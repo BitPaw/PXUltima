@@ -16,6 +16,30 @@
 
 #include <File/Format/FNT/FNT.h>
 
+size_t ImageBitDepth(const ImageDataFormat imageDataFormat)
+{
+    switch (imageDataFormat)
+    {
+    default:
+    case ImageDataFormatInvalid:
+        return 0;
+
+    case ImageDataFormatAlphaMask:
+    case ImageDataFormatAlphaMaskBinary:
+        return 1;
+
+    case ImageDataFormatBGR8:
+    case ImageDataFormatRGB8:
+    case ImageDataFormatRGBA8:
+    case ImageDataFormatBGRA8:
+        return 8;
+
+    case ImageDataFormatRGB16:
+    case ImageDataFormatRGBA16:
+        return 16;
+    }
+}
+
 size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat)
 {
     switch(imageDataFormat)
@@ -28,12 +52,12 @@ size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat)
         case ImageDataFormatAlphaMaskBinary:
             return 1;
 
-        case ImageDataFormatBGR:
-        case ImageDataFormatRGB:
+        case ImageDataFormatBGR8:
+        case ImageDataFormatRGB8:
             return 3;
 
-        case ImageDataFormatRGBA:
-        case ImageDataFormatBGRA:
+        case ImageDataFormatRGBA8:
+        case ImageDataFormatBGRA8:
             return 4;
     }
 }
@@ -369,9 +393,36 @@ void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsi
 
 void* ImageDataPoint(const Image* const image, const size_t x, const size_t y)
 {
-    const size_t index = x * 3u + y * image->Width;
+    const bytesPerPixel = ImageBytePerPixel(image->Format);
+    const size_t index = x * bytesPerPixel + y * image->Width;
 
     return (unsigned char*)image->PixelData + index;
+}
+
+size_t ImagePixelPosition(const Image* const image, const size_t x, const size_t y)
+{
+    const size_t bytesPerPixel = ImageBytePerPixel(image->Format);
+    const size_t index = x * bytesPerPixel + y * bytesPerPixel * image->Width;
+
+    return index;
+}
+
+void ImagePixelSetRGB8
+(
+    Image* const image, 
+    const size_t x,
+    const size_t y,
+    const unsigned char red, 
+    const unsigned char green,
+    const unsigned char blue
+)
+{
+    const size_t index = ImagePixelPosition(image, x, y);
+    unsigned char* const pixelData = (unsigned char* const)image->PixelData + index;
+    
+    pixelData[0] = red;
+    pixelData[1] = green;
+    pixelData[2] = blue;
 }
 
 void ImageDrawRectangle

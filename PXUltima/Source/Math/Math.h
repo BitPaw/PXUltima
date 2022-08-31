@@ -29,6 +29,7 @@ extern "C"
 {
 #endif
 	extern int MathMinimumI(const int a, const int b);
+	extern size_t MathMinimumIU(const size_t a, const size_t b);
 	extern double MathMinimumD(const double a, const double b);
 
 	extern int MathFloorI(const int a);
@@ -41,6 +42,7 @@ extern "C"
 	extern char MathLimitC(const char value, const char minimum, const char maximum);
 	extern unsigned char MathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
 	extern int MathLimitI(const int value, const int minimum, const int maximum);
+	extern size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum);
 
 	extern float MathFastInverseSqaureRoot(float number);
 	extern double MathPower(double base, double exponent);

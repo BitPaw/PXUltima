@@ -10,6 +10,10 @@
 #include <File/Image.h>
 #include <Time/Time.h>
 
+#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+
 #define PNGHeaderSequenz { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' }
 #define PNGDebugInfo false
 
@@ -863,12 +867,12 @@ unsigned char ConvertFromPNGInterlaceMethod(const PNGInterlaceMethod interlaceMe
     }
 }
 
-void PNGConstruct(PNG* png)
+void PNGConstruct(PNG* const png)
 {
     MemorySet(png, sizeof(PNG), 0);
 }
 
-void PNGDestruct(PNG* png)
+void PNGDestruct(PNG* const png)
 {
     MemoryRelease(png->PixelData, png->PixelDataSize);
 
@@ -899,9 +903,9 @@ size_t NumberOfColorChannels(const PNGColorType pngColorType)
     }
 }
 
-size_t BitsPerPixel(PNG* png)
+size_t BitsPerPixel(const PNG* const png)
 {
-    size_t numberOfColorChannels = NumberOfColorChannels(png->ImageHeader.ColorType);
+    const size_t numberOfColorChannels = NumberOfColorChannels(png->ImageHeader.ColorType);
 
     return png->ImageHeader.BitDepth * numberOfColorChannels;
 }
@@ -914,7 +918,7 @@ size_t PNGFilePredictSize(const size_t width, const size_t height, const size_t 
     const size_t end = 12;
     const size_t idat = 32768;
 
-    const size_t sum = signature + header + time + end + height* width* bbp;
+    const size_t sum = signature + header + time + end + height* width* bbp + 1024u;
 
     return sum;
 }
@@ -1842,7 +1846,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 break;
 
             case PNGColorRGB:
-                image->Format = ImageDataFormatRGB;
+                image->Format = ImageDataFormatRGB8;
                 break;
 
             case PNGColorInvalid:       
@@ -1852,7 +1856,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
             case PNGColorPalette:
             case PNGColorRGBA:
-                image->Format = ImageDataFormatRGBA;
+                image->Format = ImageDataFormatRGBA8;
                 break;
 
             default:
@@ -1984,33 +1988,579 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
 
 
 
+typedef enum LodePNGFilterStrategy
+{
+    /*every filter at zero*/
+    LFS_ZERO = 0,
+    /*every filter at 1, 2, 3 or 4 (paeth), unlike LFS_ZERO not a good choice, but for testing*/
+    LFS_ONE = 1,
+    LFS_TWO = 2,
+    LFS_THREE = 3,
+    LFS_FOUR = 4,
+    /*Use filter that gives minimum sum, as described in the official PNG filter heuristic.*/
+    LFS_MINSUM,
+    /*Use the filter type that gives smallest Shannon entropy for this scanline. Depending
+    on the image, this is better or worse than minsum.*/
+    LFS_ENTROPY,
+    /*
+    Brute-force-search PNG filters by compressing each filter for each scanline.
+    Experimental, very slow, and only rarely gives better compression than MINSUM.
+    */
+    LFS_BRUTE_FORCE,
+    /*use predefined_filters buffer: you specify the filter type for each scanline*/
+    LFS_PREDEFINED
+} LodePNGFilterStrategy;
+
+
+/* integer binary logarithm, max return value is 31 */
+static size_t ilog2(size_t i)
+{
+    size_t result = 0;
+    if(i >= 65536) { result += 16; i >>= 16; }
+    if(i >= 256) { result += 8; i >>= 8; }
+    if(i >= 16) { result += 4; i >>= 4; }
+    if(i >= 4) { result += 2; i >>= 2; }
+    if(i >= 2) { result += 1; /*i >>= 1;*/ }
+    return result;
+}
+
+/* integer approximation for i * log2(i), helper function for LFS_ENTROPY */
+static size_t ilog2i(size_t i)
+{
+    size_t l;
+    if(i == 0) return 0;
+    l = ilog2(i);
+    /* approximate i*log2(i): l is integer logarithm, ((i - (1u << l)) << 1u)
+    linearly approximates the missing fractional part multiplied by i */
+    return i * l + ((i - (1u << l)) << 1u);
+}
+
+void filterScanline(unsigned char* out, const unsigned char* scanline, const unsigned char* prevline,
+                           size_t length, size_t bytewidth, unsigned char filterType)
+{
+    size_t i;
+    switch(filterType)
+    {
+        case 0: /*None*/
+            for(i = 0; i != length; ++i) out[i] = scanline[i];
+            break;
+        case 1: /*Sub*/
+            for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+            for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - scanline[i - bytewidth];
+            break;
+        case 2: /*Up*/
+            if(prevline)
+            {
+                for(i = 0; i != length; ++i) out[i] = scanline[i] - prevline[i];
+            }
+            else
+            {
+                for(i = 0; i != length; ++i) out[i] = scanline[i];
+            }
+            break;
+        case 3: /*Average*/
+            if(prevline)
+            {
+                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i] - (prevline[i] >> 1);
+                for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - ((scanline[i - bytewidth] + prevline[i]) >> 1);
+            }
+            else
+            {
+                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+                for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - (scanline[i - bytewidth] >> 1);
+            }
+            break;
+        case 4: /*Paeth*/
+            if(prevline)
+            {
+                /*paethPredictor(0, prevline[i], 0) is always prevline[i]*/
+                for(i = 0; i != bytewidth; ++i) out[i] = (scanline[i] - prevline[i]);
+                for(i = bytewidth; i < length; ++i)
+                {
+                    out[i] = (scanline[i] - ADAM7paethPredictor(scanline[i - bytewidth], prevline[i], prevline[i - bytewidth]));
+                }
+            }
+            else
+            {
+                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+                /*paethPredictor(scanline[i - bytewidth], 0, 0) is always scanline[i - bytewidth]*/
+                for(i = bytewidth; i < length; ++i) out[i] = (scanline[i] - scanline[i - bytewidth]);
+            }
+            break;
+        default: return; /*invalid filter type given*/
+    }
+}
+
+/*
+Settings for zlib compression. Tweaking these settings tweaks the balance
+between speed and compression ratio.
+*/
+typedef struct LodePNGCompressSettings LodePNGCompressSettings;
+struct LodePNGCompressSettings /*deflate = compress*/
+{
+    /*LZ77 related settings*/
+    unsigned btype; /*the block type for LZ (0, 1, 2 or 3, see zlib standard). Should be 2 for proper compression.*/
+    unsigned use_lz77; /*whether or not to use LZ77. Should be 1 for proper compression.*/
+    unsigned windowsize; /*must be a power of two <= 32768. higher compresses more but is slower. Default value: 2048.*/
+    unsigned minmatch; /*minimum lz77 length. 3 is normally best, 6 can be better for some PNGs. Default: 0*/
+    unsigned nicematch; /*stop searching if >= this length found. Set to 258 for best compression. Default: 128*/
+    unsigned lazymatching; /*use lazy matching: better compression but a bit slower. Default: true*/
+
+    /*use custom zlib encoder instead of built in one (default: null)*/
+    unsigned (*custom_zlib)(unsigned char**, size_t*,
+                            const unsigned char*, size_t,
+                            const LodePNGCompressSettings*);
+    /*use custom deflate encoder instead of built in one (default: null)
+    if custom_zlib is used, custom_deflate is ignored since only the built in
+    zlib function will call custom_deflate*/
+    unsigned (*custom_deflate)(unsigned char**, size_t*,
+                               const unsigned char*, size_t,
+                               const LodePNGCompressSettings*);
+
+    const void* custom_context; /*optional custom settings for custom functions*/
+};
+
+
+/*in an idat chunk, each scanline is a multiple of 8 bits, unlike the lodepng output buffer,
+and in addition has one extra byte per line: the filter byte. So this gives a larger
+result than lodepng_get_raw_size. Set h to 1 to get the size of 1 row including filter byte. */
+static size_t lodepng_get_raw_size_idat(unsigned w, unsigned h, unsigned bpp)
+{
+    /* + 1 for the filter byte, and possibly plus padding bits per line. */
+    /* Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp */
+    size_t line = ((size_t)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
+    return (size_t)h * line;
+}
+
+/*Settings for the encoder.*/
+typedef struct LodePNGEncoderSettings
+{
+    LodePNGCompressSettings zlibsettings; /*settings for the zlib encoder, such as window size, ...*/
+
+    unsigned auto_convert; /*automatically choose output PNG color type. Default: true*/
+
+    /*If true, follows the official PNG heuristic: if the PNG uses a palette or lower than
+    8 bit depth, set all filters to zero. Otherwise use the filter_strategy. Note that to
+    completely follow the official PNG heuristic, filter_palette_zero must be true and
+    filter_strategy must be LFS_MINSUM*/
+    unsigned filter_palette_zero;
+    /*Which filter strategy to use when not using zeroes due to filter_palette_zero.
+    Set filter_palette_zero to 0 to ensure always using your chosen strategy. Default: LFS_MINSUM*/
+    LodePNGFilterStrategy filter_strategy;
+    /*used if filter_strategy is LFS_PREDEFINED. In that case, this must point to a buffer with
+    the same length as the amount of scanlines in the image, and each value must <= 5. You
+    have to cleanup this buffer, LodePNG will never free it. Don't forget that filter_palette_zero
+    must be set to 0 to ensure this is also used on palette or low bitdepth images.*/
+    const unsigned char* predefined_filters;
+
+    /*force creating a PLTE chunk if colortype is 2 or 6 (= a suggested palette).
+    If colortype is 3, PLTE is always created. If color type is explicitely set
+    to a grayscale type (1 or 4), this is not done and is ignored. If enabling this,
+    a palette must be present in the info_png.
+    NOTE: enabling this may worsen compression if auto_convert is used to choose
+    optimal color mode, because it cannot use grayscale color modes in this case*/
+    unsigned force_palette;
+#ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
+    /*add LodePNG identifier and version as a text chunk, for debugging*/
+    unsigned add_id;
+    /*encode text chunks as zTXt chunks instead of tEXt chunks, and use compression in iTXt chunks*/
+    unsigned text_compression;
+#endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
+} LodePNGEncoderSettings;
+
+static unsigned filter
+(
+    unsigned char* out, 
+    const unsigned char* in, 
+    size_t width, 
+    size_t height,
+    size_t bpp,
+   // const LodePNGColorMode* color, 
+    LodePNGFilterStrategy strategy
+)
+{
+
+    /*
+For PNG filter method 0
+out must be a buffer with as size: h + (w * h * bpp + 7u) / 8u, because there are
+the scanlines with 1 extra byte per scanline
+*/
+
+    //                   unsigned bpp = lodepng_get_bpp(color);
+    /*the width of a scanline in bytes, not including the filter type*/
+    size_t linebytes = lodepng_get_raw_size_idat(width, 1, bpp) - 1u;
+
+    /*bytewidth is used for filtering, is 1 when bpp < 8, number of bytes per pixel otherwise*/
+    size_t bytewidth = (bpp + 7u) / 8u;
+    const unsigned char* prevline = 0;
+    unsigned x, y;
+    unsigned error = 0;
+
+    /*
+    There is a heuristic called the minimum sum of absolute differences heuristic, suggested by the PNG standard:
+     *  If the image type is Palette, or the bit depth is smaller than 8, then do not filter the image (i.e.
+        use fixed filtering, with the filter None).
+     * (The other case) If the image type is Grayscale or RGB (with or without Alpha), and the bit depth is
+       not smaller than 8, then use adaptive filtering heuristic as follows: independently for each row, apply
+       all five filters and select the filter that produces the smallest sum of absolute values per row.
+    This heuristic is used if filter strategy is LFS_MINSUM and filter_palette_zero is true.
+
+    If filter_palette_zero is true and filter_strategy is not LFS_MINSUM, the above heuristic is followed,
+    but for "the other case", whatever strategy filter_strategy is set to instead of the minimum sum
+    heuristic is used.
+    */
+
+
+
+
+   // if(settings->filter_palette_zero &&
+   //    (color->colortype == LCT_PALETTE || color->bitdepth < 8)) strategy = LFS_ZERO;
 
 
 
 
 
+    if(bpp == 0) return 31; /*error: invalid color type*/
+
+    if(strategy >= LFS_ZERO && strategy <= LFS_FOUR)
+    {
+        unsigned char type = (unsigned char)strategy;
+        for(y = 0; y != height; ++y)
+        {
+            size_t outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
+            size_t inindex = linebytes * y;
+            out[outindex] = type; /*filter type byte*/
+            filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
+            prevline = &in[inindex];
+        }
+    }
+    else if(strategy == LFS_MINSUM)
+    {
+        /*adaptive filtering*/
+        unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
+        size_t smallest = 0;
+        unsigned char type, bestType = 0;
+
+        for(type = 0; type != 5; ++type)
+        {
+            attempt[type] = (unsigned char*)malloc(linebytes);
+            if(!attempt[type]) error = 83; /*alloc fail*/
+        }
+
+        if(!error)
+        {
+            for(y = 0; y != height; ++y)
+            {
+                /*try the 5 filter types*/
+                for(type = 0; type != 5; ++type)
+                {
+                    size_t sum = 0;
+                    filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
+
+                    /*calculate the sum of the result*/
+                    if(type == 0)
+                    {
+                        for(x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[type][x]);
+                    }
+                    else
+                    {
+                        for(x = 0; x != linebytes; ++x)
+                        {
+                            /*For differences, each byte should be treated as signed, values above 127 are negative
+                            (converted to signed char). Filtertype 0 isn't a difference though, so use unsigned there.
+                            This means filtertype 0 is almost never chosen, but that is justified.*/
+                            unsigned char s = attempt[type][x];
+                            sum += s < 128 ? s : (255U - s);
+                        }
+                    }
+
+                    /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
+                    if(type == 0 || sum < smallest)
+                    {
+                        bestType = type;
+                        smallest = sum;
+                    }
+                }
+
+                prevline = &in[y * linebytes];
+
+                /*now fill the out values*/
+                out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
+                for(x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+            }
+        }
+
+        for(type = 0; type != 5; ++type) free(attempt[type]);
+    }
+    else if(strategy == LFS_ENTROPY)
+    {
+        unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
+        size_t bestSum = 0;
+        unsigned type, bestType = 0;
+        unsigned count[256];
+
+        for(type = 0; type != 5; ++type)
+        {
+            attempt[type] = (unsigned char*)malloc(linebytes);
+            if(!attempt[type]) error = 83; /*alloc fail*/
+        }
+
+        if(!error)
+        {
+            for(y = 0; y != height; ++y)
+            {
+                /*try the 5 filter types*/
+                for(type = 0; type != 5; ++type)
+                {
+                    size_t sum = 0;
+                    filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
+                    memset(count, 0, 256 * sizeof(*count));
+                    for(x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
+                    ++count[type]; /*the filter type itself is part of the scanline*/
+                    for(x = 0; x != 256; ++x)
+                    {
+                        sum += ilog2i(count[x]);
+                    }
+                    /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
+                    if(type == 0 || sum > bestSum)
+                    {
+                        bestType = type;
+                        bestSum = sum;
+                    }
+                }
+
+                prevline = &in[y * linebytes];
+
+                /*now fill the out values*/
+                out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
+                for(x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+            }
+        }
+
+        for(type = 0; type != 5; ++type) free(attempt[type]);
+    }
+    else if(strategy == LFS_PREDEFINED)
+    {
+        for(y = 0; y != height; ++y)
+        {
+            size_t outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
+            size_t inindex = linebytes * y;
+    // unsigned char type = settings->predefined_filters[y];
+         //   out[outindex] = type; /*filter type byte*/
+          //  filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
+            prevline = &in[inindex];
+        }
+    }
+    else if(strategy == LFS_BRUTE_FORCE)
+    {
+        /*brute force filter chooser.
+        deflate the scanline after every filter attempt to see which one deflates best.
+        This is very slow and gives only slightly smaller, sometimes even larger, result*/
+        size_t size[5];
+        unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
+        size_t smallest = 0;
+        unsigned type = 0, bestType = 0;
+        unsigned char* dummy;
+        LodePNGCompressSettings zlibsettings;
+        //                              memcpy(&zlibsettings, &settings->zlibsettings, sizeof(LodePNGCompressSettings));
+        /*use fixed tree on the attempts so that the tree is not adapted to the filtertype on purpose,
+        to simulate the true case where the tree is the same for the whole image. Sometimes it gives
+        better result with dynamic tree anyway. Using the fixed tree sometimes gives worse, but in rare
+        cases better compression. It does make this a bit less slow, so it's worth doing this.*/
+        zlibsettings.btype = 1;
+        /*a custom encoder likely doesn't read the btype setting and is optimized for complete PNG
+        images only, so disable it*/
+        zlibsettings.custom_zlib = 0;
+        zlibsettings.custom_deflate = 0;
+        for(type = 0; type != 5; ++type)
+        {
+            attempt[type] = (unsigned char*)malloc(linebytes);
+            if(!attempt[type]) error = 83; /*alloc fail*/
+        }
+        if(!error)
+        {
+            for(y = 0; y != height; ++y) /*try the 5 filter types*/
+            {
+                for(type = 0; type != 5; ++type)
+                {
+                    unsigned testsize = (unsigned)linebytes;
+                    /*if(testsize > 8) testsize /= 8;*/ /*it already works good enough by testing a part of the row*/
+
+                    filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
+                    size[type] = 0;
+                    dummy = 0;
+
+                    const size_t sizeAA = 0xFFFF * 2;
+                    dummy = malloc(sizeAA);
+
+                    size_t written = 0;
+                    ZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
+                   // zlib_compress( , &zlibsettings);
+
+                    free(dummy);
+                    /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
+                    if(type == 0 || size[type] < smallest)
+                    {
+                        bestType = type;
+                        smallest = size[type];
+                    }
+                }
+                prevline = &in[y * linebytes];
+                out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
+                for(x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+            }
+        }
+        for(type = 0; type != 5; ++type) free(attempt[type]);
+    }
+    else return 88; /* unknown filter strategy */
+
+    return error;
+}
+
+void setBitOfReversedStream(size_t* bitpointer, unsigned char* bitstream, unsigned char bit)
+{
+    /*the current bit in bitstream may be 0 or 1 for this to work*/
+    if(bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
+    else         bitstream[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
+    ++(*bitpointer);
+}
+
+
+
+void addPaddingBits(unsigned char* out, const unsigned char* in,
+                           size_t olinebits, size_t ilinebits, unsigned h)
+{
+    /*The opposite of the removePaddingBits function
+    olinebits must be >= ilinebits*/
+    unsigned y;
+    size_t diff = olinebits - ilinebits;
+    size_t obp = 0, ibp = 0; /*bit pointers*/
+    for(y = 0; y != h; ++y)
+    {
+        size_t x;
+        for(x = 0; x < ilinebits; ++x)
+        {
+            unsigned char bit = readBitFromReversedStream(&ibp, in);
+            setBitOfReversedStream(&obp, out, bit);
+        }
+        /*obp += diff; --> no, fill in some value in the padding bits too, to avoid
+        "Use of uninitialised value of size ###" warning from valgrind*/
+        for(x = 0; x != diff; ++x) setBitOfReversedStream(&obp, out, 0);
+    }
+}
 
 
 
 
+/*out must be buffer big enough to contain uncompressed IDAT chunk data, and in must contain the full image.
+return value is error**/
+size_t preProcessScanlines
+(
+    PNGInterlaceMethod interlaceMethod,
+    size_t width, 
+    size_t height,
+    size_t bpp,
+    PNGColorType colorType,
+    size_t bitDepth,
+    unsigned char** out, 
+    size_t* outsize, 
+    const unsigned char* in
+)
+{
 
+    /*
+    This function converts the pure 2D image with the PNG's colortype, into filtered-padded-interlaced data. Steps:
+    *) if no Adam7: 1) add padding bits (= possible extra bits per scanline if bpp < 8) 2) filter
+    *) if adam7: 1) Adam7_interlace 2) 7x add padding bits 3) 7x filter
+    */
+    unsigned error = 0;
 
+    switch(interlaceMethod)
+    {        
+        case PNGInterlaceNone:
+        {
+            *outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
+            *out = (unsigned char*)malloc(*outsize);
+            if(!(*out) && (*outsize)) error = 83; /*alloc fail*/
 
+            if(!error)
+            {
+                /*non multiple of 8 bits per scanline, padding bits needed per scanline*/
+                if(bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u)
+                {
+                    unsigned char* padded = (unsigned char*)malloc(height * ((width * bpp + 7u) / 8u));
+                    if(!padded) error = 83; /*alloc fail*/
+                    if(!error)
+                    {
+                        addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
+                        error = filter(*out, padded, width, height, bpp, LFS_MINSUM);
+                    }
+                    free(padded);
+                }
+                else
+                {
+                    /*we can immediately filter into the out buffer, no other steps needed*/
+                    error = filter(*out, in, width, height, bpp, LFS_MINSUM);
+                }
+            }
 
+            break;
+        }
+        case PNGInterlaceADAM7:
+        {
+            unsigned passw[7], passh[7];
+            size_t filter_passstart[8], padded_passstart[8], passstart[8];
+            unsigned char* adam7;
 
+            ADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart,width,height, bpp);
 
+            *outsize = filter_passstart[7]; //image size plus an extra byte per scanline + possible padding bits
+            *out = (unsigned char*)malloc(*outsize);
+            if(!(*out)) error = 83; //alloc fail
 
+            adam7 = (unsigned char*)malloc(passstart[7]);
+            if(!adam7 && passstart[7]) error = 83; //alloc fail
 
+            if(!error)
+            {
+                unsigned i;
+                
+                //Adam7_interlace(adam7, in, png->ImageHeader.Width, png->ImageHeader.Height, bpp);
+                for(i = 0; i != 7; ++i)
+                {
+                    if(bpp < 8)
+                    {
+                        unsigned char* padded = (unsigned char*)malloc(padded_passstart[i + 1] - padded_passstart[i]);
+                      //  if(!padded) ERROR_BREAK(83); //alloc fail
+                        addPaddingBits(padded, &adam7[passstart[i]],
+                                       ((passw[i] * bpp + 7u) / 8u) * 8u, passw[i] * bpp, passh[i]);
+                      //  error = filter(&(*out)[filter_passstart[i]], padded,
+                        //               passw[i], passh[i], &info_png->color, settings);
+                        free(padded);
+                    }
+                    else
+                    {
+                       // error = filter(&(*out)[filter_passstart[i]], &adam7[padded_passstart[i]],
+                                  //     passw[i], passh[i], &info_png->color, settings);
+                    }
 
+                    if(error) break;
+                }
+            }
 
+            free(adam7);
 
+            break;
+        }
+        default:
+        case PNGInterlaceInvalid:
+        {
+            break;
+        }
+    }   
 
-
-
-
-
-
-
+    return error;
+}
 
 ActionResult PNGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
 {
@@ -2031,9 +2581,9 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
     //---<IHDR> (Image Header)--- 21 Bytes
         {
         unsigned char colorType = 0;
-        const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(PNGInterlaceADAM7);
+        const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(PNGInterlaceNone);
         const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
-        const unsigned char bbp = ImageBytePerPixel(image->Format);
+        
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
 
@@ -2046,32 +2596,42 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
                 colorType = PNGColorGrayscaleAlpha;
                 break;
 
-            case ImageDataFormatBGR:
-            case ImageDataFormatRGB:
+            case ImageDataFormatBGR8:
+            case ImageDataFormatRGB8:
                 colorType = PNGColorRGB;
                 break;
 
-            case ImageDataFormatRGBA:
-            case ImageDataFormatBGRA:
+            case ImageDataFormatRGBA8:
+            case ImageDataFormatBGRA8:
                 colorType = PNGColorRGBA;
                 break;
         }
+        const unsigned int chunkLength = 13u;
 
-        ParsingStreamWriteIU(&parsingStream, 13u, EndianBig);
+        ParsingStreamWriteIU(&parsingStream, chunkLength, EndianBig);
         ParsingStreamWriteD(&parsingStream, "IHDR", 4u);
 
         ParsingStreamWriteIU(&parsingStream, image->Width, EndianBig);
         ParsingStreamWriteIU(&parsingStream, image->Height, EndianBig);
 
-        ParsingStreamWriteCU(&parsingStream, bbp);
+        {
+            const unsigned char bitDepth = ImageBitDepth(image->Format);
+
+            ParsingStreamWriteCU(&parsingStream, bitDepth);
+        }
+
         ParsingStreamWriteCU(&parsingStream, colorType);
         ParsingStreamWriteCU(&parsingStream, compressionMethod);
         ParsingStreamWriteCU(&parsingStream, filterMethod);
         ParsingStreamWriteCU(&parsingStream, interlaceMethod);
+        
+        {
+            const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
-        const unsigned int crc = CRC32Generate(chunkStart, 13 + 4);
+            ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+        }
 
-        ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+      
     
         // Header End
 
@@ -2167,6 +2727,8 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
 
     }
 
+#if 1
+
     // [tIME] - 19 Bytes
     {
         Time time;
@@ -2181,7 +2743,10 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         pngLastModificationTime.Minute = time.Minute;
         pngLastModificationTime.Second = time.Second;
 
-        ParsingStreamWriteIU(&parsingStream, 7u, EndianBig);
+        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
+        const size_t chunkLength = 7u;
+
+        ParsingStreamWriteIU(&parsingStream, chunkLength, EndianBig);
         ParsingStreamWriteD(&parsingStream, "tIME", 4u);
         ParsingStreamWriteSU(&parsingStream, pngLastModificationTime.Year, EndianBig);
         ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Month);
@@ -2190,41 +2755,78 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Minute);
         ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Second);
 
-        ParsingStreamWriteIU(&parsingStream, 0, EndianBig); // CRC
+        {
+            const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
+
+            ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+        }
     }
+#endif
 
     // [IDAT] Image data	
     {
-        const size_t offsetSizeofChunk = parsingStream.DataCursor;
+        const size_t offsetSizeofChunk = parsingStream.DataCursor;   
 
-        size_t written = 0; 
+        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);       
+
+        size_t chunkLength = 0;
 
         ParsingStreamWriteIU(&parsingStream, 0u, EndianBig); // Length
         ParsingStreamWriteD(&parsingStream, "IDAT", 4u); 
 
-        ZLIBCompress(image->PixelData, image->PixelDataSize, ParsingStreamCursorPosition(&parsingStream), ParsingStreamRemainingSize(&parsingStream), &written);
 
-        parsingStream.DataCursor += written;
+        unsigned char* scanlines = 0;
+        size_t scanlinesSize = 0;
 
-        // update length 
+
+        // Preprocess scanlines
         {
-            const size_t oldPos = parsingStream.DataCursor; // save current position
+            // check if colormodes are equal
+            if(0)
+            {
 
-            parsingStream.DataCursor = offsetSizeofChunk; // jump to offset
-
-            ParsingStreamWriteIU(&parsingStream, written, EndianBig); // Length
-
-            parsingStream.DataCursor = oldPos; // Reset old position
+            }
+            else
+            {
+               preProcessScanlines
+               (
+                   PNGInterlaceNone,
+                   image->Width,
+                   image->Height,
+                   ImageBitsPerPixel(image->Format),
+                   PNGColorRGB,
+                   8,
+                   &scanlines,
+                   &scanlinesSize,
+                   image->PixelData
+               );
+            }
         }
 
-        ParsingStreamWriteIU(&parsingStream, 0u, EndianBig); // CRC
+        // ZLIB
+        {
+            ZLIBCompress(scanlines, scanlinesSize, ParsingStreamCursorPosition(&parsingStream), ParsingStreamRemainingSize(&parsingStream), &chunkLength);
+
+            parsingStream.DataCursor += chunkLength;
+
+            ParsingStreamWriteAtIU(&parsingStream, chunkLength, EndianBig, offsetSizeofChunk); // override length
+        }       
+
+        free(scanlines);
+
+        {
+            const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
+
+            ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+        }
     }
 
     //---<IEND>---------------------------------------------------------------- 12 Bytes
     {
-        ParsingStreamWriteIU(&parsingStream, 0u, EndianBig); // Length
-        ParsingStreamWriteD(&parsingStream, "IEND", 4u);
-        ParsingStreamWriteIU(&parsingStream, 0u, EndianBig); // CRC
+        const unsigned char imageEndChunk[13] = "\0\0\0\0IEND\xAE\x42\x60\x82"; // Combined write, as this is constand
+        const size_t imageEndChunkSize = sizeof(imageEndChunk)-1;
+
+        ParsingStreamWriteD(&parsingStream, imageEndChunk, imageEndChunkSize);
     }
 
     *dataWritten = parsingStream.DataCursor;

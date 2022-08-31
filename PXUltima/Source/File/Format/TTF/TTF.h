@@ -654,8 +654,8 @@ extern "C"
     extern TTFTableEntryType ConvertTableEntryType(const unsigned int tableEntryType);
     extern unsigned int ConvertTableEntryType(const TTFTableEntryType tableEntryType);
 
-    extern void TTFConstruct(TTF* ttf);
-    extern void TTFDestruct(TTF* ttf);
+    extern void TTFConstruct(TTF* const ttf);
+    extern void TTFDestruct(TTF* const ttf);
 
 	extern ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead);
 

@@ -7,6 +7,11 @@ int MathMinimumI(const int a, const int b)
 	return MathMinimum(a, b);
 }
 
+size_t MathMinimumIU(const size_t a, const size_t b)
+{
+	return MathMinimum(a, b);
+}
+
 double MathMinimumD(const double a, const double b)
 {
 	return MathMinimum(a, b);
@@ -43,6 +48,11 @@ unsigned char MathLimitCU(const unsigned char value, const unsigned char minimum
 }
 
 int MathLimitI(const int value, const int minimum, const int maximum)
+{
+	return MathLimit(value, minimum, maximum);
+}
+
+size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum)
 {
 	return MathLimit(value, minimum, maximum);
 }

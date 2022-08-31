@@ -1,10 +1,10 @@
 #include "CRC32.h"
 
-unsigned int CRC32Generate(const unsigned char* data, size_t length)
+unsigned int CRC32Generate(const unsigned char* const data, const size_t length)
 {
     unsigned int r = 0xffffffffu;
 
-    unsigned int table[256] =
+    const unsigned int table[256] =
     {
                0u, 1996959894u, 3993919788u, 2567524794u,  124634137u, 1886057615u, 3915621685u, 2657392035u,
        249268274u, 2044508324u, 3772115230u, 2547177864u,  162941995u, 2125561021u, 3887607047u, 2428444049u,

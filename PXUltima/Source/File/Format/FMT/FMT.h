@@ -24,7 +24,9 @@ extern "C"
 	}
 	FMT;
 
-	extern ActionResult FMTParse(FMT* fmt, const void* data, const size_t dataSize, size_t* dataRead, const Endian endian);
+	extern void FMTConstruct(FMT* const fmt);
+
+	extern ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, size_t* dataRead, const Endian endian);
 
 #ifdef __cplusplus
 }

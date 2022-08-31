@@ -179,6 +179,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Container\BinaryTree.c" />
+    <ClCompile Include="Source\Container\QuadTree.c" />
+    <ClCompile Include="Source\Container\Dictionary.c" />
     <ClCompile Include="Source\Algorithm\ADLER\Adler32.c" />
     <ClCompile Include="Source\Algorithm\CRC32\CRC32.c" />
     <ClCompile Include="Source\Algorithm\ISBN\ISBN.c" />
@@ -261,6 +264,9 @@
     <ClCompile Include="Source\Video\Vulcan\Vulcan.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Container\BinaryTree.h" />
+    <ClInclude Include="Source\Container\QuadTree.h" />
+    <ClInclude Include="Source\Container\Dictionary.h" />
     <ClInclude Include="Source\Algorithm\ADLER\Adler32.h" />
     <ClInclude Include="Source\Algorithm\CRC32\CRC32.h" />
     <ClInclude Include="Source\Algorithm\ISBN\ISBN.h" />

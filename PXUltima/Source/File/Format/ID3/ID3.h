@@ -131,7 +131,7 @@ extern "C"
 
 	extern ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID);
 
-	extern ActionResult ID3Parse(ID3* id3, const void* data, const size_t dataSize, size_t* dataRead);
+	extern ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

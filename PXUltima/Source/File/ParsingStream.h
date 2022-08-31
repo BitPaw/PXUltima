@@ -83,6 +83,8 @@ extern "C"
 	extern size_t ParsingStreamWriteFill(ParsingStream* parsingStream, const unsigned char value, const size_t length);
 	extern size_t ParsingStreamWrite(ParsingStream* parsingStream, const char* format, ...);
 
+
+	extern size_t ParsingStreamWriteAtIU(ParsingStream* const parsingStream, const unsigned int value, const Endian endian, const size_t index);
 #endif
 
 #ifdef __cplusplus

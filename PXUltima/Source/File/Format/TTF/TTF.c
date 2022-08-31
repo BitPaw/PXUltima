@@ -162,12 +162,12 @@ TTFTableEntryType ConvertTableEntryType(const unsigned int tableEntryType)
 	}
 }
 
-void TTFConstruct(TTF* ttf)
+void TTFConstruct(TTF* const ttf)
 {
 	MemorySet(ttf, sizeof(TTF), 0);
 }
 
-void TTFDestruct(TTF* ttf)
+void TTFDestruct(TTF* const ttf)
 {
 	// TODO
 }

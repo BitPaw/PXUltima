@@ -430,3 +430,16 @@ size_t ParsingStreamWrite(ParsingStream* parsingStream, const char* format, ...)
 
 	return writtenBytes;
 }
+
+size_t ParsingStreamWriteAtIU(ParsingStream* const parsingStream, const unsigned int value, const Endian endian, const size_t index)
+{
+	const size_t positionBefore = parsingStream->DataCursor; // save current position
+	
+	parsingStream->DataCursor = index; // jump to offset
+
+	ParsingStreamWriteIU(parsingStream, value, endian); // Length
+
+	parsingStream->DataCursor = positionBefore; // Reset old position
+
+	return 4u;
+}

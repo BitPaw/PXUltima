@@ -66,8 +66,8 @@ extern "C"
 	HuffmanTree;
 
 
-	extern void HuffmanTreeConstruct(HuffmanTree* huffmanTree);
-
+	extern void HuffmanTreeConstruct(HuffmanTree* const huffmanTree);
+	extern void HuffmanTreeDestruct(HuffmanTree* const huffmanTree);
 
 	extern HuffmanCodeType HuffmanCodeTypeFromCode(const unsigned short code);
 

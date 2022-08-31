@@ -178,6 +178,13 @@ void* MemoryReallocate(void* adress, const size_t size)
 {
 	const void* adressReallocated = realloc(adress, size);
 
+#if MemorySanitise
+	if (!adress)
+	{
+		MemorySet(adressReallocated, size, '#');
+	}
+#endif
+
 #if MemoryDebug
 	const unsigned char hasChanged = adress != adressReallocated;
 

@@ -116,7 +116,6 @@ extern "C"
 	}
 	JPEGFrame;
 
-
 	typedef struct JPEGFileInfo_
 	{
 		unsigned char VersionMajor;
@@ -132,14 +131,12 @@ extern "C"
 	}
 	JPEGFileInfo;
 
-
-
 	typedef struct JPEGHuffmanTable_
 	{
 		unsigned char ID;
 		unsigned char Type;
-	}JPEGHuffmanTable;
-
+	}
+	JPEGHuffmanTable;
 
 	typedef struct JPEGScanSelector_
 	{
@@ -181,14 +178,13 @@ extern "C"
 	static JPEGMarker ConvertToJPEGMarker(const unsigned short jpegMarker);
 	static unsigned short ConvertFromJPEGMarker(const JPEGMarker jpegMarker);
 
+	extern void JPEGConstruct(JPEG* const jpeg);
+	extern void JPEGDestruct(JPEG* const jpeg);
+
 	extern size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
-
-	extern void JPEGConstruct(JPEG* jpeg);
-	extern void JPEGDestruct(JPEG* jpeg);
-
-
-	extern ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead);
+	
 	extern ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead);
+	extern ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead);
 
 	extern ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 

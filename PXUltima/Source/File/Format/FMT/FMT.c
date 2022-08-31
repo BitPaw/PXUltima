@@ -6,11 +6,16 @@
 
 #define FMTSignature {'f', 'm', 't', ' '}
 
-ActionResult FMTParse(FMT* fmt, const void* data, const size_t dataSize, size_t* dataRead, const Endian endian)
+void FMTConstruct(FMT* const fmt)
+{
+	MemorySet(fmt, sizeof(FMT), 0);
+}
+
+ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, size_t* dataRead, const Endian endian)
 {
 	ParsingStream parsingStream;
 
-	MemorySet(fmt, sizeof(FMT), 0);
+	FMTConstruct(fmt);
 	*dataRead = 0;
 
 	ParsingStreamConstruct(&parsingStream, data, dataSize);

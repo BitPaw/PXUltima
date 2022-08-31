@@ -394,12 +394,12 @@ enough memory.*/
 
 
 
-	extern void PNGConstruct(PNG* png);
-	extern void PNGDestruct(PNG* png);
+	extern void PNGConstruct(PNG* const png);
+	extern void PNGDestruct(PNG* const png);
 
 
 	extern size_t NumberOfColorChannels(const PNGColorType pngColorType);
-	extern size_t BitsPerPixel(PNG* png);
+	extern size_t BitsPerPixel(const PNG* const png);
 
 	extern size_t PNGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
 

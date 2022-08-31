@@ -4,6 +4,7 @@
 #include <Math/Math.h>
 #include <File/ParsingStream.h>
 #include <File/Format/DEFLATE/DEFLATE.h>
+#include <Container/ClusterShort.h>
 
 ZLIBCompressionLevel ConvertToCompressionLevel(const unsigned char compressionLevel)
 {
@@ -99,7 +100,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
 
         // Valid Check
         {
-            unsigned char validFlags = ((unsigned int)compressionFormatByte * 256u + (unsigned int)flagByte) % 31u == 0;
+            const unsigned char validFlags = MakeShortBE(compressionFormatByte, flagByte) % 31u == 0;
 
             if(!validFlags)
             {
@@ -127,7 +128,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
 
             //assert(isCompressionInfoValid);
 
-            zlib.Header.WindowSize = MathPower(2, zlib.Header.CompressionInfo + 8);
+            zlib.Header.WindowSize = MathPower(2, zlib.Header.CompressionInfo + 8u);
         }
         //-------------------------------------------------------------------------
 
@@ -208,18 +209,21 @@ ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSiz
         buffer[1] = 0u;
     
         const unsigned char compressionMethod = ConvertFromCompressionMethod(ZLIBCompressionMethodDeflate);
-        const unsigned char compressionInfo = 7u;
+        const unsigned char compressionInfo = 7u; // 1-7
 
         const unsigned char dictionary = 0;
         const unsigned char level = ConvertFromCompressionLevel(ZLIBCompressionLevelFastest);
+        
+        buffer[0] |= compressionMethod |  // 0b00001111
+                     compressionInfo << 4u; // 0b11110000
 
+        buffer[1] |= (level & 0b11) << 6u | // 0b11000000
+                    (dictionary & 0b01) << 5u; // 0b00100000
 
-        buffer[0] = (compressionMethod) | ((compressionInfo) << 4u);
-        buffer[1] = dictionary << 2u | level;
 
         // Check
         {
-            const unsigned short checksum = buffer[0] << 8u | buffer[1];
+            const unsigned short checksum = MakeShortBE(buffer[0], buffer[1]);
             const unsigned char multble = 31-checksum % 31;
 
             buffer[1] += multble;

@@ -15,6 +15,40 @@ extern "C"
 {
 #endif
 
+	typedef enum FNTChanalMode_
+	{
+		FNTChanalInvalid,
+		FNTChanalGlyphData,		// 0 if the channel holds the glyph data
+		FNTChanalOutline, 		// 1 if it holds the outline		
+		FNTChanalGlyphAndOutline,// 2 if it holds the glyphand the outline		
+		FNTChanalSetToZero,		// 3 if its set to zero		
+		FNTChanalSetToOne		// 4 if its set to one.
+	}
+	FNTChanalMode;
+
+	typedef enum FNTLineType_
+	{
+		FNTLineUnkown,
+		FNTLineInfo,
+		FNTLineCommon,
+		FNTLinePage,
+		FNTLineCharacterCount,
+		FNTLineCharacterDefinition
+	}
+	FNTLineType;
+
+	typedef struct FNTCharacter_
+	{
+		unsigned int ID;
+		float Position[2]; // Position of the character image in the texture.
+		float Size[2];	// Size of the character image in the texture.		
+		float Offset[2];// Offset from the position-center.				
+		int XAdvance; // How much the current position should be advanced after drawing the character.		
+		int Page; // The texture page where the character image is found.		
+		int Chanal;// The texture channel where the character image is found (1 = blue, 2 = green, 4 = red, 8 = alpha, 15 = all channels).
+	}
+	FNTCharacter;
+
 	typedef struct FNTInfo_
 	{
 		char Name[FontNameSize]; // Name of this font. (synonym: face)
@@ -30,18 +64,7 @@ extern "C"
 		unsigned int SpacerOffset[2];
 		unsigned int OutlineThickness;// How thick is the line arount the Letter?
 	}
-	FNTInfo;
-
-	typedef enum FNTChanalMode_
-	{
-		FNTChanalInvalid,
-		FNTChanalGlyphData,		// 0 if the channel holds the glyph data
-		FNTChanalOutline, 		// 1 if it holds the outline		
-		FNTChanalGlyphAndOutline,// 2 if it holds the glyphand the outline		
-		FNTChanalSetToZero,		// 3 if its set to zero		
-		FNTChanalSetToOne		// 4 if its set to one.
-	}
-	FNTChanalMode;
+	FNTInfo;	
 
 	typedef struct FNTCommonData_
 	{
@@ -57,20 +80,7 @@ extern "C"
 		FNTChanalMode GreenChanal;
 		FNTChanalMode BlueChanal;
 	}
-	FNTCommonData;
-
-	typedef struct FNTCharacter_
-	{
-		unsigned int ID;
-		float Position[2]; // Position of the character image in the texture.
-		float Size[2];	// Size of the character image in the texture.		
-		float Offset[2];// Offset from the position-center.				
-		int XAdvance; // How much the current position should be advanced after drawing the character.		
-		int Page; // The texture page where the character image is found.		
-		int Chanal;// The texture channel where the character image is found (1 = blue, 2 = green, 4 = red, 8 = alpha, 15 = all channels).
-	}
-	FNTCharacter;
-
+	FNTCommonData;	
 
 	typedef struct FNTPage_
 	{
@@ -80,18 +90,6 @@ extern "C"
 		Image FontTextureMap;
 	}
 	FNTPage;
-
-	typedef enum FNTLineType_
-	{
-		FNTLineUnkown,
-		FNTLineInfo,
-		FNTLineCommon,
-		FNTLinePage,
-		FNTLineCharacterCount,
-		FNTLineCharacterDefinition
-	}
-	FNTLineType;
-
 
 	typedef struct FNT_
 	{

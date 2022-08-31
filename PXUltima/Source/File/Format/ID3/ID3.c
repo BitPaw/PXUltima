@@ -95,7 +95,7 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
     }
 }
 
-ActionResult ID3Parse(ID3* id3, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, size_t* dataRead)
 {
     ParsingStream parsingStream;
 

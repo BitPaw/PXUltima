@@ -31,10 +31,17 @@ extern "C"
 		ImageDataFormatInvalid,
 		ImageDataFormatAlphaMaskBinary,
 		ImageDataFormatAlphaMask,
-		ImageDataFormatRGB,
-		ImageDataFormatRGBA,
-		ImageDataFormatBGR,
-		ImageDataFormatBGRA
+		
+		// 8-Bit
+
+		ImageDataFormatRGB8,
+		ImageDataFormatRGBA8,
+		ImageDataFormatBGR8,
+		ImageDataFormatBGRA8,
+
+		// 16-Bit
+		ImageDataFormatRGB16,
+		ImageDataFormatRGBA16
 	}
 	ImageDataFormat;
 
@@ -73,6 +80,7 @@ extern "C"
 		const ImageDataFormat dataFormat
 	);
 
+	extern size_t ImageBitDepth(const ImageDataFormat imageDataFormat);
 	extern size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat);
 	extern size_t ImageBitsPerPixel(const ImageDataFormat imageDataFormat);
 
@@ -82,6 +90,22 @@ extern "C"
 	extern void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsigned char blue);
 
 	extern void* ImageDataPoint(const Image* const image, const size_t x, const size_t y);
+
+	extern size_t ImagePixelPosition
+	(
+		const Image* const image,
+		const size_t x,
+		const size_t y
+	);
+	extern void ImagePixelSetRGB8
+	(
+		Image* const image,
+		const size_t x,
+		const size_t y,
+		const unsigned char red,
+		const unsigned char green, 
+		const unsigned char blue
+	);
 
 	extern void ImageDrawRectangle
 	(

@@ -1,6 +1,7 @@
 #include "HuffmanTree.h"
 
 #include <Memory/Memory.h>
+#include <stdlib.h>
 
 /* a symbol value too big to represent any valid symbol, to indicate reading disallowed huffman bits combination,
 which is possible in case of only 0 or 1 present symbols. */
@@ -459,9 +460,17 @@ void GenerateFixedDistanceTree(HuffmanTree* huffmanTree)
 	GenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);
 }
 
-void HuffmanTreeConstruct(HuffmanTree* huffmanTree)
+void HuffmanTreeConstruct(HuffmanTree* const huffmanTree)
 {
 	MemorySet(huffmanTree, sizeof(HuffmanTree), 0);
+}
+
+void HuffmanTreeDestruct(HuffmanTree* const huffmanTree)
+{
+	free(huffmanTree->codes);
+	free(huffmanTree->lengths);
+	free(huffmanTree->table_len);
+	free(huffmanTree->table_value);
 }
 
 HuffmanCodeType HuffmanCodeTypeFromCode(const unsigned short code)

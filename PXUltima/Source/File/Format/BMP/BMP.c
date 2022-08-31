@@ -375,7 +375,7 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
 
         image->PixelDataSize = size;
         image->PixelData = adress;
-        image->Format = ImageDataFormatRGB;
+        image->Format = ImageDataFormatRGB8;
         image->Width = bmp.InfoHeader.Width;
         image->Height = bmp.InfoHeader.Height;
     }
@@ -481,9 +481,9 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
 
         BMPImageDataLayoutCalculate(&imageDataLayout, bmpInfoHeader.Width, bmpInfoHeader.Height, bmpInfoHeader.NumberOfBitsPerPixel);  
 
-        while (imageDataLayout.RowAmount--)
+        for (int row = imageDataLayout.RowAmount; row >= 0  ; --row)
         {
-            unsigned char* const dataInsertPoint = (unsigned char* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount);
+            unsigned char* const dataInsertPoint = (unsigned char* const)image->PixelData + (imageDataLayout.RowImageDataSize * row);
 
             for(size_t i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {
