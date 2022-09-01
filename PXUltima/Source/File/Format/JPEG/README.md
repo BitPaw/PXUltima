@@ -1,4 +1,4 @@
-# Joint Photographic Experts Group (JPEG) [ISO/IEC 10918]
+# Joint Photographic Experts Group (JPEG)<br>[ISO/IEC 10918]
 ## Info
 |||
 |:-:|:-:
