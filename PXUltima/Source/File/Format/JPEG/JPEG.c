@@ -245,15 +245,23 @@ size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t
     return sum;
 }
 
-void JPEGConstruct(JPEG* jpeg)
+void JPEGConstruct(JPEG* const jpeg)
 {
     MemorySet(jpeg, sizeof(JPEG), 0);
 }
 
-void JPEGDestruct(JPEG* jpeg)
+void JPEGDestruct(JPEG* const jpeg)
 {
 
 }
+
+ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead)
+{
+
+
+    return ResultInvalid;
+}
+
 
 ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead)
 {
@@ -613,12 +621,6 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
     return ResultSuccessful;
 }
 
-ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead)
-{
-
-
-    return ResultInvalid;
-}
 
 
 

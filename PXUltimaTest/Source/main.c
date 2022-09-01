@@ -10,7 +10,7 @@ int main()
 
 	TestSaveImageSmal();
 	TestSaveImage();
-	//ImageWriteText();
+	ImageWriteText();
 
 	printf("[i] Finished testing...\n");
 
