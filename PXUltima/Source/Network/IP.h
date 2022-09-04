@@ -33,10 +33,8 @@ extern "C"
   4 - Too long (>15)
   5 - Too many Octets (more that 4)
 */
-    extern unsigned char IsValidIPv4(const char* ipv4Adress);
-
-    // todo : Comple this function.
-    extern unsigned char IsValidIPv6(const char* ipv6Adress);
+    extern unsigned char IPv4CheckIfValid(const char* ipv4Adress);
+    extern unsigned char IPv6CheckIfValid(const char* ipv6Adress);
 
 #ifdef __cplusplus
 }

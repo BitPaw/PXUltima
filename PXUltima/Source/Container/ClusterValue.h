@@ -1,5 +1,16 @@
-#ifndef ClusterLongLongDEFINED
-#define ClusterLongLongDEFINED
+#ifndef ClusterValueDEFINED
+#define ClusterValueDEFINED
+
+
+// Detect current endianess on this system and then use #if
+#define MakeShort(a, b) MakeShortLE(a, b)
+
+#define MakeShortBE(a, b) (((unsigned short)a << 8) | ((unsigned short)b))
+#define MakeShortLE(a, b) (((unsigned short)a) | ((unsigned short)b << 8))
+
+#define MakeInt(a, b, c, d) MakeIntLE(a, b, c, d)
+#define MakeIntBE(a, b, c, d) (((unsigned int)a << 24) | ((unsigned int)b << 16) | ((unsigned int)c << 8) | ((unsigned int)d))
+#define MakeIntLE(a, b, c, d) (((unsigned int)a) | ((unsigned int)b << 8) | ((unsigned int)c << 16) | ((unsigned int)d << 24))
 
 #define MakeLongLong(a, b, c, d, e, f, g, h) MakeLongLongLE(a, b, c, d, e, f, g, h)
 
@@ -23,10 +34,48 @@
 ((unsigned long long)g << 48LL) | \
 ((unsigned long long)h << 56LL));
 
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+	typedef struct ClusterShort_
+	{
+		union
+		{
+			struct
+			{
+				unsigned char A;
+				unsigned char B;
+			};
+
+			unsigned char Data[2];
+
+			unsigned short Value;
+		};
+	}
+	ClusterShort;
+
+	typedef struct ClusterInt_
+	{
+		union
+		{
+			struct
+			{
+				unsigned char A;
+				unsigned char B;
+				unsigned char C;
+				unsigned char D;
+			};
+
+			unsigned char Data[4];
+
+			unsigned int Value;
+		};
+	}
+	ClusterInt;
 
 	typedef struct ClusterLongLong_
 	{
@@ -48,7 +97,8 @@ extern "C"
 
 			unsigned long long Value;
 		};
-	}ClusterLongLong;
+	}
+	ClusterLongLong;	
 
 #ifdef __cplusplus
 }

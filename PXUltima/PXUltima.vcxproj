@@ -22,12 +22,10 @@
     <ClInclude Include="Source\Async\Await.h" />
     <ClInclude Include="Source\Async\Lock.h" />
     <ClInclude Include="Source\Async\Thread.h" />
-    <ClInclude Include="Source\Container\BinaryTree.h" />
-    <ClInclude Include="Source\Container\ClusterInt.h" />
-    <ClInclude Include="Source\Container\ClusterLongLong.h" />
-    <ClInclude Include="Source\Container\ClusterShort.h" />
-    <ClInclude Include="Source\Container\Dictionary.h" />
-    <ClInclude Include="Source\Container\QuadTree.h" />
+    <ClInclude Include="Source\Container\BinaryTree\BinaryTree.h" />
+    <ClInclude Include="Source\Container\ClusterValue.h" />
+    <ClInclude Include="Source\Container\Dictionary\Dictionary.h" />
+    <ClInclude Include="Source\Container\QuadTree\QuadTree.h" />
     <ClInclude Include="Source\Device\Controller.h" />
     <ClInclude Include="Source\Device\InputButton.h" />
     <ClInclude Include="Source\Device\KeyBoard.h" />
@@ -116,9 +114,9 @@
   <ItemGroup>
     <ClCompile Include="Source\Async\Lock.c" />
     <ClCompile Include="Source\Async\Thread.c" />
-    <ClCompile Include="Source\Container\BinaryTree.c" />
-    <ClCompile Include="Source\Container\Dictionary.c" />
-    <ClCompile Include="Source\Container\QuadTree.c" />
+    <ClCompile Include="Source\Container\BinaryTree\BinaryTree.c" />
+    <ClCompile Include="Source\Container\Dictionary\Dictionary.c" />
+    <ClCompile Include="Source\Container\QuadTree\QuadTree.c" />
     <ClCompile Include="Source\Device\Controller.c" />
     <ClCompile Include="Source\Device\InputButton.c" />
     <ClCompile Include="Source\Device\KeyBoard.c" />

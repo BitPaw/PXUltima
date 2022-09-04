@@ -2,7 +2,7 @@
 
 #include <File/ParsingStream.h>
 #include <Text/Text.h>
-#include <Container/ClusterInt.h>
+#include <Container/ClusterValue.h>
 
 #define ID3HeaderSignature {'I','D','3'}
 #define ID3Debug 0

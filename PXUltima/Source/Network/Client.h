@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include <Error/ActionResult.h>
+
 #include "CSocket.h"
 
 #ifdef __cplusplus
@@ -13,13 +14,7 @@ extern "C"
 
 	typedef struct Client_ Client;
 
-
-
-
-
-	typedef void (*ConnectedToServerEvent)(const Client* client);
-
-	
+	typedef void (*ConnectedToServerEvent)(const Client* client);	
 
 	typedef struct Client_
 	{
@@ -29,7 +24,6 @@ extern "C"
 		ConnectedToServerEvent ConnectedToServerCallback;
 	}
 	Client;
-
 
 	extern ActionResult ClientConnectToServer(Client* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
 

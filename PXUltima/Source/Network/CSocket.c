@@ -684,7 +684,7 @@ ActionResult CSocketSetupAdress
     CSocket* cSocketList,
     const size_t cSocketListSizeMax,
     size_t* cSocketListSize,
-    char* ip, // null for any ipAdress
+    const char* const ip, // null for any ipAdress
     unsigned short port, // -1 for no port
     IPAdressFamily ipMode,
     CSocketType socketType,

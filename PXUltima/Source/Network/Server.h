@@ -31,11 +31,11 @@ extern "C"
 	}
 	Server;
 
-	extern void ServerConstruct(Server* server);
-	extern void ServerDestruct(Server* server);
+	extern void ServerConstruct(Server* const server);
+	extern void ServerDestruct(Server* const server);
 
-	extern ActionResult ServerStart(Server* server, const unsigned short port, const ProtocolMode protocolMode);
-	extern ActionResult ServerStop(Server* server);
+	extern ActionResult ServerStart(Server* const server, const unsigned short port, const ProtocolMode protocolMode);
+	extern ActionResult ServerStop(Server* const server);
 	extern ActionResult ServerKickClient(Server* server, const CSocketID socketID);
 	extern CSocket* ServerGetClientViaID(Server* server, const CSocketID socketID);
 

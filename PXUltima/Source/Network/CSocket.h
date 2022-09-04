@@ -6,8 +6,6 @@
 #include <Error/ActionResult.h>
 #include <OS/OSVersion.h>
 
-
-
 #if defined(OSUnix)
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -80,7 +78,8 @@ extern "C"
 		IPAdressFamilyTCNPROCESS,
 		IPAdressFamilyTCNMESSAGE,
 		IPAdressFamilyICLFXBM
-	}IPAdressFamily;
+	}
+	IPAdressFamily;
 
 	typedef enum CSocketType_
 	{
@@ -236,7 +235,7 @@ extern "C"
 		CSocket* cSocketList,
 		const size_t cSocketListSizeMax,
 		size_t* cSocketListSize,
-		char* ip, // null for any ipAdress
+		const char* const ip, // null for any ipAdress
 		unsigned short port, // -1 for no port
 		IPAdressFamily ipMode,
 		CSocketType socketType,

@@ -3,7 +3,7 @@
 #include <File/ParsingStream.h>
 #include <Memory/Memory.h>
 #include <File/Endian.h>
-#include <Container/ClusterInt.h>
+#include <Container/ClusterValue.h>
 #include <Format/RIFF/RIFF.h>
 
 #define WAVListMarker MakeInt('L', 'I', 'S', 'T')

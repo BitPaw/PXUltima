@@ -20,7 +20,7 @@ ActionResult ClientConnectToServer(Client* client, const char* ip, unsigned shor
         cSocketList,
         cSocketListSizeMax,
         &cSocketListSize,
-        (char*)ip,
+        ip,
         port,
         ipAdressFamily,
         socketType,

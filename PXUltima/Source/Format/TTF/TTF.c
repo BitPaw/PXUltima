@@ -3,7 +3,7 @@
 #include <File/File.h>
 #include <Memory/Memory.h>
 #include <File/ParsingStream.h>
-#include <Container/ClusterInt.h>
+#include <Container/ClusterValue.h>
 
 EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID)
 {

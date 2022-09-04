@@ -1,7 +1,7 @@
 #include "BMP.h"
 
-#include <Container/ClusterShort.h>
-#include <Container/ClusterInt.h>
+#include <Container/ClusterValue.h>
+#include <Container/ClusterValue.h>
 #include <File/ParsingStream.h>
 #include <Memory/Memory.h>
 #include <Math/Math.h>

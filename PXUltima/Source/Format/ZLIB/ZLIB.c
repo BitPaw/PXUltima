@@ -1,6 +1,6 @@
 #include "ZLIB.h"
 
-#include <Container/ClusterShort.h>
+#include <Container/ClusterValue.h>
 #include <Math/Math.h>
 #include <File/ParsingStream.h>
 #include <Format/DEFLATE/DEFLATE.h>

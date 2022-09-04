@@ -1,7 +1,7 @@
 #include "RIFF.h"
 
 #include <File/ParsingStream.h>
-#include <Container/ClusterInt.h>
+#include <Container/ClusterValue.h>
 #include <Memory/Memory.h>
 
 #define RIFFSignature MakeInt('R', 'I', 'F', 'F')

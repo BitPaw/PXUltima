@@ -3,6 +3,12 @@
 
 #include <stddef.h>
 
+#if 1
+#define EndianCurrentSystemIsLittle
+#else
+#define EndianCurrentSystemIsBig
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {

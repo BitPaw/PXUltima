@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include <Memory/Memory.h>
-#include <Container/ClusterInt.h>
+#include <Container/ClusterValue.h>
 #include <File/Endian.h>
 #include <File/ParsingStream.h>
 #include <Time/Time.h>

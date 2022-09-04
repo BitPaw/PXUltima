@@ -41,13 +41,6 @@ extern "C"
 		ResultFormatInvalid,
 		ResultFormatNotAsExpected,
 
-
-
-
-
-
-
-
 		// Socket
 		SocketOuputBufferTooSmal,
 		SocketInavlidAdressFamily,
@@ -90,9 +83,6 @@ extern "C"
 
 		WindowsSocketSystemNotInitialized,
 		//----------------------------------------
-
-
-
 
 		// POSIX Error codes, these are pre-defined
 		UnkownError, // OTHER
@@ -175,15 +165,6 @@ extern "C"
 		TextFileBusy, // TXTBSY
 		OperationWouldBlock, // WOULDBLOCK
 		CrossDeviceLink // XDEV
-
-
-
-
-
-
-
-
-
 	}
 	ActionResult;
 

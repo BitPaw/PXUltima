@@ -81,7 +81,7 @@ unsigned char IsValidIP(const char* ipAdress)
     }
 }
 
-unsigned char IsValidIPv4(const char* ipAdress)
+unsigned char IPv4CheckIfValid(const char* ipAdress)
 {
     const unsigned char resultIPv4OK = 0;
     const unsigned char resultIPv4NullPointer = 1;
@@ -153,7 +153,7 @@ unsigned char IsValidIPv4(const char* ipAdress)
     return resultIPv4OK;
 }
 
-unsigned char IsValidIPv6(const char* ipAdress)
+unsigned char IPv6CheckIfValid(const char* ipAdress)
 {
     const char validIPv6Adress = 0;
     const char invalidAmountOfSeperators = 1;

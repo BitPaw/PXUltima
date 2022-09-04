@@ -7,17 +7,17 @@
 #include <stdio.h>
 #endif
 
-void ServerConstruct(Server* server)
+void ServerConstruct(Server* const server)
 {
     MemorySet(server, sizeof(Server), 0);
 }
 
-void ServerDestruct(Server* server)
+void ServerDestruct(Server* const server)
 {
 
 }
 
-ActionResult ServerStart(Server* server, const unsigned short port, const ProtocolMode protocolMode)
+ActionResult ServerStart(Server* const server, const unsigned short port, const ProtocolMode protocolMode)
 {
     size_t adressInfoListSize = 0;
 
@@ -107,7 +107,7 @@ ActionResult ServerStart(Server* server, const unsigned short port, const Protoc
     return ResultSuccessful;
 }
 
-ActionResult ServerStop(Server* server)
+ActionResult ServerStop(Server* const server)
 {
 	return ResultInvalid;
 }

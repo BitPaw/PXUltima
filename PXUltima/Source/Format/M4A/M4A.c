@@ -1,7 +1,7 @@
 #include "M4A.h"
 
 #include <File/ParsingStream.h>
-#include <Container/ClusterInt.h>
+#include <Container/ClusterValue.h>
 #include <Memory/Memory.h>
 
 #define M4ADebugLog 1
