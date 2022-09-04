@@ -167,7 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PXUltima\PXUltima.vcxproj">
-      <Project>{e9bfec5c-ca6a-4bdc-abf4-64191cb5ad06}</Project>
+      <Project>{89e678ce-1213-4017-8633-7edf8def244c}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -403,7 +403,7 @@ unsigned int ConvertFromProtocolMode(const ProtocolMode protocolMode)
     }
 }
 
-CSocketType ConvertToSocketType(unsigned int socketType)
+CSocketType ConvertToSocketType(const unsigned int socketType)
 {
     switch(socketType)
     {
@@ -427,7 +427,7 @@ CSocketType ConvertToSocketType(unsigned int socketType)
     }
 }
 
-unsigned int ConvertFromSocketType(CSocketType socketType)
+unsigned int ConvertFromSocketType(const CSocketType socketType)
 {
     switch(socketType)
     {
@@ -613,12 +613,12 @@ unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode)
     }
 }
 
-void CSocketConstruct(CSocket* cSocket)
+void CSocketConstruct(CSocket* const cSocket)
 {
     MemorySet(cSocket, sizeof(CSocket), 0);
 }
 
-void CSocketDestruct(CSocket* cSocket)
+void CSocketDestruct(CSocket* const cSocket)
 {
 }
 

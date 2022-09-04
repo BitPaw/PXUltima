@@ -137,9 +137,6 @@ extern "C"
 	}
 	ProtocolMode;
 
-
-
-
 	typedef enum CSocketState_
 	{
 		SocketNotInitialised,
@@ -211,21 +208,18 @@ extern "C"
 	CSocket;
 
 
+	static ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode);
+	static unsigned int ConvertFromProtocolMode(const ProtocolMode protocolMode);
+
+	static CSocketType ConvertToSocketType(const unsigned int socketType);
+	static unsigned int ConvertFromSocketType(const CSocketType socketType);
+
+	static IPAdressFamily ConvertToIPAdressFamily(const unsigned int ipMode);
+	static unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode);
 
 
-
-	ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode);
-	unsigned int ConvertFromProtocolMode(const ProtocolMode protocolMode);
-
-	CSocketType ConvertToSocketType(unsigned int socketType);
-	unsigned int ConvertFromSocketType(CSocketType socketType);
-
-	IPAdressFamily ConvertToIPAdressFamily(const unsigned int ipMode);
-	unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode);
-
-
-	extern void CSocketConstruct(CSocket* cSocket);
-	extern void CSocketDestruct(CSocket* cSocket);
+	extern void CSocketConstruct(CSocket* const cSocket);
+	extern void CSocketDestruct(CSocket* const cSocket);
 
 	extern ActionResult CSocketCreate
 	(

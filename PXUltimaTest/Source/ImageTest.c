@@ -2,16 +2,15 @@
 
 #include <stdio.h>
 
-#include <File/Image.h>
-#include <File/Font.h>
+#include <Format/Image.h>
+#include <Format/Font.h>
 #include <File/File.h>
 
 void TestSaveImageSmal()
 {
     Image image;
 
-    DirectoryCreateA("_TEST_DATA_");
-
+    DirectoryCreateA("_TEST_DATA_OUTPUT_");
 
     ImageConstruct(&image);
 
@@ -30,21 +29,24 @@ void TestSaveImageSmal()
         ImagePixelSetRGB8(&image, 1, 1, 0xFF, 0xFF, 0xFF);
     }
 
-    const ActionResult saveBMP = ImageSaveA(&image, "_TEST_DATA_/ImageBMP_Smal.bmp", ImageFileFormatBitMap, ImageDataFormatRGB8);
+    const char* pathBMP = "_TEST_DATA_OUTPUT_/Smal_ImageBMP.bmp";
+    const ActionResult saveBMP = ImageSaveTest(&image, pathBMP, ImageFileFormatBitMap, ImageDataFormatRGB8);
 
     if(saveBMP != ResultSuccessful)
     {
         return saveBMP;
     }
 
-    const ActionResult savePNG = ImageSaveA(&image, "_TEST_DATA_/ImagePNG_Smal.png", ImageFileFormatPNG, ImageDataFormatRGB8);
+    const char* pathPNG = "_TEST_DATA_OUTPUT_/Smal_ImagePNG.png";
+    const ActionResult savePNG = ImageSaveTest(&image, pathPNG, ImageFileFormatPNG, ImageDataFormatRGB8);
 
     if(savePNG != ResultSuccessful)
     {
         return savePNG;
     }
 
-    const ActionResult saveJPG = ImageSaveA(&image, "_TEST_DATA_/ImageJPG_Smal.jpg", ImageFileFormatJPEG, ImageDataFormatRGB8);
+    const char* pathJPG = "_TEST_DATA_OUTPUT_/Smal_ImageJPG.jpg";
+    const ActionResult saveJPG = ImageSaveTest(&image, pathJPG, ImageFileFormatJPEG, ImageDataFormatRGB8);
 
     if(saveJPG != ResultSuccessful)
     {
@@ -58,7 +60,7 @@ void TestSaveImage()
 {
     Image image;
     
-    DirectoryCreateA("_TEST_DATA_");
+    DirectoryCreateA("_TEST_DATA_OUTPUT_");
 
 
     ImageConstruct(&image);
@@ -76,35 +78,34 @@ void TestSaveImage()
         {
             for(size_t x = 0; x < width; x++)
             {
-                const unsigned char red = x | y;
-                const unsigned char green = x ^ y;
-                const unsigned char blue = 0xFF * !(x & y);
+                const unsigned char a = 0xFF * !(x & y); // Triangle part
+                const unsigned char b = x | y; // pri
+                const unsigned char c = x ^ y; // Sec
 
-                ((unsigned char*)image.PixelData)[dimension * width * y + dimension * x + 2] = blue;
-                ((unsigned char*)image.PixelData)[dimension * width * y + dimension * x + 1] = green;
-                ((unsigned char*)image.PixelData)[dimension * width * y + dimension * x + 0] = red;
-
-
-                // image.PixelData[4 * width * y + 4 * x + 3] = 255;
+                unsigned char* data = (unsigned char*)image.PixelData + dimension * width * y + dimension * x;
+                
+                *(data + 0) = a;
+                *(data + 1) = c;
+                *(data + 2) = b;
             }
         }
     }
 
-    const ActionResult saveBMP = ImageSaveA(&image, "_TEST_DATA_/ImageBMP.bmp", ImageFileFormatBitMap, ImageDataFormatRGB8);
+    const ActionResult saveBMP = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageBMP.bmp", ImageFileFormatBitMap, ImageDataFormatRGB8);
     
     if(saveBMP != ResultSuccessful)
     {
         return saveBMP;
     }
     
-    const ActionResult savePNG = ImageSaveA(&image, "_TEST_DATA_/ImagePNG.png", ImageFileFormatPNG, ImageDataFormatRGB8);
+    const ActionResult savePNG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImagePNG.png", ImageFileFormatPNG, ImageDataFormatRGB8);
     
     if(savePNG != ResultSuccessful)
     {
         return savePNG;
     }
     
-    const ActionResult saveJPG = ImageSaveA(&image, "_TEST_DATA_/ImageJPG.jpg", ImageFileFormatJPEG, ImageDataFormatRGB8);
+    const ActionResult saveJPG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageJPG.jpg", ImageFileFormatJPEG, ImageDataFormatRGB8);
 
     if(saveJPG != ResultSuccessful)
     {
@@ -124,14 +125,14 @@ void ImageWriteText()
 
     ImageConstruct(&image);
 
-    ActionResult actionResult = FontLoadA(&font, "_TEST_DATA_/A.fnt");
+    ActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
 
     if(actionResult != ResultSuccessful)
     {
         return actionResult;
     }
 
-    ActionResult loadResult = ImageLoadA(&image, "_TEST_DATA_/ImageInput.bmp");
+    ActionResult loadResult = ImageLoadTest(&image, "_TEST_DATA_INPUT_/ImageInput.bmp");
 
     if(loadResult != ResultSuccessful)
     {
@@ -154,8 +155,8 @@ void ImageWriteText()
     }
 
     {
-        const char* path = "_TEST_DATA_/TEST_TextWrite.bmp";
-        const ActionResult saveBMP = ImageLoadTest(&image, path, ImageFileFormatBitMap, ImageDataFormatRGB8);
+        const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_BMP.bmp";
+        const ActionResult saveBMP = ImageSaveTest(&image, path, ImageFileFormatBitMap, ImageDataFormatRGB8);
 
         if(saveBMP != ResultSuccessful)
         {
@@ -165,8 +166,8 @@ void ImageWriteText()
 
   
     {
-        const char* path = "_TEST_DATA_/TEST_TextWrite.jpeg";
-        const ActionResult saveJPEG = ImageLoadTest(&image, path, ImageFileFormatJPEG, ImageDataFormatRGB8);
+        const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_JPG.jpeg";
+        const ActionResult saveJPEG = ImageSaveTest(&image, path, ImageFileFormatJPEG, ImageDataFormatRGB8);
 
         if(saveJPEG != ResultSuccessful)
         {
@@ -175,8 +176,8 @@ void ImageWriteText()
     }
 
     {
-        const char* path = "_TEST_DATA_/TEST_TextWrite.png";
-        const ActionResult savePNG = ImageLoadTest(&image, path, ImageFileFormatPNG, ImageDataFormatRGBA8);
+        const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_PNG.png";
+        const ActionResult savePNG = ImageSaveTest(&image, path, ImageFileFormatPNG, ImageDataFormatRGBA8);
 
         if(savePNG != ResultSuccessful)
         {
@@ -188,17 +189,34 @@ void ImageWriteText()
     ImageDestruct(&image);  
 }
 
-ActionResult ImageLoadTest(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat)
+ActionResult ImageLoadTest(Image* const image, const char* const filePath)
 {
-    const ActionResult savePNG = ImageLoadA(image, filePath, fileFormat, dataFormat);
+    const ActionResult savePNG = ImageLoadA(image, filePath);
 
     if(savePNG != ResultSuccessful)
     {
-        printf("[x] Image saving FAILED! ErrorID:%i Path:%s\n", savePNG, filePath);
+        printf("[x][Error] Image loading FAILED! ErrorID:%i Path:\"%s\"\n", savePNG, filePath);
     }
     else
     {
-        printf("[i] Image saving SUCCESS! Path:%s\n", filePath);
+        printf("[i][OK] Image loading SUCCESS! Path:\"%s\"\n", filePath);
+    }
+
+
+    return savePNG;
+}
+
+ActionResult ImageSaveTest(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat)
+{
+    const ActionResult savePNG = ImageSaveA(image, filePath, fileFormat, dataFormat);
+
+    if (savePNG != ResultSuccessful)
+    {
+        printf("[x][Error] Image saving FAILED! ErrorID:%i Path:\"%s\"\n", savePNG, filePath);
+    }
+    else
+    {
+        printf("[i][OK] Image saving SUCCESS! Path:\"%s\"\n", filePath);
     }
 
 

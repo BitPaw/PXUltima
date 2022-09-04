@@ -159,9 +159,32 @@ double MathNewtonGravitation(double massA, double massB, double distance)
 	return MathConstantGravity * ((massA * massB) / (MathPower(distance, 2)));
 }
 
-int MathCeiling(const double value)
+int MathCeilingF(const float value)
 {
-	return 0;
+	const int fullNumberBlockInt = (int)value;
+	const float fullNumberBlock = fullNumberBlockInt;
+	const float remaining = value - fullNumberBlock;
+
+	if (remaining)
+	{
+		return fullNumberBlockInt + 1;
+	}
+
+	return fullNumberBlockInt;
+}
+
+int MathCeilingD(const double value)
+{
+	const int fullNumberBlockInt = (int)value;
+	const double fullNumberBlock = fullNumberBlockInt;
+	const double remaining = value - fullNumberBlock;
+
+	if (remaining)
+	{
+		return fullNumberBlockInt + 1;
+	}
+
+	return fullNumberBlockInt;
 }
 
 unsigned long x = 123456789, y = 362436069, z = 521288629;

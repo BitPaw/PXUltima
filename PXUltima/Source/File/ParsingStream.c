@@ -19,56 +19,56 @@
 #define PrintSVN vsprintf_s
 #endif
 
-void ParsingStreamConstruct(ParsingStream* parsingStream, void* data, const size_t dataSize)
+void ParsingStreamConstruct(ParsingStream* const parsingStream, void* data, const size_t dataSize)
 {
 	parsingStream->Data = data;
 	parsingStream->DataSize = dataSize;
 	parsingStream->DataCursor = 0;
 }
 
-void ParsingStreamClear(ParsingStream* parsingStream)
+void ParsingStreamClear(ParsingStream* const parsingStream)
 {
 	parsingStream->Data = 0;
 	parsingStream->DataSize = 0;
 	parsingStream->DataCursor = 0;
 }
 
-size_t ParsingStreamRemainingSize(ParsingStream* parsingStream)
+size_t ParsingStreamRemainingSize(ParsingStream* const parsingStream)
 {
 	return parsingStream->DataSize - parsingStream->DataCursor;
 }
 
-unsigned char ParsingStreamIsAtEnd(ParsingStream* parsingStream)
+unsigned char ParsingStreamIsAtEnd(ParsingStream* const parsingStream)
 {
 	return parsingStream->DataCursor == parsingStream->DataSize;
 }
 
-unsigned char* ParsingStreamCursorPosition(ParsingStream* parsingStream)
+unsigned char* ParsingStreamCursorPosition(ParsingStream* const parsingStream)
 {
 	return parsingStream->Data + parsingStream->DataCursor;
 }
 
-void ParsingStreamCursorToBeginning(ParsingStream* parsingStream)
+void ParsingStreamCursorToBeginning(ParsingStream* const parsingStream)
 {
 	parsingStream->DataCursor = 0;
 }
 
-void ParsingStreamCursorAdvance(ParsingStream* parsingStream, const size_t steps)
+void ParsingStreamCursorAdvance(ParsingStream* const parsingStream, const size_t steps)
 {
 	parsingStream->DataCursor += steps; // Check overflow
 }
 
-void ParsingStreamCursorRewind(ParsingStream* parsingStream, const size_t steps)
+void ParsingStreamCursorRewind(ParsingStream* const parsingStream, const size_t steps)
 {
 	parsingStream->DataCursor -= steps; // Check underflow
 }
 
-void ParsingStreamCursorToEnd(ParsingStream* parsingStream)
+void ParsingStreamCursorToEnd(ParsingStream* const parsingStream)
 {
 	parsingStream->DataCursor = parsingStream->DataSize;
 }
 
-size_t ParsingStreamReadNextLineInto(ParsingStream* parsingStream, void* exportBuffer, const size_t exportBufferSize)
+size_t ParsingStreamReadNextLineInto(ParsingStream* const parsingStream, void* exportBuffer, const size_t exportBufferSize)
 {
 	ParsingStreamSkipEndOfLineCharacters(parsingStream);
 
@@ -103,7 +103,7 @@ size_t ParsingStreamReadNextLineInto(ParsingStream* parsingStream, void* exportB
 	return length;
 }
 
-size_t ParsingStreamSkipEndOfLineCharacters(ParsingStream* parsingStream)
+size_t ParsingStreamSkipEndOfLineCharacters(ParsingStream* const parsingStream)
 {
 	while(!ParsingStreamIsAtEnd(parsingStream))
 	{
@@ -119,7 +119,7 @@ size_t ParsingStreamSkipEndOfLineCharacters(ParsingStream* parsingStream)
 	}
 }
 
-size_t ParsingStreamSkipEmptySpace(ParsingStream* parsingStream)
+size_t ParsingStreamSkipEmptySpace(ParsingStream* const parsingStream)
 {
 	while(!ParsingStreamIsAtEnd(parsingStream))
 	{
@@ -135,7 +135,7 @@ size_t ParsingStreamSkipEmptySpace(ParsingStream* parsingStream)
 	}
 }
 
-size_t ParsingStreamSkipBlock(ParsingStream* parsingStream)
+size_t ParsingStreamSkipBlock(ParsingStream* const parsingStream)
 {
 	while(!ParsingStreamIsAtEnd(parsingStream))
 	{
@@ -153,7 +153,7 @@ size_t ParsingStreamSkipBlock(ParsingStream* parsingStream)
 	ParsingStreamSkipEmptySpace(parsingStream);
 }
 
-size_t ParsingStreamSkipLine(ParsingStream* parsingStream)
+size_t ParsingStreamSkipLine(ParsingStream* const parsingStream)
 {
 	const size_t positionBefore = parsingStream->DataCursor;
 
@@ -177,12 +177,12 @@ size_t ParsingStreamSkipLine(ParsingStream* parsingStream)
 	return skippedBytes;
 }
 
-size_t ParsingStreamReadC(ParsingStream* parsingStream, char* value)
+size_t ParsingStreamReadC(ParsingStream* const parsingStream, char* value)
 {
 	return ParsingStreamReadCU(parsingStream, (unsigned char*)value);
 }
 
-size_t ParsingStreamReadCU(ParsingStream* parsingStream, unsigned char* value)
+size_t ParsingStreamReadCU(ParsingStream* const parsingStream, unsigned char* value)
 {
 	const size_t sizeOfChar = sizeof(char);
 	const unsigned char* data = ParsingStreamCursorPosition(parsingStream);
@@ -195,12 +195,12 @@ size_t ParsingStreamReadCU(ParsingStream* parsingStream, unsigned char* value)
 	return sizeOfChar;
 }
 
-size_t ParsingStreamReadS(ParsingStream* parsingStream, short* value, const Endian endian)
+size_t ParsingStreamReadS(ParsingStream* const parsingStream, short* value, const Endian endian)
 {
 	return ParsingStreamReadSU(parsingStream, (unsigned short*)value, endian);
 }
 
-size_t ParsingStreamReadSU(ParsingStream* parsingStream, unsigned short* value, const Endian endian)
+size_t ParsingStreamReadSU(ParsingStream* const parsingStream, unsigned short* value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned short);
 	const unsigned char* data = ParsingStreamCursorPosition(parsingStream);
@@ -215,12 +215,12 @@ size_t ParsingStreamReadSU(ParsingStream* parsingStream, unsigned short* value, 
 	return dataSize;
 }
 
-size_t ParsingStreamReadI(ParsingStream* parsingStream, int* value, const Endian endian)
+size_t ParsingStreamReadI(ParsingStream* const parsingStream, int* value, const Endian endian)
 {
 	return ParsingStreamReadIU(parsingStream, (unsigned int*)value, endian);
 }
 
-size_t ParsingStreamReadIU(ParsingStream* parsingStream, unsigned int* value, const Endian endian)
+size_t ParsingStreamReadIU(ParsingStream* const parsingStream, unsigned int* value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned int);
 	const unsigned char* data = ParsingStreamCursorPosition(parsingStream);
@@ -235,12 +235,12 @@ size_t ParsingStreamReadIU(ParsingStream* parsingStream, unsigned int* value, co
 	return dataSize;
 }
 
-size_t ParsingStreamReadLL(ParsingStream* parsingStream, long long* value, const Endian endian)
+size_t ParsingStreamReadLL(ParsingStream* const parsingStream, long long* value, const Endian endian)
 {
 	return ParsingStreamReadLLU(parsingStream, (unsigned long long*)value, endian);
 }
 
-size_t ParsingStreamReadLLU(ParsingStream* parsingStream, unsigned long long* value, const Endian endian)
+size_t ParsingStreamReadLLU(ParsingStream* const parsingStream, unsigned long long* value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned long long);
 	const unsigned char* data = ParsingStreamCursorPosition(parsingStream);
@@ -255,7 +255,7 @@ size_t ParsingStreamReadLLU(ParsingStream* parsingStream, unsigned long long* va
 	return dataSize;
 }
 
-size_t ParsingStreamReadD(ParsingStream* parsingStream, void* value, const size_t length)
+size_t ParsingStreamReadD(ParsingStream* const parsingStream, void* value, const size_t length)
 {
 	const unsigned char* currentPosition = ParsingStreamCursorPosition(parsingStream);
 	const size_t readableSize = ParsingStreamRemainingSize(parsingStream);
@@ -266,12 +266,12 @@ size_t ParsingStreamReadD(ParsingStream* parsingStream, void* value, const size_
 	return copyedBytes;
 }
 
-size_t ParsingStreamRead(ParsingStream* parsingStream, const void* format, const size_t length, ...)
+size_t ParsingStreamRead(ParsingStream* const parsingStream, const void* format, const size_t length, ...)
 {
 	return 0;
 }
 
-void ParsingStreamReadUntil(ParsingStream* parsingStream, void* value, const size_t length, const char character)
+void ParsingStreamReadUntil(ParsingStream* const parsingStream, void* value, const size_t length, const char character)
 {
 	const unsigned char* currentPosition = ParsingStreamCursorPosition(parsingStream);
 
@@ -297,7 +297,7 @@ void ParsingStreamReadUntil(ParsingStream* parsingStream, void* value, const siz
 	MemoryCopy(currentPosition, readableSize, value, lengthCopy);
 }
 
-unsigned char ParsingStreamReadAndCompare(ParsingStream* parsingStream, const void* value, const size_t length)
+unsigned char ParsingStreamReadAndCompare(ParsingStream* const parsingStream, const void* value, const size_t length)
 {
 	const unsigned char* currentPosition = ParsingStreamCursorPosition(parsingStream);
 	const size_t readableSize = ParsingStreamRemainingSize(parsingStream);
@@ -312,12 +312,12 @@ unsigned char ParsingStreamReadAndCompare(ParsingStream* parsingStream, const vo
 	return result;
 }
 
-size_t ParsingStreamWriteC(ParsingStream* parsingStream, const char value)
+size_t ParsingStreamWriteC(ParsingStream* const parsingStream, const char value)
 {
 	return ParsingStreamWriteCU(parsingStream, value);
 }
 
-size_t ParsingStreamWriteCU(ParsingStream* parsingStream, const unsigned char value)
+size_t ParsingStreamWriteCU(ParsingStream* const parsingStream, const unsigned char value)
 {
 	const size_t dataSize = sizeof(unsigned char);
 
@@ -326,12 +326,12 @@ size_t ParsingStreamWriteCU(ParsingStream* parsingStream, const unsigned char va
 	return dataSize;
 }
 
-size_t ParsingStreamWriteS(ParsingStream* parsingStream, const short value, const Endian endian)
+size_t ParsingStreamWriteS(ParsingStream* const parsingStream, const short value, const Endian endian)
 {
 	return ParsingStreamWriteSU(parsingStream, value, endian);
 }
 
-size_t ParsingStreamWriteSU(ParsingStream* parsingStream, const unsigned short value, const Endian endian)
+size_t ParsingStreamWriteSU(ParsingStream* const parsingStream, const unsigned short value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned short);
 	unsigned short dataValue = value;
@@ -343,12 +343,12 @@ size_t ParsingStreamWriteSU(ParsingStream* parsingStream, const unsigned short v
 	return dataSize;
 }
 
-size_t ParsingStreamWriteI(ParsingStream* parsingStream, const int value, const Endian endian)
+size_t ParsingStreamWriteI(ParsingStream* const parsingStream, const int value, const Endian endian)
 {
 	return ParsingStreamWriteIU(parsingStream, value, endian);
 }
 
-size_t ParsingStreamWriteIU(ParsingStream* parsingStream, const unsigned int value, const Endian endian)
+size_t ParsingStreamWriteIU(ParsingStream* const parsingStream, const unsigned int value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned int);
 	unsigned int dataValue = value;
@@ -360,12 +360,12 @@ size_t ParsingStreamWriteIU(ParsingStream* parsingStream, const unsigned int val
 	return dataSize;
 }
 
-size_t ParsingStreamWriteLL(ParsingStream* parsingStream, const long long value, const Endian endian)
+size_t ParsingStreamWriteLL(ParsingStream* const parsingStream, const long long value, const Endian endian)
 {
 	return ParsingStreamWriteLU(parsingStream, value, endian);
 }
 
-size_t ParsingStreamWriteLU(ParsingStream* parsingStream, const unsigned long long value, const Endian endian)
+size_t ParsingStreamWriteLU(ParsingStream* const parsingStream, const unsigned long long value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned long long);
 	unsigned long long dataValue = value;
@@ -377,7 +377,7 @@ size_t ParsingStreamWriteLU(ParsingStream* parsingStream, const unsigned long lo
 	return dataSize;
 }
 
-size_t ParsingStreamWriteD(ParsingStream* parsingStream, const void* value, const size_t length)
+size_t ParsingStreamWriteD(ParsingStream* const parsingStream, const void* value, const size_t length)
 {
 	const size_t writableSize = ParsingStreamRemainingSize(parsingStream);
 	unsigned char* currentPosition = ParsingStreamCursorPosition(parsingStream);
@@ -389,7 +389,7 @@ size_t ParsingStreamWriteD(ParsingStream* parsingStream, const void* value, cons
 	return copyedBytes;
 }
 
-size_t ParsingStreamWriteFill(ParsingStream* parsingStream, const unsigned char value, const size_t length)
+size_t ParsingStreamWriteFill(ParsingStream* const parsingStream, const unsigned char value, const size_t length)
 {
 	const size_t writableSize = ParsingStreamRemainingSize(parsingStream);
 	unsigned char* beforePosition = ParsingStreamCursorPosition(parsingStream);
@@ -405,7 +405,7 @@ size_t ParsingStreamWriteFill(ParsingStream* parsingStream, const unsigned char 
 	return write;
 }
 
-size_t ParsingStreamWrite(ParsingStream* parsingStream, const char* format, ...)
+size_t ParsingStreamWrite(ParsingStream* const parsingStream, const char* format, ...)
 {
 	const unsigned char* currentPosition = ParsingStreamCursorPosition(parsingStream);
 

@@ -1,6 +1,27 @@
 #include "Library.h"
 
 
+#if defined(OSUnix)
+
+#elif defined(OSWindows)
+#include <dbghelp.h>
+#include <stdio.h>
+
+#pragma comment( lib, "Dbghelp.lib" )
+
+
+BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
+{
+	UNREFERENCED_PARAMETER(UserContext);
+
+	printf("%08X %4u %s\n",	pSymInfo->Address, SymbolSize, pSymInfo->Name);
+
+	return TRUE;
+}
+
+#endif
+
+
 /*
 dlopen() - gain access to an executable object file
 dclose() - close a dlopen object
@@ -127,4 +148,65 @@ unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFu
 #endif
 
 	return 1u;
+}
+
+unsigned char LibraryParseSymbols()
+{
+#if defined(OSUnix)
+	
+
+#elif defined(OSWindows)
+	/*
+
+	auto x = LoadLibraryA("user32.dll");
+
+	//HANDLE hProcess = GetCurrentProcess(); //  GetProcAddress
+	HANDLE hProcess = GetProcAddress(x, 0); //  GetProcAddress
+
+	DWORD64 BaseOfDll;
+	char* Mask = "*";
+	BOOL status;
+
+	status = SymInitialize(hProcess, NULL, FALSE);
+	if (status == FALSE)
+	{
+		return;
+	}
+
+	BaseOfDll = SymLoadModuleEx
+	(
+		hProcess,
+		NULL,
+		"user32.dll",
+		NULL,
+		0,
+		0,
+		NULL,
+		0
+	);
+
+	if (BaseOfDll == 0)
+	{
+		SymCleanup(hProcess);
+		return;
+	}
+
+	if (SymEnumSymbols(hProcess,     // Process handle from SymInitialize.
+		BaseOfDll,   // Base address of module.
+		Mask,        // Name of symbols to match.
+		EnumSymProc, // Symbol handler procedure.
+		NULL))       // User context.
+	{
+		// SymEnumSymbols succeeded
+	}
+	else
+	{
+		// SymEnumSymbols failed
+		printf("SymEnumSymbols failed: %d\n", GetLastError());
+	}
+
+	SymCleanup(hProcess);*/
+#endif
+
+	return 0;
 }

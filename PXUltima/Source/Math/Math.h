@@ -57,7 +57,8 @@ extern "C"
 	extern double MathLogarithmusBase2(double exponent);
 	extern double MathLogarithmusBase10(double exponent);
 	extern double MathNewtonGravitation(double massA, double massB, double distance);
-	extern int MathCeiling(const double value);
+	extern int MathCeilingF(const float value);
+	extern int MathCeilingD(const double value);
 	extern unsigned int MathRandomeNumber();
 	extern double MathSinus(double value);
 	extern double MathTangens(double value);

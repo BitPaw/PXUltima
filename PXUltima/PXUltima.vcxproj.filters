@@ -3,11 +3,11 @@
   <ItemGroup>
     <Filter Include="Quelldateien">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Headerdateien">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
     <Filter Include="Ressourcendateien">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
@@ -15,266 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Algorithm\ADLER\Adler32.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Algorithm\CRC32\CRC32.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Algorithm\ISBN\ISBN.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Async\Lock.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Async\Thread.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Device\Controller.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Device\InputButton.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Device\KeyBoard.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Device\Mouse.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Device\VirtualKey.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Error\ActionResult.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Event\Event.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\3DS\A3DS.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\AAC\AAC.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\ADAM7\ADAM7.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\AVI\AVI.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\BMP\BMP.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\DEFLATE\DEFLATE.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\EML\EML.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\FBX\FBX.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\FLAC\FLAC.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\FMT\FMT.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\FNT\FNT.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\GIF\GIF.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\HUFFMAN\HuffmanTree.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\ID3\ID3.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\JPEG\JPEG.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\LAME\LAME.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\M4A\M4A.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\MID\MID.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\MP3\MP3.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\MP4\MP4.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\MTL\MTL.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\OBJ\OBJ.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\OGG\OGG.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\PLY\PLY.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\PNG\PNG.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\QOI\QOI.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\RIFF\RIFF.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\STEP\STEP.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\STL\STL.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\SVG\SVG.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\TGA\TGA.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\TIFF\TIFF.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\TTF\TTF.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\UUID\UUID.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\VRML\VRML.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\WAV\WAV.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\WEBM\WebM.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\WEBP\WEBP.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\WMA\WMA.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\XingInfo\XingInfo.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Format\ZLIB\ZLIB.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\BitStream.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Color.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Endian.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\File.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Font.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\Image.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\ParsingStream.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Library\Library.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Math\Math.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Memory\Memory.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\Client.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\CSocket.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\IP.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\Server.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\Bash.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\CWindow.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\Monitor.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\OpenFileDialog.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\OSUI.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\Program.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\User.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Text\Text.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Time\Time.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UI\UI.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Video\DirectX\DirectX.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Video\Vulcan\Vulcan.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Video\Shader.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Container\Dictionary.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Container\BinaryTree.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Container\QuadTree.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Source\Algorithm\ADLER\Adler32.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Algorithm\CRC32\CRC32.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Algorithm\ISBN\ISBN.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Async\Await.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -284,6 +24,9 @@
     <ClInclude Include="Source\Async\Thread.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Container\BinaryTree.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Container\ClusterInt.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -291,6 +34,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Container\ClusterShort.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Container\Dictionary.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Container\QuadTree.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Device\Controller.h">
@@ -314,133 +63,7 @@
     <ClInclude Include="Source\Event\Event.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\Format\3DS\A3DS.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\AAC\AAC.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\ADAM7\ADAM7.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\AVI\AVI.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\BMP\BMP.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\DEFLATE\DEFLATE.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\EML\EML.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\FBX\FBX.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\FLAC\FLAC.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\FMT\FMT.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\FNT\FNT.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\GIF\GIF.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\HUFFMAN\HuffmanTree.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\ID3\ID3.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\JPEG\JPEG.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\LAME\LAME.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\M4A\M4A.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\MID\MID.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\MP3\MP3.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\MP4\MP4.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\MTL\MTL.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\OBJ\OBJ.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\OGG\OGG.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\PLY\PLY.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\PNG\PNG.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\QOI\QOI.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\RIFF\RIFF.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\STEP\STEP.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\STL\STL.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\SVG\SVG.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\TGA\TGA.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\TIFF\TIFF.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\TTF\TTF.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\UUID\UUID.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\VRML\VRML.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\WAV\WAV.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\WEBM\WebM.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\WEBP\WEBP.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\WMA\WMA.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\XingInfo\XingInfo.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Format\ZLIB\ZLIB.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\File\BitStream.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Color.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\File\Endian.h">
@@ -449,13 +72,154 @@
     <ClInclude Include="Source\File\File.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\Font.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\Image.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\File\ParsingStream.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\3DS\A3DS.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\AAC\AAC.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\ADAM7\ADAM7.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\ADLER\Adler32.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\AVI\AVI.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\BMP\BMP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\CRC32\CRC32.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\DEFLATE\DEFLATE.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\EML\EML.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\FBX\FBX.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\FLAC\FLAC.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\FMT\FMT.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\FNT\FNT.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\GIF\GIF.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\HUFFMAN\HuffmanTree.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\ID3\ID3.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\ISBN\ISBN.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\JPEG\JPEG.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\LAME\LAME.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\M4A\M4A.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\MID\MID.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\MP3\MP3.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\MP4\MP4.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\MTL\MTL.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\OBJ\OBJ.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\OGG\OGG.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\PDF\PDF.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\PLY\PLY.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\PNG\PNG.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\QOI\QOI.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\RIFF\RIFF.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\STEP\STEP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\STL\STL.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\SVG\SVG.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\TGA\TGA.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\TIFF\TIFF.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\TTF\TTF.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\UUID\UUID.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\VRML\VRML.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\WAV\WAV.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\WEBP\WEBP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\WMA\WMA.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\XingInfo\XingInfo.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\ZLIB\ZLIB.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\Color.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\Font.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\Image.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\Model.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\Sound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Library\Library.h">
@@ -503,6 +267,9 @@
     <ClInclude Include="Source\OS\User.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Processor\Processor.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Text\Text.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -512,26 +279,286 @@
     <ClInclude Include="Source\UI\UI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Video\DirectX\DirectX.h">
+    <ClInclude Include="Source\Graphics\DirectX\DirectX.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Video\Vulcan\Vulcan.h">
+    <ClInclude Include="Source\Graphics\Vulcan\Vulcan.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Video\RefreshRateMode.h">
+    <ClInclude Include="Source\Graphics\RefreshRateMode.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Video\Shader.h">
+    <ClInclude Include="Source\Graphics\Shader.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Container\Dictionary.h">
+    <ClInclude Include="Source\Format\WEBM\WEBM.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Container\BinaryTree.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Container\QuadTree.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Async\Lock.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Async\Thread.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Container\BinaryTree.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Container\Dictionary.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Container\QuadTree.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Device\Controller.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Device\InputButton.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Device\KeyBoard.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Device\Mouse.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Device\VirtualKey.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Error\ActionResult.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Event\Event.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File\BitStream.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File\Endian.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File\File.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File\ParsingStream.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\3DS\A3DS.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\AAC\AAC.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\ADAM7\ADAM7.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\ADLER\Adler32.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\AVI\AVI.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\BMP\BMP.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\CRC32\CRC32.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\DEFLATE\DEFLATE.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\EML\EML.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\FBX\FBX.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\FLAC\FLAC.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\FMT\FMT.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\FNT\FNT.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\GIF\GIF.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\HUFFMAN\HuffmanTree.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\ID3\ID3.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\ISBN\ISBN.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\JPEG\JPEG.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\LAME\LAME.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\M4A\M4A.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\MID\MID.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\MP3\MP3.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\MP4\MP4.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\MTL\MTL.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\OBJ\OBJ.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\OGG\OGG.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\PDF\PDF.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\PLY\PLY.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\PNG\PNG.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\QOI\QOI.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\RIFF\RIFF.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\STEP\STEP.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\STL\STL.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\SVG\SVG.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\TGA\TGA.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\TIFF\TIFF.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\TTF\TTF.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\UUID\UUID.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\VRML\VRML.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\WAV\WAV.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\WEBP\WEBP.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\WMA\WMA.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\XingInfo\XingInfo.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\ZLIB\ZLIB.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\Color.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\Font.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\Image.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\Model.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\Sound.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\Library.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\Math.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Memory\Memory.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Client.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\CSocket.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\IP.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Server.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\Bash.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\CWindow.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\Monitor.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\OpenFileDialog.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\OSUI.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\Program.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\User.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Processor\Processor.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Text\Text.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Time\Time.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\UI.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\DirectX\DirectX.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Vulcan\Vulcan.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Shader.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\WEBM\WEBM.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Format\PDF\README.md" />
   </ItemGroup>
 </Project>

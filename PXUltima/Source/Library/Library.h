@@ -30,6 +30,8 @@ extern "C"
     extern unsigned char LibraryClose(LibraryHandle* handle); // close a dlopen object
     extern unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
 
+    extern unsigned char LibraryParseSymbols();
+
    // void SymbolVector(); // Programming interface to dynamic linking loader.
 
     //static ErrorCode SearchDirectoryAdd(const wchar_t* directoryPath, LibraryDirectoryID& libraryDirectoryID);
