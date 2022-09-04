@@ -115,14 +115,14 @@ unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod defla
 }
 
 int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, void* const outputBuffer, const size_t outputBufferSize, size_t* const outputBufferSizeRead)
-{ 
+{
     BitStream bitStream;
     DeflateBlock deflateBlock;
 
     BitStreamConstruct(&bitStream, inputBuffer, inputBufferSize);
 
     do
-    {       
+    {
         deflateBlock.IsLastBlock = BitStreamRead(&bitStream, 1u);
 
         {
@@ -317,7 +317,7 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
             }
         }
     }
-    while(!deflateBlock.IsLastBlock);   
+    while(!deflateBlock.IsLastBlock);
 
     //*outputBufferSizeRead = bitStream.DataCursor;
 
@@ -607,7 +607,7 @@ void writeBitsReversed(LodePNGBitWriter* writer, unsigned value, size_t nbits)
 
 void addLengthDistance(uivector* values, size_t length, size_t distance);
 void updateHashChain(Hash* hash, size_t wpos, unsigned hashval, unsigned short numzeros);
-
+size_t countZeros(const unsigned char* data, size_t size, size_t pos);
 
 
 
@@ -631,19 +631,19 @@ void writeLZ77data
     size_t i = 0;
     for(i = 0; i != lz77_encoded->size; ++i)
     {
-        unsigned val = lz77_encoded->data[i];
+        size_t val = lz77_encoded->data[i];
         writeBitsReversed(writer, tree_ll->codes[val], tree_ll->lengths[val]);
         if(val > 256) /*for a length code, 3 more things have to be added*/
         {
-            unsigned length_index = val - FIRST_LENGTH_CODE_INDEX;
-            unsigned n_length_extra_bits = LENGTHEXTRA[length_index];
-            unsigned length_extra_bits = lz77_encoded->data[++i];
+            size_t length_index = val - FIRST_LENGTH_CODE_INDEX;
+            size_t n_length_extra_bits = LENGTHEXTRA[length_index];
+            size_t length_extra_bits = lz77_encoded->data[++i];
 
-            unsigned distance_code = lz77_encoded->data[++i];
+            size_t distance_code = lz77_encoded->data[++i];
 
-            unsigned distance_index = distance_code;
-            unsigned n_distance_extra_bits = DISTANCEEXTRA[distance_index];
-            unsigned distance_extra_bits = lz77_encoded->data[++i];
+            size_t distance_index = distance_code;
+            size_t n_distance_extra_bits = DISTANCEEXTRA[distance_index];
+            size_t distance_extra_bits = lz77_encoded->data[++i];
 
             PNGwriteBits(writer, length_extra_bits, n_length_extra_bits);
             writeBitsReversed(writer, tree_d->codes[distance_code], tree_d->lengths[distance_code]);
@@ -659,30 +659,30 @@ unsigned encodeLZ77
     const unsigned char* in,
     size_t inpos,
     size_t insize,
-    unsigned windowsize,
-    unsigned minmatch,
-    unsigned nicematch,
-    unsigned lazymatching
+    size_t windowsize,
+    size_t minmatch,
+    size_t nicematch,
+    size_t lazymatching
 )
 {
     size_t pos;
-    unsigned i, error = 0;
+    size_t i, error = 0;
     /*for large window lengths, assume the user wants no compression loss. Otherwise, max hash chain length speedup.*/
-    unsigned maxchainlength = windowsize >= 8192 ? windowsize : windowsize / 8u;
-    unsigned maxlazymatch = windowsize >= 8192 ? MAX_SUPPORTED_DEFLATE_LENGTH : 64;
+    size_t maxchainlength = windowsize >= 8192 ? windowsize : windowsize / 8u;
+    size_t maxlazymatch = windowsize >= 8192 ? MAX_SUPPORTED_DEFLATE_LENGTH : 64;
 
-    unsigned usezeros = 1; /*not sure if setting it to false for windowsize < 8192 is better or worse*/
-    unsigned numzeros = 0;
+    size_t usezeros = 1; /*not sure if setting it to false for windowsize < 8192 is better or worse*/
+    size_t numzeros = 0;
 
-    unsigned offset; /*the offset represents the distance in LZ77 terminology*/
-    unsigned length;
-    unsigned lazy = 0;
-    unsigned lazylength = 0, lazyoffset = 0;
-    unsigned hashval;
-    unsigned current_offset, current_length;
-    unsigned prev_offset;
+    size_t offset; /*the offset represents the distance in LZ77 terminology*/
+    size_t length;
+    size_t lazy = 0;
+    size_t lazylength = 0, lazyoffset = 0;
+    size_t hashval;
+    size_t current_offset, current_length;
+    size_t prev_offset;
     const unsigned char* lastptr, * foreptr, * backptr;
-    unsigned hashpos;
+    size_t hashpos;
 
     if(windowsize == 0 || windowsize > 32768) return 60; /*error: windowsize smaller/larger than allowed*/
     if((windowsize & (windowsize - 1)) != 0) return 90; /*error: must be power of two*/
@@ -692,7 +692,7 @@ unsigned encodeLZ77
     for(pos = inpos; pos < insize; ++pos)
     {
         size_t wpos = pos & (windowsize - 1); /*position for in 'circular' hash buffers*/
-        unsigned chainlength = 0;
+        size_t chainlength = 0;
 
         hashval = getHash(in, insize, pos);
 
@@ -935,7 +935,7 @@ unsigned deflateFixed
 }
 
 
-unsigned countZeros(const unsigned char* data, size_t size, size_t pos)
+size_t countZeros(const unsigned char* data, size_t size, size_t pos)
 {
     const unsigned char* start = data + pos;
     const unsigned char* end = start + MAX_SUPPORTED_DEFLATE_LENGTH;
@@ -1096,7 +1096,7 @@ void bpmnode_sort(BPMNode* leaves, size_t num)
         counter++;
     }
     if(counter & 1) memcpy(leaves, mem, sizeof(*leaves) * num);
-    
+
     free(mem);
 }
 
@@ -1181,7 +1181,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
         tree->table_value[i] = pointer;
         pointer += (1u << (l - FIRSTBITS));
     }
-    
+
     free(maxlens);
 
     /*fill in the first table for short symbols, or secondary table for long symbols*/
@@ -1717,7 +1717,7 @@ int DEFLATESerialize(const void* const inputBuffer, const size_t inputBufferSize
             size_t final = (i == numdeflateblocks - 1);
             size_t start = i * blocksize;
             size_t end = start + blocksize;
-            if(end > inputBufferSize) end = inputBufferSize;         
+            if(end > inputBufferSize) end = inputBufferSize;
 
             if(lodePNGCompressSettings.btype == 1) error = deflateFixed(&writer, &hash, inputBuffer, start, end, &lodePNGCompressSettings, final);
             else if(lodePNGCompressSettings.btype == 2) error = deflateDynamic(&writer, &hash, inputBuffer, start, end, &lodePNGCompressSettings, final);

@@ -38,7 +38,7 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
 {
     LodePNGColorMode colorModeIn;
     LodePNGColorMode colorModeOut;
-   
+
     MemorySet(&colorModeIn, sizeof(LodePNGColorMode), 0);
     MemorySet(&colorModeOut, sizeof(LodePNGColorMode), 0);
 
@@ -773,9 +773,9 @@ PNGChunkType ConvertToChunkType(const unsigned int pngchunkType)
         case MakeInt('c', 'H', 'R', 'M'): return PNGChunkPrimaryChromaticities; // cHRM
         case MakeInt('g', 'A', 'M', 'A'): return PNGChunkImageGamma;// gAMA
         case MakeInt('b', 'K', 'G', 'D'): return PNGChunkBackgroundColor;// bKGD
-        case MakeInt('h', 'I', 'S', 'T'): return PNGChunkPaletteHistogram;// hIST   
+        case MakeInt('h', 'I', 'S', 'T'): return PNGChunkPaletteHistogram;// hIST
         case MakeInt('p', 'H', 'Y', 's'): return PNGChunkPhysicalPixelDimensions; //pHYs
-        case MakeInt('s', 'P', 'L', 'T'): return PNGChunkSuggestedPalette;// sPLT   
+        case MakeInt('s', 'P', 'L', 'T'): return PNGChunkSuggestedPalette;// sPLT
         case MakeInt('z', 'T', 'X', 't'): return PNGChunkCompressedTextualData;// zTXt
 
         default: return PNGChunkInvalid;
@@ -1301,7 +1301,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
     //---<Allocate>------------------------------------------------------------
     png->PixelDataSize = png->ImageHeader.Width * png->ImageHeader.Height * NumberOfColorChannels(png->ImageHeader.ColorType);
     png->PixelData = MemoryAllocate(sizeof(unsigned char) * png->PixelDataSize);
-    //-------------------------------------------------------------------------    
+    //-------------------------------------------------------------------------
 
 
     //---<Unpack compressed data>----------------------------------------------
@@ -1471,7 +1471,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     const size_t palettSize = chunk.Lengh / 3u;
                     const unsigned char validSize = palettSize != 0 && palettSize <= 256;
 
-                    if(!validSize) 
+                    if(!validSize)
                         return ResultFormatNotAsExpected; // palette too small or big
 
                     png.PaletteSize = palettSize;
@@ -1481,10 +1481,10 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                         unsigned char* paletteInsertion = png.Palette + i*4;
 
                         ParsingStreamReadD(&parsingStream, paletteInsertion, 3u); // Read RGB value
-                        
+
                         paletteInsertion[3] = 0xFF; // Add alpha
                     }
-      
+
                     break;
                 }
                 case PNGChunkImageData:
@@ -1544,7 +1544,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 case PNGChunkTransparency:
                 {
                     switch(png.ImageHeader.ColorType)
-                    {                   
+                    {
                         case PNGColorGrayscale:
                         {
                             /*error: this chunk must be 2 bytes for grayscale image*/
@@ -1590,16 +1590,16 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                             {
                                 unsigned char value = 0;
 
-                                ParsingStreamReadCU(&parsingStream, &value, EndianBig);
+                                ParsingStreamReadCU(&parsingStream, &value);
 
                                 png.Palette[i * 4 + 3] = value;
                             }
 
                             break;
                         }
-                        case PNGColorGrayscaleAlpha:       
-                        case PNGColorRGBA:      
-                        case PNGColorInvalid: 
+                        case PNGColorGrayscaleAlpha:
+                        case PNGColorRGBA:
+                        case PNGColorInvalid:
                         default:
                             return ResultFormatNotAsExpected; // tRNS chunk not allowed for other color models
                     }
@@ -1701,7 +1701,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     ParsingStreamReadIU(&parsingStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], EndianBig);
                     ParsingStreamReadIU(&parsingStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
                     ParsingStreamReadCU(&parsingStream, &unitSpecifier);
-                                        
+
                     switch(unitSpecifier)
                     {
                         case 0:
@@ -1716,7 +1716,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                             png.PhysicalPixelDimension.UnitSpecifier = PNGUnitSpecifierInvalid;
                             break;
                     }
-                    
+
                     break;
                 }
                 case PNGChunkSignificantBits:
@@ -1815,10 +1815,10 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
     }
 
     //---<Allocate>------------------------------------------------------------
-    
+
 
      {
-        
+
 
         size_t size = png.ImageHeader.Width * png.ImageHeader.Height * NumberOfColorChannels(png.ImageHeader.ColorType);
 
@@ -1849,7 +1849,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 image->Format = ImageDataFormatRGB8;
                 break;
 
-            case PNGColorInvalid:       
+            case PNGColorInvalid:
             case PNGColorGrayscaleAlpha:
                 image->Format = ImageDataFormatInvalid;
                 break;
@@ -1864,7 +1864,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 break;
         }
      }
-    //-------------------------------------------------------------------------    
+    //-------------------------------------------------------------------------
 
 
     //---<Unpack compressed data>----------------------------------------------
@@ -1905,8 +1905,8 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         MemoryRelease(adam7Cache, expectedadam7CacheSize);
         MemoryRelease(workingMemory, workingMemorySize);
 
-    }   
- 
+    }
+
     //-------------------------------------------------------------------------
 
     PNGDestruct(&png);
@@ -1966,14 +1966,14 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
 
 
         // ZLIB comprssion
-    }   
-     
+    }
+
     // tIME
     // zTXt
     // tEXt
 
     //---<>---
-    {   
+    {
         ParsingStreamWriteIU(&parsingStream, 0u, EndianBig);
         ParsingStreamWriteD(&parsingStream, "IEND", 4u);
         ParsingStreamWriteIU(&parsingStream, 2923585666u, EndianBig);
@@ -2170,12 +2170,12 @@ typedef struct LodePNGEncoderSettings
 
 static unsigned filter
 (
-    unsigned char* out, 
-    const unsigned char* in, 
-    size_t width, 
+    unsigned char* out,
+    const unsigned char* in,
+    size_t width,
     size_t height,
     size_t bpp,
-   // const LodePNGColorMode* color, 
+   // const LodePNGColorMode* color,
     LodePNGFilterStrategy strategy
 )
 {
@@ -2457,13 +2457,13 @@ return value is error**/
 size_t preProcessScanlines
 (
     PNGInterlaceMethod interlaceMethod,
-    size_t width, 
+    size_t width,
     size_t height,
     size_t bpp,
     PNGColorType colorType,
     size_t bitDepth,
-    unsigned char** out, 
-    size_t* outsize, 
+    unsigned char** out,
+    size_t* outsize,
     const unsigned char* in
 )
 {
@@ -2473,10 +2473,10 @@ size_t preProcessScanlines
     *) if no Adam7: 1) add padding bits (= possible extra bits per scanline if bpp < 8) 2) filter
     *) if adam7: 1) Adam7_interlace 2) 7x add padding bits 3) 7x filter
     */
-    unsigned error = 0;        
+    unsigned error = 0;
 
     switch(interlaceMethod)
-    {        
+    {
         case PNGInterlaceNone:
         {
             *outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
@@ -2496,7 +2496,7 @@ size_t preProcessScanlines
                         addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
                         error = filter(*out, padded, width, height, bpp, LFS_MINSUM);
                     }
-                   
+
                     MemoryRelease(padded, size);
                 }
                 else
@@ -2526,7 +2526,7 @@ size_t preProcessScanlines
             if(!error)
             {
                 unsigned i;
-                
+
                 //Adam7_interlace(adam7, in, png->ImageHeader.Width, png->ImageHeader.Height, bpp);
                 for(i = 0; i != 7; ++i)
                 {
@@ -2559,7 +2559,7 @@ size_t preProcessScanlines
         {
             break;
         }
-    }   
+    }
 
     return error;
 }
@@ -2585,7 +2585,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         unsigned char colorType = 0;
         const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(PNGInterlaceNone);
         const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
-        
+
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
 
@@ -2626,19 +2626,19 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         ParsingStreamWriteCU(&parsingStream, compressionMethod);
         ParsingStreamWriteCU(&parsingStream, filterMethod);
         ParsingStreamWriteCU(&parsingStream, interlaceMethod);
-        
+
         {
             const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
             ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
         }
 
-      
-    
+
+
         // Header End
 
-        // [PLTE] Palette	
-    
+        // [PLTE] Palette
+
         // 0 = NoShow
         // 1 = Maybe
         // 2 = definitly
@@ -2675,8 +2675,8 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
     {
 
     }
-    
-    // [cHRM] -  
+
+    // [cHRM] -
     {
 
     }
@@ -2684,42 +2684,42 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
     {
 
     }
-    // [iCCP] - 
+    // [iCCP] -
     {
 
     }
 
-    // [tEXt] - 		
+    // [tEXt] -
     {
 
     }
 
-    // [zTXt] - 	
+    // [zTXt] -
     {
 
     }
 
-    // [iTXt] - 
+    // [iTXt] -
     {
 
     }
 
-    // [bKGD] - 	
+    // [bKGD] -
     {
 
     }
 
-    // [pHYs] - 
+    // [pHYs] -
     {
 
     }
 
-    // [sBIT] - 
+    // [sBIT] -
     {
 
     }
 
-    // [sPLT] - 	
+    // [sPLT] -
     {
 
     }
@@ -2765,16 +2765,16 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
     }
 #endif
 
-    // [IDAT] Image data	
+    // [IDAT] Image data
     {
-        const size_t offsetSizeofChunk = parsingStream.DataCursor;   
+        const size_t offsetSizeofChunk = parsingStream.DataCursor;
 
-        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);       
+        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
 
         size_t chunkLength = 0;
 
         ParsingStreamWriteIU(&parsingStream, 0u, EndianBig); // Length
-        ParsingStreamWriteD(&parsingStream, "IDAT", 4u); 
+        ParsingStreamWriteD(&parsingStream, "IDAT", 4u);
 
 
         unsigned char* scanlines = 0;
@@ -2812,7 +2812,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
             parsingStream.DataCursor += chunkLength;
 
             ParsingStreamWriteAtIU(&parsingStream, chunkLength, EndianBig, offsetSizeofChunk); // override length
-        }       
+        }
 
         MemoryReallocate(scanlines, -1);
 
