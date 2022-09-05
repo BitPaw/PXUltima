@@ -2,11 +2,12 @@
 
 
 ## Systems
-
 | OS | Windows | Linux (Mint) | OSX |
 |:--:|:--:|:--:|:--:|
-| x86 (32-Bit) | :heavy_check_mark:  | ⚠️ | :x: |
-| x64 (64-Bit) | :heavy_check_mark: | ⚠️ |:x: |
+| x86 (32-Bit) | :heavy_check_mark:  | :heavy_check_mark:  | :x: |
+| x64 (64-Bit) | :heavy_check_mark: | :heavy_check_mark:  |:x: |
+|ARM32| :x:  | :x: |:x: |
+|ARM64| :x:  | :x: |:x: |
 
 ## Supported Formats
 <table>
@@ -24,7 +25,7 @@
 | BMP | :heavy_check_mark: | 
 | GIF | :x: |
 | PNG | :heavy_check_mark:|
-| JPEG | :warning: |
+| JPEG | :heavy_check_mark: |
 | TGA | :heavy_check_mark: |
 | TIFF | :x: |
     
