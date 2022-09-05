@@ -161,7 +161,7 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
 
             if(!isValidType)
             {
-                return ResultInvalidHeaderSignature;
+                return ActionInvalidHeaderSignature;
             }
         }
 
@@ -241,7 +241,7 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
 
         if(!allocationSucessful)
         {
-            return ResultOutOfMemory;
+            return ActionSystemOutOfMemory;
         }
     }
 
@@ -259,7 +259,7 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
         ParsingStreamCursorAdvance(&parsingStream, imageDataLayout.RowPaddingSize);
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
@@ -291,7 +291,7 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
 
             if(!isValidType)
             {
-                return ResultInvalidHeaderSignature;
+                return ActionInvalidHeaderSignature;
             }
         }
 
@@ -370,7 +370,7 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
 
         if(!adress) // Allocation failed
         {
-            return ResultOutOfMemory;
+            return ActionSystemOutOfMemory;
         }
 
         image->PixelDataSize = size;
@@ -401,12 +401,12 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
         }
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult BMPSerialize(const BMP* const bmp, void* data, const size_t dataSize, size_t* dataWritten)
 {
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult BMPSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
@@ -502,7 +502,7 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
 
     *dataWritten = parsingStream.DataCursor;
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 void BMPConstruct(BMP* const bmp)

@@ -1,5 +1,5 @@
-#ifndef A3DSInclude
-#define A3DSInclude
+#ifndef ISBNINCLUDE
+#define ISBNINCLUDE
 
 #include <stddef.h>
 

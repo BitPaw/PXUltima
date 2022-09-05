@@ -305,7 +305,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 
 	*readBytes = parsingStream.DataCursor;
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 FNTLineType PeekLineType(const void* line, const size_t fileDataSize)
@@ -345,7 +345,7 @@ FNTLineType PeekLineType(const void* line, const size_t fileDataSize)
 			return FNTLineUnkown;
 	}
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 void FNTPrtinf(const FNT* fnt)

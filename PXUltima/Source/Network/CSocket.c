@@ -637,7 +637,7 @@ ActionResult CSocketCreate
 #if defined(OSWindows)
     {
         const ActionResult permissionGranted = WindowsSocketAgentStartup();
-        const unsigned char sucessful = ResultSuccessful == permissionGranted;
+        const unsigned char sucessful = ActionSuccessful == permissionGranted;
 
         if(!sucessful)
         {
@@ -663,7 +663,7 @@ ActionResult CSocketCreate
     cSocket->Type = socketType;
 
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult CSocketConnect(CSocket* cSocket)
@@ -676,7 +676,7 @@ ActionResult CSocketConnect(CSocket* cSocket)
         return SocketConnectionFailure;
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult CSocketSetupAdress
@@ -700,7 +700,7 @@ ActionResult CSocketSetupAdress
 #if defined(OSWindows)
     {
         const ActionResult wsaResult = WindowsSocketAgentStartup();
-        const unsigned char sucessful = wsaResult == ResultSuccessful;
+        const unsigned char sucessful = wsaResult == ActionSuccessful;
 
         if(!sucessful)
         {
@@ -819,7 +819,7 @@ ActionResult CSocketSetupAdress
 
     AdressInfoDelete(adressResult);
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 unsigned char CSocketIsCurrentlyUsed(CSocket* cSocket)
@@ -861,7 +861,7 @@ ActionResult CSocketBind(CSocket* cSocket)
         return SocketBindingFailure;
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult CSocketOptionsSet(CSocket* cSocket)
@@ -888,7 +888,7 @@ ActionResult CSocketOptionsSet(CSocket* cSocket)
         return SocketOptionFailure;
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult CSocketListen(CSocket* cSocket)
@@ -902,7 +902,7 @@ ActionResult CSocketListen(CSocket* cSocket)
         return SocketListeningFailure;
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult CSocketAccept(CSocket* server, CSocket* client)
@@ -926,7 +926,7 @@ ActionResult CSocketAccept(CSocket* server, CSocket* client)
         return SocketBindingFailure;
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult CSocketSend(CSocket* cSocket, const void* inputBuffer, const size_t inputBufferSize, size_t* inputBytesWritten)
@@ -947,7 +947,7 @@ ActionResult CSocketSend(CSocket* cSocket, const void* inputBuffer, const size_t
 
         if(!hasDataToSend)
         {
-            return ResultSuccessful; // Do not send anything if the message is empty
+            return ActionSuccessful; // Do not send anything if the message is empty
         }
     }
 
@@ -977,7 +977,7 @@ ActionResult CSocketSend(CSocket* cSocket, const void* inputBuffer, const size_t
         *inputBytesWritten = writtenBytes;
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const size_t outputBufferSize, size_t* outputBytesWritten)
@@ -1034,7 +1034,7 @@ ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const si
             }
         }
     }
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 #if defined(OSWindows)
@@ -1064,7 +1064,7 @@ ActionResult WindowsSocketAgentStartup()
 
         case 0:
         default:
-            return ResultSuccessful;
+            return ActionSuccessful;
     }
 }
 
@@ -1088,7 +1088,7 @@ ActionResult WindowsSocketAgentShutdown()
         }
         case 0:
         default:
-            return ResultSuccessful;
+            return ActionSuccessful;
     }
 }
 #endif

@@ -23,15 +23,36 @@
 
 #endif
 
+//---<Settings>------------------------
 #define MemoryAssertEnable 1
-#define MemoryDebug 0
+#define MemoryDebugOutput 1
+#define MemoryDebugLeakDetection 1
 #define MemoryUseSystemFunction 0
 #define MemorySanitise 1
-
 
 #if MemoryAssertEnable
 #include <assert.h>
 #endif
+
+#if MemoryDebugOutput
+#include <stdio.h>
+#endif
+
+#if MemoryDebugLeakDetection
+#include <Container/Dictionary/Dictionary.h>
+#include <Time/Time.h>
+
+Dictionary _memoryAdressLookup;
+
+struct MemoryAllocationInfo
+{
+	Time TimeLastChanged; // When
+	size_t Size;
+	const char* Source;
+};
+
+#endif
+//-------------------------------------
 
 unsigned char MemoryScan(MemoryUsage* memoryUsage)
 {
@@ -66,8 +87,8 @@ void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigne
 //	assert(bufferA);
 //#endif
 
-#if MemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) Set to %2x\n", bufferA, length, value);
+#if MemoryDebugOutput
+	printf("[#][Memory] 0x%p (%10zi B) Set to %2x\n", bufferA, bufferASize, value);
 #endif
 
 	if(!bufferA)
@@ -87,22 +108,22 @@ void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigne
 
 unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize)
 {
+	const size_t bufferSize = MathMinimum(bufferASize, bufferBSize);
+	size_t counter = bufferSize;
+	size_t equalSum = 0;
+
 #if MemoryAssertEnable
 	assert(bufferA);
 	assert(bufferB);
 #endif
 
-#if MemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) Compare to 0x%p\n", a, length, b);
+#if MemoryDebugOutput
+	printf("[#][Memory] 0x%p (%10zi B) Compare to 0x%p\n", bufferA, bufferSize, bufferB);
 #endif
 
 #if MemoryUseSystemFunction
 	return memcmp(a, b, length) == 0;
 #else
-
-	const size_t bufferSize = MathMinimum(bufferASize, bufferBSize);
-	size_t counter = bufferSize;
-	size_t equalSum = 0;
 
 	while(counter--)
 	{
@@ -115,17 +136,17 @@ unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferA
 
 size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize)
 {
+	const size_t bufferSize = MathMinimum(inputBufferSize, outputBufferSize);
+	size_t index = bufferSize;
+
 #if MemoryAssertEnable
 	assert(inputBuffer);
 	assert(outputBuffer);
 #endif
 
-#if MemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) Copy to 0x%p\n", bufferA, bufferSize, bufferB);
+#if MemoryDebugOutput
+	printf("[#][Memory] 0x%p (%10zi B) Copy to 0x%p\n", inputBuffer, bufferSize, outputBufferSize);
 #endif
-
-	const size_t bufferSize = MathMinimum(inputBufferSize, outputBufferSize);
-	size_t index = bufferSize;
 
 	while(index--)
 	{
@@ -147,12 +168,25 @@ void* MemoryAllocate(const size_t requestedSizeInBytes)
 
 	const void* adress = malloc(requestedSizeInBytes);
 
+	if(!adress)
+	{
+#if MemoryDebugOutput
+		printf("[x][Memory] Allocation failed! (%10zi B) Error: Out of memory\n", requestedSizeInBytes);
+#endif
+
+		return 0;
+	}
+
 #if MemorySanitise
 	MemorySet(adress, requestedSizeInBytes, '#');
 #endif
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Allocate\n", adress, requestedSizeInBytes);
+#endif
+
+#if MemoryDebugLeakDetection
+	DictionaryAdd(&_memoryAdressLookup, adress, requestedSizeInBytes);
 #endif
 
 	return adress;
@@ -167,7 +201,7 @@ void* MemoryAllocateClear(const size_t requestedSizeInBytes)
 
 	const void* adress = calloc(1u, requestedSizeInBytes);
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Allocate Cleared\n", adress, requestedSizeInBytes);
 #endif
 
@@ -185,16 +219,16 @@ void* MemoryReallocate(void* adress, const size_t size)
 	}
 #endif
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	const unsigned char hasChanged = adress != adressReallocated;
 
 	if(hasChanged)
 	{
-		printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", adress, requestedBytes, adressReallocated);
+		printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", adress, size, adressReallocated);
 	}
 	else
 	{
-		printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", adress, requestedBytes);
+		printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", adress, size);
 	}
 #endif
 
@@ -214,16 +248,16 @@ void* MemoryReallocateClear(const void* const adress, const size_t sizeBefore, c
 		MemorySet(startAdress, sizeDelta, 0);
 	}
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	const unsigned char hasChanged = adress != adressReallocated;
 
 	if (hasChanged)
 	{
-		printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", adress, requestedBytes, adressReallocated);
+		printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", adress, sizeAfter, adressReallocated);
 	}
 	else
 	{
-		printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", adress, requestedBytes);
+		printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", adress, sizeAfter);
 	}
 #endif
 
@@ -237,12 +271,16 @@ void MemoryRelease(const void* adress, const size_t size)
 		return;
 	}
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Free\n", adress, size);
 #endif
 
 #if MemorySanitise
 	MemorySet(adress, size, '#');
+#endif
+
+#if MemoryDebugLeakDetection
+	DictionaryRemove(&_memoryAdressLookup, adress);
 #endif
 
 	free(adress);
@@ -284,20 +322,20 @@ void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memory
 	const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, protectionModeID);
 #endif
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	const char* readMode;
 
 	switch(memoryProtectionMode)
 	{
-		case MemoryProtectionMode::WriteOnly:
+		case MemoryWriteOnly:
 			readMode = "Write only";
 			break;
 
-		case MemoryProtectionMode::ReadOnly:
+		case MemoryReadOnly:
 			readMode = "Read only";
 			break;
 
-		case MemoryProtectionMode::ReadAndWrite:
+		case MemoryReadAndWrite:
 			readMode = "Read & Write";
 			break;
 
@@ -327,7 +365,7 @@ void MemoryVirtualPrefetch(const void* adress, const size_t size)
 
 	//const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags);
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Pre-Fetched\n", adress, size);
 #endif
 
@@ -350,7 +388,7 @@ void MemoryVirtualRelease(const void* adress, const size_t size)
 	const unsigned char result = VirtualFree((void*)adress, 0, freeType);
 #endif
 
-#if MemoryDebug
+#if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Virtual free\n", adress, size);
 #endif
 

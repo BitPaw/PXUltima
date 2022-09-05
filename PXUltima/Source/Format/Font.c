@@ -51,7 +51,7 @@ ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
 
     {
         const ActionResult fileLoadingResult = FileMapToVirtualMemoryW(&file, filePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = fileLoadingResult == ResultSuccessful;
+        const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
 
         if(!sucessful)
         {
@@ -78,14 +78,14 @@ ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
 
         const FontFileFormat hint = FontGuessFormat(filePath);
         const ActionResult fileParsingResult = FontLoadD(font, hint, file.Data, file.DataSize, filePathDirectory);
-        const unsigned char success = fileParsingResult == ResultSuccessful;
+        const unsigned char success = fileParsingResult == ActionSuccessful;
 
         if(success)
         {
-            return ResultSuccessful;
+            return ActionSuccessful;
         }
 
-        ActionResult fileGuessResult = ResultInvalid;
+        ActionResult fileGuessResult = ActionInvalid;
         unsigned int fileFormatID = 1;
 
         do
@@ -96,7 +96,7 @@ ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
 
             fileFormatID++;
         }
-        while(fileGuessResult == ResultInvalidHeaderSignature);
+        while(fileGuessResult == ActionInvalidHeaderSignature);
 
         return fileGuessResult;
     }
@@ -119,7 +119,7 @@ ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, co
 
                 size_t readBytes = 0;
                 const ActionResult fileActionResult = FNTParse(font->FontElement, data, dataSize, &readBytes, sourcePath);
-                const unsigned char sucessful = ResultSuccessful == fileActionResult;
+                const unsigned char sucessful = ActionSuccessful == fileActionResult;
 
                 if(!sucessful)
                 {
@@ -138,13 +138,13 @@ ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, co
             {
                 size_t readBytes = 0;
                 const ActionResult fileActionResult = TTFParse(&ttf, data, dataSize, &readBytes);
-                const unsigned char sucessful = fileActionResult == ResultSuccessful;
+                const unsigned char sucessful = fileActionResult == ActionSuccessful;
 
                 if(sucessful)
                 {
                    // ttf.ConvertTo(*this);
 
-                    return ResultSuccessful;
+                    return ActionSuccessful;
                 }
             }
 
@@ -159,5 +159,5 @@ ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, co
         }
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }

@@ -29,7 +29,7 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 
 		if(!riff.Valid)
 		{
-			return ResultInvalidHeaderSignature;
+			return ActionInvalidHeaderSignature;
 		}
 
 		ParsingStreamCursorAdvance(&parsingStream, parsedBytes);
@@ -45,7 +45,7 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 		size_t parsedBytes = 0;
 	
 		const ActionResult actionResult = FMTParse(&wav->Format, fmtHeaderStart, maximalSize, &parsedBytes, endian);
-		const unsigned char sucessful = actionResult == ResultSuccessful;
+		const unsigned char sucessful = actionResult == ActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -83,7 +83,7 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 
 	ParsingStreamReadD(&parsingStream, wav->SoundData, wav->SoundDataSize);
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 /*
@@ -117,7 +117,7 @@ ActionResult BF::WAV::Save(const wchar_t* filePath)
 
 	fileStream.WriteToDisk(filePath);
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult BF::WAV::ConvertTo(Sound& sound)
@@ -130,7 +130,7 @@ ActionResult BF::WAV::ConvertTo(Sound& sound)
 
 	MemoryCopy(SoundData, SoundDataSize, sound.Data, sound.DataSize);
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 */

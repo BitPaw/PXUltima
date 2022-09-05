@@ -259,7 +259,7 @@ ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size
 {
 
 
-    return ResultInvalid;
+    return ActionInvalid;
 }
 
 
@@ -284,7 +284,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 
         if(!validStart)
         {
-            return ResultInvalidHeaderSignature;
+            return ActionInvalidHeaderSignature;
         }
 
 #if JPGDebug
@@ -312,7 +312,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                 printf("[i][JPG] End of Image\n");
 #endif
 
-                return ResultSuccessful;
+                return ActionSuccessful;
             }
 
             ParsingStreamReadSU(&parsingStream, &chunkLength, EndianBig);
@@ -618,7 +618,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
         //--------------
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 
@@ -1283,5 +1283,5 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
 
     *dataWritten = parsingStream.DataCursor;
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }

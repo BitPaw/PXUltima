@@ -32,7 +32,7 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 			if(!validHeaderSignature)
 			{
 				printf("Chunk Index missing!\n");
-				return ResultInvalidHeaderSignature;
+				return ActionInvalidHeaderSignature;
 			}
 		}
 
@@ -108,5 +108,5 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 
 	*dataRead = parsingStream.DataCursor;
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }

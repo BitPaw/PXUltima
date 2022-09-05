@@ -579,5 +579,5 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 		}
 	}
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }

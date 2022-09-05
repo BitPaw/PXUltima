@@ -1,5 +1,5 @@
-#if !defined(MemoryInclude)
-#define MemoryInclude
+#ifndef MemoryINCLUDE
+#define MemoryINCLUDE
 
 #include <stddef.h>
 

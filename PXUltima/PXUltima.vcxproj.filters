@@ -554,5 +554,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
+    <None Include="Source\Memory\README.md" />
+    <None Include="Source\Container\Dictionary\README.md" />
   </ItemGroup>
 </Project>

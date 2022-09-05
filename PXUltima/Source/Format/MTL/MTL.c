@@ -217,7 +217,7 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 	}
 	while(ParsingStreamSkipLine(&parsingStream));
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 

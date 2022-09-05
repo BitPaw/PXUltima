@@ -102,5 +102,5 @@ ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size
 
 	*dataRead = parsingStream.DataCursor;
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }

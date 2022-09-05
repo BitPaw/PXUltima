@@ -36,7 +36,7 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, s
 
 		if(!valid)
 		{
-			return ResultInvalidHeaderSignature;
+			return ActionInvalidHeaderSignature;
 		}
 	}
 
@@ -50,5 +50,5 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, s
 
 	*dataRead = parsingStream.DataCursor;
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }

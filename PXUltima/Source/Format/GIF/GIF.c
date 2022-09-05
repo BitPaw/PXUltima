@@ -44,12 +44,12 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
 
         if(!validHeader)
         {
-            return ResultInvalidHeaderSignature;
+            return ActionInvalidHeaderSignature;
         }
 
         if(!validVersion)
         {
-            return ResultInvalidVersion;
+            return ActionInvalidVersion;
         }
     }
 
@@ -109,15 +109,15 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
     //-----------------------------------------------------------------
 
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult GIFParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
 {
-    return ResultInvalid;
+    return ActionInvalid;
 }
 
 ActionResult GIFSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
 {
-    return ResultInvalid;
+    return ActionInvalid;
 }

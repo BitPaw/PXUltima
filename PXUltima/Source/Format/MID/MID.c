@@ -50,7 +50,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 
 			if(!isValid)
 			{
-				return ResultInvalidHeaderSignature;
+				return ActionInvalidHeaderSignature;
 			}
 		}
 
@@ -62,7 +62,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 
 	if(!mid->TrackListSize)
 	{
-		return ResultSuccessful;
+		return ActionSuccessful;
 	}
 
 	mid->TrackList = MemoryAllocate(sizeof(MIDITrack) * mid->TrackListSize);
@@ -80,7 +80,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 
 			if(!isValid)
 			{
-				return ResultInvalidHeaderSignature;
+				return ActionInvalidHeaderSignature;
 			}
 		}
 
@@ -95,7 +95,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 
 	*dataRead = parsingStream.DataCursor;
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* dataWritten)
@@ -105,7 +105,7 @@ ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* d
 
 	{
 		const ActionResult fileOpenResult = file.Open(filePath, FileOpenMode::Write);
-		const bool sucessful = fileOpenResult == ResultSuccessful;
+		const bool sucessful = fileOpenResult == ActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -134,7 +134,7 @@ ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* d
 
 	{
 		const ActionResult fileCloseResult = file.Close();
-		const bool sucessful = fileCloseResult == ResultSuccessful;
+		const bool sucessful = fileCloseResult == ActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -142,7 +142,7 @@ ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* d
 		}
 	}
 
-	return ResultSuccessful;*/
+	return ActionSuccessful;*/
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }

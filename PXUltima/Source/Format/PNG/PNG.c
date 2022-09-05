@@ -948,7 +948,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
 
             if(!isValidHeader)
             {
-                return ResultInvalidHeaderSignature;
+                return ActionInvalidHeaderSignature;
             }
         }
 
@@ -1320,7 +1320,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
         workingMemory = MemoryReallocate(workingMemory, sizeof(unsigned char) * expectedzlibCacheSize);
 
         const ActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
-        const unsigned char sucess = actionResult == ResultSuccessful;
+        const unsigned char sucess = actionResult == ActionSuccessful;
 
         if(!sucess)
         {
@@ -1345,7 +1345,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
     //-------------------------------------------------------------------------
 
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult PNGParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
@@ -1374,7 +1374,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
             if(!isValidHeader)
             {
-                return ResultInvalidHeaderSignature;
+                return ActionInvalidHeaderSignature;
             }
         }
 
@@ -1831,7 +1831,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
         if(!data)
         {
-            return ResultOutOfMemory;
+            return ActionSystemOutOfMemory;
         }
 
         image->Width = png.ImageHeader.Width;
@@ -1883,7 +1883,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         workingMemory = MemoryReallocate(workingMemory, sizeof(unsigned char) * expectedzlibCacheSize);
 
         const ActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
-        const unsigned char sucess = actionResult == ResultSuccessful;
+        const unsigned char sucess = actionResult == ActionSuccessful;
 
         if(!sucess)
         {
@@ -1911,7 +1911,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
     PNGDestruct(&png);
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* dataWritten)
@@ -1981,7 +1981,7 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
 
     *dataWritten = parsingStream.DataCursor;
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 
@@ -2648,7 +2648,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         {
             default:
             case PNGColorInvalid:
-                return ResultInvalid;
+                return ActionInvalid;
 
             case PNGColorGrayscale: // ColorType = 0
             case PNGColorGrayscaleAlpha:  // ColorType = 4
@@ -2833,5 +2833,5 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
 
     *dataWritten = parsingStream.DataCursor;
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }

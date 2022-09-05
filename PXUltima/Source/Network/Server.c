@@ -34,7 +34,7 @@ ActionResult ServerStart(Server* const server, const unsigned short port, const 
             CSocketTypeStream,
             protocolMode
         );
-        const unsigned char adressSetupSucessful = ResultSuccessful == adressResult;
+        const unsigned char adressSetupSucessful = ActionSuccessful == adressResult;
 
         if(!adressSetupSucessful)
         {
@@ -58,7 +58,7 @@ ActionResult ServerStart(Server* const server, const unsigned short port, const 
         // Create socket
         {
             const ActionResult socketCreateResult = CSocketCreate(&cSocket, cSocket->Family, cSocket->Type, cSocket->Protocol);
-            const unsigned char sucessful = ResultSuccessful == socketCreateResult;
+            const unsigned char sucessful = ActionSuccessful == socketCreateResult;
 
             if(!sucessful)
             {
@@ -69,7 +69,7 @@ ActionResult ServerStart(Server* const server, const unsigned short port, const 
         // Set Socket Options
         {
             const ActionResult actionResult = CSocketOptionsSet(&cSocket);
-            const unsigned char sucessful = ResultSuccessful == actionResult;
+            const unsigned char sucessful = ActionSuccessful == actionResult;
 
             if(!sucessful)
             {
@@ -80,7 +80,7 @@ ActionResult ServerStart(Server* const server, const unsigned short port, const 
         // Bind Socket
         {
             const ActionResult actionResult = CSocketBind(&cSocket);
-            const unsigned char sucessful = ResultSuccessful == actionResult;
+            const unsigned char sucessful = ActionSuccessful == actionResult;
 
             if(!sucessful)
             {
@@ -91,7 +91,7 @@ ActionResult ServerStart(Server* const server, const unsigned short port, const 
         // Listen
         {
             const ActionResult actionResult = CSocketListen(&cSocket);
-            const unsigned char sucessful = ResultSuccessful == actionResult;
+            const unsigned char sucessful = ActionSuccessful == actionResult;
 
             if(!sucessful)
             {
@@ -104,17 +104,17 @@ ActionResult ServerStart(Server* const server, const unsigned short port, const 
         cSocket->CommunicationThread = ThreadRun(ServerClientListeningThread, cSocket);
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult ServerStop(Server* const server)
 {
-	return ResultInvalid;
+	return ActionInvalid;
 }
 
 ActionResult ServerKickClient(Server* server, const CSocketID socketID)
 {
-	return ResultInvalid;
+	return ActionInvalid;
 }
 
 CSocket* ServerGetClientViaID(Server* server, const CSocketID socketID)
@@ -213,7 +213,7 @@ ThreadResult ServerClientListeningThread(void* serverAdress)
         // Set Events
 
         const ActionResult actionResult = CSocketAccept(serverSocket, &clientSocket);
-        const unsigned char successful = ResultSuccessful == actionResult;
+        const unsigned char successful = ActionSuccessful == actionResult;
 
 
         if(!successful)

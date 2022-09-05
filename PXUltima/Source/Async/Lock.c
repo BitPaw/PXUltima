@@ -41,7 +41,7 @@ ActionResult LockCreate(LockID* const asyncLockID)
         return actionResult;
 	}
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult LockDelete(LockID* const asyncLockID)

@@ -32,7 +32,7 @@ void TestSaveImageSmal()
     const char* pathBMP = "_TEST_DATA_OUTPUT_/Smal_ImageBMP.bmp";
     const ActionResult saveBMP = ImageSaveTest(&image, pathBMP, ImageFileFormatBitMap, ImageDataFormatRGB8);
 
-    if(saveBMP != ResultSuccessful)
+    if(saveBMP != ActionSuccessful)
     {
         return saveBMP;
     }
@@ -40,7 +40,7 @@ void TestSaveImageSmal()
     const char* pathPNG = "_TEST_DATA_OUTPUT_/Smal_ImagePNG.png";
     const ActionResult savePNG = ImageSaveTest(&image, pathPNG, ImageFileFormatPNG, ImageDataFormatRGB8);
 
-    if(savePNG != ResultSuccessful)
+    if(savePNG != ActionSuccessful)
     {
         return savePNG;
     }
@@ -48,7 +48,7 @@ void TestSaveImageSmal()
     const char* pathJPG = "_TEST_DATA_OUTPUT_/Smal_ImageJPG.jpg";
     const ActionResult saveJPG = ImageSaveTest(&image, pathJPG, ImageFileFormatJPEG, ImageDataFormatRGB8);
 
-    if(saveJPG != ResultSuccessful)
+    if(saveJPG != ActionSuccessful)
     {
         return saveJPG;
     }
@@ -93,21 +93,21 @@ void TestSaveImage()
 
     const ActionResult saveBMP = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageBMP.bmp", ImageFileFormatBitMap, ImageDataFormatRGB8);
     
-    if(saveBMP != ResultSuccessful)
+    if(saveBMP != ActionSuccessful)
     {
         return saveBMP;
     }
     
     const ActionResult savePNG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImagePNG.png", ImageFileFormatPNG, ImageDataFormatRGB8);
     
-    if(savePNG != ResultSuccessful)
+    if(savePNG != ActionSuccessful)
     {
         return savePNG;
     }
     
     const ActionResult saveJPG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageJPG.jpg", ImageFileFormatJPEG, ImageDataFormatRGB8);
 
-    if(saveJPG != ResultSuccessful)
+    if(saveJPG != ActionSuccessful)
     {
         return saveJPG;
     }
@@ -127,14 +127,14 @@ void ImageWriteText()
 
     ActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
 
-    if(actionResult != ResultSuccessful)
+    if(actionResult != ActionSuccessful)
     {
         return actionResult;
     }
 
     ActionResult loadResult = ImageLoadTest(&image, "_TEST_DATA_INPUT_/ImageInput.bmp");
 
-    if(loadResult != ResultSuccessful)
+    if(loadResult != ActionSuccessful)
     {
         return loadResult;
     }
@@ -158,7 +158,7 @@ void ImageWriteText()
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_BMP.bmp";
         const ActionResult saveBMP = ImageSaveTest(&image, path, ImageFileFormatBitMap, ImageDataFormatRGB8);
 
-        if(saveBMP != ResultSuccessful)
+        if(saveBMP != ActionSuccessful)
         {
             return saveBMP;
         }
@@ -169,7 +169,7 @@ void ImageWriteText()
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_JPG.jpeg";
         const ActionResult saveJPEG = ImageSaveTest(&image, path, ImageFileFormatJPEG, ImageDataFormatRGB8);
 
-        if(saveJPEG != ResultSuccessful)
+        if(saveJPEG != ActionSuccessful)
         {
             return saveJPEG;
         }
@@ -179,7 +179,7 @@ void ImageWriteText()
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_PNG.png";
         const ActionResult savePNG = ImageSaveTest(&image, path, ImageFileFormatPNG, ImageDataFormatRGBA8);
 
-        if(savePNG != ResultSuccessful)
+        if(savePNG != ActionSuccessful)
         {
             return savePNG;
         }
@@ -193,7 +193,7 @@ ActionResult ImageLoadTest(Image* const image, const char* const filePath)
 {
     const ActionResult savePNG = ImageLoadA(image, filePath);
 
-    if(savePNG != ResultSuccessful)
+    if(savePNG != ActionSuccessful)
     {
         printf("[x][Error] Image loading FAILED! ErrorID:%i Path:\"%s\"\n", savePNG, filePath);
     }
@@ -210,7 +210,7 @@ ActionResult ImageSaveTest(Image* const image, const char* const filePath, const
 {
     const ActionResult savePNG = ImageSaveA(image, filePath, fileFormat, dataFormat);
 
-    if (savePNG != ResultSuccessful)
+    if (savePNG != ActionSuccessful)
     {
         printf("[x][Error] Image saving FAILED! ErrorID:%i Path:\"%s\"\n", savePNG, filePath);
     }

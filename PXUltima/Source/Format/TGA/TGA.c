@@ -224,7 +224,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t*
 
 		if(!isTGAVersionTwo) // Is this a TGA v.1.0 dataStream?
 		{
-			return ResultSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
+			return ActionSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
 		}
 	}
 
@@ -314,7 +314,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t*
 	}
 	//-----------------------------------------------------------
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult TGAParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
@@ -413,7 +413,7 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 
 		if(!isTGAVersionTwo) // Is this a TGA v.1.0 dataStream?
 		{
-			return ResultSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
+			return ActionSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
 		}
 	}
 
@@ -503,12 +503,12 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 	}
 	//-----------------------------------------------------------
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult TGASerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
 {
-	return ResultInvalid;
+	return ActionInvalid;
 }
 
 
@@ -525,7 +525,7 @@ ActionResult TGA::Save(const wchar_t* filePath)
 
 	file.WriteToDisk(filePath);
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult TGA::ConvertTo(Image& image)

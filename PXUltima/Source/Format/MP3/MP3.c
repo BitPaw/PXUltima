@@ -1008,7 +1008,7 @@ ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, con
 
 	*dataRead = 4u;
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t* dataRead)
@@ -1176,5 +1176,5 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t*
 
 	*dataRead = parsingStream.DataCursor;
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }

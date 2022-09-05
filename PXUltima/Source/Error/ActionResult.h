@@ -8,38 +8,39 @@ extern "C"
 
 	typedef enum ActionResult_
 	{
-		ResultInvalid,
+		//---<General>-----------------------
+		ActionInvalid,
+		ActionSuccessful,
+		ActionSystemOutOfMemory,
+		//-----------------------------------
 
-		// File
-
-
-		ResultSuccessful,
-
+		//---<File-General>------------------
 		ResultEmptyPath,
-
-		// Classic
 		ResultFileNotFound,
-		ResultOutOfMemory,
 		ResultFileEmpty,
-
-		ResultWriteFailure,
-
-		//
 		ResultFileOpenFailure,
 		ResultFileCloseFailure,
 		ResultFileReadFailure,
 		ResultFileCopyFailure,
 		ResultFileCreateFailure,
+		//-----------------------------------
 
+		// File-Mapping
 		ResultFileMemoryMappingFailed,
+		//-----------------------------------
 
-		// Parsing
-		ResultInvalidHeaderSignature,
-		ResultInvalidVersion,
-
+		// File-Parsing
 		ResultFormatNotSupported,
 		ResultFormatInvalid,
 		ResultFormatNotAsExpected,
+		ActionInvalidHeaderSignature,
+		ActionInvalidVersion,
+		//-----------------------------------
+
+		// I/O
+		ResultReadFailure,
+		ResultWriteFailure,
+		//-----------------------------------
 
 		// Socket
 		SocketOuputBufferTooSmal,
@@ -60,16 +61,18 @@ extern "C"
 		HostHasNoNetworkAddresses,
 		IPOrPortNotKnown,
 		SocketIsNotConnected,
+		//-----------------------------------
 
 		RequestedServiceNotAvailableForSocket,
 
-		// Client
+		//---<Client>------------------------
 		SocketConnectionFailure,
+		//-----------------------------------
 
-
-		// Server
+		//---<Server>------------------------
 		NoClientWithThisID,
 		NoSendEmptyData,
+		//-----------------------------------
 
 		//---[ Windows Only (WindowsSocketAgent) ]-------
 		SubSystemNotReady,

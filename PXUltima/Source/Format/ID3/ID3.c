@@ -114,7 +114,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
         
         if(!isValidHeader)
         {
-            return ResultInvalidHeaderSignature;
+            return ActionInvalidHeaderSignature;
         }
     }
 
@@ -537,5 +537,5 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
 
     *dataRead = parsingStream.DataCursor;
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }

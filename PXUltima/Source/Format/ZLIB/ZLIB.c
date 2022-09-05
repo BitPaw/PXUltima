@@ -105,7 +105,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
 
             if(!validFlags)
             {
-                return ResultInvalidHeaderSignature;// assert(validFlags);
+                return ActionInvalidHeaderSignature;// assert(validFlags);
             }
         }
 
@@ -124,7 +124,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
 
             if(!isCompressionInfoValid)
             {
-                return ResultInvalidVersion;
+                return ActionInvalidVersion;
             }
 
             //assert(isCompressionInfoValid);
@@ -194,7 +194,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
         (unsigned int)inputData[dataSize - 1];    
     */
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeWritten)
@@ -252,7 +252,7 @@ ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSiz
 
     *outputDataSizeWritten = parsingSteam.DataCursor;
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 size_t ZLIBCalculateExpectedSize(const size_t width, const size_t height, const size_t bpp, const PNGInterlaceMethod interlaceMethod)

@@ -177,5 +177,5 @@ ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t*
 		}
 	}
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }

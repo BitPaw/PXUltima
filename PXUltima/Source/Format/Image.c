@@ -116,7 +116,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
 
     {
         const ActionResult fileLoadingResult = FileMapToVirtualMemoryW(&file, filePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = fileLoadingResult == ResultSuccessful;
+        const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
 
         if(!sucessful)
         {
@@ -127,14 +127,14 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
     {
         const ImageFileFormat imageFormatHint = ImageGuessFormat(filePath);
         const ActionResult fileParsingResult = ImageLoadD(image, file.Data, file.DataSize, imageFormatHint);
-        const unsigned char success = fileParsingResult == ResultSuccessful;
+        const unsigned char success = fileParsingResult == ActionSuccessful;
 
         if(success)
         {
-            return ResultSuccessful;
+            return ActionSuccessful;
         }
 
-        ActionResult fileGuessResult = ResultInvalid;
+        ActionResult fileGuessResult = ActionInvalid;
         unsigned int fileFormatID = 1;
 
         do
@@ -145,7 +145,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
 
             fileFormatID++;
         }
-        while(fileGuessResult == ResultInvalidHeaderSignature);
+        while(fileGuessResult == ActionInvalidHeaderSignature);
 
         return fileGuessResult;
     }
@@ -282,7 +282,7 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
     {
         const ActionResult mappingResult = FileMapToVirtualMemoryW(&file, filePathW, fileSize, MemoryWriteOnly);
-        const unsigned char sucessful = ResultSuccessful == mappingResult;
+        const unsigned char sucessful = ActionSuccessful == mappingResult;
 
         if(!sucessful)
         {
@@ -293,7 +293,7 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
     {
         const ActionResult serializeResult = serializeFromImageFunction(image, file.Data, file.DataSize, &file.DataCursor);
-        const unsigned char sucessful = ResultSuccessful == serializeResult;
+        const unsigned char sucessful = ActionSuccessful == serializeResult;
 
         if(!sucessful)
         {
@@ -304,12 +304,12 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
     FileDestruct(&file);
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult ImageSaveD(Image* const image, void* const data, const size_t dataSize, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat)
 {
-    return ResultInvalid;
+    return ActionInvalid;
 }
 
 void ImageResize(Image* image, const ImageDataFormat format, const size_t width, const size_t height)

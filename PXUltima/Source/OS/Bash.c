@@ -8,7 +8,7 @@ ActionResult BashExecuteA(const char* programPath, const unsigned char syncronou
 	size_t dataLength = 0;
 	unsigned char* data = 0;
 
-	if(result != ResultSuccessful)
+	if(result != ActionSuccessful)
 	{
 		return result;
 	}
@@ -21,10 +21,10 @@ ActionResult BashExecuteA(const char* programPath, const unsigned char syncronou
 
 	free(data);*/
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
 
 ActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous)
 {
-	return ResultSuccessful;
+	return ActionSuccessful;
 }

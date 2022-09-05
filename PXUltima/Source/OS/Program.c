@@ -79,7 +79,7 @@ ActionResult ProgramExecuteAS(Program* program, const char* programPath, const c
         ProgramExecuteThreadFunction(program);
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, size_t parameterListSize, ProgramExecutedEvent* callback)
@@ -125,7 +125,7 @@ ActionResult ProgramExecuteAL(Program* program, const char* programPath, const c
         ProgramExecuteThreadFunction(program);
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback)

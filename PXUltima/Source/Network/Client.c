@@ -33,12 +33,12 @@ ActionResult ClientConnectToServer(Client* client, const char* ip, unsigned shor
     {
         CSocket* cSocket = &cSocketList[i];
         const ActionResult socketCreateResult = CSocketCreate(cSocket, cSocket->Family, cSocket->Type, cSocket->Protocol);
-        const unsigned char creationSuccesful = ResultSuccessful == socketCreateResult;
+        const unsigned char creationSuccesful = ActionSuccessful == socketCreateResult;
 
         if (creationSuccesful)
         {
             const ActionResult connectResult = CSocketConnect(cSocket);
-            const unsigned char connected = ResultSuccessful == connectResult;
+            const unsigned char connected = ActionSuccessful == connectResult;
 
             if (connected)
             {  
@@ -57,7 +57,7 @@ ActionResult ClientConnectToServer(Client* client, const char* ip, unsigned shor
         return SocketConnectionFailure;
     }
 
-    return ResultSuccessful;
+    return ActionSuccessful;
 }
 
 #define ClientBufferSize 2048u
@@ -75,7 +75,7 @@ ThreadResult CommunicationFunctionAsync(void* cSocketAdress)
         MemorySet(buffer, sizeof(unsigned char) * ClientBufferSize, 0);
 
         const ActionResult receiveingResult = CSocketReceive(cSocket, buffer, bufferSizeMax, &bufferSize);
-        const unsigned char sucessful = ResultSuccessful == receiveingResult;
+        const unsigned char sucessful = ActionSuccessful == receiveingResult;
 
         if (!sucessful)
         {

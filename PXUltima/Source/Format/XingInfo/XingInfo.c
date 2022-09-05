@@ -34,7 +34,7 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 
 		if(!validHeader)
 		{
-			return ResultInvalidHeaderSignature;
+			return ActionInvalidHeaderSignature;
 		}
 
 		if(isInfo)
@@ -84,5 +84,5 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 
 	*dataRead = parsingStream.DataCursor;
 
-	return ResultSuccessful;
+	return ActionSuccessful;
 }
