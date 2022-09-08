@@ -1,4 +1,4 @@
-# DEFLATE (v.1.3) [RFC 1951]
+# DEFLATE (v.1.3)<br>[RFC 1951]
 
 ## Info
 Deflate is a compression format.<br>
