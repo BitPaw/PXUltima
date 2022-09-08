@@ -1,4 +1,4 @@
-#include "ImageTest.h"
+#include "TestImage.h"
 
 #include <stdio.h>
 
@@ -187,6 +187,17 @@ void ImageWriteText()
   
 
     ImageDestruct(&image);  
+}
+
+void TestImageAll()
+{
+    printf("[#] Test for images...\n");
+
+    TestSaveImageSmal();
+    TestSaveImage();
+    ImageWriteText();
+
+    printf("[i] Test image finished\n");
 }
 
 ActionResult ImageLoadTest(Image* const image, const char* const filePath)

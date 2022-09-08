@@ -11,6 +11,8 @@ extern "C"
 {
 #endif
 
+    extern void TestImageAll();
+
     extern ActionResult ImageLoadTest(Image* const image, const char* const filePath);
     extern void TestSaveImageSmal();
     extern void TestSaveImage();

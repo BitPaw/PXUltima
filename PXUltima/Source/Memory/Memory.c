@@ -24,9 +24,9 @@
 #endif
 
 //---<Settings>------------------------
-#define MemoryAssertEnable 1
-#define MemoryDebugOutput 1
-#define MemoryDebugLeakDetection 1
+#define MemoryAssertEnable 0
+#define MemoryDebugOutput 0
+#define MemoryDebugLeakDetection 0
 #define MemoryUseSystemFunction 0
 #define MemorySanitise 1
 

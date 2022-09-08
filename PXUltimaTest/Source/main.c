@@ -1,7 +1,9 @@
 
 #include <stdio.h>
 
-#include "ImageTest.h"
+#include "TestImage.h"
+#include "TestSBP.h"
+
 #include <Processor/Processor.h>
 #include <Library/Library.h>
 
@@ -21,9 +23,8 @@ int main()
 
 	printf("[i] Bencah %i, %i\n", x, y);
 
-	TestSaveImageSmal();
-	TestSaveImage();
-	ImageWriteText();
+	TestImageAll();
+	TestSBPAll();
 
 	printf("[i] Finished testing...\n");
 

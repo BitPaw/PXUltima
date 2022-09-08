@@ -93,6 +93,9 @@
     <ClInclude Include="Source\Network\Client.h" />
     <ClInclude Include="Source\Network\CSocket.h" />
     <ClInclude Include="Source\Network\IP.h" />
+    <ClInclude Include="Source\Network\SBP\SBPClient.h" />
+    <ClInclude Include="Source\Network\SBP\SBPProtocol.h" />
+    <ClInclude Include="Source\Network\SBP\SBPServer.h" />
     <ClInclude Include="Source\Network\Server.h" />
     <ClInclude Include="Source\OS\Bash.h" />
     <ClInclude Include="Source\OS\CWindow.h" />
@@ -184,6 +187,9 @@
     <ClCompile Include="Source\Network\Client.c" />
     <ClCompile Include="Source\Network\CSocket.c" />
     <ClCompile Include="Source\Network\IP.c" />
+    <ClCompile Include="Source\Network\SBP\SBPClient.c" />
+    <ClCompile Include="Source\Network\SBP\SBPProtocol.c" />
+    <ClCompile Include="Source\Network\SBP\SBPServer.c" />
     <ClCompile Include="Source\Network\Server.c" />
     <ClCompile Include="Source\OS\Bash.c" />
     <ClCompile Include="Source\OS\CWindow.c" />
@@ -203,7 +209,6 @@
   <ItemGroup>
     <None Include="Source\Container\Dictionary\README.md" />
     <None Include="Source\Format\PDF\README.md" />
-    <None Include="Source\Memory\README.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -284,10 +289,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -298,7 +304,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>
@@ -314,7 +320,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>
@@ -332,7 +338,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>

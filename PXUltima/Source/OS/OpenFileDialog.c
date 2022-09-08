@@ -48,11 +48,11 @@ unsigned char FileOpenDialogW(wchar_t* filePathOutput)
     }
 #else
 
-    OPENFILENAMEW openFileName;
+   // OPENFILENAMEW openFileName;
 
-    MemorySet(&openFileName, sizeof(OPENFILENAMEW), 0);
+   // MemorySet(&openFileName, sizeof(OPENFILENAMEW), 0);
 
-    const BOOL result = GetOpenFileNameW(&openFileName);
+  //  const BOOL result = GetOpenFileNameW(&openFileName);
 
 
 

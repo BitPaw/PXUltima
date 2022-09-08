@@ -288,6 +288,15 @@
     <ClInclude Include="Source\Format\WEBM\WEBM.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Network\SBP\SBPClient.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\SBP\SBPServer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\SBP\SBPProtocol.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\Lock.c">
@@ -551,10 +560,18 @@
     <ClCompile Include="Source\Format\WEBM\WEBM.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Network\SBP\SBPClient.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\SBP\SBPServer.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\SBP\SBPProtocol.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
-    <None Include="Source\Memory\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
   </ItemGroup>
 </Project>

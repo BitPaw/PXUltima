@@ -18,12 +18,18 @@
     <ClCompile Include="Source\main.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ImageTest.c">
+    <ClCompile Include="Source\TestImage.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TestSBP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\ImageTest.h">
+    <ClInclude Include="Source\TestImage.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TestSBP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

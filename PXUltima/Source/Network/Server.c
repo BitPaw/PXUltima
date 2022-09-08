@@ -7,17 +7,17 @@
 #include <stdio.h>
 #endif
 
-void ServerConstruct(Server* const server)
+void ServerConstruct(CServer* const server)
 {
-    MemorySet(server, sizeof(Server), 0);
+    MemorySet(server, sizeof(CServer), 0);
 }
 
-void ServerDestruct(Server* const server)
+void ServerDestruct(CServer* const server)
 {
 
 }
 
-ActionResult ServerStart(Server* const server, const unsigned short port, const ProtocolMode protocolMode)
+ActionResult ServerStart(CServer* const server, const unsigned short port, const ProtocolMode protocolMode)
 {
     size_t adressInfoListSize = 0;
 
@@ -107,17 +107,17 @@ ActionResult ServerStart(Server* const server, const unsigned short port, const 
     return ActionSuccessful;
 }
 
-ActionResult ServerStop(Server* const server)
+ActionResult ServerStop(CServer* const server)
 {
 	return ActionInvalid;
 }
 
-ActionResult ServerKickClient(Server* server, const CSocketID socketID)
+ActionResult ServerKickClient(CServer* server, const CSocketID socketID)
 {
 	return ActionInvalid;
 }
 
-CSocket* ServerGetClientViaID(Server* server, const CSocketID socketID)
+CSocket* ServerGetClientViaID(CServer* server, const CSocketID socketID)
 {
     for(size_t i = 0; i < server->ClientSocketListSize; i++)
     {
@@ -134,7 +134,7 @@ CSocket* ServerGetClientViaID(Server* server, const CSocketID socketID)
     return 0;
 }
 
-void ServerRegisterClient(Server* server, Client* client)
+void ServerRegisterClient(CServer* server, Client* client)
 {
     //_clientListLock.Lock();
    // Client* indexedClient = GetNextClient();
@@ -153,7 +153,7 @@ void ServerRegisterClient(Server* server, Client* client)
     //indexedClient->CommunicationThread = ThreadRun(Client::CommunicationFunctionAsync, indexedClient);
 }
 
-ActionResult ServerSendMessageToAll(Server* server, const unsigned char* data, const size_t dataSize)
+ActionResult ServerSendMessageToAll(CServer* server, const unsigned char* data, const size_t dataSize)
 {
     for(size_t i = 0; i < server->ClientSocketListSize; ++i)
     {
@@ -163,7 +163,7 @@ ActionResult ServerSendMessageToAll(Server* server, const unsigned char* data, c
     }
 }
 
-ActionResult ServerSendMessageToClient(Server* server, const CSocketID clientID, const unsigned char* data, const size_t dataSize)
+ActionResult ServerSendMessageToClient(CServer* server, const CSocketID clientID, const unsigned char* data, const size_t dataSize)
 {
     CSocket* clientSocket = ServerGetClientViaID(server, clientID);
 
@@ -180,7 +180,7 @@ ActionResult ServerSendMessageToClient(Server* server, const CSocketID clientID,
 
 ThreadResult ServerClientListeningThread(void* serverAdress)
 {
-    Server* server = serverAdress;
+    CServer* server = serverAdress;
     CSocket* serverSocket = 0;
 
     // Seek Socket
