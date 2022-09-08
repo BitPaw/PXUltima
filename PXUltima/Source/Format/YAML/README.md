@@ -1,5 +1,4 @@
-# Yet Another Markup Language (YAML)
-# YAML Ain't Markup Language
+# ~Yet Another Markup Language~ (YAML)<br>YAML Ain't Markup Language
 
 ## Info
 Serialisation format. Has no extra characters as brackets like XML or JSON.<br>
