@@ -1,7 +1,7 @@
 #ifndef MemoryINCLUDE
 #define MemoryINCLUDE
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <OS/OSVersion.h>
 
@@ -59,36 +59,36 @@ extern "C"
 	MemoryUsage;
 
 
-	extern unsigned char MemoryScan(MemoryUsage* memoryUsage);
+	CPublic unsigned char MemoryScan(MemoryUsage* memoryUsage);
 
 
-	extern void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigned char value);
+	CPublic void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigned char value);
 
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!
-	extern unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize);
+	CPublic unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize);
 
-	extern size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize);
+	CPublic size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize);
 
-	//extern char MemoryAdvice(const void* adress, const size_t length, const FileCachingMode fileCachingMode);
+	//CPublic char MemoryAdvice(const void* adress, const size_t length, const FileCachingMode fileCachingMode);
 
-	extern void* MemoryAllocate(const size_t size);
+	CPublic void* MemoryAllocate(const size_t size);
 
 	// Allocate memory and clear is after. Its just a combination of malloc and memset
-	extern void* MemoryAllocateClear(const size_t size);
-	extern void* MemoryReallocate(void* adress, const size_t size);
-	extern void* MemoryReallocateClear(const void* const adress, const size_t sizeBefore, const size_t sizeAfter);
-	extern void MemoryRelease(const void* adress, const size_t size);
+	CPublic void* MemoryAllocateClear(const size_t size);
+	CPublic void* MemoryReallocate(void* adress, const size_t size);
+	CPublic void* MemoryReallocateClear(const void* const adress, const size_t sizeBefore, const size_t sizeAfter);
+	CPublic void MemoryRelease(const void* adress, const size_t size);
 
 	// Allocate memory in virtual memory space.
 	// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 	// Only use for bigger datablocks as thic has very hi overhead.
-	extern void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memoryProtectionMode);
-	extern void MemoryVirtualPrefetch(const void* adress, const size_t size);
-	extern void MemoryVirtualRelease(const void* adress, const size_t size);
+	CPublic void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memoryProtectionMode);
+	CPublic void MemoryVirtualPrefetch(const void* adress, const size_t size);
+	CPublic void MemoryVirtualRelease(const void* adress, const size_t size);
 
 
-	extern MemoryProtectionModeType ConvertFromMemoryProtectionMode(const MemoryProtectionMode memoryProtectionMode);
+	CPublic MemoryProtectionModeType ConvertFromMemoryProtectionMode(const MemoryProtectionMode memoryProtectionMode);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #ifndef CWindowInclude
 #define CWindowInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <OS/OSVersion.h>
 
@@ -175,48 +175,48 @@ extern "C"
 
 	static ThreadResult CWindowCreateThread(void* const cWindowAdress);
 
-	extern void CWindowConstruct(CWindow* const cWindow);
-	extern void CWindowCreate(CWindow* const cWindow, const unsigned int width, const unsigned int height, const char* title, unsigned char async);
-	extern void CWindowDestruct(CWindow* const cWindow);
+	CPublic void CWindowConstruct(CWindow* const cWindow);
+	CPublic void CWindowCreate(CWindow* const cWindow, const unsigned int width, const unsigned int height, const char* title, unsigned char async);
+	CPublic void CWindowDestruct(CWindow* const cWindow);
 
-	extern void CWindowIconCorner();
-	extern void CWindowIconTaskBar();
+	CPublic void CWindowIconCorner();
+	CPublic void CWindowIconTaskBar();
 
-	extern void CWindowLookupAdd(const CWindow* CWindow);
-	extern CWindow* CWindowLookupFind(const CWindowID cWindowID);
-	extern void CWindowLookupRemove(const CWindow* CWindow);
+	CPublic void CWindowLookupAdd(const CWindow* CWindow);
+	CPublic CWindow* CWindowLookupFind(const CWindowID cWindowID);
+	CPublic void CWindowLookupRemove(const CWindow* CWindow);
 
-	extern void CWindowSize(CWindow* CWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height);
-	extern void CWindowSizeChange(CWindow* CWindow, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
-	extern void CWindowPosition(CWindow* CWindow, unsigned int* x, unsigned int* y);
-	extern void CWindowPositionChange(CWindow* CWindow, const unsigned int x, const unsigned int y);
-	extern void CWindowPositonCenterScreen(CWindow* CWindow);
-	extern void CWindowCursor(CWindow* CWindow);
+	CPublic void CWindowSize(CWindow* CWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height);
+	CPublic void CWindowSizeChange(CWindow* CWindow, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
+	CPublic void CWindowPosition(CWindow* CWindow, unsigned int* x, unsigned int* y);
+	CPublic void CWindowPositionChange(CWindow* CWindow, const unsigned int x, const unsigned int y);
+	CPublic void CWindowPositonCenterScreen(CWindow* CWindow);
+	CPublic void CWindowCursor(CWindow* CWindow);
 	//voidCWindowCursor(const CursorIcon cursorIcon);
-	extern void CWindowCursorTexture();
-	extern void CWindowCursorCaptureMode(CWindow* CWindow, const CWindowCursorMode cursorMode);
+	CPublic void CWindowCursorTexture();
+	CPublic void CWindowCursorCaptureMode(CWindow* CWindow, const CWindowCursorMode cursorMode);
 	//voidCWindowScreenShotTake(Image image);
-	extern int CWindowFrameBufferInitialize(CWindow* CWindow);
-	extern unsigned char CWindowFrameBufferSwap(CWindow* CWindow);
-	extern unsigned char CWindowFrameBufferContextRegister(CWindow* CWindow);
-	extern unsigned char CWindowFrameBufferContextRelease(CWindow* CWindow);
-	extern unsigned char CWindowInteractable(CWindow* CWindow);
+	CPublic int CWindowFrameBufferInitialize(CWindow* CWindow);
+	CPublic unsigned char CWindowFrameBufferSwap(CWindow* CWindow);
+	CPublic unsigned char CWindowFrameBufferContextRegister(CWindow* CWindow);
+	CPublic unsigned char CWindowFrameBufferContextRelease(CWindow* CWindow);
+	CPublic unsigned char CWindowInteractable(CWindow* CWindow);
 
-	extern unsigned char CWindowCursorPositionInWindowGet(CWindow* window, int* x, int* y);
-	extern unsigned char CWindowCursorPositionInDestopGet(CWindow* window, int* x, int* y);
+	CPublic unsigned char CWindowCursorPositionInWindowGet(CWindow* window, int* x, int* y);
+	CPublic unsigned char CWindowCursorPositionInDestopGet(CWindow* window, int* x, int* y);
 
 
 
 	// Event functions
-	extern void TriggerOnMouseScrollEvent(const CWindow* window, const Mouse* mouse);
-	extern void TriggerOnMouseClickEvent(const CWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
-	extern void TriggerOnMouseClickDoubleEvent(const CWindow* window, const MouseButton mouseButton);
-	extern void TriggerOnMouseMoveEvent(const CWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
-	extern void TriggerOnMouseEnterEvent(const CWindow* window, const Mouse* mouse);
-	extern void TriggerOnMouseLeaveEvent(const CWindow* window, const Mouse* mouse);
+	CPublic void TriggerOnMouseScrollEvent(const CWindow* window, const Mouse* mouse);
+	CPublic void TriggerOnMouseClickEvent(const CWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
+	CPublic void TriggerOnMouseClickDoubleEvent(const CWindow* window, const MouseButton mouseButton);
+	CPublic void TriggerOnMouseMoveEvent(const CWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
+	CPublic void TriggerOnMouseEnterEvent(const CWindow* window, const Mouse* mouse);
+	CPublic void TriggerOnMouseLeaveEvent(const CWindow* window, const Mouse* mouse);
 
 
-	extern void TriggerOnKeyBoardKeyEvent(const CWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);
+	CPublic void TriggerOnKeyBoardKeyEvent(const CWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);
 
 	// Keyboard
 	//typedef void (*KeyBoardKeyEvent)(const KeyBoardKeyInfo keyBoardKeyInfo);

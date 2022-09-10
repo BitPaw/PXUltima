@@ -1,7 +1,7 @@
 #ifndef SBPClientINCLUDE
 #define SBPClientINCLUDE
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include "SBPProtocol.h"
 
@@ -31,11 +31,11 @@ extern "C"
 
 	ThreadResult SBPClientReciveDataThread(void* sbpClient);
 
-	extern void SBPClientConstruct(SBPClient* const sbpClient);
-	extern void SBPClientDestruct(SBPClient* const sbpClient);
+	CPublic void SBPClientConstruct(SBPClient* const sbpClient);
+	CPublic void SBPClientDestruct(SBPClient* const sbpClient);
 
 	// Sending a message via a socket, await a response.
-	extern SBPResult SendAndWaitResponse
+	CPublic SBPResult SendAndWaitResponse
 	(
 		SBPClient* const sbpClient,
 		void* inputData,

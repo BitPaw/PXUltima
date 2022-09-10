@@ -1,7 +1,7 @@
 #ifndef IPInclude
 #define IPInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -14,14 +14,13 @@ extern "C"
     {
         IPVersionInvalid,
         IPVersionUnknownDomain,
-
         IPVersion4,
         IPVersion6
     }
     IPVersion;
 
     IPVersion AnalyseIPVersion(const char* ip);
-    extern unsigned char IsValidIP(const char* ipAdress);
+    CPublic unsigned char IsValidIP(const char* ipAdress);
     /*
   Check if the given IPv4 is Valid
 
@@ -33,8 +32,8 @@ extern "C"
   4 - Too long (>15)
   5 - Too many Octets (more that 4)
 */
-    extern unsigned char IPv4CheckIfValid(const char* ipv4Adress);
-    extern unsigned char IPv6CheckIfValid(const char* ipv6Adress);
+    CPublic unsigned char IPv4CheckIfValid(const char* ipv4Adress);
+    CPublic unsigned char IPv6CheckIfValid(const char* ipv6Adress);
 
 #ifdef __cplusplus
 }

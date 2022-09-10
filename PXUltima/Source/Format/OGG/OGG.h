@@ -1,7 +1,7 @@
 #ifndef OGGInclude
 #define OGGInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -37,7 +37,7 @@ extern "C"
 	}
 	OGG;
 
-	extern ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

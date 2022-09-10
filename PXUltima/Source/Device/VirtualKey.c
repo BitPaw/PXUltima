@@ -31,7 +31,7 @@
 #include <WinUser.h>
 #endif
 
-extern VirtualKey ConvertToVirtualKey(const char character)
+VirtualKey ConvertToVirtualKey(const char character)
 {
 #if defined(OSUnix)
 #elif defined(OSWindows)

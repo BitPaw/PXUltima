@@ -1,15 +1,15 @@
 #ifndef ProcessorINCLUDE
 #define ProcessorINCLUDE
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	extern unsigned int ProcessorFrequencyCurrent();
-	extern unsigned int ProcessorTimeReal();
+	CPublic __declspec(dllexport) unsigned int ProcessorFrequencyCurrent();
+	CPublic __declspec(dllexport) unsigned int ProcessorTimeReal();
 
 #ifdef __cplusplus
 }

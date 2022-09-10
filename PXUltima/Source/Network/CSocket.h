@@ -1,7 +1,7 @@
 #ifndef CSocketInclude
 #define CSocketInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <OS/OSVersion.h>
@@ -126,7 +126,7 @@ extern "C"
 		ProtocolModeRAW,
 		ProtocolModeMAX,
 		//
-		//  These are reserved for internal use by Windows.
+		//  These are reserved for CPrivate use by Windows.
 		//
 		ProtocolModeWindowsRAW,
 		ProtocolModeWindowsIPSEC,
@@ -184,7 +184,7 @@ extern "C"
 
 		CSocketState State;
 
-		//---<Internal IO>------------
+		//---<CPrivate IO>------------
 		ThreadID CommunicationThread;
 		//----------------------------
 
@@ -217,10 +217,10 @@ extern "C"
 	static unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode);
 
 
-	extern void CSocketConstruct(CSocket* const cSocket);
-	extern void CSocketDestruct(CSocket* const cSocket);
+	CPublic void CSocketConstruct(CSocket* const cSocket);
+	CPublic void CSocketDestruct(CSocket* const cSocket);
 
-	extern ActionResult CSocketCreate
+	CPublic ActionResult CSocketCreate
 	(
 		CSocket* cSocket,
 		const IPAdressFamily adressFamily,
@@ -228,9 +228,9 @@ extern "C"
 		const ProtocolMode protocolMode
 	);
 
-	extern ActionResult CSocketConnect(CSocket* cSocket);
+	CPublic ActionResult CSocketConnect(CSocket* cSocket);
 
-	extern ActionResult CSocketSetupAdress
+	CPublic ActionResult CSocketSetupAdress
 	(
 		CSocket* cSocketList,
 		const size_t cSocketListSizeMax,
@@ -242,16 +242,16 @@ extern "C"
 		ProtocolMode protocolMode
 	);
 
-	extern unsigned char CSocketIsCurrentlyUsed(CSocket* cSocket);
-	extern void CSocketClose(CSocket* cSocket);
+	CPublic unsigned char CSocketIsCurrentlyUsed(CSocket* cSocket);
+	CPublic void CSocketClose(CSocket* cSocket);
 
-	extern ActionResult CSocketBind(CSocket* cSocket);
-	extern ActionResult CSocketOptionsSet(CSocket* cSocket);
-	extern ActionResult CSocketListen(CSocket* cSocket);
-	extern ActionResult CSocketAccept(CSocket* server, CSocket* client);
+	CPublic ActionResult CSocketBind(CSocket* cSocket);
+	CPublic ActionResult CSocketOptionsSet(CSocket* cSocket);
+	CPublic ActionResult CSocketListen(CSocket* cSocket);
+	CPublic ActionResult CSocketAccept(CSocket* server, CSocket* client);
 
-	extern ActionResult CSocketSend(CSocket* cSocket, const void* inputBuffer, const size_t inputBufferSize, size_t* inputBytesWritten);
-	extern ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const size_t outputBufferSize, size_t* outputBytesWritten);
+	CPublic ActionResult CSocketSend(CSocket* cSocket, const void* inputBuffer, const size_t inputBufferSize, size_t* inputBytesWritten);
+	CPublic ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const size_t outputBufferSize, size_t* outputBytesWritten);
 
 #if defined(OSWindows)
 	static ActionResult WindowsSocketAgentStartup();

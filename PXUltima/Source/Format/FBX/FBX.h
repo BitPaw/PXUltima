@@ -1,7 +1,7 @@
 #ifndef FBXInclude
 #define FBXInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -15,7 +15,7 @@ extern "C"
 	}
 	FBX;
 
-	extern ActionResult FBXParse(const void* data, const size_t dataSize);
+	CPublic ActionResult FBXParse(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

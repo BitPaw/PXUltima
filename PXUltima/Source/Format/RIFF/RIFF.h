@@ -1,7 +1,7 @@
 #ifndef RIFFInclude
 #define RIFFInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <File/Endian.h>
@@ -34,7 +34,7 @@ extern "C"
 	}
 	RIFF;
 
-	extern ActionResult RIFFParse(RIFF* riff, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult RIFFParse(RIFF* riff, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #ifndef BashInclude
 #define BashInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -10,8 +10,8 @@ extern "C"
 {
 #endif
 
-	extern ActionResult BashExecuteA(const char* programPath, const unsigned char syncronous);
-	extern ActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous);
+	CPublic ActionResult BashExecuteA(const char* programPath, const unsigned char syncronous);
+	CPublic ActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous);
 
 #ifdef __cplusplus
 }

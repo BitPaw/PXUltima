@@ -1,7 +1,7 @@
 #ifndef ClientInclude
 #define ClientInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -25,9 +25,9 @@ extern "C"
 	}
 	Client;
 
-	extern ActionResult ClientConnectToServer(Client* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
+	CPublic ActionResult ClientConnectToServer(Client* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
 
-	extern ThreadResult CommunicationFunctionAsync(void* ioSocket);
+	CPublic ThreadResult CommunicationFunctionAsync(void* ioSocket);
 
 #ifdef __cplusplus
 }

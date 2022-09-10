@@ -637,7 +637,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 
 
 // ////////////////////////////////////////
-// data types (for internal use only)
+// data types (for CPrivate use only)
 
 // one byte
 typedef unsigned char   uint8_t;
@@ -648,7 +648,7 @@ typedef          short  int16_t;
 typedef          int    int32_t;
 
 // ////////////////////////////////////////
-// basic structs (for internal use only)
+// basic structs (for CPrivate use only)
 
 // represent a few bits, typically a Huffman code
 typedef struct BitCode_
@@ -671,7 +671,7 @@ typedef struct BitBuffer_
 }BitBuffer;
 
 // ////////////////////////////////////////
-// constants (for internal use only)
+// constants (for CPrivate use only)
 
 // quantization tables from JPEG Standard, Annex K
 // there are a few experts proposing slightly more efficient values, e.g. https://www.imagemagick.org/discourse-server/viewtopic.php?t=20333

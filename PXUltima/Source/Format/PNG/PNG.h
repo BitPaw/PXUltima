@@ -1,7 +1,7 @@
 #ifndef PNGInclude
 #define PNGInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <Format/Image.h>
@@ -366,17 +366,17 @@ enough memory.*/
 	static unsigned rgba8ToPixel(unsigned char* out, size_t i,								 const LodePNGColorMode* mode, PNGColorTree* tree /*for palette*/,								 unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 
-	extern size_t lodepng_get_raw_size_lct(size_t w, size_t h, LodePNGColorType colortype, size_t bitdepth);
-	extern size_t lodepng_get_raw_size(size_t w, size_t h, const LodePNGColorMode* color);
+	CPublic size_t lodepng_get_raw_size_lct(size_t w, size_t h, LodePNGColorType colortype, size_t bitdepth);
+	CPublic size_t lodepng_get_raw_size(size_t w, size_t h, const LodePNGColorMode* color);
 
 	/*returns -1 if color not present, its index otherwise*/
-	extern int color_tree_get(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+	CPublic int color_tree_get(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 	/*index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to*/
-	extern void addColorBits(unsigned char* out, size_t index, unsigned int bits, unsigned int in);
+	CPublic void addColorBits(unsigned char* out, size_t index, unsigned int bits, unsigned int in);
 
-	extern unsigned char readBitFromReversedStream(size_t* bitpointer, const unsigned char* bitstream);
-	extern unsigned readBitsFromReversedStream(size_t* bitpointer, const unsigned char* bitstream, size_t nbits);
+	CPublic unsigned char readBitFromReversedStream(size_t* bitpointer, const unsigned char* bitstream);
+	CPublic unsigned readBitsFromReversedStream(size_t* bitpointer, const unsigned char* bitstream, size_t nbits);
 
 
 
@@ -394,20 +394,20 @@ enough memory.*/
 
 
 
-	extern void PNGConstruct(PNG* const png);
-	extern void PNGDestruct(PNG* const png);
+	CPublic void PNGConstruct(PNG* const png);
+	CPublic void PNGDestruct(PNG* const png);
 
 
-	extern size_t NumberOfColorChannels(const PNGColorType pngColorType);
-	extern size_t BitsPerPixel(const PNG* const png);
+	CPublic size_t NumberOfColorChannels(const PNGColorType pngColorType);
+	CPublic size_t BitsPerPixel(const PNG* const png);
 
-	extern size_t PNGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	CPublic size_t PNGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
 
-	extern ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t* dataRead);
-	extern ActionResult PNGParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult PNGParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
 
-	extern ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* dataWritten);
-	extern ActionResult PNGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	CPublic ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* dataWritten);
+	CPublic ActionResult PNGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 
 #ifdef __cplusplus
 }

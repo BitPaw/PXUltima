@@ -1,7 +1,7 @@
 #ifndef PLYInclude
 #define PLYInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -15,7 +15,7 @@ extern "C"
 	}
 	PLY;
 
-	extern ActionResult PLYParse(PLY* ply, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult PLYParse(PLY* ply, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

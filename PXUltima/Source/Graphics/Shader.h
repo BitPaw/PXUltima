@@ -1,7 +1,7 @@
 #ifndef ShaderInclude
 #define ShaderInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -1,7 +1,7 @@
 #ifndef WEBPInclude
 #define WEBPInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -15,7 +15,7 @@ extern "C"
 	}
 	WEBP;
 
-	extern ActionResult WEBPParse(WEBP* webp, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult WEBPParse(WEBP* webp, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

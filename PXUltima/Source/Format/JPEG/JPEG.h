@@ -1,7 +1,7 @@
 #ifndef JPEGInclude
 #define JPEGInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <Format/Image.h>
@@ -178,15 +178,15 @@ extern "C"
 	static JPEGMarker ConvertToJPEGMarker(const unsigned short jpegMarker);
 	static unsigned short ConvertFromJPEGMarker(const JPEGMarker jpegMarker);
 
-	extern void JPEGConstruct(JPEG* const jpeg);
-	extern void JPEGDestruct(JPEG* const jpeg);
+	CPublic void JPEGConstruct(JPEG* const jpeg);
+	CPublic void JPEGDestruct(JPEG* const jpeg);
 
-	extern size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	CPublic size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
 	
-	extern ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead);
-	extern ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead);
 
-	extern ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	CPublic ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #ifndef DictionaryDEFINED
 #define DictionaryDEFINED
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -21,13 +21,13 @@ extern "C"
 	}
 	Dictionary;
 
-	extern void DictionaryConstruct(Dictionary* const dictionary);
-	extern void DictionaryDestruct(Dictionary* const dictionary);
+	CPublic void DictionaryConstruct(Dictionary* const dictionary);
+	CPublic void DictionaryDestruct(Dictionary* const dictionary);
 
-	extern void DictionaryResize(Dictionary* const dictionary, const size_t entrys);
-	extern void DictionaryAdd(Dictionary* const dictionary, const void* key, const void* value);
-	extern void DictionaryRemove(Dictionary* const dictionary, const void* key);
-	extern void DictionaryFind(Dictionary* const dictionary, const void* key, void* value);
+	CPublic void DictionaryResize(Dictionary* const dictionary, const size_t entrys);
+	CPublic void DictionaryAdd(Dictionary* const dictionary, const void* key, const void* value);
+	CPublic void DictionaryRemove(Dictionary* const dictionary, const void* key);
+	CPublic void DictionaryFind(Dictionary* const dictionary, const void* key, void* value);
 
 #ifdef __cplusplus
 }

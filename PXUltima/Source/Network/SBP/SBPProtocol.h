@@ -1,8 +1,7 @@
 #ifndef SBPProtocolINCLUDE
 #define SBPProtocolINCLUDE
 
-#include <stddef.h>
-
+#include <Format/Type.h>
 #include <Container/ClusterValue.h>
 #include <File/File.h>
 #include <Text/Text.h>
@@ -130,10 +129,10 @@ extern "C"
 	}
 	SBPData;
 
-	extern void SBPDataConstruct(SBPData* const sbpData);
-	extern void SBPDataDestruct(SBPData* const sbpData);
+	CPublic void SBPDataConstruct(SBPData* const sbpData);
+	CPublic void SBPDataDestruct(SBPData* const sbpData);
 
-	extern void SBPDataSet
+	CPublic void SBPDataSet
 	(
 		SBPData* const sbpData,
 		const unsigned int command,
@@ -144,15 +143,15 @@ extern "C"
 		const void* adress
 	);
 
-	extern unsigned int SBPDataSize(SBPData* const sbpData);
+	CPublic unsigned int SBPDataSize(SBPData* const sbpData);
 
-	extern void SBPDataClear(SBPData* const sbpData);
+	CPublic void SBPDataClear(SBPData* const sbpData);
 
-	extern void SBPDataPrint(SBPData* const sbpData);
+	CPublic void SBPDataPrint(SBPData* const sbpData);
 
-	extern size_t PackageParse(SBPData* data, const void* inputBuffer, const size_t* inputBufferSize);
-	extern size_t PackageSerialize(const SBPData* data, void* outputBuffer, const size_t outputBufferSize);
-	extern size_t PackageSerialize
+	CPublic size_t PackageParse(SBPData* data, const void* inputBuffer, const size_t* inputBufferSize);
+	CPublic size_t PackageSerialize(const SBPData* data, void* outputBuffer, const size_t outputBufferSize);
+	CPublic size_t PackageSerialize
 	(
 		void* outputBuffer,
 		const size_t outputBufferSize,
@@ -191,10 +190,10 @@ extern "C"
 	}
 	SBPDataPackageConnectionCreate;
 
-	extern void SBPDataPackageConnectionCreateFill(const SBPConnectionCreateReason reason);
+	CPublic void SBPDataPackageConnectionCreateFill(const SBPConnectionCreateReason reason);
 
-	extern size_t SBPDataPackageConnectionCreateParse(const void* inputData, const size_t inputDataSize);
-	extern size_t SBPDataPackageConnectionCreateSerialize(void* outputData, const size_t outputDataSize);
+	CPublic size_t SBPDataPackageConnectionCreateParse(const void* inputData, const size_t inputDataSize);
+	CPublic size_t SBPDataPackageConnectionCreateSerialize(void* outputData, const size_t outputDataSize);
 
 
 
@@ -246,17 +245,17 @@ extern "C"
 	
 
 
-		extern void SBPDataPackageFileConstruct(SBPDataPackageFile* const sbpDataPackageFile);
+		CPublic void SBPDataPackageFileConstruct(SBPDataPackageFile* const sbpDataPackageFile);
 
 		// S:N T:N => Invalid
 		// S:N T:Y => Create
 		// S:Y T:N => Delete
 		// S:Y T:Y => Copy
 
-		extern void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const SBPDataPackageFileMode mode, const char* source, const char* target);
+		CPublic void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const SBPDataPackageFileMode mode, const char* source, const char* target);
 
-		extern size_t SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const size_t inputDataSize);
-		extern size_t SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const size_t outputDataSize);
+		CPublic size_t SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const size_t inputDataSize);
+		CPublic size_t SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const size_t outputDataSize);
 
 
 
@@ -277,12 +276,12 @@ extern "C"
 	SBPDataPackageIam;
 
 
-	extern void SBPDataPackageIamConstruct(SBPDataPackageIam* const sbpDataPackageIam);
+	CPublic void SBPDataPackageIamConstruct(SBPDataPackageIam* const sbpDataPackageIam);
 
-	extern void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam);
+	CPublic void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam);
 
-	extern size_t SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const size_t inputDataSize);
-	extern size_t SBPDataPackageIamSerialize(SBPDataPackageIam* const sbpDataPackageIam, void* outputData, const size_t outputDataSize);
+	CPublic size_t SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const size_t inputDataSize);
+	CPublic size_t SBPDataPackageIamSerialize(SBPDataPackageIam* const sbpDataPackageIam, void* outputData, const size_t outputDataSize);
 
 
 
@@ -307,10 +306,10 @@ extern "C"
 		}
 		SBPDataPackageResponse;
 	
-		extern void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse);
+		CPublic void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse);
 
-		extern size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const size_t inputDataSize);
-		extern size_t SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const size_t outputDataSize);
+		CPublic size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const size_t inputDataSize);
+		CPublic size_t SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const size_t outputDataSize);
 
 
 
@@ -322,11 +321,11 @@ extern "C"
 	}
 	SBPDataPackageText;
 
-	extern void SBPDataPackageTextConstruct(SBPDataPackageText* const sbpDataPackageText);
-	extern void SBPDataPackageTextDestruct(SBPDataPackageText* const sbpDataPackageText);
+	CPublic void SBPDataPackageTextConstruct(SBPDataPackageText* const sbpDataPackageText);
+	CPublic void SBPDataPackageTextDestruct(SBPDataPackageText* const sbpDataPackageText);
 
-	extern size_t SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const size_t inputDataSize);
-	extern size_t SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const size_t outputDataSize);
+	CPublic size_t SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const size_t inputDataSize);
+	CPublic size_t SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const size_t outputDataSize);
 
 
 

@@ -3,7 +3,7 @@
 
 #include <OS/OSVersion.h>
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #if defined(OSUnix)
 #include <sys/types.h>
@@ -25,12 +25,12 @@
 extern "C"
 {
 #endif
-    extern unsigned char LibraryOpenA(LibraryHandle* handle, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
-    extern unsigned char LibraryOpenW(LibraryHandle* handle, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
-    extern unsigned char LibraryClose(LibraryHandle* handle); // close a dlopen object
-    extern unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
+    CPublic __declspec(dllexport) unsigned char LibraryOpenA(LibraryHandle* handle, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
+    CPublic __declspec(dllexport) unsigned char LibraryOpenW(LibraryHandle* handle, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
+    CPublic __declspec(dllexport) unsigned char LibraryClose(LibraryHandle* handle); // close a dlopen object
+    CPublic __declspec(dllexport) unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
 
-    extern unsigned char LibraryParseSymbols();
+    CPublic __declspec(dllexport) unsigned char LibraryParseSymbols();
 
    // void SymbolVector(); // Programming interface to dynamic linking loader.
 

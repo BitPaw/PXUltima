@@ -1,7 +1,7 @@
 #ifndef MP3Include
 #define MP3Include
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <Format/ID3/ID3.h>
@@ -227,7 +227,7 @@ extern "C"
 	static unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre);
 	static ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const size_t dataSize, size_t* dataRead);
 
-	extern ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t* dataRead);
 
 
 #ifdef __cplusplus

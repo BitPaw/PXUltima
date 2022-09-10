@@ -297,6 +297,12 @@
     <ClInclude Include="Source\Network\SBP\SBPProtocol.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Format\Type.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Compiler\Compiler.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\Lock.c">
@@ -567,6 +573,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Network\SBP\SBPProtocol.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\Type.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Compiler\Compiler.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

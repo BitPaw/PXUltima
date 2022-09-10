@@ -3,7 +3,7 @@
 #ifndef MP4MInclude
 #define MP4MInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 

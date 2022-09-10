@@ -1,7 +1,7 @@
 #ifndef BMPInclude
 #define BMPInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -110,21 +110,21 @@ extern "C"
 
 	//---<Public Functions--------------------------------------------------------
 
-	extern void BMPConstruct(BMP* const bmp);
-	extern void BMPDestruct(BMP* const bmp);
+	CPublic void BMPConstruct(BMP* const bmp);
+	CPublic void BMPDestruct(BMP* const bmp);
 
 	// Calculate information about the layout how the raw image data is stored.
 	// There will be "amount of vertical rows", and "pixeldata" + "padding" .
-	extern void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const size_t width, const size_t height, const size_t bbp);
+	CPublic void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const size_t width, const size_t height, const size_t bbp);
 
 	//----------------------------------------------------------------------------
-	extern size_t BMPFilePredictSize(const size_t width, const size_t height, const size_t bitsPerPixel);
+	CPublic size_t BMPFilePredictSize(const size_t width, const size_t height, const size_t bitsPerPixel);
 
-	extern ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t* dataRead); 	
-	extern ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t* dataRead); 	
+	CPublic ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
 
-	extern ActionResult BMPSerialize(const BMP* const bmp, void* data, const size_t dataSize, size_t* dataWritten);
-	extern ActionResult BMPSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	CPublic ActionResult BMPSerialize(const BMP* const bmp, void* data, const size_t dataSize, size_t* dataWritten);
+	CPublic ActionResult BMPSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

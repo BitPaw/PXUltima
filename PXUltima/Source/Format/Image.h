@@ -1,8 +1,7 @@
 #ifndef ImageInclude
 #define ImageInclude
 
-#include <stddef.h>
-
+#include <Format/Type.h>
 #include <Error/ActionResult.h>
 
 #ifdef __cplusplus
@@ -26,12 +25,12 @@ extern "C"
 	}
 	ImageFileFormat;
 
-	typedef enum ImageDataFormat_
+	typedef  enum ImageDataFormat_
 	{
 		ImageDataFormatInvalid,
 		ImageDataFormatAlphaMaskBinary,
 		ImageDataFormatAlphaMask,
-		
+
 		// 8-Bit
 
 		ImageDataFormatRGB8,
@@ -57,57 +56,57 @@ extern "C"
 	}
 	Image;
 
-	typedef ActionResult(*ParseToImage)(Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
-	typedef ActionResult(*SerializeFromImage)(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	typedef  ActionResult(*ParseToImage)(Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	typedef  ActionResult(*SerializeFromImage)(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 
-	extern void ImageConstruct(Image* const image);
-	extern void ImageDestruct(Image* const image);
+	CPublic void ImageConstruct(Image* const image);
+	CPublic void ImageDestruct(Image* const image);
 
-	extern ImageFileFormat ImageGuessFormat(const wchar_t* const filePath);
+	CPublic ImageFileFormat ImageGuessFormat(const wchar_t* const filePath);
 
-	extern ActionResult ImageLoadA(Image* const image, const char* const filePath);
-	extern ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath);
-	extern ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const ImageFileFormat guessedFormat);
+	CPublic ActionResult ImageLoadA(Image* const image, const char* const filePath);
+	CPublic ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath);
+	CPublic ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const ImageFileFormat guessedFormat);
 
-	extern ActionResult ImageSaveA(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
-	extern ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
-	extern ActionResult ImageSaveD
+	CPublic ActionResult ImageSaveA(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
+	CPublic ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
+	CPublic ActionResult ImageSaveD
 	(
-		Image* image, 
+		Image* image,
 		void* const data,
-		const size_t dataSize, 
+		const size_t dataSize,
 		const ImageFileFormat fileFormat,
 		const ImageDataFormat dataFormat
 	);
 
-	extern size_t ImageBitDepth(const ImageDataFormat imageDataFormat);
-	extern size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat);
-	extern size_t ImageBitsPerPixel(const ImageDataFormat imageDataFormat);
+	CPublic size_t ImageBitDepth(const ImageDataFormat imageDataFormat);
+	CPublic size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat);
+	CPublic size_t ImageBitsPerPixel(const ImageDataFormat imageDataFormat);
 
-	extern void ImageResize(Image* image, const ImageDataFormat format, const size_t width, const size_t height);
-	extern void ImageFlipHorizontal(Image* image);
-	extern void ImageFlipVertical(Image* image);
-	extern void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsigned char blue);
+	CPublic void ImageResize(Image* image, const ImageDataFormat format, const size_t width, const size_t height);
+	CPublic void ImageFlipHorizontal(Image* image);
+	CPublic void ImageFlipVertical(Image* image);
+	CPublic void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsigned char blue);
 
-	extern void* ImageDataPoint(const Image* const image, const size_t x, const size_t y);
+	CPublic void* ImageDataPoint(const Image* const image, const size_t x, const size_t y);
 
-	extern size_t ImagePixelPosition
+	CPublic size_t ImagePixelPosition
 	(
 		const Image* const image,
 		const size_t x,
 		const size_t y
 	);
-	extern void ImagePixelSetRGB8
+	CPublic void ImagePixelSetRGB8
 	(
 		Image* const image,
 		const size_t x,
 		const size_t y,
 		const unsigned char red,
-		const unsigned char green, 
+		const unsigned char green,
 		const unsigned char blue
 	);
 
-	extern void ImageDrawRectangle
+	CPublic void ImageDrawRectangle
 	(
 		Image* const image,
 		const size_t x,
@@ -119,9 +118,9 @@ extern "C"
 		const unsigned char blue,
 		const unsigned char alpha
 	);
-	extern void ImageDrawTextA
+	CPublic void ImageDrawTextA
 	(
-		Image* const image,		
+		Image* const image,
 		const size_t x,
 		const size_t y,
 		const size_t width,
@@ -129,7 +128,7 @@ extern "C"
 		const CFont* const font,
 		const char* text
 	);
-	extern void ImageDrawTextW
+	CPublic void ImageDrawTextW
 	(
 		Image* const image,
 		const size_t x,
@@ -139,7 +138,7 @@ extern "C"
 		const CFont* const font,
 		const wchar_t* text
 	);
-	extern void ImageMerge
+	CPublic void ImageMerge
 	(
 		Image* const image,
 		const size_t x,
@@ -151,8 +150,8 @@ extern "C"
 		const Image* const imageInsert
 	);
 
-	//extern void ImageFillRandome();
-	//extern void ImageFormatChange(ImageDataFormat imageFormat);
+	//CPublic void ImageFillRandome();
+	//CPublic void ImageFormatChange(ImageDataFormat imageFormat);
 
 
 #ifdef __cplusplus

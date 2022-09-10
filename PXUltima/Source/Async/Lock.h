@@ -17,13 +17,13 @@
 extern "C"
 {
 #endif
-    // Clear value of lock, sets internal data to 0.
-    extern void LockClear(LockID* const asyncLockID);
+    // Clear value of lock, sets CPrivate data to 0.
+    CPublic void LockClear(LockID* const asyncLockID);
 
-	extern ActionResult LockCreate(LockID* const asyncLockID);
-	extern ActionResult LockDelete(LockID* const asyncLockID);
-	extern ActionResult LockLock(LockID* const asyncLockID);
-	extern ActionResult LockRelease(LockID* const asyncLockID);
+	CPublic ActionResult LockCreate(LockID* const asyncLockID);
+	CPublic ActionResult LockDelete(LockID* const asyncLockID);
+	CPublic ActionResult LockLock(LockID* const asyncLockID);
+	CPublic ActionResult LockRelease(LockID* const asyncLockID);
 #ifdef __cplusplus
 }
 #endif

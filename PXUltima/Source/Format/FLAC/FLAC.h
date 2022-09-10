@@ -1,7 +1,7 @@
 #ifndef FLACInclude
 #define FLACInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -15,7 +15,7 @@ extern "C"
 	}
 	FLAC;
 
-	extern ActionResult FLACParse(const void* data, const size_t dataSize);
+	CPublic ActionResult FLACParse(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

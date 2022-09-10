@@ -1,7 +1,7 @@
 #ifndef MTLInclude
 #define MTLInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -77,12 +77,12 @@ extern "C"
 	}
 	MTL;
 
-	extern void MTLConstruct(MTL* mtl);
-	extern void MTLDestruct(MTL* mtl);
+	CPublic void MTLConstruct(MTL* mtl);
+	CPublic void MTLDestruct(MTL* mtl);
 
 	static MTLLineType MTLPeekLine(const void* line);
 
-	extern ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

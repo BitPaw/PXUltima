@@ -1,7 +1,7 @@
 #ifndef EndianInclude
 #define EndianInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #if 1
 #define EndianCurrentSystemIsLittle
@@ -29,7 +29,7 @@ extern "C"
 
 #define EndianCurrentSystem EndianLittle
 
-	extern void EndianSwap(void* data, const size_t dataSize, const Endian endianFrom, const Endian endianTo);
+	CPublic void EndianSwap(void* data, const size_t dataSize, const Endian endianFrom, const Endian endianTo);
 
 #ifdef __cplusplus
 }

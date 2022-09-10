@@ -1,7 +1,7 @@
 #ifndef XingInfoInclude
 #define XingInfoInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -30,7 +30,7 @@ extern "C"
 	}
 	XingInfo;
 
-	extern ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #ifndef TimeInclude
 #define TimeInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -53,11 +53,11 @@ extern "C"
 	}
 	Time;
 
-	extern TimeDayOfWeek ConvertToMonth(unsigned short monthID);
-	extern TimeMonth ConvertToDay(unsigned short dayID);
+	CPublic TimeDayOfWeek ConvertToMonth(unsigned short monthID);
+	CPublic TimeMonth ConvertToDay(unsigned short dayID);
 
-	extern void TimeNow(Time* time);
-	extern size_t TimeMillisecondsDelta(const Time* timeA, const Time* timeB);
+	CPublic void TimeNow(Time* time);
+	CPublic size_t TimeMillisecondsDelta(const Time* timeA, const Time* timeB);
 
 #ifdef __cplusplus
 }

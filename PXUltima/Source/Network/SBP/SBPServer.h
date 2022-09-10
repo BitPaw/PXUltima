@@ -1,7 +1,7 @@
 #ifndef SBPServerINCLUDE
 #define SBPServerINCLUDE
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include "SBPProtocol.h"
 
@@ -22,14 +22,14 @@ extern "C"
 	}
 	SBPServer;
 
-	extern void SBPServerStart(const unsigned short port);
-	extern void SBPServerStop();
+	CPublic void SBPServerStart(const unsigned short port);
+	CPublic void SBPServerStop();
 
-	extern void SBPServerSendFile(const CSocketID clientID, const char* text);
-	extern void SBPServerSendFile(const CSocketID clientID, wchar_t* text);
+	CPublic void SBPServerSendFile(const CSocketID clientID, const char* text);
+	CPublic void SBPServerSendFile(const CSocketID clientID, wchar_t* text);
 
-	extern const ResponseID SBPServerGenerateResponseID();
-	extern unsigned char SBPServerSendMessageWaitResponse
+	CPublic const ResponseID SBPServerGenerateResponseID();
+	CPublic unsigned char SBPServerSendMessageWaitResponse
 	(
 		const CSocketID clientID,
 		const ResponseID responseID,
@@ -37,10 +37,10 @@ extern "C"
 		const size_t* bufferSize
 	);
 
-	extern void SBPServerSendTextToAll(const char* text);
-	extern void SBPServerSendTextToAll(const wchar_t* text);
-	extern void SBPServerSendTextToClient(const unsigned int clientID, const char* text);
-	extern void SBPServerSendTextToClient(const unsigned int clientID, const wchar_t* text);
+	CPublic void SBPServerSendTextToAll(const char* text);
+	CPublic void SBPServerSendTextToAll(const wchar_t* text);
+	CPublic void SBPServerSendTextToClient(const unsigned int clientID, const char* text);
+	CPublic void SBPServerSendTextToClient(const unsigned int clientID, const wchar_t* text);
 
 #ifdef __cplusplus
 }

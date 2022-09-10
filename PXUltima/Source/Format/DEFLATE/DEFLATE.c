@@ -414,7 +414,7 @@ struct LodePNGCompressSettings /*deflate = compress*/
     const void* custom_context; /*optional custom settings for custom functions*/
 };
 
-extern const LodePNGCompressSettings lodepng_default_compress_settings;
+CPublic const LodePNGCompressSettings lodepng_default_compress_settings;
 void lodepng_compress_settings_init(LodePNGCompressSettings* settings);
 
 
@@ -1254,7 +1254,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
     }
     else
     {
-        /* A good huffman tree has N * 2 - 1 nodes, of which N - 1 are internal nodes.
+        /* A good huffman tree has N * 2 - 1 nodes, of which N - 1 are CPrivate nodes.
         If that is not the case (due to too long length codes), the table will not
         have been fully used, and this is an error (not all bit combinations can be
         decoded): an oversubscribed huffman tree, indicated by error 55. */

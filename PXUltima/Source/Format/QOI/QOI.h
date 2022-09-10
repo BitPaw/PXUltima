@@ -1,7 +1,7 @@
 #ifndef QOIInclude
 #define QOIInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -15,7 +15,7 @@ extern "C"
 	}
 	QOI;
 
-	extern ActionResult QOIParse(QOI* qoi, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult QOIParse(QOI* qoi, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

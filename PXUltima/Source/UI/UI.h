@@ -1,6 +1,8 @@
 #ifndef UIDEFINED
 #define UIDEFINED
 
+#include <Format/Type.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -74,7 +76,7 @@ extern "C"
 	UIElement;
 
 
-	extern void UIContainerElementAdd(UIContainerRoot* uiContainerRoot);
+	CPublic void UIContainerElementAdd(UIContainerRoot* uiContainerRoot);
 
 #ifdef __cplusplus
 }

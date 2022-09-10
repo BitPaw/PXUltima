@@ -1,7 +1,7 @@
 #ifndef FontInclude
 #define FontInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -40,14 +40,14 @@ extern "C"
 
 	//---[ Public-Functions ]----------------------------------------------
 
-	extern void FontConstruct(CFont* const font);
-	extern void FontDestruct(CFont* const font);
+	CPublic __declspec(dllexport) void FontConstruct(CFont* const font);
+	CPublic __declspec(dllexport) void FontDestruct(CFont* const font);
 
-	extern FontFileFormat FontGuessFormat(const wchar_t* filePath);
+	CPublic __declspec(dllexport) FontFileFormat FontGuessFormat(const wchar_t* filePath);
 
-	extern ActionResult FontLoadA(CFont* const font, const char* filePath);
-	extern ActionResult FontLoadW(CFont* const font, const wchar_t* filePath);
-	extern ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
+	CPublic __declspec(dllexport) ActionResult FontLoadA(CFont* const font, const char* filePath);
+	CPublic __declspec(dllexport) ActionResult FontLoadW(CFont* const font, const wchar_t* filePath);
+	CPublic __declspec(dllexport) ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
 
 
 #ifdef __cplusplus

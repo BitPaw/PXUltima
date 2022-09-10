@@ -2,7 +2,7 @@
 
 #include <Memory/Memory.h>
 
-extern void LockClear(LockID* const asyncLockID)
+CPublic void LockClear(LockID* const asyncLockID)
 {
 #if defined(OSUnix)
     MemorySet(asyncLockID, sizeof(LockID), 0);

@@ -105,7 +105,7 @@ ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t*
 				char isoSignature[8]; // isom3gp4
 
 				ParsingStreamReadD(&parsingStream, chunk.TypeSub, 4u);
-				ParsingStreamReadUI(&parsingStream, &sizeB, EndianBig);
+				ParsingStreamReadIU(&parsingStream, &sizeB, EndianBig);
 				ParsingStreamReadD(&parsingStream, isoSignature, 8u);
 
 				break;

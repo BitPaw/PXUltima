@@ -5,7 +5,7 @@
 #define CharSetNameSize 30u
 #define FNTPageFileNameSize 128
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <Format/Image.h>
@@ -100,9 +100,9 @@ extern "C"
 	}
 	FNT;
 
-	extern FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character);
+	CPublic FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character);
 
-	extern ActionResult FNTParse
+	CPublic ActionResult FNTParse
 	(
 		FNT* fnt,
 		const void* fileData,
@@ -113,7 +113,7 @@ extern "C"
 
 	static FNTLineType PeekLineType(const void* line, const size_t fileDataSize);
 
-	extern void FNTPrtinf(const FNT* fnt);
+	CPublic void FNTPrtinf(const FNT* fnt);
 
 #ifdef __cplusplus
 }

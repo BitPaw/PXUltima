@@ -2,6 +2,7 @@
 #define ThreadInclude
 
 #include <OS/OSVersion.h>
+#include <Format/Type.h>
 
 #ifdef OSUnix
 #include <pthread.h>
@@ -28,12 +29,12 @@ extern "C"
 
 	typedef ThreadResult(*ThreadFunction)(void* data);
 
-	extern ThreadID ThreadRun(const ThreadFunction threadFunction, const void* parameter);
+	CPublic ThreadID ThreadRun(const ThreadFunction threadFunction, const void* parameter);
 
-	extern size_t ThreadCurrentID();
-	extern ThreadID ThreadCurrentGet();
+	CPublic size_t ThreadCurrentID();
+	CPublic ThreadID ThreadCurrentGet();
 
-	extern void ThreadWaitForFinish(const ThreadID threadID);
+	CPublic void ThreadWaitForFinish(const ThreadID threadID);
 
 #ifdef __cplusplus
 }

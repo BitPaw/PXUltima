@@ -1,7 +1,7 @@
 #ifndef ZLIBInclude
 #define ZLIBInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <Format/PNG/PNG.h>
@@ -68,16 +68,16 @@ extern "C"
 	static ZLIBCompressionMethod ConvertToCompressionMethod(const unsigned char compressionMethod);
 	static unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressionMethod);
 
-	extern ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize,size_t* const outputDataSizeRead);
-	extern ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeWritten);
+	CPublic ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize,size_t* const outputDataSizeRead);
+	CPublic ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeWritten);
 
 
-	extern size_t ZLIBCalculateExpectedSize(const size_t width, const size_t height, const size_t bpp, const PNGInterlaceMethod interlaceMethod);
+	CPublic size_t ZLIBCalculateExpectedSize(const size_t width, const size_t height, const size_t bpp, const PNGInterlaceMethod interlaceMethod);
 
 	/*in an idat chunk, each scanline is a multiple of 8 bits, unlike the lodepng output buffer,
 and in addition has one extra byte per line: the filter byte. So this gives a larger
 result than lodepng_get_raw_size. Set h to 1 to get the size of 1 row including filter byte. */
-	extern size_t CalculateRawSizeIDAT(const size_t w, const size_t h, const size_t bpp);
+	CPublic size_t CalculateRawSizeIDAT(const size_t w, const size_t h, const size_t bpp);
 
 #ifdef __cplusplus
 }

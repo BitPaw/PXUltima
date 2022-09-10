@@ -1,7 +1,7 @@
 #ifndef BMPInclude
 #define BMPInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -55,7 +55,7 @@ extern "C"
 	LAME;
 
 
-	extern ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

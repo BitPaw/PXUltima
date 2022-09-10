@@ -1,7 +1,7 @@
 #ifndef MonitorInclude
 #define MonitorInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <OS/OSVersion.h>
 
@@ -32,9 +32,9 @@ extern "C"
 	static BOOL _stdcall MonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data);
 #endif
 
-	extern void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, const size_t monitorListSize);
+	CPublic void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, const size_t monitorListSize);
 
-	extern void MonitorGetSize(unsigned int* width, unsigned int* height);
+	CPublic void MonitorGetSize(unsigned int* width, unsigned int* height);
 
 #ifdef __cplusplus
 }

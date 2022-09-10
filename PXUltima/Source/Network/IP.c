@@ -62,7 +62,7 @@ unsigned char IsValidIP(const char* ipAdress)
     {
     case IPVersion4:
     {
-        return IsValidIPv4(ipAdress) == 0;
+        return IPv4CheckIfValid(ipAdress) == 0;
     }
     case IPVersionUnknownDomain:
     {
@@ -70,7 +70,7 @@ unsigned char IsValidIP(const char* ipAdress)
     }
     case IPVersion6:
     {
-        return IsValidIPv6(ipAdress) == 0;
+        return IPv6CheckIfValid(ipAdress) == 0;
     }
 
     default:

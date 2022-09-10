@@ -1,7 +1,7 @@
 #ifndef ID3Include
 #define ID3Include
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -129,9 +129,9 @@ extern "C"
 	}
 	ID3;
 
-	extern ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID);
+	CPublic ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID);
 
-	extern ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

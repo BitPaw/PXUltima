@@ -1,7 +1,7 @@
 #ifndef VRMLInclude
 #define VRMLInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -15,7 +15,7 @@ extern "C"
 	}
 	VRML;
 
-	extern ActionResult VRMLParse(const void* data, const size_t dataSize);
+	CPublic ActionResult VRMLParse(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

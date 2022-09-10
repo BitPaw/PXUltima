@@ -1,15 +1,15 @@
 #ifndef FileOpenDialogInclude
 #define FileOpenDialogInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	extern unsigned char FileOpenDialogA(char* filePathOutput);
-	extern unsigned char FileOpenDialogW(wchar_t* filePathOutput);
+	CPublic unsigned char FileOpenDialogA(char* filePathOutput);
+	CPublic unsigned char FileOpenDialogW(wchar_t* filePathOutput);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #ifndef STLInclude
 #define STLInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -15,7 +15,7 @@ extern "C"
 	}
 	STL;
 
-	extern ActionResult STLParse(const void* data, const size_t dataSize);
+	CPublic ActionResult STLParse(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

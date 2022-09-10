@@ -1,7 +1,7 @@
 #ifndef MIDInclude
 #define MIDInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -61,8 +61,8 @@ extern "C"
 	}
 	MID;
 
-	extern ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t* dataRead);
-	extern ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* dataWritten);
+	CPublic ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* dataWritten);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,8 @@
 #ifndef KeyBoardKeyInclude
 #define KeyBoardKeyInclude
 
+#include <Format/Type.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -181,7 +183,7 @@ extern "C"
 	}
 	VirtualKey;
 
-	extern VirtualKey ConvertToVirtualKey(const char character);
+	CPublic VirtualKey ConvertToVirtualKey(const char character);
 
 #ifdef __cplusplus
 }

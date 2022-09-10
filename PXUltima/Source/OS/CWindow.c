@@ -2165,7 +2165,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     return ThreadSucessful;
 }
 
-extern void CWindowConstruct(CWindow* const window)
+CPublic void CWindowConstruct(CWindow* const window)
 {
     MemorySet(window, sizeof(CWindow), 0);
 }

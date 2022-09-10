@@ -3,7 +3,7 @@
 
 #include <OS/OSVersion.h>
 
-#include <stddef.h>
+#include <Format/Type.h>
 #include <Error/ActionResult.h>
 #include <Async/Thread.h>
 
@@ -41,21 +41,21 @@ extern "C"
 	}
 	Program;
 
-	extern ThreadResult  ProgramExecuteThreadFunction(void* data);
+	CPublic ThreadResult  ProgramExecuteThreadFunction(void* data);
 
 	// Execute function Asyncroinusly in another Thread.
-	extern ActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback);
-	extern ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, size_t parameterListSize, ProgramExecutedEvent* callback);
+	CPublic ActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback);
+	CPublic ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, size_t parameterListSize, ProgramExecutedEvent* callback);
 
-	extern ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback);
+	CPublic ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback);
 
 
-	extern ProcessHandle ProgramCurrentProcess();
-	extern ProcessID ProgramCurrentProcessID();
+	CPublic ProcessHandle ProgramCurrentProcess();
+	CPublic ProcessID ProgramCurrentProcessID();
 
-	extern void ProgramAttach(Program* program);
-	extern void ProgramDetach(Program* program);
-	extern void ProgramReadMemory(Program* program);
+	CPublic void ProgramAttach(Program* program);
+	CPublic void ProgramDetach(Program* program);
+	CPublic void ProgramReadMemory(Program* program);
 
 #ifdef __cplusplus
 }

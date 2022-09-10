@@ -1,6 +1,8 @@
 #ifndef MouseInclude
 #define MouseInclude
 
+#include <Format/Type.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -32,9 +34,9 @@ extern "C"
 	}
 	Mouse;
 
-	extern void MouseInputReset(Mouse* mouse);
+	CPublic void MouseInputReset(Mouse* mouse);
 
-	extern void MouseInputPrint(Mouse* mouse);
+	CPublic void MouseInputPrint(Mouse* mouse);
 
 #ifdef __cplusplus
 }

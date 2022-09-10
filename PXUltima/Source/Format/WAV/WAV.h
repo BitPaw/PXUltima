@@ -1,7 +1,7 @@
 #ifndef WAVInclude
 #define WAVInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <Format/FMT/FMT.h>
@@ -21,7 +21,7 @@ extern "C"
 	}
 	WAV;
 
-	extern ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

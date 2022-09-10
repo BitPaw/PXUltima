@@ -1,7 +1,7 @@
 #ifndef UUIDInclude
 #define UUIDInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"

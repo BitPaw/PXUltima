@@ -1,7 +1,7 @@
 #ifndef MathInclude
 #define MathInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #define MathConstantPI 3.1415926535897932384626433832 	// Pi, Archimedes' constant or Ludolph's number
 #define MathConstantE 2.71828182845904523536028747135266249
@@ -28,44 +28,44 @@
 extern "C"
 {
 #endif
-	extern int MathMinimumI(const int a, const int b);
-	extern size_t MathMinimumIU(const size_t a, const size_t b);
-	extern double MathMinimumD(const double a, const double b);
+	CPublic int MathMinimumI(const int a, const int b);
+	CPublic size_t MathMinimumIU(const size_t a, const size_t b);
+	CPublic double MathMinimumD(const double a, const double b);
 
-	extern int MathFloorI(const int a);
-	extern int MathFloorD(const double a);
+	CPublic int MathFloorI(const int a);
+	CPublic int MathFloorD(const double a);
 
-	extern size_t MathAbsoluteI(const int value);
-	extern double MathAbsoluteD(const double value);
+	CPublic size_t MathAbsoluteI(const int value);
+	CPublic double MathAbsoluteD(const double value);
 
 
-	extern char MathLimitC(const char value, const char minimum, const char maximum);
-	extern unsigned char MathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
-	extern int MathLimitI(const int value, const int minimum, const int maximum);
-	extern size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum);
+	CPublic char MathLimitC(const char value, const char minimum, const char maximum);
+	CPublic unsigned char MathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
+	CPublic int MathLimitI(const int value, const int minimum, const int maximum);
+	CPublic size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum);
 
-	extern float MathFastInverseSqaureRoot(float number);
-	extern double MathPower(double base, double exponent);
-	extern double MathPowerOfTwo(double base);
-	extern unsigned int MathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo);
-	extern double MathRoot(unsigned int rootNr, double value);
-	extern double MathSquareRoot(double value);
-	extern double MathCubicRoot(double value);
-	extern double MathPythagoras(double a, double b);
-	extern double MathPythagorasReverse(double c, double a);
-	extern double MathLogarithmus(int base, double exponent);
-	extern double MathLogarithmusBase2(double exponent);
-	extern double MathLogarithmusBase10(double exponent);
-	extern double MathNewtonGravitation(double massA, double massB, double distance);
-	extern int MathCeilingF(const float value);
-	extern int MathCeilingD(const double value);
-	extern unsigned int MathRandomeNumber();
-	extern double MathSinus(double value);
-	extern double MathTangens(double value);
-	extern double MathCosinus(double value);
-	extern unsigned long MathFibonacci(unsigned long step);
-	extern double MathRadiansToDegree(double radians);
-	extern double MathDegreeToRadians(double degree);
+	CPublic float MathFastInverseSqaureRoot(float number);
+	CPublic double MathPower(double base, double exponent);
+	CPublic double MathPowerOfTwo(double base);
+	CPublic unsigned int MathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo);
+	CPublic double MathRoot(unsigned int rootNr, double value);
+	CPublic double MathSquareRoot(double value);
+	CPublic double MathCubicRoot(double value);
+	CPublic double MathPythagoras(double a, double b);
+	CPublic double MathPythagorasReverse(double c, double a);
+	CPublic double MathLogarithmus(int base, double exponent);
+	CPublic double MathLogarithmusBase2(double exponent);
+	CPublic double MathLogarithmusBase10(double exponent);
+	CPublic double MathNewtonGravitation(double massA, double massB, double distance);
+	CPublic int MathCeilingF(const float value);
+	CPublic int MathCeilingD(const double value);
+	CPublic unsigned int MathRandomeNumber();
+	CPublic double MathSinus(double value);
+	CPublic double MathTangens(double value);
+	CPublic double MathCosinus(double value);
+	CPublic unsigned long MathFibonacci(unsigned long step);
+	CPublic double MathRadiansToDegree(double radians);
+	CPublic double MathDegreeToRadians(double degree);
 
 #ifdef __cplusplus
 }

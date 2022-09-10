@@ -99,10 +99,10 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 			{
 				material = &mtl->MaterialList[materialIndex++];
 
-				const char internalText[] = "<internal>";
-				const size_t internalTextSize = sizeof(internalText);
+				const char CPrivateText[] = "<CPrivate>";
+				const size_t CPrivateTextSize = sizeof(CPrivateText);
 
-				TextCopyA(internalText, internalTextSize, material->TextureFilePath, MTLFilePath);
+				TextCopyA(CPrivateText, CPrivateTextSize, material->TextureFilePath, MTLFilePath);
 
 				TextParseA(dataPoint, lineSize, "s", material->Name);
 

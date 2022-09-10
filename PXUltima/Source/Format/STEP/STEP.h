@@ -1,7 +1,7 @@
 #ifndef STEPInclude
 #define STEPInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -17,7 +17,7 @@ extern "C"
 	}
 	STEP;
 
-	extern ActionResult STEPParse(STEP* step, const void* data, const size_t dataSize, size_t* dataRead);	
+	CPublic ActionResult STEPParse(STEP* step, const void* data, const size_t dataSize, size_t* dataRead);	
 
 #ifdef __cplusplus
 }

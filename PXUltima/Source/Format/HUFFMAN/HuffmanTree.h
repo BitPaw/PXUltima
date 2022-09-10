@@ -1,7 +1,7 @@
 #ifndef HuffmanTreeInclude
 #define HuffmanTreeInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 #include <File/BitStream.h>
@@ -66,26 +66,26 @@ extern "C"
 	HuffmanTree;
 
 
-	extern void HuffmanTreeConstruct(HuffmanTree* const huffmanTree);
-	extern void HuffmanTreeDestruct(HuffmanTree* const huffmanTree);
+	CPublic void HuffmanTreeConstruct(HuffmanTree* const huffmanTree);
+	CPublic void HuffmanTreeDestruct(HuffmanTree* const huffmanTree);
 
-	extern HuffmanCodeType HuffmanCodeTypeFromCode(const unsigned short code);
-
-
-	extern void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree);
-	extern void GenerateFixedDistanceTree(HuffmanTree* huffmanTree);
-
-	extern int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, size_t numcodes, size_t maxbitlen);
+	CPublic HuffmanCodeType HuffmanCodeTypeFromCode(const unsigned short code);
 
 
+	CPublic void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree);
+	CPublic void GenerateFixedDistanceTree(HuffmanTree* huffmanTree);
 
-	extern unsigned reverseBits(unsigned bits, unsigned num);
-	extern unsigned int GenerateDynamicTree(BitStream* bitStream, HuffmanTree* treeLength, HuffmanTree* treeDistance);
+	CPublic int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, size_t numcodes, size_t maxbitlen);
+
+
+
+	CPublic unsigned reverseBits(unsigned bits, unsigned num);
+	CPublic unsigned int GenerateDynamicTree(BitStream* bitStream, HuffmanTree* treeLength, HuffmanTree* treeDistance);
 
 	/* Safely check if a + b > c, even if overflow could happen. */
-	extern int lodepng_gtofl(size_t a, size_t b, size_t c);
-	extern int lodepng_addofl(size_t a, size_t b, size_t* result);
-	extern unsigned int huffmanDecodeSymbol(BitStream* bitStream, HuffmanTree* codetree);
+	CPublic int lodepng_gtofl(size_t a, size_t b, size_t c);
+	CPublic int lodepng_addofl(size_t a, size_t b, size_t* result);
+	CPublic unsigned int huffmanDecodeSymbol(BitStream* bitStream, HuffmanTree* codetree);
 
 
 #ifdef __cplusplus

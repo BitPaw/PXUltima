@@ -1,6 +1,8 @@
 #ifndef ActionResultInclude
 #define ActionResultInclude
 
+#include <Format/Type.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -171,8 +173,8 @@ extern "C"
 	}
 	ActionResult;
 
-	extern ActionResult ConvertErrorCode(const int errorCode);
-	extern ActionResult GetCurrentError();
+	CPublic ActionResult ConvertErrorCode(const int errorCode);
+	CPublic ActionResult GetCurrentError();
 
 #ifdef __cplusplus
 }

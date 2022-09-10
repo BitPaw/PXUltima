@@ -1,7 +1,7 @@
 #ifndef M4AInclude
 #define M4AInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -56,7 +56,7 @@ extern "C"
 
 	static M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID);
 
-	extern ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

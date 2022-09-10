@@ -1,7 +1,7 @@
 #ifndef TTFInclude
 #define TTFInclude
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #include <Error/ActionResult.h>
 
@@ -291,7 +291,7 @@ extern "C"
     }
     TTFKerning;
 
-    extern void TTFKerningSubtableCoverageValueParse(unsigned short coverage);
+    CPublic void TTFKerningSubtableCoverageValueParse(unsigned short coverage);
     //----------------
 
 
@@ -646,18 +646,18 @@ extern "C"
 	TTF;
 
 
-    extern EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID);
+    CPublic EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID);
 
-    extern TTFVersionType ConvertFromVersionType(unsigned short major, unsigned short minor);
-    extern void ConvertToVersionType(unsigned short* major, unsigned short* minor, const TTFVersionType versionType);
+    CPublic TTFVersionType ConvertFromVersionType(unsigned short major, unsigned short minor);
+    CPublic void ConvertToVersionType(unsigned short* major, unsigned short* minor, const TTFVersionType versionType);
 
-    extern TTFTableEntryType ConvertTableEntryType(const unsigned int tableEntryType);
-    extern unsigned int ConvertTableEntryType(const TTFTableEntryType tableEntryType);
+    CPublic TTFTableEntryType ConvertTableEntryType(const unsigned int tableEntryType);
+    CPublic unsigned int ConvertTableEntryType(const TTFTableEntryType tableEntryType);
 
-    extern void TTFConstruct(TTF* const ttf);
-    extern void TTFDestruct(TTF* const ttf);
+    CPublic void TTFConstruct(TTF* const ttf);
+    CPublic void TTFDestruct(TTF* const ttf);
 
-	extern ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead);
+	CPublic ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }
