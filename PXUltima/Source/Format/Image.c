@@ -3,6 +3,8 @@
 #include <Memory/Memory.h>
 #include <File/File.h>
 #include <Text/Text.h>
+#include <File/DataStream.h>
+#include <Math/Math.h>
 
 #include <Format/BMP/BMP.h>
 #include <Format/GIF/GIF.h>
@@ -11,10 +13,7 @@
 #include <Format/TGA/TGA.h>
 #include <Format/TIFF/TIFF.h>
 #include <Format/FNT/FNT.h>
-
 #include <Format/Font.h>
-#include <Math/Math.h>
-
 
 size_t ImageBitDepth(const ImageDataFormat imageDataFormat)
 {
@@ -109,13 +108,13 @@ ActionResult ImageLoadA(Image* image, const char* filePath)
 
 ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
 {
-    File file;
+    DataStream dataStream;
 
-    FileConstruct(&file);
+    DataStreamConstruct(&dataStream);    
     ImageConstruct(image);
 
     {
-        const ActionResult fileLoadingResult = FileMapToVirtualMemoryW(&file, filePath, 0, MemoryReadOnly);
+        const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
         const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
 
         if(!sucessful)
@@ -126,7 +125,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
 
     {
         const ImageFileFormat imageFormatHint = ImageGuessFormat(filePath);
-        const ActionResult fileParsingResult = ImageLoadD(image, file.Data, file.DataSize, imageFormatHint);
+        const ActionResult fileParsingResult = ImageLoadD(image, dataStream.Data, dataStream.DataSize, imageFormatHint);
         const unsigned char success = fileParsingResult == ActionSuccessful;
 
         if(success)
@@ -141,7 +140,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
         {
             const ImageFileFormat imageFileFormat = fileGuessResult + fileFormatID;
 
-            fileGuessResult = ImageLoadD(image, file.Data, file.DataSize, imageFileFormat);
+            fileGuessResult = ImageLoadD(image, dataStream.Data, dataStream.DataSize, imageFileFormat);
 
             fileFormatID++;
         }
@@ -150,7 +149,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
         return fileGuessResult;
     }
 
-    FileDestruct(&file);
+    DataStreamDestruct(&dataStream);
 }
 
 ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const ImageFileFormat guessedFormat)
@@ -219,11 +218,11 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
     size_t fileSize = 0;
     size_t writtenBytes = 0;
-    File file;  
+    DataStream dataStream;  
 
     SerializeFromImage serializeFromImageFunction = 0;
 
-    FileConstruct(&file);
+    DataStreamConstruct(&dataStream);
 
     switch(fileFormat)
     {    
@@ -281,28 +280,28 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
     }
 
     {
-        const ActionResult mappingResult = FileMapToVirtualMemoryW(&file, filePathW, fileSize, MemoryWriteOnly);
+        const ActionResult mappingResult = DataStreamMapToMemoryW(&dataStream, filePathW, fileSize, MemoryWriteOnly);
         const unsigned char sucessful = ActionSuccessful == mappingResult;
 
         if(!sucessful)
         {
-            FileDestruct(&file);
+            DataStreamDestruct(&dataStream);
             return mappingResult;
         }
     }
 
     {
-        const ActionResult serializeResult = serializeFromImageFunction(image, file.Data, file.DataSize, &file.DataCursor);
+        const ActionResult serializeResult = serializeFromImageFunction(image, dataStream.Data, dataStream.DataSize, &dataStream.DataCursor);
         const unsigned char sucessful = ActionSuccessful == serializeResult;
 
         if(!sucessful)
         {
-            FileDestruct(&file);
+            DataStreamDestruct(&dataStream);
             return serializeResult;
         }
     }
 
-    FileDestruct(&file);
+    DataStreamDestruct(&dataStream);
 
     return ActionSuccessful;
 }

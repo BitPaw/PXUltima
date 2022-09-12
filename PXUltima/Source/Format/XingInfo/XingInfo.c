@@ -1,12 +1,13 @@
 #include "XingInfo.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 
 ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 
 	*dataRead = 0;
 
@@ -16,7 +17,7 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 		const char xingTag[] = { 'X', 'i', 'n', 'g' };
 		char indetifier[4];
 
-		ParsingStreamReadD(&parsingStream, indetifier, 4u);
+		DataStreamReadD(&dataStream, indetifier, 4u);
 
 		const unsigned char isInfo =
 			indetifier[0] == infoTag[0] &&
@@ -50,7 +51,7 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 
 	unsigned int flags = 0;
 
-	ParsingStreamReadIU(&parsingStream, &flags, EndianBig);
+	DataStreamReadIU(&dataStream, &flags, EndianBig);
 
 	const unsigned char hasNumberOfFrames = flags & 0b00000001;
 	const unsigned char hasSizeInBytes = (flags & 0b00000010) >> 1;
@@ -61,7 +62,7 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 	// It represents the total number of frames in the Audio file.
 	if(hasNumberOfFrames)
 	{
-		ParsingStreamReadIU(&parsingStream, &xingInfo->NumberOfFrames, EndianBig);
+		DataStreamReadIU(&dataStream, &xingInfo->NumberOfFrames, EndianBig);
 	}
 
 	// (0x0002) is set, then read one 32 bit integer in Big Endian. 
@@ -69,20 +70,20 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 	// This does not include the ID3 tag, however, it includes this very tag.
 	if(hasSizeInBytes)
 	{
-		ParsingStreamReadIU(&parsingStream, &xingInfo->SizeInBytes, EndianBig);
+		DataStreamReadIU(&dataStream, &xingInfo->SizeInBytes, EndianBig);
 	}
 
 	if(hasTOCData)
 	{
-		ParsingStreamReadD(&parsingStream, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
+		DataStreamReadD(&dataStream, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
 	}
 
 	if(hasVBRScale)
 	{
-		ParsingStreamReadIU(&parsingStream, &xingInfo->VBRScale, EndianBig);
+		DataStreamReadIU(&dataStream, &xingInfo->VBRScale, EndianBig);
 	}
 
-	*dataRead = parsingStream.DataCursor;
+	*dataRead = dataStream.DataCursor;
 
 	return ActionSuccessful;
 }

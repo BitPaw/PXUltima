@@ -1,6 +1,6 @@
 #include "GIF.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Memory/Memory.h>
 #include <Math/Math.h>
 
@@ -16,10 +16,11 @@ size_t GIFFilePredictSize(const size_t width, const size_t height, const size_t 
 
 ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* dataRead)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
 
     MemorySet(gif, sizeof(GIF), 0);
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
     *dataRead = 0;
 
     // Check Header
@@ -29,9 +30,9 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
         const char headerTag[3] = GIFHeader;
         char version[3] = { '#','#','#' };
 
-        const unsigned char validHeader = ParsingStreamReadAndCompare(&parsingStream, headerTag, sizeof(headerTag));
+        const unsigned char validHeader = DataStreamReadAndCompare(&dataStream, headerTag, sizeof(headerTag));
 
-        ParsingStreamReadD(&parsingStream, version, sizeof(version));
+        DataStreamReadD(&dataStream, version, sizeof(version));
 
         const unsigned char validVersion =
             version[0] == versionA[0] &&
@@ -55,14 +56,14 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
 
     // Logical Screen Descriptor.
     {
-        ParsingStreamReadSU(&parsingStream, &gif->Width, EndianLittle);
-        ParsingStreamReadSU(&parsingStream, &gif->Height, EndianLittle);
+        DataStreamReadSU(&dataStream, &gif->Width, EndianLittle);
+        DataStreamReadSU(&dataStream, &gif->Height, EndianLittle);
 
         unsigned char packedFields = 0;
 
-        ParsingStreamReadCU(&parsingStream, &packedFields);
-        ParsingStreamReadCU(&parsingStream, &gif->BackgroundColorIndex);
-        ParsingStreamReadCU(&parsingStream, &gif->PixelAspectRatio);
+        DataStreamReadCU(&dataStream, &packedFields);
+        DataStreamReadCU(&dataStream, &gif->BackgroundColorIndex);
+        DataStreamReadCU(&dataStream, &gif->PixelAspectRatio);
 
         gif->GlobalColorTableSize = packedFields & 0b00000111;
         gif->IsSorted = (packedFields & 0b00001000) >> 3;
@@ -80,12 +81,12 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
 
             unsigned char packedFields = 0;
 
-            ParsingStreamReadCU(&parsingStream, &imageDescriptor.Separator);
-            ParsingStreamReadSU(&parsingStream, &imageDescriptor.LeftPosition, EndianLittle);
-            ParsingStreamReadSU(&parsingStream, &imageDescriptor.TopPosition, EndianLittle);
-            ParsingStreamReadSU(&parsingStream, &imageDescriptor.Width, EndianLittle);
-            ParsingStreamReadSU(&parsingStream, &imageDescriptor.Height, EndianLittle);
-            ParsingStreamReadCU(&parsingStream, &packedFields);
+            DataStreamReadCU(&dataStream, &imageDescriptor.Separator);
+            DataStreamReadSU(&dataStream, &imageDescriptor.LeftPosition, EndianLittle);
+            DataStreamReadSU(&dataStream, &imageDescriptor.TopPosition, EndianLittle);
+            DataStreamReadSU(&dataStream, &imageDescriptor.Width, EndianLittle);
+            DataStreamReadSU(&dataStream, &imageDescriptor.Height, EndianLittle);
+            DataStreamReadCU(&dataStream, &packedFields);
 
             imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
             imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;

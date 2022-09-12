@@ -1,6 +1,6 @@
 #include "WAV.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Memory/Memory.h>
 #include <File/Endian.h>
 #include <Container/ClusterValue.h>
@@ -10,19 +10,20 @@
 
 ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 	Endian endian = EndianInvalid;
 
 	MemorySet(wav, sizeof(WAV), 0);
 	*dataRead = 0;
 
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 
 	// RIFF
 	{
 		RIFF riff;
-		const unsigned char* riffHeaderStart = ParsingStreamCursorPosition(&parsingStream);
-		const size_t maximalSize = ParsingStreamRemainingSize(&parsingStream);
+		const unsigned char* riffHeaderStart = DataStreamCursorPosition(&dataStream);
+		const size_t maximalSize = DataStreamRemainingSize(&dataStream);
 		size_t parsedBytes = 0;
 
 		const ActionResult actionResult = RIFFParse(&riff, riffHeaderStart, maximalSize, &parsedBytes);
@@ -32,7 +33,7 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 			return ActionInvalidHeaderSignature;
 		}
 
-		ParsingStreamCursorAdvance(&parsingStream, parsedBytes);
+		DataStreamCursorAdvance(&dataStream, parsedBytes);
 
 		endian = riff.EndianFormat;
 	}
@@ -40,8 +41,8 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
-		const unsigned char* fmtHeaderStart = ParsingStreamCursorPosition(&parsingStream);
-		const size_t maximalSize = ParsingStreamRemainingSize(&parsingStream);
+		const unsigned char* fmtHeaderStart = DataStreamCursorPosition(&dataStream);
+		const size_t maximalSize = DataStreamRemainingSize(&dataStream);
 		size_t parsedBytes = 0;
 	
 		const ActionResult actionResult = FMTParse(&wav->Format, fmtHeaderStart, maximalSize, &parsedBytes, endian);
@@ -52,24 +53,24 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 			return ResultFormatNotAsExpected;
 		}
 
-		ParsingStreamCursorAdvance(&parsingStream, parsedBytes);
+		DataStreamCursorAdvance(&dataStream, parsedBytes);
 	}
 	//---------------------------------------
 
 	//---------------------------------------	
 	{
 		const unsigned int value = WAVListMarker;
-		const unsigned char isRIFFListChunk = ParsingStreamReadAndCompare(&parsingStream, &value, sizeof(unsigned int));
+		const unsigned char isRIFFListChunk = DataStreamReadAndCompare(&dataStream, &value, sizeof(unsigned int));
 
 		if(isRIFFListChunk)
 		{
-			ParsingStreamCursorAdvance(&parsingStream, 30u);
+			DataStreamCursorAdvance(&dataStream, 30u);
 		}
 	}
 	//---------------------------------------
 	{
 		const unsigned int value = MakeInt('d', 'a', 't', 'a');
-		const unsigned char validDataChunk = ParsingStreamReadAndCompare(&parsingStream, &value, sizeof(unsigned int));
+		const unsigned char validDataChunk = DataStreamReadAndCompare(&dataStream, &value, sizeof(unsigned int));
 
 		if(!validDataChunk)
 		{
@@ -77,11 +78,11 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 		}
 	}
 
-	ParsingStreamReadIU(&parsingStream, wav->SoundDataSize, endian);
+	DataStreamReadIU(&dataStream, wav->SoundDataSize, endian);
 
 	wav->SoundData = MemoryAllocate(sizeof(unsigned char) * wav->SoundDataSize);
 
-	ParsingStreamReadD(&parsingStream, wav->SoundData, wav->SoundDataSize);
+	DataStreamReadD(&dataStream, wav->SoundData, wav->SoundDataSize);
 
 	return ActionSuccessful;
 }

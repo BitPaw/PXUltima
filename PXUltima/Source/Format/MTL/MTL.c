@@ -1,6 +1,6 @@
 #include "MTL.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
 #include <Memory/Memory.h>
@@ -43,10 +43,11 @@ MTLLineType MTLPeekLine(const void* line)
 
 ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 
 	MTLConstruct(mtl);
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 	*dataRead = 0;
 
 	// Count How many materials are needed
@@ -55,7 +56,7 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 
 		do
 		{
-			const unsigned char* currentLine = ParsingStreamCursorPosition(&parsingStream);
+			const unsigned char* currentLine = DataStreamCursorPosition(&dataStream);
 			const unsigned char isNewMaterialUsed = *currentLine == 'n';
 
 			if(isNewMaterialUsed)
@@ -63,14 +64,14 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 				++materialCounter;
 			}
 		}
-		while(ParsingStreamSkipLine(&parsingStream));
+		while(DataStreamSkipLine(&dataStream));
 
 		mtl->MaterialListSize = materialCounter;
 		mtl->MaterialList = MemoryAllocate(sizeof(MTLMaterial) * materialCounter);
 
 		MemorySet(mtl->MaterialList, sizeof(MTLMaterial) * materialCounter, 0);
 
-		ParsingStreamCursorToBeginning(&parsingStream);
+		DataStreamCursorToBeginning(&dataStream);
 	}
 
 	// Raw Parse
@@ -79,13 +80,13 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 
 	do
 	{
-		const char* currentLine = ParsingStreamCursorPosition(&parsingStream);
+		const char* currentLine = DataStreamCursorPosition(&dataStream);
 		const MTLLineType lineType = MTLPeekLine(currentLine);
 			
-		ParsingStreamSkipBlock(&parsingStream); // Skip first element
+		DataStreamSkipBlock(&dataStream); // Skip first element
 
-		const char* dataPoint = ParsingStreamCursorPosition(&parsingStream);
-		const size_t maxSize = ParsingStreamRemainingSize(&parsingStream);
+		const char* dataPoint = DataStreamCursorPosition(&dataStream);
+		const size_t maxSize = DataStreamRemainingSize(&dataStream);
 		const size_t lineSize = TextLengthUntilA(dataPoint, maxSize, '\n');
 
 		switch(lineType)
@@ -215,7 +216,7 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 			}
 		}
 	}
-	while(ParsingStreamSkipLine(&parsingStream));
+	while(DataStreamSkipLine(&dataStream));
 
 	return ActionSuccessful;
 }

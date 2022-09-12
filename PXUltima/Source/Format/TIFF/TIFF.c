@@ -1,6 +1,6 @@
 #include "TIFF.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Memory/Memory.h>
 
 #define GIFFormatA {'I','I'}
@@ -13,12 +13,13 @@ size_t TIFFFilePredictSize(const size_t width, const size_t height, const size_t
 
 ActionResult TIFFParse(TIFF* tiff, const void* data, const size_t dataSize, size_t* dataRead)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
 
     MemorySet(tiff, sizeof(TIFF), 0);
     *dataRead = 0;
 
-    ParsingStreamConstruct(&parsingStream, data, data);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
 
     // Check Header
     {
@@ -26,7 +27,7 @@ ActionResult TIFFParse(TIFF* tiff, const void* data, const size_t dataSize, size
         const char versionB[2] = GIFFormatB;
         char headerTag[2];
 
-        ParsingStreamReadD(&parsingStream, headerTag, 2u);
+        DataStreamReadD(&dataStream, headerTag, 2u);
 
         const unsigned char useBigEndian = headerTag[0] == versionB[0] && headerTag[1] == versionB[1];
         const unsigned char useLittleEndian = headerTag[0] == versionA[0] && headerTag[1] == versionA[1];
@@ -38,7 +39,7 @@ ActionResult TIFFParse(TIFF* tiff, const void* data, const size_t dataSize, size
         }
     }
 
-    *dataRead = parsingStream.DataCursor;
+    *dataRead = dataStream.DataCursor;
 
     return ActionSuccessful;
 }

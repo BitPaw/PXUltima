@@ -2,10 +2,9 @@
 
 #include <Container/ClusterValue.h>
 #include <Math/Math.h>
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Format/DEFLATE/DEFLATE.h>
 #include <Format/ADLER/Adler32.h>
-
 
 ZLIBCompressionLevel ConvertToCompressionLevel(const unsigned char compressionLevel)
 {
@@ -83,10 +82,11 @@ unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressi
 
 ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeRead)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
     ZLIB zlib;
 
-    ParsingStreamConstruct(&parsingStream, inputData, inputDataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, inputData, inputDataSize);
 
     const size_t headerSize = 2u;
     const size_t adlerSize = 4u;    
@@ -96,8 +96,8 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
         unsigned char compressionFormatByte = 0;
         unsigned char flagByte = 0;
 
-        ParsingStreamReadCU(&parsingStream, &compressionFormatByte);
-        ParsingStreamReadCU(&parsingStream, &flagByte);
+        DataStreamReadCU(&dataStream, &compressionFormatByte);
+        DataStreamReadCU(&dataStream, &flagByte);
 
         // Valid Check
         {
@@ -160,8 +160,8 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
     }*/
 
 
-    zlib.CompressedDataSize = ParsingStreamRemainingSize(&parsingStream) - adlerSize;
-    zlib.CompressedData = ParsingStreamCursorPosition(&parsingStream);
+    zlib.CompressedDataSize = DataStreamRemainingSize(&dataStream) - adlerSize;
+    zlib.CompressedData = DataStreamCursorPosition(&dataStream);
 
     switch(zlib.Header.CompressionMethod)
     {
@@ -199,9 +199,10 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
 
 ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeWritten)
 {
-    ParsingStream parsingSteam;
+    DataStream parsingSteam;
 
-    ParsingStreamConstruct(&parsingSteam, outputData, outputDataSize);
+    DataStreamConstruct(&parsingSteam);
+    DataStreamFromExternal(&parsingSteam, outputData, outputDataSize);
 
     // Write 1 Byte
     {
@@ -231,7 +232,7 @@ ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSiz
         }
     
 
-        ParsingStreamWriteD(&parsingSteam, buffer, 2u);
+        DataStreamWriteD(&parsingSteam, buffer, 2u);
     }
 
     // Wirte Data
@@ -240,14 +241,14 @@ ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSiz
 
         const unsigned int value = DEFLATESerialize(inputData, inputDataSize, (const unsigned char* const)outputData + 2u, outputDataSize - 4u, &sizeWritten);
 
-        ParsingStreamCursorAdvance(&parsingSteam, sizeWritten);
+        DataStreamCursorAdvance(&parsingSteam, sizeWritten);
     }
 
     // Write ADLER
     {
         const unsigned int adler = Adler32Create(1, inputData, inputDataSize);
 
-        ParsingStreamWriteIU(&parsingSteam, adler, EndianBig);
+        DataStreamWriteIU(&parsingSteam, adler, EndianBig);
     }
 
     *outputDataSizeWritten = parsingSteam.DataCursor;

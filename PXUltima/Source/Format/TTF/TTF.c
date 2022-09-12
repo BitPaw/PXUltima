@@ -2,7 +2,7 @@
 
 #include <File/File.h>
 #include <Memory/Memory.h>
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Container/ClusterValue.h>
 
 EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID)
@@ -174,27 +174,28 @@ void TTFDestruct(TTF* const ttf)
 
 ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 	TTFOffsetTable offsetTable;
 
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 	
 
-	ParsingStreamRead(&parsingStream, &offsetTable.Version.Major, EndianBig);
-	ParsingStreamRead(&parsingStream, &offsetTable.Version.Minor, EndianBig);
-	ParsingStreamRead(&parsingStream, &offsetTable.NumberOfTables, EndianBig);
-	ParsingStreamRead(&parsingStream, &offsetTable.SearchRange, EndianBig);
-	ParsingStreamRead(&parsingStream, &offsetTable.EntrySelctor, EndianBig);
-	ParsingStreamRead(&parsingStream, &offsetTable.RangeShift, EndianBig);
+	DataStreamRead(&dataStream, &offsetTable.Version.Major, EndianBig);
+	DataStreamRead(&dataStream, &offsetTable.Version.Minor, EndianBig);
+	DataStreamRead(&dataStream, &offsetTable.NumberOfTables, EndianBig);
+	DataStreamRead(&dataStream, &offsetTable.SearchRange, EndianBig);
+	DataStreamRead(&dataStream, &offsetTable.EntrySelctor, EndianBig);
+	DataStreamRead(&dataStream, &offsetTable.RangeShift, EndianBig);
 
 	for(size_t i = 0; i < offsetTable.NumberOfTables; i++)
 	{
 		TTFTableEntry tableEntry;
 
-		ParsingStreamRead(&parsingStream, tableEntry.TypeRaw, 4u);
-		ParsingStreamRead(&parsingStream, tableEntry.CheckSum, EndianBig);
-		ParsingStreamRead(&parsingStream, tableEntry.Offset, EndianBig);
-		ParsingStreamRead(&parsingStream, tableEntry.Length, EndianBig);
+		DataStreamRead(&dataStream, tableEntry.TypeRaw, 4u);
+		DataStreamRead(&dataStream, tableEntry.CheckSum, EndianBig);
+		DataStreamRead(&dataStream, tableEntry.Offset, EndianBig);
+		DataStreamRead(&dataStream, tableEntry.Length, EndianBig);
 
 		const unsigned int typeID = MakeInt(tableEntry.TypeRaw[0], tableEntry.TypeRaw[1], tableEntry.TypeRaw[2], tableEntry.TypeRaw[3]);
 
@@ -217,94 +218,94 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 			//---<Essential>---------------------------------------------------		
 			case TTFTableEntryFontHeader:
 			{
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.Version.Major, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.Version.Minor, EndianLittle);
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.Revision.Major, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.Revision.Minor, EndianLittle);
-				ParsingStreamReadIU(&parsingStream, &ttf->Header.CheckSumAdjustment, EndianBig);
-				ParsingStreamReadIU(&parsingStream, &ttf->Header.MagicNumber, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.Flags, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.UnitsPerEM, EndianBig);
-				ParsingStreamReadLLU(&parsingStream, &ttf->Header.Created, EndianBig);
-				ParsingStreamReadLLU(&parsingStream, &ttf->Header.Modified, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Header.Minimum[0], EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Header.Minimum[1], EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Header.Maximum[0], EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Header.Maximum[1], EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.MacStyle, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Header.LowestRecPpem, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Header.FontDirectionHint, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Header.IndexToLocFormat, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Header.GlyphDataFormat, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Header.Version.Major, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Header.Version.Minor, EndianLittle);
+				DataStreamReadSU(&dataStream, &ttf->Header.Revision.Major, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Header.Revision.Minor, EndianLittle);
+				DataStreamReadIU(&dataStream, &ttf->Header.CheckSumAdjustment, EndianBig);
+				DataStreamReadIU(&dataStream, &ttf->Header.MagicNumber, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Header.Flags, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Header.UnitsPerEM, EndianBig);
+				DataStreamReadLLU(&dataStream, &ttf->Header.Created, EndianBig);
+				DataStreamReadLLU(&dataStream, &ttf->Header.Modified, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Header.Minimum[0], EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Header.Minimum[1], EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Header.Maximum[0], EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Header.Maximum[1], EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Header.MacStyle, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Header.LowestRecPpem, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Header.FontDirectionHint, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Header.IndexToLocFormat, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Header.GlyphDataFormat, EndianBig);
 				break;
 			}
 			case TTFTableEntryHorizontalHeader:
 			{
-				ParsingStreamReadSU(&parsingStream, &ttf->HorizontalHeader.Version.Major, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->HorizontalHeader.Version.Minor, EndianLittle);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.Ascender, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.Descender, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.LineGap, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->HorizontalHeader.AdvanceWidthMaximum, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.MinimumLeftSideBearing, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.MinimumRightSideBearing, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.MaximalExtendX, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.CaretSlopeRun, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.CaretSlopeRise, EndianBig);
-				ParsingStreamReadD(&parsingStream, &ttf->HorizontalHeader.Reserved, 10u);
-				ParsingStreamReadS(&parsingStream, &ttf->HorizontalHeader.MetricDataFormat, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->HorizontalHeader.NumberOfHorizontalMetrics, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->HorizontalHeader.Version.Major, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->HorizontalHeader.Version.Minor, EndianLittle);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.Ascender, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.Descender, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.LineGap, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->HorizontalHeader.AdvanceWidthMaximum, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.MinimumLeftSideBearing, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.MinimumRightSideBearing, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.MaximalExtendX, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.CaretSlopeRun, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.CaretSlopeRise, EndianBig);
+				DataStreamReadD(&dataStream, &ttf->HorizontalHeader.Reserved, 10u);
+				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.MetricDataFormat, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->HorizontalHeader.NumberOfHorizontalMetrics, EndianBig);
 				break;
 			}
 			case TTFTableEntryMaximumProfile:
 			{
-				ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.Version.Major, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.Version.Minor, EndianLittle);
+				DataStreamReadSU(&dataStream, &ttf->MaximumProfile.Version.Major, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->MaximumProfile.Version.Minor, EndianLittle);
 
 				const unsigned char trustedTypeFonts = ttf->MaximumProfile.Version.Major == 1 && ttf->MaximumProfile.Version.Minor == 0;
 				const unsigned char openTypeFonts = ttf->MaximumProfile.Version.Major == 0 && ttf->MaximumProfile.Version.Minor == 5;
 				const unsigned char validVersion = trustedTypeFonts || openTypeFonts;
 
-				ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.NumberOfGlyphs, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->MaximumProfile.NumberOfGlyphs, EndianBig);
 
 				assert(validVersion);
 
 				if(trustedTypeFonts && !openTypeFonts)
 				{
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.PointsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.ContoursMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.ComponentPointsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.ComponentContoursMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.ZonesMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.TwilightPointsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.StorageMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.FunctionDefsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.InstructionDefsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.StackElementsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.SizeOfInstructionsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.ComponentElementsMaximal, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->MaximumProfile.ComponentDepthMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.PointsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.ContoursMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.ComponentPointsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.ComponentContoursMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.ZonesMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.TwilightPointsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.StorageMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.FunctionDefsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.InstructionDefsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.StackElementsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.SizeOfInstructionsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.ComponentElementsMaximal, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->MaximumProfile.ComponentDepthMaximal, EndianBig);
 				}
 
 				break;
 			}
 			case TTFTableEntryCompatibility:
 			{
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.Version, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.xAvgCharWidth, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usWeightClass, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usWidthClass, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.fsType, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySubscriptXSize, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySubscriptYSize, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySubscriptXOffset, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySubscriptYOffset, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySuperscriptXSize, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySuperscriptYSize, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySuperscriptXOffset, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.ySuperscriptYOffset, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.yStrikeoutPosition, EndianBig);
-				ParsingStreamReadS(&parsingStream, &ttf->Compatibility.sFamilyClass, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.Version, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.xAvgCharWidth, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.usWeightClass, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.usWidthClass, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.fsType, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySubscriptXSize, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySubscriptYSize, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySubscriptXOffset, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySubscriptYOffset, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySuperscriptXSize, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySuperscriptYSize, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySuperscriptXOffset, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.ySuperscriptYOffset, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.yStrikeoutPosition, EndianBig);
+				DataStreamReadS(&dataStream, &ttf->Compatibility.sFamilyClass, EndianBig);
 
 				// Parse PANROSE
 				{
@@ -320,16 +321,16 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 					unsigned char bMidline;
 					unsigned char bXHeight;
 
-					ParsingStreamReadCU(&parsingStream, &bFamilyType);
-					ParsingStreamReadCU(&parsingStream, &bSerifStyle);
-					ParsingStreamReadCU(&parsingStream, &bWeight);
-					ParsingStreamReadCU(&parsingStream, &bProportion);
-					ParsingStreamReadCU(&parsingStream, &bContrast);
-					ParsingStreamReadCU(&parsingStream, &bStrokeVariation);
-					ParsingStreamReadCU(&parsingStream, &bArmStyle);
-					ParsingStreamReadCU(&parsingStream, &bLetterform);
-					ParsingStreamReadCU(&parsingStream, &bMidline);
-					ParsingStreamReadCU(&parsingStream, &bXHeight);
+					DataStreamReadCU(&dataStream, &bFamilyType);
+					DataStreamReadCU(&dataStream, &bSerifStyle);
+					DataStreamReadCU(&dataStream, &bWeight);
+					DataStreamReadCU(&dataStream, &bProportion);
+					DataStreamReadCU(&dataStream, &bContrast);
+					DataStreamReadCU(&dataStream, &bStrokeVariation);
+					DataStreamReadCU(&dataStream, &bArmStyle);
+					DataStreamReadCU(&dataStream, &bLetterform);
+					DataStreamReadCU(&dataStream, &bMidline);
+					DataStreamReadCU(&dataStream, &bXHeight);
 
 					//panrose.FamilyType = ConvertTTFFamilyType(bFamilyType);
 					//panrose.SerifStyle = ConvertTTFSerifStyle(bSerifStyle);
@@ -343,33 +344,33 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 					//panrose.HeightX = ConvertTTFHeightX(bXHeight);
 				}
 
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.ulUnicodeRange[0], EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.ulUnicodeRange[1], EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.ulUnicodeRange[2], EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.ulUnicodeRange[3], EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.ulUnicodeRange[0], EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.ulUnicodeRange[1], EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.ulUnicodeRange[2], EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.ulUnicodeRange[3], EndianBig);
 
-				ParsingStreamReadD(&parsingStream, &ttf->Compatibility.achVendID, 4u);
+				DataStreamReadD(&dataStream, &ttf->Compatibility.achVendID, 4u);
 
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.fsSelection, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.fsFirstCharIndex, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.fsLastCharIndex, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.fsSelection, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.fsFirstCharIndex, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Compatibility.fsLastCharIndex, EndianBig);
 
 				if(ttf->Compatibility.Version > 0)
 				{
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.sTypoAscender, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.sTypoDescender, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.sTypoLineGap, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usWinAscent, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usWinDescent, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.ulCodePageRange1, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.ulCodePageRange2, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.sxHeight, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.sCapHeight, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usDefaultChar, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usBreakChar, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usMaxContext, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usLowerPointSize, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->Compatibility.usUpperPointSize, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.sTypoAscender, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.sTypoDescender, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.sTypoLineGap, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.usWinAscent, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.usWinDescent, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.ulCodePageRange1, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.ulCodePageRange2, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.sxHeight, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.sCapHeight, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.usDefaultChar, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.usBreakChar, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.usMaxContext, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.usLowerPointSize, EndianBig);
+					DataStreamReadSU(&dataStream, &ttf->Compatibility.usUpperPointSize, EndianBig);
 				}
 
 				break;
@@ -382,8 +383,8 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 			}
 			case TTFTableEntryGlyphNameAndPostScriptCompatibility: // post
 			{
-				ParsingStreamReadSU(&parsingStream, &ttf->PostScript.Version.Major, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->PostScript.Version.Minor, EndianLittle);
+				DataStreamReadSU(&dataStream, &ttf->PostScript.Version.Major, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->PostScript.Version.Minor, EndianLittle);
 
 				//PostScript.Version.Check();
 
@@ -399,12 +400,12 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 
 					case TTFVersion2Dot0:
 					{
-						ParsingStreamReadSU(&parsingStream, &ttf->PostScript.NumberOfGlyphs, EndianBig);
+						DataStreamReadSU(&DataStream, &ttf->PostScript.NumberOfGlyphs, EndianBig);
 						break;
 					}
 					case TTFVersion2Dot5:
 					{
-						ParsingStreamReadSU(&parsingStream, &ttf->PostScript.NumberOfGlyphs, EndianBig);
+						DataStreamReadSU(&DataStream, &ttf->PostScript.NumberOfGlyphs, EndianBig);
 						break;
 					}
 					case TTFVersion3Dot0:
@@ -419,8 +420,8 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 			}
 			case TTFTableEntryKerning: // kern
 			{
-				ParsingStreamReadSU(&parsingStream, &ttf->Kerning.Version, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->Kerning.NumberOfSubtables, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Kerning.Version, EndianBig);
+				DataStreamReadSU(&dataStream, &ttf->Kerning.NumberOfSubtables, EndianBig);
 
 				/*
 
@@ -432,9 +433,9 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 
 					unsigned short coverage = 0;
 
-					ParsingStreamReadSU(&parsingStream, &ttf->kerningTable.Version, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->kerningTable.Length, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->coverage, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->kerningTable.Version, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->kerningTable.Length, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->coverage, EndianBig);
 
 					kerningTable.ParseCoverageValue(coverage);
 
@@ -444,10 +445,10 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 						{
 							TTFSubtableFormat0& subtableFormat = kerningTable.SubtableFormat0;
 
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.NumberOfPairs, EndianBig);
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.SearchRange, EndianBig);
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.EntrySelector, EndianBig);
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.RangeShift, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.NumberOfPairs, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.SearchRange, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.EntrySelector, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.RangeShift, EndianBig);
 
 							subtableFormat.KerningPairList = new TTFKerningPair[subtableFormat.NumberOfPairs];
 
@@ -455,9 +456,9 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 							{
 								TTFKerningPair& kerningPair = subtableFormat.KerningPairList[i];
 
-								ParsingStreamReadSU(&parsingStream, &ttf->kerningPair.Left, EndianBig);
-								ParsingStreamReadSU(&parsingStream, &ttf->kerningPair.Right, EndianBig);
-								ParsingStreamReadSU(&parsingStream, &ttf->kerningPair.Value, EndianBig);
+								DataStreamReadSU(&DataStream, &ttf->kerningPair.Left, EndianBig);
+								DataStreamReadSU(&DataStream, &ttf->kerningPair.Right, EndianBig);
+								DataStreamReadSU(&DataStream, &ttf->kerningPair.Value, EndianBig);
 							}
 
 							break;
@@ -466,10 +467,10 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 						{
 							TTFSubtableFormat2& subtableFormat = kerningTable.SubtableFormat2;
 
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.RowWidth, EndianBig);
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.LeftClassOffset, EndianBig);
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.RightClassOffset, EndianBig);
-							ParsingStreamReadSU(&parsingStream, &ttf->subtableFormat.KerningArrayOffset, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.RowWidth, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.LeftClassOffset, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.RightClassOffset, EndianBig);
+							DataStreamReadSU(&DataStream, &ttf->subtableFormat.KerningArrayOffset, EndianBig);
 
 							break;
 						}
@@ -498,8 +499,8 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 			case TTFTableEntryCharacterCodeMapping:
 			{
 				/*
-				ParsingStreamReadSU(&parsingStream, &ttf->CharacterMapping.Version, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->CharacterMapping.NumberOfTables, EndianBig);
+				DataStreamReadSU(&DataStream, &ttf->CharacterMapping.Version, EndianBig);
+				DataStreamReadSU(&DataStream, &ttf->CharacterMapping.NumberOfTables, EndianBig);
 
 				CharacterMapping.EncodingRecordList = new EncodingRecord[CharacterMapping.NumberOfTables];
 
@@ -510,9 +511,9 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 					unsigned short platformID;
 					unsigned short encodingID;
 
-					ParsingStreamReadSU(&parsingStream, &ttf->platformID, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->encodingID, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->encodingRecord.SubtableOffset, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->platformID, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->encodingID, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->encodingRecord.SubtableOffset, EndianBig);
 
 					encodingRecord.Platform = ConvertPlatformID(platformID);
 					encodingRecord.Encoding = ConvertEncodingID(encodingRecord.Platform, encodingID);
@@ -523,12 +524,12 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 			case TTFTableEntryLinearThreshold:
 			{
 				/*
-				ParsingStreamReadSU(&parsingStream, &ttf->LinearThreshold.Version, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->LinearThreshold.NumberOfGlyphs, EndianBig);
+				DataStreamReadSU(&DataStream, &ttf->LinearThreshold.Version, EndianBig);
+				DataStreamReadSU(&DataStream, &ttf->LinearThreshold.NumberOfGlyphs, EndianBig);
 
 				LinearThreshold.PelsHeightList = Memory::Allocate<Byte__>(LinearThreshold.NumberOfGlyphs);
 
-				ParsingStreamReadSU(&parsingStream, &ttf->LinearThreshold.PelsHeightList, LinearThreshold.NumberOfGlyphs);*/
+				DataStreamReadSU(&DataStream, &ttf->LinearThreshold.PelsHeightList, LinearThreshold.NumberOfGlyphs);*/
 
 				break;
 			}
@@ -537,9 +538,9 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 				/*
 				Byte__* startPointer = chunkData.Data + chunkData.DataCursor;
 
-				ParsingStreamReadSU(&parsingStream, &ttf->DigitalSignature.Version, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->DigitalSignature.NumberOfSignatures, EndianBig);
-				ParsingStreamReadSU(&parsingStream, &ttf->DigitalSignature.Flags, EndianBig);
+				DataStreamReadSU(&DataStream, &ttf->DigitalSignature.Version, EndianBig);
+				DataStreamReadSU(&DataStream, &ttf->DigitalSignature.NumberOfSignatures, EndianBig);
+				DataStreamReadSU(&DataStream, &ttf->DigitalSignature.Flags, EndianBig);
 
 				DigitalSignature.SignatureRecordList = new TTFDigitalSignatureRecord[DigitalSignature.NumberOfSignatures];
 				DigitalSignature.SignatureBlockList = new TTFDigitalSignatureBlock[DigitalSignature.NumberOfSignatures];
@@ -548,21 +549,21 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 				{
 					TTFDigitalSignatureRecord& signatureRecord = DigitalSignature.SignatureRecordList[i];
 
-					ParsingStreamReadSU(&parsingStream, &ttf->signatureRecord.Format, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->signatureRecord.Length, EndianBig);
-					ParsingStreamReadSU(&parsingStream, &ttf->signatureRecord.SignatureBlockOffset, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->signatureRecord.Format, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->signatureRecord.Length, EndianBig);
+					DataStreamReadSU(&DataStream, &ttf->signatureRecord.SignatureBlockOffset, EndianBig);
 
 					{
-						ParsingStreamX byteSteam(startPointer + signatureRecord.SignatureBlockOffset, signatureRecord.Length);
+						DataStreamX byteSteam(startPointer + signatureRecord.SignatureBlockOffset, signatureRecord.Length);
 						TTFDigitalSignatureBlock& signatureBlock = DigitalSignature.SignatureBlockList[i];
 
-						ParsingStreamReadSU(&parsingStream, &ttf->signatureBlock.Reserved1, EndianBig);
-						ParsingStreamReadSU(&parsingStream, &ttf->signatureBlock.Reserved2, EndianBig);
-						ParsingStreamReadSU(&parsingStream, &ttf->signatureBlock.SignatureLength, EndianBig);
+						DataStreamReadSU(&DataStream, &ttf->signatureBlock.Reserved1, EndianBig);
+						DataStreamReadSU(&DataStream, &ttf->signatureBlock.Reserved2, EndianBig);
+						DataStreamReadSU(&DataStream, &ttf->signatureBlock.SignatureLength, EndianBig);
 
 						signatureBlock.Signature = (char*)malloc(signatureBlock.SignatureLength);
 
-						ParsingStreamReadSU(&parsingStream, &ttf->signatureBlock.Signature, signatureBlock.SignatureLength);
+						DataStreamReadSU(&DataStream, &ttf->signatureBlock.Signature, signatureBlock.SignatureLength);
 
 						for(size_t w = 0; w < signatureBlock.SignatureLength - 2; w++)
 						{

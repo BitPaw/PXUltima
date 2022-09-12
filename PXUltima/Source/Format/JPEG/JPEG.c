@@ -6,7 +6,7 @@
 #include <Container/ClusterValue.h>
 #include <Memory/Memory.h>
 #include <Math/Math.h>
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <File/BitStream.h>
 #include <Format/Color.h>
 
@@ -265,11 +265,12 @@ ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size
 
 ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
     JPEG jpeXg;
     JPEG* jpeg = &jpeXg;
 
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
     JPEGConstruct(jpeg);
     *dataRead = 0;
 
@@ -277,7 +278,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
     {
         ClusterShort startBlock;
 
-        ParsingStreamReadD(&parsingStream, startBlock.Data, 2u);
+        DataStreamReadD(&dataStream, startBlock.Data, 2u);
 
         const JPEGMarker marker = ConvertToJPEGMarker(startBlock.Value);
         const unsigned char validStart = marker == JPEGMarkerStartOfImage;
@@ -292,7 +293,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 #endif
     }
 
-    while(!ParsingStreamIsAtEnd(&parsingStream))
+    while(!DataStreamIsAtEnd(&dataStream))
     {
         JPEGMarker chunkMarker = JPEGMarkerInvalid;
         unsigned short chunkLength = -1;
@@ -302,7 +303,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
         {
             ClusterShort markerData;
 
-            ParsingStreamReadD(&parsingStream, markerData.Data, 2u);
+            DataStreamReadD(&dataStream, markerData.Data, 2u);
 
             chunkMarker = ConvertToJPEGMarker(markerData.Value);
 
@@ -315,15 +316,15 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                 return ActionSuccessful;
             }
 
-            ParsingStreamReadSU(&parsingStream, &chunkLength, EndianBig);
+            DataStreamReadSU(&dataStream, &chunkLength, EndianBig);
 
             chunkLength -= 2u; // dont count header
 
-            expectedOffset = parsingStream.DataCursor + chunkLength;
+            expectedOffset = dataStream.DataCursor + chunkLength;
 
 #if JPGDebug
 
-            unsigned int percentage = (parsingStream.DataCursor / (float)parsingStream.DataSize) * 100;
+            unsigned int percentage = (dataStream.DataCursor / (float)dataStream.DataSize) * 100;
 
             printf("\n[i][JPG] Chunk <%2x%2x> deteced. Size:%i Bytes (Parsed : %i%%)\n", markerData.A, markerData.B, chunkLength, percentage);
 #endif
@@ -341,19 +342,19 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             {
                 JPEGFrame frame;
 
-                ParsingStreamReadCU(&parsingStream, &frame.Precision);
-                ParsingStreamReadSU(&parsingStream, &frame.Height, EndianBig);
-                ParsingStreamReadSU(&parsingStream, &frame.Width, EndianBig);
-                ParsingStreamReadCU(&parsingStream, &frame.ComponentListSize);
+                DataStreamReadCU(&dataStream, &frame.Precision);
+                DataStreamReadSU(&dataStream, &frame.Height, EndianBig);
+                DataStreamReadSU(&dataStream, &frame.Width, EndianBig);
+                DataStreamReadCU(&dataStream, &frame.ComponentListSize);
 
                 for(size_t i = 0; i < frame.ComponentListSize; ++i)
                 {
                     JPEGFrameComponent* frameComponent = &frame.ComponentList[i];
                     unsigned char samplingFactor = 0;
 
-                    ParsingStreamReadC(&parsingStream, &frameComponent->ID);
-                    ParsingStreamReadC(&parsingStream, &samplingFactor);
-                    ParsingStreamReadC(&parsingStream, &frameComponent->QuantizationTableID);
+                    DataStreamReadC(&dataStream, &frameComponent->ID);
+                    DataStreamReadC(&dataStream, &samplingFactor);
+                    DataStreamReadC(&dataStream, &frameComponent->QuantizationTableID);
 
                     frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
                     frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
@@ -388,7 +389,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     {
                         unsigned char cluster = 0;
 
-                        remainingBytes -= ParsingStreamReadCU(&parsingStream, &cluster);
+                        remainingBytes -= DataStreamReadCU(&dataStream, &cluster);
 
                         precision = (cluster & 0b11110000) >> 4;
                         matixID = (cluster & 0b00001111);
@@ -396,7 +397,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 
                     unsigned char* matrixAdress = jpeg->QuantizationTable[matixID];
 
-                    remainingBytes -= ParsingStreamReadD(&parsingStream, matrixAdress, 64u);
+                    remainingBytes -= DataStreamReadD(&dataStream, matrixAdress, 64u);
 
 #if JPGDebug
                     printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
@@ -433,7 +434,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     {
                         unsigned char huffmanTableInfo;
 
-                        remainingBytes -= ParsingStreamReadCU(&parsingStream, &huffmanTableInfo);
+                        remainingBytes -= DataStreamReadCU(&dataStream, &huffmanTableInfo);
 
                         jpegHuffmanTable.ID = (huffmanTableInfo & 0b00001111);
                         jpegHuffmanTable.Type = (huffmanTableInfo & 0b00010000) >> 4u;
@@ -458,7 +459,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     {
                         unsigned char symbol = 0;
 
-                        remainingBytes -= ParsingStreamReadCU(&parsingStream, &symbol);
+                        remainingBytes -= DataStreamReadCU(&dataStream, &symbol);
 
 #if JPGDebug
                         printf
@@ -485,7 +486,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     {
                         unsigned char symbol = 0;
 
-                        remainingBytes -= ParsingStreamReadCU(&parsingStream, &symbol);
+                        remainingBytes -= DataStreamReadCU(&dataStream, &symbol);
 
 #if JPGDebug
                         printf
@@ -503,34 +504,34 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             }
             case JPEGMarkerStartOfScan:
             {
-                ParsingStreamReadCU(&parsingStream, &jpeg->ScanStart.ScanSelectorSize);
+                DataStreamReadCU(&dataStream, &jpeg->ScanStart.ScanSelectorSize);
 
                 for(size_t i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
                 {
                     JPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
                     unsigned char huffmanTableUsed = 0;
 
-                    ParsingStreamReadCU(&parsingStream, &scanSelector->ID);
-                    ParsingStreamReadCU(&parsingStream, &huffmanTableUsed);
+                    DataStreamReadCU(&dataStream, &scanSelector->ID);
+                    DataStreamReadCU(&dataStream, &huffmanTableUsed);
 
                     scanSelector->DC = ((huffmanTableUsed & 0b11110000) >> 4u);
                     scanSelector->ACTable = (huffmanTableUsed & 0b00001111);
                 }
 
-                ParsingStreamCursorAdvance(&parsingStream, 3u); // mandatorily to skip these, why?
+                DataStreamCursorAdvance(&dataStream, 3u); // mandatorily to skip these, why?
 
                 // Compressed image data starts here --------------------------------
 
-                //ParsingStreamReadCU(&parsingStream, &jpeg->ScanStart.SpectralSelectFrom);
-                //ParsingStreamReadCU(&parsingStream, &jpeg->ScanStart.SpectralSelectTo);
-                //ParsingStreamReadCU(&parsingStream, &jpeg->ScanStart.SuccessiveAproximation);
+                //DataStreamReadCU(&DataStream, &jpeg->ScanStart.SpectralSelectFrom);
+                //DataStreamReadCU(&DataStream, &jpeg->ScanStart.SpectralSelectTo);
+                //DataStreamReadCU(&DataStream, &jpeg->ScanStart.SuccessiveAproximation);
 
-                //jpeg->CompressedImageDataSize = ParsingStreamRemainingSize(&parsingStream) - 2u;
+                //jpeg->CompressedImageDataSize = DataStreamRemainingSize(&DataStream) - 2u;
                 //jpeg->CompressedImageData = MemoryAllocate(sizeof(unsigned char) * jpeg->CompressedImageDataSize);
 
-                //ParsingStreamReadD(&parsingStream, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
+                //DataStreamReadD(&DataStream, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
 
-                const size_t imageDataSize = ParsingStreamRemainingSize(&parsingStream) - 2u;
+                const size_t imageDataSize = DataStreamRemainingSize(&dataStream) - 2u;
 
                 // Correct expected offset, as the "chunk length" seems to be only considering the data iself and not the whole chunk.
 
@@ -544,7 +545,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     imageDataSize
                 );
 #endif
-                ParsingStreamCursorAdvance(&parsingStream, imageDataSize);
+                DataStreamCursorAdvance(&dataStream, imageDataSize);
 
                 break;
             }
@@ -552,14 +553,14 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             {
                 char identifier[5];
 
-                ParsingStreamReadD(&parsingStream, identifier, 5u);
-                ParsingStreamReadCU(&parsingStream, &jpeg->FileInfo.VersionMajor);
-                ParsingStreamReadCU(&parsingStream, &jpeg->FileInfo.VersionMinor);
-                ParsingStreamReadCU(&parsingStream, &jpeg->FileInfo.DensityUnits);
-                ParsingStreamReadSU(&parsingStream, &jpeg->FileInfo.DensityX, EndianLittle);
-                ParsingStreamReadSU(&parsingStream, &jpeg->FileInfo.DensityY, EndianLittle);
-                ParsingStreamReadCU(&parsingStream, &jpeg->FileInfo.ThumbnailX);
-                ParsingStreamReadCU(&parsingStream, &jpeg->FileInfo.ThumbnailY);
+                DataStreamReadD(&dataStream, identifier, 5u);
+                DataStreamReadCU(&dataStream, &jpeg->FileInfo.VersionMajor);
+                DataStreamReadCU(&dataStream, &jpeg->FileInfo.VersionMinor);
+                DataStreamReadCU(&dataStream, &jpeg->FileInfo.DensityUnits);
+                DataStreamReadSU(&dataStream, &jpeg->FileInfo.DensityX, EndianLittle);
+                DataStreamReadSU(&dataStream, &jpeg->FileInfo.DensityY, EndianLittle);
+                DataStreamReadCU(&dataStream, &jpeg->FileInfo.ThumbnailX);
+                DataStreamReadCU(&dataStream, &jpeg->FileInfo.ThumbnailY);
 
 #if JPGDebug
                 printf
@@ -590,7 +591,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                         jpeg->FileInfo.ThumbnailDataSize = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
                         jpeg->FileInfo.ThumbnailData = MemoryAllocate(sizeof(unsigned char) * jpeg->FileInfo.ThumbnailDataSize);
 
-                        ParsingStreamReadD(&parsingStream, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
+                        DataStreamReadD(&dataStream, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
                     }
                 }
 
@@ -601,20 +602,20 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                 jpeg->CommentSize = chunkLength;
                 jpeg->Comment = MemoryAllocate(sizeof(char) * chunkLength);
 
-                ParsingStreamReadD(&parsingStream, jpeg->Comment, chunkLength);
+                DataStreamReadD(&dataStream, jpeg->Comment, chunkLength);
 
                 break;
             }
         }
 
 #if JPGDebug
-        if(parsingStream.DataCursor != expectedOffset)
+        if(dataStream.DataCursor != expectedOffset)
         {
-            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - parsingStream.DataCursor);
+            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - dataStream.DataCursor);
         }
 #endif
         //--<Allign>----
-        parsingStream.DataCursor = expectedOffset;
+        dataStream.DataCursor = expectedOffset;
         //--------------
     }
 
@@ -753,7 +754,7 @@ const uint8_t AcChrominanceValues[162] =                                        
 
 
 // write bits stored in BitCode, keep excess bits in BitBuffer
-void writeBits(ParsingStream* parsingStream, BitBuffer* buffer, BitCode data)
+void writeBits(DataStream* DataStream, BitBuffer* buffer, BitCode data)
 {
     // append the new bits to those bits leftover from previous call(s)
     buffer->numBits += data.numBits;
@@ -766,10 +767,10 @@ void writeBits(ParsingStream* parsingStream, BitBuffer* buffer, BitCode data)
         // extract highest 8 bits
         buffer->numBits -= 8;
         auto oneByte = (buffer->bits >> buffer->numBits) & 0xFF;
-        ParsingStreamWriteCU(parsingStream, oneByte);
+        DataStreamWriteCU(DataStream, oneByte);
 
         if(oneByte == 0xFF) // 0xFF has a special meaning for JPEGs (it's a block marker)
-            ParsingStreamWriteCU(parsingStream, 0);         // therefore pad a zero to indicate "nope, this one ain't a marker, it's just a coincidence"
+            DataStreamWriteCU(DataStream, 0);         // therefore pad a zero to indicate "nope, this one ain't a marker, it's just a coincidence"
 
           // note: I don't clear those written bits, therefore buffer.bits contains garbage in the high bits
           //       if you really want to "clean up" (e.g. for debugging purposes) then uncomment the following line
@@ -842,7 +843,7 @@ void DCT(int stride, float block[8 * 8])
 // run DCT, quantize and write Huffman bit codes
 short JPEGEncodeBlock
 (
-    ParsingStream* parsingStream,
+    DataStream* DataStream,
     BitBuffer* buffer,
     float block[8][8],
     const float scaled[8 * 8],
@@ -871,13 +872,13 @@ short JPEGEncodeBlock
     short DC = (short)(block64[0] + (block64[0] >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
     // same "average color" as previous block ?
     if(DC == lastDC)
-        writeBits(parsingStream, buffer, huffmanDC[0x00]); // yes, write a special short symbol
+        writeBits(DataStream, buffer, huffmanDC[0x00]); // yes, write a special short symbol
     else
     {
         BitCode bitCode;
         convertCode(&bitCode, DC - lastDC);       // nope, encode the difference to previous block's average color
-        writeBits(parsingStream, buffer, huffmanDC[bitCode.numBits]);
-        writeBits(parsingStream, buffer, bitCode);
+        writeBits(DataStream, buffer, huffmanDC[bitCode.numBits]);
+        writeBits(DataStream, buffer, bitCode);
     }
 
     // quantize and zigzag the other 63 coefficients
@@ -906,7 +907,7 @@ short JPEGEncodeBlock
             if(offset > 15 << 4) // remember, the counter is in the upper 4 bits
             {
                 offset = 0;
-                writeBits(parsingStream, buffer, huffmanAC[0xF0]); // 0xF0 is a special code for "16 zeros"
+                writeBits(DataStream, buffer, huffmanAC[0xF0]); // 0xF0 is a special code for "16 zeros"
             }
         }
 
@@ -914,13 +915,13 @@ short JPEGEncodeBlock
         BitCode bitCode;
         convertCode(&bitCode, quantized[i]);
         offset += bitCode.numBits;
-        writeBits(parsingStream, buffer, huffmanAC[offset]);
-        writeBits(parsingStream, buffer, bitCode);
+        writeBits(DataStream, buffer, huffmanAC[offset]);
+        writeBits(DataStream, buffer, bitCode);
     }
 
     // send end-of-block code (0x00), only needed if there are trailing zeros
     if(posNonZero < 8 * 8 - 1) // = 63
-        writeBits(parsingStream, buffer, huffmanAC[0x00]);
+        writeBits(DataStream, buffer, huffmanAC[0x00]);
 
     return DC;
 }
@@ -954,9 +955,10 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     unsigned char downsample = 0;
     const char* comment = 0;
 
-    ParsingStream parsingStream;
+    DataStream dataStream;
 
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
     *dataWritten = 0;
 
 
@@ -968,7 +970,7 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
 
     // Header Signature
     {
-        ParsingStreamWriteSU(&parsingStream, JPEGMarkerStartOfImageID, EndianCurrentSystem);
+        DataStreamWriteSU(&dataStream, JPEGMarkerStartOfImageID, EndianCurrentSystem);
     }
 
     // APP0
@@ -984,16 +986,16 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
         jpegFileInfo.ThumbnailDataSize = 0;
         jpegFileInfo.ThumbnailData = 0;
 
-        ParsingStreamWriteSU(&parsingStream, JPEGMarkerApplicationSegment00ID, EndianCurrentSystem);
-        ParsingStreamWriteSU(&parsingStream, 16u, EndianBig);
-        ParsingStreamWriteD(&parsingStream, "JFIF", 5u);
-        ParsingStreamWriteCU(&parsingStream, jpegFileInfo.VersionMajor);
-        ParsingStreamWriteCU(&parsingStream, jpegFileInfo.VersionMinor);
-        ParsingStreamWriteCU(&parsingStream, jpegFileInfo.DensityUnits);
-        ParsingStreamWriteSU(&parsingStream, jpegFileInfo.DensityX, EndianBig);
-        ParsingStreamWriteSU(&parsingStream, jpegFileInfo.DensityY, EndianBig);
-        ParsingStreamWriteCU(&parsingStream, jpegFileInfo.ThumbnailX);
-        ParsingStreamWriteCU(&parsingStream, jpegFileInfo.ThumbnailY);
+        DataStreamWriteSU(&dataStream, JPEGMarkerApplicationSegment00ID, EndianCurrentSystem);
+        DataStreamWriteSU(&dataStream, 16u, EndianBig);
+        DataStreamWriteD(&dataStream, "JFIF", 5u);
+        DataStreamWriteCU(&dataStream, jpegFileInfo.VersionMajor);
+        DataStreamWriteCU(&dataStream, jpegFileInfo.VersionMinor);
+        DataStreamWriteCU(&dataStream, jpegFileInfo.DensityUnits);
+        DataStreamWriteSU(&dataStream, jpegFileInfo.DensityX, EndianBig);
+        DataStreamWriteSU(&dataStream, jpegFileInfo.DensityY, EndianBig);
+        DataStreamWriteCU(&dataStream, jpegFileInfo.ThumbnailX);
+        DataStreamWriteCU(&dataStream, jpegFileInfo.ThumbnailY);
     }
 
     // ////////////////////////////////////////
@@ -1011,17 +1013,17 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     }
 
     // write quantization tables
-    ParsingStreamWriteSU(&parsingStream, JPEGMarkerDefineQuantizationTableListID, EndianCurrentSystem);
-    ParsingStreamWriteSU(&parsingStream, 2 + (isRGB ? 2 : 1) * (1 + 8 * 8), EndianBig);  // length: 65 bytes per table + 2 bytes for this length field
+    DataStreamWriteSU(&dataStream, JPEGMarkerDefineQuantizationTableListID, EndianCurrentSystem);
+    DataStreamWriteSU(&dataStream, 2 + (isRGB ? 2 : 1) * (1 + 8 * 8), EndianBig);  // length: 65 bytes per table + 2 bytes for this length field
 
     // each table has 64 entries and is preceded by an ID byte
-    ParsingStreamWriteCU(&parsingStream, 0u); // first  quantization table
-    ParsingStreamWriteD(&parsingStream, quantLuminance, sizeof(unsigned char) * 64u);
+    DataStreamWriteCU(&dataStream, 0u); // first  quantization table
+    DataStreamWriteD(&dataStream, quantLuminance, sizeof(unsigned char) * 64u);
 
     if(isRGB)// chrominance is only relevant for color images
     {
-        ParsingStreamWriteCU(&parsingStream, 1u);  // second quantization table
-        ParsingStreamWriteD(&parsingStream, quantChrominance, sizeof(unsigned char) * 64u);
+        DataStreamWriteCU(&dataStream, 1u);  // second quantization table
+        DataStreamWriteD(&dataStream, quantChrominance, sizeof(unsigned char) * 64u);
     }
 
     // ////////////////////////////////////////
@@ -1029,34 +1031,34 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     // length: 6 bytes general info + 3 per channel + 2 bytes for this length field
     unsigned char numComponents = isRGB ? 3 : 1;
 
-    ParsingStreamWriteSU(&parsingStream, JPEGMarkerStartOfFrameHuffmanBaselineDCTID, EndianCurrentSystem);
-    ParsingStreamWriteSU(&parsingStream, 2 + 6 + 3 * numComponents, EndianBig);
+    DataStreamWriteSU(&dataStream, JPEGMarkerStartOfFrameHuffmanBaselineDCTID, EndianCurrentSystem);
+    DataStreamWriteSU(&dataStream, 2 + 6 + 3 * numComponents, EndianBig);
 
 
-    ParsingStreamWriteCU(&parsingStream, 8u); // 8 bits per channel
+    DataStreamWriteCU(&dataStream, 8u); // 8 bits per channel
 
     // image dimensions (big-endian)
-    ParsingStreamWriteSU(&parsingStream, image->Height, EndianBig);
-    ParsingStreamWriteSU(&parsingStream, image->Width, EndianBig);
+    DataStreamWriteSU(&dataStream, image->Height, EndianBig);
+    DataStreamWriteSU(&dataStream, image->Width, EndianBig);
 
     // sampling and quantization tables for each component
             // 1 component (grayscale, Y only) or 3 components (Y,Cb,Cr)
-    ParsingStreamWriteCU(&parsingStream, numComponents);
+    DataStreamWriteCU(&dataStream, numComponents);
 
 
     for(size_t id = 1; id <= numComponents; ++id)
     {
-        ParsingStreamWriteCU(&parsingStream, id);                    // component ID (Y=1, Cb=2, Cr=3)
+        DataStreamWriteCU(&dataStream, id);                    // component ID (Y=1, Cb=2, Cr=3)
         // bitmasks for sampling: highest 4 bits: horizontal, lowest 4 bits: vertical
-        ParsingStreamWriteCU(&parsingStream, id == 1 && downsample ? 0x22 : 0x11); // 0x11 is default YCbCr 4:4:4 and 0x22 stands for YCbCr 4:2:0
-        ParsingStreamWriteCU(&parsingStream, id == 1 ? 0 : 1);       // use quantization table 0 for Y, else table 1
+        DataStreamWriteCU(&dataStream, id == 1 && downsample ? 0x22 : 0x11); // 0x11 is default YCbCr 4:4:4 and 0x22 stands for YCbCr 4:2:0
+        DataStreamWriteCU(&dataStream, id == 1 ? 0 : 1);       // use quantization table 0 for Y, else table 1
     }
 
     // ////////////////////////////////////////
     // Huffman tables
     // DHT marker - define Huffman tables
-    ParsingStreamWriteSU(&parsingStream, JPEGMarkerDefineHuffmanTableListID, EndianCurrentSystem);
-    ParsingStreamWriteSU(&parsingStream, isRGB ? (2 + 208 + 208) : (2 + 208), EndianBig);
+    DataStreamWriteSU(&dataStream, JPEGMarkerDefineHuffmanTableListID, EndianCurrentSystem);
+    DataStreamWriteSU(&dataStream, isRGB ? (2 + 208 + 208) : (2 + 208), EndianBig);
 
 
     // 2 bytes for the length field, store chrominance only if needed
@@ -1067,15 +1069,15 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
 
 // store luminance's DC+AC Huffman table definitions
     // highest 4 bits: 0 => DC, lowest 4 bits: 0 => Y (baseline)
-    ParsingStreamWriteCU(&parsingStream, 0x00);
+    DataStreamWriteCU(&dataStream, 0x00);
 
-    ParsingStreamWriteD(&parsingStream, DcLuminanceCodesPerBitsize, sizeof(DcLuminanceCodesPerBitsize));
-    ParsingStreamWriteD(&parsingStream, DcLuminanceValues, sizeof(DcLuminanceValues));
+    DataStreamWriteD(&dataStream, DcLuminanceCodesPerBitsize, sizeof(DcLuminanceCodesPerBitsize));
+    DataStreamWriteD(&dataStream, DcLuminanceValues, sizeof(DcLuminanceValues));
 
-    ParsingStreamWriteCU(&parsingStream, 0x10);// highest 4 bits: 1 => AC, lowest 4 bits: 0 => Y (baseline)
+    DataStreamWriteCU(&dataStream, 0x10);// highest 4 bits: 1 => AC, lowest 4 bits: 0 => Y (baseline)
 
-    ParsingStreamWriteD(&parsingStream, AcLuminanceCodesPerBitsize, sizeof(AcLuminanceCodesPerBitsize));
-    ParsingStreamWriteD(&parsingStream, AcLuminanceValues, sizeof(AcLuminanceValues));
+    DataStreamWriteD(&dataStream, AcLuminanceCodesPerBitsize, sizeof(AcLuminanceCodesPerBitsize));
+    DataStreamWriteD(&dataStream, AcLuminanceValues, sizeof(AcLuminanceValues));
 
 
     // compute actual Huffman code tables (see Jon's code for precalculated tables)
@@ -1091,17 +1093,17 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     {
         // store luminance's DC+AC Huffman table definitions
         // highest 4 bits: 0 => DC, lowest 4 bits: 1 => Cr,Cb (baseline)
-        ParsingStreamWriteCU(&parsingStream, 0x01);
+        DataStreamWriteCU(&dataStream, 0x01);
 
-        ParsingStreamWriteD(&parsingStream, DcChrominanceCodesPerBitsize, sizeof(DcChrominanceCodesPerBitsize));
-        ParsingStreamWriteD(&parsingStream, DcChrominanceValues, sizeof(DcChrominanceValues));
+        DataStreamWriteD(&dataStream, DcChrominanceCodesPerBitsize, sizeof(DcChrominanceCodesPerBitsize));
+        DataStreamWriteD(&dataStream, DcChrominanceValues, sizeof(DcChrominanceValues));
 
 
         // highest 4 bits: 1 => AC, lowest 4 bits: 1 => Cr,Cb (baseline)
-        ParsingStreamWriteCU(&parsingStream, 0x11);
+        DataStreamWriteCU(&dataStream, 0x11);
 
-        ParsingStreamWriteD(&parsingStream, AcChrominanceCodesPerBitsize, sizeof(AcChrominanceCodesPerBitsize));
-        ParsingStreamWriteD(&parsingStream, AcChrominanceValues, sizeof(AcChrominanceValues));
+        DataStreamWriteD(&dataStream, AcChrominanceCodesPerBitsize, sizeof(AcChrominanceCodesPerBitsize));
+        DataStreamWriteD(&dataStream, AcChrominanceValues, sizeof(AcChrominanceValues));
 
         // compute actual Huffman code tables (see Jon's code for precalculated tables)
         generateHuffmanTable(DcChrominanceCodesPerBitsize, DcChrominanceValues, huffmanChrominanceDC);
@@ -1110,25 +1112,25 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
 
     // ////////////////////////////////////////
     // start of scan (there is only a single scan for baseline JPEGs)
-    ParsingStreamWriteSU(&parsingStream, JPEGMarkerStartOfScanID, EndianCurrentSystem);
-    ParsingStreamWriteSU(&parsingStream, 2 + 1 + 2 * numComponents + 3, EndianBig);
+    DataStreamWriteSU(&dataStream, JPEGMarkerStartOfScanID, EndianCurrentSystem);
+    DataStreamWriteSU(&dataStream, 2 + 1 + 2 * numComponents + 3, EndianBig);
 
 
     // assign Huffman tables to each component
-    ParsingStreamWriteCU(&parsingStream, numComponents);
+    DataStreamWriteCU(&dataStream, numComponents);
 
     for(size_t id = 1; id <= numComponents; ++id)
     {
         // component ID (Y=1, Cb=2, Cr=3)
-        ParsingStreamWriteCU(&parsingStream, id);
+        DataStreamWriteCU(&dataStream, id);
         // highest 4 bits: DC Huffman table, lowest 4 bits: AC Huffman table
-        ParsingStreamWriteCU(&parsingStream, id == 1 ? 0x00 : 0x11); // Y: tables 0 for DC and AC; Cb + Cr: tables 1 for DC and AC
+        DataStreamWriteCU(&dataStream, id == 1 ? 0x00 : 0x11); // Y: tables 0 for DC and AC; Cb + Cr: tables 1 for DC and AC
     }
 
     // constant values for our baseline JPEGs with a single sequential scan
-    ParsingStreamWriteCU(&parsingStream, 0u); // spectral selection: must start at  0
-    ParsingStreamWriteCU(&parsingStream, 63u); // spectral selection: must stop  at 63
-    ParsingStreamWriteCU(&parsingStream, 0u); // successive approximation: must be  0
+    DataStreamWriteCU(&dataStream, 0u); // spectral selection: must start at  0
+    DataStreamWriteCU(&dataStream, 63u); // spectral selection: must stop  at 63
+    DataStreamWriteCU(&dataStream, 0u); // successive approximation: must be  0
 
     // adjust quantization tables with AAN scaling factors to simplify DCT
     float scaledLuminance[8 * 8];
@@ -1229,7 +1231,7 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
                     }
 
                 // encode Y channel
-                lastYDC = JPEGEncodeBlock(&parsingStream, &buffer, Y, scaledLuminance, lastYDC, huffmanLuminanceDC, huffmanLuminanceAC);
+                lastYDC = JPEGEncodeBlock(&dataStream, &buffer, Y, scaledLuminance, lastYDC, huffmanLuminanceDC, huffmanLuminanceAC);
             }
 
             if(!isRGB)
@@ -1262,8 +1264,8 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
 
 
             // encode Cb + Cr channels
-            lastCbDC = JPEGEncodeBlock(&parsingStream, &buffer, Cb, scaledChrominance, lastCbDC, huffmanChrominanceDC, huffmanChrominanceAC);
-            lastCrDC = JPEGEncodeBlock(&parsingStream, &buffer, Cr, scaledChrominance, lastCrDC, huffmanChrominanceDC, huffmanChrominanceAC);
+            lastCbDC = JPEGEncodeBlock(&dataStream, &buffer, Cb, scaledChrominance, lastCbDC, huffmanChrominanceDC, huffmanChrominanceAC);
+            lastCrDC = JPEGEncodeBlock(&dataStream, &buffer, Cr, scaledChrominance, lastCrDC, huffmanChrominanceDC, huffmanChrominanceAC);
         }
 
     // fill remaining bits with 1s
@@ -1271,17 +1273,17 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     bitCode.code = 0x7F;
     bitCode.numBits = 7;
 
-    writeBits(&parsingStream, &buffer, bitCode); // seven set bits: 0x7F = binary 0111 1111
+    writeBits(&dataStream, &buffer, bitCode); // seven set bits: 0x7F = binary 0111 1111
 
-   // ParsingStreamWriteCU(&parsingStream, &buffer);
-   // ParsingStreamWriteSU(&parsingStream, );
+   // DataStreamWriteCU(&DataStream, &buffer);
+   // DataStreamWriteSU(&DataStream, );
 
     // End Tag
     {
-        ParsingStreamWriteSU(&parsingStream, JPEGMarkerEndOfImageID, EndianCurrentSystem);
+        DataStreamWriteSU(&dataStream, JPEGMarkerEndOfImageID, EndianCurrentSystem);
     }
 
-    *dataWritten = parsingStream.DataCursor;
+    *dataWritten = dataStream.DataCursor;
 
     return ActionSuccessful;
 }

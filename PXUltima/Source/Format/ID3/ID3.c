@@ -1,6 +1,6 @@
 #include "ID3.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
 
@@ -97,9 +97,10 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
 
 ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, size_t* dataRead)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
 
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
 
     ID3Version version = ID3VersionInvalid;
 
@@ -110,7 +111,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
         // Einen ID3v2-Block erkennt man am Header, dessen erste fünf Bytes aus der Zeichenkette „ID3“ und der ID3v2-Version (z. B. $04 00 für ID3v2.4) bestehen
         const unsigned char signbature[3] = ID3HeaderSignature;
         const size_t signbatureSize = sizeof(signbature);  
-        const unsigned char isValidHeader = ParsingStreamReadAndCompare(&parsingStream, signbature, signbatureSize);
+        const unsigned char isValidHeader = DataStreamReadAndCompare(&dataStream, signbature, signbatureSize);
         
         if(!isValidHeader)
         {
@@ -122,7 +123,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
     {
         char versionTag[2];
 
-        ParsingStreamReadD(&parsingStream, versionTag, 2);
+        DataStreamReadD(&dataStream, versionTag, 2);
 
         switch(versionTag[0])
         {
@@ -144,7 +145,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
 
             default: // Version is probably 1.x
             {
-                const unsigned char* trackIDAdress = ParsingStreamCursorPosition(&parsingStream) + ID3CommentSize - 2;
+                const unsigned char* trackIDAdress = (unsigned char*)DataStreamCursorPosition(&dataStream) + ID3CommentSize - 2;
                 const unsigned short trackIDSymbol = ((unsigned short)trackIDAdress[0]) << 8 + trackIDAdress[1];
                 const unsigned char isVersion1x0 = trackIDSymbol == 0x0000;
 
@@ -182,22 +183,22 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
         {
             const unsigned char hasTrackID = version == ID3Versionv1x1;
 
-            ParsingStreamReadD(&parsingStream, id3->Title, ID3TitleSize);
-            ParsingStreamReadD(&parsingStream, id3->Artist, ID3TitleSize);
-            ParsingStreamReadD(&parsingStream, id3->Album, ID3TitleSize);
-            ParsingStreamReadD(&parsingStream, id3->Year, ID3TitleSize);
+            DataStreamReadD(&dataStream, id3->Title, ID3TitleSize);
+            DataStreamReadD(&dataStream, id3->Artist, ID3TitleSize);
+            DataStreamReadD(&dataStream, id3->Album, ID3TitleSize);
+            DataStreamReadD(&dataStream, id3->Year, ID3TitleSize);
 
             if(hasTrackID)
             {
-                ParsingStreamReadD(&parsingStream, id3->Comment, ID3CommentSize - 1);
-                ParsingStreamReadC(&parsingStream, &id3->TrackID);
+                DataStreamReadD(&dataStream, id3->Comment, ID3CommentSize - 1);
+                DataStreamReadC(&dataStream, &id3->TrackID);
             }
             else
             {
-                ParsingStreamReadD(&parsingStream, id3->Comment, ID3CommentSize);
+                DataStreamReadD(&dataStream, id3->Comment, ID3CommentSize);
             }
 
-            ParsingStreamReadC(&parsingStream, &id3->Genre);
+            DataStreamReadC(&dataStream, &id3->Genre);
         }
         else
         {
@@ -210,7 +211,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
             {
                 unsigned char flags = 0;
 
-                ParsingStreamReadC(&parsingStream, &flags);
+                DataStreamReadC(&dataStream, &flags);
 
                 a = (flags & 0b10000000) >> 7;
                 b = (flags & 0b01000000) >> 6;
@@ -221,7 +222,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
             {
                 ClusterInt sizeCluster;
 
-                ParsingStreamReadD(&parsingStream, sizeCluster.Data, 4u);
+                DataStreamReadD(&dataStream, sizeCluster.Data, 4u);
 
                 // Size format: x000 x000 x000 x000 => 28 Bit int
                 // The first bit of each byte not only unused but shall be merged!
@@ -249,21 +250,21 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                 case ID3Versionv2x3:
                 case ID3Versionv2x4:
                 {
-                    const size_t posCurrent = parsingStream.DataSize;
-                    const size_t posExpectedMax = parsingStream.DataCursor + sizeOfDataSegment;
+                    const size_t posCurrent = dataStream.DataSize;
+                    const size_t posExpectedMax = dataStream.DataCursor + sizeOfDataSegment;
 
-                    parsingStream.DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
+                    dataStream.DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
 
-                    while(!ParsingStreamIsAtEnd(&parsingStream))
+                    while(!DataStreamIsAtEnd(&dataStream))
                     {
                         // Read 4 byte indexes
                         ClusterInt indentifier;
                         unsigned int frameSize = 0;
                         unsigned short frameFlags = 0;
 
-                        ParsingStreamReadD(&parsingStream, indentifier.Data, 4u);
-                        ParsingStreamReadIU(&parsingStream, frameSize, EndianBig);
-                        ParsingStreamReadIU(&parsingStream, frameFlags, EndianBig);
+                        DataStreamReadD(&dataStream, indentifier.Data, 4u);
+                        DataStreamReadIU(&dataStream, frameSize, EndianBig);
+                        DataStreamReadIU(&dataStream, frameFlags, EndianBig);
     
                         const ID3v2xFrameTag frameTag = ConvertID3v2xFrameTag(indentifier.Value);
                         const unsigned char unkownTag = frameTag == ID3v2xFrameTagInvalid;
@@ -274,7 +275,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
 
                             if(emptyDataDertected)
                             {
-                                ParsingStreamCursorToEnd(&parsingStream);
+                                DataStreamCursorToEnd(&dataStream);
                                 break; // Cancel while loop, as there is nothing else to parse.
                             }
                         }
@@ -291,7 +292,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                         );
 #endif
 
-                        size_t posAfterChunk = parsingStream.DataCursor + frameSize;
+                        size_t posAfterChunk = dataStream.DataCursor + frameSize;
 
 
 #if 0 // Skip
@@ -356,16 +357,16 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                                 break;
                             case Popularimeter:
                             {
-                                const unsigned char* emailToUser = ParsingStreamCursorPosition(&parsingStream);
-                                const size_t maximalToRead = ParsingStreamRemainingSize(&parsingStream) - 6u;
+                                const unsigned char* emailToUser = DataStreamCursorPosition(&dataStream);
+                                const size_t maximalToRead = DataStreamRemainingSize(&dataStream) - 6u;
                                 const size_t emailToUserSize = TextLengthA((char*)emailToUser, maximalToRead);
                                 unsigned char rating = 0;
                                 // counter?
 
                                 // Copy
 
-                                ParsingStreamCursorAdvance(&parsingStream, emailToUserSize + 1);
-                                ParsingStreamReadC(&parsingStream, rating);
+                                DataStreamCursorAdvance(&dataStream, emailToUserSize + 1);
+                                DataStreamReadC(&dataStream, rating);
 
                                 break;
                             }
@@ -519,13 +520,13 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                         }
 #endif
 
-                        const unsigned char hasUnhandleChunkDetected = parsingStream.DataCursor < posAfterChunk;
+                        const unsigned char hasUnhandleChunkDetected = dataStream.DataCursor < posAfterChunk;
 
                         if(hasUnhandleChunkDetected)
                         {
                             printf("Unhandle chunk detected!\n");
 
-                            parsingStream.DataCursor = posAfterChunk;
+                            dataStream.DataCursor = posAfterChunk;
                         }
                     }
 
@@ -535,7 +536,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
         }
     }
 
-    *dataRead = parsingStream.DataCursor;
+    *dataRead = dataStream.DataCursor;
 
     return ActionSuccessful;
 }

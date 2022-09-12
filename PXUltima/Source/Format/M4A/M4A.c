@@ -1,6 +1,6 @@
 #include "M4A.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Container/ClusterValue.h>
 #include <Memory/Memory.h>
 
@@ -66,23 +66,24 @@ M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID)
 
 ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 
 	MemorySet(m4a, sizeof(M4A), 0);
 	*dataRead = 0;
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 
-	while(!ParsingStreamIsAtEnd(&parsingStream))
+	while(!DataStreamIsAtEnd(&dataStream))
 	{
 		M4AChunk chunk;
 
 		unsigned int chunkSize = 0;
 		ClusterInt typePrimaryID;
 
-		ParsingStreamReadIU(&parsingStream, &chunkSize, EndianBig);
-		ParsingStreamReadD(&parsingStream, typePrimaryID.Data, 4u);
+		DataStreamReadIU(&dataStream, &chunkSize, EndianBig);
+		DataStreamReadD(&dataStream, typePrimaryID.Data, 4u);
 
-		const size_t positionPrediction = parsingStream.DataCursor + chunkSize - 8;
+		const size_t positionPrediction = dataStream.DataCursor + chunkSize - 8;
 		const M4AChunkID typePrimary = ConvertToM4AChunkID(typePrimaryID.Value);
 
 #if M4ADebugLog
@@ -104,9 +105,9 @@ ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t*
 				unsigned int sizeB = 0;
 				char isoSignature[8]; // isom3gp4
 
-				ParsingStreamReadD(&parsingStream, chunk.TypeSub, 4u);
-				ParsingStreamReadIU(&parsingStream, &sizeB, EndianBig);
-				ParsingStreamReadD(&parsingStream, isoSignature, 8u);
+				DataStreamReadD(&dataStream, chunk.TypeSub, 4u);
+				DataStreamReadIU(&dataStream, &sizeB, EndianBig);
+				DataStreamReadD(&dataStream, isoSignature, 8u);
 
 				break;
 			}
@@ -165,15 +166,15 @@ ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t*
 			}
 		}
 
-		if(parsingStream.DataCursor < positionPrediction)
+		if(dataStream.DataCursor < positionPrediction)
 		{
-			const unsigned int offset = positionPrediction - parsingStream.DataCursor;
+			const unsigned int offset = positionPrediction - dataStream.DataCursor;
 
 #if M4ADebugLog
 			printf("[M4A] Illegal allignment detected! Moving %i Bytes\n", offset);
 #endif
 
-			parsingStream.DataCursor = positionPrediction;
+			dataStream.DataCursor = positionPrediction;
 		}
 	}
 

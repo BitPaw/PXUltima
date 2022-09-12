@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Format\PHP\PHP.h" />
     <ClInclude Include="Source\Compiler\Compiler.h" />
     <ClInclude Include="Source\Async\Await.h" />
     <ClInclude Include="Source\Async\Lock.h" />
@@ -37,7 +38,7 @@
     <ClInclude Include="Source\File\BitStream.h" />
     <ClInclude Include="Source\File\Endian.h" />
     <ClInclude Include="Source\File\File.h" />
-    <ClInclude Include="Source\File\ParsingStream.h" />
+    <ClInclude Include="Source\File\DataStream.h" />
     <ClInclude Include="Source\Format\3DS\A3DS.h" />
     <ClInclude Include="Source\Format\AAC\AAC.h" />
     <ClInclude Include="Source\Format\ADAM7\ADAM7.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="Source\Format\Type.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Format\PHP\PHP.c" />
     <ClCompile Include="Source\Compiler\Compiler.c" />
     <ClCompile Include="Source\Async\Lock.c" />
     <ClCompile Include="Source\Async\Thread.c" />
@@ -133,7 +135,7 @@
     <ClCompile Include="Source\File\BitStream.c" />
     <ClCompile Include="Source\File\Endian.c" />
     <ClCompile Include="Source\File\File.c" />
-    <ClCompile Include="Source\File\ParsingStream.c" />
+    <ClCompile Include="Source\File\DataStream.c" />
     <ClCompile Include="Source\Format\3DS\A3DS.c" />
     <ClCompile Include="Source\Format\AAC\AAC.c" />
     <ClCompile Include="Source\Format\ADAM7\ADAM7.c" />

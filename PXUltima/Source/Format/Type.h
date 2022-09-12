@@ -15,6 +15,10 @@
 #endif
 //-----------------------------------------------------------------------------
 
+#ifndef Byte
+#define CByte unsigned char
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {

@@ -1,6 +1,6 @@
 #include "OGG.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Memory/Memory.h>
 
 #define OGGHeaderSignature { 'O','g','g','S' }
@@ -11,13 +11,14 @@
 
 ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 
-	MemorySet(ogg, sizeof(ogg), 0);
+	MemorySet(ogg, sizeof(OGG), 0);
 	*dataRead = 0;
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 
-	while(!ParsingStreamIsAtEnd(&parsingStream))
+	while(!DataStreamIsAtEnd(&dataStream))
 	{
 		OGGPage page;
 
@@ -27,7 +28,7 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 			// You can refocus it when the file is corrupted.
 			const unsigned char* headerSignature[] = OGGHeaderSignature;
 			const size_t headerSignatureSize = sizeof(headerSignature);
-			const unsigned char validHeaderSignature = ParsingStreamReadAndCompare(&parsingStream, headerSignature, headerSignatureSize);
+			const unsigned char validHeaderSignature = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!validHeaderSignature)
 			{
@@ -36,13 +37,13 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 			}
 		}
 
-		ParsingStreamReadCU(&parsingStream, &page.Version);
-		ParsingStreamReadCU(&parsingStream, &page.HeaderType);
-		ParsingStreamReadIU(&parsingStream, &page.GranulePosition, EndianLittle);
-		ParsingStreamReadIU(&parsingStream, &page.SerialNumber, EndianLittle);
-		ParsingStreamReadIU(&parsingStream, &page.SequenceNumber, EndianLittle);
-		ParsingStreamReadIU(&parsingStream, &page.CRC32CheckSum, EndianLittle);
-		ParsingStreamReadCU(&parsingStream, &page.PageSegments);
+		DataStreamReadCU(&dataStream, &page.Version);
+		DataStreamReadCU(&dataStream, &page.HeaderType);
+		DataStreamReadIU(&dataStream, &page.GranulePosition, EndianLittle);
+		DataStreamReadIU(&dataStream, &page.SerialNumber, EndianLittle);
+		DataStreamReadIU(&dataStream, &page.SequenceNumber, EndianLittle);
+		DataStreamReadIU(&dataStream, &page.CRC32CheckSum, EndianLittle);
+		DataStreamReadCU(&dataStream, &page.PageSegments);
 
 		unsigned char segmentSizeList[0xFF];
 
@@ -70,7 +71,7 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 
 		for(size_t i = 0; i < page.PageSegments; ++i)
 		{
-			ParsingStreamReadCU(&parsingStream, &segmentSizeList[i]);
+			DataStreamReadCU(&dataStream, &segmentSizeList[i]);
 
 			printf
 			(
@@ -88,7 +89,7 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 
 			for(size_t i = 0; i < x; i++)
 			{
-				unsigned char* currentPos = ParsingStreamCursorPosition(&parsingStream) + i;
+				unsigned char* currentPos = (unsigned char*)DataStreamCursorPosition(&dataStream) + i;
 
 				char print = (*currentPos >= ' ' && *currentPos <= '~') ? *currentPos : '.';
 
@@ -102,11 +103,11 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 
 			printf("\n");
 
-			ParsingStreamCursorAdvance(&parsingStream, x);
+			DataStreamCursorAdvance(&dataStream, x);
 		}
 	}
 
-	*dataRead = parsingStream.DataCursor;
+	*dataRead = dataStream.DataCursor;
 
 	return ActionSuccessful;
 }

@@ -1,7 +1,7 @@
 #include "SBPProtocol.h"
 
 #include <Memory/Memory.h>
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <OS/User.h>
 
 void SBPDataConstruct(SBPData* const sbpData)
@@ -172,7 +172,7 @@ void SBPDataPrint(SBPData* const sbpData)
 
 size_t SBPDataPackageParse(SBPData* data, const void* inputBuffer, const size_t* inputBufferSize)
 {
-	ParsingStream dataStream(inputBuffer, inputBufferSize);
+	DataStream dataStream(inputBuffer, inputBufferSize);
 
 	size_t bufferSize = 0;
 
@@ -208,7 +208,7 @@ size_t SBPDataPackageParse(SBPData* data, const void* inputBuffer, const size_t*
 
 size_t SBPDataPackageSerialize(const SBPData& data, void* outputBuffer, const size_t outputBufferSize)
 {
-	ParsingStreamX stream(outputBuffer, outputBufferSize);
+	DataStreamX stream(outputBuffer, outputBufferSize);
 
 	stream.Write("°°", 2u);
 	stream.Write(data.CommandID.Data, 4u);
@@ -292,7 +292,7 @@ void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const 
 
 size_t SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const size_t inputDataSize)
 {
-	ParsingStreamX byteStream(inputData, inputDataSize);
+	DataStreamX byteStream(inputData, inputDataSize);
 
 	{
 		unsigned char modeID = 0;
@@ -367,7 +367,7 @@ size_t SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, con
 
 size_t SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const size_t outputDataSize) const
 {
-	ParsingStreamX byteStream(outputData, outputDataSize);
+	DataStreamX byteStream(outputData, outputDataSize);
 
 	{
 		unsigned char modeID = 0;
@@ -453,20 +453,20 @@ void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam)
 
 size_t SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const size_t inputDataSize)
 {
-	ParsingStreamX parsingStream(inputData, inputDataSize);
+	DataStreamX DataStream(inputData, inputDataSize);
 
 	// Add name
 	{
 		unsigned char formatType = 0;
 		unsigned short size = 0;
 
-		parsingStream.Read(formatType);
-		parsingStream.Read(size, EndianLittle);
+		DataStream.Read(formatType);
+		DataStream.Read(size, EndianLittle);
 
 		NameSize = size;
 		Format = (TextFormat)formatType;
 
-		const Byte__* nameStart = parsingStream.CursorCurrentAdress();
+		const Byte__* nameStart = DataStream.CursorCurrentAdress();
 
 		switch (Format)
 		{
@@ -483,24 +483,24 @@ size_t SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const 
 		}
 	}
 
-	return parsingStream.DataCursor;
+	return DataStream.DataCursor;
 }
 
 size_t SBPDataPackageIamSerialize(SBPDataPackageIam* cosnt sbpDataPackageIam, void* outputData, const size_t outputDataSize) const
 {
-	ParsingStreamX parsingStream(outputData, outputDataSize);
+	DataStreamX DataStream(outputData, outputDataSize);
 
 	// Add name
 	{
 		const unsigned char formatType = (TextFormat)Format;
 		unsigned short size = NameSize;
 
-		parsingStream.Write(formatType);
-		parsingStream.Write(size, EndianLittle);
-		parsingStream.Write(NameW, size);
+		DataStream.Write(formatType);
+		DataStream.Write(size, EndianLittle);
+		DataStream.Write(NameW, size);
 	}
 
-	return parsingStream.DataCursor;
+	return DataStream.DataCursor;
 }
 
 void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse)
@@ -511,12 +511,12 @@ void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackag
 
 size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const size_t inputDataSize)
 {
-	ParsingStreamX parsingStream(inputData, inputDataSize);
+	DataStreamX DataStream(inputData, inputDataSize);
 
 	{
 		unsigned char typeID = 0;
 
-		parsingStream.Read(typeID);
+		DataStream.Read(typeID);
 
 		switch (typeID)
 		{
@@ -538,12 +538,12 @@ size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageR
 		}
 	}
 
-	return parsingStream.DataCursor;
+	return DataStream.DataCursor;
 }
 
 size_t SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const size_t outputDataSize)
 {
-	ParsingStreamX parsingStream(outputData, outputDataSize);
+	DataStreamX DataStream(outputData, outputDataSize);
 
 	unsigned char typeID = 0;
 
@@ -566,9 +566,9 @@ size_t SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPack
 		break;
 	}
 
-	parsingStream.Write(typeID);
+	DataStream.Write(typeID);
 
-	return parsingStream.DataCursor;
+	return DataStream.DataCursor;
 }
 
 void SBPDataPackageTextConstruct(SBPDataPackageText* const sbpDataPackageText)
@@ -582,33 +582,33 @@ void SBPDataPackageTextDestruct(SBPDataPackageText* const sbpDataPackageText)
 
 size_t SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const size_t inputDataSize)
 {
-	ParsingStreamX parsingStream(inputData, inputDataSize);
+	DataStreamX DataStream(inputData, inputDataSize);
 
 	{
 		unsigned char textModeID = 0;
 
-		parsingStream.Read(textModeID);
+		DataStream.Read(textModeID);
 
 		TextData.Format = (TextFormat)textModeID;
 	}
 
-	parsingStream.Read(TextData.SizeInBytes, EndianLittle);
-	parsingStream.Read(TextData.TextData, TextData.SizeInBytes);
+	DataStream.Read(TextData.SizeInBytes, EndianLittle);
+	DataStream.Read(TextData.TextData, TextData.SizeInBytes);
 
-	return parsingStream.DataCursor;
+	return DataStream.DataCursor;
 }
 
 size_t SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const size_t outputDataSize)
 {
-	ParsingStreamX parsingStream(outputData, outputDataSize);
+	DataStreamX DataStream(outputData, outputDataSize);
 
 	const unsigned char textModeID = (TextFormat)TextData.Format;
 
-	parsingStream.Write(textModeID);
-	parsingStream.Write(TextData.SizeInBytes, EndianLittle);
-	parsingStream.Write(TextData.TextData, TextData.SizeInBytes);
+	DataStream.Write(textModeID);
+	DataStream.Write(TextData.SizeInBytes, EndianLittle);
+	DataStream.Write(TextData.TextData, TextData.SizeInBytes);
 
-	return parsingStream.DataCursor;
+	return DataStream.DataCursor;
 }
 
 void SBPDataPackageConnectionCreateFill(const SBPConnectionCreateReason reason)

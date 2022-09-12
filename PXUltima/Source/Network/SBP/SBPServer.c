@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Text/Text.h>
 
 /*

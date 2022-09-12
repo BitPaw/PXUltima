@@ -1,6 +1,6 @@
 #include "RIFF.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Container/ClusterValue.h>
 #include <Memory/Memory.h>
 
@@ -20,19 +20,20 @@
 
 ActionResult RIFFParse(RIFF* riff, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 
 	MemorySet(riff, sizeof(RIFF), 0);
 	*dataRead = 0;
 
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 
 	ClusterInt chunkID;
 	ClusterInt formatID;
 
-	ParsingStreamReadIU(&parsingStream, chunkID.Data, 4u);
-	ParsingStreamReadIU(&parsingStream, &riff->ChunkSize, EndianLittle);
-	ParsingStreamReadIU(&parsingStream, formatID.Data, 4u);
+	DataStreamReadIU(&dataStream, chunkID.Data, 4u);
+	DataStreamReadIU(&dataStream, &riff->ChunkSize, EndianLittle);
+	DataStreamReadIU(&dataStream, formatID.Data, 4u);
 
 	switch(chunkID.Value) // Detect Endiantype
 	{
@@ -82,7 +83,7 @@ ActionResult RIFFParse(RIFF* riff, const void* data, const size_t dataSize, size
 
 	riff->Valid = (riff->EndianFormat != EndianInvalid) && (riff->Format != RIFFInvalid);
 
-	*dataRead = parsingStream.DataCursor;
+	*dataRead = dataStream.DataCursor;
 
 	return ActionSuccessful;
 }

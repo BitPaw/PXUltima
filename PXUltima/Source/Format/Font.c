@@ -2,7 +2,7 @@
 
 #include <Memory/Memory.h>
 #include <Text/Text.h>
-#include <File/File.h>
+#include <File/DataStream.h>
 
 #include <Format/FNT/FNT.h>
 #include <Format/TTF/TTF.h>
@@ -44,13 +44,13 @@ ActionResult FontLoadA(CFont* const font, const char* filePath)
 
 ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
 {
-    File file;
+    DataStream dataStream;
 
-    FileConstruct(&file);
+    DataStreamConstruct(&dataStream);
     FontConstruct(font);
 
     {
-        const ActionResult fileLoadingResult = FileMapToVirtualMemoryW(&file, filePath, 0, MemoryReadOnly);
+        const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
         const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
 
         if(!sucessful)
@@ -77,7 +77,7 @@ ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
 
 
         const FontFileFormat hint = FontGuessFormat(filePath);
-        const ActionResult fileParsingResult = FontLoadD(font, hint, file.Data, file.DataSize, filePathDirectory);
+        const ActionResult fileParsingResult = FontLoadD(font, hint, dataStream.Data, dataStream.DataSize, filePathDirectory);
         const unsigned char success = fileParsingResult == ActionSuccessful;
 
         if(success)
@@ -92,7 +92,7 @@ ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
         {
             const ImageFileFormat imageFileFormat = fileGuessResult + fileFormatID;
 
-            fileGuessResult = FontLoadD(font, imageFileFormat, file.Data, file.DataSize, filePathDirectory);
+            fileGuessResult = FontLoadD(font, imageFileFormat, dataStream.Data, dataStream.DataSize, filePathDirectory);
 
             fileFormatID++;
         }
@@ -101,7 +101,7 @@ ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
         return fileGuessResult;
     }
 
-    FileDestruct(&file);
+    DataStreamDestruct(&dataStream);
 }
 
 ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath)

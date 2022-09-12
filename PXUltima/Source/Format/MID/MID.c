@@ -1,6 +1,6 @@
 #include "MID.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Memory/Memory.h>
 
 
@@ -35,9 +35,10 @@ switch (midiCommand)
 
 ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t* dataRead)
 {
-	ParsingStream parsingStream;
+	DataStream dataStream;
 
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&dataStream);
+	DataStreamFromExternal(&dataStream, data, dataSize);
 
 	// Pasre Chunk header
 	{
@@ -46,7 +47,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 		{
 			const unsigned char headerSignature[] = MIDITrackHeaderID;
 			const size_t headerSignatureSize = sizeof(headerSignature);
-			const unsigned char isValid = ParsingStreamReadAndCompare(&parsingStream, headerSignature, headerSignatureSize);
+			const unsigned char isValid = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
@@ -54,10 +55,10 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 			}
 		}
 
-		ParsingStreamReadSU(&parsingStream, chunkLength, EndianBig);
-		ParsingStreamReadSU(&parsingStream, &mid->Format, EndianBig);
-		ParsingStreamReadSU(&parsingStream, &mid->TrackListSize, EndianBig);
-		ParsingStreamReadSU(&parsingStream, &mid->MusicSpeed, EndianBig);
+		DataStreamReadSU(&dataStream, chunkLength, EndianBig);
+		DataStreamReadSU(&dataStream, &mid->Format, EndianBig);
+		DataStreamReadSU(&dataStream, &mid->TrackListSize, EndianBig);
+		DataStreamReadSU(&dataStream, &mid->MusicSpeed, EndianBig);
 	}
 
 	if(!mid->TrackListSize)
@@ -76,7 +77,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 		{
 			const unsigned char headerSignature[] = MIDITrackChunkID;
 			const size_t headerSignatureSize = sizeof(headerSignature);
-			const unsigned char isValid = ParsingStreamReadAndCompare(&parsingStream, headerSignature, headerSignatureSize);
+			const unsigned char isValid = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
@@ -84,16 +85,16 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 			}
 		}
 
-		ParsingStreamReadIU(&parsingStream, chunkLength, EndianBig);
+		DataStreamReadIU(&dataStream, chunkLength, EndianBig);
 
 		track->ID = i;
 		track->EventData = MemoryAllocate(sizeof(unsigned char) * chunkLength);
 		track->EventDataSize = chunkLength;
 
-		ParsingStreamReadD(&parsingStream, track->EventData, chunkLength);
+		DataStreamReadD(&dataStream, track->EventData, chunkLength);
 	}
 
-	*dataRead = parsingStream.DataCursor;
+	*dataRead = dataStream.DataCursor;
 
 	return ActionSuccessful;
 }

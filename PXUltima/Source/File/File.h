@@ -1,12 +1,12 @@
 #ifndef FileINCLUDE
 #define FileINCLUDE
 
-#include <Format/Type.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>
 #include <assert.h>
 
+#include <Format/Type.h>
 #include <OS/OSVersion.h>
 #include <Memory/Memory.h>
 #include <Error/ActionResult.h>
@@ -54,41 +54,6 @@
 extern "C"
 {
 #endif
-	typedef enum FileLocation_
-	{
-		FileLocationInvalid,
-		FileLocationMappedVirtual, // Used 'VirtalAlloc()' / 'mmap()'
-		FileLocationMappedFromDisk, // Used 'FileView()' / 'fmap()'
-		FileLocationCachedFromDisk, // When the file is cached into an CPrivate buffer
-		FileLocationLinked // Used existing file with 'fopen()'
-	}
-	FileLocation;
-
-	typedef enum FilePersistence_
-	{
-		Permanent,
-		Tempoary
-	}
-	FilePersistence;
-
-	typedef enum FileCachingMode_
-	{
-		FileCachingDefault,
-
-		FileCachingRandom,  // Access data in a random order.
-		FileCachingSequential, // Data sequentially from lower offsets to higher offsets.
-		FileCachingTemporary, // File will not be saves to drive.
-		FileCachingUseOnce, // Access the specified data once and then not reuse it again.
-
-		// Windows only
-		FileCachingWriteThrough,
-		FileCachingNoBuffering, // No OS Caching, direct to Harddrive if supprted
-
-		// UNIX only
-		FileCachingNeedLater, // Data is not needed right now. "For later"[near future].
-		FileCachingDontNeedNow // Data will not be cached. "I dont need it yet"
-	}
-	FileCachingMode;
 
 	/*
 	typedef struct FilePath_
@@ -100,90 +65,6 @@ extern "C"
 		wchar_t Extension[ExtensionMaxSize];
 	}
 	FilePath;*/
-
-
-
-	typedef struct File_
-	{
-		unsigned char* Data;
-		size_t DataSize;
-		size_t DataCursor;
-
-		FileLocation _fileLocation; // Where the is stored, used as indicator how to clean up.
-
-		FileHandleType FileHandle; // Only used if file is used directly
-
-		FileMappingID IDMapping; // Only used while mapping a file
-
-#if defined(OSUnix)
-
-#elif defined(OSWindows)
-		FILE* FileHandleCStyle; // Used for writing only, usage of fprintf()
-#endif
-		MemoryProtectionMode MemoryMode;
-	}
-	File;
-
-
-
-	CPrivate FileCachingMode ConvertToFileCachingMode(const unsigned int value);
-	CPrivate unsigned int ConvertFromFileCachingMode(const FileCachingMode fileCachingMode);
-
-
-	CPublic void FileConstruct(File* file);
-	CPublic void FileDestruct(File* file);
-
-
-	//---<Open>------------------------------------------------------------
-	CPublic ActionResult FileOpenA(File* file, const char* filePath, const MemoryProtectionMode fileOpenMode, FileCachingMode fileCachingMode);
-	CPublic ActionResult FileOpenW(File* file, const wchar_t* filePath, const MemoryProtectionMode fileOpenMode, FileCachingMode fileCachingMode);
-	//---------------------------------------------------------------------
-
-	//---<Close>-----------------------------------------------------------
-	CPublic ActionResult FileClose(File* file);
-	//---------------------------------------------------------------------
-
-	//---<Mapping>---------------------------------------------------------
-	CPublic ActionResult FileMapToVirtualMemoryA(File* file, const char* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode);
-	CPublic ActionResult FileMapToVirtualMemoryW(File* file, const wchar_t* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode);
-	CPublic ActionResult FileMapToVirtualMemory(File* file, const size_t size, const MemoryProtectionMode protectionMode);
-	CPublic ActionResult FileUnmapFromVirtualMemory(File* file);
-	//---------------------------------------------------------------------
-
-	//---<Read>------------------------------------------------------------
-	/*CPublic ActionResult ReadFromDisk(File* file, unsigned char** outPutBuffer, size_t* outPutBufferSize, const unsigned char addTerminatorByte);
-	CPublic ActionResult ReadFromDisk(File* file, const char* filePath, const unsigned char addNullTerminator, const FilePersistence filePersistence);
-	CPublic 	ActionResult ReadFromDisk(File* file, const wchar_t* filePath, const unsigned char addNullTerminator, const FilePersistence filePersistence);
-
-	CPublic ActionResult ReadFromDisk(FILE* file, unsigned char** targetBuffer, size_t* bufferSize, const unsigned char addNullTerminator);
-	CPublic ActionResult ReadFromDisk
-	(
-		const wchar_t* filePath,
-		unsigned char** targetBuffer,
-		size_t* bufferSize,
-		const unsigned char addNullTerminator,
-		FilePersistence filePersistence
-	);*/
-	//---------------------------------------------------------------------
-
-	//---<Write>-----------------------------------------------------------
-	/*CPublic ActionResult WriteToDiskC(File* file, const char value);
-	CPublic ActionResult WriteToDiskCU(File* file, const unsigned char value);
-	CPublic ActionResult WriteToDiskS(File* file, const short value, const Endian endian);
-	CPublic ActionResult WriteToDiskSU(File* file, const unsigned short value, const Endian endian);
-	CPublic ActionResult WriteToDiskI(File* file, const int value, const  Endian endian);
-	CPublic ActionResult WriteToDiskIU(File* file, const unsigned int value, const Endian endian);
-	CPublic ActionResult WriteToDiskLL(File* file, const long long value, const Endian endian);
-	CPublic ActionResult WriteToDiskLLU(File* file, const unsigned long long value, const Endian endian);
-	CPublic ActionResult WriteToDiskD(File* file, const void* value, const size_t length);
-	CPublic ActionResult WriteToDisk(File* file, const char* format, ...);*/
-
-	//ActionResult WriteIntoFile(const void* data, const size_t dataSize);
-	//ActionResult WriteToDisk(const char* filePath, FilePersistence filePersistence);
-	//ActionResult WriteToDisk(const wchar_t* filePath, FilePersistence filePersistence);
-	//---------------------------------------------------------------------
-
-
 
 	//---<Utility>---------------------------------------------------------
 	CPublic unsigned char FileDoesExistA(const char* filePath);
@@ -213,8 +94,6 @@ extern "C"
 	CPublic ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, size_t* listSize);
 	CPublic ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, size_t* listSize);
 	//---------------------------------------------------------------------
-
-
 
 	CPublic void FilePathSplittA
 	(

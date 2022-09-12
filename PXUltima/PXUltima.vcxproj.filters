@@ -66,9 +66,6 @@
     <ClInclude Include="Source\File\File.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\ParsingStream.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Format\3DS\A3DS.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -303,6 +300,12 @@
     <ClInclude Include="Source\Compiler\Compiler.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\File\DataStream.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\PHP\PHP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\Lock.c">
@@ -348,9 +351,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\File\File.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\ParsingStream.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\3DS\A3DS.c">
@@ -579,6 +579,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Compiler\Compiler.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File\DataStream.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\PHP\PHP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -7,7 +7,7 @@
 #include <Memory/Memory.h>
 #include <Container/ClusterValue.h>
 #include <File/Endian.h>
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Time/Time.h>
 #include <Format/Image.h>
 #include <Format/ZLIB/ZLIB.h>
@@ -925,9 +925,9 @@ size_t PNGFilePredictSize(const size_t width, const size_t height, const size_t 
 
 ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t* dataRead)
 {
-    ParsingStream parsingStream;
+    DataStream DataStream;
 
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&DataStream, data, dataSize);
     PNGConstruct(png);
     *dataRead = 0;
 
@@ -944,7 +944,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
         {
             const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
             const size_t pngFileHeaderSize = sizeof(pngFileHeader);
-            const unsigned char isValidHeader = ParsingStreamReadAndCompare(&parsingStream, pngFileHeader, pngFileHeaderSize);
+            const unsigned char isValidHeader = DataStreamReadAndCompare(&DataStream, pngFileHeader, pngFileHeaderSize);
 
             if(!isValidHeader)
             {
@@ -953,7 +953,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
         }
 
         // Allocate Memory for later ImageData Chunks
-        imageDataChunkCacheSizeMAX = parsingStream.DataSize - 0u;
+        imageDataChunkCacheSizeMAX = DataStream.DataSize - 0u;
         imageDataChunkCache = MemoryAllocate(sizeof(unsigned char) * imageDataChunkCacheSizeMAX);
 
         //---------------------------------------------------------------------
@@ -977,8 +977,8 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
 
             //chunk.ChunkData = dataStream.Data + dataStream.DataCursor;
 
-            ParsingStreamReadIU(&parsingStream, &chunk.Lengh, EndianBig);
-            ParsingStreamReadD(&parsingStream, chunk.ChunkTypeRaw, 4u);
+            DataStreamReadIU(&DataStream, &chunk.Lengh, EndianBig);
+            DataStreamReadD(&DataStream, chunk.ChunkTypeRaw, 4u);
 
             // Check
             {
@@ -998,7 +998,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
 
                 chunk.ChunkType = ConvertToChunkType(ChunkTypeID);
 
-                predictedOffset = parsingStream.DataCursor + chunk.Lengh;
+                predictedOffset = DataStream.DataCursor + chunk.Lengh;
             }
 
 #if PNGDebugInfo
@@ -1025,14 +1025,14 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
                     unsigned char colorTypeRaw = 0;
                     unsigned char interlaceMethodRaw = 0;
 
-                    ParsingStreamReadIU(&parsingStream, &png->ImageHeader.Width, EndianBig); // 4 Bytes
-                    ParsingStreamReadIU(&parsingStream, &png->ImageHeader.Height, EndianBig); // 4 Bytes
+                    DataStreamReadIU(&DataStream, &png->ImageHeader.Width, EndianBig); // 4 Bytes
+                    DataStreamReadIU(&DataStream, &png->ImageHeader.Height, EndianBig); // 4 Bytes
 
-                    ParsingStreamReadCU(&parsingStream, &png->ImageHeader.BitDepth); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &colorTypeRaw); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &png->ImageHeader.CompressionMethod); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &png->ImageHeader.FilterMethod); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &interlaceMethodRaw); // 1 Byte__
+                    DataStreamReadCU(&DataStream, &png->ImageHeader.BitDepth); // 1 Byte__
+                    DataStreamReadCU(&DataStream, &colorTypeRaw); // 1 Byte__
+                    DataStreamReadCU(&DataStream, &png->ImageHeader.CompressionMethod); // 1 Byte__
+                    DataStreamReadCU(&DataStream, &png->ImageHeader.FilterMethod); // 1 Byte__
+                    DataStreamReadCU(&DataStream, &interlaceMethodRaw); // 1 Byte__
 
                     png->ImageHeader.ColorType = ConvertToPNGColorType(colorTypeRaw);
                     png->ImageHeader.InterlaceMethod = ConvertToPNGInterlaceMethod(interlaceMethodRaw);
@@ -1090,7 +1090,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
                     //zlib.Unpack(imageDataChunkCache, imageDataChunkCacheSizeUSED);
 
 
-                    ParsingStreamReadD(&parsingStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
+                    DataStreamReadD(&DataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
 
                     imageDataChunkCacheSizeUSED += chunk.Lengh;
 
@@ -1105,26 +1105,26 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
                 }
                 case PNGChunkTransparency:
                 {
-                    ParsingStreamCursorAdvance(&parsingStream, chunk.Lengh); // not handled
+                    DataStreamCursorAdvance(&DataStream, chunk.Lengh); // not handled
 
                     break;
                 }
                 case PNGChunkImageGamma:
                 {
-                    ParsingStreamReadIU(&parsingStream, &png->Gamma, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->Gamma, EndianBig);
 
                     break;
                 }
                 case PNGChunkPrimaryChromaticities:
                 {
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.WhiteX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.WhiteY, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.RedX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.RedY, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.GreenX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.GreenY, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.BlueX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png->PrimaryChromatics.BlueY, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.WhiteX, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.WhiteY, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.RedX, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.RedY, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.GreenX, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.GreenY, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.BlueX, EndianBig);
+                    DataStreamReadIU(&DataStream, &png->PrimaryChromatics.BlueY, EndianBig);
 
                     break;
                 }
@@ -1257,40 +1257,40 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
 
                     for(size_t i = 0; i < listSize; i++)
                     {
-                        ParsingStreamReadSU(&parsingStream, &list[i], EndianBig);
+                        DataStreamReadSU(&DataStream, &list[i], EndianBig);
                     }
 
                     break;
                 }
                 case PNGChunkLastModificationTime:
                 {
-                    ParsingStreamReadSU(&parsingStream, &png->LastModificationTime.Year, EndianBig);
-                    ParsingStreamReadCU(&parsingStream, &png->LastModificationTime.Month);
-                    ParsingStreamReadCU(&parsingStream, &png->LastModificationTime.Day);
-                    ParsingStreamReadCU(&parsingStream, &png->LastModificationTime.Hour);
-                    ParsingStreamReadCU(&parsingStream, &png->LastModificationTime.Minute);
-                    ParsingStreamReadCU(&parsingStream, &png->LastModificationTime.Second);
+                    DataStreamReadSU(&DataStream, &png->LastModificationTime.Year, EndianBig);
+                    DataStreamReadCU(&DataStream, &png->LastModificationTime.Month);
+                    DataStreamReadCU(&DataStream, &png->LastModificationTime.Day);
+                    DataStreamReadCU(&DataStream, &png->LastModificationTime.Hour);
+                    DataStreamReadCU(&DataStream, &png->LastModificationTime.Minute);
+                    DataStreamReadCU(&DataStream, &png->LastModificationTime.Second);
 
                     break;
                 }
                 case PNGChunkCustom:
                 default:
                 {
-                    ParsingStreamCursorAdvance(&parsingStream, chunk.Lengh);
+                    DataStreamCursorAdvance(&DataStream, chunk.Lengh);
                     break;
                 }
             }
             //---------------------------------------------------------------
 
 #if PNGDebugInfo
-            if(parsingStream.DataCursor != predictedOffset)
+            if(DataStream.DataCursor != predictedOffset)
             {
                 printf("[i][PNG] Chunk did not handle all Bytes\n");
             }
 #endif
-            parsingStream.DataCursor = predictedOffset;
+            DataStream.DataCursor = predictedOffset;
 
-            ParsingStreamReadIU(&parsingStream, &chunk.CRC, EndianBig); // 4 Bytes
+            DataStreamReadIU(&DataStream, &chunk.CRC, EndianBig); // 4 Bytes
 
             //---<Check CRC>---
             // TODO: Yes
@@ -1350,10 +1350,11 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
 
 ActionResult PNGParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
     PNG png;
 
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
     PNGConstruct(&png);
     *dataRead = 0;
 
@@ -1370,7 +1371,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         {
             const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
             const size_t pngFileHeaderSize = sizeof(pngFileHeader);
-            const unsigned char isValidHeader = ParsingStreamReadAndCompare(&parsingStream, pngFileHeader, pngFileHeaderSize);
+            const unsigned char isValidHeader = DataStreamReadAndCompare(&dataStream, pngFileHeader, pngFileHeaderSize);
 
             if(!isValidHeader)
             {
@@ -1379,7 +1380,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         }
 
         // Allocate Memory for later ImageData Chunks
-        imageDataChunkCacheSizeMAX = parsingStream.DataSize - 0u;
+        imageDataChunkCacheSizeMAX = dataStream.DataSize - 0u;
         imageDataChunkCache = MemoryAllocate(sizeof(unsigned char) * imageDataChunkCacheSizeMAX);
 
         //---------------------------------------------------------------------
@@ -1403,8 +1404,8 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
             //chunk.ChunkData = dataStream.Data + dataStream.DataCursor;
 
-            ParsingStreamReadIU(&parsingStream, &chunk.Lengh, EndianBig);
-            ParsingStreamReadD(&parsingStream, chunk.ChunkTypeRaw, 4u);
+            DataStreamReadIU(&dataStream, &chunk.Lengh, EndianBig);
+            DataStreamReadD(&dataStream, chunk.ChunkTypeRaw, 4u);
 
             // Check
             {
@@ -1424,7 +1425,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
                 chunk.ChunkType = ConvertToChunkType(ChunkTypeID);
 
-                predictedOffset = parsingStream.DataCursor + chunk.Lengh;
+                predictedOffset = dataStream.DataCursor + chunk.Lengh;
             }
 
 #if PNGDebugInfo
@@ -1451,14 +1452,14 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     unsigned char colorTypeRaw = 0;
                     unsigned char interlaceMethodRaw = 0;
 
-                    ParsingStreamReadIU(&parsingStream, &png.ImageHeader.Width, EndianBig); // 4 Bytes
-                    ParsingStreamReadIU(&parsingStream, &png.ImageHeader.Height, EndianBig); // 4 Bytes
+                    DataStreamReadIU(&dataStream, &png.ImageHeader.Width, EndianBig); // 4 Bytes
+                    DataStreamReadIU(&dataStream, &png.ImageHeader.Height, EndianBig); // 4 Bytes
 
-                    ParsingStreamReadCU(&parsingStream, &png.ImageHeader.BitDepth); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &colorTypeRaw); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &png.ImageHeader.CompressionMethod); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &png.ImageHeader.FilterMethod); // 1 Byte__
-                    ParsingStreamReadCU(&parsingStream, &interlaceMethodRaw); // 1 Byte__
+                    DataStreamReadCU(&dataStream, &png.ImageHeader.BitDepth); // 1 Byte__
+                    DataStreamReadCU(&dataStream, &colorTypeRaw); // 1 Byte__
+                    DataStreamReadCU(&dataStream, &png.ImageHeader.CompressionMethod); // 1 Byte__
+                    DataStreamReadCU(&dataStream, &png.ImageHeader.FilterMethod); // 1 Byte__
+                    DataStreamReadCU(&dataStream, &interlaceMethodRaw); // 1 Byte__
 
                     png.ImageHeader.ColorType = ConvertToPNGColorType(colorTypeRaw);
                     png.ImageHeader.InterlaceMethod = ConvertToPNGInterlaceMethod(interlaceMethodRaw);
@@ -1480,7 +1481,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     {
                         unsigned char* paletteInsertion = png.Palette + i*4;
 
-                        ParsingStreamReadD(&parsingStream, paletteInsertion, 3u); // Read RGB value
+                        DataStreamReadD(&dataStream, paletteInsertion, 3u); // Read RGB value
 
                         paletteInsertion[3] = 0xFF; // Add alpha
                     }
@@ -1528,7 +1529,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     //zlib.Unpack(imageDataChunkCache, imageDataChunkCacheSizeUSED);
 
 
-                    ParsingStreamReadD(&parsingStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
+                    DataStreamReadD(&dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
 
                     imageDataChunkCacheSizeUSED += chunk.Lengh;
 
@@ -1552,7 +1553,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
                             unsigned short value;
 
-                            ParsingStreamReadSU(&parsingStream, &value, EndianBig);
+                            DataStreamReadSU(&dataStream, &value, EndianBig);
 
                            // color->key_defined = 1;
                             //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
@@ -1568,9 +1569,9 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                             unsigned short green;
                             unsigned short blue;
 
-                            ParsingStreamReadSU(&parsingStream, &red, EndianBig);
-                            ParsingStreamReadSU(&parsingStream, &green, EndianBig);
-                            ParsingStreamReadSU(&parsingStream, &blue, EndianBig);
+                            DataStreamReadSU(&dataStream, &red, EndianBig);
+                            DataStreamReadSU(&dataStream, &green, EndianBig);
+                            DataStreamReadSU(&dataStream, &blue, EndianBig);
 
                             //color->key_defined = 1;
                             //color->key_r = 256u * data[0] + data[1];
@@ -1590,7 +1591,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                             {
                                 unsigned char value = 0;
 
-                                ParsingStreamReadCU(&parsingStream, &value);
+                                DataStreamReadCU(&dataStream, &value);
 
                                 png.Palette[i * 4 + 3] = value;
                             }
@@ -1608,20 +1609,20 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 }
                 case PNGChunkImageGamma:
                 {
-                    ParsingStreamReadIU(&parsingStream, &png.Gamma, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.Gamma, EndianBig);
 
                     break;
                 }
                 case PNGChunkPrimaryChromaticities:
                 {
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.WhiteX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.WhiteY, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.RedX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.RedY, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.GreenX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.GreenY, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.BlueX, EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PrimaryChromatics.BlueY, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.WhiteX, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.WhiteY, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.RedX, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.RedY, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.GreenX, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.GreenY, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.BlueX, EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.BlueY, EndianBig);
 
                     break;
                 }
@@ -1698,9 +1699,9 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 {
                     unsigned char unitSpecifier = 0;
 
-                    ParsingStreamReadIU(&parsingStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], EndianBig);
-                    ParsingStreamReadIU(&parsingStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
-                    ParsingStreamReadCU(&parsingStream, &unitSpecifier);
+                    DataStreamReadIU(&dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], EndianBig);
+                    DataStreamReadIU(&dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
+                    DataStreamReadCU(&dataStream, &unitSpecifier);
 
                     switch(unitSpecifier)
                     {
@@ -1773,40 +1774,40 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
                     for(size_t i = 0; i < listSize; i++)
                     {
-                        ParsingStreamReadSU(&parsingStream, &list[i], EndianBig);
+                        DataStreamReadSU(&dataStream, &list[i], EndianBig);
                     }
 
                     break;
                 }
                 case PNGChunkLastModificationTime:
                 {
-                    ParsingStreamReadSU(&parsingStream, &png.LastModificationTime.Year, EndianBig);
-                    ParsingStreamReadCU(&parsingStream, &png.LastModificationTime.Month);
-                    ParsingStreamReadCU(&parsingStream, &png.LastModificationTime.Day);
-                    ParsingStreamReadCU(&parsingStream, &png.LastModificationTime.Hour);
-                    ParsingStreamReadCU(&parsingStream, &png.LastModificationTime.Minute);
-                    ParsingStreamReadCU(&parsingStream, &png.LastModificationTime.Second);
+                    DataStreamReadSU(&dataStream, &png.LastModificationTime.Year, EndianBig);
+                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Month);
+                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Day);
+                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Hour);
+                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Minute);
+                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Second);
 
                     break;
                 }
                 case PNGChunkCustom:
                 default:
                 {
-                    ParsingStreamCursorAdvance(&parsingStream, chunk.Lengh);
+                    DataStreamCursorAdvance(&dataStream, chunk.Lengh);
                     break;
                 }
             }
             //---------------------------------------------------------------
 
 #if PNGDebugInfo
-            if(parsingStream.DataCursor != predictedOffset)
+            if(DataStream.DataCursor != predictedOffset)
             {
                 printf("[i][PNG] Chunk did not handle all Bytes\n");
             }
 #endif
-            parsingStream.DataCursor = predictedOffset;
+            dataStream.DataCursor = predictedOffset;
 
-            ParsingStreamReadIU(&parsingStream, &chunk.CRC, EndianBig); // 4 Bytes
+            DataStreamReadIU(&dataStream, &chunk.CRC, EndianBig); // 4 Bytes
 
             //---<Check CRC>---
             // TODO: Yes
@@ -1916,9 +1917,10 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
 ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* dataWritten)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
 
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
 
     *dataWritten = 0;
 
@@ -1927,30 +1929,30 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
         const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
         const size_t pngFileHeaderSize = sizeof(pngFileHeader);
 
-        ParsingStreamWriteD(&parsingStream, pngFileHeader, pngFileHeaderSize);
+        DataStreamWriteD(&dataStream, pngFileHeader, pngFileHeaderSize);
     }
 
     //---<IHDR> (Image Header)---
     {
         const unsigned char colorType = ConvertFromPNGColorType(png->ImageHeader.ColorType);
         const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(png->ImageHeader.InterlaceMethod);
-        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
+        const unsigned char* chunkStart = DataStreamCursorPosition(&dataStream);
 
-        ParsingStreamWriteIU(&parsingStream, 13u, EndianBig);
-        ParsingStreamWriteD(&parsingStream, "IHDR", 4u);
+        DataStreamWriteIU(&dataStream, 13u, EndianBig);
+        DataStreamWriteD(&dataStream, "IHDR", 4u);
 
-        ParsingStreamWriteIU(&parsingStream, png->ImageHeader.Width, EndianBig);
-        ParsingStreamWriteIU(&parsingStream, png->ImageHeader.Height, EndianBig);
+        DataStreamWriteIU(&dataStream, png->ImageHeader.Width, EndianBig);
+        DataStreamWriteIU(&dataStream, png->ImageHeader.Height, EndianBig);
 
-        ParsingStreamWriteCU(&parsingStream, png->ImageHeader.BitDepth);
-        ParsingStreamWriteCU(&parsingStream, colorType);
-        ParsingStreamWriteCU(&parsingStream, png->ImageHeader.CompressionMethod);
-        ParsingStreamWriteCU(&parsingStream, png->ImageHeader.FilterMethod);
-        ParsingStreamWriteCU(&parsingStream, interlaceMethod);
+        DataStreamWriteCU(&dataStream, png->ImageHeader.BitDepth);
+        DataStreamWriteCU(&dataStream, colorType);
+        DataStreamWriteCU(&dataStream, png->ImageHeader.CompressionMethod);
+        DataStreamWriteCU(&dataStream, png->ImageHeader.FilterMethod);
+        DataStreamWriteCU(&dataStream, interlaceMethod);
 
         const unsigned int crc = CRC32Generate(chunkStart, 13 + 4);
 
-        ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+        DataStreamWriteIU(&dataStream, crc, EndianBig);
     }
 
     // iCCP
@@ -1974,12 +1976,12 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
 
     //---<>---
     {
-        ParsingStreamWriteIU(&parsingStream, 0u, EndianBig);
-        ParsingStreamWriteD(&parsingStream, "IEND", 4u);
-        ParsingStreamWriteIU(&parsingStream, 2923585666u, EndianBig);
+        DataStreamWriteIU(&dataStream, 0u, EndianBig);
+        DataStreamWriteD(&dataStream, "IEND", 4u);
+        DataStreamWriteIU(&dataStream, 2923585666u, EndianBig);
     }
 
-    *dataWritten = parsingStream.DataCursor;
+    *dataWritten = dataStream.DataCursor;
 
     return ActionSuccessful;
 }
@@ -2566,9 +2568,10 @@ size_t preProcessScanlines
 
 ActionResult PNGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
 {
-    ParsingStream parsingStream;
+    DataStream dataStream;
 
-    ParsingStreamConstruct(&parsingStream, data, dataSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, data, dataSize);
 
     *dataWritten = 0;
 
@@ -2577,14 +2580,14 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
         const size_t pngFileHeaderSize = sizeof(pngFileHeader);
 
-        ParsingStreamWriteD(&parsingStream, pngFileHeader, pngFileHeaderSize);
+        DataStreamWriteD(&dataStream, pngFileHeader, pngFileHeaderSize);
     }
 
     //---<IHDR> (Image Header)--- 21 Bytes
         {
         unsigned char colorType = 0;
         const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(PNGInterlaceNone);
-        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
+        const unsigned char* chunkStart = DataStreamCursorPosition(&dataStream);
 
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
@@ -2610,27 +2613,27 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         }
         const unsigned int chunkLength = 13u;
 
-        ParsingStreamWriteIU(&parsingStream, chunkLength, EndianBig);
-        ParsingStreamWriteD(&parsingStream, "IHDR", 4u);
+        DataStreamWriteIU(&dataStream, chunkLength, EndianBig);
+        DataStreamWriteD(&dataStream, "IHDR", 4u);
 
-        ParsingStreamWriteIU(&parsingStream, image->Width, EndianBig);
-        ParsingStreamWriteIU(&parsingStream, image->Height, EndianBig);
+        DataStreamWriteIU(&dataStream, image->Width, EndianBig);
+        DataStreamWriteIU(&dataStream, image->Height, EndianBig);
 
         {
             const unsigned char bitDepth = ImageBitDepth(image->Format);
 
-            ParsingStreamWriteCU(&parsingStream, bitDepth);
+            DataStreamWriteCU(&dataStream, bitDepth);
         }
 
-        ParsingStreamWriteCU(&parsingStream, colorType);
-        ParsingStreamWriteCU(&parsingStream, compressionMethod);
-        ParsingStreamWriteCU(&parsingStream, filterMethod);
-        ParsingStreamWriteCU(&parsingStream, interlaceMethod);
+        DataStreamWriteCU(&dataStream, colorType);
+        DataStreamWriteCU(&dataStream, compressionMethod);
+        DataStreamWriteCU(&dataStream, filterMethod);
+        DataStreamWriteCU(&dataStream, interlaceMethod);
 
         {
             const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+            DataStreamWriteIU(&dataStream, crc, EndianBig);
         }
 
 
@@ -2745,36 +2748,36 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         pngLastModificationTime.Minute = time.Minute;
         pngLastModificationTime.Second = time.Second;
 
-        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
+        const unsigned char* chunkStart = DataStreamCursorPosition(&dataStream);
         const size_t chunkLength = 7u;
 
-        ParsingStreamWriteIU(&parsingStream, chunkLength, EndianBig);
-        ParsingStreamWriteD(&parsingStream, "tIME", 4u);
-        ParsingStreamWriteSU(&parsingStream, pngLastModificationTime.Year, EndianBig);
-        ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Month);
-        ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Day);
-        ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Hour);
-        ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Minute);
-        ParsingStreamWriteCU(&parsingStream, pngLastModificationTime.Second);
+        DataStreamWriteIU(&dataStream, chunkLength, EndianBig);
+        DataStreamWriteD(&dataStream, "tIME", 4u);
+        DataStreamWriteSU(&dataStream, pngLastModificationTime.Year, EndianBig);
+        DataStreamWriteCU(&dataStream, pngLastModificationTime.Month);
+        DataStreamWriteCU(&dataStream, pngLastModificationTime.Day);
+        DataStreamWriteCU(&dataStream, pngLastModificationTime.Hour);
+        DataStreamWriteCU(&dataStream, pngLastModificationTime.Minute);
+        DataStreamWriteCU(&dataStream, pngLastModificationTime.Second);
 
         {
             const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+            DataStreamWriteIU(&dataStream, crc, EndianBig);
         }
     }
 #endif
 
     // [IDAT] Image data
     {
-        const size_t offsetSizeofChunk = parsingStream.DataCursor;
+        const size_t offsetSizeofChunk = dataStream.DataCursor;
 
-        const unsigned char* chunkStart = ParsingStreamCursorPosition(&parsingStream);
+        const unsigned char* chunkStart = DataStreamCursorPosition(&dataStream);
 
         size_t chunkLength = 0;
 
-        ParsingStreamWriteIU(&parsingStream, 0u, EndianBig); // Length
-        ParsingStreamWriteD(&parsingStream, "IDAT", 4u);
+        DataStreamWriteIU(&dataStream, 0u, EndianBig); // Length
+        DataStreamWriteD(&dataStream, "IDAT", 4u);
 
 
         unsigned char* scanlines = 0;
@@ -2807,11 +2810,11 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
 
         // ZLIB
         {
-            ZLIBCompress(scanlines, scanlinesSize, ParsingStreamCursorPosition(&parsingStream), ParsingStreamRemainingSize(&parsingStream), &chunkLength);
+            ZLIBCompress(scanlines, scanlinesSize, DataStreamCursorPosition(&dataStream), DataStreamRemainingSize(&dataStream), &chunkLength);
 
-            parsingStream.DataCursor += chunkLength;
+            dataStream.DataCursor += chunkLength;
 
-            ParsingStreamWriteAtIU(&parsingStream, chunkLength, EndianBig, offsetSizeofChunk); // override length
+            DataStreamWriteAtIU(&dataStream, chunkLength, EndianBig, offsetSizeofChunk); // override length
         }
 
         MemoryReallocate(scanlines, -1);
@@ -2819,7 +2822,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         {
             const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            ParsingStreamWriteIU(&parsingStream, crc, EndianBig);
+            DataStreamWriteIU(&dataStream, crc, EndianBig);
         }
     }
 
@@ -2828,10 +2831,10 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         const unsigned char imageEndChunk[13] = "\0\0\0\0IEND\xAE\x42\x60\x82"; // Combined write, as this is constand
         const size_t imageEndChunkSize = sizeof(imageEndChunk)-1;
 
-        ParsingStreamWriteD(&parsingStream, imageEndChunk, imageEndChunkSize);
+        DataStreamWriteD(&dataStream, imageEndChunk, imageEndChunkSize);
     }
 
-    *dataWritten = parsingStream.DataCursor;
+    *dataWritten = dataStream.DataCursor;
 
     return ActionSuccessful;
 }

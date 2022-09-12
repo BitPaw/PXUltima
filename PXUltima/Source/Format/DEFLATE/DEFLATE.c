@@ -7,7 +7,7 @@
 #include <Memory/Memory.h>
 #include <Format/HUFFMAN/HuffmanTree.h>
 #include <File/BitStream.h>
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Math/Math.h>
 
 #define DeflateEncodingInvalidID -1

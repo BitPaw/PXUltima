@@ -1,6 +1,6 @@
 #include "FMT.h"
 
-#include <File/ParsingStream.h>
+#include <File/DataStream.h>
 #include <Memory/Memory.h>
 #include <Container/ClusterValue.h>
 
@@ -13,12 +13,12 @@ void FMTConstruct(FMT* const fmt)
 
 ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, size_t* dataRead, const Endian endian)
 {
-	ParsingStream parsingStream;
+	DataStream DataStream;
 
 	FMTConstruct(fmt);
 	*dataRead = 0;
 
-	ParsingStreamConstruct(&parsingStream, data, dataSize);
+	DataStreamConstruct(&DataStream, data, dataSize);
 
 	// Check header signature
 	{
@@ -26,7 +26,7 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, s
 
 		ClusterInt fmtHeader;
 
-		ParsingStreamReadD(&parsingStream, fmtHeader.Data, 4u);
+		DataStreamReadD(&DataStream, fmtHeader.Data, 4u);
 
 		const unsigned char valid =
 			expectedValue[0] == fmtHeader.A &&
@@ -40,15 +40,15 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, s
 		}
 	}
 
-	ParsingStreamReadD(&parsingStream, &fmt->ChunkSize, endian);
-	ParsingStreamReadD(&parsingStream, &fmt->AudioFormat, endian);
-	ParsingStreamReadD(&parsingStream, &fmt->NumerOfChannels, endian);
-	ParsingStreamReadD(&parsingStream, &fmt->SampleRate, endian);
-	ParsingStreamReadD(&parsingStream, &fmt->ByteRate, endian);
-	ParsingStreamReadD(&parsingStream, &fmt->BlockAllign, endian);
-	ParsingStreamReadD(&parsingStream, &fmt->BitsPerSample, endian);
+	DataStreamReadD(&DataStream, &fmt->ChunkSize, endian);
+	DataStreamReadD(&DataStream, &fmt->AudioFormat, endian);
+	DataStreamReadD(&DataStream, &fmt->NumerOfChannels, endian);
+	DataStreamReadD(&DataStream, &fmt->SampleRate, endian);
+	DataStreamReadD(&DataStream, &fmt->ByteRate, endian);
+	DataStreamReadD(&DataStream, &fmt->BlockAllign, endian);
+	DataStreamReadD(&DataStream, &fmt->BitsPerSample, endian);
 
-	*dataRead = parsingStream.DataCursor;
+	*dataRead = DataStream.DataCursor;
 
 	return ActionSuccessful;
 }
