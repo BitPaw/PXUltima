@@ -89,6 +89,12 @@
     <ClInclude Include="Source\Format\WMA\WMA.h" />
     <ClInclude Include="Source\Format\XingInfo\XingInfo.h" />
     <ClInclude Include="Source\Format\ZLIB\ZLIB.h" />
+    <ClInclude Include="Source\Graphics\DirectX\DirectX.h" />
+    <ClInclude Include="Source\Graphics\OpenGL\OpenGL.h" />
+    <ClInclude Include="Source\Graphics\RefreshRateMode.h" />
+    <ClInclude Include="Source\Graphics\Shader\Shader.h" />
+    <ClInclude Include="Source\Graphics\SoftwareRender\SoftwareRender.h" />
+    <ClInclude Include="Source\Graphics\Vulcan\Vulcan.h" />
     <ClInclude Include="Source\Library\Library.h" />
     <ClInclude Include="Source\Math\Math.h" />
     <ClInclude Include="Source\Memory\Memory.h" />
@@ -111,10 +117,6 @@
     <ClInclude Include="Source\Text\Text.h" />
     <ClInclude Include="Source\Time\Time.h" />
     <ClInclude Include="Source\UI\UI.h" />
-    <ClInclude Include="Source\Graphics\DirectX\DirectX.h" />
-    <ClInclude Include="Source\Graphics\RefreshRateMode.h" />
-    <ClInclude Include="Source\Graphics\Shader.h" />
-    <ClInclude Include="Source\Graphics\Vulcan\Vulcan.h" />
     <ClInclude Include="Source\Format\Type.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +188,11 @@
     <ClCompile Include="Source\Format\WMA\WMA.c" />
     <ClCompile Include="Source\Format\XingInfo\XingInfo.c" />
     <ClCompile Include="Source\Format\ZLIB\ZLIB.c" />
+    <ClCompile Include="Source\Graphics\DirectX\DirectX.c" />
+    <ClCompile Include="Source\Graphics\OpenGL\OpenGL.c" />
+    <ClCompile Include="Source\Graphics\Shader\Shader.c" />
+    <ClCompile Include="Source\Graphics\SoftwareRender\SoftwareRender.c" />
+    <ClCompile Include="Source\Graphics\Vulcan\Vulcan.c" />
     <ClCompile Include="Source\Library\Library.c" />
     <ClCompile Include="Source\Math\Math.c" />
     <ClCompile Include="Source\Memory\Memory.c" />
@@ -207,12 +214,10 @@
     <ClCompile Include="Source\Text\Text.c" />
     <ClCompile Include="Source\Time\Time.c" />
     <ClCompile Include="Source\UI\UI.c" />
-    <ClCompile Include="Source\Graphics\DirectX\DirectX.c" />
-    <ClCompile Include="Source\Graphics\Shader.c" />
-    <ClCompile Include="Source\Graphics\Vulcan\Vulcan.c" />
     <ClCompile Include="Source\Format\Type.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="Source\Container\Dictionary\README.md" />
     <None Include="Source\Format\PDF\README.md" />
   </ItemGroup>
@@ -226,26 +231,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -309,7 +314,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -326,7 +331,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -347,7 +352,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -368,7 +373,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,5 +1,5 @@
-#ifndef DirectXInclude
-#define DirectXInclude
+#ifndef DirectXINCLUDE
+#define DirectXINCLUDE
 
 #ifdef __cplusplus
 extern "C"

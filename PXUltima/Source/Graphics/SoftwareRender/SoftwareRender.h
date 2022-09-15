@@ -1,5 +1,5 @@
-#ifndef VulcanINCLUDE
-#define VulcanINCLUDE
+#ifndef SoftwareRenderINCLUDE
+#define SoftwareRenderINCLUDE
 
 #ifdef __cplusplus
 extern "C"
@@ -7,11 +7,11 @@ extern "C"
 #endif
 #pragma once
 
-	typedef struct Vulcan_
+	typedef struct SoftwareRender_
 	{
 		unsigned int __dummy__;
 	}
-	Vulcan;
+	SoftwareRender;
 
 #ifdef __cplusplus
 }

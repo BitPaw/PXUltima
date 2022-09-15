@@ -1,10 +1,12 @@
 #include "CWindow.h"
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-
 #include <Event/Event.h>
 #include <Memory/Memory.h>
+#include <Graphics/OpenGL/OpenGL.h>
+#include <OS/Monitor.h>
+#include <Text/Text.h>
+#include <Async/Await.h>
+#include <stdio.h>
 
 #if defined(OSUnix)
 
@@ -33,11 +35,6 @@
 #define DefautPositionY CW_USEDEFAULT
 
 #endif
-
-#include <OS/Monitor.h>
-#include <Text/Text.h>
-#include <Async/Await.h>
-#include <stdio.h>
 
 CWindow* currentWindow = 0;
 
@@ -1915,7 +1912,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     HMENU hMenu = 0;
     void* lpParam = 0;
 
-    CWindowID CWindowID = CreateWindowExW
+    CWindowID windowID = CreateWindowExW
     (
         windowStyle,
         lpClassName,
@@ -1932,7 +1929,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     );
 
     {
-        if(!CWindowID)
+        if(!windowID)
         {
             DWORD error = GetLastError();
             wchar_t errorBuffer[1024];
@@ -1940,12 +1937,12 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
             MessageBox(NULL, errorBuffer, L"Error", MB_ICONHAND);
         }
 
-        window->ID = CWindowID;
+        window->ID = windowID;
     }
 
     // Create OpenGL Context
     {
-        const HDC windowHandleToDeviceContext = GetDC(CWindowID);
+        const HDC windowHandleToDeviceContext = GetDC(windowID);
         const PIXELFORMATDESCRIPTOR pfd =
         {
             sizeof(PIXELFORMATDESCRIPTOR),
@@ -1968,7 +1965,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(windowHandleToDeviceContext, &pfd);
         const unsigned char sucessul = SetPixelFormat(windowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
 
-        window->HandleDeviceContext = windowHandleToDeviceContext;
+        window->OpenGLContext.WindowsDeviceContext = windowHandleToDeviceContext;
     }
 
     // Register input device
@@ -1979,7 +1976,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
         rid.usUsage = HID_USAGE_GENERIC_MOUSE;
         rid.dwFlags = RIDEV_INPUTSINK;
-        rid.hwndTarget = CWindowID;
+        rid.hwndTarget = windowID;
 
         const unsigned char result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE));
 
@@ -1988,13 +1985,14 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
     }
 
-    window->OpenGLConext = wglCreateContext(window->HandleDeviceContext);
-
 #endif
 
     // Create context
-    CWindowFrameBufferContextRegister(window);
+    OpenGLContextCreate(&window->OpenGLContext);
 
+  
+
+    /*
     {
         const unsigned int result = glewInit(); // Initialise OpenGL enviroment
 
@@ -2018,7 +2016,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
             default:
                 return (ThreadResult)5u;
         }
-    }
+    }*/
 
     if(1)
     {
@@ -2387,7 +2385,7 @@ int CWindowFrameBufferInitialize(CWindow* window)
 
 unsigned char CWindowFrameBufferSwap(CWindow* window)
 {
-    glFlush();  // Flush drawing command buffer to make drawing happen as soon as possible.
+    OpenGLContextFlush();
 
     const unsigned char successful =
 #if defined(OSUnix)
@@ -2395,24 +2393,6 @@ unsigned char CWindowFrameBufferSwap(CWindow* window)
     glXSwapBuffers(window->DisplayCurrent, window->ID);
 #elif defined(OSWindows)
     SwapBuffers(window->HandleDeviceContext);
-#endif
-
-    return successful;
-}
-
-unsigned char CWindowFrameBufferContextRegister(CWindow* window)
-{
-    const size_t threadID = ThreadCurrentID();
-
-    const unsigned char  successful =
-#if defined(OSUnix)
-    glXMakeCurrent(window->DisplayCurrent, window->ID, window->OpenGLConext);
-
-    //printf("[%x][OpenGL] Make context %p %i %p\n", threadID, DisplayCurrent, ID, OpenGLConext);
-#elif defined(OSWindows)
-    wglMakeCurrent(window->HandleDeviceContext, window->OpenGLConext);
-
-    //printf("[%x][OpenGL] Make context %p %p\n", threadID, HandleDeviceContext, OpenGLConext);
 #endif
 
     return successful;

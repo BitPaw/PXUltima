@@ -3,6 +3,7 @@
 
 #include "TestImage.h"
 #include "TestSBP.h"
+#include "TestWindow.h"
 
 #include <Processor/Processor.h>
 #include <Library/Library.h>
@@ -25,6 +26,7 @@ int main()
 
 	TestImageAll();
 	TestSBPAll();
+	TestWindowAll();
 
 	printf("[i] Finished testing...\n");
 

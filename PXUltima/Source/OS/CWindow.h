@@ -25,6 +25,7 @@
 #include <Async/Thread.h>
 #include <Device/Mouse.h>
 #include <Device/KeyBoard.h>
+#include <Graphics/OpenGL/OpenGL.h>
 
 #define UseRawMouseData 1
 #define CWindowTitleSizeMax 256
@@ -120,7 +121,6 @@ extern "C"
 	{
 		volatile unsigned char IsRunning;
 		CWindowID ID;
-		OpenGLConextID OpenGLConext;
 
 		// Live data
 		unsigned char HasSizeChanged;
@@ -135,6 +135,8 @@ extern "C"
 		unsigned int Height;
 
 		wchar_t Title[CWindowTitleSizeMax];
+
+		OpenGL OpenGLContext;
 
 #if defined(OSUnix)
 		Display* DisplayCurrent;
@@ -198,7 +200,7 @@ extern "C"
 	//voidCWindowScreenShotTake(Image image);
 	CPublic int CWindowFrameBufferInitialize(CWindow* CWindow);
 	CPublic unsigned char CWindowFrameBufferSwap(CWindow* CWindow);
-	CPublic unsigned char CWindowFrameBufferContextRegister(CWindow* CWindow);
+
 	CPublic unsigned char CWindowFrameBufferContextRelease(CWindow* CWindow);
 	CPublic unsigned char CWindowInteractable(CWindow* CWindow);
 
