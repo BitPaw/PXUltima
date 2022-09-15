@@ -18,20 +18,15 @@
 #define OpenGLConextID HGLRC
 #endif
 
-// OpenGL
-#if defined(OSUnix)
-
+//---<OpenGL>----------------
 #include <GL/gl.h>
-#include <GL/glx.h>
 
+#if defined(OSUnix)
+#include <GL/glx.h>
 #elif defined(OSWindows)
 
 #endif
-
-
-#include <GL/gl.h>
-
-//-----------------
+//---------------------------
 
 
 
@@ -44,6 +39,10 @@ extern "C"
 	typedef struct OpenGL_
 	{
 		OpenGLConextID OpenGLConext;
+
+		char Vendor[32];
+		char Renderer[32];
+		char Version[32];
 
 #if defined(OSUnix)
 
@@ -68,6 +67,10 @@ extern "C"
 	CPublic void OpenGLContextRelease(OpenGL* const openGL);
 
 	CPublic void OpenGLContextFlush();
+
+	// [Version 2] Extended functions
+	CPublic unsigned int OpenGLShaderProgramCreate();
+
 
 #ifdef __cplusplus
 }

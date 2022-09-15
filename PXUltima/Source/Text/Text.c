@@ -7,7 +7,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define PXTextAssertEnable 1
+#define PXTextAssertEnable 0
 
 #if PXTextAssertEnable
 #include <assert.h>
@@ -283,6 +283,11 @@ size_t TextCopyA(const char* source, const size_t sourceLength, char* destinatio
 #if PXTextAssertEnable
 	assert(destination);
 	assert(source);
+#else
+	if (!(destination && source))
+	{
+		return 0;
+	}
 #endif
 
 	for(; (i < minLength) && (source[i] != '\0'); ++i)
@@ -623,7 +628,9 @@ void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax,
 
 				const size_t readBytes = TextToIntA(source, offsetLength, i);
 
+#if PXTextAssertEnable
 				assert(readBytes);
+#endif				
 
 				offsetData += readBytes;
 
@@ -636,7 +643,9 @@ void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax,
 
 				const size_t readBytes = TextToFloatA(source, offsetLength, number);
 
+#if PXTextAssertEnable
 				assert(readBytes);
+#endif			
 
 				offsetData += readBytes;
 

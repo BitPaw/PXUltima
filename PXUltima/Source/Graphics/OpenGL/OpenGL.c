@@ -4,6 +4,7 @@
 
 #include <Error/ActionResult.h>
 #include <Memory/Memory.h>
+#include <Text/Text.h>
 
 
 #if defined(OSUnix)
@@ -11,6 +12,12 @@
 #elif defined(OSWindows)
 #pragma comment(lib, "opengl32.lib")
 #endif
+
+
+// Extended functions
+
+GLuint (*glCreateProgram)(void);
+
 
 /*
 
@@ -170,7 +177,25 @@ void OpenGLContextCreate(OpenGL* const openGL)
 
     openGL->OpenGLConext = handle;
 
-#endif
+#endif      
+
+    OpenGLContextSelect(openGL);
+
+
+    const char* vendor = glGetString(GL_VENDOR); // Returns the company responsible for this GL implementation.This name does not change from release to release.
+   
+    TextCopyA(vendor, -1, openGL->Vendor, 32);
+    
+   
+    const char* renderer = glGetString(GL_RENDERER); //   Returns the name of the renderer.This name is typically specific to a particular configuration of a hardware platform.It does not change from release to release.
+    
+    TextCopyA(renderer, -1, openGL->Renderer, 32);
+    
+    const char* version = glGetString(GL_VERSION); //    Returns a version or release number.
+  
+    TextCopyA(version, -1, openGL->Version, 32);
+                                                   // glGetString(GL_SHADING_LANGUAGE_VERSION); //   Returns a version or release number for the shading language.
+
 }
 
 void OpenGLContextSelect(OpenGL* const openGL)
@@ -209,4 +234,11 @@ void OpenGLContextRelease(OpenGL* const openGL)
 void OpenGLContextFlush()
 {
     glFlush(); // Flush drawing command buffer to make drawing happen as soon as possible.
+}
+
+unsigned int OpenGLShaderProgramCreate()
+{
+    glCreateProgram = OpenGLFunctionFetch("glCreateProgram");
+
+    return glCreateProgram();
 }
