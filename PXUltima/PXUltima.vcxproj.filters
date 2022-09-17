@@ -603,6 +603,5 @@
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

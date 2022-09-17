@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32825.248
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32802.440
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PXUltimaTest", "PXUltimaTest\PXUltimaTest.vcxproj", "{23B354B3-2A8B-4CA7-B005-7826DFD8A579}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PXUltima", "PXUltima\PXUltima.vcxproj", "{89E678CE-1213-4017-8633-7EDF8DEF244C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PXUltimaSharp", "PXUltimaSharp\PXUltimaSharp.csproj", "{71D48713-A2B1-4E1D-BD07-5217AD8A2663}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PXUltimaSharp", "PXUltimaSharp\PXUltimaSharp.csproj", "{71D48713-A2B1-4E1D-BD07-5217AD8A2663}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PXUltimaSharpTest", "PXUltimaSharpTest\PXUltimaSharpTest.csproj", "{FAEB080F-9E97-452D-B28F-D7CCAEC91C5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PXUltimaSharpTest", "PXUltimaSharpTest\PXUltimaSharpTest.csproj", "{FAEB080F-9E97-452D-B28F-D7CCAEC91C5F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PXUltimaCPP", "PXUltimaCPP\PXUltimaCPP.vcxproj", "{122EF263-9E88-4478-A929-532F011EAADF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,16 @@ Global
 		{FAEB080F-9E97-452D-B28F-D7CCAEC91C5F}.Release|x64.Build.0 = Release|Any CPU
 		{FAEB080F-9E97-452D-B28F-D7CCAEC91C5F}.Release|x86.ActiveCfg = Release|Any CPU
 		{FAEB080F-9E97-452D-B28F-D7CCAEC91C5F}.Release|x86.Build.0 = Release|Any CPU
+		{122EF263-9E88-4478-A929-532F011EAADF}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{122EF263-9E88-4478-A929-532F011EAADF}.Debug|x64.ActiveCfg = Debug|x64
+		{122EF263-9E88-4478-A929-532F011EAADF}.Debug|x64.Build.0 = Debug|x64
+		{122EF263-9E88-4478-A929-532F011EAADF}.Debug|x86.ActiveCfg = Debug|Win32
+		{122EF263-9E88-4478-A929-532F011EAADF}.Debug|x86.Build.0 = Debug|Win32
+		{122EF263-9E88-4478-A929-532F011EAADF}.Release|Any CPU.ActiveCfg = Release|Win32
+		{122EF263-9E88-4478-A929-532F011EAADF}.Release|x64.ActiveCfg = Release|x64
+		{122EF263-9E88-4478-A929-532F011EAADF}.Release|x64.Build.0 = Release|x64
+		{122EF263-9E88-4478-A929-532F011EAADF}.Release|x86.ActiveCfg = Release|Win32
+		{122EF263-9E88-4478-A929-532F011EAADF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
