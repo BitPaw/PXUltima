@@ -48,6 +48,14 @@
 #define WindowsAtleastXP
 #endif
 
+#if Version_Windows >= Version_Windows_Vista
+#define WindowsAtleastVista
+#endif
+
+#if Version_Windows >= Version_Windows_7
+#define WindowsAtleast7
+#endif
+
 #if Version_Windows >= Version_Windows_8
 #define WindowsAtleast8
 #endif

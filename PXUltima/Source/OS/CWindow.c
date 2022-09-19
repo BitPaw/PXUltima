@@ -28,7 +28,7 @@
 #include <windowsx.h>
 #include <WinUser.h>
 #include <wtypes.h>
-#include <hidusage.h>
+//#include <hidusage.h>
 #include <Dbt.h>
 
 #define DefautPositionX CW_USEDEFAULT
@@ -491,26 +491,26 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_EXITSIZEMOVE: return WindowEventEXITSIZEMOVE;
         case WM_DROPFILES: return WindowEventDROPFILES;
         case WM_MDIREFRESHMENU: return WindowEventMDIREFRESHMENU;
-        case WM_POINTERDEVICECHANGE: return WindowEventPOINTERDEVICECHANGE;
-        case WM_POINTERDEVICEINRANGE: return WindowEventPOINTERDEVICEINRANGE;
-        case WM_POINTERDEVICEOUTOFRANGE: return WindowEventPOINTERDEVICEOUTOFRANGE;
+            //case WM_POINTERDEVICECHANGE: return WindowEventPOINTERDEVICECHANGE;
+        //case WM_POINTERDEVICEINRANGE: return WindowEventPOINTERDEVICEINRANGE;
+        //case WM_POINTERDEVICEOUTOFRANGE: return WindowEventPOINTERDEVICEOUTOFRANGE;
         case WM_TOUCH: return WindowEventTOUCH;
-        case WM_NCPOINTERUPDATE: return WindowEventNCPOINTERUPDATE;
-        case WM_NCPOINTERDOWN: return WindowEventNCPOINTERDOWN;
-        case WM_NCPOINTERUP: return WindowEventNCPOINTERUP;
-        case WM_POINTERUPDATE: return WindowEventPOINTERUPDATE;
-        case WM_POINTERDOWN: return WindowEventPOINTERDOWN;
-        case WM_POINTERUP: return WindowEventPOINTERUP;
-        case WM_POINTERENTER: return WindowEventPOINTERENTER;
-        case WM_POINTERLEAVE: return WindowEventPOINTERLEAVE;
-        case WM_POINTERACTIVATE: return WindowEventPOINTERACTIVATE;
-        case WM_POINTERCAPTURECHANGED: return WindowEventPOINTERCAPTURECHANGED;
-        case WM_TOUCHHITTESTING: return WindowEventTOUCHHITTESTING;
-        case WM_POINTERWHEEL: return WindowEventPOINTERWHEEL;
-        case WM_POINTERHWHEEL: return WindowEventPOINTERHWHEEL;
-        case WM_POINTERROUTEDTO: return WindowEventPOINTERROUTEDTO;
-        case WM_POINTERROUTEDAWAY: return WindowEventPOINTERROUTEDAWAY;
-        case WM_POINTERROUTEDRELEASED: return WindowEventPOINTERROUTEDRELEASED;
+            //case WM_NCPOINTERUPDATE: return WindowEventNCPOINTERUPDATE;
+        //case WM_NCPOINTERDOWN: return WindowEventNCPOINTERDOWN;
+        //case WM_NCPOINTERUP: return WindowEventNCPOINTERUP;
+        //case WM_POINTERUPDATE: return WindowEventPOINTERUPDATE;
+        //case WM_POINTERDOWN: return WindowEventPOINTERDOWN;
+        //case WM_POINTERUP: return WindowEventPOINTERUP;
+        //case WM_POINTERENTER: return WindowEventPOINTERENTER;
+        //case WM_POINTERLEAVE: return WindowEventPOINTERLEAVE;
+        //case WM_POINTERACTIVATE: return WindowEventPOINTERACTIVATE;
+        //case WM_POINTERCAPTURECHANGED: return WindowEventPOINTERCAPTURECHANGED;
+        //case WM_TOUCHHITTESTING: return WindowEventTOUCHHITTESTING;
+        //case WM_POINTERWHEEL: return WindowEventPOINTERWHEEL;
+        //case WM_POINTERHWHEEL: return WindowEventPOINTERHWHEEL;
+            //case WM_POINTERROUTEDTO: return WindowEventPOINTERROUTEDTO;
+            //case WM_POINTERROUTEDAWAY: return WindowEventPOINTERROUTEDAWAY;
+        //case WM_POINTERROUTEDRELEASED: return WindowEventPOINTERROUTEDRELEASED;
         case WM_IME_SETCONTEXT: return WindowEventIME_SETCONTEXT;
         case WM_IME_NOTIFY: return WindowEventIME_NOTIFY;
         case WM_IME_CONTROL: return WindowEventIME_CONTROL;
@@ -527,10 +527,10 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_WTSSESSION_CHANGE: return WindowEventWTSSESSION_CHANGE;
         case WM_TABLET_FIRST: return WindowEventTABLET_FIRST;
         case WM_TABLET_LAST: return WindowEventTABLET_LAST;
-        case WM_DPICHANGED: return WindowEventDPICHANGED;
-        case WM_DPICHANGED_BEFOREPARENT: return WindowEventDPICHANGED_BEFOREPARENT;
-        case WM_DPICHANGED_AFTERPARENT: return WindowEventDPICHANGED_AFTERPARENT;
-        case WM_GETDPISCALEDSIZE: return WindowEventGETDPISCALEDSIZE;
+            //case WM_DPICHANGED: return WindowEventDPICHANGED;
+            //case WM_DPICHANGED_BEFOREPARENT: return WindowEventDPICHANGED_BEFOREPARENT;
+            //case WM_DPICHANGED_AFTERPARENT: return WindowEventDPICHANGED_AFTERPARENT;
+            // case WM_GETDPISCALEDSIZE: return WindowEventGETDPISCALEDSIZE;
         case WM_CUT: return WindowEventCUT;
         case WM_COPY: return WindowEventCOPY;
         case WM_PASTE: return WindowEventPASTE;
@@ -1973,8 +1973,8 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
         RAWINPUTDEVICE rid;
 
-        rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
-        rid.usUsage = HID_USAGE_GENERIC_MOUSE;
+        //rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
+        //rid.usUsage = HID_USAGE_GENERIC_MOUSE;
         rid.dwFlags = RIDEV_INPUTSINK;
         rid.hwndTarget = windowID;
 

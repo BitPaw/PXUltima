@@ -4,7 +4,8 @@
 
 #if defined(OSUnix)
 
-#elif defined(OSWindows)
+#elif defined(OSWindowsE)
+
 #include <Windows.h>
 #include <joystickapi.h>
 #include "Controller.h"
@@ -15,7 +16,7 @@
 unsigned char ControllerScanDevices(NewControllerDetectedCallback callback)
 {
 #if defined(OSUnix)
-#elif defined(OSWindows)
+#elif defined(OSWindowsE)
 const size_t amountOfJoySticksSupported = joyGetNumDevs();
 
 	for (size_t i = 0; i < amountOfJoySticksSupported; i++)
@@ -86,7 +87,7 @@ unsigned char ControllerDataGet(Controller* controller)
 #if defined(OSUnix)
     return 0u;
 
-#elif defined(OSWindows)
+#elif defined(OSWindowsE)
 #if (WINVER >= 0x0400) // newer than Windows NT 4.0
 	JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
@@ -136,7 +137,7 @@ unsigned char ControllerAttachToWindow(const ControllerID controllerID, const CW
 #if defined(OSUnix)
     return 0u;
 
-#elif defined(OSWindows)
+#elif defined(OSWindowsE)
 	UINT uPeriod = 1;
 	BOOL fChanged = 1u;
 
@@ -152,7 +153,7 @@ unsigned char ControllerDetachToWindow(const ControllerID controllerID)
 #if defined(OSUnix)
     return 0u;
 
-#elif defined(OSWindows)
+#elif defined(OSWindowsE)
 	const MMRESULT releaseResult = joyReleaseCapture(controllerID);
 	const unsigned char successful = releaseResult == JOYERR_NOERROR;
 

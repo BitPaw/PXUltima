@@ -1,12 +1,12 @@
 
 #include <stdio.h>
 
-#include "TestImage.h"
-#include "TestSBP.h"
+//#include "TestImage.h"
+//#include "TestSBP.h"
 #include "TestWindow.h"
 
-#include <Processor/Processor.h>
-#include <Library/Library.h>
+//#include <Processor/Processor.h>
+//#include <Library/Library.h>
 
 int main()
 {
@@ -15,18 +15,16 @@ int main()
 	unsigned int x = 0;
 	unsigned int y = 0;
 
+	//x = ProcessorFrequencyCurrent();
+	//y = ProcessorTimeReal();
 
-	x = ProcessorFrequencyCurrent();
-	y = ProcessorTimeReal();
-
-	LibraryParseSymbols();
-
+	//LibraryParseSymbols();
 
 	printf("[i] Bencah %i, %i\n", x, y);
 
-	TestImageAll();
+	//TestWindowAll();
+	//TestImageAll();
 	TestSBPAll();
-	TestWindowAll();
 
 	printf("[i] Finished testing...\n");
 
