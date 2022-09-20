@@ -27,7 +27,7 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
-[Oo]bj/
+#[o]bj/ # Brings problems when any folder is OBJ
 [Ll]og/
 [Ll]ogs/
 
@@ -357,3 +357,5 @@ MigrationBackup/
 __Export__
 __Temp__
 _TEST_DATA_OUTPUT_
+PXUltimaSharp/obj/
+PXUltimaSharpTest/obj/
