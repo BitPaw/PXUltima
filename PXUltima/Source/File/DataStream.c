@@ -601,7 +601,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 ActionResult DataStreamMapToMemory(DataStream* const dataStream, const size_t size, const MemoryProtectionMode protectionMode)
 {
 	const void* data = MemoryVirtualAllocate(size, protectionMode);
-	const unsigned char successful = data;
+	const unsigned char successful = data != 0;
 
 	if (!successful)
 	{
@@ -706,8 +706,6 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 			const BOOL setSuccessful = SetFilePointerEx(dataStream->FileHandle, largeInteger, 0, FILE_BEGIN);
 
 			const BOOL endSuccessful = SetEndOfFile(dataStream->FileHandle);
-
-			printf("");
 		}
 
 		const ActionResult closeFile = DataStreamClose(dataStream);
@@ -762,9 +760,9 @@ void DataStreamCursorToEnd(DataStream* const DataStream)
 
 size_t DataStreamReadNextLineInto(DataStream* const DataStream, void* exportBuffer, const size_t exportBufferSize)
 {
-	DataStreamSkipEndOfLineCharacters(DataStream);
-
 	const size_t dataPositionBefore = DataStream->DataCursor;
+
+	DataStreamSkipEndOfLineCharacters(DataStream);
 
 	while (!DataStreamIsAtEnd(DataStream))
 	{
@@ -797,6 +795,8 @@ size_t DataStreamReadNextLineInto(DataStream* const DataStream, void* exportBuff
 
 size_t DataStreamSkipEndOfLineCharacters(DataStream* const DataStream)
 {
+	const size_t dataPositionBefore = DataStream->DataCursor;
+
 	while (!DataStreamIsAtEnd(DataStream))
 	{
 		const unsigned char* data = DataStreamCursorPosition(DataStream);
@@ -809,13 +809,17 @@ size_t DataStreamSkipEndOfLineCharacters(DataStream* const DataStream)
 
 		DataStreamCursorAdvance(DataStream, 1u);
 	}
+
+	return DataStream->DataCursor - dataPositionBefore;
 }
 
-size_t DataStreamSkipEmptySpace(DataStream* const DataStream)
+size_t DataStreamSkipEmptySpace(DataStream* const dataStream)
 {
-	while (!DataStreamIsAtEnd(DataStream))
+	const size_t oldPosition = dataStream->DataCursor;
+
+	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(DataStream);
+		const unsigned char* data = DataStreamCursorPosition(dataStream);
 		const unsigned char advance = IsEmptySpace(*data);
 
 		if (!advance)
@@ -823,15 +827,19 @@ size_t DataStreamSkipEmptySpace(DataStream* const DataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(DataStream, 1u);
+		DataStreamCursorAdvance(dataStream, 1u);
 	}
+
+	return dataStream->DataCursor - oldPosition;
 }
 
-size_t DataStreamSkipBlock(DataStream* const DataStream)
+size_t DataStreamSkipBlock(DataStream* const dataStream)
 {
-	while (!DataStreamIsAtEnd(DataStream))
+	const size_t oldPosition = dataStream->DataCursor;
+
+	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(DataStream);
+		const unsigned char* data = DataStreamCursorPosition(dataStream);
 		const unsigned char advance = !IsEndOfString(*data) and !IsEmptySpace(*data);
 
 		if (!advance)
@@ -839,10 +847,12 @@ size_t DataStreamSkipBlock(DataStream* const DataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(DataStream, 1u);
+		DataStreamCursorAdvance(dataStream, 1u);
 	}
 
-	DataStreamSkipEmptySpace(DataStream);
+	DataStreamSkipEmptySpace(dataStream);
+
+	return dataStream->DataCursor - oldPosition;
 }
 
 size_t DataStreamSkipLine(DataStream* const DataStream)
@@ -1062,7 +1072,7 @@ size_t DataStreamWriteLU(DataStream* const DataStream, const unsigned long long 
 	const size_t dataSize = sizeof(unsigned long long);
 	unsigned long long dataValue = value;
 
-	EndianSwap(value, dataSize, EndianCurrentSystem, endian);
+	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
 	DataStreamWriteD(DataStream, &dataValue, dataSize);
 
@@ -1085,7 +1095,7 @@ size_t DataStreamWriteFill(DataStream* const DataStream, const unsigned char val
 {
 	const size_t writableSize = DataStreamRemainingSize(DataStream);
 	unsigned char* beforePosition = DataStreamCursorPosition(DataStream);
-	const size_t write = MathMinimumI(writableSize, length);
+	const size_t write = MathMinimumIU(writableSize, length);
 
 	for (size_t i = 0; i < write; ++i)
 	{

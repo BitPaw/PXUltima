@@ -1,12 +1,13 @@
 #include "CWindow.h"
 
+#include <stdio.h>
+
 #include <Event/Event.h>
 #include <Memory/Memory.h>
-#include <Graphics/OpenGL/OpenGL.h>
 #include <OS/Monitor.h>
 #include <Text/Text.h>
 #include <Async/Await.h>
-#include <stdio.h>
+#include <Graphics/OpenGL/OpenGL.h>
 
 #if defined(OSUnix)
 
@@ -1965,7 +1966,8 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(windowHandleToDeviceContext, &pfd);
         const unsigned char sucessul = SetPixelFormat(windowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
 
-        window->OpenGLContext.WindowsDeviceContext = windowHandleToDeviceContext;
+        window->HandleDeviceContext = windowHandleToDeviceContext;
+        window->GLContext.WindowsDeviceContext = windowHandleToDeviceContext;
     }
 
     // Register input device
@@ -1973,48 +1975,19 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
         RAWINPUTDEVICE rid;
 
-        //rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
-        //rid.usUsage = HID_USAGE_GENERIC_MOUSE;
+        rid.usUsagePage = 0;//HID_USAGE_PAGE_GENERIC;
+        rid.usUsage = 0;// HID_USAGE_GENERIC_MOUSE;
         rid.dwFlags = RIDEV_INPUTSINK;
         rid.hwndTarget = windowID;
 
         const unsigned char result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE));
-
-        printf("");
 
         // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
     }
 
 #endif
 
-    // Create context
-    OpenGLContextCreate(&window->OpenGLContext);  
-
-    /*
-    {
-        const unsigned int result = glewInit(); // Initialise OpenGL enviroment
-
-        switch(result)
-        {
-            case GLEW_OK: // No Error, do nothing
-                break;
-
-            case GLEW_ERROR_NO_GL_VERSION:
-                return (ThreadResult)1u;
-
-            case GLEW_ERROR_GL_VERSION_10_ONLY:
-                return (ThreadResult)2u;
-
-            case GLEW_ERROR_GLX_VERSION_11_ONLY:
-                return (ThreadResult)3u;
-
-            case GLEW_ERROR_NO_GLX_DISPLAY:
-                return (ThreadResult)4u;
-
-            default:
-                return (ThreadResult)5u;
-        }
-    }*/
+    OpenGLContextCreate(&window->GLContext);  
 
     if(1)
     {
@@ -2037,9 +2010,6 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
          //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
     }
 
-    glClearColor(0.2, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     CWindowLookupAdd(window);
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
@@ -2047,7 +2017,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     CWindowFrameBufferContextRelease(window);
 
     //ShowWindow(window->ID, SW_SHOW);
-    //UpdateWindow(window->ID);
+    UpdateWindow(window->ID);
 
     window->IsRunning = 1;
 
@@ -2120,25 +2090,10 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
 
         CWindowEventHandler(window, &windowEvent);
 
-#if 0
-        glClearColor(1.0, 1.0, 1.0, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glBegin(GL_QUADS);
-        glColor3f(1., 0., 0.); glVertex3f(-.75, -.75, 0.);
-        glColor3f(0., 1., 0.); glVertex3f(.75, -.75, 0.);
-        glColor3f(0., 0., 1.); glVertex3f(.75, .75, 0.);
-        glColor3f(1., 1., 0.); glVertex3f(-.75, .75, 0.);
-        glEnd();
-
-        window.FrameBufferSwap();
-#endif
-
-
 #elif defined(OSWindows)
         MSG message;
 
-        const unsigned char peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);
+        const unsigned char peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);           
 
         if(peekResult)
         {
@@ -2171,7 +2126,7 @@ void CWindowCreate(CWindow* window, const unsigned int width, const unsigned int
     window->Width = width;
     window->Height = height;
 
-    TextCopyAW(title, 256, window->Title, 256);
+    TextCopyA(title, 256, window->Title, 256);
 
 // if width or height == WindowSizeDefault, then what?
     {
@@ -2383,7 +2338,7 @@ int CWindowFrameBufferInitialize(CWindow* window)
 
 unsigned char CWindowFrameBufferSwap(CWindow* window)
 {
-    OpenGLContextFlush();
+    //OpenGLContextFlush();
 
     const unsigned char successful =
 #if defined(OSUnix)
@@ -2416,6 +2371,7 @@ unsigned char CWindowInteractable(CWindow* window)
 {
     switch(window->CursorModeCurrent)
     {
+    default:
         case CWindowCursorIgnore:
         case CWindowCursorShow:
             return 0;

@@ -22,9 +22,9 @@ int main()
 
 	printf("[i] Bencah %i, %i\n", x, y);
 
-	//TestWindowAll();
+	TestWindowAll();
 	//TestImageAll();
-	TestSBPAll();
+	//TestSBPAll();
 
 	printf("[i] Finished testing...\n");
 

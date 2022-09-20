@@ -3,6 +3,8 @@
 unsigned char InputButtonReset(unsigned char* value)
 {
 	*value = 0x00;
+
+	return 0;
 }
 
 unsigned char InputButtonIncrement(unsigned char* value)
@@ -11,6 +13,8 @@ unsigned char InputButtonIncrement(unsigned char* value)
 	{
 		++(*value);
 	}
+
+	return 0;
 }
 
 unsigned char InputButtonIncrementIfAlreadyPressed(unsigned char* value)
@@ -19,6 +23,8 @@ unsigned char InputButtonIncrementIfAlreadyPressed(unsigned char* value)
 	{
 		++(*value);
 	}
+
+	return 0;
 }
 
 unsigned char InputButtonIsShortPressed(const unsigned char value)

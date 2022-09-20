@@ -5,7 +5,6 @@
 extern "C"
 {
 #endif
-#pragma once
 
 	typedef struct SoftwareRender_
 	{

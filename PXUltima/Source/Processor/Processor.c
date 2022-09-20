@@ -2,12 +2,61 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSWindows)
-#include <Windows.h>
-#elif defined(OSUnix)
+#if defined(OSUnix)
 #include <time.h>
 #include <sys/time.h>
+#elif defined(OSWindows)
+#include <Windows.h>
+#include <intrin.h>
 #endif
+
+void ProcessorFetchInfo(Processor* const processor)
+{
+#if defined(OSUnix)
+
+
+#elif defined(OSWindows)
+    int CPUInfo[4] = { -1 };
+    unsigned   nExIds, i = 0;
+
+    // Get the information associated with each extended ID.
+
+    __cpuid(CPUInfo, 0x80000000);
+
+    nExIds = CPUInfo[0];
+    for (i = 0x80000000; i <= nExIds; ++i)
+    {
+        __cpuid(CPUInfo, i);
+        // Interpret CPU brand string
+
+        switch (i)
+        {
+        case 0x80000002:
+        {
+            memcpy(processor->BrandName, CPUInfo, sizeof(CPUInfo));
+            break;
+        }
+        case 0x80000003:
+        {
+            memcpy(processor->BrandName + 16, CPUInfo, sizeof(CPUInfo));
+            break;
+        }
+        case 0x80000004:
+        {
+            memcpy(processor->BrandName + 32, CPUInfo, sizeof(CPUInfo));
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
+    SYSTEM_INFO sysInfo;
+    GetSystemInfo(&sysInfo);
+
+    processor->NumberOfProcessors = sysInfo.dwNumberOfProcessors;
+#endif   
+}
 
 unsigned int ProcessorFrequencyCurrent()
 {

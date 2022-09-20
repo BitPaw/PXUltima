@@ -136,7 +136,7 @@ extern "C"
 
 		wchar_t Title[CWindowTitleSizeMax];
 
-		OpenGL OpenGLContext;
+		OpenGLContext GLContext;
 
 #if defined(OSUnix)
 		Display* DisplayCurrent;

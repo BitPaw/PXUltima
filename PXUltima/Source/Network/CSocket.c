@@ -866,9 +866,9 @@ ActionResult CSocketBind(CSocket* cSocket)
 
 ActionResult CSocketOptionsSet(CSocket* cSocket)
 {
-    if(cSocket->ID != -1)
+    if(cSocket->ID == -1)
     {
-        return;
+        return ActionInvalid;
     }
 
     const int level = SOL_SOCKET;

@@ -8,8 +8,19 @@ extern "C"
 {
 #endif
 
-	CPublic __declspec(dllexport) unsigned int ProcessorFrequencyCurrent();
-	CPublic __declspec(dllexport) unsigned int ProcessorTimeReal();
+	typedef struct Processor_
+	{
+		char NumberOfProcessors;
+		char BrandName[128];  // string includes manufacturer, model and clockspeed
+	}
+	Processor;
+
+	CPublic void ProcessorFetchInfo(Processor* const processor);
+
+	CPublic unsigned int ProcessorFrequencyCurrent();
+	CPublic unsigned int ProcessorTimeReal();
+
+
 
 #ifdef __cplusplus
 }

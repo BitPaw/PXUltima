@@ -19,6 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\DataBase\DataBase.h" />
+    <ClInclude Include="Source\Format\CSS\CSS.h" />
+    <ClInclude Include="Source\Format\DLL\DLL.h" />
+    <ClInclude Include="Source\Format\EXE\EXE.h" />
+    <ClInclude Include="Source\Format\HTML\HTML.h" />
+    <ClInclude Include="Source\Format\INI\INI.h" />
+    <ClInclude Include="Source\Format\JSON\JSON.h" />
+    <ClInclude Include="Source\Format\MSI\MSI.h" />
+    <ClInclude Include="Source\Format\XML\XML.h" />
+    <ClInclude Include="Source\Format\YAML\YAML.h" />
+    <ClInclude Include="Source\Graphics\DirectX\DirectX.h" />
+    <ClInclude Include="Source\Graphics\Graphics.h" />
+    <ClInclude Include="Source\Graphics\OpenGL\OpenGL.h" />
+    <ClInclude Include="Source\Graphics\SoftwareRender\SoftwareRender.h" />
+    <ClInclude Include="Source\Graphics\Vulcan\Vulcan.h" />
+    <ClInclude Include="Source\OS\ClipBoard.h" />
+    <ClInclude Include="Source\Math\Matrix.h" />
     <ClInclude Include="Source\Format\PHP\PHP.h" />
     <ClInclude Include="Source\Compiler\Compiler.h" />
     <ClInclude Include="Source\Async\Await.h" />
@@ -89,12 +106,6 @@
     <ClInclude Include="Source\Format\WMA\WMA.h" />
     <ClInclude Include="Source\Format\XingInfo\XingInfo.h" />
     <ClInclude Include="Source\Format\ZLIB\ZLIB.h" />
-    <ClInclude Include="Source\Graphics\DirectX\DirectX.h" />
-    <ClInclude Include="Source\Graphics\OpenGL\OpenGL.h" />
-    <ClInclude Include="Source\Graphics\RefreshRateMode.h" />
-    <ClInclude Include="Source\Graphics\Shader\Shader.h" />
-    <ClInclude Include="Source\Graphics\SoftwareRender\SoftwareRender.h" />
-    <ClInclude Include="Source\Graphics\Vulcan\Vulcan.h" />
     <ClInclude Include="Source\Library\Library.h" />
     <ClInclude Include="Source\Math\Math.h" />
     <ClInclude Include="Source\Memory\Memory.h" />
@@ -120,6 +131,23 @@
     <ClInclude Include="Source\Format\Type.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\DataBase\DataBase.c" />
+    <ClCompile Include="Source\Format\CSS\CSS.c" />
+    <ClCompile Include="Source\Format\DLL\DLL.c" />
+    <ClCompile Include="Source\Format\EXE\EXE.c" />
+    <ClCompile Include="Source\Format\HTML\HTML.c" />
+    <ClCompile Include="Source\Format\INI\INI.c" />
+    <ClCompile Include="Source\Format\JSON\JSON.c" />
+    <ClCompile Include="Source\Format\MSI\MSI.c" />
+    <ClCompile Include="Source\Format\XML\XML.c" />
+    <ClCompile Include="Source\Format\YAML\YAML.c" />
+    <ClCompile Include="Source\Graphics\DirectX\DirectX.c" />
+    <ClCompile Include="Source\Graphics\Graphics.c" />
+    <ClCompile Include="Source\Graphics\OpenGL\OpenGL.c" />
+    <ClCompile Include="Source\Graphics\SoftwareRender\SoftwareRender.c" />
+    <ClCompile Include="Source\Graphics\Vulcan\Vulcan.c" />
+    <ClCompile Include="Source\OS\ClipBoard.c" />
+    <ClCompile Include="Source\Math\Matrix.c" />
     <ClCompile Include="Source\Format\PHP\PHP.c" />
     <ClCompile Include="Source\Compiler\Compiler.c" />
     <ClCompile Include="Source\Async\Lock.c" />
@@ -188,11 +216,6 @@
     <ClCompile Include="Source\Format\WMA\WMA.c" />
     <ClCompile Include="Source\Format\XingInfo\XingInfo.c" />
     <ClCompile Include="Source\Format\ZLIB\ZLIB.c" />
-    <ClCompile Include="Source\Graphics\DirectX\DirectX.c" />
-    <ClCompile Include="Source\Graphics\OpenGL\OpenGL.c" />
-    <ClCompile Include="Source\Graphics\Shader\Shader.c" />
-    <ClCompile Include="Source\Graphics\SoftwareRender\SoftwareRender.c" />
-    <ClCompile Include="Source\Graphics\Vulcan\Vulcan.c" />
     <ClCompile Include="Source\Library\Library.c" />
     <ClCompile Include="Source\Math\Math.c" />
     <ClCompile Include="Source\Memory\Memory.c" />
@@ -230,28 +253,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -309,11 +332,12 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -326,18 +350,19 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -345,20 +370,19 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -366,13 +390,12 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
