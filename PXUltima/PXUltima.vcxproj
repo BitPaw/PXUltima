@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\OS\Registry.h" />
     <ClInclude Include="Source\DataBase\DataBase.h" />
     <ClInclude Include="Source\Format\CSS\CSS.h" />
     <ClInclude Include="Source\Format\DLL\DLL.h" />
@@ -29,11 +30,11 @@
     <ClInclude Include="Source\Format\MSI\MSI.h" />
     <ClInclude Include="Source\Format\XML\XML.h" />
     <ClInclude Include="Source\Format\YAML\YAML.h" />
-    <ClInclude Include="Source\Graphics\DirectX\DirectX.h" />
-    <ClInclude Include="Source\Graphics\Graphics.h" />
-    <ClInclude Include="Source\Graphics\OpenGL\OpenGL.h" />
-    <ClInclude Include="Source\Graphics\SoftwareRender\SoftwareRender.h" />
-    <ClInclude Include="Source\Graphics\Vulcan\Vulcan.h" />
+    <ClInclude Include="Source\Graphic\DirectX\DirectX.h" />
+    <ClInclude Include="Source\Graphic\Graphic.h" />
+    <ClInclude Include="Source\Graphic\OpenGL\OpenGL.h" />
+    <ClInclude Include="Source\Graphic\SoftwareRender\SoftwareRender.h" />
+    <ClInclude Include="Source\Graphic\Vulcan\Vulcan.h" />
     <ClInclude Include="Source\OS\ClipBoard.h" />
     <ClInclude Include="Source\Math\Matrix.h" />
     <ClInclude Include="Source\Format\PHP\PHP.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="Source\Format\Type.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\OS\Registry.c" />
     <ClCompile Include="Source\DataBase\DataBase.c" />
     <ClCompile Include="Source\Format\CSS\CSS.c" />
     <ClCompile Include="Source\Format\DLL\DLL.c" />
@@ -141,11 +143,11 @@
     <ClCompile Include="Source\Format\MSI\MSI.c" />
     <ClCompile Include="Source\Format\XML\XML.c" />
     <ClCompile Include="Source\Format\YAML\YAML.c" />
-    <ClCompile Include="Source\Graphics\DirectX\DirectX.c" />
-    <ClCompile Include="Source\Graphics\Graphics.c" />
-    <ClCompile Include="Source\Graphics\OpenGL\OpenGL.c" />
-    <ClCompile Include="Source\Graphics\SoftwareRender\SoftwareRender.c" />
-    <ClCompile Include="Source\Graphics\Vulcan\Vulcan.c" />
+    <ClCompile Include="Source\Graphic\DirectX\DirectX.c" />
+    <ClCompile Include="Source\Graphic\Graphic.c" />
+    <ClCompile Include="Source\Graphic\OpenGL\OpenGL.c" />
+    <ClCompile Include="Source\Graphic\SoftwareRender\SoftwareRender.c" />
+    <ClCompile Include="Source\Graphic\Vulcan\Vulcan.c" />
     <ClCompile Include="Source\OS\ClipBoard.c" />
     <ClCompile Include="Source\Math\Matrix.c" />
     <ClCompile Include="Source\Format\PHP\PHP.c" />
@@ -332,7 +334,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -350,7 +352,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -370,7 +372,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -390,7 +392,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

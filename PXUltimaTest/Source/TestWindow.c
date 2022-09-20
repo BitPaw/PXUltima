@@ -47,7 +47,7 @@ void TestWindowOpen()
 	printf
 	(
 		"+---<RAM>-------------------------------------------------+\n"
-		"| Size : %-45i MB |\n",
+		"| Size : %-45zi MB |\n",
 		memoryUsage.PhysicalAvailable / 1000000
 	);
 

@@ -1,7 +1,8 @@
-#ifndef GraphicsINCLUDE
-#define GraphicsINCLUDE
+#ifndef GraphicINCLUDE
+#define GraphicINCLUDE
 
 #include <Format/Image.h>
+#include <Format/Model.h>
 #include <Format/Type.h>
 
 #ifdef __cplusplus
@@ -177,9 +178,9 @@ extern "C"
 
 	typedef enum RefreshRateMode_
 	{
-		Unlimited,
-		VSync,
-		CustomSync
+		RefreshRateUnlimited,
+		RefreshRateVSync,
+		RefreshRateCustomSync
 	}
 	RefreshRateMode;
 
@@ -191,17 +192,51 @@ extern "C"
 	}
 	GraphicConfig;
 
-	CPublic ActionResult GraphicTextureRegister(CTexture* const texture);
-	CPublic ActionResult GraphicTextureRelease(CTexture* const texture);
 
-	CPublic ActionResult GraphicTextureCubeRegister(CTextureCube* const textureCube);
-	CPublic ActionResult GraphicTextureCubeRelease(CTextureCube* const textureCube);
+	//typedef struct Renderable_ Renderable; ?
+
+	typedef struct Renderable_
+	{
+		unsigned int ID; // VAO
+
+		GraphicRenderMode RenderMode;
+	}
+	Renderable;
+
+
+	// Shader
 
 	CPublic ActionResult GraphicShaderProgramCreate();
 	CPublic ActionResult GraphicShaderCompile();
 	CPublic ActionResult GraphicShaderUse(const unsigned int shaderID);
 
-	CPublic ActionResult GraphicRender(GraphicRenderMode renderMode, size_t start, size_t amount);
+	CPublic ActionResult GraphicShaderProgramCreateVF(ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath);
+
+	CPublic void GraphicShaderUpdateMatrix4x4F(const unsigned int locationID, float* matrix4x4);
+	CPublic unsigned int GraphicShaderVariableIDFetch(const unsigned int shaderID, const char* const name);
+	CPublic void GraphicShaderProgramUse(const unsigned int shaderID);
+
+
+	// Rendering
+	CPublic ActionResult GraphicRenderElement(GraphicRenderMode renderMode, size_t start, size_t amount);
+	CPublic ActionResult GraphicRenderList(GraphicRenderMode renderMode, size_t start, size_t amount);
+
+
+	// Texture
+
+	CPublic ActionResult GraphicTextureUse(CTexture* const texture);
+	CPublic ActionResult GraphicTextureRegister(CTexture* const texture);
+	CPublic ActionResult GraphicTextureRelease(CTexture* const texture);
+	CPublic ActionResult GraphicTextureCubeRegister(CTextureCube* const textureCube);
+	CPublic ActionResult GraphicTextureCubeRelease(CTextureCube* const textureCube);
+
+	// Model
+	CPublic ActionResult GraphicSkyboxRegister(CSkyBox* const skyBox);
+	CPublic ActionResult GraphicSkyboxUse(CSkyBox* const skyBox);
+
+	CPublic ActionResult GraphicModelRegisterFromModel(Renderable* const renderable, const Model* const model);
+	CPublic ActionResult GraphicModelRegisterFromData(Renderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);
+
 
 #ifdef __cplusplus
 }

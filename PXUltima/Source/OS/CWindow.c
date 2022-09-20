@@ -7,7 +7,7 @@
 #include <OS/Monitor.h>
 #include <Text/Text.h>
 #include <Async/Await.h>
-#include <Graphics/OpenGL/OpenGL.h>
+#include <Graphic/OpenGL/OpenGL.h>
 
 #if defined(OSUnix)
 

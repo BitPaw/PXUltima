@@ -374,8 +374,9 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
 #elif defined(OSWindows)
         void* p = (void*)wglGetProcAddress(functionName);
+        const unsigned char successful = !(p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1));
 
-        if (p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1))
+        if (!successful)
         {
             HMODULE module = LoadLibraryA("opengl32.dll");
             p = (void*)GetProcAddress(module, functionName);
@@ -388,6 +389,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     if (openGLContext->OpenGLDebugMessageCallback)
     {
         (openGLContext->OpenGLDebugMessageCallback)(OpenGLErrorMessageCallback, 0);
+        glEnable(GL_DEBUG_OUTPUT);
     }
 }
 
@@ -419,7 +421,7 @@ void OpenGLContextFlush()
     glFlush();
 }
 
-void OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
 {
     unsigned char openGLspecific = type == GL_DEBUG_TYPE_ERROR;
     const char* sourceText = 0;

@@ -11,7 +11,7 @@ extern "C"
 	typedef struct Processor_
 	{
 		char NumberOfProcessors;
-		char BrandName[128];  // string includes manufacturer, model and clockspeed
+		char BrandName[64];  // string includes manufacturer, model and clockspeed
 	}
 	Processor;
 

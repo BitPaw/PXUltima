@@ -300,19 +300,19 @@
     <ClInclude Include="Source\OS\ClipBoard.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\Graphics.h">
+    <ClInclude Include="Source\Graphic\Graphic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\OpenGL\OpenGL.h">
+    <ClInclude Include="Source\Graphic\OpenGL\OpenGL.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\DirectX\DirectX.h">
+    <ClInclude Include="Source\Graphic\DirectX\DirectX.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\Vulcan\Vulcan.h">
+    <ClInclude Include="Source\Graphic\Vulcan\Vulcan.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\SoftwareRender\SoftwareRender.h">
+    <ClInclude Include="Source\Graphic\SoftwareRender\SoftwareRender.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Format\CSS\CSS.h">
@@ -343,6 +343,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\DataBase\DataBase.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\OS\Registry.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -623,19 +626,19 @@
     <ClCompile Include="Source\OS\ClipBoard.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\Graphics.c">
+    <ClCompile Include="Source\Graphic\Graphic.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\DirectX\DirectX.c">
+    <ClCompile Include="Source\Graphic\DirectX\DirectX.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\Vulcan\Vulcan.c">
+    <ClCompile Include="Source\Graphic\Vulcan\Vulcan.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\SoftwareRender\SoftwareRender.c">
+    <ClCompile Include="Source\Graphic\SoftwareRender\SoftwareRender.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\OpenGL\OpenGL.c">
+    <ClCompile Include="Source\Graphic\OpenGL\OpenGL.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\CSS\CSS.c">
@@ -666,6 +669,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\DataBase\DataBase.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\Registry.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -28,7 +28,7 @@
 //---------------------------
 
 #include <Format/Type.h>
-#include <Graphics/Graphics.h>
+#include <Graphic/Graphic.h>
 
 #define OpenGLID unsigned int
 #define OpenGLShaderProgramID unsigned int
@@ -259,15 +259,17 @@ extern "C"
 #define GL_DEBUG_SEVERITY_LOW 0x9148
 #define GL_DEBUG_OUTPUT 0x92E0
 
-	typedef void (* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+	#define GLAPIENTRY APIENTRY 
 
-	typedef void (*OpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
+	typedef void (GLAPIENTRY* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+
+	typedef void (GLAPIENTRY*OpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
 	//-------------------------------------------------------------------------
 
 	//---<Added 4.5>-----------------------------------------------------------
-	typedef void (*OpenGLNamedBufferData)(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
-	typedef void (*OpenGLEnableVertexAttribArray)(GLuint index);
-	typedef void (*OpenGLEnableVertexArrayAttrib)(GLuint vaobj, GLuint index);
+	typedef void (GLAPIENTRY *OpenGLNamedBufferData)(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
+	typedef void (GLAPIENTRY *OpenGLEnableVertexAttribArray)(GLuint index);
+	typedef void (GLAPIENTRY *OpenGLEnableVertexArrayAttrib)(GLuint vaobj, GLuint index);
 	//-------------------------------------------------------------------------
 
 	typedef struct OpenGLContext_
@@ -348,7 +350,7 @@ extern "C"
 	CPublic void OpenGLContextFlush();
 
 
-	CPublic void OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+	CPublic void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
 	/*
 	CPublic OpenGLID OpenGLToRenderMode(const GraphicRenderMode renderMode);

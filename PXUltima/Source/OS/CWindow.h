@@ -25,7 +25,7 @@
 #include <Async/Thread.h>
 #include <Device/Mouse.h>
 #include <Device/KeyBoard.h>
-#include <Graphics/OpenGL/OpenGL.h>
+#include <Graphic/OpenGL/OpenGL.h>
 
 #define UseRawMouseData 1
 #define CWindowTitleSizeMax 256
