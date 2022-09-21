@@ -4,29 +4,30 @@
 #include <Format/Image.h>
 #include <Format/Model.h>
 #include <Format/Type.h>
+#include <Graphic/OpenGL/OpenGL.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef enum RenderFilter_
+	typedef enum GraphicRenderFilter_
 	{
-		RenderFilterInvalid,		
-		RenderFilterNoFilter, // No filter Option, use this for Pixelated Textures.
-		RenderFilterBilinear, 		// Level I Filter
-		RenderFilterTrilinear		// Level II Filter
+		GraphicRenderFilterInvalid,
+		GraphicRenderFilterNoFilter, // No filter Option, use this for Pixelated Textures.
+		GraphicRenderFilterBilinear, 		// Level I Filter
+		GraphicRenderFilterTrilinear		// Level II Filter
 	}
-	ImageFilter;
+	GraphicRenderFilter;
 
 	typedef enum ShaderType_
 	{
-		ShaderTypeUnkown,
+		ShaderTypeInvalid,
 		ShaderTypeVertex,     // .vert - a vertex shader
+		ShaderTypeFragment,   // .frag - a fragment shader
 		ShaderTypeTessellationControl,    // .tesc - a tessellation control shader
 		ShaderTypeTessellationEvaluation,     // .tese - a tessellation evaluation shader
-		ShaderTypeGeometry,      // .geom - a geometry shader
-		ShaderTypeFragment,   // .frag - a fragment shader
+		ShaderTypeGeometry,      // .geom - a geometry shader		
 		ShaderTypeCompute,   // .comp - a compute shader
 	}
 	ShaderType;
@@ -128,6 +129,7 @@ extern "C"
 
 	typedef struct Shader_
 	{
+		unsigned int ID;
 		ShaderType Type;
 		size_t ContentSize;
 		char* Content;
@@ -146,7 +148,7 @@ extern "C"
 		unsigned int ID;		
 
 		GraphicImageType Type;
-		ImageFilter Filter;
+		GraphicRenderFilter Filter;
 		GraphicImageLayout LayoutNear;
 		GraphicImageLayout LayoutFar;
 		GraphicImageWrap WrapHeight;
@@ -203,39 +205,64 @@ extern "C"
 	}
 	Renderable;
 
+	typedef struct GraphicContext_
+	{
+		OpenGLContext OpenGLInstance;
+
+		void* AttachedWindow;
+	}
+	GraphicContext;
+
+
+
+
+	//---<OpenGL Translate>----------------
+	CPrivate OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType);
+	//-------------------------------------
+
+
+	CPublic void GraphicInstantiate(GraphicContext* const graphicContext);
+
+	CPublic unsigned char GraphicImageBufferSwap(GraphicContext* const graphicContext);
+
+
 
 	// Shader
 
-	CPublic ActionResult GraphicShaderProgramCreate();
-	CPublic ActionResult GraphicShaderCompile();
-	CPublic ActionResult GraphicShaderUse(const unsigned int shaderID);
+	CPublic ActionResult GraphicShaderProgramCreate(GraphicContext* const graphicContext);
+	CPublic ActionResult GraphicShaderCompile(GraphicContext* const graphicContext);
+	CPublic ActionResult GraphicShaderUse(GraphicContext* const graphicContext, const unsigned int shaderID);
 
-	CPublic ActionResult GraphicShaderProgramCreateVF(ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath);
+	CPublic ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath);
 
-	CPublic void GraphicShaderUpdateMatrix4x4F(const unsigned int locationID, float* matrix4x4);
-	CPublic unsigned int GraphicShaderVariableIDFetch(const unsigned int shaderID, const char* const name);
-	CPublic void GraphicShaderProgramUse(const unsigned int shaderID);
+	CPublic void GraphicShaderUpdateMatrix4x4F(GraphicContext* const graphicContext, const unsigned int locationID, float* matrix4x4);
+	CPublic unsigned int GraphicShaderVariableIDFetch(GraphicContext* const graphicContext, const unsigned int shaderID, const char* const name);
+	CPublic void GraphicShaderProgramUse(GraphicContext* const graphicContext, const unsigned int shaderID);
 
 
 	// Rendering
-	CPublic ActionResult GraphicRenderElement(GraphicRenderMode renderMode, size_t start, size_t amount);
-	CPublic ActionResult GraphicRenderList(GraphicRenderMode renderMode, size_t start, size_t amount);
+	CPublic ActionResult GraphicRenderElement(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount);
+	CPublic ActionResult GraphicRenderList(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount);
 
 
 	// Texture
 
-	CPublic ActionResult GraphicTextureUse(CTexture* const texture);
-	CPublic ActionResult GraphicTextureRegister(CTexture* const texture);
-	CPublic ActionResult GraphicTextureRelease(CTexture* const texture);
-	CPublic ActionResult GraphicTextureCubeRegister(CTextureCube* const textureCube);
-	CPublic ActionResult GraphicTextureCubeRelease(CTextureCube* const textureCube);
+	CPublic ActionResult GraphicTextureUse(GraphicContext* const graphicContext, CTexture* const texture);
+	CPublic ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, CTexture* const texture);
+	CPublic ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, CTexture* const texture);
+
+	CPublic ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CTextureCube* const textureCube);
+	CPublic ActionResult GraphicTextureCubeRegisterUse(GraphicContext* const graphicContext, CTextureCube* const textureCube);
+	CPublic ActionResult GraphicTextureCubeRelease(GraphicContext* const graphicContext, CTextureCube* const textureCube);
 
 	// Model
-	CPublic ActionResult GraphicSkyboxRegister(CSkyBox* const skyBox);
-	CPublic ActionResult GraphicSkyboxUse(CSkyBox* const skyBox);
+	CPublic ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, CSkyBox* const skyBox);
+	CPublic ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, CSkyBox* const skyBox);
+	CPublic ActionResult GraphicSkyboxRelease(GraphicContext* const graphicContext, CSkyBox* const skyBox);
 
-	CPublic ActionResult GraphicModelRegisterFromModel(Renderable* const renderable, const Model* const model);
-	CPublic ActionResult GraphicModelRegisterFromData(Renderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);
+	CPublic ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, Renderable* const renderable, const Model* const model);
+	CPublic ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, Renderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);
+
 
 
 #ifdef __cplusplus

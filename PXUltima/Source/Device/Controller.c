@@ -132,7 +132,7 @@ unsigned char ControllerDataGet(Controller* controller)
 #endif
 }
 
-unsigned char ControllerAttachToWindow(const ControllerID controllerID, const CWindowID cWindowID)
+unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID)
 {
 #if defined(OSUnix)
     return 0u;
@@ -141,7 +141,7 @@ unsigned char ControllerAttachToWindow(const ControllerID controllerID, const CW
 	UINT uPeriod = 1;
 	BOOL fChanged = 1u;
 
-	const MMRESULT captureResult = joySetCapture(cWindowID, controllerID, uPeriod, fChanged);
+	const MMRESULT captureResult = joySetCapture(PXWindowID, controllerID, uPeriod, fChanged);
 	const unsigned char successful = captureResult == JOYERR_NOERROR;
 
 	return successful;

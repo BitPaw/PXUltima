@@ -1,8 +1,10 @@
 #include "Graphic.h"
 
 #include <Graphic/OpenGL/OpenGL.h>
+#include <File/DataStream.h>
+#include <OS/PXWindow.h>
 
-ActionResult GraphicRegisterTexture(CTexture* const texture)
+ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, CTexture* const texture)
 {
     Image* image = &texture->Image;
     /*
@@ -53,7 +55,7 @@ ActionResult GraphicRegisterTexture(CTexture* const texture)
     return ActionSuccessful;
 }
 
-ActionResult GraphicTextureUse(CTexture* const texture)
+ActionResult GraphicTextureUse(GraphicContext* const graphicContext, CTexture* const texture)
 {
     /*
     const bool isValidTexture = textureID != -1 && imageType != ImageType::Invalid;
@@ -76,17 +78,17 @@ ActionResult GraphicTextureUse(CTexture* const texture)
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureRegister(CTexture* const texture)
+ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, CTexture* const texture)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureRelease(CTexture* const texture)
+ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, CTexture* const texture)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureCubeRegister(CTextureCube* const textureCube)
+ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CTextureCube* const textureCube)
 {
     OpenGLID textureID = -1;
 
@@ -133,12 +135,17 @@ ActionResult GraphicTextureCubeRegister(CTextureCube* const textureCube)
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureCubeRelease(CTextureCube* const textureCube)
+ActionResult GraphicTextureCubeRegisterUse(GraphicContext* const graphicContext, CTextureCube* const textureCube)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicSkyboxRegister(CSkyBox* const skyBox)
+ActionResult GraphicTextureCubeRelease(GraphicContext* const graphicContext, CTextureCube* const textureCube)
+{
+    return ActionInvalid;
+}
+
+ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, CSkyBox* const skyBox)
 {
     const float vertexData[] =
     {
@@ -173,7 +180,7 @@ ActionResult GraphicSkyboxRegister(CSkyBox* const skyBox)
     return ActionInvalid;
 }
 
-ActionResult GraphicSkyboxUse(CSkyBox* const skyBox)
+ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, CSkyBox* const skyBox)
 {
     /*
     // TODO:TEST REMOVAL !!!    OpenGL::VertexArrayBind(skyBox.RenderInfo.VAO);
@@ -192,7 +199,7 @@ ActionResult GraphicSkyboxUse(CSkyBox* const skyBox)
     return ActionInvalid;
 }
 
-ActionResult GraphicModelRegisterFromModel(Renderable* const renderable, const Model* const model)
+ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, Renderable* const renderable, const Model* const model)
 {
     /*
     //float vaoIDList[128u];
@@ -356,7 +363,7 @@ ActionResult GraphicModelRegisterFromModel(Renderable* const renderable, const M
     // Merge
 }
 
-ActionResult GraphicModelRegisterFromData(Renderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize)
+ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, Renderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize)
 {
     /*
     // Check
@@ -406,55 +413,130 @@ ActionResult GraphicModelRegisterFromData(Renderable* const renderable, const fl
     return ActionInvalid;
 }
 
-ActionResult GraphicShaderProgramCreate()
+OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType)
+{
+    switch (shaderType)
+    {
+    default:
+    case ShaderTypeInvalid:
+        return OpenGLShaderInvalid;
+
+    case ShaderTypeVertex:
+        return OpenGLShaderVertex;
+
+    case ShaderTypeFragment:
+        return OpenGLShaderFragment;
+
+    case ShaderTypeTessellationControl:
+        return OpenGLShaderTessellationControl;
+
+    case ShaderTypeTessellationEvaluation:
+        return OpenGLShaderTessellationEvaluation;
+
+    case ShaderTypeGeometry:
+        return OpenGLShaderGeometry;
+
+    case ShaderTypeCompute:
+        return OpenGLShaderCompute;
+    }
+}
+
+void GraphicInstantiate(GraphicContext* const graphicContext)
+{
+    PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
+
+    graphicContext->OpenGLInstance.WindowsDeviceContext = window->HandleDeviceContext;
+
+    OpenGLContextCreate(&graphicContext->OpenGLInstance);
+
+    if (1)
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
+
+    if (1) // X-RAY
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    if (1)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_COLOR, GL_DST_COLOR);
+
+         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    }
+
+    OpenGLContextDeselect(&graphicContext->OpenGLInstance);
+}
+
+unsigned char GraphicImageBufferSwap(GraphicContext* const graphicContext)
+{
+    PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
+
+   // OpenGLContextFlush(&graphicContext->OpenGLInstance);
+
+    const unsigned char successful =
+#if defined(OSUnix)
+        1u; // No feedback?
+    glXSwapBuffers(window->DisplayCurrent, window->ID);
+#elif defined(OSWindows)
+        SwapBuffers(window->HandleDeviceContext);
+#endif
+
+    return successful;
+}
+
+ActionResult GraphicShaderProgramCreate(GraphicContext* const graphicContext)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicShaderCompile()
+ActionResult GraphicShaderCompile(GraphicContext* const graphicContext)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicShaderUse(const unsigned int shaderID)
+ActionResult GraphicShaderUse(GraphicContext* const graphicContext, const unsigned int shaderID)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicShaderProgramCreateVF(ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)
-{
-    /*
+ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)
+{   
     Shader vertexShader;
     Shader fragmentShader;
-    File vertexShaderFile;
-    File fragmentFile;
+    DataStream vertexShaderFile;
+    DataStream fragmentFile;
 
-    FileConstruct(&vertexShaderFile);
-    FileConstruct(&fragmentFile);
+    DataStreamConstruct(&vertexShaderFile);
+    DataStreamConstruct(&fragmentFile);
 
     {
-        const bool isAlreadyLoaded = shaderProgram.ID != -1;
-        const bool hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
+        const unsigned char isAlreadyLoaded = shaderProgram->ID != -1;
+        const unsigned char hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
 
         if (isAlreadyLoaded)
         {
-            return false;
+            return ActionSuccessful;
         }
 
         if (hasEmptyPaths)
         {
-            return false;
+            return ActionSuccessful;
         }
     }
 
-
     {
-        const ActionResult actionResult = FileMapToVirtualMemoryW(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = ResultSuccessful == actionResult;
+        const ActionResult actionResult = DataStreamMapToMemoryW(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
+        const unsigned char sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
         {
-            return false;
+            return actionResult;
         }
 
         vertexShader.Type = ShaderTypeVertex;
@@ -464,12 +546,12 @@ ActionResult GraphicShaderProgramCreateVF(ShaderProgram* const shaderProgram, co
 
 
     {
-        const ActionResult actionResult = FileMapToVirtualMemoryW(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = ResultSuccessful == actionResult;
+        const ActionResult actionResult = DataStreamMapToMemoryW(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
+        const unsigned char sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
         {
-            return false;
+            return actionResult;
         }
 
         fragmentShader.Type = ShaderTypeFragment;
@@ -479,97 +561,96 @@ ActionResult GraphicShaderProgramCreateVF(ShaderProgram* const shaderProgram, co
     //-----
 
     const size_t shaderListSize = 2;
-    const Shader* shaderList[shaderListSize]{ &vertexShader, &fragmentShader };
-    const OpenGLID shaderProgrammID = OpenGL::ShaderProgramCreate();
-    OpenGLID shaderIDList[shaderListSize] = { (unsigned int)-1,(unsigned int)-1 };
+    const Shader* shaderList[2] = { &vertexShader, &fragmentShader };
+    const OpenGLID shaderProgrammID = OpenGLShaderProgramCreate(graphicContext);
     unsigned int  sucessfulCounter = 0;
-    bool isValidShader = false;
+    unsigned char isValidShader = 1;
 
     for (size_t i = 0; i < shaderListSize; ++i)
     {
-        const Shader& shader = *shaderList[i];
-        const OpenGLID type = ToShaderType(shader.Type);
-        const OpenGLID shaderID = OpenGL::ShaderCompile(type, shader.Content);
-        const bool compileFailed = shaderID == -1;
+        Shader* const shader = shaderList[i];
+        const OpenGLShaderType openGLShaderType = GraphicShaderFromOpenGL(shader->Type);             
+        const unsigned int shaderID = OpenGLShaderCreate(graphicContext, openGLShaderType);
 
-        if (compileFailed)
+        OpenGLShaderSource(graphicContext, shaderID, 1u, &shader->Content, &shader->ContentSize);
+
+        const unsigned char compileSuccessful = OpenGLShaderCompile(graphicContext, shaderID);
+
+        if (!compileSuccessful)
         {
-            isValidShader = false;
-
-            const wchar_t* text = i == 0 ? vertexShaderFilePath : fragmentShaderFilePath;
-            printf("[x][OpenGL][Shader] Failed to compile <%ls>!\n", text);
+            isValidShader = 0;
             break;
-        }
+        }    
 
-        shaderIDList[i] = shaderID;
+        OpenGLShaderProgramAttach(graphicContext, shaderProgrammID, shaderID);
 
-        isValidShader = true;
-
-        glAttachShader(shaderProgrammID, shaderID);
+        shader->ID = shaderID;
     }
 
     if (isValidShader)
-    {
-        glLinkProgram(shaderProgrammID);
-        glValidateProgram(shaderProgrammID);
+    {        
+        OpenGLShaderProgramLink(graphicContext, shaderProgrammID);
+        OpenGLShaderProgramValidate(graphicContext, shaderProgrammID);
 
-        shaderProgram.ID = shaderProgrammID;
+        shaderProgram->ID = shaderProgrammID;
     }
 
     // We used the Shaders above to compile, these elements are not used anymore.
     for (size_t i = 0; i < shaderListSize; ++i)
     {
-        const OpenGLID shaderID = shaderIDList[i];
-        const bool isLoaded = shaderID != -1;
+        Shader* const shader = shaderList[i];
+        const unsigned char isLoaded = shader->ID != -1;
 
         if (isLoaded)
         {
-            glDeleteShader(shaderID);
+            OpenGLShaderDelete(graphicContext, shader->ID);
         }
     }
 
     if (!isValidShader)
     {
-        glDeleteProgram(shaderProgrammID);
+        OpenGLShaderProgramDelete(graphicContext, shaderProgrammID);
     }
 
-    FileDestruct(&vertexShaderFile);
-    FileDestruct(&fragmentFile);
-    
+    DataStreamDestruct(&vertexShaderFile);
+    DataStreamDestruct(&fragmentFile);
 
-    return isValidShader;
+    if (!isValidShader)
+    {
+        return ActionInvalid;
+    }
 
-    */
-
-    return ActionInvalid;
+    return ActionSuccessful;
 }
 
-ActionResult GraphicRender(GraphicRenderMode renderMode, size_t start, size_t amount)
+ActionResult GraphicRender(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount)
 {
     return ActionInvalid;
 }
 
-void GraphicShaderUpdateMatrix4x4F(const unsigned int locationID, float* matrix4x4)
+void GraphicShaderUpdateMatrix4x4F(GraphicContext* const graphicContext, const unsigned int locationID, float* matrix4x4)
 {   
-    return ActionInvalid;
+    OpenGLShaderVariableMatrix4fv(&graphicContext->OpenGLInstance, locationID, 1, 0, matrix4x4);
 }
 
-unsigned int GraphicShaderVariableIDFetch(const unsigned int shaderID, const char* const name)
+unsigned int GraphicShaderVariableIDFetch(GraphicContext* const graphicContext, const unsigned int shaderID, const char* const name)
+{
+    const unsigned int locationID = OpenGLShaderVariableIDGet(&graphicContext->OpenGLInstance, shaderID, name);
+
+    return locationID;
+}
+
+void GraphicShaderProgramUse(GraphicContext* const graphicContext, const unsigned int shaderID)
+{
+    OpenGLShaderProgramUse(&graphicContext->OpenGLInstance, shaderID);
+}
+
+ActionResult GraphicRenderElement(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount)
 {
     return ActionInvalid;
 }
 
-void GraphicShaderProgramUse(const unsigned int shaderID)
-{
-    return ActionInvalid;
-}
-
-ActionResult GraphicRenderElement(GraphicRenderMode renderMode, size_t start, size_t amount)
-{
-    return ActionInvalid;
-}
-
-ActionResult GraphicRenderList(GraphicRenderMode renderMode, size_t start, size_t amount)
+ActionResult GraphicRenderList(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount)
 {
     return ActionInvalid;
 }

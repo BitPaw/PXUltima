@@ -4,7 +4,7 @@
 #include <Format/Type.h>
 
 #include <Error/ActionResult.h>
-#include <OS/CWindow.h>
+#include <OS/PXWindow.h>
 #include <OS/OSVersion.h>
 
 #if defined(OSUnix)
@@ -38,7 +38,7 @@ extern "C"
 	}UILayout;
 
 
-	CPublic void UIElementConstruct(const CWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name);
+	CPublic void UIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name);
 
 	typedef struct OSButton_
 	{
@@ -49,7 +49,7 @@ extern "C"
 
 	CPublic void ButtonConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSButton* button,
 		const unsigned int x,
 		const unsigned int y,
@@ -69,7 +69,7 @@ extern "C"
 
 	CPublic void ComboBoxConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSComboBox* comboBox,
 		const unsigned int x,
 		const unsigned int y,
@@ -89,7 +89,7 @@ extern "C"
 
 	CPublic void ListBoxConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSListBox* listBox,
 		const unsigned int x,
 		const unsigned int y,
@@ -108,7 +108,7 @@ extern "C"
 
 	CPublic void TextEditConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSTextEdit* textEdit,
 		const unsigned int x,
 		const unsigned int y,
@@ -134,7 +134,7 @@ extern "C"
 
 	CPublic void RichEditConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSRichEdit* richEdit,
 		const unsigned int x,
 		const unsigned int y,
@@ -155,7 +155,7 @@ extern "C"
 
 	CPublic void ScrollBarConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSScrollBar* scrollBar,
 		const unsigned int x,
 		const unsigned int y,
@@ -183,7 +183,7 @@ extern "C"
 
 	CPublic void OSUITextConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSUIText* uiText,
 		const unsigned int x,
 		const unsigned int y,
@@ -203,7 +203,7 @@ extern "C"
 
 	CPublic void OSCheckBoxConstruct
 	(
-		const CWindowID window,
+		const PXWindowID window,
 		OSUICheckBox* uiCheckBox,
 		const unsigned int x,
 		const unsigned int y,
@@ -221,7 +221,7 @@ extern "C"
 
 	}OSUITrackbar;
 
-	CPublic void OSUITrackbarCreate(const CWindowID window, OSUITrackbar* osUITrackbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUITrackbarCreate(const PXWindowID window, OSUITrackbar* osUITrackbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 	//-------------------------------------------------------------------------
 
@@ -236,7 +236,7 @@ extern "C"
 	}
 	OSUIStatusbar;
 
-	CPublic void OSUIStatusbarCreate(const CWindowID window, OSUIStatusbar* osUIStatusbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIStatusbarCreate(const PXWindowID window, OSUIStatusbar* osUIStatusbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 	//-------------------------------------------------------------------------
 
@@ -249,7 +249,7 @@ extern "C"
 
 	}OSUIUpDown;
 
-	CPublic void OSUIUpDownCreate(const CWindowID window, OSUIUpDown* osUIUpDown, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIUpDownCreate(const PXWindowID window, OSUIUpDown* osUIUpDown, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 	//-------------------------------------------------------------------------
 
@@ -262,7 +262,7 @@ extern "C"
 
 	}OSUIProgressbar;
 
-	CPublic void OSUIProgressbarCreate(const CWindowID window, OSUIProgressbar* osUIProgressbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIProgressbarCreate(const PXWindowID window, OSUIProgressbar* osUIProgressbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 	//-------------------------------------------------------------------------
 
@@ -275,7 +275,7 @@ extern "C"
 
 	}OSUIHotKey;
 
-	CPublic void OSUIHotKeyCreate(const CWindowID window, OSUIHotKey* osUIHotKey, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIHotKeyCreate(const PXWindowID window, OSUIHotKey* osUIHotKey, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 	//-------------------------------------------------------------------------
 
@@ -287,7 +287,7 @@ extern "C"
 
 	}OSUICalender;
 
-	CPublic void OSUICalenderCreate(const CWindowID window, OSUICalender* osUICalender, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUICalenderCreate(const PXWindowID window, OSUICalender* osUICalender, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIToolTip_
@@ -297,7 +297,7 @@ extern "C"
 
 	}OSUIToolTip;
 
-	CPublic void OSUIToolTipCreate(const CWindowID window, OSUIToolTip* osUIToolTip, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIToolTipCreate(const PXWindowID window, OSUIToolTip* osUIToolTip, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIAnimate_
@@ -307,7 +307,7 @@ extern "C"
 
 	}OSUIAnimate;
 
-	CPublic void OSUIAnimateCreate(const CWindowID window, OSUIAnimate* osUIAnimate, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIAnimateCreate(const PXWindowID window, OSUIAnimate* osUIAnimate, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIDateTimePicker_
@@ -317,7 +317,7 @@ extern "C"
 
 	}OSUIDateTimePicker;
 
-	CPublic void OSUIDateTimePickerCreate(const CWindowID window, OSUIDateTimePicker* osUIDateTimePicker, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIDateTimePickerCreate(const PXWindowID window, OSUIDateTimePicker* osUIDateTimePicker, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIGroupBox_
@@ -327,7 +327,7 @@ extern "C"
 
 	}OSUIGroupBox;
 
-	CPublic void OSUIGroupBoxCreate(const CWindowID window, OSUIGroupBox* osUIGroupBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIGroupBoxCreate(const PXWindowID window, OSUIGroupBox* osUIGroupBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIRadioButton_
@@ -337,7 +337,7 @@ extern "C"
 
 	}OSUIRadioButton;
 
-	CPublic void OSUIRadioButtonCreate(const CWindowID window, OSUIRadioButton* osUIRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIRadioButtonCreate(const PXWindowID window, OSUIRadioButton* osUIRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 
@@ -349,7 +349,7 @@ extern "C"
 
 	}OSUIGroupRadioButton;
 
-	CPublic void OSUIGroupRadioButtonCreate(const CWindowID window, OSUIGroupRadioButton* osUIGroupRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIGroupRadioButtonCreate(const PXWindowID window, OSUIGroupRadioButton* osUIGroupRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIListBox_
@@ -360,7 +360,7 @@ extern "C"
 	}OSUIListBox;
 
 
-	CPublic void OSUIListBoxCreate(const CWindowID window, OSUIListBox* osUIListBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIListBoxCreate(const PXWindowID window, OSUIListBox* osUIListBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUITreeView_
@@ -370,7 +370,7 @@ extern "C"
 	}
 	OSUITreeView;
 
-	CPublic void OSUITreeViewCreate(const CWindowID window, OSUITreeView* OSUITreeView, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUITreeViewCreate(const PXWindowID window, OSUITreeView* OSUITreeView, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 
@@ -381,7 +381,7 @@ extern "C"
 
 	}OSUIIPInput;
 
-	CPublic void OSUIIPInputCreate(const CWindowID window, OSUIIPInput* osUIIPInput, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIIPInputCreate(const PXWindowID window, OSUIIPInput* osUIIPInput, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 
@@ -392,7 +392,7 @@ extern "C"
 
 	}OSUITabControl;
 
-	CPublic void OSUITabControlCreate(const CWindowID window, OSUITabControl* osUITabControl, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUITabControlCreate(const PXWindowID window, OSUITabControl* osUITabControl, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 
@@ -408,7 +408,7 @@ extern "C"
 
 	}OSUIPageScroller;
 
-	CPublic void OSUIPageScrollerCreate(const CWindowID window, OSUIPageScroller* osUIPageScroller, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIPageScrollerCreate(const PXWindowID window, OSUIPageScroller* osUIPageScroller, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIFontSelector_
@@ -418,7 +418,7 @@ extern "C"
 
 	}OSUIFontSelector;
 
-	CPublic void OSUIFontSelectorCreate(const CWindowID window, OSUIFontSelector* osUIFontSelector, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIFontSelectorCreate(const PXWindowID window, OSUIFontSelector* osUIFontSelector, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUIHeader_
@@ -428,7 +428,7 @@ extern "C"
 
 	}OSUIHeader;
 
-	CPublic void OSUIHeaderCreate(const CWindowID window, OSUIHeader* osUIHeader, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUIHeaderCreate(const PXWindowID window, OSUIHeader* osUIHeader, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 	typedef struct OSUILink_
@@ -438,7 +438,7 @@ extern "C"
 
 	}OSUILink;
 
-	CPublic void OSUILinkCreate(const CWindowID window, OSUILink* osUILink, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
+	CPublic void OSUILinkCreate(const PXWindowID window, OSUILink* osUILink, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText);
 
 
 

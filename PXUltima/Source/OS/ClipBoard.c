@@ -252,8 +252,8 @@ ActionResult ClipBoardOpen(ClipBoard* const clipBoard)
 	return ResultInvalid;
 
 #elif defined(OSWindows)
-	HWND CWindowID = NULL;
-	unsigned char success = OpenClipboard(CWindowID);
+	HWND PXWindowID = NULL;
+	unsigned char success = OpenClipboard(PXWindowID);
 
 	if (!success)
 	{

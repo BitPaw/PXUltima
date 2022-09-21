@@ -1,4 +1,4 @@
-#include "CWindow.h"
+#include "PXWindow.h"
 
 #include <stdio.h>
 
@@ -7,7 +7,7 @@
 #include <OS/Monitor.h>
 #include <Text/Text.h>
 #include <Async/Await.h>
-#include <Graphic/OpenGL/OpenGL.h>
+#include <Graphic/Graphic.h>
 
 #if defined(OSUnix)
 
@@ -37,7 +37,7 @@
 
 #endif
 
-CWindow* currentWindow = 0;
+PXWindow* currentWindow = 0;
 
 #if defined(OSWindows)
 
@@ -580,7 +580,71 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
 
 
 #if defined(OSUnix)
-void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
+
+#define CursorIconNormalID 1
+#define CursorIconIBeamID 2
+#define CursorIconWaitID 3
+#define CursorIconCrossID 4
+#define CursorIconUpID 5
+#define CursorIconSizeID 6
+#define CursorIconIconID 7
+#define CursorIconResizeClockwiseCounterID 8
+#define CursorIconResizeClockwiseID 10
+#define CursorIconResizeHorizontalID 11
+#define CursorIconResizeVerticalID 12
+#define CursorIconResizeAllID 13
+#define CursorIconCursorID 14
+#define CursorIconNoAllowedID 15
+#define CursorIconHandID 16
+#define CursorIconAppStartingID 17
+
+#elif defined(OSWindows)
+
+#include <winuser.rh>
+#define CursorIconNormalID OCR_NORMAL
+#define CursorIconIBeamID OCR_IBEAM
+#define CursorIconWaitID OCR_WAIT
+#define CursorIconCrossID OCR_CROSS
+#define CursorIconUpID OCR_UP
+#define CursorIconSizeID OCR_SIZE               // OBSOLETE: use OCR_SIZEALL
+#define CursorIconIconID OCR_ICON               // OBSOLETE: use OCR_NORMAL
+#define CursorIconResizeClockwiseCounterID OCR_SIZENWSE
+#define CursorIconResizeClockwiseID OCR_SIZENESW
+#define CursorIconResizeHorizontalID OCR_SIZEWE
+#define CursorIconResizeVerticalID OCR_SIZENS
+#define CursorIconResizeAllID OCR_SIZEALL
+#define CursorIconCursorID OCR_ICOCUR             // OBSOLETE: use OIC_WINLOGO
+#define CursorIconNoAllowedID OCR_NO
+
+#if defined(WindowsAtleast2000)
+#define CursorIconHandID OCR_HAND
+#else
+#define CursorIconHandID 32649
+#endif
+
+#if defined(WindowsAtleastNT)
+#define CursorIconAppStartingID OCR_APPSTARTING
+#else
+#defined CursorIconAppStartingID 32650
+#endif
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if defined(OSUnix)
+void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 {
     switch(event->type)
     {
@@ -590,7 +654,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
             const XKeyEvent* keyEvent = &event->xkey;
             const unsigned int keyCode = keyEvent->keycode;
             const unsigned char release = event->type == KeyRelease;
-            const KeySym keySym = XKeycodeToKeysym(cWindow->DisplayCurrent, keyCode, 0);
+            const KeySym keySym = XKeycodeToKeysym(PXWindow->DisplayCurrent, keyCode, 0);
             const char* keyName = XKeysymToString(keySym);
 
             VirtualKey keyBoardKey = ConvertToVirtualKey(keySym);
@@ -606,7 +670,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
             keyBoardKeyInfo.PreState = 0;
             keyBoardKeyInfo.GapState = 0;
 
-            InvokeEvent(cWindow->KeyBoardKeyCallBack, cWindow->EventReceiver, cWindow, keyBoardKeyInfo);
+            InvokeEvent(PXWindow->KeyBoardKeyCallBack, PXWindow->EventReceiver, PXWindow, keyBoardKeyInfo);
 
             if(release)
             {
@@ -630,23 +694,23 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
             switch(buttonID)
             {
                 case MouseButtonLeft:
-                    InvokeEvent(cWindow->MouseClickCallBack, cWindow->EventReceiver, cWindow, MouseButtonLeft, buttonState);
+                    InvokeEvent(PXWindow->MouseClickCallBack, PXWindow->EventReceiver, PXWindow, MouseButtonLeft, buttonState);
                     break;
 
                 case MouseButtonMiddle:
-                    InvokeEvent(cWindow->MouseClickCallBack, cWindow->EventReceiver, cWindow, MouseButtonMiddle, buttonState);
+                    InvokeEvent(PXWindow->MouseClickCallBack, PXWindow->EventReceiver, PXWindow, MouseButtonMiddle, buttonState);
                     break;
 
                 case MouseButtonRight:
-                    InvokeEvent(cWindow->MouseClickCallBack, cWindow->EventReceiver, cWindow, MouseButtonRight, buttonState);
+                    InvokeEvent(PXWindow->MouseClickCallBack, PXWindow->EventReceiver, PXWindow, MouseButtonRight, buttonState);
                     break;
 
                 case MouseScrollUp:
-                    InvokeEvent(cWindow->MouseScrollCallBack, cWindow->EventReceiver, cWindow, MouseScrollDirectionUp);
+                    InvokeEvent(PXWindow->MouseScrollCallBack, PXWindow->EventReceiver, PXWindow, MouseScrollDirectionUp);
                     break;
 
                 case MouseScrollDown:
-                    InvokeEvent(cWindow->MouseScrollCallBack, cWindow->EventReceiver, cWindow, MouseScrollDirectionDown);
+                    InvokeEvent(PXWindow->MouseScrollCallBack, PXWindow->EventReceiver, PXWindow, MouseScrollDirectionDown);
                     break;
 
             }
@@ -659,22 +723,22 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
         }
         case EnterNotify:
         {
-            InvokeEvent(cWindow->MouseEnterCallBack, cWindow->EventReceiver, cWindow);
+            InvokeEvent(PXWindow->MouseEnterCallBack, PXWindow->EventReceiver, PXWindow);
             break;
         }
         case LeaveNotify:
         {
-            InvokeEvent(cWindow->MouseLeaveCallBack, cWindow->EventReceiver, cWindow);
+            InvokeEvent(PXWindow->MouseLeaveCallBack, PXWindow->EventReceiver, PXWindow);
             break;
         }
         case FocusIn:
         {
-            InvokeEvent(cWindow->FocusEnterCallBack, cWindow->EventReceiver, cWindow);
+            InvokeEvent(PXWindow->FocusEnterCallBack, PXWindow->EventReceiver, PXWindow);
             break;
         }
         case FocusOut:
         {
-            InvokeEvent(cWindow->FocusLeaveCallBack, cWindow->EventReceiver, cWindow);
+            InvokeEvent(PXWindow->FocusLeaveCallBack, PXWindow->EventReceiver, PXWindow);
             break;
         }
         case KeymapNotify:
@@ -690,7 +754,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
             /*
               XWindowAttributes gwa;
 
-                        XGetWindowAttributes(window.Dis, CWindowID, &gwa);
+                        XGetWindowAttributes(window.Dis, PXWindowID, &gwa);
                         glViewport(0, 0, gwa.width, gwa.height);
 
 
@@ -790,7 +854,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
 
             // glViewport(0,0, width, height);
 
-            InvokeEvent(cWindow->WindowSizeChangedCallBack, cWindow->EventReceiver, cWindow, width, height);
+            InvokeEvent(PXWindow->WindowSizeChangedCallBack, PXWindow->EventReceiver, PXWindow, width, height);
 
             break;
         }
@@ -852,7 +916,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
         {
             XGenericEventCookie cookie = event->xcookie; // Make Copy
 
-            const int result = XGetEventData(cWindow->DisplayCurrent, &cookie);
+            const int result = XGetEventData(PXWindow->DisplayCurrent, &cookie);
             const unsigned char sucessful = result != 0 && cookie.data;
 
             if(sucessful)
@@ -865,7 +929,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
 
                         if(re->valuators.mask_len)
                         {
-                            Mouse* mouse = &cWindow->MouseCurrentInput;
+                            Mouse* mouse = &PXWindow->MouseCurrentInput;
                             const double* values = re->raw_values;
                             const unsigned char isX = XIMaskIsSet(re->valuators.mask, 0);
                             const unsigned char isY = XIMaskIsSet(re->valuators.mask, 1);
@@ -892,7 +956,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
 
                             printf("[Event] RawMotion %5.4lf %5.4lf\n", xpos, ypos);
 
-                            InvokeEvent(cWindow->MouseMoveCallBack, cWindow->EventReceiver, cWindow, mouse);
+                            InvokeEvent(PXWindow->MouseMoveCallBack, PXWindow->EventReceiver, PXWindow, mouse);
 
                             //printf("[Event] RawMotion %5.4lf %5.4lf\n", window.MouseDeltaX, window.MouseDeltaY);
 
@@ -906,7 +970,7 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
                 printf("[Event] GenericEvent %i\n", cookie.evtype);
             }
 
-            XFreeEventData(cWindow->DisplayCurrent, &cookie);
+            XFreeEventData(PXWindow->DisplayCurrent, &cookie);
 
             break;
         }
@@ -919,10 +983,10 @@ void CWindowEventHandler(CWindow* const cWindow, const XEvent* const event)
     }
 }
 #elif defined(OSWindows)
-LRESULT CALLBACK CWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam, LPARAM lParam)
 {
     const WindowEventType windowEventType = ToWindowEventType(eventID);
-    CWindow* window = CWindowLookupFind(windowsID);
+    PXWindow* window = PXWindowLookupFind(windowsID);
 
     if(!window)
     {
@@ -1025,7 +1089,7 @@ LRESULT CALLBACK CWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam
             const HWND windowsHandle = (HWND)wParam;
             const WORD hitTestResult = LOWORD(lParam);
             const WORD sourceMessage = HIWORD(lParam);
-            const unsigned char showCursor = !(window->CursorModeCurrent == CWindowCursorInvisible || window->CursorModeCurrent == CWindowCursorLockAndHide);
+            const unsigned char showCursor = !(window->CursorModeCurrent == PXWindowCursorInvisible || window->CursorModeCurrent == PXWindowCursorLockAndHide);
 
             if(showCursor)
             {
@@ -1197,7 +1261,7 @@ LRESULT CALLBACK CWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam
                             int deltaX = rawInput.data.mouse.lLastX;
                             int deltaY = rawInput.data.mouse.lLastY;
 
-                            CWindowCursorPositionInWindowGet(window, &positionX, &positionY);
+                            PXWindowCursorPositionInWindowGet(window, &positionX, &positionY);
 
                             TriggerOnMouseMoveEvent(window, positionX, positionY, deltaX, deltaY);
 
@@ -1699,9 +1763,9 @@ LRESULT CALLBACK CWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam
 }
 #endif
 
-ThreadResult CWindowCreateThread(void* const windowAdress)
+ThreadResult PXWindowCreateThread(void* const windowAdress)
 {
-    CWindow* const window = (CWindow*)windowAdress;
+    PXWindow* const window = (PXWindow*)windowAdress;
 
     if(!windowAdress)
     {
@@ -1709,7 +1773,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     }
 
     window->IsRunning = 0;
-    window->CursorModeCurrent = CWindowCursorShow;
+    window->CursorModeCurrent = PXWindowCursorShow;
 
 #if defined(OSUnix)
     XInitThreads();
@@ -1796,9 +1860,9 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     {
         int borderWidth = 0;
 
-        CWindow cccc = *window;
+        PXWindow cccc = *window;
 
-        const XID cWindowID = XCreateWindow
+        const XID PXWindowID = XCreateWindow
         (
             window->DisplayCurrent,
             window->WindowRoot,
@@ -1813,11 +1877,11 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
             CWColormap | CWEventMask,
             &setWindowAttributes
         );
-        const unsigned char sucessful = cWindowID;
+        const unsigned char sucessful = PXWindowID;
 
         printf("[i][Window] Create <%i x %i> \n",window->Width,  window->Height );
 
-        window->ID = sucessful ? cWindowID : 0;
+        window->ID = sucessful ? PXWindowID : 0;
     }
 
 
@@ -1894,7 +1958,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     MemorySet(&wndclass, sizeof(WNDCLASS), 0);
 
     wndclass.style = CS_OWNDC; //  CS_HREDRAW | CS_VREDRAW;
-    wndclass.lpfnWndProc = CWindowEventHandler;
+    wndclass.lpfnWndProc = PXWindowEventHandler;
     wndclass.cbClsExtra = 0; // The number of extra bytes to allocate following the window-class structure.
     wndclass.cbWndExtra = 0;
     wndclass.hInstance = hInstance;
@@ -1913,7 +1977,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     HMENU hMenu = 0;
     void* lpParam = 0;
 
-    CWindowID windowID = CreateWindowExW
+    PXWindowID windowID = CreateWindowExW
     (
         windowStyle,
         lpClassName,
@@ -1939,35 +2003,63 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         }
 
         window->ID = windowID;
+        window->GraphicInstance.AttachedWindow = window;
     }
 
-    // Create OpenGL Context
+    // PixelDraw system
     {
         const HDC windowHandleToDeviceContext = GetDC(windowID);
+     
+        const WORD  nSize = sizeof(PIXELFORMATDESCRIPTOR);
+        const WORD  nVersion = 1;
+        const DWORD dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+        const BYTE  iPixelType = PFD_TYPE_RGBA; // The kind of framebuffer. RGBA or palette.
+        const BYTE  cColorBits = 32;   // Colordepth of the framebuffer.
+        const BYTE  cRedBits = 0;
+        const BYTE  cRedShift = 0;
+        const BYTE  cGreenBits = 0;
+        const BYTE  cGreenShift = 0;
+        const BYTE  cBlueBits = 0;
+        const BYTE  cBlueShift = 0;
+        const BYTE  cAlphaBits = 0;
+        const BYTE  cAlphaShift = 0;
+        const BYTE  cAccumBits = 0;
+        const BYTE  cAccumRedBits = 0;
+        const BYTE  cAccumGreenBits = 0;
+        const BYTE  cAccumBlueBits = 0;
+        const BYTE  cAccumAlphaBits = 0;
+        const BYTE  cDepthBits = 24; // Number of bits for the depthbuffer
+        const BYTE  cStencilBits = 8;  // Number of bits for the stencilbuffer
+        const BYTE  cAuxBuffers = 0;  // Number of Aux buffers in the framebuffer.
+        const BYTE  iLayerType = PFD_MAIN_PLANE;
+        const BYTE  bReserved = 0;
+        const DWORD dwLayerMask = 0;
+        const DWORD dwVisibleMask = 0;
+        const DWORD dwDamageMask = 0;
         const PIXELFORMATDESCRIPTOR pfd =
         {
-            sizeof(PIXELFORMATDESCRIPTOR),
-            1,
-            PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-            PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
-            32,                   // Colordepth of the framebuffer.
-            0, 0, 0, 0, 0, 0,
-            0,
-            0,
-            0,
-            0, 0, 0, 0,
-            24,                   // Number of bits for the depthbuffer
-            8,                    // Number of bits for the stencilbuffer
-            0,                    // Number of Aux buffers in the framebuffer.
-            PFD_MAIN_PLANE,
-            0,
-            0, 0, 0
+            nSize,
+            nVersion,
+            dwFlags,  
+            iPixelType,
+            cColorBits,                
+            cRedBits,cRedShift,
+            cGreenBits, cGreenShift, 
+            cBlueBits, cBlueShift, 
+            cAlphaBits, cAlphaShift,
+            cAccumBits, 
+            cAccumRedBits, cAccumGreenBits, cAccumBlueBits, cAccumAlphaBits,
+            cDepthBits,                  
+            cStencilBits,
+            cAuxBuffers,
+            iLayerType,
+            bReserved,
+            dwLayerMask, dwVisibleMask, dwDamageMask
         };
         const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(windowHandleToDeviceContext, &pfd);
         const unsigned char sucessul = SetPixelFormat(windowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
 
         window->HandleDeviceContext = windowHandleToDeviceContext;
-        window->GLContext.WindowsDeviceContext = windowHandleToDeviceContext;
     }
 
     // Register input device
@@ -1987,36 +2079,13 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
 
 #endif
 
-    OpenGLContextCreate(&window->GLContext);  
+    GraphicInstantiate(&window->GraphicInstance); 
 
-    if(1)
-    {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-    }
-
-    if(1) // X-RAY
-    {
-        glEnable(GL_DEPTH_TEST);
-    }
-
-    if(1)
-    {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_COLOR, GL_DST_COLOR);
-
-         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-         //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-    }
-
-    CWindowLookupAdd(window);
+    PXWindowLookupAdd(window);
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
 
-    CWindowFrameBufferContextRelease(window);
-
-    //ShowWindow(window->ID, SW_SHOW);
+    ShowWindow(window->ID, SW_SHOW);
     UpdateWindow(window->ID);
 
     window->IsRunning = 1;
@@ -2044,7 +2113,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
         // XEventClass eventList[8]={0,0,0,0,0,0,0,0};
        //  int listSize = xDeviceInfo.num_classes;
 
-       //  int resultE = XSelectExtensionEvent(display, CWindowID, eventList, listSize);
+       //  int resultE = XSelectExtensionEvent(display, PXWindowID, eventList, listSize);
 
         // printf("");
     }
@@ -2088,7 +2157,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
 
         XUnlockDisplay(window->DisplayCurrent);
 
-        CWindowEventHandler(window, &windowEvent);
+        PXWindowEventHandler(window, &windowEvent);
 
 #elif defined(OSWindows)
         MSG message;
@@ -2106,8 +2175,7 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
             }
             else
             {
-                // An error occurred! Handle it and bail out.
-                MessageBox(0, L"Unexpected Error", 0, MB_OK | MB_ICONERROR);
+                break; // Unexpected error?
             }
         }
 #endif
@@ -2116,17 +2184,17 @@ ThreadResult CWindowCreateThread(void* const windowAdress)
     return ThreadSucessful;
 }
 
-CPublic void CWindowConstruct(CWindow* const window)
+CPublic void PXWindowConstruct(PXWindow* const window)
 {
-    MemorySet(window, sizeof(CWindow), 0);
+    MemorySet(window, sizeof(PXWindow), 0);
 }
 
-void CWindowCreate(CWindow* window, const unsigned int width, const unsigned int height, const char* title, unsigned char async)
+void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, unsigned char async)
 {
     window->Width = width;
     window->Height = height;
 
-    TextCopyA(title, 256, window->Title, 256);
+    TextCopyAW(title, 256, window->Title, 256);
 
 // if width or height == WindowSizeDefault, then what?
     {
@@ -2143,15 +2211,15 @@ void CWindowCreate(CWindow* window, const unsigned int width, const unsigned int
 
     if(async)
     {
-        window->MessageThreadID = ThreadRun(CWindowCreateThread, window);
+        window->MessageThreadID = ThreadRun(PXWindowCreateThread, window);
     }
     else
     {
-        CWindowCreateThread(window);
+        PXWindowCreateThread(window);
     }
 }
 
-void CWindowDestruct(CWindow* const window)
+void PXWindowDestruct(PXWindow* const window)
 {
 #if defined(OSUnix)
     glXMakeCurrent(window->DisplayCurrent, None, NULL);
@@ -2165,30 +2233,30 @@ void CWindowDestruct(CWindow* const window)
     window->ID = 0;
 }
 
-void CWindowIconCorner()
+void PXWindowIconCorner()
 {
 }
 
-void CWindowIconTaskBar()
+void PXWindowIconTaskBar()
 {
 }
 
-void CWindowLookupAdd(const CWindow* window)
+void PXWindowLookupAdd(const PXWindow* window)
 {
     currentWindow = window;
 }
 
-CWindow* CWindowLookupFind(const CWindowID cWindowID)
+PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID)
 {
     return currentWindow;
 }
 
-void CWindowLookupRemove(const CWindow* window)
+void PXWindowLookupRemove(const PXWindow* window)
 {
     currentWindow = 0;
 }
 
-void CWindowSize(CWindow* window, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height)
+void PXWindowSize(PXWindow* window, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height)
 {
 #if defined(OSUnix)
 #elif defined(OSWindows)
@@ -2206,7 +2274,7 @@ void CWindowSize(CWindow* window, unsigned int* x, unsigned int* y, unsigned int
 #endif
 }
 
-void CWindowSizeChange(CWindow* window, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
+void PXWindowSizeChange(PXWindow* window, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
 {
 #if defined(OSUnix)
 #elif defined(OSWindows)
@@ -2229,27 +2297,27 @@ void CWindowSizeChange(CWindow* window, const unsigned int x, const unsigned int
 #endif
 }
 
-void CWindowPosition(CWindow* window, unsigned int* x, unsigned int* y)
+void PXWindowPosition(PXWindow* window, unsigned int* x, unsigned int* y)
 {
 }
 
-void CWindowPositionChange(CWindow* window, const unsigned int x, const unsigned int y)
+void PXWindowPositionChange(PXWindow* window, const unsigned int x, const unsigned int y)
 {
 }
 
-void CWindowPositonCenterScreen(CWindow* window)
+void PXWindowPositonCenterScreen(PXWindow* window)
 {
 }
 
-void CWindowCursor(CWindow* window)
+void PXWindowCursor(PXWindow* window)
 {
 }
 
-void CWindowCursorTexture()
+void PXWindowCursorTexture()
 {
 }
 
-void CWindowCursorCaptureMode(CWindow* window, const CWindowCursorMode cursorMode)
+void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursorMode)
 {
     unsigned int horizontal = 0;
     unsigned int vertical = 0;
@@ -2261,7 +2329,7 @@ void CWindowCursorCaptureMode(CWindow* window, const CWindowCursorMode cursorMod
 
     switch(cursorMode)
     {
-        case CWindowCursorShow:
+        case PXWindowCursorShow:
         {
             printf("[Cursor] Show\n");
 
@@ -2272,7 +2340,7 @@ void CWindowCursorCaptureMode(CWindow* window, const CWindowCursorMode cursorMod
 
             break;
         }
-        case CWindowCursorLock:
+        case PXWindowCursorLock:
         {
             printf("[Cursor] Lock\n");
 
@@ -2287,7 +2355,7 @@ void CWindowCursorCaptureMode(CWindow* window, const CWindowCursorMode cursorMod
 
             break;
         }
-        case CWindowCursorLockAndHide:
+        case PXWindowCursorLockAndHide:
         {
             printf("[Cursor] Lock and hide\n");
 
@@ -2331,63 +2399,32 @@ void CWindowCursorCaptureMode(CWindow* window, const CWindowCursorMode cursorMod
 #endif
 }
 
-int CWindowFrameBufferInitialize(CWindow* window)
-{
-	return 0;
+unsigned char PXWindowFrameBufferSwap(PXWindow* window)
+{ 
+    return GraphicImageBufferSwap(&window->GraphicInstance);
 }
 
-unsigned char CWindowFrameBufferSwap(CWindow* window)
-{
-    //OpenGLContextFlush();
-
-    const unsigned char successful =
-#if defined(OSUnix)
-    1u; // No feedback?
-    glXSwapBuffers(window->DisplayCurrent, window->ID);
-#elif defined(OSWindows)
-    SwapBuffers(window->HandleDeviceContext);
-#endif
-
-    return successful;
-}
-
-unsigned char CWindowFrameBufferContextRelease(CWindow* window)
-{
-    //const size_t threadID = ThreadCurrentID();
-
-    //printf("[%x][OpenGL] Remove context \n", threadID);
-
-    const unsigned char successful =
-#if defined(OSUnix)
-    glXMakeCurrent(0, window->ID, window->OpenGLConext);
-#elif defined(OSWindows)
-    wglMakeCurrent(0, 0);
-#endif
-
-    return successful;
-}
-
-unsigned char CWindowInteractable(CWindow* window)
+unsigned char PXWindowInteractable(PXWindow* window)
 {
     switch(window->CursorModeCurrent)
     {
     default:
-        case CWindowCursorIgnore:
-        case CWindowCursorShow:
+        case PXWindowCursorIgnore:
+        case PXWindowCursorShow:
             return 0;
 
-        case CWindowCursorInvisible:
-        case CWindowCursorLock:
-        case CWindowCursorLockAndHide:
+        case PXWindowCursorInvisible:
+        case PXWindowCursorLock:
+        case PXWindowCursorLockAndHide:
             return 1;
     }
 }
 
-unsigned char CWindowCursorPositionInWindowGet(CWindow* window, int* x, int* y)
+unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y)
 {
     int xPos = 0;
     int yPos = 0;
-    const unsigned char sucessfulA = CWindowCursorPositionInDestopGet(window, &xPos, &yPos);
+    const unsigned char sucessfulA = PXWindowCursorPositionInDestopGet(window, &xPos, &yPos);
 
 #if defined(OSUnix)
 
@@ -2413,7 +2450,7 @@ unsigned char CWindowCursorPositionInWindowGet(CWindow* window, int* x, int* y)
 #endif
 }
 
-unsigned char CWindowCursorPositionInDestopGet(CWindow* window, int* x, int* y)
+unsigned char PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
 {
 #if defined(OSUnix)
 
@@ -2439,11 +2476,11 @@ unsigned char CWindowCursorPositionInDestopGet(CWindow* window, int* x, int* y)
 #endif
 }
 
-void TriggerOnMouseScrollEvent(const CWindow* window, const Mouse* mouse)
+void TriggerOnMouseScrollEvent(const PXWindow* window, const Mouse* mouse)
 {
 }
 
-void TriggerOnMouseClickEvent(const CWindow* window, const MouseButton mouseButton, const ButtonState buttonState)
+void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState)
 {
     Mouse* mouse = &window->MouseCurrentInput;
 
@@ -2515,12 +2552,12 @@ void TriggerOnMouseClickEvent(const CWindow* window, const MouseButton mouseButt
     InvokeEvent(window->MouseClickCallBack, window->EventReceiver, window, mouseButton, buttonState);
 }
 
-void TriggerOnMouseClickDoubleEvent(const CWindow* window, const MouseButton mouseButton)
+void TriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton)
 {
     InvokeEvent(window->MouseClickDoubleCallBack, window->EventReceiver, window, mouseButton);
 }
 
-void TriggerOnMouseMoveEvent(const CWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY)
+void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY)
 {
     Mouse* mouse = &window->MouseCurrentInput;
 
@@ -2532,17 +2569,65 @@ void TriggerOnMouseMoveEvent(const CWindow* window, const int positionX, const i
     InvokeEvent(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
 }
 
-void TriggerOnMouseEnterEvent(const CWindow* window, const Mouse* mouse)
+void TriggerOnMouseEnterEvent(const PXWindow* window, const Mouse* mouse)
 {
 }
 
-void TriggerOnMouseLeaveEvent(const CWindow* window, const Mouse* mouse)
+void TriggerOnMouseLeaveEvent(const PXWindow* window, const Mouse* mouse)
 {
 }
 
-void TriggerOnKeyBoardKeyEvent(const CWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo)
+void TriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo)
 {
     printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo.KeyID, keyBoardKeyInfo.Key, keyBoardKeyInfo.Mode);
 
     InvokeEvent(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
+}
+
+unsigned int CursorIconToID(const CursorIcon cursorIcon)
+{
+    switch (cursorIcon)
+    {
+        case CursorIconInvalid:
+            return -1;
+
+        case CursorIconNormal:
+            return CursorIconNormalID;
+
+        case CursorIconIBeam:
+            return CursorIconIBeamID;
+
+        case CursorIconWait:
+            return CursorIconWaitID;
+
+        case CursorIconCross:
+            return CursorIconCrossID;
+
+        case CursorIconUp:
+            return CursorIconUpID;
+
+        case CursorIconHand:
+            return CursorIconHandID;
+
+        case CursorIconNotAllowed:
+            return CursorIconNoAllowedID;
+
+        case CursorIconAppStarting:
+            return CursorIconAppStartingID;
+
+        case CursorIconResizeHorizontal:
+            return CursorIconResizeHorizontalID;
+
+        case CursorIconResizeVertical:
+            return CursorIconResizeVerticalID;
+
+        case CursorIconResizeClockwise:
+            return CursorIconResizeClockwiseID;
+
+        case CursorIconResizeClockwiseCounter:
+            return CursorIconResizeClockwiseCounterID;
+
+        case CursorIconResizeAll:
+            return CursorIconResizeAllID;
+    }
 }

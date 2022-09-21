@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <OS/CWindow.h>
+#include <OS/PXWindow.h>
 #include <Processor/Processor.h>
 #include <Memory/Memory.h>
 
@@ -13,11 +13,11 @@ void TestWindowAll()
 
 void TestWindowOpen()
 {
-	CWindow window;
+	PXWindow window;
 
-	CWindowConstruct(&window);
+	PXWindowConstruct(&window);
 
-	CWindowCreate(&window, 400, 600, "[PX] OpenGL-Test", 1);
+	PXWindowCreate(&window, 400, 600, "[PX] OpenGL-Test", 1);
 
 	int x = 1;
 
@@ -25,7 +25,6 @@ void TestWindowOpen()
 	{
 		x++;
 	}
-
 
 	Processor processor;
 
@@ -52,7 +51,7 @@ void TestWindowOpen()
 	);
 
 
-	OpenGLContext* openGL = &window.GLContext;
+	GraphicContext* graphicContext = &window.GraphicInstance;
 
 	printf
 	(
@@ -61,16 +60,12 @@ void TestWindowOpen()
 		"| Renderer : %-44s |\n"
 		"| Version  : %-44s |\n"
 		"+----------+----------------------------------------------+\n",
-		openGL->Vendor,
-		openGL->Renderer,
-		openGL->VersionText
+		graphicContext->OpenGLInstance.Vendor,
+		graphicContext->OpenGLInstance.Renderer,
+		graphicContext->OpenGLInstance.VersionText
 	);
 
-	
-
-
-
-	OpenGLContextSelect(openGL);
+	OpenGLContextSelect(&graphicContext->OpenGLInstance);
 
 	while (1)
 	{
@@ -88,5 +83,5 @@ void TestWindowOpen()
 		SwapBuffers(window.HandleDeviceContext);
 	}
 
-	CWindowDestruct(&window);
+	PXWindowDestruct(&window);
 }

@@ -8,12 +8,12 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-#define CWindowID XID // XID is CWindow
+#define PXWindowID XID // XID is PXWindow
 #define OpenGLConextID GLXContext
 
 #elif defined(OSWindows)
 #include <Windows.h>
-#define CWindowID HWND
+#define PXWindowID HWND
 #define OpenGLConextID HGLRC
 #endif
 
@@ -28,11 +28,11 @@
 //---------------------------
 
 #include <Format/Type.h>
-#include <Graphic/Graphic.h>
 
 #define OpenGLID unsigned int
 #define OpenGLShaderProgramID unsigned int
 #define OpenGLShaderID unsigned int
+#define GLAPIENTRY APIENTRY 
 
 #ifdef __cplusplus
 extern "C"
@@ -168,10 +168,99 @@ extern "C"
 #define GL_MULTISAMPLE_BIT 0x20000000
 
 	//---<Added 2.0>-----------------------------------------------------------
+
+#define GL_BLEND_EQUATION_RGB GL_BLEND_EQUATION
+#define GL_VERTEX_ATTRIB_ARRAY_ENABLED 0x8622
+#define GL_VERTEX_ATTRIB_ARRAY_SIZE 0x8623
+#define GL_VERTEX_ATTRIB_ARRAY_STRIDE 0x8624
+#define GL_VERTEX_ATTRIB_ARRAY_TYPE 0x8625
+#define GL_CURRENT_VERTEX_ATTRIB 0x8626
+#define GL_VERTEX_PROGRAM_POINT_SIZE 0x8642
+#define GL_VERTEX_PROGRAM_TWO_SIDE 0x8643
+#define GL_VERTEX_ATTRIB_ARRAY_POINTER 0x8645
+#define GL_STENCIL_BACK_FUNC 0x8800
+#define GL_STENCIL_BACK_FAIL 0x8801
+#define GL_STENCIL_BACK_PASS_DEPTH_FAIL 0x8802
+#define GL_STENCIL_BACK_PASS_DEPTH_PASS 0x8803
+#define GL_MAX_DRAW_BUFFERS 0x8824
+#define GL_DRAW_BUFFER0 0x8825
+#define GL_DRAW_BUFFER1 0x8826
+#define GL_DRAW_BUFFER2 0x8827
+#define GL_DRAW_BUFFER3 0x8828
+#define GL_DRAW_BUFFER4 0x8829
+#define GL_DRAW_BUFFER5 0x882A
+#define GL_DRAW_BUFFER6 0x882B
+#define GL_DRAW_BUFFER7 0x882C
+#define GL_DRAW_BUFFER8 0x882D
+#define GL_DRAW_BUFFER9 0x882E
+#define GL_DRAW_BUFFER10 0x882F
+#define GL_DRAW_BUFFER11 0x8830
+#define GL_DRAW_BUFFER12 0x8831
+#define GL_DRAW_BUFFER13 0x8832
+#define GL_DRAW_BUFFER14 0x8833
+#define GL_DRAW_BUFFER15 0x8834
+#define GL_BLEND_EQUATION_ALPHA 0x883D
+#define GL_POINT_SPRITE 0x8861
+#define GL_COORD_REPLACE 0x8862
+#define GL_MAX_VERTEX_ATTRIBS 0x8869
+#define GL_VERTEX_ATTRIB_ARRAY_NORMALIZED 0x886A
+#define GL_MAX_TEXTURE_COORDS 0x8871
+#define GL_MAX_TEXTURE_IMAGE_UNITS 0x8872
+#define GL_FRAGMENT_SHADER 0x8B30
+#define GL_VERTEX_SHADER 0x8B31
+#define GL_MAX_FRAGMENT_UNIFORM_COMPONENTS 0x8B49
+#define GL_MAX_VERTEX_UNIFORM_COMPONENTS 0x8B4A
+#define GL_MAX_VARYING_FLOATS 0x8B4B
+#define GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS 0x8B4C
+#define GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS 0x8B4D
+#define GL_SHADER_TYPE 0x8B4F
+#define GL_FLOAT_VEC2 0x8B50
+#define GL_FLOAT_VEC3 0x8B51
+#define GL_FLOAT_VEC4 0x8B52
+#define GL_INT_VEC2 0x8B53
+#define GL_INT_VEC3 0x8B54
+#define GL_INT_VEC4 0x8B55
+#define GL_BOOL 0x8B56
+#define GL_BOOL_VEC2 0x8B57
+#define GL_BOOL_VEC3 0x8B58
+#define GL_BOOL_VEC4 0x8B59
+#define GL_FLOAT_MAT2 0x8B5A
+#define GL_FLOAT_MAT3 0x8B5B
+#define GL_FLOAT_MAT4 0x8B5C
+#define GL_SAMPLER_1D 0x8B5D
+#define GL_SAMPLER_2D 0x8B5E
+#define GL_SAMPLER_3D 0x8B5F
+#define GL_SAMPLER_CUBE 0x8B60
+#define GL_SAMPLER_1D_SHADOW 0x8B61
+#define GL_SAMPLER_2D_SHADOW 0x8B62
+#define GL_DELETE_STATUS 0x8B80
+#define GL_COMPILE_STATUS 0x8B81
+#define GL_LINK_STATUS 0x8B82
+#define GL_VALIDATE_STATUS 0x8B83
+#define GL_INFO_LOG_LENGTH 0x8B84
+#define GL_ATTACHED_SHADERS 0x8B85
+#define GL_ACTIVE_UNIFORMS 0x8B86
+#define GL_ACTIVE_UNIFORM_MAX_LENGTH 0x8B87
+#define GL_SHADER_SOURCE_LENGTH 0x8B88
+#define GL_ACTIVE_ATTRIBUTES 0x8B89
+#define GL_ACTIVE_ATTRIBUTE_MAX_LENGTH 0x8B8A
+#define GL_FRAGMENT_SHADER_DERIVATIVE_HINT 0x8B8B
+#define GL_SHADING_LANGUAGE_VERSION 0x8B8C
+#define GL_CURRENT_PROGRAM 0x8B8D
+#define GL_POINT_SPRITE_COORD_ORIGIN 0x8CA0
+#define GL_LOWER_LEFT 0x8CA1
+#define GL_UPPER_LEFT 0x8CA2
+#define GL_STENCIL_BACK_REF 0x8CA3
+#define GL_STENCIL_BACK_VALUE_MASK 0x8CA4
+#define GL_STENCIL_BACK_WRITEMASK 0x8CA5
+
+
 	typedef unsigned int (*OpenGLShaderProgramCreateFunction)();
 	typedef void (*OpenGLShaderProgramUseFunction)(unsigned int program);
+	typedef void (*OpenGLShaderProgramDeleteFunction)(GLuint program); // glDeleteProgram
 	typedef void (*OpenGLShaderSourceFunction)(unsigned int shader, int count, const char** string, const int* length);
-	typedef void (*OpenGLCompileShaderFunction)(GLuint shader);	
+	typedef GLuint (*OpenGLShaderCreateFunction)(GLenum shaderType); // glCreateShader
+	typedef void (*OpenGLShaderCompileFunction)(GLuint shader);	
 	typedef void (*OpenGLShaderGetivFunction)(GLuint shader, GLenum pname, GLint* params);
 	typedef void (*OpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 	typedef void (*OpenGLShaderDeleteFunction)(GLuint shader);
@@ -208,10 +297,39 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<Added 3.0>-----------------------------------------------------------
-	typedef void (*OpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
-	typedef void (*OpenGLBindVertexArrayFunction)(GLuint arrayID);	
-	typedef void (*OpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
+	typedef void (GLAPIENTRY* OpenGLFrameBufferCreateFunction)(GLsizei n, GLuint* ids); // glGenFramebuffers
+	typedef void (GLAPIENTRY* OpenGLFrameBufferDeleteFunction)(GLsizei n, GLuint* framebuffers); // glDeleteFramebuffers
+	typedef void (GLAPIENTRY* OpenGLFrameBufferBindFunction)(GLenum target, GLuint framebuffer); // glBindFramebuffer
+
+	typedef void (GLAPIENTRY* OpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
+	typedef void (GLAPIENTRY* OpenGLBindVertexArrayFunction)(GLuint arrayID);
+	typedef void (GLAPIENTRY* OpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 	//-------------------------------------------------------------------------
+
+	// 3.2
+#define GL_CONTEXT_CORE_PROFILE_BIT 0x00000001
+#define GL_CONTEXT_COMPATIBILITY_PROFILE_BIT 0x00000002
+#define GL_LINES_ADJACENCY 0x000A
+#define GL_LINE_STRIP_ADJACENCY 0x000B
+#define GL_TRIANGLES_ADJACENCY 0x000C
+#define GL_TRIANGLE_STRIP_ADJACENCY 0x000D
+#define GL_PROGRAM_POINT_SIZE 0x8642
+#define GL_GEOMETRY_VERTICES_OUT 0x8916
+#define GL_GEOMETRY_INPUT_TYPE 0x8917
+#define GL_GEOMETRY_OUTPUT_TYPE 0x8918
+#define GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS 0x8C29
+#define GL_FRAMEBUFFER_ATTACHMENT_LAYERED 0x8DA7
+#define GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS 0x8DA8
+#define GL_GEOMETRY_SHADER 0x8DD9
+#define GL_MAX_GEOMETRY_UNIFORM_COMPONENTS 0x8DDF
+#define GL_MAX_GEOMETRY_OUTPUT_VERTICES 0x8DE0
+#define GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS 0x8DE1
+#define GL_MAX_VERTEX_OUTPUT_COMPONENTS 0x9122
+#define GL_MAX_GEOMETRY_INPUT_COMPONENTS 0x9123
+#define GL_MAX_GEOMETRY_OUTPUT_COMPONENTS 0x9124
+#define GL_MAX_FRAGMENT_INPUT_COMPONENTS 0x9125
+#define GL_CONTEXT_PROFILE_MASK 0x9126
+
 
 	//---<Added 4.1>-----------------------------------------------------------	
 	typedef void (*OpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
@@ -259,8 +377,6 @@ extern "C"
 #define GL_DEBUG_SEVERITY_LOW 0x9148
 #define GL_DEBUG_OUTPUT 0x92E0
 
-	#define GLAPIENTRY APIENTRY 
-
 	typedef void (GLAPIENTRY* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
 	typedef void (GLAPIENTRY*OpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
@@ -289,8 +405,10 @@ extern "C"
 
 		OpenGLShaderProgramCreateFunction	OpenGLShaderProgramCreateCallBack;
 		OpenGLShaderProgramUseFunction	OpenGLShaderProgramUseCallBack;
+		OpenGLShaderProgramDeleteFunction OpenGLShaderProgramDeleteCallBack;
+		OpenGLShaderCreateFunction OpenGLShaderCreateCallBack;
 		OpenGLShaderSourceFunction	OpenGLShaderSourceCallBack;
-		OpenGLCompileShaderFunction	OpenGLCompileShaderCallBack;
+		OpenGLShaderCompileFunction	OpenGLShaderCompileCallBack;
 		OpenGLShaderGetivFunction	OpenGLShaderGetivCallBack;
 		OpenGLShaderLogInfoGetFunction	OpenGLShaderLogInfoGetCallBack;
 		OpenGLShaderDeleteFunction	OpenGLShaderDeleteCallBack;
@@ -325,6 +443,11 @@ extern "C"
 		OpenGLUniformMatrix3fvFunction	OpenGLUniformMatrix3fvCallBack;
 		OpenGLUniformMatrix4fvFunction OpenGLUniformMatrix4fvCallBack;
 
+		// 3
+		OpenGLFrameBufferCreateFunction OpenGLFrameBufferCreateCallBack;
+		OpenGLFrameBufferDeleteFunction OpenGLFrameBufferDeleteCallBack;
+		OpenGLFrameBufferBindFunction OpenGLFrameBufferBindCallBack;
+
 		OpenGLGenVertexArraysFunction OpenGLGenVertexArraysCallBack;
 		OpenGLBindVertexArrayFunction OpenGLBindVertexArrayCallBack;
 		OpenGLVertexAttribIPointerFunction OpenGLVertexAttribIPointerCallBack;	
@@ -336,6 +459,19 @@ extern "C"
 	OpenGLContext;
 
 
+	typedef enum OpenGLShaderType_
+	{
+		OpenGLShaderInvalid,
+		OpenGLShaderVertex,    
+		OpenGLShaderFragment,   
+		OpenGLShaderTessellationControl,    
+		OpenGLShaderTessellationEvaluation,     
+		OpenGLShaderGeometry,     
+		OpenGLShaderCompute
+	}
+	OpenGLShaderType;
+
+
 	CPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID);
 	CPrivate void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void* functionADress);
 
@@ -344,13 +480,75 @@ extern "C"
 
 	CPublic void OpenGLContextCreate(OpenGLContext* const openGLContext);
 	CPublic void OpenGLContextSelect(OpenGLContext* const openGLContext);
-	CPublic void OpenGLContextDeselect(OpenGLContext* const openGLContext);
+	CPublic unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext);
 	CPublic void OpenGLContextRelease(OpenGLContext* const openGLContext);
 
 	CPublic void OpenGLContextFlush();
 
 
 	CPublic void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+
+
+
+
+
+	// [Version 2] Extended functions
+	CPublic OpenGLShaderProgramID OpenGLShaderProgramCreate(OpenGLContext* const openGLContext);
+	CPublic void OpenGLShaderProgramUse(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
+	CPublic void OpenGLShaderProgramDelete(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
+	
+	CPublic unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType);
+	CPublic OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const OpenGLShaderType openGLShaderType);
+	CPublic void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, int count, const char** string, const int* length);
+	CPublic unsigned char OpenGLShaderCompile(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+	CPublic void OpenGLShaderGetiv(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLenum pname, GLint* params);
+	CPublic void OpenGLShaderLogInfoGet(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
+	CPublic void OpenGLShaderDelete(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+
+
+	CPublic void OpenGLShaderProgramAttach(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID, const OpenGLShaderID shaderID);
+	CPublic void OpenGLShaderProgramLink(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+	CPublic void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+
+	// [Version 3.0]
+	CPublic void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
+	CPublic void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const unsigned int target, const unsigned int framebufferID);
+	CPublic void OpenGLFrameBufferDestroy(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
+
+
+
+
+	CPublic GLint OpenGLShaderVariableIDGet(OpenGLContext* const openGLContext, GLuint program, const char* name);
+	CPublic void OpenGLShaderVariableFx1(OpenGLContext* const openGLContext, GLint location, GLfloat v0);
+	CPublic void OpenGLShaderVariableFx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	CPublic void OpenGLShaderVariableIx1(OpenGLContext* const openGLContext, GLint location, GLint v0);
+	CPublic void OpenGLShaderVariableIx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	CPublic void OpenGLShaderVariableFx2(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1);
+	CPublic void OpenGLShaderVariableFx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	CPublic void OpenGLShaderVariableIx2(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1);
+	CPublic void OpenGLShaderVariableIx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	CPublic void OpenGLShaderVariableFx3(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+	CPublic void OpenGLShaderVariableFx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	CPublic void OpenGLShaderVariableIx3(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2);
+	CPublic void OpenGLShaderVariableIx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	CPublic void OpenGLShaderVariableFx4(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+	CPublic void OpenGLShaderVariableFx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	CPublic void OpenGLShaderVariableIx4(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+	CPublic void OpenGLShaderVariableIx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	CPublic void OpenGLShaderVariableMatrix2fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	CPublic void OpenGLShaderVariableMatrix3fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	CPublic void OpenGLShaderVariableMatrix4fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+
+
+
+
+
+
+
+
+
+
+
 
 	/*
 	CPublic OpenGLID OpenGLToRenderMode(const GraphicRenderMode renderMode);
@@ -366,14 +564,7 @@ extern "C"
 
 
 
-	// [Version 2] Extended functions
-	CPublic OpenGLShaderProgramID OpenGLShaderProgramCreate(OpenGL* const openGL);
-	CPublic void OpenGLShaderProgramUse(OpenGL* const openGL, const OpenGLShaderProgramID shaderProgramID);
-	CPublic void OpenGLShaderSource(OpenGL* const openGL, unsigned int shader, int count, const char** string, const int* length);
-	CPublic void OpenGLShaderCompile(OpenGL* const openGL, const OpenGLShaderID shaderID);
-	CPublic void OpenGLShaderGetiv(OpenGL* const openGL, const OpenGLShaderID shaderID, GLenum pname, GLint* params);
-	CPublic void OpenGLShaderLogInfoGet(OpenGL* const openGL, const OpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
-	CPublic void OpenGLShaderDelete(OpenGL* const openGL, const OpenGLShaderID shaderID);
+
 
 
 

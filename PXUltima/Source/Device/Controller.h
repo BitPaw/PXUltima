@@ -2,7 +2,7 @@
 #define ControllerInclude
 
 #include <OS/OSVersion.h>
-#include <OS/CWindow.h>
+#include <OS/PXWindow.h>
 
 #define ControllerID unsigned int
 
@@ -33,7 +33,7 @@ extern "C"
 
 	CPublic unsigned char ControllerScanDevices(NewControllerDetectedCallback callback);
 	CPublic unsigned char ControllerDataGet(Controller* controller);
-	CPublic unsigned char ControllerAttachToWindow(const ControllerID controllerID, const CWindowID cWindowID);
+	CPublic unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID);
 	CPublic unsigned char ControllerDetachToWindow(const ControllerID controllerID);
 
 #ifdef __cplusplus

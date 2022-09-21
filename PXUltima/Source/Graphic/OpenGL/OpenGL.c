@@ -177,6 +177,10 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     }
     case OpenGLVersion3x0:
     {
+        OpenGLCacheFunction(functionNameList, &length, "glGenFramebuffers", &openGLContext->OpenGLFrameBufferCreateCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glDeleteFramebuffers", &openGLContext->OpenGLFrameBufferDeleteCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glBindFramebuffer", &openGLContext->OpenGLFrameBufferBindCallBack);
+
         OpenGLCacheFunction(functionNameList, &length, "glGenVertexArrays", &openGLContext->OpenGLGenVertexArraysCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glBindVertexArray", &openGLContext->OpenGLBindVertexArrayCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glVertexAttribIPointer", &openGLContext->OpenGLVertexAttribIPointerCallBack);
@@ -191,8 +195,10 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     {
         OpenGLCacheFunction(functionNameList, &length, "glCreateProgram", &openGLContext->OpenGLShaderProgramCreateCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->OpenGLShaderProgramUseCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->OpenGLShaderProgramDeleteCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glShaderSource", &openGLContext->OpenGLShaderSourceCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->OpenGLCompileShaderCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->OpenGLShaderCreateCallBack);        
+        OpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->OpenGLShaderCompileCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glGetShaderiv", &openGLContext->OpenGLShaderGetivCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glGetShaderInfoLog", &openGLContext->OpenGLShaderLogInfoGetCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glDeleteShader", &openGLContext->OpenGLShaderDeleteCallBack);
@@ -402,13 +408,16 @@ void OpenGLContextSelect(OpenGLContext* const openGLContext)
 #endif
 }
 
-void OpenGLContextDeselect(OpenGLContext* const openGLContext)
+unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext)
 {
+    const unsigned char successful =
 #if defined(OSUnix)
-
+        glXMakeCurrent(0, window->ID, window->OpenGLConext);
 #elif defined(OSWindows)
-    const BOOL result = wglMakeCurrent(0, 0);
+        wglMakeCurrent(0, 0);
 #endif
+
+    return successful;
 }
 
 void OpenGLContextRelease(OpenGLContext* const openGLContext)
@@ -1271,3 +1280,217 @@ void BF::OpenGL::ShaderSetUniformVector4(int vector3UniformID, float x, float y,
 
 
 */
+
+OpenGLShaderProgramID OpenGLShaderProgramCreate(OpenGLContext* const openGLContext)
+{
+    return openGLContext->OpenGLShaderProgramCreateCallBack();
+}
+
+void OpenGLShaderProgramUse(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID)
+{
+    openGLContext->OpenGLShaderProgramUseCallBack(shaderProgramID);
+}
+
+void OpenGLShaderProgramDelete(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID)
+{
+    openGLContext->OpenGLShaderProgramDeleteCallBack(shaderProgramID);
+}
+
+unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType)
+{       
+    switch (openGLShaderType)
+    {
+    default:
+    case OpenGLShaderInvalid:
+        return -1;
+
+    case OpenGLShaderVertex:
+        return GL_VERTEX_SHADER;
+
+    case OpenGLShaderFragment:
+        return GL_FRAGMENT_SHADER;
+
+        // case OpenGLShaderTessellationControl:
+        //     return GL_TESS_CONTROL_SHADER;
+
+         //case OpenGLShaderTessellationEvaluation:
+        //     return GL_TESS_EVALUATION_SHADER;
+
+    case OpenGLShaderGeometry:
+        return GL_GEOMETRY_SHADER;
+
+        // case OpenGLShaderCompute:
+       //      return GL_COMPUTE_SHADER;
+    }
+}
+
+OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const OpenGLShaderType openGLShaderType)
+{
+    const unsigned int shaderTypeID = OpenGLShaderTypeToID(openGLShaderType);
+    const unsigned int shaderID = openGLContext->OpenGLShaderCreateCallBack(shaderTypeID);
+
+    return shaderID;
+}
+
+void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, int count, const char** string, const int* length)
+{
+    openGLContext->OpenGLShaderSourceCallBack(shaderID, count, string, length);
+}
+
+unsigned char OpenGLShaderCompile(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID)
+{ 
+    openGLContext->OpenGLShaderCompileCallBack(shaderID);
+
+    {
+        GLint isCompiled = 0;
+
+        OpenGLShaderGetiv(openGLContext, shaderID, GL_COMPILE_STATUS, &isCompiled);
+
+        return isCompiled;
+    }   
+}
+
+void OpenGLShaderGetiv(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLenum pname, GLint* params)
+{
+    openGLContext->OpenGLShaderGetivCallBack(shaderID, pname, params);
+}
+
+void OpenGLShaderLogInfoGet(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog)
+{
+    openGLContext->OpenGLShaderLogInfoGetCallBack(shaderID, maxLength, length, infoLog);
+}
+
+void OpenGLShaderDelete(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID)
+{
+    openGLContext->OpenGLShaderDeleteCallBack(shaderID);
+}
+
+void OpenGLShaderProgramAttach(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID, const OpenGLShaderID shaderID)
+{
+    openGLContext->OpenGLAttachShaderCallBack(shaderProgramID, shaderID);
+}
+
+void OpenGLShaderProgramLink(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID)
+{
+    openGLContext->OpenGLLinkProgramCallBack(shaderID);
+}
+
+void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID)
+{
+    openGLContext->OpenGLValidateProgramCallBack(shaderID);
+}
+
+void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList)
+{
+    openGLContext->OpenGLFrameBufferCreateCallBack(amount, framebufferIDList);
+}
+
+void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const unsigned int target, const unsigned int framebufferID)
+{
+    openGLContext->OpenGLFrameBufferBindCallBack(target, framebufferID); // GL_FRAMEBUFFER
+}
+
+void OpenGLFrameBufferDestroy(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList)
+{
+    openGLContext->OpenGLFrameBufferDeleteCallBack(amount, framebufferIDList);
+}
+
+GLint OpenGLShaderVariableIDGet(OpenGLContext* const openGLContext, GLuint program, const char* name)
+{
+    return openGLContext->OpenGLGetUniformLocation(program, name);
+}
+
+void OpenGLShaderVariableFx1(OpenGLContext* const openGLContext, GLint location, GLfloat v0)
+{
+    openGLContext->OpenGLUniform1fCallBack(location, v0);
+}
+
+void OpenGLShaderVariableFx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value)
+{
+    openGLContext->OpenGLUniform1fvCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableIx1(OpenGLContext* const openGLContext, GLint location, GLint v0)
+{
+    openGLContext->OpenGLUniform1iCallBack(location, v0);
+}
+
+void OpenGLShaderVariableIx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value)
+{
+    openGLContext->OpenGLUniform1ivCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableFx2(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1)
+{
+    openGLContext->OpenGLUniform2fCallBack(location, v0, v1);
+}
+
+void OpenGLShaderVariableFx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value)
+{
+    openGLContext->OpenGLUniform2fvCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableIx2(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1)
+{
+    openGLContext->OpenGLUniform2iCallBack(location, v0, v1);
+}
+
+void OpenGLShaderVariableIx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value)
+{
+    openGLContext->OpenGLUniform2ivCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableFx3(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
+{
+    openGLContext->OpenGLUniform3fCallBack(location, v0, v1, v2);
+}
+
+void OpenGLShaderVariableFx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value)
+{
+    openGLContext->OpenGLUniform3fvCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableIx3(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2)
+{
+    openGLContext->OpenGLUniform3iCallBack(location, v0, v1, v2);
+}
+
+void OpenGLShaderVariableIx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value)
+{
+    openGLContext->OpenGLUniform3ivCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableFx4(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+{
+    openGLContext->OpenGLUniform4fCallBack(location, v0, v1, v2, v3);
+}
+
+void OpenGLShaderVariableFx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value)
+{
+    openGLContext->OpenGLUniform4fvCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableIx4(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2, GLint v3)
+{
+    openGLContext->OpenGLUniform4iCallBack(location, v0, v1, v2, v3);
+}
+
+void OpenGLShaderVariableIx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value)
+{
+    openGLContext->OpenGLUniform4ivCallBack(location, count, value);
+}
+
+void OpenGLShaderVariableMatrix2fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+    openGLContext->OpenGLUniformMatrix2fvCallBack(location, count, transpose, value);
+}
+
+void OpenGLShaderVariableMatrix3fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+    openGLContext->OpenGLUniformMatrix3fvCallBack(location, count, transpose, value);
+}
+
+void OpenGLShaderVariableMatrix4fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+    openGLContext->OpenGLUniformMatrix4fvCallBack(location, count, transpose, value);
+}
