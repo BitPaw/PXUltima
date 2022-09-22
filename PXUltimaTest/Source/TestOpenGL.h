@@ -1,5 +1,5 @@
-#ifndef TestWindowDEFINE
-#define TestWindowDEFINE
+#ifndef TestOpenGLDEFINE
+#define TestOpenGLDEFINE
 
 #include <Error/ActionResult.h>
 #include <Format/Image.h>
@@ -9,9 +9,9 @@ extern "C"
 {
 #endif
 
-    extern void TestWindowAll();
+    extern void TestOpenGLAll();
 
-    extern void TestWindowOpen();
+    extern void TestOpenGLRenderToTexture();
 
 #ifdef __cplusplus
 }

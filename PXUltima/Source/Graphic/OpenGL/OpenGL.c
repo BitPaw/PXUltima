@@ -7,6 +7,7 @@
 #include <Memory/Memory.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
+#include <OS/PXWindow.h>
 
 #if defined(OSUnix)
 
@@ -14,6 +15,27 @@
 #pragma comment(lib, "opengl32.lib")
 #endif
 
+
+unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType)
+{
+    switch (openGLTextureType)
+    {
+    case OpenGLTextureType1D: return  GL_TEXTURE_1D;
+    case OpenGLTextureType2D:return  GL_TEXTURE_2D;
+    case OpenGLTextureType3D:return   GL_TEXTURE_3D;
+    case OpenGLTextureType1DArray:return   GL_TEXTURE_1D_ARRAY;
+    case OpenGLTextureType2DArray:return   GL_TEXTURE_2D_ARRAY;
+    //case OpenGLTextureTypeRectangle:return   GL_TEXTURE_RECTANGLE;
+    case OpenGLTextureTypeCubeMap:return  GL_TEXTURE_CUBE_MAP;
+    case OpenGLTextureTypeCubleMapArray:return   GL_TEXTURE_CUBE_MAP_ARRAY;
+   // case OpenGLTextureTypeBuffer:return   GL_TEXTURE_BUFFER;
+   // case OpenGLTextureType2DMultiSample:return   GL_TEXTURE_2D_MULTISAMPLE;
+   // case OpenGLTextureType2DMultiSampleArray:return   GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+    case OpenGLTextureTypeInvalid:
+    default:
+        return -1;
+    }
+}
 
 CPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID)
 {
@@ -70,7 +92,29 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
 
 #elif defined(OSWindows)
-    const HGLRC handle = wglCreateContext(openGLContext->WindowsDeviceContext);
+    PXWindow* const window = openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
+
+    if (!window) // if not set, we want a "hidden" window. Windows needs a window to make a OpenGL context.. for some reason.
+    {     
+        PXWindow* const window = (PXWindow* const)MemoryAllocate(sizeof(PXWindow) * 1u);
+
+        PXWindowConstruct(window);
+
+        PXWindowCreateHidden(window, 1u); // This will call this function again. Recursive
+
+        while (!window->IsRunning) // Wait
+        {
+            printf("");
+        }
+
+        openGLContext->AttachedWindow = window;
+        
+        MemoryCopy(&window->GraphicInstance.OpenGLInstance, sizeof(OpenGLContext), openGLContext,sizeof(OpenGLContext));
+
+        return; // We should have all data here, stoping.
+    }
+
+    const HGLRC handle = wglCreateContext(window->HandleDeviceContext);
 
     // Check if failed
     {
@@ -84,7 +128,9 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         }
     }
 
-    openGLContext->OpenGLConext = handle;
+    openGLContext->OpenGLConext = handle; 
+
+   
 
 #endif      
 
@@ -180,6 +226,14 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         OpenGLCacheFunction(functionNameList, &length, "glGenFramebuffers", &openGLContext->OpenGLFrameBufferCreateCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glDeleteFramebuffers", &openGLContext->OpenGLFrameBufferDeleteCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glBindFramebuffer", &openGLContext->OpenGLFrameBufferBindCallBack);
+        
+        OpenGLCacheFunction(functionNameList, &length, "glGenRenderbuffers", &openGLContext->OpenGLRenderBufferCreateCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glBindRenderbuffer", &openGLContext->OpenGLRenderBufferBindCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glDeleteRenderbuffers", &openGLContext->OpenGLRenderBufferDeleteCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glRenderbufferStorage", &openGLContext->OpenGLRenderBufferStorageCallBack);
+
+        OpenGLCacheFunction(functionNameList, &length, "glFramebufferTexture2D", &openGLContext->OpenGLFrameBufferLinkTexture2DCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glFramebufferRenderbuffer", &openGLContext->OpenGLFrameBufferLinkRenderBufferCallBack);
 
         OpenGLCacheFunction(functionNameList, &length, "glGenVertexArrays", &openGLContext->OpenGLGenVertexArraysCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glBindVertexArray", &openGLContext->OpenGLBindVertexArrayCallBack);
@@ -193,6 +247,10 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     }
     case OpenGLVersion2x0:
     {
+        OpenGLCacheFunction(functionNameList, &length, "glGenTextures", &openGLContext->OpenGLTextureCreateCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glBindTexture", &openGLContext->OpenGLTextureBindCallBack);
+        OpenGLCacheFunction(functionNameList, &length, "glDeleteTextures", &openGLContext->OpenGLTextureDeleteCallBack);
+
         OpenGLCacheFunction(functionNameList, &length, "glCreateProgram", &openGLContext->OpenGLShaderProgramCreateCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->OpenGLShaderProgramUseCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->OpenGLShaderProgramDeleteCallBack);
@@ -404,7 +462,8 @@ void OpenGLContextSelect(OpenGLContext* const openGLContext)
 #if defined(OSUnix)
 
 #elif defined(OSWindows)
-    const BOOL result = wglMakeCurrent(openGLContext->WindowsDeviceContext, openGLContext->OpenGLConext);
+    const PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow;
+    const BOOL result = wglMakeCurrent(window->HandleDeviceContext, openGLContext->OpenGLConext);
 #endif
 }
 
@@ -1380,19 +1439,88 @@ void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenG
     openGLContext->OpenGLValidateProgramCallBack(shaderID);
 }
 
+void OpenGLTextureCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* textures)
+{
+    openGLContext->OpenGLTextureCreateCallBack(n, textures);
+}
+
+void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLuint texture)
+{
+    const unsigned int textureTypeID = OpenGLTextureTypeToID(textureType);
+
+    openGLContext->OpenGLTextureBindCallBack(textureTypeID, texture);
+}
+
+void OpenGLTextureDelete(OpenGLContext* const openGLContext, GLsizei n, const GLuint* textures)
+{
+    openGLContext->OpenGLTextureDeleteCallBack(n, textures);
+}
+
 void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList)
 {
     openGLContext->OpenGLFrameBufferCreateCallBack(amount, framebufferIDList);
 }
 
-void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const unsigned int target, const unsigned int framebufferID)
+void OpenGLRenderBufferStorage(OpenGLContext* const openGLContext, GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
-    openGLContext->OpenGLFrameBufferBindCallBack(target, framebufferID); // GL_FRAMEBUFFER
+    openGLContext->OpenGLRenderBufferStorageCallBack(target, internalformat, width, height);
+}
+
+void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const OpenGLFrameBufferMode target, const unsigned int framebufferID)
+{
+    unsigned int targetID = 0;
+
+    switch (target)
+    {
+    default:
+    case OpenGLFrameBufferModeInvalid:
+        targetID = -1;
+        break;
+
+    case OpenGLFrameBufferModeDraw:
+        targetID = GL_DRAW_FRAMEBUFFER;
+        break;
+
+    case OpenGLFrameBufferModeRead:
+        targetID = GL_READ_FRAMEBUFFER;
+        break;
+
+    case OpenGLFrameBufferModeDrawAndRead:
+        targetID = GL_FRAMEBUFFER;
+        break;
+    }    
+
+    openGLContext->OpenGLFrameBufferBindCallBack(targetID, framebufferID); // GL_FRAMEBUFFER
 }
 
 void OpenGLFrameBufferDestroy(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList)
 {
     openGLContext->OpenGLFrameBufferDeleteCallBack(amount, framebufferIDList);
+}
+
+void OpenGLRenderBufferCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers)
+{
+    openGLContext->OpenGLRenderBufferCreateCallBack(n, renderbuffers);
+}
+
+void OpenGLRenderBufferBind(OpenGLContext* const openGLContext, GLenum target, GLuint renderbuffer)
+{
+    openGLContext->OpenGLRenderBufferBindCallBack(target, renderbuffer);
+}
+
+void OpenGLRenderBufferDelete(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers)
+{
+    openGLContext->OpenGLRenderBufferDeleteCallBack(n, renderbuffers);
+}
+
+void OpenGLFrameBufferLinkTexture2D(OpenGLContext* const openGLContext, GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+{
+    openGLContext->OpenGLFrameBufferLinkTexture2DCallBack(target, attachment, textarget, texture, level);
+}
+
+GLuint OpenGLFrameBufferLinkRenderBuffer(OpenGLContext* const openGLContext, GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+{
+    return openGLContext->OpenGLFrameBufferLinkRenderBufferCallBack(target, attachment, renderbuffertarget, renderbuffer);
 }
 
 GLint OpenGLShaderVariableIDGet(OpenGLContext* const openGLContext, GLuint program, const char* name)

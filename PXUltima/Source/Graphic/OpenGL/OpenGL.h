@@ -255,51 +255,212 @@ extern "C"
 #define GL_STENCIL_BACK_WRITEMASK 0x8CA5
 
 
-	typedef unsigned int (*OpenGLShaderProgramCreateFunction)();
-	typedef void (*OpenGLShaderProgramUseFunction)(unsigned int program);
-	typedef void (*OpenGLShaderProgramDeleteFunction)(GLuint program); // glDeleteProgram
-	typedef void (*OpenGLShaderSourceFunction)(unsigned int shader, int count, const char** string, const int* length);
-	typedef GLuint (*OpenGLShaderCreateFunction)(GLenum shaderType); // glCreateShader
-	typedef void (*OpenGLShaderCompileFunction)(GLuint shader);	
-	typedef void (*OpenGLShaderGetivFunction)(GLuint shader, GLenum pname, GLint* params);
-	typedef void (*OpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
-	typedef void (*OpenGLShaderDeleteFunction)(GLuint shader);
-	typedef void (*OpenGLAttachShaderFunction)(GLuint program,	GLuint shader); // glAttachShader
-	typedef void (*OpenGLLinkProgramFunction)(GLuint program); // glLinkProgram
-	typedef void (*OpenGLValidateProgramFunction)(GLuint program); // glValidateProgram
-	typedef void (*OpenGLActiveTextureFunction)(GLenum texture); // glActiveTexture
-	typedef void (*OpenGLGenBuffersFunction)(GLsizei n, GLuint* buffers); // glGenBuffers
-	typedef void (*OpenGLBindBufferFunction)(GLenum target, GLuint buffer);
-	typedef void (*OpenGLBufferDataFunction)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);
-	typedef void (*OpenGLVertexAttribPointerFunction)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
-	typedef void (*OpenGLDisableVertexAttribArrayFunction)(GLuint index);
-	typedef void (*OpenGLDisableVertexArrayAttribFunction)(GLuint vaobj, GLuint index);
-	typedef GLint (*OpenGLGetUniformLocation)(GLuint program, const char* name);
-	typedef void (*OpenGLUniform1fFunction)(GLint location, GLfloat v0);
-	typedef void (*OpenGLUniform1fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (*OpenGLUniform1iFunction)(GLint location, GLint v0);
-	typedef void (*OpenGLUniform1ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (*OpenGLUniform2fFunction)(GLint location, GLfloat v0, GLfloat v1);
-	typedef void (*OpenGLUniform2fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (*OpenGLUniform2iFunction)(GLint location, GLint v0, GLint v1);
-	typedef void (*OpenGLUniform2ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (*OpenGLUniform3fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-	typedef void (*OpenGLUniform3fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (*OpenGLUniform3iFunction)(GLint location, GLint v0, GLint v1, GLint v2);
-	typedef void (*OpenGLUniform3ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (*OpenGLUniform4fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-	typedef void (*OpenGLUniform4fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (*OpenGLUniform4iFunction)(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-	typedef void (*OpenGLUniform4ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (*OpenGLUniformMatrix2fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	typedef void (*OpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	typedef void (*OpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+// Texture, sparse
+#define GL_TEXTURE_2D 0x0DE1
+#define GL_TEXTURE_3D 0x806F
+#define GL_TEXTURE_CUBE_MAP 0x8513
+#define GL_TEXTURE_2D_ARRAY 0x8C1A
+#define GL_TEXTURE_CUBE_MAP_ARRAY_OES 0x9009
+#define GL_VIRTUAL_PAGE_SIZE_X_EXT 0x9195
+#define GL_VIRTUAL_PAGE_SIZE_Y_EXT 0x9196
+#define GL_VIRTUAL_PAGE_SIZE_Z_EXT 0x9197
+#define GL_MAX_SPARSE_TEXTURE_SIZE_EXT 0x9198
+#define GL_MAX_SPARSE_3D_TEXTURE_SIZE_EXT 0x9199
+#define GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS_EXT 0x919A
+#define GL_TEXTURE_SPARSE_EXT 0x91A6
+#define GL_VIRTUAL_PAGE_SIZE_INDEX_EXT 0x91A7
+#define GL_NUM_VIRTUAL_PAGE_SIZES_EXT 0x91A8
+#define GL_SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_EXT 0x91A9
+#define GL_NUM_SPARSE_LEVELS_EXT 0x91AA
+
+typedef enum OpenGLTextureType_
+{
+	OpenGLTextureTypeInvalid,
+	OpenGLTextureType1D,
+	OpenGLTextureType2D,
+	OpenGLTextureType3D,
+	OpenGLTextureType1DArray,
+	OpenGLTextureType2DArray,
+	OpenGLTextureTypeRectangle,
+	OpenGLTextureTypeCubeMap,
+	OpenGLTextureTypeCubleMapArray,
+	OpenGLTextureTypeBuffer,
+	OpenGLTextureType2DMultiSample,
+	OpenGLTextureType2DMultiSampleArray,
+}
+OpenGLTextureType;
+	
+CPrivate unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType);
+
+
+	typedef unsigned int (APIENTRY *OpenGLShaderProgramCreateFunction)();
+	typedef void (APIENTRY * OpenGLShaderProgramUseFunction)(unsigned int program);
+	typedef void (APIENTRY * OpenGLShaderProgramDeleteFunction)(GLuint program); // glDeleteProgram
+	typedef void (APIENTRY * OpenGLShaderSourceFunction)(unsigned int shader, int count, const char** string, const int* length);
+	typedef GLuint (APIENTRY * OpenGLShaderCreateFunction)(GLenum shaderType); // glCreateShader
+	typedef void (APIENTRY * OpenGLShaderCompileFunction)(GLuint shader);	
+	typedef void (APIENTRY * OpenGLShaderGetivFunction)(GLuint shader, GLenum pname, GLint* params);
+	typedef void (APIENTRY * OpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
+	typedef void (APIENTRY * OpenGLShaderDeleteFunction)(GLuint shader);
+	typedef void (APIENTRY * OpenGLAttachShaderFunction)(GLuint program,	GLuint shader); // glAttachShader
+	typedef void (APIENTRY * OpenGLLinkProgramFunction)(GLuint program); // glLinkProgram
+	typedef void (APIENTRY * OpenGLValidateProgramFunction)(GLuint program); // glValidateProgram
+	typedef void (APIENTRY * OpenGLActiveTextureFunction)(GLenum texture); // glActiveTexture
+	typedef void (APIENTRY * OpenGLGenBuffersFunction)(GLsizei n, GLuint* buffers); // glGenBuffers
+	typedef void (APIENTRY * OpenGLBindBufferFunction)(GLenum target, GLuint buffer);
+	typedef void (APIENTRY * OpenGLBufferDataFunction)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);
+	typedef void (APIENTRY * OpenGLVertexAttribPointerFunction)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+	typedef void (APIENTRY * OpenGLDisableVertexAttribArrayFunction)(GLuint index);
+	typedef void (APIENTRY * OpenGLDisableVertexArrayAttribFunction)(GLuint vaobj, GLuint index);
+	typedef GLint (APIENTRY * OpenGLGetUniformLocation)(GLuint program, const char* name);
+	typedef void (APIENTRY * OpenGLUniform1fFunction)(GLint location, GLfloat v0);
+	typedef void (APIENTRY * OpenGLUniform1fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (APIENTRY * OpenGLUniform1iFunction)(GLint location, GLint v0);
+	typedef void (APIENTRY * OpenGLUniform1ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (APIENTRY * OpenGLUniform2fFunction)(GLint location, GLfloat v0, GLfloat v1);
+	typedef void (APIENTRY * OpenGLUniform2fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (APIENTRY * OpenGLUniform2iFunction)(GLint location, GLint v0, GLint v1);
+	typedef void (APIENTRY * OpenGLUniform2ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (APIENTRY * OpenGLUniform3fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+	typedef void (APIENTRY * OpenGLUniform3fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (APIENTRY * OpenGLUniform3iFunction)(GLint location, GLint v0, GLint v1, GLint v2);
+	typedef void (APIENTRY * OpenGLUniform3ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (APIENTRY * OpenGLUniform4fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+	typedef void (APIENTRY * OpenGLUniform4fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (APIENTRY * OpenGLUniform4iFunction)(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+	typedef void (APIENTRY * OpenGLUniform4ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (APIENTRY * OpenGLUniformMatrix2fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	typedef void (APIENTRY * OpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	typedef void (APIENTRY * OpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+
+	typedef void (APIENTRY * OpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
+	typedef void (APIENTRY * OpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
+	typedef void (APIENTRY * OpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
 	//-------------------------------------------------------------------------
 
 	//---<Added 3.0>-----------------------------------------------------------
+
+#define GL_CLIP_DISTANCE0 GL_CLIP_PLANE0
+#define GL_CLIP_DISTANCE1 GL_CLIP_PLANE1
+#define GL_CLIP_DISTANCE2 GL_CLIP_PLANE2
+#define GL_CLIP_DISTANCE3 GL_CLIP_PLANE3
+#define GL_CLIP_DISTANCE4 GL_CLIP_PLANE4
+#define GL_CLIP_DISTANCE5 GL_CLIP_PLANE5
+#define GL_COMPARE_REF_TO_TEXTURE GL_COMPARE_R_TO_TEXTURE_ARB
+#define GL_MAX_CLIP_DISTANCES GL_MAX_CLIP_PLANES
+#define GL_MAX_VARYING_COMPONENTS GL_MAX_VARYING_FLOATS
+#define GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT 0x0001
+#define GL_MAJOR_VERSION 0x821B
+#define GL_MINOR_VERSION 0x821C
+#define GL_NUM_EXTENSIONS 0x821D
+#define GL_CONTEXT_FLAGS 0x821E
+#define GL_DEPTH_BUFFER 0x8223
+#define GL_STENCIL_BUFFER 0x8224
+#define GL_RGBA32F 0x8814
+#define GL_RGB32F 0x8815
+#define GL_RGBA16F 0x881A
+#define GL_RGB16F 0x881B
+#define GL_VERTEX_ATTRIB_ARRAY_INTEGER 0x88FD
+#define GL_MAX_ARRAY_TEXTURE_LAYERS 0x88FF
+#define GL_MIN_PROGRAM_TEXEL_OFFSET 0x8904
+#define GL_MAX_PROGRAM_TEXEL_OFFSET 0x8905
+#define GL_CLAMP_VERTEX_COLOR 0x891A
+#define GL_CLAMP_FRAGMENT_COLOR 0x891B
+#define GL_CLAMP_READ_COLOR 0x891C
+#define GL_FIXED_ONLY 0x891D
+#define GL_TEXTURE_RED_TYPE 0x8C10
+#define GL_TEXTURE_GREEN_TYPE 0x8C11
+#define GL_TEXTURE_BLUE_TYPE 0x8C12
+#define GL_TEXTURE_ALPHA_TYPE 0x8C13
+#define GL_TEXTURE_LUMINANCE_TYPE 0x8C14
+#define GL_TEXTURE_INTENSITY_TYPE 0x8C15
+#define GL_TEXTURE_DEPTH_TYPE 0x8C16
+#define GL_TEXTURE_1D_ARRAY 0x8C18
+#define GL_PROXY_TEXTURE_1D_ARRAY 0x8C19
+#define GL_TEXTURE_2D_ARRAY 0x8C1A
+#define GL_PROXY_TEXTURE_2D_ARRAY 0x8C1B
+#define GL_TEXTURE_BINDING_1D_ARRAY 0x8C1C
+#define GL_TEXTURE_BINDING_2D_ARRAY 0x8C1D
+#define GL_R11F_G11F_B10F 0x8C3A
+#define GL_UNSIGNED_INT_10F_11F_11F_REV 0x8C3B
+#define GL_RGB9_E5 0x8C3D
+#define GL_UNSIGNED_INT_5_9_9_9_REV 0x8C3E
+#define GL_TEXTURE_SHARED_SIZE 0x8C3F
+#define GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH 0x8C76
+#define GL_TRANSFORM_FEEDBACK_BUFFER_MODE 0x8C7F
+#define GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS 0x8C80
+#define GL_TRANSFORM_FEEDBACK_VARYINGS 0x8C83
+#define GL_TRANSFORM_FEEDBACK_BUFFER_START 0x8C84
+#define GL_TRANSFORM_FEEDBACK_BUFFER_SIZE 0x8C85
+#define GL_PRIMITIVES_GENERATED 0x8C87
+#define GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN 0x8C88
+#define GL_RASTERIZER_DISCARD 0x8C89
+#define GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS 0x8C8A
+#define GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS 0x8C8B
+#define GL_INTERLEAVED_ATTRIBS 0x8C8C
+#define GL_SEPARATE_ATTRIBS 0x8C8D
+#define GL_TRANSFORM_FEEDBACK_BUFFER 0x8C8E
+#define GL_TRANSFORM_FEEDBACK_BUFFER_BINDING 0x8C8F
+#define GL_RGBA32UI 0x8D70
+#define GL_RGB32UI 0x8D71
+#define GL_RGBA16UI 0x8D76
+#define GL_RGB16UI 0x8D77
+#define GL_RGBA8UI 0x8D7C
+#define GL_RGB8UI 0x8D7D
+#define GL_RGBA32I 0x8D82
+#define GL_RGB32I 0x8D83
+#define GL_RGBA16I 0x8D88
+#define GL_RGB16I 0x8D89
+#define GL_RGBA8I 0x8D8E
+#define GL_RGB8I 0x8D8F
+#define GL_RED_INTEGER 0x8D94
+#define GL_GREEN_INTEGER 0x8D95
+#define GL_BLUE_INTEGER 0x8D96
+#define GL_ALPHA_INTEGER 0x8D97
+#define GL_RGB_INTEGER 0x8D98
+#define GL_RGBA_INTEGER 0x8D99
+#define GL_BGR_INTEGER 0x8D9A
+#define GL_BGRA_INTEGER 0x8D9B
+#define GL_SAMPLER_1D_ARRAY 0x8DC0
+#define GL_SAMPLER_2D_ARRAY 0x8DC1
+#define GL_SAMPLER_1D_ARRAY_SHADOW 0x8DC3
+#define GL_SAMPLER_2D_ARRAY_SHADOW 0x8DC4
+#define GL_SAMPLER_CUBE_SHADOW 0x8DC5
+#define GL_UNSIGNED_INT_VEC2 0x8DC6
+#define GL_UNSIGNED_INT_VEC3 0x8DC7
+#define GL_UNSIGNED_INT_VEC4 0x8DC8
+#define GL_INT_SAMPLER_1D 0x8DC9
+#define GL_INT_SAMPLER_2D 0x8DCA
+#define GL_INT_SAMPLER_3D 0x8DCB
+#define GL_INT_SAMPLER_CUBE 0x8DCC
+#define GL_INT_SAMPLER_1D_ARRAY 0x8DCE
+#define GL_INT_SAMPLER_2D_ARRAY 0x8DCF
+#define GL_UNSIGNED_INT_SAMPLER_1D 0x8DD1
+#define GL_UNSIGNED_INT_SAMPLER_2D 0x8DD2
+#define GL_UNSIGNED_INT_SAMPLER_3D 0x8DD3
+#define GL_UNSIGNED_INT_SAMPLER_CUBE 0x8DD4
+#define GL_UNSIGNED_INT_SAMPLER_1D_ARRAY 0x8DD6
+#define GL_UNSIGNED_INT_SAMPLER_2D_ARRAY 0x8DD7
+#define GL_QUERY_WAIT 0x8E13
+#define GL_QUERY_NO_WAIT 0x8E14
+#define GL_QUERY_BY_REGION_WAIT 0x8E15
+#define GL_QUERY_BY_REGION_NO_WAIT 0x8E16
+
+
+
 	typedef void (GLAPIENTRY* OpenGLFrameBufferCreateFunction)(GLsizei n, GLuint* ids); // glGenFramebuffers
 	typedef void (GLAPIENTRY* OpenGLFrameBufferDeleteFunction)(GLsizei n, GLuint* framebuffers); // glDeleteFramebuffers
 	typedef void (GLAPIENTRY* OpenGLFrameBufferBindFunction)(GLenum target, GLuint framebuffer); // glBindFramebuffer
+
+	typedef void (GLAPIENTRY* OpenGLRenderBufferCreateFunction)(GLsizei n, GLuint* renderbuffers); // glGenRenderbuffers
+	typedef void (GLAPIENTRY* OpenGLRenderBufferBindFunction)(GLenum target, GLuint renderbuffer); // glBindRenderbuffer
+	typedef void (GLAPIENTRY* OpenGLRenderBufferDeleteFunction)(GLsizei n, GLuint* renderbuffers); // glDeleteRenderbuffers
+	typedef void (GLAPIENTRY* OpenGLRenderBufferStorageFunction)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height); // glRenderbufferStorage
+
+	typedef void (GLAPIENTRY* OpenGLFrameBufferLinkTexture2DFunction)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	typedef GLuint (GLAPIENTRY* OpenGLFrameBufferLinkRenderBufferFunction)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+
+
 
 	typedef void (GLAPIENTRY* OpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
 	typedef void (GLAPIENTRY* OpenGLBindVertexArrayFunction)(GLuint arrayID);
@@ -331,8 +492,23 @@ extern "C"
 #define GL_CONTEXT_PROFILE_MASK 0x9126
 
 
+	// 4.0
+#define GL_SAMPLE_SHADING 0x8C36
+#define GL_MIN_SAMPLE_SHADING_VALUE 0x8C37
+#define GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET 0x8E5E
+#define GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET 0x8E5F
+#define GL_MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS 0x8F9F
+#define GL_TEXTURE_CUBE_MAP_ARRAY 0x9009
+#define GL_TEXTURE_BINDING_CUBE_MAP_ARRAY 0x900A
+#define GL_PROXY_TEXTURE_CUBE_MAP_ARRAY 0x900B
+#define GL_SAMPLER_CUBE_MAP_ARRAY 0x900C
+#define GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW 0x900D
+#define GL_INT_SAMPLER_CUBE_MAP_ARRAY 0x900E
+#define GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY 0x900F
+
+
 	//---<Added 4.1>-----------------------------------------------------------	
-	typedef void (*OpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
+	typedef void (APIENTRY * OpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 	//-------------------------------------------------------------------------
 
 	//---<Added 4.3>-----------------------------------------------------------
@@ -377,9 +553,9 @@ extern "C"
 #define GL_DEBUG_SEVERITY_LOW 0x9148
 #define GL_DEBUG_OUTPUT 0x92E0
 
-	typedef void (GLAPIENTRY* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+	typedef void (GLAPIENTRY *DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
-	typedef void (GLAPIENTRY*OpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
+	typedef void (GLAPIENTRY *OpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
 	//-------------------------------------------------------------------------
 
 	//---<Added 4.5>-----------------------------------------------------------
@@ -387,6 +563,100 @@ extern "C"
 	typedef void (GLAPIENTRY *OpenGLEnableVertexAttribArray)(GLuint index);
 	typedef void (GLAPIENTRY *OpenGLEnableVertexArrayAttrib)(GLuint vaobj, GLuint index);
 	//-------------------------------------------------------------------------
+
+
+
+
+	// extension - Frabbuffer
+#define GL_INVALID_FRAMEBUFFER_OPERATION 0x0506
+#define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING 0x8210
+#define GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE 0x8211
+#define GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE 0x8212
+#define GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE 0x8213
+#define GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE 0x8214
+#define GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE 0x8215
+#define GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE 0x8216
+#define GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE 0x8217
+#define GL_FRAMEBUFFER_DEFAULT 0x8218
+#define GL_FRAMEBUFFER_UNDEFINED 0x8219
+#define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
+#define GL_INDEX 0x8222
+#define GL_MAX_RENDERBUFFER_SIZE 0x84E8
+#define GL_DEPTH_STENCIL 0x84F9
+#define GL_UNSIGNED_INT_24_8 0x84FA
+#define GL_DEPTH24_STENCIL8 0x88F0
+#define GL_TEXTURE_STENCIL_SIZE 0x88F1
+#define GL_UNSIGNED_NORMALIZED 0x8C17
+#define GL_SRGB 0x8C40
+#define GL_DRAW_FRAMEBUFFER_BINDING 0x8CA6
+#define GL_FRAMEBUFFER_BINDING 0x8CA6
+#define GL_RENDERBUFFER_BINDING 0x8CA7
+#define GL_READ_FRAMEBUFFER 0x8CA8
+#define GL_DRAW_FRAMEBUFFER 0x8CA9
+#define GL_READ_FRAMEBUFFER_BINDING 0x8CAA
+#define GL_RENDERBUFFER_SAMPLES 0x8CAB
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE 0x8CD0
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME 0x8CD1
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL 0x8CD2
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE 0x8CD3
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER 0x8CD4
+#define GL_FRAMEBUFFER_COMPLETE 0x8CD5
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT 0x8CD6
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT 0x8CD7
+#define GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER 0x8CDB
+#define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER 0x8CDC
+#define GL_FRAMEBUFFER_UNSUPPORTED 0x8CDD
+#define GL_MAX_COLOR_ATTACHMENTS 0x8CDF
+#define GL_COLOR_ATTACHMENT0 0x8CE0
+#define GL_COLOR_ATTACHMENT1 0x8CE1
+#define GL_COLOR_ATTACHMENT2 0x8CE2
+#define GL_COLOR_ATTACHMENT3 0x8CE3
+#define GL_COLOR_ATTACHMENT4 0x8CE4
+#define GL_COLOR_ATTACHMENT5 0x8CE5
+#define GL_COLOR_ATTACHMENT6 0x8CE6
+#define GL_COLOR_ATTACHMENT7 0x8CE7
+#define GL_COLOR_ATTACHMENT8 0x8CE8
+#define GL_COLOR_ATTACHMENT9 0x8CE9
+#define GL_COLOR_ATTACHMENT10 0x8CEA
+#define GL_COLOR_ATTACHMENT11 0x8CEB
+#define GL_COLOR_ATTACHMENT12 0x8CEC
+#define GL_COLOR_ATTACHMENT13 0x8CED
+#define GL_COLOR_ATTACHMENT14 0x8CEE
+#define GL_COLOR_ATTACHMENT15 0x8CEF
+#define GL_DEPTH_ATTACHMENT 0x8D00
+#define GL_STENCIL_ATTACHMENT 0x8D20
+#define GL_FRAMEBUFFER 0x8D40
+#define GL_RENDERBUFFER 0x8D41
+#define GL_RENDERBUFFER_WIDTH 0x8D42
+#define GL_RENDERBUFFER_HEIGHT 0x8D43
+#define GL_RENDERBUFFER_INTERNAL_FORMAT 0x8D44
+#define GL_STENCIL_INDEX1 0x8D46
+#define GL_STENCIL_INDEX4 0x8D47
+#define GL_STENCIL_INDEX8 0x8D48
+#define GL_STENCIL_INDEX16 0x8D49
+#define GL_RENDERBUFFER_RED_SIZE 0x8D50
+#define GL_RENDERBUFFER_GREEN_SIZE 0x8D51
+#define GL_RENDERBUFFER_BLUE_SIZE 0x8D52
+#define GL_RENDERBUFFER_ALPHA_SIZE 0x8D53
+#define GL_RENDERBUFFER_DEPTH_SIZE 0x8D54
+#define GL_RENDERBUFFER_STENCIL_SIZE 0x8D55
+#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE 0x8D56
+#define GL_MAX_SAMPLES 0x8D57
+	//------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	typedef struct OpenGLContext_
 	{
@@ -400,7 +670,7 @@ extern "C"
 #if defined(OSUnix)
 
 #elif defined(OSWindows)
-		HDC WindowsDeviceContext;
+		void* AttachedWindow;
 #endif
 
 		OpenGLShaderProgramCreateFunction	OpenGLShaderProgramCreateCallBack;
@@ -443,10 +713,21 @@ extern "C"
 		OpenGLUniformMatrix3fvFunction	OpenGLUniformMatrix3fvCallBack;
 		OpenGLUniformMatrix4fvFunction OpenGLUniformMatrix4fvCallBack;
 
+		OpenGLTextureCreateFunction OpenGLTextureCreateCallBack;
+		OpenGLTextureBindFunction OpenGLTextureBindCallBack;
+		OpenGLTextureDeleteFunction OpenGLTextureDeleteCallBack;
+
 		// 3
 		OpenGLFrameBufferCreateFunction OpenGLFrameBufferCreateCallBack;
 		OpenGLFrameBufferDeleteFunction OpenGLFrameBufferDeleteCallBack;
 		OpenGLFrameBufferBindFunction OpenGLFrameBufferBindCallBack;
+
+		OpenGLRenderBufferCreateFunction OpenGLRenderBufferCreateCallBack;
+		OpenGLRenderBufferBindFunction  OpenGLRenderBufferBindCallBack;
+		OpenGLRenderBufferDeleteFunction OpenGLRenderBufferDeleteCallBack;
+		OpenGLRenderBufferStorageFunction OpenGLRenderBufferStorageCallBack;
+		OpenGLFrameBufferLinkTexture2DFunction OpenGLFrameBufferLinkTexture2DCallBack;
+		OpenGLFrameBufferLinkRenderBufferFunction OpenGLFrameBufferLinkRenderBufferCallBack;
 
 		OpenGLGenVertexArraysFunction OpenGLGenVertexArraysCallBack;
 		OpenGLBindVertexArrayFunction OpenGLBindVertexArrayCallBack;
@@ -458,6 +739,14 @@ extern "C"
 	}
 	OpenGLContext;
 
+	typedef enum OpenGLFrameBufferMode_
+	{
+		OpenGLFrameBufferModeInvalid,
+		OpenGLFrameBufferModeDraw,
+		OpenGLFrameBufferModeRead,
+		OpenGLFrameBufferModeDrawAndRead
+	}
+	OpenGLFrameBufferMode;
 
 	typedef enum OpenGLShaderType_
 	{
@@ -510,11 +799,33 @@ extern "C"
 	CPublic void OpenGLShaderProgramLink(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
 	CPublic void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
 
+
+	CPublic void OpenGLTextureCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* textures); // glGenTextures
+	CPublic void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLuint texture); // glBindTexture
+	CPublic void OpenGLTextureDelete(OpenGLContext* const openGLContext, GLsizei n, const GLuint* textures); // glDeleteTextures
+
+
 	// [Version 3.0]
+
 	CPublic void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
-	CPublic void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const unsigned int target, const unsigned int framebufferID);
+	CPublic void OpenGLRenderBufferStorage(OpenGLContext* const openGLContext, GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+	
+
+	// If we bind to 0, we select the "main window" 
+	CPublic void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const OpenGLFrameBufferMode target, const unsigned int framebufferID);
+
 	CPublic void OpenGLFrameBufferDestroy(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
 
+	CPublic void OpenGLRenderBufferCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
+
+
+	CPublic void OpenGLRenderBufferBind(OpenGLContext* const openGLContext, GLenum target, GLuint renderbuffer); 
+
+	CPublic void OpenGLRenderBufferDelete(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
+
+
+	CPublic void OpenGLFrameBufferLinkTexture2D(OpenGLContext* const openGLContext, GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	CPublic GLuint OpenGLFrameBufferLinkRenderBuffer(OpenGLContext* const openGLContext, GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 
 
 

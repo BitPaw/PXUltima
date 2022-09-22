@@ -1767,6 +1767,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 {
     PXWindow* const window = (PXWindow*)windowAdress;
 
+
     if(!windowAdress)
     {
         return ThreadSucessful;
@@ -1946,12 +1947,23 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
 #elif defined(OSWindows)
 
-    DWORD dwStyle = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+   
+    DWORD dwStyle = 0;
     HWND hWndParent = 0;
     HINSTANCE hInstance = GetModuleHandle(NULL);
-    const wchar_t* lpClassName = L"BFE::Window::AsyncThread";
+    const wchar_t* lpClassName = L"PXWindow::AsyncThread";
     const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
     window->CursorID = cursorID;
+
+
+    { 
+        const unsigned char isHidden = window->Width == 0 && window->Height == 0;
+
+        if (!isHidden)
+        {
+            dwStyle |= WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+        }
+    }
 
     WNDCLASS wndclass;
 
@@ -2085,8 +2097,15 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
 
-    ShowWindow(window->ID, SW_SHOW);
-    UpdateWindow(window->ID);
+    {
+        const unsigned char isHidden = window->Width == 0 && window->Height == 0;
+
+        if (!isHidden)
+        {
+            ShowWindow(window->ID, SW_SHOW);
+            UpdateWindow(window->ID);
+        }
+    }
 
     window->IsRunning = 1;
 
@@ -2196,17 +2215,21 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
 
     TextCopyAW(title, 256, window->Title, 256);
 
-// if width or height == WindowSizeDefault, then what?
     {
-        unsigned int screenWidth = 0;
-        unsigned int screenHeight = 0;
+        const unsigned char isDefaultSize = width == 1 && height == 1;
 
-        MonitorGetSize(&screenWidth, &screenHeight);
+        if (isDefaultSize)
+        {
+            unsigned int screenWidth = 0;
+            unsigned int screenHeight = 0;
 
-        window->X = screenWidth * 0.125f;
-        window->Y = screenHeight * 0.125f;
-        window->Width = screenWidth * 0.75f;
-        window->Height = screenHeight * 0.75f;
+            MonitorGetSize(&screenWidth, &screenHeight);
+
+            window->X = screenWidth * 0.125f;
+            window->Y = screenHeight * 0.125f;
+            window->Width = screenWidth * 0.75f;
+            window->Height = screenHeight * 0.75f;
+        }
     }
 
     if(async)
@@ -2217,6 +2240,11 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
     {
         PXWindowCreateThread(window);
     }
+}
+
+void PXWindowCreateHidden(PXWindow* const PXWindow, unsigned char async)
+{
+    PXWindowCreate(PXWindow, 0, 0, "*Hidden*", 1u);
 }
 
 void PXWindowDestruct(PXWindow* const window)

@@ -443,9 +443,7 @@ OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType)
 
 void GraphicInstantiate(GraphicContext* const graphicContext)
 {
-    PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
-
-    graphicContext->OpenGLInstance.WindowsDeviceContext = window->HandleDeviceContext;
+    graphicContext->OpenGLInstance.AttachedWindow = graphicContext->AttachedWindow;
 
     OpenGLContextCreate(&graphicContext->OpenGLInstance);
 

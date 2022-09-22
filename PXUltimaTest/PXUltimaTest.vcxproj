@@ -171,11 +171,13 @@
     <ClCompile Include="Source\main.c" />
     <ClCompile Include="Source\TestSBP.c" />
     <ClCompile Include="Source\TestWindow.c" />
+    <ClCompile Include="Source\TestOpenGL.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\TestImage.h" />
     <ClInclude Include="Source\TestSBP.h" />
     <ClInclude Include="Source\TestWindow.h" />
+    <ClInclude Include="Source\TestOpenGL.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PXUltima\PXUltima.vcxproj">

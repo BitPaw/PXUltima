@@ -196,6 +196,7 @@ extern "C"
 
 	CPublic void PXWindowConstruct(PXWindow* const PXWindow);
 	CPublic void PXWindowCreate(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const char* title, unsigned char async);
+	CPublic void PXWindowCreateHidden(PXWindow* const PXWindow, unsigned char async);
 	CPublic void PXWindowDestruct(PXWindow* const PXWindow);
 
 	CPublic void PXWindowIconCorner();
