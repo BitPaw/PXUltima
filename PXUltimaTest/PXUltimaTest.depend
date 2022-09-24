@@ -1,0 +1,198 @@
+# depslib dependency file v1.0
+1663922110 source:d:\_data\git\pxultima\pxultimatest\source\main.c
+	<stdio.h>
+	"TestWindow.h"
+
+1663922110 d:\_data\git\pxultima\pxultimatest\source\testwindow.h
+	<Error/ActionResult.h>
+	<Format/Image.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\error\actionresult.h
+	<Format/Type.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\format\type.h
+	<stddef.h>
+	<OS/OSVersion.h>
+
+1663964251 d:\_data\git\pxultima\pxultima\source\os\osversion.h
+	<stdint.h>
+	<SdkDdkVer.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\format\image.h
+	<Format/Type.h>
+	<Error/ActionResult.h>
+
+1663959641 source:d:\_data\git\pxultima\pxultimatest\source\testopengl.c
+	"TestOpenGL.h"
+	<Graphic/OpenGL/OpenGL.h>
+	<Format/Image.h>
+	<Memory/Memory.h>
+	<stdio.h>
+	<float.h>
+	<OS\PXWindow.h>
+
+1663922110 d:\_data\git\pxultima\pxultimatest\source\testopengl.h
+	<Error/ActionResult.h>
+	<Format/Image.h>
+
+1663959421 d:\_data\git\pxultima\pxultima\source\graphic\opengl\opengl.h
+	<OS/OSVersion.h>
+	<X11/X.h>
+	<X11/Xlib.h>
+	<Windows.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	<Format/Type.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\memory\memory.h
+	<Format/Type.h>
+	<OS/OSVersion.h>
+
+1663922110 d:\_data\git\pxultima\pxultima\source\os\pxwindow.h
+	<Format/Type.h>
+	<OS/OSVersion.h>
+	<X11/X.h>
+	<X11/Xlib.h>
+	<Windows.h>
+	<Device/VirtualKey.h>
+	<Async/Thread.h>
+	<Device/Mouse.h>
+	<Device/KeyBoard.h>
+	<Graphic/Graphic.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\device\virtualkey.h
+	<Format/Type.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\async\thread.h
+	<OS/OSVersion.h>
+	<Format/Type.h>
+	<pthread.h>
+	<unistd.h>
+	<windows.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\device\mouse.h
+	<Format/Type.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\device\keyboard.h
+	"VirtualKey.h"
+
+1663842600 d:\_data\git\pxultima\pxultima\source\graphic\graphic.h
+	<Format/Image.h>
+	<Format/Model.h>
+	<Format/Type.h>
+	<Graphic/OpenGL/OpenGL.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\format\model.h
+	<Format/Type.h>
+
+1663842600 source:d:\_data\git\pxultima\pxultimatest\source\testsbp.c
+	"TestSBP.h"
+	<stdio.h>
+	<Network/SBP/SBPClient.h>
+	<Network/SBP/SBPServer.h>
+
+1663842600 d:\_data\git\pxultima\pxultimatest\source\testsbp.h
+	<stddef.h>
+	<Error/ActionResult.h>
+	<Format/Image.h>
+
+1663965070 d:\_data\git\pxultima\pxultima\source\network\sbp\sbpclient.h
+	<Format/Type.h>
+	"SBPProtocol.h"
+	<Network/Client.h>
+	<Async/Thread.h>
+
+1663965063 d:\_data\git\pxultima\pxultima\source\network\sbp\sbpprotocol.h
+	<Format/Type.h>
+	<Container/ClusterValue.h>
+	<File/File.h>
+	<Text/Text.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\container\clustervalue.h
+
+1663842600 d:\_data\git\pxultima\pxultima\source\file\file.h
+	<stdlib.h>
+	<stdio.h>
+	<wchar.h>
+	<assert.h>
+	<Format/Type.h>
+	<OS/OSVersion.h>
+	<Memory/Memory.h>
+	<Error/ActionResult.h>
+	<File/Endian.h>
+	<sys/stat.h>
+	<sys/mman.h>
+	<unistd.h>
+	<libgen.h>
+	<dirent.h>
+	<windows.h>
+	<direct.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\file\endian.h
+	<Format/Type.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\text\text.h
+	<Format/Type.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\network\client.h
+	<Format/Type.h>
+	<Error/ActionResult.h>
+	"CSocket.h"
+
+1663842600 d:\_data\git\pxultima\pxultima\source\network\csocket.h
+	<Format/Type.h>
+	<Error/ActionResult.h>
+	<OS/OSVersion.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<unistd.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+	<netdb.h>
+	<windows.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<iphlpapi.h>
+	<Async/Thread.h>
+
+1663970426 d:\_data\git\pxultima\pxultima\source\network\sbp\sbpserver.h
+	<Format/Type.h>
+	"SBPProtocol.h"
+	<Container/Dictionary/Dictionary.h>
+	<Network/Server.h>
+	<Network/Client.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\container\dictionary\dictionary.h
+	<Format/Type.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\network\server.h
+	<Format/Type.h>
+	<Error/ActionResult.h>
+	<Network/CSocket.h>
+
+1663922110 source:d:\_data\git\pxultima\pxultimatest\source\testwindow.c
+	"TestWindow.h"
+	<stdio.h>
+	<OS/PXWindow.h>
+	<Processor/Processor.h>
+	<Memory/Memory.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\processor\processor.h
+	<Format/Type.h>
+
+1663842600 source:d:\_data\git\pxultima\pxultimatest\source\testimage.c
+	"TestImage.h"
+	<stdio.h>
+	<Format/Image.h>
+	<Format/Font.h>
+	<File/File.h>
+
+1663971196 d:\_data\git\pxultima\pxultimatest\source\testimage.h
+	<stddef.h>
+	<Error/ActionResult.h>
+	<Format/Image.h>
+
+1663842600 d:\_data\git\pxultima\pxultima\source\format\font.h
+	<Format/Type.h>
+	<Error/ActionResult.h>
+

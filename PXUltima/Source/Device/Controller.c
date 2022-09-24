@@ -6,9 +6,8 @@
 
 #elif defined(OSWindows)
 
-#include <Windows.h>
-#include <joystickapi.h>
-#include "Controller.h"
+#include <windows.h>
+#include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
 
 #pragma comment( lib, "winmm.lib" )
 #endif

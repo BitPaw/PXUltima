@@ -16,7 +16,7 @@ const SQLType SQLTypeFromID(const unsigned int sqlType)
     case -9: return SQLTypeStringUNICODE;
 
         // is this thenCorrect?
-    case  SQL_VARCHAR:return SQLTypeStringANSI;
+    case SQL_VARCHAR:return SQLTypeStringANSI;
 
     case SQL_UNKNOWN_TYPE: return SQLTypeUnkown;
     case SQL_CHAR:return SQLTypeCharacter;

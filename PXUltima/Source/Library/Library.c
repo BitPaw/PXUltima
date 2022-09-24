@@ -4,11 +4,12 @@
 #if defined(OSUnix)
 
 #elif defined(OSWindows)
-#include <dbghelp.h>
+//#include <dbghelp.h> // MISSING
 #include <stdio.h>
 
 #pragma comment( lib, "Dbghelp.lib" )
 
+/* PSYMBOL_INFO:MISSING
 
 BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
 {
@@ -17,7 +18,7 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 	printf("%08X %4u %s\n",	pSymInfo->Address, SymbolSize, pSymInfo->Name);
 
 	return TRUE;
-}
+}*/
 
 #endif
 
@@ -153,7 +154,7 @@ unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFu
 unsigned char LibraryParseSymbols()
 {
 #if defined(OSUnix)
-	
+
 
 #elif defined(OSWindows)
 	/*

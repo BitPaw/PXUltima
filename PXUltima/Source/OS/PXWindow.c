@@ -398,9 +398,9 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_NCXBUTTONDOWN: return WindowEventNCXBUTTONDOWN;
         case WM_NCXBUTTONUP: return WindowEventNCXBUTTONUP;
         case WM_NCXBUTTONDBLCLK: return WindowEventNCXBUTTONDBLCLK;
-        case WM_INPUT_DEVICE_CHANGE: return WindowEventINPUT_DEVICE_CHANGE;
-        case WM_INPUT: return WindowEventINPUT;
-            //case WM_KEYFIRST: return WindowEventKEYFIRST;
+     //   case WM_INPUT_DEVICE_CHANGE: return WindowEventINPUT_DEVICE_CHANGE;
+     //   case WM_INPUT: return WindowEventINPUT;
+            // ?? case WM_KEYFIRST: return WindowEventKEYFIRST;
         case WM_KEYDOWN: return WindowEventKEYDOWN;
         case WM_KEYUP: return WindowEventKEYUP;
         case WM_CHAR: return WindowEventCHAR;
@@ -409,7 +409,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_SYSKEYUP: return WindowEventSYSKEYUP;
         case WM_SYSCHAR: return WindowEventSYSCHAR;
         case WM_SYSDEADCHAR: return WindowEventSYSDEADCHAR;
-        case WM_UNICHAR: return WindowEventUNICHAR;
+       // case WM_UNICHAR: return WindowEventUNICHAR;
             //case WM_KEYLAST: return WindowEventKEYLAST;
                // case UNICODE_NOCHAR: return WindowEventXXXXXXXXXXXXXXX;
 
@@ -425,8 +425,8 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_VSCROLL: return WindowEventVSCROLL;
         case WM_INITMENU: return WindowEventINITMENU;
         case WM_INITMENUPOPUP: return WindowEventINITMENUPOPUP;
-        case WM_GESTURE: return WindowEventGESTURE;
-        case WM_GESTURENOTIFY: return WindowEventGESTURENOTIFY;
+      //  case WM_GESTURE: return WindowEventGESTURE;
+     //   case WM_GESTURENOTIFY: return WindowEventGESTURENOTIFY;
         case WM_MENUSELECT: return WindowEventMENUSELECT;
         case WM_MENUCHAR: return WindowEventMENUCHAR;
         case WM_ENTERIDLE: return WindowEventENTERIDLE;
@@ -446,7 +446,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_CTLCOLORSCROLLBAR: return WindowEventCTLCOLORSCROLLBAR;
 
         case WM_CTLCOLORSTATIC: return WindowEventCTLCOLORSTATIC;
-        case MN_GETHMENU: return WindowEventGETHMENU;
+      //  case MN_GETHMENU: return WindowEventGETHMENU;
             //case WM_MOUSEFIRST: return WindowEventMOUSEFIRST;
         case WM_MOUSEMOVE: return WindowEventMOUSEMOVE;
 
@@ -465,7 +465,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_XBUTTONDOWN: return WindowEventXBUTTONDOWN;
         case WM_XBUTTONUP: return WindowEventXBUTTONUP;
         case WM_XBUTTONDBLCLK: return WindowEventXBUTTONDBLCLK;
-        case WM_MOUSEHWHEEL: return WindowEventMOUSEHWHEEL;
+     //   case WM_MOUSEHWHEEL: return WindowEventMOUSEHWHEEL;
             //case WM_MOUSELAST: return WindowEventMOUSELAST;
         case WM_PARENTNOTIFY: return WindowEventPARENTNOTIFY;
         case WM_ENTERMENULOOP: return WindowEventENTERMENULOOP;
@@ -495,7 +495,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
             //case WM_POINTERDEVICECHANGE: return WindowEventPOINTERDEVICECHANGE;
         //case WM_POINTERDEVICEINRANGE: return WindowEventPOINTERDEVICEINRANGE;
         //case WM_POINTERDEVICEOUTOFRANGE: return WindowEventPOINTERDEVICEOUTOFRANGE;
-        case WM_TOUCH: return WindowEventTOUCH;
+      //  case WM_TOUCH: return WindowEventTOUCH;
             //case WM_NCPOINTERUPDATE: return WindowEventNCPOINTERUPDATE;
         //case WM_NCPOINTERDOWN: return WindowEventNCPOINTERDOWN;
         //case WM_NCPOINTERUP: return WindowEventNCPOINTERUP;
@@ -525,9 +525,9 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_MOUSELEAVE: return WindowEventMOUSELEAVE;
         case WM_NCMOUSEHOVER: return WindowEventNCMOUSEHOVER;
         case WM_NCMOUSELEAVE: return WindowEventNCMOUSELEAVE;
-        case WM_WTSSESSION_CHANGE: return WindowEventWTSSESSION_CHANGE;
-        case WM_TABLET_FIRST: return WindowEventTABLET_FIRST;
-        case WM_TABLET_LAST: return WindowEventTABLET_LAST;
+      //  case WM_WTSSESSION_CHANGE: return WindowEventWTSSESSION_CHANGE;
+      //  case WM_TABLET_FIRST: return WindowEventTABLET_FIRST;
+      //  case WM_TABLET_LAST: return WindowEventTABLET_LAST;
             //case WM_DPICHANGED: return WindowEventDPICHANGED;
             //case WM_DPICHANGED_BEFOREPARENT: return WindowEventDPICHANGED_BEFOREPARENT;
             //case WM_DPICHANGED_AFTERPARENT: return WindowEventDPICHANGED_AFTERPARENT;
@@ -555,14 +555,14 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_PRINTCLIENT: return WindowEventPRINTCLIENT;
         case WM_APPCOMMAND: return WindowEventAPPCOMMAND;
         case WM_THEMECHANGED: return WindowEventTHEMECHANGED;
-        case WM_CLIPBOARDUPDATE: return WindowEventCLIPBOARDUPDATE;
-        case WM_DWMCOMPOSITIONCHANGED: return WindowEventDWMCOMPOSITIONCHANGED;
-        case WM_DWMNCRENDERINGCHANGED: return WindowEventDWMNCRENDERINGCHANGED;
-        case WM_DWMCOLORIZATIONCOLORCHANGED: return WindowEventDWMCOLORIZATIONCOLORCHANGED;
-        case WM_DWMWINDOWMAXIMIZEDCHANGE: return WindowEventDWMWINDOWMAXIMIZEDCHANGE;
-        case WM_DWMSENDICONICTHUMBNAIL: return WindowEventDWMSENDICONICTHUMBNAIL;
-        case WM_DWMSENDICONICLIVEPREVIEWBITMAP: return WindowEventDWMSENDICONICLIVEPREVIEWBITMAP;
-        case WM_GETTITLEBARINFOEX: return WindowEventGETTITLEBARINFOEX;
+      //  case WM_CLIPBOARDUPDATE: return WindowEventCLIPBOARDUPDATE;
+      //  case WM_DWMCOMPOSITIONCHANGED: return WindowEventDWMCOMPOSITIONCHANGED;
+     //   case WM_DWMNCRENDERINGCHANGED: return WindowEventDWMNCRENDERINGCHANGED;
+     //   case WM_DWMCOLORIZATIONCOLORCHANGED: return WindowEventDWMCOLORIZATIONCOLORCHANGED;
+    //    case WM_DWMWINDOWMAXIMIZEDCHANGE: return WindowEventDWMWINDOWMAXIMIZEDCHANGE;
+    //    case WM_DWMSENDICONICTHUMBNAIL: return WindowEventDWMSENDICONICTHUMBNAIL;
+     //   case WM_DWMSENDICONICLIVEPREVIEWBITMAP: return WindowEventDWMSENDICONICLIVEPREVIEWBITMAP;
+     //   case WM_GETTITLEBARINFOEX: return WindowEventGETTITLEBARINFOEX;
         case WM_HANDHELDFIRST: return WindowEventHANDHELDFIRST;
         case WM_HANDHELDLAST: return WindowEventHANDHELDLAST;
         case WM_AFXFIRST: return WindowEventAFXFIRST;
@@ -600,7 +600,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
 
 #elif defined(OSWindows)
 
-#include <winuser.rh>
+#include <winuser.rh> // MISSING
 #define CursorIconNormalID OCR_NORMAL
 #define CursorIconIBeamID OCR_IBEAM
 #define CursorIconWaitID OCR_WAIT
@@ -625,7 +625,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
 #if defined(WindowsAtleastNT)
 #define CursorIconAppStartingID OCR_APPSTARTING
 #else
-#defined CursorIconAppStartingID 32650
+#define CursorIconAppStartingID 32650
 #endif
 
 #endif
@@ -1237,7 +1237,8 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             break;
         case WindowEventINPUT:
         {
-            const size_t inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
+            /* MISSING
+                   const size_t inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
             const HRAWINPUT handle = (HRAWINPUT)lParam;
             const UINT uiCommand = RID_INPUT; // RID_HEADER
 
@@ -1284,7 +1285,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 
                 default:
                     break;
-            }
+            }*/
 
             break;
         }
@@ -1321,14 +1322,17 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             buttonInfo.KeyID = character;
             buttonInfo.Key = virtualKey;
             buttonInfo.Mode = mode;
-            buttonInfo.Repeat = (characterInfo & 0b00000000000000001111111111111111); // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
+
+			// TODO: on system 32 Bit error
+			/*
+			buttonInfo.Repeat = (characterInfo & 0b00000000000000001111111111111111); // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
             buttonInfo.ScanCode = (characterInfo & 0b00000000111111110000000000000000) >> 16; // Der Scancode.Der Wert hängt vom OEM ab.
             buttonInfo.SpecialKey = (characterInfo & 0b00000001000000000000000000000000) >> 24; // Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
             //buttonInfo.ReservedDontUse = (characterInfo & 0b00011110000000000000000000000000) >> 25; //	Reserviert; nicht verwenden.
             buttonInfo.KontextCode = (characterInfo & 0b00100000000000000000000000000000) >> 29; // Der Kontextcode.Der Wert ist für eine WM _ KEYUP - Nachricht immer 0.
             buttonInfo.PreState = (characterInfo & 0b01000000000000000000000000000000) >> 30; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
             buttonInfo.GapState = (characterInfo & 0b10000000000000000000000000000000) >> 31; // Der Übergangszustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
-
+			*/
 
             TriggerOnKeyBoardKeyEvent(window, buttonInfo);
 
@@ -1463,8 +1467,8 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         case WindowEventXBUTTONUP:
         case WindowEventXBUTTONDOWN:
         {
-            MouseButton mouseButton = ButtonStateInvalid;
-            ButtonState buttonState = MouseButtonInvalid;
+            MouseButton mouseButton = MouseButtonInvalid;
+            ButtonState buttonState = ButtonStateInvalid;
 
             const WORD releaseID = HIWORD(wParam);
             // const WORD xxxxx = LOWORD(wParam);
@@ -1947,7 +1951,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
 #elif defined(OSWindows)
 
-   
+
     DWORD dwStyle = 0;
     HWND hWndParent = 0;
     HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -1956,7 +1960,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     window->CursorID = cursorID;
 
 
-    { 
+    {
         const unsigned char isHidden = window->Width == 0 && window->Height == 0;
 
         if (!isHidden)
@@ -1965,9 +1969,9 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
         }
     }
 
-    WNDCLASS wndclass;
+    WNDCLASSW wndclass;
 
-    MemorySet(&wndclass, sizeof(WNDCLASS), 0);
+    MemorySet(&wndclass, sizeof(WNDCLASSW), 0);
 
     wndclass.style = CS_OWNDC; //  CS_HREDRAW | CS_VREDRAW;
     wndclass.lpfnWndProc = PXWindowEventHandler;
@@ -2021,7 +2025,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     // PixelDraw system
     {
         const HDC windowHandleToDeviceContext = GetDC(windowID);
-     
+
         const WORD  nSize = sizeof(PIXELFORMATDESCRIPTOR);
         const WORD  nVersion = 1;
         const DWORD dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
@@ -2052,16 +2056,16 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
         {
             nSize,
             nVersion,
-            dwFlags,  
+            dwFlags,
             iPixelType,
-            cColorBits,                
+            cColorBits,
             cRedBits,cRedShift,
-            cGreenBits, cGreenShift, 
-            cBlueBits, cBlueShift, 
+            cGreenBits, cGreenShift,
+            cBlueBits, cBlueShift,
             cAlphaBits, cAlphaShift,
-            cAccumBits, 
+            cAccumBits,
             cAccumRedBits, cAccumGreenBits, cAccumBlueBits, cAccumAlphaBits,
-            cDepthBits,                  
+            cDepthBits,
             cStencilBits,
             cAuxBuffers,
             iLayerType,
@@ -2073,6 +2077,8 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
         window->HandleDeviceContext = windowHandleToDeviceContext;
     }
+
+    /* MISSING
 
     // Register input device
     {
@@ -2087,11 +2093,11 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
         const unsigned char result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE));
 
         // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
-    }
+    }*/
 
 #endif
 
-    GraphicInstantiate(&window->GraphicInstance); 
+    GraphicInstantiate(&window->GraphicInstance);
 
     PXWindowLookupAdd(window);
 
@@ -2181,7 +2187,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 #elif defined(OSWindows)
         MSG message;
 
-        const unsigned char peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);           
+        const unsigned char peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);
 
         if(peekResult)
         {
@@ -2244,7 +2250,7 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
 
 void PXWindowCreateHidden(PXWindow* const PXWindow, unsigned char async)
 {
-    PXWindowCreate(PXWindow, 0, 0, "*Hidden*", 1u);
+    PXWindowCreate(PXWindow, 800, 600, "*Hidden*", 1u);
 }
 
 void PXWindowDestruct(PXWindow* const window)
@@ -2428,7 +2434,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 }
 
 unsigned char PXWindowFrameBufferSwap(PXWindow* window)
-{ 
+{
     return GraphicImageBufferSwap(&window->GraphicInstance);
 }
 
@@ -2510,7 +2516,7 @@ void TriggerOnMouseScrollEvent(const PXWindow* window, const Mouse* mouse)
 
 void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState)
 {
-    Mouse* mouse = &window->MouseCurrentInput;
+    const Mouse* const mouse = &window->MouseCurrentInput;
 
     const char* buttonStateText = 0;
     const char* mouseButtonText = 0;
@@ -2572,8 +2578,6 @@ void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseBut
             mouseButtonText = "Special E";
             break;
     }
-
-
 
     printf("[#][Event][Mouse] Button:%-10s State:%-10s\n", mouseButtonText, buttonStateText);
 

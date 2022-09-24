@@ -6,33 +6,91 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
-				<Option output="../__Export__/X64B-Debug - Linux/PXUltima_DEBUG.lib" prefix_auto="0" extension_auto="0" />
+			<Target title="Windows 32 Bit - Debug">
+				<Option output="../__Export__/x86 Debug - Windows/PXUltima_DEBUG.lib" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="../__Temp__/X64B-Debug - Linux/PXUltima" />
+				<Option object_output="../__Temp__/x86 Debug - Windows/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
+					<Add option="-std=c11" />
+					<Add option="-m32" />
 					<Add option="-g" />
+					<Add option="-D_WINSOCKAPI_" />
+					<Add option="-DWIN32_LEAN_AND_MEAN" />
+					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
 					<Add directory="../PXUltima/Source" />
+					<Add directory="C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/um" />
+					<Add directory="C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/shared" />
 				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc" />
+					<Add option="-m32" />
+				</Linker>
+				<Environment>
+					<Variable name="_MSC_VER" value="1537" />
+				</Environment>
 			</Target>
-			<Target title="Release">
-				<Option output="../__Export__/X64B-Release - Linux/PXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />
+			<Target title="Windows 32 Bit - Release">
+				<Option output="../__Export__/x86 Debug - Windows/PXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="../__Temp__/X64B-Release - Linux/PXUltima" />
+				<Option object_output="../__Temp__/x86 Release - Windows/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-O2" />
 					<Add option="-Wall" />
+					<Add option="-std=c11" />
+					<Add option="-m32" />
+					<Add directory="../PXUltima/Source" />
+					<Add directory="C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/um" />
+					<Add directory="C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/shared" />
+				</Compiler>
+				<Linker>
+					<Add option="-O3" />
+					<Add option="-s" />
+					<Add option="-static-libgcc" />
+					<Add option="-m32" />
+				</Linker>
+			</Target>
+			<Target title="Linux 64 Bit - Debug">
+				<Option output="../__Export__/x64 Debug - Linux/PXUltima_DEBUG.lib" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="../__Temp__/x64 Debug - Linux/PXUltima/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-std=c11" />
+					<Add option="-m64" />
 					<Add directory="../PXUltima/Source" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
+					<Add option="-static-libgcc" />
+					<Add option="-m64" />
+				</Linker>
+			</Target>
+			<Target title="Linux 64 Bit - Release">
+				<Option output="../__Export__/x64 Release - Linux/PXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="../__Temp__/x64 Release - Linux/PXUltima/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-std=c11" />
+					<Add option="-m64" />
+					<Add directory="../PXUltima/Source" />
+				</Compiler>
+				<Linker>
+					<Add option="-O3" />
+					<Add option="-static-libgcc" />
+					<Add option="-m64" />
 				</Linker>
 			</Target>
 		</Build>
@@ -45,6 +103,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Async/Thread.h" />
+		<Unit filename="Source/Compiler/Compiler.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Compiler/Compiler.h" />
 		<Unit filename="Source/Container/BinaryTree/BinaryTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -58,6 +120,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Container/QuadTree/QuadTree.h" />
+		<Unit filename="Source/DataBase/DataBase.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/DataBase/DataBase.h" />
 		<Unit filename="Source/Device/Controller.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -90,6 +156,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/File/BitStream.h" />
+		<Unit filename="Source/File/DataStream.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/File/DataStream.h" />
 		<Unit filename="Source/File/Endian.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -98,10 +168,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/File/File.h" />
-		<Unit filename="Source/File/ParsingStream.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/File/ParsingStream.h" />
 		<Unit filename="Source/Format/3DS/A3DS.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -130,6 +196,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/CRC32/CRC32.h" />
+		<Unit filename="Source/Format/CSS/CSS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/CSS/CSS.h" />
 		<Unit filename="Source/Format/Color.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -138,10 +208,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/DEFLATE/DEFLATE.h" />
+		<Unit filename="Source/Format/DLL/DLL.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/DLL/DLL.h" />
 		<Unit filename="Source/Format/EML/EML.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/EML/EML.h" />
+		<Unit filename="Source/Format/EXE/EXE.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/EXE/EXE.h" />
 		<Unit filename="Source/Format/FBX/FBX.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -166,6 +244,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/GIF/GIF.h" />
+		<Unit filename="Source/Format/HTML/HTML.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/HTML/HTML.h" />
 		<Unit filename="Source/Format/HUFFMAN/HuffmanTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -174,6 +256,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/ID3/ID3.h" />
+		<Unit filename="Source/Format/INI/INI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/INI/INI.h" />
 		<Unit filename="Source/Format/ISBN/ISBN.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -186,6 +272,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/JPEG/JPEG.h" />
+		<Unit filename="Source/Format/JSON/JSON.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/JSON/JSON.h" />
 		<Unit filename="Source/Format/LAME/LAME.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -206,6 +296,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/MP4/MP4.h" />
+		<Unit filename="Source/Format/MSI/MSI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/MSI/MSI.h" />
 		<Unit filename="Source/Format/MTL/MTL.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -214,6 +308,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/Model.h" />
+		<Unit filename="Source/Format/OBJ/OBJ.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/OBJ/OBJ.h" />
 		<Unit filename="Source/Format/OGG/OGG.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -222,6 +320,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/PDF/PDF.h" />
+		<Unit filename="Source/Format/PHP/PHP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/PHP/PHP.h" />
 		<Unit filename="Source/Format/PLY/PLY.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -266,6 +368,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/TTF/TTF.h" />
+		<Unit filename="Source/Format/Type.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/Type.h" />
 		<Unit filename="Source/Format/UUID/UUID.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -290,27 +396,42 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/WMA/WMA.h" />
+		<Unit filename="Source/Format/XML/XML.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/XML/XML.h" />
 		<Unit filename="Source/Format/XingInfo/XingInfo.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/XingInfo/XingInfo.h" />
+		<Unit filename="Source/Format/YAML/YAML.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/YAML/YAML.h" />
 		<Unit filename="Source/Format/ZLIB/ZLIB.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/ZLIB/ZLIB.h" />
-		<Unit filename="Source/Graphics/DirectX/DirectX.c">
+		<Unit filename="Source/Graphic/DirectX/DirectX.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Graphics/DirectX/DirectX.h" />
-		<Unit filename="Source/Graphics/RefreshRateMode.h" />
-		<Unit filename="Source/Graphics/Shader.c">
+		<Unit filename="Source/Graphic/DirectX/DirectX.h" />
+		<Unit filename="Source/Graphic/Graphic.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Graphics/Shader.h" />
-		<Unit filename="Source/Graphics/Vulcan/Vulcan.c">
+		<Unit filename="Source/Graphic/Graphic.h" />
+		<Unit filename="Source/Graphic/OpenGL/OpenGL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Graphics/Vulcan/Vulcan.h" />
+		<Unit filename="Source/Graphic/OpenGL/OpenGL.h" />
+		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.h" />
+		<Unit filename="Source/Graphic/Vulcan/Vulcan.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/Vulcan/Vulcan.h" />
 		<Unit filename="Source/Library/Library.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -319,6 +440,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Math/Math.h" />
+		<Unit filename="Source/Math/Matrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Math/Matrix.h" />
 		<Unit filename="Source/Memory/Memory.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -335,6 +460,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Network/IP.h" />
+		<Unit filename="Source/Network/SBP/SBPClient.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/SBP/SBPClient.h" />
+		<Unit filename="Source/Network/SBP/SBPProtocol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/SBP/SBPProtocol.h" />
+		<Unit filename="Source/Network/SBP/SBPServer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/SBP/SBPServer.h" />
 		<Unit filename="Source/Network/Server.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -343,10 +480,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/OS/Bash.h" />
-		<Unit filename="Source/OS/CWindow.c">
+		<Unit filename="Source/OS/ClipBoard.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/CWindow.h" />
+		<Unit filename="Source/OS/ClipBoard.h" />
 		<Unit filename="Source/OS/Monitor.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -360,10 +497,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/OS/OpenFileDialog.h" />
+		<Unit filename="Source/OS/PXWindow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/PXWindow.h" />
 		<Unit filename="Source/OS/Program.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/OS/Program.h" />
+		<Unit filename="Source/OS/Registry.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Registry.h" />
 		<Unit filename="Source/OS/User.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -384,19 +529,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/UI/UI.h" />
-		<Unit filename="Source/Video/DirectX/DirectX.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Video/DirectX/DirectX.h" />
-		<Unit filename="Source/Video/RefreshRateMode.h" />
-		<Unit filename="Source/Video/Shader.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Video/Shader.h" />
-		<Unit filename="Source/Video/Vulcan/Vulcan.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Video/Vulcan/Vulcan.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

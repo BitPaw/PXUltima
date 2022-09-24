@@ -323,7 +323,8 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 	DataStream DataStream;
 	TGA tga;
 
-	DataStreamConstruct(&DataStream, data, dataSize);
+	DataStreamConstruct(&DataStream);
+	DataStreamFromExternal(&DataStream, data, dataSize);
 	TGAConstruct(&tga);
 	*dataRead = 0;
 

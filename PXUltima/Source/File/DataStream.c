@@ -554,7 +554,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 		DWORD fileOffsetLow = 0;
 		size_t numberOfBytesToMap = 0;
 		void* baseAddressTarget = 0;
-		DWORD  numaNodePreferred = NUMA_NO_PREFERRED_NODE;
+		DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
 
 		switch (protectionMode)
 		{

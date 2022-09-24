@@ -151,6 +151,7 @@ extern "C"
 
 	CPublic size_t PackageParse(SBPData* data, const void* inputBuffer, const size_t* inputBufferSize);
 	CPublic size_t PackageSerialize(const SBPData* data, void* outputBuffer, const size_t outputBufferSize);
+	/*
 	CPublic size_t PackageSerialize
 	(
 		void* outputBuffer,
@@ -159,7 +160,7 @@ extern "C"
 		const unsigned int target,
 		const SBPDataPackage* dataPackage,
 		const ResponseID responseID
-	);
+	);*/
 
 	// Recieve custom package, this is only called for unregistered packages
 	typedef void (*PackageRecieveEvent)(const SBPData* sbpData);
@@ -186,7 +187,7 @@ extern "C"
 
 	typedef struct SBPDataPackageConnectionCreate_
 	{
-		SBPConnectionCreateReason Reason;		
+		SBPConnectionCreateReason Reason;
 	}
 	SBPDataPackageConnectionCreate;
 
@@ -205,8 +206,8 @@ extern "C"
 #define SBPDataPackageFileModeIDUpdate 0x03
 #define SBPDataPackageFileModeIDMove 0x04
 #define SBPDataPackageFileModeIDCopy 0x05
-#define SBPDataPackageFileModeIDRename 0x06 
-	
+#define SBPDataPackageFileModeIDRename 0x06
+
 		typedef enum SBPDataPackageFileMode
 		{
 			Invalid,
@@ -239,10 +240,10 @@ extern "C"
 				wchar_t FilePathTargetW[PathMaxSize];
 			};
 
-			size_t FileSize; // HAs to be 8 Byte__!			
+			size_t FileSize; // HAs to be 8 Byte__!
 		}
 		SBPDataPackageFile;
-	
+
 
 
 		CPublic void SBPDataPackageFileConstruct(SBPDataPackageFile* const sbpDataPackageFile);
@@ -271,7 +272,7 @@ extern "C"
 		{
 			char NameA[PathMaxSize];
 			wchar_t NameW[PathMaxSize];
-		};		
+		};
 	}
 	SBPDataPackageIam;
 
@@ -287,9 +288,9 @@ extern "C"
 
 #define SBPDataPackageResponseID MakeInt('R', 'e', 's', 'p')
 
-#define SBPDataPackageResponseTypeOKID 0x01 
-#define SBPDataPackageResponseTypeNoPermissionID 0x02 
-#define SBPDataPackageResponseTypeDeniedID 0x03 
+#define SBPDataPackageResponseTypeOKID 0x01
+#define SBPDataPackageResponseTypeNoPermissionID 0x02
+#define SBPDataPackageResponseTypeDeniedID 0x03
 
 		typedef enum SBPDataPackageResponseType_
 		{
@@ -305,7 +306,7 @@ extern "C"
 			SBPDataPackageResponseType Type;
 		}
 		SBPDataPackageResponse;
-	
+
 		CPublic void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse);
 
 		CPublic size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const size_t inputDataSize);

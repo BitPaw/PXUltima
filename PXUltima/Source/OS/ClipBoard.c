@@ -110,17 +110,17 @@ unsigned int ClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 	case ClipBoardFormatENHMETAFILE:
 		return ClipBoardFormatENHMETAFILEID;
 
-	case ClipBoardFormatHDROP:
-		return ClipBoardFormatHDROPID;
+//	case ClipBoardFormatHDROP:
+//		return ClipBoardFormatHDROPID;
 
-	case ClipBoardFormatLOCALE:
-		return ClipBoardFormatLOCALEID;
+//	case ClipBoardFormatLOCALE:
+//		return ClipBoardFormatLOCALEID;
 
-	case ClipBoardFormatDIBV5:
-		return ClipBoardFormatDIBV5ID;
+//	case ClipBoardFormatDIBV5:
+//		return ClipBoardFormatDIBV5ID;
 
-	case ClipBoardFormatMAX:
-		return ClipBoardFormatMAXID;
+//	case ClipBoardFormatMAX:
+//		return ClipBoardFormatMAXID;
 
 	case ClipBoardFormatOWNERDISPLAY:
 		return ClipBoardFormatOWNERDISPLAYID;
@@ -201,17 +201,17 @@ ClipBoardFormat ClipBoardFormatFromID(const unsigned int clipBoardFormat)
 	case ClipBoardFormatENHMETAFILEID:
 		return ClipBoardFormatENHMETAFILE;
 
-	case ClipBoardFormatHDROPID:
-		return ClipBoardFormatHDROP;
+//	case ClipBoardFormatHDROPID:
+//		return ClipBoardFormatHDROP;
 
-	case ClipBoardFormatLOCALEID:
-		return ClipBoardFormatLOCALE;
+//	case ClipBoardFormatLOCALEID:
+//		return ClipBoardFormatLOCALE;
 
-	case ClipBoardFormatDIBV5ID:
-		return ClipBoardFormatDIBV5;
+//	case ClipBoardFormatDIBV5ID:
+//		return ClipBoardFormatDIBV5;
 
-	case ClipBoardFormatMAXID:
-		return ClipBoardFormatMAX;
+//	case ClipBoardFormatMAXID:
+//		return ClipBoardFormatMAX;
 
 	case ClipBoardFormatOWNERDISPLAYID:
 		return ClipBoardFormatOWNERDISPLAY;

@@ -1,26 +1,61 @@
-#include <stdint.h>
+#ifndef OSVersionINCLUDE
+#define OSVersionINCLUDE
 
-#if UINTPTR_MAX == 0xffffffff
-#define OS32Bit
-#elif (UINTPTR_MAX == 0xffffffffffffffff)
-#define OS64Bit
-#else
-#error Invalid format
+//---<Detect Linux version>----------------------------------------------------
+#ifndef OSUnix
+#if defined(linux) || defined(__APPLE__)
+#define OSUnix
+
+//#define BYTE unsigned char
+#define CHAR char
+#define INT int
+#define UINT unsigned int
+#define FLOAT float
+#define DOUBLE double
 #endif
+#endif
+//-----------------------------------------------------------------------------
 
+
+
+//---<Detect Windows version>---------------------------------------------------
 #ifndef OSWindows
-#if defined(_WIN64)
-#define System64Bit
+#if defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__)
+#define OSWindowsSystem64Bit
+#pragma message("[PX] Windows architecture 64-Bit detected")
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__WIN32__)
+#define OSWindowsSystem32Bit
+#pragma message("[PX] Windows architecture 32-Bit detected")
+#else
+#error [PX] Windows architecture not detect
 #endif
 
-#if defined(_WIN32) && !defined(System64Bit)
-#define System32Bit
-#endif
-
-#if (defined(_WIN32) || defined(_WIN64)) && !defined(WINVER)
+#if (defined(OSWindowsSystem64Bit) || defined(OSWindowsSystem32Bit))
 #define OSWindows
+#endif
+//-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+#if defined(_AMD64_) || defined(_IA64_)
+#define OS64Bit
+#pragma message("[PX] architecture 64-Bit detected")
+#elif defined(_X86_)
+#define OS32Bit
+#pragma message("[PX] architecture 32-Bit detected")
+#else
+#error [PX][Error] Invalid bit-version architecture!
+#endif
+//-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+#if defined(OSWindows)
+
+#include <Windows.h>
 #include <SdkDdkVer.h>
-//#include <Windows.h>
 
 #define Version_Windows WINVER
 
@@ -74,16 +109,9 @@ typedef struct IUnknown IUnknown;
 #endif
 #endif
 #endif
+//-----------------------------------------------------------------------------
 
-#ifndef OSUnix
-#if defined(linux) || defined(__APPLE__)
-#define OSUnix
 
-//#define BYTE unsigned char
-#define CHAR char
-#define INT int
-#define UINT unsigned int
-#define FLOAT float
-#define DOUBLE double
-#endif
+
+
 #endif

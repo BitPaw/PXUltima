@@ -102,8 +102,11 @@ ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CT
         }
     }
 
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+
+    OpenGLTextureCreate(graphicContext, 1u, &textureID);
+    OpenGLTextureBind(graphicContext, OpenGLTextureTypeCubeMap, textureID);
+
 
     /*
 

@@ -15,23 +15,23 @@ ActionResult ConvertErrorCode(const int errorCode)
 	switch(errorCode)
 	{
 		default:
-		case EOTHER:
-			return UnkownError;
+	//	case EOTHER:
+	//		return UnkownError;
 
 		case EACCES:
 			return PermissionDenied;
 
-		case EADDRINUSE:
-			return AddressInUse;
+	//	case EADDRINUSE:
+	//		return AddressInUse;
 
-		case EADDRNOTAVAIL:
-			return AddressNotAvailable;
+	//	case EADDRNOTAVAIL:
+	//		return AddressNotAvailable;
 
-		case EAFNOSUPPORT:
-			return AddressFamilyNotSupported;
+//		case EAFNOSUPPORT:
+	//		return AddressFamilyNotSupported;
 
-		case EALREADY:
-			return ConnectionAlreadyInProgress;
+	//	case EALREADY:
+	//		return ConnectionAlreadyInProgress;
 
 		case E2BIG:
 			return ArgumentListTooLong;
@@ -39,32 +39,32 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case EBADF:
 			return BadFileDescriptor;
 
-		case EBADMSG:
-			return BadMessage;
+	//	case EBADMSG:
+	//		return BadMessage;
 
 		case EBUSY:
 			return DeviceOrResourceBusy;
 
-		case ECANCELED:
-			return OperationCanceled;
+	//	case ECANCELED:
+	//		return OperationCanceled;
 
 		case ECHILD:
 			return NoChildProcesses;
 
-		case ECONNABORTED:
-			return ConnectionAborted;
+	//	case ECONNABORTED:
+	//		return ConnectionAborted;
 
-		case ECONNREFUSED:
-			return ConnectionRefused;
+	//	case ECONNREFUSED:
+	//		return ConnectionRefused;
 
-		case ECONNRESET:
-			return ConnectionReset;
+	//	case ECONNRESET:
+	//		return ConnectionReset;
 
 		case EDEADLK:
 			return ResourceDeadlockWouldOccur;
 
-		case EDESTADDRREQ:
-			return DestinationAddressRequired;
+	//	case EDESTADDRREQ:
+	//		return DestinationAddressRequired;
 
 		case EDOM:
 			return MathematicsArgumentOutOfDomainOfFunction;
@@ -78,17 +78,17 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case EFBIG:
 			return FileTooLarge;
 
-		case EHOSTUNREACH:
-			return HostIsUnreachable;
+	//	case EHOSTUNREACH:
+	//		return HostIsUnreachable;
 
-		case EIDRM:
-			return IdentifierRemoved;
+	//	case EIDRM:
+	//		return IdentifierRemoved;
 
 		case EILSEQ:
 			return IllegalByteSequence;
 
-		case EINPROGRESS:
-			return OperationInProgress;
+	//	case EINPROGRESS:
+	//		return OperationInProgress;
 
 		case EINTR:
 			return InterruptedFunction;
@@ -99,14 +99,14 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case EIO:
 			return IOFailure;
 
-		case EISCONN:
-			return SocketIsConnected;
+	//	case EISCONN:
+	//		return SocketIsConnected;
 
 		case EISDIR:
 			return IsADirectory;
 
-		case ELOOP:
-			return TooManyLevelsOfSymbolicLinks;
+	//	case ELOOP:
+	//		return TooManyLevelsOfSymbolicLinks;
 
 		case EMFILE:
 			return FileDescriptorValueTooLarge;
@@ -114,29 +114,29 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case EMLINK:
 			return TooManyLinks;
 
-		case EMSGSIZE:
-			return MessageTooLarge;
+	//	case EMSGSIZE:
+	//		return MessageTooLarge;
 
 		case ENAMETOOLONG:
 			return FilenameTooLong;
 
-		case ENETDOWN:
-			return NetworkIsDown;
+	//	case ENETDOWN:
+	//		return NetworkIsDown;
 
-		case ENETRESET:
-			return ConnectionAbortedByNetwork;
+	//	case ENETRESET:
+	//		return ConnectionAbortedByNetwork;
 
-		case ENETUNREACH:
-			return NetworkUnreachable;
+	//	case ENETUNREACH:
+	//		return NetworkUnreachable;
 
 		case ENFILE:
 			return TooManyFilesOpenInSystem;
 
-		case ENOBUFS:
-			return NoBufferSpaceAvailable;
+	//	case ENOBUFS:
+	//		return NoBufferSpaceAvailable;
 
-		case ENODATA:
-			return NoMessageIsAvailableOnTheStreamHeadReadQueue;
+	//	case ENODATA:
+	//		return NoMessageIsAvailableOnTheStreamHeadReadQueue;
 
 		case ENODEV:
 			return NoSuchDevice;
@@ -150,32 +150,32 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case ENOLCK:
 			return NoLocksAvailable;
 
-		case ENOLINK:
-			return LinkHasBeenSevered;
+	//	case ENOLINK:
+	//		return LinkHasBeenSevered;
 
 		case ENOMEM:
 			return OutOfMemory;
 
-		case ENOMSG:
-			return NoMessageOfTheDesiredType;
+	//	case ENOMSG:
+	//		return NoMessageOfTheDesiredType;
 
-		case ENOPROTOOPT:
-			return ProtocolNotAvailable;
+	//	case ENOPROTOOPT:
+	//		return ProtocolNotAvailable;
 
 		case ENOSPC:
 			return NoSpaceLeftOnDevice;
 
-		case ENOSR:
-			return NoStreamResources;
+	//	case ENOSR:
+	//		return NoStreamResources;
 
-		case ENOSTR:
-			return NotAStream;
+	//	case ENOSTR:
+	//		return NotAStream;
 
 		case ENOSYS:
 			return FunctionNotSupported;
 
-		case ENOTCONN:
-			return TheSocketIsNotConnected;
+	//	case ENOTCONN:
+	//		return TheSocketIsNotConnected;
 
 		case ENOTDIR:
 			return NotADirectory;
@@ -183,11 +183,11 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case ENOTEMPTY:
 			return DirectoryNotEmpty;
 
-		case ENOTRECOVERABLE:
-			return StateNotRecoverable;
+	//	case ENOTRECOVERABLE:
+	//		return StateNotRecoverable;
 
-		case ENOTSOCK:
-			return NotASocket;
+	//	case ENOTSOCK:
+	//		return NotASocket;
 
 		case ENOTTY:
 			return InappropriateIOControlOperation;
@@ -208,21 +208,21 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case EAGAIN:
 			return ResourceUnavailableTryAgain;
 
-		case EWOULDBLOCK:
-			return OperationWouldBlock;
+	//	case EWOULDBLOCK:
+	//		return OperationWouldBlock;
 
-		case ENOTSUP:
-			return NotSupported;
+	//	case ENOTSUP:
+	//		return NotSupported;
 
-		case EOPNOTSUPP:
-			return OperationNotSupportedOnSocket;
-#endif	
+	//	case EOPNOTSUPP:
+	//		return OperationNotSupportedOnSocket;
+#endif
 
-		case EOVERFLOW:
-			return ValueTooLargeToBeStoredInDataType;
+	//	case EOVERFLOW:
+	//		return ValueTooLargeToBeStoredInDataType;
 
-		case EOWNERDEAD:
-			return PreviousOwnerDied;
+	//	case EOWNERDEAD:
+	//		return PreviousOwnerDied;
 
 		case EPERM:
 			return OperationNotPermitted;
@@ -230,14 +230,14 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case EPIPE:
 			return BrokenPipe;
 
-		case EPROTO:
-			return ProtocolError;
+	//	case EPROTO:
+	//		return ProtocolError;
 
-		case EPROTONOSUPPORT:
-			return ProtocolNotSupported;
+	//	case EPROTONOSUPPORT:
+	//		return ProtocolNotSupported;
 
-		case EPROTOTYPE:
-			return ProtocolWrongTypeForSocket;
+	//	case EPROTOTYPE:
+	//		return ProtocolWrongTypeForSocket;
 
 		case ERANGE:
 			return ResultTooLarge;
@@ -251,14 +251,14 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case ESRCH:
 			return NoSuchProcess;
 
-		case ETIME:
-			return StreamTimeout;
+	//	case ETIME:
+	//		return StreamTimeout;
 
-		case ETIMEDOUT:
-			return ConnectionTimedOut;
+	//	case ETIMEDOUT:
+	//		return ConnectionTimedOut;
 
-		case ETXTBSY:
-			return TextFileBusy;
+	//	case ETXTBSY:
+	//		return TextFileBusy;
 
 		case EXDEV:
 			return CrossDeviceLink;

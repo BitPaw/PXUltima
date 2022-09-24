@@ -35,7 +35,7 @@ AudioResult AudioConvertMMResult(const unsigned int mmResultID)
 	case MMSYSERR_DELETEERROR:   return AudioResultRegistryDeleteError;
 	case MMSYSERR_VALNOTFOUND: return AudioResultRegistryValueNotFound;
 	case MMSYSERR_NODRIVERCB:  return AudioResultDriverNoCallback;
-	case MMSYSERR_MOREDATA:   return AudioResultMoreData;
+//	case MMSYSERR_MOREDATA:   return AudioResultMoreData;
 
 	case WAVERR_BADFORMAT: return AudioResultWaveFormatUnsupported;
 	case WAVERR_STILLPLAYING: return AudioResultDeviceIsStillPlaying;
@@ -136,7 +136,7 @@ AudioResult AudioOutputOpen(AudioDeviceOutput* audioDeviceOutput, unsigned int d
 		dwInstance,
 		fdwOpen
 	);
-	const AudioResult audioResult = ConvertMMResult(result);
+	const AudioResult audioResult = AudioConvertMMResult(result);
 
 	return audioResult;
 #endif
@@ -205,7 +205,7 @@ AudioResult AudioOutputClose(AudioDeviceOutput* audioDeviceOutput)
 #elif defined(OSWindows)
 
 	const MMRESULT result = waveOutClose(audioDeviceOutput->Handle);
-	const AudioResult audioResult = ConvertMMResult(result);
+	const AudioResult audioResult = AudioConvertMMResult(result);
 
 	audioDeviceOutput->Handle = 0;
 

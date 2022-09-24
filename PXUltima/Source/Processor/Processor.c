@@ -7,7 +7,7 @@
 #include <sys/time.h>
 #elif defined(OSWindows)
 #include <Windows.h>
-#include <intrin.h>
+//#include <intrin.h> // MISSING
 #endif
 
 void ProcessorFetchInfo(Processor* const processor)
@@ -55,7 +55,7 @@ void ProcessorFetchInfo(Processor* const processor)
     GetSystemInfo(&sysInfo);
 
     processor->NumberOfProcessors = sysInfo.dwNumberOfProcessors;
-#endif   
+#endif
 }
 
 unsigned int ProcessorFrequencyCurrent()
@@ -76,7 +76,7 @@ unsigned int ProcessorFrequencyCurrent()
     //  Returns total user time.
     //  Can be tweaked to include kernel times as well.
     return deltaTimeIU;
-        
+
 #elif defined(OSUnix)
     return (double)clock() / CLOCKS_PER_SEC;
 #endif

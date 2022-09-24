@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="PXUltimaTest" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/PXUltimaTest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c11" />
+					<Add option="-g" />
+					<Add directory="../PXUltima/Source" />
+					<Add directory="Source" />
+				</Compiler>
+				<Linker>
+					<Add library="../__Export__/X64B-Debug - Linux/PXUltima_DEBUG.lib" />
+					<Add library="C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x86/OpenGL32.Lib" />
+					<Add library="C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x86/Gdi32.Lib" />
+					<Add library="C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x86/User32.Lib" />
+					<Add library="C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x86/kernel32.Lib" />
+					<Add directory="../__Export__/X64B-Debug - Linux" />
+					<Add directory="C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x86" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/PXUltimaTest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Source/TestImage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/TestImage.h" />
+		<Unit filename="Source/TestOpenGL.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/TestOpenGL.h" />
+		<Unit filename="Source/TestSBP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/TestSBP.h" />
+		<Unit filename="Source/TestWindow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/TestWindow.h" />
+		<Unit filename="Source/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

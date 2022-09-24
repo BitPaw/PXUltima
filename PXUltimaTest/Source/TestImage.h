@@ -18,6 +18,9 @@ extern "C"
     extern void TestSaveImage();
     extern void ImageWriteText();
 
+    ActionResult ImageLoadTest(Image* const image, const char* const filePath);
+    ActionResult ImageSaveTest(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
+
 #ifdef __cplusplus
 }
 #endif

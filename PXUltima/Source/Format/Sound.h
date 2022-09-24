@@ -12,7 +12,7 @@
 #define AudioDeviceInputHandle int
 #elif defined(OSWindows)
 #include <Windows.h>
-#include <mmeapi.h>
+#include <mmeapi.h> // MISSING
 #define AudioDeviceOutputHandle HWAVEOUT
 #define AudioDeviceInputHandle HWAVEIN
 #endif

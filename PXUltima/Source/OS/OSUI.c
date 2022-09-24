@@ -22,7 +22,7 @@
 #endif
 
 
-#include <CommCtrl.h>
+#include <commctrl.h>
 #include <commdlg.h>
 //#include <ShObjIdl.h>
 #endif
@@ -46,15 +46,16 @@ void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, co
 
 void OSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferWritten)
 {
-    const int lengthWrittem = SetWindowTextW(uiElementID, buffer, bufferSize);
+    //const int lengthWrittem = SetWindowTextW(uiElementID, buffer, bufferSize);
 
-    *bufferWritten = lengthWrittem;
+    //*bufferWritten = lengthWrittem;
 }
 #endif
 
 void OSUIElementEnable()
 {
-#if defined(OSWindows)
+    /*
+    #if defined(OSWindows)
     INITCOMMONCONTROLSEX icex;
 
     icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -83,7 +84,7 @@ void OSUIElementEnable()
 
 
     InitCommonControlsEx(&icex);
-#endif
+#endif*/
 }
 
 
@@ -480,7 +481,7 @@ void OSUIIPInputCreate(const PXWindowID window, OSUIIPInput* osUIIPInput, const 
     osUIIPInput->Layout.Height = height;
 
     UIElementConstruct(window, &osUIIPInput->ID, &osUIIPInput->Layout, WC_IPADDRESSW, buttonText);
-#endif    
+#endif
 }
 
 void OSUITabControlCreate(const PXWindowID window, OSUITabControl* osUITabControl, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
@@ -515,7 +516,7 @@ void OSUIFontSelectorCreate(const PXWindowID window, OSUIFontSelector* osUIFontS
 {
 #if defined(OSUnix)
 #elif defined(OSWindows)
-    osUIFontSelector->Layout.Style = WS_VISIBLE | WS_CHILD | NFS_USEFONTASSOC | WS_BORDER;
+    osUIFontSelector->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;// NFS_USEFONTASSOC;
     osUIFontSelector->Layout.X = x;
     osUIFontSelector->Layout.Y = y;
     osUIFontSelector->Layout.Width = width;

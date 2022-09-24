@@ -54,16 +54,16 @@ ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t*
     DataStream dataStream;
 
     DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, data, dataSize);
+    DataStreamFromExternal(&dataStream, (void*)data, dataSize);
     OBJConstruct(obj);
     *dataRead = 0;
 
     unsigned char isFirstVertex = 0;
 
     obj->ElementListSize = 1;
-    obj->ElementList = MemoryAllocate(sizeof(OBJElement) * 1u);
+    obj->ElementList = (OBJElement*)MemoryAllocate(sizeof(OBJElement) * 1u);
 
-    typedef struct OBJSegmentData
+    typedef struct OBJSegmentData_
     {
         size_t Position;
         size_t Texture;
@@ -87,7 +87,7 @@ ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t*
 
         do
         {
-            const char* currentLine = DataStreamCursorPosition(&dataStream);
+            const char* currentLine = (const char*)DataStreamCursorPosition(&dataStream);
             const OBJLineType command = OBJPeekLine(currentLine);
 
             OBJSegmentData* currentSegmentData = &segmentData[segmentAmount];
@@ -141,7 +141,7 @@ ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t*
         DataStreamCursorToBeginning(&dataStream);
 
         obj->MaterialFileListSize = materialCounter;
-        obj->MaterialFileList = MemoryAllocate(sizeof(MTL) * materialCounter);
+        obj->MaterialFileList = (MTL*)MemoryAllocate(sizeof(MTL) * materialCounter);
 
         MemorySet(obj->MaterialFileList, sizeof(MTL) * materialCounter, 0);
 
@@ -154,22 +154,22 @@ ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t*
             OBJElementConstruct(segment);
 
             segment->VertexPositionListSize = currentSegmentData->Position * 3u;
-            segment->VertexPositionList = MemoryAllocate(sizeof(float) * segment->VertexPositionListSize);
+            segment->VertexPositionList = (float*)MemoryAllocate(sizeof(float) * segment->VertexPositionListSize);
 
             segment->TextureCoordinateListSize = currentSegmentData->Texture * 2u;
-            segment->TextureCoordinateList = MemoryAllocate(sizeof(float) * segment->TextureCoordinateListSize);
+            segment->TextureCoordinateList = (float*)MemoryAllocate(sizeof(float) * segment->TextureCoordinateListSize);
 
             segment->VertexNormalPositionListSize = currentSegmentData->Normal * 3u;
-            segment->VertexNormalPositionList = MemoryAllocate(sizeof(float) * segment->VertexNormalPositionListSize);
+            segment->VertexNormalPositionList = (float*)MemoryAllocate(sizeof(float) * segment->VertexNormalPositionListSize);
 
             segment->VertexParameterListSize = currentSegmentData->Parameter * 3u;
-            segment->VertexParameterList = MemoryAllocate(sizeof(float) * segment->VertexParameterListSize);
+            segment->VertexParameterList = (float*)MemoryAllocate(sizeof(float) * segment->VertexParameterListSize);
 
             segment->FaceElementListSize = currentSegmentData->Face * 3u;
-            segment->FaceElementList = MemoryAllocate(sizeof(unsigned int) * segment->FaceElementListSize);
+            segment->FaceElementList = (unsigned int*)MemoryAllocate(sizeof(unsigned int) * segment->FaceElementListSize);
 
             segment->MaterialInfoSize = currentSegmentData->Material;
-            segment->MaterialInfo = MemoryAllocate(sizeof(OBJElementMaterialInfo) * segment->MaterialInfoSize);
+            segment->MaterialInfo = (OBJElementMaterialInfo*)MemoryAllocate(sizeof(OBJElementMaterialInfo) * segment->MaterialInfoSize);
 
 #if OBJDebug
 
@@ -213,13 +213,13 @@ ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t*
         // Parse
         do
         {
-            const char* currentLine = DataStreamCursorPosition(&dataStream);
+            const char* const currentLine = (const char* const)DataStreamCursorPosition(&dataStream);
             const unsigned short lineTagID = MakeShort(currentLine[0], currentLine[1]);
             const OBJLineType command = OBJPeekLine(currentLine);
 
             DataStreamSkipBlock(&dataStream);
 
-            const char* dataPoint = DataStreamCursorPosition(&dataStream);
+            const char* const dataPoint = (const char* const)DataStreamCursorPosition(&dataStream);
             const size_t maximalSize = DataStreamRemainingSize(&dataStream);
             const size_t currentLineLength = TextLengthUntilA(dataPoint, maximalSize, '\n');
 

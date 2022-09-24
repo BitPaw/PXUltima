@@ -26,7 +26,7 @@ extern "C"
 	CPublic void SBPServerStop();
 
 	CPublic void SBPServerSendFile(const CSocketID clientID, const char* text);
-	CPublic void SBPServerSendFile(const CSocketID clientID, wchar_t* text);
+	//CPublic void SBPServerSendFile(const CSocketID clientID, wchar_t* text);
 
 	CPublic const ResponseID SBPServerGenerateResponseID();
 	CPublic unsigned char SBPServerSendMessageWaitResponse
@@ -38,9 +38,9 @@ extern "C"
 	);
 
 	CPublic void SBPServerSendTextToAll(const char* text);
-	CPublic void SBPServerSendTextToAll(const wchar_t* text);
+	//CPublic void SBPServerSendTextToAll(const wchar_t* text);
 	CPublic void SBPServerSendTextToClient(const unsigned int clientID, const char* text);
-	CPublic void SBPServerSendTextToClient(const unsigned int clientID, const wchar_t* text);
+	//CPublic void SBPServerSendTextToClient(const unsigned int clientID, const wchar_t* text);
 
 #ifdef __cplusplus
 }

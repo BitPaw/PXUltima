@@ -19,7 +19,7 @@ extern "C"
 	{
 		// private
 		//ResponseCache _responseCache;
-		Client _client;		
+		Client _client;
 
 		// public
 		wchar_t Name[256];
@@ -51,7 +51,7 @@ extern "C"
 
 
 	void SBPClientConnectToServer(SBPClient* const sbpClient, const char* ip, const unsigned short port);
-	void SBPClientConnectToServer(SBPClient* const sbpClient, const wchar_t* ip, const unsigned short port);
+//	void SBPClientConnectToServer(SBPClient* const sbpClient, const wchar_t* ip, const unsigned short port);
 	void SBPClientDisconnectFromServer(SBPClient* const sbpClient);
 
 	void SBPClientRegisterMe();

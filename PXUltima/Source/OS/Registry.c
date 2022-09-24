@@ -5,6 +5,10 @@
 #if defined(OSUnix)
 #elif defined(OSWindows)
 #pragma comment(lib, "Advapi32.lib")
+
+#ifndef LSTATUS
+#define LSTATUS long 
+#endif
 #endif
 
 RegistryResult RegistryConnectSpace(Registry* const registry, const RegistrySpace registrySpace)
@@ -20,10 +24,6 @@ RegistryResult RegistryConnectRemote(Registry* const registry, const wchar_t* co
 
 	switch (registrySpace)
 	{
-	default:
-	case RegistrySpaceInvalid:
-		break;
-
 	case RegistrySpaceLocalMachine:
 		hKey = HKEY_LOCAL_MACHINE;
 		break;
@@ -35,10 +35,13 @@ RegistryResult RegistryConnectRemote(Registry* const registry, const wchar_t* co
 	case RegistrySpaceUsers:
 		hKey = HKEY_USERS;
 		break;
+
+	default:
+		break;
 	}
 
 
-	const LSTATUS status = RegConnectRegistryW(computerName, hKey, &registry->ID);
+	const LSTATUS status = RegConnectRegistryW(computerName, hKey, &registry->ID); // LSTATUS
 	const unsigned char sucessful = status == ERROR_SUCCESS;
 
 	if (!sucessful)

@@ -168,7 +168,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
-#define AdressInfoType ADDRINFOA
+#define AdressInfoType struct addrinfo
 #endif
 
 #define SOCK_Invalid 0xFF
