@@ -67,13 +67,20 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-std=c11" />
+					<Add option="-pg" />
 					<Add option="-m64" />
+					<Add option="-Og" />
+					<Add option="-g" />
 					<Add directory="../PXUltima/Source" />
 				</Compiler>
 				<Linker>
+					<Add option="-pg" />
 					<Add option="-static-libgcc" />
 					<Add option="-m64" />
 				</Linker>
+				<Environment>
+					<Variable name="_XOPEN_SOURCE" value="600" />
+				</Environment>
 			</Target>
 			<Target title="Linux 64 Bit - Release">
 				<Option output="../__Export__/x64 Release - Linux/PXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />

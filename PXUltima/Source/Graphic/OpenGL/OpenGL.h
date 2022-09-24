@@ -22,6 +22,7 @@
 
 #if defined(OSUnix)
 #include <GL/glx.h>
+#define OpenGLAPICallType
 #elif defined(OSWindows)
 #define OpenGLAPICallType APIENTRY
 #endif
@@ -65,7 +66,7 @@ extern "C"
 		OpenGLVersion4x3x0, // August 6, 2012. GLSL 4.30, Compute shaders leveraging GPU parallelism, shader storage buffer objects, high - quality ETC2 / EAC texture compression, increased memory security, a multi - application robustness extension, compatibility with OpenGL ES 3.0[39]
 		OpenGLVersion4x4x0, // July 22, 2013. GLSL 4.40, Buffer Placement Control, Efficient Asynchronous Queries, Shader Variable Layout, Efficient Multiple Object Binding, Streamlined Porting of Direct3D applications, Bindless Texture Extension, Sparse Texture Extension[40]
 		OpenGLVersion4x5x0,	// August 11, 2014. GLSL 4.50, Direct State Access(DSA), Flush Control, Robustness, OpenGL ES 3.1 API and shader compatibility, DX11 emulation features
-		OpenGLVersion4x6x0	// July 31, 2017. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering 
+		OpenGLVersion4x6x0	// July 31, 2017. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering
 	}
 	OpenGLVersion;
 
@@ -118,7 +119,7 @@ extern "C"
 
 	CPrivate unsigned int OpenGLRenderBufferAttachmentPointToID(const OpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint);
 
-	
+
 
 	typedef enum OpenGLImageFormat_
 	{
@@ -153,7 +154,7 @@ extern "C"
 
 		OpenGLTypeIntegerSigned,  // 4 Byte, signed
 		OpenGLTypeIntegerUnsigned,  // 4 Byte, unsigned
-		
+
 		OpenGLTypeFloat,  // 4 Byte
 		OpenGLTypeDouble,  // 8 Byte
 	}
@@ -181,13 +182,13 @@ extern "C"
 
 	//---<OpenGL v.1.3.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
-	
+
 	//---<OpenGL v.1.4.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
-	
+
 	//---<OpenGL v.1.5.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
-    
+
 	//---<OpenGL v.2.0.0>------------------------------------------------------
 	CPrivate unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType);
 
@@ -235,8 +236,8 @@ extern "C"
 	typedef void (OpenGLAPICallType* OpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
 	typedef void (OpenGLAPICallType* OpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
     //-------------------------------------------------------------------------
-    
-	//---<OpenGL v.2.1.0>------------------------------------------------------ 
+
+	//---<OpenGL v.2.1.0>------------------------------------------------------
     //-------------------------------------------------------------------------
 
     //---<OpenGL v.3.0.0>------------------------------------------------------
@@ -251,7 +252,7 @@ extern "C"
 
 	typedef void (OpenGLAPICallType* OpenGLFrameBufferLinkTexture2DFunction)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
 	typedef GLuint (OpenGLAPICallType* OpenGLFrameBufferLinkRenderBufferFunction)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-	   
+
 	typedef void (OpenGLAPICallType* OpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
 	typedef void (OpenGLAPICallType* OpenGLBindVertexArrayFunction)(GLuint arrayID);
 	typedef void (OpenGLAPICallType* OpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
@@ -266,7 +267,7 @@ extern "C"
 
 	//---<OpenGL v.4.0.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
-	
+
 	//---<OpenGL v.4.1.0>------------------------------------------------------
 	typedef void (OpenGLAPICallType * OpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 	//-------------------------------------------------------------------------
@@ -300,11 +301,7 @@ extern "C"
 		char VersionText[64];
 		OpenGLVersion Version;
 
-#if defined(OSUnix)
-
-#elif defined(OSWindows)
-		void* AttachedWindow;
-#endif
+        void* AttachedWindow;
 
 		OpenGLShaderProgramCreateFunction	OpenGLShaderProgramCreateCallBack;
 		OpenGLShaderProgramUseFunction	OpenGLShaderProgramUseCallBack;
@@ -364,7 +361,7 @@ extern "C"
 
 		OpenGLGenVertexArraysFunction OpenGLGenVertexArraysCallBack;
 		OpenGLBindVertexArrayFunction OpenGLBindVertexArrayCallBack;
-		OpenGLVertexAttribIPointerFunction OpenGLVertexAttribIPointerCallBack;	
+		OpenGLVertexAttribIPointerFunction OpenGLVertexAttribIPointerCallBack;
 
 		OpenGLVertexAttribLPointerFunction	OpenGLVertexAttribLPointerCallBack;
 
@@ -374,6 +371,7 @@ extern "C"
 
 	CPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID);
 	CPrivate void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void* functionADress);
+    CPrivate void* OpenGLFunctionAdressFetch(const char* const functionName);
 
 	CPublic void OpenGLContextConstruct(OpenGLContext* const openGLContext);
 	CPublic void OpenGLContextDestruct(OpenGLContext* const openGLContext);
@@ -383,15 +381,17 @@ extern "C"
 	CPublic unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext);
 	CPublic void OpenGLContextRelease(OpenGLContext* const openGLContext);
 
+	CPublic void OpenGLRenderBufferSwap(OpenGLContext* const openGLContext);
+
 	CPublic void OpenGLContextFlush();
 
 	CPublic void OpenGLAPICallType OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
-	   	  
+
 	// [Version 2] Extended functions
 	CPublic OpenGLShaderProgramID OpenGLShaderProgramCreate(OpenGLContext* const openGLContext);
 	CPublic void OpenGLShaderProgramUse(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
 	CPublic void OpenGLShaderProgramDelete(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
-	
+
 	CPublic unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType);
 	CPublic OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const OpenGLShaderType openGLShaderType);
 	CPublic void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, int count, const char** string, const int* length);
@@ -415,9 +415,9 @@ extern "C"
 
 	CPublic void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
 	CPublic void OpenGLRenderBufferStorage(OpenGLContext* const openGLContext, const OpenGLRenderBufferFormat internalformat, const int width, const int height);
-	
 
-	// If we bind to 0, we select the "main window" 
+
+	// If we bind to 0, we select the "main window"
 	CPublic void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const OpenGLFrameBufferMode target, const unsigned int framebufferID);
 
 	CPublic void OpenGLFrameBufferDestroy(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
@@ -425,7 +425,7 @@ extern "C"
 	CPublic void OpenGLRenderBufferCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
 
 
-	CPublic void OpenGLRenderBufferBind(OpenGLContext* const openGLContext, const unsigned int renderbuffer); 
+	CPublic void OpenGLRenderBufferBind(OpenGLContext* const openGLContext, const unsigned int renderbuffer);
 
 	CPublic void OpenGLRenderBufferDelete(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
 
@@ -465,11 +465,11 @@ extern "C"
 	//---<OpenGL v.1.1.0>------------------------------------------------------
 	CPublic void OpenGLPixelDataRead
 	(
-		OpenGLContext* const openGLContext, 
+		OpenGLContext* const openGLContext,
 		const int x,
-		const int y, 
-		const int width, 
-		const int height, 
+		const int y,
+		const int width,
+		const int height,
 		OpenGLImageFormat imageFormat,
 		OpenGLDataType openGLDataType,
 		void* const pixelData
@@ -495,7 +495,7 @@ extern "C"
 
 //-------------------------------------------------------------------------
 
-//---<OpenGL v.2.1.0>------------------------------------------------------ 
+//---<OpenGL v.2.1.0>------------------------------------------------------
 //-------------------------------------------------------------------------
 
 //---<OpenGL v.3.0.0>------------------------------------------------------
@@ -545,9 +545,9 @@ extern "C"
 	CPublic OpenGLID OpenGLToImageType(const GraphicImageType imageType);
 	CPublic OpenGLID OpenGLToImageWrap(const GraphicImageWrap imageWrap);
 	CPublic OpenGLID OpenGLToImageLayout(const GraphicImageLayout layout);
-	
 
-	
+
+
 
 
 

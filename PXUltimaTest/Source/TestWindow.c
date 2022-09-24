@@ -79,8 +79,8 @@ void TestWindowOpen()
 		glEnd();
 
 		glFlush();
-				
-		SwapBuffers(window.HandleDeviceContext);
+
+		OpenGLRenderBufferSwap(&graphicContext->OpenGLInstance);
 	}
 
 	PXWindowDestruct(&window);

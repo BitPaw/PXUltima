@@ -1904,7 +1904,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     {
         GLXContext glContext = glXCreateContext(window->DisplayCurrent, visualInfo, NULL, GL_TRUE);
 
-        window->OpenGLConext = glContext;
+        window->GraphicInstance.OpenGLInstance.OpenGLConext = glContext;
     }
 
 
@@ -1950,7 +1950,6 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
 
 #elif defined(OSWindows)
-
 
     DWORD dwStyle = 0;
     HWND hWndParent = 0;
@@ -2103,6 +2102,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
 
+    #if defined(OSWindows)
     {
         const unsigned char isHidden = window->Width == 0 && window->Height == 0;
 
@@ -2112,6 +2112,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
             UpdateWindow(window->ID);
         }
     }
+    #endif
 
     window->IsRunning = 1;
 

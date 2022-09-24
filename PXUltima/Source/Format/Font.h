@@ -40,14 +40,14 @@ extern "C"
 
 	//---[ Public-Functions ]----------------------------------------------
 
-	CPublic __declspec(dllexport) void FontConstruct(CFont* const font);
-	CPublic __declspec(dllexport) void FontDestruct(CFont* const font);
+	CPublic void FontConstruct(CFont* const font);
+	CPublic void FontDestruct(CFont* const font);
 
-	CPublic __declspec(dllexport) FontFileFormat FontGuessFormat(const wchar_t* filePath);
+	CPublic FontFileFormat FontGuessFormat(const wchar_t* filePath);
 
-	CPublic __declspec(dllexport) ActionResult FontLoadA(CFont* const font, const char* filePath);
-	CPublic __declspec(dllexport) ActionResult FontLoadW(CFont* const font, const wchar_t* filePath);
-	CPublic __declspec(dllexport) ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
+	CPublic ActionResult FontLoadA(CFont* const font, const char* filePath);
+	CPublic ActionResult FontLoadW(CFont* const font, const wchar_t* filePath);
+	CPublic ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
 
 
 #ifdef __cplusplus

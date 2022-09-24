@@ -7,7 +7,7 @@
 const SQLType SQLTypeFromID(const unsigned int sqlType)
 {
 #if defined(OSUnix)
-    return SQLType::Invalid;
+    return SQLTypeInvalid;
 
 #elif defined(OSWindows)
     switch (sqlType)
@@ -57,16 +57,16 @@ void DataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection)
 
 void DataBaseConnectionConnect
 (
-    DataBaseConnection* const dataBaseConnection, 
-    const wchar_t* source, 
-    const wchar_t* database, 
-    const wchar_t* user, 
+    DataBaseConnection* const dataBaseConnection,
+    const wchar_t* source,
+    const wchar_t* database,
+    const wchar_t* user,
     const wchar_t* password
 )
 {
 
 #if defined(OSUnix)
-    return SQLResult::Invalid;
+    return SQLResultInvalid;
 
 #elif defined(OSWindows)
     // Allocate environment handle

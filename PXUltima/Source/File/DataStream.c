@@ -45,6 +45,7 @@
 
 #if defined(OSUnix)
 #define PrintSVN vsnprintf
+#include <fcntl.h>
 #elif defined(OSWindows)
 #include <fcntl.h> // _O_RDONLY, _O_RDWR, _O_RDWR
 #define PrintSVN vsprintf_s
@@ -130,11 +131,11 @@ ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* f
 	switch (fileOpenMode)
 	{
 	case MemoryReadOnly:
-		readMode = FileReadMode;
+		readMode = "rb";
 		break;
 
 	case MemoryWriteOnly:
-		readMode = FileWriteMode;
+		readMode = "wb";
 		break;
 	}
 
@@ -144,9 +145,9 @@ ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* f
 	// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
 	// int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
 
-	file->FileHandle = fopen(filePath, readMode);
+	dataStream->FileHandle = fopen(filePath, readMode);
 
-	return file->FileHandle ? ActionSuccessful : ResultFileOpenFailure;
+	return dataStream->FileHandle ? ActionSuccessful : ResultFileOpenFailure;
 
 #elif defined(OSWindows)
 	wchar_t filePathW[PathMaxSize];
@@ -164,7 +165,7 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 
 	TextCopyWA(filePath, PathMaxSize, filePathA, PathMaxSize);
 
-	const ActionResult openResult = FileOpenA(file, filePathA, fileOpenMode, fileCachingMode);
+	const ActionResult openResult = DataStreamOpenFromPathA(dataStream, filePathA, fileOpenMode, dataStreamCachingMode);
 	const unsigned char successful = openResult == ActionSuccessful;
 
 	if (!successful)
@@ -305,9 +306,8 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 
 ActionResult DataStreamClose(DataStream* const dataStream)
 {
-
 #if defined(OSUnix)
-	const int closeResult = fclose(file->FileHandle);
+	const int closeResult = fclose(dataStream->FileHandle);
 
 	switch (closeResult)
 	{
@@ -343,7 +343,7 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 {
 #if defined(OSUnix)
 	int accessType = PROT_READ;
-	int flags = MAP_PRIVATE | MAP_POPULATE;
+	int flags = MAP_PRIVATE;// | MAP_POPULATE;
 	int fileDescriptor = 0;
 	off_t length = 0;
 
@@ -380,12 +380,12 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 			return actionResult;
 		}
 
-		file->IDMapping = fileDescriptor;
+		dataStream->IDMapping = fileDescriptor;
 	}
 
 	// Get file length
 	{
-		const size_t fileLength = lseek64(file->IDMapping, 0, SEEK_END);
+		const size_t fileLength = lseek64(dataStream->IDMapping, 0, SEEK_END);
 		const unsigned char sucessful = fileLength > 0;
 
 		if (!sucessful)
@@ -393,22 +393,22 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 			return ResultFileReadFailure;
 		}
 
-		file->DataSize = fileLength;
+		dataStream->DataSize = fileLength;
 	}
 
 	// Map data
 	{
 		const MemoryProtectionModeType protectionModeID = ConvertFromMemoryProtectionMode(protectionMode);
-		const int flags = MAP_PRIVATE | MAP_POPULATE;
+		const int flags = MAP_PRIVATE;// | MAP_POPULATE;
 		const off_t offset = 0;
 
 		const void* mappedData = mmap
 		(
 			0, // addressPrefered
-			file->DataSize,
+			dataStream->DataSize,
 			protectionModeID,
 			flags,
-			file->IDMapping, // fileDescriptor
+			dataStream->IDMapping, // fileDescriptor
 			offset
 		);
 		const unsigned char successfulMapping = mappedData != 0;
@@ -418,14 +418,14 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 			return ResultFileMemoryMappingFailed;
 		}
 
-		file->Data = (unsigned char*)mappedData;
+		dataStream->Data = mappedData;
 	}
 
-	file->_fileLocation = FileLocationMappedFromDisk;
+	dataStream->_fileLocation = FileLocationMappedFromDisk;
 
-	close(file->IDMapping);
+	close(dataStream->IDMapping);
 
-	file->IDMapping = 0;
+	dataStream->IDMapping = 0;
 
 #if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", Data, DataSize, filePath);
@@ -451,7 +451,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 	TextCopyWA(filePath, PathMaxSize, filePathA, PathMaxSize);
 
-	return FileMapToVirtualMemoryA(file, filePathA, fileSize, protectionMode);
+	return DataStreamMapToMemoryA(dataStream, filePathA, fileSize, protectionMode);
 
 #elif defined(OSWindows)
 
@@ -641,7 +641,7 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 #endif
 
 #if defined(OSUnix)
-	const int result = munmap(file->Data, file->DataSize);
+	const int result = munmap(dataStream->Data, dataStream->DataSize);
 	const unsigned char sucessful = result != -1;
 
 	if (!sucessful)
@@ -651,8 +651,8 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 		return ResultFileMemoryMappingFailed;
 	}
 
-	file->Data = 0;
-	file->DataSize = 0;
+	dataStream->Data = 0;
+	dataStream->DataSize = 0;
 
 	return ActionSuccessful;
 

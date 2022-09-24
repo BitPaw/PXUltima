@@ -10,7 +10,7 @@
 #include <OS/PXWindow.h>
 
 #if defined(OSUnix)
-
+#pragma comment(lib, "opengl32.so")
 #elif defined(OSWindows)
 #pragma comment(lib, "opengl32.lib")
 #endif
@@ -637,6 +637,29 @@ void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void*
     *currentSize += 2u;
 }
 
+void* OpenGLFunctionAdressFetch(const char* const functionName)
+{
+    const void* const functionAdress =
+#if defined(OSUnix)
+    (const void* const)glXGetProcAddress(functionName);
+#elif defined(OSWindows)
+    (const void* const)wglGetProcAddress(functionName);
+
+    switch(functionAdress)
+    {
+        case -1: // fall though
+        case 0x0: // fall though
+        case 0x1: // fall though
+        case 0x2: // fall though
+        case 0x3:
+            return 0x0;
+        // default: do nothing
+    }
+#endif
+
+    return functionAdress;
+}
+
 void OpenGLContextConstruct(OpenGLContext* const openGLContext)
 {
     MemorySet(openGLContext, sizeof(OpenGLContext), 0);
@@ -649,15 +672,16 @@ void OpenGLContextDestruct(OpenGLContext* const openGLContext)
 
 void OpenGLContextCreate(OpenGLContext* const openGLContext)
 {
-#if defined(OSUnix)
-    glXMakeCurrent(window->DisplayCurrent, window->ID, window->OpenGLConext);
+    PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
 
+#if defined(OSUnix)
+    //glXCreateContext(window->DisplayCurren, ) // TODO:::
+
+    glXMakeCurrent(window->DisplayCurrent, window->ID, openGLContext->OpenGLConext);
 
 #elif defined(OSWindows)
-    PXWindow* const window = openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
-
     if (!window) // if not set, we want a "hidden" window. Windows needs a window to make a OpenGL context.. for some reason.
-    {     
+    {
         PXWindow* const window = (PXWindow* const)MemoryAllocate(sizeof(PXWindow) * 1u);
 
         PXWindowConstruct(window);
@@ -670,7 +694,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         }
 
         openGLContext->AttachedWindow = window;
-        
+
         MemoryCopy(&window->GraphicInstance.OpenGLInstance, sizeof(OpenGLContext), openGLContext,sizeof(OpenGLContext));
 
         return; // We should have all data here, stoping.
@@ -690,11 +714,11 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         }
     }
 
-    openGLContext->OpenGLConext = handle; 
+    openGLContext->OpenGLConext = handle;
 
-   
 
-#endif      
+
+#endif
 
     OpenGLContextSelect(openGLContext);
 
@@ -727,7 +751,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
         const unsigned int id = MakeInt(0, versionMajor, versionMinor, versionPatch);
 
-        openGLContext->Version = OpenGLVersionParse(id);      
+        openGLContext->Version = OpenGLVersionParse(id);
     }
 
     // Fetch functions
@@ -788,7 +812,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         OpenGLCacheFunction(functionNameList, &length, "glGenFramebuffers", &openGLContext->OpenGLFrameBufferCreateCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glDeleteFramebuffers", &openGLContext->OpenGLFrameBufferDeleteCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glBindFramebuffer", &openGLContext->OpenGLFrameBufferBindCallBack);
-        
+
         OpenGLCacheFunction(functionNameList, &length, "glGenRenderbuffers", &openGLContext->OpenGLRenderBufferCreateCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glBindRenderbuffer", &openGLContext->OpenGLRenderBufferBindCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glDeleteRenderbuffers", &openGLContext->OpenGLRenderBufferDeleteCallBack);
@@ -817,7 +841,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         OpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->OpenGLShaderProgramUseCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->OpenGLShaderProgramDeleteCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glShaderSource", &openGLContext->OpenGLShaderSourceCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->OpenGLShaderCreateCallBack);        
+        OpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->OpenGLShaderCreateCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->OpenGLShaderCompileCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glGetShaderiv", &openGLContext->OpenGLShaderGetivCallBack);
         OpenGLCacheFunction(functionNameList, &length, "glGetShaderInfoLog", &openGLContext->OpenGLShaderLogInfoGetCallBack);
@@ -996,20 +1020,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         void** functionAdress = functionNameList[i];
         const char* functionName = functionNameList[i + 1];
 
-#if defined(OSUnix)
-
-#elif defined(OSWindows)
-        void* p = (void*)wglGetProcAddress(functionName);
-        const unsigned char successful = !(p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1));
-
-        if (!successful)
-        {
-            HMODULE module = LoadLibraryA("opengl32.dll");
-            p = (void*)GetProcAddress(module, functionName);
-        }
-#endif
-
-        *functionAdress = p;
+        *functionAdress = OpenGLFunctionAdressFetch(functionName);
     }
 
     if (openGLContext->OpenGLDebugMessageCallback)
@@ -1021,19 +1032,22 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
 void OpenGLContextSelect(OpenGLContext* const openGLContext)
 {
-#if defined(OSUnix)
+    const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
+#if defined(OSUnix)
+    const int result = glXMakeCurrent(window->DisplayCurrent, window->ID, openGLContext->OpenGLConext);
 #elif defined(OSWindows)
-    const PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow;
     const BOOL result = wglMakeCurrent(window->HandleDeviceContext, openGLContext->OpenGLConext);
 #endif
 }
 
 unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext)
 {
+    const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
+
     const unsigned char successful =
 #if defined(OSUnix)
-        glXMakeCurrent(0, window->ID, window->OpenGLConext);
+        glXMakeCurrent(0, window->ID, openGLContext->OpenGLConext);
 #elif defined(OSWindows)
         wglMakeCurrent(0, 0);
 #endif
@@ -1043,7 +1057,26 @@ unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext)
 
 void OpenGLContextRelease(OpenGLContext* const openGLContext)
 {
+    const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
+#if defined(OSUnix)
+    const int result = glXMakeCurrent(window->DisplayCurrent,0, 0);
+
+#elif defined(OSWindows)
+
+#endif
+}
+
+void OpenGLRenderBufferSwap(OpenGLContext* const openGLContext)
+{
+    const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
+
+#if defined(OSUnix)
+    glXSwapBuffers(window->DisplayCurrent, window->ID);
+
+#elif defined(OSWindows)
+    SwapBuffers(window->ID);
+#endif
 }
 
 void OpenGLContextFlush()
@@ -1352,7 +1385,7 @@ wglUseFontOutlinesW
 
 
 /*
-windows only 
+windows only
 
 
     ChoosePixelFormat
@@ -1918,7 +1951,7 @@ void OpenGLShaderProgramDelete(OpenGLContext* const openGLContext, const OpenGLS
 }
 
 unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType)
-{       
+{
     switch (openGLShaderType)
     {
     default:
@@ -1959,7 +1992,7 @@ void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID
 }
 
 unsigned char OpenGLShaderCompile(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID)
-{ 
+{
     openGLContext->OpenGLShaderCompileCallBack(shaderID);
 
     {
@@ -1968,7 +2001,7 @@ unsigned char OpenGLShaderCompile(OpenGLContext* const openGLContext, const Open
         OpenGLShaderGetiv(openGLContext, shaderID, GL_COMPILE_STATUS, &isCompiled);
 
         return isCompiled;
-    }   
+    }
 }
 
 void OpenGLShaderGetiv(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLenum pname, GLint* params)
@@ -2052,7 +2085,7 @@ void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const OpenGLFrame
     case OpenGLFrameBufferModeDrawAndRead:
         targetID = GL_FRAMEBUFFER;
         break;
-    }    
+    }
 
     openGLContext->OpenGLFrameBufferBindCallBack(targetID, framebufferID); // GL_FRAMEBUFFER
 }

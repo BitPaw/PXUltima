@@ -47,7 +47,7 @@ void TestOpenGLRenderToTexture()
 	OpenGLFrameBufferLinkTexture2D(&openGLContext, OpenGLRenderBufferAttachmentPointColor, OpenGLTextureType2D, textureID, 0);
 
 
-	
+
 	// init renderbuffer
 	unsigned int rbo= 0;
 	OpenGLRenderBufferCreate(&openGLContext, 1u, &rbo);
@@ -63,8 +63,8 @@ void TestOpenGLRenderToTexture()
 	glClearColor(0.2, 0.2, 0.2, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glScalef(1, -1, 1);
-	
-	glBegin(GL_POLYGON);	
+
+	glBegin(GL_POLYGON);
 	//glPixelZoom(1, -1);
 	//glPerspective(-45.0, width / height, 1.0, 100.0);
 
@@ -76,7 +76,8 @@ void TestOpenGLRenderToTexture()
 	glEnd();
 
 	glFlush();
-	SwapBuffers(((PXWindow*)openGLContext.AttachedWindow)->HandleDeviceContext);
+
+	OpenGLRenderBufferSwap(&openGLContext);
 
 	//glReadPixels(0,0, width, heigh, ;
 

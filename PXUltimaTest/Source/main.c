@@ -22,8 +22,8 @@ int main()
 
 	printf("[i] Bencah %i, %i\n", x, y);
 
-	TestOpenGLAll();
-	//TestWindowAll();
+	//TestOpenGLAll();
+	TestWindowAll();
 	//TestImageAll();
 	//TestSBPAll();
 

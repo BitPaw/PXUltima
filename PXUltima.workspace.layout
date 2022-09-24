@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveProject path="PXUltima/PXUltima.cbp" />
-	<PreferredTarget name="Debug" />
+	<ActiveProject path="PXUltimaTest/PXUltimaTest.cbp" />
+	<PreferredTarget name="Linux 64 - Debug" />
 </CodeBlocks_workspace_layout_file>

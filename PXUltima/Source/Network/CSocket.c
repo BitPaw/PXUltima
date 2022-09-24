@@ -5,8 +5,9 @@
 #include <Event/Event.h>
 #include <stdio.h>
 
+#if defined(OSUnix)
 
-#if defined(OSWindows)
+#elif defined(OSWindows)
 #pragma comment( lib, "Ws2_32.lib" )
 #endif
 
@@ -139,40 +140,11 @@
 
 #define IPAF_Invalid 0xFF
 
-
-
-
-
-
-
-
-
-
 #if defined(OSWindows)
 #define EAI_ADDRFAMILY WSAHOST_NOT_FOUND
 #endif
 
-
-#ifdef OSUnix
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#define AdressInfoType struct addrinfo
-#elif defined(OSWindows)
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <iphlpapi.h>
-#define AdressInfoType struct addrinfo
-#endif
-
 #define SOCK_Invalid 0xFF
-
 
 ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode)
 {

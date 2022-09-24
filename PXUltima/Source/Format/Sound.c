@@ -10,6 +10,7 @@
 #pragma comment(lib, "winmm.lib")
 #endif
 
+#if defined(OSWindows)
 AudioResult AudioConvertMMResult(const unsigned int mmResultID)
 {
 	switch (mmResultID)
@@ -46,6 +47,7 @@ AudioResult AudioConvertMMResult(const unsigned int mmResultID)
 		return AudioResultInvalid;
 	}
 }
+#endif
 
 void AudioDeviceCapabilitiesPrinf(AudioDeviceCapabilities* const audioDeviceCapabilities)
 {

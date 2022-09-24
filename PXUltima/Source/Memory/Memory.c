@@ -292,7 +292,7 @@ void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memory
 	const MemoryProtectionModeType protectionModeID = ConvertFromMemoryProtectionMode(memoryProtectionMode);
 
 #if defined(OSUnix)
-	const int flags = MAP_PRIVATE | MAP_POPULATE | MAP_ANONYMOUS;
+	const int flags = MAP_PRIVATE;// | MAP_ANONYMOUS; | MAP_POPULATE; // missing on linux?
 	const int fileDescriptor = -1;
 	const off_t offset = 0;
 

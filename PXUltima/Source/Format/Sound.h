@@ -179,9 +179,9 @@ extern "C"
 	}
 	AudioDeviceCapabilities;
 
-
+#if defined(OSWindows)
 	CPrivate AudioResult AudioConvertMMResult(const unsigned int mmResultID);
-
+#endif
 
 	CPublic void AudioDeviceCapabilitiesPrinf(AudioDeviceCapabilities* const audioDeviceCapabilities);
 

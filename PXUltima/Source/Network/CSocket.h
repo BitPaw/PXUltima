@@ -1,19 +1,23 @@
 #ifndef CSocketInclude
 #define CSocketInclude
 
-#include <Format/Type.h>
-
-#include <Error/ActionResult.h>
 #include <OS/OSVersion.h>
 
 #if defined(OSUnix)
+#ifndef _XOPEN_SOURCE
+    // Needed for some reason, as without the "netdb.h" does not get included properly
+    // Some say that there a flags that disable the code.
+    // This statement here.. counters this.
+    #define _XOPEN_SOURCE 600
+#endif // _XOPEN_SOURCE
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#define AdressInfoType struct addrinfo
+
+typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinfo)
 #define AdressInfoDelete freeaddrinfo
 #elif defined(OSWindows)
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -27,6 +31,8 @@
 #endif
 
 #include <Async/Thread.h>
+#include <Format/Type.h>
+#include <Error/ActionResult.h>
 
 #define CSocketID size_t
 #define SocketDebug 1
@@ -207,14 +213,14 @@ extern "C"
 	CSocket;
 
 
-	static ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode);
-	static unsigned int ConvertFromProtocolMode(const ProtocolMode protocolMode);
+	CPrivate ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode);
+	CPrivate unsigned int ConvertFromProtocolMode(const ProtocolMode protocolMode);
 
-	static CSocketType ConvertToSocketType(const unsigned int socketType);
-	static unsigned int ConvertFromSocketType(const CSocketType socketType);
+	CPrivate CSocketType ConvertToSocketType(const unsigned int socketType);
+	CPrivate unsigned int ConvertFromSocketType(const CSocketType socketType);
 
-	static IPAdressFamily ConvertToIPAdressFamily(const unsigned int ipMode);
-	static unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode);
+	CPrivate IPAdressFamily ConvertToIPAdressFamily(const unsigned int ipMode);
+	CPrivate unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode);
 
 
 	CPublic void CSocketConstruct(CSocket* const cSocket);
@@ -254,8 +260,8 @@ extern "C"
 	CPublic ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const size_t outputBufferSize, size_t* outputBytesWritten);
 
 #if defined(OSWindows)
-	static ActionResult WindowsSocketAgentStartup();
-	static ActionResult WindowsSocketAgentShutdown();
+	CPrivate ActionResult WindowsSocketAgentStartup();
+	CPrivate ActionResult WindowsSocketAgentShutdown();
 #endif
 
 #ifdef __cplusplus
