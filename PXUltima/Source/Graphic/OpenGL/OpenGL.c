@@ -645,7 +645,7 @@ void* OpenGLFunctionAdressFetch(const char* const functionName)
 #elif defined(OSWindows)
     (const void* const)wglGetProcAddress(functionName);
 
-    switch(functionAdress)
+    switch((size_t)functionAdress)
     {
         case -1: // fall though
         case 0x0: // fall though
