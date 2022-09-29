@@ -6,6 +6,7 @@
 #include <Container/ClusterValue.h>
 #include <Text/Text.h>
 #include <File/File.h>
+#include <Math/Math.h>
 
 void OBJElementConstruct(OBJElement* objElement)
 {
@@ -113,6 +114,12 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
     size_t errorCounter = 0;
     DataStream tokenSteam;   
 
+    unsigned char renderMode = 0;
+    unsigned int vertexListSize = 0;
+    unsigned int normalListSize = 0;
+    unsigned int textureListSize = 0;
+    unsigned int indexListSize = 0;
+
     // Lexer - Level I 
     {
         PXCompilerSettings compilerSettings;
@@ -123,6 +130,13 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
 
         DataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
     }
+
+    // Write 0'ed data to later jump back to to change.
+    DataStreamWriteCU(outputStream, renderMode);
+    DataStreamWriteIU(outputStream, vertexListSize, EndianLittle);
+    DataStreamWriteIU(outputStream, normalListSize, EndianLittle);
+    DataStreamWriteIU(outputStream, textureListSize, EndianLittle);
+    DataStreamWriteIU(outputStream, indexListSize, EndianLittle);
 
     while (!DataStreamIsAtEnd(&tokenSteam))
     {
@@ -268,10 +282,12 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
                     {
                         case OBJLineVertexGeometric:
                             typeID = 'v';
+                            vertexListSize += valuesDetected;
                             break;
 
                         case OBJLineVertexNormal:
                             typeID = 'n';
+                            normalListSize += valuesDetected;
                             break;
 
                         case OBJLineVertexParameter:
@@ -280,6 +296,7 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
 
                         case OBJLineVertexTexture:
                             typeID = 't';
+                            textureListSize += valuesDetected;
                             break;
                     }
 
@@ -353,9 +370,13 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
                     DataStreamWriteF(outputStream, vertexData[2]);
 
                     //----------------------------------             
-
+                    
                     ++cornerPoints;
                 }
+
+                renderMode = MathMaximum(renderMode, cornerPoints);
+
+                indexListSize += cornerPoints;
 
                 DataStreamWriteAtCU(outputStream, cornerPoints, cursorPos);
 
@@ -382,11 +403,36 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
         return ActionCompilingError;
     }
 
+    size_t offset = outputStream->DataCursor;
+
+    outputStream->DataCursor = 0;
+
+    DataStreamWriteCU(outputStream, renderMode);
+    DataStreamWriteIU(outputStream, vertexListSize, EndianLittle);
+    DataStreamWriteIU(outputStream, normalListSize, EndianLittle);
+    DataStreamWriteIU(outputStream, textureListSize, EndianLittle);
+    DataStreamWriteIU(outputStream, indexListSize, EndianLittle);
+
+    outputStream->DataCursor = offset;
+
     return ActionSuccessful;
 }
 
 ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 {
+    unsigned char renderMode = 0;
+    unsigned int vertexListSize = 0;
+    unsigned int normalListSize = 0;
+    unsigned int textureListSize = 0;
+    unsigned int indexListSize = 0;
+
+    DataStreamReadCU(inputStream, &renderMode);
+    DataStreamReadIU(inputStream, &vertexListSize, EndianLittle);
+    DataStreamReadIU(inputStream, &normalListSize, EndianLittle);
+    DataStreamReadIU(inputStream, &textureListSize, EndianLittle);
+    DataStreamReadIU(inputStream, &indexListSize, EndianLittle);
+
+
     return ActionSuccessful;
 }
 

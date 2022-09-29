@@ -6,11 +6,9 @@
 
 ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, CTexture* const texture)
 {
-    Image* image = &texture->Image;
-    /*
+    const OpenGLTextureType openGLTextureType = ImageTypeGraphicToOpenGL(texture->Type);
 
-    const OpenGLID format = OpenGLToImageFormat(image->Format);
-    const OpenGLID textureType = OpenGLToImageType(texture->Type);
+    Image* image = &texture->Image;
 
     if (!image->PixelData)
     {
@@ -21,15 +19,20 @@ ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, CTextu
     {
         OpenGLID textureID = 0;
 
-        glGenTextures(1, &textureID);
+        OpenGLTextureCreate(graphicContext, 1u, &textureID);
 
-        glBindTexture(textureType, textureID);
+        if (textureID == -1)
+        {
+            return ActionInvalid;
+        }
+
+        OpenGLTextureBind(graphicContext, openGLTextureType, textureID);
 
         texture->ID = textureID;
     }
 
     // Texture Style
-    {
+    {/*
         const int textureWrapWidth = OpenGLToImageWrap(texture->WrapWidth);
         const int textureWrapHeight = OpenGLToImageWrap(texture->WrapHeight);
         const int textueFilterNear = OpenGLToImageLayout(texture->LayoutNear);
@@ -38,19 +41,23 @@ ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, CTextu
         glTexParameteri(textureType, GL_TEXTURE_WRAP_S, textureWrapWidth);
         glTexParameteri(textureType, GL_TEXTURE_WRAP_T, textureWrapHeight);
         glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, textueFilterNear);
-        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, textueFilterFar);
-       // glTexParameteri(textureType, GL_GENERATE_MIPMAP, GL_FALSE);
+       // glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, textueFilterFar);
+       // glTexParameteri(textureType, GL_GENERATE_MIPMAP, GL_FALSE);*/
     }
 
     //glTexParameterf(textureType, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
 
     // ToDO: erro?
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(textureType, 0, GL_RGBA, image->Width, image->Height, 0, format, GL_UNSIGNED_BYTE, image->PixelData);
+
+    OpenGLTextureData2D(graphicContext, openGLTextureType, 0, OpenGLImageFormatRGBA, image->Width, image->Height, 0, OpenGLImageFormatRGBA, OpenGLTypeByteUnsigned, image->PixelData);
+
+   // glTexImage2D(textureType, 0, GL_RGBA, image->Width, image->Height, 0, format, OpenGLTypeByteUnsigned, image->PixelData);
 
    // glGenerateMipmap(textureType);
+      
 
-    glBindTexture(textureType, 0);*/
+    OpenGLTextureBind(graphicContext, openGLTextureType, 0);
 
     return ActionSuccessful;
 }
@@ -102,38 +109,69 @@ ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CT
         }
     }
 
-
-
     OpenGLTextureCreate(&graphicContext->OpenGLInstance, 1u, &textureID);
     OpenGLTextureBind(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, textureID);
 
 
     /*
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
+    typedef enum OpenGLTextureSettingName_
+    {
+        OpenGLTextureSettingNameInvalid,
 
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        OpenGLTextureWrapAxisS,
+        OpenGLTextureWrapAxisT,
+        OpenGLTextureWrapAxisR,
+
+        OpenGLTextureFilterTypeMinimation,
+        OpenGLTextureFilterTypeMagnification
+
+    }
+    OpenGLTextureSettingName;
+
+    typedef enum OpenGLTextureSettingValue_
+    {
+        OpenGLTextureFilterInvalid,
+        OpenGLTextureFilterNear,
+        OpenGLTextureFilterLiniar,
+        OpenGLTextureFilterBiliniar,
+        OpenGLTextureFilterTriliniar,
+
+        OpenGLTextureWrapClampToEdge,
+
+        OpenGLTextureBaseLevel,
+        OpenGLTextureMaxLevel
+    }
+    OpenGLTextureSettingValue;
+
+
+
+
+
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWrapAxisS, OpenGLTextureWrapClampToEdge);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWrapAxisT, OpenGLTextureWrapClampToEdge);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWrapAxisR, OpenGLTextureWrapClampToEdge);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureFilterTypeMagnification, OpenGLTextureFilterLiniar);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureFilterTypeMinimation, OpenGLTextureFilterLiniar);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureBaseLevel, 0);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureMaxLevel, 0);
+
+    OpenGLEnable(&graphicContext->OpenGLInstance, OpenGLToggleTextureCubeMapSeamless);
 
     for (size_t i = 0; i < 6; i++)
     {
-        Image* image = textureCube->ImageList[i];
+        Image* image = &textureCube->ImageList[i];
         const unsigned int textureTypeID = (unsigned int)GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
         const unsigned int imageFormat = OpenGLToImageFormat(image->Format);
-        const ImageType imageType = OpenGLToImageType(textureTypeID);
-
+        //const OpenGLTextureType imageType = OpenGLTextureTypeToID(textureTypeID);
+        
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(textureTypeID, 0, GL_RGB, image->Width, image->Height, 0, imageFormat, GL_UNSIGNED_BYTE, image->PixelData);
-    }
+    }*/
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    OpenGLTextureBind(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, 0);
 
-    textureCube->ID = textureID;*/
+    textureCube->ID = textureID;
 
     return ActionInvalid;
 }
@@ -441,6 +479,40 @@ OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType)
 
     case ShaderTypeCompute:
         return OpenGLShaderCompute;
+    }
+}
+
+/*
+
+        OpenGLTextureTypeInvalid,
+        OpenGLTextureType1D,
+        OpenGLTextureType2D,
+        OpenGLTextureType3D,
+        OpenGLTextureType1DArray,
+        OpenGLTextureType2DArray,
+        OpenGLTextureTypeRectangle,
+        OpenGLTextureTypeCubeMap,
+        OpenGLTextureTypeCubleMapArray,
+        OpenGLTextureTypeBuffer,
+        OpenGLTextureType2DMultiSample,
+        OpenGLTextureType2DMultiSampleArray,
+*/
+
+OpenGLTextureType ImageTypeGraphicToOpenGL(const GraphicImageType graphicImageType)
+{
+    switch (graphicImageType)
+    {
+        default:
+        case GraphicImageTypeInvalid: return OpenGLTextureTypeInvalid;
+        case GraphicImageTypeTexture2D: return OpenGLTextureType2D;
+        case GraphicImageTypeTexture3D: return OpenGLTextureType3D;
+        case GraphicImageTypeTextureCubeContainer: return OpenGLTextureTypeCubeMap;
+        //case GraphicImageTypeTextureCubeRight: return OpenGLTextureTypeInvalid;
+        //case GraphicImageTypeTextureCubeLeft: return OpenGLTextureTypeInvalid;
+        //case GraphicImageTypeTextureCubeTop: return OpenGLTextureTypeInvalid;
+        //case GraphicImageTypeTextureCubeDown: return OpenGLTextureTypeInvalid;
+        //case GraphicImageTypeTextureCubeBack: return OpenGLTextureTypeInvalid;
+        //case GraphicImageTypeTextureCubeFront: return OpenGLTextureTypeInvalid;
     }
 }
 

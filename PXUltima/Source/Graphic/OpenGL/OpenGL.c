@@ -496,6 +496,100 @@
 #define GL_DEBUG_OUTPUT 0x92E0
 //-------------------------------------------------------------------------
 
+
+// extension imaging
+#define GL_CONSTANT_COLOR 0x8001
+#define GL_ONE_MINUS_CONSTANT_COLOR 0x8002
+#define GL_CONSTANT_ALPHA 0x8003
+#define GL_ONE_MINUS_CONSTANT_ALPHA 0x8004
+#define GL_BLEND_COLOR 0x8005
+#define GL_FUNC_ADD 0x8006
+#define GL_MIN 0x8007
+#define GL_MAX 0x8008
+#define GL_BLEND_EQUATION 0x8009
+#define GL_FUNC_SUBTRACT 0x800A
+#define GL_FUNC_REVERSE_SUBTRACT 0x800B
+#define GL_CONVOLUTION_1D 0x8010
+#define GL_CONVOLUTION_2D 0x8011
+#define GL_SEPARABLE_2D 0x8012
+#define GL_CONVOLUTION_BORDER_MODE 0x8013
+#define GL_CONVOLUTION_FILTER_SCALE 0x8014
+#define GL_CONVOLUTION_FILTER_BIAS 0x8015
+#define GL_REDUCE 0x8016
+#define GL_CONVOLUTION_FORMAT 0x8017
+#define GL_CONVOLUTION_WIDTH 0x8018
+#define GL_CONVOLUTION_HEIGHT 0x8019
+#define GL_MAX_CONVOLUTION_WIDTH 0x801A
+#define GL_MAX_CONVOLUTION_HEIGHT 0x801B
+#define GL_POST_CONVOLUTION_RED_SCALE 0x801C
+#define GL_POST_CONVOLUTION_GREEN_SCALE 0x801D
+#define GL_POST_CONVOLUTION_BLUE_SCALE 0x801E
+#define GL_POST_CONVOLUTION_ALPHA_SCALE 0x801F
+#define GL_POST_CONVOLUTION_RED_BIAS 0x8020
+#define GL_POST_CONVOLUTION_GREEN_BIAS 0x8021
+#define GL_POST_CONVOLUTION_BLUE_BIAS 0x8022
+#define GL_POST_CONVOLUTION_ALPHA_BIAS 0x8023
+#define GL_HISTOGRAM 0x8024
+#define GL_PROXY_HISTOGRAM 0x8025
+#define GL_HISTOGRAM_WIDTH 0x8026
+#define GL_HISTOGRAM_FORMAT 0x8027
+#define GL_HISTOGRAM_RED_SIZE 0x8028
+#define GL_HISTOGRAM_GREEN_SIZE 0x8029
+#define GL_HISTOGRAM_BLUE_SIZE 0x802A
+#define GL_HISTOGRAM_ALPHA_SIZE 0x802B
+#define GL_HISTOGRAM_LUMINANCE_SIZE 0x802C
+#define GL_HISTOGRAM_SINK 0x802D
+#define GL_MINMAX 0x802E
+#define GL_MINMAX_FORMAT 0x802F
+#define GL_MINMAX_SINK 0x8030
+#define GL_TABLE_TOO_LARGE 0x8031
+#define GL_COLOR_MATRIX 0x80B1
+#define GL_COLOR_MATRIX_STACK_DEPTH 0x80B2
+#define GL_MAX_COLOR_MATRIX_STACK_DEPTH 0x80B3
+#define GL_POST_COLOR_MATRIX_RED_SCALE 0x80B4
+#define GL_POST_COLOR_MATRIX_GREEN_SCALE 0x80B5
+#define GL_POST_COLOR_MATRIX_BLUE_SCALE 0x80B6
+#define GL_POST_COLOR_MATRIX_ALPHA_SCALE 0x80B7
+#define GL_POST_COLOR_MATRIX_RED_BIAS 0x80B8
+#define GL_POST_COLOR_MATRIX_GREEN_BIAS 0x80B9
+#define GL_POST_COLOR_MATRIX_BLUE_BIAS 0x80BA
+#define GL_POST_COLOR_MATRIX_ALPHA_BIAS 0x80BB
+#define GL_COLOR_TABLE 0x80D0
+#define GL_POST_CONVOLUTION_COLOR_TABLE 0x80D1
+#define GL_POST_COLOR_MATRIX_COLOR_TABLE 0x80D2
+#define GL_PROXY_COLOR_TABLE 0x80D3
+#define GL_PROXY_POST_CONVOLUTION_COLOR_TABLE 0x80D4
+#define GL_PROXY_POST_COLOR_MATRIX_COLOR_TABLE 0x80D5
+#define GL_COLOR_TABLE_SCALE 0x80D6
+#define GL_COLOR_TABLE_BIAS 0x80D7
+#define GL_COLOR_TABLE_FORMAT 0x80D8
+#define GL_COLOR_TABLE_WIDTH 0x80D9
+#define GL_COLOR_TABLE_RED_SIZE 0x80DA
+#define GL_COLOR_TABLE_GREEN_SIZE 0x80DB
+#define GL_COLOR_TABLE_BLUE_SIZE 0x80DC
+#define GL_COLOR_TABLE_ALPHA_SIZE 0x80DD
+#define GL_COLOR_TABLE_LUMINANCE_SIZE 0x80DE
+#define GL_COLOR_TABLE_INTENSITY_SIZE 0x80DF
+#define GL_IGNORE_BORDER 0x8150
+#define GL_CONSTANT_BORDER 0x8151
+#define GL_WRAP_BORDER 0x8152
+#define GL_REPLICATE_BORDER 0x8153
+#define GL_CONVOLUTION_BORDER_COLOR 0x8154
+
+
+
+
+// Seemless texture
+#define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
+
+
+
+
+
+
+
+
+
 unsigned int OpenGLRenderBufferAttachmentPointToID(const OpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint)
 {
     switch (renderBufferAttachmentPoint)
@@ -590,6 +684,85 @@ int OpenGLRenderModeToID(const OpenGLRenderMode openGLRenderMode)
         case OpenGLRenderQuads: return GL_QUADS;
         case OpenGLRenderQuadStrip: return GL_QUAD_STRIP;
         case OpenGLRenderPolygon: return GL_POLYGON;
+
+        default:
+            return -1;
+    }
+}
+
+int OpenGLToggleToID(const OpenGLToggle openGLToggle)
+{
+    switch (openGLToggle)
+    {
+        case OpenGLToggleTextureCubeMapSeamless: return GL_TEXTURE_CUBE_MAP_SEAMLESS;
+
+        case OpenGLALPHA_TEST :return GL_ALPHA_TEST;
+        case OpenGLAUTO_NORMAL :return GL_AUTO_NORMAL;
+        case OpenGLBLEND :return GL_BLEND;
+        //case OpenGLCLIP_PLANEi :return GL_CLIP_PLANEi;
+        case OpenGLCOLOR_LOGIC_OP :return GL_COLOR_LOGIC_OP;
+        case OpenGLCOLOR_MATERIAL :return GL_COLOR_MATERIAL;
+        //case OpenGLCOLOR_SUM :return GL_COLOR_SUM;
+        case OpenGLCOLOR_TABLE :return GL_COLOR_TABLE;
+        case OpenGLCONVOLUTION_1D :return GL_CONVOLUTION_1D;
+        case OpenGLCONVOLUTION_2D :return GL_CONVOLUTION_2D;
+        case OpenGLCULL_FACE :return GL_CULL_FACE;
+        case OpenGLDEPTH_TEST :return GL_DEPTH_TEST;
+        case OpenGLDITHER :return GL_DITHER;
+        case OpenGLFOG :return GL_FOG;
+        case OpenGLHISTOGRAM :return GL_HISTOGRAM;
+        case OpenGLINDEX_LOGIC_OP :return GL_INDEX_LOGIC_OP;
+        //case OpenGLLIGHTi :return GL_LIGHTi;
+        case OpenGLLIGHTING :return GL_LIGHTING;
+        case OpenGLLINE_SMOOTH :return GL_LINE_SMOOTH;
+        case OpenGLLINE_STIPPLE :return GL_LINE_STIPPLE;
+        case OpenGLMAP1_COLOR_4 :return GL_MAP1_COLOR_4;
+        case OpenGLMAP1_INDEX :return GL_MAP1_INDEX;
+        case OpenGLMAP1_NORMAL :return GL_MAP1_NORMAL;
+        case OpenGLMAP1_TEXTURE_COORD_1 :return GL_MAP1_TEXTURE_COORD_1;
+        case OpenGLMAP1_TEXTURE_COORD_2 :return GL_MAP1_TEXTURE_COORD_2;
+        case OpenGLMAP1_TEXTURE_COORD_3 :return GL_MAP1_TEXTURE_COORD_3;
+        case OpenGLMAP1_TEXTURE_COORD_4 :return GL_MAP1_TEXTURE_COORD_4;
+        case OpenGLMAP1_VERTEX_3 :return GL_MAP1_VERTEX_3;
+        case OpenGLMAP1_VERTEX_4 :return GL_MAP1_VERTEX_4;
+        case OpenGLMAP2_COLOR_4 :return GL_MAP2_COLOR_4;
+        case OpenGLMAP2_INDEX :return GL_MAP2_INDEX;
+        case OpenGLMAP2_NORMAL :return GL_MAP2_NORMAL;
+        case OpenGLMAP2_TEXTURE_COORD_1 :return GL_MAP2_TEXTURE_COORD_1;
+        case OpenGLMAP2_TEXTURE_COORD_2 :return GL_MAP2_TEXTURE_COORD_2;
+        case OpenGLMAP2_TEXTURE_COORD_3 :return GL_MAP2_TEXTURE_COORD_3;
+        case OpenGLMAP2_TEXTURE_COORD_4 :return GL_MAP2_TEXTURE_COORD_4;
+        case OpenGLMAP2_VERTEX_3 :return GL_MAP2_VERTEX_3;
+        case OpenGLMAP2_VERTEX_4 :return GL_MAP2_VERTEX_4;
+        case OpenGLMINMAX :return GL_MINMAX;
+        case OpenGLMULTISAMPLE :return GL_MULTISAMPLE;
+        case OpenGLNORMALIZE :return GL_NORMALIZE;
+        case OpenGLPOINT_SMOOTH :return GL_POINT_SMOOTH;
+        case OpenGLPOINT_SPRITE :return GL_POINT_SPRITE;
+        case OpenGLPOLYGON_OFFSET_FILL :return GL_POLYGON_OFFSET_FILL;
+        case OpenGLPOLYGON_OFFSET_LINE :return GL_POLYGON_OFFSET_LINE;
+        case OpenGLPOLYGON_OFFSET_POINT :return GL_POLYGON_OFFSET_POINT;
+        case OpenGLPOLYGON_SMOOTH :return GL_POLYGON_SMOOTH;
+        case OpenGLPOLYGON_STIPPLE :return GL_POLYGON_STIPPLE;
+        case OpenGLPOST_COLOR_MATRIX_COLOR_TABLE :return GL_POST_COLOR_MATRIX_COLOR_TABLE;
+        case OpenGLPOST_CONVOLUTION_COLOR_TABLE :return GL_POST_CONVOLUTION_COLOR_TABLE;
+        //case OpenGLRESCALE_NORMAL :return GL_RESCALE_NORMAL;
+        case OpenGLSAMPLE_ALPHA_TO_COVERAGE :return GL_SAMPLE_ALPHA_TO_COVERAGE;
+        case OpenGLSAMPLE_ALPHA_TO_ONE :return GL_SAMPLE_ALPHA_TO_ONE;
+        case OpenGLSAMPLE_COVERAGE :return GL_SAMPLE_COVERAGE;
+        case OpenGLSEPARABLE_2D :return GL_SEPARABLE_2D;
+        case OpenGLSCISSOR_TEST :return GL_SCISSOR_TEST;
+        case OpenGLSTENCIL_TEST :return GL_STENCIL_TEST;
+        case OpenGLTEXTURE_1D :return GL_TEXTURE_1D;
+        case OpenGLTEXTURE_2D :return GL_TEXTURE_2D;
+        case OpenGLTEXTURE_3D :return GL_TEXTURE_3D;
+        case OpenGLTEXTURE_CUBE_MAP :return GL_TEXTURE_CUBE_MAP;
+        case OpenGLTEXTURE_GEN_Q :return GL_TEXTURE_GEN_Q;
+        case OpenGLTEXTURE_GEN_R :return GL_TEXTURE_GEN_R;
+        case OpenGLTEXTURE_GEN_S :return GL_TEXTURE_GEN_S;
+        case OpenGLTEXTURE_GEN_T :return GL_TEXTURE_GEN_T;
+        case OpenGLVERTEX_PROGRAM_POINT_SIZE :return GL_VERTEX_PROGRAM_POINT_SIZE;
+        case OpenGLVERTEX_PROGRAM_TWO_SIDE:return GL_VERTEX_PROGRAM_TWO_SIDE;
 
         default:
             return -1;
@@ -1116,6 +1289,13 @@ void OpenGLViewSize(OpenGLContext* const openGLContext, const size_t x, const si
     glViewport(x, y, width, height);
 }
 
+void OpenGLEnable(OpenGLContext* const openGLContext, const OpenGLToggle toggle)
+{
+    const unsigned int toggleID = OpenGLToggleToID(toggle);
+
+    glEnable(toggleID);
+}
+
 void OpenGLClearColor(OpenGLContext* const openGLContext, const float red, const float green, const float blue, const float alpha)
 {
     glClearColor(red, green, blue, alpha);
@@ -1151,6 +1331,22 @@ void OpenGLDrawColorRGBF(OpenGLContext* const openGLContext, const float red, co
 void OpenGLDrawEnd(OpenGLContext* const openGLContext)
 {
     glEnd();
+}
+
+void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLenum pname, GLint param)
+{
+    /*
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
+
+    
+    */
+
 }
 
 void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
@@ -2118,6 +2314,28 @@ void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureTy
 void OpenGLTextureDelete(OpenGLContext* const openGLContext, GLsizei n, const GLuint* textures)
 {
     openGLContext->OpenGLTextureDeleteCallBack(n, textures);
+}
+
+void OpenGLTextureData2D
+(
+    OpenGLContext* const openGLContext,
+    const OpenGLTextureType glTextureType,
+    const unsigned int level,
+    const OpenGLImageFormat glImageFormatInternal,
+    const size_t width, 
+    const size_t height, 
+    const unsigned int border,
+    const OpenGLImageFormat glImageFormatInput,
+    const OpenGLDataType glDataType, 
+    const void* const imageData
+)
+{
+    const unsigned int glImageFormatInternalID = OpenGLImageFormatToID(glImageFormatInternal);
+    const unsigned int glTextureTypeID = OpenGLTextureTypeToID(glTextureType);
+    const unsigned int glImageFormatInputID = OpenGLImageFormatToID(glImageFormatInput);
+    const unsigned int glDataTypeID = OpenGLDataTypeToID(glDataType);
+
+    glTexImage2D(glTextureTypeID, level, glImageFormatInternalID, width, height, border, glImageFormatInputID, glDataTypeID, imageData);
 }
 
 void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList)

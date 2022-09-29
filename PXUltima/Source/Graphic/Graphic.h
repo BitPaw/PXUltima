@@ -145,7 +145,7 @@ extern "C"
 
 	typedef struct CTexture_
 	{
-		unsigned int ID;		
+		unsigned int ID;
 
 		GraphicImageType Type;
 		GraphicRenderFilter Filter;
@@ -161,7 +161,7 @@ extern "C"
 	typedef struct CTextureCube_
 	{
 		unsigned int ID;
-		Image Image[6];
+		Image ImageList[6];
 	}
 	CTextureCube;
 
@@ -218,6 +218,7 @@ extern "C"
 
 	//---<OpenGL Translate>----------------
 	CPrivate OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType);
+	CPrivate OpenGLTextureType ImageTypeGraphicToOpenGL(const GraphicImageType graphicImageType);
 	//-------------------------------------
 
 
