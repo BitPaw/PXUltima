@@ -20,10 +20,9 @@ int main()
 
 	//LibraryParseSymbols();
 
-	printf("[i] Bencah %i, %i\n", x, y);
-
-	//TestOpenGLAll();
-	TestWindowAll();
+	//TestPXCompilerAll();
+	TestOpenGLAll();
+	//TestWindowAll();
 	//TestImageAll();
 	//TestSBPAll();
 

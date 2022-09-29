@@ -5,6 +5,8 @@
 
 #include <Error/ActionResult.h>
 #include <Format/MTL/MTL.h>
+#include <File/DataStream.h>
+#include <Format/Model.h>
 
 #define OBJNameSize 64u
 #define OBJElementNameLength 50u
@@ -23,6 +25,7 @@ extern "C"
 		OBJLineMaterialLibraryInclude,
 		OBJLineMaterialLibraryUse,
 		OBJLineObjectName,
+		OBJLineObjectGroup,
 		OBJLineVertexGeometric,
 		OBJLineVertexTexture,
 		OBJLineVertexNormal,
@@ -81,12 +84,17 @@ extern "C"
 	}
 	OBJ;
 
-	extern void OBJConstruct(OBJ* obj);
-	extern void OBJDestruct(OBJ* obj);
+	CPublic void OBJConstruct(OBJ* const obj);
+	CPublic void OBJDestruct(OBJ* const obj);
 
-	static OBJLineType OBJPeekLine(const void* line);
+	CPrivate OBJLineType OBJPeekLine(const void* line, const size_t size);
 
-	extern ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName);
+	CPublic ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outputStream);
+
+	CPublic ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model);
+
+
+	CPublic ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName);
 
 #ifdef __cplusplus
 }

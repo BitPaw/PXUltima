@@ -1075,7 +1075,9 @@ void OpenGLRenderBufferSwap(OpenGLContext* const openGLContext)
     glXSwapBuffers(window->DisplayCurrent, window->ID);
 
 #elif defined(OSWindows)
-    SwapBuffers(window->ID);
+    BOOL successful = SwapBuffers(window->HandleDeviceContext);
+
+    successful += 0;
 #endif
 }
 

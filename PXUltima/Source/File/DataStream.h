@@ -15,6 +15,7 @@ extern "C"
 	typedef enum DataStreamLocation_
 	{
 		FileLocationInvalid,
+		FileLocationExternal,
 		FileLocationMappedVirtual, // Used 'VirtalAlloc()' / 'mmap()'
 		FileLocationMappedFromDisk, // Used 'FileView()' / 'fmap()'
 		FileLocationCachedFromDisk, // When the file is cached into an CPrivate buffer
@@ -108,43 +109,44 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Parsing Utility>-----------------------------------------------------
-	CPublic size_t DataStreamRemainingSize(DataStream* const DataStream);
-	CPublic unsigned char DataStreamIsAtEnd(DataStream* const DataStream);
+	CPublic size_t DataStreamRemainingSize(DataStream* const dataStream);
+	CPublic unsigned char DataStreamIsAtEnd(DataStream* const dataStream);
 
-	CPublic void* DataStreamCursorPosition(DataStream* const DataStream);
-	CPublic void DataStreamCursorToBeginning(DataStream* const DataStream);
-	CPublic void DataStreamCursorAdvance(DataStream* const DataStream, const size_t steps);
-	CPublic void DataStreamCursorRewind(DataStream* const DataStream, const size_t steps);
-	CPublic void DataStreamCursorToEnd(DataStream* const DataStream);	
+	CPublic void* DataStreamCursorPosition(DataStream* const dataStream);
+	CPublic void DataStreamCursorToBeginning(DataStream* const dataStream);
+	CPublic void DataStreamCursorAdvance(DataStream* const dataStream, const size_t steps);
+	CPublic void DataStreamCursorRewind(DataStream* const dataStream, const size_t steps);
+	CPublic void DataStreamCursorToEnd(DataStream* const dataStream);	
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
 	CPublic size_t DataStreamSkipEndOfLineCharacters(DataStream* const  DataStream);
-	CPublic size_t DataStreamSkipEmptySpace(DataStream* const DataStream);
+	CPublic size_t DataStreamSkipEmptySpace(DataStream* const dataStream);
 
-	CPublic size_t DataStreamReadNextLineInto(DataStream* const DataStream, void* exportBuffer, const size_t exportBufferSize);
+	CPublic size_t DataStreamReadNextLineInto(DataStream* const dataStream, void* exportBuffer, const size_t exportBufferSize);
 
 
 	// Skips current block thats seperated with spaces.
 	// Example : '|' is the cursor.
 	// Before : |AAAA  BBBB CCC
 	// After :  AAAA |BBBB CCC
-	CPublic size_t DataStreamSkipBlock(DataStream* const DataStream);
-	CPublic size_t DataStreamSkipLine(DataStream* const DataStream);
+	CPublic size_t DataStreamSkipBlock(DataStream* const dataStream);
+	CPublic size_t DataStreamSkipToNextBlock(DataStream* const dataStream);
+	CPublic size_t DataStreamSkipLine(DataStream* const dataStream);
 
-	CPublic size_t DataStreamReadC(DataStream* const DataStream, char* value);
-	CPublic size_t DataStreamReadCU(DataStream* const DataStream, unsigned char* value);
-	CPublic size_t DataStreamReadS(DataStream* const DataStream, short* value, const Endian endian);
-	CPublic size_t DataStreamReadSU(DataStream* const DataStream, unsigned short* value, const Endian endian);
-	CPublic size_t DataStreamReadI(DataStream* const DataStream, int* value, const  Endian endian);
-	CPublic size_t DataStreamReadIU(DataStream* const DataStream, unsigned int* value, const Endian endian);
-	CPublic size_t DataStreamReadLL(DataStream* const DataStream, long long* value, const Endian endian);
-	CPublic size_t DataStreamReadLLU(DataStream* const DataStream, unsigned long long* value, const  Endian endian);
-	CPublic size_t DataStreamReadD(DataStream* const DataStream, void* value, const size_t length);
-	CPublic size_t DataStreamRead(DataStream* const DataStream, const void* format, const size_t length, ...);
+	CPublic size_t DataStreamReadC(DataStream* const dataStream, char* value);
+	CPublic size_t DataStreamReadCU(DataStream* const dataStream, unsigned char* value);
+	CPublic size_t DataStreamReadS(DataStream* const dataStream, short* value, const Endian endian);
+	CPublic size_t DataStreamReadSU(DataStream* const dataStream, unsigned short* value, const Endian endian);
+	CPublic size_t DataStreamReadI(DataStream* const dataStream, int* value, const  Endian endian);
+	CPublic size_t DataStreamReadIU(DataStream* const dataStream, unsigned int* value, const Endian endian);
+	CPublic size_t DataStreamReadLL(DataStream* const dataStream, long long* value, const Endian endian);
+	CPublic size_t DataStreamReadLLU(DataStream* const dataStream, unsigned long long* value, const  Endian endian);
+	CPublic size_t DataStreamReadD(DataStream* const dataStream, void* value, const size_t length);
+	CPublic size_t DataStreamRead(DataStream* const dataStream, const void* format, const size_t length, ...);
 
 
-	CPublic void DataStreamReadUntil(DataStream* const DataStream, void* value, const size_t length, const char character);
+	CPublic void DataStreamReadUntil(DataStream* const dataStream, void* value, const size_t length, const char character);
 
 
 
@@ -153,26 +155,31 @@ extern "C"
 	//size_t ReadSafe(Byte__* value, const size_t length);
 
 
-	unsigned char DataStreamReadAndCompare(DataStream* const DataStream, const void* value, const size_t length);
+	unsigned char DataStreamReadAndCompare(DataStream* const dataStream, const void* value, const size_t length);
 	//unsigned char DataStreamReadAndCompareC(DataStream* DataStream, const char value);
 	//unsigned char DataStreamReadAndCompareIU(DataStream* DataStream, const unsigned int value);
 
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
-	CPublic size_t DataStreamWriteC(DataStream* const DataStream, const char value);
-	CPublic size_t DataStreamWriteCU(DataStream* const DataStream, const unsigned char value);
-	CPublic size_t DataStreamWriteS(DataStream* const DataStream, const short value, const Endian endian);
-	CPublic size_t DataStreamWriteSU(DataStream* const DataStream, const unsigned short value, const Endian endian);
+	CPublic size_t DataStreamWriteC(DataStream* const dataStream, const char value);
+	CPublic size_t DataStreamWriteCU(DataStream* const dataStream, const unsigned char value);
+	CPublic size_t DataStreamWriteS(DataStream* const dataStream, const short value, const Endian endian);
+	CPublic size_t DataStreamWriteSU(DataStream* const dataStream, const unsigned short value, const Endian endian);
 	CPublic size_t DataStreamWriteI(DataStream* const  DataStream, const int value, const Endian endian);
-	CPublic size_t DataStreamWriteIU(DataStream* const DataStream, const unsigned int value, const Endian endian);
-	CPublic size_t DataStreamWriteLL(DataStream* const DataStream, const long long value, const Endian endian);
-	CPublic size_t DataStreamWriteLU(DataStream* const DataStream, const unsigned long long value, const Endian endian);
-	CPublic size_t DataStreamWriteD(DataStream* const DataStream, const void* value, const size_t length);
-	CPublic size_t DataStreamWriteFill(DataStream* const DataStream, const unsigned char value, const size_t length);
-	CPublic size_t DataStreamWrite(DataStream* const DataStream, const char* format, ...);
+	CPublic size_t DataStreamWriteIU(DataStream* const dataStream, const unsigned int value, const Endian endian);
+	CPublic size_t DataStreamWriteLL(DataStream* const dataStream, const long long value, const Endian endian);
+	CPublic size_t DataStreamWriteLU(DataStream* const dataStream, const unsigned long long value, const Endian endian);
 
-	CPublic size_t DataStreamWriteAtIU(DataStream* const DataStream, const unsigned int value, const Endian endian, const size_t index);
+	CPublic size_t DataStreamWriteF(DataStream* const dataStream, const float value);
+	//CPublic size_t DataStreamWrite(DataStream* const dataStream, const double value);
+
+	CPublic size_t DataStreamWriteD(DataStream* const dataStream, const void* value, const size_t length);
+	CPublic size_t DataStreamWriteFill(DataStream* const dataStream, const unsigned char value, const size_t length);
+	CPublic size_t DataStreamWrite(DataStream* const dataStream, const char* format, ...);
+
+	CPublic size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const size_t index);
+	CPublic size_t DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const size_t index);
 	//-------------------------------------------------------------------------
 
 #endif

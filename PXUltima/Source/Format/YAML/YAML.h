@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-	//CPublic void YAMLLexer();
+	CPublic void YAMLAnalyseFromPath(const char* const filaPath);
 
 #ifdef __cplusplus
 }

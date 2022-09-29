@@ -15,8 +15,12 @@
 #endif
 //-----------------------------------------------------------------------------
 
-#ifndef Byte
-#define CByte unsigned char
+#ifndef PXByte
+#define PXByte unsigned char
+#endif
+
+#ifndef PXBool
+#define PXBool unsigned char
 #endif
 
 #ifdef __cplusplus

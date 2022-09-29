@@ -89,6 +89,9 @@ extern "C"
 	CPublic size_t TextCopyWA(const wchar_t* source, const size_t sourceLength, char* destination, const size_t destinationLength);
 	CPublic size_t TextCopyW(const wchar_t* source, const size_t sourceLength, wchar_t* destination, const size_t destinationLength);
 
+	CPublic size_t TextCountA(const char* text, const size_t textSize, const char target);
+	CPublic size_t TextCountW(const wchar_t* text, const size_t textSize, const wchar_t target);
+
 	CPublic size_t TextCountUntilA(const char* text, const size_t textSize, const char target, const char stopAt);
 	CPublic size_t TextCountUntilW(const wchar_t* text, const size_t textSize, const wchar_t target, const wchar_t stopAt);
 

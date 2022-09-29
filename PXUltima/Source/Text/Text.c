@@ -157,6 +157,8 @@ size_t TextToDoubleA(const char* string, const size_t dataSize, double* number)
 	unsigned char isNegative = 0;
 	unsigned char isWholeNumberChunk = 1;
 
+	
+
 	if(!string)
 	{
 		return 0;
@@ -358,6 +360,26 @@ size_t TextCopyW(const wchar_t* source, const size_t sourceLength, wchar_t* dest
 	destination[i] = '\0';
 
 	return i;
+}
+
+size_t TextCountA(const char* text, const size_t textSize, const char target)
+{
+	size_t samecounter = 0;
+
+	for (size_t index = 0; (index < textSize) && (text[index] != '\0'); ++index)
+		samecounter += target == text[index];
+
+	return samecounter;
+}
+
+size_t TextCountW(const wchar_t* text, const size_t textSize, const wchar_t target)
+{
+	size_t samecounter = 0;
+
+	for (size_t index = 0; (index < textSize) && (text[index] != '\0'); ++index)
+		samecounter += target == text[index];
+
+	return samecounter;
 }
 
 size_t TextCountUntilA(const char* text, const size_t textSize, const char target, const char stopAt)

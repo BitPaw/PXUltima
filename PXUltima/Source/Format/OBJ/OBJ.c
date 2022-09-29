@@ -1,5 +1,6 @@
 #include "OBJ.h"
 
+#include <Compiler/Compiler.h>
 #include <File/DataStream.h>
 #include <Memory/Memory.h>
 #include <Container/ClusterValue.h>
@@ -16,40 +17,380 @@ void OBJElementDestruct(OBJElement* objElement)
     //TODO: clear memeory
 }
 
-void OBJConstruct(OBJ* obj)
+void OBJConstruct(OBJ* const obj)
 {
     MemorySet(obj, sizeof(OBJ), 0);
 }
 
-void OBJDestruct(OBJ* obj)
+void OBJDestruct(OBJ* const obj)
 {
     MemoryRelease(obj->ElementList, obj->ElementListSize);
 
     MemoryRelease(obj->MaterialFileList, obj->MaterialFileListSize);
 }
 
-OBJLineType OBJPeekLine(const void* line)
+OBJLineType OBJPeekLine(const void* line, const size_t size)
 {
-    const unsigned short lineTagID = MakeShort(((unsigned char*)line)[0], ((unsigned char*)line)[1]);
+    const char* const text = (const char* const)line;   
 
-    switch (lineTagID)
+    switch (size)
     {
-    case MakeShort('v', ' '): return OBJLineVertexGeometric;
-    case MakeShort('v', 't'): return OBJLineVertexTexture;
-    case MakeShort('v', 'n'): return OBJLineVertexNormal;
-    case MakeShort('v', 'p'): return OBJLineVertexParameter;
-    case MakeShort('f', ' '): return OBJLineFaceElement;
-    case MakeShort('m', 't'): return OBJLineMaterialLibraryInclude;
-    case MakeShort('u', 's'): return OBJLineMaterialLibraryUse;
-    case MakeShort('#', ' '): return OBJLineComment;
-    case MakeShort('o', ' '): return OBJLineObjectName;
-    case MakeShort('s', ' '): return OBJLineSmoothShading;
+        case 1:
+        {
+            switch (text[0])
+            {
+                case 'v': return OBJLineVertexGeometric;
+                case 'f': return OBJLineFaceElement;
+                case '#': return OBJLineComment;
+                case 'o': return OBJLineObjectName;
+                case 's': return OBJLineSmoothShading;
+                case 'g': return OBJLineObjectGroup;
+            }
 
-    default: return OBJLineInvalid;
+            break;
+        }
+        case 2:
+        {
+            const unsigned short lineTagID = MakeShort(text[0], text[1]);
+
+            switch (lineTagID)
+            {
+                case MakeShort('v', 't'): return OBJLineVertexTexture;
+                case MakeShort('v', 'n'): return OBJLineVertexNormal;
+                case MakeShort('v', 'p'): return OBJLineVertexParameter;
+            }      
+
+            break;
+        }
+
+        case 6:
+        {
+            const unsigned long long lineTagID = MakeInt(text[0], text[1], text[2], text[3]);
+
+            switch (lineTagID)
+            {
+                case MakeInt('m', 't', 'l', 'l'):
+                case MakeInt('u', 's', 'e', 'm'):
+                {
+                    const unsigned short lineTagID = MakeShort(text[4], text[5]);
+
+                    switch (lineTagID)
+                    {
+                        case MakeShort('i', 'b'): return OBJLineMaterialLibraryInclude;
+                        case MakeShort('t', 'l'): return OBJLineMaterialLibraryUse;
+                    }
+
+                    break;
+                }
+            }
+
+            break;
+        }
     }
+
+    return OBJLineInvalid;
 }
 
-ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName)
+void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int expectedID)
+{
+    char textBuffer[32];
+
+    TextCopyA(compilerSymbolEntry->Source - 5, 20, textBuffer, 32);
+
+    printf
+    (
+        "[OBJ][Error] At line <%i> at <%i>, unexpected symbol.\n"
+        "          -> %s\n"
+        "             -----/\\\n",
+        compilerSymbolEntry->Line,
+        compilerSymbolEntry->Coloum,
+        textBuffer
+    );
+}
+
+ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outputStream)
+{
+    size_t errorCounter = 0;
+    DataStream tokenSteam;   
+
+    // Lexer - Level I 
+    {
+        PXCompilerSettings compilerSettings;
+
+        compilerSettings.WhiteSpaceKeep = 0;
+
+        PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
+
+        DataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+    }
+
+    while (!DataStreamIsAtEnd(&tokenSteam))
+    {
+        PXCompilerSymbolEntry compilerSymbolEntry;
+
+        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+      
+        const OBJLineType objPeekLine = OBJPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+        switch (objPeekLine)
+        {
+            case OBJLineComment:
+            {
+                do // We are at a comment. Skip everything until "end of line"
+                {
+                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                } 
+                while (!DataStreamIsAtEnd(&tokenSteam) && (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLineID));
+                       
+                break; // [OK]
+            }
+            case OBJLineMaterialLibraryInclude:
+            case OBJLineMaterialLibraryUse:
+            case OBJLineObjectName:
+            case OBJLineSmoothShading:
+            case OBJLineObjectGroup:
+            {
+                char namedElement[128];
+                size_t namedElementSize = 0;
+
+                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
+
+                // Check if symbol is expected name
+                {
+                    unsigned char isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
+
+                    if (!isSymbol) // Error
+                    {
+                        ++errorCounter;
+                        OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerElementID);
+                        break; 
+                    }
+                }
+
+                namedElementSize = TextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, namedElement, 128);
+
+                char* nameAdressStart = compilerSymbolEntry.Source;
+
+                while (1u)
+                {
+                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
+      
+                    const unsigned char isElement = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
+
+                    if (isElement)
+                    {
+                        const size_t namelength = ((size_t)compilerSymbolEntry.Source + (size_t)compilerSymbolEntry.Size) - (size_t)nameAdressStart;
+
+                        namedElementSize = TextCopyA(nameAdressStart, namelength, namedElement, 128);
+                    }
+                    else // Should be expected new line Error
+                    {
+                        break;
+                    }
+                }
+
+                //----------------------------------------------- Export
+                {
+                    char nameID = 0;
+
+                    switch (objPeekLine)
+                    {
+                        case OBJLineMaterialLibraryInclude:
+                            nameID = 'I';
+                            break;
+
+                        case OBJLineMaterialLibraryUse:
+                            nameID = 'U';
+                            break;
+
+                        case OBJLineObjectName:
+                            nameID = 'O';
+                            break;
+
+                        case OBJLineSmoothShading:
+                            nameID = 'S';
+                            break;
+
+                        case OBJLineObjectGroup:
+                            nameID = 'G';
+                            break;                            
+                    }
+
+                    DataStreamWriteC(outputStream, nameID);
+                    DataStreamWriteSU(outputStream, namedElementSize, EndianLittle);
+                    DataStreamWriteD(outputStream, namedElement, namedElementSize);
+                }                
+                //-----------------------------------------------    
+
+                break; // [OK]
+            }    
+            case OBJLineVertexTexture:
+            case OBJLineVertexGeometric:            
+            case OBJLineVertexNormal:
+            case OBJLineVertexParameter:
+            {
+                size_t valuesDetected = 0;
+                PXBool isNumber[4];
+                float vector[4];            
+
+                MemorySet(&isNumber, sizeof(PXBool) * 4u, 0);
+                MemorySet(&vector, sizeof(float) * 4u, 0);
+
+                while (1u)
+                {
+                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+
+                    // [symbol check] Check if symbol is expected name
+                    {
+                        unsigned char isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
+
+                        if (!isSymbol)
+                        {
+                            // we are at the line end
+
+                            break; // finished
+                        }
+                    }
+
+                    const size_t parsedCharacters = TextToFloatA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &vector[valuesDetected]);
+
+                    isNumber[valuesDetected] = parsedCharacters > 0;
+
+                    ++valuesDetected;
+                }
+            
+
+                // Export
+                {
+                    char typeID = 0;
+
+                    switch (objPeekLine)
+                    {
+                        case OBJLineVertexGeometric:
+                            typeID = 'v';
+                            break;
+
+                        case OBJLineVertexNormal:
+                            typeID = 'n';
+                            break;
+
+                        case OBJLineVertexParameter:
+                            typeID = 'p';
+                            break;
+
+                        case OBJLineVertexTexture:
+                            typeID = 't';
+                            break;
+                    }
+
+                    DataStreamWriteC(outputStream, typeID);
+                    DataStreamWriteCU(outputStream, (char)valuesDetected);
+
+                    for (size_t i = 0; i < valuesDetected; ++i)
+                    {
+                        DataStreamWriteF(outputStream, vector[i]);
+                    }
+                }
+           
+                break; // [OK]
+            }          
+            case OBJLineFaceElement:
+            {
+                size_t cornerPoints = 0;
+                size_t cursorPos = outputStream->DataCursor;
+
+                DataStreamWriteCU(outputStream, 0);
+
+                while (1u)
+                {
+                    unsigned int vertexData[3] = { -1,-1, -1 };
+
+                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+
+                    if (compilerSymbolEntry.ID != PXCompilerSymbolLexerElementID)
+                    {
+                        break;
+                    }
+
+                    size_t offsetA = TextToIntA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &vertexData[0]);
+
+                    const char* expectedSlash = compilerSymbolEntry.Source + offsetA;
+                    const PXBool isSlashA = expectedSlash[0] == '/';
+
+                    if (isSlashA) // not "f 1 2 3"
+                    {
+                        const char* nextValueAdress = expectedSlash + 1u;
+                        const PXBool isSlashB = nextValueAdress[0] == '/';
+
+                        if (isSlashB) // 7//1  ->   // texture is not set
+                        {
+                            ++nextValueAdress;
+                        }
+                        else
+                        {
+                            size_t offsetB = TextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[1]);
+                            nextValueAdress = nextValueAdress + offsetB + 1u;
+                            const PXBool isSlashC = nextValueAdress[0] == '/';
+
+                            if (!isSlashC)
+                            {
+                                // error
+                            } 
+                            //else ok
+                        }
+                       
+                        size_t offsetB = TextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[2]); // read             
+                        
+                        if (!offsetB)
+                        {
+                            ++errorCounter;
+                            OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerElementID);
+                        }
+                    }
+
+                    DataStreamWriteF(outputStream, vertexData[0]);
+                    DataStreamWriteF(outputStream, vertexData[1]);
+                    DataStreamWriteF(outputStream, vertexData[2]);
+
+                    //----------------------------------             
+
+                    ++cornerPoints;
+                }
+
+                DataStreamWriteAtCU(outputStream, cornerPoints, cursorPos);
+
+                break; // [OK]
+            }
+            default: // Error
+            {
+                ++errorCounter;
+                OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerElementID);        
+
+                do
+                {
+                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                } 
+                while (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLineID);
+
+                break;
+            } 
+        }
+    }
+
+    if (errorCounter)
+    {
+        return ActionCompilingError;
+    }
+
+    return ActionSuccessful;
+}
+
+ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
+{
+    return ActionSuccessful;
+}
+
+ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName)
 {
     DataStream dataStream;
 
@@ -88,7 +429,7 @@ ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t*
         do
         {
             const char* currentLine = (const char*)DataStreamCursorPosition(&dataStream);
-            const OBJLineType command = OBJPeekLine(currentLine);
+            const OBJLineType command = OBJPeekLine(currentLine, 0);
 
             OBJSegmentData* currentSegmentData = &segmentData[segmentAmount];
 
@@ -215,7 +556,7 @@ ActionResult OBJParse(OBJ* obj, const void* data, const size_t dataSize, size_t*
         {
             const char* const currentLine = (const char* const)DataStreamCursorPosition(&dataStream);
             const unsigned short lineTagID = MakeShort(currentLine[0], currentLine[1]);
-            const OBJLineType command = OBJPeekLine(currentLine);
+            const OBJLineType command = OBJPeekLine(currentLine, 0);
 
             DataStreamSkipBlock(&dataStream);
 

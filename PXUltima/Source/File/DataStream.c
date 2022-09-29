@@ -118,9 +118,12 @@ unsigned int ConvertFromFileCachingMode(const DataStreamCachingMode fileCachingM
 
 void DataStreamFromExternal(DataStream* const dataStream, void* const data, const size_t dataSize)
 {
+	DataStreamConstruct(dataStream);
+
 	dataStream->Data = data;
 	dataStream->DataSize = dataSize;
-	dataStream->DataCursor = 0;
+	dataStream->MemoryMode = MemoryReadAndWrite;
+	dataStream->_fileLocation = FileLocationExternal;
 }
 
 ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
@@ -723,50 +726,50 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 #endif
 }
 
-size_t DataStreamRemainingSize(DataStream* const DataStream)
+size_t DataStreamRemainingSize(DataStream* const dataStream)
 {
-	return DataStream->DataSize - DataStream->DataCursor;
+	return dataStream->DataSize - dataStream->DataCursor;
 }
 
-unsigned char DataStreamIsAtEnd(DataStream* const DataStream)
+unsigned char DataStreamIsAtEnd(DataStream* const dataStream)
 {
-	return DataStream->DataCursor == DataStream->DataSize;
+	return dataStream->DataCursor >= dataStream->DataSize;
 }
 
-void* DataStreamCursorPosition(DataStream* const DataStream)
+void* DataStreamCursorPosition(DataStream* const dataStream)
 {
-	return  (unsigned char*)DataStream->Data + DataStream->DataCursor;
+	return  (unsigned char*)dataStream->Data + dataStream->DataCursor;
 }
 
-void DataStreamCursorToBeginning(DataStream* const DataStream)
+void DataStreamCursorToBeginning(DataStream* const dataStream)
 {
-	DataStream->DataCursor = 0;
+	dataStream->DataCursor = 0;
 }
 
-void DataStreamCursorAdvance(DataStream* const DataStream, const size_t steps)
+void DataStreamCursorAdvance(DataStream* const dataStream, const size_t steps)
 {
-	DataStream->DataCursor += steps; // Check overflow
+	dataStream->DataCursor += steps; // Check overflow
 }
 
-void DataStreamCursorRewind(DataStream* const DataStream, const size_t steps)
+void DataStreamCursorRewind(DataStream* const dataStream, const size_t steps)
 {
-	DataStream->DataCursor -= steps; // Check underflow
+	dataStream->DataCursor -= steps; // Check underflow
 }
 
-void DataStreamCursorToEnd(DataStream* const DataStream)
+void DataStreamCursorToEnd(DataStream* const dataStream)
 {
-	DataStream->DataCursor = DataStream->DataSize;
+	dataStream->DataCursor = dataStream->DataSize;
 }
 
-size_t DataStreamReadNextLineInto(DataStream* const DataStream, void* exportBuffer, const size_t exportBufferSize)
+size_t DataStreamReadNextLineInto(DataStream* const dataStream, void* exportBuffer, const size_t exportBufferSize)
 {
-	const size_t dataPositionBefore = DataStream->DataCursor;
+	const size_t dataPositionBefore = dataStream->DataCursor;
 
-	DataStreamSkipEndOfLineCharacters(DataStream);
+	DataStreamSkipEndOfLineCharacters(dataStream);
 
-	while (!DataStreamIsAtEnd(DataStream))
+	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(DataStream);
+		const unsigned char* data = DataStreamCursorPosition(dataStream);
 		const unsigned char advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
@@ -774,11 +777,11 @@ size_t DataStreamReadNextLineInto(DataStream* const DataStream, void* exportBuff
 			break;
 		}
 
-		DataStreamCursorAdvance(DataStream, 1u);
+		DataStreamCursorAdvance(dataStream, 1u);
 	}
 
-	const char* dataPoint = (char*)DataStream->Data + dataPositionBefore;
-	const size_t dataPositionAfter = DataStream->DataCursor;
+	const char* dataPoint = (char*)dataStream->Data + dataPositionBefore;
+	const size_t dataPositionAfter = dataStream->DataCursor;
 	const size_t length = dataPositionAfter - dataPositionBefore;
 
 	if (length == 0)
@@ -788,18 +791,18 @@ size_t DataStreamReadNextLineInto(DataStream* const DataStream, void* exportBuff
 
 	TextCopyA(dataPoint, length, exportBuffer, length);
 
-	DataStreamSkipEndOfLineCharacters(DataStream);
+	DataStreamSkipEndOfLineCharacters(dataStream);
 
 	return length;
 }
 
-size_t DataStreamSkipEndOfLineCharacters(DataStream* const DataStream)
+size_t DataStreamSkipEndOfLineCharacters(DataStream* const dataStream)
 {
-	const size_t dataPositionBefore = DataStream->DataCursor;
+	const size_t dataPositionBefore = dataStream->DataCursor;
 
-	while (!DataStreamIsAtEnd(DataStream))
+	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(DataStream);
+		const unsigned char* data = DataStreamCursorPosition(dataStream);
 		const unsigned char advance = IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
@@ -807,10 +810,10 @@ size_t DataStreamSkipEndOfLineCharacters(DataStream* const DataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(DataStream, 1u);
+		DataStreamCursorAdvance(dataStream, 1u);
 	}
 
-	return DataStream->DataCursor - dataPositionBefore;
+	return dataStream->DataCursor - dataPositionBefore;
 }
 
 size_t DataStreamSkipEmptySpace(DataStream* const dataStream)
@@ -840,7 +843,8 @@ size_t DataStreamSkipBlock(DataStream* const dataStream)
 	while (!DataStreamIsAtEnd(dataStream))
 	{
 		const unsigned char* data = DataStreamCursorPosition(dataStream);
-		const unsigned char advance = !IsEndOfString(*data) and !IsEmptySpace(*data);
+		const unsigned char character = *data;
+		const unsigned char advance = !IsEndOfString(character) and !IsEmptySpace(character) and !IsEndOfLineCharacter(character);
 
 		if (!advance)
 		{
@@ -850,18 +854,27 @@ size_t DataStreamSkipBlock(DataStream* const dataStream)
 		DataStreamCursorAdvance(dataStream, 1u);
 	}
 
+	return dataStream->DataCursor - oldPosition;
+}
+
+size_t DataStreamSkipToNextBlock(DataStream* const dataStream)
+{
+	const size_t oldPosition = dataStream->DataCursor;
+
+	DataStreamSkipBlock(dataStream);
+	
 	DataStreamSkipEmptySpace(dataStream);
 
 	return dataStream->DataCursor - oldPosition;
 }
 
-size_t DataStreamSkipLine(DataStream* const DataStream)
+size_t DataStreamSkipLine(DataStream* const dataStream)
 {
-	const size_t positionBefore = DataStream->DataCursor;
+	const size_t positionBefore = dataStream->DataCursor;
 
-	while (!DataStreamIsAtEnd(DataStream))
+	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(DataStream);
+		const unsigned char* data = DataStreamCursorPosition(dataStream);
 		const unsigned char advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
@@ -869,119 +882,119 @@ size_t DataStreamSkipLine(DataStream* const DataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(DataStream, 1u);
+		DataStreamCursorAdvance(dataStream, 1u);
 	}
 
-	DataStreamSkipEndOfLineCharacters(DataStream);
+	DataStreamSkipEndOfLineCharacters(dataStream);
 
-	const size_t skippedBytes = DataStream->DataCursor - positionBefore;
+	const size_t skippedBytes = dataStream->DataCursor - positionBefore;
 
 	return skippedBytes;
 }
 
-size_t DataStreamReadC(DataStream* const DataStream, char* value)
+size_t DataStreamReadC(DataStream* const dataStream, char* value)
 {
-	return DataStreamReadCU(DataStream, (unsigned char*)value);
+	return DataStreamReadCU(dataStream, (unsigned char*)value);
 }
 
-size_t DataStreamReadCU(DataStream* const DataStream, unsigned char* value)
+size_t DataStreamReadCU(DataStream* const dataStream, unsigned char* value)
 {
 	const size_t sizeOfChar = sizeof(char);
-	const unsigned char* data = DataStreamCursorPosition(DataStream);
+	const unsigned char* data = DataStreamCursorPosition(dataStream);
 	const unsigned char character = *data;
 
 	*value = character;
 
-	DataStreamCursorAdvance(DataStream, sizeOfChar);
+	DataStreamCursorAdvance(dataStream, sizeOfChar);
 
 	return sizeOfChar;
 }
 
-size_t DataStreamReadS(DataStream* const DataStream, short* value, const Endian endian)
+size_t DataStreamReadS(DataStream* const dataStream, short* value, const Endian endian)
 {
-	return DataStreamReadSU(DataStream, (unsigned short*)value, endian);
+	return DataStreamReadSU(dataStream, (unsigned short*)value, endian);
 }
 
-size_t DataStreamReadSU(DataStream* const DataStream, unsigned short* value, const Endian endian)
+size_t DataStreamReadSU(DataStream* const dataStream, unsigned short* value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned short);
-	const unsigned char* data = DataStreamCursorPosition(DataStream);
+	const unsigned char* data = DataStreamCursorPosition(dataStream);
 	const unsigned short* dataValue = (unsigned short*)data;
 
 	*value = *dataValue;
 
 	EndianSwap(value, dataSize, endian, EndianCurrentSystem);
 
-	DataStreamCursorAdvance(DataStream, dataSize);
+	DataStreamCursorAdvance(dataStream, dataSize);
 
 	return dataSize;
 }
 
-size_t DataStreamReadI(DataStream* const DataStream, int* value, const Endian endian)
+size_t DataStreamReadI(DataStream* const dataStream, int* value, const Endian endian)
 {
-	return DataStreamReadIU(DataStream, (unsigned int*)value, endian);
+	return DataStreamReadIU(dataStream, (unsigned int*)value, endian);
 }
 
-size_t DataStreamReadIU(DataStream* const DataStream, unsigned int* value, const Endian endian)
+size_t DataStreamReadIU(DataStream* const dataStream, unsigned int* value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned int);
-	const unsigned char* data = DataStreamCursorPosition(DataStream);
+	const unsigned char* data = DataStreamCursorPosition(dataStream);
 	const unsigned int* dataValue = (unsigned int*)data;
 
 	*value = *dataValue;
 
 	EndianSwap(value, dataSize, endian, EndianCurrentSystem);
 
-	DataStreamCursorAdvance(DataStream, dataSize);
+	DataStreamCursorAdvance(dataStream, dataSize);
 
 	return dataSize;
 }
 
-size_t DataStreamReadLL(DataStream* const DataStream, long long* value, const Endian endian)
+size_t DataStreamReadLL(DataStream* const dataStream, long long* value, const Endian endian)
 {
-	return DataStreamReadLLU(DataStream, (unsigned long long*)value, endian);
+	return DataStreamReadLLU(dataStream, (unsigned long long*)value, endian);
 }
 
-size_t DataStreamReadLLU(DataStream* const DataStream, unsigned long long* value, const Endian endian)
+size_t DataStreamReadLLU(DataStream* const dataStream, unsigned long long* value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned long long);
-	const unsigned char* data = DataStreamCursorPosition(DataStream);
+	const unsigned char* data = DataStreamCursorPosition(dataStream);
 	const unsigned long long* dataValue = (unsigned long long*)data;
 
 	*value = *dataValue;
 
 	EndianSwap(value, dataSize, endian, EndianCurrentSystem);
 
-	DataStreamCursorAdvance(DataStream, dataSize);
+	DataStreamCursorAdvance(dataStream, dataSize);
 
 	return dataSize;
 }
 
-size_t DataStreamReadD(DataStream* const DataStream, void* value, const size_t length)
+size_t DataStreamReadD(DataStream* const dataStream, void* value, const size_t length)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(DataStream);
-	const size_t readableSize = DataStreamRemainingSize(DataStream);
+	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
+	const size_t readableSize = DataStreamRemainingSize(dataStream);
 	const size_t copyedBytes = MemoryCopy(currentPosition, readableSize, value, length);
 
-	DataStreamCursorAdvance(DataStream, copyedBytes);
+	DataStreamCursorAdvance(dataStream, copyedBytes);
 
 	return copyedBytes;
 }
 
-size_t DataStreamRead(DataStream* const DataStream, const void* format, const size_t length, ...)
+size_t DataStreamRead(DataStream* const dataStream, const void* format, const size_t length, ...)
 {
 	return 0;
 }
 
-void DataStreamReadUntil(DataStream* const DataStream, void* value, const size_t length, const char character)
+void DataStreamReadUntil(DataStream* const dataStream, void* value, const size_t length, const char character)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(DataStream);
+	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
 
 	size_t lengthCopy = 0;
 
-	while (!DataStreamIsAtEnd(DataStream))
+	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(DataStream);
+		const unsigned char* data = DataStreamCursorPosition(dataStream);
 		const unsigned char advance = *data != character && length <= lengthCopy;
 
 		if (!advance)
@@ -991,110 +1004,115 @@ void DataStreamReadUntil(DataStream* const DataStream, void* value, const size_t
 
 		++lengthCopy;
 
-		DataStreamCursorAdvance(DataStream, 1u);
+		DataStreamCursorAdvance(dataStream, 1u);
 	}
 
-	const size_t readableSize = DataStreamRemainingSize(DataStream);
+	const size_t readableSize = DataStreamRemainingSize(dataStream);
 
 	MemoryCopy(currentPosition, readableSize, value, lengthCopy);
 }
 
-unsigned char DataStreamReadAndCompare(DataStream* const DataStream, const void* value, const size_t length)
+unsigned char DataStreamReadAndCompare(DataStream* const dataStream, const void* value, const size_t length)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(DataStream);
-	const size_t readableSize = DataStreamRemainingSize(DataStream);
+	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
+	const size_t readableSize = DataStreamRemainingSize(dataStream);
 
 	const unsigned char result = MemoryCompare(currentPosition, readableSize, value, length);
 
 	if (result)
 	{
-		DataStreamCursorAdvance(DataStream, length);
+		DataStreamCursorAdvance(dataStream, length);
 	}
 
 	return result;
 }
 
-size_t DataStreamWriteC(DataStream* const DataStream, const char value)
+size_t DataStreamWriteC(DataStream* const dataStream, const char value)
 {
-	return DataStreamWriteCU(DataStream, value);
+	return DataStreamWriteCU(dataStream, value);
 }
 
-size_t DataStreamWriteCU(DataStream* const DataStream, const unsigned char value)
+size_t DataStreamWriteCU(DataStream* const dataStream, const unsigned char value)
 {
 	const size_t dataSize = sizeof(unsigned char);
 
-	DataStreamWriteD(DataStream, &value, dataSize);
+	DataStreamWriteD(dataStream, &value, dataSize);
 
 	return dataSize;
 }
 
-size_t DataStreamWriteS(DataStream* const DataStream, const short value, const Endian endian)
+size_t DataStreamWriteS(DataStream* const dataStream, const short value, const Endian endian)
 {
-	return DataStreamWriteSU(DataStream, value, endian);
+	return DataStreamWriteSU(dataStream, value, endian);
 }
 
-size_t DataStreamWriteSU(DataStream* const DataStream, const unsigned short value, const Endian endian)
+size_t DataStreamWriteSU(DataStream* const dataStream, const unsigned short value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned short);
 	unsigned short dataValue = value;
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteD(DataStream, &dataValue, dataSize);
+	DataStreamWriteD(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
 
-size_t DataStreamWriteI(DataStream* const DataStream, const int value, const Endian endian)
+size_t DataStreamWriteI(DataStream* const dataStream, const int value, const Endian endian)
 {
-	return DataStreamWriteIU(DataStream, value, endian);
+	return DataStreamWriteIU(dataStream, value, endian);
 }
 
-size_t DataStreamWriteIU(DataStream* const DataStream, const unsigned int value, const Endian endian)
+size_t DataStreamWriteIU(DataStream* const dataStream, const unsigned int value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned int);
 	unsigned int dataValue = value;
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteD(DataStream, &dataValue, dataSize);
+	DataStreamWriteD(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
 
-size_t DataStreamWriteLL(DataStream* const DataStream, const long long value, const Endian endian)
+size_t DataStreamWriteLL(DataStream* const dataStream, const long long value, const Endian endian)
 {
-	return DataStreamWriteLU(DataStream, value, endian);
+	return DataStreamWriteLU(dataStream, value, endian);
 }
 
-size_t DataStreamWriteLU(DataStream* const DataStream, const unsigned long long value, const Endian endian)
+size_t DataStreamWriteLU(DataStream* const dataStream, const unsigned long long value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned long long);
 	unsigned long long dataValue = value;
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteD(DataStream, &dataValue, dataSize);
+	DataStreamWriteD(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
 
-size_t DataStreamWriteD(DataStream* const DataStream, const void* value, const size_t length)
+size_t DataStreamWriteF(DataStream* const dataStream, const float value)
 {
-	const size_t writableSize = DataStreamRemainingSize(DataStream);
-	unsigned char* currentPosition = DataStreamCursorPosition(DataStream);
+	return DataStreamWriteD(dataStream, &value, sizeof(float));
+}
+
+size_t DataStreamWriteD(DataStream* const dataStream, const void* value, const size_t length)
+{
+	const size_t writableSize = DataStreamRemainingSize(dataStream);
+	unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
 
 	const size_t copyedBytes = MemoryCopy(value, length, currentPosition, writableSize);
 
-	DataStreamCursorAdvance(DataStream, copyedBytes);
+	DataStreamCursorAdvance(dataStream, copyedBytes);
 
 	return copyedBytes;
 }
 
-size_t DataStreamWriteFill(DataStream* const DataStream, const unsigned char value, const size_t length)
+size_t DataStreamWriteFill(DataStream* const dataStream, const unsigned char value, const size_t length)
 {
-	const size_t writableSize = DataStreamRemainingSize(DataStream);
-	unsigned char* beforePosition = DataStreamCursorPosition(DataStream);
+	const size_t writableSize = DataStreamRemainingSize(dataStream);
+	unsigned char* beforePosition = DataStreamCursorPosition(dataStream);
 	const size_t write = MathMinimumIU(writableSize, length);
 
 	for (size_t i = 0; i < write; ++i)
@@ -1102,19 +1120,19 @@ size_t DataStreamWriteFill(DataStream* const DataStream, const unsigned char val
 		beforePosition[i] = value;
 	}
 
-	DataStreamCursorAdvance(DataStream, write);
+	DataStreamCursorAdvance(dataStream, write);
 
 	return write;
 }
 
-size_t DataStreamWrite(DataStream* const DataStream, const char* format, ...)
+size_t DataStreamWrite(DataStream* const dataStream, const char* format, ...)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(DataStream);
+	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
 
 	va_list args;
 	va_start(args, format);
 
-	const size_t writableSize = DataStreamRemainingSize(DataStream);
+	const size_t writableSize = DataStreamRemainingSize(dataStream);
 	const int writtenBytes = PrintSVN(currentPosition, writableSize, format, args);
 
 	va_end(args);
@@ -1128,20 +1146,33 @@ size_t DataStreamWrite(DataStream* const DataStream, const char* format, ...)
 		}
 	}
 
-	DataStreamCursorAdvance(DataStream, writtenBytes);
+	DataStreamCursorAdvance(dataStream, writtenBytes);
 
 	return writtenBytes;
 }
 
-size_t DataStreamWriteAtIU(DataStream* const DataStream, const unsigned int value, const Endian endian, const size_t index)
+size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const size_t index)
 {
-	const size_t positionBefore = DataStream->DataCursor; // save current position
+	const size_t positionBefore = dataStream->DataCursor; // save current position
 
-	DataStream->DataCursor = index; // jump to offset
+	dataStream->DataCursor = index; // jump to offset
 
-	DataStreamWriteIU(DataStream, value, endian); // Length
+	DataStreamWriteCU(dataStream, value); // Length
 
-	DataStream->DataCursor = positionBefore; // Reset old position
+	dataStream->DataCursor = positionBefore; // Reset old position
+
+	return 1u;
+}
+
+size_t DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const size_t index)
+{
+	const size_t positionBefore = dataStream->DataCursor; // save current position
+
+	dataStream->DataCursor = index; // jump to offset
+
+	DataStreamWriteIU(dataStream, value, endian); // Length
+
+	dataStream->DataCursor = positionBefore; // Reset old position
 
 	return 4u;
 }

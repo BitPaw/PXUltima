@@ -76,6 +76,10 @@ extern "C"
 		NoSendEmptyData,
 		//-----------------------------------
 
+		//---<Compiler>----------------------
+		ActionCompilingError,
+		//-----------------------------------
+
 		//---[ Windows Only (WindowsSocketAgent) ]-------
 		SubSystemNotReady,
 		VersionNotSupported,

@@ -33,48 +33,65 @@ extern "C"
 	}
 	Material;
 
-	typedef struct MeshSegmentMaterialInfo_
-	{
-		size_t MaterialIndex;
-		size_t Size; // Size of buffer to use given material		
-	}
-	MeshSegmentMaterialInfo;
-
+	// The renderable part of a mesh.
 	typedef struct MeshSegment_
 	{
 		wchar_t Name[64];
-		size_t IndexDataListSize;
-		unsigned int* IndexDataList;
-
-		MeshSegmentMaterialInfo* MaterialInfo;
-		size_t MaterialInfoSize;
 	}
 	MeshSegment;
 
+	
+	// A collection of positions and its atributes (Vertex).
 	typedef struct Mesh_
-	{	
-		size_t VertexDataListSize;
-		float* VertexDataList;
-
-		size_t VertexDataStructureListSize;
-		unsigned int VertexDataStructureList[4];
-
-		size_t SegmentListSize;
-		MeshSegment* SegmentList;
+	{			
+		wchar_t Name[64];
 	}
 	Mesh;
 
+	// A collection of multible meshes.
+	// Example, multible flowers and a vase together are a model.
 	typedef struct Model_
 	{
+		// Mesh
+		// +-Name
+		// +-VBO
+		// +-VBO-Texture
+		// +-VBO-Normals
+		// +-IBO
+
+		// 
+		// MeshListLength [Amount]
+		// MeshList
+		//   | 
+		//   +    (Structure)
+		//   +--- StructureSize		- Triangle(3), Quad(4), ...
+		//   +--- StructureListLength	- 123
+		//   +--- StructureListData	- [ x, y, z]
+		
+		// 
+		// 
+		// 
+		// 
+
+
+		// MeshSegment
+		// +-- Name
+		// +-- Structure
+		// +-- MateralID
+		// +-- RenderLength
+
+		void* Data;
+
+
+
+		
+
+
+
 		size_t MaterialListSize;
 		Material* MaterialList;
-
-		size_t MeshListSize;
-		Mesh* MeshList;
 	}
 	Model;
-
-
 
 #ifdef __cplusplus
 }

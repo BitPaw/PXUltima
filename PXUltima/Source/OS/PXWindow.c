@@ -2106,10 +2106,11 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     {
         const unsigned char isHidden = window->Width == 0 && window->Height == 0;
 
+        UpdateWindow(window->ID);
+
         if (!isHidden)
         {
-            ShowWindow(window->ID, SW_SHOW);
-            UpdateWindow(window->ID);
+            ShowWindow(window->ID, SW_SHOW);         
         }
     }
     #endif
@@ -2251,7 +2252,7 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
 
 void PXWindowCreateHidden(PXWindow* const PXWindow, unsigned char async)
 {
-    PXWindowCreate(PXWindow, 800, 600, "*Hidden*", 1u);
+    PXWindowCreate(PXWindow, 600, 400, "*Hidden*", 1u);
 }
 
 void PXWindowDestruct(PXWindow* const window)
