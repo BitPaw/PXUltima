@@ -7,9 +7,9 @@
 #include <OS/PXWindow.h>
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #define UIElementID unsigned int
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 #define UIElementID HWND
 #endif
@@ -20,7 +20,7 @@ extern "C"
 {
 #endif
 
-#if defined(OSWindows)
+#if OSWindows
 	CPublic void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferRead);
 	CPublic void OSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferWritten);
 #endif

@@ -12,7 +12,7 @@
 #include <Error/ActionResult.h>
 #include <File/Endian.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -23,7 +23,7 @@
 #define FileHandleType FILE*
 #define FileMappingID int
 
-#elif defined(OSWindows)
+#elif OSWindows
 
 #include <windows.h>
 #include <direct.h>
@@ -35,13 +35,13 @@
 
 #define FileLineBufferSize 2048
 
-#if defined(OSUnix)
+#if OSUnix
 #define PathMaxSize 260
 #define DriveMaxSize 3
 #define DirectoryMaxSize 256
 #define FileNameMaxSize 256
 #define ExtensionMaxSize 256
-#elif defined(OSWindows)
+#elif OSWindows
 #define PathMaxSize 260 // _MAX_PATH
 #define DriveMaxSize 3 //_MAX_DRIVE
 #define DirectoryMaxSize 256//_MAX_DIR
@@ -111,6 +111,15 @@ extern "C"
 		wchar_t* directory, size_t directoryMaxSize,
 		wchar_t* fileName, size_t fileNameMaxSize,
 		wchar_t* extension, size_t extensionMaxSize
+	);
+
+	CPublic void FilePathSplittPositionW
+	(
+		const wchar_t* fullPath, size_t fullPathMaxSize,
+		size_t* drivePos, size_t driveSize,
+		size_t* directory, size_t directorySize,
+		size_t* fileName, size_t fileNameSize,
+		size_t* extension, size_t extensionSize
 	);
 
 	CPublic void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax);

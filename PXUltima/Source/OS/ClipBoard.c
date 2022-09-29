@@ -2,8 +2,8 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #include <Windows.h>
 #include <WinUser.h>
 
@@ -58,10 +58,10 @@
 unsigned int ClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 {
 
-#if defined(OSUnix)
+#if OSUnix
 	return -1;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	switch (clipBoardFormat)
 	{
 	default:
@@ -154,10 +154,10 @@ unsigned int ClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 
 ClipBoardFormat ClipBoardFormatFromID(const unsigned int clipBoardFormat)
 {
-#if defined(OSUnix)
+#if OSUnix
     return ActionInvalid;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	switch (clipBoardFormat)
 	{
 	case ClipBoardFormatTEXTID:
@@ -249,10 +249,10 @@ ClipBoardFormat ClipBoardFormatFromID(const unsigned int clipBoardFormat)
 
 ActionResult ClipBoardOpen(ClipBoard* const clipBoard)
 {
-#if defined(OSUnix)
+#if OSUnix
     return ActionInvalid;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	HWND PXWindowID = NULL;
 	unsigned char success = OpenClipboard(PXWindowID);
 
@@ -267,10 +267,10 @@ ActionResult ClipBoardOpen(ClipBoard* const clipBoard)
 
 ActionResult ClipBoardClose(ClipBoard* const clipBoard)
 {
-#if defined(OSUnix)
+#if OSUnix
     return ActionInvalid;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	return CloseClipboard();
 #endif
 }
@@ -278,10 +278,10 @@ ActionResult ClipBoardClose(ClipBoard* const clipBoard)
 ActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat format, const void* data)
 {
 
-#if defined(OSUnix)
+#if OSUnix
 	return ActionInvalid;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	// Alloc something with GlobalAlloc()
 	// Maybe copy data?
 
@@ -301,10 +301,10 @@ ActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat form
 
 ActionResult ClipBoardClear(ClipBoard* const clipBoard)
 {
-#if defined(OSUnix)
+#if OSUnix
     return ActionInvalid;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	return EmptyClipboard();
 #endif
 }

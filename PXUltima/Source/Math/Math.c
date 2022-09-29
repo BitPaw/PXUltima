@@ -137,9 +137,9 @@ double MathPythagorasReverse(double c, double a)
 
 double MathLogarithmus(int base, double exponent)
 {
-#if defined(OSUnix)
+#if OSUnix
 	return 0; // TODO: not implemented?
-#elif defined(OSWindows)
+#elif OSWindows
 	return _dlog(exponent, base);
 #endif	
 }

@@ -2,7 +2,7 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #define ButtonBackSpace  0x08
 #define ButtonTab  0x09
 #define ButtonReturn  0x0D
@@ -26,15 +26,15 @@
 #define ButtonMenuRight  0xA5
 
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 #include <WinUser.h>
 #endif
 
 VirtualKey ConvertToVirtualKey(const char character)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	switch(character)
 	{
 		/*

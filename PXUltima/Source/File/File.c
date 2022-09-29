@@ -17,7 +17,7 @@
 #define FileReadWriteModeW L"rwb"
 
 
-#if defined(OSUnix)
+#if OSUnix
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -38,7 +38,7 @@
 #define PipeOpenW(wchar, mode) popen((char*)wchar, (const char*) mode) // TODO: instable
 #define PipeClose pclose
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <io.h>
 
 #define OSFileOpenA fopen
@@ -68,7 +68,7 @@
 
 void FilePathSplittA(const char* fullPath, size_t fullPathMaxSize, char* drive, size_t driveMaxSize, char* directory, size_t directoryMaxSize, char* fileName, size_t fileNameMaxSize, char* extension, size_t extensionMaxSize)
 {
-#if defined(OSUnix)
+#if OSUnix
 	char directoryNameCache[PathMaxSize];
 	char baseNameCache[FileNameMaxSize];
 
@@ -91,7 +91,7 @@ void FilePathSplittA(const char* fullPath, size_t fullPathMaxSize, char* drive, 
 			break;
 		}
 	}
-#elif defined(OSWindows)
+#elif OSWindows
 	char fileNameCache[FileNameMaxSize];
 
 	_splitpath_s
@@ -119,7 +119,7 @@ void FilePathSplittA(const char* fullPath, size_t fullPathMaxSize, char* drive, 
 
 void FilePathSplittW(const wchar_t* fullPath, size_t fullPathMaxSize, wchar_t* drive, size_t driveMaxSize, wchar_t* directory, size_t directoryMaxSize, wchar_t* fileName, size_t fileNameMaxSize, wchar_t* extension, size_t extensionMaxSize)
 {
-#if defined(OSUnix)
+#if OSUnix
 	char fullPathA[PathMaxSize];
 	char driveA[DriveMaxSize];
 	char directoryA[DirectoryMaxSize];
@@ -141,7 +141,7 @@ void FilePathSplittW(const wchar_t* fullPath, size_t fullPathMaxSize, wchar_t* d
 	TextCopyAW(directoryA, DirectoryMaxSize, directory, DirectoryMaxSize);
 	TextCopyAW(fileNameA, FileNameMaxSize, fileName, FileNameMaxSize);
 	TextCopyAW(extensionA, ExtensionMaxSize, extension, ExtensionMaxSize);
-#elif defined(OSWindows)
+#elif OSWindows
 	wchar_t extensionCache[FileNameMaxSize];
 
 	_wsplitpath_s
@@ -165,6 +165,10 @@ void FilePathSplittW(const wchar_t* fullPath, size_t fullPathMaxSize, wchar_t* d
 		}
 	}
 #endif
+}
+
+void FilePathSplittPositionW(const wchar_t* fullPath, size_t fullPathMaxSize, size_t* drivePos, size_t driveSize, size_t* directory, size_t directorySize, size_t* fileName, size_t fileNameSize, size_t* extension, size_t extensionSize)
+{
 }
 
 void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax)
@@ -248,7 +252,7 @@ ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePa
 	{
 		return ResultEmptyPath;
 	}
-#if defined (OSUnix)
+#if OSUnix
 	FILE* fileSource = fopen(sourceFilePath, FileReadMode);
 	FILE* fileDestination = fopen(destinationFilePath, FileWriteMode);
 	const unsigned char fileOpenSuccesful = fileSource && fileDestination;
@@ -269,7 +273,7 @@ ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePa
 
 	fclose(fileSource);
 	fclose(fileDestination);
-#elif defined(OSWindows)
+#elif OSWindows
 	unsigned char succesfull = CopyFileA(sourceFilePath, destinationFilePath, 0);
 
 	if(!succesfull)
@@ -288,7 +292,7 @@ ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destination
 		return ResultEmptyPath;
 	}
 
-#if defined (OSUnix)
+#if OSUnix
 	char sourceFilePathA[PathMaxSize];
 	char destinationFilePathA[PathMaxSize];
 
@@ -296,7 +300,7 @@ ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destination
 	TextCopyWA(destinationFilePath, PathMaxSize, destinationFilePathA, PathMaxSize);
 
 	return FileCopyA(sourceFilePathA, destinationFilePathA);
-#elif defined(OSWindows)
+#elif OSWindows
 	const unsigned char succesfull = CopyFileW(sourceFilePath, destinationFilePath, 0);
 
 	if(!succesfull)
@@ -388,14 +392,35 @@ ActionResult DirectoryCreateA(const char* directoryName)
 
 ActionResult DirectoryCreateW(const wchar_t* directoryName)
 {
-	const int creationResult = OSFileDirectoryCreateW(directoryName);
-	const unsigned char wasSuccesful = creationResult == 0;
+	wchar_t directoryNameSegment[PathMaxSize];
+	size_t starPos = 0;
+	size_t successful = 0;
 
-	if(!wasSuccesful)
+	do
 	{
-		return ActionInvalid; //GetCurrentError();
-	}
+		size_t offset = TextFindFirstW(directoryName + starPos, PathMaxSize - starPos, '/');
 
+		if (offset == -1)
+		{
+			break;
+		}
+
+		TextCopyW(directoryName + starPos, offset-1, directoryNameSegment, PathMaxSize);
+
+		const int creationResult = OSFileDirectoryCreateW(directoryNameSegment);
+		const unsigned char wasSuccesful = creationResult == 0;
+
+		if (!wasSuccesful)
+		{
+			break;
+			//return ActionInvalid; //GetCurrentError();
+		}
+
+		starPos += offset;
+		++successful;
+	} 
+	while (1);
+	   	
 	return ActionSuccessful;
 }
 
@@ -713,9 +738,9 @@ ActionResult FileWriteToDisk(const unsigned long long& value, const Endian endia
 
 ActionResult FileWriteToDisk(const void* value, const size_t length)
 {
-#if defined(OSUnix)
+#if OSUnix
 FILE* fileHandle = FileHandle;
-#elif defined(OSWindows)
+#elif OSWindows
 FILE* fileHandle = FileHandleCStyle;
 #endif
 
@@ -733,9 +758,9 @@ FILE* fileHandle = FileHandleCStyle;
 
 ActionResult FileWriteToDisk(const char* format, ...)
 {
-#if defined(OSUnix)
+#if OSUnix
     FILE* fileHandle = FileHandle;
-#elif defined(OSWindows)
+#elif OSWindows
     FILE* fileHandle = FileHandleCStyle;
 #endif
 
@@ -757,9 +782,9 @@ ActionResult FileWriteToDisk(const char* format, ...)
 
 ActionResult FileWriteIntoFile(const void* data, const size_t dataSize)
 {
-#if defined(OSUnix)
+#if OSUnix
 	size_t writtenBytes = fwrite(data, sizeof(char), dataSize, FileHandle);
-#elif defined(OSWindows)
+#elif OSWindows
 	DWORD writtenBytes = 0;
 	const bool successful = WriteFile(FileHandle, data, dataSize, &writtenBytes, nullptr);
 #endif
@@ -798,9 +823,9 @@ ActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersis
 		}
 	}
 
-#if defined(OSUnix)
+#if OSUnix
 	size_t writtenBytes = fwrite(Data, sizeof(char), DataCursorPosition, file.FileHandle);
-#elif defined(OSWindows)
+#elif OSWindows
 	DWORD writtenBytes = 0;
 	const bool successful = WriteFile(file.FileHandle, Data, DataCursor, &writtenBytes, nullptr);
 #endif
@@ -820,7 +845,7 @@ ActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersis
 
 ActionResult FileReadFromDisk(unsigned char** outPutBuffer, size_t& outPutBufferSize, const bool addTerminatorByte)
 {
-#if defined(OSUnix)
+#if OSUnix
 	fseek(FileHandle, 0, SEEK_END); // Jump to end of file
 	outPutBufferSize = ftell(FileHandle); // Get current 'data-cursor' position
 
@@ -857,7 +882,7 @@ ActionResult FileReadFromDisk(unsigned char** outPutBuffer, size_t& outPutBuffer
 	assert(outPutBufferSize == readBytes);
 
 	return ActionSuccessful;
-#elif defined(OSWindows)
+#elif OSWindows
 	const DWORD fileSize = GetFileSize(FileHandle, nullptr);
 	DWORD numberOfBytesRead = 0;
 	OVERLAPPED* overlapped = nullptr;
@@ -916,7 +941,7 @@ void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wch
 
 void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize)
 {
-#if defined(OSUnix)
+#if OSUnix
 	DIR* directory = opendir(folderPath);
 
 	if (directory)
@@ -955,7 +980,7 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize
 
 		closedir(directory);
 	}
-#elif defined(OSWindows)
+#elif OSWindows
 	wchar_t folderPathW[PathMaxSize];
 	size_t writtenBytes = TextCopyAW(folderPath, PathMaxSize, folderPathW, PathMaxSize);
 
@@ -1028,14 +1053,14 @@ unsigned char FileDoesExistA(const char* filePath)
 
 unsigned char FileDoesExistW(const wchar_t* filePath)
 {
-#if defined(OSUnix)
+#if OSUnix
     char filePathA[PathMaxSize];
 
     Text::Copy(filePath, PathMaxSize, filePathA, PathMaxSize);
 
     return DoesFileExist(filePathA);
 
-#elif defined(OSWindows)
+#elif OSWindows
 	FILE* file = OSFileOpenW(filePath, L"rb");
 
 	if(file)

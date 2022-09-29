@@ -3,7 +3,7 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -11,7 +11,7 @@
 #define PXWindowID XID // XID is PXWindow
 #define OpenGLConextID GLXContext
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 #define PXWindowID HWND
 #define OpenGLConextID HGLRC
@@ -20,10 +20,10 @@
 //---<OpenGL>----------------
 #include <GL/gl.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #include <GL/glx.h>
 #define OpenGLAPICallType
-#elif defined(OSWindows)
+#elif OSWindows
 #define OpenGLAPICallType APIENTRY
 #endif
 //---------------------------
@@ -48,25 +48,25 @@ extern "C"
 		OpenGLVersionInvalid,
 		OpenGLVersionNone,
 		OpenGLVersion1x0x0,
-		OpenGLVersion1x1x0, // 1995[citation needed]. Texture objects, Vertex Arrays
-		OpenGLVersion1x2x0, // March 16, 1998. 3D textures, BGRAand packed pixel formats, [28] introduction of the imaging subset useful to image - processing applications
-		OpenGLVersion1x2x1, // October 14, 1998. A concept of ARB extensions
-		OpenGLVersion1x3x0, // August 14, 2001. Multitexturing, multisampling, texture compression
-		OpenGLVersion1x4x0, // July 24, 2002. Depth textures, GLSlang[29]
-		OpenGLVersion1x5x0, // July 29, 2003. Vertex Buffer Object(VBO), Occlusion Queries[30]
-		OpenGLVersion2x0x0, // September 7, 2004. GLSL 1.1, MRT, Non Power of Two textures, Point Sprites, [31] Two - sided stencil[30]
-		OpenGLVersion2x1x0, // July 2, 2006. GLSL 1.2, Pixel Buffer Object(PBO), sRGB Textures[30]
-		OpenGLVersion3x0x0, // August 11, 2008. GLSL 1.3, Texture Arrays, Conditional rendering, Frame Buffer Object(FBO)[32]
-		OpenGLVersion3x1x0, // March 24, 2009. GLSL 1.4, Instancing, Texture Buffer Object, Uniform Buffer Object, Primitive restart[33]
-		OpenGLVersion3x2x0, // August 3, 2009. GLSL 1.5, Geometry Shader, Multi - sampled textures[34]
-		OpenGLVersion3x3x0, // March 11, 2010. GLSL 3.30, Backports as much function as possible from the OpenGL 4.0 specification
-		OpenGLVersion4x0x0, // March 11, 2010. GLSL 4.00, Tessellation on GPU, shaders with 64 - bit precision[35]
-		OpenGLVersion4x1x0, // July 26, 2010. GLSL 4.10, Developer - friendly debug outputs, compatibility with OpenGL ES 2.0[36]
-		OpenGLVersion4x2x0, // August 8, 2011. GLSL 4.20, Shaders with atomic counters, draw transform feedback instanced, shader packing, performance improvements
-		OpenGLVersion4x3x0, // August 6, 2012. GLSL 4.30, Compute shaders leveraging GPU parallelism, shader storage buffer objects, high - quality ETC2 / EAC texture compression, increased memory security, a multi - application robustness extension, compatibility with OpenGL ES 3.0[39]
-		OpenGLVersion4x4x0, // July 22, 2013. GLSL 4.40, Buffer Placement Control, Efficient Asynchronous Queries, Shader Variable Layout, Efficient Multiple Object Binding, Streamlined Porting of Direct3D applications, Bindless Texture Extension, Sparse Texture Extension[40]
-		OpenGLVersion4x5x0,	// August 11, 2014. GLSL 4.50, Direct State Access(DSA), Flush Control, Robustness, OpenGL ES 3.1 API and shader compatibility, DX11 emulation features
-		OpenGLVersion4x6x0	// July 31, 2017. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering
+		OpenGLVersion1x1x0, // 1995              Texture objects, Vertex Arrays
+		OpenGLVersion1x2x0, // 1998 March    16. 3D textures, BGRA and packed pixel formats, introduction of the imaging subset useful to image - processing applications
+		OpenGLVersion1x2x1, // 1998 October  14. A concept of ARB extensions
+		OpenGLVersion1x3x0, // 2001 August   14. Multitexturing, multisampling, texture compression
+		OpenGLVersion1x4x0, // 2002 July     24. Depth textures, GLSlang
+		OpenGLVersion1x5x0, // 2003 July     29. Vertex Buffer Object(VBO), Occlusion Queries
+		OpenGLVersion2x0x0, // 2004 September 7. GLSL 1.10, MRT, Non Power of Two textures, Point Sprites, Two - sided stencil
+		OpenGLVersion2x1x0, // 2006 July      2. GLSL 1.20, Pixel Buffer Object(PBO), sRGB Textures
+		OpenGLVersion3x0x0, // 2008 August   11. GLSL 1.30, Texture Arrays, Conditional rendering, Frame Buffer Object(FBO)
+		OpenGLVersion3x1x0, // 2009 March    24. GLSL 1.40, Instancing, Texture Buffer Object, Uniform Buffer Object, Primitive restart
+		OpenGLVersion3x2x0, // 2009 August    3. GLSL 1.50, Geometry Shader, Multi - sampled textures
+		OpenGLVersion3x3x0, // 2010 March    11. GLSL 3.30, Backports as much function as possible from the OpenGL 4.0 specification
+		OpenGLVersion4x0x0, // 2010 March    11. GLSL 4.00, Tessellation on GPU, shaders with 64 - bit precision
+		OpenGLVersion4x1x0, // 2010 July     26. GLSL 4.10, Developer - friendly debug outputs, compatibility with OpenGL ES 2.0
+		OpenGLVersion4x2x0, // 2011 August    8. GLSL 4.20, Shaders with atomic counters, draw transform feedback instanced, shader packing, performance improvements
+		OpenGLVersion4x3x0, // 2012 August    6. GLSL 4.30, Compute shaders leveraging GPU parallelism, shader storage buffer objects, high - quality ETC2 / EAC texture compression, increased memory security, a multi - application robustness extension, compatibility with OpenGL ES 3.0
+		OpenGLVersion4x4x0, // 2013 July     22. GLSL 4.40, Buffer Placement Control, Efficient Asynchronous Queries, Shader Variable Layout, Efficient Multiple Object Binding, Streamlined Porting of Direct3D applications, Bindless Texture Extension, Sparse Texture Extension
+		OpenGLVersion4x5x0,	// 2014 August   11. GLSL 4.50, Direct State Access(DSA), Flush Control, Robustness, OpenGL ES 3.1 API and shader compatibility, DX11 emulation features
+		OpenGLVersion4x6x0	// 2017 July     31. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering
 	}
 	OpenGLVersion;
 
@@ -172,6 +172,26 @@ extern "C"
 	CPrivate int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataType);
 
 
+
+	typedef enum OpenGLRenderMode_
+	{
+		OpenGLRenderInvalid,
+		OpenGLRenderPoints,
+		OpenGLRenderLines,
+		OpenGLRenderLineLoop,
+		OpenGLRenderLineStrip,
+		OpenGLRenderTriangles,
+		OpenGLRenderTriangleStrip,
+		OpenGLRenderTriangleFan,
+		OpenGLRenderQuads,
+		OpenGLRenderQuadStrip,
+		OpenGLRenderPolygon
+	}
+	OpenGLRenderMode;
+
+	CPrivate int OpenGLRenderModeToID(const OpenGLRenderMode openGLRenderMode);
+
+
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.1.2.0>------------------------------------------------------
@@ -263,7 +283,6 @@ extern "C"
 
 	//---<OpenGL v.3.2.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
-
 
 	//---<OpenGL v.4.0.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
@@ -371,19 +390,34 @@ extern "C"
 
 	CPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID);
 	CPrivate void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void* functionADress);
-    CPrivate void* OpenGLFunctionAdressFetch(const char* const functionName);
+    CPrivate const void* const OpenGLFunctionAdressFetch(const char* const functionName);
 
 	CPublic void OpenGLContextConstruct(OpenGLContext* const openGLContext);
 	CPublic void OpenGLContextDestruct(OpenGLContext* const openGLContext);
 
 	CPublic void OpenGLContextCreate(OpenGLContext* const openGLContext);
+	CPublic void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const size_t width, const size_t height);
 	CPublic void OpenGLContextSelect(OpenGLContext* const openGLContext);
 	CPublic unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext);
 	CPublic void OpenGLContextRelease(OpenGLContext* const openGLContext);
 
 	CPublic void OpenGLRenderBufferSwap(OpenGLContext* const openGLContext);
 
-	CPublic void OpenGLContextFlush();
+	CPublic void OpenGLFlush(OpenGLContext* const openGLContext);
+	CPublic void OpenGLViewSize(OpenGLContext* const openGLContext, const size_t x, const size_t y, const size_t width, const size_t height);
+
+
+	CPublic void OpenGLClearColor(OpenGLContext* const openGLContext, const float red, const float green, const float blue, const float alpha);
+	CPublic void OpenGLClear(OpenGLContext* const openGLContext, const unsigned int clearID);
+	CPublic void OpenGLDrawScaleF(OpenGLContext* const openGLContext, const float x, const float y, const float z);
+	CPublic void OpenGLDrawBegin(OpenGLContext* const openGLContext, const OpenGLRenderMode openGLRenderMode);
+	CPublic void OpenGLDrawVertexXYZF(OpenGLContext* const openGLContext, const float x, const float y, const float z);
+	CPublic void OpenGLDrawColorRGBF(OpenGLContext* const openGLContext, const float red, const float green, const float blue);
+	CPublic void OpenGLDrawEnd(OpenGLContext* const openGLContext);
+
+
+
+
 
 	CPublic void OpenGLAPICallType OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
@@ -394,7 +428,7 @@ extern "C"
 
 	CPublic unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType);
 	CPublic OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const OpenGLShaderType openGLShaderType);
-	CPublic void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, int count, const char** string, const int* length);
+	CPublic void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, const size_t count, const char** string, size_t* const length);
 	CPublic unsigned char OpenGLShaderCompile(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
 	CPublic void OpenGLShaderGetiv(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLenum pname, GLint* params);
 	CPublic void OpenGLShaderLogInfoGet(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);

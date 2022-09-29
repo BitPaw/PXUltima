@@ -6,10 +6,10 @@
 #include <OS/OSVersion.h>
 
 //-- Reivented public / private. The keywords are reserved, so we need other names.
-#if defined(OSUnix)
+#if OSUnix
 #define CPrivate static 
 #define CPublic extern 
-#elif defined(OSWindows)
+#elif OSWindows
 #define CPrivate static 
 #define CPublic extern __declspec(dllexport) // The visual studio compiler also wants this definition, for microsoft stuff.
 #endif

@@ -2,19 +2,19 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 #endif
 
 unsigned char UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSizeWritten)
 {
-#if defined(OSUnix)
+#if OSUnix
 
 	return 0;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	DWORD size = nameSizeMax;
 
 	const unsigned char sucessful = GetComputerNameA(name, &size);
@@ -27,11 +27,11 @@ unsigned char UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSiz
 
 unsigned char UserNameGetW(wchar_t* name, const size_t nameSizeMax, size_t* nameSizeWritten)
 {
-#if defined(OSUnix)
+#if OSUnix
 
 	return 0;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	DWORD size = nameSizeMax;
 
 	const unsigned char sucessful = GetComputerNameW(name, &size);

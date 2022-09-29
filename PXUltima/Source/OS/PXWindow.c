@@ -9,7 +9,7 @@
 #include <Async/Await.h>
 #include <Graphic/Graphic.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
 #include <X11/cursorfont.h>
 #include <X11/extensions/XInput.h>
@@ -25,7 +25,7 @@
 #define MouseScrollUp 4
 #define MouseScrollDown 5
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <windowsx.h>
 #include <WinUser.h>
 #include <wtypes.h>
@@ -39,7 +39,7 @@
 
 PXWindow* currentWindow = 0;
 
-#if defined(OSWindows)
+#if OSWindows
 
 typedef enum WindowEventType_
 {
@@ -579,7 +579,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
 
 
 
-#if defined(OSUnix)
+#if OSUnix
 
 #define CursorIconNormalID 1
 #define CursorIconIBeamID 2
@@ -598,7 +598,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
 #define CursorIconHandID 16
 #define CursorIconAppStartingID 17
 
-#elif defined(OSWindows)
+#elif OSWindows
 
 #include <winuser.rh> // MISSING
 #define CursorIconNormalID OCR_NORMAL
@@ -643,7 +643,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
 
 
 
-#if defined(OSUnix)
+#if OSUnix
 void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 {
     switch(event->type)
@@ -982,7 +982,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
         }
     }
 }
-#elif defined(OSWindows)
+#elif OSWindows
 LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam, LPARAM lParam)
 {
     const WindowEventType windowEventType = ToWindowEventType(eventID);
@@ -1770,7 +1770,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 ThreadResult PXWindowCreateThread(void* const windowAdress)
 {
     PXWindow* const window = (PXWindow*)windowAdress;
-
+    const unsigned char isHidden = window->Title[0] == '\0';
 
     if(!windowAdress)
     {
@@ -1780,7 +1780,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     window->IsRunning = 0;
     window->CursorModeCurrent = PXWindowCursorShow;
 
-#if defined(OSUnix)
+#if OSUnix
     XInitThreads();
 
     // Create display
@@ -1949,7 +1949,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     XFlush(window->DisplayCurrent);
 
 
-#elif defined(OSWindows)
+#elif OSWindows
 
     DWORD dwStyle = 0;
     HWND hWndParent = 0;
@@ -1958,14 +1958,9 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
     window->CursorID = cursorID;
 
-
+    if (!isHidden)
     {
-        const unsigned char isHidden = window->Width == 0 && window->Height == 0;
-
-        if (!isHidden)
-        {
-            dwStyle |= WS_VISIBLE | WS_OVERLAPPEDWINDOW;
-        }
+        dwStyle |= WS_VISIBLE | WS_OVERLAPPEDWINDOW;
     }
 
     WNDCLASSW wndclass;
@@ -2102,10 +2097,8 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
 
-    #if defined(OSWindows)
+    #if OSWindows
     {
-        const unsigned char isHidden = window->Width == 0 && window->Height == 0;
-
         UpdateWindow(window->ID);
 
         if (!isHidden)
@@ -2117,7 +2110,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
     window->IsRunning = 1;
 
-#if defined(OSUnix)
+#if OSUnix
 #if 0
     int numberOfDevices = 0;
 
@@ -2149,7 +2142,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
     while(window->IsRunning)
     {
-#if defined(OSUnix)
+#if OSUnix
         XEvent windowEvent;
 
         /*
@@ -2186,7 +2179,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 
         PXWindowEventHandler(window, &windowEvent);
 
-#elif defined(OSWindows)
+#elif OSWindows
         MSG message;
 
         const unsigned char peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);
@@ -2211,20 +2204,20 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
     return ThreadSucessful;
 }
 
-CPublic void PXWindowConstruct(PXWindow* const window)
+void PXWindowConstruct(PXWindow* const window)
 {
     MemorySet(window, sizeof(PXWindow), 0);
 }
 
-void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, unsigned char async)
+void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
 {
     window->Width = width;
     window->Height = height;
 
-    TextCopyAW(title, 256, window->Title, 256);
+    TextCopyAW(title, 256u, window->Title, 256u);
 
     {
-        const unsigned char isDefaultSize = width == 1 && height == 1;
+        const unsigned char isDefaultSize = width == 1u && height == 1u;
 
         if (isDefaultSize)
         {
@@ -2250,19 +2243,19 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
     }
 }
 
-void PXWindowCreateHidden(PXWindow* const PXWindow, unsigned char async)
+void PXWindowCreateHidden(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async)
 {
-    PXWindowCreate(PXWindow, 600, 400, "*Hidden*", 1u);
+    PXWindowCreate(window, width, height, 0, async);
 }
 
 void PXWindowDestruct(PXWindow* const window)
 {
-#if defined(OSUnix)
+#if OSUnix
     glXMakeCurrent(window->DisplayCurrent, None, NULL);
     //    glXDestroyContext(DisplayCurrent, OpenGLConextID);
     XDestroyWindow(window->DisplayCurrent, window->ID);
     XCloseDisplay(window->DisplayCurrent);
-#elif defined(OSWindows)
+#elif OSWindows
     CloseWindow(window->ID);
 #endif
 
@@ -2294,8 +2287,8 @@ void PXWindowLookupRemove(const PXWindow* window)
 
 void PXWindowSize(PXWindow* window, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     RECT rect;
 
     const unsigned char result = GetWindowRect(window->ID, &rect);
@@ -2312,8 +2305,8 @@ void PXWindowSize(PXWindow* window, unsigned int* x, unsigned int* y, unsigned i
 
 void PXWindowSizeChange(PXWindow* window, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     RECT rect;
 
     rect.left = x;
@@ -2358,8 +2351,8 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
     unsigned int horizontal = 0;
     unsigned int vertical = 0;
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     MonitorGetSize(&horizontal, &vertical);
 
@@ -2462,9 +2455,9 @@ unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y
     int yPos = 0;
     const unsigned char sucessfulA = PXWindowCursorPositionInDestopGet(window, &xPos, &yPos);
 
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
     POINT point;
     point.x = xPos;
     point.y = yPos;
@@ -2488,9 +2481,9 @@ unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y
 
 unsigned char PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
 {
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
     POINT point;
     point.x = 0;
     point.y = 0;

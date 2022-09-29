@@ -348,6 +348,9 @@
     <ClInclude Include="Source\OS\Registry.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\OS\HardDrive.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\Lock.c">
@@ -672,6 +675,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Registry.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\HardDrive.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

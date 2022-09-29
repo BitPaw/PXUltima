@@ -6,9 +6,9 @@
 
 #include <stdio.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #define _MAX_PATH 260
-#elif defined(OSWindows)
+#elif OSWindows
 #include <windows.h>
 #include <shobjidl.h> 
 #endif
@@ -26,8 +26,8 @@ unsigned char FileOpenDialogW(wchar_t* filePathOutput)
 {
     unsigned char wasSuccesful = 0;
 
-#if defined(OSWindows)
-#if defined(OSWindowsXP)
+#if OSWindows
+#if OSWindowsXP
     const wchar_t* filter = L"All Files (*.*)\0*.*\0";
     HWND owner = NULL;
 
@@ -114,7 +114,7 @@ unsigned char FileOpenDialogW(wchar_t* filePathOutput)
 #endif
     
 #endif
-#elif defined(OSUnix)
+#elif OSUnix
 #endif
 
     return wasSuccesful;

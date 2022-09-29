@@ -12,6 +12,7 @@ extern "C"
     extern void TestOpenGLAll();
 
     extern void TestOpenGLRenderToTexture();
+    extern void TestOpenGLTextDraw();
 
 #ifdef __cplusplus
 }

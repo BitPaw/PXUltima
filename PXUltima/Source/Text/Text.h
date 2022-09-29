@@ -108,6 +108,7 @@ extern "C"
 	CPublic char* TextFindPositionA(const char* data, size_t dataSize, const char* target, size_t targetSize);
 
 	CPublic size_t TextFindFirstA(const char* string, const size_t dataSize, const char character);
+	CPublic size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_t character);
 	CPublic size_t TextFindLastA(const char* string, const size_t dataSize, const char character);
 	CPublic size_t TextFindLastW(const wchar_t* string, const size_t dataSize, const wchar_t character);
 

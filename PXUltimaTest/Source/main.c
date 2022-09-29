@@ -1,28 +1,20 @@
 
 #include <stdio.h>
 
-//#include "TestImage.h"
-//#include "TestSBP.h"
+#include "TestSystemInfo.h"
 #include "TestWindow.h"
-
-//#include <Processor/Processor.h>
-//#include <Library/Library.h>
+#include "TestOpenGL.h"
+#include "TestPXCompiler.h"
+#include "TestImage.h"
 
 int main()
 {
 	printf("[i] Starting testing...\n");
 
-	unsigned int x = 0;
-	unsigned int y = 0;
-
-	//x = ProcessorFrequencyCurrent();
-	//y = ProcessorTimeReal();
-
-	//LibraryParseSymbols();
-
+	TestSystemInfoAll();
 	//TestPXCompilerAll();
-	TestOpenGLAll();
-	//TestWindowAll();
+	//TestOpenGLAll();
+	TestWindowAll();
 	//TestImageAll();
 	//TestSBPAll();
 

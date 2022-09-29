@@ -4,20 +4,20 @@
 #include <OS/OSVersion.h>
 #include <Format/Type.h>
 
-#ifdef OSUnix
+#if OSUnix
 #include <pthread.h>
 #include <unistd.h>
 #define ThreadResult void*
 #define ThreadSucessful 0 // Adress
 #define ThreadID pthread_t
 #define ThreadIDUnused 0
-#elif defined(OSWindows)
+#elif OSWindows
 #include <windows.h>
 #define ThreadResult unsigned long
 #define ThreadSucessful 0
 #define ThreadID HANDLE
 #define ThreadIDUnused nullptr
-#if defined(OSWindowsXP)
+#if OSWindowsXP
 typedef struct IUnknown IUnknown;
 #endif
 #endif

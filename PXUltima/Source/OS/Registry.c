@@ -2,8 +2,8 @@
 
 #include <Memory/Memory.h>
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #pragma comment(lib, "Advapi32.lib")
 
 #ifndef LSTATUS
@@ -18,8 +18,8 @@ RegistryResult RegistryConnectSpace(Registry* const registry, const RegistrySpac
 
 RegistryResult RegistryConnectRemote(Registry* const registry, const wchar_t* computerName, const RegistrySpace registrySpace)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	HKEY hKey = 0;
 
 	switch (registrySpace)
@@ -56,8 +56,8 @@ RegistryResult RegistryConnectRemote(Registry* const registry, const wchar_t* co
 
 void RegistryClose(Registry* const registry)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	const LSTATUS status = RegCloseKey(registry->ID);
 
 	registry->ID = 0;
@@ -66,8 +66,8 @@ void RegistryClose(Registry* const registry)
 
 void RegistryKeyCreate(Registry* const registry)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	HKEY hKey = 0;
 	LPCWSTR lpSubKey = 0;
 	DWORD Reserved = 0;
@@ -97,8 +97,8 @@ void RegistryKeyCreate(Registry* const registry)
 
 void RegistryKeyLoad(Registry* const registry, const wchar_t* file)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	HKEY hKey = 0;
 	SECURITY_ATTRIBUTES securityAttributes;
 	DWORD Flags = 0;
@@ -111,14 +111,14 @@ void RegistryKeyLoad(Registry* const registry, const wchar_t* file)
 
 void RegistryKeySave(Registry* const registry)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #endif
 }
 
 void RegistryKeyDelete(Registry* const registry)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #endif
 }

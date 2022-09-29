@@ -10,21 +10,25 @@
 
 void TestOpenGLAll()
 {
-	printf("Testing OpenGL...\n");
+	printf("[OpenGL] Testing...\n");
 
 	TestOpenGLRenderToTexture();
+	TestOpenGLTextDraw();
+
+	printf("[OpenGL] Testing finished!\n");
 }
 
 void TestOpenGLRenderToTexture()
 {
 	// Init OpenGL
-	unsigned int width = 800;
-	unsigned int height = 600;
+	float scake = 1;
+	unsigned int width = 800 * scake;
+	unsigned int height = 600 * scake;
 
 	OpenGLContext openGLContext;
 
 	OpenGLContextConstruct(&openGLContext);
-	OpenGLContextCreate(&openGLContext);
+	OpenGLContextCreateWindowless(&openGLContext, width, height);
 	OpenGLContextSelect(&openGLContext);
 	//-------------------------------------------------------------------------
 
@@ -58,25 +62,26 @@ void TestOpenGLRenderToTexture()
 
 	OpenGLFrameBufferLinkRenderBuffer(&openGLContext, OpenGLRenderBufferAttachmentPointStencil,  rbo);
 	//-------------------------------------------------------------------------
+	   
 
+	
 
-	glClearColor(0.2, 0.2, 0.2, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glScalef(1, -1, 1);
+	OpenGLClearColor(&openGLContext, 0.2f, 0.2f, 0.2f, 1.0f);
+	OpenGLClear(&openGLContext, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	OpenGLDrawScaleF(&openGLContext, 1, -1, 1);
 
-	glBegin(GL_POLYGON);
+	OpenGLDrawBegin(&openGLContext, OpenGLRenderPolygon);
 	//glPixelZoom(1, -1);
 	//glPerspective(-45.0, width / height, 1.0, 100.0);
 
+	OpenGLDrawColorRGBF(&openGLContext, 0, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0, 0.75, 0);
+	OpenGLDrawColorRGBF(&openGLContext, 1, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0.8, 0.8, 0);
+	OpenGLDrawColorRGBF(&openGLContext, 0, 1, 0); OpenGLDrawVertexXYZF(&openGLContext, 0.6, -0.75, 0);
+	OpenGLDrawColorRGBF(&openGLContext, 1, 0, 0); OpenGLDrawVertexXYZF(&openGLContext, -0.6, -0.75, 0.5);
 
-	glColor3f(0, 0, 1); glVertex3f(0, 0.75, 0);
-	//glColor3f(1, 0, 1); glVertex3f(0.8, 0.8, 0);
-	glColor3f(0, 1, 0); glVertex3f(0.6, -0.75, 0);
-	glColor3f(1, 0, 0); glVertex3f(-0.6, -0.75, 0.5);
-	glEnd();
+	OpenGLDrawEnd(&openGLContext);
 
-	glFlush();
-
+	OpenGLFlush(&openGLContext);
 	OpenGLRenderBufferSwap(&openGLContext);
 
 	//glReadPixels(0,0, width, heigh, ;
@@ -85,7 +90,7 @@ void TestOpenGLRenderToTexture()
 	image.Height = height;
 	image.Width = width;
 	image.Format = ImageDataFormatRGB8;
-	image.PixelDataSize = height * width * 3;
+	image.PixelDataSize = height * width * 3u;
 	image.PixelData = MemoryAllocate(image.PixelDataSize);
 
 	OpenGLPixelDataRead(&openGLContext, 0,0,width, height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
@@ -97,6 +102,14 @@ void TestOpenGLRenderToTexture()
 	//OpenGLFrameBufferLinkTexture2D(&openGLContext, GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
 
 
+	OpenGLContextDeselect(&openGLContext);
+}
 
+void TestOpenGLTextDraw()
+{
+	// Create OpenGL stuff
 
+	// Draw text and rotate, size check
+
+	// Save image
 }

@@ -7,11 +7,11 @@
 #include <Error/ActionResult.h>
 #include <Async/Thread.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #include <unistd.h>
 #define ProcessHandle pid_t
 #define ProcessID unsigned int
-#elif defined(OSWindows)
+#elif OSWindows
 #include <windows.h>
 #define ProcessHandle HANDLE
 #define ProcessID DWORD

@@ -53,28 +53,28 @@ extern "C"
 
 	typedef struct DataStream_
 	{
-		//---<Raw Data>--------
+		//---<Raw Data>--------------------------------------------------------
 		void* Data;
 		size_t DataSize;
 		size_t DataCursor;
-		size_t DataBitOffset;
-		//---------------------
+		size_t DataCursorBitOffset;
+		//---------------------------------------------------------------------
 
-		// Into, location needed to write
+		//---<Extended Settings>-----------------------------------------------
 		MemoryProtectionMode MemoryMode;
-
 		DataStreamLocation _fileLocation; // Where the is stored, used as indicator how to clean up.
+		//---------------------------------------------------------------------
 
+		//---<Internal location Info>------------------------------------------
 		FileHandleType FileHandle; // Only used if file is used directly
-
 		FileMappingID IDMapping; // Only used while mapping a file
 
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
 		FILE* FileHandleCStyle; // Used for writing only, usage of fprintf()
 #endif	
-
+		//---------------------------------------------------------------------
 	}
 	DataStream;
 

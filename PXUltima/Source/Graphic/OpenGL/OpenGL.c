@@ -9,13 +9,11 @@
 #include <Container/ClusterValue.h>
 #include <OS/PXWindow.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #pragma comment(lib, "opengl32.so")
-#elif defined(OSWindows)
+#elif OSWindows
 #pragma comment(lib, "opengl32.lib")
 #endif
-
-
 
 //---<Version 1.3>------------------
 #define GL_MULTISAMPLE 0x809D
@@ -578,6 +576,26 @@ CPrivate int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataTyp
     }
 }
 
+int OpenGLRenderModeToID(const OpenGLRenderMode openGLRenderMode)
+{
+    switch (openGLRenderMode)
+    {
+        case OpenGLRenderPoints: return GL_POINTS;
+        case OpenGLRenderLines: return GL_LINES;
+        case OpenGLRenderLineLoop: return GL_LINE_LOOP;
+        case OpenGLRenderLineStrip: return GL_LINE_STRIP;
+        case OpenGLRenderTriangles: return GL_TRIANGLES;
+        case OpenGLRenderTriangleStrip: return GL_TRIANGLE_STRIP;
+        case OpenGLRenderTriangleFan: return GL_TRIANGLE_FAN;
+        case OpenGLRenderQuads: return GL_QUADS;
+        case OpenGLRenderQuadStrip: return GL_QUAD_STRIP;
+        case OpenGLRenderPolygon: return GL_POLYGON;
+
+        default:
+            return -1;
+    }
+}
+
 unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType)
 {
     switch (openGLTextureType)
@@ -637,12 +655,12 @@ void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void*
     *currentSize += 2u;
 }
 
-void* OpenGLFunctionAdressFetch(const char* const functionName)
+const void* const OpenGLFunctionAdressFetch(const char* const functionName)
 {
     const void* const functionAdress =
-#if defined(OSUnix)
+#if OSUnix
     (const void* const)glXGetProcAddress(functionName);
-#elif defined(OSWindows)
+#elif OSWindows
     (const void* const)wglGetProcAddress(functionName);
 
     switch((size_t)functionAdress)
@@ -674,32 +692,13 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 {
     PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
 
-#if defined(OSUnix)
+#if OSUnix
     //glXCreateContext(window->DisplayCurren, ) // TODO:::
 
     glXMakeCurrent(window->DisplayCurrent, window->ID, openGLContext->OpenGLConext);
 
-#elif defined(OSWindows)
-    if (!window) // if not set, we want a "hidden" window. Windows needs a window to make a OpenGL context.. for some reason.
-    {
-        PXWindow* const window = (PXWindow* const)MemoryAllocate(sizeof(PXWindow) * 1u);
-
-        PXWindowConstruct(window);
-
-        PXWindowCreateHidden(window, 1u); // This will call this function again. Recursive
-
-        while (!window->IsRunning) // Wait
-        {
-            printf("");
-        }
-
-        openGLContext->AttachedWindow = window;
-
-        MemoryCopy(&window->GraphicInstance.OpenGLInstance, sizeof(OpenGLContext), openGLContext,sizeof(OpenGLContext));
-
-        return; // We should have all data here, stoping.
-    }
-
+#elif OSWindows
+  
     const HGLRC handle = wglCreateContext(window->HandleDeviceContext);
 
     // Check if failed
@@ -715,8 +714,6 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     }
 
     openGLContext->OpenGLConext = handle;
-
-
 
 #endif
 
@@ -1028,27 +1025,55 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         (openGLContext->OpenGLDebugMessageCallback)(OpenGLErrorMessageCallback, 0);
         glEnable(GL_DEBUG_OUTPUT);
     }
+
+    OpenGLViewSize(openGLContext, 0, 0, window->Width, window->Height);
+}
+
+void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const size_t width, const size_t height)
+{
+#if OSWindows
+
+    if (!openGLContext->AttachedWindow) // if not set, we want a "hidden" window. Windows needs a window to make a OpenGL context.. for some reason.
+    {
+        PXWindow* const window = (PXWindow* const)MemoryAllocate(sizeof(PXWindow) * 1u);
+
+        PXWindowConstruct(window);
+
+        PXWindowCreateHidden(window, width, height, 1u); // This will call this function again. Recursive
+
+        while (!window->IsRunning) // Wait
+        {
+            printf("");
+        }
+
+        openGLContext->AttachedWindow = window;
+
+        MemoryCopy(&window->GraphicInstance.OpenGLInstance, sizeof(OpenGLContext), openGLContext, sizeof(OpenGLContext));
+
+        return; // We should have all data here, stoping.
+    }
+#endif
 }
 
 void OpenGLContextSelect(OpenGLContext* const openGLContext)
 {
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
-#if defined(OSUnix)
+#if OSUnix
     const int result = glXMakeCurrent(window->DisplayCurrent, window->ID, openGLContext->OpenGLConext);
-#elif defined(OSWindows)
+#elif OSWindows
     const BOOL result = wglMakeCurrent(window->HandleDeviceContext, openGLContext->OpenGLConext);
 #endif
 }
 
-unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext)
+unsigned char OpenGLContextDeselect(OpenGLContext* const openGLContext)
 {
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
     const unsigned char successful =
-#if defined(OSUnix)
+#if OSUnix
         glXMakeCurrent(0, window->ID, openGLContext->OpenGLConext);
-#elif defined(OSWindows)
+#elif OSWindows
         wglMakeCurrent(0, 0);
 #endif
 
@@ -1059,10 +1084,10 @@ void OpenGLContextRelease(OpenGLContext* const openGLContext)
 {
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
-#if defined(OSUnix)
+#if OSUnix
     const int result = glXMakeCurrent(window->DisplayCurrent,0, 0);
 
-#elif defined(OSWindows)
+#elif OSWindows
 
 #endif
 }
@@ -1071,19 +1096,61 @@ void OpenGLRenderBufferSwap(OpenGLContext* const openGLContext)
 {
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
-#if defined(OSUnix)
+#if OSUnix
     glXSwapBuffers(window->DisplayCurrent, window->ID);
 
-#elif defined(OSWindows)
+#elif OSWindows
     BOOL successful = SwapBuffers(window->HandleDeviceContext);
 
     successful += 0;
 #endif
 }
 
-void OpenGLContextFlush()
+void OpenGLFlush(OpenGLContext* const openGLContext)
 {
     glFlush();
+}
+
+void OpenGLViewSize(OpenGLContext* const openGLContext, const size_t x, const size_t y, const size_t width, const size_t height)
+{
+    glViewport(x, y, width, height);
+}
+
+void OpenGLClearColor(OpenGLContext* const openGLContext, const float red, const float green, const float blue, const float alpha)
+{
+    glClearColor(red, green, blue, alpha);
+}
+
+void OpenGLClear(OpenGLContext* const openGLContext, const unsigned int clearID)
+{
+    glClear(clearID);
+}
+
+void OpenGLDrawScaleF(OpenGLContext* const openGLContext, const float x, const float y, const float z)
+{
+    glScaled(x, y, z);
+}
+
+void OpenGLDrawBegin(OpenGLContext* const openGLContext, const OpenGLRenderMode openGLRenderMode)
+{
+    const int openGLRenderModeID = OpenGLRenderModeToID(openGLRenderMode);
+
+    glBegin(openGLRenderModeID);
+}
+
+void OpenGLDrawVertexXYZF(OpenGLContext* const openGLContext, const float x, const float y, const float z)
+{
+    glVertex3f(x, y, z);
+}
+
+void OpenGLDrawColorRGBF(OpenGLContext* const openGLContext, const float red, const float green, const float blue)
+{
+    glColor3f(red, green, blue);
+}
+
+void OpenGLDrawEnd(OpenGLContext* const openGLContext)
+{
+    glEnd();
 }
 
 void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
@@ -1574,18 +1641,18 @@ void OpenGLContextSelect(OpenGL* const openGL)
 
 void OpenGLContextDeselect()
 {
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
     wglMakeCurrent(NULL, NULL);
 #endif
 }
 
 void OpenGLContextRelease(OpenGL* const openGL)
 {
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
     const BOOL result = wglDeleteContext(openGL->OpenGLConext);
 
     if (result)
@@ -1988,7 +2055,7 @@ OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const Open
     return shaderID;
 }
 
-void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, int count, const char** string, const int* length)
+void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, const size_t count, const char** string, size_t* const length)
 {
     openGLContext->OpenGLShaderSourceCallBack(shaderID, count, string, length);
 }

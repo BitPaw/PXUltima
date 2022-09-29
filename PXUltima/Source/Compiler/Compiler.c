@@ -55,7 +55,7 @@ void PXCompilerSymbolEntryAdd(DataStream* const dataStream, unsigned int id, uns
 
 void PXCompilerSymbolEntryExtract(DataStream* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
-	const void* oldPos = DataStreamCursorPosition(dataStream);
+	void* const oldPos = DataStreamCursorPosition(dataStream);
 	size_t size = 0;
 
 	size += DataStreamReadIU(dataStream, &compilerSymbolEntry->ID, EndianLittle);
@@ -69,8 +69,8 @@ void PXCompilerSymbolEntryExtract(DataStream* const dataStream, PXCompilerSymbol
 
 void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const outputStream, const PXCompilerSettings* const compilerSettings)
 {
-	unsigned int currentLine = 0;
-	unsigned int currentColoum = 0;
+	size_t currentLine = 0;
+	size_t currentColoum = 0;
 
 	while (!DataStreamIsAtEnd(inputStream))
 	{

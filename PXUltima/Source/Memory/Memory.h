@@ -5,9 +5,9 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #define MemoryProtectionModeType int
-#elif defined(OSWindows)
+#elif OSWindows
 #define MemoryProtectionModeType unsigned long // DWORD
 #endif
 

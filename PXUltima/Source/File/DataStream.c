@@ -8,6 +8,7 @@
 #include <iso646.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <fcntl.h>
 
 #define IsEndOfString(c) (c == '\0')
 #define IsEmptySpace(c) (c == ' ')
@@ -17,7 +18,7 @@
 //-----------------------------------------------------------------------------
 #define FileCachingModeDefault 0 //POSIX_FADV_NORMAL
 
-#if defined(OSUnix)
+#if OSUnix
 
 #define FileCachingModeSequentialScan 2 // POSIX_FADV_SEQUENTIAL
 #define FileCachingModeRandomAccess  1 // POSIX_FADV_RANDOM
@@ -25,7 +26,7 @@
 #define FileCachingModeDontNeed 4 // POSIX_FADV_DONTNEED
 #define FileCachingModeNoReuse 5 // POSIX_FADV_NOREUSE
 
-#elif defined(OSWindows)
+#elif OSWindows
 // From WinBase.h
 
 #define FileCachingModeWriteThrough      0x80000000 // FILE_FLAG_WRITE_THROUGH
@@ -43,11 +44,10 @@
 #endif
 //-----------------------------------------------------------------------------
 
-#if defined(OSUnix)
+#if OSUnix
 #define PrintSVN vsnprintf
-#include <fcntl.h>
-#elif defined(OSWindows)
-#include <fcntl.h> // _O_RDONLY, _O_RDWR, _O_RDWR
+#elif OSWindows
+ // _O_RDONLY, _O_RDWR, _O_RDWR
 #define PrintSVN vsprintf_s
 #endif
 
@@ -128,7 +128,7 @@ void DataStreamFromExternal(DataStream* const dataStream, void* const data, cons
 
 ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
 {
-#if defined(OSUnix)
+#if OSUnix
 	const char* readMode = 0u;
 
 	switch (fileOpenMode)
@@ -152,7 +152,7 @@ ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* f
 
 	return dataStream->FileHandle ? ActionSuccessful : ResultFileOpenFailure;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	wchar_t filePathW[PathMaxSize];
 
 	TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
@@ -163,7 +163,7 @@ ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* f
 
 ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
 {
-#if defined(OSUnix)
+#if OSUnix
 	char filePathA[PathMaxSize];
 
 	TextCopyWA(filePath, PathMaxSize, filePathA, PathMaxSize);
@@ -177,7 +177,7 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 	}
 
 	return ActionSuccessful;
-#elif defined(OSWindows)
+#elif OSWindows
 	DWORD dwDesiredAccess = 0;
 	DWORD dwShareMode = 0;
 	//SECURITY_ATTRIBUTES securityAttributes = 0;
@@ -211,6 +211,20 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 	}
 
 	dwFlagsAndAttributes |= ConvertFromFileCachingMode(dataStreamCachingMode);
+
+
+	// Make directory if needed
+//	FilePathExtensionGetW
+
+	{
+		const ActionResult directoryCreateResult = DirectoryCreateW(filePath);
+		const PXBool successful = ActionSuccessful == directoryCreateResult;
+
+		if (!successful)
+		{
+			return directoryCreateResult;
+		}
+	}
 
 	HANDLE fileHandle = CreateFileW
 	(
@@ -309,7 +323,7 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 
 ActionResult DataStreamClose(DataStream* const dataStream)
 {
-#if defined(OSUnix)
+#if OSUnix
 	const int closeResult = fclose(dataStream->FileHandle);
 
 	switch (closeResult)
@@ -320,7 +334,7 @@ ActionResult DataStreamClose(DataStream* const dataStream)
 	default:
 		return ResultFileCloseFailure;
 	}
-#elif defined(OSWindows)
+#elif OSWindows
 	if (dataStream->FileHandleCStyle)
 	{
 		_fclose_nolock(dataStream->FileHandleCStyle);
@@ -344,7 +358,7 @@ ActionResult DataStreamClose(DataStream* const dataStream)
 
 ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode)
 {
-#if defined(OSUnix)
+#if OSUnix
 	int accessType = PROT_READ;
 	int flags = MAP_PRIVATE;// | MAP_POPULATE;
 	int fileDescriptor = 0;
@@ -436,7 +450,7 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 
 	return ActionSuccessful;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	wchar_t filePathW[PathMaxSize];
 
 	TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
@@ -449,14 +463,14 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 
 ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode)
 {
-#if defined(OSUnix)
+#if OSUnix
 	char filePathA[PathMaxSize];
 
 	TextCopyWA(filePath, PathMaxSize, filePathA, PathMaxSize);
 
 	return DataStreamMapToMemoryA(dataStream, filePathA, fileSize, protectionMode);
 
-#elif defined(OSWindows)
+#elif OSWindows
 
 	// Open file
 	{
@@ -643,7 +657,7 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 	printf("[#][Memory] 0x%p (%10zi B) MMAP-Release\n", Data, DataSize);
 #endif
 
-#if defined(OSUnix)
+#if OSUnix
 	const int result = munmap(dataStream->Data, dataStream->DataSize);
 	const unsigned char sucessful = result != -1;
 
@@ -659,7 +673,7 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 
 	return ActionSuccessful;
 
-#elif defined(OSWindows)
+#elif OSWindows
 
 	// Write pending data
 	{

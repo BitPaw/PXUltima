@@ -13,9 +13,9 @@
 #include <assert.h>
 #endif
 
-#if defined(OSUnix)
+#if OSUnix
 #define PrintSN snprintf
-#elif defined(OSWindows)
+#elif OSWindows
 #define PrintSN sprintf_s
 #endif
 
@@ -305,7 +305,13 @@ size_t TextCopyA(const char* source, const size_t sourceLength, char* destinatio
 size_t TextCopyAW(const char* source, const size_t sourceLength, wchar_t* destination, const size_t destinationLength)
 {
 	const size_t minLength = MathMinimum(sourceLength, destinationLength);
+	const PXBool validCall = source && destination && minLength;
 	size_t i = 0;
+
+	if (!validCall)
+	{
+		return 0;
+	}
 
 #if PXTextAssertEnable
 	assert(destination);
@@ -554,6 +560,21 @@ size_t TextFindFirstA(const char* string, const size_t dataSize, const char char
 	return i;
 }
 
+size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_t character)
+{
+	unsigned char found = 0;
+	size_t i = TextLengthW(string, dataSize);
+
+	for (; i > 0 && !found; --i)
+	{
+		found = character == string[i];
+	}
+
+	++i;
+
+	return found ? i + 1 : TextIndexNotFound;
+}
+
 size_t TextFindLastA(const char* string, const size_t dataSize, const char character)
 {
 	unsigned char found = 0;
@@ -771,20 +792,20 @@ size_t TextFromBoolW(const unsigned char number, wchar_t* string, const size_t d
 
 size_t TextFromFloatA(const float number, char* string, const size_t dataSize)
 {
-#if defined(OSUnix)
-	int bytesWritten = snprintf(string, dataSize, "%f", &number);
-#elif defined(OSWindows)
-	int bytesWritten = sprintf_s(string, dataSize, "%f", &number);
+#if OSUnix
+	int bytesWritten = snprintf(string, dataSize, "%f", number);
+#elif OSWindows
+	int bytesWritten = sprintf_s(string, dataSize, "%f", number);
 #endif
 	return bytesWritten;
 }
 
 size_t TextFromFloatW(const float number, wchar_t* string, const size_t dataSize)
 {
-#if defined(OSUnix)
-	int bytesWritten = snprintf(string, dataSize, "%f", &number);
-#elif defined(OSWindows)
-	int bytesWritten = sprintf_s(string, dataSize, "%f", &number);
+#if OSUnix
+	int bytesWritten = snprintf(string, dataSize, "%f", number);
+#elif OSWindows
+	int bytesWritten = sprintf_s(string, dataSize, "%f", number);
 #endif
 
 	return bytesWritten;
@@ -792,20 +813,20 @@ size_t TextFromFloatW(const float number, wchar_t* string, const size_t dataSize
 
 size_t TextFromDoubleA(const double number, char* string, const size_t dataSize)
 {
-#if defined(OSUnix)
-	int bytesWritten = snprintf(string, dataSize, "%li", &number);
-#elif defined(OSWindows)
-	int bytesWritten = sprintf_s(string, dataSize, "%li", &number);
+#if OSUnix
+	int bytesWritten = snprintf(string, dataSize, "%li", number);
+#elif OSWindows
+	int bytesWritten = sprintf_s(string, dataSize, "%lf", number);
 #endif
 	return bytesWritten;
 }
 
 size_t TextFromDoubleW(const double number, wchar_t* string, const size_t dataSize)
 {
-#if defined(OSUnix)
-    int bytesWritten = snprintf(string, dataSize, "%li", &number);
-#elif defined(OSWindows)
-	int bytesWritten = sprintf_s(string, dataSize, "%li", &number);
+#if OSUnix
+    int bytesWritten = snprintf(string, dataSize, "%lf", number);
+#elif OSWindows
+	int bytesWritten = sprintf_s(string, dataSize, "%lf", number);
 #endif
 	return bytesWritten;
 }

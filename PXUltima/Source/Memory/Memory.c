@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
 #include <sys/mman.h>
 
@@ -13,7 +13,7 @@
 #define ProtectionIDWrite PROT_WRITE
 #define ProtectionIDReadWrite PROT_READ | PROT_WRITE
 
-#elif defined(OSWindows)
+#elif OSWindows
 
 #include <Windows.h>
 
@@ -56,7 +56,7 @@ struct MemoryAllocationInfo
 
 unsigned char MemoryScan(MemoryUsage* memoryUsage)
 {
-#if defined(OSUnix)
+#if OSUnix
 #elif defined(WindowsAtleastXP)
 	// MEMORYSTATUS won't work on >4GB Systems
 
@@ -291,7 +291,7 @@ void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memory
 	const void* addressPrefered = 0;
 	const MemoryProtectionModeType protectionModeID = ConvertFromMemoryProtectionMode(memoryProtectionMode);
 
-#if defined(OSUnix)
+#if OSUnix
 	const int flags = MAP_PRIVATE;// | MAP_ANONYMOUS; | MAP_POPULATE; // missing on linux?
 	const int fileDescriptor = -1;
 	const off_t offset = 0;
@@ -316,7 +316,7 @@ void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memory
 		}
 	}
 
-#elif defined(OSWindows)
+#elif OSWindows
 	DWORD allocationType = MEM_COMMIT | MEM_RESERVE;
 
 	const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, protectionModeID);
@@ -352,8 +352,8 @@ void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memory
 
 void MemoryVirtualPrefetch(const void* adress, const size_t size)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #if defined(WindowsAtleast8)
 	const HANDLE process = GetCurrentProcess();
 	const size_t numberOfEntries = 2;
@@ -380,10 +380,10 @@ void MemoryVirtualPrefetch(const void* adress, const size_t size)
 
 void MemoryVirtualRelease(const void* adress, const size_t size)
 {
-#if defined(OSUnix)
+#if OSUnix
 	const unsigned char result = 1u;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	DWORD freeType = MEM_RELEASE;
 	const unsigned char result = VirtualFree((void*)adress, 0, freeType);
 #endif

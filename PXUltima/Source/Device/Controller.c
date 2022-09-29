@@ -2,9 +2,9 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
 
 #include <windows.h>
 #include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
@@ -14,8 +14,8 @@
 
 unsigned char ControllerScanDevices(NewControllerDetectedCallback callback)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 const size_t amountOfJoySticksSupported = joyGetNumDevs();
 
 	for (size_t i = 0; i < amountOfJoySticksSupported; i++)
@@ -83,10 +83,10 @@ const size_t amountOfJoySticksSupported = joyGetNumDevs();
 
 unsigned char ControllerDataGet(Controller* controller)
 {
-#if defined(OSUnix)
+#if OSUnix
     return 0u;
 
-#elif defined(OSWindows)
+#elif OSWindows
 #if (WINVER >= 0x0400) // newer than Windows NT 4.0
 	JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
@@ -133,10 +133,10 @@ unsigned char ControllerDataGet(Controller* controller)
 
 unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID)
 {
-#if defined(OSUnix)
+#if OSUnix
     return 0u;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	UINT uPeriod = 1;
 	BOOL fChanged = 1u;
 
@@ -149,10 +149,10 @@ unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PX
 
 unsigned char ControllerDetachToWindow(const ControllerID controllerID)
 {
-#if defined(OSUnix)
+#if OSUnix
     return 0u;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	const MMRESULT releaseResult = joyReleaseCapture(controllerID);
 	const unsigned char successful = releaseResult == JOYERR_NOERROR;
 

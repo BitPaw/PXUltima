@@ -7,10 +7,10 @@
 #define PitchMinimum 0.2
 #define SoundDeviceProductName 32u
 
-#if defined(OSUnix)
+#if OSUnix
 #define AudioDeviceOutputHandle int
 #define AudioDeviceInputHandle int
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 #include <mmeapi.h> // MISSING
 #define AudioDeviceOutputHandle HWAVEOUT
@@ -179,7 +179,7 @@ extern "C"
 	}
 	AudioDeviceCapabilities;
 
-#if defined(OSWindows)
+#if OSWindows
 	CPrivate AudioResult AudioConvertMMResult(const unsigned int mmResultID);
 #endif
 

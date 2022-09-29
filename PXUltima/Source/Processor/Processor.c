@@ -2,20 +2,20 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #include <time.h>
 #include <sys/time.h>
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 //#include <intrin.h> // MISSING
 #endif
 
 void ProcessorFetchInfo(Processor* const processor)
 {
-#if defined(OSUnix)
+#if OSUnix
 
 
-#elif defined(OSWindows)
+#elif OSWindows
     int CPUInfo[4] = { -1 };
     unsigned   nExIds, i = 0;
 
@@ -60,7 +60,7 @@ void ProcessorFetchInfo(Processor* const processor)
 
 unsigned int ProcessorFrequencyCurrent()
 {
-#if defined(OSWindows)
+#if OSWindows
     FILETIME a, b, c, d;
     const HANDLE process = GetCurrentProcess();
     const unsigned char sucessful = GetProcessTimes(process, &a, & b, & c, & d);
@@ -77,14 +77,14 @@ unsigned int ProcessorFrequencyCurrent()
     //  Can be tweaked to include kernel times as well.
     return deltaTimeIU;
 
-#elif defined(OSUnix)
+#elif OSUnix
     return (double)clock() / CLOCKS_PER_SEC;
 #endif
 }
 
 unsigned int ProcessorTimeReal()
 {
-#if defined(OSWindows)
+#if OSWindows
     LARGE_INTEGER time, freq;
     if (!QueryPerformanceFrequency(&freq)) {
         //  Handle error
@@ -98,7 +98,7 @@ unsigned int ProcessorTimeReal()
     const double x = (double)time.QuadPart / (double)freq.QuadPart;
 
     return x;
-#elif defined(OSUnix)
+#elif OSUnix
     struct timeval time;
     if (gettimeofday(&time, NULL)) {
         //  Handle error

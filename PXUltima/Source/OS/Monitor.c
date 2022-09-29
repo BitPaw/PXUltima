@@ -2,8 +2,8 @@
 
 #include <Memory/Memory.h>
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 BOOL _stdcall MonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data)
 {
 	MONITORINFOEXW monitorInfo;
@@ -40,8 +40,8 @@ BOOL _stdcall MonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT
 
 void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, const size_t monitorListSize)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	HDC             hdc = 0;
 	RECT         rectangleClip;
 	MONITORENUMPROC lpfnEnum = MonitorListCallBack;
@@ -83,11 +83,11 @@ void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, cons
 
 void MonitorGetSize(unsigned int* width, unsigned int* height)
 {
-#if defined(OSUnix)
+#if OSUnix
     *width = 1200;
     *height = 800;
 
-#elif defined(OSWindows)
+#elif OSWindows
 	RECT desktop;
 
 	// Get a handle to the desktop window

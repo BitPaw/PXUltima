@@ -2,11 +2,11 @@
 
 #include <stdio.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #include <spawn.h>
 #include <wait.h>
 #define ExecuteProgram spawnv
-#elif defined(OSWindows)
+#elif OSWindows
 #include <process.h>
 #define ExecuteProgram _spawnv
 #endif
@@ -18,7 +18,7 @@ ThreadResult ProgramExecuteThreadFunction(void* data)
 {
     Program* program = (Program*)data;
 
-#if defined(OSUnix)
+#if OSUnix
     char** envirument = 0;
     int creationResult = posix_spawn(&program->Handle, program->FilePath, NULL, NULL, program->ParameterList, envirument);
     const unsigned char creationSucessful = creationResult == 0;
@@ -33,7 +33,7 @@ ThreadResult ProgramExecuteThreadFunction(void* data)
     }
 
 
-#elif defined(OSWindows)
+#elif OSWindows
     program->ReturnValue = ExecuteProgram(_P_WAIT, program->FilePath, (const char* const*)program->ParameterList);
     program->ExecutionSuccessfull = program->ReturnValue == 0;
 #endif
@@ -143,26 +143,26 @@ ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, cons
 
 ProcessHandle ProgramCurrentProcess()
 {
-#if defined(OSUnix)
+#if OSUnix
     return 0;
-#elif defined(OSWindows)
+#elif OSWindows
     return GetCurrentProcess();
 #endif
 }
 
 ProcessID ProgramCurrentProcessID()
 {
-#if defined(OSUnix)
+#if OSUnix
     return 0;
-#elif defined(OSWindows)
+#elif OSWindows
     return GetCurrentProcessId();
 #endif
 }
 
 void ProgramAttach(Program* program)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     DWORD dwDesiredAccess = 0;
     BOOL bInheritHandle = 0;
     DWORD dwProcessID = 0;
@@ -174,8 +174,8 @@ void ProgramAttach(Program* program)
 
 void ProgramDetach(Program* program)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     HANDLE handleID = 0;
 
     const unsigned char closeResult = CloseHandle(program->Handle);
@@ -190,8 +190,8 @@ void ProgramDetach(Program* program)
 
 void ProgramReadMemory(Program* program)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     HANDLE hProcess = program->Handle;
     LPCVOID lpBaseAddress = 0;
     LPVOID* lpBuffer = 0;

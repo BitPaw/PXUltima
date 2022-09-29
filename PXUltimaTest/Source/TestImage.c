@@ -120,24 +120,25 @@ void ImageWriteText()
     Image image;
     CFont font;
 
-    Image imageAA;
-    //ActionResult dfsdsfdsf = ImageLoadA(&imageAA, "D:/_Data/A.png");
-
-    ImageConstruct(&image);
-
-    ActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
-
-    if(actionResult != ActionSuccessful)
     {
-        return actionResult;
+        const ActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
+        const PXBool successful = ActionSuccessful == actionResult;
+
+        if (!successful)
+        {
+            return actionResult;
+        }
     }
 
-    ActionResult loadResult = ImageLoadTest(&image, "_TEST_DATA_INPUT_/ImageInput.bmp");
-
-    if(loadResult != ActionSuccessful)
     {
-        return loadResult;
-    }
+        const ActionResult loadResult = ImageLoadTest(&image, "_TEST_DATA_INPUT_/ImageInput.bmp");
+        const PXBool successful = ActionSuccessful == loadResult;
+
+        if (!successful)
+        {
+            return loadResult;
+        }
+    } 
 
     // Write image data
     {

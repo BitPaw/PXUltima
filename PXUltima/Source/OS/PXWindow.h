@@ -5,7 +5,7 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -13,7 +13,7 @@
 #define PXWindowID XID // XID is PXWindow
 #define OpenGLConextID GLXContext
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 #define PXWindowID HWND
 #define OpenGLConextID HGLRC
@@ -155,10 +155,10 @@ extern "C"
 
 		GraphicContext GraphicInstance;
 
-#if defined(OSUnix)
+#if OSUnix
 		Display* DisplayCurrent;
 		PXWindowID WindowRoot;
-#elif defined(OSWindows)
+#elif OSWindows
 		HCURSOR CursorID;
 		HDC HandleDeviceContext;
 #endif
@@ -186,17 +186,20 @@ extern "C"
 	}
 	PXWindow;
 
-#if defined(OSUnix)
-	static void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event);
-#elif defined(OSWindows)
-	static LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
+#if OSUnix
+	CPrivate void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event);
+#elif OSWindows
+	CPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
 #endif
 
-	static ThreadResult PXWindowCreateThread(void* const PXWindowAdress);
+	CPrivate ThreadResult PXWindowCreateThread(void* const PXWindowAdress);
 
 	CPublic void PXWindowConstruct(PXWindow* const PXWindow);
-	CPublic void PXWindowCreate(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const char* title, unsigned char async);
-	CPublic void PXWindowCreateHidden(PXWindow* const PXWindow, unsigned char async);
+
+	// Create a window based on the OS implementation.
+	// if a NULL pointer is used as a title, the window will be hidden.
+	CPublic void PXWindowCreate(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const char* title, const PXBool async);
+	CPublic void PXWindowCreateHidden(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const PXBool async);
 	CPublic void PXWindowDestruct(PXWindow* const PXWindow);
 
 	CPublic void PXWindowIconCorner();

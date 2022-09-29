@@ -5,10 +5,10 @@
 #include <Event/Event.h>
 #include <stdio.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
-#pragma comment( lib, "Ws2_32.lib" )
+#elif OSWindows
+#pragma comment(lib, "Ws2_32.lib")
 #endif
 
 #define ProtocolInvalid (unsigned int)-1
@@ -140,7 +140,7 @@
 
 #define IPAF_Invalid 0xFF
 
-#if defined(OSWindows)
+#if OSWindows
 #define EAI_ADDRFAMILY WSAHOST_NOT_FOUND
 #endif
 
@@ -606,7 +606,7 @@ ActionResult CSocketCreate
     const int socketTypeID = ConvertFromSocketType(socketType);
     const int protocolModeID = ConvertFromProtocolMode(protocolMode);
 
-#if defined(OSWindows)
+#if OSWindows
     {
         const ActionResult permissionGranted = WindowsSocketAgentStartup();
         const unsigned char sucessful = ActionSuccessful == permissionGranted;
@@ -669,7 +669,7 @@ ActionResult CSocketSetupAdress
     AdressInfoType* adressResult = 0;
     // ADRRINFOW?
 
-#if defined(OSWindows)
+#if OSWindows
     {
         const ActionResult wsaResult = WindowsSocketAgentStartup();
         const unsigned char sucessful = wsaResult == ActionSuccessful;
@@ -704,7 +704,7 @@ ActionResult CSocketSetupAdress
         case 0:
             break; // OK - Sucess
 
-#if defined(OSWIndows)
+#if OSWindows
         case EAI_ADDRFAMILY:
             return HostHasNoNetworkAddresses;
 #endif
@@ -735,7 +735,7 @@ ActionResult CSocketSetupAdress
         case EAI_SOCKTYPE:
             return SocketTypeNotSupported;
 
-#if defined(OSWindows)
+#if OSWindows
         case WSANOTINITIALISED:
             return WindowsSocketSystemNotInitialized;
 #endif
@@ -814,7 +814,7 @@ void CSocketClose(CSocket* cSocket)
 #ifdef OSWindows
     shutdown(cSocket->ID, SD_SEND);
     closesocket(cSocket->ID);
-#elif defined(OSUnix)
+#elif OSUnix
     close(cSocket->ID);
 #endif
 
@@ -846,9 +846,9 @@ ActionResult CSocketOptionsSet(CSocket* cSocket)
     const int level = SOL_SOCKET;
 
     const int optionName =
-#if defined(OSUnix)
+#if OSUnix
         SO_REUSEADDR;      // Do not use SO_REUSEADDR, else the port can be hacked. SO_REUSEPORT
-#elif defined(OSWindows)
+#elif OSWindows
         SO_EXCLUSIVEADDRUSE;
 #endif
     const char opval = 1;
@@ -884,9 +884,9 @@ ActionResult CSocketAccept(CSocket* server, CSocket* client)
     (
         server->ID,
         (struct sockaddr*)client->IP,
-#if defined(OSUnix)
+#if OSUnix
         (socklen_t*)&client->IPSize
-#elif defined(OSWindows)
+#elif OSWindows
         (int*)&client->IPSize
 #endif
     );
@@ -934,9 +934,9 @@ ActionResult CSocketSend(CSocket* cSocket, const void* inputBuffer, const size_t
         const char* data = (const char*)inputBuffer;
 
         const int writtenBytes =
-#if defined(OSUnix)
+#if OSUnix
             write(cSocket->ID, data, inputBufferSize);
-#elif defined(OSWindows)
+#elif OSWindows
             send(cSocket->ID, data, inputBufferSize, 0);
 #endif
         const unsigned char sucessfulSend = writtenBytes != -1;
@@ -975,9 +975,9 @@ ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const si
         //StateChange(SocketStateDataReceiving);
 
         const unsigned int byteRead =
-#if defined(OSUnix)
+#if OSUnix
             read(cSocket->ID, data, length);
-#elif defined(OSWindows)
+#elif OSWindows
             recv(cSocket->ID, data, length, 0);
 #endif
 
@@ -1009,7 +1009,7 @@ ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const si
     return ActionSuccessful;
 }
 
-#if defined(OSWindows)
+#if OSWindows
 ActionResult WindowsSocketAgentStartup()
 {
     WORD wVersionRequested = MAKEWORD(2, 2);

@@ -3,7 +3,7 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #ifndef _XOPEN_SOURCE
     // Needed for some reason, as without the "netdb.h" does not get included properly
     // Some say that there a flags that disable the code.
@@ -19,9 +19,16 @@
 
 typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinfo)
 #define AdressInfoDelete freeaddrinfo
-#elif defined(OSWindows)
+#elif OSWindows
+
+#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define WIN32_LEAN_AND_MEAN
+#endif // !_WINSOCK_DEPRECATED_NO_WARNINGS
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1u
+#endif
+
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -35,7 +42,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <Error/ActionResult.h>
 
 #define CSocketID size_t
-#define SocketDebug 1
+#define SocketDebug 0
 #define SocketIDOffline -1
 #define IPv6LengthMax 65
 
@@ -259,7 +266,7 @@ extern "C"
 	CPublic ActionResult CSocketSend(CSocket* cSocket, const void* inputBuffer, const size_t inputBufferSize, size_t* inputBytesWritten);
 	CPublic ActionResult CSocketReceive(CSocket* cSocket, const void* outputBuffer, const size_t outputBufferSize, size_t* outputBytesWritten);
 
-#if defined(OSWindows)
+#if OSWindows
 	CPrivate ActionResult WindowsSocketAgentStartup();
 	CPrivate ActionResult WindowsSocketAgentShutdown();
 #endif

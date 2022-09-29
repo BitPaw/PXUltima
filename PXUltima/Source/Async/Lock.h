@@ -4,10 +4,10 @@
 #include <OS/OSVersion.h>
 #include <Error/ActionResult.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #include <semaphore.h>
 #define LockID sem_t // is union, cannot be defined as "sem_t" only -> compile error
-#elif defined(OSWindows)
+#elif OSWindows
 #include <windows.h>
 //#include <process.h>
 #define LockID HANDLE // same as void*

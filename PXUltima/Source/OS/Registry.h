@@ -3,10 +3,10 @@
 
 #include <Format/Type.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #define RegistryID unsigned int
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <Windows.h>
 #include <winreg.h>
 

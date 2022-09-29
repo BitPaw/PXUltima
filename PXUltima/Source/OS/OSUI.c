@@ -2,8 +2,8 @@
 
 #define WindowsEnableModernColorSceme 1
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
 #if WindowsEnableModernColorSceme
 
@@ -34,7 +34,7 @@
 #include <stdio.h>
 
 
-#if defined(OSWindows)
+#if OSWindows
 void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferRead)
 {
     const int textLength = GetWindowTextLengthW(uiElementID) + 1;
@@ -55,7 +55,7 @@ void OSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, co
 void OSUIElementEnable()
 {
     /*
-    #if defined(OSWindows)
+    #if OSWindows
     INITCOMMONCONTROLSEX icex;
 
     icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -90,8 +90,8 @@ void OSUIElementEnable()
 
 void UIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     DWORD dwExStyle = 0;
     wchar_t* lpClassName = className;// Predefined class; Unicode assumed ;
     wchar_t* lpWindowName = name;
@@ -133,8 +133,8 @@ void ButtonConstruct(const PXWindowID window, OSButton* button, const unsigned i
 {
     MemorySet(button, sizeof(OSButton), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     button->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_USERBUTTON | WS_BORDER;
     button->Layout.X = x;
     button->Layout.Y = y;
@@ -149,8 +149,8 @@ void ComboBoxConstruct(const PXWindowID window, OSComboBox* comboBox, const unsi
 {
     MemorySet(comboBox, sizeof(OSComboBox), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     comboBox->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     comboBox->Layout.X = x;
@@ -168,8 +168,8 @@ void ListBoxConstruct(const PXWindowID window, OSListBox* listBox, const unsigne
 {
     MemorySet(listBox, sizeof(OSListBox), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     listBox->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     listBox->Layout.X = x;
@@ -185,8 +185,8 @@ void TextEditConstruct(const PXWindowID window, OSTextEdit* textEdit, const unsi
 {
     MemorySet(textEdit, sizeof(OSTextEdit), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     textEdit->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     textEdit->Layout.X = x;
@@ -207,8 +207,8 @@ void RichEditConstruct(const PXWindowID window, OSRichEdit* richEdit, const unsi
 {
     MemorySet(richEdit, sizeof(OSRichEdit), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     richEdit->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     richEdit->Layout.X = x;
@@ -224,8 +224,8 @@ void ScrollBarConstruct(const PXWindowID window, OSScrollBar* scrollBar, const u
 {
     MemorySet(scrollBar, sizeof(OSScrollBar), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     scrollBar->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     scrollBar->Layout.X = x;
@@ -241,8 +241,8 @@ void OSUITextConstruct(const PXWindowID window, OSUIText* uiText, const unsigned
 {
     MemorySet(uiText, sizeof(OSUIText), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     uiText->Layout.Style = WS_VISIBLE | WS_CHILD | SS_LEFT | WS_BORDER;
     uiText->Layout.X = x;
@@ -259,8 +259,8 @@ void OSCheckBoxConstruct(const PXWindowID window, OSUICheckBox* uiCheckBox, cons
 {
     MemorySet(uiCheckBox, sizeof(OSUICheckBox), 0);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 
     uiCheckBox->Layout.Style = WS_VISIBLE | WS_CHILD | BS_CHECKBOX | WS_BORDER;
     uiCheckBox->Layout.X = x;
@@ -276,8 +276,8 @@ void OSCheckBoxConstruct(const PXWindowID window, OSUICheckBox* uiCheckBox, cons
 
 void OSUITrackbarCreate(const PXWindowID window, OSUITrackbar* osUITrackbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUITrackbar->Layout.Style = WS_VISIBLE | WS_CHILD | TBS_AUTOTICKS | WS_BORDER;
     osUITrackbar->Layout.X = x;
     osUITrackbar->Layout.Y = y;
@@ -290,8 +290,8 @@ void OSUITrackbarCreate(const PXWindowID window, OSUITrackbar* osUITrackbar, con
 
 void OSUIStatusbarCreate(const PXWindowID window, OSUIStatusbar* osUIStatusbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIStatusbar->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIStatusbar->Layout.X = x;
     osUIStatusbar->Layout.Y = y;
@@ -304,8 +304,8 @@ void OSUIStatusbarCreate(const PXWindowID window, OSUIStatusbar* osUIStatusbar, 
 
 void OSUIUpDownCreate(const PXWindowID window, OSUIUpDown* osUIUpDown, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIUpDown->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIUpDown->Layout.X = x;
     osUIUpDown->Layout.Y = y;
@@ -318,8 +318,8 @@ void OSUIUpDownCreate(const PXWindowID window, OSUIUpDown* osUIUpDown, const uns
 
 void OSUIProgressbarCreate(const PXWindowID window, OSUIProgressbar* osUIProgressbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIProgressbar->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIProgressbar->Layout.X = x;
     osUIProgressbar->Layout.Y = y;
@@ -332,8 +332,8 @@ void OSUIProgressbarCreate(const PXWindowID window, OSUIProgressbar* osUIProgres
 
 void OSUIHotKeyCreate(const PXWindowID window, OSUIHotKey* osUIHotKey, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIHotKey->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIHotKey->Layout.X = x;
     osUIHotKey->Layout.Y = y;
@@ -346,8 +346,8 @@ void OSUIHotKeyCreate(const PXWindowID window, OSUIHotKey* osUIHotKey, const uns
 
 void OSUICalenderCreate(const PXWindowID window, OSUICalender* osUICalender, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUICalender->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUICalender->Layout.X = x;
     osUICalender->Layout.Y = y;
@@ -360,8 +360,8 @@ void OSUICalenderCreate(const PXWindowID window, OSUICalender* osUICalender, con
 
 void OSUIToolTipCreate(const PXWindowID window, OSUIToolTip* osUIToolTip, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIToolTip->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIToolTip->Layout.X = x;
     osUIToolTip->Layout.Y = y;
@@ -374,8 +374,8 @@ void OSUIToolTipCreate(const PXWindowID window, OSUIToolTip* osUIToolTip, const 
 
 void OSUIAnimateCreate(const PXWindowID window, OSUIAnimate* osUIAnimate, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIAnimate->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIAnimate->Layout.X = x;
     osUIAnimate->Layout.Y = y;
@@ -388,8 +388,8 @@ void OSUIAnimateCreate(const PXWindowID window, OSUIAnimate* osUIAnimate, const 
 
 void OSUIDateTimePickerCreate(const PXWindowID window, OSUIDateTimePicker* osUIDateTimePicker, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIDateTimePicker->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIDateTimePicker->Layout.X = x;
     osUIDateTimePicker->Layout.Y = y;
@@ -402,8 +402,8 @@ void OSUIDateTimePickerCreate(const PXWindowID window, OSUIDateTimePicker* osUID
 
 void OSUIGroupBoxCreate(const PXWindowID window, OSUIGroupBox* osUIGroupBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIGroupBox->Layout.Style = WS_VISIBLE | WS_CHILD | BS_GROUPBOX | WS_BORDER;
     osUIGroupBox->Layout.X = x;
     osUIGroupBox->Layout.Y = y;
@@ -416,8 +416,8 @@ void OSUIGroupBoxCreate(const PXWindowID window, OSUIGroupBox* osUIGroupBox, con
 
 void OSUIRadioButtonCreate(const PXWindowID window, OSUIRadioButton* osUIRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIRadioButton->Layout.Style = WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON | WS_BORDER;
     osUIRadioButton->Layout.X = x;
     osUIRadioButton->Layout.Y = y;
@@ -430,8 +430,8 @@ void OSUIRadioButtonCreate(const PXWindowID window, OSUIRadioButton* osUIRadioBu
 
 void OSUIGroupRadioButtonCreate(const PXWindowID window, OSUIGroupRadioButton* osUIGroupRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIGroupRadioButton->Layout.Style = WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_BORDER;
     osUIGroupRadioButton->Layout.X = x;
     osUIGroupRadioButton->Layout.Y = y;
@@ -444,8 +444,8 @@ void OSUIGroupRadioButtonCreate(const PXWindowID window, OSUIGroupRadioButton* o
 
 void OSUIListBoxCreate(const PXWindowID window, OSUIListBox* osUIListBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIListBox->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIListBox->Layout.X = x;
     osUIListBox->Layout.Y = y;
@@ -458,8 +458,8 @@ void OSUIListBoxCreate(const PXWindowID window, OSUIListBox* osUIListBox, const 
 
 void OSUITreeViewCreate(const PXWindowID window, OSUITreeView* OSUITreeView, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     OSUITreeView->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     OSUITreeView->Layout.X = x;
     OSUITreeView->Layout.Y = y;
@@ -472,8 +472,8 @@ void OSUITreeViewCreate(const PXWindowID window, OSUITreeView* OSUITreeView, con
 
 void OSUIIPInputCreate(const PXWindowID window, OSUIIPInput* osUIIPInput, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIIPInput->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIIPInput->Layout.X = x;
     osUIIPInput->Layout.Y = y;
@@ -486,8 +486,8 @@ void OSUIIPInputCreate(const PXWindowID window, OSUIIPInput* osUIIPInput, const 
 
 void OSUITabControlCreate(const PXWindowID window, OSUITabControl* osUITabControl, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUITabControl->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUITabControl->Layout.X = x;
     osUITabControl->Layout.Y = y;
@@ -500,8 +500,8 @@ void OSUITabControlCreate(const PXWindowID window, OSUITabControl* osUITabContro
 
 void OSUIPageScrollerCreate(const PXWindowID window, OSUIPageScroller* osUIPageScroller, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIPageScroller->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIPageScroller->Layout.X = x;
     osUIPageScroller->Layout.Y = y;
@@ -514,8 +514,8 @@ void OSUIPageScrollerCreate(const PXWindowID window, OSUIPageScroller* osUIPageS
 
 void OSUIFontSelectorCreate(const PXWindowID window, OSUIFontSelector* osUIFontSelector, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIFontSelector->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;// NFS_USEFONTASSOC;
     osUIFontSelector->Layout.X = x;
     osUIFontSelector->Layout.Y = y;
@@ -528,8 +528,8 @@ void OSUIFontSelectorCreate(const PXWindowID window, OSUIFontSelector* osUIFontS
 
 void OSUIHeaderCreate(const PXWindowID window, OSUIHeader* osUIHeader, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUIHeader->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     osUIHeader->Layout.X = x;
     osUIHeader->Layout.Y = y;
@@ -542,8 +542,8 @@ void OSUIHeaderCreate(const PXWindowID window, OSUIHeader* osUIHeader, const uns
 
 void OSUILinkCreate(const PXWindowID window, OSUILink* osUILink, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     osUILink->Layout.Style = WS_VISIBLE | WS_CHILD;
     osUILink->Layout.X = x;
     osUILink->Layout.Y = y;

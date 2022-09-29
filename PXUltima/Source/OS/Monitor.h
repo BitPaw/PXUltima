@@ -5,8 +5,8 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #include <windows.h>
 #endif
 
@@ -27,8 +27,8 @@ extern "C"
 	}
 	Monitor;
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	static BOOL _stdcall MonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data);
 #endif
 

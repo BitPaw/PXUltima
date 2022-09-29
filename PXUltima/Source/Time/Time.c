@@ -2,8 +2,8 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #include <Windows.h>
 #endif
 
@@ -44,8 +44,8 @@ TimeMonth ConvertToDay(unsigned short dayID)
 
 void TimeNow(Time* time)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	SYSTEMTIME systemTime;
 
 	//GetSystemTime(&st);

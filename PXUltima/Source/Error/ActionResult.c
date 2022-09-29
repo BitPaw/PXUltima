@@ -4,10 +4,10 @@
 
 #include <errno.h>
 
-#if defined(OSUnix)
+#if OSUnix
 
 #define EOTHER -1
-#elif defined(OSWindows)
+#elif OSWindows
 #endif
 
 ActionResult ConvertErrorCode(const int errorCode)
@@ -195,7 +195,7 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case ENXIO:
 			return NoSuchDeviceOrAddress;
 
-#if defined(OSUnix)
+#if OSUnix
 			//case EAGAIN:
 		case EWOULDBLOCK:
 			return OperationWouldBlock;
@@ -204,7 +204,7 @@ ActionResult ConvertErrorCode(const int errorCode)
 		case ENOTSUP:
 			return NotSupported;
 
-#elif defined(OSWindows)
+#elif OSWindows
 		case EAGAIN:
 			return ResourceUnavailableTryAgain;
 

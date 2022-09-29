@@ -3,8 +3,8 @@
 
 #include <OS/OSVersion.h>
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 #include <Windows.h>
 #include <sqlext.h>  
 #include <sqltypes.h>
@@ -91,8 +91,8 @@ extern "C"
 
 	typedef struct DataBaseConnection_
 	{
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 		SQLHENV _handleEnvironment;
 		SQLHDBC _handleConnection;
 #endif	

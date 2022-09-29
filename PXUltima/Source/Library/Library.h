@@ -5,7 +5,7 @@
 
 #include <Format/Type.h>
 
-#if defined(OSUnix)
+#if OSUnix
 #include <sys/types.h>
 #include <dlfcn.h>
 
@@ -13,7 +13,7 @@
 #define LibraryFunction void*
 #define LibraryDirectoryID void*
 
-#elif defined(OSWindows)
+#elif OSWindows
 #include <windows.h>
 
 #define LibraryHandle HMODULE // HINSTANCE (semms is also okey)

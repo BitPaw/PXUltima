@@ -1,9 +1,9 @@
 #include "Library.h"
 
 
-#if defined(OSUnix)
+#if OSUnix
 
-#elif defined(OSWindows)
+#elif OSWindows
 //#include <dbghelp.h> // MISSING
 #include <stdio.h>
 
@@ -34,8 +34,8 @@ dlerror() - get diagnostic information
 /*
 BF::ErrorCode BF::Library::SearchDirectoryAdd(const wchar_t* directoryPath, LibraryDirectoryID& libraryDirectoryID)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	const DLL_DIRECTORY_COOKIE cookie = AddDllDirectory(directoryPath);
 	const bool successful = cookie != 0;
 
@@ -54,8 +54,8 @@ BF::ErrorCode BF::Library::SearchDirectoryAdd(const wchar_t* directoryPath, Libr
 
 BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDirectoryID)
 {
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
 	const bool successful = RemoveDllDirectory(libraryDirectoryID);
 
 	if(!successful)
@@ -73,11 +73,11 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 
 unsigned char LibraryOpenA(LibraryHandle* Handle, const char* filePath)
 {
-#if defined(OSUnix)
+#if OSUnix
 	const int mode = RTLD_NOW;
 	LibraryHandle libraryHandle = dlopen(filePath, mode);
 
-#elif defined(OSWindows)
+#elif OSWindows
 	const LibraryHandle libraryHandle = LoadLibraryA(filePath);
 
 #endif
@@ -98,9 +98,9 @@ unsigned char LibraryOpenA(LibraryHandle* Handle, const char* filePath)
 
 unsigned char LibraryOpenW(LibraryHandle* Handle, const wchar_t* filePath)
 {
-#if defined(OSUnix)
+#if OSUnix
 	return Open((char*)filePath);
-#elif defined(OSWindows)
+#elif OSWindows
 	const LibraryHandle libraryHandle = LoadLibraryW(filePath);
 
 	{
@@ -120,9 +120,9 @@ unsigned char LibraryOpenW(LibraryHandle* Handle, const wchar_t* filePath)
 
 unsigned char LibraryClose(LibraryHandle* Handle)
 {
-#if defined(OSUnix)
+#if OSUnix
 	const unsigned char result = dlclose(Handle);
-#elif defined(OSWindows)
+#elif OSWindows
 	const unsigned char result = FreeLibrary(Handle);
 #endif
 
@@ -133,18 +133,18 @@ unsigned char LibraryClose(LibraryHandle* Handle)
 
 unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName)
 {
-#if defined(OSUnix)
+#if OSUnix
 	const LibraryFunction functionPointer = (LibraryFunction*)dlsym(handle, symbolName);
 	const char* errorString = dlerror();
 	const unsigned char successful = errorString;
-#elif defined(OSWindows)
+#elif OSWindows
 	const LibraryFunction functionPointer = GetProcAddress(handle, symbolName);
 	const unsigned char successful = functionPointer;
 #endif
 
-#if defined(OSUnix)
+#if OSUnix
 	libraryFunction = (void*)functionPointer;
-#elif defined(OSWindows)
+#elif OSWindows
 	libraryFunction = functionPointer;
 #endif
 
@@ -153,10 +153,10 @@ unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFu
 
 unsigned char LibraryParseSymbols()
 {
-#if defined(OSUnix)
+#if OSUnix
 
 
-#elif defined(OSWindows)
+#elif OSWindows
 	/*
 
 	auto x = LoadLibraryA("user32.dll");

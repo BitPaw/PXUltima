@@ -6,10 +6,10 @@
 
 const SQLType SQLTypeFromID(const unsigned int sqlType)
 {
-#if defined(OSUnix)
+#if OSUnix
     return SQLTypeInvalid;
 
-#elif defined(OSWindows)
+#elif OSWindows
     switch (sqlType)
     {
         // Mysql?
@@ -65,10 +65,10 @@ void DataBaseConnectionConnect
 )
 {
 
-#if defined(OSUnix)
+#if OSUnix
     return SQLResultInvalid;
 
-#elif defined(OSWindows)
+#elif OSWindows
     // Allocate environment handle
     {
         const SQLRETURN result = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &dataBaseConnection->_handleEnvironment);
@@ -206,8 +206,8 @@ void DataBaseConnectionConnect
 void DataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection)
 {
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     if (dataBaseConnection->_handleConnection != 0)
     {
         const SQLRETURN resultDisconnect = SQLDisconnect(dataBaseConnection->_handleConnection);
@@ -222,8 +222,8 @@ void DataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection)
 {
     DataBaseConnectionDisconnect(dataBaseConnection);
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     if (dataBaseConnection->_handleEnvironment != 0)
     {
         const SQLRETURN result = SQLFreeHandle(SQL_HANDLE_ENV, dataBaseConnection->_handleEnvironment);
@@ -234,8 +234,8 @@ void DataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection)
 void DataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnection)
 {
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     SQLUSMALLINT direction = SQL_FETCH_FIRST;
     unsigned char finished = 0;
 
@@ -289,8 +289,8 @@ void DataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnecti
 void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, const wchar_t* sqlStatement)
 {
 
-#if defined(OSUnix)
-#elif defined(OSWindows)
+#if OSUnix
+#elif OSWindows
     SQLHSTMT handleStatement = 0;
     size_t colums = 0;
     size_t rows = 0;

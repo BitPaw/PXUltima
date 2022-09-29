@@ -4,61 +4,101 @@
 //---<Detect OS version>----------------------------------------------------
 #if defined(unix) || defined(__unix) || defined(__unix__)
     #ifndef OSUnix
-        #define OSUnix
-        #pragma message("[PX] UNIX architecture detected")
+        #define OSUnix 1u
     #endif
-#elif defined(linux) || defined(__linux) || defined(__linux__)
+#else
+    #ifndef OSUnix
+        #define OSUnix 0u
+    #endif
+#endif
+//-----------------------------------------------------------------------------
+#if defined(linux) || defined(__linux) || defined(__linux__)
     #ifndef OSLinux
-        #define OSLinux
-         #pragma message("[PX] Linux architecture detected")
+        #define OSLinux 1u
     #endif
-#elif defined(__APPLE__) || defined(__MACH__)
+#else
+    #ifndef OSLinux
+        #define OSLinux 0u
+    #endif
+#endif
+//-----------------------------------------------------------------------------
+#if defined(__APPLE__) || defined(__MACH__)
     #ifndef OSApple
-        #define OSApple
-         #pragma message("[PX] Apple architecture detected")
+        #define OSApple 1u
     #endif
-#elif defined(__ANDROID__)
+#else
     #ifndef OSApple
-        #define OSAndroid
-        #pragma message("[PX] Android architecture detected")
+        #define OSApple 0u
     #endif
-#elif defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__)
-    #define OSWindowsSystem64Bit
-    #pragma message("[PX] Windows architecture 64-Bit detected")
+#endif
+//-----------------------------------------------------------------------------
+#if defined(__ANDROID__)
+    #ifndef OSAndroid
+        #define OSAndroid 1u
+    #endif
+#else
+    #ifndef OSAndroid
+        #define OSAndroid 0u
+    #endif
+#endif
+//-----------------------------------------------------------------------------
+#if defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__)
+    #ifndef OSWindows64B
+        #define OSWindows64B 1u
+    #endif
+
+    #ifndef OSWindows32B
+        #define OSWindows32B 0u
+    #endif
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__WIN32__)
-    #define OSWindowsSystem32Bit
-    #pragma message("[PX] Windows architecture 32-Bit detected")
-#else
-    #error [PX] Architecture not detected!
-#endif
-//-----------------------------------------------------------------------------
+    #ifndef OSWindows64B
+        #define OSWindows64B 0u // Cant be 64-Bit, as this is 32-Bit
+    #endif
 
-#if (defined(OSWindowsSystem64Bit) || defined(OSWindowsSystem32Bit))
+    #ifndef OSWindows32B
+        #define OSWindows32B 1u
+    #endif
+#else
+#pragma PX Windows Bit version cant be detected? This can not happen   
+#endif
+
+#if (OSWindows64B || OSWindows32B)
     #ifndef OSWindows
-        #define OSWindows
-        #pragma message("[PX] Windows architecture detected")
+        #define OSWindows 1u
+    #endif
+#else
+    #ifndef OSWindows
+        #define OSWindows 0u
     #endif
 #endif
 //-----------------------------------------------------------------------------
 
 
-/*
+
 //-----------------------------------------------------------------------------
-#if defined(_AMD64_) || defined(OSWindowsSystem64Bit)
-#define OS64Bit
-#pragma message("[PX] architecture 64-Bit detected")
-#elif defined(_X86_)
-#define OS32Bit
-#pragma message("[PX] architecture 32-Bit detected")
+#if ÓSVersionOutput
+#if OSUnix
+    #pragma message("[PX] Operating system: UNIX")
+#elif OSLinux
+    #pragma message("[PX] Operating system: Linux")
+#elif OSApple
+    #pragma message("[PX] Operating system: Apple")
+#elif OSAndroid
+    #pragma message("[PX] Operating system: Android")
+#elif OSWindows64B
+    #pragma message("[PX] Operating system: Windows 64-Bit detected")
+#elif OSWindows32B
+    #pragma message("[PX] Operating system: Windows 32-Bit detected")
 #else
-#error [PX][Error] Invalid bit-version architecture!
-#endif*/
+    #error [PX] Operating system could not be detected!
+#endif
+#endif
 //-----------------------------------------------------------------------------
 
 
 
 //-----------------------------------------------------------------------------
-#if defined(OSWindows) // Detect which windows version is used
+#if OSWindows // Detect which windows version is used
 
     #include <Windows.h>
     #include <SdkDdkVer.h>
@@ -77,42 +117,66 @@
     #define Version_Windows_10 0x0A00
 
     #if Version_Windows >= Version_Windows_NT
-        #define WindowsAtleastNT
+        #define WindowsAtleastNT 1u
+    #else 
+        #define WindowsAtleastNT 0u
     #endif
 
     #if Version_Windows >= Version_Windows_2000
-        #define WindowsAtleast2000
+        #define WindowsAtleast2000 1u
+    #else 
+        #define WindowsAtleast2000 0u
     #endif
 
     #if Version_Windows >= Version_Windows_XP
-        #define WindowsAtleastXP
+        #define WindowsAtleastXP 1u
+    #else 
+        #define WindowsAtleastXP 0u
     #endif
 
     #if Version_Windows >= Version_Windows_Vista
-        #define WindowsAtleastVista
+        #define WindowsAtleastVista 1u
+    #else 
+        #define WindowsAtleastVista 0u
     #endif
 
     #if Version_Windows >= Version_Windows_7
-        #define WindowsAtleast7
+        #define WindowsAtleast7 1u
+    #else 
+        #define WindowsAtleast7 0u
     #endif
 
     #if Version_Windows >= Version_Windows_8
-        #define WindowsAtleast8
+        #define WindowsAtleast8 1u
+    #else 
+        #define WindowsAtleast8 0u
     #endif
 
     #if Version_Windows >= Version_Windows_10
-        #define WindowsAtleast10
+        #define WindowsAtleast10 1u
+    #else 
+        #define WindowsAtleast10 0u
     #endif
 
     #if Version_Windows == Version_Windows_XP
-        #define OSWindowsXP
+        #define OSWindowsXP 1u
         typedef struct IUnknown IUnknown;
-    #elif Version_Windows == Version_Windows_7
-        #define OSWindows7
-    #elif Version_Windows == Version_Windows_10
-        #define OSWindows10
+    #else 
+        #define OSWindowsXP 0u
+    #endif
+
+    #if Version_Windows == Version_Windows_7
+        #define OSWindows7 1u
+    #else 
+        #define OSWindows7 0u
+    #endif
+
+    #if Version_Windows == Version_Windows_10
+        #define OSWindows10 1u
+    #else 
+        #define OSWindows10 0u
     #endif
 //-----------------------------------------------------------------------------
 #endif
 
-#endif // OSVersionINCLUDE
+#endif

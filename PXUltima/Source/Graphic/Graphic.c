@@ -98,14 +98,14 @@ ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CT
 
         if (!isValid)
         {
-            return;
+            return ActionInvalid;
         }
     }
 
 
 
-    OpenGLTextureCreate(graphicContext, 1u, &textureID);
-    OpenGLTextureBind(graphicContext, OpenGLTextureTypeCubeMap, textureID);
+    OpenGLTextureCreate(&graphicContext->OpenGLInstance, 1u, &textureID);
+    OpenGLTextureBind(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, textureID);
 
 
     /*
@@ -481,10 +481,10 @@ unsigned char GraphicImageBufferSwap(GraphicContext* const graphicContext)
    // OpenGLContextFlush(&graphicContext->OpenGLInstance);
 
     const unsigned char successful =
-#if defined(OSUnix)
+#if OSUnix
         1u; // No feedback?
     glXSwapBuffers(window->DisplayCurrent, window->ID);
-#elif defined(OSWindows)
+#elif OSWindows
         SwapBuffers(window->HandleDeviceContext);
 #endif
 
@@ -562,8 +562,8 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
     //-----
 
     const size_t shaderListSize = 2;
-    const Shader* shaderList[2] = { &vertexShader, &fragmentShader };
-    const OpenGLID shaderProgrammID = OpenGLShaderProgramCreate(graphicContext);
+    Shader* const shaderList[2] = { &vertexShader, &fragmentShader };
+    const OpenGLID shaderProgrammID = OpenGLShaderProgramCreate(&graphicContext->OpenGLInstance);
     unsigned int  sucessfulCounter = 0;
     unsigned char isValidShader = 1;
 
@@ -571,11 +571,11 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
     {
         Shader* const shader = shaderList[i];
         const OpenGLShaderType openGLShaderType = GraphicShaderFromOpenGL(shader->Type);             
-        const unsigned int shaderID = OpenGLShaderCreate(graphicContext, openGLShaderType);
+        const unsigned int shaderID = OpenGLShaderCreate(&graphicContext->OpenGLInstance, openGLShaderType);
 
-        OpenGLShaderSource(graphicContext, shaderID, 1u, &shader->Content, &shader->ContentSize);
+        OpenGLShaderSource(&graphicContext->OpenGLInstance, shaderID, 1u, &shader->Content, &shader->ContentSize);
 
-        const unsigned char compileSuccessful = OpenGLShaderCompile(graphicContext, shaderID);
+        const unsigned char compileSuccessful = OpenGLShaderCompile(&graphicContext->OpenGLInstance, shaderID);
 
         if (!compileSuccessful)
         {
@@ -583,15 +583,15 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
             break;
         }    
 
-        OpenGLShaderProgramAttach(graphicContext, shaderProgrammID, shaderID);
+        OpenGLShaderProgramAttach(&graphicContext->OpenGLInstance, shaderProgrammID, shaderID);
 
         shader->ID = shaderID;
     }
 
     if (isValidShader)
     {        
-        OpenGLShaderProgramLink(graphicContext, shaderProgrammID);
-        OpenGLShaderProgramValidate(graphicContext, shaderProgrammID);
+        OpenGLShaderProgramLink(&graphicContext->OpenGLInstance, shaderProgrammID);
+        OpenGLShaderProgramValidate(&graphicContext->OpenGLInstance, shaderProgrammID);
 
         shaderProgram->ID = shaderProgrammID;
     }
@@ -604,13 +604,13 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
 
         if (isLoaded)
         {
-            OpenGLShaderDelete(graphicContext, shader->ID);
+            OpenGLShaderDelete(&graphicContext->OpenGLInstance, shader->ID);
         }
     }
 
     if (!isValidShader)
     {
-        OpenGLShaderProgramDelete(graphicContext, shaderProgrammID);
+        OpenGLShaderProgramDelete(&graphicContext->OpenGLInstance, shaderProgrammID);
     }
 
     DataStreamDestruct(&vertexShaderFile);
