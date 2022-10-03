@@ -1,16 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <FileUpgradeFlags>40</FileUpgradeFlags>
+    <UpgradeBackupLocation>D:\_Data\Git\PXUltima\Backup\PXUltimaSharpTest\</UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\PXUltimaSharp\PXUltimaSharp.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="glew32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -22,5 +22,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>

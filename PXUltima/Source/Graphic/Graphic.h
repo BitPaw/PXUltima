@@ -143,7 +143,7 @@ extern "C"
 	ShaderProgram;
 
 
-	typedef struct CTexture_
+	typedef struct PXTexture_
 	{
 		unsigned int ID;
 
@@ -156,7 +156,10 @@ extern "C"
 
 		Image Image;
 	}
-	CTexture;
+	PXTexture;
+
+	CPublic void PXTextureConstruct(PXTexture* const texture);
+	CPublic void PXTextureDestruct(PXTexture* const texture);
 
 	typedef struct CTextureCube_
 	{
@@ -168,7 +171,7 @@ extern "C"
 	typedef struct CSprite_
 	{
 		unsigned int ID;
-		CTexture* Texture;
+		PXTexture* Texture;
 	}
 	CSprite;
 
@@ -248,9 +251,9 @@ extern "C"
 
 	// Texture
 
-	CPublic ActionResult GraphicTextureUse(GraphicContext* const graphicContext, CTexture* const texture);
-	CPublic ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, CTexture* const texture);
-	CPublic ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, CTexture* const texture);
+	CPublic ActionResult GraphicTextureUse(GraphicContext* const graphicContext, PXTexture* const texture);
+	CPublic ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, PXTexture* const texture);
+	CPublic ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, PXTexture* const texture);
 
 	CPublic ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CTextureCube* const textureCube);
 	CPublic ActionResult GraphicTextureCubeRegisterUse(GraphicContext* const graphicContext, CTextureCube* const textureCube);

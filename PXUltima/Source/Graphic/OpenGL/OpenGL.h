@@ -75,15 +75,29 @@ extern "C"
 		OpenGLTextureTypeInvalid,
 		OpenGLTextureType1D,
 		OpenGLTextureType2D,
+		OpenGLTextureType2DProxy,
 		OpenGLTextureType3D,
 		OpenGLTextureType1DArray,
+		OpenGLTextureType1DArrayProxy,
 		OpenGLTextureType2DArray,
 		OpenGLTextureTypeRectangle,
+		OpenGLTextureTypeRectangleProxy,
+
+
 		OpenGLTextureTypeCubeMap,
+		OpenGLTextureTypeCubeMapProxy,
+		OpenGLTextureTypeCubeMapTop,
+		OpenGLTextureTypeCubeMapBottom,
+		OpenGLTextureTypeCubeMapFront,
+		OpenGLTextureTypeCubeMapBack,
+		OpenGLTextureTypeCubeMapLeft,
+		OpenGLTextureTypeCubeMapRight,
+
+
 		OpenGLTextureTypeCubleMapArray,
 		OpenGLTextureTypeBuffer,
 		OpenGLTextureType2DMultiSample,
-		OpenGLTextureType2DMultiSampleArray,
+		OpenGLTextureType2DMultiSampleArray
 	}
 	OpenGLTextureType;
 
@@ -530,7 +544,6 @@ extern "C"
 		const OpenGLImageFormat glImageFormatInternal,
 		const size_t width,
 		const size_t height,
-		const unsigned int border,
 		const OpenGLImageFormat glImageFormatInput,
 		const OpenGLDataType glDataType,
 		const void* const imageData

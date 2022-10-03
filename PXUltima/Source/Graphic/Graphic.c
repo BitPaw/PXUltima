@@ -4,7 +4,7 @@
 #include <File/DataStream.h>
 #include <OS/PXWindow.h>
 
-ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, CTexture* const texture)
+ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, PXTexture* const texture)
 {
     const OpenGLTextureType openGLTextureType = ImageTypeGraphicToOpenGL(texture->Type);
 
@@ -62,7 +62,7 @@ ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, CTextu
     return ActionSuccessful;
 }
 
-ActionResult GraphicTextureUse(GraphicContext* const graphicContext, CTexture* const texture)
+ActionResult GraphicTextureUse(GraphicContext* const graphicContext, PXTexture* const texture)
 {
     /*
     const bool isValidTexture = textureID != -1 && imageType != ImageType::Invalid;
@@ -85,12 +85,12 @@ ActionResult GraphicTextureUse(GraphicContext* const graphicContext, CTexture* c
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, CTexture* const texture)
+ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, PXTexture* const texture)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, CTexture* const texture)
+ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, PXTexture* const texture)
 {
     return ActionInvalid;
 }
@@ -452,6 +452,16 @@ ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, 
     */
 
     return ActionInvalid;
+}
+
+void PXTextureConstruct(PXTexture* const texture)
+{
+    MemorySet(texture, sizeof(PXTexture), 0);
+}
+
+void PXTextureDestruct(PXTexture* const texture)
+{
+	
 }
 
 OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType)
