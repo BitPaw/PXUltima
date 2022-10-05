@@ -390,6 +390,19 @@ void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsi
 {
 }
 
+void ImageFillColorRGBA8(Image* const image, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)
+{
+    for (size_t i = 0; i < image->PixelDataSize; i += 4u)
+    {
+        unsigned char* const data = (unsigned char*)image->PixelData + i;
+
+        data[0] = red;
+        data[1] = green;
+        data[2] = blue;
+        data[3] = alpha;
+    }
+}
+
 void* ImageDataPoint(const Image* const image, const size_t x, const size_t y)
 {
     const bytesPerPixel = ImageBytePerPixel(image->Format);
@@ -441,12 +454,13 @@ void ImageDrawRectangle
 
     const size_t mimimumInBoundsX = MathMinimum(x + width, image->Width);
     const size_t mimimumInBoundsY = MathMinimum(y + height, image->Height);
-    
+    const size_t bytePerPixel = ImageBytePerPixel(image->Format);
+
     for (size_t cy = y; cy < mimimumInBoundsY; ++cy)
     {
         for (size_t cx = x; cx < mimimumInBoundsX; ++cx)
         {
-            const size_t index = cx *3u + cy * image->Width*3u;
+            const size_t index = cx * bytePerPixel + cy * image->Width* bytePerPixel;
 
             ((unsigned char*)image->PixelData)[index+0] = red;
             ((unsigned char*)image->PixelData)[index+1] = green;
@@ -455,7 +469,7 @@ void ImageDrawRectangle
     }      
 }
 
-void ImageDrawTextA(Image* const image, const size_t x, const size_t y, const size_t width, const size_t height, const CFont* const font, const char* text)
+void ImageDrawTextA(Image* const image, const size_t x, const size_t y, const size_t width, const size_t height, const PXFont* const font, const char* text)
 {
     wchar_t textW[1024];
 
@@ -471,15 +485,12 @@ void ImageDrawTextW
     const size_t y,
     const size_t width,
     const size_t height,
-    const CFont* const font,
+    const PXFont* const font,
     const wchar_t* text
 )
 {
     float fontSize = 0.002;
     float lastPositionX = x;
-
-
-   // FNTPrtinf(&font->BitMapFont);
 
     for (size_t i = 0; (i < 1024u) && (text[i] != '\0'); ++i)
     {

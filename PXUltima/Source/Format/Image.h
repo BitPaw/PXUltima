@@ -9,8 +9,8 @@ extern "C"
 {
 #endif
 
-#ifndef CFont_
-	typedef struct CFont_ CFont; // Avoid inclusion loop
+#ifndef PXFont_
+	typedef struct PXFont_ PXFont; // Avoid inclusion loop
 #endif
 
 	typedef enum ImageFileFormat_
@@ -87,6 +87,7 @@ extern "C"
 	CPublic void ImageFlipHorizontal(Image* image);
 	CPublic void ImageFlipVertical(Image* image);
 	CPublic void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsigned char blue);
+	CPublic void ImageFillColorRGBA8(Image* const image, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha);
 
 	CPublic void* ImageDataPoint(const Image* const image, const size_t x, const size_t y);
 
@@ -125,7 +126,7 @@ extern "C"
 		const size_t y,
 		const size_t width,
 		const size_t height,
-		const CFont* const font,
+		const PXFont* const font,
 		const char* text
 	);
 	CPublic void ImageDrawTextW
@@ -135,7 +136,7 @@ extern "C"
 		const size_t y,
 		const size_t width,
 		const size_t height,
-		const CFont* const font,
+		const PXFont* const font,
 		const wchar_t* text
 	);
 	CPublic void ImageMerge

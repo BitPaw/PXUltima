@@ -8,6 +8,7 @@
 #include <float.h>
 #include <OS/PXWindow.h>
 #include <Format/Font.h>
+#include <Math/Matrix.h>
 
 void TestOpenGLAll()
 {
@@ -39,6 +40,8 @@ void CreateRenderableTexture(OpenGLContext* openGLContext, unsigned int width, u
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, 0);
 	//-------------------------------------------------------------------------
 
@@ -60,24 +63,31 @@ void CreateRenderableTexture(OpenGLContext* openGLContext, unsigned int width, u
 	OpenGLClearColor(openGLContext, 0.2f, 0.2f, 0.2f, 1.0f);
 	OpenGLClear(openGLContext, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	OpenGLDrawScaleF(openGLContext, 1, -1, 1);
+
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_TEXTURE_2D);
 }
+
 
 void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
 {
 	PXWindow* pxWindow = (PXWindow*)openGLContext->AttachedWindow;
 
-	//glReadPixels(0,0, width, heigh, ;
-
 	Image image;
+
+	ImageConstruct(&image);
+
 	image.Height = pxWindow->Height;
 	image.Width = pxWindow->Width;
 	image.Format = ImageDataFormatRGB8;
 	image.PixelDataSize = pxWindow->Width * pxWindow->Height * 3u;
 	image.PixelData = MemoryAllocate(image.PixelDataSize);
 
-	OpenGLPixelDataRead(&openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
+	OpenGLPixelDataRead(openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
 
 	ImageSaveA(&image, "_TEST_DATA_OUTPUT_/Buffertest.png", ImageFileFormatPNG, ImageDataFormatRGB8);
+
+	ImageDestruct(&image);
 }
 
 void TestOpenGLRenderToTexture()
@@ -112,185 +122,187 @@ void TestOpenGLRenderToTexture()
 	OpenGLContextDeselect(&openGLContext);
 }
 
+void RenderRectangle(float postionX, float postionY, float textureScaleX, float textureScaleY)
+{
+	glBegin(GL_QUADS);
+
+	glColor3f(1, 1, 1);
+
+	glTexCoord2f(0* textureScaleX, 1 * textureScaleY);
+	glVertex2f(-1 + postionX, -1 + postionY); // bottom-left
+
+	glTexCoord2f(0 * textureScaleX, 0 * textureScaleY);
+	glVertex2f(-1 + postionX, 1 + postionY); // top left
+
+	glTexCoord2f(1 * textureScaleX, 0* textureScaleY);
+	glVertex2f(1 + postionX, 1 + postionY); // top-right
+
+	glTexCoord2f(1 * textureScaleX, 1 * textureScaleY);
+	glVertex2f(1 + postionX, -1 + postionY); // top-left
+
+	glEnd();
+}
+
+void DrawStructure(OpenGLContext* const openGLContext,float* modelMatrix,  float* vertexList, float* texturePositionList, float* colorList, unsigned int textureID)
+{
+	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, textureID);
+	
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(modelMatrix);
+	//glPushMatrix();
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	if (texturePositionList)
+	{
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(2, GL_FLOAT, 0, texturePositionList);
+	}
+
+	if (colorList)
+	{
+		glEnableClientState(GL_COLOR_ARRAY);
+		glColorPointer(3, GL_FLOAT, 0, colorList);
+	}
+
+	glVertexPointer(2, GL_FLOAT, 0, vertexList);
+
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, 0);
+}
+
 void TestOpenGLTextDraw()
 {
-	// Create OpenGL stuff
+	float scale = 1;
+	unsigned int width = 800 * scale;
+	unsigned int height = 600 * scale;
 
-	// Draw text and rotate, size check
-
-	// Save image
-
-
-
-
-	float scake = 1;
-	unsigned int width = 800 * scake;
-	unsigned int height = 600 * scake;
-
-	CFont font;
-	FontConstruct(&font);
-
+	PXFont font;
 	FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
 
-	OpenGLContext openGLContext;
+	PXTexture textureText;
+	PXTextureConstruct(&textureText);
 
+	OpenGLContext openGLContext;
 	CreateRenderableTexture(&openGLContext, width, height);
 
 	//------------------------------	
 
 
-	//glPixelZoom(1, -1);
-	//glPerspective(-45.0, width / height, 1.0, 100.0);
-
-	// Render text to texture (generic, just text
-
-	// Scale texture
-
-	//glActiveTexture(0x84C0);
-
-
-#if 1
-// Put it where is should be set
-
-
-
-//OpenGLDrawScaleF(&openGLContext, 1/5.0f, -1, 1);
-
-// Will be rendered to RenderBuffer->Framebuffer->RenderTexture
-
-
-
-	glDisable(GL_CULL_FACE); // render both sides
-
-
-	PXTexture textureTecxt;
-
-	PXTextureConstruct(&textureTecxt);
-
-	glEnable(GL_TEXTURE_2D);
+	
 
 	//---<Draw text into texture>----------------------------------------------
-	OpenGLTextureCreate(&openGLContext, 1u, &textureTecxt.ID);
-	OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureTecxt.ID);
-
-	ImageResize(&textureTecxt.Image, ImageDataFormatRGBA8, 1024, 1024); // Create memory
-
-	for (size_t i = 0; i < textureTecxt.Image.PixelDataSize; i += 4)
 	{
-		((unsigned char*)textureTecxt.Image.PixelData)[i + 0] = 0xFF;
-		((unsigned char*)textureTecxt.Image.PixelData)[i + 1] = 0;
-		((unsigned char*)textureTecxt.Image.PixelData)[i + 2] = 0;
-		((unsigned char*)textureTecxt.Image.PixelData)[i + 3] = 0xFF;
+		size_t textWidth = 1024u;
+		size_t textHeight = 1024;
+
+		OpenGLTextureCreate(&openGLContext, 1u, &textureText.ID);
+		OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureText.ID);
+
+		ImageResize(&textureText.Image, ImageDataFormatRGBA8, textWidth, textHeight); // Create memory
+		ImageFillColorRGBA8(&textureText.Image, 50, 50, 50, 150);
+
+		ImageDrawRectangle(&textureText.Image, 10, 10, 100, 100, 0xFF, 0, 0, 0xFF); // test
+		ImageDrawTextA(&textureText.Image, 0, 0, textWidth, textHeight, &font, "Sample Text"); // Draw text
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+		glTexEnvi(GL_TEXTURE_ENV, 0x8571, GL_MODULATE);
+
+		OpenGLTextureData2D(&openGLContext, OpenGLTextureType2D, 0, OpenGLImageFormatRGBA, textWidth, textHeight, OpenGLImageFormatRGBA, OpenGLTypeByteUnsigned, textureText.Image.PixelData);
+		OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, 0);
 	}
 
-	ImageDrawRectangle(&textureTecxt.Image, 10, 10, 100, 100, 0xFF, 0, 0, 0xFF); // test
-	ImageDrawTextA(&textureTecxt.Image, 0, 0, 1024, 1024, &font, "Sample Text"); // Draw text
 
-
-
-
-
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-
-
-
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glTexEnvi(GL_TEXTURE_ENV, 0x8571, GL_BLEND);// GL_COMBINE_RGB , 0x8570
-	glTexEnvi(GL_TEXTURE_ENV, 0x8571, GL_ADD);// GL_COMBINE_RGB , 0x8570
+	///glTexEnvi(GL_TEXTURE_ENV, 0x8571, GL_MODULATE);// GL_COMBINE_RGB , 0x8570
 	//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MULT);
 
 
 
-
-
-	OpenGLTextureData2D(&openGLContext, OpenGLTextureType2D, 0, OpenGLImageFormatRGBA, 1024, 1024, OpenGLImageFormatRGBA, OpenGLTypeByteUnsigned, textureTecxt.Image.PixelData);
-	//OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, 0);
 	//-------------------------------------------------------------------------
 
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	
+#if 1 // Mega Text
+	float startPositionX = 0;
+	float startPositionY = 0;
 	float scaleTextureX = 0.5;
-	float scaleTextureY = 0.5;
+	float scaleTextureY = 0.05;
 
-	glBegin(GL_QUADS);
+	OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureText.ID);
+	RenderRectangle(startPositionX, startPositionY, scaleTextureX, scaleTextureY);
+	OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, 0);
+#endif
 
-	glColor3f(1, 1, 1);
-
-	glTexCoord2f(0, 1);
-	glVertex2f(-1* scaleTextureX, -1* scaleTextureY); // bottom-left
-
-	glTexCoord2f(0, 0);
-	glVertex2f(-1* scaleTextureX, 1* scaleTextureY); // top left
-
-	glTexCoord2f(1, 0);
-	glVertex2f(1* scaleTextureX, 1* scaleTextureY); // top-right
-
-	glTexCoord2f(1, 1);
-	glVertex2f(1* scaleTextureX, -1* scaleTextureY); // top-left
-
-	glEnd();
-
-
+#if 1 // colored background
 	OpenGLDrawBegin(&openGLContext, OpenGLRenderQuads);
 	OpenGLDrawVertexXYZF(&openGLContext, -1, -1, 0);  glColor4d(1, 0, 1, 0.2f);
 	OpenGLDrawVertexXYZF(&openGLContext, 1, -1, 0);  glColor4d(0, 1, 0, 0.2);
 	OpenGLDrawVertexXYZF(&openGLContext, 1, 1, 0); glColor4d(0, 1, 1, 0.2);
 	OpenGLDrawVertexXYZF(&openGLContext, -1, 1, 0);  glColor4d(0, 0.5, 0.2, 0.2f);
 	OpenGLDrawEnd(&openGLContext);
+#endif
 
 	//OpenGLFlush(&openGLContext);
-#if 1
 
 
-#if 0
+#if 0 // draw bigText
 
 	glTexCoord2f(0, 0);	OpenGLDrawColorRGBF(&openGLContext, 0, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0, 0.75, 0);
 	glTexCoord2f(1, 0); OpenGLDrawColorRGBF(&openGLContext, 1, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0.8, 0.8, 0);
 	glTexCoord2f(1, 1); OpenGLDrawColorRGBF(&openGLContext, 0, 1, 0); OpenGLDrawVertexXYZF(&openGLContext, 0.6, -0.75, 0);
 	glTexCoord2f(0, 1); OpenGLDrawColorRGBF(&openGLContext, 1, 0, 0); OpenGLDrawVertexXYZF(&openGLContext, -0.6, -0.75, 0.5);
-#elif 1
+#endif
 
-	/*
+#if 1 // Draw mini text
 
-	GLfloat pixels[] = {
-1, 0, 0,
-0, 1, 0,
-0, 0, 1,
-1, 1, 1
-	};
+	{
+		PXMatrix4x4F matrix4x4F;
 
-	GLfloat vertices[] = {
-		0, 0,
-		0, 1,
-		1, 1,
-		1, 0,
-	};
+		PXMatrix4x4FReset(&matrix4x4F);
 
-	GLfloat coords[] = {
-		0, 0,
-		1, 0,
-		1, 1,
-		0, 1
-	};
+		//PXMatrix4x4FRotate(&matrix4x4F, 0, 0, 1, &matrix4x4F);
 
-	glColorPointer(2, GL_FLOAT, 0, coords);
-	glTexCoordPointer(2, GL_FLOAT, 0, coords);
-	glVertexPointer(2, GL_FLOAT, 0, vertices);
-	glDrawArrays(GL_LINE_LOOP, 0, 4);
+		GLfloat vertices[] = {
+			0, 0,
+			0, 1,
+			1, 1,
+			1, 0,
+		};
+
+		GLfloat coords[] = {
+			0, 1,
+			0, 0,
+			1, 0,
+			1, 1
+		};
+
+		GLfloat colorList[] = {
+		1, 1,1,
+		1, 1,1,
+		1, 1,1,
+		1, 1,1
+		};
+
+		DrawStructure(&openGLContext, matrix4x4F.Data, vertices, coords, colorList, textureText.ID);
+	}
+#endif
+
 
 	
-
+	/*
 	OpenGLDrawBegin(&openGLContext, OpenGLRenderLineLoop);
 	OpenGLDrawVertexXYZF(&openGLContext, -.1, .1, 0);
 	OpenGLDrawVertexXYZF(&openGLContext, .1, .1, 0);
@@ -303,32 +315,6 @@ void TestOpenGLTextDraw()
 	//OpenGLFlush(&openGLContext);
 	OpenGLRenderBufferSwap(&openGLContext);
 
-#elif 1
-
-	OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureTecxt.ID);
-
-	OpenGLDrawBegin(&openGLContext, OpenGLRenderQuads);
-
-	OpenGLDrawVertexXYZF(&openGLContext, -1, -1, 0); glTexCoord2d(1, 1);  glColor4d(1, 0, 1, 0.2f);
-	OpenGLDrawVertexXYZF(&openGLContext, 1, -1, 0); glTexCoord2d(0, 1); glColor4d(0, 1, 0, 0.2);
-	OpenGLDrawVertexXYZF(&openGLContext, 1, 1, 0); glTexCoord2d(0, 0); glColor4d(0, 1, 1, 0.2);
-	OpenGLDrawVertexXYZF(&openGLContext, -1, 1, 0); glTexCoord2d(1, 0); glColor4d(0, 0.5, 0.2, 0.2f);
-	OpenGLDrawEnd(&openGLContext);
-
-#else
-	OpenGLDrawBegin(&openGLContext, OpenGLRenderQuads);
-	OpenGLDrawVertexXYZF(&openGLContext, -1, 1, 0);
-	OpenGLDrawVertexXYZF(&openGLContext, 1, 1, 0);
-	OpenGLDrawVertexXYZF(&openGLContext, 1, -1, 0);
-	OpenGLDrawVertexXYZF(&openGLContext, -1, -1, 0);
-	OpenGLDrawEnd(&openGLContext);
-#endif
-
-
-
-
-#endif
-
 	// Simply sample the texture
 
 
@@ -337,9 +323,6 @@ void TestOpenGLTextDraw()
 
 	//---
 
-
-
-#endif
 	// Rotate?
 
 

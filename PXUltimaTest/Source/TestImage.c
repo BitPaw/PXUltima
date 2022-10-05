@@ -118,7 +118,7 @@ void TestSaveImage()
 void ImageWriteText()
 {
     Image image;
-    CFont font;
+    PXFont font;
 
     {
         const ActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");

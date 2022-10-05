@@ -1,5 +1,5 @@
-#ifndef FontInclude
-#define FontInclude
+#ifndef PXFontInclude
+#define PXFontInclude
 
 #include <Format/Type.h>
 
@@ -27,7 +27,7 @@ extern "C"
 	}
 	FontFileFormat;
 
-	typedef struct CFont_
+	typedef struct PXFont_
 	{
 		unsigned short CharacterSize;
 		unsigned short SizeBetweenCharacters;
@@ -36,18 +36,18 @@ extern "C"
 		FNT* FontElement;
 		size_t FontElementSize;
 	}
-	CFont;
+	PXFont;
 
 	//---[ Public-Functions ]----------------------------------------------
 
-	CPublic void FontConstruct(CFont* const font);
-	CPublic void FontDestruct(CFont* const font);
+	CPublic void PXFontConstruct(PXFont* const font);
+	CPublic void PXFontDestruct(PXFont* const font);
 
 	CPublic FontFileFormat FontGuessFormat(const wchar_t* filePath);
 
-	CPublic ActionResult FontLoadA(CFont* const font, const char* filePath);
-	CPublic ActionResult FontLoadW(CFont* const font, const wchar_t* filePath);
-	CPublic ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
+	CPublic ActionResult FontLoadA(PXFont* const font, const char* filePath);
+	CPublic ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath);
+	CPublic ActionResult FontLoadD(PXFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
 
 
 #ifdef __cplusplus

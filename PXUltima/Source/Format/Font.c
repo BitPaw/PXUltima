@@ -8,12 +8,12 @@
 #include <Format/TTF/TTF.h>
 #include <Format/Image.h>
 
-void FontConstruct(CFont* const font)
+void PXFontConstruct(PXFont* const font)
 {
-    MemorySet(font, sizeof(CFont), 0);
+    MemorySet(font, sizeof(PXFont), 0);
 }
 
-void FontDestruct(CFont* const font)
+void PXFontDestruct(PXFont* const font)
 {
     MemoryRelease(font->FontElement, font->FontElementSize);
 }
@@ -31,7 +31,7 @@ FontFileFormat FontGuessFormat(const wchar_t* filePath)
     return FontFileFormatUnkown;
 }
 
-ActionResult FontLoadA(CFont* const font, const char* filePath)
+ActionResult FontLoadA(PXFont* const font, const char* filePath)
 {
     wchar_t filePathW[PathMaxSize];
 
@@ -42,12 +42,12 @@ ActionResult FontLoadA(CFont* const font, const char* filePath)
     return actionResult;
 }
 
-ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
+ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 {
     DataStream dataStream;
 
     DataStreamConstruct(&dataStream);
-    FontConstruct(font);
+    PXFontConstruct(font);
 
     {
         const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
@@ -104,9 +104,9 @@ ActionResult FontLoadW(CFont* const font, const wchar_t* filePath)
     DataStreamDestruct(&dataStream);
 }
 
-ActionResult FontLoadD(CFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath)
+ActionResult FontLoadD(PXFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath)
 {
-    FontConstruct(font);
+    PXFontConstruct(font);
 
     switch(guessedFormat)
     {
