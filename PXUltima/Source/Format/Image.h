@@ -32,7 +32,6 @@ extern "C"
 		ImageDataFormatAlphaMask,
 
 		// 8-Bit
-
 		ImageDataFormatRGB8,
 		ImageDataFormatRGBA8,
 		ImageDataFormatBGR8,
@@ -40,7 +39,10 @@ extern "C"
 
 		// 16-Bit
 		ImageDataFormatRGB16,
-		ImageDataFormatRGBA16
+		ImageDataFormatRGBA16,
+
+		ImageDataFormatRGBFloat,
+		ImageDataFormatRGBAFloat
 	}
 	ImageDataFormat;
 

@@ -405,7 +405,7 @@ void ImageFillColorRGBA8(Image* const image, const PXByte red, const PXByte gree
 
 void* ImageDataPoint(const Image* const image, const size_t x, const size_t y)
 {
-    const bytesPerPixel = ImageBytePerPixel(image->Format);
+    const size_t bytesPerPixel = ImageBytePerPixel(image->Format);
     const size_t index = x * bytesPerPixel + y * image->Width;
 
     return (unsigned char*)image->PixelData + index;

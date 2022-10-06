@@ -166,7 +166,7 @@ extern "C"
 	CPublic size_t DataStreamWriteCU(DataStream* const dataStream, const unsigned char value);
 	CPublic size_t DataStreamWriteS(DataStream* const dataStream, const short value, const Endian endian);
 	CPublic size_t DataStreamWriteSU(DataStream* const dataStream, const unsigned short value, const Endian endian);
-	CPublic size_t DataStreamWriteI(DataStream* const  DataStream, const int value, const Endian endian);
+	CPublic size_t DataStreamWriteI(DataStream* const dataStream, const int value, const Endian endian);
 	CPublic size_t DataStreamWriteIU(DataStream* const dataStream, const unsigned int value, const Endian endian);
 	CPublic size_t DataStreamWriteLL(DataStream* const dataStream, const long long value, const Endian endian);
 	CPublic size_t DataStreamWriteLU(DataStream* const dataStream, const unsigned long long value, const Endian endian);
@@ -180,6 +180,19 @@ extern "C"
 
 	CPublic size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const size_t index);
 	CPublic size_t DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const size_t index);
+	//-------------------------------------------------------------------------
+
+
+
+	//---<Extra bit stuff>-----------------------------------------------------
+	CPublic size_t DataStreamSkipBitsToNextByte(DataStream* const dataStream);
+	CPublic size_t DataStreamCursorMoveBits(DataStream* const dataStream, const size_t amountOfBits);
+	CPublic size_t DataStreamBitsAllign(DataStream* const dataStream);
+
+	CPublic size_t DataStreamPeekBits(DataStream* const dataStream, const size_t amountOfBits);
+	CPublic size_t DataStreamReadBits(DataStream* const dataStream, const size_t amountOfBits);
+
+	CPublic size_t DataStreamWriteBits(DataStream* const dataStream, const size_t bitData, const size_t amountOfBits);
 	//-------------------------------------------------------------------------
 
 #endif

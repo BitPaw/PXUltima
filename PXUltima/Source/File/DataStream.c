@@ -51,6 +51,13 @@
 #define PrintSVN vsprintf_s
 #endif
 
+
+#define BitStreamDebug 0
+
+#if BitStreamDebug
+#include <stdio.h>
+#endif
+
 void DataStreamConstruct(DataStream* const dataStream)
 {
 	MemorySet(dataStream, sizeof(DataStream), 0);
@@ -1189,4 +1196,112 @@ size_t DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int valu
 	dataStream->DataCursor = positionBefore; // Reset old position
 
 	return 4u;
+}
+
+size_t DataStreamSkipBitsToNextByte(DataStream* const dataStream)
+{
+	const unsigned char hasAnyBitConsumed = dataStream->DataCursorBitOffset > 0;
+
+	if (hasAnyBitConsumed)
+	{
+		dataStream->DataCursorBitOffset = 0; // Reset
+		++dataStream->DataCursor; // Go 1 Byte further
+	}
+
+	return 0;
+}
+
+size_t DataStreamCursorMoveBits(DataStream* const dataStream, const size_t amountOfBits)
+{
+	dataStream->DataCursorBitOffset += amountOfBits;
+
+	DataStreamBitsAllign(dataStream);
+
+	return 0;
+}
+
+size_t DataStreamBitsAllign(DataStream* const dataStream)
+{
+	while (dataStream->DataCursorBitOffset >= 8u) // Move a Byte__ at the time forward, 8 Bits = 1 Byte__.
+	{
+		dataStream->DataCursor++;
+		dataStream->DataCursorBitOffset -= 8u;
+	}
+}
+
+size_t DataStreamPeekBits(DataStream* const dataStream, const size_t amountOfBits)
+{
+	unsigned int bitMask = ((1u << amountOfBits) - 1u) << dataStream->DataCursorBitOffset; // 0000111111
+	unsigned int bitBlock;
+	unsigned char* a =  DataStreamCursorPosition(dataStream);
+	unsigned char* b = a + 1;
+	unsigned char* c = a + 2;
+	unsigned char* d = a + 3;
+	unsigned char* maxAdress = (unsigned char*)dataStream->Data + (dataStream->DataSize - 1);
+
+	unsigned int ai = a > maxAdress ? 0 : *a;
+	unsigned int bi = b > maxAdress ? 0 : *b;
+	unsigned int ci = c > maxAdress ? 0 : *c;
+	unsigned int di = d > maxAdress ? 0 : *d;
+
+	// [d][c][b][a] Little Endian
+
+	bitBlock = ai | bi << 8 | ci << 16 | di << 24;
+
+	unsigned int result = bitBlock & bitMask;
+
+#if BitStreamDebug
+	printf("Extract %i Bits. Byte__:%i Offset:%i\n", amountOfBits, dataStream->DataCursor, dataStream->BitOffset);
+	printf("BitBlock : ");
+	PrintBinary(bitBlock);
+	printf("BitMask  : ");
+	PrintBinary(bitMask);
+	printf("Result   : ");
+	//PrintBinary(result);
+#endif
+
+	result >>= dataStream->DataCursorBitOffset; // Shoitft correction
+
+#if BitStreamDebug
+	printf("Shifted  : ");
+	//PrintBinary(result);
+#endif
+
+	return result;
+}
+
+size_t DataStreamReadBits(DataStream* const dataStream, const size_t amountOfBits)
+{
+	const size_t result = DataStreamPeekBits(dataStream, amountOfBits);
+
+	DataStreamCursorMoveBits(dataStream, amountOfBits);
+
+	return result;
+}
+
+size_t DataStreamWriteBits(DataStream* const dataStream, const size_t bitData, const size_t amountOfBits)
+{
+	unsigned char* currentPos = DataStreamCursorPosition(dataStream);
+
+	unsigned char* a = currentPos;
+	unsigned char* b = currentPos + 1;
+	unsigned char* c = currentPos + 2;
+	unsigned char* d = currentPos + 3;
+
+	size_t moveCounter = 0;
+
+	for (size_t i = 1; i <= amountOfBits; i++)
+	{
+		unsigned char bit = bitData << i;
+
+		*currentPos += bit;
+		*currentPos << 1;
+
+		dataStream->DataCursorBitOffset++;
+		moveCounter++;
+	}
+
+	DataStreamBitsAllign(dataStream);
+
+	return moveCounter;
 }

@@ -7,7 +7,6 @@
 #include <Memory/Memory.h>
 #include <Math/Math.h>
 #include <File/DataStream.h>
-#include <File/BitStream.h>
 #include <Format/Color.h>
 
 #define JPGDebug 1

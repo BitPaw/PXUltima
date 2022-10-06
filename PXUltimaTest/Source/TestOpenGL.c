@@ -77,11 +77,7 @@ void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
 
 	ImageConstruct(&image);
 
-	image.Height = pxWindow->Height;
-	image.Width = pxWindow->Width;
-	image.Format = ImageDataFormatRGB8;
-	image.PixelDataSize = pxWindow->Width * pxWindow->Height * 3u;
-	image.PixelData = MemoryAllocate(image.PixelDataSize);
+	ImageResize(&image, ImageDataFormatRGB8, pxWindow->Width, pxWindow->Height);
 
 	OpenGLPixelDataRead(openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
 

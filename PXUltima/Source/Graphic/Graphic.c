@@ -62,6 +62,13 @@ ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, PXText
     return ActionSuccessful;
 }
 
+ActionResult GraphicTextureScreenShot(GraphicContext* const graphicContext, Image* const image)
+{
+  //  OpenGLPixelDataRead(graphicContext, 0, 0, image->Width, image->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image->PixelData);
+
+	return ActionSuccessful;
+}
+
 ActionResult GraphicTextureUse(GraphicContext* const graphicContext, PXTexture* const texture)
 {
     /*

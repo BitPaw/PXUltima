@@ -4,7 +4,7 @@
 #include <Format/Type.h>
 
 #include <Error/ActionResult.h>
-#include <File/BitStream.h>
+#include <File/DataStream.h>
 
 
 /* amount of bits for first huffman table lookup (aka root bits), see HuffmanTree_makeTable and huffmanDecodeSymbol.*/
@@ -80,12 +80,12 @@ extern "C"
 
 
 	CPublic unsigned reverseBits(unsigned bits, unsigned num);
-	CPublic unsigned int GenerateDynamicTree(BitStream* bitStream, HuffmanTree* treeLength, HuffmanTree* treeDistance);
+	CPublic unsigned int GenerateDynamicTree(DataStream* const dataStream, HuffmanTree* treeLength, HuffmanTree* treeDistance);
 
 	/* Safely check if a + b > c, even if overflow could happen. */
 	CPublic int lodepng_gtofl(size_t a, size_t b, size_t c);
 	CPublic int lodepng_addofl(size_t a, size_t b, size_t* result);
-	CPublic unsigned int huffmanDecodeSymbol(BitStream* bitStream, HuffmanTree* codetree);
+	CPublic unsigned int huffmanDecodeSymbol(DataStream* const dataStream, HuffmanTree* codetree);
 
 
 #ifdef __cplusplus

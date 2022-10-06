@@ -207,7 +207,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 	return 0;
 }
 
-unsigned int GenerateDynamicTree(BitStream* bitStream, HuffmanTree* treeLength, HuffmanTree* treeDistance)
+unsigned int GenerateDynamicTree(DataStream* const dataStream, HuffmanTree* treeLength, HuffmanTree* treeDistance)
 {
 #define NUM_CODE_LENGTH_CODES 19
 
@@ -230,10 +230,10 @@ tree of the dynamic huffman tree lengths is generated*/
 
 	HuffmanTreeConstruct(&tree_cl);
 
-	HuffmanNumberCode huffmanNumberCode;
-	huffmanNumberCode.NumberOfLiteralCodes = BitStreamRead(bitStream, 5u) + 257u;
-	huffmanNumberCode.NumberOfDistanceCodes = BitStreamRead(bitStream, 5u) + 1u;
-	huffmanNumberCode.NumberOfLengthCodes = BitStreamRead(bitStream, 4u) + 4u;
+	HuffmanNumberCode huffmanNumberCode; 
+	huffmanNumberCode.NumberOfLiteralCodes = DataStreamReadBits(dataStream, 5u) + 257u;
+	huffmanNumberCode.NumberOfDistanceCodes = DataStreamReadBits(dataStream, 5u) + 1u;
+	huffmanNumberCode.NumberOfLengthCodes = DataStreamReadBits(dataStream, 4u) + 4u;
 
 	HLIT = huffmanNumberCode.NumberOfLiteralCodes;
 	HDIST = huffmanNumberCode.NumberOfDistanceCodes;
@@ -261,7 +261,7 @@ tree of the dynamic huffman tree lengths is generated*/
 		for (size_t index = 0; index != HCLEN; ++index)
 		{
 			//ensureBits9(reader, 3); /*out of bounds already checked above */
-			bitlen_cl[CLCL_ORDER[index]] = BitStreamRead(bitStream, 3u);
+			bitlen_cl[CLCL_ORDER[index]] = DataStreamReadBits(dataStream, 3u);
 		}
 		for (size_t index = HCLEN; index != NUM_CODE_LENGTH_CODES; ++index)
 		{
@@ -284,7 +284,7 @@ tree of the dynamic huffman tree lengths is generated*/
 		{
 			unsigned code;
 			//ensureBits25(reader, 22); /* up to 15 bits for huffman code, up to 7 extra bits below*/
-			code =  huffmanDecodeSymbol(bitStream, &tree_cl);
+			code =  huffmanDecodeSymbol(dataStream, &tree_cl);
 			if (code <= 15) /*a length code*/
 			{
 				if (i < HLIT) bitlen_ll[i] = code;
@@ -298,7 +298,7 @@ tree of the dynamic huffman tree lengths is generated*/
 
 				if (i == 0) return(54); /*can't repeat previous if i is 0*/
 
-				replength += BitStreamRead(bitStream, 2u);
+				replength += DataStreamReadBits(dataStream, 2u);
 
 				if (i < HLIT + 1) value = bitlen_ll[i - 1];
 				else value = bitlen_d[i - HLIT - 1];
@@ -314,7 +314,7 @@ tree of the dynamic huffman tree lengths is generated*/
 			else if (code == 17) /*repeat "0" 3-10 times*/
 			{
 				size_t replength = 3; /*read in the bits that indicate repeat length*/
-				replength += BitStreamRead(bitStream, 3u);
+				replength += DataStreamReadBits(dataStream, 3u);
 
 				/*repeat this value in the next lengths*/
 				for (n = 0; n < replength; ++n)
@@ -329,7 +329,7 @@ tree of the dynamic huffman tree lengths is generated*/
 			else if (code == 18) /*repeat "0" 11-138 times*/
 			{
 				unsigned replength = 11; /*read in the bits that indicate repeat length*/
-				replength += BitStreamRead(bitStream, 7u);
+				replength += DataStreamReadBits(dataStream, 7u);
 
 				/*repeat this value in the next lengths*/
 				for (n = 0; n < replength; ++n)
@@ -387,10 +387,10 @@ int lodepng_addofl(size_t a, size_t b, size_t* result)
 	return *result < a;
 }
 
-unsigned int huffmanDecodeSymbol(BitStream* bitStream, HuffmanTree* codetree)
+unsigned int huffmanDecodeSymbol(DataStream* const dataStream, HuffmanTree* codetree)
 {
 	HuffmanSymbol huffmanSymbol;
-	huffmanSymbol.Code = BitStreamPeek(bitStream, FIRSTBITS);;
+	huffmanSymbol.Code = DataStreamPeekBits(dataStream, FIRSTBITS);
 	huffmanSymbol.Length = codetree->table_len[huffmanSymbol.Code];
 	huffmanSymbol.Value = codetree->table_value[huffmanSymbol.Code];
 
@@ -398,21 +398,21 @@ unsigned int huffmanDecodeSymbol(BitStream* bitStream, HuffmanTree* codetree)
 
 	if (finished)
 	{
-		BitStreamCursorMoveInBits(bitStream, huffmanSymbol.Length);
+		DataStreamCursorMoveBits(dataStream, huffmanSymbol.Length);
 
 		return huffmanSymbol.Value;
 	}
 	else
 	{
-		BitStreamCursorMoveInBits(bitStream, FIRSTBITS);
+		DataStreamCursorMoveBits(dataStream, FIRSTBITS);
 
 		unsigned int extraBitsToRead = huffmanSymbol.Length - FIRSTBITS;
-		unsigned int extraBits = BitStreamPeek(bitStream, extraBitsToRead);
+		unsigned int extraBits = DataStreamPeekBits(dataStream, extraBitsToRead);
 		unsigned int index2 = huffmanSymbol.Value + extraBits;
 		unsigned int moveBits = codetree->table_len[index2] - FIRSTBITS;
 		unsigned int result = codetree->table_value[index2];
 
-		BitStreamCursorMoveInBits(bitStream, moveBits);
+		DataStreamCursorMoveBits(dataStream, moveBits);
 
 		return result;
 	}
@@ -421,8 +421,8 @@ unsigned int huffmanDecodeSymbol(BitStream* bitStream, HuffmanTree* codetree)
 unsigned reverseBits(unsigned bits, unsigned num)
 {
 	/*TODO: implement faster lookup table based version when needed*/
-	unsigned i, result = 0;
-	for (i = 0; i < num; i++) result |= ((bits >> (num - i - 1u)) & 1u) << i;
+	size_t result = 0;
+	for (size_t i = 0; i < num; i++) result |= ((bits >> (num - i - 1u)) & 1u) << i;
 	return result;
 }
 
@@ -432,14 +432,12 @@ void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree)
 	const unsigned int maxbitlen = 15;
 	const size_t numcodes = NUM_DEFLATE_CODE_SYMBOLS;
 	unsigned int bitlen[NUM_DEFLATE_CODE_SYMBOLS];
-	unsigned int i = 0;
-
 
 	/*288 possible codes: 0-255=literals, 256=endcode, 257-285=lengthcodes, 286-287=unused*/
-	for (i = 0; i <= 143; ++i) bitlen[i] = 8;
-	for (i = 144; i <= 255; ++i) bitlen[i] = 9;
-	for (i = 256; i <= 279; ++i) bitlen[i] = 7;
-	for (i = 280; i <= 287; ++i) bitlen[i] = 8;
+	for (size_t i = 0; i <= 143; ++i) bitlen[i] = 8;
+	for (size_t i = 144; i <= 255; ++i) bitlen[i] = 9;
+	for (size_t i = 256; i <= 279; ++i) bitlen[i] = 7;
+	for (size_t i = 280; i <= 287; ++i) bitlen[i] = 8;
 	//---------------------------------------------------------------------------
 
 	GenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);

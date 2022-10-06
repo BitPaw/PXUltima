@@ -6,7 +6,6 @@
 
 #include <Memory/Memory.h>
 #include <Format/HUFFMAN/HuffmanTree.h>
-#include <File/BitStream.h>
 #include <File/DataStream.h>
 #include <Math/Math.h>
 
@@ -116,17 +115,18 @@ unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod defla
 
 int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, void* const outputBuffer, const size_t outputBufferSize, size_t* const outputBufferSizeRead)
 {
-    BitStream bitStream;
+    DataStream dataStream;
     DeflateBlock deflateBlock;
 
-    BitStreamConstruct(&bitStream, inputBuffer, inputBufferSize);
+    DataStreamConstruct(&dataStream);
+    DataStreamFromExternal(&dataStream, inputBuffer, inputBufferSize);
 
     do
     {
-        deflateBlock.IsLastBlock = BitStreamRead(&bitStream, 1u);
+        deflateBlock.IsLastBlock = DataStreamReadBits(&dataStream, 1u);
 
         {
-            const unsigned char encodingMethodValue = BitStreamRead(&bitStream, 2u);
+            const unsigned char encodingMethodValue = DataStreamReadBits(&dataStream, 2u);
 
             deflateBlock.EncodingMethod = ConvertToDeflateEncodingMethod(encodingMethodValue);
         }
@@ -141,21 +141,21 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
             }
             case DeflateEncodingLiteralRaw:
             {
-                BitStreamSkipBitsToNextByte(&bitStream); // Skip remaining Bytes
+                DataStreamSkipBitsToNextByte(&dataStream); // Skip remaining Bytes
 
-                const unsigned short length = BitStreamRead(&bitStream, 16u);
-                const unsigned short lengthInverse = BitStreamRead(&bitStream, 16u);
-                const unsigned char* sourceAdress = BitStreamCursorPosition(&bitStream);
+                const unsigned short length = DataStreamReadBits(&dataStream, 16u);
+                const unsigned short lengthInverse = DataStreamReadBits(&dataStream, 16u);
+                const void* sourceAdress = DataStreamCursorPosition(&dataStream);
                 const unsigned char validLength = (length + lengthInverse) == 65535;
                 //const size_t bitsToJump = (size_t)length * 8;
 
                 //assert(validLength);
 
-                MemoryCopy(sourceAdress, BitStreamRemainingSize(&bitStream), (unsigned char*)outputBuffer + *outputBufferSizeRead, length);
+                MemoryCopy(sourceAdress, DataStreamRemainingSize(&dataStream), (unsigned char*)outputBuffer + *outputBufferSizeRead, length);
 
                 *outputBufferSizeRead += length;
 
-                BitStreamCursorMoveInBytes(&bitStream, length);
+                DataStreamCursorAdvance(&dataStream, length);
 
                 break;
             }
@@ -173,7 +173,7 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
                 {
                     case DeflateEncodingHuffmanDynamic:
                     {
-                        const unsigned int result = GenerateDynamicTree(&bitStream, &literalAndLengthCodes, &distanceCodes);
+                        const unsigned int result = GenerateDynamicTree(&dataStream, &literalAndLengthCodes, &distanceCodes);
 
                         if(result != 0)
                         {
@@ -192,7 +192,7 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
 
                 while(!foundEndOFBlock)
                 {
-                    unsigned int resultLengthCode = huffmanDecodeSymbol(&bitStream, &literalAndLengthCodes);
+                    unsigned int resultLengthCode = huffmanDecodeSymbol(&dataStream, &literalAndLengthCodes);
                     HuffmanCodeType huffmanCodeType = HuffmanCodeTypeFromCode(resultLengthCode);
 
                     switch(huffmanCodeType)
@@ -245,12 +245,12 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
                             if(numextrabits_l != 0)
                             {
                                 /* bits already ensured above */
-                                length += BitStreamRead(&bitStream, numextrabits_l);
+                                length += DataStreamReadBits(&dataStream, numextrabits_l);
                             }
 
                             /*part 3: get distance code*/
                             //ensureBits32(reader, 28); /* up to 15 for the huffman symbol, up to 13 for the extra bits */
-                            unsigned int resultDistanceCode = huffmanDecodeSymbol(&bitStream, &distanceCodes);
+                            unsigned int resultDistanceCode = huffmanDecodeSymbol(&dataStream, &distanceCodes);
                             unsigned char isUnsupportedCode = resultDistanceCode > 29;
                             unsigned char isIllegalCode = resultDistanceCode > 31;
 
@@ -273,7 +273,7 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
                             if(numextrabits_d != 0)
                             {
                                 /* bits already ensured above */
-                                distance += BitStreamRead(&bitStream, numextrabits_d);
+                                distance += DataStreamReadBits(&dataStream, numextrabits_d);
                             }
 
                             /*part 5: fill in all the out[n] values based on the length and dist*/
@@ -319,7 +319,7 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
     }
     while(!deflateBlock.IsLastBlock);
 
-    //*outputBufferSizeRead = bitStream.DataCursor;
+    //*outputBufferSizeRead = dataStream.DataCursor;
 
     return 0;
 }

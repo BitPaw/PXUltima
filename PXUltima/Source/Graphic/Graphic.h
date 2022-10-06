@@ -250,6 +250,7 @@ extern "C"
 
 
 	// Texture
+	CPublic ActionResult GraphicTextureScreenShot(GraphicContext* const graphicContext, Image* const image);
 
 	CPublic ActionResult GraphicTextureUse(GraphicContext* const graphicContext, PXTexture* const texture);
 	CPublic ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, PXTexture* const texture);

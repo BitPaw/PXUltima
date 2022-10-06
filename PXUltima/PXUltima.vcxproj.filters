@@ -57,9 +57,6 @@
     <ClInclude Include="Source\Event\Event.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\BitStream.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\File\Endian.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -387,9 +384,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Event\Event.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\BitStream.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\File\Endian.c">

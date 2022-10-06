@@ -54,7 +54,6 @@
     <ClInclude Include="Source\Device\VirtualKey.h" />
     <ClInclude Include="Source\Error\ActionResult.h" />
     <ClInclude Include="Source\Event\Event.h" />
-    <ClInclude Include="Source\File\BitStream.h" />
     <ClInclude Include="Source\File\Endian.h" />
     <ClInclude Include="Source\File\File.h" />
     <ClInclude Include="Source\File\DataStream.h" />
@@ -166,7 +165,6 @@
     <ClCompile Include="Source\Device\VirtualKey.c" />
     <ClCompile Include="Source\Error\ActionResult.c" />
     <ClCompile Include="Source\Event\Event.c" />
-    <ClCompile Include="Source\File\BitStream.c" />
     <ClCompile Include="Source\File\Endian.c" />
     <ClCompile Include="Source\File\File.c" />
     <ClCompile Include="Source\File\DataStream.c" />
@@ -257,26 +255,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
