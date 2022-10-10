@@ -37,7 +37,7 @@ extern "C"
 	}
 	OGG;
 
-	CPublic ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

@@ -414,7 +414,7 @@ struct LodePNGCompressSettings /*deflate = compress*/
     const void* custom_context; /*optional custom settings for custom functions*/
 };
 
-CPublic const LodePNGCompressSettings lodepng_default_compress_settings;
+PXPublic const LodePNGCompressSettings lodepng_default_compress_settings;
 void lodepng_compress_settings_init(LodePNGCompressSettings* settings);
 
 

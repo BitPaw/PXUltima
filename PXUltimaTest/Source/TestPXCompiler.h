@@ -15,6 +15,7 @@ extern "C"
 
     extern void TestPXCompilerOBJ();
     extern void TestPXCompilerYAML();
+    extern void TestPXCompilerXML();
 
 #ifdef __cplusplus
 }

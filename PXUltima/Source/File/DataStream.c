@@ -65,7 +65,7 @@ void DataStreamConstruct(DataStream* const dataStream)
 
 void DataStreamDestruct(DataStream* const dataStream)
 {
-	switch (dataStream->_fileLocation)
+	switch (dataStream->DataLocation)
 	{
 	case FileLocationMappedFromDisk:
 		DataStreamUnmapFromMemory(dataStream);
@@ -130,7 +130,7 @@ void DataStreamFromExternal(DataStream* const dataStream, void* const data, cons
 	dataStream->Data = data;
 	dataStream->DataSize = dataSize;
 	dataStream->MemoryMode = MemoryReadAndWrite;
-	dataStream->_fileLocation = FileLocationExternal;
+	dataStream->DataLocation = FileLocationExternal;
 }
 
 ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
@@ -221,8 +221,7 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 
 
 	// Make directory if needed
-//	FilePathExtensionGetW
-
+	// FilePathExtensionGetW
 	{
 		const ActionResult directoryCreateResult = DirectoryCreateW(filePath);
 		const PXBool successful = ActionSuccessful == directoryCreateResult;
@@ -245,7 +244,7 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 	);
 
 	{
-		const unsigned char successful = fileHandle != INVALID_HANDLE_VALUE;
+		const PXBool successful = fileHandle != INVALID_HANDLE_VALUE;
 
 		if (!successful)
 		{
@@ -299,12 +298,12 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 		}
 
 		const int nHandle = _open_osfhandle((intptr_t)fileHandle, osHandleMode);
-		const unsigned char sucessful = nHandle != -1;
+		const PXBool sucessful = nHandle != -1;
 
 		if (sucessful)
 		{
 			FILE* fp = _fdopen(nHandle, fdOpenMode);
-			const unsigned char result = fp;
+			const PXBool result = fp;
 
 			if (result)
 			{
@@ -322,7 +321,7 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 	}
 
 	dataStream->FileHandle = fileHandle;
-	dataStream->_fileLocation = FileLocationLinked;
+	dataStream->DataLocation = FileLocationLinked;
 
 	return ActionSuccessful;
 #endif
@@ -352,7 +351,7 @@ ActionResult DataStreamClose(DataStream* const dataStream)
 
 	if (dataStream->FileHandle)
 	{
-		const unsigned char successful = CloseHandle(dataStream->FileHandle);
+		const PXBool successful = CloseHandle(dataStream->FileHandle);
 
 		dataStream->FileHandle = 0;
 
@@ -365,6 +364,8 @@ ActionResult DataStreamClose(DataStream* const dataStream)
 
 ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode)
 {
+	DataStreamConstruct(dataStream);
+
 #if OSUnix
 	int accessType = PROT_READ;
 	int flags = MAP_PRIVATE;// | MAP_POPULATE;
@@ -504,7 +505,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 		{
 			LARGE_INTEGER largeInt;
 
-			const unsigned char sizeResult = GetFileSizeEx(dataStream->FileHandle, &largeInt);
+			const BOOL sizeResult = GetFileSizeEx(dataStream->FileHandle, &largeInt);
 
 			dwMaximumSizeHigh = 0;
 			dwMaximumSizeLow = 0;
@@ -595,15 +596,13 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 			break;
 		}
 
-		void* fileMapped = MapViewOfFileExNuma
+		void* fileMapped = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista
 		(
 			dataStream->IDMapping,
 			desiredAccess,
 			fileOffsetHigh,
 			fileOffsetLow,
-			numberOfBytesToMap,
-			baseAddressTarget,
-			numaNodePreferred
+			numberOfBytesToMap
 		);
 
 		dataStream->Data = fileMapped;
@@ -613,7 +612,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 #endif
 
-	dataStream->_fileLocation = FileLocationMappedFromDisk;
+	dataStream->DataLocation = FileLocationMappedFromDisk;
 
 #if MemoryDebug
 	printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", Data, DataSize, filePath);
@@ -632,7 +631,9 @@ ActionResult DataStreamMapToMemory(DataStream* const dataStream, const size_t si
 		return ActionSystemOutOfMemory;
 	}
 
-	dataStream->_fileLocation = FileLocationMappedVirtual;
+	DataStreamConstruct(dataStream);
+
+	dataStream->DataLocation = FileLocationMappedVirtual;
 	dataStream->Data = data;
 	dataStream->DataSize = size;
 
@@ -991,7 +992,23 @@ size_t DataStreamReadLLU(DataStream* const dataStream, unsigned long long* value
 	return dataSize;
 }
 
-size_t DataStreamReadD(DataStream* const dataStream, void* value, const size_t length)
+size_t DataStreamReadF(DataStream* const dataStream, float* const value)
+{
+	const size_t dataSize = sizeof(float);
+	const size_t writtenBytes = DataStreamReadP(dataStream, value, dataSize);
+
+	return writtenBytes;
+}
+
+size_t DataStreamReadD(DataStream* const dataStream, double* const value)
+{
+	const size_t dataSize = sizeof(double);
+	const size_t writtenBytes = DataStreamReadP(dataStream, value, dataSize);
+
+	return writtenBytes;
+}
+
+size_t DataStreamReadP(DataStream* const dataStream, void* value, const size_t length)
 {
 	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
 	const size_t readableSize = DataStreamRemainingSize(dataStream);
@@ -1057,7 +1074,7 @@ size_t DataStreamWriteCU(DataStream* const dataStream, const unsigned char value
 {
 	const size_t dataSize = sizeof(unsigned char);
 
-	DataStreamWriteD(dataStream, &value, dataSize);
+	DataStreamWriteP(dataStream, &value, dataSize);
 
 	return dataSize;
 }
@@ -1074,7 +1091,7 @@ size_t DataStreamWriteSU(DataStream* const dataStream, const unsigned short valu
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteD(dataStream, &dataValue, dataSize);
+	DataStreamWriteP(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
@@ -1091,7 +1108,7 @@ size_t DataStreamWriteIU(DataStream* const dataStream, const unsigned int value,
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteD(dataStream, &dataValue, dataSize);
+	DataStreamWriteP(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
@@ -1108,17 +1125,22 @@ size_t DataStreamWriteLU(DataStream* const dataStream, const unsigned long long 
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteD(dataStream, &dataValue, dataSize);
+	DataStreamWriteP(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
 
 size_t DataStreamWriteF(DataStream* const dataStream, const float value)
 {
-	return DataStreamWriteD(dataStream, &value, sizeof(float));
+	return DataStreamWriteP(dataStream, &value, sizeof(float));
 }
 
-size_t DataStreamWriteD(DataStream* const dataStream, const void* value, const size_t length)
+size_t DataStreamWriteD(DataStream* const dataStream, const double value)
+{
+	return DataStreamWriteP(dataStream, &value, sizeof(double));
+}
+
+size_t DataStreamWriteP(DataStream* const dataStream, const void* value, const size_t length)
 {
 	const size_t writableSize = DataStreamRemainingSize(dataStream);
 	unsigned char* currentPosition = DataStreamCursorPosition(dataStream);

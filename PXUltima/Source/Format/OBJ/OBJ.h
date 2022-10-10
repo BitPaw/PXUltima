@@ -84,17 +84,17 @@ extern "C"
 	}
 	OBJ;
 
-	CPublic void OBJConstruct(OBJ* const obj);
-	CPublic void OBJDestruct(OBJ* const obj);
+	PXPublic void OBJConstruct(OBJ* const obj);
+	PXPublic void OBJDestruct(OBJ* const obj);
 
-	CPrivate OBJLineType OBJPeekLine(const void* line, const size_t size);
+	PXPrivate OBJLineType OBJPeekLine(const void* line, const size_t size);
 
-	CPublic ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outputStream);
+	PXPublic ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const outputStream);
 
-	CPublic ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model);
+	PXPublic ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model);
 
 
-	CPublic ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName);
+	PXPublic ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName);
 
 #ifdef __cplusplus
 }

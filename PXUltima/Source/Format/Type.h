@@ -7,11 +7,11 @@
 
 //-- Reivented public / private. The keywords are reserved, so we need other names.
 #if OSUnix
-#define CPrivate static 
-#define CPublic extern 
+#define PXPrivate static 
+#define PXPublic extern 
 #elif OSWindows
-#define CPrivate static 
-#define CPublic extern __declspec(dllexport) // The visual studio compiler also wants this definition, for microsoft stuff.
+#define PXPrivate static 
+#define PXPublic extern __declspec(dllexport) // The visual studio compiler also wants this definition, for microsoft stuff.
 #endif
 //-----------------------------------------------------------------------------
 
@@ -22,6 +22,15 @@
 #ifndef PXBool
 #define PXBool unsigned char
 #endif
+
+#ifndef PXYes
+#define PXYes 1u
+#endif
+
+#ifndef PXNo
+#define PXNo 0u
+#endif
+
 
 #ifdef __cplusplus
 extern "C"

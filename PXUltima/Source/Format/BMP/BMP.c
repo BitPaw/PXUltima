@@ -150,7 +150,7 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
         unsigned int reservedBlock = 0;
         unsigned int dataOffset = 0;
 
-        DataStreamReadD(&dataStream, byteCluster.Data, 2u);
+        DataStreamReadP(&dataStream, byteCluster.Data, 2u);
         DataStreamReadIU(&dataStream, &sizeOfFile, EndianLittle);
         DataStreamReadIU(&dataStream, &reservedBlock, EndianLittle);
         DataStreamReadIU(&dataStream, &dataOffset, EndianLittle);
@@ -256,7 +256,7 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
     {      
         unsigned char* data = bmp->PixelData + pixelDataOffset;
 
-        pixelDataOffset += DataStreamReadD(&dataStream, data, imageDataLayout.RowImageDataSize);
+        pixelDataOffset += DataStreamReadP(&dataStream, data, imageDataLayout.RowImageDataSize);
         DataStreamCursorAdvance(&dataStream, imageDataLayout.RowPaddingSize);
     }
 
@@ -280,7 +280,7 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
         unsigned int reservedBlock = 0;
         unsigned int dataOffset = 0;
 
-        DataStreamReadD(&DataStream, byteCluster.Data, 2u);
+        DataStreamReadP(&DataStream, byteCluster.Data, 2u);
         DataStreamReadIU(&DataStream, &sizeOfFile, EndianLittle);
         DataStreamReadIU(&DataStream, &reservedBlock, EndianLittle);
         DataStreamReadIU(&DataStream, &dataOffset, EndianLittle);
@@ -390,7 +390,7 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
     {
         unsigned char* const data = (unsigned char* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount);
 
-        DataStreamReadD(&DataStream, data, imageDataLayout.RowImageDataSize);
+        DataStreamReadP(&DataStream, data, imageDataLayout.RowImageDataSize);
         DataStreamCursorAdvance(&DataStream, imageDataLayout.RowPaddingSize);
 
         for(size_t i = 0; i < imageDataLayout.RowImageDataSize; i += 3)
@@ -428,7 +428,7 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
 
         byteCluster.Value = ConvertFromBMPType(BMPWindows);
 
-        DataStreamWriteD(&DataStream, byteCluster.Data, 2u);
+        DataStreamWriteP(&DataStream, byteCluster.Data, 2u);
         DataStreamWriteIU(&DataStream, sizeOfFile, EndianLittle);
         DataStreamWriteIU(&DataStream, reservedBlock, EndianLittle);
         DataStreamWriteIU(&DataStream, dataOffset, EndianLittle);
@@ -495,7 +495,7 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
                 pixelBuffer[1u] = dataInsertPoint[i+1u]; // Green 
                 pixelBuffer[0u] = dataInsertPoint[i+2u]; // Red
 
-                DataStreamWriteD(&DataStream, pixelBuffer, 3u);
+                DataStreamWriteP(&DataStream, pixelBuffer, 3u);
             }
 
             DataStreamWriteFill(&DataStream, 0, imageDataLayout.RowPaddingSize);

@@ -36,6 +36,9 @@
     <ClCompile Include="Source\TestSystemInfo.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\TestYAML.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\TestImage.h">
@@ -54,6 +57,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\TestSystemInfo.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TestYAML.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

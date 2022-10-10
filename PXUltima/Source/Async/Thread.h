@@ -29,12 +29,12 @@ extern "C"
 
 	typedef ThreadResult(*ThreadFunction)(void* data);
 
-	CPublic ThreadID ThreadRun(const ThreadFunction threadFunction, const void* parameter);
+	PXPublic ThreadID ThreadRun(const ThreadFunction threadFunction, const void* parameter);
 
-	CPublic size_t ThreadCurrentID();
-	CPublic ThreadID ThreadCurrentGet();
+	PXPublic size_t ThreadCurrentID();
+	PXPublic ThreadID ThreadCurrentGet();
 
-	CPublic void ThreadWaitForFinish(const ThreadID threadID);
+	PXPublic void ThreadWaitForFinish(const ThreadID threadID);
 
 #ifdef __cplusplus
 }

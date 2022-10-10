@@ -8,6 +8,16 @@
 #include <File/File.h>
 #include <Math/Math.h>
 
+#define PXCompilerSymbolLexerOBJMaterialLibraryIncludeID 'I'
+#define PXCompilerSymbolLexerOBJMaterialLibraryUselID 'U'
+#define PXCompilerSymbolLexerOBJObjectNameID 'O'
+#define PXCompilerSymbolLexerOBJSmoothShadingID 'S'
+#define PXCompilerSymbolLexerOBJObjectGroupID 'G'
+#define PXCompilerSymbolLexerOBJVertexGerometricID 'v'
+#define PXCompilerSymbolLexerOBJVertexNormalID 'n'
+#define PXCompilerSymbolLexerOBJVertexParameterID 'p'
+#define PXCompilerSymbolLexerOBJVertexTextureID 't'
+
 void OBJElementConstruct(OBJElement* objElement)
 {
     MemorySet(objElement, sizeof(OBJElement), 0);
@@ -96,20 +106,19 @@ void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned 
 {
     char textBuffer[32];
 
-    TextCopyA(compilerSymbolEntry->Source - 5, 20, textBuffer, 32);
+    TextCopyA(compilerSymbolEntry->Source, 20, textBuffer, 32);
 
     printf
     (
         "[OBJ][Error] At line <%i> at <%i>, unexpected symbol.\n"
-        "          -> %s\n"
-        "             -----/\\\n",
+        "          -> %s\n",
         compilerSymbolEntry->Line,
         compilerSymbolEntry->Coloum,
         textBuffer
     );
 }
 
-ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outputStream)
+ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const outputStream)
 {
     size_t errorCounter = 0;
     DataStream tokenSteam;   
@@ -124,7 +133,9 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
     {
         PXCompilerSettings compilerSettings;
 
-        compilerSettings.WhiteSpaceKeep = 0;
+        compilerSettings.KeepWhiteSpace = 0;
+        compilerSettings.KeepWhiteSpaceIndentationLeft = 0;
+        compilerSettings.TryAnalyseTypes = 1u;
 
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
@@ -210,29 +221,29 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
                     switch (objPeekLine)
                     {
                         case OBJLineMaterialLibraryInclude:
-                            nameID = 'I';
+                            nameID = PXCompilerSymbolLexerOBJMaterialLibraryIncludeID;
                             break;
 
                         case OBJLineMaterialLibraryUse:
-                            nameID = 'U';
+                            nameID = PXCompilerSymbolLexerOBJMaterialLibraryUselID;
                             break;
 
                         case OBJLineObjectName:
-                            nameID = 'O';
+                            nameID = PXCompilerSymbolLexerOBJObjectNameID;
                             break;
 
                         case OBJLineSmoothShading:
-                            nameID = 'S';
+                            nameID = PXCompilerSymbolLexerOBJSmoothShadingID;
                             break;
 
                         case OBJLineObjectGroup:
-                            nameID = 'G';
+                            nameID = PXCompilerSymbolLexerOBJObjectGroupID;
                             break;                            
                     }
 
                     DataStreamWriteC(outputStream, nameID);
                     DataStreamWriteSU(outputStream, namedElementSize, EndianLittle);
-                    DataStreamWriteD(outputStream, namedElement, namedElementSize);
+                    DataStreamWriteP(outputStream, namedElement, namedElementSize);
                 }                
                 //-----------------------------------------------    
 
@@ -256,7 +267,7 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
 
                     // [symbol check] Check if symbol is expected name
                     {
-                        unsigned char isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
+                       const PXBool isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
 
                         if (!isSymbol)
                         {
@@ -271,8 +282,8 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
                     isNumber[valuesDetected] = parsedCharacters > 0;
 
                     ++valuesDetected;
-                }
-            
+                }          
+
 
                 // Export
                 {
@@ -281,21 +292,21 @@ ActionResult OBJFileParse(DataStream* const inputStream, DataStream* const outpu
                     switch (objPeekLine)
                     {
                         case OBJLineVertexGeometric:
-                            typeID = 'v';
+                            typeID = PXCompilerSymbolLexerOBJVertexGerometricID;
                             vertexListSize += valuesDetected;
                             break;
 
                         case OBJLineVertexNormal:
-                            typeID = 'n';
+                            typeID = PXCompilerSymbolLexerOBJVertexNormalID;
                             normalListSize += valuesDetected;
                             break;
 
                         case OBJLineVertexParameter:
-                            typeID = 'p';
+                            typeID = PXCompilerSymbolLexerOBJVertexParameterID;
                             break;
 
                         case OBJLineVertexTexture:
-                            typeID = 't';
+                            typeID = PXCompilerSymbolLexerOBJVertexTextureID;
                             textureListSize += valuesDetected;
                             break;
                     }

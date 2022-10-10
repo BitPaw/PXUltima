@@ -227,7 +227,7 @@ extern "C"
 	static unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre);
 	static ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const size_t dataSize, size_t* dataRead);
 
-	CPublic ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t* dataRead);
 
 
 #ifdef __cplusplus

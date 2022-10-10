@@ -30,7 +30,7 @@ extern "C"
 	}
 	XingInfo;
 
-	CPublic ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

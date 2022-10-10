@@ -15,7 +15,7 @@ extern "C"
 	}
 	AAC;
 
-	CPublic ActionResult AACParse(const void* data, const size_t dataSize);
+	PXPublic ActionResult AACParse(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

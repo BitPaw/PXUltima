@@ -180,18 +180,18 @@ extern "C"
 	AudioDeviceCapabilities;
 
 #if OSWindows
-	CPrivate AudioResult AudioConvertMMResult(const unsigned int mmResultID);
+	PXPrivate AudioResult AudioConvertMMResult(const unsigned int mmResultID);
 #endif
 
-	CPublic void AudioDeviceCapabilitiesPrinf(AudioDeviceCapabilities* const audioDeviceCapabilities);
+	PXPublic void AudioDeviceCapabilitiesPrinf(AudioDeviceCapabilities* const audioDeviceCapabilities);
 
 
-	CPublic void AudioSourceConstruct(AudioSource* const audioSource);
-	CPublic void AudioSourcePitchIncrease(AudioSource* const audioSource, float amount);
-	CPublic	void AudioSourcePitchReduce(AudioSource* const audioSource, float amount);
+	PXPublic void AudioSourceConstruct(AudioSource* const audioSource);
+	PXPublic void AudioSourcePitchIncrease(AudioSource* const audioSource, float amount);
+	PXPublic	void AudioSourcePitchReduce(AudioSource* const audioSource, float amount);
 
 
-	CPublic AudioResult  AudioOutputOpen
+	PXPublic AudioResult  AudioOutputOpen
 	(
 		AudioDeviceOutput* audioDeviceOutput,
 		unsigned int deviceID,
@@ -203,8 +203,8 @@ extern "C"
 		unsigned short bitsPerSample,     /* number of bits per sample of mono data */
 		unsigned short cbSize             /* the count in bytes of the size of */
 	);
-	CPublic AudioResult  AudioOutputPrepare(AudioDeviceOutput* audioDeviceOutput);
-	CPublic AudioResult  AudioOutputWrite
+	PXPublic AudioResult  AudioOutputPrepare(AudioDeviceOutput* audioDeviceOutput);
+	PXPublic AudioResult  AudioOutputWrite
 	(
 		AudioDeviceOutput* audioDeviceOutput,
 		void* dataBuffer,
@@ -214,18 +214,18 @@ extern "C"
 		unsigned int flags,
 		unsigned int loopControlCounter
 	);
-	CPublic AudioResult  AudioOutputClose(AudioDeviceOutput* audioDeviceOutput);
-	CPublic AudioResult  AudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigned short* volume);
+	PXPublic AudioResult  AudioOutputClose(AudioDeviceOutput* audioDeviceOutput);
+	PXPublic AudioResult  AudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigned short* volume);
 
-	CPublic AudioResult  AudioOutputVolumeSetEqual(AudioDeviceOutput* audioDeviceOutput, const unsigned int volume);
-	CPublic AudioResult  AudioOutputVolumeSetIndividual(AudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight);
-	CPublic AudioResult  AudioOutputPause(AudioDeviceOutput* audioDeviceOutput);
-	CPublic AudioResult  AudioOutputPitchSet(AudioDeviceOutput* audioDeviceOutput, const unsigned int pitch);
-	CPublic AudioResult  AudioOutputPlaybackRateSet(AudioDeviceOutput* audioDeviceOutput, const unsigned int pitch);
+	PXPublic AudioResult  AudioOutputVolumeSetEqual(AudioDeviceOutput* audioDeviceOutput, const unsigned int volume);
+	PXPublic AudioResult  AudioOutputVolumeSetIndividual(AudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight);
+	PXPublic AudioResult  AudioOutputPause(AudioDeviceOutput* audioDeviceOutput);
+	PXPublic AudioResult  AudioOutputPitchSet(AudioDeviceOutput* audioDeviceOutput, const unsigned int pitch);
+	PXPublic AudioResult  AudioOutputPlaybackRateSet(AudioDeviceOutput* audioDeviceOutput, const unsigned int pitch);
 
 
-	CPublic AudioResult  AudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabilitiesList, const size_t audioDeviceCapabilitiesListSizeMax, size_t* audioDeviceCapabilitiesListSize);
-	CPublic AudioResult  AudioDevicesFetchInput(AudioDeviceCapabilities* audioDeviceCapabilitiesList, const size_t audioDeviceCapabilitiesListSizeMax, size_t* audioDeviceCapabilitiesListSize);
+	PXPublic AudioResult  AudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabilitiesList, const size_t audioDeviceCapabilitiesListSizeMax, size_t* audioDeviceCapabilitiesListSize);
+	PXPublic AudioResult  AudioDevicesFetchInput(AudioDeviceCapabilities* audioDeviceCapabilitiesList, const size_t audioDeviceCapabilitiesListSizeMax, size_t* audioDeviceCapabilitiesListSize);
 
 #ifdef __cplusplus
 }

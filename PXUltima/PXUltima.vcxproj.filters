@@ -219,16 +219,7 @@
     <ClInclude Include="Source\Memory\Memory.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\Client.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Network\CSocket.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Network\IP.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Network\Server.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Bash.h">
@@ -346,6 +337,15 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\HardDrive.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\PXSocket.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\PXServer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\PXClient.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -548,16 +548,7 @@
     <ClCompile Include="Source\Memory\Memory.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\Client.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\CSocket.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Network\IP.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\Server.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Bash.c">
@@ -672,6 +663,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\HardDrive.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\PXSocket.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\PXServer.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\PXClient.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

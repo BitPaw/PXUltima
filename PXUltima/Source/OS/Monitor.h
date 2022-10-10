@@ -32,9 +32,9 @@ extern "C"
 	static BOOL _stdcall MonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data);
 #endif
 
-	CPublic void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, const size_t monitorListSize);
+	PXPublic void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, const size_t monitorListSize);
 
-	CPublic void MonitorGetSize(unsigned int* width, unsigned int* height);
+	PXPublic void MonitorGetSize(unsigned int* width, unsigned int* height);
 
 #ifdef __cplusplus
 }

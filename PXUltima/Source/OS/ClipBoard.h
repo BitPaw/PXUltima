@@ -53,14 +53,14 @@ extern "C"
 
 	// Open clipboard, close it imedidly after using!
 	// Fails if another window has the clipboard open.
-	CPublic ActionResult ClipBoardOpen(ClipBoard* const clipBoard);
+	PXPublic ActionResult ClipBoardOpen(ClipBoard* const clipBoard);
 
 	// Use this right after using!
-	CPublic ActionResult ClipBoardClose(ClipBoard* const clipBoard);
+	PXPublic ActionResult ClipBoardClose(ClipBoard* const clipBoard);
 
-	CPublic ActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat format, const void* data);
+	PXPublic ActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat format, const void* data);
 
-	CPublic ActionResult ClipBoardClear(ClipBoard* const clipBoard);
+	PXPublic ActionResult ClipBoardClear(ClipBoard* const clipBoard);
 
 
 #ifdef __cplusplus

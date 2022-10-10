@@ -91,7 +91,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 		track->EventData = MemoryAllocate(sizeof(unsigned char) * chunkLength);
 		track->EventDataSize = chunkLength;
 
-		DataStreamReadD(&dataStream, track->EventData, chunkLength);
+		DataStreamReadP(&dataStream, track->EventData, chunkLength);
 	}
 
 	*dataRead = dataStream.DataCursor;

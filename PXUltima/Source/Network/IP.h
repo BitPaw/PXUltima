@@ -20,7 +20,7 @@ extern "C"
     IPVersion;
 
     IPVersion AnalyseIPVersion(const char* ip);
-    CPublic unsigned char IsValidIP(const char* ipAdress);
+    PXPublic unsigned char IsValidIP(const char* ipAdress);
     /*
   Check if the given IPv4 is Valid
 
@@ -32,8 +32,8 @@ extern "C"
   4 - Too long (>15)
   5 - Too many Octets (more that 4)
 */
-    CPublic unsigned char IPv4CheckIfValid(const char* ipv4Adress);
-    CPublic unsigned char IPv6CheckIfValid(const char* ipv6Adress);
+    PXPublic unsigned char IPv4CheckIfValid(const char* ipv4Adress);
+    PXPublic unsigned char IPv6CheckIfValid(const char* ipv6Adress);
 
 #ifdef __cplusplus
 }

@@ -76,7 +76,7 @@ extern "C"
 	UIElement;
 
 
-	CPublic void UIContainerElementAdd(UIContainerRoot* uiContainerRoot);
+	PXPublic void UIContainerElementAdd(UIContainerRoot* uiContainerRoot);
 
 #ifdef __cplusplus
 }

@@ -18,12 +18,12 @@ extern "C"
 {
 #endif
     // Clear value of lock, sets CPrivate data to 0.
-    CPublic void LockClear(LockID* const asyncLockID);
+    PXPublic void LockClear(LockID* const asyncLockID);
 
-	CPublic ActionResult LockCreate(LockID* const asyncLockID);
-	CPublic ActionResult LockDelete(LockID* const asyncLockID);
-	CPublic ActionResult LockLock(LockID* const asyncLockID);
-	CPublic ActionResult LockRelease(LockID* const asyncLockID);
+	PXPublic ActionResult LockCreate(LockID* const asyncLockID);
+	PXPublic ActionResult LockDelete(LockID* const asyncLockID);
+	PXPublic ActionResult LockLock(LockID* const asyncLockID);
+	PXPublic ActionResult LockRelease(LockID* const asyncLockID);
 #ifdef __cplusplus
 }
 #endif

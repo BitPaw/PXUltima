@@ -15,7 +15,7 @@ extern "C"
 	}
 	VRML;
 
-	CPublic ActionResult VRMLParse(const void* data, const size_t dataSize);
+	PXPublic ActionResult VRMLParse(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

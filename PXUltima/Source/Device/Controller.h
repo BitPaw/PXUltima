@@ -31,10 +31,10 @@ extern "C"
 
 	typedef void (*NewControllerDetectedCallback)(ControllerID controllerID);
 
-	CPublic unsigned char ControllerScanDevices(NewControllerDetectedCallback callback);
-	CPublic unsigned char ControllerDataGet(Controller* controller);
-	CPublic unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID);
-	CPublic unsigned char ControllerDetachToWindow(const ControllerID controllerID);
+	PXPublic unsigned char ControllerScanDevices(NewControllerDetectedCallback callback);
+	PXPublic unsigned char ControllerDataGet(Controller* controller);
+	PXPublic unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID);
+	PXPublic unsigned char ControllerDetachToWindow(const ControllerID controllerID);
 
 #ifdef __cplusplus
 }

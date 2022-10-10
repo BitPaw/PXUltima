@@ -19,7 +19,7 @@ void SBPServerStop()
 	_server.Stop();
 }
 
-void SBPServerSendFile(const ClientID clientID, const char* text)
+void SBPServerSendFile(const PXClientID clientID, const char* text)
 {
 	File file;
 	/*
@@ -58,7 +58,7 @@ void SBPServerSendFile(const ClientID clientID, const char* text)
 
 
 
-		//_server.SendMessageToClient(clientID, buffer, bufferSize);
+		//_server.SendMessageToPXClient(clientID, buffer, bufferSize);
 	//}
 
 	// Create "i want to send" package
@@ -73,9 +73,9 @@ void SBPServerSendFile(const ClientID clientID, const char* text)
 
 
 	/*
-	for(size_t i = 0; i < _server.NumberOfConnectedClients; i++)
+	for(size_t i = 0; i < _server.NumberOfConnectedPXClients; i++)
 	{
-		auto& client = _server.ClientList[i];
+		auto& client = _server.PXClientList[i];
 
 		client.SendFile(text);
 	}	* /
@@ -88,13 +88,13 @@ const ResponseID SBPServerGenerateResponseID()
 	return randomIDGenerator++;
 }
 
-bool SBPServerSendMessageWaitResponse(const ClientID clientID, const ResponseID responseID, const Byte__* buffer, const size_t& bufferSize)
+bool SBPServerSendMessageWaitResponse(const PXClientID clientID, const ResponseID responseID, const Byte__* buffer, const size_t& bufferSize)
 {
 	_responseLookup.Add(responseID, nullptr);
 
 
 
-	//_server.SendMessageToClient(clientID, buffer, bufferSize);
+	//_server.SendMessageToPXClient(clientID, buffer, bufferSize);
 
 	/*
 	// wait for message
@@ -129,16 +129,16 @@ void SBPServerSendTextToAll(const wchar_t* text)
 	//_server.SendMessageToAll(buffer, size);
 }
 
-void SBPServerSendTextToClient(const unsigned int clientID, const char* text)
+void SBPServerSendTextToPXClient(const unsigned int clientID, const char* text)
 {
 
 
 	//CreateText(text, buffer, size, bufferSize);
 
-	//_server.SendMessageToClient(clientID, buffer, size);
+	//_server.SendMessageToPXClient(clientID, buffer, size);
 }
 
-void SBPServerSendTextToClient(const unsigned int clientID, const wchar_t* text)
+void SBPServerSendTextToPXClient(const unsigned int clientID, const wchar_t* text)
 {
 	const size_t bufferSize = 2048;
 	size_t size = 0;
@@ -146,7 +146,7 @@ void SBPServerSendTextToClient(const unsigned int clientID, const wchar_t* text)
 
 	//CreateText(text, buffer, size, bufferSize);
 
-	//_server.SendMessageToClient(clientID, buffer, size);
+	//_server.SendMessageToPXClient(clientID, buffer, size);
 }
 
 void SBPServerOnSocketCreating(const IPAdressInfo& adressInfo, bool& use)
@@ -203,7 +203,7 @@ void SBPServerOnMessageReceive(IOSocketMessage socketMessage)
 #if SocketDebug
 				printf("[i][SBP-Server] Sending response\n");
 #endif
-				_server.SendMessageToClient(socketMessage.SocketID, buffer, written);			
+				_server.SendMessageToPXClient(socketMessage.SocketID, buffer, written);			
 
 				break;
 			}				

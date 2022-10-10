@@ -81,7 +81,7 @@ ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t*
 		ClusterInt typePrimaryID;
 
 		DataStreamReadIU(&dataStream, &chunkSize, EndianBig);
-		DataStreamReadD(&dataStream, typePrimaryID.Data, 4u);
+		DataStreamReadP(&dataStream, typePrimaryID.Data, 4u);
 
 		const size_t positionPrediction = dataStream.DataCursor + chunkSize - 8;
 		const M4AChunkID typePrimary = ConvertToM4AChunkID(typePrimaryID.Value);
@@ -105,9 +105,9 @@ ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t*
 				unsigned int sizeB = 0;
 				char isoSignature[8]; // isom3gp4
 
-				DataStreamReadD(&dataStream, chunk.TypeSub, 4u);
+				DataStreamReadP(&dataStream, chunk.TypeSub, 4u);
 				DataStreamReadIU(&dataStream, &sizeB, EndianBig);
-				DataStreamReadD(&dataStream, isoSignature, 8u);
+				DataStreamReadP(&dataStream, isoSignature, 8u);
 
 				break;
 			}

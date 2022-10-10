@@ -67,35 +67,35 @@ extern "C"
 	FilePath;*/
 
 	//---<Utility>---------------------------------------------------------
-	CPublic unsigned char FileDoesExistA(const char* filePath);
-	CPublic unsigned char FileDoesExistW(const wchar_t* filePath);
+	PXPublic unsigned char FileDoesExistA(const char* filePath);
+	PXPublic unsigned char FileDoesExistW(const wchar_t* filePath);
 
-	CPublic ActionResult FileRemoveA(const char* filePath);
-	CPublic ActionResult FileRemoveW(const wchar_t* filePath);
-	CPublic ActionResult FileRenameA(const char* oldName, const char* newName);
-	CPublic ActionResult FileRenameW(const wchar_t* oldName, const wchar_t* newName);
-	CPublic ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePath);
-	CPublic ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinationFilePath);
+	PXPublic ActionResult FileRemoveA(const char* filePath);
+	PXPublic ActionResult FileRemoveW(const wchar_t* filePath);
+	PXPublic ActionResult FileRenameA(const char* oldName, const char* newName);
+	PXPublic ActionResult FileRenameW(const wchar_t* oldName, const wchar_t* newName);
+	PXPublic ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePath);
+	PXPublic ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinationFilePath);
 
-	CPublic void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
-	CPublic void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileName);
-	CPublic void FilePathSwapExtensionW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileExtension);
+	PXPublic void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
+	PXPublic void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileName);
+	PXPublic void FilePathSwapExtensionW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileExtension);
 	//---------------------------------------------------------------------
 
 	//---<Directory>-------------------------------------------------------
-	CPublic ActionResult DirectoryCreateA(const char* directoryName);
-	CPublic ActionResult DirectoryCreateW(const wchar_t* directoryName);
-	CPublic ActionResult WorkingDirectoryChange(const char* directoryName);
-	CPublic ActionResult WorkingDirectoryGetA(char* workingDirectory, size_t workingDirectorySize);
-	CPublic ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, size_t workingDirectorySize);
-	CPublic ActionResult WorkingDirectoryChangeW(const wchar_t* directoryName);
-	CPublic ActionResult DirectoryDeleteA(const char* directoryName);
-	CPublic ActionResult DirectoryDeleteW(const wchar_t* directoryName);
-	CPublic ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, size_t* listSize);
-	CPublic ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, size_t* listSize);
+	PXPublic ActionResult DirectoryCreateA(const char* directoryName);
+	PXPublic ActionResult DirectoryCreateW(const wchar_t* directoryName);
+	PXPublic ActionResult WorkingDirectoryChange(const char* directoryName);
+	PXPublic ActionResult WorkingDirectoryGetA(char* workingDirectory, size_t workingDirectorySize);
+	PXPublic ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, size_t workingDirectorySize);
+	PXPublic ActionResult WorkingDirectoryChangeW(const wchar_t* directoryName);
+	PXPublic ActionResult DirectoryDeleteA(const char* directoryName);
+	PXPublic ActionResult DirectoryDeleteW(const wchar_t* directoryName);
+	PXPublic ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, size_t* listSize);
+	PXPublic ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, size_t* listSize);
 	//---------------------------------------------------------------------
 
-	CPublic void FilePathSplittA
+	PXPublic void FilePathSplittA
 	(
 		const char* fullPath, size_t fullPathMaxSize,
 		char* drive, size_t driveMaxSize,
@@ -104,7 +104,7 @@ extern "C"
 		char* extension, size_t extensionMaxSize
 	);
 
-	CPublic void FilePathSplittW
+	PXPublic void FilePathSplittW
 	(
 		const wchar_t* fullPath, size_t fullPathMaxSize,
 		wchar_t* drive, size_t driveMaxSize,
@@ -113,7 +113,7 @@ extern "C"
 		wchar_t* extension, size_t extensionMaxSize
 	);
 
-	CPublic void FilePathSplittPositionW
+	PXPublic void FilePathSplittPositionW
 	(
 		const wchar_t* fullPath, size_t fullPathMaxSize,
 		size_t* drivePos, size_t driveSize,
@@ -122,8 +122,8 @@ extern "C"
 		size_t* extension, size_t extensionSize
 	);
 
-	CPublic void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax);
-	CPublic void FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax);
+	PXPublic void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax);
+	PXPublic void FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax);
 
 #ifdef __cplusplus
 }

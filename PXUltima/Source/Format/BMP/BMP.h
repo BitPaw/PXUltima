@@ -110,21 +110,21 @@ extern "C"
 
 	//---<Public Functions--------------------------------------------------------
 
-	CPublic void BMPConstruct(BMP* const bmp);
-	CPublic void BMPDestruct(BMP* const bmp);
+	PXPublic void BMPConstruct(BMP* const bmp);
+	PXPublic void BMPDestruct(BMP* const bmp);
 
 	// Calculate information about the layout how the raw image data is stored.
 	// There will be "amount of vertical rows", and "pixeldata" + "padding" .
-	CPublic void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const size_t width, const size_t height, const size_t bbp);
+	PXPublic void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const size_t width, const size_t height, const size_t bbp);
 
 	//----------------------------------------------------------------------------
-	CPublic size_t BMPFilePredictSize(const size_t width, const size_t height, const size_t bitsPerPixel);
+	PXPublic size_t BMPFilePredictSize(const size_t width, const size_t height, const size_t bitsPerPixel);
 
-	CPublic ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t* dataRead); 	
-	CPublic ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t* dataRead); 	
+	PXPublic ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
 
-	CPublic ActionResult BMPSerialize(const BMP* const bmp, void* data, const size_t dataSize, size_t* dataWritten);
-	CPublic ActionResult BMPSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult BMPSerialize(const BMP* const bmp, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult BMPSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

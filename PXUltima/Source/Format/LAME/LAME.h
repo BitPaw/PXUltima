@@ -55,7 +55,7 @@ extern "C"
 	LAME;
 
 
-	CPublic ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

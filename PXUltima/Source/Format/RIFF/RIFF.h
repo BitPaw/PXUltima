@@ -34,7 +34,7 @@ extern "C"
 	}
 	RIFF;
 
-	CPublic ActionResult RIFFParse(RIFF* riff, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult RIFFParse(RIFF* riff, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-	CPublic unsigned char ISBNIsValid(const void* data, const size_t dataSize);
+	PXPublic unsigned char ISBNIsValid(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

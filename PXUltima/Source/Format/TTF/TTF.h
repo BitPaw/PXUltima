@@ -291,7 +291,7 @@ extern "C"
     }
     TTFKerning;
 
-    CPublic void TTFKerningSubtableCoverageValueParse(unsigned short coverage);
+    PXPublic void TTFKerningSubtableCoverageValueParse(unsigned short coverage);
     //----------------
 
 
@@ -646,18 +646,18 @@ extern "C"
 	TTF;
 
 
-    CPublic EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID);
+    PXPublic EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID);
 
-    CPublic TTFVersionType ConvertFromVersionType(unsigned short major, unsigned short minor);
-    CPublic void ConvertToVersionType(unsigned short* major, unsigned short* minor, const TTFVersionType versionType);
+    PXPublic TTFVersionType ConvertFromVersionType(unsigned short major, unsigned short minor);
+    PXPublic void ConvertToVersionType(unsigned short* major, unsigned short* minor, const TTFVersionType versionType);
 
-    CPublic TTFTableEntryType ConvertTableEntryType(const unsigned int tableEntryType);
-    CPublic unsigned int ConvertTableEntryType(const TTFTableEntryType tableEntryType);
+    PXPublic TTFTableEntryType ConvertTableEntryType(const unsigned int tableEntryType);
+    PXPublic unsigned int ConvertTableEntryType(const TTFTableEntryType tableEntryType);
 
-    CPublic void TTFConstruct(TTF* const ttf);
-    CPublic void TTFDestruct(TTF* const ttf);
+    PXPublic void TTFConstruct(TTF* const ttf);
+    PXPublic void TTFDestruct(TTF* const ttf);
 
-	CPublic ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

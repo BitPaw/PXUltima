@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-	CPublic unsigned int CRC32Generate(const unsigned char* const data, const size_t length);
+	PXPublic unsigned int CRC32Generate(const unsigned char* const data, const size_t length);
 
 #ifdef __cplusplus
 }

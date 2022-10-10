@@ -131,7 +131,7 @@ extern "C"
 	}
 	OpenGLRenderBufferAttachmentPoint;
 
-	CPrivate unsigned int OpenGLRenderBufferAttachmentPointToID(const OpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint);
+	PXPrivate unsigned int OpenGLRenderBufferAttachmentPointToID(const OpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint);
 
 
 
@@ -154,7 +154,7 @@ extern "C"
 	}
 	OpenGLImageFormat;
 
-	CPrivate int OpenGLImageFormatToID(const OpenGLImageFormat imageFormat);
+	PXPrivate int OpenGLImageFormatToID(const OpenGLImageFormat imageFormat);
 
 	typedef enum OpenGLDataType_
 	{
@@ -174,7 +174,7 @@ extern "C"
 	}
 	OpenGLDataType;
 
-	CPrivate int OpenGLDataTypeToID(const OpenGLDataType dataType);
+	PXPrivate int OpenGLDataTypeToID(const OpenGLDataType dataType);
 
 	typedef enum OpenGLRenderBufferFormat_
 	{
@@ -183,7 +183,7 @@ extern "C"
 	}
 	OpenGLRenderBufferFormat;
 
-	CPrivate int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataType);
+	PXPrivate int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataType);
 
 
 
@@ -203,7 +203,7 @@ extern "C"
 	}
 	OpenGLRenderMode;
 
-	CPrivate int OpenGLRenderModeToID(const OpenGLRenderMode openGLRenderMode);
+	PXPrivate int OpenGLRenderModeToID(const OpenGLRenderMode openGLRenderMode);
 
 
 
@@ -283,7 +283,7 @@ extern "C"
 	}
 	OpenGLToggle;
 
-	CPrivate int OpenGLToggleToID(const OpenGLToggle openGLToggle);
+	PXPrivate int OpenGLToggleToID(const OpenGLToggle openGLToggle);
 
 	//-------------------------------------------------------------------------
 
@@ -303,7 +303,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.2.0.0>------------------------------------------------------
-	CPrivate unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType);
+	PXPrivate unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType);
 
 	typedef unsigned int (OpenGLAPICallType* OpenGLShaderProgramCreateFunction)();
 	typedef void (OpenGLAPICallType* OpenGLShaderProgramUseFunction)(unsigned int program);
@@ -481,62 +481,62 @@ extern "C"
 	}
 	OpenGLContext;
 
-	CPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID);
-	CPrivate void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void* functionADress);
-    CPrivate const void* const OpenGLFunctionAdressFetch(const char* const functionName);
+	PXPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID);
+	PXPrivate void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void* functionADress);
+    PXPrivate const void* const OpenGLFunctionAdressFetch(const char* const functionName);
 
-	CPublic void OpenGLContextConstruct(OpenGLContext* const openGLContext);
-	CPublic void OpenGLContextDestruct(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLContextConstruct(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLContextDestruct(OpenGLContext* const openGLContext);
 
-	CPublic void OpenGLContextCreate(OpenGLContext* const openGLContext);
-	CPublic void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const size_t width, const size_t height);
-	CPublic void OpenGLContextSelect(OpenGLContext* const openGLContext);
-	CPublic unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext);
-	CPublic void OpenGLContextRelease(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLContextCreate(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const size_t width, const size_t height);
+	PXPublic void OpenGLContextSelect(OpenGLContext* const openGLContext);
+	PXPublic unsigned char  OpenGLContextDeselect(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLContextRelease(OpenGLContext* const openGLContext);
 
-	CPublic void OpenGLRenderBufferSwap(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLRenderBufferSwap(OpenGLContext* const openGLContext);
 
-	CPublic void OpenGLFlush(OpenGLContext* const openGLContext);
-	CPublic void OpenGLViewSize(OpenGLContext* const openGLContext, const size_t x, const size_t y, const size_t width, const size_t height);
+	PXPublic void OpenGLFlush(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLViewSize(OpenGLContext* const openGLContext, const size_t x, const size_t y, const size_t width, const size_t height);
 
-	CPublic void OpenGLEnable(OpenGLContext* const openGLContext, const OpenGLToggle toggle);
-	CPublic void OpenGLClearColor(OpenGLContext* const openGLContext, const float red, const float green, const float blue, const float alpha);
-	CPublic void OpenGLClear(OpenGLContext* const openGLContext, const unsigned int clearID);
-	CPublic void OpenGLDrawScaleF(OpenGLContext* const openGLContext, const float x, const float y, const float z);
-	CPublic void OpenGLDrawBegin(OpenGLContext* const openGLContext, const OpenGLRenderMode openGLRenderMode);
-	CPublic void OpenGLDrawVertexXYZF(OpenGLContext* const openGLContext, const float x, const float y, const float z);
-	CPublic void OpenGLDrawColorRGBF(OpenGLContext* const openGLContext, const float red, const float green, const float blue);
-	CPublic void OpenGLDrawEnd(OpenGLContext* const openGLContext);
-	CPublic void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLenum pname, GLint param);
-
-
+	PXPublic void OpenGLEnable(OpenGLContext* const openGLContext, const OpenGLToggle toggle);
+	PXPublic void OpenGLClearColor(OpenGLContext* const openGLContext, const float red, const float green, const float blue, const float alpha);
+	PXPublic void OpenGLClear(OpenGLContext* const openGLContext, const unsigned int clearID);
+	PXPublic void OpenGLDrawScaleF(OpenGLContext* const openGLContext, const float x, const float y, const float z);
+	PXPublic void OpenGLDrawBegin(OpenGLContext* const openGLContext, const OpenGLRenderMode openGLRenderMode);
+	PXPublic void OpenGLDrawVertexXYZF(OpenGLContext* const openGLContext, const float x, const float y, const float z);
+	PXPublic void OpenGLDrawColorRGBF(OpenGLContext* const openGLContext, const float red, const float green, const float blue);
+	PXPublic void OpenGLDrawEnd(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLenum pname, GLint param);
 
 
-	CPublic void OpenGLAPICallType OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+
+
+	PXPublic void OpenGLAPICallType OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
 	// [Version 2] Extended functions
-	CPublic OpenGLShaderProgramID OpenGLShaderProgramCreate(OpenGLContext* const openGLContext);
-	CPublic void OpenGLShaderProgramUse(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
-	CPublic void OpenGLShaderProgramDelete(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
+	PXPublic OpenGLShaderProgramID OpenGLShaderProgramCreate(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLShaderProgramUse(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
+	PXPublic void OpenGLShaderProgramDelete(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID);
 
-	CPublic unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType);
-	CPublic OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const OpenGLShaderType openGLShaderType);
-	CPublic void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, const size_t count, const char** string, size_t* const length);
-	CPublic unsigned char OpenGLShaderCompile(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
-	CPublic void OpenGLShaderGetiv(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLenum pname, GLint* params);
-	CPublic void OpenGLShaderLogInfoGet(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
-	CPublic void OpenGLShaderDelete(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
-
-
-	CPublic void OpenGLShaderProgramAttach(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID, const OpenGLShaderID shaderID);
-	CPublic void OpenGLShaderProgramLink(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
-	CPublic void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+	PXPublic unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType);
+	PXPublic OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const OpenGLShaderType openGLShaderType);
+	PXPublic void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, const size_t count, const char** string, size_t* const length);
+	PXPublic unsigned char OpenGLShaderCompile(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+	PXPublic void OpenGLShaderGetiv(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLenum pname, GLint* params);
+	PXPublic void OpenGLShaderLogInfoGet(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
+	PXPublic void OpenGLShaderDelete(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
 
 
-	CPublic void OpenGLTextureCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* textures); // glGenTextures
-	CPublic void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLuint texture); // glBindTexture
-	CPublic void OpenGLTextureDelete(OpenGLContext* const openGLContext, GLsizei n, const GLuint* textures); // glDeleteTextures
-	CPublic void OpenGLTextureData2D
+	PXPublic void OpenGLShaderProgramAttach(OpenGLContext* const openGLContext, const OpenGLShaderProgramID shaderProgramID, const OpenGLShaderID shaderID);
+	PXPublic void OpenGLShaderProgramLink(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+	PXPublic void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
+
+
+	PXPublic void OpenGLTextureCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* textures); // glGenTextures
+	PXPublic void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLuint texture); // glBindTexture
+	PXPublic void OpenGLTextureDelete(OpenGLContext* const openGLContext, GLsizei n, const GLuint* textures); // glDeleteTextures
+	PXPublic void OpenGLTextureData2D
 	(
 		OpenGLContext* const openGLContext,
 		const OpenGLTextureType glTextureType,
@@ -551,48 +551,48 @@ extern "C"
 
 	// [Version 3.0]
 
-	CPublic void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
-	CPublic void OpenGLRenderBufferStorage(OpenGLContext* const openGLContext, const OpenGLRenderBufferFormat internalformat, const int width, const int height);
+	PXPublic void OpenGLFrameBufferCreate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
+	PXPublic void OpenGLRenderBufferStorage(OpenGLContext* const openGLContext, const OpenGLRenderBufferFormat internalformat, const int width, const int height);
 
 
 	// If we bind to 0, we select the "main window"
-	CPublic void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const OpenGLFrameBufferMode target, const unsigned int framebufferID);
+	PXPublic void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const OpenGLFrameBufferMode target, const unsigned int framebufferID);
 
-	CPublic void OpenGLFrameBufferDestroy(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
+	PXPublic void OpenGLFrameBufferDestroy(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
 
-	CPublic void OpenGLRenderBufferCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
-
-
-	CPublic void OpenGLRenderBufferBind(OpenGLContext* const openGLContext, const unsigned int renderbuffer);
-
-	CPublic void OpenGLRenderBufferDelete(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
+	PXPublic void OpenGLRenderBufferCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
 
 
-	CPublic void OpenGLFrameBufferLinkTexture2D(OpenGLContext* const openGLContext, const OpenGLRenderBufferAttachmentPoint attachment, const OpenGLTextureType textarget, const unsigned int textureID, const int level);
-	CPublic GLuint OpenGLFrameBufferLinkRenderBuffer(OpenGLContext* const openGLContext, const OpenGLRenderBufferAttachmentPoint attachment, const unsigned int renderbuffer);
+	PXPublic void OpenGLRenderBufferBind(OpenGLContext* const openGLContext, const unsigned int renderbuffer);
+
+	PXPublic void OpenGLRenderBufferDelete(OpenGLContext* const openGLContext, GLsizei n, GLuint* renderbuffers);
+
+
+	PXPublic void OpenGLFrameBufferLinkTexture2D(OpenGLContext* const openGLContext, const OpenGLRenderBufferAttachmentPoint attachment, const OpenGLTextureType textarget, const unsigned int textureID, const int level);
+	PXPublic GLuint OpenGLFrameBufferLinkRenderBuffer(OpenGLContext* const openGLContext, const OpenGLRenderBufferAttachmentPoint attachment, const unsigned int renderbuffer);
 
 
 
-	CPublic GLint OpenGLShaderVariableIDGet(OpenGLContext* const openGLContext, GLuint program, const char* name);
-	CPublic void OpenGLShaderVariableFx1(OpenGLContext* const openGLContext, GLint location, GLfloat v0);
-	CPublic void OpenGLShaderVariableFx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	CPublic void OpenGLShaderVariableIx1(OpenGLContext* const openGLContext, GLint location, GLint v0);
-	CPublic void OpenGLShaderVariableIx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	CPublic void OpenGLShaderVariableFx2(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1);
-	CPublic void OpenGLShaderVariableFx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	CPublic void OpenGLShaderVariableIx2(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1);
-	CPublic void OpenGLShaderVariableIx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	CPublic void OpenGLShaderVariableFx3(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-	CPublic void OpenGLShaderVariableFx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	CPublic void OpenGLShaderVariableIx3(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2);
-	CPublic void OpenGLShaderVariableIx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	CPublic void OpenGLShaderVariableFx4(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-	CPublic void OpenGLShaderVariableFx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	CPublic void OpenGLShaderVariableIx4(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-	CPublic void OpenGLShaderVariableIx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	CPublic void OpenGLShaderVariableMatrix2fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	CPublic void OpenGLShaderVariableMatrix3fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	CPublic void OpenGLShaderVariableMatrix4fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	PXPublic GLint OpenGLShaderVariableIDGet(OpenGLContext* const openGLContext, GLuint program, const char* name);
+	PXPublic void OpenGLShaderVariableFx1(OpenGLContext* const openGLContext, GLint location, GLfloat v0);
+	PXPublic void OpenGLShaderVariableFx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void OpenGLShaderVariableIx1(OpenGLContext* const openGLContext, GLint location, GLint v0);
+	PXPublic void OpenGLShaderVariableIx1xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void OpenGLShaderVariableFx2(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1);
+	PXPublic void OpenGLShaderVariableFx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void OpenGLShaderVariableIx2(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1);
+	PXPublic void OpenGLShaderVariableIx2xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void OpenGLShaderVariableFx3(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+	PXPublic void OpenGLShaderVariableFx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void OpenGLShaderVariableIx3(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2);
+	PXPublic void OpenGLShaderVariableIx3xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void OpenGLShaderVariableFx4(OpenGLContext* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+	PXPublic void OpenGLShaderVariableFx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void OpenGLShaderVariableIx4(OpenGLContext* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+	PXPublic void OpenGLShaderVariableIx4xN(OpenGLContext* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void OpenGLShaderVariableMatrix2fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	PXPublic void OpenGLShaderVariableMatrix3fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	PXPublic void OpenGLShaderVariableMatrix4fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 
 
 
@@ -601,7 +601,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.1.1.0>------------------------------------------------------
-	CPublic void OpenGLPixelDataRead
+	PXPublic void OpenGLPixelDataRead
 	(
 		OpenGLContext* const openGLContext,
 		const int x,

@@ -232,7 +232,7 @@ ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSiz
         }
     
 
-        DataStreamWriteD(&parsingSteam, buffer, 2u);
+        DataStreamWriteP(&parsingSteam, buffer, 2u);
     }
 
     // Wirte Data

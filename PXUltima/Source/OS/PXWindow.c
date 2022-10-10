@@ -900,9 +900,9 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
             break;
         }
-        case ClientMessage:
+        case PXClientMessage:
         {
-            printf("[Event] ClientMessage \n");
+            printf("[Event] PXClientMessage \n");
 
             break;
         }

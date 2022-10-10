@@ -110,13 +110,13 @@
     <ClInclude Include="Source\Library\Library.h" />
     <ClInclude Include="Source\Math\Math.h" />
     <ClInclude Include="Source\Memory\Memory.h" />
-    <ClInclude Include="Source\Network\Client.h" />
-    <ClInclude Include="Source\Network\CSocket.h" />
+    <ClInclude Include="Source\Network\PXClient.h" />
+    <ClInclude Include="Source\Network\PXSocket.h" />
     <ClInclude Include="Source\Network\IP.h" />
     <ClInclude Include="Source\Network\SBP\SBPClient.h" />
     <ClInclude Include="Source\Network\SBP\SBPProtocol.h" />
     <ClInclude Include="Source\Network\SBP\SBPServer.h" />
-    <ClInclude Include="Source\Network\Server.h" />
+    <ClInclude Include="Source\Network\PXServer.h" />
     <ClInclude Include="Source\OS\Bash.h" />
     <ClInclude Include="Source\OS\PXWindow.h" />
     <ClInclude Include="Source\OS\Monitor.h" />
@@ -221,13 +221,13 @@
     <ClCompile Include="Source\Library\Library.c" />
     <ClCompile Include="Source\Math\Math.c" />
     <ClCompile Include="Source\Memory\Memory.c" />
-    <ClCompile Include="Source\Network\Client.c" />
-    <ClCompile Include="Source\Network\CSocket.c" />
+    <ClCompile Include="Source\Network\PXClient.c" />
+    <ClCompile Include="Source\Network\PXSocket.c" />
     <ClCompile Include="Source\Network\IP.c" />
     <ClCompile Include="Source\Network\SBP\SBPClient.c" />
     <ClCompile Include="Source\Network\SBP\SBPProtocol.c" />
     <ClCompile Include="Source\Network\SBP\SBPServer.c" />
-    <ClCompile Include="Source\Network\Server.c" />
+    <ClCompile Include="Source\Network\PXServer.c" />
     <ClCompile Include="Source\OS\Bash.c" />
     <ClCompile Include="Source\OS\PXWindow.c" />
     <ClCompile Include="Source\OS\Monitor.c" />
@@ -259,7 +259,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -272,7 +272,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -366,7 +366,7 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -376,6 +376,9 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ShowIncludes>false</ShowIncludes>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -387,7 +390,7 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -397,6 +400,9 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ShowIncludes>false</ShowIncludes>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

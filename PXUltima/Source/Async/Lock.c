@@ -2,7 +2,7 @@
 
 #include <Memory/Memory.h>
 
-CPublic void LockClear(LockID* const asyncLockID)
+PXPublic void LockClear(LockID* const asyncLockID)
 {
 #if OSUnix
     MemorySet(asyncLockID, sizeof(LockID), 0);

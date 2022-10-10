@@ -15,10 +15,10 @@ extern "C"
 	}
 	Processor;
 
-	CPublic void ProcessorFetchInfo(Processor* const processor);
+	PXPublic void ProcessorFetchInfo(Processor* const processor);
 
-	CPublic unsigned int ProcessorFrequencyCurrent();
-	CPublic unsigned int ProcessorTimeReal();
+	PXPublic unsigned int ProcessorFrequencyCurrent();
+	PXPublic unsigned int ProcessorTimeReal();
 
 
 

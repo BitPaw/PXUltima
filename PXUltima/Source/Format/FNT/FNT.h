@@ -100,9 +100,9 @@ extern "C"
 	}
 	FNT;
 
-	CPublic FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character);
+	PXPublic FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character);
 
-	CPublic ActionResult FNTParse
+	PXPublic ActionResult FNTParse
 	(
 		FNT* fnt,
 		const void* fileData,
@@ -113,7 +113,7 @@ extern "C"
 
 	static FNTLineType PeekLineType(const void* line, const size_t fileDataSize);
 
-	CPublic void FNTPrtinf(const FNT* fnt);
+	PXPublic void FNTPrtinf(const FNT* fnt);
 
 #ifdef __cplusplus
 }

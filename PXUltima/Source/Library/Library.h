@@ -25,12 +25,12 @@
 extern "C"
 {
 #endif
-    CPublic unsigned char LibraryOpenA(LibraryHandle* handle, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
-    CPublic unsigned char LibraryOpenW(LibraryHandle* handle, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
-    CPublic unsigned char LibraryClose(LibraryHandle* handle); // close a dlopen object
-    CPublic unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
+    PXPublic unsigned char LibraryOpenA(LibraryHandle* handle, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic unsigned char LibraryOpenW(LibraryHandle* handle, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic unsigned char LibraryClose(LibraryHandle* handle); // close a dlopen object
+    PXPublic unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
 
-    CPublic unsigned char LibraryParseSymbols();
+    PXPublic unsigned char LibraryParseSymbols();
 
    // void SymbolVector(); // Programming interface to dynamic linking loader.
 

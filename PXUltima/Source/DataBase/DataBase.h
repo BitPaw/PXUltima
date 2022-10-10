@@ -106,10 +106,10 @@ extern "C"
 	DataBaseConnection;
 
 
-	CPublic void DataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection);
-	CPublic void DataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection);
+	PXPublic void DataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection);
+	PXPublic void DataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection);
 
-	CPublic void DataBaseConnectionConnect
+	PXPublic void DataBaseConnectionConnect
 	(
 		DataBaseConnection* const dataBaseConnection,
 		const wchar_t* source,
@@ -117,12 +117,12 @@ extern "C"
 		const wchar_t* user,
 		const wchar_t* password
 	);
-	CPublic void DataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection);
-	CPublic void DataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection);
+	PXPublic void DataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection);
+	PXPublic void DataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection);
 
-	CPublic void DataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnection);
+	PXPublic void DataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnection);
 
-	CPublic void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, const wchar_t* sqlStatement);
+	PXPublic void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, const wchar_t* sqlStatement);
 
 #ifdef __cplusplus
 }

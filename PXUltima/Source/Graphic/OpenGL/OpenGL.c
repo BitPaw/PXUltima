@@ -16,7 +16,6 @@
 #endif
 
 
-
 //---<Version 1.2>------------------
 #define GL_SMOOTH_POINT_SIZE_RANGE 0x0B12
 #define GL_SMOOTH_POINT_SIZE_GRANULARITY 0x0B13
@@ -964,7 +963,7 @@ int OpenGLDataTypeToID(const OpenGLDataType dataType)
     }
 }
 
-CPrivate int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataType)
+PXPrivate int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataType)
 {
     switch (dataType)
     {
@@ -1105,7 +1104,7 @@ unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType)
     }       
 }
 
-CPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID)
+PXPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID)
 {
     switch (versionID)
     {
@@ -1400,7 +1399,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         functionNameList[0] = "glClearColor";
         functionNameList[0] = "glClearDepth";
         functionNameList[0] = "glClearStencil";
-        functionNameList[0] = "glClientActiveTexture";
+        functionNameList[0] = "glPXClientActiveTexture";
         functionNameList[0] = "glClipPlane";
         functionNameList[0] = "glColor";
         functionNameList[0] = "glColorMask";
@@ -1420,7 +1419,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         functionNameList[0] = "glDrawElements";
         functionNameList[0] = "glDrawTex";
         functionNameList[0] = "glEnable";
-        functionNameList[0] = "glEnableClientState";
+        functionNameList[0] = "glEnablePXClientState";
         functionNameList[0] = "glFinish";
         functionNameList[0] = "glFlush";
         functionNameList[0] = "glFog";

@@ -252,7 +252,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.MaximalExtendX, EndianBig);
 				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.CaretSlopeRun, EndianBig);
 				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.CaretSlopeRise, EndianBig);
-				DataStreamReadD(&dataStream, &ttf->HorizontalHeader.Reserved, 10u);
+				DataStreamReadP(&dataStream, &ttf->HorizontalHeader.Reserved, 10u);
 				DataStreamReadS(&dataStream, &ttf->HorizontalHeader.MetricDataFormat, EndianBig);
 				DataStreamReadSU(&dataStream, &ttf->HorizontalHeader.NumberOfHorizontalMetrics, EndianBig);
 				break;
@@ -349,7 +349,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 				DataStreamReadSU(&dataStream, &ttf->Compatibility.ulUnicodeRange[2], EndianBig);
 				DataStreamReadSU(&dataStream, &ttf->Compatibility.ulUnicodeRange[3], EndianBig);
 
-				DataStreamReadD(&dataStream, &ttf->Compatibility.achVendID, 4u);
+				DataStreamReadP(&dataStream, &ttf->Compatibility.achVendID, 4u);
 
 				DataStreamReadSU(&dataStream, &ttf->Compatibility.fsSelection, EndianBig);
 				DataStreamReadSU(&dataStream, &ttf->Compatibility.fsFirstCharIndex, EndianBig);

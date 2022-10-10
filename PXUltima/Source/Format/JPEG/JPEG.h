@@ -178,15 +178,15 @@ extern "C"
 	static JPEGMarker ConvertToJPEGMarker(const unsigned short jpegMarker);
 	static unsigned short ConvertFromJPEGMarker(const JPEGMarker jpegMarker);
 
-	CPublic void JPEGConstruct(JPEG* const jpeg);
-	CPublic void JPEGDestruct(JPEG* const jpeg);
+	PXPublic void JPEGConstruct(JPEG* const jpeg);
+	PXPublic void JPEGDestruct(JPEG* const jpeg);
 
-	CPublic size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	PXPublic size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
 	
-	CPublic ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead);
-	CPublic ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead);
 
-	CPublic ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 
 #ifdef __cplusplus
 }

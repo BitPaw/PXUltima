@@ -189,7 +189,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t*
 	//---[Parse Image ID]--------------
 	if(tga->ImageInformationSize)
 	{
-		DataStreamReadD(&dataStream, tga->ImageInformation, tga->ImageInformationSize);
+		DataStreamReadP(&dataStream, tga->ImageInformation, tga->ImageInformationSize);
 	}
 	//----------------------------------
 
@@ -201,7 +201,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t*
 	//--------------------------------
 
 	//---[ ImageData ]------------------
-	DataStreamReadD(&dataStream, tga->ImageData, tga->ImageDataSize);
+	DataStreamReadP(&dataStream, tga->ImageData, tga->ImageDataSize);
 	//-----------------------------------------------------------------
 
 
@@ -262,8 +262,8 @@ ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t*
 			return ResultFormatNotAsExpected;
 		}
 
-		DataStreamReadD(&dataStream, tga->AuthorName, 41u);
-		DataStreamReadD(&dataStream, tga->AuthorComment, 324u);
+		DataStreamReadP(&dataStream, tga->AuthorName, 41u);
+		DataStreamReadP(&dataStream, tga->AuthorComment, 324u);
 
 		// 12 Bytes
 		DataStreamReadSU(&dataStream, &tga->DateTimeMonth, EndianLittle);
@@ -273,7 +273,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t*
 		DataStreamReadSU(&dataStream, &tga->JobTimeMinute, EndianLittle);
 		DataStreamReadSU(&dataStream, &tga->JobTimeSecond, EndianLittle);
 
-		DataStreamReadD(&dataStream, tga->JobID, 41u);
+		DataStreamReadP(&dataStream, tga->JobID, 41u);
 
 		// 6 Bytes
 		DataStreamReadSU(&dataStream, &tga->JobTimeHours, EndianLittle);
@@ -282,7 +282,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t*
 
 		dataStream.DataCursor += 12u;
 
-		DataStreamReadD(&dataStream, tga->SoftwareName, 41u);
+		DataStreamReadP(&dataStream, tga->SoftwareName, 41u);
 
 		DataStreamReadSU(&dataStream, &tga->VersionNumber, EndianLittle);
 		DataStreamReadCU(&dataStream, &tga->SoftwareVersion);
@@ -379,7 +379,7 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 	//---[Parse Image ID]--------------
 	if(tga.ImageInformationSize)
 	{
-		DataStreamReadD(&DataStream, tga.ImageInformation, tga.ImageInformationSize);
+		DataStreamReadP(&DataStream, tga.ImageInformation, tga.ImageInformationSize);
 	}
 	//----------------------------------
 
@@ -391,7 +391,7 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 	//--------------------------------
 
 	//---[ ImageData ]------------------
-	DataStreamReadD(&DataStream, image->PixelData, image->PixelDataSize);
+	DataStreamReadP(&DataStream, image->PixelData, image->PixelDataSize);
 	//-----------------------------------------------------------------
 
 
@@ -452,8 +452,8 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 			return ResultFormatNotAsExpected;
 		}
 
-		DataStreamReadD(&DataStream, tga.AuthorName, 41u);
-		DataStreamReadD(&DataStream, tga.AuthorComment, 324u);
+		DataStreamReadP(&DataStream, tga.AuthorName, 41u);
+		DataStreamReadP(&DataStream, tga.AuthorComment, 324u);
 
 		// 12 Bytes
 		DataStreamReadSU(&DataStream, &tga.DateTimeMonth, EndianLittle);
@@ -463,7 +463,7 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 		DataStreamReadSU(&DataStream, &tga.JobTimeMinute, EndianLittle);
 		DataStreamReadSU(&DataStream, &tga.JobTimeSecond, EndianLittle);
 
-		DataStreamReadD(&DataStream, tga.JobID, 41u);
+		DataStreamReadP(&DataStream, tga.JobID, 41u);
 
 		// 6 Bytes
 		DataStreamReadSU(&DataStream, &tga.JobTimeHours, EndianLittle);
@@ -472,7 +472,7 @@ ActionResult TGAParseToImage(Image* const image, const void* const data, const s
 
 		DataStream.DataCursor += 12u;
 
-		DataStreamReadD(&DataStream, tga.SoftwareName, 41u);
+		DataStreamReadP(&DataStream, tga.SoftwareName, 41u);
 
 		DataStreamReadSU(&DataStream, &tga.VersionNumber, EndianLittle);
 		DataStreamReadCU(&DataStream, &tga.SoftwareVersion);

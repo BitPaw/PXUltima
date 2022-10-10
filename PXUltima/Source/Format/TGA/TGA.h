@@ -109,17 +109,17 @@ extern "C"
 	static unsigned char ConvertFromImageDataType(const TGAImageDataType imageDataType);
 
 
-	CPublic size_t TGAFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	PXPublic size_t TGAFilePredictSize(const size_t width, const size_t height, const size_t bbp);
 
 
-	CPublic void TGAConstruct(TGA* const tga); 
-	CPublic void TGADestruct(TGA* const tga);
+	PXPublic void TGAConstruct(TGA* const tga); 
+	PXPublic void TGADestruct(TGA* const tga);
 
 
-	CPublic ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t* dataRead);
-	CPublic ActionResult TGAParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult TGAParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
 
-	CPublic ActionResult TGASerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult TGASerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 
 #ifdef __cplusplus
 }

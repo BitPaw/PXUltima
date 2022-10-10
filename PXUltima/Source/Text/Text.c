@@ -249,7 +249,7 @@ size_t TextLengthA(const char* string, const size_t stringSize)
 {
 	size_t index = 0;
 
-	for(; (string[index] != '\0'); ++index);
+	for(; (string[index] != '\0') && (index < stringSize); ++index);
 
 	return index;
 }
@@ -258,7 +258,7 @@ size_t TextLengthW(const wchar_t* string, const size_t stringSize)
 {
 	size_t index = 0;
 
-	for(; (string[index] != L'\0'); ++index);
+	for(; (string[index] != L'\0') && (index < stringSize); ++index);
 
 	return index;
 }
@@ -548,21 +548,22 @@ char* TextFindPositionA(const char* data, size_t dataSize, const char* target, s
 
 size_t TextFindFirstA(const char* string, const size_t dataSize, const char character)
 {
-	size_t i = 0;
+	PXBool found = 0;
+	size_t i = TextLengthW(string, dataSize);
 
-	for(unsigned char found = 0; (string[i] != '\0') && i < dataSize && !found; ++i)
+	for (; i > 0 && !found; --i)
 	{
 		found = character == string[i];
 	}
 
-	--i;
+	++i;
 
-	return i;
+	return found ? i + 1 : TextIndexNotFound;
 }
 
 size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_t character)
 {
-	unsigned char found = 0;
+	PXBool found = 0;
 	size_t i = TextLengthW(string, dataSize);
 
 	for (; i > 0 && !found; --i)
@@ -577,7 +578,7 @@ size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_
 
 size_t TextFindLastA(const char* string, const size_t dataSize, const char character)
 {
-	unsigned char found = 0;
+	PXBool found = 0;
 	size_t i = TextLengthA(string, dataSize);
 
 	for(; i > 0 && !found; --i)

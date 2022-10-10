@@ -35,7 +35,7 @@ extern "C"
 	}
 	AVI;
 
-	CPublic ActionResult AVIParse(AVI* avi, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult AVIParse(AVI* avi, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

@@ -979,7 +979,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
             //chunk.ChunkData = dataStream.Data + dataStream.DataCursor;
 
             DataStreamReadIU(&dataStream, &chunk.Lengh, EndianBig);
-            DataStreamReadD(&dataStream, chunk.ChunkTypeRaw, 4u);
+            DataStreamReadP(&dataStream, chunk.ChunkTypeRaw, 4u);
 
             // Check
             {
@@ -1091,7 +1091,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
                     //zlib.Unpack(imageDataChunkCache, imageDataChunkCacheSizeUSED);
 
 
-                    DataStreamReadD(&dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
+                    DataStreamReadP(&dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
 
                     imageDataChunkCacheSizeUSED += chunk.Lengh;
 
@@ -1406,7 +1406,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
             //chunk.ChunkData = dataStream.Data + dataStream.DataCursor;
 
             DataStreamReadIU(&dataStream, &chunk.Lengh, EndianBig);
-            DataStreamReadD(&dataStream, chunk.ChunkTypeRaw, 4u);
+            DataStreamReadP(&dataStream, chunk.ChunkTypeRaw, 4u);
 
             // Check
             {
@@ -1482,7 +1482,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     {
                         unsigned char* paletteInsertion = png.Palette + i*4;
 
-                        DataStreamReadD(&dataStream, paletteInsertion, 3u); // Read RGB value
+                        DataStreamReadP(&dataStream, paletteInsertion, 3u); // Read RGB value
 
                         paletteInsertion[3] = 0xFF; // Add alpha
                     }
@@ -1530,7 +1530,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     //zlib.Unpack(imageDataChunkCache, imageDataChunkCacheSizeUSED);
 
 
-                    DataStreamReadD(&dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
+                    DataStreamReadP(&dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
 
                     imageDataChunkCacheSizeUSED += chunk.Lengh;
 
@@ -1930,7 +1930,7 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
         const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
         const size_t pngFileHeaderSize = sizeof(pngFileHeader);
 
-        DataStreamWriteD(&dataStream, pngFileHeader, pngFileHeaderSize);
+        DataStreamWriteP(&dataStream, pngFileHeader, pngFileHeaderSize);
     }
 
     //---<IHDR> (Image Header)---
@@ -1940,7 +1940,7 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
         const unsigned char* chunkStart = DataStreamCursorPosition(&dataStream);
 
         DataStreamWriteIU(&dataStream, 13u, EndianBig);
-        DataStreamWriteD(&dataStream, "IHDR", 4u);
+        DataStreamWriteP(&dataStream, "IHDR", 4u);
 
         DataStreamWriteIU(&dataStream, png->ImageHeader.Width, EndianBig);
         DataStreamWriteIU(&dataStream, png->ImageHeader.Height, EndianBig);
@@ -1978,7 +1978,7 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
     //---<>---
     {
         DataStreamWriteIU(&dataStream, 0u, EndianBig);
-        DataStreamWriteD(&dataStream, "IEND", 4u);
+        DataStreamWriteP(&dataStream, "IEND", 4u);
         DataStreamWriteIU(&dataStream, 2923585666u, EndianBig);
     }
 
@@ -2581,7 +2581,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
         const size_t pngFileHeaderSize = sizeof(pngFileHeader);
 
-        DataStreamWriteD(&dataStream, pngFileHeader, pngFileHeaderSize);
+        DataStreamWriteP(&dataStream, pngFileHeader, pngFileHeaderSize);
     }
 
     //---<IHDR> (Image Header)--- 21 Bytes
@@ -2615,7 +2615,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         const unsigned int chunkLength = 13u;
 
         DataStreamWriteIU(&dataStream, chunkLength, EndianBig);
-        DataStreamWriteD(&dataStream, "IHDR", 4u);
+        DataStreamWriteP(&dataStream, "IHDR", 4u);
 
         DataStreamWriteIU(&dataStream, image->Width, EndianBig);
         DataStreamWriteIU(&dataStream, image->Height, EndianBig);
@@ -2753,7 +2753,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         const size_t chunkLength = 7u;
 
         DataStreamWriteIU(&dataStream, chunkLength, EndianBig);
-        DataStreamWriteD(&dataStream, "tIME", 4u);
+        DataStreamWriteP(&dataStream, "tIME", 4u);
         DataStreamWriteSU(&dataStream, pngLastModificationTime.Year, EndianBig);
         DataStreamWriteCU(&dataStream, pngLastModificationTime.Month);
         DataStreamWriteCU(&dataStream, pngLastModificationTime.Day);
@@ -2778,7 +2778,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         size_t chunkLength = 0;
 
         DataStreamWriteIU(&dataStream, 0u, EndianBig); // Length
-        DataStreamWriteD(&dataStream, "IDAT", 4u);
+        DataStreamWriteP(&dataStream, "IDAT", 4u);
 
 
         unsigned char* scanlines = 0;
@@ -2832,7 +2832,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         const unsigned char imageEndChunk[13] = "\0\0\0\0IEND\xAE\x42\x60\x82"; // Combined write, as this is constand
         const size_t imageEndChunkSize = sizeof(imageEndChunk)-1;
 
-        DataStreamWriteD(&dataStream, imageEndChunk, imageEndChunkSize);
+        DataStreamWriteP(&dataStream, imageEndChunk, imageEndChunkSize);
     }
 
     *dataWritten = dataStream.DataCursor;

@@ -18,12 +18,12 @@ extern "C"
 	}
 	TIFF;
 
-	CPublic size_t TIFFFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	PXPublic size_t TIFFFilePredictSize(const size_t width, const size_t height, const size_t bbp);
 
-	CPublic ActionResult TIFFParse(TIFF* tiff, const void* data, const size_t dataSize, size_t* dataRead);
-	CPublic ActionResult TIFFParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult TIFFParse(TIFF* tiff, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult TIFFParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
 
-	CPublic ActionResult TIFFSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult TIFFSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
 
 #ifdef __cplusplus
 }

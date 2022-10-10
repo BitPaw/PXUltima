@@ -17,7 +17,7 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 		const char xingTag[] = { 'X', 'i', 'n', 'g' };
 		char indetifier[4];
 
-		DataStreamReadD(&dataStream, indetifier, 4u);
+		DataStreamReadP(&dataStream, indetifier, 4u);
 
 		const unsigned char isInfo =
 			indetifier[0] == infoTag[0] &&
@@ -75,7 +75,7 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t da
 
 	if(hasTOCData)
 	{
-		DataStreamReadD(&dataStream, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
+		DataStreamReadP(&dataStream, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
 	}
 
 	if(hasVBRScale)

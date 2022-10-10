@@ -123,7 +123,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
     {
         char versionTag[2];
 
-        DataStreamReadD(&dataStream, versionTag, 2);
+        DataStreamReadP(&dataStream, versionTag, 2);
 
         switch(versionTag[0])
         {
@@ -183,19 +183,19 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
         {
             const unsigned char hasTrackID = version == ID3Versionv1x1;
 
-            DataStreamReadD(&dataStream, id3->Title, ID3TitleSize);
-            DataStreamReadD(&dataStream, id3->Artist, ID3TitleSize);
-            DataStreamReadD(&dataStream, id3->Album, ID3TitleSize);
-            DataStreamReadD(&dataStream, id3->Year, ID3TitleSize);
+            DataStreamReadP(&dataStream, id3->Title, ID3TitleSize);
+            DataStreamReadP(&dataStream, id3->Artist, ID3TitleSize);
+            DataStreamReadP(&dataStream, id3->Album, ID3TitleSize);
+            DataStreamReadP(&dataStream, id3->Year, ID3TitleSize);
 
             if(hasTrackID)
             {
-                DataStreamReadD(&dataStream, id3->Comment, ID3CommentSize - 1);
+                DataStreamReadP(&dataStream, id3->Comment, ID3CommentSize - 1);
                 DataStreamReadC(&dataStream, &id3->TrackID);
             }
             else
             {
-                DataStreamReadD(&dataStream, id3->Comment, ID3CommentSize);
+                DataStreamReadP(&dataStream, id3->Comment, ID3CommentSize);
             }
 
             DataStreamReadC(&dataStream, &id3->Genre);
@@ -222,7 +222,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
             {
                 ClusterInt sizeCluster;
 
-                DataStreamReadD(&dataStream, sizeCluster.Data, 4u);
+                DataStreamReadP(&dataStream, sizeCluster.Data, 4u);
 
                 // Size format: x000 x000 x000 x000 => 28 Bit int
                 // The first bit of each byte not only unused but shall be merged!
@@ -262,7 +262,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                         unsigned int frameSize = 0;
                         unsigned short frameFlags = 0;
 
-                        DataStreamReadD(&dataStream, indentifier.Data, 4u);
+                        DataStreamReadP(&dataStream, indentifier.Data, 4u);
                         DataStreamReadIU(&dataStream, frameSize, EndianBig);
                         DataStreamReadIU(&dataStream, frameFlags, EndianBig);
     

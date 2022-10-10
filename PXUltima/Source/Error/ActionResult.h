@@ -67,12 +67,12 @@ extern "C"
 
 		RequestedServiceNotAvailableForSocket,
 
-		//---<Client>------------------------
+		//---<PXClient>------------------------
 		SocketConnectionFailure,
 		//-----------------------------------
 
 		//---<Server>------------------------
-		NoClientWithThisID,
+		NoPXClientWithThisID,
 		NoSendEmptyData,
 		//-----------------------------------
 
@@ -177,8 +177,8 @@ extern "C"
 	}
 	ActionResult;
 
-	CPublic ActionResult ConvertErrorCode(const int errorCode);
-	CPublic ActionResult GetCurrentError();
+	PXPublic ActionResult ConvertErrorCode(const int errorCode);
+	PXPublic ActionResult GetCurrentError();
 
 #ifdef __cplusplus
 }

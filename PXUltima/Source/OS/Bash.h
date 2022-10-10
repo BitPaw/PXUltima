@@ -10,8 +10,8 @@ extern "C"
 {
 #endif
 
-	CPublic ActionResult BashExecuteA(const char* programPath, const unsigned char syncronous);
-	CPublic ActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous);
+	PXPublic ActionResult BashExecuteA(const char* programPath, const unsigned char syncronous);
+	PXPublic ActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous);
 
 #ifdef __cplusplus
 }

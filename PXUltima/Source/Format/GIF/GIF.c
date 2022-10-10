@@ -32,7 +32,7 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
 
         const unsigned char validHeader = DataStreamReadAndCompare(&dataStream, headerTag, sizeof(headerTag));
 
-        DataStreamReadD(&dataStream, version, sizeof(version));
+        DataStreamReadP(&dataStream, version, sizeof(version));
 
         const unsigned char validVersion =
             version[0] == versionA[0] &&

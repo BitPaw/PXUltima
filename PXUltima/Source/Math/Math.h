@@ -28,44 +28,44 @@
 extern "C"
 {
 #endif
-	CPublic int MathMinimumI(const int a, const int b);
-	CPublic size_t MathMinimumIU(const size_t a, const size_t b);
-	CPublic double MathMinimumD(const double a, const double b);
+	PXPublic int MathMinimumI(const int a, const int b);
+	PXPublic size_t MathMinimumIU(const size_t a, const size_t b);
+	PXPublic double MathMinimumD(const double a, const double b);
 
-	CPublic int MathFloorI(const int a);
-	CPublic int MathFloorD(const double a);
+	PXPublic int MathFloorI(const int a);
+	PXPublic int MathFloorD(const double a);
 
-	CPublic size_t MathAbsoluteI(const int value);
-	CPublic double MathAbsoluteD(const double value);
+	PXPublic size_t MathAbsoluteI(const int value);
+	PXPublic double MathAbsoluteD(const double value);
 
 
-	CPublic char MathLimitC(const char value, const char minimum, const char maximum);
-	CPublic unsigned char MathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
-	CPublic int MathLimitI(const int value, const int minimum, const int maximum);
-	CPublic size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum);
+	PXPublic char MathLimitC(const char value, const char minimum, const char maximum);
+	PXPublic unsigned char MathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
+	PXPublic int MathLimitI(const int value, const int minimum, const int maximum);
+	PXPublic size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum);
 
-	CPublic float MathFastInverseSqaureRoot(float number);
-	CPublic double MathPower(double base, double exponent);
-	CPublic double MathPowerOfTwo(double base);
-	CPublic unsigned int MathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo);
-	CPublic double MathRoot(unsigned int rootNr, double value);
-	CPublic double MathSquareRoot(double value);
-	CPublic double MathCubicRoot(double value);
-	CPublic double MathPythagoras(double a, double b);
-	CPublic double MathPythagorasReverse(double c, double a);
-	CPublic double MathLogarithmus(int base, double exponent);
-	CPublic double MathLogarithmusBase2(double exponent);
-	CPublic double MathLogarithmusBase10(double exponent);
-	CPublic double MathNewtonGravitation(double massA, double massB, double distance);
-	CPublic int MathCeilingF(const float value);
-	CPublic int MathCeilingD(const double value);
-	CPublic unsigned int MathRandomeNumber();
-	CPublic double MathSinus(double value);
-	CPublic double MathTangens(double value);
-	CPublic double MathCosinus(double value);
-	CPublic unsigned long MathFibonacci(unsigned long step);
-	CPublic double MathRadiansToDegree(double radians);
-	CPublic double MathDegreeToRadians(double degree);
+	PXPublic float MathFastInverseSqaureRoot(float number);
+	PXPublic double MathPower(double base, double exponent);
+	PXPublic double MathPowerOfTwo(double base);
+	PXPublic unsigned int MathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo);
+	PXPublic double MathRoot(unsigned int rootNr, double value);
+	PXPublic double MathSquareRoot(double value);
+	PXPublic double MathCubicRoot(double value);
+	PXPublic double MathPythagoras(double a, double b);
+	PXPublic double MathPythagorasReverse(double c, double a);
+	PXPublic double MathLogarithmus(int base, double exponent);
+	PXPublic double MathLogarithmusBase2(double exponent);
+	PXPublic double MathLogarithmusBase10(double exponent);
+	PXPublic double MathNewtonGravitation(double massA, double massB, double distance);
+	PXPublic int MathCeilingF(const float value);
+	PXPublic int MathCeilingD(const double value);
+	PXPublic unsigned int MathRandomeNumber();
+	PXPublic double MathSinus(double value);
+	PXPublic double MathTangens(double value);
+	PXPublic double MathCosinus(double value);
+	PXPublic unsigned long MathFibonacci(unsigned long step);
+	PXPublic double MathRadiansToDegree(double radians);
+	PXPublic double MathDegreeToRadians(double degree);
 
 #ifdef __cplusplus
 }

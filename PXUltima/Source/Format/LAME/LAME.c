@@ -30,7 +30,7 @@ ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size
 
 		DataStreamReadC(&dataStream, &majorVersionText); // 1 character
 		const char isDot = DataStreamReadAndCompare(&dataStream, '.', sizeof(unsigned char));
-		DataStreamReadD(&dataStream, minorVersionText, 2u); // 2 character
+		DataStreamReadP(&dataStream, minorVersionText, 2u); // 2 character
 		DataStreamReadC(&dataStream, releaseVersionText); // letter
 
 		int a = 0;

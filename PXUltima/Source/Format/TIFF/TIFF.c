@@ -27,7 +27,7 @@ ActionResult TIFFParse(TIFF* tiff, const void* data, const size_t dataSize, size
         const char versionB[2] = GIFFormatB;
         char headerTag[2];
 
-        DataStreamReadD(&dataStream, headerTag, 2u);
+        DataStreamReadP(&dataStream, headerTag, 2u);
 
         const unsigned char useBigEndian = headerTag[0] == versionB[0] && headerTag[1] == versionB[1];
         const unsigned char useLittleEndian = headerTag[0] == versionA[0] && headerTag[1] == versionA[1];

@@ -5,11 +5,13 @@
 #include <Compiler/Compiler.h>
 #include <Format/YAML/YAML.h>
 #include <Format/OBJ/OBJ.h>
+#include <Format/XML/XML.h>
 
 void TestPXCompilerAll()
 {
-	TestPXCompilerOBJ();
-	TestPXCompilerYAML();
+	//TestPXCompilerOBJ();
+	//TestPXCompilerYAML();
+	TestPXCompilerXML();
 }
 
 void TestPXCompilerOBJ()
@@ -30,7 +32,7 @@ void TestPXCompilerOBJ()
 
 	DataStreamMapToMemory(&outputStream, inputStream.DataSize*4, MemoryReadAndWrite);
 
-	OBJFileParse(&inputStream, &outputStream);
+	OBJFileCompile(&inputStream, &outputStream);
 
 	printf("____\n");
 }
@@ -60,9 +62,39 @@ void TestPXCompilerYAML()
 
 	PXCompilerSettings compilerSettings;
 
-	compilerSettings.WhiteSpaceKeep = 1;
+	//compilerSettings. = 1;
 
 	PXCompilerLexicalAnalysis(&inputStream, &outputStream, &compilerSettings);
+
+	printf("____\n");
+}
+
+void TestPXCompilerXML()
+{
+	const char xmlData[] =
+		"<part number=\"1976\">\n"
+		"<name>Windscreen Wiper</name>\n"
+		"<description>The Windscreen wiper\n"
+		"automatically removes rain\n"
+		"from your windscreen, if it\n"
+		"should happen to splash there.\n"
+		"It has a rubber <ref part=\"1977\">blade</ref>\n"
+		"which can be ordered separately\n"
+		"if you need to replace it.\n"
+		"</description>\n"
+		"</part>\n";
+
+	DataStream inputStream;
+	DataStream outputStream;
+
+	DataStreamConstruct(&inputStream);
+	DataStreamConstruct(&outputStream);
+
+	DataStreamFromExternal(&inputStream, xmlData, 299-1);
+
+	DataStreamMapToMemory(&outputStream, inputStream.DataSize * 8, MemoryReadAndWrite);
+
+	XMLFileCompile(&inputStream, &outputStream);
 
 	printf("____\n");
 }

@@ -27,7 +27,7 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, s
 
 		ClusterInt fmtHeader;
 
-		DataStreamReadD(&dataStream, fmtHeader.Data, 4u);
+		DataStreamReadP(&dataStream, fmtHeader.Data, 4u);
 
 		const unsigned char valid =
 			expectedValue[0] == fmtHeader.A &&
@@ -41,13 +41,13 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, s
 		}
 	}
 
-	DataStreamReadD(&dataStream, &fmt->ChunkSize, endian);
-	DataStreamReadD(&dataStream, &fmt->AudioFormat, endian);
-	DataStreamReadD(&dataStream, &fmt->NumerOfChannels, endian);
-	DataStreamReadD(&dataStream, &fmt->SampleRate, endian);
-	DataStreamReadD(&dataStream, &fmt->ByteRate, endian);
-	DataStreamReadD(&dataStream, &fmt->BlockAllign, endian);
-	DataStreamReadD(&dataStream, &fmt->BitsPerSample, endian);
+	DataStreamReadP(&dataStream, &fmt->ChunkSize, endian);
+	DataStreamReadP(&dataStream, &fmt->AudioFormat, endian);
+	DataStreamReadP(&dataStream, &fmt->NumerOfChannels, endian);
+	DataStreamReadP(&dataStream, &fmt->SampleRate, endian);
+	DataStreamReadP(&dataStream, &fmt->ByteRate, endian);
+	DataStreamReadP(&dataStream, &fmt->BlockAllign, endian);
+	DataStreamReadP(&dataStream, &fmt->BitsPerSample, endian);
 
 	*dataRead = dataStream.DataCursor;
 

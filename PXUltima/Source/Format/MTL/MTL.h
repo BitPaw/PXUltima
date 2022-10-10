@@ -77,12 +77,12 @@ extern "C"
 	}
 	MTL;
 
-	CPublic void MTLConstruct(MTL* mtl);
-	CPublic void MTLDestruct(MTL* mtl);
+	PXPublic void MTLConstruct(MTL* mtl);
+	PXPublic void MTLDestruct(MTL* mtl);
 
 	static MTLLineType MTLPeekLine(const void* line);
 
-	CPublic ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

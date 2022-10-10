@@ -40,14 +40,14 @@ extern "C"
 
 	//---[ Public-Functions ]----------------------------------------------
 
-	CPublic void PXFontConstruct(PXFont* const font);
-	CPublic void PXFontDestruct(PXFont* const font);
+	PXPublic void PXFontConstruct(PXFont* const font);
+	PXPublic void PXFontDestruct(PXFont* const font);
 
-	CPublic FontFileFormat FontGuessFormat(const wchar_t* filePath);
+	PXPublic FontFileFormat FontGuessFormat(const wchar_t* filePath);
 
-	CPublic ActionResult FontLoadA(PXFont* const font, const char* filePath);
-	CPublic ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath);
-	CPublic ActionResult FontLoadD(PXFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
+	PXPublic ActionResult FontLoadA(PXFont* const font, const char* filePath);
+	PXPublic ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath);
+	PXPublic ActionResult FontLoadD(PXFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
 
 
 #ifdef __cplusplus

@@ -34,9 +34,9 @@ extern "C"
 	}
 	Mouse;
 
-	CPublic void MouseInputReset(Mouse* mouse);
+	PXPublic void MouseInputReset(Mouse* mouse);
 
-	CPublic void MouseInputPrint(Mouse* mouse);
+	PXPublic void MouseInputPrint(Mouse* mouse);
 
 #ifdef __cplusplus
 }

@@ -40,15 +40,15 @@ extern "C"
 	}
 	Registry;
 
-	CPublic RegistryResult RegistryConnectSpace(Registry* const registry, const RegistrySpace registrySpace);
-	CPublic RegistryResult RegistryConnectRemote(Registry* const registry, const wchar_t* computerName, const RegistrySpace registrySpace);
+	PXPublic RegistryResult RegistryConnectSpace(Registry* const registry, const RegistrySpace registrySpace);
+	PXPublic RegistryResult RegistryConnectRemote(Registry* const registry, const wchar_t* computerName, const RegistrySpace registrySpace);
 
-	CPublic void RegistryClose(Registry* const registry);
+	PXPublic void RegistryClose(Registry* const registry);
 
-	CPublic void RegistryKeyCreate(Registry* const registry);
-	CPublic void RegistryKeyLoad(Registry* const registry, const wchar_t* file);
-	CPublic void RegistryKeySave(Registry* const registry);
-	CPublic void RegistryKeyDelete(Registry* const registry);
+	PXPublic void RegistryKeyCreate(Registry* const registry);
+	PXPublic void RegistryKeyLoad(Registry* const registry, const wchar_t* file);
+	PXPublic void RegistryKeySave(Registry* const registry);
+	PXPublic void RegistryKeyDelete(Registry* const registry);
 
 #ifdef __cplusplus
 }

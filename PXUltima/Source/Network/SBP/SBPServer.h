@@ -6,8 +6,8 @@
 #include "SBPProtocol.h"
 
 #include <Container/Dictionary/Dictionary.h>
-#include <Network/Server.h>
-#include <Network/Client.h>
+#include <Network/PXServer.h>
+#include <Network/PXClient.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -16,31 +16,31 @@ extern "C"
 
 	typedef struct SBPServer_
 	{
-		CServer Server;
+		PXServer PXServer;
 		//SBPQueue _inputQueue;
 		//Dictionary<ResponseID, unsigned char*> _responseLookup;
 	}
 	SBPServer;
 
-	CPublic void SBPServerStart(const unsigned short port);
-	CPublic void SBPServerStop();
+	PXPublic void SBPServerStart(const unsigned short port);
+	PXPublic void SBPServerStop();
 
-	CPublic void SBPServerSendFile(const CSocketID clientID, const char* text);
-	//CPublic void SBPServerSendFile(const CSocketID clientID, wchar_t* text);
+	PXPublic void SBPServerSendFile(const PXSocketID clientID, const char* text);
+	//CPublic void SBPServerSendFile(const PXSocketID clientID, wchar_t* text);
 
-	CPublic const ResponseID SBPServerGenerateResponseID();
-	CPublic unsigned char SBPServerSendMessageWaitResponse
+	PXPublic const ResponseID SBPServerGenerateResponseID();
+	PXPublic unsigned char SBPServerSendMessageWaitResponse
 	(
-		const CSocketID clientID,
+		const PXSocketID clientID,
 		const ResponseID responseID,
 		const unsigned char* buffer,
 		const size_t* bufferSize
 	);
 
-	CPublic void SBPServerSendTextToAll(const char* text);
+	PXPublic void SBPServerSendTextToAll(const char* text);
 	//CPublic void SBPServerSendTextToAll(const wchar_t* text);
-	CPublic void SBPServerSendTextToClient(const unsigned int clientID, const char* text);
-	//CPublic void SBPServerSendTextToClient(const unsigned int clientID, const wchar_t* text);
+	PXPublic void SBPServerSendTextToPXClient(const unsigned int clientID, const char* text);
+	//CPublic void SBPServerSendTextToPXClient(const unsigned int clientID, const wchar_t* text);
 
 #ifdef __cplusplus
 }

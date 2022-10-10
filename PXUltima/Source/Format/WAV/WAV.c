@@ -82,7 +82,7 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 
 	wav->SoundData = MemoryAllocate(sizeof(unsigned char) * wav->SoundDataSize);
 
-	DataStreamReadD(&dataStream, wav->SoundData, wav->SoundDataSize);
+	DataStreamReadP(&dataStream, wav->SoundData, wav->SoundDataSize);
 
 	return ActionSuccessful;
 }

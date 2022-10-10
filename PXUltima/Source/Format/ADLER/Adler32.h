@@ -8,8 +8,8 @@ extern "C"
 {
 #endif
 
-	CPublic unsigned int Adler32Check(unsigned char* data, size_t length);
-	CPublic unsigned int Adler32Create(size_t adler, const unsigned char* data, size_t length);
+	PXPublic unsigned int Adler32Check(unsigned char* data, size_t length);
+	PXPublic unsigned int Adler32Create(size_t adler, const unsigned char* data, size_t length);
 
 #ifdef __cplusplus
 }

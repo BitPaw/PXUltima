@@ -15,7 +15,7 @@ extern "C"
 	}
 	SVG;
 
-	CPublic ActionResult SVGParse(SVG* svg, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult SVGParse(SVG* svg, const void* data, const size_t dataSize, size_t* dataRead);
 
 #ifdef __cplusplus
 }

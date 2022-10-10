@@ -8,8 +8,8 @@ extern "C"
 {
 #endif
 
-	CPublic unsigned char FileOpenDialogA(char* filePathOutput);
-	CPublic unsigned char FileOpenDialogW(wchar_t* filePathOutput);
+	PXPublic unsigned char FileOpenDialogA(char* filePathOutput);
+	PXPublic unsigned char FileOpenDialogW(wchar_t* filePathOutput);
 
 #ifdef __cplusplus
 }

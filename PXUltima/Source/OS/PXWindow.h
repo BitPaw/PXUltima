@@ -189,56 +189,56 @@ extern "C"
 #if OSUnix
 	CPrivate void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event);
 #elif OSWindows
-	CPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
+	PXPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
 #endif
 
-	CPrivate ThreadResult PXWindowCreateThread(void* const PXWindowAdress);
+	PXPrivate ThreadResult PXWindowCreateThread(void* const PXWindowAdress);
 
-	CPublic void PXWindowConstruct(PXWindow* const PXWindow);
+	PXPublic void PXWindowConstruct(PXWindow* const PXWindow);
 
 	// Create a window based on the OS implementation.
 	// if a NULL pointer is used as a title, the window will be hidden.
-	CPublic void PXWindowCreate(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const char* title, const PXBool async);
-	CPublic void PXWindowCreateHidden(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const PXBool async);
-	CPublic void PXWindowDestruct(PXWindow* const PXWindow);
+	PXPublic void PXWindowCreate(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const char* title, const PXBool async);
+	PXPublic void PXWindowCreateHidden(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const PXBool async);
+	PXPublic void PXWindowDestruct(PXWindow* const PXWindow);
 
-	CPublic void PXWindowIconCorner();
-	CPublic void PXWindowIconTaskBar();
+	PXPublic void PXWindowIconCorner();
+	PXPublic void PXWindowIconTaskBar();
 
-	CPublic void PXWindowLookupAdd(const PXWindow* PXWindow);
-	CPublic PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID);
-	CPublic void PXWindowLookupRemove(const PXWindow* PXWindow);
+	PXPublic void PXWindowLookupAdd(const PXWindow* PXWindow);
+	PXPublic PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID);
+	PXPublic void PXWindowLookupRemove(const PXWindow* PXWindow);
 
-	CPublic void PXWindowSize(PXWindow* PXWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height);
-	CPublic void PXWindowSizeChange(PXWindow* PXWindow, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
-	CPublic void PXWindowPosition(PXWindow* PXWindow, unsigned int* x, unsigned int* y);
-	CPublic void PXWindowPositionChange(PXWindow* PXWindow, const unsigned int x, const unsigned int y);
-	CPublic void PXWindowPositonCenterScreen(PXWindow* PXWindow);
-	CPublic void PXWindowCursor(PXWindow* PXWindow);
+	PXPublic void PXWindowSize(PXWindow* PXWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height);
+	PXPublic void PXWindowSizeChange(PXWindow* PXWindow, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
+	PXPublic void PXWindowPosition(PXWindow* PXWindow, unsigned int* x, unsigned int* y);
+	PXPublic void PXWindowPositionChange(PXWindow* PXWindow, const unsigned int x, const unsigned int y);
+	PXPublic void PXWindowPositonCenterScreen(PXWindow* PXWindow);
+	PXPublic void PXWindowCursor(PXWindow* PXWindow);
 	//voidPXWindowCursor(const CursorIcon cursorIcon);
-	CPublic void PXWindowCursorTexture();
-	CPublic void PXWindowCursorCaptureMode(PXWindow* PXWindow, const PXWindowCursorMode cursorMode);
+	PXPublic void PXWindowCursorTexture();
+	PXPublic void PXWindowCursorCaptureMode(PXWindow* PXWindow, const PXWindowCursorMode cursorMode);
 	//voidPXWindowScreenShotTake(Image image);
 
-	CPublic unsigned char PXWindowFrameBufferSwap(PXWindow* PXWindow);
+	PXPublic unsigned char PXWindowFrameBufferSwap(PXWindow* PXWindow);
 
-	CPublic unsigned char PXWindowInteractable(PXWindow* PXWindow);
+	PXPublic unsigned char PXWindowInteractable(PXWindow* PXWindow);
 
-	CPublic unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y);
-	CPublic unsigned char PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y);
+	PXPublic unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y);
+	PXPublic unsigned char PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y);
 
 
 
 	// Event functions
-	CPublic void TriggerOnMouseScrollEvent(const PXWindow* window, const Mouse* mouse);
-	CPublic void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
-	CPublic void TriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
-	CPublic void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
-	CPublic void TriggerOnMouseEnterEvent(const PXWindow* window, const Mouse* mouse);
-	CPublic void TriggerOnMouseLeaveEvent(const PXWindow* window, const Mouse* mouse);
+	PXPublic void TriggerOnMouseScrollEvent(const PXWindow* window, const Mouse* mouse);
+	PXPublic void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
+	PXPublic void TriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
+	PXPublic void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
+	PXPublic void TriggerOnMouseEnterEvent(const PXWindow* window, const Mouse* mouse);
+	PXPublic void TriggerOnMouseLeaveEvent(const PXWindow* window, const Mouse* mouse);
 
 
-	CPublic void TriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);
+	PXPublic void TriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);
 
 	// Keyboard
 	//typedef void (*KeyBoardKeyEvent)(const KeyBoardKeyInfo keyBoardKeyInfo);

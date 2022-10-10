@@ -9,17 +9,17 @@
 
 /*
 
-void SBPClientConstruct(SBPClient* const sbpClient)
+void SBPPXClientConstruct(SBPPXClient* const sbpPXClient)
 {
-	sbpClient->SubConnectionList = 0;
-	sbpClient->SubConnectionListSize = 0;
+	sbpPXClient->SubConnectionList = 0;
+	sbpPXClient->SubConnectionListSize = 0;
 
-	sbpClient->_client.EventCallBackSocket = 0;
+	sbpPXClient->_client.EventCallBackSocket = 0;
 }
 
-SBPResult SBPClientSendAndWaitResponse
+SBPResult SBPPXClientSendAndWaitResponse
 (
-	SBPClient* const sbpClient,
+	SBPPXClient* const sbpPXClient,
 	void* inputData,
 	const size_t inputDataSize,
 	void* responseData,
@@ -80,7 +80,7 @@ SBPResult SBPClientSendAndWaitResponse
 				if(isTimeout)
 				{
 #if SocketDebug
-					printf("[x][SBP-Client] Package timed out!\n");
+					printf("[x][SBP-PXClient] Package timed out!\n");
 #endif
 
 					_responseCache.Remove(responseID); // We assume that the message does not come anymore or is not needed
@@ -101,7 +101,7 @@ SBPResult SBPClientSendAndWaitResponse
 					responseDataSize = responseCacheEntry.Length;
 
 #if SocketDebug
-					printf("[!][SBP-Client] Package answered! Took %3zi\n", millisecondsDelta);
+					printf("[!][SBP-PXClient] Package answered! Took %3zi\n", millisecondsDelta);
 #endif
 
 					return SBPResultPackageAnswered;
@@ -113,7 +113,7 @@ SBPResult SBPClientSendAndWaitResponse
 	return SBPResultInvalid;
 }
 
-void SBPClientConnectToServer(SBPClient* const sbpClient, const char* ip, const unsigned short port)
+void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const char* ip, const unsigned short port)
 {
 	const ActionResult connectResult = _client.ConnectToServer(ip, port, this, ReciveDataThread);
 	const unsigned char sucessful = connectResult == ActionSuccessful;
@@ -140,7 +140,7 @@ void SBPClientConnectToServer(SBPClient* const sbpClient, const char* ip, const 
 
 	const SBPResult result = SendAndWaitResponse
 	(
-		sbpClient,
+		sbpPXClient,
 		inputBuffer,
 		inputBufferSize,
 		outputBuffer,
@@ -158,34 +158,34 @@ void SBPClientConnectToServer(SBPClient* const sbpClient, const char* ip, const 
 	//}
 }
 
-void SBPClientConnectToServer(SBPClient* const sbpClient, const wchar_t* ip, const unsigned short port)
+void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const wchar_t* ip, const unsigned short port)
 {
 
 }
 
-void SBPClientDisconnectFromServer(SBPClient* const sbpClient)
+void SBPPXClientDisconnectFromServer(SBPPXClient* const sbpPXClient)
 {
 	//_client.Disconnect();
 }
 
-void SBPClientRegisterMe()
+void SBPPXClientRegisterMe()
 {
 
 
 
 }
 
-void SBPClientSendText(const char* text)
+void SBPPXClientSendText(const char* text)
 {
 	
 }
 
-void SBPClientSendFile(const char* filePath)
+void SBPPXClientSendFile(const char* filePath)
 {
-	printf("[SBP-Client] Sending file <%s>...\n", filePath);
+	printf("[SBP-PXClient] Sending file <%s>...\n", filePath);
 
 	/*
-	Client clientFileSender;
+	PXClient clientFileSender;
 
 	// Request new connection
 	{
@@ -208,11 +208,11 @@ void SBPClientSendFile(const char* filePath)
 
 		if(!sucessful)
 		{
-			printf("[SBP-Client] File cannot be send, no new connection allowed\n");
+			printf("[SBP-PXClient] File cannot be send, no new connection allowed\n");
 			return;
 		}
 
-		printf("[SBP-Client] File-Send Response parsing...\n");
+		printf("[SBP-PXClient] File-Send Response parsing...\n");
 
 		// Parse
 		{
@@ -231,7 +231,7 @@ void SBPClientSendFile(const char* filePath)
 		const unsigned short port = _client.AdressInfo.Port;
 
 		{
-			const SocketActionResult connectResult = clientFileSender.ConnectToServer(ip, port, &clientFileSender, Client::CommunicationFunctionAsync);
+			const SocketActionResult connectResult = clientFileSender.ConnectToServer(ip, port, &clientFileSender, PXClient::CommunicationFunctionAsync);
 			const bool sucessful = connectResult == SocketActionResult::Successful;
 
 			if(!sucessful)
@@ -296,61 +296,61 @@ void SBPClientSendFile(const char* filePath)
 	return;
 }
 
-void SBPClientOnSocketCreating(const IPAdressInfo& adressInfo, bool& use)
+void SBPPXClientOnSocketCreating(const IPAdressInfo& adressInfo, bool& use)
 {
-	printf("[?][SBP-Client] Should the socket <%zi> %s:%i be created?\n", adressInfo.SocketID, adressInfo.IP, adressInfo.Port);
+	printf("[?][SBP-PXClient] Should the socket <%zi> %s:%i be created?\n", adressInfo.SocketID, adressInfo.IP, adressInfo.Port);
 }
 
-void SBPClientOnSocketCreated(const IPAdressInfo& adressInfo, bool& use)
+void SBPPXClientOnSocketCreated(const IPAdressInfo& adressInfo, bool& use)
 {
-	printf("[+][SBP-Client] Created <%zi> %s:%i\n", adressInfo.SocketID, adressInfo.IP, adressInfo.Port);
+	printf("[+][SBP-PXClient] Created <%zi> %s:%i\n", adressInfo.SocketID, adressInfo.IP, adressInfo.Port);
 }
 
-void SBPClientOnMessageSend(IOSocketMessage socketMessage)
+void SBPPXClientOnMessageSend(IOSocketMessage socketMessage)
 {
 #if SocketDebug
-	printf("[#][SBP-Client] Send %zi Bytes to <%i>\n", socketMessage.MessageSize, socketMessage.SocketID);
+	printf("[#][SBP-PXClient] Send %zi Bytes to <%i>\n", socketMessage.MessageSize, socketMessage.SocketID);
 #endif
 }
 
-void SBPClientOnMessageReceive(IOSocketMessage socketMessage)
+void SBPPXClientOnMessageReceive(IOSocketMessage socketMessage)
 {
 #if SocketDebug 
-	printf("[#][SBP-Client] Receive %zi Bytes from <%i>\n", socketMessage.MessageSize, socketMessage.SocketID);
+	printf("[#][SBP-PXClient] Receive %zi Bytes from <%i>\n", socketMessage.MessageSize, socketMessage.SocketID);
 #endif
 }
 
-void SBPClientOnConnectionListening(const IPAdressInfo& adressInfo)
+void SBPPXClientOnConnectionListening(const IPAdressInfo& adressInfo)
 {
 #if SocketDebug
-	printf("[i][SBP-Client] OnConnectionListening\n");
+	printf("[i][SBP-PXClient] OnConnectionListening\n");
 #endif
 }
 
-void SBPClientOnConnectionLinked(const IPAdressInfo& adressInfo)
+void SBPPXClientOnConnectionLinked(const IPAdressInfo& adressInfo)
 {
 #if SocketDebug
-	printf("[i][SBP-Client] OnConnectionLinked\n");
+	printf("[i][SBP-PXClient] OnConnectionLinked\n");
 #endif
 }
 
-void SBPClientOnConnectionEstablished(const IPAdressInfo& adressInfo)
+void SBPPXClientOnConnectionEstablished(const IPAdressInfo& adressInfo)
 {
 #if SocketDebug
-	printf("[i][SBP-Client] OnConnectionEstablished\n");
+	printf("[i][SBP-PXClient] OnConnectionEstablished\n");
 #endif
 }
 
-void SBPClientOnConnectionTerminated(const IPAdressInfo& adressInfo)
+void SBPPXClientOnConnectionTerminated(const IPAdressInfo& adressInfo)
 {
 #if SocketDebug
-	printf("[-][SBP-Client] OnConnectionTerminated\n");
+	printf("[-][SBP-PXClient] OnConnectionTerminated\n");
 #endif
 }
 
-ThreadResult SBPClientReciveDataThread(void* sbpClientAdress)
+ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 {
-	SBPClient& client = *(SBPClient*)sbpClientAdress;
+	SBPPXClient& client = *(SBPPXClient*)sbpPXClientAdress;
 
 	char buffer[1024]{ 0 };
 	size_t bufferSizeMax = 1024;
@@ -369,7 +369,7 @@ ThreadResult SBPClientReciveDataThread(void* sbpClientAdress)
 		if(parsedBytes)
 		{
 #if SocketDebug
-			printf("[i][SBP-Client] SBP detected! Command:<%c%c%c%c>\n", data.CommandID.A, data.CommandID.B, data.CommandID.C, data.CommandID.D);
+			printf("[i][SBP-PXClient] SBP detected! Command:<%c%c%c%c>\n", data.CommandID.A, data.CommandID.B, data.CommandID.C, data.CommandID.D);
 #endif
 			client._responseCache.Fill(data.ID, buffer, bufferSize);
 

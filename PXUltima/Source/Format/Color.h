@@ -34,12 +34,12 @@ extern "C"
 
 	//---[ Public-Functions ]----------------------------------------------
 
-	CPublic void ConvertColorRGBToYCbCr(const ColorRGB* const colorRGB, ColorYCbCr* const ColorYCbCr);
-	CPublic void ConvertColorYCbCrToRGB(const ColorYCbCr* const colorYCbCr, ColorRGB* const colorRGB);
+	PXPublic void ConvertColorRGBToYCbCr(const ColorRGB* const colorRGB, ColorYCbCr* const ColorYCbCr);
+	PXPublic void ConvertColorYCbCrToRGB(const ColorYCbCr* const colorYCbCr, ColorRGB* const colorRGB);
 
-	CPublic float ConvertColorRGBToY(const float red, const float green, const float blue);
-	CPublic float ConvertColorRGBToCb(const float red, const float green, const float blue);
-	CPublic float ConvertColorRGBToCr(const float red, const float green, const float blue);
+	PXPublic float ConvertColorRGBToY(const float red, const float green, const float blue);
+	PXPublic float ConvertColorRGBToCb(const float red, const float green, const float blue);
+	PXPublic float ConvertColorRGBToCr(const float red, const float green, const float blue);
 
 
 #ifdef __cplusplus

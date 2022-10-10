@@ -53,11 +53,11 @@ extern "C"
 	}
 	Time;
 
-	CPublic TimeDayOfWeek ConvertToMonth(unsigned short monthID);
-	CPublic TimeMonth ConvertToDay(unsigned short dayID);
+	PXPublic TimeDayOfWeek ConvertToMonth(unsigned short monthID);
+	PXPublic TimeMonth ConvertToDay(unsigned short dayID);
 
-	CPublic void TimeNow(Time* time);
-	CPublic size_t TimeMillisecondsDelta(const Time* timeA, const Time* timeB);
+	PXPublic void TimeNow(Time* time);
+	PXPublic size_t TimeMillisecondsDelta(const Time* timeA, const Time* timeB);
 
 #ifdef __cplusplus
 }

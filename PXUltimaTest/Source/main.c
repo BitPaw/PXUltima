@@ -6,14 +6,16 @@
 #include "TestOpenGL.h"
 #include "TestPXCompiler.h"
 #include "TestImage.h"
+#include "TestYAML.h"
 
 int main()
 {
 	printf("[i] Starting testing...\n");
 
+	//TestYAMLAll();
 	//TestSystemInfoAll();
-	//TestPXCompilerAll();
-	TestOpenGLAll();
+	TestPXCompilerAll();
+	//TestOpenGLAll();
 	//TestWindowAll();
 	//TestImageAll();
 	//TestSBPAll();

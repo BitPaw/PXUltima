@@ -21,13 +21,13 @@ extern "C"
 	}
 	Dictionary;
 
-	CPublic void DictionaryConstruct(Dictionary* const dictionary);
-	CPublic void DictionaryDestruct(Dictionary* const dictionary);
+	PXPublic void DictionaryConstruct(Dictionary* const dictionary);
+	PXPublic void DictionaryDestruct(Dictionary* const dictionary);
 
-	CPublic void DictionaryResize(Dictionary* const dictionary, const size_t entrys);
-	CPublic void DictionaryAdd(Dictionary* const dictionary, const void* key, const void* value);
-	CPublic void DictionaryRemove(Dictionary* const dictionary, const void* key);
-	CPublic void DictionaryFind(Dictionary* const dictionary, const void* key, void* value);
+	PXPublic void DictionaryResize(Dictionary* const dictionary, const size_t entrys);
+	PXPublic void DictionaryAdd(Dictionary* const dictionary, const void* key, const void* value);
+	PXPublic void DictionaryRemove(Dictionary* const dictionary, const void* key);
+	PXPublic void DictionaryFind(Dictionary* const dictionary, const void* key, void* value);
 
 #ifdef __cplusplus
 }

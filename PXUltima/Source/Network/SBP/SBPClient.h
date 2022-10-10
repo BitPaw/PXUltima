@@ -1,11 +1,11 @@
-#ifndef SBPClientINCLUDE
-#define SBPClientINCLUDE
+#ifndef SBPPXClientINCLUDE
+#define SBPPXClientINCLUDE
 
 #include <Format/Type.h>
 
 #include "SBPProtocol.h"
 
-#include <Network/Client.h>
+#include <Network/PXClient.h>
 #include <Async/Thread.h>
 
 #ifdef __cplusplus
@@ -13,31 +13,31 @@ extern "C"
 {
 #endif
 
-	typedef struct SBPClient_ SBPClient;
+	typedef struct SBPPXClient_ SBPPXClient;
 
-	typedef struct SBPClient_
+	typedef struct SBPPXClient_
 	{
 		// private
 		//ResponseCache _responseCache;
-		Client _client;
+		PXClient _client;
 
 		// public
 		wchar_t Name[256];
 
-		SBPClient* SubConnectionList;
+		SBPPXClient* SubConnectionList;
 		size_t SubConnectionListSize;
 	}
-	SBPClient;
+	SBPPXClient;
 
-	ThreadResult SBPClientReciveDataThread(void* sbpClient);
+	ThreadResult SBPPXClientReciveDataThread(void* sbpPXClient);
 
-	CPublic void SBPClientConstruct(SBPClient* const sbpClient);
-	CPublic void SBPClientDestruct(SBPClient* const sbpClient);
+	PXPublic void SBPPXClientConstruct(SBPPXClient* const sbpPXClient);
+	PXPublic void SBPPXClientDestruct(SBPPXClient* const sbpPXClient);
 
 	// Sending a message via a socket, await a response.
-	CPublic SBPResult SendAndWaitResponse
+	PXPublic SBPResult SendAndWaitResponse
 	(
-		SBPClient* const sbpClient,
+		SBPPXClient* const sbpPXClient,
 		void* inputData,
 		const size_t inputDataSize,
 		void* responseData,
@@ -50,13 +50,13 @@ extern "C"
 
 
 
-	void SBPClientConnectToServer(SBPClient* const sbpClient, const char* ip, const unsigned short port);
-//	void SBPClientConnectToServer(SBPClient* const sbpClient, const wchar_t* ip, const unsigned short port);
-	void SBPClientDisconnectFromServer(SBPClient* const sbpClient);
+	void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const char* ip, const unsigned short port);
+//	void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const wchar_t* ip, const unsigned short port);
+	void SBPPXClientDisconnectFromServer(SBPPXClient* const sbpPXClient);
 
-	void SBPClientRegisterMe();
-	void SBPClientSendText(const char* text);
-	void SBPClientSendFile(const char* filePath);
+	void SBPPXClientRegisterMe();
+	void SBPPXClientSendText(const char* text);
+	void SBPPXClientSendFile(const char* filePath);
 
 #ifdef __cplusplus
 }

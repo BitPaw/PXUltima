@@ -15,7 +15,7 @@ extern "C"
 	}
 	STL;
 
-	CPublic ActionResult STLParse(const void* data, const size_t dataSize);
+	PXPublic ActionResult STLParse(const void* data, const size_t dataSize);
 
 #ifdef __cplusplus
 }

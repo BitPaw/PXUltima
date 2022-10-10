@@ -145,12 +145,12 @@ extern "C"
 	}
 	KeyBoard;
 
-	CPublic void KeyBoardInputReset(KeyBoard* keyBoard);
+	PXPublic void KeyBoardInputReset(KeyBoard* keyBoard);
 
-	CPublic unsigned char KeyBoardKeyPressedGet(KeyBoard* keyBoard, const VirtualKey virtualKey);
-	CPublic unsigned char KeyBoardKeyPressedSet(KeyBoard* keyBoard, const VirtualKey virtualKey, const unsigned char isPressed);
+	PXPublic unsigned char KeyBoardKeyPressedGet(KeyBoard* keyBoard, const VirtualKey virtualKey);
+	PXPublic unsigned char KeyBoardKeyPressedSet(KeyBoard* keyBoard, const VirtualKey virtualKey, const unsigned char isPressed);
 
-	CPublic void KeyBoardInputPrint(KeyBoard* keyBoard);
+	PXPublic void KeyBoardInputPrint(KeyBoard* keyBoard);
 
 #ifdef __cplusplus
 }

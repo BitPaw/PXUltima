@@ -79,18 +79,18 @@ extern "C"
 	}
 	PXMatrix4x4F;
 
-	CPublic void PXMatrix4x4FReset(PXMatrix4x4F* const matrix4x4F);
-	CPublic void PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F);
+	PXPublic void PXMatrix4x4FReset(PXMatrix4x4F* const matrix4x4F);
+	PXPublic void PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F);
 
-	CPublic void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult);
-	CPublic void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
 
-	CPublic void PXMatrix4x4FMoveXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult);
-	CPublic void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FMoveXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
 
-	CPublic void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, PXMatrix4x4F* const matrixResult);
 
-	CPublic void PXMatrix4x4FScaleSet(const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FScaleSet(const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
 
 #ifdef __cplusplus
 }
