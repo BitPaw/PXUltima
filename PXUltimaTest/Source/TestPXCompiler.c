@@ -90,8 +90,11 @@ void TestPXCompilerXML()
 	DataStreamConstruct(&inputStream);
 	DataStreamConstruct(&outputStream);
 
-	DataStreamFromExternal(&inputStream, xmlData, 299-1);
-
+#if 1
+	DataStreamFromExternal(&inputStream, xmlData, 299-1);	
+#else
+	DataStreamMapToMemoryA(&inputStream, "A:/index.php", MemoryReadOnly, FileCachingSequential);
+#endif
 	DataStreamMapToMemory(&outputStream, inputStream.DataSize * 8, MemoryReadAndWrite);
 
 	XMLFileCompile(&inputStream, &outputStream);

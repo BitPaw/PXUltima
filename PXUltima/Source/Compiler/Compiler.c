@@ -182,6 +182,8 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 					whiteSpaceSize,
 					whiteSpaceSource
 				);
+
+				continue;
 			}
 		}
 
@@ -208,6 +210,8 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 
 				currentColoum = 0; // Reset, next entry will begin in new line
 				currentLine += linesSkipped;
+
+				continue;
 			}
 		}	
 
@@ -236,6 +240,8 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 					blockSize,
 					blockSpaceSource
 				);
+
+				continue;
 			}
 		}
 	}

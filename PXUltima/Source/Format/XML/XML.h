@@ -23,6 +23,8 @@ extern "C"
 		XMLSymbolTagCloseFull, // </>
 
 		XMLSymbolAttribute,
+
+		XMLSymbolRawData
 	}
 	XMLSymbol;
 

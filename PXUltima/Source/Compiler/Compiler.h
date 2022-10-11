@@ -24,6 +24,7 @@ extern "C"
 
 		PXCompilerSymbolLexerWhiteSpace,
 		PXCompilerSymbolLexerNewLine,
+		PXCompilerSymbolLexerTab,
 		PXCompilerSymbolLexerGenericElement,
 		PXCompilerSymbolLexerSingleCharacter,
 
@@ -55,6 +56,9 @@ extern "C"
 		PXBool KeepWhiteSpaceIndentationLeft;
 		PXBool TryAnalyseTypes;
 		PXBool IntrepredNewLineAsWhiteSpace;
+		PXBool KeepTabs;
+		PXBool IntrepredTabsAsWhiteSpace;
+
 	}
 	PXCompilerSettings;
 

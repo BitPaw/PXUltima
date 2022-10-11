@@ -181,6 +181,7 @@ extern "C"
 	PXPublic size_t DataStreamWrite(DataStream* const dataStream, const char* format, ...);
 
 	PXPublic size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const size_t index);
+	PXPublic size_t DataStreamWriteAtSU(DataStream* const dataStream, const unsigned short value, const Endian endian, const size_t index);
 	PXPublic size_t DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const size_t index);
 	//-------------------------------------------------------------------------
 

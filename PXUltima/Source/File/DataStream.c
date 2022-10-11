@@ -11,6 +11,7 @@
 #include <fcntl.h>
 
 #define IsEndOfString(c) (c == '\0')
+#define IsTab(c) (c == '\t')
 #define IsEmptySpace(c) (c == ' ')
 #define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
 
@@ -845,7 +846,7 @@ size_t DataStreamSkipEmptySpace(DataStream* const dataStream)
 	while (!DataStreamIsAtEnd(dataStream))
 	{
 		const unsigned char* data = DataStreamCursorPosition(dataStream);
-		const unsigned char advance = IsEmptySpace(*data);
+		const unsigned char advance = IsEmptySpace(*data) || IsTab(*data);
 
 		if (!advance)
 		{
@@ -1205,6 +1206,19 @@ size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char val
 	dataStream->DataCursor = positionBefore; // Reset old position
 
 	return 1u;
+}
+
+size_t DataStreamWriteAtSU(DataStream* const dataStream, const unsigned short value, const Endian endian, const size_t index)
+{
+	const size_t positionBefore = dataStream->DataCursor; // save current position
+
+	dataStream->DataCursor = index; // jump to offset
+
+	DataStreamWriteSU(dataStream, value, endian); // Length
+
+	dataStream->DataCursor = positionBefore; // Reset old position
+
+	return 2u;
 }
 
 size_t DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const size_t index)

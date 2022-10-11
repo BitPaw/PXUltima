@@ -549,16 +549,15 @@ char* TextFindPositionA(const char* data, size_t dataSize, const char* target, s
 size_t TextFindFirstA(const char* string, const size_t dataSize, const char character)
 {
 	PXBool found = 0;
-	size_t i = TextLengthW(string, dataSize);
 
-	for (; i > 0 && !found; --i)
+	size_t index = 0;
+
+	for (; index < dataSize && !found; ++index)
 	{
-		found = character == string[i];
+		found = character == string[index];
 	}
 
-	++i;
-
-	return found ? i + 1 : TextIndexNotFound;
+	return found ? index -1 : TextIndexNotFound;
 }
 
 size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_t character)
