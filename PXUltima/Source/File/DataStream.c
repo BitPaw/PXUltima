@@ -845,8 +845,8 @@ size_t DataStreamSkipEmptySpace(DataStream* const dataStream)
 
 	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(dataStream);
-		const unsigned char advance = IsEmptySpace(*data) || IsTab(*data);
+		const char* data = DataStreamCursorPosition(dataStream);
+		const PXBool advance = IsEmptySpace(*data) || IsTab(*data);
 
 		if (!advance)
 		{
@@ -865,9 +865,9 @@ size_t DataStreamSkipBlock(DataStream* const dataStream)
 
 	while (!DataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(dataStream);
-		const unsigned char character = *data;
-		const unsigned char advance = !IsEndOfString(character) and !IsEmptySpace(character) and !IsEndOfLineCharacter(character);
+		const char* data = DataStreamCursorPosition(dataStream);
+		const char character = *data;
+		const PXBool advance = !IsEndOfString(character) and !IsEmptySpace(character) and !IsEndOfLineCharacter(character);
 
 		if (!advance)
 		{

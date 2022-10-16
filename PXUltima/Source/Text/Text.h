@@ -95,10 +95,10 @@ extern "C"
 	PXPublic size_t TextCountUntilA(const char* text, const size_t textSize, const char target, const char stopAt);
 	PXPublic size_t TextCountUntilW(const wchar_t* text, const size_t textSize, const wchar_t target, const wchar_t stopAt);
 
-	PXPublic char TextCompareA(const char* a, const size_t aSize, const char* b, const size_t bSize);
-	PXPublic char TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize);
-	PXPublic char TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize);
-	PXPublic char TextCompareWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize);
+	PXPublic PXBool TextCompareA(const char* a, const size_t aSize, const char* b, const size_t bSize);
+	PXPublic PXBool TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize);
+	PXPublic PXBool TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize);
+	PXPublic PXBool TextCompareWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize);
 
 	PXPublic char TextCompareIgnoreCaseA(const char* a, const size_t aSize, const char* b, const size_t bSize);
 	PXPublic char TextCompareIgnoreCaseW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize);

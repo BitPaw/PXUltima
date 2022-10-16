@@ -132,10 +132,16 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
     // Lexer - Level I 
     {
         PXCompilerSettings compilerSettings;
-
-        compilerSettings.KeepWhiteSpace = 0;
-        compilerSettings.KeepWhiteSpaceIndentationLeft = 0;
-        compilerSettings.TryAnalyseTypes = 1u;
+        compilerSettings.KeepWhiteSpace = PXNo;
+        compilerSettings.KeepWhiteSpaceIndentationLeft = PXNo;
+        compilerSettings.TryAnalyseTypes = PXYes;
+        compilerSettings.IntrepredNewLineAsWhiteSpace = PXNo;
+        compilerSettings.KeepTabs = PXNo;
+        compilerSettings.IntrepredTabsAsWhiteSpace = PXYes;
+        compilerSettings.CommentSingleLineSize = 1u;
+        compilerSettings.CommentSingleLine = "#";
+        compilerSettings.CommentMultibleLineSize = 0;
+        compilerSettings.CommentMultibleLine = 0;
 
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
@@ -159,16 +165,6 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
         switch (objPeekLine)
         {
-            case OBJLineComment:
-            {
-                do // We are at a comment. Skip everything until "end of line"
-                {
-                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                } 
-                while (!DataStreamIsAtEnd(&tokenSteam) && (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLineID));
-                       
-                break; // [OK]
-            }
             case OBJLineMaterialLibraryInclude:
             case OBJLineMaterialLibraryUse:
             case OBJLineObjectName:
@@ -182,12 +178,12 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                 // Check if symbol is expected name
                 {
-                    unsigned char isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
+                    unsigned char isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
 
                     if (!isSymbol) // Error
                     {
                         ++errorCounter;
-                        OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerElementID);
+                        OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
                         break; 
                     }
                 }
@@ -200,7 +196,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                 {
                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
       
-                    const unsigned char isElement = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
+                    const unsigned char isElement = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
 
                     if (isElement)
                     {
@@ -267,7 +263,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                     // [symbol check] Check if symbol is expected name
                     {
-                       const PXBool isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerElementID;
+                       const PXBool isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
 
                         if (!isSymbol)
                         {
@@ -331,11 +327,11 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                 while (1u)
                 {
-                    unsigned int vertexData[3] = { -1,-1, -1 };
+                    unsigned int vertexData[3] = { -1, -1, -1 };
 
                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
-                    if (compilerSymbolEntry.ID != PXCompilerSymbolLexerElementID)
+                    if (compilerSymbolEntry.ID != PXCompilerSymbolLexerGenericElement)
                     {
                         break;
                     }
@@ -372,7 +368,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                         if (!offsetB)
                         {
                             ++errorCounter;
-                            OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerElementID);
+                            OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
                         }
                     }
 
@@ -396,13 +392,13 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
             default: // Error
             {
                 ++errorCounter;
-                OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerElementID);        
+                OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
 
                 do
                 {
                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
                 } 
-                while (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLineID);
+                while (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLine);
 
                 break;
             } 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Serialization\Serialization.h" />
     <ClInclude Include="Source\OS\HardDrive.h" />
     <ClInclude Include="Source\OS\Registry.h" />
     <ClInclude Include="Source\DataBase\DataBase.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="Source\Format\Type.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Serialization\Serialization.c" />
     <ClCompile Include="Source\OS\HardDrive.c" />
     <ClCompile Include="Source\OS\Registry.c" />
     <ClCompile Include="Source\DataBase\DataBase.c" />

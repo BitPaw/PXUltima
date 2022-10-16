@@ -408,7 +408,7 @@ size_t TextCountUntilW(const wchar_t* text, const size_t textSize, const wchar_t
 	return samecounter;
 }
 
-char TextCompareA(const char* a, const size_t aSize, const char* b, const size_t bSize)
+PXBool TextCompareA(const char* a, const size_t aSize, const char* b, const size_t bSize)
 {
 	const size_t textSize = MathMinimum(aSize, bSize);
 
@@ -427,7 +427,7 @@ char TextCompareA(const char* a, const size_t aSize, const char* b, const size_t
 	return (index == samecounter);
 }
 
-char TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize)
+PXBool TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize)
 {
 	const size_t textSize = MathMinimum(aSize, bSize);
 
@@ -440,7 +440,7 @@ char TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const si
 	return (index == samecounter);
 }
 
-char TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize)
+PXBool TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize)
 {
 	const size_t textSize = MathMinimum(aSize, bSize);
 
@@ -453,7 +453,7 @@ char TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, const 
 	return (index == samecounter);
 }
 
-char TextCompareWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize)
+PXBool TextCompareWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize)
 {
 	const size_t textSize = MathMinimum(aSize, bSize);
 

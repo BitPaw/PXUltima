@@ -12,9 +12,9 @@ int main()
 {
 	printf("[i] Starting testing...\n");
 
-	//TestYAMLAll();
+	TestYAMLAll();
 	//TestSystemInfoAll();
-	TestPXCompilerAll();
+	//TestPXCompilerAll();
 	//TestOpenGLAll();
 	//TestWindowAll();
 	//TestImageAll();

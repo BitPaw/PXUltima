@@ -4,15 +4,6 @@
 #include <Error/ActionResult.h>
 #include <File/DataStream.h>
 
-#define PXCompilerSymbolLexerInvalidID 0xFF000001
-#define PXCompilerSymbolLexerWhiteSpaceID PXCompilerSymbolLexerInvalidID + 1u
-#define PXCompilerSymbolLexerNewLineID  PXCompilerSymbolLexerInvalidID + 2u
-#define PXCompilerSymbolLexerElementID PXCompilerSymbolLexerInvalidID + 3u
-#define PXCompilerSymbolLexerTrueID PXCompilerSymbolLexerInvalidID + 4u
-#define PXCompilerSymbolLexerFalseID PXCompilerSymbolLexerInvalidID + 5u
-#define PXCompilerSymbolLexerIntegerID PXCompilerSymbolLexerInvalidID + 6u
-#define PXCompilerSymbolLexerFloatID PXCompilerSymbolLexerInvalidID + 7u
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -25,22 +16,36 @@ extern "C"
 		PXCompilerSymbolLexerWhiteSpace,
 		PXCompilerSymbolLexerNewLine,
 		PXCompilerSymbolLexerTab,
+
 		PXCompilerSymbolLexerGenericElement,
+
 		PXCompilerSymbolLexerSingleCharacter,
 
-		PXCompilerSymbolLexerTrue,
-		PXCompilerSymbolLexerFalse,
+		PXCompilerSymbolLexerComment,
 
+		PXCompilerSymbolLexerBool,
 		PXCompilerSymbolLexerFloat,
 		PXCompilerSymbolLexerInteger,
-		PXCompilerSymbolLexerString
+		PXCompilerSymbolLexerString,
+
+		PXCompilerSymbolLexerStringBegin,
+		PXCompilerSymbolLexerStringEnd
 	}
 	PXCompilerSymbolLexer;
 
 	typedef struct PXCompilerSymbolEntry_
 	{
 		//---<Temporal data------
-		char* Source;
+
+		union 
+		{
+			char* Source;
+			float DataF;
+			unsigned int DataI;
+			unsigned short DataS;
+			unsigned char DataC;
+		};	
+		
 		unsigned int Coloum;
 		unsigned int Line;
 		unsigned int Size;	
@@ -58,18 +63,19 @@ extern "C"
 		PXBool IntrepredNewLineAsWhiteSpace;
 		PXBool KeepTabs;
 		PXBool IntrepredTabsAsWhiteSpace;
+		
+		size_t CommentSingleLineSize;
+		char* CommentSingleLine;
 
+		size_t CommentMultibleLineSize;
+		char* CommentMultibleLine;
 	}
 	PXCompilerSettings;
 
 	PXPrivate void PXCompilerSymbolEntryAdd
 	(
 		DataStream* const dataStream, 
-		PXCompilerSymbolLexer id,
-		unsigned int coloum,
-		unsigned int line,
-		unsigned int size,
-		char* source
+		const PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
 
 	PXPublic void PXCompilerSymbolEntryExtract
@@ -78,7 +84,7 @@ extern "C"
 		PXCompilerSymbolEntry* compilerSymbolEntry
 	);
 
-	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const size_t textSize);
+	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const size_t textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
 	PXPublic void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const outputStream, const PXCompilerSettings* const compilerSettings);
 

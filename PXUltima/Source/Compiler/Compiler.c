@@ -4,57 +4,81 @@
 
 #include <File/DataStream.h>
 #include <Text/Text.h>
+#include <Math/Math.h>
 
-
-
-void PXCompilerSymbolEntryAdd(DataStream* const dataStream, PXCompilerSymbolLexer symbol, unsigned int coloum, unsigned int line, unsigned int size, char* source)
+void PXCompilerSymbolEntryAdd(DataStream* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	unsigned int symbolID = symbol;
+	DataStreamWriteCU(dataStream, compilerSymbolEntry->ID, EndianLittle);
+	DataStreamWriteIU(dataStream, compilerSymbolEntry->Coloum, EndianLittle);
+	DataStreamWriteIU(dataStream, compilerSymbolEntry->Line, EndianLittle);
+	DataStreamWriteIU(dataStream, compilerSymbolEntry->Size, EndianLittle);
+	DataStreamWriteP(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
-	DataStreamWriteIU(dataStream, symbolID, EndianLittle);
-	DataStreamWriteIU(dataStream, coloum, EndianLittle);
-	DataStreamWriteIU(dataStream, line, EndianLittle);
-	DataStreamWriteIU(dataStream, size, EndianLittle);
-	DataStreamWriteP(dataStream, &source, sizeof(void*));
+	size_t idBufferSize = 10;
+	char idbuffer[15];
+	size_t textBufferSize = 20;
+	char textbuffer[25];
 
-	char textbuffer[128];
-
+	MemorySet(idbuffer, sizeof(idbuffer), 0);
 	MemorySet(textbuffer, sizeof(textbuffer), 0);
 
-	switch (symbolID)
+	switch (compilerSymbolEntry->ID)
 	{
-		case PXCompilerSymbolLexerWhiteSpaceID:
+		case PXCompilerSymbolLexerWhiteSpace:
 		{
-			TextCopyA("***Whitespace***", 17, textbuffer, 128);
+			//TextCopyA("***Whitespace***", 17, textbuffer, textBufferSize);
 			break;
 		}
-		case PXCompilerSymbolLexerNewLineID:
+		case PXCompilerSymbolLexerNewLine:
 		{
-			TextCopyA("***New Line***", 15, textbuffer, 128);
+			TextCopyA("\\n", 3, idbuffer, idBufferSize);
+			//TextCopyA("***New Line***", 15, textbuffer, textBufferSize);
 			break;
 		}
-		case PXCompilerSymbolLexerElementID:
+		case PXCompilerSymbolLexerComment:
+			TextCopyA("comment", 8, idbuffer, idBufferSize);
+			TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
+			break;
+
+		case PXCompilerSymbolLexerBool:
+			TextCopyA("bool", 5, idbuffer, idBufferSize);
+			sprintf(textbuffer, "%s", compilerSymbolEntry->DataC ? "true" : "false");
+			break;
+
+		case PXCompilerSymbolLexerFloat:
+			TextCopyA("float", 6, idbuffer, idBufferSize);
+			sprintf(textbuffer, "%f", compilerSymbolEntry->DataF);
+			break;
+
+		case PXCompilerSymbolLexerInteger:
+			TextCopyA("int", 4, idbuffer, idBufferSize);
+			sprintf(textbuffer, "%i", compilerSymbolEntry->DataI);
+			break;
+
+		case PXCompilerSymbolLexerString:
+			TextCopyA("string", 7, idbuffer, idBufferSize);
+			TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
+			break;
+
+		case PXCompilerSymbolLexerGenericElement:
 		{
-			TextCopyA(source, size, textbuffer, 128);
+			TextCopyA("*Generic*", 10, idbuffer, idBufferSize);
+			TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
 			break;
 		}
-		default:
-			break;
 	}
 
-#if 0
+#if 1
 	printf
 	(
-		"[%8x] C:%-2i L:%-2i S:%-2i D:%p -> %s\n",
-		id,
-		coloum,
-		line,
-		size,
-		source,
+		"|| C:%-2i L:%-2i S:%-2i | %-10s -> %-20s ||\n",
+		compilerSymbolEntry->Coloum,
+		compilerSymbolEntry->Line,
+		compilerSymbolEntry->Size,
+		idbuffer,
 		textbuffer
-	);
+	);	
 #endif
-
 }
 
 void PXCompilerSymbolEntryExtract(DataStream* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
@@ -62,9 +86,9 @@ void PXCompilerSymbolEntryExtract(DataStream* const dataStream, PXCompilerSymbol
 	void* const oldPos = DataStreamCursorPosition(dataStream);
 	size_t size = 0;
 
-	unsigned int symbolID = 0;
+	unsigned char symbolID = 0;
 
-	size += DataStreamReadIU(dataStream, &symbolID, EndianLittle);
+	size += DataStreamReadCU(dataStream, &symbolID);
 	size += DataStreamReadIU(dataStream, &compilerSymbolEntry->Coloum, EndianLittle);
 	size += DataStreamReadIU(dataStream, &compilerSymbolEntry->Line, EndianLittle);
 	size += DataStreamReadIU(dataStream, &compilerSymbolEntry->Size, EndianLittle);
@@ -75,15 +99,22 @@ void PXCompilerSymbolEntryExtract(DataStream* const dataStream, PXCompilerSymbol
 	MemorySet(oldPos, size, '#');
 }
 
-PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const size_t textSize)
+PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const size_t textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	if (textSize == 1)
-	{
-		return PXCompilerSymbolLexerSingleCharacter;
-	}
-
 	switch (text[0])
 	{
+		case '\'':
+		case '\"':
+		{
+			const PXBool isFull = text[textSize - 1] == '\'' || text[textSize - 1] == '\"';
+
+			if (isFull)
+			{
+				return PXCompilerSymbolLexerString;
+			}
+
+			return PXCompilerSymbolLexerStringBegin;
+		}
 		case 'T':
 		case 't':
 		{
@@ -91,11 +122,13 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 
 			if (result)
 			{
-				return PXCompilerSymbolLexerTrue;
+				compilerSymbolEntry->DataC = PXYes;
+
+				return PXCompilerSymbolLexerBool;
 			}
 
 			break;
-		}		
+		}
 		case 'F':
 		case 'f':
 		{
@@ -103,33 +136,36 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 
 			if (result)
 			{
-				return PXCompilerSymbolLexerFalse;
+				compilerSymbolEntry->DataC = PXNo;
+
+				return PXCompilerSymbolLexerBool;
 			}
 
 			break;
 		}
 		case '+':
 		case '-':
-		case 0u:
-		case 1u:
-		case 2u:
-		case 3u:
-		case 4u:
-		case 5u:
-		case 6u:
-		case 7u:
-		case 8u:
-		case 9u:
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
 		{
 			// Probe for number
 			const size_t dotIndex = TextFindFirstA(text, textSize, '.');
 			const PXBool probablyFloat = dotIndex != (size_t)-1;
 			size_t writtenNumbers = 0;
 
+			compilerSymbolEntry->Source = 0;
+
 			if (probablyFloat)
 			{
-				float number = 0;
-				const size_t writtenNumbers = TextToFloatA(text, textSize, &number);
+				const size_t writtenNumbers = TextToFloatA(text, textSize, &compilerSymbolEntry->DataF);
 
 				if (writtenNumbers)
 				{
@@ -138,8 +174,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 			}
 			else
 			{
-				int number = 0;
-				const size_t 	writtenNumbers = TextToIntA(text, textSize, &number);
+				const size_t writtenNumbers = TextToIntA(text, textSize, &compilerSymbolEntry->DataI);
 
 				if (writtenNumbers)
 				{
@@ -147,6 +182,13 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 				}
 			}
 		}
+	}
+
+	const PXBool isEndOfString = (text[textSize - 1] == '\'') || (text[textSize - 1] == '\"');
+
+	if (isEndOfString)
+	{
+		return PXCompilerSymbolLexerStringEnd;
 	}
 
 	return PXCompilerSymbolLexerGenericElement;
@@ -160,12 +202,16 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 
 	const PXCompilerSymbolLexer newLineSymbol = compilerSettings->IntrepredNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;
 
+	printf("||=====================================================||\n");
+
 	while (!DataStreamIsAtEnd(inputStream))
 	{
+		PXCompilerSymbolEntry compilerSymbolEntry;
+		compilerSymbolEntry.Source = (const char*)DataStreamCursorPosition(inputStream);	
+
 		// Consume whitespace
 		{
-			char* const whiteSpaceSource = (char* const)DataStreamCursorPosition(inputStream);
-			const size_t whiteSpaceSize = DataStreamSkipEmptySpace(inputStream); 
+			const size_t whiteSpaceSize = DataStreamSkipEmptySpace(inputStream);
 
 			currentColoum += whiteSpaceSize;
 
@@ -173,15 +219,12 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 			{
 				isFirstWhiteSpaceInLine = 0;
 
-				PXCompilerSymbolEntryAdd
-				(
-					outputStream,
-					PXCompilerSymbolLexerWhiteSpace,
-					currentColoum,
-					currentLine,
-					whiteSpaceSize,
-					whiteSpaceSource
-				);
+				compilerSymbolEntry.ID = PXCompilerSymbolLexerWhiteSpace;
+				compilerSymbolEntry.Line = currentLine;
+				compilerSymbolEntry.Coloum = currentColoum;
+				compilerSymbolEntry.Size = whiteSpaceSize;
+
+				PXCompilerSymbolEntryAdd(outputStream, &compilerSymbolEntry);
 
 				continue;
 			}
@@ -189,60 +232,101 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 
 		// Consume new line
 		{
-			char* const endofLineSource = (char* const)DataStreamCursorPosition(inputStream);
 			const size_t endofLineSize = DataStreamSkipEndOfLineCharacters(inputStream);
 
 			if (endofLineSize)
-			{			
-				const size_t linesSkipped = TextCountA(endofLineSource, endofLineSize, '\n');
+			{
+				const size_t linesSkipped = TextCountA(compilerSymbolEntry.Source, endofLineSize, '\n');
 
-				PXCompilerSymbolEntryAdd
-				(
-					outputStream,
-					newLineSymbol,
-					currentColoum,
-					currentLine,
-					endofLineSize,
-					endofLineSource
-				);
+				compilerSymbolEntry.ID = newLineSymbol;
+				compilerSymbolEntry.Line = currentLine;
+				compilerSymbolEntry.Coloum = currentColoum;
+				compilerSymbolEntry.Size = endofLineSize;
 
 				isFirstWhiteSpaceInLine = 1u;
 
 				currentColoum = 0; // Reset, next entry will begin in new line
 				currentLine += linesSkipped;
 
+				PXCompilerSymbolEntryAdd(outputStream, &compilerSymbolEntry);
+
 				continue;
 			}
-		}	
+		}
 
 		// Consume block
 		{
-			char* const blockSpaceSource = (char* const)DataStreamCursorPosition(inputStream);
-			const size_t blockSize = DataStreamSkipBlock(inputStream);	// consume block
+			compilerSymbolEntry.ID = PXCompilerSymbolLexerGenericElement;
+			compilerSymbolEntry.Line = currentLine;
+			compilerSymbolEntry.Coloum = currentColoum;
+			compilerSymbolEntry.Size = DataStreamSkipBlock(inputStream);	// consume block
 
-			currentColoum += blockSize;
+			currentColoum += compilerSymbolEntry.Size;
 
-			if (blockSize)
+			if (compilerSymbolEntry.Size)
 			{
-				PXCompilerSymbolLexer symbol = PXCompilerSymbolLexerGenericElement;
-
 				if (compilerSettings->TryAnalyseTypes)
 				{
-					symbol = PXCompilerTryAnalyseType(blockSpaceSource, blockSize);
+					compilerSymbolEntry.ID = PXCompilerTryAnalyseType(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);
+
+					switch (compilerSymbolEntry.ID)
+					{
+						case PXCompilerSymbolLexerGenericElement:
+						{
+							if (compilerSettings->CommentSingleLineSize)
+							{
+								const PXBool isComment = TextCompareA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, compilerSettings->CommentSingleLine, compilerSettings->CommentSingleLineSize);
+
+								if (isComment)
+								{
+									compilerSymbolEntry.ID = PXCompilerSymbolLexerComment;
+									compilerSymbolEntry.Size += DataStreamSkipLine(inputStream);
+								}
+							}
+
+							break;
+						}
+
+						case PXCompilerSymbolLexerStringBegin:
+						{
+							++compilerSymbolEntry.Source;
+
+							const size_t blockSizeCUr = DataStreamRemainingSize(inputStream) + compilerSymbolEntry.Size;
+							const size_t symbolPositionApostrophe = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\'');
+							const size_t symbolPositionQuotationMark = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\"');
+							const size_t symbolPosition = MathMinimumIU(symbolPositionApostrophe, symbolPositionQuotationMark);
+							const PXBool hasIndex = symbolPosition != (size_t)-1;
+
+							if (!hasIndex)
+							{
+								// Error
+							}
+							DataStreamCursorAdvance(inputStream, symbolPosition);
+
+							compilerSymbolEntry.Size = symbolPosition;
+							compilerSymbolEntry.ID = PXCompilerSymbolLexerString;
+
+							break;
+						}
+						case PXCompilerSymbolLexerString:
+						{
+							compilerSymbolEntry.Source += 1u;
+							compilerSymbolEntry.Size -= 2u;;
+
+							break;
+						}
+
+						default:
+							break;
+					}
 				}
 
-				PXCompilerSymbolEntryAdd
-				(
-					outputStream,
-					symbol,
-					currentColoum,
-					currentLine,
-					blockSize,
-					blockSpaceSource
-				);
+				PXCompilerSymbolEntryAdd(outputStream, &compilerSymbolEntry);
 
 				continue;
 			}
 		}
 	}
+
+	printf("||=====================================================||\n");
 }
