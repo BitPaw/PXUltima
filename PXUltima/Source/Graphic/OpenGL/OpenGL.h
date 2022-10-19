@@ -207,6 +207,46 @@ extern "C"
 
 
 
+	typedef enum OpenGLBufferType_
+	{
+		OpenGLBufferArray,//Vertex attributes
+		OpenGLBufferAtomicCounter, 	//Atomic counter storage
+		OpenGLBufferCopyRead 	,//Buffer copy source
+		OpenGLBufferCopyWrite 	,//Buffer copy destination
+		OpenGLBufferDispatchIndirect, //	Indirect compute dispatch commands
+		OpenGLBufferDrawIndirect,	//Indirect command arguments
+		OpenGLBufferElementArray,	//Vertex array indices
+		OpenGLBufferPixelPack 	,//Pixel read target
+		OpenGLBufferPixelUnpack ,//	Texture data source
+		OpenGLBufferQuery,//Query result buffer
+		OpenGLBufferShaderStorage ,	//Read - write storage for shaders
+		OpenGLBufferTexture 	,// Texture data buffer
+		OpenGLBufferTransformFeedback,//	Transform feedback buffer
+		OpenGLBufferUniform
+	}
+	OpenGLBufferType;
+
+	PXPrivate int OpenGLBufferTypeToID(const OpenGLBufferType openGLBufferType);
+
+
+	typedef enum OpenGLStoreMode_
+	{
+		OpenGLStoreInvalid,
+		OpenGLStoreStreamDraw,
+		OpenGLStoreStreamRead,
+		OpenGLStoreStreamCopy,
+		OpenGLStoreStaticDraw,
+		OpenGLStoreStaticREAD,
+		OpenGLStoreStaticCOPY,
+		OpenGLStoreDynamicDraw,
+		OpenGLStoreDynamicRead,
+		OpenGLStoreDynamicCopy
+	}
+	OpenGLStoreMode;
+
+	PXPrivate int OpenGLStoreModeToID(const OpenGLStoreMode openGLStoreMode);
+
+
 	typedef enum OpenGLToggle_
 	{
 		OpenGLToggleInvalid,
@@ -321,8 +361,12 @@ extern "C"
 	typedef void (OpenGLAPICallType* OpenGLGenBuffersFunction)(GLsizei n, GLuint* buffers); // glGenBuffers
 	typedef void (OpenGLAPICallType* OpenGLBindBufferFunction)(GLenum target, GLuint buffer);
 	typedef void (OpenGLAPICallType* OpenGLBufferDataFunction)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);
+
 	typedef void (OpenGLAPICallType* OpenGLVertexAttribPointerFunction)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
-	typedef void (OpenGLAPICallType* OpenGLDisableVertexAttribArrayFunction)(GLuint index);
+	typedef void (OpenGLAPICallType* OpenGLVertexAttribArrayEnableFunction)(GLuint index); // glEnableVertexAttribArray
+	typedef void (OpenGLAPICallType* OpenGLVertexAttribArrayDisableFunction)(GLuint index); // glDisableVertexAttribArray
+
+
 	typedef void (OpenGLAPICallType* OpenGLDisableVertexArrayAttribFunction)(GLuint vaobj, GLuint index);
 	typedef GLint(OpenGLAPICallType* OpenGLGetUniformLocation)(GLuint program, const char* name);
 	typedef void (OpenGLAPICallType* OpenGLUniform1fFunction)(GLint location, GLfloat v0);
@@ -432,7 +476,8 @@ extern "C"
 		OpenGLBindBufferFunction	OpenGLBindBufferCallBack;
 		OpenGLBufferDataFunction	OpenGLBufferDataCallBack;
 		OpenGLVertexAttribPointerFunction OpenGLVertexAttribPointerCallBack;
-		OpenGLDisableVertexAttribArrayFunction	OpenGLDisableVertexAttribArrayCallBack;
+		OpenGLVertexAttribArrayEnableFunction OpenGLVertexAttribArrayEnableCallBack;
+			OpenGLVertexAttribArrayDisableFunction OpenGLVertexAttribArrayDisableCallBack;
 		OpenGLDisableVertexArrayAttribFunction	OpenGLDisableVertexArrayAttribCallBack;
 		OpenGLGetUniformLocation	OpenGLGetUniformLocation;
 		OpenGLUniform1fFunction	OpenGLUniform1fCallBack;
@@ -593,6 +638,30 @@ extern "C"
 	PXPublic void OpenGLShaderVariableMatrix2fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 	PXPublic void OpenGLShaderVariableMatrix3fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 	PXPublic void OpenGLShaderVariableMatrix4fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+
+
+	PXPublic void OpenGLVertexArrayGenerate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const vaoList);
+	PXPublic void OpenGLVertexArrayBind(OpenGLContext* const openGLContext, const unsigned int vaoID);
+	PXPublic void OpenGLVertexArrayUnbind(OpenGLContext* const openGLContext);
+	PXPublic void OpenGLVertexArrayAttributeDefine
+	(
+		OpenGLContext* const openGLContext, 
+		const unsigned int index,
+		const unsigned int size,
+		const OpenGLDataType datatype,
+		const unsigned char normalized,
+		const unsigned int stride,
+		const void* const pointer
+	);
+	PXPublic void OpenGLVertexArrayEnable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID);
+	PXPublic void OpenGLVertexArrayDisable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID);
+
+	PXPublic void OpenGLBufferGenerate(OpenGLContext* const openGLContext, const unsigned int amount, unsigned int* const bufferIDList);
+	PXPublic void OpenGLBufferBind(OpenGLContext* const openGLContext, const OpenGLBufferType bufferType, const unsigned int bufferID);
+	PXPublic void OpenGLBufferData(OpenGLContext* const openGLContext, const OpenGLBufferType bufferType, const unsigned int size, const void* const data, const OpenGLStoreMode openGLStoreMode);
+	PXPublic void OpenGLBufferUnbind(OpenGLContext* const openGLContext, const OpenGLBufferType bufferType);
+
+
 
 
 

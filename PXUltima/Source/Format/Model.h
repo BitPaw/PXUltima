@@ -2,24 +2,27 @@
 #define ModelINCLUDE
 
 #include <Format/Type.h>
+#include <Error/ActionResult.h>
+
+#include <File/DataStream.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef enum ModelType_
+	typedef enum ModelFileFormat_
 	{
-		ModelInvalid,
-		ModelUnKown,
-		ModelA3DS,
-		ModelFBX,
-		ModelOBJ,
-		ModelPLY,
-		ModelSTL,
-		ModelWRL
+		ModelFileFormatInvalid,
+		ModelFileFormatUnKown,
+		ModelFileFormatA3DS,
+		ModelFileFormatFBX,
+		ModelFileFormatOBJ,
+		ModelFileFormatPLY,
+		ModelFileFormatSTL,
+		ModelFileFormatWRL
 	}
-	ModelType;
+	ModelFileFormat;
 
 
 	typedef struct Material_
@@ -36,7 +39,12 @@ extern "C"
 	// The renderable part of a mesh.
 	typedef struct MeshSegment_
 	{
-		wchar_t Name[64];
+		//wchar_t Name[64];
+
+		unsigned char DrawStrideSize;
+		unsigned int DrawClusterSize;
+
+		float* VertexData;
 	}
 	MeshSegment;
 
@@ -80,18 +88,51 @@ extern "C"
 		// +-- MateralID
 		// +-- RenderLength
 
+		//---------------------------------------------------------------------
 		void* Data;
 
+		void* DataVertex;
+		size_t DataVertexWidth;
+		size_t DataVertexStride;
+		size_t DataVertexSize;
 
+		size_t DataNormalWidth;
+		size_t DataNormalStride;
+		size_t DataNormalSize;
 
-		
+		size_t DataTextureWidth;
+		size_t DataTextureStride;
+		size_t DataTextureSize;
 
+		size_t DataColorWidth;
+		size_t DataColorStride;
+		size_t DataColorSize;
 
+		size_t DataIndexWidth;
+		size_t DataIndexStride;
+		size_t DataIndexSize;
+		//---------------------------------------------------------------------
 
 		size_t MaterialListSize;
 		Material* MaterialList;
 	}
 	Model;
+
+	typedef ActionResult(*ModelCompilerFunction)(DataStream* const inputStream, DataStream* const outputStream);
+	typedef ActionResult(*ModelParserFunction)(DataStream* const inputStream, Model* const model);
+
+
+	PXPublic void ModelConstruct(Model* const model);
+	PXPublic void ModelDestruct(Model* const model);
+
+	PXPublic unsigned char ModelSegmentsAmount(const Model* const model);
+	PXPublic void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment* const meshSegment);
+
+	PXPrivate ModelFileFormat ModelGuessFormat(const wchar_t* const filePath);
+
+	PXPublic ActionResult ModelLoadA(Model* const model, const char* const filePath);
+	PXPublic ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath);
+	PXPublic ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const ModelFileFormat modelType);
 
 #ifdef __cplusplus
 }

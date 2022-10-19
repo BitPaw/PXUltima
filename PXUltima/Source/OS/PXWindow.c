@@ -2210,14 +2210,15 @@ void PXWindowConstruct(PXWindow* const window)
 }
 
 void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
-{
+{ 
+
     window->Width = width;
     window->Height = height;
 
     TextCopyAW(title, 256u, window->Title, 256u);
 
     {
-        const unsigned char isDefaultSize = width == 1u && height == 1u;
+        const unsigned char isDefaultSize = width == -1 && height == -1;
 
         if (isDefaultSize)
         {

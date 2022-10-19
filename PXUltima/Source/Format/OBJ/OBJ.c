@@ -55,7 +55,7 @@ OBJLineType OBJPeekLine(const void* line, const size_t size)
                 case '#': return OBJLineComment;
                 case 'o': return OBJLineObjectName;
                 case 's': return OBJLineSmoothShading;
-                case 'g': return OBJLineObjectGroup;
+                case 'g': return OBJLineObjectGroup;               
             }
 
             break;
@@ -123,11 +123,21 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
     size_t errorCounter = 0;
     DataStream tokenSteam;   
 
-    unsigned char renderMode = 0;
     unsigned int vertexListSize = 0;
     unsigned int normalListSize = 0;
     unsigned int textureListSize = 0;
+    unsigned int parameterListSize = 0;
     unsigned int indexListSize = 0;
+
+    size_t drawoffsetCounter = 0;
+    size_t drawCurrentCounter = 0;
+    size_t drawCurrentIndex = 0;
+
+    unsigned char drawSize[20];
+    size_t drawOrder[20];
+
+    MemorySet(drawSize, sizeof(drawSize), 0);
+    MemorySet(drawOrder, sizeof(drawOrder), 0);
 
     // Lexer - Level I 
     {
@@ -146,22 +156,30 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
         DataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+
+        outputStream->DataCursor = 0;
     }
+       
 
     // Write 0'ed data to later jump back to to change.
-    DataStreamWriteCU(outputStream, renderMode);
-    DataStreamWriteIU(outputStream, vertexListSize, EndianLittle);
-    DataStreamWriteIU(outputStream, normalListSize, EndianLittle);
-    DataStreamWriteIU(outputStream, textureListSize, EndianLittle);
-    DataStreamWriteIU(outputStream, indexListSize, EndianLittle);
+    DataStreamCursorAdvance(outputStream, sizeof(unsigned int) * 5u + sizeof(unsigned char));
 
     while (!DataStreamIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntry compilerSymbolEntry;
 
-        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);      
       
+        switch (compilerSymbolEntry.ID)
+        {
+            case PXCompilerSymbolLexerComment:
+            case PXCompilerSymbolLexerNewLine:
+                continue;
+        }
+
         const OBJLineType objPeekLine = OBJPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+        DataStreamWriteCU(outputStream, objPeekLine);
 
         switch (objPeekLine)
         {
@@ -174,74 +192,59 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                 char namedElement[128];
                 size_t namedElementSize = 0;
 
-                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
+                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.    
 
-                // Check if symbol is expected name
+                switch (compilerSymbolEntry.ID)
                 {
-                    unsigned char isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+                    case PXCompilerSymbolLexerInteger:
+                    {
+                        DataStreamWriteCU(outputStream, PXCompilerSymbolLexerInteger);
+                        DataStreamWriteIU(outputStream, compilerSymbolEntry.DataI, EndianLittle);
+                        break;
+                    }
 
-                    if (!isSymbol) // Error
+                    case PXCompilerSymbolLexerGenericElement:
+                    {
+                        namedElementSize = TextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, namedElement, 128);
+
+                        char* nameAdressStart = compilerSymbolEntry.Source;
+
+                        while (1u)
+                        {
+                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
+
+                            const PXBool isElement = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+
+                            if (isElement)
+                            {
+                                const size_t namelength = ((size_t)compilerSymbolEntry.Source + (size_t)compilerSymbolEntry.Size) - (size_t)nameAdressStart;
+
+                                namedElementSize = TextCopyA(nameAdressStart, namelength, namedElement, 128);
+                            }
+                            else // Should be expected new line Error
+                            {
+                                break;
+                            }
+                        }
+
+                        DataStreamWriteCU(outputStream, PXCompilerSymbolLexerString);
+                        DataStreamWriteSU(outputStream, namedElementSize, EndianLittle);
+                        DataStreamWriteP(outputStream, namedElement, namedElementSize);
+
+                        break;
+                    }
+                    default:
                     {
                         ++errorCounter;
                         OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
-                        break; 
-                    }
-                }
-
-                namedElementSize = TextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, namedElement, 128);
-
-                char* nameAdressStart = compilerSymbolEntry.Source;
-
-                while (1u)
-                {
-                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
-      
-                    const unsigned char isElement = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-
-                    if (isElement)
-                    {
-                        const size_t namelength = ((size_t)compilerSymbolEntry.Source + (size_t)compilerSymbolEntry.Size) - (size_t)nameAdressStart;
-
-                        namedElementSize = TextCopyA(nameAdressStart, namelength, namedElement, 128);
-                    }
-                    else // Should be expected new line Error
-                    {
                         break;
-                    }
-                }
+                    }                      
+                }          
 
-                //----------------------------------------------- Export
+                if (objPeekLine == OBJLineMaterialLibraryUse)
                 {
-                    char nameID = 0;
-
-                    switch (objPeekLine)
-                    {
-                        case OBJLineMaterialLibraryInclude:
-                            nameID = PXCompilerSymbolLexerOBJMaterialLibraryIncludeID;
-                            break;
-
-                        case OBJLineMaterialLibraryUse:
-                            nameID = PXCompilerSymbolLexerOBJMaterialLibraryUselID;
-                            break;
-
-                        case OBJLineObjectName:
-                            nameID = PXCompilerSymbolLexerOBJObjectNameID;
-                            break;
-
-                        case OBJLineSmoothShading:
-                            nameID = PXCompilerSymbolLexerOBJSmoothShadingID;
-                            break;
-
-                        case OBJLineObjectGroup:
-                            nameID = PXCompilerSymbolLexerOBJObjectGroupID;
-                            break;                            
-                    }
-
-                    DataStreamWriteC(outputStream, nameID);
-                    DataStreamWriteSU(outputStream, namedElementSize, EndianLittle);
-                    DataStreamWriteP(outputStream, namedElement, namedElementSize);
-                }                
-                //-----------------------------------------------    
+                    drawOrder[drawCurrentIndex++] = drawCurrentCounter;
+                }
 
                 break; // [OK]
             }    
@@ -251,11 +254,8 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
             case OBJLineVertexParameter:
             {
                 size_t valuesDetected = 0;
-                PXBool isNumber[4];
-                float vector[4];            
-
-                MemorySet(&isNumber, sizeof(PXBool) * 4u, 0);
-                MemorySet(&vector, sizeof(float) * 4u, 0);
+                PXBool isNumber[4] = { 0u, 0u, 0u, 0u };
+                float vector[4] = { -1, -1, -1, -1 };
 
                 while (1u)
                 {
@@ -263,9 +263,9 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                     // [symbol check] Check if symbol is expected name
                     {
-                       const PXBool isSymbol = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+                       const PXBool isFloat = compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
 
-                        if (!isSymbol)
+                        if (!isFloat)
                         {
                             // we are at the line end
 
@@ -273,9 +273,8 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                         }
                     }
 
-                    const size_t parsedCharacters = TextToFloatA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &vector[valuesDetected]);
-
-                    isNumber[valuesDetected] = parsedCharacters > 0;
+                    vector[valuesDetected] = compilerSymbolEntry.DataF;
+                    isNumber[valuesDetected] = PXYes;
 
                     ++valuesDetected;
                 }          
@@ -283,32 +282,26 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                 // Export
                 {
-                    char typeID = 0;
-
                     switch (objPeekLine)
                     {
                         case OBJLineVertexGeometric:
-                            typeID = PXCompilerSymbolLexerOBJVertexGerometricID;
                             vertexListSize += valuesDetected;
                             break;
 
                         case OBJLineVertexNormal:
-                            typeID = PXCompilerSymbolLexerOBJVertexNormalID;
                             normalListSize += valuesDetected;
                             break;
 
                         case OBJLineVertexParameter:
-                            typeID = PXCompilerSymbolLexerOBJVertexParameterID;
+                            parameterListSize += valuesDetected;
                             break;
 
                         case OBJLineVertexTexture:
-                            typeID = PXCompilerSymbolLexerOBJVertexTextureID;
                             textureListSize += valuesDetected;
                             break;
                     }
 
-                    DataStreamWriteC(outputStream, typeID);
-                    DataStreamWriteCU(outputStream, (char)valuesDetected);
+                    DataStreamWriteCU(outputStream, valuesDetected);
 
                     for (size_t i = 0; i < valuesDetected; ++i)
                     {
@@ -323,7 +316,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                 size_t cornerPoints = 0;
                 size_t cursorPos = outputStream->DataCursor;
 
-                DataStreamWriteCU(outputStream, 0);
+                DataStreamWriteCU(outputStream, 0xFF);
 
                 while (1u)
                 {
@@ -372,18 +365,20 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                         }
                     }
 
-                    DataStreamWriteF(outputStream, vertexData[0]);
-                    DataStreamWriteF(outputStream, vertexData[1]);
-                    DataStreamWriteF(outputStream, vertexData[2]);
+                    DataStreamWriteIU(outputStream, vertexData[0], EndianLittle);
+                    DataStreamWriteIU(outputStream, vertexData[1], EndianLittle);
+                    DataStreamWriteIU(outputStream, vertexData[2], EndianLittle);
 
                     //----------------------------------             
                     
                     ++cornerPoints;
                 }
 
-                renderMode = MathMaximum(renderMode, cornerPoints);
+                drawSize[drawCurrentIndex] = MathMaximum(drawSize[drawCurrentIndex], cornerPoints);
 
                 indexListSize += cornerPoints;
+
+                ++drawCurrentCounter;
 
                 DataStreamWriteAtCU(outputStream, cornerPoints, cursorPos);
 
@@ -405,39 +400,279 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
         }
     }
 
-    if (errorCounter)
-    {
-        return ActionCompilingError;
-    }
+    drawOrder[drawCurrentIndex] = drawCurrentCounter;
+
+
 
     size_t offset = outputStream->DataCursor;
 
     outputStream->DataCursor = 0;
 
-    DataStreamWriteCU(outputStream, renderMode);
+    DataStreamWriteCU(outputStream, drawCurrentIndex);
+
+    for (size_t i = 0; i < drawCurrentIndex; ++i)
+    {
+        DataStreamWriteCU(outputStream, drawSize[i+1]);
+        DataStreamWriteIU(outputStream, drawOrder[i+1] - drawOrder[i], EndianLittle);
+    }  
+
     DataStreamWriteIU(outputStream, vertexListSize, EndianLittle);
     DataStreamWriteIU(outputStream, normalListSize, EndianLittle);
     DataStreamWriteIU(outputStream, textureListSize, EndianLittle);
+    DataStreamWriteIU(outputStream, parameterListSize, EndianLittle);
     DataStreamWriteIU(outputStream, indexListSize, EndianLittle);
 
     outputStream->DataCursor = offset;
+
+
+    if (errorCounter)
+    {
+        return ActionCompilingError;
+    }
 
     return ActionSuccessful;
 }
 
 ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 {
-    unsigned char renderMode = 0;
+    ModelConstruct(model);
+
+    inputStream->DataCursor = 0;
+
+    unsigned char numberOfMeshes = 0;
+    unsigned char renderMode[20];
+    unsigned int renderSize[20];
+
     unsigned int vertexListSize = 0;
     unsigned int normalListSize = 0;
     unsigned int textureListSize = 0;
+    unsigned int parameterListSize = 0;
     unsigned int indexListSize = 0;
 
-    DataStreamReadCU(inputStream, &renderMode);
+
+    DataStreamReadCU(inputStream, &numberOfMeshes);
+
+    for (size_t i = 0; i < numberOfMeshes; ++i)
+    {
+        DataStreamReadCU(inputStream, &renderMode[i]);
+        DataStreamReadIU(inputStream, &renderSize[i], EndianLittle);
+    }
+    
     DataStreamReadIU(inputStream, &vertexListSize, EndianLittle);
     DataStreamReadIU(inputStream, &normalListSize, EndianLittle);
     DataStreamReadIU(inputStream, &textureListSize, EndianLittle);
+    DataStreamReadIU(inputStream, &parameterListSize, EndianLittle);
     DataStreamReadIU(inputStream, &indexListSize, EndianLittle);
+
+    size_t infoHeader = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int));
+
+    size_t expectedSize = sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeader;// +indexListSize;
+
+    void* buffer = MemoryAllocate(expectedSize);
+
+    model->Data = MemoryAllocate(expectedSize * 10);
+
+    // Format: Ver Nor Tx Colo
+    //         XYZ XYZ XY RGBA
+    //          3   3  2  4     = 12
+    //      
+
+
+    size_t blockOffsetDDataPointCounter = 0;
+
+    model->DataVertexWidth = 3u;
+    model->DataNormalWidth = 3u;
+    model->DataTextureWidth = 2u;
+    model->DataColorWidth = 0u;
+    model->DataIndexWidth = renderMode;
+
+    model->DataVertexStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
+    model->DataNormalStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
+    model->DataTextureStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
+    model->DataColorStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
+    model->DataIndexStride = renderMode;
+
+    model->DataVertexSize = vertexListSize;
+    model->DataNormalSize = normalListSize;
+    model->DataTextureSize = textureListSize;
+    model->DataColorSize = 0;
+    model->DataIndexSize = indexListSize;
+
+    model->DataVertex = (unsigned char*)model->Data + infoHeader;
+
+    DataStream vertexArrayData;
+
+    DataStreamFromExternal(&vertexArrayData, model->DataVertex, model->DataVertexSize);
+
+
+
+
+    float* vertexBuffer = buffer;
+    size_t vertexBufferOffset = 0;
+
+    float* normalList = (unsigned char*)buffer + vertexListSize;
+    size_t normalListOffset = 0;
+
+    float* textureList = (unsigned char*)normalList + normalListSize;
+    size_t textureListOffset = 0;
+
+    float* parameterList = (unsigned char*)textureList + textureListSize;
+    size_t parameterListOffset = 0;
+
+    while (!DataStreamIsAtEnd(inputStream))
+    {
+        OBJLineType objLineType;     
+
+        {
+            unsigned char lineTypeID = 0;
+
+            DataStreamReadCU(inputStream, &lineTypeID); // Line Type     
+
+            objLineType = lineTypeID;
+        }
+   
+        switch (objLineType)
+        {
+            case OBJLineMaterialLibraryInclude:
+            case OBJLineMaterialLibraryUse:
+            case OBJLineObjectName:
+            case OBJLineSmoothShading:
+            case OBJLineObjectGroup:
+            {
+                PXCompilerSymbolLexer compilerSymbolLexer;
+
+                {
+                    unsigned char compilerSymbolLexerID = 0;
+
+                    DataStreamReadCU(inputStream, &compilerSymbolLexerID); // following datatype
+
+                    compilerSymbolLexer = compilerSymbolLexerID;
+                }
+
+                switch (compilerSymbolLexer)
+                {
+                    case PXCompilerSymbolLexerInteger:
+                    {
+                        unsigned int value = 0;
+                        DataStreamReadIU(inputStream, &value, EndianLittle);
+                        break;
+                    }
+
+                    case PXCompilerSymbolLexerString:
+                    {
+                        unsigned short size = 0;
+                        char* name = model->Data;
+
+                        DataStreamReadSU(inputStream, &size, EndianLittle);
+                        DataStreamReadP(inputStream, name, size);
+
+                        break;
+                    }
+
+                    default:
+                        break;
+                }
+
+                break; // [OK]
+            }
+            case OBJLineVertexTexture:
+            case OBJLineVertexGeometric:
+            case OBJLineVertexNormal:
+            case OBJLineVertexParameter:
+            {       
+                unsigned char amountofValues;
+                float* adress;
+                size_t* offset;
+
+                switch (objLineType)
+                {
+                    case OBJLineVertexTexture:
+                        adress = textureList;
+                        offset = &textureListOffset;
+                        break;
+
+                    case OBJLineVertexGeometric:
+                        adress = vertexBuffer;
+                        offset = &vertexBufferOffset;
+                        break;
+
+                    case OBJLineVertexNormal:
+                        adress = normalList;
+                        offset = &normalListOffset;
+                        break;
+
+                    case OBJLineVertexParameter:
+                        adress = parameterList;
+                        offset = &parameterListOffset;
+                        break;
+
+                    default:
+                        adress = 0;
+                        offset = 0;
+                        break;
+                }       
+
+                adress += *offset;
+
+                DataStreamReadCU(inputStream, &amountofValues);
+
+                for (size_t i = 0; i < amountofValues; ++i)
+                {           
+                    DataStreamReadF(inputStream, &adress[i], EndianLittle);
+                }
+
+                *offset += amountofValues;
+
+                break;
+            }
+
+            case OBJLineFaceElement:
+            {
+
+ // Format: Ver Nor Tx Colo
+ //         XYZ XYZ XY RGBA
+ //          3   3  2  4     = 12
+ // 
+
+                unsigned char amountofValues = 0;            
+
+                DataStreamReadCU(inputStream, &amountofValues);
+
+                for (size_t i = 0; i < amountofValues; ++i)
+                {
+                    unsigned int indexList[3] = { -1, -1, -1, };
+
+                    DataStreamReadIU(inputStream, &indexList[0], EndianLittle);
+                    DataStreamReadIU(inputStream, &indexList[1], EndianLittle);
+                    DataStreamReadIU(inputStream, &indexList[2], EndianLittle);
+
+                    float* vertexValueIndex = &vertexBuffer[indexList[0]];
+                    float* normalValueIndex = &normalList[indexList[1]];
+                    float* textureValueIndex = &textureList[indexList[2]];                    
+
+                    float* vertexDataPoint = (size_t)model->DataVertex + blockOffsetDDataPointCounter * model->DataVertexStride + sizeof(float) * 0;
+                    float* normalDataPoint = (size_t)model->DataVertex + blockOffsetDDataPointCounter * model->DataNormalStride + sizeof(float) * (model->DataVertexWidth);
+                    float* textureDataPoint = (size_t)model->DataVertex + blockOffsetDDataPointCounter * model->DataTextureStride + sizeof(float) * (model->DataVertexWidth + +model->DataNormalWidth);
+                           
+                    size_t vertexSize = model->DataVertexWidth * sizeof(float);
+                    MemoryCopy(vertexValueIndex, vertexSize, vertexDataPoint, vertexSize);
+
+                    size_t normalSize = model->DataNormalWidth * sizeof(float);
+                    MemoryCopy(normalValueIndex, normalSize, normalDataPoint, normalSize);
+
+                    size_t textureSize = model->DataTextureWidth * sizeof(float);
+                    MemoryCopy(textureValueIndex, textureSize, textureDataPoint, textureSize);
+
+                    ++blockOffsetDDataPointCounter;
+                } 
+
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
 
 
     return ActionSuccessful;
@@ -572,12 +807,12 @@ ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size
                 "[OBJ][Segment (%li/%li)] V:%li T:%li N:%li P:%li F:%li M:%i\n",
                 i + 1,
                 segmentAmount,
-                currentSegmentData.Position,
-                currentSegmentData.Texture,
-                currentSegmentData.Normal,
-                currentSegmentData.Parameter,
-                currentSegmentData.Face,
-                currentSegmentData.Material
+                currentSegmentData->Position,
+                currentSegmentData->Texture,
+                currentSegmentData->Normal,
+                currentSegmentData->Parameter,
+                currentSegmentData->Face,
+                currentSegmentData->Material
             );
 #endif
         }

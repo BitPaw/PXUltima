@@ -68,7 +68,7 @@ void PXCompilerSymbolEntryAdd(DataStream* const dataStream, const PXCompilerSymb
 		}
 	}
 
-#if 1
+#if 0
 	printf
 	(
 		"|| C:%-2i L:%-2i S:%-2i | %-10s -> %-20s ||\n",
@@ -118,7 +118,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 		case 'T':
 		case 't':
 		{
-			const PXBool  result = TextCompareIgnoreCaseA(text, textSize, "true", 4);
+			const PXBool  result = TextCompareIgnoreCaseA(text, textSize, "true", 4) && textSize > 4;
 
 			if (result)
 			{
@@ -132,7 +132,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 		case 'F':
 		case 'f':
 		{
-			const PXBool  result = TextCompareIgnoreCaseA(text, textSize, "false", 5);
+			const PXBool  result = TextCompareIgnoreCaseA(text, textSize, "false", 5) && textSize > 5;
 
 			if (result)
 			{
@@ -159,25 +159,35 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 			// Probe for number
 			const size_t dotIndex = TextFindFirstA(text, textSize, '.');
 			const PXBool probablyFloat = dotIndex != (size_t)-1;
-			size_t writtenNumbers = 0;
-
-			compilerSymbolEntry->Source = 0;
+			size_t writtenNumbers = 0;			
 
 			if (probablyFloat)
 			{
-				const size_t writtenNumbers = TextToFloatA(text, textSize, &compilerSymbolEntry->DataF);
+				float value = 0;
 
-				if (writtenNumbers)
+				const size_t writtenNumbers = TextToFloatA(text, textSize, &value);
+				const PXBool isFloat = textSize == writtenNumbers;
+
+				if (isFloat)
 				{
+					compilerSymbolEntry->Source = 0;
+					compilerSymbolEntry->DataF = value;
+
 					return PXCompilerSymbolLexerFloat;
 				}
 			}
 			else
 			{
-				const size_t writtenNumbers = TextToIntA(text, textSize, &compilerSymbolEntry->DataI);
+				unsigned int value = 0;
 
-				if (writtenNumbers)
+				const size_t writtenNumbers = TextToIntA(text, textSize, &value);
+				const PXBool isInteger = textSize == writtenNumbers;
+
+				if (isInteger)
 				{
+					compilerSymbolEntry->Source = 0;
+					compilerSymbolEntry->DataI = value;
+
 					return PXCompilerSymbolLexerInteger;
 				}
 			}
@@ -215,7 +225,7 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 
 			currentColoum += whiteSpaceSize;
 
-			if (whiteSpaceSize && (compilerSettings->KeepWhiteSpace || isFirstWhiteSpaceInLine))
+			if (whiteSpaceSize)
 			{
 				isFirstWhiteSpaceInLine = 0;
 
@@ -224,7 +234,10 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 				compilerSymbolEntry.Coloum = currentColoum;
 				compilerSymbolEntry.Size = whiteSpaceSize;
 
-				PXCompilerSymbolEntryAdd(outputStream, &compilerSymbolEntry);
+				if (compilerSettings->KeepWhiteSpace || isFirstWhiteSpaceInLine)
+				{
+					PXCompilerSymbolEntryAdd(outputStream, &compilerSymbolEntry);
+				}	
 
 				continue;
 			}
@@ -267,7 +280,7 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 			{
 				if (compilerSettings->TryAnalyseTypes)
 				{
-					compilerSymbolEntry.ID = PXCompilerTryAnalyseType(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);
+					compilerSymbolEntry.ID = PXCompilerTryAnalyseType(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);		
 
 					switch (compilerSymbolEntry.ID)
 					{

@@ -1,6 +1,6 @@
 #include "TestOpenGL.h"
 
-#include <Graphic/OpenGL/OpenGL.h>
+
 #include <Format/Image.h>
 #include <Memory/Memory.h>
 
@@ -10,12 +10,16 @@
 #include <Format/Font.h>
 #include <Math/Matrix.h>
 
+#include <Graphic/Graphic.h>
+#include <Graphic/OpenGL/OpenGL.h>
+
 void TestOpenGLAll()
 {
 	printf("[OpenGL] Testing...\n");
 
 	//TestOpenGLRenderToTexture();
-	TestOpenGLTextDraw();
+	//TestOpenGLTextDraw();
+	TestOpenGLVBO();
 
 	printf("[OpenGL] Testing finished!\n");
 }
@@ -327,4 +331,221 @@ void TestOpenGLTextDraw()
 	DumpRenderedTexture(&openGLContext, "_TEST_DATA_OUTPUT_/Buffertest.png");
 
 	OpenGLContextDeselect(&openGLContext);
+}
+
+void TestOpenGLVAO()
+{
+	PXWindow window;
+	PXWindowConstruct(&window);
+	PXWindowCreate(&window, 0, 0, "VAO Test", 1);
+
+
+	PXRenderable renderable;
+	Model model;
+
+	ModelLoadA(&model, "B:/Daten/Objects/Moze/Moze.obj");
+
+	while (!window.IsRunning)
+	{
+		printf(".");
+	}
+
+	printf("Windows ok\n");
+
+
+	OpenGLContextSelect(&window.GraphicInstance.OpenGLInstance);
+
+	GraphicModelRegisterFromModel(&window.GraphicInstance, &renderable, &model);
+
+
+	while (1)
+	{
+		//OpenGLVertexArrayBind(&window.GraphicInstance.OpenGLInstance, renderable.ID); ; // VAO
+		//GraphicShaderUse(&_mainWindow.GraphicInstance, 1);
+		//CameraDataGet(&_mainWindow, 1);
+		//CameraDataUpdate(&_mainWindow, MainCamera);
+
+		//GraphicShaderUpdateMatrix4x4F(&_mainWindow.GraphicInstance, _matrixModelID, renderable.MatrixModel.Data);
+
+
+
+		OpenGLBufferBind(&window.GraphicInstance.OpenGLInstance, OpenGLBufferArray, renderable.VBO);
+
+		glDrawBuffer(GL_POINTS);
+		//glDrawElements(GL_LINES, 36, GL_UNSIGNED_INT, 0);
+
+		OpenGLBufferUnbind(&window.GraphicInstance.OpenGLInstance, OpenGLBufferArray);
+
+		//OpenGLVertexArrayUnbind(&window.GraphicInstance.OpenGLInstance);
+	}
+
+}
+
+void TestOpenGLVBO()
+{
+	PXWindow window;
+	PXWindowConstruct(&window);
+	PXWindowCreate(&window, -1, -1, "RAW Test", 1);
+
+	while (!window.IsRunning)
+	{
+		printf(".");
+	}
+
+	printf("Windows ok\n");
+
+	OpenGLContext* glContext = &window.GraphicInstance.OpenGLInstance;
+
+
+
+	//This code will use an IndexBuffer to produce a triangle with 1 inner triangle that isn't drawn.
+//Vertex Shader Source Code
+	const char VertexShaderSource[] = "#version 330 core \n"
+		"layout (location = 0) in vec3 aPos; \n"
+		"void main()\n"
+		"{\n"
+		"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"}";
+	//Fragment Shader Source Code
+	const char fragmentShaderSource[] = "#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"void main()\n"
+		"{\n"
+		"     FragColor = vec4(0.55f, 0.15f, 0.15f, 1.0f);\n"
+		"}";
+
+
+	OpenGLContextSelect(glContext);
+
+	//glViewport(0, 0, 800, 800); //Determining the size of the Window.
+
+
+	ShaderProgram shaderProgram;
+	shaderProgram.ID = -1;
+	
+	Shader vertexShader;
+	Shader fragmentShader;
+
+	ShaderDataSet(&vertexShader, ShaderTypeVertex, sizeof(VertexShaderSource), VertexShaderSource);
+	ShaderDataSet(&fragmentShader, ShaderTypeFragment, sizeof(fragmentShaderSource), fragmentShaderSource);
+
+	GraphicShaderProgramCreateVFData(&window.GraphicInstance, &shaderProgram, &vertexShader, &fragmentShader);
+
+#if 0
+	//Vertices coordinates
+	GLfloat vertices[] =
+	{
+		-1.0f,		-1.0f * (1 / 3.0f),		0.0f, //Lower Left Corner
+		1.0f,		-1.0f * (1 /  3.0f),	0.0f, //Lower Right Corner
+		0.0f,		1.1f * (1 * 2 / 3.0f),	0.0f,
+		-1.0f / 2,	1.0f * (1 / 6.0f),		0.0f, //Inner Left
+		1.0f / 2,	1.0f * (1 / 6.0f),		0.0f,//Inner Right
+		0.0f,		-1.0f * (1 / 3.0f),		0.0f// Inner Down
+
+	};
+	GLuint indices[] =
+	{
+		0, 3, 5, // Lower Left Triangle
+		3, 2, 4, //Lower Right Triangle
+		5, 4, 1 //Upper Triangle
+	};
+#else
+	//Vertices coordinates
+	GLfloat vertices[] =
+	{
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+
+	};
+	GLuint indices[] =
+	{
+		0,1,2
+	};
+#endif
+
+	//Create a reference container to the Vertex Array Object and Vertex Buffer Object
+	GLuint VAO, VBO, EBO;
+	//Generate the VAO and VBO with only 1 object each.
+
+#define useVAO 1
+
+#if useVAO
+	OpenGLVertexArrayGenerate(glContext, 1, &VAO);
+#endif
+
+
+
+	OpenGLBufferGenerate(glContext, 1, &VBO);
+	OpenGLBufferGenerate(glContext, 1, &EBO);
+
+	//Make the VAO the current Vertex Array Object by binding it.
+	// 
+#if useVAO
+	OpenGLVertexArrayBind(glContext, VAO);
+#endif
+
+
+	//Bind the VBO specifying it's a Buffer Array.
+
+	OpenGLBufferBind(glContext, OpenGLBufferElementArray, EBO);
+	OpenGLBufferData(glContext, OpenGLBufferElementArray, sizeof(indices), indices, OpenGLStoreStaticDraw);
+	OpenGLBufferUnbind(glContext, OpenGLBufferElementArray, 0);
+
+	OpenGLBufferBind(glContext, OpenGLBufferArray, VBO);
+	OpenGLBufferData(glContext, OpenGLBufferArray, sizeof(vertices), vertices, OpenGLStoreStaticDraw);
+
+	OpenGLVertexArrayAttributeDefine(glContext, 0, 3, OpenGLTypeFloat, GL_FALSE, 3 * sizeof(float), (void*)0);
+	OpenGLVertexArrayEnable(glContext, 0);
+
+	OpenGLBufferUnbind(glContext, OpenGLBufferArray, 0);
+
+#if useVAO
+	OpenGLVertexArrayUnbind(glContext);
+#endif
+
+	
+
+
+
+	OpenGLShaderProgramUse(glContext, shaderProgram.ID);
+
+
+#if useVAO
+	OpenGLVertexArrayBind(glContext, VAO);
+#endif
+
+
+	OpenGLBufferBind(glContext, OpenGLBufferArray, VBO);
+	OpenGLBufferBind(glContext, OpenGLBufferElementArray, EBO);
+	//glFrontFace(GL_CW);
+	//glFrontFace(GL_CCW);
+
+	//Declare how many Arrays we want GL to draw.
+	glDisable(GL_CULL_FACE);
+
+	glPointSize(5);
+
+	while (window.IsRunning)
+	{
+		glClearColor(0.20f, 0.20f, 0.20f, 1.0f); //The 3 first values signify RGB numbers and the last digit stand for the Alpha
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		//glDrawBuffer(GL_POINTS);
+		//glDrawArrays(GL_POINTS, 0, 3);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+		OpenGLFlush(glContext);
+		OpenGLRenderBufferSwap(glContext);
+
+		//Take care of the glfwEvents
+		//glfwPollEvents();
+	}
+	//glDeleteVertexArrays(1, &EBO);
+	//glDeleteBuffers(1, &VBO);
+	//glDeleteBuffers(1, &VAO);
+	//glDeleteProgram(shaderProgram);
+	//glfwDestroyWindow(window);
+	//glfwTerminate();
+
 }

@@ -10,7 +10,7 @@
 
 #define OBJNameSize 64u
 #define OBJElementNameLength 50u
-#define OBJDebug 0
+#define OBJDebug 1
 
 #ifdef __cplusplus
 extern "C"

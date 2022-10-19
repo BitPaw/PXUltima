@@ -198,8 +198,8 @@ extern "C"
 	PXPublic size_t DataStreamWriteBits(DataStream* const dataStream, const size_t bitData, const size_t amountOfBits);
 	//-------------------------------------------------------------------------
 
-#endif
-
 #ifdef __cplusplus
 }
+#endif
+
 #endif

@@ -9,9 +9,9 @@
 
 void TestPXCompilerAll()
 {
-	//TestPXCompilerOBJ();
+	TestPXCompilerOBJ();
 	//TestPXCompilerYAML();
-	TestPXCompilerXML();
+	//TestPXCompilerXML();
 }
 
 void TestPXCompilerOBJ()
@@ -33,6 +33,12 @@ void TestPXCompilerOBJ()
 	DataStreamMapToMemory(&outputStream, inputStream.DataSize*4, MemoryReadAndWrite);
 
 	OBJFileCompile(&inputStream, &outputStream);
+
+	Model model;
+
+
+
+	OBJParseToModel(&outputStream, &model);
 
 	printf("____\n");
 }

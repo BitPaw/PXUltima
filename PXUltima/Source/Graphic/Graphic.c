@@ -102,7 +102,7 @@ ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, PXTextu
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CTextureCube* const textureCube)
+ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, PXTextureCube* const textureCube)
 {
     OpenGLID textureID = -1;
 
@@ -183,12 +183,12 @@ ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, CT
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureCubeRegisterUse(GraphicContext* const graphicContext, CTextureCube* const textureCube)
+ActionResult GraphicTextureCubeRegisterUse(GraphicContext* const graphicContext, PXTextureCube* const textureCube)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicTextureCubeRelease(GraphicContext* const graphicContext, CTextureCube* const textureCube)
+ActionResult GraphicTextureCubeRelease(GraphicContext* const graphicContext, PXTextureCube* const textureCube)
 {
     return ActionInvalid;
 }
@@ -217,7 +217,7 @@ ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, CSkyBox
     };
     const size_t vertexDataSize = sizeof(vertexData) / sizeof(float);
     const size_t indexListSize = sizeof(indexList) / sizeof(unsigned int);
-    //CTextureCube* textureCube = skyBox->Texture;
+    //PXTextureCube* textureCube = skyBox->Texture;
     //Renderable* renderable = &skyBox->RenderInfo;
 
     //GraphicModelRegisterFromData(renderable, vertexData, vertexDataSize, indexList, indexListSize);
@@ -247,171 +247,47 @@ ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, CSkyBox* con
     return ActionInvalid;
 }
 
-ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, Renderable* const renderable, const Model* const model)
-{
-    /*
-    //float vaoIDList[128u];
-      //memset(vaoIDList, -1, 128u * sizeof(unsigned int));
+ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const Model* const model)
+{   
+    PXMatrix4x4FReset(&renderable->MatrixModel);
 
-      //glGenVertexArrays(numberOfMeshes, vaoIDList); // Generate VAOs
+   OpenGLVertexArrayGenerate(&graphicContext->OpenGLInstance, 1u, &renderable->ID);
 
-    glGenVertexArrays(1, &renderable.ID); // Create VAO
+    OpenGLID vbo = 0;
 
-    glBindVertexArray(renderable.ID);
+    // Create VBO Buffers
+    OpenGLBufferGenerate(&graphicContext->OpenGLInstance, 1u, &vbo);
 
-    // VBO creator
-    {
-        const size_t numberOfMeshes = model.MeshListSize;
-        size_t meshIndexCounter = 0;
+    OpenGLVertexArrayBind(&graphicContext->OpenGLInstance, renderable->ID);
 
-        OpenGLID meshIDList[128u];
-        MemorySet(meshIDList, 128u * sizeof(OpenGLID), -1);
+    OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferArray, vbo);
+    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, model->DataIndexSize * model->DataVertexStride, model->DataVertex, OpenGLStoreStaticDraw);
 
-        glGenBuffers(numberOfMeshes, meshIDList); // Create VBO Buffers
+    // TODO
+    unsigned int index = 0;
 
-        renderable.ChunkListSize = numberOfMeshes;
-        renderable.ChunkList = new RenderableChunk[numberOfMeshes];
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, 0);
+    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-        for (size_t i = 0; i < numberOfMeshes; ++i)
-        {
-            const Mesh& mesh = model.MeshList[i];
-            const size_t segmentListSize = mesh.SegmentListSize;
-            const OpenGLID vertexBufferID = meshIDList[meshIndexCounter++];
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * model->DataVertexWidth);
+    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-            assert(vertexBufferID != -1);
-
-            RenderableChunk& chunk = renderable.ChunkList[i];
-
-            chunk.ID = vertexBufferID;
-            chunk.SegmentListSize = segmentListSize;
-            chunk.SegmentList = new RenderableSegment[segmentListSize];
-
-            // Select VBO
-            glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID); // Select Buffer
-            glBufferData(GL_ARRAY_BUFFER, mesh.VertexDataListSize * sizeof(float), mesh.VertexDataList, GL_STATIC_DRAW);
-
-            OpenGL::VertexAttributeArrayDefine(sizeof(float), mesh.VertexDataStructureListSize, mesh.VertexDataStructureList);
-
-#if 0
-            printf("+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+\n");
-
-            printf
-            (
-                "| %7s | %7s | %7s | %7s | %7s | %7s | %7s | %7s | %7s | %7s | %7s | %7s |\n",
-                "x",
-                "y",
-                "z",
-                "nx",
-                "ny",
-                "nz",
-                "r",
-                "g",
-                "b",
-                "a",
-                "u",
-                "v"
-            );
-
-            for (size_t i = 0; i < mesh.VertexDataListSize; )
-            {
-                float x = mesh.VertexDataList[i++];
-                float y = mesh.VertexDataList[i++];
-                float z = mesh.VertexDataList[i++];
-
-                float nx = mesh.VertexDataList[i++];
-                float ny = mesh.VertexDataList[i++];
-                float nz = mesh.VertexDataList[i++];
-
-                float r = mesh.VertexDataList[i++];
-                float g = mesh.VertexDataList[i++];
-                float b = mesh.VertexDataList[i++];
-                float a = mesh.VertexDataList[i++];
-
-                float u = mesh.VertexDataList[i++];
-                float v = mesh.VertexDataList[i++];
-
-                printf
-                (
-                    "| %7.2f | %7.2f | %7.2f | %7.2f | %7.2f | %7.2f | %7.2f | %7.2f | %7.2f | %7.2f | %7.2f | %7.2f |\n",
-                    x,
-                    y,
-                    z,
-                    nx,
-                    ny,
-                    nz,
-                    r,
-                    g,
-                    b,
-                    a,
-                    u,
-                    v
-                );
-            }
-
-            printf("+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+\n");
-#endif
-            size_t segmentIndexCounter = 0;
-
-            OpenGLID segmentIDList[128u];
-            MemorySet(segmentIDList, 128u * sizeof(OpenGLID), -1);
-
-            glGenBuffers(segmentListSize, segmentIDList); // Generate IBO
-
-            for (size_t segmentIndex = 0; segmentIndex < segmentListSize; ++segmentIndex)
-            {
-                const MeshSegment& meshSegment = mesh.SegmentList[segmentIndex];
-                const OpenGLID indexBufferID = segmentIDList[segmentIndexCounter++];
-                RenderableSegment& segment = chunk.SegmentList[segmentIndex];
-
-                assert(indexBufferID != -1);
-
-                segment.ID = indexBufferID;
-                segment.Size = meshSegment.IndexDataListSize;
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth));
+    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
 
-                segment.MaterialRangeSize = meshSegment.MaterialInfoSize;
-                segment.MaterialRange = new SegmentMaterialRange[meshSegment.MaterialInfoSize];
+    //OpenGLVertexAttributeArrayDefine(sizeof(float), mesh.VertexDataStructureListSize, mesh.VertexDataStructureList);
+    
 
-                for (size_t i = 0; i < meshSegment.MaterialInfoSize; i++)
-                {
-                    const OBJElementMaterialInfo& info = meshSegment.MaterialInfo[i];
-                    SegmentMaterialRange& range = segment.MaterialRange[i];
+    OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferArray);
+   // OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray);
+  //  OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
 
-                    range.Size = info.Size;
-                    range.TextureID = 3;
 
-                }
-
-#if 0
-
-                for (size_t i = 0; i < meshSegment.IndexDataListSize; )
-                {
-                    unsigned int x = meshSegment.IndexDataList[i++];
-                    unsigned int y = meshSegment.IndexDataList[i++];
-                    unsigned int z = meshSegment.IndexDataList[i++];
-
-                    printf("| %5i | %5i | %5i |\n", x, y, z);
-                }
-#endif
-                // Select IBÒ
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshSegment.IndexDataListSize * sizeof(unsigned int), meshSegment.IndexDataList, GL_STATIC_DRAW);
-            }
-        }
-    }
-
-    // printf("[OpenGL] Register Mesh <%ls> from <%ls>. Sub-Meshes <%zu>\n", , model.FilePath, model.MeshListSize);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    */
-
-    // Merge
+    renderable->VBO = vbo;
 }
 
-ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, Renderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize)
+ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize)
 {
     /*
     // Check
@@ -459,6 +335,14 @@ ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, 
     */
 
     return ActionInvalid;
+}
+
+void ShaderDataSet(Shader* const shader, const ShaderType type, const size_t size, const char* data)
+{
+    shader->ID = -1;
+    shader->Type = type;
+    shader->ContentSize = size;
+    shader->Content = data;
 }
 
 void PXTextureConstruct(PXTexture* const texture)
@@ -595,8 +479,8 @@ ActionResult GraphicShaderUse(GraphicContext* const graphicContext, const unsign
     return ActionInvalid;
 }
 
-ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)
-{   
+ActionResult GraphicShaderProgramCreateVFPath(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)
+{
     Shader vertexShader;
     Shader fragmentShader;
     DataStream vertexShaderFile;
@@ -650,8 +534,17 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
     }
     //-----
 
+    GraphicShaderProgramCreateVFData(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
+
+
+    DataStreamDestruct(&vertexShaderFile);
+    DataStreamDestruct(&fragmentFile);
+}
+
+ActionResult GraphicShaderProgramCreateVFData(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, Shader* vertexShader, Shader* fragmentShader)
+{
     const size_t shaderListSize = 2;
-    Shader* const shaderList[2] = { &vertexShader, &fragmentShader };
+    Shader* const shaderList[2] = { vertexShader, fragmentShader };
     const OpenGLID shaderProgrammID = OpenGLShaderProgramCreate(&graphicContext->OpenGLInstance);
     unsigned int  sucessfulCounter = 0;
     unsigned char isValidShader = 1;
@@ -659,7 +552,7 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
     for (size_t i = 0; i < shaderListSize; ++i)
     {
         Shader* const shader = shaderList[i];
-        const OpenGLShaderType openGLShaderType = GraphicShaderFromOpenGL(shader->Type);             
+        const OpenGLShaderType openGLShaderType = GraphicShaderFromOpenGL(shader->Type);
         const unsigned int shaderID = OpenGLShaderCreate(&graphicContext->OpenGLInstance, openGLShaderType);
 
         OpenGLShaderSource(&graphicContext->OpenGLInstance, shaderID, 1u, &shader->Content, &shader->ContentSize);
@@ -670,7 +563,7 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
         {
             isValidShader = 0;
             break;
-        }    
+        }
 
         OpenGLShaderProgramAttach(&graphicContext->OpenGLInstance, shaderProgrammID, shaderID);
 
@@ -678,7 +571,7 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
     }
 
     if (isValidShader)
-    {        
+    {
         OpenGLShaderProgramLink(&graphicContext->OpenGLInstance, shaderProgrammID);
         OpenGLShaderProgramValidate(&graphicContext->OpenGLInstance, shaderProgrammID);
 
@@ -701,9 +594,6 @@ ActionResult GraphicShaderProgramCreateVF(GraphicContext* const graphicContext, 
     {
         OpenGLShaderProgramDelete(&graphicContext->OpenGLInstance, shaderProgrammID);
     }
-
-    DataStreamDestruct(&vertexShaderFile);
-    DataStreamDestruct(&fragmentFile);
 
     if (!isValidShader)
     {
