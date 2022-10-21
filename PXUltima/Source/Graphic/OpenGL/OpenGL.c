@@ -10,7 +10,7 @@
 #include <OS/PXWindow.h>
 
 #if 0
-#include <gl/glew.h>
+#include <GLEW/glew.h>
 #endif
 
 

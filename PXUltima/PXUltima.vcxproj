@@ -261,10 +261,9 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -274,10 +273,9 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -300,31 +298,31 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)__Export__/x64 Debug/</OutDir>
-    <IntDir>$(SolutionDir)__Temp__/x64 Debug/$(ProjectName)/</IntDir>
-    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)__Dependencies__/include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)__Dependencies__\lib_Windows_10_64_Debug/;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)[Dependency]/Include/;$(Configuration);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)[Dependency]/$(PlatformArchitecture)B-Windows-$(Configuration)/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)__Export__/x86 Debug/</OutDir>
-    <IntDir>$(SolutionDir)__Temp__/x86 Debug/$(ProjectName)/</IntDir>
-    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)__Dependencies__/include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)__Dependencies__\lib_Windows_10_32_Debug/;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)[Dependency]/Include/;$(Configuration);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)[Dependency]/$(PlatformArchitecture)B-Windows-$(Configuration)/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)__Export__/x86 Release/</OutDir>
-    <IntDir>$(SolutionDir)__Temp__/x86 Release/$(ProjectName)/</IntDir>
-    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)__Dependencies__/include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)__Dependencies__\lib_Windows_10_32_Release/;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)[Dependency]/Include/;$(Configuration);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)[Dependency]/$(PlatformArchitecture)B-Windows-$(Configuration)/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)__Export__/x64 Release/</OutDir>
-    <IntDir>$(SolutionDir)__Temp__/x64 Release/$(ProjectName)/</IntDir>
-    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)__Dependencies__/include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)__Dependencies__\lib_Windows_10_64_Release/;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir)Source/;$(SolutionDir)[Dependency]/Include/;$(Configuration);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)[Dependency]/$(PlatformArchitecture)B-Windows-$(Configuration)/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -342,7 +340,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -361,7 +358,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -385,7 +381,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -409,7 +404,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
