@@ -261,7 +261,9 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     OpenGLVertexArrayBind(&graphicContext->OpenGLInstance, renderable->ID);
 
     OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferArray, vbo);
-    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, model->DataIndexSize * model->DataVertexStride, model->DataVertex, OpenGLStoreStaticDraw);
+    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, model->DataIndexSize * 32, model->DataVertex, OpenGLStoreStaticDraw);
+
+    renderable->RenderSize = model->DataIndexSize;
 
     // TODO
     unsigned int index = 0;
@@ -269,10 +271,10 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, 0);
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * model->DataVertexWidth);
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride,  sizeof(float) *3);
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth));
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * (3+3));
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
 
@@ -280,8 +282,9 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     
 
     OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferArray);
-   // OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray);
-  //  OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
+   
+    // OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray);
+    //  OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
 
 
     renderable->VBO = vbo;
@@ -476,7 +479,9 @@ ActionResult GraphicShaderCompile(GraphicContext* const graphicContext)
 
 ActionResult GraphicShaderUse(GraphicContext* const graphicContext, const unsigned int shaderID)
 {
-    return ActionInvalid;
+    OpenGLShaderProgramUse(&graphicContext->OpenGLInstance, shaderID);
+
+    return ActionSuccessful;
 }
 
 ActionResult GraphicShaderProgramCreateVFPath(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)

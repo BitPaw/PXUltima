@@ -5,6 +5,7 @@
 #include <OS/PXWindow.h>
 #include <Processor/Processor.h>
 #include <Memory/Memory.h>
+#include <Graphic/DirectX/DirectX.h>
 
 void TestWindowAll()
 {
@@ -17,7 +18,7 @@ void TestWindowOpen()
 
 	PXWindowConstruct(&window);
 
-	PXWindowCreate(&window, 1, 1, "[PX] OpenGL-Test", 1);
+	PXWindowCreate(&window, -1, -1, "[PX] OpenGL-Test", 1);
 
 	int x = 1;
 
@@ -34,21 +35,80 @@ void TestWindowOpen()
 	(
 		"+---<CPU>-------------------------------------------------+\n"
 		"| Name  : %-47s |\n"
-		"| Cores : %-47i |\n",
+		"| Ident : %-47s |\n"
+		"| Cores : %-47i |\n"
+		"| Family: %-47i |\n"
+		"| Model : %-47i |\n",
 		processor.BrandName,
-		processor.NumberOfProcessors
+		processor.IdentityString,
+		processor.NumberOfProcessors,
+		processor.Family,
+		processor.Model
 	);
 
 	MemoryUsage memoryUsage;
 
 	MemoryScan(&memoryUsage);
 
+	char ramBuffer[256];
+
+	unsigned char biggerThanMB = memoryUsage.PhysicalTotal > 1000000;
+	unsigned char biggerThanGB = memoryUsage.PhysicalTotal > 1000000000;
+
+	char ideex =
+		'A' * (!biggerThanMB && !biggerThanGB) +
+		'B' * (biggerThanMB && !biggerThanGB) +
+		'C' * (biggerThanMB && biggerThanGB);
+		
+	//ideex = 'F';
+
+	switch (ideex)
+	{
+		case 'A':
+			sprintf(ramBuffer, "%zi KB", memoryUsage.PhysicalTotal / 1000);
+			break;
+
+		case 'B':
+			sprintf(ramBuffer, "%zi MB", memoryUsage.PhysicalTotal /1000000);
+			break;
+		
+		case 'C':
+			sprintf(ramBuffer, "%zi GB", memoryUsage.PhysicalTotal / 1000000000);
+			break;
+
+		default:
+			sprintf(ramBuffer, "%zi Byte", memoryUsage.PhysicalTotal);
+			break;
+	}
+	
+
 	printf
 	(
 		"+---<RAM>-------------------------------------------------+\n"
-		"| Size : %-45zi MB |\n",
-		memoryUsage.PhysicalAvailable / 1000000
+		"| Size : %-48s |\n",
+		ramBuffer
 	);
+
+	// DirectX
+	{
+		DirectXContext directXContext;		
+
+		DirectXContextCreate(&directXContext);
+
+		printf
+		(
+			"+---<DirectX>---------------------------------------------+\n"
+			"| Driver      : %-41s |\n"
+			"| Description : %-41s |\n"
+			"| DeviceName  : %-41s |\n",
+			directXContext.Driver,
+			directXContext.Description,
+			directXContext.DeviceName
+		);
+
+		DirectXContextDestruct(&directXContext);
+	}
+
 
 
 	GraphicContext* graphicContext = &window.GraphicInstance;
@@ -59,11 +119,14 @@ void TestWindowOpen()
 		"| Vendor   : %-44s |\n"
 		"| Renderer : %-44s |\n"
 		"| Version  : %-44s |\n"
+		"| GLSL Ver.: %-44s |\n"
 		"+----------+----------------------------------------------+\n",
 		graphicContext->OpenGLInstance.Vendor,
 		graphicContext->OpenGLInstance.Renderer,
-		graphicContext->OpenGLInstance.VersionText
+		graphicContext->OpenGLInstance.VersionText,
+		graphicContext->OpenGLInstance.GLSLVersionText
 	);
+
 
 	OpenGLContextSelect(&graphicContext->OpenGLInstance);
 

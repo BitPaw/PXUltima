@@ -8,12 +8,16 @@
 
 void PXCompilerSymbolEntryAdd(DataStream* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	DataStreamWriteCU(dataStream, compilerSymbolEntry->ID, EndianLittle);
+	const unsigned char symbolID = compilerSymbolEntry->ID;
+
+	DataStreamWriteCU(dataStream, symbolID);
 	DataStreamWriteIU(dataStream, compilerSymbolEntry->Coloum, EndianLittle);
 	DataStreamWriteIU(dataStream, compilerSymbolEntry->Line, EndianLittle);
 	DataStreamWriteIU(dataStream, compilerSymbolEntry->Size, EndianLittle);
 	DataStreamWriteP(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
+
+#if 0
 	size_t idBufferSize = 10;
 	char idbuffer[15];
 	size_t textBufferSize = 20;
@@ -68,7 +72,7 @@ void PXCompilerSymbolEntryAdd(DataStream* const dataStream, const PXCompilerSymb
 		}
 	}
 
-#if 0
+
 	printf
 	(
 		"|| C:%-2i L:%-2i S:%-2i | %-10s -> %-20s ||\n",
@@ -212,7 +216,7 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 
 	const PXCompilerSymbolLexer newLineSymbol = compilerSettings->IntrepredNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;
 
-	printf("||=====================================================||\n");
+	//printf("||=====================================================||\n");
 
 	while (!DataStreamIsAtEnd(inputStream))
 	{
@@ -341,5 +345,5 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 		}
 	}
 
-	printf("||=====================================================||\n");
+	//printf("||=====================================================||\n");
 }

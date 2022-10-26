@@ -56,14 +56,18 @@ struct MemoryAllocationInfo
 
 unsigned char MemoryScan(MemoryUsage* memoryUsage)
 {
+	MemorySet(memoryUsage, sizeof(MemoryUsage), 0);
+
 #if OSUnix
-#elif defined(WindowsAtleastXP)
+#elif WindowsAtleastXP
 	// MEMORYSTATUS won't work on >4GB Systems
 
 	MEMORYSTATUSEX memoryStatus;
 	memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
 
 	const unsigned char result = GlobalMemoryStatusEx(&memoryStatus);
+
+
 
 	if(result)
 	{
@@ -75,6 +79,19 @@ unsigned char MemoryScan(MemoryUsage* memoryUsage)
 		memoryUsage->VirtualTotal = memoryStatus.ullTotalVirtual;
 		memoryUsage->VirtualAvailable = memoryStatus.ullAvailVirtual;
 		memoryUsage->ExtendedVirtualAvailable = memoryStatus.ullAvailExtendedVirtual;
+	}
+
+
+	{
+		ULONGLONG ramSizte = 0;
+
+		BOOL x = 0;// GetPhysicallyInstalledSystemMemory(&ramSizte);
+
+		if (x)
+		{
+			memoryUsage->PhysicalRAMSize = ramSizte;
+		}
+
 	}
 
 	return result;
@@ -354,7 +371,7 @@ void MemoryVirtualPrefetch(const void* adress, const size_t size)
 {
 #if OSUnix
 #elif OSWindows
-#if defined(WindowsAtleast8)
+#if WindowsAtleast8
 	const HANDLE process = GetCurrentProcess();
 	const size_t numberOfEntries = 2;
 	WIN32_MEMORY_RANGE_ENTRY memoryRangeEntry;

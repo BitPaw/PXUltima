@@ -215,6 +215,8 @@ extern "C"
 		PXMatrix4x4F MatrixModel;
 
 		GraphicRenderMode RenderMode;
+
+		unsigned int RenderSize;
 	}
 	PXRenderable;
 

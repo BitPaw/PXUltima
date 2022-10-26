@@ -10,7 +10,7 @@
 #pragma comment(lib, "winmm.lib")
 #endif
 
-#if OSWindows
+#if OSWindowsEE
 AudioResult AudioConvertMMResult(const unsigned int mmResultID)
 {
 	switch (mmResultID)
@@ -115,7 +115,7 @@ AudioResult AudioOutputOpen(AudioDeviceOutput* audioDeviceOutput, unsigned int d
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	WAVEFORMATEX waveFormatEX;
 	DWORD_PTR dwCallback = 0;
 	DWORD_PTR dwInstance = 0;
@@ -160,7 +160,7 @@ AudioResult AudioOutputWrite(AudioDeviceOutput* audioDeviceOutput, void* dataBuf
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	WAVEHDR waveHeader;
 	const UINT cbwh = sizeof(waveHeader);
 
@@ -204,7 +204,7 @@ AudioResult AudioOutputClose(AudioDeviceOutput* audioDeviceOutput)
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 
 	const MMRESULT result = waveOutClose(audioDeviceOutput->Handle);
 	const AudioResult audioResult = AudioConvertMMResult(result);
@@ -221,7 +221,7 @@ AudioResult AudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigned 
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	DWORD volumeDW = 0;
 
 	const MMRESULT volumeResultID = waveOutGetVolume(audioDeviceOutput->Handle, &volumeDW);
@@ -245,12 +245,14 @@ AudioResult AudioOutputVolumeSetEqual(AudioDeviceOutput* audioDeviceOutput, cons
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	const MMRESULT volumeResultID = waveOutSetVolume(audioDeviceOutput->Handle, volume);
 	const AudioResult audioResult = AudioConvertMMResult(volumeResultID);
 
 	return audioResult;
 #endif
+
+	return AudioResultInvalid;
 }
 
 AudioResult AudioOutputVolumeSetIndividual(AudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight)
@@ -271,7 +273,7 @@ AudioResult AudioOutputPitchSet(AudioDeviceOutput* audioDeviceOutput, const unsi
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	const MMRESULT pitchResultID = waveOutSetPitch(audioDeviceOutput->Handle, pitch);
 	const AudioResult pitchResult = AudioConvertMMResult(pitchResultID);
 
@@ -284,7 +286,7 @@ AudioResult AudioOutputPlaybackRateSet(AudioDeviceOutput* audioDeviceOutput, con
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	const MMRESULT playbackRateResultID = waveOutSetPlaybackRate(audioDeviceOutput->Handle, pitch);
 	const AudioResult playbackRateResult = AudioConvertMMResult(playbackRateResultID);
 
@@ -297,7 +299,7 @@ AudioResult AudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabili
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	const UINT numberOfPutpudevices = waveOutGetNumDevs();
 	const unsigned char isListBigEngough = numberOfPutpudevices < audioDeviceCapabilitiesListSizeMax;
 
@@ -348,7 +350,7 @@ AudioResult AudioDevicesFetchInput(AudioDeviceCapabilities* audioDeviceCapabilit
 #if OSUnix
 	return AudioResultInvalid;
 
-#elif OSWindows
+#elif OSWindowsEE
 	const UINT numberOfInputDevices = waveInGetNumDevs();
 	const unsigned char isListBigEngough = numberOfInputDevices < audioDeviceCapabilitiesListSizeMax;
 

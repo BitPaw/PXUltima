@@ -398,8 +398,8 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
         case WM_NCXBUTTONDOWN: return WindowEventNCXBUTTONDOWN;
         case WM_NCXBUTTONUP: return WindowEventNCXBUTTONUP;
         case WM_NCXBUTTONDBLCLK: return WindowEventNCXBUTTONDBLCLK;
-     //   case WM_INPUT_DEVICE_CHANGE: return WindowEventINPUT_DEVICE_CHANGE;
-     //   case WM_INPUT: return WindowEventINPUT;
+        case WM_INPUT_DEVICE_CHANGE: return WindowEventINPUT_DEVICE_CHANGE;
+        case WM_INPUT: return WindowEventINPUT;
             // ?? case WM_KEYFIRST: return WindowEventKEYFIRST;
         case WM_KEYDOWN: return WindowEventKEYDOWN;
         case WM_KEYUP: return WindowEventKEYUP;
@@ -1237,8 +1237,8 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             break;
         case WindowEventINPUT:
         {
-            /* MISSING
-                   const size_t inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
+             // MISSING
+            const size_t inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
             const HRAWINPUT handle = (HRAWINPUT)lParam;
             const UINT uiCommand = RID_INPUT; // RID_HEADER
 
@@ -1285,7 +1285,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 
                 default:
                     break;
-            }*/
+            }
 
             break;
         }
@@ -2016,6 +2016,8 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
         window->GraphicInstance.AttachedWindow = window;
     }
 
+    // MISSING
+
     // PixelDraw system
     {
         const HDC windowHandleToDeviceContext = GetDC(windowID);
@@ -2067,27 +2069,12 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
             dwLayerMask, dwVisibleMask, dwDamageMask
         };
         const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(windowHandleToDeviceContext, &pfd);
-        const unsigned char sucessul = SetPixelFormat(windowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
+        const PXBool sucessul = SetPixelFormat(windowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
 
         window->HandleDeviceContext = windowHandleToDeviceContext;
     }
 
-    /* MISSING
 
-    // Register input device
-    {
-        // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
-        RAWINPUTDEVICE rid;
-
-        rid.usUsagePage = 0;//HID_USAGE_PAGE_GENERIC;
-        rid.usUsage = 0;// HID_USAGE_GENERIC_MOUSE;
-        rid.dwFlags = RIDEV_INPUTSINK;
-        rid.hwndTarget = windowID;
-
-        const unsigned char result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE));
-
-        // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
-    }*/
 
 #endif
 
@@ -2138,6 +2125,26 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
         // printf("");
     }
 #endif
+#elif OSWindows
+    // Register input device
+    {
+        // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
+        RAWINPUTDEVICE rid;
+
+        rid.usUsagePage = 0x01;//HID_USAGE_PAGE_GENERIC;
+        rid.usUsage = 0x02;// HID_USAGE_GENERIC_MOUSE;
+        rid.dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
+        rid.hwndTarget = windowID;
+
+        const PXBool result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE));
+
+        if (!result)
+        {
+            printf("Err\n");
+        }
+
+        // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
+    }
 #endif
 
     while(window->IsRunning)

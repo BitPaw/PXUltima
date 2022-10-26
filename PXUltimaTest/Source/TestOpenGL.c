@@ -387,9 +387,12 @@ void TestOpenGLVBO()
 	PXWindowConstruct(&window);
 	PXWindowCreate(&window, -1, -1, "RAW Test", 1);
 
+	int x = 0;
+
 	while (!window.IsRunning)
 	{
-		printf(".");
+		x++;
+		//printf(".");
 	}
 
 	printf("Windows ok\n");

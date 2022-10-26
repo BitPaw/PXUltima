@@ -147,6 +147,8 @@ extern "C"
 	PXPublic size_t DataStreamReadP(DataStream* const dataStream, void* value, const size_t length);
 	PXPublic size_t DataStreamRead(DataStream* const dataStream, const void* format, const size_t length, ...);
 
+	PXPublic size_t DataStreamReadTextA(DataStream* const dataStream, char* const value, const size_t length);
+	PXPublic size_t DataStreamReadTextW(DataStream* const dataStream, wchar_t* const value, const size_t length);
 
 	PXPublic void DataStreamReadUntil(DataStream* const dataStream, void* value, const size_t length, const char character);
 

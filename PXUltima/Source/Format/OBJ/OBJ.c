@@ -133,11 +133,13 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
     size_t drawCurrentCounter = 0;
     size_t drawCurrentIndex = 0;
 
-    unsigned char drawSize[20];
-    size_t drawOrder[20];
+    unsigned char drawSize[256];
+    size_t drawOrder[256];
 
     MemorySet(drawSize, sizeof(drawSize), 0);
     MemorySet(drawOrder, sizeof(drawOrder), 0);
+
+    const size_t headerOffset = 256;
 
     // Lexer - Level I 
     {
@@ -153,16 +155,18 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
         compilerSettings.CommentMultibleLineSize = 0;
         compilerSettings.CommentMultibleLine = 0;
 
+        outputStream->DataCursor += headerOffset;
+
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-        DataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+        DataStreamFromExternal(&tokenSteam, (unsigned char*)outputStream->Data + headerOffset, outputStream->DataCursor- headerOffset);
 
         outputStream->DataCursor = 0;
     }
        
 
     // Write 0'ed data to later jump back to to change.
-    DataStreamCursorAdvance(outputStream, sizeof(unsigned int) * 5u + sizeof(unsigned char));
+    DataStreamCursorAdvance(outputStream, headerOffset);
 
     while (!DataStreamIsAtEnd(&tokenSteam))
     {
@@ -286,10 +290,12 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                     {
                         case OBJLineVertexGeometric:
                             vertexListSize += valuesDetected;
+                           // printf("position: ");
                             break;
 
                         case OBJLineVertexNormal:
                             normalListSize += valuesDetected;
+                            //printf("norm: ");
                             break;
 
                         case OBJLineVertexParameter:
@@ -298,15 +304,21 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                         case OBJLineVertexTexture:
                             textureListSize += valuesDetected;
+                           // printf("text: ");
                             break;
                     }
 
                     DataStreamWriteCU(outputStream, valuesDetected);
+                    DataStreamWriteP(outputStream, vector, sizeof(float) * valuesDetected);
 
+#if 0
                     for (size_t i = 0; i < valuesDetected; ++i)
                     {
-                        DataStreamWriteF(outputStream, vector[i]);
+                        printf("%f, ", vector[i]);
                     }
+
+                    printf("\n");
+#endif
                 }
            
                 break; // [OK]
@@ -318,7 +330,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                 DataStreamWriteCU(outputStream, 0xFF);
 
-                while (1u)
+                while (!DataStreamIsAtEnd(&tokenSteam))
                 {
                     unsigned int vertexData[3] = { -1, -1, -1 };
 
@@ -363,11 +375,16 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                             ++errorCounter;
                             OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
                         }
+
+                        for (size_t i = 0; i < 3u; ++i)
+                        {
+                            vertexData[i] -= 1u;
+                        }
                     }
 
-                    DataStreamWriteIU(outputStream, vertexData[0], EndianLittle);
-                    DataStreamWriteIU(outputStream, vertexData[1], EndianLittle);
-                    DataStreamWriteIU(outputStream, vertexData[2], EndianLittle);
+                    DataStreamWriteP(outputStream, vertexData, sizeof(unsigned int) * 3u);
+
+                  //  printf("Face _> %i, %i, %i\n", vertexData[0], vertexData[1], vertexData[2]);
 
                     //----------------------------------             
                     
@@ -408,12 +425,12 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
     outputStream->DataCursor = 0;
 
-    DataStreamWriteCU(outputStream, drawCurrentIndex);
+    DataStreamWriteCU(outputStream, drawCurrentIndex+1);
 
-    for (size_t i = 0; i < drawCurrentIndex; ++i)
+    for (size_t i = 0; i < drawCurrentIndex + 1; ++i)
     {
-        DataStreamWriteCU(outputStream, drawSize[i+1]);
-        DataStreamWriteIU(outputStream, drawOrder[i+1] - drawOrder[i], EndianLittle);
+        DataStreamWriteCU(outputStream, drawSize[i]);
+        DataStreamWriteIU(outputStream, MathAbsoluteI((int)drawOrder[i+1] - (int)drawOrder[i]), EndianLittle);
     }  
 
     DataStreamWriteIU(outputStream, vertexListSize, EndianLittle);
@@ -440,8 +457,8 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     inputStream->DataCursor = 0;
 
     unsigned char numberOfMeshes = 0;
-    unsigned char renderMode[20];
-    unsigned int renderSize[20];
+    unsigned char renderMode[256];
+    unsigned int renderSize[256];
 
     unsigned int vertexListSize = 0;
     unsigned int normalListSize = 0;
@@ -464,21 +481,23 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     DataStreamReadIU(inputStream, &parameterListSize, EndianLittle);
     DataStreamReadIU(inputStream, &indexListSize, EndianLittle);
 
+    inputStream->DataCursor = 256;
+
     size_t infoHeader = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int));
 
-    size_t expectedSize = sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeader;// +indexListSize;
+    size_t expectedSize = 5*sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeader;// +indexListSize;
 
-    void* buffer = MemoryAllocate(expectedSize);
 
-    model->Data = MemoryAllocate(expectedSize * 10);
+
+    model->Data = MemoryAllocateClear(expectedSize * 20);
+
+    MemorySet(model->Data, expectedSize * 20, 0xFF);
 
     // Format: Ver Nor Tx Colo
     //         XYZ XYZ XY RGBA
     //          3   3  2  4     = 12
     //      
 
-
-    size_t blockOffsetDDataPointCounter = 0;
 
     model->DataVertexWidth = 3u;
     model->DataNormalWidth = 3u;
@@ -502,22 +521,31 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
     DataStream vertexArrayData;
 
-    DataStreamFromExternal(&vertexArrayData, model->DataVertex, model->DataVertexSize);
+    DataStreamFromExternal(&vertexArrayData, model->DataVertex, expectedSize*20);
 
 
 
 
-    float* vertexBuffer = buffer;
-    size_t vertexBufferOffset = 0;
+    void* buffer = MemoryAllocateClear(expectedSize);
+    MemorySet(buffer, expectedSize, 0xFF);
 
-    float* normalList = (unsigned char*)buffer + vertexListSize;
+    float* vertexValueList = buffer;
+    size_t vertexValueListOffset = 0;
+    MemorySet(vertexValueList, vertexListSize * sizeof(float), 0xAA);
+
+    float* normalList = &vertexValueList[vertexListSize];
     size_t normalListOffset = 0;
+    MemorySet(normalList, normalListSize * sizeof(float), 0xBB);
 
-    float* textureList = (unsigned char*)normalList + normalListSize;
+    float* textureList = &normalList[normalListSize];
     size_t textureListOffset = 0;
+    MemorySet(textureList, textureListSize * sizeof(float), 0xCC);
 
-    float* parameterList = (unsigned char*)textureList + textureListSize;
+    float* parameterList = &textureList[textureListSize];
     size_t parameterListOffset = 0;
+    MemorySet(parameterList, 0 * sizeof(float), 0xDD);
+
+
 
     while (!DataStreamIsAtEnd(inputStream))
     {
@@ -589,16 +617,19 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                     case OBJLineVertexTexture:
                         adress = textureList;
                         offset = &textureListOffset;
+                       // printf("text ");
                         break;
 
                     case OBJLineVertexGeometric:
-                        adress = vertexBuffer;
-                        offset = &vertexBufferOffset;
+                        adress = vertexValueList;
+                        offset = &vertexValueListOffset;
+                      //  printf("psotion ");
                         break;
 
                     case OBJLineVertexNormal:
                         adress = normalList;
                         offset = &normalListOffset;
+                       // printf("norm ");
                         break;
 
                     case OBJLineVertexParameter:
@@ -612,14 +643,20 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                         break;
                 }       
 
-                adress += *offset;
+                adress = &adress[*offset];           
 
                 DataStreamReadCU(inputStream, &amountofValues);
+                DataStreamReadP(inputStream, adress, sizeof(float) * amountofValues);            
 
-                for (size_t i = 0; i < amountofValues; ++i)
-                {           
-                    DataStreamReadF(inputStream, &adress[i], EndianLittle);
+#if 0
+                for (size_t i = 0; i < amountofValues; i++)
+                {
+                    printf("%f, ", adress[i]);
+
                 }
+
+                printf("\n");
+#endif
 
                 *offset += amountofValues;
 
@@ -646,34 +683,36 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                     DataStreamReadIU(inputStream, &indexList[1], EndianLittle);
                     DataStreamReadIU(inputStream, &indexList[2], EndianLittle);
 
-                    float* vertexValueIndex = &vertexBuffer[indexList[0]];
-                    float* normalValueIndex = &normalList[indexList[1]];
-                    float* textureValueIndex = &textureList[indexList[2]];                    
+                    const float* vertexValueIndex = &vertexValueList[indexList[0] * 3u + i];                   
+                    const float* textureValueIndex = &textureList[indexList[1] * 2u + i];
+                    const float* normalValueIndex = &normalList[indexList[2] * 3u + i];
 
-                    float* vertexDataPoint = (size_t)model->DataVertex + blockOffsetDDataPointCounter * model->DataVertexStride + sizeof(float) * 0;
-                    float* normalDataPoint = (size_t)model->DataVertex + blockOffsetDDataPointCounter * model->DataNormalStride + sizeof(float) * (model->DataVertexWidth);
-                    float* textureDataPoint = (size_t)model->DataVertex + blockOffsetDDataPointCounter * model->DataTextureStride + sizeof(float) * (model->DataVertexWidth + +model->DataNormalWidth);
-                           
-                    size_t vertexSize = model->DataVertexWidth * sizeof(float);
-                    MemoryCopy(vertexValueIndex, vertexSize, vertexDataPoint, vertexSize);
+                    //printf("Face _> %i, %i, %i\n", indexList[0], indexList[1], indexList[2]);
 
-                    size_t normalSize = model->DataNormalWidth * sizeof(float);
-                    MemoryCopy(normalValueIndex, normalSize, normalDataPoint, normalSize);
+                    float* xDat = (float*)DataStreamCursorPosition(&vertexArrayData);
+                    size_t xDatSize = 0;
 
-                    size_t textureSize = model->DataTextureWidth * sizeof(float);
-                    MemoryCopy(textureValueIndex, textureSize, textureDataPoint, textureSize);
+                    DataStreamWriteP(&vertexArrayData, vertexValueIndex, sizeof(float) * 3u);
+                    DataStreamWriteP(&vertexArrayData, normalValueIndex, sizeof(float) * 3u);
+                    DataStreamWriteP(&vertexArrayData, textureValueIndex, sizeof(float) * 2u);
+                              
+                    xDatSize = vertexArrayData.DataCursor;
 
-                    ++blockOffsetDDataPointCounter;
+#if 0
+                    printf("---\n");
+
+                    for (size_t i = 0; i < 8u; i++)
+                    {
+                       printf("[%i] %f\n", i, xDat[i]);
+                    }
+                    printf("---\n");
+#endif
                 } 
 
                 break;
             }
-
-            default:
-                break;
         }
     }
-
 
     return ActionSuccessful;
 }

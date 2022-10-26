@@ -325,6 +325,25 @@ extern "C"
 
 	PXPrivate int OpenGLToggleToID(const OpenGLToggle openGLToggle);
 
+
+	typedef enum OpenGLStringName_
+	{
+		OpenGLStringNameInvalid,
+		OpenGLStringNameVendor,
+		OpenGLStringNameRenderer,
+		OpenGLStringNameVersion,
+		OpenGLStringNameShadingLanguage,
+		OpenGLStringNameExtensions
+	}
+	OpenGLStringName;
+
+	typedef const GLubyte* (*OpenGLStringFunction)(GLenum name); // glGetString
+
+	PXPrivate unsigned int OpenGLStringNameToID(const OpenGLStringName stringName);
+
+	PXPublic const char* OpenGLStringGet(const OpenGLStringName stringName);
+
+
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.1.2.0>------------------------------------------------------
@@ -413,6 +432,8 @@ extern "C"
 	typedef void (OpenGLAPICallType* OpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
 	typedef void (OpenGLAPICallType* OpenGLBindVertexArrayFunction)(GLuint arrayID);
 	typedef void (OpenGLAPICallType* OpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
+	typedef const GLubyte* (OpenGLAPICallType* OpenGLStringIFunction)(GLenum name, GLuint index); // glGetStringi
+
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.3.1.0>------------------------------------------------------
@@ -448,6 +469,26 @@ extern "C"
 	//---<OpenGL v.4.6.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
 
+
+	//---<Extensions>----------------------------------------------------------
+	typedef const char* (OpenGLAPICallType* OpenGLStringGetExtensionsARB)(HDC hdc); // wglGetExtensionsStringARB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	typedef struct OpenGLContext_
 	{
 		OpenGLConextID OpenGLConext;
@@ -455,10 +496,30 @@ extern "C"
 		char Vendor[64];
 		char Renderer[64];
 		char VersionText[64];
+		char GLSLVersionText[64];
 		OpenGLVersion Version;
 
         void* AttachedWindow;
 
+
+
+
+		//---<OpenGL v.1.2.0>------------------------------------------------------
+//-------------------------------------------------------------------------
+
+//---<OpenGL v.1.2.1>------------------------------------------------------
+//-------------------------------------------------------------------------
+
+//---<OpenGL v.1.3.0>------------------------------------------------------
+//-------------------------------------------------------------------------
+
+//---<OpenGL v.1.4.0>------------------------------------------------------
+//-------------------------------------------------------------------------
+
+//---<OpenGL v.1.5.0>------------------------------------------------------
+//-------------------------------------------------------------------------
+
+//---<OpenGL v.2.0.0>------------------------------------------------------
 		OpenGLShaderProgramCreateFunction	OpenGLShaderProgramCreateCallBack;
 		OpenGLShaderProgramUseFunction	OpenGLShaderProgramUseCallBack;
 		OpenGLShaderProgramDeleteFunction OpenGLShaderProgramDeleteCallBack;
@@ -477,7 +538,7 @@ extern "C"
 		OpenGLBufferDataFunction	OpenGLBufferDataCallBack;
 		OpenGLVertexAttribPointerFunction OpenGLVertexAttribPointerCallBack;
 		OpenGLVertexAttribArrayEnableFunction OpenGLVertexAttribArrayEnableCallBack;
-			OpenGLVertexAttribArrayDisableFunction OpenGLVertexAttribArrayDisableCallBack;
+		OpenGLVertexAttribArrayDisableFunction OpenGLVertexAttribArrayDisableCallBack;
 		OpenGLDisableVertexArrayAttribFunction	OpenGLDisableVertexArrayAttribCallBack;
 		OpenGLGetUniformLocation	OpenGLGetUniformLocation;
 		OpenGLUniform1fFunction	OpenGLUniform1fCallBack;
@@ -503,8 +564,12 @@ extern "C"
 		OpenGLTextureCreateFunction OpenGLTextureCreateCallBack;
 		OpenGLTextureBindFunction OpenGLTextureBindCallBack;
 		OpenGLTextureDeleteFunction OpenGLTextureDeleteCallBack;
+		//-------------------------------------------------------------------------
 
-		// 3
+		//---<OpenGL v.2.1.0>------------------------------------------------------
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.3.0.0>------------------------------------------------------
 		OpenGLFrameBufferCreateFunction OpenGLFrameBufferCreateCallBack;
 		OpenGLFrameBufferDeleteFunction OpenGLFrameBufferDeleteCallBack;
 		OpenGLFrameBufferBindFunction OpenGLFrameBufferBindCallBack;
@@ -520,9 +585,38 @@ extern "C"
 		OpenGLBindVertexArrayFunction OpenGLBindVertexArrayCallBack;
 		OpenGLVertexAttribIPointerFunction OpenGLVertexAttribIPointerCallBack;
 
-		OpenGLVertexAttribLPointerFunction	OpenGLVertexAttribLPointerCallBack;
+		OpenGLStringIFunction OpenGLStringICallBack;
+		//-------------------------------------------------------------------------
 
+		//---<OpenGL v.3.1.0>------------------------------------------------------
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.3.2.0>------------------------------------------------------
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.4.0.0>------------------------------------------------------
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.4.1.0>------------------------------------------------------
+		OpenGLVertexAttribLPointerFunction	OpenGLVertexAttribLPointerCallBack;
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.4.2.0>------------------------------------------------------
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.4.3.0>------------------------------------------------------
 		OpenGLDebugMessageFunction OpenGLDebugMessageCallback;
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.4.4.0>------------------------------------------------------
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.4.5.0>------------------------------------------------------
+
+		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.4.6.0>------------------------------------------------------
+		//-------------------------------------------------------------------------
 	}
 	OpenGLContext;
 
@@ -706,7 +800,7 @@ extern "C"
 //-------------------------------------------------------------------------
 
 //---<OpenGL v.3.0.0>------------------------------------------------------
-
+PXPublic const char* OpenGLStringGetI(OpenGLContext* const openGLContext, const OpenGLStringName stringName, const unsigned int index);
 //-------------------------------------------------------------------------
 
 //---<OpenGL v.3.1.0>------------------------------------------------------

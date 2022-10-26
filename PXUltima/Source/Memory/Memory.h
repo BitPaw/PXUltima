@@ -47,6 +47,8 @@ extern "C"
 
 	typedef struct MemoryUsage_
 	{
+		size_t PhysicalRAMSize;
+
 		size_t PercentInUse;
 		size_t PhysicalTotal;
 		size_t PhysicalAvailable;

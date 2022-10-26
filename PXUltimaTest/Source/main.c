@@ -8,6 +8,8 @@
 #include "TestImage.h"
 #include "TestYAML.h"
 
+#include <Graphic/DirectX/DirectX.h>
+
 int main()
 {
 	printf("[i] Starting testing...\n");
@@ -15,8 +17,8 @@ int main()
 	//TestYAMLAll();
 	//TestSystemInfoAll();
 	//TestPXCompilerAll();
-	TestOpenGLAll();
-	//TestWindowAll();
+	//TestOpenGLAll();
+	TestWindowAll();
 	//TestImageAll();
 	//TestSBPAll();
 

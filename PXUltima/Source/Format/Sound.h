@@ -10,12 +10,15 @@
 #if OSUnix
 #define AudioDeviceOutputHandle int
 #define AudioDeviceInputHandle int
-#elif OSWindows
+#elif OSWindowsEE
 #include <Windows.h>
 #include <mmeapi.h> // MISSING
 #define AudioDeviceOutputHandle HWAVEOUT
 #define AudioDeviceInputHandle HWAVEIN
 #endif
+
+#define AudioDeviceOutputHandle int
+#define AudioDeviceInputHandle int
 
 #ifdef __cplusplus
 extern "C"

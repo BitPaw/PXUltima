@@ -990,13 +990,13 @@ unsigned int OpenGLRenderBufferAttachmentPointToID(const OpenGLRenderBufferAttac
 {
     switch (renderBufferAttachmentPoint)
     {
-    case OpenGLRenderBufferAttachmentPointColor: return GL_COLOR_ATTACHMENT0;
-    case OpenGLRenderBufferAttachmentPointDepth: return GL_DEPTH_ATTACHMENT;
-    case OpenGLRenderBufferAttachmentPointStencil: return GL_STENCIL_ATTACHMENT;
+        case OpenGLRenderBufferAttachmentPointColor: return GL_COLOR_ATTACHMENT0;
+        case OpenGLRenderBufferAttachmentPointDepth: return GL_DEPTH_ATTACHMENT;
+        case OpenGLRenderBufferAttachmentPointStencil: return GL_STENCIL_ATTACHMENT;
 
-    case OpenGLRenderBufferAttachmentPointInvalid:
-    default:
-        return -1;
+        case OpenGLRenderBufferAttachmentPointInvalid:
+        default:
+            return -1;
     }
 }
 
@@ -1004,21 +1004,21 @@ int OpenGLImageFormatToID(const OpenGLImageFormat imageFormat)
 {
     switch (imageFormat)
     {
-    case OpenGLImageFormatColorIndex: return GL_COLOR_INDEX;
-    case OpenGLImageFormatStencilIndex: return GL_STENCIL_INDEX;
-    case OpenGLImageFormatDepthComponent: return GL_DEPTH_COMPONENT;
-    case OpenGLImageFormatRed: return GL_RED;
-    case OpenGLImageFormatGreen: return GL_GREEN;
-    case OpenGLImageFormatBlue: return GL_BLUE;
-    case OpenGLImageFormatAlpha: return GL_ALPHA;
-    case OpenGLImageFormatRGB: return GL_RGB;
-    case OpenGLImageFormatRGBA: return GL_RGBA;
-    case OpenGLImageFormatBGR: return GL_BGR;
-    case OpenGLImageFormatBGRA: return GL_BGRA;
-    case OpenGLImageFormatLuminance: return GL_LUMINANCE;
-    case OpenGLImageFormatLuminanceAlpha: return GL_LUMINANCE_ALPHA;
-    default:
-        return -1;
+        case OpenGLImageFormatColorIndex: return GL_COLOR_INDEX;
+        case OpenGLImageFormatStencilIndex: return GL_STENCIL_INDEX;
+        case OpenGLImageFormatDepthComponent: return GL_DEPTH_COMPONENT;
+        case OpenGLImageFormatRed: return GL_RED;
+        case OpenGLImageFormatGreen: return GL_GREEN;
+        case OpenGLImageFormatBlue: return GL_BLUE;
+        case OpenGLImageFormatAlpha: return GL_ALPHA;
+        case OpenGLImageFormatRGB: return GL_RGB;
+        case OpenGLImageFormatRGBA: return GL_RGBA;
+        case OpenGLImageFormatBGR: return GL_BGR;
+        case OpenGLImageFormatBGRA: return GL_BGRA;
+        case OpenGLImageFormatLuminance: return GL_LUMINANCE;
+        case OpenGLImageFormatLuminanceAlpha: return GL_LUMINANCE_ALPHA;
+        default:
+            return -1;
     }
 }
 
@@ -1026,32 +1026,32 @@ int OpenGLDataTypeToID(const OpenGLDataType dataType)
 {
     switch (dataType)
     {
-    case OpenGLTypeByteSigned:
-        return GL_BYTE;
+        case OpenGLTypeByteSigned:
+            return GL_BYTE;
 
-    case OpenGLTypeByteUnsigned:
-        return GL_UNSIGNED_BYTE;
+        case OpenGLTypeByteUnsigned:
+            return GL_UNSIGNED_BYTE;
 
-    case OpenGLTypeShortSigned:
-        return GL_SHORT;
+        case OpenGLTypeShortSigned:
+            return GL_SHORT;
 
-    case OpenGLTypeShortUnsigned:
-        return GL_UNSIGNED_SHORT;
+        case OpenGLTypeShortUnsigned:
+            return GL_UNSIGNED_SHORT;
 
-    case OpenGLTypeIntegerSigned:
-        return GL_INT;
+        case OpenGLTypeIntegerSigned:
+            return GL_INT;
 
-    case OpenGLTypeIntegerUnsigned:
-        return GL_UNSIGNED_INT;
+        case OpenGLTypeIntegerUnsigned:
+            return GL_UNSIGNED_INT;
 
-    case OpenGLTypeFloat:
-        return GL_FLOAT;
+        case OpenGLTypeFloat:
+            return GL_FLOAT;
 
-    case OpenGLTypeDouble:
-        return GL_DOUBLE;
+        case OpenGLTypeDouble:
+            return GL_DOUBLE;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
@@ -1092,15 +1092,15 @@ int OpenGLBufferTypeToID(const OpenGLBufferType openGLBufferType)
     {
         case OpenGLBufferArray: return GL_ARRAY_BUFFER;
         case OpenGLBufferAtomicCounter: return GL_ATOMIC_COUNTER_BUFFER;
-      //  case OpenGLBufferCopyRead: return GL_COPY_READ_BUFFER;
-       // case OpenGLBufferCopyWrite: return GL_COPY_WRITE_BUFFER;
+            //  case OpenGLBufferCopyRead: return GL_COPY_READ_BUFFER;
+             // case OpenGLBufferCopyWrite: return GL_COPY_WRITE_BUFFER;
         case OpenGLBufferDispatchIndirect: return GL_DISPATCH_INDIRECT_BUFFER;
-      //  case OpenGLBufferDrawIndirect: return GL_DRAW_INDIRECT_BUFFER;
+            //  case OpenGLBufferDrawIndirect: return GL_DRAW_INDIRECT_BUFFER;
         case OpenGLBufferElementArray: return GL_ELEMENT_ARRAY_BUFFER;
         case OpenGLBufferPixelPack: return GL_PIXEL_PACK_BUFFER;
         case OpenGLBufferPixelUnpack: return GL_PIXEL_UNPACK_BUFFER;
-      //  case OpenGLBufferQuery: return GL_QUERY_BUFFER;
-        //case OpenGLBufferShaderStorage: return GL_SHADER_STORAGE_BUFFER;
+            //  case OpenGLBufferQuery: return GL_QUERY_BUFFER;
+              //case OpenGLBufferShaderStorage: return GL_SHADER_STORAGE_BUFFER;
         case OpenGLBufferTexture: return GL_TEXTURE_BUFFER;
         case OpenGLBufferTransformFeedback: return GL_TRANSFORM_FEEDBACK_BUFFER;
         case OpenGLBufferUniform: return GL_UNIFORM_BUFFER;
@@ -1135,72 +1135,72 @@ int OpenGLToggleToID(const OpenGLToggle openGLToggle)
     {
         case OpenGLToggleTextureCubeMapSeamless: return GL_TEXTURE_CUBE_MAP_SEAMLESS;
 
-        case OpenGLALPHA_TEST :return GL_ALPHA_TEST;
-        case OpenGLAUTO_NORMAL :return GL_AUTO_NORMAL;
-        case OpenGLBLEND :return GL_BLEND;
-        //case OpenGLCLIP_PLANEi :return GL_CLIP_PLANEi;
-        case OpenGLCOLOR_LOGIC_OP :return GL_COLOR_LOGIC_OP;
-        case OpenGLCOLOR_MATERIAL :return GL_COLOR_MATERIAL;
-        //case OpenGLCOLOR_SUM :return GL_COLOR_SUM;
-        case OpenGLCOLOR_TABLE :return GL_COLOR_TABLE;
-        case OpenGLCONVOLUTION_1D :return GL_CONVOLUTION_1D;
-        case OpenGLCONVOLUTION_2D :return GL_CONVOLUTION_2D;
-        case OpenGLCULL_FACE :return GL_CULL_FACE;
-        case OpenGLDEPTH_TEST :return GL_DEPTH_TEST;
-        case OpenGLDITHER :return GL_DITHER;
-        case OpenGLFOG :return GL_FOG;
-        case OpenGLHISTOGRAM :return GL_HISTOGRAM;
-        case OpenGLINDEX_LOGIC_OP :return GL_INDEX_LOGIC_OP;
-        //case OpenGLLIGHTi :return GL_LIGHTi;
-        case OpenGLLIGHTING :return GL_LIGHTING;
-        case OpenGLLINE_SMOOTH :return GL_LINE_SMOOTH;
-        case OpenGLLINE_STIPPLE :return GL_LINE_STIPPLE;
-        case OpenGLMAP1_COLOR_4 :return GL_MAP1_COLOR_4;
-        case OpenGLMAP1_INDEX :return GL_MAP1_INDEX;
-        case OpenGLMAP1_NORMAL :return GL_MAP1_NORMAL;
-        case OpenGLMAP1_TEXTURE_COORD_1 :return GL_MAP1_TEXTURE_COORD_1;
-        case OpenGLMAP1_TEXTURE_COORD_2 :return GL_MAP1_TEXTURE_COORD_2;
-        case OpenGLMAP1_TEXTURE_COORD_3 :return GL_MAP1_TEXTURE_COORD_3;
-        case OpenGLMAP1_TEXTURE_COORD_4 :return GL_MAP1_TEXTURE_COORD_4;
-        case OpenGLMAP1_VERTEX_3 :return GL_MAP1_VERTEX_3;
-        case OpenGLMAP1_VERTEX_4 :return GL_MAP1_VERTEX_4;
-        case OpenGLMAP2_COLOR_4 :return GL_MAP2_COLOR_4;
-        case OpenGLMAP2_INDEX :return GL_MAP2_INDEX;
-        case OpenGLMAP2_NORMAL :return GL_MAP2_NORMAL;
-        case OpenGLMAP2_TEXTURE_COORD_1 :return GL_MAP2_TEXTURE_COORD_1;
-        case OpenGLMAP2_TEXTURE_COORD_2 :return GL_MAP2_TEXTURE_COORD_2;
-        case OpenGLMAP2_TEXTURE_COORD_3 :return GL_MAP2_TEXTURE_COORD_3;
-        case OpenGLMAP2_TEXTURE_COORD_4 :return GL_MAP2_TEXTURE_COORD_4;
-        case OpenGLMAP2_VERTEX_3 :return GL_MAP2_VERTEX_3;
-        case OpenGLMAP2_VERTEX_4 :return GL_MAP2_VERTEX_4;
-        case OpenGLMINMAX :return GL_MINMAX;
-        case OpenGLMULTISAMPLE :return GL_MULTISAMPLE;
-        case OpenGLNORMALIZE :return GL_NORMALIZE;
-        case OpenGLPOINT_SMOOTH :return GL_POINT_SMOOTH;
-        case OpenGLPOINT_SPRITE :return GL_POINT_SPRITE;
-        case OpenGLPOLYGON_OFFSET_FILL :return GL_POLYGON_OFFSET_FILL;
-        case OpenGLPOLYGON_OFFSET_LINE :return GL_POLYGON_OFFSET_LINE;
-        case OpenGLPOLYGON_OFFSET_POINT :return GL_POLYGON_OFFSET_POINT;
-        case OpenGLPOLYGON_SMOOTH :return GL_POLYGON_SMOOTH;
-        case OpenGLPOLYGON_STIPPLE :return GL_POLYGON_STIPPLE;
-        case OpenGLPOST_COLOR_MATRIX_COLOR_TABLE :return GL_POST_COLOR_MATRIX_COLOR_TABLE;
-        case OpenGLPOST_CONVOLUTION_COLOR_TABLE :return GL_POST_CONVOLUTION_COLOR_TABLE;
-        //case OpenGLRESCALE_NORMAL :return GL_RESCALE_NORMAL;
-        case OpenGLSAMPLE_ALPHA_TO_COVERAGE :return GL_SAMPLE_ALPHA_TO_COVERAGE;
-        case OpenGLSAMPLE_ALPHA_TO_ONE :return GL_SAMPLE_ALPHA_TO_ONE;
-        case OpenGLSAMPLE_COVERAGE :return GL_SAMPLE_COVERAGE;
-        case OpenGLSEPARABLE_2D :return GL_SEPARABLE_2D;
-        case OpenGLSCISSOR_TEST :return GL_SCISSOR_TEST;
-        case OpenGLSTENCIL_TEST :return GL_STENCIL_TEST;
-        case OpenGLTEXTURE_1D :return GL_TEXTURE_1D;
-        case OpenGLTEXTURE_2D :return GL_TEXTURE_2D;
-        case OpenGLTEXTURE_3D :return GL_TEXTURE_3D;
-        case OpenGLTEXTURE_CUBE_MAP :return GL_TEXTURE_CUBE_MAP;
-        case OpenGLTEXTURE_GEN_Q :return GL_TEXTURE_GEN_Q;
-        case OpenGLTEXTURE_GEN_R :return GL_TEXTURE_GEN_R;
-        case OpenGLTEXTURE_GEN_S :return GL_TEXTURE_GEN_S;
-        case OpenGLTEXTURE_GEN_T :return GL_TEXTURE_GEN_T;
-        case OpenGLVERTEX_PROGRAM_POINT_SIZE :return GL_VERTEX_PROGRAM_POINT_SIZE;
+        case OpenGLALPHA_TEST:return GL_ALPHA_TEST;
+        case OpenGLAUTO_NORMAL:return GL_AUTO_NORMAL;
+        case OpenGLBLEND:return GL_BLEND;
+            //case OpenGLCLIP_PLANEi :return GL_CLIP_PLANEi;
+        case OpenGLCOLOR_LOGIC_OP:return GL_COLOR_LOGIC_OP;
+        case OpenGLCOLOR_MATERIAL:return GL_COLOR_MATERIAL;
+            //case OpenGLCOLOR_SUM :return GL_COLOR_SUM;
+        case OpenGLCOLOR_TABLE:return GL_COLOR_TABLE;
+        case OpenGLCONVOLUTION_1D:return GL_CONVOLUTION_1D;
+        case OpenGLCONVOLUTION_2D:return GL_CONVOLUTION_2D;
+        case OpenGLCULL_FACE:return GL_CULL_FACE;
+        case OpenGLDEPTH_TEST:return GL_DEPTH_TEST;
+        case OpenGLDITHER:return GL_DITHER;
+        case OpenGLFOG:return GL_FOG;
+        case OpenGLHISTOGRAM:return GL_HISTOGRAM;
+        case OpenGLINDEX_LOGIC_OP:return GL_INDEX_LOGIC_OP;
+            //case OpenGLLIGHTi :return GL_LIGHTi;
+        case OpenGLLIGHTING:return GL_LIGHTING;
+        case OpenGLLINE_SMOOTH:return GL_LINE_SMOOTH;
+        case OpenGLLINE_STIPPLE:return GL_LINE_STIPPLE;
+        case OpenGLMAP1_COLOR_4:return GL_MAP1_COLOR_4;
+        case OpenGLMAP1_INDEX:return GL_MAP1_INDEX;
+        case OpenGLMAP1_NORMAL:return GL_MAP1_NORMAL;
+        case OpenGLMAP1_TEXTURE_COORD_1:return GL_MAP1_TEXTURE_COORD_1;
+        case OpenGLMAP1_TEXTURE_COORD_2:return GL_MAP1_TEXTURE_COORD_2;
+        case OpenGLMAP1_TEXTURE_COORD_3:return GL_MAP1_TEXTURE_COORD_3;
+        case OpenGLMAP1_TEXTURE_COORD_4:return GL_MAP1_TEXTURE_COORD_4;
+        case OpenGLMAP1_VERTEX_3:return GL_MAP1_VERTEX_3;
+        case OpenGLMAP1_VERTEX_4:return GL_MAP1_VERTEX_4;
+        case OpenGLMAP2_COLOR_4:return GL_MAP2_COLOR_4;
+        case OpenGLMAP2_INDEX:return GL_MAP2_INDEX;
+        case OpenGLMAP2_NORMAL:return GL_MAP2_NORMAL;
+        case OpenGLMAP2_TEXTURE_COORD_1:return GL_MAP2_TEXTURE_COORD_1;
+        case OpenGLMAP2_TEXTURE_COORD_2:return GL_MAP2_TEXTURE_COORD_2;
+        case OpenGLMAP2_TEXTURE_COORD_3:return GL_MAP2_TEXTURE_COORD_3;
+        case OpenGLMAP2_TEXTURE_COORD_4:return GL_MAP2_TEXTURE_COORD_4;
+        case OpenGLMAP2_VERTEX_3:return GL_MAP2_VERTEX_3;
+        case OpenGLMAP2_VERTEX_4:return GL_MAP2_VERTEX_4;
+        case OpenGLMINMAX:return GL_MINMAX;
+        case OpenGLMULTISAMPLE:return GL_MULTISAMPLE;
+        case OpenGLNORMALIZE:return GL_NORMALIZE;
+        case OpenGLPOINT_SMOOTH:return GL_POINT_SMOOTH;
+        case OpenGLPOINT_SPRITE:return GL_POINT_SPRITE;
+        case OpenGLPOLYGON_OFFSET_FILL:return GL_POLYGON_OFFSET_FILL;
+        case OpenGLPOLYGON_OFFSET_LINE:return GL_POLYGON_OFFSET_LINE;
+        case OpenGLPOLYGON_OFFSET_POINT:return GL_POLYGON_OFFSET_POINT;
+        case OpenGLPOLYGON_SMOOTH:return GL_POLYGON_SMOOTH;
+        case OpenGLPOLYGON_STIPPLE:return GL_POLYGON_STIPPLE;
+        case OpenGLPOST_COLOR_MATRIX_COLOR_TABLE:return GL_POST_COLOR_MATRIX_COLOR_TABLE;
+        case OpenGLPOST_CONVOLUTION_COLOR_TABLE:return GL_POST_CONVOLUTION_COLOR_TABLE;
+            //case OpenGLRESCALE_NORMAL :return GL_RESCALE_NORMAL;
+        case OpenGLSAMPLE_ALPHA_TO_COVERAGE:return GL_SAMPLE_ALPHA_TO_COVERAGE;
+        case OpenGLSAMPLE_ALPHA_TO_ONE:return GL_SAMPLE_ALPHA_TO_ONE;
+        case OpenGLSAMPLE_COVERAGE:return GL_SAMPLE_COVERAGE;
+        case OpenGLSEPARABLE_2D:return GL_SEPARABLE_2D;
+        case OpenGLSCISSOR_TEST:return GL_SCISSOR_TEST;
+        case OpenGLSTENCIL_TEST:return GL_STENCIL_TEST;
+        case OpenGLTEXTURE_1D:return GL_TEXTURE_1D;
+        case OpenGLTEXTURE_2D:return GL_TEXTURE_2D;
+        case OpenGLTEXTURE_3D:return GL_TEXTURE_3D;
+        case OpenGLTEXTURE_CUBE_MAP:return GL_TEXTURE_CUBE_MAP;
+        case OpenGLTEXTURE_GEN_Q:return GL_TEXTURE_GEN_Q;
+        case OpenGLTEXTURE_GEN_R:return GL_TEXTURE_GEN_R;
+        case OpenGLTEXTURE_GEN_S:return GL_TEXTURE_GEN_S;
+        case OpenGLTEXTURE_GEN_T:return GL_TEXTURE_GEN_T;
+        case OpenGLVERTEX_PROGRAM_POINT_SIZE:return GL_VERTEX_PROGRAM_POINT_SIZE;
         case OpenGLVERTEX_PROGRAM_TWO_SIDE:return GL_VERTEX_PROGRAM_TWO_SIDE;
 
         default:
@@ -1208,62 +1208,101 @@ int OpenGLToggleToID(const OpenGLToggle openGLToggle)
     }
 }
 
+unsigned int OpenGLStringNameToID(const OpenGLStringName stringName)
+{
+    switch (stringName)
+    {
+        case OpenGLStringNameVendor:
+            return GL_VENDOR;
+
+        case OpenGLStringNameRenderer:
+            return GL_RENDERER;
+
+        case OpenGLStringNameVersion:
+            return GL_VERSION;
+
+        case OpenGLStringNameShadingLanguage:
+            return GL_SHADING_LANGUAGE_VERSION;
+
+        case OpenGLStringNameExtensions:
+            return GL_EXTENSIONS;
+
+        case OpenGLStringNameInvalid:
+        default:
+            return -1;
+    }
+}
+
+const char* OpenGLStringGet(const OpenGLStringName stringName)
+{
+    const unsigned int stringNameID = OpenGLStringNameToID(stringName);
+
+    return glGetString(stringNameID);
+}
+
+const char* OpenGLStringGetI(OpenGLContext* const openGLContext, const OpenGLStringName stringName, const unsigned int index)
+{
+    const unsigned int stringNameID = OpenGLStringNameToID(stringName);
+
+    return openGLContext->OpenGLStringICallBack(stringNameID, index);
+}
+
 unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType)
 {
     switch (openGLTextureType)
     {
-    case OpenGLTextureType1D: return  GL_TEXTURE_1D;
-    case OpenGLTextureType2D:return  GL_TEXTURE_2D;
-    case OpenGLTextureType2DProxy:return  GL_PROXY_TEXTURE_2D;
-    case OpenGLTextureType3D:return   GL_TEXTURE_3D;
-    case OpenGLTextureType1DArray:return   GL_TEXTURE_1D_ARRAY;
-    case OpenGLTextureType1DArrayProxy:return   GL_PROXY_TEXTURE_1D_ARRAY;
-    case OpenGLTextureType2DArray:return   GL_TEXTURE_2D_ARRAY;
-    case OpenGLTextureTypeRectangle:return GL_TEXTURE_RECTANGLE;
-    case OpenGLTextureTypeRectangleProxy:return GL_PROXY_TEXTURE_RECTANGLE;
-    case OpenGLTextureTypeCubeMap:return  GL_TEXTURE_CUBE_MAP;
-    case OpenGLTextureTypeCubeMapProxy: return GL_PROXY_TEXTURE_CUBE_MAP;
-    case OpenGLTextureTypeCubeMapTop: return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-    case OpenGLTextureTypeCubeMapBottom: return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-    case OpenGLTextureTypeCubeMapFront: return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-    case OpenGLTextureTypeCubeMapBack: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-    case OpenGLTextureTypeCubeMapLeft: return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-    case OpenGLTextureTypeCubeMapRight: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-    case OpenGLTextureTypeCubleMapArray:return   GL_TEXTURE_CUBE_MAP_ARRAY;
-    case OpenGLTextureTypeBuffer:return   GL_TEXTURE_BUFFER;
-    case OpenGLTextureType2DMultiSample:return   GL_TEXTURE_2D_MULTISAMPLE;
-    case OpenGLTextureType2DMultiSampleArray:return   GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-    case OpenGLTextureTypeInvalid:
-    default:
-        return -1;
-    }       
+        case OpenGLTextureType1D: return  GL_TEXTURE_1D;
+        case OpenGLTextureType2D:return  GL_TEXTURE_2D;
+        case OpenGLTextureType2DProxy:return  GL_PROXY_TEXTURE_2D;
+        case OpenGLTextureType3D:return   GL_TEXTURE_3D;
+        case OpenGLTextureType1DArray:return   GL_TEXTURE_1D_ARRAY;
+        case OpenGLTextureType1DArrayProxy:return   GL_PROXY_TEXTURE_1D_ARRAY;
+        case OpenGLTextureType2DArray:return   GL_TEXTURE_2D_ARRAY;
+        case OpenGLTextureTypeRectangle:return GL_TEXTURE_RECTANGLE;
+        case OpenGLTextureTypeRectangleProxy:return GL_PROXY_TEXTURE_RECTANGLE;
+        case OpenGLTextureTypeCubeMap:return  GL_TEXTURE_CUBE_MAP;
+        case OpenGLTextureTypeCubeMapProxy: return GL_PROXY_TEXTURE_CUBE_MAP;
+        case OpenGLTextureTypeCubeMapTop: return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+        case OpenGLTextureTypeCubeMapBottom: return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+        case OpenGLTextureTypeCubeMapFront: return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+        case OpenGLTextureTypeCubeMapBack: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+        case OpenGLTextureTypeCubeMapLeft: return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+        case OpenGLTextureTypeCubeMapRight: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+        case OpenGLTextureTypeCubleMapArray:return   GL_TEXTURE_CUBE_MAP_ARRAY;
+        case OpenGLTextureTypeBuffer:return   GL_TEXTURE_BUFFER;
+        case OpenGLTextureType2DMultiSample:return   GL_TEXTURE_2D_MULTISAMPLE;
+        case OpenGLTextureType2DMultiSampleArray:return   GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+        case OpenGLTextureTypeInvalid:
+        default:
+            return -1;
+    }
 }
 
 PXPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID)
 {
     switch (versionID)
     {
-    case MakeInt(0, 1, 0, 0): return OpenGLVersion1x0x0;
-    case MakeInt(0, 1, 1, 0): return OpenGLVersion1x1x0;
-    case MakeInt(0, 1, 2, 0): return OpenGLVersion1x2x0;
-    case MakeInt(0, 1, 2, 1): return OpenGLVersion1x2x1;
-    case MakeInt(0, 1, 3, 0): return OpenGLVersion1x3x0;
-    case MakeInt(0, 1, 4, 0): return OpenGLVersion1x4x0;
-    case MakeInt(0, 1, 5, 0): return OpenGLVersion1x5x0;
-    case MakeInt(0, 2, 0, 0): return OpenGLVersion2x0x0;
-    case MakeInt(0, 2, 1, 0): return OpenGLVersion2x1x0;
-    case MakeInt(0, 3, 0, 0): return OpenGLVersion3x0x0;
-    case MakeInt(0, 3, 1, 0): return OpenGLVersion3x1x0;
-    case MakeInt(0, 3, 2, 0): return OpenGLVersion3x2x0;
-    case MakeInt(0, 3, 3, 0): return OpenGLVersion3x3x0;
-    case MakeInt(0, 4, 0, 0): return OpenGLVersion4x0x0;
-    case MakeInt(0, 4, 1, 0): return OpenGLVersion4x1x0;
-    case MakeInt(0, 4, 2, 0): return OpenGLVersion4x2x0;
-    case MakeInt(0, 4, 3, 0): return OpenGLVersion4x3x0;
-    case MakeInt(0, 4, 4, 0): return OpenGLVersion4x4x0;
-    case MakeInt(0, 4, 5, 0): return OpenGLVersion4x5x0;
-    case MakeInt(0, 4, 6, 0): return OpenGLVersion4x6x0;
-    default: return  OpenGLVersionInvalid;
+        case MakeInt(0, 1, 0, 0): return OpenGLVersion1x0x0;
+        case MakeInt(0, 1, 1, 0): return OpenGLVersion1x1x0;
+        case MakeInt(0, 1, 2, 0): return OpenGLVersion1x2x0;
+        case MakeInt(0, 1, 2, 1): return OpenGLVersion1x2x1;
+        case MakeInt(0, 1, 3, 0): return OpenGLVersion1x3x0;
+        case MakeInt(0, 1, 4, 0): return OpenGLVersion1x4x0;
+        case MakeInt(0, 1, 5, 0): return OpenGLVersion1x5x0;
+        case MakeInt(0, 2, 0, 0): return OpenGLVersion2x0x0;
+        case MakeInt(0, 2, 1, 0): return OpenGLVersion2x1x0;
+        case MakeInt(0, 3, 0, 0): return OpenGLVersion3x0x0;
+        case MakeInt(0, 3, 1, 0): return OpenGLVersion3x1x0;
+        case MakeInt(0, 3, 2, 0): return OpenGLVersion3x2x0;
+        case MakeInt(0, 3, 3, 0): return OpenGLVersion3x3x0;
+        case MakeInt(0, 4, 0, 0): return OpenGLVersion4x0x0;
+        case MakeInt(0, 4, 1, 0): return OpenGLVersion4x1x0;
+        case MakeInt(0, 4, 2, 0): return OpenGLVersion4x2x0;
+        case MakeInt(0, 4, 3, 0): return OpenGLVersion4x3x0;
+        case MakeInt(0, 4, 4, 0): return OpenGLVersion4x4x0;
+        case MakeInt(0, 4, 5, 0): return OpenGLVersion4x5x0;
+        case MakeInt(0, 4, 6, 0): return OpenGLVersion4x6x0;
+        default: return  OpenGLVersionInvalid;
     }
 }
 
@@ -1285,7 +1324,7 @@ const void* const OpenGLFunctionAdressFetch(const char* const functionName)
 #elif OSWindows
     (const void* const)wglGetProcAddress(functionName);
 
-    switch((size_t)functionAdress)
+    switch ((size_t)functionAdress)
     {
         case -1: // fall though
         case 0x0: // fall though
@@ -1293,7 +1332,7 @@ const void* const OpenGLFunctionAdressFetch(const char* const functionName)
         case 0x2: // fall though
         case 0x3:
             return 0x0;
-        // default: do nothing
+            // default: do nothing
     }
 #endif
 
@@ -1320,7 +1359,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     glXMakeCurrent(window->DisplayCurrent, window->ID, openGLContext->OpenGLConext);
 
 #elif OSWindows
-  
+
     const HGLRC handle = wglCreateContext(window->HandleDeviceContext);
 
     // Check if failed
@@ -1342,18 +1381,26 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     OpenGLContextSelect(openGLContext);
 
 
-    const char* vendor = glGetString(GL_VENDOR); // Returns the company responsible for this GL implementation.This name does not change from release to release.
+    const char* vendor = OpenGLStringGet(OpenGLStringNameVendor); // Returns the company responsible for this GL implementation.This name does not change from release to release.
 
     TextCopyA(vendor, -1, openGLContext->Vendor, 64);
 
-    const char* renderer = glGetString(GL_RENDERER); //   Returns the name of the renderer.This name is typically specific to a particular configuration of a hardware platform.It does not change from release to release.
+    const char* renderer = OpenGLStringGet(OpenGLStringNameRenderer); //   Returns the name of the renderer.This name is typically specific to a particular configuration of a hardware platform.It does not change from release to release.
 
     TextCopyA(renderer, -1, openGLContext->Renderer, 64);
 
-    const char* version = glGetString(GL_VERSION); //    Returns a version or release number.
+    const char* version = OpenGLStringGet(OpenGLStringNameVersion); //    Returns a version or release number.
 
     TextCopyA(version, -1, openGLContext->VersionText, 64);
-    // glGetString(GL_SHADING_LANGUAGE_VERSION); //   Returns a version or release number for the shading language.
+
+
+    const char* glslVersion = OpenGLStringGet(OpenGLStringNameShadingLanguage); //    Returns a version or release number.
+
+    TextCopyA(glslVersion, -1, openGLContext->GLSLVersionText, 64);
+
+
+
+
 
 // Parse version
     {
@@ -1380,261 +1427,268 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
     switch (openGLContext->Version)
     {
-    default: return;
+        default: return;
 
-    case OpenGLVersion4x6x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion4x5x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion4x4x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion4x3x0:
-    {
-        OpenGLCacheFunction(functionNameList, &length, "glDebugMessageCallback", &openGLContext->OpenGLDebugMessageCallback);
-
-        // Fall though1
-    }
-    case OpenGLVersion4x2x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion4x1x0:
-    {
-        OpenGLCacheFunction(functionNameList, &length, "glVertexAttribLPointer", &openGLContext->OpenGLVertexAttribLPointerCallBack);
-
-        // Fall though1
-    }
-    case OpenGLVersion4x0x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion3x3x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion3x2x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion3x1x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion3x0x0:
-    {
-        OpenGLCacheFunction(functionNameList, &length, "glGenFramebuffers", &openGLContext->OpenGLFrameBufferCreateCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glDeleteFramebuffers", &openGLContext->OpenGLFrameBufferDeleteCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glBindFramebuffer", &openGLContext->OpenGLFrameBufferBindCallBack);
-
-        OpenGLCacheFunction(functionNameList, &length, "glGenRenderbuffers", &openGLContext->OpenGLRenderBufferCreateCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glBindRenderbuffer", &openGLContext->OpenGLRenderBufferBindCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glDeleteRenderbuffers", &openGLContext->OpenGLRenderBufferDeleteCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glRenderbufferStorage", &openGLContext->OpenGLRenderBufferStorageCallBack);
-
-        OpenGLCacheFunction(functionNameList, &length, "glFramebufferTexture2D", &openGLContext->OpenGLFrameBufferLinkTexture2DCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glFramebufferRenderbuffer", &openGLContext->OpenGLFrameBufferLinkRenderBufferCallBack);
-
-        OpenGLCacheFunction(functionNameList, &length, "glGenVertexArrays", &openGLContext->OpenGLGenVertexArraysCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glBindVertexArray", &openGLContext->OpenGLBindVertexArrayCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glVertexAttribIPointer", &openGLContext->OpenGLVertexAttribIPointerCallBack);
-
-        // Fall though1
-    }
-    case OpenGLVersion2x1x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion2x0x0:
-    {
-        OpenGLCacheFunction(functionNameList, &length, "glGenTextures", &openGLContext->OpenGLTextureCreateCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glBindTexture", &openGLContext->OpenGLTextureBindCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glDeleteTextures", &openGLContext->OpenGLTextureDeleteCallBack);
-
-        OpenGLCacheFunction(functionNameList, &length, "glCreateProgram", &openGLContext->OpenGLShaderProgramCreateCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->OpenGLShaderProgramUseCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->OpenGLShaderProgramDeleteCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glShaderSource", &openGLContext->OpenGLShaderSourceCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->OpenGLShaderCreateCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->OpenGLShaderCompileCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glGetShaderiv", &openGLContext->OpenGLShaderGetivCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glGetShaderInfoLog", &openGLContext->OpenGLShaderLogInfoGetCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glDeleteShader", &openGLContext->OpenGLShaderDeleteCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glAttachShader", &openGLContext->OpenGLAttachShaderCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glLinkProgram", &openGLContext->OpenGLLinkProgramCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glValidateProgram", &openGLContext->OpenGLValidateProgramCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glActiveTexture", &openGLContext->OpenGLActiveTextureCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glGenBuffers", &openGLContext->OpenGLGenBuffersCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glBindBuffer", &openGLContext->OpenGLBindBufferCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glBufferData", &openGLContext->OpenGLBufferDataCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glVertexAttribPointer", &openGLContext->OpenGLVertexAttribPointerCallBack);
-
-        OpenGLCacheFunction(functionNameList, &length, "glEnableVertexAttribArray", &openGLContext->OpenGLVertexAttribArrayEnableCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glDisableVertexAttribArray", &openGLContext->OpenGLVertexAttribArrayDisableCallBack);
-
-        OpenGLCacheFunction(functionNameList, &length, "glDisableVertexArrayAttrib", &openGLContext->OpenGLDisableVertexArrayAttribCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glGetUniformLocation", &openGLContext->OpenGLGetUniformLocation);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform1f", &openGLContext->OpenGLUniform1fCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform1fv", &openGLContext->OpenGLUniform1fvCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform1i", &openGLContext->OpenGLUniform1iCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform1iv", &openGLContext->OpenGLUniform1ivCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform2f", &openGLContext->OpenGLUniform2fCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform2fv", &openGLContext->OpenGLUniform2fvCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform2i", &openGLContext->OpenGLUniform2iCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform2iv", &openGLContext->OpenGLUniform2ivCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform3f", &openGLContext->OpenGLUniform3fCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform3fv", &openGLContext->OpenGLUniform3fvCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform3i", &openGLContext->OpenGLUniform3iCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform3iv", &openGLContext->OpenGLUniform3ivCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform4f", &openGLContext->OpenGLUniform4fCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform4fv", &openGLContext->OpenGLUniform4fvCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform4i", &openGLContext->OpenGLUniform4iCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniform4iv", &openGLContext->OpenGLUniform4ivCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniformMatrix2fv", &openGLContext->OpenGLUniformMatrix2fvCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniformMatrix3fv", &openGLContext->OpenGLUniformMatrix3fvCallBack);
-        OpenGLCacheFunction(functionNameList, &length, "glUniformMatrix4fv", &openGLContext->OpenGLUniformMatrix4fvCallBack);
-
-        // Fall though1
-    }
-    case OpenGLVersion1x5x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion1x4x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion1x3x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion1x2x1:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion1x2x0:
-    {
-        // Fall though1
-    }
-    case OpenGLVersion1x1x0:
-    {
-        /*
-        const char* functionNameList[50];
-
-        functionNameList[0] = "glActiveTexture";
-        functionNameList[0] = "glAlphaFunc";
-        functionNameList[0] = "glBindBuffer";
-        functionNameList[0] = "glBindTexture";
-        functionNameList[0] = "glBlendFunc";
-        functionNameList[0] = "glBufferData";
-        functionNameList[0] = "glBufferSubData";
-        functionNameList[0] = "glClear";
-        functionNameList[0] = "glClearColor";
-        functionNameList[0] = "glClearDepth";
-        functionNameList[0] = "glClearStencil";
-        functionNameList[0] = "glPXClientActiveTexture";
-        functionNameList[0] = "glClipPlane";
-        functionNameList[0] = "glColor";
-        functionNameList[0] = "glColorMask";
-        functionNameList[0] = "glColorPointer";
-        functionNameList[0] = "glCompressedTexImage2D";
-        functionNameList[0] = "glCompressedTexSubImage2D";
-        functionNameList[0] = "glCopyTexImage2D";
-        functionNameList[0] = "glCopyTexSubImage2D";
-        functionNameList[0] = "glCullFace";
-        functionNameList[0] = "glCurrentPaletteMatrix";
-        functionNameList[0] = "glDeleteBuffers";
-        functionNameList[0] = "glDeleteTextures";
-        functionNameList[0] = "glDepthFunc";
-        functionNameList[0] = "glDepthMask";
-        functionNameList[0] = "glDepthRange";
-        functionNameList[0] = "glDrawArrays";
-        functionNameList[0] = "glDrawElements";
-        functionNameList[0] = "glDrawTex";
-        functionNameList[0] = "glEnable";
-        functionNameList[0] = "glEnablePXClientState";
-        functionNameList[0] = "glFinish";
-        functionNameList[0] = "glFlush";
-        functionNameList[0] = "glFog";
-        functionNameList[0] = "glFrontFace";
-        functionNameList[0] = "glFrustum";
-        functionNameList[0] = "glGenBuffers";
-        functionNameList[0] = "glGenTextures";
-        functionNameList[0] = "glGet";
-        functionNameList[0] = "glGetBufferParameteriv";
-        functionNameList[0] = "glGetClipPlane";
-        functionNameList[0] = "glGetError";
-        functionNameList[0] = "glGetLight";
-        functionNameList[0] = "glGetMaterial";
-        functionNameList[0] = "glGetPointerv";
-        functionNameList[0] = "glGetString";
-        functionNameList[0] = "glGetTexEnv";
-        functionNameList[0] = "glGetTexParameter";
-        functionNameList[0] = "glHint";
-        functionNameList[0] = "glIntro";
-        functionNameList[0] = "glIsBuffer";
-        functionNameList[0] = "glIsEnabled";
-        functionNameList[0] = "glIsTexture";
-        functionNameList[0] = "glLight";
-        functionNameList[0] = "glLightModel";
-        functionNameList[0] = "glLineWidth";
-        functionNameList[0] = "glLoadIdentity";
-        functionNameList[0] = "glLoadMatrix";
-        functionNameList[0] = "glLoadPaletteFromModelViewMatrix";
-        functionNameList[0] = "glLogicOp";
-        functionNameList[0] = "glMaterial";
-        functionNameList[0] = "glMatrixIndexPointer";
-        functionNameList[0] = "glMatrixMode";
-        functionNameList[0] = "glMultMatrix";
-        functionNameList[0] = "glMultiTexCoord";
-        functionNameList[0] = "glNormal";
-        functionNameList[0] = "glNormalPointer";
-        functionNameList[0] = "glOrtho";
-        functionNameList[0] = "glPixelStorei";
-        functionNameList[0] = "glPointParameter";
-        functionNameList[0] = "glPointSize";
-        functionNameList[0] = "glPointSizePointerOES";
-        functionNameList[0] = "glPolygonOffset";
-        functionNameList[0] = "glPushMatrix";
-        functionNameList[0] = "glQueryMatrix";
-        functionNameList[0] = "glReadPixels";
-        functionNameList[0] = "glRotate";
-        functionNameList[0] = "glSampleCoverage";
-        functionNameList[0] = "glScale";
-        functionNameList[0] = "glScissor";
-        functionNameList[0] = "glShadeModel";
-        functionNameList[0] = "glStencilFunc";
-        functionNameList[0] = "glStencilMask";
-        functionNameList[0] = "glStencilOp";
-        functionNameList[0] = "glTexCoordPointer";
-        functionNameList[0] = "glTexEnv";
-        functionNameList[0] = "glTexImage2D";
-        functionNameList[0] = "glTexParameter";
-        functionNameList[0] = "glTexSubImage2D";
-        functionNameList[0] = "glTranslate";
-        functionNameList[0] = "glVertexPointer";
-        functionNameList[0] = "glViewport";
-        functionNameList[0] = "glWeightPointer";
-
-        for (size_t i = 0; i < length; ++i)
+        case OpenGLVersion4x6x0:
         {
-            const char* const functioName = functionNameList[i];
-
-            OpenGLFunctionFetch();
+            // Fall though1
         }
-        */
+        case OpenGLVersion4x5x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion4x4x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion4x3x0:
+        {
+            OpenGLCacheFunction(functionNameList, &length, "glDebugMessageCallback", &openGLContext->OpenGLDebugMessageCallback);
 
-        // Fall though1
-    }
-    case OpenGLVersion1x0x0:
-    {
-        // Is connected staticly, no fetching needed.
-    }
+            // Fall though1
+        }
+        case OpenGLVersion4x2x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion4x1x0:
+        {
+            OpenGLCacheFunction(functionNameList, &length, "glVertexAttribLPointer", &openGLContext->OpenGLVertexAttribLPointerCallBack);
+
+            // Fall though1
+        }
+        case OpenGLVersion4x0x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion3x3x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion3x2x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion3x1x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion3x0x0:
+        {
+            OpenGLCacheFunction(functionNameList, &length, "glGetStringi", &openGLContext->OpenGLStringICallBack);
+
+            OpenGLCacheFunction(functionNameList, &length, "glGenFramebuffers", &openGLContext->OpenGLFrameBufferCreateCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glDeleteFramebuffers", &openGLContext->OpenGLFrameBufferDeleteCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glBindFramebuffer", &openGLContext->OpenGLFrameBufferBindCallBack);
+
+            OpenGLCacheFunction(functionNameList, &length, "glGenRenderbuffers", &openGLContext->OpenGLRenderBufferCreateCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glBindRenderbuffer", &openGLContext->OpenGLRenderBufferBindCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glDeleteRenderbuffers", &openGLContext->OpenGLRenderBufferDeleteCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glRenderbufferStorage", &openGLContext->OpenGLRenderBufferStorageCallBack);
+
+            OpenGLCacheFunction(functionNameList, &length, "glFramebufferTexture2D", &openGLContext->OpenGLFrameBufferLinkTexture2DCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glFramebufferRenderbuffer", &openGLContext->OpenGLFrameBufferLinkRenderBufferCallBack);
+
+            OpenGLCacheFunction(functionNameList, &length, "glGenVertexArrays", &openGLContext->OpenGLGenVertexArraysCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glBindVertexArray", &openGLContext->OpenGLBindVertexArrayCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glVertexAttribIPointer", &openGLContext->OpenGLVertexAttribIPointerCallBack);
+
+
+           
+
+
+                // Fall though1
+            
+        }
+        case OpenGLVersion2x1x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion2x0x0:
+        {
+            OpenGLCacheFunction(functionNameList, &length, "glGenTextures", &openGLContext->OpenGLTextureCreateCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glBindTexture", &openGLContext->OpenGLTextureBindCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glDeleteTextures", &openGLContext->OpenGLTextureDeleteCallBack);
+
+            OpenGLCacheFunction(functionNameList, &length, "glCreateProgram", &openGLContext->OpenGLShaderProgramCreateCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->OpenGLShaderProgramUseCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->OpenGLShaderProgramDeleteCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glShaderSource", &openGLContext->OpenGLShaderSourceCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->OpenGLShaderCreateCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->OpenGLShaderCompileCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glGetShaderiv", &openGLContext->OpenGLShaderGetivCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glGetShaderInfoLog", &openGLContext->OpenGLShaderLogInfoGetCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glDeleteShader", &openGLContext->OpenGLShaderDeleteCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glAttachShader", &openGLContext->OpenGLAttachShaderCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glLinkProgram", &openGLContext->OpenGLLinkProgramCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glValidateProgram", &openGLContext->OpenGLValidateProgramCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glActiveTexture", &openGLContext->OpenGLActiveTextureCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glGenBuffers", &openGLContext->OpenGLGenBuffersCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glBindBuffer", &openGLContext->OpenGLBindBufferCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glBufferData", &openGLContext->OpenGLBufferDataCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glVertexAttribPointer", &openGLContext->OpenGLVertexAttribPointerCallBack);
+
+            OpenGLCacheFunction(functionNameList, &length, "glEnableVertexAttribArray", &openGLContext->OpenGLVertexAttribArrayEnableCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glDisableVertexAttribArray", &openGLContext->OpenGLVertexAttribArrayDisableCallBack);
+
+            OpenGLCacheFunction(functionNameList, &length, "glDisableVertexArrayAttrib", &openGLContext->OpenGLDisableVertexArrayAttribCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glGetUniformLocation", &openGLContext->OpenGLGetUniformLocation);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform1f", &openGLContext->OpenGLUniform1fCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform1fv", &openGLContext->OpenGLUniform1fvCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform1i", &openGLContext->OpenGLUniform1iCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform1iv", &openGLContext->OpenGLUniform1ivCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform2f", &openGLContext->OpenGLUniform2fCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform2fv", &openGLContext->OpenGLUniform2fvCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform2i", &openGLContext->OpenGLUniform2iCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform2iv", &openGLContext->OpenGLUniform2ivCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform3f", &openGLContext->OpenGLUniform3fCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform3fv", &openGLContext->OpenGLUniform3fvCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform3i", &openGLContext->OpenGLUniform3iCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform3iv", &openGLContext->OpenGLUniform3ivCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform4f", &openGLContext->OpenGLUniform4fCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform4fv", &openGLContext->OpenGLUniform4fvCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform4i", &openGLContext->OpenGLUniform4iCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniform4iv", &openGLContext->OpenGLUniform4ivCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniformMatrix2fv", &openGLContext->OpenGLUniformMatrix2fvCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniformMatrix3fv", &openGLContext->OpenGLUniformMatrix3fvCallBack);
+            OpenGLCacheFunction(functionNameList, &length, "glUniformMatrix4fv", &openGLContext->OpenGLUniformMatrix4fvCallBack);
+
+            // Fall though1
+        }
+        case OpenGLVersion1x5x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion1x4x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion1x3x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion1x2x1:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion1x2x0:
+        {
+            // Fall though1
+        }
+        case OpenGLVersion1x1x0:
+        {
+            /*
+            const char* functionNameList[50];
+
+            functionNameList[0] = "glActiveTexture";
+            functionNameList[0] = "glAlphaFunc";
+            functionNameList[0] = "glBindBuffer";
+            functionNameList[0] = "glBindTexture";
+            functionNameList[0] = "glBlendFunc";
+            functionNameList[0] = "glBufferData";
+            functionNameList[0] = "glBufferSubData";
+            functionNameList[0] = "glClear";
+            functionNameList[0] = "glClearColor";
+            functionNameList[0] = "glClearDepth";
+            functionNameList[0] = "glClearStencil";
+            functionNameList[0] = "glPXClientActiveTexture";
+            functionNameList[0] = "glClipPlane";
+            functionNameList[0] = "glColor";
+            functionNameList[0] = "glColorMask";
+            functionNameList[0] = "glColorPointer";
+            functionNameList[0] = "glCompressedTexImage2D";
+            functionNameList[0] = "glCompressedTexSubImage2D";
+            functionNameList[0] = "glCopyTexImage2D";
+            functionNameList[0] = "glCopyTexSubImage2D";
+            functionNameList[0] = "glCullFace";
+            functionNameList[0] = "glCurrentPaletteMatrix";
+            functionNameList[0] = "glDeleteBuffers";
+            functionNameList[0] = "glDeleteTextures";
+            functionNameList[0] = "glDepthFunc";
+            functionNameList[0] = "glDepthMask";
+            functionNameList[0] = "glDepthRange";
+            functionNameList[0] = "glDrawArrays";
+            functionNameList[0] = "glDrawElements";
+            functionNameList[0] = "glDrawTex";
+            functionNameList[0] = "glEnable";
+            functionNameList[0] = "glEnablePXClientState";
+            functionNameList[0] = "glFinish";
+            functionNameList[0] = "glFlush";
+            functionNameList[0] = "glFog";
+            functionNameList[0] = "glFrontFace";
+            functionNameList[0] = "glFrustum";
+            functionNameList[0] = "glGenBuffers";
+            functionNameList[0] = "glGenTextures";
+            functionNameList[0] = "glGet";
+            functionNameList[0] = "glGetBufferParameteriv";
+            functionNameList[0] = "glGetClipPlane";
+            functionNameList[0] = "glGetError";
+            functionNameList[0] = "glGetLight";
+            functionNameList[0] = "glGetMaterial";
+            functionNameList[0] = "glGetPointerv";
+            functionNameList[0] = "glGetString";
+            functionNameList[0] = "glGetTexEnv";
+            functionNameList[0] = "glGetTexParameter";
+            functionNameList[0] = "glHint";
+            functionNameList[0] = "glIntro";
+            functionNameList[0] = "glIsBuffer";
+            functionNameList[0] = "glIsEnabled";
+            functionNameList[0] = "glIsTexture";
+            functionNameList[0] = "glLight";
+            functionNameList[0] = "glLightModel";
+            functionNameList[0] = "glLineWidth";
+            functionNameList[0] = "glLoadIdentity";
+            functionNameList[0] = "glLoadMatrix";
+            functionNameList[0] = "glLoadPaletteFromModelViewMatrix";
+            functionNameList[0] = "glLogicOp";
+            functionNameList[0] = "glMaterial";
+            functionNameList[0] = "glMatrixIndexPointer";
+            functionNameList[0] = "glMatrixMode";
+            functionNameList[0] = "glMultMatrix";
+            functionNameList[0] = "glMultiTexCoord";
+            functionNameList[0] = "glNormal";
+            functionNameList[0] = "glNormalPointer";
+            functionNameList[0] = "glOrtho";
+            functionNameList[0] = "glPixelStorei";
+            functionNameList[0] = "glPointParameter";
+            functionNameList[0] = "glPointSize";
+            functionNameList[0] = "glPointSizePointerOES";
+            functionNameList[0] = "glPolygonOffset";
+            functionNameList[0] = "glPushMatrix";
+            functionNameList[0] = "glQueryMatrix";
+            functionNameList[0] = "glReadPixels";
+            functionNameList[0] = "glRotate";
+            functionNameList[0] = "glSampleCoverage";
+            functionNameList[0] = "glScale";
+            functionNameList[0] = "glScissor";
+            functionNameList[0] = "glShadeModel";
+            functionNameList[0] = "glStencilFunc";
+            functionNameList[0] = "glStencilMask";
+            functionNameList[0] = "glStencilOp";
+            functionNameList[0] = "glTexCoordPointer";
+            functionNameList[0] = "glTexEnv";
+            functionNameList[0] = "glTexImage2D";
+            functionNameList[0] = "glTexParameter";
+            functionNameList[0] = "glTexSubImage2D";
+            functionNameList[0] = "glTranslate";
+            functionNameList[0] = "glVertexPointer";
+            functionNameList[0] = "glViewport";
+            functionNameList[0] = "glWeightPointer";
+
+            for (size_t i = 0; i < length; ++i)
+            {
+                const char* const functioName = functionNameList[i];
+
+                OpenGLFunctionFetch();
+            }
+            */
+
+            // Fall though1
+        }
+        case OpenGLVersion1x0x0:
+        {
+            // Is connected staticly, no fetching needed.
+        }
     }
 
     for (size_t i = 0; i < length; i += 2)
@@ -1644,6 +1698,82 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
         *functionAdress = OpenGLFunctionAdressFetch(functionName);
     }
+
+    // Get extensions
+    {
+        // extensions
+        int NumberOfExtensions;
+
+        
+
+      
+
+        OpenGLStringGetExtensionsARB func = (OpenGLStringGetExtensionsARB)wglGetProcAddress("wglGetExtensionsStringARB");
+
+        if (func)
+        {
+            char* teeext = func(window->HandleDeviceContext);
+
+            {
+                DataStream dataStream;
+
+                DataStreamFromExternal(&dataStream, teeext, -1);
+
+                size_t x = 99999;
+
+                char wurst[256];
+
+                while (x)
+                {
+                    char* adres = DataStreamCursorPosition(&dataStream);
+
+                    size_t textSize = 0;
+
+                    x = DataStreamSkipBlock(&dataStream);
+
+                    textSize = x + 1;
+
+                    DataStreamCursorRewind(&dataStream, x);
+
+                    DataStreamReadTextA(&dataStream, wurst, textSize - 1);
+                    DataStreamCursorAdvance(&dataStream, 1);
+
+                    printf("%s\n", wurst);
+                }
+
+            }
+        }
+        else
+        {
+            printf("wglGetExtensionsStringARB not deteced..\n");
+        }
+
+        NumberOfExtensions = 0;
+
+        glGetIntegerv(GL_NUM_EXTENSIONS, &NumberOfExtensions);
+
+        printf("Extensions detected %i.\n", NumberOfExtensions);
+
+        for (size_t i = 0; i < NumberOfExtensions; ++i)
+        {
+            const char* ccc = OpenGLStringGetI(openGLContext, OpenGLStringNameExtensions, i);
+
+            printf("%3i - %s\n", i, ccc);
+
+            //if (strcmp(ccc, (const GLubyte*)"GL_ARB_debug_output") == 0) {
+                // The extension is supported by our hardware and driver
+                // Try to get the "glDebugMessageCallbackARB" function :
+            //    glDebugMessageCallbackARB = (PFNGLDEBUGMESSAGECALLBACKARBPROC)wglGetProcAddress("glDebugMessageCallbackARB");
+           // }
+
+
+
+        }
+
+        
+
+    }
+
 
     if (openGLContext->OpenGLDebugMessageCallback)
     {
@@ -1710,7 +1840,7 @@ void OpenGLContextRelease(OpenGLContext* const openGLContext)
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
 #if OSUnix
-    const int result = glXMakeCurrent(window->DisplayCurrent,0, 0);
+    const int result = glXMakeCurrent(window->DisplayCurrent, 0, 0);
 
 #elif OSWindows
 
@@ -1796,7 +1926,7 @@ void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTex
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
 
-    
+
     */
 
 }
@@ -1810,96 +1940,96 @@ void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, 
 
     switch (source)
     {
-    case GL_DEBUG_SOURCE_API:
-        sourceText = "API";
-        break;
+        case GL_DEBUG_SOURCE_API:
+            sourceText = "API";
+            break;
 
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-        sourceText = "Window";
-        break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            sourceText = "Window";
+            break;
 
-    case GL_DEBUG_SOURCE_SHADER_COMPILER:
-        sourceText = "Shader";
-        break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            sourceText = "Shader";
+            break;
 
-    case GL_DEBUG_SOURCE_THIRD_PARTY:
-        sourceText = "3rd Party";
-        break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            sourceText = "3rd Party";
+            break;
 
-    case GL_DEBUG_SOURCE_APPLICATION:
-        sourceText = "Application";
-        break;
+        case GL_DEBUG_SOURCE_APPLICATION:
+            sourceText = "Application";
+            break;
 
-    case GL_DEBUG_SOURCE_OTHER:
-        sourceText = "Other";
-        break;
+        case GL_DEBUG_SOURCE_OTHER:
+            sourceText = "Other";
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
     switch (type)
     {
-    case GL_DEBUG_TYPE_ERROR:
-        typeText = "Error";
-        break;
+        case GL_DEBUG_TYPE_ERROR:
+            typeText = "Error";
+            break;
 
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-        typeText = "DEPRECATED_BEHAVIOR";
-        break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            typeText = "DEPRECATED_BEHAVIOR";
+            break;
 
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-        typeText = "UNDEFINED_BEHAVIOR";
-        break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            typeText = "UNDEFINED_BEHAVIOR";
+            break;
 
-    case GL_DEBUG_TYPE_PORTABILITY:
-        typeText = "PORTABILITY";
-        break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            typeText = "PORTABILITY";
+            break;
 
-    case GL_DEBUG_TYPE_PERFORMANCE:
-        typeText = "PERFORMANCE";
-        break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            typeText = "PERFORMANCE";
+            break;
 
-    case GL_DEBUG_TYPE_OTHER:
-        typeText = "OTHER";
-        break;
+        case GL_DEBUG_TYPE_OTHER:
+            typeText = "OTHER";
+            break;
 
-    case GL_DEBUG_TYPE_MARKER:
-        typeText = "MARKER";
-        break;
+        case GL_DEBUG_TYPE_MARKER:
+            typeText = "MARKER";
+            break;
 
-    case GL_DEBUG_TYPE_PUSH_GROUP:
-        typeText = "PUSH_GROUP";
-        break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:
+            typeText = "PUSH_GROUP";
+            break;
 
-    case GL_DEBUG_TYPE_POP_GROUP:
-        typeText = "POP_GROUP";
-        break;
+        case GL_DEBUG_TYPE_POP_GROUP:
+            typeText = "POP_GROUP";
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
     switch (severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH:
-        servertyText = "High";
-        break;
+        case GL_DEBUG_SEVERITY_HIGH:
+            servertyText = "High";
+            break;
 
-    case GL_DEBUG_SEVERITY_MEDIUM:
-        servertyText = "Medium";
-        break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            servertyText = "Medium";
+            break;
 
-    case GL_DEBUG_SEVERITY_LOW:
-        servertyText = "Low";
-        break;
+        case GL_DEBUG_SEVERITY_LOW:
+            servertyText = "Low";
+            break;
 
-    case GL_DEBUG_SEVERITY_NOTIFICATION:
-        servertyText = "Info";
-        break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            servertyText = "Info";
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
     fprintf
@@ -2671,27 +2801,27 @@ unsigned int OpenGLShaderTypeToID(const OpenGLShaderType openGLShaderType)
 {
     switch (openGLShaderType)
     {
-    default:
-    case OpenGLShaderInvalid:
-        return -1;
+        default:
+        case OpenGLShaderInvalid:
+            return -1;
 
-    case OpenGLShaderVertex:
-        return GL_VERTEX_SHADER;
+        case OpenGLShaderVertex:
+            return GL_VERTEX_SHADER;
 
-    case OpenGLShaderFragment:
-        return GL_FRAGMENT_SHADER;
+        case OpenGLShaderFragment:
+            return GL_FRAGMENT_SHADER;
 
-        // case OpenGLShaderTessellationControl:
-        //     return GL_TESS_CONTROL_SHADER;
+            // case OpenGLShaderTessellationControl:
+            //     return GL_TESS_CONTROL_SHADER;
 
-         //case OpenGLShaderTessellationEvaluation:
-        //     return GL_TESS_EVALUATION_SHADER;
+             //case OpenGLShaderTessellationEvaluation:
+            //     return GL_TESS_EVALUATION_SHADER;
 
-    case OpenGLShaderGeometry:
-        return GL_GEOMETRY_SHADER;
+        case OpenGLShaderGeometry:
+            return GL_GEOMETRY_SHADER;
 
-        // case OpenGLShaderCompute:
-       //      return GL_COMPUTE_SHADER;
+            // case OpenGLShaderCompute:
+           //      return GL_COMPUTE_SHADER;
     }
 }
 
@@ -2774,10 +2904,10 @@ void OpenGLTextureData2D
     const OpenGLTextureType glTextureType,
     const unsigned int levelOfDetail,
     const OpenGLImageFormat glImageFormatInternal,
-    const size_t width, 
-    const size_t height, 
+    const size_t width,
+    const size_t height,
     const OpenGLImageFormat glImageFormatInput,
-    const OpenGLDataType glDataType, 
+    const OpenGLDataType glDataType,
     const void* const imageData
 )
 {
@@ -2807,22 +2937,22 @@ void OpenGLFrameBufferBind(OpenGLContext* const openGLContext, const OpenGLFrame
 
     switch (target)
     {
-    default:
-    case OpenGLFrameBufferModeInvalid:
-        targetID = -1;
-        break;
+        default:
+        case OpenGLFrameBufferModeInvalid:
+            targetID = -1;
+            break;
 
-    case OpenGLFrameBufferModeDraw:
-        targetID = GL_DRAW_FRAMEBUFFER;
-        break;
+        case OpenGLFrameBufferModeDraw:
+            targetID = GL_DRAW_FRAMEBUFFER;
+            break;
 
-    case OpenGLFrameBufferModeRead:
-        targetID = GL_READ_FRAMEBUFFER;
-        break;
+        case OpenGLFrameBufferModeRead:
+            targetID = GL_READ_FRAMEBUFFER;
+            break;
 
-    case OpenGLFrameBufferModeDrawAndRead:
-        targetID = GL_FRAMEBUFFER;
-        break;
+        case OpenGLFrameBufferModeDrawAndRead:
+            targetID = GL_FRAMEBUFFER;
+            break;
     }
 
     openGLContext->OpenGLFrameBufferBindCallBack(targetID, framebufferID); // GL_FRAMEBUFFER

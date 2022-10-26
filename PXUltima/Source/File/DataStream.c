@@ -634,6 +634,7 @@ ActionResult DataStreamMapToMemory(DataStream* const dataStream, const size_t si
 
 	DataStreamConstruct(dataStream);
 
+	dataStream->MemoryMode = protectionMode;
 	dataStream->DataLocation = FileLocationMappedVirtual;
 	dataStream->Data = data;
 	dataStream->DataSize = size;
@@ -1023,6 +1024,24 @@ size_t DataStreamReadP(DataStream* const dataStream, void* value, const size_t l
 size_t DataStreamRead(DataStream* const dataStream, const void* format, const size_t length, ...)
 {
 	return 0;
+}
+
+size_t DataStreamReadTextA(DataStream* const dataStream, char* const value, const size_t length)
+{
+	const size_t size = DataStreamReadP(dataStream, value, length);
+
+	value[size] = 0;
+
+	return size;
+}
+
+size_t DataStreamReadTextW(DataStream* const dataStream, wchar_t* const value, const size_t length)
+{
+	const size_t size = DataStreamReadP(dataStream, value, length);
+
+	value[size] = 0;
+
+	return size;
 }
 
 void DataStreamReadUntil(DataStream* const dataStream, void* value, const size_t length, const char character)

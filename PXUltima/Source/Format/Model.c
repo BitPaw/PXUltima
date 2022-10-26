@@ -112,7 +112,7 @@ ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const 
     ModelCompilerFunction modelCompilerFunction = 0;
     ModelParserFunction modelParserFunction = 0;
 
-    DataStreamMapToMemory(&modelCompileCache, fileStream->DataSize * 10, MemoryReadAndWrite);
+    DataStreamMapToMemory(&modelCompileCache, fileStream->DataSize * 100, MemoryReadAndWrite);
 
     switch (modelType)
     {
