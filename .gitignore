@@ -350,8 +350,8 @@ MigrationBackup/
 .ionide/
 
 #---<BitPaws stuff>---
-[Export]/
-[Temp]/
+*Export*/
+*Temp*/
 PXUltimaSharp/bin/
 PXUltimaSharp/obj/
 PXUltimaSharpTest/bin/
