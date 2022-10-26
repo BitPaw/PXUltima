@@ -349,11 +349,7 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-
-
-
-
-# BitPaws stuff
+#---<BitPaws stuff>---
 [Export]/
 [Temp]/
 PXUltimaSharp/bin/
@@ -363,3 +359,4 @@ PXUltimaSharpTest/obj/
 _TEST_DATA_OUTPUT_/
 PXUltimaSharp/obj/
 PXUltimaSharpTest/obj/
+#----------------------
