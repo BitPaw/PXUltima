@@ -62,3 +62,13 @@
   </td>
  </table>
  
+
+## Test Systems
+| OS | CPU | RAM | GPU | Does it run? |
+|:--:|:--:|:--:|:--:|:--:|
+|Windows 10 (x64)|Intel i7 6400k|32GB DDR4| Nvidia GTX 1080 | :heavy_check_mark:|
+|Windows 10 (x64)|Intel i3 2300M|4GB DDR3| Intel HD 3000 | :heavy_check_mark:|
+|Windows 7 (x64)|Intel Pentium IV 3GHz|3GB DDR2|???|:heavy_check_mark:|
+|Windows XP (x86)|AMD Sempron |1GB DDR1|Nvidia FX5200 (64-Bit)| :warning:|
+|Windows XP (x86)|Intel Pentium II 233MHz|128MB SDRAM|Matrox G100|:warning:|
+|Windows 98 SE (x86)|Intel Pentium 90 MHz|??? MB EDORAM|S3 Trio32|:x:|
