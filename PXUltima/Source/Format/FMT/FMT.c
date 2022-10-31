@@ -1,7 +1,7 @@
 #include "FMT.h"
 
 #include <File/DataStream.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
 
 #define FMTSignature {'f', 'm', 't', ' '}

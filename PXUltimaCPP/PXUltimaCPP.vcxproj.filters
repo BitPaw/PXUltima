@@ -18,9 +18,15 @@
     <ClInclude Include="Source\OS\Window.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Memory\Memory.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\OS\Window.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Memory\Memory.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

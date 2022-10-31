@@ -230,7 +230,7 @@ VirtualKey ConvertToVirtualKey(const char character)
 						/*
 						 * Fujitsu/OASYS kbd definitions
 						 */
-						 //case VK_OEM_FJ_JISHO:   // 'Dictionary' key
+						 //case VK_OEM_FJ_JISHO:   // 'PXDictionary' key
 		//case VK_OEM_FJ_MASSHOU:   // 'Unregister word' key
 		//case VK_OEM_FJ_TOUROKU:   // 'Register word' key
 		//case VK_OEM_FJ_LOYA:   // 'Left OYAYUBI' key

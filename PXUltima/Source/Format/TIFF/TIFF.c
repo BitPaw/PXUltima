@@ -1,7 +1,7 @@
 #include "TIFF.h"
 
 #include <File/DataStream.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #define GIFFormatA {'I','I'}
 #define GIFFormatB {'M','M'}

@@ -1,6 +1,6 @@
 #include "SBPProtocol.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <File/DataStream.h>
 #include <OS/User.h>
 

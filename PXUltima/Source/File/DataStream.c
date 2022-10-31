@@ -1,8 +1,8 @@
 #include "DataStream.h"
 
 #include <OS/OSVersion.h>
-#include <Memory/Memory.h>
-#include <Math/Math.h>
+#include <Memory/PXMemory.h>
+#include <Math/PXMath.h>
 #include <Text/Text.h>
 
 #include <iso646.h>

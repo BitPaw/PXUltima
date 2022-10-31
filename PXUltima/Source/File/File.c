@@ -1,7 +1,7 @@
 #include "File.h"
 
 #include <Text/Text.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #include <stdarg.h>
 #include <fcntl.h>

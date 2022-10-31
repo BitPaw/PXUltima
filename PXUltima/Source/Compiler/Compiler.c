@@ -4,7 +4,7 @@
 
 #include <File/DataStream.h>
 #include <Text/Text.h>
-#include <Math/Math.h>
+#include <Math/PXMath.h>
 
 void PXCompilerSymbolEntryAdd(DataStream* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
 {

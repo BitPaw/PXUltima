@@ -119,10 +119,10 @@
 		</Unit>
 		<Unit filename="Source/Container/BinaryTree/BinaryTree.h" />
 		<Unit filename="Source/Container/ClusterValue.h" />
-		<Unit filename="Source/Container/Dictionary/Dictionary.c">
+		<Unit filename="Source/Container/PXDictionary/PXDictionary.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Container/Dictionary/Dictionary.h" />
+		<Unit filename="Source/Container/PXDictionary/PXDictionary.h" />
 		<Unit filename="Source/Container/QuadTree/QuadTree.c">
 			<Option compilerVar="CC" />
 		</Unit>

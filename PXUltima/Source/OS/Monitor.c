@@ -1,6 +1,6 @@
 #include "Monitor.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #if OSUnix
 #elif OSWindows

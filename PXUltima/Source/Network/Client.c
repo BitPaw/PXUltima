@@ -1,6 +1,6 @@
 #include "Client.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Event/Event.h>
 
 ActionResult ClientConnectToServer(Client* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)

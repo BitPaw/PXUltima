@@ -2,13 +2,13 @@
 
 
 #include <Format/Image.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #include <stdio.h>
 #include <float.h>
 #include <OS/PXWindow.h>
 #include <Format/Font.h>
-#include <Math/Matrix.h>
+#include <Math/PXMatrix.h>
 
 #include <Graphic/Graphic.h>
 #include <Graphic/OpenGL/OpenGL.h>
@@ -271,7 +271,7 @@ void TestOpenGLTextDraw()
 	{
 		PXMatrix4x4F matrix4x4F;
 
-		PXMatrix4x4FReset(&matrix4x4F);
+		PXMatrix4x4FIdentity(&matrix4x4F);
 
 		//PXMatrix4x4FRotate(&matrix4x4F, 0, 0, 1, &matrix4x4F);
 

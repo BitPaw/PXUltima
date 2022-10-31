@@ -3,7 +3,7 @@
 #include <File/DataStream.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 void MTLConstruct(MTL* mtl)
 {

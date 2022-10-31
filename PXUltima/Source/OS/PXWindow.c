@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include <Event/Event.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <OS/Monitor.h>
 #include <Text/Text.h>
 #include <Async/Await.h>

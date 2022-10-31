@@ -14,15 +14,15 @@
 #define GravityOnMoon 1.62
 #define GravityOnMars 3.711
 
+#define MathMinimum(a, b) ((a < b) * a + (a >= b) * b)
+#define MathMaximum(a, b) ((a > b) * a + (a <= b) * b)
+//#define MathLimit(x, low, high) (MathMinimum(MathMaximum(x, low), high)) 
+#define MathLimit(x, low, high)  (low*(x <= low) + high*(x >= high) + x *((x > low) && (x < high)))
 
-#define MathMinimum(a, b) (a <= b ? a : b)
-#define MathMaximum(a, b) (a >= b ? a : b)
 #define MathFloor(a) ((int)(a))
 //#define MathCeiling(a)
 #define MathAbsolute(a) (a < 0 ? -a : a)
 
-// Limit v between minimum and maximum
-#define MathLimit(v, min, max)  (min*(v <= min) + max*(v >= max) + v *((v > min) && (v < max)));
 
 #ifdef __cplusplus
 extern "C"
@@ -66,6 +66,10 @@ extern "C"
 	PXPublic unsigned long MathFibonacci(unsigned long step);
 	PXPublic double MathRadiansToDegree(double radians);
 	PXPublic double MathDegreeToRadians(double degree);
+
+	PXPublic float MathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue);
+	PXPublic float MathNormalizeF(const float minimum, const float maximum, const float value);
+	PXPublic unsigned int MathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value);
 
 #ifdef __cplusplus
 }

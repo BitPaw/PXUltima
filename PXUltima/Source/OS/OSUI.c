@@ -27,9 +27,9 @@
 //#include <ShObjIdl.h>
 #endif
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
-#include <Math/Math.h>
+#include <Math/PXMath.h>
 
 #include <stdio.h>
 

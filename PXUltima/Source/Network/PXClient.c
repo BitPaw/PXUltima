@@ -1,6 +1,6 @@
 #include "PXClient.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Event/Event.h>
 
 ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)

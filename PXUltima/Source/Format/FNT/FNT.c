@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include <Text/Text.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <File/DataStream.h>
 #include <File/File.h>
 #include <Format/Image.h>

@@ -1,7 +1,7 @@
 #include "OGG.h"
 
 #include <File/DataStream.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #define OGGHeaderSignature { 'O','g','g','S' }
 

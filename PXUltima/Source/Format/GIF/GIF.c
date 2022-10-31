@@ -1,8 +1,8 @@
 #include "GIF.h"
 
 #include <File/DataStream.h>
-#include <Memory/Memory.h>
-#include <Math/Math.h>
+#include <Memory/PXMemory.h>
+#include <Math/PXMath.h>
 
 #define GIFHeader {'G','I','F'}
 #define GIFVersionA {'8','7','a'}

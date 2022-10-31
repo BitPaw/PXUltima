@@ -1,6 +1,6 @@
 #include "PXSocket.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
 #include <Event/Event.h>
 #include <stdio.h>

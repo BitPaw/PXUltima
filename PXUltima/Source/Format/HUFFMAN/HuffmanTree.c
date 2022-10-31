@@ -1,6 +1,6 @@
 #include "HuffmanTree.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <stdlib.h>
 
 /* a symbol value too big to represent any valid symbol, to indicate reading disallowed huffman bits combination,

@@ -2,11 +2,11 @@
 
 #include <Compiler/Compiler.h>
 #include <File/DataStream.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
 #include <Text/Text.h>
 #include <File/File.h>
-#include <Math/Math.h>
+#include <Math/PXMath.h>
 
 #define PXCompilerSymbolLexerOBJMaterialLibraryIncludeID 'I'
 #define PXCompilerSymbolLexerOBJMaterialLibraryUselID 'U'

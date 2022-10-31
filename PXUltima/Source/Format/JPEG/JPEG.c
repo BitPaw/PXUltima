@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 #include <Container/ClusterValue.h>
-#include <Memory/Memory.h>
-#include <Math/Math.h>
+#include <Memory/PXMemory.h>
+#include <Math/PXMath.h>
 #include <File/DataStream.h>
 #include <Format/Color.h>
 

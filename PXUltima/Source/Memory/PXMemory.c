@@ -1,6 +1,6 @@
-#include "Memory.h"
+#include "PXMemory.h"
 
-#include <Math/Math.h>
+#include <Math/PXMath.h>
 
 #include <stdlib.h>
 #include <malloc.h>
@@ -39,10 +39,10 @@
 #endif
 
 #if MemoryDebugLeakDetection
-#include <Container/Dictionary/Dictionary.h>
+#include <Container/PXDictionary/PXDictionary.h>
 #include <Time/Time.h>
 
-Dictionary _memoryAdressLookup;
+PXDictionary _memoryAdressLookup;
 
 struct MemoryAllocationInfo
 {
@@ -203,7 +203,7 @@ void* MemoryAllocate(const size_t requestedSizeInBytes)
 #endif
 
 #if MemoryDebugLeakDetection
-	DictionaryAdd(&_memoryAdressLookup, adress, requestedSizeInBytes);
+	PXDictionaryAdd(&_memoryAdressLookup, adress, requestedSizeInBytes);
 #endif
 
 	return adress;
@@ -297,7 +297,7 @@ void MemoryRelease(const void* adress, const size_t size)
 #endif
 
 #if MemoryDebugLeakDetection
-	DictionaryRemove(&_memoryAdressLookup, adress);
+	PXDictionaryRemove(&_memoryAdressLookup, adress);
 #endif
 
 	free(adress);

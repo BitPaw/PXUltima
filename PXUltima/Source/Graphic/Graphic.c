@@ -193,7 +193,7 @@ ActionResult GraphicTextureCubeRelease(GraphicContext* const graphicContext, PXT
     return ActionInvalid;
 }
 
-ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, CSkyBox* const skyBox)
+ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, PXSkyBox* const skyBox)
 {
     const float vertexData[] =
     {
@@ -228,7 +228,7 @@ ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, CSkyBox
     return ActionInvalid;
 }
 
-ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, CSkyBox* const skyBox)
+ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* const skyBox)
 {
     /*
     // TODO:TEST REMOVAL !!!    OpenGL::VertexArrayBind(skyBox.RenderInfo.VAO);
@@ -249,7 +249,7 @@ ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, CSkyBox* con
 
 ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const Model* const model)
 {   
-    PXMatrix4x4FReset(&renderable->MatrixModel);
+    PXMatrix4x4FIdentity(&renderable->MatrixModel);
 
    OpenGLVertexArrayGenerate(&graphicContext->OpenGLInstance, 1u, &renderable->ID);
 

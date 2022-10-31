@@ -4,7 +4,7 @@
 
 #include <OS/PXWindow.h>
 #include <Processor/Processor.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Graphic/DirectX/DirectX.h>
 
 void TestWindowAll()

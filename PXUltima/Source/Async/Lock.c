@@ -1,6 +1,6 @@
 #include "Lock.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 PXPublic void LockClear(LockID* const asyncLockID)
 {

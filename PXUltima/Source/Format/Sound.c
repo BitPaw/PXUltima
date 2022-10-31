@@ -2,7 +2,7 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
 
 #if OSUnix

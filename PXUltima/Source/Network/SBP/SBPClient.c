@@ -1,6 +1,6 @@
 #include "SBPClient.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
 #include <OS/User.h>
 #include <Time/Time.h>

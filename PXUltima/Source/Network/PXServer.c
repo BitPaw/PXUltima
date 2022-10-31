@@ -1,7 +1,7 @@
 #include "PXServer.h"
 
 #include <Event/Event.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #if SocketDebug
 #include <stdio.h>

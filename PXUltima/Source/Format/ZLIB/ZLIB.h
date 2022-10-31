@@ -46,7 +46,7 @@ extern "C"
 
 		size_t WindowSize;
 		unsigned char  CheckFlag; // 5 Bits
-		unsigned char DictionaryPresent; // 1 Bit
+		unsigned char PXDictionaryPresent; // 1 Bit
 		ZLIBCompressionLevel CompressionLevel; // 2 Bits
 	}
 	ZLIBHeader;

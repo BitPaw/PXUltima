@@ -1,6 +1,6 @@
 #include "KeyBoard.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
 
 #include <stdio.h>

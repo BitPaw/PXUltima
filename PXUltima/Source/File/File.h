@@ -8,7 +8,7 @@
 
 #include <Format/Type.h>
 #include <OS/OSVersion.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Error/ActionResult.h>
 #include <File/Endian.h>
 

@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include <Error/ActionResult.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
 #include <OS/PXWindow.h>
@@ -1710,21 +1710,24 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
         OpenGLStringGetExtensionsARB func = (OpenGLStringGetExtensionsARB)wglGetProcAddress("wglGetExtensionsStringARB");
 
-        if (func)
+        if (func && 0)
         {
             char* teeext = func(window->HandleDeviceContext);
 
             {
                 DataStream dataStream;
 
-                DataStreamFromExternal(&dataStream, teeext, -1);
+                const size_t teextSize = TextFindFirstA(teeext, 0xFFFF, '\0');
+                DataStreamFromExternal(&dataStream, teeext, teextSize);
 
                 size_t x = 99999;
 
                 char wurst[256];
 
-                while (x)
+                while (!DataStreamIsAtEnd(&dataStream))
                 {
+                    MemorySet(wurst, sizeof(256), 0);
+
                     char* adres = DataStreamCursorPosition(&dataStream);
 
                     size_t textSize = 0;

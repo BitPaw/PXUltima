@@ -4,10 +4,10 @@
 #include <malloc.h>
 #include <string.h>
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Format/HUFFMAN/HuffmanTree.h>
 #include <File/DataStream.h>
-#include <Math/Math.h>
+#include <Math/PXMath.h>
 
 #define DeflateEncodingInvalidID -1
 #define DeflateEncodingLiteralRawID 0b00

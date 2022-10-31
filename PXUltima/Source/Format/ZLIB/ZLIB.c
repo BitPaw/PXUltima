@@ -1,7 +1,7 @@
 #include "ZLIB.h"
 
 #include <Container/ClusterValue.h>
-#include <Math/Math.h>
+#include <Math/PXMath.h>
 #include <File/DataStream.h>
 #include <Format/DEFLATE/DEFLATE.h>
 #include <Format/ADLER/Adler32.h>
@@ -138,15 +138,15 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
             unsigned char compressionLevelValue = (flagByte & 0b11000000) >> 6;
 
             zlib.Header.CheckFlag = (flagByte & 0b00011111);
-            zlib.Header.DictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
+            zlib.Header.PXDictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
             zlib.Header.CompressionLevel = ConvertToCompressionLevel(compressionLevelValue);
         }
         //-------------------------------------------------------------------------        
     }
 
 
-    //---<Dictionary Parse>----------------------------------------------------
-    if(zlib.Header.DictionaryPresent)
+    //---<PXDictionary Parse>----------------------------------------------------
+    if(zlib.Header.PXDictionaryPresent)
     {
         // Parse DICT dictionary identifier 
 

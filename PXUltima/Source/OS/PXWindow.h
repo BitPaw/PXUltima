@@ -132,7 +132,7 @@ extern "C"
 	typedef void (*WindowClosingEvent)(const void* const receiver, const PXWindow* sender, unsigned char* allowClosing);
 	typedef void (*WindowClosedEvent)(const void* const receiver, const PXWindow* sender);
 
-	// 	static Dictionary<PXWindowID, PXWindow*> _windowLookup;
+	// 	static PXDictionary<PXWindowID, PXWindow*> _windowLookup;
 
 	typedef struct PXWindow_
 	{

@@ -2,7 +2,7 @@
 
 #include <OS/OSVersion.h>
 #include <Text/Text.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #include <stdio.h>
 

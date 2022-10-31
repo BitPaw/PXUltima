@@ -1,7 +1,7 @@
 #include "HardDrive.h"
 
 #include <OS/OSVersion.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #if OSUnix
 #elif OSWindows

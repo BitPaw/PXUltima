@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <stdio.h>
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
 
 #pragma comment(lib, "D3d9.lib")

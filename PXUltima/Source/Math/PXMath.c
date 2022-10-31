@@ -1,4 +1,4 @@
-#include "Math.h"
+#include "PXMath.h"
 
 #include <math.h>
 
@@ -252,4 +252,28 @@ double MathRadiansToDegree(double radians)
 double MathDegreeToRadians(double degree)
 {
 	return degree * (MathConstantPI / 180.0);
+}
+
+float MathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue)
+{
+	// Cap Value
+	float xCap = xValue > xMaximum ? xMaximum : xValue;
+	xCap = xValue < xMinimum ? xMinimum : xValue;
+
+	// ((ydelta * xValueDelta) / xdelta) + yMinimum;
+
+	return (((yMaximum - yMinimum) * (xValue - xMinimum)) / (xMaximum - xMinimum)) + yMinimum;
+}
+
+float MathNormalizeF(const float minimum, const float maximum, const float value)
+{
+	return MathLiniarF(0, 1, minimum, maximum, value);
+}
+
+unsigned int MathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value)
+{
+	const float result = MathLiniarF(0, 255, minimum, maximum, value);
+	const unsigned int convertedResult = (unsigned int)(result);
+
+	return convertedResult;
 }

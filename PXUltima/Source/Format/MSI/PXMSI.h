@@ -1,7 +1,7 @@
-#ifndef MSIINCLUDE
-#define MSIINCLUDE
+#ifndef PXMSIINCLUDE
+#define PXMSIINCLUDE
 
-#include <stddef.h>
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"

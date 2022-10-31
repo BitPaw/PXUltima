@@ -1,6 +1,6 @@
 #include "Font.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Text/Text.h>
 #include <File/DataStream.h>
 

@@ -5,7 +5,7 @@
 
 #include "SBPProtocol.h"
 
-#include <Container/Dictionary/Dictionary.h>
+#include <Container/Dictionary/PXDictionary.h>
 #include <Network/PXServer.h>
 #include <Network/PXClient.h>
 
@@ -18,7 +18,7 @@ extern "C"
 	{
 		PXServer PXServer;
 		//SBPQueue _inputQueue;
-		//Dictionary<ResponseID, unsigned char*> _responseLookup;
+		//PXDictionary<ResponseID, unsigned char*> _responseLookup;
 	}
 	SBPServer;
 

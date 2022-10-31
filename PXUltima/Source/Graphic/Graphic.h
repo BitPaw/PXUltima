@@ -5,7 +5,7 @@
 #include <Format/Model.h>
 #include <Format/Type.h>
 #include <Graphic/OpenGL/OpenGL.h>
-#include <Math/Matrix.h>
+#include <Math/PXMatrix.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -179,11 +179,11 @@ extern "C"
 	}
 	CSprite;
 
-	typedef	struct CSkyBox_
+	typedef	struct PXSkyBox_
 	{
 		PXTextureCube TextureCube;
 	}
-	CSkyBox;
+	PXSkyBox;
 
 	typedef enum RefreshRateMode_
 	{
@@ -274,9 +274,9 @@ extern "C"
 	PXPublic ActionResult GraphicTextureCubeRelease(GraphicContext* const graphicContext, PXTextureCube* const textureCube);
 
 	// Model
-	PXPublic ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, CSkyBox* const skyBox);
-	PXPublic ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, CSkyBox* const skyBox);
-	PXPublic ActionResult GraphicSkyboxRelease(GraphicContext* const graphicContext, CSkyBox* const skyBox);
+	PXPublic ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, PXSkyBox* const skyBox);
+	PXPublic ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* const skyBox);
+	PXPublic ActionResult GraphicSkyboxRelease(GraphicContext* const graphicContext, PXSkyBox* const skyBox);
 
 	PXPublic ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const Model* const model);
 	PXPublic ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);

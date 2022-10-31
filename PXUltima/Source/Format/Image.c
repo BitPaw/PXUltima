@@ -1,10 +1,10 @@
 #include "Image.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <File/File.h>
 #include <Text/Text.h>
 #include <File/DataStream.h>
-#include <Math/Math.h>
+#include <Math/PXMath.h>
 
 #include <Format/BMP/BMP.h>
 #include <Format/GIF/GIF.h>

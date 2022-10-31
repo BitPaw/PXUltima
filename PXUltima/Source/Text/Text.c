@@ -1,8 +1,8 @@
 #include "Text.h"
 
 #include <OS/OSVersion.h>
-#include <Memory/Memory.h>
-#include <Math/Math.h>
+#include <Memory/PXMemory.h>
+#include <Math/PXMath.h>
 
 #include <stdarg.h>
 #include <stdio.h>

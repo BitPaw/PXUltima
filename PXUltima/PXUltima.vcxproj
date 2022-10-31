@@ -19,6 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Format\MD5\MD5.h" />
+    <ClInclude Include="Source\Format\RSA\RSA.h" />
+    <ClInclude Include="Source\Format\SHA\PXSHA.h" />
+    <ClInclude Include="Source\Math\PXDiagram.h" />
+    <ClInclude Include="Source\Graphic\Camera.h" />
+    <ClInclude Include="Source\Container\LinkedList\PXLinkedList.h" />
+    <ClInclude Include="Source\Container\List\PXList.h" />
+    <ClInclude Include="Source\Container\Queue\PXQueue.h" />
+    <ClInclude Include="Source\Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="Source\Serialization\Serialization.h" />
     <ClInclude Include="Source\OS\HardDrive.h" />
     <ClInclude Include="Source\OS\Registry.h" />
@@ -29,7 +38,7 @@
     <ClInclude Include="Source\Format\HTML\HTML.h" />
     <ClInclude Include="Source\Format\INI\INI.h" />
     <ClInclude Include="Source\Format\JSON\JSON.h" />
-    <ClInclude Include="Source\Format\MSI\MSI.h" />
+    <ClInclude Include="Source\Format\MSI\PXMSI.h" />
     <ClInclude Include="Source\Format\XML\XML.h" />
     <ClInclude Include="Source\Format\YAML\YAML.h" />
     <ClInclude Include="Source\Graphic\DirectX\DirectX.h" />
@@ -38,7 +47,7 @@
     <ClInclude Include="Source\Graphic\SoftwareRender\SoftwareRender.h" />
     <ClInclude Include="Source\Graphic\Vulcan\Vulcan.h" />
     <ClInclude Include="Source\OS\ClipBoard.h" />
-    <ClInclude Include="Source\Math\Matrix.h" />
+    <ClInclude Include="Source\Math\PXMatrix.h" />
     <ClInclude Include="Source\Format\PHP\PHP.h" />
     <ClInclude Include="Source\Compiler\Compiler.h" />
     <ClInclude Include="Source\Async\Await.h" />
@@ -46,7 +55,7 @@
     <ClInclude Include="Source\Async\Thread.h" />
     <ClInclude Include="Source\Container\BinaryTree\BinaryTree.h" />
     <ClInclude Include="Source\Container\ClusterValue.h" />
-    <ClInclude Include="Source\Container\Dictionary\Dictionary.h" />
+    <ClInclude Include="Source\Container\Dictionary\PXDictionary.h" />
     <ClInclude Include="Source\Container\QuadTree\QuadTree.h" />
     <ClInclude Include="Source\Device\Controller.h" />
     <ClInclude Include="Source\Device\InputButton.h" />
@@ -109,8 +118,8 @@
     <ClInclude Include="Source\Format\XingInfo\XingInfo.h" />
     <ClInclude Include="Source\Format\ZLIB\ZLIB.h" />
     <ClInclude Include="Source\Library\Library.h" />
-    <ClInclude Include="Source\Math\Math.h" />
-    <ClInclude Include="Source\Memory\Memory.h" />
+    <ClInclude Include="Source\Math\PXMath.h" />
+    <ClInclude Include="Source\Memory\PXMemory.h" />
     <ClInclude Include="Source\Network\PXClient.h" />
     <ClInclude Include="Source\Network\PXSocket.h" />
     <ClInclude Include="Source\Network\IP.h" />
@@ -131,8 +140,18 @@
     <ClInclude Include="Source\Time\Time.h" />
     <ClInclude Include="Source\UI\UI.h" />
     <ClInclude Include="Source\Format\Type.h" />
+    <ClInclude Include="Source\Math\PXVector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Format\MD5\MD5.c" />
+    <ClCompile Include="Source\Format\RSA\RSA.c" />
+    <ClCompile Include="Source\Format\SHA\PXSHA.c" />
+    <ClCompile Include="Source\Math\PXDiagram.c" />
+    <ClCompile Include="Source\Graphic\Camera.c" />
+    <ClCompile Include="Source\Container\LinkedList\PXLinkedList.c" />
+    <ClCompile Include="Source\Container\List\PXList.c" />
+    <ClCompile Include="Source\Container\Queue\PXQueue.c" />
+    <ClCompile Include="Source\Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="Source\Serialization\Serialization.c" />
     <ClCompile Include="Source\OS\HardDrive.c" />
     <ClCompile Include="Source\OS\Registry.c" />
@@ -143,7 +162,7 @@
     <ClCompile Include="Source\Format\HTML\HTML.c" />
     <ClCompile Include="Source\Format\INI\INI.c" />
     <ClCompile Include="Source\Format\JSON\JSON.c" />
-    <ClCompile Include="Source\Format\MSI\MSI.c" />
+    <ClCompile Include="Source\Format\MSI\PXMSI.c" />
     <ClCompile Include="Source\Format\XML\XML.c" />
     <ClCompile Include="Source\Format\YAML\YAML.c" />
     <ClCompile Include="Source\Graphic\DirectX\DirectX.c" />
@@ -152,13 +171,13 @@
     <ClCompile Include="Source\Graphic\SoftwareRender\SoftwareRender.c" />
     <ClCompile Include="Source\Graphic\Vulcan\Vulcan.c" />
     <ClCompile Include="Source\OS\ClipBoard.c" />
-    <ClCompile Include="Source\Math\Matrix.c" />
+    <ClCompile Include="Source\Math\PXMatrix.c" />
     <ClCompile Include="Source\Format\PHP\PHP.c" />
     <ClCompile Include="Source\Compiler\Compiler.c" />
     <ClCompile Include="Source\Async\Lock.c" />
     <ClCompile Include="Source\Async\Thread.c" />
     <ClCompile Include="Source\Container\BinaryTree\BinaryTree.c" />
-    <ClCompile Include="Source\Container\Dictionary\Dictionary.c" />
+    <ClCompile Include="Source\Container\Dictionary\PXDictionary.c" />
     <ClCompile Include="Source\Container\QuadTree\QuadTree.c" />
     <ClCompile Include="Source\Device\Controller.c" />
     <ClCompile Include="Source\Device\InputButton.c" />
@@ -221,8 +240,8 @@
     <ClCompile Include="Source\Format\XingInfo\XingInfo.c" />
     <ClCompile Include="Source\Format\ZLIB\ZLIB.c" />
     <ClCompile Include="Source\Library\Library.c" />
-    <ClCompile Include="Source\Math\Math.c" />
-    <ClCompile Include="Source\Memory\Memory.c" />
+    <ClCompile Include="Source\Math\PXMath.c" />
+    <ClCompile Include="Source\Memory\PXMemory.c" />
     <ClCompile Include="Source\Network\PXClient.c" />
     <ClCompile Include="Source\Network\PXSocket.c" />
     <ClCompile Include="Source\Network\IP.c" />
@@ -242,6 +261,7 @@
     <ClCompile Include="Source\Time\Time.c" />
     <ClCompile Include="Source\UI\UI.c" />
     <ClCompile Include="Source\Format\Type.c" />
+    <ClCompile Include="Source\Math\PXVector.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Container\Dictionary\README.md" />

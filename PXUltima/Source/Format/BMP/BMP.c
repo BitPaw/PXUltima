@@ -3,8 +3,8 @@
 #include <Container/ClusterValue.h>
 #include <Container/ClusterValue.h>
 #include <File/DataStream.h>
-#include <Memory/Memory.h>
-#include <Math/Math.h>
+#include <Memory/PXMemory.h>
+#include <Math/PXMath.h>
 #include <Format/Image.h>
 
 #define BMPHeaderIDWindows                  MakeShort('B', 'M')
@@ -265,12 +265,12 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
 
 ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
 {
-    DataStream DataStream;
+    DataStream dataStream;
     BMP bmp;
     
     BMPConstruct(&bmp);
-    DataStreamConstruct(&DataStream);   
-    DataStreamFromExternal(&DataStream, data, dataSize);
+    DataStreamConstruct(&dataStream);   
+    DataStreamFromExternal(&dataStream, data, dataSize);
     *dataRead = 0;
 
     //---[ Parsing Header ]----------------------------------------------------
@@ -280,10 +280,10 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
         unsigned int reservedBlock = 0;
         unsigned int dataOffset = 0;
 
-        DataStreamReadP(&DataStream, byteCluster.Data, 2u);
-        DataStreamReadIU(&DataStream, &sizeOfFile, EndianLittle);
-        DataStreamReadIU(&DataStream, &reservedBlock, EndianLittle);
-        DataStreamReadIU(&DataStream, &dataOffset, EndianLittle);
+        DataStreamReadP(&dataStream, byteCluster.Data, 2u);
+        DataStreamReadIU(&dataStream, &sizeOfFile, EndianLittle);
+        DataStreamReadIU(&dataStream, &reservedBlock, EndianLittle);
+        DataStreamReadIU(&dataStream, &dataOffset, EndianLittle);
 
         const BMPType type = ConvertToBMPType(byteCluster.Value);
 
@@ -302,7 +302,7 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
 
     //---[ DIP ]---------------------------------------------------------------
     {
-        DataStreamReadIU(&DataStream, &bmp.InfoHeader.HeaderSize, EndianLittle);
+        DataStreamReadIU(&dataStream, &bmp.InfoHeader.HeaderSize, EndianLittle);
 
         bmp.InfoHeaderType = ConvertToBMPInfoHeaderType(bmp.InfoHeader.HeaderSize);
 
@@ -310,16 +310,16 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
         {
             case BitMapInfoHeader:
             {
-                DataStreamReadI(&DataStream, &bmp.InfoHeader.Width, EndianLittle);
-                DataStreamReadI(&DataStream, &bmp.InfoHeader.Height, EndianLittle);
-                DataStreamReadSU(&DataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
-                DataStreamReadSU(&DataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
-                DataStreamReadIU(&DataStream, &bmp.InfoHeader.CompressionMethod, EndianLittle);
-                DataStreamReadIU(&DataStream, &bmp.InfoHeader.ImageSize, EndianLittle);
-                DataStreamReadI(&DataStream, &bmp.InfoHeader.HorizontalResolution, EndianLittle);
-                DataStreamReadI(&DataStream, &bmp.InfoHeader.VerticalResolution, EndianLittle);
-                DataStreamReadIU(&DataStream, &bmp.InfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
-                DataStreamReadIU(&DataStream, &bmp.InfoHeader.NumberOfImportantColorsUsed, EndianLittle);
+                DataStreamReadI(&dataStream, &bmp.InfoHeader.Width, EndianLittle);
+                DataStreamReadI(&dataStream, &bmp.InfoHeader.Height, EndianLittle);
+                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
+                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
+                DataStreamReadIU(&dataStream, &bmp.InfoHeader.CompressionMethod, EndianLittle);
+                DataStreamReadIU(&dataStream, &bmp.InfoHeader.ImageSize, EndianLittle);
+                DataStreamReadI(&dataStream, &bmp.InfoHeader.HorizontalResolution, EndianLittle);
+                DataStreamReadI(&dataStream, &bmp.InfoHeader.VerticalResolution, EndianLittle);
+                DataStreamReadIU(&dataStream, &bmp.InfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
+                DataStreamReadIU(&dataStream, &bmp.InfoHeader.NumberOfImportantColorsUsed, EndianLittle);
 
                 break;
             }
@@ -329,10 +329,10 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
                 unsigned short width = 0;
                 unsigned short height = 0;
 
-                DataStreamReadSU(&DataStream, &width, EndianLittle);
-                DataStreamReadSU(&DataStream, &height, EndianLittle);
-                DataStreamReadSU(&DataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
-                DataStreamReadSU(&DataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
+                DataStreamReadSU(&dataStream, &width, EndianLittle);
+                DataStreamReadSU(&dataStream, &height, EndianLittle);
+                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
+                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
 
                 bmp.InfoHeader.Width = width;
                 bmp.InfoHeader.Height = height;
@@ -341,15 +341,15 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
                 {
                     unsigned short paddingBytes = 0; // Padding.Ignored and should be zero
 
-                    DataStreamReadSU(&DataStream, &bmp.InfoHeader.HorizontalandVerticalResolutions, EndianLittle);
-                    DataStreamReadSU(&DataStream, &paddingBytes, EndianLittle);
-                    DataStreamReadSU(&DataStream, &bmp.InfoHeader.DirectionOfBits, EndianLittle);
-                    DataStreamReadSU(&DataStream, &bmp.InfoHeader.halftoningAlgorithm, EndianLittle);
+                    DataStreamReadSU(&dataStream, &bmp.InfoHeader.HorizontalandVerticalResolutions, EndianLittle);
+                    DataStreamReadSU(&dataStream, &paddingBytes, EndianLittle);
+                    DataStreamReadSU(&dataStream, &bmp.InfoHeader.DirectionOfBits, EndianLittle);
+                    DataStreamReadSU(&dataStream, &bmp.InfoHeader.halftoningAlgorithm, EndianLittle);
 
-                    DataStreamReadIU(&DataStream, &bmp.InfoHeader.HalftoningParameterA, EndianLittle);
-                    DataStreamReadIU(&DataStream, &bmp.InfoHeader.HalftoningParameterB, EndianLittle);
-                    DataStreamReadIU(&DataStream, &bmp.InfoHeader.ColorEncoding, EndianLittle);
-                    DataStreamReadIU(&DataStream, &bmp.InfoHeader.ApplicationDefinedByte, EndianLittle);
+                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.HalftoningParameterA, EndianLittle);
+                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.HalftoningParameterB, EndianLittle);
+                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.ColorEncoding, EndianLittle);
+                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.ApplicationDefinedByte, EndianLittle);
                 }
 
                 break;
@@ -390,8 +390,8 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
     {
         unsigned char* const data = (unsigned char* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount);
 
-        DataStreamReadP(&DataStream, data, imageDataLayout.RowImageDataSize);
-        DataStreamCursorAdvance(&DataStream, imageDataLayout.RowPaddingSize);
+        DataStreamReadP(&dataStream, data, imageDataLayout.RowImageDataSize);
+        DataStreamCursorAdvance(&dataStream, imageDataLayout.RowPaddingSize);
 
         for(size_t i = 0; i < imageDataLayout.RowImageDataSize; i += 3)
         {

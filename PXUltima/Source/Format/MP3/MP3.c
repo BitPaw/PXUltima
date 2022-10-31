@@ -1,7 +1,7 @@
 #include "MP3.h"
 
 #include <File/DataStream.h>
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 #include <Format/XingInfo/XingInfo.h>
 #include <Format/LAME/LAME.h>

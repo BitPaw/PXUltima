@@ -4,7 +4,7 @@
 #include <malloc.h>
 #include <string.h>
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
 #include <File/Endian.h>
 #include <File/DataStream.h>
@@ -1066,13 +1066,13 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
                         "| CompressionInfo   : %7i |\n"
                         "| WindowSize        : %7i |\n"
                         "| CheckFlag         : %7i |\n"
-                        "| DictionaryPresent : %7i |\n"
+                        "| PXDictionaryPresent : %7i |\n"
                         "| CompressionLevel  : %7s |\n",
                         CompressionMethodToString(zlib.Header.CompressionMethod),
                         zlib.Header.CompressionInfo,
                         zlib.Header.WindowSize,
                         zlib.Header.CheckFlag,
-                        zlib.Header.DictionaryPresent,
+                        zlib.Header.PXDictionaryPresent,
                         CompressionLevelToString(zlib.Header.CompressionLevel)
                     );
 
@@ -1505,13 +1505,13 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                         "| CompressionInfo   : %7i |\n"
                         "| WindowSize        : %7i |\n"
                         "| CheckFlag         : %7i |\n"
-                        "| DictionaryPresent : %7i |\n"
+                        "| PXDictionaryPresent : %7i |\n"
                         "| CompressionLevel  : %7s |\n",
                         CompressionMethodToString(zlib.Header.CompressionMethod),
                         zlib.Header.CompressionInfo,
                         zlib.Header.WindowSize,
                         zlib.Header.CheckFlag,
-                        zlib.Header.DictionaryPresent,
+                        zlib.Header.PXDictionaryPresent,
                         CompressionLevelToString(zlib.Header.CompressionLevel)
                     );
 

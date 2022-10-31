@@ -1,6 +1,6 @@
 #include "Model.h"
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 #include <File/File.h>
 #include <Text/Text.h>
 #include <File/DataStream.h>
