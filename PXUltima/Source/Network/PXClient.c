@@ -44,7 +44,7 @@ ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned 
             {  
                 InvokeEvent(pxSocket->ConnectionEstablishedCallback, pxSocket);
 
-                pxSocket->CommunicationThread = ThreadRun(threadFunction, threadObject);
+                const ActionResult ActionResult = PXThreadRun(&pxSocket->CommunicationThread, threadFunction, threadObject);
 
                 wasSucessful = 1u;
                 break; // Connect only once. If this is not here, we would connect more than once (with different protocol)
@@ -62,7 +62,7 @@ ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned 
 
 #define PXClientBufferSize 2048u
 
-ThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
+PXThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
 {
     PXSocket* const pxSocket = (PXSocket*)PXSocketAdress;
 

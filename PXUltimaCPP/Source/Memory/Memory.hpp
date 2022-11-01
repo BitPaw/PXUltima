@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Memory/Memory.h>
+#include <Memory/PXMemory.h>
 
 namespace PX
 {

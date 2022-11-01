@@ -5,7 +5,7 @@
 
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
-#include <Async/Thread.h>
+#include <Async/PXThread.h>
 
 #if OSUnix
 #include <unistd.h>
@@ -35,13 +35,15 @@ extern "C"
 		size_t ParameterListSize;
 		char** ParameterList;
 
-		ThreadID WorkingThread;
+		PXThread WorkingThread;
 		size_t ReturnValue;
 		unsigned char ExecutionSuccessfull;
 	}
 	Program;
 
-	PXPublic ThreadResult  ProgramExecuteThreadFunction(void* data);
+	PXPublic PXThreadResult  ProgramExecuteThreadFunction(void* data);
+
+	PXPrivate ActionResult ProgramExecute(Program* const program);
 
 	// Execute function Asyncroinusly in another Thread.
 	PXPublic ActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback);

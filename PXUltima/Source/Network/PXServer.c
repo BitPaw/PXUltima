@@ -101,7 +101,7 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
 
         InvokeEvent(pxSocket->ConnectionListeningCallback, pxSocket);
 
-        pxSocket->CommunicationThread = ThreadRun(PXServerPXClientListeningThread, pxSocket);
+        const ActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, pxSocket);
     }
 
     return ActionSuccessful;
@@ -178,14 +178,15 @@ ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID cl
     return actionResult;
 }
 
-ThreadResult PXServerPXClientListeningThread(void* serverAdress)
+PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
 {
     PXServer* server = serverAdress;
     PXSocket* serverSocket = 0;
 
     // Seek Socket
     {
-        ThreadID threadID = ThreadCurrentGet();
+        /* What does this do ??
+        ThreadID threadID = PXThreadCurrentGet();
 
         for(size_t i = 0; i < server->ServerSocketListSize; ++i)
         {
@@ -196,12 +197,12 @@ ThreadResult PXServerPXClientListeningThread(void* serverAdress)
                 serverSocket = serverSocket;
                 break;
             }
-        }
+        }*/
     }
 
     if(!serverSocket)
     {
-        return ThreadSucessful;
+        return PXThreadSucessful;
     }
 
     while(PXSocketIsCurrentlyUsed(serverSocket))
@@ -232,5 +233,5 @@ ThreadResult PXServerPXClientListeningThread(void* serverAdress)
         PXServerRegisterPXClient(serverSocket , &clientSocket);
     }
 
-    return ThreadSucessful;
+    return PXThreadSucessful;
 }

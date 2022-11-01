@@ -1767,14 +1767,14 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 }
 #endif
 
-ThreadResult PXWindowCreateThread(void* const windowAdress)
+PXThreadResult PXWindowCreateThread(void* const windowAdress)
 {
     PXWindow* const window = (PXWindow*)windowAdress;
     const unsigned char isHidden = window->Title[0] == '\0';
 
     if(!windowAdress)
     {
-        return ThreadSucessful;
+        return PXThreadSucessful;
     }
 
     window->IsRunning = 0;
@@ -2208,7 +2208,7 @@ ThreadResult PXWindowCreateThread(void* const windowAdress)
 #endif
     }
 
-    return ThreadSucessful;
+    return PXThreadSucessful;
 }
 
 void PXWindowConstruct(PXWindow* const window)
@@ -2243,7 +2243,8 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
 
     if(async)
     {
-        window->MessageThreadID = ThreadRun(PXWindowCreateThread, window);
+        const ActionResult actionResult = PXThreadRun(&window->MessageThread, PXWindowCreateThread, window);
+        const PXBool sucessful = ActionSuccessful == actionResult;
     }
     else
     {

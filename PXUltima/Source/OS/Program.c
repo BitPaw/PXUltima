@@ -14,7 +14,7 @@
 #include <Text/Text.h>
 #include <Memory/PXMemory.h>
 
-ThreadResult ProgramExecuteThreadFunction(void* data)
+PXThreadResult ProgramExecuteThreadFunction(void* data)
 {
     Program* program = (Program*)data;
 
@@ -45,7 +45,27 @@ ThreadResult ProgramExecuteThreadFunction(void* data)
 
     // Free?
 
-    return ThreadSucessful;
+    return PXThreadSucessful;
+}
+
+ActionResult ProgramExecute(Program* const program)
+{
+    if (program->ProgramExecutedCallBack)
+    {
+        const ActionResult actionResult = PXThreadRun(&program->WorkingThread, ProgramExecuteThreadFunction, program);
+        const PXBool sucessful = ActionSuccessful == actionResult;
+
+        if (!sucessful)
+        {
+            return actionResult;
+        }
+    }
+    else
+    {
+        ProgramExecuteThreadFunction(program);
+    }
+
+    return ActionSuccessful;
 }
 
 ActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback)
@@ -70,16 +90,9 @@ ActionResult ProgramExecuteAS(Program* program, const char* programPath, const c
 
     TextCopyA(parameterString, 1024, program->ParameterList[1], 1024);
 
-    if(callback)
-    {
-        program->WorkingThread = ThreadRun(ProgramExecuteThreadFunction, program);
-    }
-    else
-    {
-        ProgramExecuteThreadFunction(program);
-    }
+    const ActionResult actionResult = ProgramExecute(program);
 
-    return ActionSuccessful;
+    return actionResult;
 }
 
 ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, size_t parameterListSize, ProgramExecutedEvent* callback)
@@ -116,16 +129,9 @@ ActionResult ProgramExecuteAL(Program* program, const char* programPath, const c
         program->ParameterList[i++] = 0;
     }
 
-    if(callback)
-    {
-        program->WorkingThread = ThreadRun(ProgramExecuteThreadFunction, program);
-    }
-    else
-    {
-        ProgramExecuteThreadFunction(program);
-    }
+    const ActionResult actionResult = ProgramExecute(program);
 
-    return ActionSuccessful;
+    return actionResult;
 }
 
 ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback)

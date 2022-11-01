@@ -20,7 +20,7 @@
 #endif
 
 #include <Device/VirtualKey.h>
-#include <Async/Thread.h>
+#include <Async/PXThread.h>
 #include <Device/Mouse.h>
 #include <Device/KeyBoard.h>
 #include <Graphic/Graphic.h>
@@ -164,7 +164,7 @@ extern "C"
 #endif
 
 		// Interneal
-		ThreadID MessageThreadID;
+		PXThread MessageThread;
 
 		void* EventReceiver;
 
@@ -192,7 +192,7 @@ extern "C"
 	PXPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
 #endif
 
-	PXPrivate ThreadResult PXWindowCreateThread(void* const PXWindowAdress);
+	PXPrivate PXThreadResult PXWindowCreateThread(void* const PXWindowAdress);
 
 	PXPublic void PXWindowConstruct(PXWindow* const PXWindow);
 

@@ -82,6 +82,8 @@ extern "C"
 	PXPublic void PXVector4FMultiplyXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult);
 
 	PXPublic void PXVector2FDivideXY(const float x, const float y);
+	PXPublic void PXVector3FDivide(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
+	PXPublic void PXVector3FDivideS(const PXVector3F* const vectorA, const float scalar, PXVector3F* const vectorResult);
 	PXPublic void PXVector3FDivideXYZ(const float x, const float y, const float z);
 	PXPublic void PXVector4FDivideXYZW(const float x, const float y, const float z, const float w);
 

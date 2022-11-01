@@ -37,7 +37,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #define AdressInfoDelete FreeAddrInfoA
 #endif
 
-#include <Async/Thread.h>
+#include <Async/PXThread.h>
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
 
@@ -198,7 +198,7 @@ extern "C"
 		PXSocketState State;
 
 		//---<CPrivate IO>------------
-		ThreadID CommunicationThread;
+		PXThread CommunicationThread;
 		//----------------------------
 
 		//---<Event CallBack>---------

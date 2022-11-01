@@ -40,7 +40,7 @@ extern "C"
 	TimeMonth;
 
 
-	typedef struct Time_
+	typedef struct PXTime_
 	{
 		unsigned short Year;
 		unsigned short Month;
@@ -51,13 +51,14 @@ extern "C"
 		unsigned short Second;
 		unsigned short Milliseconds;
 	}
-	Time;
+	PXTime;
 
 	PXPublic TimeDayOfWeek ConvertToMonth(unsigned short monthID);
 	PXPublic TimeMonth ConvertToDay(unsigned short dayID);
 
-	PXPublic void TimeNow(Time* time);
-	PXPublic size_t TimeMillisecondsDelta(const Time* timeA, const Time* timeB);
+	PXPublic void PXTimeNow(PXTime* time);
+	PXPublic size_t PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
+	
 
 #ifdef __cplusplus
 }

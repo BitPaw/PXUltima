@@ -19,12 +19,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Math\Matrix.hpp" />
+    <ClInclude Include="Source\Async\Lock.hpp" />
     <ClInclude Include="Source\Memory\Memory.hpp" />
     <ClInclude Include="Source\OS\Window.h" />
+    <ClInclude Include="Source\Async\Thread.hpp" />
+    <ClInclude Include="Source\Math\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Math\Matrix.cpp" />
+    <ClCompile Include="Source\Async\Lock.cpp" />
     <ClCompile Include="Source\Memory\Memory.cpp" />
     <ClCompile Include="Source\OS\Window.cpp" />
+    <ClCompile Include="Source\Async\Thread.cpp" />
+    <ClCompile Include="Source\Math\Vector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

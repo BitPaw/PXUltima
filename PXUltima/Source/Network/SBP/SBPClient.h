@@ -6,7 +6,7 @@
 #include "SBPProtocol.h"
 
 #include <Network/PXClient.h>
-#include <Async/Thread.h>
+#include <Async/PXThread.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -29,7 +29,7 @@ extern "C"
 	}
 	SBPPXClient;
 
-	ThreadResult SBPPXClientReciveDataThread(void* sbpPXClient);
+	PXThreadResult SBPPXClientReciveDataThread(void* sbpPXClient);
 
 	PXPublic void SBPPXClientConstruct(SBPPXClient* const sbpPXClient);
 	PXPublic void SBPPXClientDestruct(SBPPXClient* const sbpPXClient);

@@ -1,4 +1,4 @@
-#include "Time.h"
+#include "PXTime.h"
 
 #include <OS/OSVersion.h>
 
@@ -42,7 +42,7 @@ TimeMonth ConvertToDay(unsigned short dayID)
 	}
 }
 
-void TimeNow(Time* time)
+void PXTimeNow(PXTime* time)
 {
 #if OSUnix
 #elif OSWindows
@@ -62,7 +62,7 @@ void TimeNow(Time* time)
 #endif
 }
 
-size_t TimeMillisecondsDelta(const Time* timeA, const Time* timeB)
+size_t PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 {
 	//Year = -1;
 //Month = Month::Invalid;

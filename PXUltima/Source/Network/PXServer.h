@@ -50,7 +50,7 @@ extern "C"
 	//CPublic ActionResult PXServerBroadcastMessageToPXClients(PXServer* server, char* message, size_t messageLength);
 	//CPublic ActionResult PXServerBroadcastFileToPXClients(PXServer* server, const char* filePath);
 
-	static ThreadResult PXServerPXClientListeningThread(void* server);
+	static PXThreadResult PXServerPXClientListeningThread(void* server);
 
 #ifdef __cplusplus
 }

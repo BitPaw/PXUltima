@@ -18,10 +18,10 @@
     <ClInclude Include="Source\Async\Await.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Async\Lock.h">
+    <ClInclude Include="Source\Async\PXLock.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Async\Thread.h">
+    <ClInclude Include="Source\Async\PXThread.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Container\BinaryTree\BinaryTree.h">
@@ -252,7 +252,7 @@
     <ClInclude Include="Source\Text\Text.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Time\Time.h">
+    <ClInclude Include="Source\Time\PXTime.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\UI\UI.h">
@@ -363,7 +363,7 @@
     <ClInclude Include="Source\Container\RingBuffer\PXRingBuffer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphic\Camera.h">
+    <ClInclude Include="Source\Graphic\PXCamera.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Math\PXVector.h">
@@ -381,12 +381,18 @@
     <ClInclude Include="Source\Format\RSA\RSA.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Math\PXPhysic.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Time\PXStopWatch.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Async\Lock.c">
+    <ClCompile Include="Source\Async\PXLock.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Async\Thread.c">
+    <ClCompile Include="Source\Async\PXThread.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Container\BinaryTree\BinaryTree.c">
@@ -611,7 +617,7 @@
     <ClCompile Include="Source\Text\Text.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Time\Time.c">
+    <ClCompile Include="Source\Time\PXTime.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\UI\UI.c">
@@ -722,7 +728,7 @@
     <ClCompile Include="Source\Container\RingBuffer\PXRingBuffer.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\Camera.c">
+    <ClCompile Include="Source\Graphic\PXCamera.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Math\PXVector.c">
@@ -738,6 +744,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\RSA\RSA.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\PXPhysic.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Time\PXStopWatch.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

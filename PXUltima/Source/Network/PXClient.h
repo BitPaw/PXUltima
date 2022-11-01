@@ -27,7 +27,7 @@ extern "C"
 
 	PXPublic ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
 
-	PXPublic ThreadResult CommunicationFunctionAsync(void* ioSocket);
+	PXPublic PXThreadResult CommunicationFunctionAsync(void* ioSocket);
 
 #ifdef __cplusplus
 }

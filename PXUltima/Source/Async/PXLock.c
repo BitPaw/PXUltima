@@ -1,23 +1,23 @@
-#include "Lock.h"
+#include "PXLock.h"
 
 #include <Memory/PXMemory.h>
 
-PXPublic void LockClear(LockID* const asyncLockID)
+void PXLockClear(PXLock* const lock)
 {
 #if OSUnix
-    MemorySet(asyncLockID, sizeof(LockID), 0);
+    MemorySet(lock->PXLockID, sizeof(LockID), 0);
 #elif OSWindows
-    *asyncLockID = 0;
+	lock->PXLockID = 0;
 #endif
 }
 
-ActionResult LockCreate(LockID* const asyncLockID)
+ActionResult PXLockCreate(PXLock* const lock)
 {
 #if OSUnix
 	int sharedPointer = 0;
 	unsigned int value = 1;
 
-	const int resultID = sem_init(asyncLockID, sharedPointer, value);
+	const int resultID = sem_init(lock->PXLockID, sharedPointer, value);
 	const unsigned char sucessful = resultID == 0; // 0=sucessful, -1=Error
 
 #elif OSWindows
@@ -29,14 +29,14 @@ ActionResult LockCreate(LockID* const asyncLockID)
 	const HANDLE handle = CreateSemaphoreW(lpSemaphoreAttributes, lInitialCount, lMaximumCount, lpName);
 	const unsigned char sucessful = handle != 0;
 
-	*asyncLockID = handle;
+	lock->PXLockID = handle;
 #endif
 
 	if (!sucessful)
 	{
         const ActionResult actionResult = GetCurrentError();
 
-        LockClear(asyncLockID);
+		PXLockClear(lock);
 
         return actionResult;
 	}
@@ -44,42 +44,42 @@ ActionResult LockCreate(LockID* const asyncLockID)
 	return ActionSuccessful;
 }
 
-ActionResult LockDelete(LockID* const asyncLockID)
+ActionResult PXLockDelete(PXLock* const lock)
 {
 	int closingResult = -1;
 
 #if OSUnix
-	closingResult = sem_destroy(asyncLockID);
+	closingResult = sem_destroy(lock->PXLockID);
 #elif OSWindows
-	closingResult = CloseHandle(asyncLockID);
+	closingResult = CloseHandle(lock->PXLockID);
 #endif
 
-    LockClear(asyncLockID);
+    PXLockClear(lock);
 
 	return closingResult;
 }
 
-ActionResult LockLock(LockID* const asyncLockID)
+ActionResult PXLockEngage(PXLock* const lock)
 {
 	int lockResult = -1;
 
 #if OSUnix
-	lockResult = sem_wait(asyncLockID);
+	lockResult = sem_wait(lock->PXLockID);
 #elif OSWindows
-	lockResult = WaitForSingleObject(*asyncLockID, INFINITE);
+	lockResult = WaitForSingleObject(lock->PXLockID, INFINITE);
 #endif
 
 	return lockResult;
 }
 
-ActionResult LockRelease(LockID* const asyncLockID)
+ActionResult PXLockRelease(PXLock* const lock)
 {
 	int releaseResult = -1;
 
 #if OSUnix
-	releaseResult = sem_post(asyncLockID);
+	releaseResult = sem_post(lock->PXLockID);
 #elif OSWindows
-	releaseResult = ReleaseSemaphore(*asyncLockID, 1, 0);
+	releaseResult = ReleaseSemaphore(lock->PXLockID, 1, 0);
 #endif
 
 	return releaseResult;

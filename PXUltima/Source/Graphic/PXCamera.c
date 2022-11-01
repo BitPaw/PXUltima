@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "PXCamera.h"
 
 #include <Memory/PXMemory.h>
 #include <Math/PXMath.h>
@@ -14,13 +14,11 @@ void PXCameraConstruct(PXCamera* const camera)
 	camera->Height = 1;
 	camera->Width = 1;
 	camera->Near = 0.01;
-	camera->Far = 10000;
+	camera->Far = 100000;
 
 	PXMatrix4x4FIdentity(&camera->MatrixModel);
 	PXMatrix4x4FIdentity(&camera->MatrixView);
 	PXMatrix4x4FIdentity(&camera->MatrixProjection);
-
-	PXVector3FSetXYZ(&camera->LookAtPosition, 1, 0, 0, &camera->LookAtPosition);
 
 	PXCameraViewChange(camera, PXCameraPerspective3D);
 }
@@ -97,7 +95,7 @@ void PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F)
 	const float minValue = -85.0f;
 
 	camera->CurrentRotation.X -= vector3F->X * camera->ViewSpeed;
-	camera->CurrentRotation.Y += vector3F->Y * camera->ViewSpeed;
+	camera->CurrentRotation.Y -= vector3F->Y * camera->ViewSpeed;
 
 	camera->CurrentRotation.Y = MathLimit(camera->CurrentRotation.Y, minValue, maxValue);
 
