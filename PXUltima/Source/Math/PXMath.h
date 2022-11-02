@@ -1,5 +1,5 @@
-#ifndef MathInclude
-#define MathInclude
+#ifndef PXMathInclude
+#define PXMathInclude
 
 #include <Format/Type.h>
 
@@ -21,7 +21,7 @@
 
 #define MathFloor(a) ((int)(a))
 //#define MathCeiling(a)
-#define MathAbsolute(a) (a < 0 ? -a : a)
+#define MathAbsolute(a) (a * ((a >= 0) - (a < 0)))
 
 
 #ifdef __cplusplus

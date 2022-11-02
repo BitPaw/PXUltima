@@ -8,7 +8,7 @@
 #include <Container/ClusterValue.h>
 #include <File/Endian.h>
 #include <File/DataStream.h>
-#include <Time/Time.h>
+#include <Time/PXTime.h>
 #include <Format/Image.h>
 #include <Format/ZLIB/ZLIB.h>
 #include <Format/ADAM7/ADAM7.h>
@@ -2737,10 +2737,10 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
 
     // [tIME] - 19 Bytes
     {
-        Time time;
+        PXTime time;
         PNGLastModificationTime pngLastModificationTime;
 
-        TimeNow(&time);
+        PXTimeNow(&time);
 
         pngLastModificationTime.Year = time.Year;
         pngLastModificationTime.Month = time.Month;

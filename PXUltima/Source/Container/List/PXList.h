@@ -22,7 +22,7 @@ extern "C"
 
 	PXPublic void PXListInitialize(PXList* const list, void* const data, const size_t dataTypeSize, const size_t sizeAllocated);
 
-	PXPublic void PXListAdd(PXList* const list, void* const dataElement);
+	PXPublic PXBool PXListAdd(PXList* const list, void* const dataElement);
 
 #ifdef __cplusplus
 }

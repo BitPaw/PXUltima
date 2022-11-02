@@ -288,6 +288,8 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 
 
     renderable->VBO = vbo;
+
+    renderable->DoRendering = 1u;
 }
 
 ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize)
@@ -613,7 +615,7 @@ ActionResult GraphicRender(GraphicContext* const graphicContext, GraphicRenderMo
     return ActionInvalid;
 }
 
-void GraphicShaderUpdateMatrix4x4F(GraphicContext* const graphicContext, const unsigned int locationID, float* matrix4x4)
+void GraphicShaderUpdateMatrix4x4F(GraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4)
 {   
     OpenGLShaderVariableMatrix4fv(&graphicContext->OpenGLInstance, locationID, 1, 0, matrix4x4);
 }

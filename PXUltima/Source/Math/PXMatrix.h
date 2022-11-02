@@ -1,5 +1,5 @@
-#ifndef MatrixINCLUDE
-#define MatrixINCLUDE
+#ifndef PXMatrixINCLUDE
+#define PXMatrixINCLUDE
 
 #include <Format/Type.h>
 #include <Math/PXVector.h>
