@@ -387,6 +387,9 @@
     <ClInclude Include="Source\Time\PXStopWatch.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Format\ELF\ELF.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -750,6 +753,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Time\PXStopWatch.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\ELF\ELF.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

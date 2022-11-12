@@ -3,27 +3,13 @@
 
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
-
 #include <File/DataStream.h>
+#include <File/File.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-	typedef enum ModelFileFormat_
-	{
-		ModelFileFormatInvalid,
-		ModelFileFormatUnKown,
-		ModelFileFormatA3DS,
-		ModelFileFormatFBX,
-		ModelFileFormatOBJ,
-		ModelFileFormatPLY,
-		ModelFileFormatSTL,
-		ModelFileFormatWRL
-	}
-	ModelFileFormat;
-
 
 	typedef struct PXMaterial_
 	{
@@ -156,11 +142,9 @@ extern "C"
 	PXPublic unsigned char ModelSegmentsAmount(const Model* const model);
 	PXPublic void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment* const meshSegment);
 
-	PXPrivate ModelFileFormat ModelGuessFormat(const wchar_t* const filePath);
-
 	PXPublic ActionResult ModelLoadA(Model* const model, const char* const filePath);
 	PXPublic ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath);
-	PXPublic ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const ModelFileFormat modelType);
+	PXPublic ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const FileFormatExtension modelType);
 
 #ifdef __cplusplus
 }

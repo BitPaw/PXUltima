@@ -78,23 +78,6 @@ void ImageDestruct(Image* const image)
     ImageConstruct(image);
 }
 
-ImageFileFormat ImageGuessFormat(const wchar_t* const filePath)
-{
-    wchar_t extension[ExtensionMaxSize];
-
-    FilePathExtensionGetW(filePath, PathMaxSize, extension, ExtensionMaxSize);
-
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "BMP", 3u))  return ImageFileFormatBitMap;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "GIF", 3u))  return ImageFileFormatGIF;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "JPG", 4u))  return ImageFileFormatJPEG;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "JPEG", 4u))  return ImageFileFormatJPEG;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "PNG", 3u))  return ImageFileFormatPNG;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "TGA", 3u))  return ImageFileFormatTGA;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "TIFF", 4u))  return ImageFileFormatTIFF;
-
-    return ImageFileFormatUnkown;
-}
-
 ActionResult ImageLoadA(Image* image, const char* filePath)
 {
     wchar_t filePathW[PathMaxSize];
@@ -115,7 +98,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
 
     {
         const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
+        const PXBool sucessful = fileLoadingResult == ActionSuccessful;
 
         if(!sucessful)
         {
@@ -124,9 +107,9 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
     }
 
     {
-        const ImageFileFormat imageFormatHint = ImageGuessFormat(filePath);
+        const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryW(filePath, PathMaxSize);
         const ActionResult fileParsingResult = ImageLoadD(image, dataStream.Data, dataStream.DataSize, imageFormatHint);
-        const unsigned char success = fileParsingResult == ActionSuccessful;
+        const PXBool success = fileParsingResult == ActionSuccessful;
 
         if(success)
         {
@@ -138,7 +121,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
 
         do
         {
-            const ImageFileFormat imageFileFormat = fileGuessResult + fileFormatID;
+            const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
 
             fileGuessResult = ImageLoadD(image, dataStream.Data, dataStream.DataSize, imageFileFormat);
 
@@ -152,39 +135,39 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
     DataStreamDestruct(&dataStream);
 }
 
-ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const ImageFileFormat guessedFormat)
+ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const FileFormatExtension guessedFormat)
 {
     size_t bytesRead = 0;
     ParseToImage parseToImage = 0;
 
     switch(guessedFormat)
     {
-        case ImageFileFormatBitMap:
+        case FileFormatBitMap:
         {
             parseToImage = BMPParseToImage;
             break;
         }
-        case ImageFileFormatGIF:
+        case FileFormatGIF:
         {
             parseToImage = GIFParseToImage;
             break;
         }
-        case ImageFileFormatJPEG:
+        case FileFormatJPEG:
         {
             parseToImage = JPEGParseToImage;
             break;
         }
-        case ImageFileFormatPNG:
+        case FileFormatPNG:
         {
             parseToImage = PNGParseToImage;
             break;
         }
-        case ImageFileFormatTGA:
+        case FileFormatTGA:
         {
             parseToImage = TGAParseToImage;
             break;
         }
-        case ImageFileFormatTIFF:
+        case FileFormatTagImage:
         {
             parseToImage = TIFFParseToImage;
             break;
@@ -200,7 +183,7 @@ ActionResult ImageLoadD(Image* const image, const void* const data, const size_t
     return actionResult;
 }
 
-ActionResult ImageSaveA(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat)
+ActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     wchar_t filePathW[PathMaxSize];
 
@@ -211,7 +194,7 @@ ActionResult ImageSaveA(Image* const image, const char* const filePath, const Im
     return actionResult;
 }
 
-ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat)
+ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     wchar_t filePathW[PathMaxSize];
     wchar_t* fileExtension = 0;
@@ -226,49 +209,48 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
     switch(fileFormat)
     {    
-        case ImageFileFormatBitMap:
+        case FileFormatBitMap:
         {
             fileSize = BMPFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = BMPSerializeFromImage;
             fileExtension = L"bmp";
             break;
         }
-        case ImageFileFormatPNG:
+        case FileFormatPNG:
         {
             fileSize = PNGFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = PNGSerializeFromImage;
             fileExtension = L"png";
             break;
         }
-        case ImageFileFormatTGA:
+        case FileFormatTGA:
         {
             fileSize = TGAFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = TGASerializeFromImage;
             fileExtension = L"tga";
             break;
         }
-        case ImageFileFormatJPEG:
+        case FileFormatJPEG:
         {
             fileSize = JPEGFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = JPEGSerializeFromImage;
             fileExtension = L"jpg";
             break;
         }
-        case ImageFileFormatTIFF:
+        case FileFormatTagImage:
         {
             fileSize = TIFFFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = TIFFSerializeFromImage;
             fileExtension = L"tiff";
             break;
         }
-        case ImageFileFormatGIF:
+        case FileFormatGIF:
         {
             fileSize = GIFFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = GIFSerializeFromImage;
             fileExtension = L"gif";
             break;
         }
-        case ImageFileFormatUnkown:
         default:
             return ResultFormatNotSupported;
     }
@@ -306,7 +288,7 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
     return ActionSuccessful;
 }
 
-ActionResult ImageSaveD(Image* const image, void* const data, const size_t dataSize, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat)
+ActionResult ImageSaveD(Image* const image, void* const data, const size_t dataSize, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     return ActionInvalid;
 }

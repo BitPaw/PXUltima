@@ -200,6 +200,117 @@ void FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, w
 	TextCopyW(filePath + index + 1, filePathSize - index, extension, extensionSizeMax);
 }
 
+FileFormatExtension FilePathExtensionDetectTryA(const char* const filePath, const size_t filePathSize)
+{
+	char extensionA[ExtensionMaxSize];
+
+	FilePathExtensionGetA(filePath, filePathSize, extensionA, ExtensionMaxSize);
+
+	FileFormatExtension fileFormatExtension = FileExtensionDetectTryA(extensionA, ExtensionMaxSize);
+
+	return fileFormatExtension;
+}
+
+FileFormatExtension FilePathExtensionDetectTryW(const wchar_t* const filePath, const size_t filePathSize)
+{
+	wchar_t extensionW[ExtensionMaxSize];
+
+	FilePathExtensionGetW(filePath, filePathSize, extensionW, ExtensionMaxSize);
+
+	FileFormatExtension fileFormatExtension = FileExtensionDetectTryW(extensionW, ExtensionMaxSize);
+
+	return fileFormatExtension;
+}
+
+FileFormatExtension FileExtensionDetectTryA(const char* const extension, const size_t extensionSize)
+{
+	wchar_t extensionW[ExtensionMaxSize];
+
+	const size_t extensionWSize = TextCopyAW(extension, extensionSize, extensionW, ExtensionMaxSize);
+	const FileFormatExtension format = FileExtensionDetectTryW(extensionW, extensionWSize);
+
+	return format;
+}
+
+FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const size_t extensionSize)
+{
+	const size_t extensionSize = MathMinimumIU(extensionSize, ExtensionMaxSize);
+
+	switch (extensionSize)
+	{
+		case 0:
+			return FileFormatInvalid;
+
+		case 1u:
+		{
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "O", 1u))  return FileFormatLinuxExecutableAndLinkable;
+			break; 
+		}
+		case 2u:
+		{
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "SO", 2u))  return FileFormatLinuxExecutableAndLinkable;
+			break;
+		}
+		case 3u:
+		{
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "ELF", 3u))  return FileFormatLinuxExecutableAndLinkable;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "OUT", 3u))  return FileFormatLinuxExecutableAndLinkable;
+
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "FNT", 3u))  return FileFormatSpriteFont;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "GIF", 3u))  return FileFormatGIF;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "HTM", 3u))  return FileFormatHTML;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "INI", 3u))  return FileFormatINI;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "M4A", 3u))  return FileFormatM4A;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "3DS", 3u))  return FileFormatA3DS;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "ACC", 3u))  return FileFormatAAC;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "AVI", 3u))  return FileFormatAVI;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "BMP", 3u))  return FileFormatBitMap;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "CSS", 3u))  return FileFormatCSS;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "DLL", 3u))  return FileFormatWindowsDynamicLinkedLibrary;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "EML", 3u))  return FileFormatEML;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "EXE", 3u))  return FileFormatWindowsExecutable;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "FBX", 3u))  return FileFormatFimBox;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MP3", 3u))  return FileFormatMP3;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MP4", 3u))  return FileFormatMP4;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MSI", 3u))  return FileFormatMSI;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MTL", 3u))  return FileFormatMTL;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "OBJ", 3u))  return FileFormatOBJ;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "OGG", 3u))  return FileFormatOGG;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PDF", 3u))  return FileFormatPDF;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PHP", 3u))  return FileFormatPHP;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PLY", 3u))  return FileFormatPLY;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PNG", 3u))  return FileFormatPNG;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "QUI", 3u))  return FileFormatQOI;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "STL", 4u))  return FileFormatSTL;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "SVG", 4u))  return FileFormatSVG;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TGA", 4u))  return FileFormatTGA;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TTF", 4u))  return FileFormatTrueTypeFont;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WAV", 4u))  return FileFormatWave;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WMA", 4u))  return FileFormatWMA;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "XML", 3u))  return FileFormatXML;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "YML", 3u))  return FileFormatYAML;
+
+			break;
+		}
+		case 4u:
+		{			
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "FLAC", 4u))  return FileFormatFLAC;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MIDI", 4u))  return FileFormatMIDI; 
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "STEP", 4u))  return FileFormatSTEP;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TIFF", 4u))  return FileFormatTagImage;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "JPEG", 4u))  return FileFormatJPEG;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "JSON", 4u))  return FileFormatJSON;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "VRML", 4u))  return FileFormatVRML;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WEBM", 4u))  return FileFormatWEBM;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WEBP", 4u))  return FileFormatWEBP;
+
+			break;
+		}
+	}
+
+	return FileFormatUnkown;
+}
+
 unsigned char FileDoesExistA(const char* filePath)
 {
 	return 0;

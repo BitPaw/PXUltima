@@ -18,19 +18,6 @@ void PXFontDestruct(PXFont* const font)
     MemoryRelease(font->FontElement, font->FontElementSize);
 }
 
-FontFileFormat FontGuessFormat(const wchar_t* filePath)
-{
-    wchar_t extension[ExtensionMaxSize];
-
-    FilePathExtensionGetW(filePath, PathMaxSize, extension, ExtensionMaxSize);
-
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "FNT", 3u))  return FontFileFormatFNT;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "OTF", 3u))  return FontFileFormatOFT;
-    if(TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "TTF", 4u))  return FontFileFormatTTF;
-
-    return FontFileFormatUnkown;
-}
-
 ActionResult FontLoadA(PXFont* const font, const char* filePath)
 {
     wchar_t filePathW[PathMaxSize];
@@ -60,9 +47,9 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
     }
 
     {
-        wchar_t filePathDirectory[256];
+        wchar_t filePathDirectory[PathMaxSize];
 
-        size_t index = TextFindLastW(filePath, 256, '/');
+        size_t index = TextFindLastW(filePath, PathMaxSize, '/');
 
         if (index == -1)
         {
@@ -76,7 +63,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
         TextCopyW(filePath, index, filePathDirectory, 256);
 
 
-        const FontFileFormat hint = FontGuessFormat(filePath);
+        const FileFormatExtension hint = FilePathExtensionDetectTryW(filePath, PathMaxSize);
         const ActionResult fileParsingResult = FontLoadD(font, hint, dataStream.Data, dataStream.DataSize, filePathDirectory);
         const unsigned char success = fileParsingResult == ActionSuccessful;
 
@@ -90,7 +77,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 
         do
         {
-            const ImageFileFormat imageFileFormat = fileGuessResult + fileFormatID;
+            const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
 
             fileGuessResult = FontLoadD(font, imageFileFormat, dataStream.Data, dataStream.DataSize, filePathDirectory);
 
@@ -104,13 +91,13 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
     DataStreamDestruct(&dataStream);
 }
 
-ActionResult FontLoadD(PXFont* const font, const FontFileFormat guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath)
+ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath)
 {
     PXFontConstruct(font);
 
     switch(guessedFormat)
     {
-        case FontFileFormatFNT:
+        case FileFormatSpriteFont:
         {
             font->FontElementSize = 1u;
             font->FontElement = MemoryAllocateClear(sizeof(FNT) * 1u);
@@ -129,7 +116,7 @@ ActionResult FontLoadD(PXFont* const font, const FontFileFormat guessedFormat, c
 
             break;
         }
-        case FontFileFormatTTF:
+        case FileFormatTrueTypeFont:
         {
             TTF ttf;
 
@@ -152,7 +139,6 @@ ActionResult FontLoadD(PXFont* const font, const FontFileFormat guessedFormat, c
 
             break;
         }
-        case FontFileFormatUnkown:
         default:
         {
             return ResultFormatNotSupported;

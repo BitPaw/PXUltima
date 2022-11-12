@@ -55,6 +55,65 @@ extern "C"
 {
 #endif
 
+	typedef enum FileFormatExtension_
+	{
+		FileFormatInvalid,
+		FileFormatUnkown,
+
+		FileFormatA3DS,
+		FileFormatAAC,
+		FileFormatAVI,
+		FileFormatBitMap,
+		FileFormatCSS,
+		FileFormatWindowsDynamicLinkedLibrary,
+		FileFormatLinuxExecutableAndLinkable,
+		FileFormatEML,
+		FileFormatWindowsExecutable,
+		FileFormatFimBox,
+		FileFormatFLAC,
+		FileFormatSpriteFont,
+		FileFormatGIF,
+		FileFormatHTML,
+		FileFormatINI,
+		FileFormatJPEG,
+		FileFormatJSON,
+		FileFormatM4A,
+		FileFormatMIDI,
+		FileFormatMP3,
+		FileFormatMP4,
+		FileFormatMSI,
+		FileFormatMTL,
+		FileFormatOBJ,
+		FileFormatOGG,
+		FileFormatPDF,
+		FileFormatPHP,
+		FileFormatPLY,
+		FileFormatPNG,
+		FileFormatQOI,
+		FileFormatSTEP,
+		FileFormatSTL,
+		FileFormatSVG,
+		FileFormatTGA,
+		FileFormatTagImage,
+		FileFormatTrueTypeFont,
+		FileFormatVRML,
+		FileFormatWave,
+		FileFormatWEBM,
+		FileFormatWEBP,
+		FileFormatWMA,
+		FileFormatXML,
+		FileFormatYAML
+	}
+	FileFormatExtension;
+
+	PXPublic FileFormatExtension FilePathExtensionDetectTryA(const char* const filePath, const size_t filePathSize);
+	PXPublic FileFormatExtension FilePathExtensionDetectTryW(const wchar_t* const filePath, const size_t filePathSize);
+
+	PXPublic FileFormatExtension FileExtensionDetectTryA(const char* const extension, const size_t extensionSize);
+	PXPublic FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const size_t extensionSize);
+
+
+
 	/*
 	typedef struct FilePath_
 	{
@@ -124,6 +183,8 @@ extern "C"
 
 	PXPublic void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax);
 	PXPublic void FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax);
+
+	PXPublic void FileExtensionDetect();
 
 #ifdef __cplusplus
 }

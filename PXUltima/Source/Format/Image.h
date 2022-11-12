@@ -13,18 +13,6 @@ extern "C"
 	typedef struct PXFont_ PXFont; // Avoid inclusion loop
 #endif
 
-	typedef enum ImageFileFormat_
-	{
-		ImageFileFormatUnkown,
-		ImageFileFormatBitMap,
-		ImageFileFormatPNG,
-		ImageFileFormatTGA,
-		ImageFileFormatJPEG,
-		ImageFileFormatTIFF,
-		ImageFileFormatGIF
-	}
-	ImageFileFormat;
-
 	typedef  enum ImageDataFormat_
 	{
 		ImageDataFormatInvalid,
@@ -64,20 +52,18 @@ extern "C"
 	PXPublic void ImageConstruct(Image* const image);
 	PXPublic void ImageDestruct(Image* const image);
 
-	PXPublic ImageFileFormat ImageGuessFormat(const wchar_t* const filePath);
-
 	PXPublic ActionResult ImageLoadA(Image* const image, const char* const filePath);
 	PXPublic ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath);
-	PXPublic ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const ImageFileFormat guessedFormat);
+	PXPublic ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const FileFormatExtension guessedFormat);
 
-	PXPublic ActionResult ImageSaveA(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
-	PXPublic ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
+	PXPublic ActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+	PXPublic ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
 	PXPublic ActionResult ImageSaveD
 	(
 		Image* image,
 		void* const data,
 		const size_t dataSize,
-		const ImageFileFormat fileFormat,
+		const FileFormatExtension fileFormat,
 		const ImageDataFormat dataFormat
 	);
 

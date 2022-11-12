@@ -89,22 +89,6 @@ void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment*
 	meshSegment->VertexData = model->DataVertex;
 }
 
-ModelFileFormat ModelGuessFormat(const wchar_t* const filePath)
-{
-	wchar_t extension[ExtensionMaxSize];
-
-	FilePathExtensionGetW(filePath, PathMaxSize, extension, ExtensionMaxSize);
-
-	if (TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "3ds", 3u))  return ModelFileFormatA3DS;
-	if (TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "FBX", 3u))  return ModelFileFormatFBX;
-	if (TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "OBJ", 3u))  return ModelFileFormatOBJ;
-	if (TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "PLY", 3u))  return ModelFileFormatPLY;
-	if (TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "STL", 3u))  return ModelFileFormatSTL;
-	if (TextCompareIgnoreCaseWA(extension, ExtensionMaxSize, "WRL", 3u))  return ModelFileFormatWRL;
-
-	return ModelFileFormatUnKown;
-}
-
 ActionResult ModelLoadA(Model* const model, const char* const filePath)
 {
 	wchar_t filePathW[PathMaxSize];
@@ -161,7 +145,7 @@ ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath)
     DataStreamDestruct(&dataStream);
 }
 
-ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const ModelFileFormat modelType)
+ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const FileFormatExtension modelType)
 {
     DataStream modelCompileCache;
 
@@ -173,37 +157,37 @@ ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const 
 
     switch (modelType)
     {
-        case ModelFileFormatA3DS:
+ /*       case FileFormatA3DS:
         {
            
             break;
         }
-        case ModelFileFormatFBX:
+        case FileFormatFimBox:
         {
            
             break;
-        }
-        case ModelFileFormatOBJ:
+        }*/
+        case FileFormatOBJ:
         {
             modelCompilerFunction = OBJFileCompile;
             modelParserFunction = OBJParseToModel;
             break;
         }
-        case ModelFileFormatPLY:
+   /*     case FileFormatPLY:
         {
             
             break;
         }
-        case ModelFileFormatSTL:
+        case FileFormatSTL:
         {
             
             break;
         }
-        case ModelFileFormatWRL:
+        case FileFormatVRML:
         {
          
             break;
-        }
+        }*/
         default:
         {
             return ResultFormatNotSupported;

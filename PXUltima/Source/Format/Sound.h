@@ -25,21 +25,6 @@ extern "C"
 {
 #endif
 
-	typedef enum SoundFormat_
-	{
-		SoundFormatInvalid,
-		SoundFormatUnkown,
-		SoundFormatAAC,
-		SoundFormatFLAC,
-		SoundFormatM4A,
-		SoundFormatMID,
-		SoundFormatMP3,
-		SoundFormatOGG,
-		SoundFormatWAV,
-		SoundFormatWMA
-	}
-	SoundFormat;
-
 	typedef enum SoundPlayStyle_
 	{
 		SoundPlayStyleOnce,

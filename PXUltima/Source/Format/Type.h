@@ -15,6 +15,10 @@
 #endif
 //-----------------------------------------------------------------------------
 
+#ifndef PXAdress
+#define PXAdress unsigned char*
+#endif
+
 #ifndef PXByte
 #define PXByte unsigned char
 #endif
@@ -31,6 +35,13 @@
 #define PXNo 0u
 #endif
 
+#ifndef PXTrue
+#define PXTrue 1u
+#endif
+
+#ifndef PXFalse
+#define PXFalse 0u
+#endif
 
 #ifdef __cplusplus
 extern "C"
