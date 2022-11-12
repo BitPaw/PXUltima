@@ -2,6 +2,7 @@
 
 #include <Text/Text.h>
 #include <Memory/PXMemory.h>
+#include <Math/PXMath.h>
 
 #include <stdarg.h>
 #include <fcntl.h>
@@ -328,38 +329,33 @@ void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wch
 
 void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileName)
 {
-	wchar_t extension[ExtensionMaxSize];
+	wchar_t finalPath[PathMaxSize];
 
-	size_t indexFileName = TextFindLastW(inputPath, PathMaxSize, '/');
-	const unsigned char found = indexFileName != -1;
+	wchar_t driveW[DriveMaxSize];
+	wchar_t directoryW[DirectoryMaxSize];
 
-	if (!found)
 	{
-		indexFileName = 0;
+		wchar_t fileNameW[FileNameMaxSize];
+		wchar_t extensionW[ExtensionMaxSize];
+
+		FilePathSplittW
+		(
+			inputPath, PathMaxSize,
+			driveW, DriveMaxSize,
+			directoryW, DirectoryMaxSize,
+			fileNameW, FileNameMaxSize,
+			extensionW, ExtensionMaxSize
+		);
 	}
 
-	// Fetch extension
 	{
-		const size_t indexDot = TextFindLastW(inputPath, PathMaxSize, '.'); // Find last dot
-		const unsigned char found = indexDot != -1;
+		size_t offset = 0;
 
-		if (!found)
-		{
-			return;
-		}
+		offset += TextCopyW(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
+		offset += TextCopyW(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
+		offset += TextCopyW(fileName, PathMaxSize, finalPath + offset, PathMaxSize - offset);
 
-		TextCopyW(&inputPath[indexDot], PathMaxSize, extension, ExtensionMaxSize);
-	}
-
-	// Copy old filename
-	TextCopyW(inputPath, PathMaxSize, exportPath, PathMaxSize);
-	TextCopyW(fileName, PathMaxSize, &exportPath[indexFileName], PathMaxSize);
-
-	// Add old extension
-	{
-		size_t length = TextLengthW(exportPath, PathMaxSize);
-
-		TextCopyW(extension , PathMaxSize, &exportPath[length], ExtensionMaxSize);
+		TextCopyW(finalPath, offset, exportPath, PathMaxSize);
 	}
 }
 

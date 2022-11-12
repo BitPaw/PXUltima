@@ -258,23 +258,58 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     // Create VBO Buffers
     OpenGLBufferGenerate(&graphicContext->OpenGLInstance, 1u, &vbo);
 
-    OpenGLVertexArrayBind(&graphicContext->OpenGLInstance, renderable->ID);
+    //OpenGLVertexArrayBind(&graphicContext->OpenGLInstance, renderable->ID);
 
     OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferArray, vbo);
-    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, model->DataIndexSize * 32, model->DataVertex, OpenGLStoreStaticDraw);
+    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, model->DataIndexSize * (3+3+2) * sizeof(float), model->DataVertex, OpenGLStoreStaticDraw);
 
     renderable->RenderSize = model->DataIndexSize;
+
+#if 1
+    printf
+    (
+        "| %7s %7s %7s | %7s %7s %7s | %7s %7s |\n", 
+        "X",
+        "Y",
+        "Z", 
+        "Nx",
+        "Ny",
+        "Nz",
+        "Tx",
+        "Ty"
+    );
+
+    for (size_t i = 0; i < model->DataIndexSize * (3 + 3 + 2); i+=8)
+    {
+        float* data = &(((float*)model->DataVertex)[i]);
+
+        printf
+        (
+            "| %7.2f %7.2f %7.2f | %7.2f %7.2f %7.2f | %7.2f %7.2f |\n",
+            data[0],
+            data[1],
+            data[2],
+
+            data[3],
+            data[4],
+            data[5],
+
+            data[6],
+            data[7]
+        );
+    }
+#endif
 
     // TODO
     unsigned int index = 0;
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, 0);
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, 0u);
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride,  sizeof(float) *3);
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * 3u);
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * (3+3));
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * (3u+3u));
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
 
@@ -283,12 +318,18 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 
     OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferArray);
    
-    // OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray);
+
+
+    //OpenGLBufferGenerate(&graphicContext->OpenGLInstance, 1u, &vbo);
+    //OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray, vbo);
+   // OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferElementArray, model->DataIndexSize * sizeof(unsigned int), model->DataVertex, OpenGLStoreStaticDraw);
+   // OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray);
+
+
     //  OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
 
 
     renderable->VBO = vbo;
-
     renderable->DoRendering = 1u;
 }
 

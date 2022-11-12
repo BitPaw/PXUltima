@@ -17,6 +17,63 @@ void ModelDestruct(Model* const model)
 	
 }
 
+size_t PXModelMaterialAmount(Model* const model)
+{
+    DataStream materialData;
+
+    DataStreamFromExternal(&materialData, model->MaterialList, -1);
+
+    unsigned int amount = 0;
+
+    DataStreamReadIU(&materialData, &amount, EndianLittle);
+
+    return amount;    
+}
+
+PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMaterial* const pxMaterial)
+{
+    const size_t amount = PXModelMaterialAmount(model);
+    const PXBool isInRange = amount <= materialID;
+
+    MemorySet(pxMaterial, sizeof(PXMaterial), 0);
+
+    if (!isInRange)
+    {
+        return PXNo;
+    }
+
+    DataStream materialData;
+
+    DataStreamFromExternal(&materialData, model->MaterialList, -1);
+    DataStreamCursorAdvance(&materialData, sizeof(unsigned int));
+
+    for (size_t i = 0; i < amount; ++i)
+    {
+        unsigned short materialSize = 0;
+
+        DataStreamReadSU(&materialData, &materialSize, EndianLittle); // Total size
+
+        PXBool isGoal = i == materialID;
+
+        if (isGoal)
+        {
+            DataStreamReadSU(&materialData, &pxMaterial->NameSize, EndianLittle);
+            pxMaterial->Name = DataStreamCursorPosition(&materialData);
+
+            DataStreamReadP(&materialData, &pxMaterial->Ambient, sizeof(float) * 3u);
+            DataStreamReadP(&materialData, &pxMaterial->Diffuse, sizeof(float) * 3u);
+            DataStreamReadP(&materialData, &pxMaterial->Specular, sizeof(float) * 3u);
+            DataStreamReadP(&materialData, &pxMaterial->Emission, sizeof(float) * 3u);
+
+            break;
+        }
+
+        DataStreamCursorAdvance(&materialData, materialSize);
+    }
+
+    return PXYes;
+}
+
 unsigned char ModelSegmentsAmount(const Model* const model)
 {
 	return *(unsigned char*)model->Data;
@@ -112,7 +169,7 @@ ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const 
     ModelCompilerFunction modelCompilerFunction = 0;
     ModelParserFunction modelParserFunction = 0;
 
-    DataStreamMapToMemory(&modelCompileCache, fileStream->DataSize * 100, MemoryReadAndWrite);
+    DataStreamMapToMemory(&modelCompileCache, fileStream->DataSize * 200, MemoryReadAndWrite);
 
     switch (modelType)
     {

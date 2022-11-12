@@ -8,6 +8,8 @@
 #include <File/File.h>
 #include <Math/PXMath.h>
 
+#define OBJDetectMaterial 1
+
 #define PXCompilerSymbolLexerOBJMaterialLibraryIncludeID 'I'
 #define PXCompilerSymbolLexerOBJMaterialLibraryUselID 'U'
 #define PXCompilerSymbolLexerOBJObjectNameID 'O'
@@ -129,6 +131,9 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
     unsigned int parameterListSize = 0;
     unsigned int indexListSize = 0;
 
+    unsigned int mtlInlclueesListSize = 0;
+    size_t mtlEmbeddedDataOffset = 0;
+
     size_t drawoffsetCounter = 0;
     size_t drawCurrentCounter = 0;
     size_t drawCurrentIndex = 0;
@@ -139,7 +144,8 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
     MemorySet(drawSize, sizeof(drawSize), 0);
     MemorySet(drawOrder, sizeof(drawOrder), 0);
 
-    const size_t headerOffset = 256;
+    const size_t headerOffset = 1024;
+    size_t headerCacheOffset = 0;
 
     // Lexer - Level I 
     {
@@ -187,102 +193,68 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
         switch (objPeekLine)
         {
-            case OBJLineMaterialLibraryInclude:
-            case OBJLineMaterialLibraryUse:
-            case OBJLineObjectName:
             case OBJLineSmoothShading:
-            case OBJLineObjectGroup:
             {
-                char namedElement[128];
-                size_t namedElementSize = 0;
-
                 PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.    
 
-                switch (compilerSymbolEntry.ID)
+                DataStreamWriteCU(outputStream, PXCompilerSymbolLexerInteger);
+                DataStreamWriteIU(outputStream, compilerSymbolEntry.DataI, EndianLittle);
+
+                break;
+            }
+            case OBJLineMaterialLibraryInclude:
+            case OBJLineMaterialLibraryUse:
+            case OBJLineObjectName:  
+            case OBJLineObjectGroup:
+            {
+                char namedElement[256];
+                size_t namedElementSize = 0;
+
+                const PXBool isString = PXCompilerParseStringUntilNewLine(&tokenSteam, &compilerSymbolEntry, namedElement, 256, &namedElementSize);
+
+                if (!isString)
                 {
-                    case PXCompilerSymbolLexerInteger:
+                    ++errorCounter;
+                    OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
+                    break;
+                }
+
+                DataStreamWriteCU(outputStream, PXCompilerSymbolLexerString);
+                DataStreamWriteSU(outputStream, namedElementSize, EndianLittle);
+                DataStreamWriteA(outputStream, namedElement, namedElementSize);
+
+                switch (objPeekLine)
+                {
+                    case OBJLineMaterialLibraryInclude:
                     {
-                        DataStreamWriteCU(outputStream, PXCompilerSymbolLexerInteger);
-                        DataStreamWriteIU(outputStream, compilerSymbolEntry.DataI, EndianLittle);
+                        ++mtlInlclueesListSize;
+
+#if OBJDetectMaterial
+
+                        headerCacheOffset += DataStreamWriteAtSU(outputStream, namedElementSize, EndianLittle, headerCacheOffset);
+                        headerCacheOffset += DataStreamWriteAtP(outputStream, namedElement, namedElementSize, headerCacheOffset);
+#endif
+
                         break;
                     }
-
-                    case PXCompilerSymbolLexerGenericElement:
+                    case OBJLineMaterialLibraryUse:
                     {
-                        namedElementSize = TextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, namedElement, 128);
-
-                        char* nameAdressStart = compilerSymbolEntry.Source;
-
-                        while (1u)
-                        {
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
-
-                            const PXBool isElement = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-
-                            if (isElement)
-                            {
-                                const size_t namelength = ((size_t)compilerSymbolEntry.Source + (size_t)compilerSymbolEntry.Size) - (size_t)nameAdressStart;
-
-                                namedElementSize = TextCopyA(nameAdressStart, namelength, namedElement, 128);
-                            }
-                            else // Should be expected new line Error
-                            {
-                                break;
-                            }
-                        }
-
-                        DataStreamWriteCU(outputStream, PXCompilerSymbolLexerString);
-                        DataStreamWriteSU(outputStream, namedElementSize, EndianLittle);
-                        DataStreamWriteP(outputStream, namedElement, namedElementSize);
-
+                        drawOrder[drawCurrentIndex++] = drawCurrentCounter;
                         break;
                     }
-                    default:
-                    {
-                        ++errorCounter;
-                        OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
-                        break;
-                    }                      
-                }          
-
-                if (objPeekLine == OBJLineMaterialLibraryUse)
-                {
-                    drawOrder[drawCurrentIndex++] = drawCurrentCounter;
                 }
 
                 break; // [OK]
             }    
             case OBJLineVertexTexture:
-            case OBJLineVertexGeometric:            
+            case OBJLineVertexGeometric:
             case OBJLineVertexNormal:
             case OBJLineVertexParameter:
             {
                 size_t valuesDetected = 0;
-                PXBool isNumber[4] = { 0u, 0u, 0u, 0u };
                 float vector[4] = { -1, -1, -1, -1 };
 
-                while (1u)
-                {
-                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                    // [symbol check] Check if symbol is expected name
-                    {
-                       const PXBool isFloat = compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
-
-                        if (!isFloat)
-                        {
-                            // we are at the line end
-
-                            break; // finished
-                        }
-                    }
-
-                    vector[valuesDetected] = compilerSymbolEntry.DataF;
-                    isNumber[valuesDetected] = PXYes;
-
-                    ++valuesDetected;
-                }          
-
+                const PXBool listParsed = PXCompilerParseFloatList(&tokenSteam, &compilerSymbolEntry, vector, 4u, &valuesDetected);
 
                 // Export
                 {
@@ -290,12 +262,10 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                     {
                         case OBJLineVertexGeometric:
                             vertexListSize += valuesDetected;
-                           // printf("position: ");
                             break;
 
                         case OBJLineVertexNormal:
                             normalListSize += valuesDetected;
-                            //printf("norm: ");
                             break;
 
                         case OBJLineVertexParameter:
@@ -304,21 +274,11 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
                         case OBJLineVertexTexture:
                             textureListSize += valuesDetected;
-                           // printf("text: ");
                             break;
                     }
 
                     DataStreamWriteCU(outputStream, valuesDetected);
                     DataStreamWriteP(outputStream, vector, sizeof(float) * valuesDetected);
-
-#if 0
-                    for (size_t i = 0; i < valuesDetected; ++i)
-                    {
-                        printf("%f, ", vector[i]);
-                    }
-
-                    printf("\n");
-#endif
                 }
            
                 break; // [OK]
@@ -417,30 +377,84 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
         }
     }
 
+    // End of OBJ parsing
     drawOrder[drawCurrentIndex] = drawCurrentCounter;
+    mtlEmbeddedDataOffset = outputStream->DataCursor;
+
+    // Reset for header fetching
+    //const size_t offset = outputStream->DataCursor; // Save old position
+    //outputStream->DataCursor = 0; // Jump to beginning, parsing temp headerInfo
+
+    // Begin loading MTL files    
+#if OBJDetectMaterial
+    {        
+        DataStream materialNameFetchStream;
+        DataStream materialFileStream;
+
+        DataStreamFromExternal(&materialNameFetchStream, outputStream->Data, outputStream->DataCursor);
+            
+        wchar_t currentWorkPath[PathMaxSize];
+        wchar_t currentMTLFileW[PathMaxSize];
+        char currentMTLFileA[PathMaxSize];
+
+        const PXBool succ = DataStreamFilePathGetW(inputStream, currentWorkPath, PathMaxSize); // Work OBJ file path
+
+        for (size_t i = 0; i < mtlInlclueesListSize; ++i)
+        {
+            unsigned short length = 0;
+
+            DataStreamWriteCU(outputStream, OBJEmbeddedMTL);
+
+            DataStreamReadSU(&materialNameFetchStream, &length, EndianLittle);
+            DataStreamReadP(&materialNameFetchStream, currentMTLFileA, PathMaxSize);
+
+            TextCopyAW(currentMTLFileA, length, currentMTLFileW, PathMaxSize);
+
+            FilePathSwapFileNameW(currentWorkPath, currentMTLFileW, currentMTLFileW);
+
+            {
+                const ActionResult materialFileLoadResult = DataStreamMapToMemoryW(&materialFileStream, currentMTLFileW, 0, MemoryReadOnly);
+                const PXBool sucessful = ActionSuccessful == materialFileLoadResult;
+
+                if (!sucessful)
+                {
+                    continue;
+                }
+
+                const ActionResult materialFileCompileResult = MTLFileCompile(&materialFileStream, outputStream);
+
+                DataStreamDestruct(&materialFileStream);
+            }
+        }    
+    }
+#endif
+    // MTL loading finished
+    
 
 
-
-    size_t offset = outputStream->DataCursor;
-
-    outputStream->DataCursor = 0;
-
-    DataStreamWriteCU(outputStream, drawCurrentIndex+1);
-
-    for (size_t i = 0; i < drawCurrentIndex + 1; ++i)
     {
-        DataStreamWriteCU(outputStream, drawSize[i]);
-        DataStreamWriteIU(outputStream, MathAbsoluteI((int)drawOrder[i+1] - (int)drawOrder[i]), EndianLittle);
-    }  
+        DataStream headerInfoStream;
 
-    DataStreamWriteIU(outputStream, vertexListSize, EndianLittle);
-    DataStreamWriteIU(outputStream, normalListSize, EndianLittle);
-    DataStreamWriteIU(outputStream, textureListSize, EndianLittle);
-    DataStreamWriteIU(outputStream, parameterListSize, EndianLittle);
-    DataStreamWriteIU(outputStream, indexListSize, EndianLittle);
+        DataStreamFromExternal(&headerInfoStream, outputStream->Data, outputStream->DataCursor);
 
-    outputStream->DataCursor = offset;
+        DataStreamWriteCU(&headerInfoStream, drawCurrentIndex + 1);
 
+        for (size_t i = 0; i < drawCurrentIndex + 1; ++i)
+        {
+            DataStreamWriteCU(&headerInfoStream, drawSize[i]);
+            DataStreamWriteIU(&headerInfoStream, MathAbsoluteI((int)drawOrder[i + 1] - (int)drawOrder[i]), EndianLittle);
+        }
+
+        DataStreamWriteIU(&headerInfoStream, vertexListSize, EndianLittle);
+        DataStreamWriteIU(&headerInfoStream, normalListSize, EndianLittle);
+        DataStreamWriteIU(&headerInfoStream, textureListSize, EndianLittle);
+        DataStreamWriteIU(&headerInfoStream, parameterListSize, EndianLittle);
+        DataStreamWriteIU(&headerInfoStream, indexListSize, EndianLittle);
+        DataStreamWriteIU(&headerInfoStream, mtlInlclueesListSize, EndianLittle);
+        DataStreamWriteLLU(&headerInfoStream, mtlEmbeddedDataOffset, EndianLittle);
+    }
+
+    // outputStream->DataCursor = offset;
 
     if (errorCounter)
     {
@@ -465,7 +479,8 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     unsigned int textureListSize = 0;
     unsigned int parameterListSize = 0;
     unsigned int indexListSize = 0;
-
+    unsigned int mtlInlclueesListSize = 0;
+    size_t mtlEmbeddedDataOffset = 0;
 
     DataStreamReadCU(inputStream, &numberOfMeshes);
 
@@ -480,24 +495,100 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     DataStreamReadIU(inputStream, &textureListSize, EndianLittle);
     DataStreamReadIU(inputStream, &parameterListSize, EndianLittle);
     DataStreamReadIU(inputStream, &indexListSize, EndianLittle);
+    DataStreamReadIU(inputStream, &mtlInlclueesListSize, EndianLittle);
+    DataStreamReadLLU(inputStream, &mtlEmbeddedDataOffset, EndianLittle);
 
-    inputStream->DataCursor = 256;
+    size_t expectedMaterialSize = (sizeof(PXMaterial) + 256)* 40;
+    size_t infoHeaderSize = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int)) + expectedMaterialSize;
+    size_t expectedSize = 25 * sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeaderSize;// +indexListSize;
 
-    size_t infoHeader = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int));
-
-    size_t expectedSize = 5*sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeader;// +indexListSize;
-
+    model->Data = MemoryAllocate(expectedSize);
+    //---<End header>----------------------------------------------------------
 
 
-    model->Data = MemoryAllocateClear(expectedSize * 20);
 
-    MemorySet(model->Data, expectedSize * 20, 0xFF);
+    //---<Lookup materials>----------------------------------------------------
+
+    {
+        DataStream modelHeaderStream;      
+
+        DataStreamFromExternal(&modelHeaderStream, model->Data, infoHeaderSize);
+
+        DataStreamWriteCU(&modelHeaderStream, numberOfMeshes);
+
+        for (size_t meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex)
+        {
+            DataStreamWriteCU(&modelHeaderStream, renderMode[meshIndex]); // Draw mode
+            DataStreamWriteIU(&modelHeaderStream, renderSize[meshIndex], EndianLittle); // Draw amount
+            DataStreamWriteIU(&modelHeaderStream, (unsigned int)-1, EndianLittle); // Material ID, set later   
+        }
+#if OBJDetectMaterial
+        //---<MTL to PXMaterial>-----------------------------------------------
+        mtlEmbeddedDataOffset += 1; // ???
+
+        void* data = (unsigned char*)inputStream->Data + mtlEmbeddedDataOffset;
+        const size_t size = inputStream->DataSize - mtlEmbeddedDataOffset;
+
+        DataStreamWriteIU(&modelHeaderStream, 0, EndianLittle);
+
+        if (mtlInlclueesListSize > 0)
+        {
+            const size_t amount = MTLFetchAmount(data, size);
+
+            model->MaterialList = data;
+
+            DataStreamWriteIU(&modelHeaderStream, amount, EndianLittle);
+
+            for (size_t i = 0; i < amount; ++i)
+            {
+                MTLMaterial mtlMaterial;
+
+                const PXBool succ = MTLFetchMaterial(data, size, i, &mtlMaterial);
+
+                // Write PXMaterial format
+                {
+                    const size_t positionSizeData = modelHeaderStream.DataCursor;
+
+                    DataStreamWriteSU(&modelHeaderStream, (unsigned short)-1, EndianLittle); // Total size
+                    DataStreamWriteSU(&modelHeaderStream, mtlMaterial.NameSize, EndianLittle); // Size of name
+                    DataStreamWriteA(&modelHeaderStream, mtlMaterial.Name, mtlMaterial.NameSize); // Name
+
+                    DataStreamWriteP(&modelHeaderStream, mtlMaterial.Ambient, sizeof(float) * 3u);
+                    DataStreamWriteP(&modelHeaderStream, mtlMaterial.Diffuse, sizeof(float) * 3u);
+                    DataStreamWriteP(&modelHeaderStream, mtlMaterial.Specular, sizeof(float) * 3u);
+                    DataStreamWriteP(&modelHeaderStream, mtlMaterial.Emission, sizeof(float) * 3u);
+
+                    {
+                        const size_t pxMaterialSize = modelHeaderStream.DataCursor - positionSizeData;
+
+                        DataStreamWriteAtSU(&modelHeaderStream, pxMaterialSize, EndianLittle, positionSizeData);
+                    }
+                }
+            }
+        }    
+#endif
+    }
+
+    //-------------------------------------------------------------------------
+
+
+
+
+
+    //---<Start parsing Data>-------------------------------------------------
+    DataStream materialIDLookupStream;
+    DataStream vertexArrayData;
+
+    inputStream->DataCursor = 1024;
+    model->DataVertex = (unsigned char*)model->Data + infoHeaderSize;
+
+    DataStreamFromExternal(&materialIDLookupStream, model->Data, infoHeaderSize);
+    DataStreamFromExternal(&vertexArrayData, model->DataVertex, expectedSize);
+     
 
     // Format: Ver Nor Tx Colo
     //         XYZ XYZ XY RGBA
     //          3   3  2  4     = 12
-    //      
-
 
     model->DataVertexWidth = 3u;
     model->DataNormalWidth = 3u;
@@ -517,11 +608,9 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     model->DataColorSize = 0;
     model->DataIndexSize = indexListSize;
 
-    model->DataVertex = (unsigned char*)model->Data + infoHeader;
 
-    DataStream vertexArrayData;
 
-    DataStreamFromExternal(&vertexArrayData, model->DataVertex, expectedSize*20);
+
 
 
 
@@ -549,7 +638,7 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
     while (!DataStreamIsAtEnd(inputStream))
     {
-        OBJLineType objLineType;     
+        OBJLineType objLineType = OBJLineInvalid;
 
         {
             unsigned char lineTypeID = 0;
@@ -561,6 +650,7 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
    
         switch (objLineType)
         {
+            //case OBJEmbeddedMTL:
             case OBJLineMaterialLibraryInclude:
             case OBJLineMaterialLibraryUse:
             case OBJLineObjectName:
@@ -591,8 +681,42 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                         unsigned short size = 0;
                         char* name = model->Data;
 
-                        DataStreamReadSU(inputStream, &size, EndianLittle);
-                        DataStreamReadP(inputStream, name, size);
+                        if (OBJLineMaterialLibraryUse == objLineType)
+                        {
+#if OBJDetectMaterial
+                            char materialName[256];
+
+                            DataStreamReadSU(inputStream, &size, EndianLittle);
+                            DataStreamReadA(inputStream, materialName, size);
+
+                            DataStreamCursorAdvance(&materialIDLookupStream, sizeof(unsigned char) + sizeof(unsigned int));
+
+                            // Lookup material
+                            for (size_t i = 0; i < mtlInlclueesListSize; ++i)
+                            {
+                                PXMaterial pxMaterial;
+
+                                PXModelMaterialGet(model, i, &pxMaterial);
+
+                                const PXBool isValid = TextCompareA(materialName, size, pxMaterial.Name, pxMaterial.NameSize); // is found?
+
+                                if (isValid)
+                                {
+                                    DataStreamWriteIU(&materialIDLookupStream, i, EndianLittle); // Material ID, set later   
+                                    break;
+                                }
+      
+                            }
+#else
+                            DataStreamReadSU(inputStream, &size, EndianLittle);
+                            DataStreamReadA(inputStream, name, size);
+#endif
+                        }
+                        else
+                        {
+                            DataStreamReadSU(inputStream, &size, EndianLittle);
+                            DataStreamReadA(inputStream, name, size);
+                        }
 
                         break;
                     }
@@ -617,19 +741,19 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                     case OBJLineVertexTexture:
                         adress = textureList;
                         offset = &textureListOffset;
-                       // printf("text ");
+                        //printf("text ");
                         break;
 
                     case OBJLineVertexGeometric:
                         adress = vertexValueList;
                         offset = &vertexValueListOffset;
-                      //  printf("psotion ");
+                        //printf("psotion ");
                         break;
 
                     case OBJLineVertexNormal:
                         adress = normalList;
                         offset = &normalListOffset;
-                       // printf("norm ");
+                      // printf("norm ");
                         break;
 
                     case OBJLineVertexParameter:
@@ -648,16 +772,6 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                 DataStreamReadCU(inputStream, &amountofValues);
                 DataStreamReadP(inputStream, adress, sizeof(float) * amountofValues);            
 
-#if 0
-                for (size_t i = 0; i < amountofValues; i++)
-                {
-                    printf("%f, ", adress[i]);
-
-                }
-
-                printf("\n");
-#endif
-
                 *offset += amountofValues;
 
                 break;
@@ -665,48 +779,25 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
             case OBJLineFaceElement:
             {
-
- // Format: Ver Nor Tx Colo
- //         XYZ XYZ XY RGBA
- //          3   3  2  4     = 12
- // 
-
                 unsigned char amountofValues = 0;            
 
                 DataStreamReadCU(inputStream, &amountofValues);
 
-                for (size_t i = 0; i < amountofValues; ++i)
+                for (size_t nodeIndex = 0; nodeIndex < amountofValues; ++nodeIndex)
                 {
-                    unsigned int indexList[3] = { -1, -1, -1, };
+                    unsigned int indexList[3] = { -1, -1, -1 };
 
                     DataStreamReadIU(inputStream, &indexList[0], EndianLittle);
                     DataStreamReadIU(inputStream, &indexList[1], EndianLittle);
                     DataStreamReadIU(inputStream, &indexList[2], EndianLittle);
 
-                    const float* vertexValueIndex = &vertexValueList[indexList[0] * 3u + i];                   
-                    const float* textureValueIndex = &textureList[indexList[1] * 2u + i];
-                    const float* normalValueIndex = &normalList[indexList[2] * 3u + i];
-
-                    //printf("Face _> %i, %i, %i\n", indexList[0], indexList[1], indexList[2]);
-
-                    float* xDat = (float*)DataStreamCursorPosition(&vertexArrayData);
-                    size_t xDatSize = 0;
+                    const float* vertexValueIndex = &vertexValueList[indexList[0] * (3u)];
+                    const float* textureValueIndex = &textureList[indexList[1] * (2u)];
+                    const float* normalValueIndex = &normalList[indexList[2] * (3u)];
 
                     DataStreamWriteP(&vertexArrayData, vertexValueIndex, sizeof(float) * 3u);
                     DataStreamWriteP(&vertexArrayData, normalValueIndex, sizeof(float) * 3u);
                     DataStreamWriteP(&vertexArrayData, textureValueIndex, sizeof(float) * 2u);
-                              
-                    xDatSize = vertexArrayData.DataCursor;
-
-#if 0
-                    printf("---\n");
-
-                    for (size_t i = 0; i < 8u; i++)
-                    {
-                       printf("[%i] %f\n", i, xDat[i]);
-                    }
-                    printf("---\n");
-#endif
                 } 
 
                 break;
@@ -716,6 +807,8 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
     return ActionSuccessful;
 }
+
+/*
 
 ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName)
 {
@@ -1141,3 +1234,4 @@ ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size
 
     return ActionSuccessful;
 }
+*/

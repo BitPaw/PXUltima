@@ -2,8 +2,9 @@
 #define MTLInclude
 
 #include <Format/Type.h>
-
 #include <Error/ActionResult.h>
+#include <File/DataStream.h>
+#include <Format/Model.h>
 
 #define MTLNameSize 32u
 #define MTLFilePath 60u
@@ -22,7 +23,7 @@ extern "C"
 		MTLLineColorAmbient,
 		MTLLineColorDiffuse,
 		MTLLineColorSpecular,
-		MTLLineEmission,
+		MTLLineColorEmission,
 		MTLLineDissolved,
 		MTLLineDensity,
 		MTLLineIllumination
@@ -32,25 +33,28 @@ extern "C"
 	typedef enum IlluminationMode_
 	{
 		IlluminationNone,
-		IlluminationColorAndAmbientDisable = 0,		// [0] Color on and Ambient off
-		IlluminationColorAndAmbientEnable = 1,		// [1] Color on and Ambient on	
-		IlluminationHighlightEnable = 2,	// [2] Highlight on	
-		IlluminationReflectionOnRayTraceEnable = 3,	// [3] Reflection on and Ray trace on	
-		IlluminationReflectionOnRayTraceTransparency = 4, 	// [4] Transparency: Glass on, Reflection : Ray trace on	
-		IlluminationReflectionOnRayTraceFresnel = 5, 	// [5] Reflection : Fresnel on and Ray trace on	
-		IlluminationReflectionOnRayTraceTransparencyFresnel = 6, 	// [6] Transparency : Refraction on, Reflection : Fresnel offand Ray trace on	
-		IlluminationReflectionOnRayTraceFullEnable = 7,	// [7] Transparency : Refraction on, Reflection : Fresnel onand Ray trace on	
-		IlluminationReflectionEnable = 8, 	// [8] Reflection on and Ray trace off	
-		IlluminationTransparencyEnable = 9, 	// [9] Transparency : Glass on, Reflection : Ray trace off	
-		IlluminationShadowsEnable = 10 	// [10] Casts shadows onto invisible surfaces
+		IlluminationColorAndAmbientDisable ,		// [0] Color on and Ambient off
+		IlluminationColorAndAmbientEnable,		// [1] Color on and Ambient on	
+		IlluminationHighlightEnable ,	// [2] Highlight on	
+		IlluminationReflectionOnRayTraceEnable,	// [3] Reflection on and Ray trace on	
+		IlluminationReflectionOnRayTraceTransparency, 	// [4] Transparency: Glass on, Reflection : Ray trace on	
+		IlluminationReflectionOnRayTraceFresnel, 	// [5] Reflection : Fresnel on and Ray trace on	
+		IlluminationReflectionOnRayTraceTransparencyFresnel, 	// [6] Transparency : Refraction on, Reflection : Fresnel offand Ray trace on	
+		IlluminationReflectionOnRayTraceFullEnable,	// [7] Transparency : Refraction on, Reflection : Fresnel onand Ray trace on	
+		IlluminationReflectionEnable, 	// [8] Reflection on and Ray trace off	
+		IlluminationTransparencyEnable, 	// [9] Transparency : Glass on, Reflection : Ray trace off	
+		IlluminationShadowsEnable  	// [10] Casts shadows onto invisible surfaces
 	}
 	IlluminationMode;
 
 
 	typedef struct MTLMaterial_
 	{
-		char Name[MTLNameSize];
-		char TextureFilePath[MTLFilePath];
+		unsigned char NameSize;
+		char* Name;
+
+		unsigned char DiffuseTexturePathSize;
+		char* DiffuseTexturePath;
 
 		// Ranges between 0 and 1000
 		float Weight;
@@ -77,12 +81,19 @@ extern "C"
 	}
 	MTL;
 
-	PXPublic void MTLConstruct(MTL* mtl);
-	PXPublic void MTLDestruct(MTL* mtl);
+	PXPublic void MTLConstruct(MTL* const mtl);
+	PXPublic void MTLDestruct(MTL* const mtl);
 
-	static MTLLineType MTLPeekLine(const void* line);
+	PXPrivate IlluminationMode MTLIlluminationModeFromID(const unsigned int illuminationModeID);
 
-	PXPublic ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPrivate MTLLineType MTLPeekLine(const char* const line, const size_t lineSize);
+
+	PXPublic size_t MTLFetchAmount(const void* const data, const size_t dataSize);
+	PXPublic PXBool MTLFetchMaterial(const void* const data, const size_t dataSize, const size_t materialID, MTLMaterial* const mtlMaterial);
+
+	PXPublic ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const outputStream);
+
+	PXPublic ActionResult MTLParseToMaterial(DataStream* const inputStream, PXMaterialList* const pxMaterialList);
 
 #ifdef __cplusplus
 }

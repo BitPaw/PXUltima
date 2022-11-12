@@ -7,6 +7,10 @@
 #define MakeLetterCaseUpper(character) (character & 0b11011111)
 #define CompareLetterCaseIgnore(a, b) (MakeLetterCaseLower(a) == b) || (MakeLetterCaseUpper(a) == b)
 #define UnicodeToASCII(wc) (wc <= 0xFF ? (char)wc : '?')
+#define IsEndOfString(c) (c == '\0')
+#define IsTab(c) (c == '\t')
+#define IsEmptySpace(c) (c == ' ')
+#define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
 
 #define TextUnkownLength -1
 #define TextIndexNotFound -1

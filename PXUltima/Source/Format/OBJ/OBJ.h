@@ -32,6 +32,8 @@ extern "C"
 		OBJLineVertexParameter,
 		OBJLineSmoothShading,
 		OBJLineFaceElement,
+
+		OBJEmbeddedMTL
 	}
 	OBJLineType;
 
@@ -92,9 +94,6 @@ extern "C"
 	PXPublic ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const outputStream);
 
 	PXPublic ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model);
-
-
-	PXPublic ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName);
 
 #ifdef __cplusplus
 }

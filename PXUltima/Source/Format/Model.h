@@ -25,16 +25,34 @@ extern "C"
 	ModelFileFormat;
 
 
-	typedef struct Material_
+	typedef struct PXMaterial_
 	{
-		wchar_t Name[64];
-		wchar_t TextureFilePath[260];
+		size_t NameSize;
+		char* Name;
+
+		size_t DiffuseTextureFilePathSize;
+		char* DiffuseTextureFilePath;
+
 		float Ambient[3];
 		float Diffuse[3];
 		float Specular[3];
 		float Emission[3];
 	}
-	Material;
+	PXMaterial;
+
+	typedef struct PXMaterialList_
+	{
+		// private
+		void* Data;
+		size_t DataSize;
+		//-------
+		
+		size_t NumberOfMatrials;
+
+	}
+	PXMaterialList;
+
+
 
 	// The renderable part of a mesh.
 	typedef struct MeshSegment_
@@ -91,6 +109,15 @@ extern "C"
 		//---------------------------------------------------------------------
 		void* Data;
 
+		// MeshRenderList
+		// unsigned char -> Mode
+		// unsigned int -> Size
+		// struct		-> Material
+		// 
+
+
+		void* MaterialList;
+
 		void* DataVertex;
 		size_t DataVertexWidth;
 		size_t DataVertexStride;
@@ -112,9 +139,6 @@ extern "C"
 		size_t DataIndexStride;
 		size_t DataIndexSize;
 		//---------------------------------------------------------------------
-
-		size_t MaterialListSize;
-		Material* MaterialList;
 	}
 	Model;
 
@@ -124,6 +148,10 @@ extern "C"
 
 	PXPublic void ModelConstruct(Model* const model);
 	PXPublic void ModelDestruct(Model* const model);
+
+	PXPublic size_t PXModelMaterialAmount(Model* const model);
+	PXPublic PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMaterial* const pxMaterial);
+
 
 	PXPublic unsigned char ModelSegmentsAmount(const Model* const model);
 	PXPublic void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment* const meshSegment);

@@ -21,6 +21,9 @@
 #endif
 
 
+#define GL_CW 0x0900
+#define GL_CCW 0x0901
+
 //---<Version 1.2>------------------
 #define GL_SMOOTH_POINT_SIZE_RANGE 0x0B12
 #define GL_SMOOTH_POINT_SIZE_GRANULARITY 0x0B13
@@ -1738,7 +1741,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
                     DataStreamCursorRewind(&dataStream, x);
 
-                    DataStreamReadTextA(&dataStream, wurst, textSize - 1);
+                    DataStreamReadA(&dataStream, wurst, textSize - 1);
                     DataStreamCursorAdvance(&dataStream, 1);
 
                     printf("%s\n", wurst);
@@ -3111,11 +3114,11 @@ void OpenGLVertexArrayUnbind(OpenGLContext* const openGLContext)
     openGLContext->OpenGLBindVertexArrayCallBack(openGLContext, 0);
 }
 
-void OpenGLVertexArrayAttributeDefine(OpenGLContext* const openGLContext, const unsigned int index, const unsigned int size, const OpenGLDataType datatype, const unsigned char normalized, const unsigned int stride, const void* const pointer)
+void OpenGLVertexArrayAttributeDefine(OpenGLContext* const openGLContext, const unsigned int index, const unsigned int size, const OpenGLDataType datatype, const unsigned char normalized, const unsigned int stride, const size_t offset)
 {
     const unsigned int openGLDataTypeID = OpenGLDataTypeToID(datatype);
 
-    openGLContext->OpenGLVertexAttribPointerCallBack(index, size, openGLDataTypeID, normalized, stride, pointer);
+    openGLContext->OpenGLVertexAttribPointerCallBack(index, size, openGLDataTypeID, normalized, stride, offset);
 }
 
 void OpenGLVertexArrayEnable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID)

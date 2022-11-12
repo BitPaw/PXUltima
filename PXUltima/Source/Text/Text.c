@@ -279,7 +279,7 @@ size_t TextLengthUntilW(const wchar_t* string, const size_t stringSize, const wc
 
 size_t TextCopyA(const char* source, const size_t sourceLength, char* destination, const size_t destinationLength)
 {
-	const size_t minLength = MathMinimum(sourceLength, destinationLength);
+	const size_t minLength = MathMinimumIU(sourceLength, destinationLength);
 	size_t i = 0;
 
 #if PXTextAssertEnable

@@ -10,11 +10,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-#define IsEndOfString(c) (c == '\0')
-#define IsTab(c) (c == '\t')
-#define IsEmptySpace(c) (c == ' ')
-#define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
-
+#define MemoryPageLargeEnable 0
 
 //-----------------------------------------------------------------------------
 #define FileCachingModeDefault 0 //POSIX_FADV_NORMAL
@@ -470,8 +466,53 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 #endif
 }
 
+
+
+ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
+{
+	HANDLE           hToken;
+	TOKEN_PRIVILEGES tp;
+	BOOL             status;
+	DWORD            error;
+
+	// open process token
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+		return GetCurrentError(); // OpenProcessToken
+	 
+	// get the luid
+	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
+		return GetCurrentError();  // LookupPrivilegeValue
+
+	tp.PrivilegeCount = 1;
+
+	// enable or disable privilege
+	if (bEnable)
+		tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	else
+		tp.Privileges[0].Attributes = 0;
+
+	// enable or disable privilege
+	status = AdjustTokenPrivileges(hToken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+
+	// It is possible for AdjustTokenPrivileges to return TRUE and still not succeed.
+	// So always check for the last error value.
+	error = GetLastError();
+	if (!status || (error != ERROR_SUCCESS))
+		return GetCurrentError();  // AdjustTokenPrivileges
+
+	// close the handle
+	if (!CloseHandle(hToken))
+		return GetCurrentError(); // CloseHandle
+
+	return ActionSuccessful;
+}
+
 ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode)
 {
+	PXBool useLargeMemoryPages = PXNo;
+
+	DataStreamConstruct(dataStream);
+
 #if OSUnix
 	char filePathA[PathMaxSize];
 
@@ -484,13 +525,17 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 	// Open file
 	{
 		const ActionResult openResult = DataStreamOpenFromPathW(dataStream, filePath, protectionMode, FileCachingSequential);
-		const unsigned char openSuccess = openResult == ActionSuccessful;
+		const PXBool openSuccess = ActionSuccessful == openResult;
 
 		if (!openSuccess)
 		{
 			return openResult; //openResult;
 		}
 	}
+
+	dataStream->MemoryMode = protectionMode;
+	dataStream->DataSize = fileSize;
+	
 
 	// Create mapping
 	{
@@ -518,9 +563,6 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 		{
 			dwMaximumSizeHigh = 0;
 			dwMaximumSizeLow = fileSize;
-
-			dataStream->DataSize = fileSize;
-
 			break;
 		}
 		case MemoryReadAndWrite:
@@ -532,46 +574,68 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 			break;
 		}
 
-		dataStream->MemoryMode = protectionMode;
+
+#if MemoryPageLargeEnable
+		// Check if large pages can be used
+		{
+			const size_t largePageMinimumSize = GetLargePageMinimum(); // [Kernel32.dll] OS minimum: Windows Vista 
+			const PXBool hasLargePageSupport = largePageMinimumSize != 0u;
+			
+			useLargeMemoryPages = hasLargePageSupport && (dataStream->DataSize > (largePageMinimumSize * 0.5f)); // if the allocation is atleah half of a big page, use that.		
+
+			if (useLargeMemoryPages)
+			{
+				dwMaximumSizeLow = largePageMinimumSize * ((dataStream->DataSize / largePageMinimumSize) + 1);
+
+				ActionResult actionResult = WindowsProcessPrivilege(L"SeLockMemoryPrivilege", TRUE);
+
+				flProtect |= SEC_COMMIT | SEC_LARGE_PAGES;
+			}
+		}	
+#endif
 
 		switch (protectionMode)
 		{
-		case MemoryNoReadWrite:
-			flProtect = PAGE_NOACCESS;
-			break;
+			case MemoryNoReadWrite:
+				flProtect |= PAGE_NOACCESS;
+				break;
 
-		case MemoryReadOnly:
-			flProtect = PAGE_READONLY;
-			break;
+			case MemoryReadOnly:
+				flProtect |= PAGE_READONLY;
+				break;
 
-		case MemoryWriteOnly:
-			flProtect = PAGE_READWRITE; // PAGE_WRITECOPY
-			break;
+			case MemoryWriteOnly:
+				flProtect |= PAGE_READWRITE; // PAGE_WRITECOPY
+				break;
 
-		case MemoryReadAndWrite:
-			flProtect = PAGE_READWRITE;
-			break;
+			case MemoryReadAndWrite:
+				flProtect |= PAGE_READWRITE;
+				break;
 		}
 
 		const HANDLE fileMappingHandleResult = CreateFileMappingW
 		(
 			dataStream->FileHandle,
-			0,
+			0, // No security attributes
 			flProtect,
 			dwMaximumSizeHigh,
 			dwMaximumSizeLow,
-			name
+			0 // No Name
 		);
-		const unsigned char successful = fileMappingHandleResult;
 
-		if (!successful)
+		// check if successful 
 		{
-			DWORD x = GetLastError();
+			const PXBool successful = fileMappingHandleResult;
 
-			return ResultFileMemoryMappingFailed;
-		}
+			if (!successful)
+			{
+				const ActionResult mappingError = GetCurrentError(); // File memory-mapping failed
 
-		dataStream->IDMapping = fileMappingHandleResult;
+				return mappingError;
+			}
+
+			dataStream->IDMapping = fileMappingHandleResult; // Mapping [OK]
+		}	
 	}
 
 	{
@@ -580,24 +644,30 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 		DWORD fileOffsetLow = 0;
 		size_t numberOfBytesToMap = 0;
 		void* baseAddressTarget = 0;
-		DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
+		//DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
 
 		switch (protectionMode)
 		{
 		case MemoryReadOnly:
-			desiredAccess = FILE_MAP_READ;
+			desiredAccess |= FILE_MAP_READ;
 			break;
 
 		case MemoryWriteOnly:
-			desiredAccess = FILE_MAP_WRITE;
+			desiredAccess |= FILE_MAP_WRITE;
 			break;
 
 		case MemoryReadAndWrite:
-			desiredAccess = FILE_MAP_ALL_ACCESS;
+			desiredAccess |= FILE_MAP_ALL_ACCESS;
 			break;
 		}
 
-		void* fileMapped = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista
+		// if large pages are supported, anable if
+		if (useLargeMemoryPages)
+		{
+			desiredAccess |= FILE_MAP_LARGE_PAGES;
+		}
+
+		void* const fileMapped = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista
 		(
 			dataStream->IDMapping,
 			desiredAccess,
@@ -916,30 +986,22 @@ size_t DataStreamSkipLine(DataStream* const dataStream)
 	return skippedBytes;
 }
 
-size_t DataStreamReadC(DataStream* const dataStream, char* value)
+size_t DataStreamReadC(DataStream* const dataStream, char* const value)
 {
-	return DataStreamReadCU(dataStream, (unsigned char*)value);
+	return DataStreamReadP(dataStream, value, sizeof(char));
 }
 
-size_t DataStreamReadCU(DataStream* const dataStream, unsigned char* value)
+size_t DataStreamReadCU(DataStream* const dataStream, unsigned char* const value)
 {
-	const size_t sizeOfChar = sizeof(char);
-	const unsigned char* data = DataStreamCursorPosition(dataStream);
-	const unsigned char character = *data;
-
-	*value = character;
-
-	DataStreamCursorAdvance(dataStream, sizeOfChar);
-
-	return sizeOfChar;
+	return DataStreamReadP(dataStream, value, sizeof(unsigned char));
 }
 
-size_t DataStreamReadS(DataStream* const dataStream, short* value, const Endian endian)
+size_t DataStreamReadS(DataStream* const dataStream, short* const value, const Endian endian)
 {
 	return DataStreamReadSU(dataStream, (unsigned short*)value, endian);
 }
 
-size_t DataStreamReadSU(DataStream* const dataStream, unsigned short* value, const Endian endian)
+size_t DataStreamReadSU(DataStream* const dataStream, unsigned short* const value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned short);
 	const unsigned char* data = DataStreamCursorPosition(dataStream);
@@ -954,12 +1016,12 @@ size_t DataStreamReadSU(DataStream* const dataStream, unsigned short* value, con
 	return dataSize;
 }
 
-size_t DataStreamReadI(DataStream* const dataStream, int* value, const Endian endian)
+size_t DataStreamReadI(DataStream* const dataStream, int* const value, const Endian endian)
 {
 	return DataStreamReadIU(dataStream, (unsigned int*)value, endian);
 }
 
-size_t DataStreamReadIU(DataStream* const dataStream, unsigned int* value, const Endian endian)
+size_t DataStreamReadIU(DataStream* const dataStream, unsigned int* const value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned int);
 	const unsigned char* data = DataStreamCursorPosition(dataStream);
@@ -974,12 +1036,12 @@ size_t DataStreamReadIU(DataStream* const dataStream, unsigned int* value, const
 	return dataSize;
 }
 
-size_t DataStreamReadLL(DataStream* const dataStream, long long* value, const Endian endian)
+size_t DataStreamReadLL(DataStream* const dataStream, long long* const value, const Endian endian)
 {
 	return DataStreamReadLLU(dataStream, (unsigned long long*)value, endian);
 }
 
-size_t DataStreamReadLLU(DataStream* const dataStream, unsigned long long* value, const Endian endian)
+size_t DataStreamReadLLU(DataStream* const dataStream, unsigned long long* const value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned long long);
 	const unsigned char* data = DataStreamCursorPosition(dataStream);
@@ -1026,7 +1088,7 @@ size_t DataStreamRead(DataStream* const dataStream, const void* format, const si
 	return 0;
 }
 
-size_t DataStreamReadTextA(DataStream* const dataStream, char* const value, const size_t length)
+size_t DataStreamReadA(DataStream* const dataStream, char* const value, const size_t length)
 {
 	const size_t size = DataStreamReadP(dataStream, value, length);
 
@@ -1035,7 +1097,7 @@ size_t DataStreamReadTextA(DataStream* const dataStream, char* const value, cons
 	return size;
 }
 
-size_t DataStreamReadTextW(DataStream* const dataStream, wchar_t* const value, const size_t length)
+size_t DataStreamReadW(DataStream* const dataStream, wchar_t* const value, const size_t length)
 {
 	const size_t size = DataStreamReadP(dataStream, value, length);
 
@@ -1135,10 +1197,10 @@ size_t DataStreamWriteIU(DataStream* const dataStream, const unsigned int value,
 
 size_t DataStreamWriteLL(DataStream* const dataStream, const long long value, const Endian endian)
 {
-	return DataStreamWriteLU(dataStream, value, endian);
+	return DataStreamWriteLLU(dataStream, value, endian);
 }
 
-size_t DataStreamWriteLU(DataStream* const dataStream, const unsigned long long value, const Endian endian)
+size_t DataStreamWriteLLU(DataStream* const dataStream, const unsigned long long value, const Endian endian)
 {
 	const size_t dataSize = sizeof(unsigned long long);
 	unsigned long long dataValue = value;
@@ -1158,6 +1220,34 @@ size_t DataStreamWriteF(DataStream* const dataStream, const float value)
 size_t DataStreamWriteD(DataStream* const dataStream, const double value)
 {
 	return DataStreamWriteP(dataStream, &value, sizeof(double));
+}
+
+size_t DataStreamWriteA(DataStream* const dataStream, const char* const text, size_t textSize)
+{
+#if 1
+	return DataStreamWriteP(dataStream, text, textSize);
+#else
+	const size_t writableSize = DataStreamRemainingSize(dataStream);
+	char* const currentPosition = (char* const)DataStreamCursorPosition(dataStream);
+
+	const size_t writtenBytes = TextCopyA(text, textSize, currentPosition, writableSize);
+
+	DataStreamCursorAdvance(dataStream, writtenBytes);
+
+	return writtenBytes;
+#endif
+}
+
+size_t DataStreamWriteW(DataStream* const dataStream, const wchar_t* const text, size_t textSize)
+{
+	const size_t writableSize = DataStreamRemainingSize(dataStream);
+	wchar_t* const currentPosition = (wchar_t* const)DataStreamCursorPosition(dataStream);
+
+	const size_t writtenBytes = TextCopyW(text, textSize, currentPosition, writableSize);
+
+	DataStreamCursorAdvance(dataStream, writtenBytes);
+
+	return writtenBytes;
 }
 
 size_t DataStreamWriteP(DataStream* const dataStream, const void* value, const size_t length)
@@ -1214,17 +1304,22 @@ size_t DataStreamWrite(DataStream* const dataStream, const char* format, ...)
 	return writtenBytes;
 }
 
-size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const size_t index)
+size_t DataStreamWriteAtP(DataStream* const dataStream, const void* const data, const size_t dataSize, const size_t index)
 {
 	const size_t positionBefore = dataStream->DataCursor; // save current position
 
 	dataStream->DataCursor = index; // jump to offset
 
-	DataStreamWriteCU(dataStream, value); // Length
+	const size_t writtenBytes = DataStreamWriteP(dataStream, data, dataSize); // Length
 
 	dataStream->DataCursor = positionBefore; // Reset old position
 
-	return 1u;
+	return writtenBytes;
+}
+
+size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const size_t index)
+{
+	return DataStreamWriteAtP(dataStream, &value, sizeof(unsigned char), index);
 }
 
 size_t DataStreamWriteAtSU(DataStream* const dataStream, const unsigned short value, const Endian endian, const size_t index)
@@ -1359,4 +1454,43 @@ size_t DataStreamWriteBits(DataStream* const dataStream, const size_t bitData, c
 	DataStreamBitsAllign(dataStream);
 
 	return moveCounter;
+}
+
+size_t DataStreamFilePathGetA(DataStream* const dataStream, char* const filePath, const size_t filePathMaxSize)
+{
+	const DWORD length = GetFinalPathNameByHandleA(dataStream->FileHandle, filePath, filePathMaxSize, VOLUME_NAME_DOS); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
+	const PXBool sucessful = 0u == length;
+
+	if (!sucessful)
+	{
+		const ActionResult result = GetCurrentError();
+
+		return result;
+	}
+
+	return ActionSuccessful;
+}
+
+size_t DataStreamFilePathGetW(DataStream* const dataStream, wchar_t* const filePath, const size_t filePathMaxSize)
+{
+	const DWORD flags = VOLUME_NAME_DOS | FILE_NAME_NORMALIZED;
+	const DWORD length = GetFinalPathNameByHandleW(dataStream->FileHandle, filePath, filePathMaxSize, flags); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
+	const PXBool sucessful = 0u != length;
+
+	if (!sucessful)
+	{
+		const ActionResult result = GetCurrentError();
+
+		return result;
+	}
+
+	wchar_t buffer[PathMaxSize];
+
+	if (filePath[0] == '\\')
+	{
+		TextCopyW(filePath+4, length-4, buffer, PathMaxSize);
+		TextCopyW(buffer, PathMaxSize, filePath, length-4);
+	}
+
+	return ActionSuccessful;
 }

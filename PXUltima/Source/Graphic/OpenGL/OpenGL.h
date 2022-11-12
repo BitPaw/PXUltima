@@ -745,7 +745,7 @@ extern "C"
 		const OpenGLDataType datatype,
 		const unsigned char normalized,
 		const unsigned int stride,
-		const void* const pointer
+		const size_t offset
 	);
 	PXPublic void OpenGLVertexArrayEnable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID);
 	PXPublic void OpenGLVertexArrayDisable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID);
