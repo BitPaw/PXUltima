@@ -3,6 +3,7 @@
 
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
+#include <File/File.h>
 
 #ifdef __cplusplus
 extern "C"

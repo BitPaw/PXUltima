@@ -181,8 +181,8 @@ extern "C"
 		size_t* extension, size_t extensionSize
 	);
 
-	PXPublic void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax);
-	PXPublic void FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax);
+	PXPublic size_t FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax);
+	PXPublic size_t FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax);
 
 	PXPublic void FileExtensionDetect();
 

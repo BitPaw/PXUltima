@@ -118,7 +118,7 @@ ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath)
     }
 
     {
-        const ModelFileFormat modelFileFormat = ModelGuessFormat(filePath);
+        const FileFormatExtension modelFileFormat = FilePathExtensionDetectTryW(filePath, PathMaxSize);
         const ActionResult fileParsingResult = ModelLoadD(model, &dataStream, modelFileFormat);
         const unsigned char success = fileParsingResult == ActionSuccessful;
 
@@ -132,7 +132,7 @@ ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath)
 
         do
         {
-            const ModelFileFormat imageFileFormat = fileGuessResult + fileFormatID;
+            const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
 
             fileGuessResult = ModelLoadD(model, &dataStream, imageFileFormat);
 

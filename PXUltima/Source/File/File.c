@@ -172,7 +172,7 @@ void FilePathSplittPositionW(const wchar_t* fullPath, size_t fullPathMaxSize, si
 {
 }
 
-void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax)
+size_t FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax)
 {
 	const size_t index = TextFindLastA(filePath, filePathSize, '.');
 	const unsigned char hasExtension = index != TextIndexNotFound;
@@ -183,10 +183,12 @@ void FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char
 		return;
 	}
 
-	TextCopyA(filePath + index, filePathSize - index, extension, extensionSizeMax);
+	const size_t writtenBytes = TextCopyA(filePath + index, filePathSize - index, extension, extensionSizeMax);
+
+	return writtenBytes;
 }
 
-void FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax)
+size_t FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax)
 {
 	const size_t index = TextFindLastW(filePath, filePathSize, '.');
 	const unsigned char hasExtension = index != TextIndexNotFound;
@@ -197,16 +199,18 @@ void FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, w
 		return;
 	}
 
-	TextCopyW(filePath + index + 1, filePathSize - index, extension, extensionSizeMax);
+	const size_t writtenBytes = TextCopyW(filePath + index + 1, filePathSize - index, extension, extensionSizeMax);
+
+	return writtenBytes;
 }
 
 FileFormatExtension FilePathExtensionDetectTryA(const char* const filePath, const size_t filePathSize)
 {
 	char extensionA[ExtensionMaxSize];
 
-	FilePathExtensionGetA(filePath, filePathSize, extensionA, ExtensionMaxSize);
+	const size_t writtenBytes = FilePathExtensionGetA(filePath, filePathSize, extensionA, ExtensionMaxSize);
 
-	FileFormatExtension fileFormatExtension = FileExtensionDetectTryA(extensionA, ExtensionMaxSize);
+	FileFormatExtension fileFormatExtension = FileExtensionDetectTryA(extensionA, writtenBytes);
 
 	return fileFormatExtension;
 }
@@ -215,9 +219,9 @@ FileFormatExtension FilePathExtensionDetectTryW(const wchar_t* const filePath, c
 {
 	wchar_t extensionW[ExtensionMaxSize];
 
-	FilePathExtensionGetW(filePath, filePathSize, extensionW, ExtensionMaxSize);
+	const size_t writtenBytes = FilePathExtensionGetW(filePath, filePathSize, extensionW, ExtensionMaxSize);
 
-	FileFormatExtension fileFormatExtension = FileExtensionDetectTryW(extensionW, ExtensionMaxSize);
+	FileFormatExtension fileFormatExtension = FileExtensionDetectTryW(extensionW, writtenBytes);
 
 	return fileFormatExtension;
 }
@@ -232,9 +236,9 @@ FileFormatExtension FileExtensionDetectTryA(const char* const extension, const s
 	return format;
 }
 
-FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const size_t extensionSize)
+FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const size_t extensionSizeC)
 {
-	const size_t extensionSize = MathMinimumIU(extensionSize, ExtensionMaxSize);
+	const size_t extensionSize = MathMinimumIU(extensionSizeC, ExtensionMaxSize);
 
 	switch (extensionSize)
 	{
