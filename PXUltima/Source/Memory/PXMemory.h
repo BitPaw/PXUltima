@@ -11,6 +11,14 @@
 #define MemoryProtectionModeType unsigned long // DWORD
 #endif
 
+//---<Settings>---
+#define MemoryAssertEnable 0
+#define MemoryDebugOutput 0
+#define MemoryDebugLeakDetection 0
+#define MemoryUseSystemFunction 0
+#define MemorySanitise 0
+//----------------
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -64,7 +72,8 @@ extern "C"
 	PXPublic unsigned char MemoryScan(MemoryUsage* memoryUsage);
 
 
-	PXPublic void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigned char value);
+	PXPublic void MemoryClear(void* const __restrict bufferA, const size_t bufferASize);
+	PXPublic void MemorySet(void* const __restrict bufferA, const size_t bufferASize, const unsigned char value);
 
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!
@@ -73,6 +82,12 @@ extern "C"
 	PXPublic size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize);
 
 	//CPublic char MemoryAdvice(const void* adress, const size_t length, const FileCachingMode fileCachingMode);
+
+	// Allocates size bytes on the program stack.
+	// The allocated space is automatically freed when the calling function exits
+	// (not when the allocation merely passes out of scope).
+	PXPublic void* MemoryStackAllocate(const size_t size);
+	//PXPublic void* MemoryStackRelease(void* const adress);
 
 	PXPublic void* MemoryAllocate(const size_t size);
 

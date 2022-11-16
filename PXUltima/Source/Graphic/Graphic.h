@@ -204,21 +204,38 @@ extern "C"
 
 	//typedef struct Renderable_ Renderable; ?
 
-	typedef struct PXRenderable_
+	typedef struct PXRenderableMeshSegment_
 	{
-		unsigned char DoRendering;
-
-		unsigned int ID; // VAO
-
-		unsigned int VBO;
-
-		PXMatrix4x4F MatrixModel;
+		unsigned int NumberOfVertices;
+		unsigned int TextureID;
+		unsigned int ShaderID;
 
 		GraphicRenderMode RenderMode;
 
-		unsigned int RenderSize;
+		PXBool DoRendering;
+	}
+	PXRenderableMeshSegment;
+
+	typedef struct PXRenderable_
+	{
+		PXMatrix4x4F MatrixModel;
+
+		unsigned int VAO;
+		unsigned int VBO;
+		unsigned int IBO;
+
+		size_t MeshSegmentListSize;
+		PXRenderableMeshSegment* MeshSegmentList;
+
+		PXBool DoRendering;
 	}
 	PXRenderable;
+
+
+
+
+	PXPublic void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
+
 
 	typedef struct GraphicContext_
 	{
@@ -266,6 +283,7 @@ extern "C"
 	PXPublic ActionResult GraphicTextureScreenShot(GraphicContext* const graphicContext, Image* const image);
 
 	PXPublic ActionResult GraphicTextureUse(GraphicContext* const graphicContext, PXTexture* const texture);
+	PXPublic ActionResult GraphicTextureRegisterA(GraphicContext* const graphicContext, PXTexture* const texture, const char* const filePath);
 	PXPublic ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, PXTexture* const texture);
 	PXPublic ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, PXTexture* const texture);
 

@@ -1702,14 +1702,12 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         *functionAdress = OpenGLFunctionAdressFetch(functionName);
     }
 
+#if 0 // print extensions
+
     // Get extensions
     {
         // extensions
         int NumberOfExtensions;
-
-        
-
-      
 
         OpenGLStringGetExtensionsARB func = (OpenGLStringGetExtensionsARB)wglGetProcAddress("wglGetExtensionsStringARB");
 
@@ -1774,11 +1772,10 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
 
 
-        }
-
-        
+        }   
 
     }
+#endif
 
 
     if (openGLContext->OpenGLDebugMessageCallback)
@@ -2887,6 +2884,13 @@ void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenG
     openGLContext->OpenGLValidateProgramCallBack(shaderID);
 }
 
+void OpenGLTextureActivate(OpenGLContext* const openGLContext, const unsigned int index)
+{
+    unsigned int indexID = GL_TEXTURE0 + index;
+
+    openGLContext->OpenGLActiveTextureCallBack(indexID);
+}
+
 void OpenGLTextureCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* textures)
 {
     openGLContext->OpenGLTextureCreateCallBack(n, textures);
@@ -2894,8 +2898,12 @@ void OpenGLTextureCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* 
 
 void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLuint texture)
 {
-    const unsigned int textureTypeID = OpenGLTextureTypeToID(textureType);
+    if (texture == (unsigned int)-1)
+    {
+        return;
+    }
 
+    const unsigned int textureTypeID = OpenGLTextureTypeToID(textureType);
     openGLContext->OpenGLTextureBindCallBack(textureTypeID, texture);
 }
 

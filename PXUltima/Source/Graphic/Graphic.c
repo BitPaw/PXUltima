@@ -4,64 +4,6 @@
 #include <File/DataStream.h>
 #include <OS/PXWindow.h>
 
-ActionResult GraphicRegisterTexture(GraphicContext* const graphicContext, PXTexture* const texture)
-{
-    const OpenGLTextureType openGLTextureType = ImageTypeGraphicToOpenGL(texture->Type);
-
-    Image* image = &texture->Image;
-
-    if (!image->PixelData)
-    {
-        return; // No image data
-    }
-
-    // Register and select
-    {
-        OpenGLID textureID = 0;
-
-        OpenGLTextureCreate(graphicContext, 1u, &textureID);
-
-        if (textureID == -1)
-        {
-            return ActionInvalid;
-        }
-
-        OpenGLTextureBind(graphicContext, openGLTextureType, textureID);
-
-        texture->ID = textureID;
-    }
-
-    // Texture Style
-    {/*
-        const int textureWrapWidth = OpenGLToImageWrap(texture->WrapWidth);
-        const int textureWrapHeight = OpenGLToImageWrap(texture->WrapHeight);
-        const int textueFilterNear = OpenGLToImageLayout(texture->LayoutNear);
-        const int textueFilterFar = OpenGLToImageLayout(texture->LayoutFar);
-
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_S, textureWrapWidth);
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_T, textureWrapHeight);
-        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, textueFilterNear);
-       // glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, textueFilterFar);
-       // glTexParameteri(textureType, GL_GENERATE_MIPMAP, GL_FALSE);*/
-    }
-
-    //glTexParameterf(textureType, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-
-    // ToDO: erro?
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    OpenGLTextureData2D(graphicContext, openGLTextureType, 0, OpenGLImageFormatRGBA, image->Width, image->Height, 0, OpenGLImageFormatRGBA, OpenGLTypeByteUnsigned, image->PixelData);
-
-   // glTexImage2D(textureType, 0, GL_RGBA, image->Width, image->Height, 0, format, OpenGLTypeByteUnsigned, image->PixelData);
-
-   // glGenerateMipmap(textureType);
-      
-
-    OpenGLTextureBind(graphicContext, openGLTextureType, 0);
-
-    return ActionSuccessful;
-}
-
 ActionResult GraphicTextureScreenShot(GraphicContext* const graphicContext, Image* const image)
 {
   //  OpenGLPixelDataRead(graphicContext, 0, 0, image->Width, image->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image->PixelData);
@@ -92,9 +34,91 @@ ActionResult GraphicTextureUse(GraphicContext* const graphicContext, PXTexture* 
     return ActionInvalid;
 }
 
+ActionResult GraphicTextureRegisterA(GraphicContext* const graphicContext, PXTexture* const texture, const char* const filePath)
+{
+    // Load texture..
+    {
+        const ActionResult loadResult = ImageLoadA(&texture->Image, filePath);
+        const PXBool successful = ActionSuccessful == loadResult;
+
+        if (!successful)
+        {
+            return loadResult;
+        }
+    }
+
+    // Register as normal 
+    {
+        const ActionResult registerResult = GraphicTextureRegister(graphicContext, texture);
+        const PXBool successful = ActionSuccessful == registerResult;
+
+        if (!successful)
+        {
+            return registerResult;
+        }
+    }
+
+    return ActionSuccessful;
+}
+
 ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, PXTexture* const texture)
 {
-    return ActionInvalid;
+    const OpenGLTextureType openGLTextureType = ImageTypeGraphicToOpenGL(texture->Type);
+
+    const unsigned int openGLTextureTypeID = OpenGLTextureTypeToID(openGLTextureType);
+
+    Image* image = &texture->Image;
+
+    if (!image->PixelData)
+    {
+        return ResultFileEmpty; // No image data
+    }
+
+    // Register and select
+    {
+        OpenGLID textureID = 0;
+
+        OpenGLTextureCreate(graphicContext, 1u, &textureID);
+
+        if (textureID == -1)
+        {
+            return ActionInvalid;
+        }
+
+        OpenGLTextureBind(graphicContext, openGLTextureType, textureID);
+
+        texture->ID = textureID;
+    }
+
+    // Texture Style
+    {
+        //const int textureWrapWidth = OpenGLToImageWrap(texture->WrapWidth);
+        //onst int textureWrapHeight = OpenGLToImageWrap(texture->WrapHeight);
+        //const int textueFilterNear = OpenGLToImageLayout(texture->LayoutNear);
+       // const int textueFilterFar = OpenGLToImageLayout(texture->LayoutFar);
+
+        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Remember! This stuff is required for some reason, its not optional!
+        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // if not done, textures might be black.
+       // glTexParameteri(openGLTextureTypeID, GL_GENERATE_MIPMAP, GL_FALSE);
+    }
+
+    //glTexParameterf(textureType, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+
+    // ToDO: erro?
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    OpenGLTextureData2D(graphicContext, openGLTextureType, 0, OpenGLImageFormatRGBA, image->Width, image->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image->PixelData);
+
+    // glTexImage2D(textureType, 0, GL_RGBA, image->Width, image->Height, 0, format, OpenGLTypeByteUnsigned, image->PixelData);
+
+    //glGenerateMipmap(openGLTextureTypeID);
+
+
+    OpenGLTextureBind(graphicContext, openGLTextureType, 0);
+
+    return ActionSuccessful;
 }
 
 ActionResult GraphicTextureRelease(GraphicContext* const graphicContext, PXTexture* const texture)
@@ -251,21 +275,24 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 {   
     PXMatrix4x4FIdentity(&renderable->MatrixModel);
 
-   OpenGLVertexArrayGenerate(&graphicContext->OpenGLInstance, 1u, &renderable->ID);
+    OpenGLVertexArrayGenerate(&graphicContext->OpenGLInstance, 1u, &renderable->VAO);
 
     OpenGLID vbo = 0;
 
     // Create VBO Buffers
     OpenGLBufferGenerate(&graphicContext->OpenGLInstance, 1u, &vbo);
+    renderable->VBO = vbo;
+
+
 
     //OpenGLVertexArrayBind(&graphicContext->OpenGLInstance, renderable->ID);
 
-    OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferArray, vbo);
+    OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferArray, renderable->VBO);
     OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, model->DataIndexSize * (3+3+2) * sizeof(float), model->DataVertex, OpenGLStoreStaticDraw);
 
-    renderable->RenderSize = model->DataIndexSize;
+    //renderable->RenderSize = model->DataIndexSize;
 
-#if 1
+#if 0
     printf
     (
         "| %7s %7s %7s | %7s %7s %7s | %7s %7s |\n", 
@@ -328,8 +355,59 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 
     //  OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
 
+ 
 
-    renderable->VBO = vbo;
+
+
+    //---<Register all textures>-----------------------------------------------
+    const size_t segmentsListSize = ModelSegmentsAmount(model);
+    const size_t modelListSize = PXModelMaterialAmount(model);
+
+    renderable->MeshSegmentListSize = modelListSize;
+    renderable->MeshSegmentList = (PXRenderableMeshSegment*)MemoryAllocate(sizeof(PXRenderableMeshSegment) * segmentsListSize);
+
+    for (size_t i = 0; i < segmentsListSize; ++i)
+    {
+        PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
+        MeshSegment meshSegment;
+
+        PXRenderableMeshSegmentConstruct(pxRenderableMeshSegment);
+        ModelSegmentsGet(model, i, &meshSegment);    
+
+        pxRenderableMeshSegment->RenderMode = GraphicRenderModeTriangle;
+        pxRenderableMeshSegment->NumberOfVertices = meshSegment.DrawClusterSize;
+        pxRenderableMeshSegment->TextureID = meshSegment.TextureID;
+        pxRenderableMeshSegment->DoRendering = PXYes;
+    }
+
+    for (size_t i = 0; i < modelListSize; ++i)
+    {
+        PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
+
+        PXMaterial material;
+        PXTexture pxTexture; 
+
+        PXTextureConstruct(&pxTexture);
+
+        pxTexture.Type = GraphicImageTypeTexture2D;
+        pxTexture.Filter = GraphicRenderFilterNoFilter;
+        pxTexture.LayoutNear = GraphicImageLayoutNearest;
+        pxTexture.LayoutFar = GraphicImageLayoutNearest;
+        pxTexture.WrapHeight = GraphicImageWrapRepeat;
+        pxTexture.WrapWidth = GraphicImageWrapRepeat;       
+
+        PXModelMaterialGet(model, i, &material);
+
+        GraphicTextureRegisterA(graphicContext, &pxTexture, material.DiffuseTextureFilePath);
+
+        pxRenderableMeshSegment->TextureID = pxTexture.ID;
+    }
+    //-------------------------------------------------------------------------
+
+
+
+
+    // Model is not fully registered and ready to be rendered
     renderable->DoRendering = 1u;
 }
 
@@ -399,6 +477,15 @@ void PXTextureConstruct(PXTexture* const texture)
 void PXTextureDestruct(PXTexture* const texture)
 {
 	
+}
+
+void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)
+{
+    pxRenderableMeshSegment->NumberOfVertices = 0;
+    pxRenderableMeshSegment->TextureID = (unsigned int)-1;
+    pxRenderableMeshSegment->ShaderID = (unsigned int)-1;
+    pxRenderableMeshSegment->RenderMode = GraphicRenderModeInvalid;
+    pxRenderableMeshSegment->DoRendering = PXNo;
 }
 
 OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType)

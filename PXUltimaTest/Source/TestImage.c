@@ -30,7 +30,7 @@ void TestSaveImageSmal()
     }
 
     const char* pathBMP = "_TEST_DATA_OUTPUT_/Smal_ImageBMP.bmp";
-    const ActionResult saveBMP = ImageSaveTest(&image, pathBMP, ImageFileFormatBitMap, ImageDataFormatRGB8);
+    const ActionResult saveBMP = ImageSaveTest(&image, pathBMP, FileFormatBitMap, ImageDataFormatRGB8);
 
     if(saveBMP != ActionSuccessful)
     {
@@ -38,7 +38,7 @@ void TestSaveImageSmal()
     }
 
     const char* pathPNG = "_TEST_DATA_OUTPUT_/Smal_ImagePNG.png";
-    const ActionResult savePNG = ImageSaveTest(&image, pathPNG, ImageFileFormatPNG, ImageDataFormatRGB8);
+    const ActionResult savePNG = ImageSaveTest(&image, pathPNG, FileFormatPNG, ImageDataFormatRGB8);
 
     if(savePNG != ActionSuccessful)
     {
@@ -46,7 +46,7 @@ void TestSaveImageSmal()
     }
 
     const char* pathJPG = "_TEST_DATA_OUTPUT_/Smal_ImageJPG.jpg";
-    const ActionResult saveJPG = ImageSaveTest(&image, pathJPG, ImageFileFormatJPEG, ImageDataFormatRGB8);
+    const ActionResult saveJPG = ImageSaveTest(&image, pathJPG, FileFormatJPEG, ImageDataFormatRGB8);
 
     if(saveJPG != ActionSuccessful)
     {
@@ -91,21 +91,21 @@ void TestSaveImage()
         }
     }
 
-    const ActionResult saveBMP = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageBMP.bmp", ImageFileFormatBitMap, ImageDataFormatRGB8);
+    const ActionResult saveBMP = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageBMP.bmp", FileFormatBitMap, ImageDataFormatRGB8);
     
     if(saveBMP != ActionSuccessful)
     {
         return saveBMP;
     }
     
-    const ActionResult savePNG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImagePNG.png", ImageFileFormatPNG, ImageDataFormatRGB8);
+    const ActionResult savePNG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImagePNG.png", FileFormatPNG, ImageDataFormatRGB8);
     
     if(savePNG != ActionSuccessful)
     {
         return savePNG;
     }
     
-    const ActionResult saveJPG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageJPG.jpg", ImageFileFormatJPEG, ImageDataFormatRGB8);
+    const ActionResult saveJPG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageJPG.jpg", FileFormatJPEG, ImageDataFormatRGB8);
 
     if(saveJPG != ActionSuccessful)
     {
@@ -157,7 +157,7 @@ void ImageWriteText()
 
     {
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_BMP.bmp";
-        const ActionResult saveBMP = ImageSaveTest(&image, path, ImageFileFormatBitMap, ImageDataFormatRGB8);
+        const ActionResult saveBMP = ImageSaveTest(&image, path, FileFormatBitMap, ImageDataFormatRGB8);
 
         if(saveBMP != ActionSuccessful)
         {
@@ -168,7 +168,7 @@ void ImageWriteText()
   
     {
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_JPG.jpeg";
-        const ActionResult saveJPEG = ImageSaveTest(&image, path, ImageFileFormatJPEG, ImageDataFormatRGB8);
+        const ActionResult saveJPEG = ImageSaveTest(&image, path, FileFormatJPEG, ImageDataFormatRGB8);
 
         if(saveJPEG != ActionSuccessful)
         {
@@ -178,7 +178,7 @@ void ImageWriteText()
 
     {
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_PNG.png";
-        const ActionResult savePNG = ImageSaveTest(&image, path, ImageFileFormatPNG, ImageDataFormatRGBA8);
+        const ActionResult savePNG = ImageSaveTest(&image, path, FileFormatPNG, ImageDataFormatRGBA8);
 
         if(savePNG != ActionSuccessful)
         {
@@ -218,7 +218,7 @@ ActionResult ImageLoadTest(Image* const image, const char* const filePath)
     return savePNG;
 }
 
-ActionResult ImageSaveTest(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat)
+ActionResult ImageSaveTest(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     const ActionResult savePNG = ImageSaveA(image, filePath, fileFormat, dataFormat);
 

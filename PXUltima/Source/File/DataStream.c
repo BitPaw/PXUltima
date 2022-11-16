@@ -685,8 +685,8 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 	dataStream->DataLocation = FileLocationMappedFromDisk;
 
-#if MemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", Data, DataSize, filePath);
+#if MemoryDebugOutput
+	printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", dataStream->Data, dataStream->DataSize, filePath);
 #endif
 
 	return ActionSuccessful;
@@ -733,8 +733,8 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 	}
 
 
-#if MemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) MMAP-Release\n", Data, DataSize);
+#if MemoryDebugOutput
+	printf("[#][Memory] 0x%p (%10zi B) MMAP-Release\n", dataStream->Data, dataStream->DataSize);
 #endif
 
 #if OSUnix

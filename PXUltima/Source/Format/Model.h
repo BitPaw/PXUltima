@@ -47,6 +47,7 @@ extern "C"
 
 		unsigned char DrawStrideSize;
 		unsigned int DrawClusterSize;
+		unsigned int TextureID;
 
 		float* VertexData;
 	}

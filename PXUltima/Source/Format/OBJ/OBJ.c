@@ -500,7 +500,7 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
     size_t expectedMaterialSize = (sizeof(PXMaterial) + 256)* 40;
     size_t infoHeaderSize = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int)) + expectedMaterialSize;
-    size_t expectedSize = 25 * sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeaderSize;// +indexListSize;
+    size_t expectedSize = 40 * sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeaderSize;// +indexListSize;
 
     model->Data = MemoryAllocate(expectedSize);
     //---<End header>----------------------------------------------------------
@@ -535,7 +535,7 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
         {
             const size_t amount = MTLFetchAmount(data, size);
 
-            model->MaterialList = data;
+            model->MaterialList = DataStreamCursorPosition(&modelHeaderStream);
 
             DataStreamWriteIU(&modelHeaderStream, amount, EndianLittle);
 
@@ -552,6 +552,9 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                     DataStreamWriteSU(&modelHeaderStream, (unsigned short)-1, EndianLittle); // Total size
                     DataStreamWriteSU(&modelHeaderStream, mtlMaterial.NameSize, EndianLittle); // Size of name
                     DataStreamWriteA(&modelHeaderStream, mtlMaterial.Name, mtlMaterial.NameSize); // Name
+
+                    DataStreamWriteSU(&modelHeaderStream, mtlMaterial.DiffuseTexturePathSize, EndianLittle); // Size of filepath
+                    DataStreamWriteA(&modelHeaderStream, mtlMaterial.DiffuseTexturePath, mtlMaterial.DiffuseTexturePathSize); // filepath
 
                     DataStreamWriteP(&modelHeaderStream, mtlMaterial.Ambient, sizeof(float) * 3u);
                     DataStreamWriteP(&modelHeaderStream, mtlMaterial.Diffuse, sizeof(float) * 3u);

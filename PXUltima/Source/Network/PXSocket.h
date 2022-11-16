@@ -23,7 +23,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#endif // !_WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1u

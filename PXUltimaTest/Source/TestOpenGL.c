@@ -85,7 +85,7 @@ void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
 
 	OpenGLPixelDataRead(openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
 
-	ImageSaveA(&image, "_TEST_DATA_OUTPUT_/Buffertest.png", ImageFileFormatPNG, ImageDataFormatRGB8);
+	ImageSaveA(&image, "_TEST_DATA_OUTPUT_/Buffertest.png", FileFormatPNG, ImageDataFormatRGB8);
 
 	ImageDestruct(&image);
 }

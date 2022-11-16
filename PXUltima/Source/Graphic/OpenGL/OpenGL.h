@@ -362,7 +362,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.2.0.0>------------------------------------------------------
-	PXPrivate unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType);
+	PXPublic unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType);
 
 	typedef unsigned int (OpenGLAPICallType* OpenGLShaderProgramCreateFunction)();
 	typedef void (OpenGLAPICallType* OpenGLShaderProgramUseFunction)(unsigned int program);
@@ -384,7 +384,6 @@ extern "C"
 	typedef void (OpenGLAPICallType* OpenGLVertexAttribPointerFunction)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
 	typedef void (OpenGLAPICallType* OpenGLVertexAttribArrayEnableFunction)(GLuint index); // glEnableVertexAttribArray
 	typedef void (OpenGLAPICallType* OpenGLVertexAttribArrayDisableFunction)(GLuint index); // glDisableVertexAttribArray
-
 
 	typedef void (OpenGLAPICallType* OpenGLDisableVertexArrayAttribFunction)(GLuint vaobj, GLuint index);
 	typedef GLint(OpenGLAPICallType* OpenGLGetUniformLocation)(GLuint program, const char* name);
@@ -672,6 +671,8 @@ extern "C"
 	PXPublic void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID);
 
 
+
+	PXPublic void OpenGLTextureActivate(OpenGLContext* const openGLContext, const unsigned int index);
 	PXPublic void OpenGLTextureCreate(OpenGLContext* const openGLContext, GLsizei n, GLuint* textures); // glGenTextures
 	PXPublic void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLuint texture); // glBindTexture
 	PXPublic void OpenGLTextureDelete(OpenGLContext* const openGLContext, GLsizei n, const GLuint* textures); // glDeleteTextures

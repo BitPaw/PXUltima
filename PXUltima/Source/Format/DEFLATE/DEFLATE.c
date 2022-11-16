@@ -1,7 +1,6 @@
 #include "DEFLATE.h"
 
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 
 #include <Memory/PXMemory.h>
@@ -444,13 +443,13 @@ typedef struct Hash
 unsigned hash_init(Hash* hash, unsigned windowsize)
 {
     size_t i;
-    hash->head = (int*)malloc(sizeof(int) * HASH_NUM_VALUES);
-    hash->val = (int*)malloc(sizeof(int) * windowsize);
-    hash->chain = (unsigned short*)malloc(sizeof(unsigned short) * windowsize);
+    hash->head = (int*)MemoryAllocate(sizeof(int) * HASH_NUM_VALUES);
+    hash->val = (int*)MemoryAllocate(sizeof(int) * windowsize);
+    hash->chain = (unsigned short*)MemoryAllocate(sizeof(unsigned short) * windowsize);
 
-    hash->zeros = (unsigned short*)malloc(sizeof(unsigned short) * windowsize);
-    hash->headz = (int*)malloc(sizeof(int) * (MAX_SUPPORTED_DEFLATE_LENGTH + 1));
-    hash->chainz = (unsigned short*)malloc(sizeof(unsigned short) * windowsize);
+    hash->zeros = (unsigned short*)MemoryAllocate(sizeof(unsigned short) * windowsize);
+    hash->headz = (int*)MemoryAllocate(sizeof(int) * (MAX_SUPPORTED_DEFLATE_LENGTH + 1));
+    hash->chainz = (unsigned short*)MemoryAllocate(sizeof(unsigned short) * windowsize);
 
     if(!hash->head || !hash->chain || !hash->val || !hash->headz || !hash->chainz || !hash->zeros)
     {
@@ -1075,7 +1074,7 @@ BPMNode* bpmnode_create(BPMLists* lists, int weight, unsigned index, BPMNode* ta
 /*sort the leaves with stable mergesort*/
 void bpmnode_sort(BPMNode* leaves, size_t num)
 {
-    BPMNode* mem = (BPMNode*)malloc(sizeof(*leaves) * num);
+    BPMNode* mem = (BPMNode*)MemoryAllocate(sizeof(*leaves) * num);
     size_t width, counter = 0;
     for(width = 1; width < num; width *= 2)
     {
@@ -1138,7 +1137,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
     static const unsigned headsize = 1u << FIRSTBITS; /*size of the first table*/
     static const unsigned mask = (1u << FIRSTBITS) /*headsize*/ - 1u;
     size_t i, numpresent, pointer, size; /*total table size*/
-    unsigned* maxlens = (unsigned*)malloc(headsize * sizeof(unsigned));
+    unsigned* maxlens = (unsigned*)MemoryAllocate(headsize * sizeof(unsigned));
     if(!maxlens) return 83; /*alloc fail*/
 
     /* compute maxlens: max total bit length of symbols sharing prefix in the first table*/
@@ -1160,8 +1159,8 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
         unsigned l = maxlens[i];
         if(l > FIRSTBITS) size += (1u << (l - FIRSTBITS));
     }
-    tree->table_len = (unsigned char*)malloc(size * sizeof(*tree->table_len));
-    tree->table_value = (unsigned short*)malloc(size * sizeof(*tree->table_value));
+    tree->table_len = (unsigned char*)MemoryAllocate(size * sizeof(*tree->table_len));
+    tree->table_value = (unsigned short*)MemoryAllocate(size * sizeof(*tree->table_value));
     if(!tree->table_len || !tree->table_value)
     {
         free(maxlens);
@@ -1274,9 +1273,9 @@ static unsigned HuffmanTree_makeFromLengths2(HuffmanTree* tree)
     unsigned error = 0;
     unsigned bits, n;
 
-    tree->codes = (unsigned*)malloc(tree->numcodes * sizeof(unsigned));
-    blcount = (unsigned*)malloc((tree->maxbitlen + 1) * sizeof(unsigned));
-    nextcode = (unsigned*)malloc((tree->maxbitlen + 1) * sizeof(unsigned));
+    tree->codes = (unsigned*)MemoryAllocate(tree->numcodes * sizeof(unsigned));
+    blcount = (unsigned*)MemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned));
+    nextcode = (unsigned*)MemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned));
     if(!tree->codes || !blcount || !nextcode) error = 83; /*alloc fail*/
 
     if(!error)
@@ -1319,7 +1318,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
     if(numcodes == 0) return 80; /*error: a tree of 0 symbols is not supposed to be made*/
     if((1u << maxbitlen) < (unsigned)numcodes) return 80; /*error: represent all symbols*/
 
-    leaves = (BPMNode*)malloc(numcodes * sizeof(*leaves));
+    leaves = (BPMNode*)MemoryAllocate(numcodes * sizeof(*leaves));
     if(!leaves) return 83; /*alloc fail*/
 
     for(i = 0; i != numcodes; ++i)
@@ -1359,10 +1358,10 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
         lists.memsize = 2 * maxbitlen * (maxbitlen + 1);
         lists.nextfree = 0;
         lists.numfree = lists.memsize;
-        lists.memory = (BPMNode*)malloc(lists.memsize * sizeof(*lists.memory));
-        lists.freelist = (BPMNode**)malloc(lists.memsize * sizeof(BPMNode*));
-        lists.chains0 = (BPMNode**)malloc(lists.listsize * sizeof(BPMNode*));
-        lists.chains1 = (BPMNode**)malloc(lists.listsize * sizeof(BPMNode*));
+        lists.memory = (BPMNode*)MemoryAllocate(lists.memsize * sizeof(*lists.memory));
+        lists.freelist = (BPMNode**)MemoryAllocate(lists.memsize * sizeof(BPMNode*));
+        lists.chains0 = (BPMNode**)MemoryAllocate(lists.listsize * sizeof(BPMNode*));
+        lists.chains1 = (BPMNode**)MemoryAllocate(lists.listsize * sizeof(BPMNode*));
         if(!lists.memory || !lists.freelist || !lists.chains0 || !lists.chains1) error = 83; /*alloc fail*/
 
         if(!error)
@@ -1402,7 +1401,7 @@ unsigned HuffmanTree_makeFromFrequencies(HuffmanTree* tree, const unsigned* freq
 {
     unsigned error = 0;
     while(!frequencies[numcodes - 1] && numcodes > mincodes) --numcodes; /*trim zeroes*/
-    tree->lengths = (unsigned*)malloc(numcodes * sizeof(unsigned));
+    tree->lengths = (unsigned*)MemoryAllocate(numcodes * sizeof(unsigned));
     if(!tree->lengths) return 83; /*alloc fail*/
     tree->maxbitlen = maxbitlen;
     tree->numcodes = (unsigned)numcodes; /*number of symbols*/
@@ -1469,9 +1468,9 @@ unsigned deflateDynamic
     HuffmanTreeConstruct(&tree_d);
     HuffmanTreeConstruct(&tree_cl);
     /* could fit on stack, but >1KB is on the larger side so allocate instead */
-    frequencies_ll = (unsigned*)malloc(286 * sizeof(*frequencies_ll));
-    frequencies_d = (unsigned*)malloc(30 * sizeof(*frequencies_d));
-    frequencies_cl = (unsigned*)malloc(NUM_CODE_LENGTH_CODES * sizeof(*frequencies_cl));
+    frequencies_ll = (unsigned*)MemoryAllocate(286 * sizeof(*frequencies_ll));
+    frequencies_d = (unsigned*)MemoryAllocate(30 * sizeof(*frequencies_d));
+    frequencies_cl = (unsigned*)MemoryAllocate(NUM_CODE_LENGTH_CODES * sizeof(*frequencies_cl));
 
     if(!frequencies_ll || !frequencies_d || !frequencies_cl) error = 83; /*alloc fail*/
 
@@ -1520,9 +1519,9 @@ unsigned deflateDynamic
         numcodes_d = MathMinimum(tree_d.numcodes, 30);
         /*store the code lengths of both generated trees in bitlen_lld*/
         numcodes_lld = numcodes_ll + numcodes_d;
-        bitlen_lld = (unsigned*)malloc(numcodes_lld * sizeof(*bitlen_lld));
+        bitlen_lld = (unsigned*)MemoryAllocate(numcodes_lld * sizeof(*bitlen_lld));
         /*numcodes_lld_e never needs more size than bitlen_lld*/
-        bitlen_lld_e = (unsigned*)malloc(numcodes_lld * sizeof(*bitlen_lld_e));
+        bitlen_lld_e = (unsigned*)MemoryAllocate(numcodes_lld * sizeof(*bitlen_lld_e));
         if(!bitlen_lld || !bitlen_lld_e) ERROR_BREAK(83); /*alloc fail*/
         numcodes_lld_e = 0;
 

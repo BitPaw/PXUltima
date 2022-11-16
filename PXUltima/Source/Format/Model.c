@@ -33,7 +33,7 @@ size_t PXModelMaterialAmount(Model* const model)
 PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMaterial* const pxMaterial)
 {
     const size_t amount = PXModelMaterialAmount(model);
-    const PXBool isInRange = amount <= materialID;
+    const PXBool isInRange = amount >= materialID;
 
     MemorySet(pxMaterial, sizeof(PXMaterial), 0);
 
@@ -57,8 +57,18 @@ PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMateria
 
         if (isGoal)
         {
-            DataStreamReadSU(&materialData, &pxMaterial->NameSize, EndianLittle);
+            unsigned short range = 0;
+            DataStreamReadSU(&materialData, &range, EndianLittle);
             pxMaterial->Name = DataStreamCursorPosition(&materialData);
+            pxMaterial->NameSize = range;
+
+            DataStreamCursorAdvance(&materialData, range);
+
+            DataStreamReadSU(&materialData, &range, EndianLittle);
+            pxMaterial->DiffuseTextureFilePath = DataStreamCursorPosition(&materialData);
+            pxMaterial->DiffuseTextureFilePathSize = range;
+
+            DataStreamCursorAdvance(&materialData, range);
 
             DataStreamReadP(&materialData, &pxMaterial->Ambient, sizeof(float) * 3u);
             DataStreamReadP(&materialData, &pxMaterial->Diffuse, sizeof(float) * 3u);
@@ -68,7 +78,7 @@ PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMateria
             break;
         }
 
-        DataStreamCursorAdvance(&materialData, materialSize);
+        DataStreamCursorAdvance(&materialData, materialSize-2u);
     }
 
     return PXYes;
@@ -81,10 +91,15 @@ unsigned char ModelSegmentsAmount(const Model* const model)
 
 void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment* const meshSegment)
 {
-	unsigned char* ancer= (unsigned char*)model->Data +1 + (index * (sizeof(char) + sizeof(int)));
+	unsigned char* ancer= (unsigned char*)model->Data +1 + (index * (sizeof(char) + sizeof(int) * 2u));
 
-	meshSegment->DrawStrideSize = ancer;
-	meshSegment->DrawClusterSize = ancer + sizeof(char);
+    DataStream dataStream;
+
+    DataStreamFromExternal(&dataStream, ancer, -1);
+
+    DataStreamReadCU(&dataStream, &meshSegment->DrawStrideSize);
+    DataStreamReadIU(&dataStream, &meshSegment->DrawClusterSize, EndianLittle);
+    DataStreamReadIU(&dataStream, &meshSegment->TextureID, EndianLittle);
 
 	meshSegment->VertexData = model->DataVertex;
 }

@@ -8,6 +8,7 @@
 #if OSUnix
 
 #include <sys/mman.h>
+#include <alloca.h>
 
 #define ProtectionIDRead PROT_READ
 #define ProtectionIDWrite PROT_WRITE
@@ -24,11 +25,6 @@
 #endif
 
 //---<Settings>------------------------
-#define MemoryAssertEnable 0
-#define MemoryDebugOutput 0
-#define MemoryDebugLeakDetection 0
-#define MemoryUseSystemFunction 0
-#define MemorySanitise 1
 
 #if MemoryAssertEnable
 #include <assert.h>
@@ -98,6 +94,11 @@ unsigned char MemoryScan(MemoryUsage* memoryUsage)
 #endif
 }
 
+void MemoryClear(void* const __restrict bufferA, const size_t bufferASize)
+{
+	return MemorySet(bufferA, bufferASize, 0u);
+}
+
 void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigned char value)
 {
 //#if MemoryAssertEnable
@@ -105,7 +106,7 @@ void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigne
 //#endif
 
 #if MemoryDebugOutput
-	printf("[#][Memory] 0x%p (%10zi B) Set to %2x\n", bufferA, bufferASize, value);
+	//printf("[#][Memory] 0x%p (%10zi B) Set to %2x\n", bufferA, bufferASize, value);
 #endif
 
 	if(!bufferA)
@@ -118,14 +119,14 @@ void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigne
 #else
 	for(size_t i = 0; i < bufferASize; ++i)
 	{
-		((unsigned char*)bufferA)[i] = value;
+		((PXAdress)bufferA)[i] = value;
 	}
 #endif
 }
 
 unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize)
 {
-	const size_t bufferSize = MathMinimum(bufferASize, bufferBSize);
+	const size_t bufferSize = MathMinimumIU(bufferASize, bufferBSize);
 	size_t counter = bufferSize;
 	size_t equalSum = 0;
 
@@ -144,7 +145,7 @@ unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferA
 
 	while(counter--)
 	{
-		equalSum += ((unsigned char*)bufferA)[counter] == ((unsigned char*)bufferB)[counter];
+		equalSum += ((PXAdress)bufferA)[counter] == ((PXAdress)bufferB)[counter];
 	}
 
 	return equalSum == bufferSize;
@@ -153,7 +154,7 @@ unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferA
 
 size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize)
 {
-	const size_t bufferSize = MathMinimum(inputBufferSize, outputBufferSize);
+	const size_t bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
 	size_t index = bufferSize;
 
 #if MemoryAssertEnable
@@ -162,18 +163,31 @@ size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSi
 #endif
 
 #if MemoryDebugOutput
-	printf("[#][Memory] 0x%p (%10zi B) Copy to 0x%p\n", inputBuffer, bufferSize, outputBufferSize);
+	//printf("[#][Memory] 0x%p (%10zi B) Copy to 0x%p\n", inputBuffer, bufferSize, outputBufferSize);
 #endif
 
 	while(index--)
 	{
-		const unsigned char* inputByte = ((unsigned char*)inputBuffer) + index;
-		unsigned char* outputByte = ((unsigned char*)outputBuffer) + index;
+		const PXAdress inputByte = ((PXAdress)inputBuffer) + index;
+		PXAdress outputByte = ((PXAdress)outputBuffer) + index;
 
 		*outputByte = *inputByte;
 	}
 
 	return bufferSize;
+}
+
+void* MemoryStackAllocate(const size_t size)
+{ 
+	void* const stackAllocated  =
+
+#if OSUnix
+		alloca(size);
+#elif OSWindows
+		_alloca(size); // _alloca() is deprecated (security reasons) but _malloca() is not an alternative
+#endif
+
+	return stackAllocated;
 }
 
 void* MemoryAllocate(const size_t requestedSizeInBytes)
@@ -259,7 +273,7 @@ void* MemoryReallocateClear(const void* const adress, const size_t sizeBefore, c
 
 	if (sizeIncredes)
 	{
-		const unsigned char* startAdress = (unsigned char*)adressReallocated + sizeBefore;
+		const PXAdress startAdress = (PXAdress)adressReallocated + sizeBefore;
 		const size_t sizeDelta = sizeAfter - sizeBefore;
 
 		MemorySet(startAdress, sizeDelta, 0);

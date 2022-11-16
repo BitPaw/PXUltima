@@ -5,6 +5,7 @@
 
 #include <Error/ActionResult.h>
 #include <Format/Image.h>
+#include <File/File.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -19,7 +20,7 @@ extern "C"
     extern void ImageWriteText();
 
     ActionResult ImageLoadTest(Image* const image, const char* const filePath);
-    ActionResult ImageSaveTest(Image* const image, const char* const filePath, const ImageFileFormat fileFormat, const ImageDataFormat dataFormat);
+    ActionResult ImageSaveTest(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
 
 #ifdef __cplusplus
 }
