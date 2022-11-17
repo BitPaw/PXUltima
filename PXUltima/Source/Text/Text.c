@@ -410,7 +410,7 @@ size_t TextCountUntilW(const wchar_t* text, const size_t textSize, const wchar_t
 
 PXBool TextCompareA(const char* a, const size_t aSize, const char* b, const size_t bSize)
 {
-	const size_t textSize = MathMinimum(aSize, bSize);
+	const size_t textSize = MathMinimumIU(aSize, bSize);
 
 	size_t index = 0;
 	size_t samecounter = 0;
@@ -418,9 +418,28 @@ PXBool TextCompareA(const char* a, const size_t aSize, const char* b, const size
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
 
-	if(index < textSize) // Still in range but encountered an \0 in a or b
+	const PXBool stillHasDatainA = textSize < aSize;
+	const PXBool stillHasDatainB = textSize < bSize;
+
+	// Check if data is just empty
 	{
-		samecounter += a[index] == b[index]; // One of them is \0, check this too
+		const PXBool isEmptyData = stillHasDatainA && stillHasDatainB;
+
+		if (isEmptyData)
+		{
+			return (index == samecounter); // End check
+		}
+	}
+
+	if (stillHasDatainA)
+	{
+		samecounter += a[index] == '\0';
+		++index; // keep for comparsion
+	}
+
+	if (stillHasDatainB)
+	{
+		samecounter += b[index] == '\0';
 		++index; // keep for comparsion
 	}
 

@@ -240,7 +240,7 @@ ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const out
 
 		DataStreamReadIU(&headerStream, &sizeA, EndianLittle);
 
-		DataStreamWriteAtIU(&headerStream, sizeA - materialSizeDelta, EndianLittle, positionA);
+        DataStreamWriteAtIU(&headerStream, materialSizeDelta- sizeA, EndianLittle, positionA);
 	}
 
 	//outputStream->DataCursor = startoffset + tokenSteam.DataCursor; // Only save the actuan size

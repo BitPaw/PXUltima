@@ -240,6 +240,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                     case OBJLineMaterialLibraryUse:
                     {
                         drawOrder[drawCurrentIndex++] = drawCurrentCounter;
+                        drawCurrentCounter = 0;
                         break;
                     }
                 }
@@ -354,8 +355,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
                 drawSize[drawCurrentIndex] = MathMaximum(drawSize[drawCurrentIndex], cornerPoints);
 
                 indexListSize += cornerPoints;
-
-                ++drawCurrentCounter;
+                drawCurrentCounter += cornerPoints;
 
                 DataStreamWriteAtCU(outputStream, cornerPoints, cursorPos);
 
@@ -441,8 +441,8 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
 
         for (size_t i = 0; i < drawCurrentIndex + 1; ++i)
         {
-            DataStreamWriteCU(&headerInfoStream, drawSize[i]);
-            DataStreamWriteIU(&headerInfoStream, MathAbsoluteI((int)drawOrder[i + 1] - (int)drawOrder[i]), EndianLittle);
+            DataStreamWriteCU(&headerInfoStream, drawSize[i+1]);
+            DataStreamWriteIU(&headerInfoStream, MathAbsoluteI(drawOrder[i+1]), EndianLittle);
         }
 
         DataStreamWriteIU(&headerInfoStream, vertexListSize, EndianLittle);
@@ -484,6 +484,9 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
     DataStreamReadCU(inputStream, &numberOfMeshes);
 
+    MemorySet(renderMode, sizeof(renderMode), 0);
+    MemorySet(renderSize, sizeof(renderSize), 0);
+
     for (size_t i = 0; i < numberOfMeshes; ++i)
     {
         DataStreamReadCU(inputStream, &renderMode[i]);
@@ -520,7 +523,7 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
         {
             DataStreamWriteCU(&modelHeaderStream, renderMode[meshIndex]); // Draw mode
             DataStreamWriteIU(&modelHeaderStream, renderSize[meshIndex], EndianLittle); // Draw amount
-            DataStreamWriteIU(&modelHeaderStream, (unsigned int)-1, EndianLittle); // Material ID, set later   
+            DataStreamWriteIU(&modelHeaderStream,(unsigned int)-1, EndianLittle); // Material ID, set later   
         }
 #if OBJDetectMaterial
         //---<MTL to PXMaterial>-----------------------------------------------
@@ -585,7 +588,7 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     inputStream->DataCursor = 1024;
     model->DataVertex = (unsigned char*)model->Data + infoHeaderSize;
 
-    DataStreamFromExternal(&materialIDLookupStream, model->Data, infoHeaderSize);
+    DataStreamFromExternal(&materialIDLookupStream, (PXAdress)model->Data+1, infoHeaderSize);
     DataStreamFromExternal(&vertexArrayData, model->DataVertex, expectedSize);
      
 
@@ -689,13 +692,17 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 #if OBJDetectMaterial
                             char materialName[256];
 
+                            void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
+                            const size_t sizeEE = inputStream->DataSize - mtlEmbeddedDataOffset;
+                            const size_t amount = MTLFetchAmount(data, sizeEE);
+
                             DataStreamReadSU(inputStream, &size, EndianLittle);
                             DataStreamReadA(inputStream, materialName, size);
 
                             DataStreamCursorAdvance(&materialIDLookupStream, sizeof(unsigned char) + sizeof(unsigned int));
 
                             // Lookup material
-                            for (size_t i = 0; i < mtlInlclueesListSize; ++i)
+                            for (size_t i = 0; i < amount; ++i)
                             {
                                 PXMaterial pxMaterial;
 
@@ -717,8 +724,10 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
                         }
                         else
                         {
+                            unsigned char tttt[260];
+
                             DataStreamReadSU(inputStream, &size, EndianLittle);
-                            DataStreamReadA(inputStream, name, size);
+                            DataStreamReadA(inputStream, tttt, size);
                         }
 
                         break;
@@ -810,431 +819,3 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
     return ActionSuccessful;
 }
-
-/*
-
-ActionResult OBJParseEEE(OBJ* obj, const void* data, const size_t dataSize, size_t* dataRead, const wchar_t* fileName)
-{
-    DataStream dataStream;
-
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, (void*)data, dataSize);
-    OBJConstruct(obj);
-    *dataRead = 0;
-
-    unsigned char isFirstVertex = 0;
-
-    obj->ElementListSize = 1;
-    obj->ElementList = (OBJElement*)MemoryAllocate(sizeof(OBJElement) * 1u);
-
-    typedef struct OBJSegmentData_
-    {
-        size_t Position;
-        size_t Texture;
-        size_t Normal;
-        size_t Parameter;
-        size_t Face;
-        size_t Material;
-    }
-    OBJSegmentData;
-
-    //---<Cound needed Space and allocate>----------------------------------
-    {
-        OBJSegmentData segmentData[128];
-        size_t segmentAmount = 0;
-        size_t materialCounter = 0;
-
-        OBJElement* currentSegment = obj->ElementList;
-        unsigned char isInMesh = 0;
-
-        MemorySet(segmentData, sizeof(OBJSegmentData) * 128, 0);
-
-        do
-        {
-            const char* currentLine = (const char*)DataStreamCursorPosition(&dataStream);
-            const OBJLineType command = OBJPeekLine(currentLine, 0);
-
-            OBJSegmentData* currentSegmentData = &segmentData[segmentAmount];
-
-            switch (command)
-            {
-            case OBJLineMaterialLibraryInclude:
-                ++materialCounter;
-                break;
-
-            case OBJLineMaterialLibraryUse:
-                ++currentSegmentData->Material;
-                break;
-
-            case OBJLineObjectName:
-                ++segmentAmount;
-                break;
-
-            case OBJLineVertexGeometric:
-                ++currentSegmentData->Position;
-                break;
-
-            case OBJLineVertexTexture:
-                ++currentSegmentData->Texture;
-                break;
-
-            case OBJLineVertexNormal:
-                ++currentSegmentData->Normal;
-                break;
-
-            case OBJLineVertexParameter:
-                ++currentSegmentData->Parameter;
-                break;
-
-            case OBJLineFaceElement:
-            {
-                const size_t amount = TextCountUntilA(currentLine + 2, DataStreamRemainingSize(&dataStream), '/', '\n') / 2;
-
-                currentSegmentData->Face += amount;
-
-                isInMesh = 1u;
-
-                if (obj->VertexStructureSize < amount)
-                    obj->VertexStructureSize = amount;
-
-                break;
-            }
-            }
-        } while (DataStreamSkipLine(&dataStream));
-
-        DataStreamCursorToBeginning(&dataStream);
-
-        obj->MaterialFileListSize = materialCounter;
-        obj->MaterialFileList = (MTL*)MemoryAllocate(sizeof(MTL) * materialCounter);
-
-        MemorySet(obj->MaterialFileList, sizeof(MTL) * materialCounter, 0);
-
-        for (size_t i = 0; i < segmentAmount; i++)
-        {
-            const OBJSegmentData* currentSegmentData = &segmentData[segmentAmount];
-
-            OBJElement* segment = currentSegment;
-
-            OBJElementConstruct(segment);
-
-            segment->VertexPositionListSize = currentSegmentData->Position * 3u;
-            segment->VertexPositionList = (float*)MemoryAllocate(sizeof(float) * segment->VertexPositionListSize);
-
-            segment->TextureCoordinateListSize = currentSegmentData->Texture * 2u;
-            segment->TextureCoordinateList = (float*)MemoryAllocate(sizeof(float) * segment->TextureCoordinateListSize);
-
-            segment->VertexNormalPositionListSize = currentSegmentData->Normal * 3u;
-            segment->VertexNormalPositionList = (float*)MemoryAllocate(sizeof(float) * segment->VertexNormalPositionListSize);
-
-            segment->VertexParameterListSize = currentSegmentData->Parameter * 3u;
-            segment->VertexParameterList = (float*)MemoryAllocate(sizeof(float) * segment->VertexParameterListSize);
-
-            segment->FaceElementListSize = currentSegmentData->Face * 3u;
-            segment->FaceElementList = (unsigned int*)MemoryAllocate(sizeof(unsigned int) * segment->FaceElementListSize);
-
-            segment->MaterialInfoSize = currentSegmentData->Material;
-            segment->MaterialInfo = (OBJElementMaterialInfo*)MemoryAllocate(sizeof(OBJElementMaterialInfo) * segment->MaterialInfoSize);
-
-#if OBJDebug
-
-            printf
-            (
-                "[OBJ][Segment (%li/%li)] V:%li T:%li N:%li P:%li F:%li M:%i\n",
-                i + 1,
-                segmentAmount,
-                currentSegmentData->Position,
-                currentSegmentData->Texture,
-                currentSegmentData->Normal,
-                currentSegmentData->Parameter,
-                currentSegmentData->Face,
-                currentSegmentData->Material
-            );
-#endif
-        }
-    }
-    //--------------------------------------------------------------------
-
-    //assert(VertexStructureSize == 3 || VertexStructureSize == 4);
-
-    // Exact Parse
-    {
-        size_t currentPositionElement = 0;
-        size_t currentTextureElement = 0;
-        size_t currentNormalElement = 0;
-        size_t currentParameterElement = 0;
-        size_t currentFaceElement = 0;
-        size_t materialIndex = 0;
-        size_t materialIDCounter = 0;
-
-        size_t elementIndex = -1;
-        OBJElement* elemtentAdress = obj->ElementList;
-        unsigned char isInMesh = 0;
-
-        size_t materialInfoIndex = 0;
-        size_t materialFaceCounter = 0;
-        size_t materialFaceCounterMAX = 0;
-
-        // Parse
-        do
-        {
-            const char* const currentLine = (const char* const)DataStreamCursorPosition(&dataStream);
-            const unsigned short lineTagID = MakeShort(currentLine[0], currentLine[1]);
-            const OBJLineType command = OBJPeekLine(currentLine, 0);
-
-            DataStreamSkipBlock(&dataStream);
-
-            const char* const dataPoint = (const char* const)DataStreamCursorPosition(&dataStream);
-            const size_t maximalSize = DataStreamRemainingSize(&dataStream);
-            const size_t currentLineLength = TextLengthUntilA(dataPoint, maximalSize, '\n');
-
-            OBJElement* currentElemtent = elemtentAdress;
-
-            switch (command)
-            {
-            case OBJLineMaterialLibraryInclude:
-            {
-                char materialFilePathA[PathMaxSize];
-                wchar_t materialFilePathW[PathMaxSize];
-                wchar_t materialFilePathFullW[PathMaxSize];
-                MTL* material = &obj->MaterialFileList[materialIndex++];
-
-                // Parse materialPath
-                {
-                    TextParseA
-                    (
-                        dataPoint,
-                        currentLineLength,
-                        "s",
-                        materialFilePathA
-                    );
-                }
-
-                TextCopyAW(materialFilePathA, PathMaxSize, materialFilePathW, PathMaxSize);
-
-                FilePathSwapFile(fileName, materialFilePathFullW, materialFilePathW);
-
-                {
-
-                    DataStream dataStreamMTL;
-
-                    DataStreamConstruct(&dataStreamMTL);
-
-                    {
-                        const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStreamMTL, materialFilePathFullW, 0, MemoryReadOnly);
-                        const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
-
-                        // if(!sucessful)
-                        // {
-                        //     return ResultInvalid;
-                        // }
-                    }
-                    size_t readBytes = 0;
-                    const ActionResult actionResult = MTLParse(material, dataStreamMTL.Data, dataStreamMTL.DataSize, &readBytes);
-                    const unsigned char sucessful = actionResult == ActionSuccessful;
-
-#if OBJDebug
-
-                    if (sucessful)
-                    {
-                        printf("[+][MTL] Material (.mtl) file loaded <%ls>\n", materialFilePathFullW);
-                    }
-                    else
-                    {
-                        printf("[Warning] Material (.mtl) file is missing at path <%ls>\n", materialFilePathFullW);
-                    }
-#endif
-
-                    DataStreamDestruct(&dataStreamMTL);
-                }
-
-                break;
-            }
-            case OBJLineMaterialLibraryUse:
-            {
-                char usedMaterialName[MTLNameSize];
-                unsigned int materialID = -1;
-
-                TextParseA
-                (
-                    dataPoint,
-                    currentLineLength,
-                    "s",
-                    usedMaterialName
-                );
-
-                for (size_t i = 0; i < obj->MaterialFileListSize; ++i)
-                {
-                    const MTL* mtl = &obj->MaterialFileList[i];
-                    const size_t materialListSize = mtl->MaterialListSize;
-
-                    for (size_t j = 0; j < materialListSize; ++j)
-                    {
-                        const MTLMaterial* material = &mtl->MaterialList[j];
-                        const unsigned char isSameName = TextCompareA(material->Name, MTLNameSize, usedMaterialName, MTLNameSize);
-
-                        if (isSameName)
-                        {
-                            materialID = j;
-                            break;
-                        }
-                    }
-                }
-
-                if (materialInfoIndex)
-                {
-                    OBJElementMaterialInfo* infoBefore = &currentElemtent->MaterialInfo[materialInfoIndex - 1];
-                    OBJElementMaterialInfo* infoNew = &currentElemtent->MaterialInfo[materialInfoIndex++];
-
-                    infoNew->MaterialIndex = materialID;
-                    infoNew->Size = -1;
-
-                    size_t newSize = (currentFaceElement * 3);
-
-                    infoBefore->Size = materialFaceCounter;
-
-                    materialFaceCounterMAX += materialFaceCounter;
-                    materialFaceCounter = 0;
-
-                    if (materialInfoIndex == currentElemtent->MaterialInfoSize)
-                    {
-                        // Last entry
-                        infoNew->Size = currentElemtent->FaceElementListSize - materialFaceCounterMAX;
-                    }
-                }
-                else
-                {
-                    OBJElementMaterialInfo* info = &currentElemtent->MaterialInfo[materialInfoIndex++];
-
-                    info->MaterialIndex = materialID;
-                    info->Size = -1;
-                }
-
-                break;
-            }
-
-            case OBJLineObjectName:
-            {
-                OBJElement* elemtentAdress = &obj->ElementList[elementIndex++];
-
-                materialInfoIndex = 0;
-
-                TextCopyA(dataPoint, currentLineLength, currentElemtent->Name, OBJElementNameLength);
-                break;
-            }
-
-            case OBJLineVertexParameter:
-            case OBJLineVertexNormal:
-            case OBJLineVertexGeometric:
-            {
-                float* data = 0;
-
-                switch (command)
-                {
-                case OBJLineVertexParameter:
-                    data = &currentElemtent->VertexParameterList[currentParameterElement];
-                    currentParameterElement += 3;
-                    break;
-
-                case OBJLineVertexNormal:
-                    data = &currentElemtent->VertexNormalPositionList[currentNormalElement];
-                    currentNormalElement += 3;
-                    break;
-
-                case OBJLineVertexGeometric:
-                    data = &currentElemtent->VertexPositionList[currentPositionElement];
-                    currentPositionElement += 3;
-                    break;
-                }
-
-                //assert(currentVectorValue);
-
-                TextParseA
-                (
-                    dataPoint,
-                    currentLineLength,
-                    "fff",
-                    &data[0], // x
-                    &data[1], // y
-                    &data[2] // z
-                );
-                break;
-            }
-
-            case OBJLineVertexTexture:
-            {
-                float* data = &currentElemtent->TextureCoordinateList[currentTextureElement];
-
-                currentTextureElement += 2u;
-
-                TextParseA
-                (
-                    dataPoint,
-                    currentLineLength,
-                    "ff",
-                    &data[0], // x
-                    &data[1] // y
-                );
-
-                break;
-            }
-            case OBJLineSmoothShading:
-                break;
-
-            case OBJLineFaceElement:
-            {
-                unsigned int* data = &currentElemtent->FaceElementList[currentFaceElement];
-
-                currentFaceElement += obj->VertexStructureSize * 3;
-                materialFaceCounter += obj->VertexStructureSize * 3;
-
-                switch (obj->VertexStructureSize)
-                {
-                case 3:
-                {
-                    TextParseA
-                    (
-                        dataPoint,
-                        currentLineLength,
-                        "u§u§uu§u§uu§u§u",
-                        &data[0], &data[1], &data[2], // x, y, z (A)
-                        &data[3], &data[4], &data[5], // x, y, z (B)
-                        &data[6], &data[7], &data[8]  // x, y, z (C)
-                    );
-                    break;
-                }
-                case 4:
-                {
-                    TextParseA
-                    (
-                        dataPoint,
-                        currentLineLength,
-                        "u§u§u§uu§u§u§uu§u§u§uu§u§u§u",
-                        &data[0], &data[1], &data[2], // x, y, z (A)
-                        &data[3], &data[4], &data[5], // x, y, z (B)
-                        &data[6], &data[7], &data[8],  // x, y, z (C)
-                        &data[9], &data[10], &data[11]  // x, y, z (D)
-                    );
-                    break;
-                }
-
-                default:
-                    break;
-                }
-
-                isInMesh = 1;
-
-                break;
-            }
-
-            case OBJLineInvalid:
-            case OBJLineNone:
-            case OBJLineComment:
-            default:
-                break;
-            }
-        } while (DataStreamSkipLine(&dataStream));
-    }
-
-    return ActionSuccessful;
-}
-*/

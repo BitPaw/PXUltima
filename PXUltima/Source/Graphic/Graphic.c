@@ -376,16 +376,16 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 
         pxRenderableMeshSegment->RenderMode = GraphicRenderModeTriangle;
         pxRenderableMeshSegment->NumberOfVertices = meshSegment.DrawClusterSize;
-        pxRenderableMeshSegment->TextureID = meshSegment.TextureID;
-        pxRenderableMeshSegment->DoRendering = PXYes;
-    }
 
-    for (size_t i = 0; i < modelListSize; ++i)
-    {
-        PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
+        printf("TX %i\n", meshSegment.TextureID);
+
 
         PXMaterial material;
-        PXTexture pxTexture; 
+        PXModelMaterialGet(model, meshSegment.TextureID, &material);
+
+
+
+        PXTexture pxTexture;
 
         PXTextureConstruct(&pxTexture);
 
@@ -394,13 +394,12 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
         pxTexture.LayoutNear = GraphicImageLayoutNearest;
         pxTexture.LayoutFar = GraphicImageLayoutNearest;
         pxTexture.WrapHeight = GraphicImageWrapRepeat;
-        pxTexture.WrapWidth = GraphicImageWrapRepeat;       
-
-        PXModelMaterialGet(model, i, &material);
+        pxTexture.WrapWidth = GraphicImageWrapRepeat;
 
         GraphicTextureRegisterA(graphicContext, &pxTexture, material.DiffuseTextureFilePath);
 
         pxRenderableMeshSegment->TextureID = pxTexture.ID;
+        pxRenderableMeshSegment->DoRendering = PXYes;
     }
     //-------------------------------------------------------------------------
 
