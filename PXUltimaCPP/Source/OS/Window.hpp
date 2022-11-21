@@ -2,7 +2,7 @@
 
 #include <OS/PXWindow.h>
 
-namespace BF
+namespace PX
 {
 	class Window : public PXWindow
 	{

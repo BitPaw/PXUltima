@@ -22,7 +22,7 @@
     <ClInclude Include="Source\Math\Matrix.hpp" />
     <ClInclude Include="Source\Async\Lock.hpp" />
     <ClInclude Include="Source\Memory\Memory.hpp" />
-    <ClInclude Include="Source\OS\Window.h" />
+    <ClInclude Include="Source\OS\Window.hpp" />
     <ClInclude Include="Source\Async\Thread.hpp" />
     <ClInclude Include="Source\Math\Vector.hpp" />
   </ItemGroup>

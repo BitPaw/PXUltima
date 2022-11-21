@@ -271,7 +271,7 @@ ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* co
     return ActionInvalid;
 }
 
-ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const Model* const model)
+ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model)
 {   
     PXMatrix4x4FIdentity(&renderable->MatrixModel);
 
@@ -287,8 +287,11 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 
     //OpenGLVertexArrayBind(&graphicContext->OpenGLInstance, renderable->ID);
 
+    const size_t stride = ModelVertexDataStride(model);
+    const size_t vertexListSize = model->DataVertexListSize * stride;
+
     OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferArray, renderable->VBO);
-    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, model->DataIndexSize * (3+3+2) * sizeof(float), model->DataVertex, OpenGLStoreStaticDraw);
+    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, vertexListSize, model->DataVertexList, OpenGLStoreStaticDraw);
 
     //renderable->RenderSize = model->DataIndexSize;
 
@@ -306,7 +309,7 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
         "Ty"
     );
 
-    for (size_t i = 0; i < model->DataIndexSize * (3 + 3 + 2); i+=8)
+    for (size_t i = 0; i < model->DataIndexSize * stride; i+=8)
     {
         float* data = &(((float*)model->DataVertex)[i]);
 
@@ -330,13 +333,13 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     // TODO
     unsigned int index = 0;
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, 0u);
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, stride, 0u);
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * 3u);
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, stride, sizeof(float) * 3u);
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, model->DataVertexStride, sizeof(float) * (3u+3u));
+    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u+3u));
     OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
 
 
@@ -460,6 +463,22 @@ ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, 
     return ActionInvalid;
 }
 
+ActionResult GraphicUIRectangleCreate(GraphicContext* const graphicContext, PXRenderable* const renderable, const size_t x, const size_t y, const size_t sidth, const size_t height)
+{
+    PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y, &renderable->MatrixModel);
+    PXMatrix4x4FScaleSet(sidth, height, 1, &renderable->MatrixModel);
+
+    // Register rectangle
+    {  
+        //float 
+
+        //GraphicModelRegisterFromData(graphicContext, renderable, , );
+
+    }
+
+    return ActionSuccessful;
+}
+
 void ShaderDataSet(Shader* const shader, const ShaderType type, const size_t size, const char* data)
 {
     shader->ID = -1;
@@ -470,12 +489,49 @@ void ShaderDataSet(Shader* const shader, const ShaderType type, const size_t siz
 
 void PXTextureConstruct(PXTexture* const texture)
 {
-    MemorySet(texture, sizeof(PXTexture), 0);
+    MemoryClear(texture, sizeof(PXTexture));
 }
 
 void PXTextureDestruct(PXTexture* const texture)
 {
 	
+}
+
+ActionResult GraphicUIPanelRegister(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
+{
+    const float vertexData[] =
+    {
+         -1,  -1,  0,
+        1,  -1,  0, 
+         1, 1,  0,
+        -1, 1,  0
+    };
+    const size_t vertexDataSize = sizeof(vertexData) / sizeof(float);
+
+    PXModel model;
+
+    ModelConstruct(&model);
+
+    model.Data = 0;
+    model.MaterialList = 0;
+    model.DataVertexListSize = vertexData;
+
+    model.DataVertexWidth = 3u;
+    model.DataVertexSize = vertexDataSize;
+
+    const ActionResult actionResult = GraphicModelRegisterFromModel(graphicContext, &pxUIPanel->Renderable, &model);
+
+    return actionResult;
+}
+
+ActionResult GraphicUIPanelUpdate(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
+{
+    return ActionInvalid;
+}
+
+ActionResult GraphicUIPanelUnregister(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
+{
+    return ActionInvalid;
 }
 
 void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)

@@ -9,7 +9,6 @@
 extern "C"
 {
 #endif
-#pragma once
 
 	typedef struct DirectXContext_
 	{

@@ -136,15 +136,8 @@ extern "C"
 
 	typedef struct PXWindow_
 	{
-		volatile unsigned char IsRunning;
+		volatile PXBool IsRunning;
 		PXWindowID ID;
-
-		// Live data
-		unsigned char HasSizeChanged;
-		PXWindowCursorMode CursorModeCurrent;
-
-		KeyBoard KeyBoardCurrentInput;
-		Mouse MouseCurrentInput;
 
 		unsigned int X;
 		unsigned int Y;
@@ -152,6 +145,16 @@ extern "C"
 		unsigned int Height;
 
 		wchar_t Title[PXWindowTitleSizeMax];
+
+
+		// Live data
+		PXBool HasSizeChanged;
+		PXWindowCursorMode CursorModeCurrent;
+
+		KeyBoard KeyBoardCurrentInput;
+		Mouse MouseCurrentInput;
+
+	
 
 		GraphicContext GraphicInstance;
 
@@ -194,13 +197,16 @@ extern "C"
 
 	PXPrivate PXThreadResult PXWindowCreateThread(void* const PXWindowAdress);
 
-	PXPublic void PXWindowConstruct(PXWindow* const PXWindow);
+	PXPublic void PXWindowConstruct(PXWindow* const window);
 
 	// Create a window based on the OS implementation.
 	// if a NULL pointer is used as a title, the window will be hidden.
-	PXPublic void PXWindowCreate(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const char* title, const PXBool async);
-	PXPublic void PXWindowCreateHidden(PXWindow* const PXWindow, const unsigned int width, const unsigned int height, const PXBool async);
-	PXPublic void PXWindowDestruct(PXWindow* const PXWindow);
+	PXPublic void PXWindowCreateA(PXWindow* const window, const unsigned int width, const unsigned int height, const char* title, const PXBool async);
+	PXPublic void PXWindowCreateW(PXWindow* const window, const unsigned int width, const unsigned int height, const wchar_t* title, const PXBool async);
+	PXPublic void PXWindowCreateU(PXWindow* const window, const unsigned int width, const unsigned int height, const char* title, const PXBool async);
+	PXPublic void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async);
+	PXPublic void PXWindowCreateHidden(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async);
+	PXPublic void PXWindowDestruct(PXWindow* const window);
 
 	PXPublic void PXWindowIconCorner();
 	PXPublic void PXWindowIconTaskBar();

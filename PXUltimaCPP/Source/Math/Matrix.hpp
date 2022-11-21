@@ -1,5 +1,9 @@
 #pragma once
-class Matrix
-{
-};
 
+namespace PX
+{
+	class Matrix
+	{
+
+	};
+}

@@ -18,7 +18,7 @@ void TestWindowOpen()
 
 	PXWindowConstruct(&window);
 
-	PXWindowCreate(&window, -1, -1, "[PX] OpenGL-Test", 1);
+	PXWindowCreateA(&window, -1, -1, "[PX] OpenGL-Test", 1);
 
 	int x = 1;
 

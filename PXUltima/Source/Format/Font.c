@@ -10,7 +10,7 @@
 
 void PXFontConstruct(PXFont* const font)
 {
-    MemorySet(font, sizeof(PXFont), 0);
+    MemoryClear(font, sizeof(PXFont));
 }
 
 void PXFontDestruct(PXFont* const font)

@@ -2216,13 +2216,31 @@ void PXWindowConstruct(PXWindow* const window)
     MemorySet(window, sizeof(PXWindow), 0);
 }
 
-void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
-{ 
+void PXWindowCreateA(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
+{     
+    TextCopyAW(title, 256u, window->Title, 256u);
 
+    PXWindowCreate(window, width, height, async);
+}
+
+void PXWindowCreateW(PXWindow* const window, const unsigned int width, const unsigned int height, const wchar_t* title, const PXBool async)
+{
+    TextCopyW(title, 256u, window->Title, 256u);
+
+    PXWindowCreate(window, width, height, async);
+}
+
+void PXWindowCreateU(PXWindow* const window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
+{
+    TextCopyAW(title, 256u, window->Title, 256u);
+
+    PXWindowCreate(window, width, height, async);
+}
+
+void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async)
+{
     window->Width = width;
     window->Height = height;
-
-    TextCopyAW(title, 256u, window->Title, 256u);
 
     {
         const unsigned char isDefaultSize = width == -1 && height == -1;
@@ -2241,7 +2259,7 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
         }
     }
 
-    if(async)
+    if (async)
     {
         const ActionResult actionResult = PXThreadRun(&window->MessageThread, PXWindowCreateThread, window);
         const PXBool sucessful = ActionSuccessful == actionResult;
@@ -2254,7 +2272,7 @@ void PXWindowCreate(PXWindow* window, const unsigned int width, const unsigned i
 
 void PXWindowCreateHidden(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async)
 {
-    PXWindowCreate(window, width, height, 0, async);
+    PXWindowCreateA(window, width, height, 0, async);
 }
 
 void PXWindowDestruct(PXWindow* const window)

@@ -1,19 +1,18 @@
-﻿
-using System.Runtime.InteropServices;
-
-public unsafe struct CImage
-{
-    public ulong Width;
-    public ulong Height;
-
-    public char Format;
-
-    public ulong PixelDataSize;
-    void* PixelData;
-}
+﻿using System.Runtime.InteropServices;
 
 namespace PX
 {
+    public unsafe struct CImage
+    {
+        public ulong Width;
+        public ulong Height;
+
+        public char Format;
+
+        public ulong PixelDataSize;
+        void* PixelData;
+    }
+
     public class Image //: IDisposable
     {
         private CImage _cImage;

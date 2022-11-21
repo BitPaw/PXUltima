@@ -34,7 +34,7 @@ void TestPXCompilerOBJ()
 
 	OBJFileCompile(&inputStream, &outputStream);
 
-	Model model;
+	PXModel model;
 
 
 

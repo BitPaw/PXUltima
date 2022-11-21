@@ -36,7 +36,7 @@ void DirectXContextCreate(DirectXContext* const directXContext)
 	{
 		D3DADAPTER_IDENTIFIER9 aDAPTER_IDENTIFIER9;
 
-		MemorySet(&aDAPTER_IDENTIFIER9, sizeof(D3DADAPTER_IDENTIFIER9), 0);
+		MemoryClear(&aDAPTER_IDENTIFIER9, sizeof(D3DADAPTER_IDENTIFIER9));
 
 		context->lpVtbl->GetAdapterIdentifier(context, i, 0, &aDAPTER_IDENTIFIER9);
 

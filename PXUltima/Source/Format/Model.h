@@ -63,7 +63,7 @@ extern "C"
 
 	// A collection of multible meshes.
 	// Example, multible flowers and a vase together are a model.
-	typedef struct Model_
+	typedef struct PXModel_
 	{
 		// Mesh
 		// +-Name
@@ -81,12 +81,6 @@ extern "C"
 		//   +--- StructureListLength	- 123
 		//   +--- StructureListData	- [ x, y, z]
 		
-		// 
-		// 
-		// 
-		// 
-
-
 		// MeshSegment
 		// +-- Name
 		// +-- Structure
@@ -105,47 +99,46 @@ extern "C"
 
 		void* MaterialList;
 
-		void* DataVertex;
+		void* DataVertexList;
+		size_t DataVertexListSize;
+		
 		size_t DataVertexWidth;
-		size_t DataVertexStride;
 		size_t DataVertexSize;
 
 		size_t DataNormalWidth;
-		size_t DataNormalStride;
 		size_t DataNormalSize;
 
 		size_t DataTextureWidth;
-		size_t DataTextureStride;
 		size_t DataTextureSize;
 
 		size_t DataColorWidth;
-		size_t DataColorStride;
 		size_t DataColorSize;
 
 		size_t DataIndexWidth;
-		size_t DataIndexStride;
 		size_t DataIndexSize;
 		//---------------------------------------------------------------------
 	}
-	Model;
+	PXModel;
 
 	typedef ActionResult(*ModelCompilerFunction)(DataStream* const inputStream, DataStream* const outputStream);
-	typedef ActionResult(*ModelParserFunction)(DataStream* const inputStream, Model* const model);
+	typedef ActionResult(*ModelParserFunction)(DataStream* const inputStream, PXModel* const model);
 
 
-	PXPublic void ModelConstruct(Model* const model);
-	PXPublic void ModelDestruct(Model* const model);
+	PXPublic void ModelConstruct(PXModel* const model);
+	PXPublic void ModelDestruct(PXModel* const model);
 
-	PXPublic size_t PXModelMaterialAmount(Model* const model);
-	PXPublic PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMaterial* const pxMaterial);
+	PXPublic size_t PXModelMaterialAmount(PXModel* const model);
+	PXPublic PXBool PXModelMaterialGet(PXModel* const model, const size_t materialID, PXMaterial* const pxMaterial);
 
 
-	PXPublic unsigned char ModelSegmentsAmount(const Model* const model);
-	PXPublic void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment* const meshSegment);
+	PXPublic unsigned char ModelSegmentsAmount(const PXModel* const model);
+	PXPublic void ModelSegmentsGet(const PXModel* const model, const size_t index, MeshSegment* const meshSegment);
 
-	PXPublic ActionResult ModelLoadA(Model* const model, const char* const filePath);
-	PXPublic ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath);
-	PXPublic ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const FileFormatExtension modelType);
+	PXPublic size_t ModelVertexDataStride(const PXModel* const model);
+
+	PXPublic ActionResult ModelLoadA(PXModel* const model, const char* const filePath);
+	PXPublic ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath);
+	PXPublic ActionResult ModelLoadD(PXModel* const model, DataStream* const fileStream, const FileFormatExtension modelType);
 
 #ifdef __cplusplus
 }

@@ -14,6 +14,7 @@ extern "C"
 		ActionInvalid,
 		ActionSuccessful,
 		ActionSystemOutOfMemory,
+		ActionFailedInputBufferTooSmal,
 		//-----------------------------------
 
 		//---<File-General>------------------

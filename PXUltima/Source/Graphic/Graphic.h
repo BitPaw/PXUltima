@@ -231,10 +231,31 @@ extern "C"
 	}
 	PXRenderable;
 
+	//---<UI Elements>---------------------------------------------------------
 
+	typedef struct PXUIPanel_
+	{
+		PXRenderable Renderable;
+	}
+	PXUIPanel;
 
+	typedef struct PXUIButton_
+	{
+		PXRenderable Renderable;
+	}
+	PXUIButton;
 
-	PXPublic void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
+	typedef struct PXUIImage_
+	{
+		PXRenderable Renderable;
+	}
+	PXUIImage;
+
+	typedef struct PXUIText_
+	{
+		PXRenderable Renderable;
+	}
+	PXUIText;
 
 
 	typedef struct GraphicContext_
@@ -244,6 +265,31 @@ extern "C"
 		void* AttachedWindow;
 	}
 	GraphicContext;
+
+
+	// Create
+	PXPublic ActionResult GraphicUIPanelRegister(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
+	PXPublic ActionResult GraphicUIPanelUpdate(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
+	PXPublic ActionResult GraphicUIPanelUnregister(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
+	// 
+	// Update
+	// Destroy
+
+	PXPublic ActionResult GraphicUITextRegister(GraphicContext* const graphicContext, PXUIText* const pxUIText, const size_t x, const size_t y, const size_t sidth, const size_t height);
+
+
+
+	 
+	 
+	 
+	//-------------------------------------------------------------------------
+
+
+
+
+	PXPublic void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
+
+
 
 
 
@@ -296,7 +342,7 @@ extern "C"
 	PXPublic ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* const skyBox);
 	PXPublic ActionResult GraphicSkyboxRelease(GraphicContext* const graphicContext, PXSkyBox* const skyBox);
 
-	PXPublic ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const Model* const model);
+	PXPublic ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);
 	PXPublic ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);
 
 

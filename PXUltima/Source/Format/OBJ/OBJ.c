@@ -464,7 +464,7 @@ ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const out
     return ActionSuccessful;
 }
 
-ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
+ActionResult OBJParseToModel(DataStream* const inputStream, PXModel* const model)
 {
     ModelConstruct(model);
 
@@ -484,8 +484,8 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
     DataStreamReadCU(inputStream, &numberOfMeshes);
 
-    MemorySet(renderMode, sizeof(renderMode), 0);
-    MemorySet(renderSize, sizeof(renderSize), 0);
+    MemoryClear(renderMode, sizeof(renderMode));
+    MemoryClear(renderSize, sizeof(renderSize));
 
     for (size_t i = 0; i < numberOfMeshes; ++i)
     {
@@ -501,10 +501,13 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     DataStreamReadIU(inputStream, &mtlInlclueesListSize, EndianLittle);
     DataStreamReadLLU(inputStream, &mtlEmbeddedDataOffset, EndianLittle);
 
+    model->DataVertexListSize = sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize);
+
     size_t expectedMaterialSize = (sizeof(PXMaterial) + 256)* 40;
     size_t infoHeaderSize = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int)) + expectedMaterialSize;
-    size_t expectedSize = 40 * sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize) + infoHeaderSize;// +indexListSize;
-
+    size_t expectedSize = 40 * model->DataVertexListSize + infoHeaderSize;// +indexListSize;
+      
+   
     model->Data = MemoryAllocate(expectedSize);
     //---<End header>----------------------------------------------------------
 
@@ -529,7 +532,7 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
         //---<MTL to PXMaterial>-----------------------------------------------
         mtlEmbeddedDataOffset += 1; // ???
 
-        void* data = (unsigned char*)inputStream->Data + mtlEmbeddedDataOffset;
+        void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
         const size_t size = inputStream->DataSize - mtlEmbeddedDataOffset;
 
         DataStreamWriteIU(&modelHeaderStream, 0, EndianLittle);
@@ -586,10 +589,10 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     DataStream vertexArrayData;
 
     inputStream->DataCursor = 1024;
-    model->DataVertex = (unsigned char*)model->Data + infoHeaderSize;
+    model->DataVertexList = (PXAdress)model->Data + infoHeaderSize;
 
     DataStreamFromExternal(&materialIDLookupStream, (PXAdress)model->Data+1, infoHeaderSize);
-    DataStreamFromExternal(&vertexArrayData, model->DataVertex, expectedSize);
+    DataStreamFromExternal(&vertexArrayData, model->DataVertexList, expectedSize);
      
 
     // Format: Ver Nor Tx Colo
@@ -601,12 +604,6 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
     model->DataTextureWidth = 2u;
     model->DataColorWidth = 0u;
     model->DataIndexWidth = renderMode;
-
-    model->DataVertexStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
-    model->DataNormalStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
-    model->DataTextureStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
-    model->DataColorStride = sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
-    model->DataIndexStride = renderMode;
 
     model->DataVertexSize = vertexListSize;
     model->DataNormalSize = normalListSize;
@@ -621,24 +618,24 @@ ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model)
 
 
 
-    void* buffer = MemoryAllocateClear(expectedSize);
-    MemorySet(buffer, expectedSize, 0xFF);
+    float* buffer = MemoryAllocateClear(expectedSize);
+    //MemorySet(buffer, expectedSize, 0xFF);
 
     float* vertexValueList = buffer;
     size_t vertexValueListOffset = 0;
-    MemorySet(vertexValueList, vertexListSize * sizeof(float), 0xAA);
+    //MemorySet(vertexValueList, vertexListSize * sizeof(float), 0xAA);
 
     float* normalList = &vertexValueList[vertexListSize];
     size_t normalListOffset = 0;
-    MemorySet(normalList, normalListSize * sizeof(float), 0xBB);
+    //MemorySet(normalList, normalListSize * sizeof(float), 0xBB);
 
     float* textureList = &normalList[normalListSize];
     size_t textureListOffset = 0;
-    MemorySet(textureList, textureListSize * sizeof(float), 0xCC);
+    //MemorySet(textureList, textureListSize * sizeof(float), 0xCC);
 
     float* parameterList = &textureList[textureListSize];
     size_t parameterListOffset = 0;
-    MemorySet(parameterList, 0 * sizeof(float), 0xDD);
+    //MemorySet(parameterList, 0 * sizeof(float), 0xDD);
 
 
 

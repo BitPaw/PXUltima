@@ -337,11 +337,11 @@ void TestOpenGLVAO()
 {
 	PXWindow window;
 	PXWindowConstruct(&window);
-	PXWindowCreate(&window, 0, 0, "VAO Test", 1);
+	PXWindowCreateA(&window, 0, 0, "VAO Test", 1);
 
 
 	PXRenderable renderable;
-	Model model;
+	PXModel model;
 
 	ModelLoadA(&model, "B:/Daten/Objects/Moze/Moze.obj");
 
@@ -385,7 +385,7 @@ void TestOpenGLVBO()
 {
 	PXWindow window;
 	PXWindowConstruct(&window);
-	PXWindowCreate(&window, -1, -1, "RAW Test", 1);
+	PXWindowCreateA(&window, -1, -1, "RAW Test", 1);
 
 	int x = 0;
 

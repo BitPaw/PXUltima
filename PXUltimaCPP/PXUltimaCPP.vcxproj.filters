@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\OS\Window.h">
+    <ClInclude Include="Source\OS\Window.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Memory\Memory.hpp">

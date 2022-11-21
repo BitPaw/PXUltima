@@ -7,17 +7,17 @@
 
 #include <Format/OBJ/OBJ.h>
 
-void ModelConstruct(Model* const model)
+void ModelConstruct(PXModel* const model)
 {
-	MemorySet(model, sizeof(Model), 0);
+	MemorySet(model, sizeof(PXModel), 0);
 }
 
-void ModelDestruct(Model* const model)
+void ModelDestruct(PXModel* const model)
 {
 	
 }
 
-size_t PXModelMaterialAmount(Model* const model)
+size_t PXModelMaterialAmount(PXModel* const model)
 {
     DataStream materialData;
 
@@ -30,7 +30,7 @@ size_t PXModelMaterialAmount(Model* const model)
     return amount;    
 }
 
-PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMaterial* const pxMaterial)
+PXBool PXModelMaterialGet(PXModel* const model, const size_t materialID, PXMaterial* const pxMaterial)
 {
     const size_t amount = PXModelMaterialAmount(model);
     const PXBool isInRange = amount >= materialID;
@@ -84,12 +84,12 @@ PXBool PXModelMaterialGet(Model* const model, const size_t materialID, PXMateria
     return PXYes;
 }
 
-unsigned char ModelSegmentsAmount(const Model* const model)
+unsigned char ModelSegmentsAmount(const PXModel* const model)
 {
 	return *(unsigned char*)model->Data;
 }
 
-void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment* const meshSegment)
+void ModelSegmentsGet(const PXModel* const model, const size_t index, MeshSegment* const meshSegment)
 {
 	unsigned char* ancer= (unsigned char*)model->Data +1 + (index * (sizeof(char) + sizeof(int) * 2u));
 
@@ -101,10 +101,15 @@ void ModelSegmentsGet(const Model* const model, const size_t index, MeshSegment*
     DataStreamReadIU(&dataStream, &meshSegment->DrawClusterSize, EndianLittle);
     DataStreamReadIU(&dataStream, &meshSegment->TextureID, EndianLittle);
 
-	meshSegment->VertexData = model->DataVertex;
+	meshSegment->VertexData = model->DataVertexList;
 }
 
-ActionResult ModelLoadA(Model* const model, const char* const filePath)
+size_t ModelVertexDataStride(const PXModel* const model)
+{
+    return sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
+}
+
+ActionResult ModelLoadA(PXModel* const model, const char* const filePath)
 {
 	wchar_t filePathW[PathMaxSize];
 
@@ -115,7 +120,7 @@ ActionResult ModelLoadA(Model* const model, const char* const filePath)
 	return actionResult;
 }
 
-ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath)
+ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
 {
     DataStream dataStream;    
 
@@ -160,7 +165,7 @@ ActionResult ModelLoadW(Model* const model, const wchar_t* const filePath)
     DataStreamDestruct(&dataStream);
 }
 
-ActionResult ModelLoadD(Model* const model, DataStream* const fileStream, const FileFormatExtension modelType)
+ActionResult ModelLoadD(PXModel* const model, DataStream* const fileStream, const FileFormatExtension modelType)
 {
     DataStream modelCompileCache;
 

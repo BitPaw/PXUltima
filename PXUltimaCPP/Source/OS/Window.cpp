@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "Window.hpp"
 
 BF::Window::Window()
 {
@@ -10,7 +10,7 @@ BF::Window::~Window()
 
 void BF::Window::Create(const unsigned int width, const unsigned int height, const char* title, bool async)
 {
-	PXWindowCreate(this, width, height, title, async);
+	PXWindowCreateA(this, width, height, title, async);
 }
 
 void BF::Window::Destroy()

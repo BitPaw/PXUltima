@@ -93,7 +93,7 @@ extern "C"
 
 	PXPublic ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const outputStream);
 
-	PXPublic ActionResult OBJParseToModel(DataStream* const inputStream, Model* const model);
+	PXPublic ActionResult OBJParseToModel(DataStream* const inputStream, PXModel* const model);
 
 #ifdef __cplusplus
 }

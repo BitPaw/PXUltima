@@ -8,44 +8,77 @@
 #include <direct.h>
 #endif
 
+size_t HardDriveListSize()
+{
+#if OSUnix
+    const size_t numberOfDrives = 0;
+
+#elif OSWindows
+
+    size_t bitmaskDrives = _getdrives();
+    size_t numberOfDrives = 0;
+
+    for (size_t indexDrive = 1; indexDrive <= 26u; ++indexDrive)
+    {
+        numberOfDrives += bitmaskDrives & 1;
+
+        bitmaskDrives >>= 1;
+    }
+
+#endif
+
+    return numberOfDrives;
+}
+
 ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const size_t hardDriveListMaxSize, size_t* hardDriveListSize)
 {
-    MemorySet(hardDriveList, sizeof(HardDrive) * hardDriveListMaxSize, 0);
+    const size_t numberOfDrives = HardDriveListSize();
+
+    MemoryClear(hardDriveList, sizeof(HardDrive) * hardDriveListMaxSize);
+
+    // Has enough space?
+    {
+        const PXBool hasEnoughSpace = numberOfDrives <= hardDriveListMaxSize;
+
+        if (!hasEnoughSpace)
+        {
+            return ActionFailedInputBufferTooSmal;
+        }
+    }
 
 #if OSUnix
     return ActionInvalid;
 
-#elif OSWindows
-    ULONG uDriveMask = _getdrives();
+#elif OSWindows   
 
-    size_t hardDriveListIndex = 0;
+    size_t bitmaskDrives = _getdrives();
 
-    for (size_t uDrive = 1; uDrive <= hardDriveListMaxSize && uDrive <= 26u; ++uDrive)
+    for (size_t indexDrive = 1; numberOfDrives; ++indexDrive)
     {
-        if (uDriveMask & 1)
+        const PXBool isUsed = bitmaskDrives & 1;
+
+        if (isUsed)
         {
-            HardDrive* harddrive = &hardDriveList[hardDriveListIndex];
+            HardDrive* harddrive = &hardDriveList[numberOfDrives-1];
             struct _diskfree_t df = { 0 };
-            const unsigned int uErr = _getdiskfree(uDrive, &df);
+            const unsigned int uErr = _getdiskfree(numberOfDrives, &df);
             const unsigned char successul = 0 == uErr;
 
             if (successul)
             {
-                harddrive->Letter = 'A' + uDrive - 1;
+                harddrive->Letter = 'A' + numberOfDrives - 1;
                 harddrive->ClustersTotal = df.total_clusters;
                 harddrive->ClustersFree = df.avail_clusters;
                 harddrive->ClusterSectors = df.sectors_per_cluster;
                 harddrive->ClusterSectorSize = df.bytes_per_sector;
-
-                ++hardDriveListIndex;
             }
         }
 
-        uDriveMask >>= 1;
+        bitmaskDrives >>= 1;
     }
-
-    *hardDriveListSize = (hardDriveListIndex);
 #endif
+
+    *hardDriveListSize = (numberOfDrives);
 
 	return ActionSuccessful;
 }

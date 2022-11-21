@@ -21,6 +21,8 @@ extern "C"
 	}
 	HardDrive;
 
+	PXPublic size_t HardDriveListSize();
+
 	PXPublic ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const size_t hardDriveListMaxSize, size_t* hardDriveListSize);
 
 #ifdef __cplusplus

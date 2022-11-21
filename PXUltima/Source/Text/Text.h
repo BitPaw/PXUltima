@@ -20,6 +20,10 @@ extern "C"
 {
 #endif
 
+	typedef char TextASCII;
+	typedef char TextUTF8;
+	typedef wchar_t TextUNICODE;
+
 	typedef struct ParsingTokenA_
 	{
 		const char* String;
