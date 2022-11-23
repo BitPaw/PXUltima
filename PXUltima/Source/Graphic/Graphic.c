@@ -3,6 +3,7 @@
 #include <Graphic/OpenGL/OpenGL.h>
 #include <File/DataStream.h>
 #include <OS/PXWindow.h>
+#include <Format/Font.h>
 
 ActionResult GraphicTextureScreenShot(GraphicContext* const graphicContext, Image* const image)
 {
@@ -39,23 +40,62 @@ ActionResult GraphicTextureRegisterA(GraphicContext* const graphicContext, PXTex
     // Load texture..
     {
         const ActionResult loadResult = ImageLoadA(&texture->Image, filePath);
-        const PXBool successful = ActionSuccessful == loadResult;
 
-        if (!successful)
-        {
-            return loadResult;
-        }
+        ActionExitOnError(loadResult);
     }
 
     // Register as normal 
     {
         const ActionResult registerResult = GraphicTextureRegister(graphicContext, texture);
-        const PXBool successful = ActionSuccessful == registerResult;
 
-        if (!successful)
+        ActionExitOnError(registerResult);
+    }
+
+
+    
+    /*
+    
+      if(loadAsynchronously)
+    {
+        PXThreadRun(0, LoadResourceAsync, &image);
+
+        return ActionSuccessful;
+    }
+    else
+    {
+        const ActionResult imageLoadResult = ImageLoadW(image, filePath);
+        const bool isSucessful = imageLoadResult == ActionSuccessful;
+
+        if(isSucessful)
         {
-            return registerResult;
+
+
+            GraphicTextureRegister(&_mainWindow.GraphicInstance, &texture);
         }
+
+        return imageLoadResult;
+    }
+
+    */
+
+
+    return ActionSuccessful;
+}
+
+ActionResult GraphicTextureRegisterW(GraphicContext* const graphicContext, PXTexture* const texture, const wchar_t* const filePath)
+{
+    // Load texture..
+    {
+        const ActionResult loadResult = ImageLoadW(&texture->Image, filePath);
+
+        ActionExitOnError(loadResult);
+    }
+
+    // Register as normal 
+    {
+        const ActionResult registerResult = GraphicTextureRegister(graphicContext, texture);
+
+        ActionExitOnError(registerResult);
     }
 
     return ActionSuccessful;
@@ -63,8 +103,11 @@ ActionResult GraphicTextureRegisterA(GraphicContext* const graphicContext, PXTex
 
 ActionResult GraphicTextureRegister(GraphicContext* const graphicContext, PXTexture* const texture)
 {
-    const OpenGLTextureType openGLTextureType = ImageTypeGraphicToOpenGL(texture->Type);
+    PXLockEngage(&graphicContext->_resourceLock);
+    PXLinkedListFixedNodeAdd(&graphicContext->_textureList, texture);
+    PXLockRelease(&graphicContext->_resourceLock);
 
+    const OpenGLTextureType openGLTextureType = ImageTypeGraphicToOpenGL(texture->Type);
     const unsigned int openGLTextureTypeID = OpenGLTextureTypeToID(openGLTextureType);
 
     Image* image = &texture->Image;
@@ -252,6 +295,45 @@ ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, PXSkyBo
     return ActionInvalid;
 }
 
+ActionResult GraphicSkyboxRegisterA
+(
+    GraphicContext* const graphicContext, 
+    PXSkyBox** skyBox, 
+    const char* shaderVertex, 
+    const char* shaderFragment, 
+    const char* textureRight, 
+    const char* textureLeft, 
+    const char* textureTop, 
+    const char* textureBottom, 
+    const char* textureBack, 
+    const char* textureFront
+)
+{
+
+    //ShaderProgram& shaderProgram = skyBox.Shader;
+
+ // Load(shaderProgram, shaderVertex, shaderFragment);
+
+  /*
+
+  Image* imageList = skyBox.Texture.ImageList;
+
+  const ActionResult textureRightResult = ImageLoadW(&imageList[0], textureRight);
+  const ActionResult textureLeftResult = ImageLoadW(&imageList[1], textureLeft);
+  const ActionResult textureTopResult = ImageLoadW(&imageList[2], textureTop);
+  const ActionResult textureBottomResult = ImageLoadW(&imageList[3], textureBottom);
+  const ActionResult textureBackResult = ImageLoadW(&imageList[4], textureBack);
+  const ActionResult textureFrontResult = ImageLoadW(&imageList[5],textureFront);
+
+  //GraphicSkyboxRegister(&skyBox);
+
+  DefaultSkyBox = &skyBox;
+
+  */
+
+    return ActionSuccessful;
+}
+
 ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* const skyBox)
 {
     /*
@@ -271,8 +353,182 @@ ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* co
     return ActionInvalid;
 }
 
+size_t GraphicModelListSize(const GraphicContext* const graphicContext)
+{
+
+
+    return PXYes;
+}
+
+PXBool GraphicModelListGetFromIndex(const GraphicContext* const graphicContext, PXModel** pxModel, const size_t index)
+{
+    return PXYes;
+}
+
+size_t GraphicRenderableListSize(const GraphicContext* const graphicContext)
+{
+    size_t counter = 0;
+
+    PXLinkedListNodeFixed currentModel;
+
+    PXLinkedListFixedNodeAt(&graphicContext->_renderList, &currentModel, 0);
+
+    do
+    {
+        const PXRenderable* const pxRenderable = (const PXRenderable* const)currentModel.BlockData;
+
+        {
+            const PXBool skip = !pxRenderable;
+
+            if (skip)
+            {
+                return 0;
+            }
+        }
+
+        ++counter;
+
+    } while (PXLinkedListFixedNodeNext(&graphicContext->_renderList, &currentModel));
+       
+    return counter;
+}
+
+PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicContext, PXRenderable** pxRenderable, const size_t index)
+{
+    PXLinkedListNodeFixed currentModel;
+
+    PXLinkedListFixedNodeAt(&graphicContext->_renderList, &currentModel, 0);
+
+    *pxRenderable = 0;
+
+    size_t counter = 0;
+
+    do
+    {
+        const PXRenderable* const renderableCurrent = (const PXRenderable* const)currentModel.BlockData;
+
+        {
+            const PXBool skip = !renderableCurrent;
+
+            if (skip)
+            {
+                return PXFalse;
+            }
+        }
+
+        {
+            const PXBool skip = !renderableCurrent->DoRendering;
+
+            if (skip)
+            {
+                continue;
+            }
+        }
+
+        if (index == counter++)
+        {
+            *pxRenderable = renderableCurrent;
+            return PXTrue;
+        }
+
+    } 
+    while (PXLinkedListFixedNodeNext(&graphicContext->_renderList, &currentModel));
+
+    return PXNo;
+}
+
+ActionResult GraphicModelCreate(GraphicContext* const graphicContext, PXModel** const pxModel)
+{
+    PXModel* const model = (PXModel* const)MemoryAllocate(sizeof(PXModel) * 1u);
+
+    if (!model)
+    {
+        return ActionSystemOutOfMemory;
+    }
+
+    ModelConstruct(model);
+
+    PXLockEngage(&graphicContext->_resourceLock);
+    PXLinkedListFixedNodeAdd(&graphicContext->_pxModelList, model);
+    PXLockRelease(&graphicContext->_resourceLock);
+
+    *pxModel = model;
+
+    return ActionSuccessful;
+}
+
+ActionResult GraphicRenderableCreate(GraphicContext* const graphicContext, PXRenderable** const pxRenderable)
+{
+    PXRenderable* const renderable = (PXRenderable* const)MemoryAllocate(sizeof(PXRenderable) * 1u);
+
+    if (!renderable)
+    {
+        return ActionSystemOutOfMemory;
+    }
+
+    MemoryClear(renderable, sizeof(PXRenderable));
+
+    PXLockEngage(&graphicContext->_resourceLock);
+    PXLinkedListFixedNodeAdd(&graphicContext->_renderList, renderable);
+    PXLockRelease(&graphicContext->_resourceLock);
+
+    *pxRenderable = renderable;  
+
+    return ActionSuccessful;
+}
+
+
+ActionResult GraphicModelRegisterA(GraphicContext* const graphicContext, PXRenderable** const renderable, const char* const filePath)
+{
+    PXModel* model = 0;
+    PXRenderable* pxRenderable = 0;
+
+    // Create model
+    {
+        const ActionResult createResult = GraphicModelCreate(graphicContext, &model);
+       
+        ActionExitOnError(createResult);       
+    }
+
+    // create PXRenderable
+    {
+        if (renderable) // Owner is caller
+        {
+            pxRenderable = *renderable;
+
+            PXLockEngage(&graphicContext->_resourceLock);
+            PXLinkedListFixedNodeAdd(&graphicContext->_renderList, renderable);
+            PXLockRelease(&graphicContext->_resourceLock);
+        }
+        else // No model, make one
+        {
+            const ActionResult createResult = GraphicRenderableCreate(graphicContext, &pxRenderable);
+
+            ActionExitOnError(createResult);
+
+            *renderable = pxRenderable; // Write to return back to caller
+        }      
+    }
+
+    // Load model
+    {
+        const ActionResult loadResult = ModelLoadA(model, filePath);
+
+        ActionExitOnError(loadResult);
+    }
+
+    // Register model into renderable
+    {
+        const ActionResult loadResult = GraphicModelRegisterFromModel(graphicContext, pxRenderable, model);
+
+        ActionExitOnError(loadResult);
+    }
+
+    return ActionSuccessful;
+}
+
 ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model)
-{   
+{       
     PXMatrix4x4FIdentity(&renderable->MatrixModel);
 
     OpenGLVertexArrayGenerate(&graphicContext->OpenGLInstance, 1u, &renderable->VAO);
@@ -333,18 +589,25 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     // TODO
     unsigned int index = 0;
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, stride, 0u);
-    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+    if (model->DataVertexWidth)
+    {
+        OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, model->DataVertexWidth, OpenGLTypeFloat, 0, stride, 0u);
+        OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+    }
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3u, OpenGLTypeFloat, 0, stride, sizeof(float) * 3u);
-    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+    if (model->DataNormalWidth)
+    {
+        OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, model->DataNormalWidth, OpenGLTypeFloat, 0, stride, sizeof(float) * 3u);
+        OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+    }
 
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2u, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u+3u));
-    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+    if (model->DataTextureWidth)
+    {
+        OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, model->DataTextureWidth, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u + 3u));
+        OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+    }
 
-
-    //OpenGLVertexAttributeArrayDefine(sizeof(float), mesh.VertexDataStructureListSize, mesh.VertexDataStructureList);
-    
+    // Color?    
 
     OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferArray);
    
@@ -354,7 +617,6 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     //OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray, vbo);
    // OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferElementArray, model->DataIndexSize * sizeof(unsigned int), model->DataVertex, OpenGLStoreStaticDraw);
    // OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray);
-
 
     //  OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
 
@@ -380,37 +642,35 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
         pxRenderableMeshSegment->RenderMode = GraphicRenderModeTriangle;
         pxRenderableMeshSegment->NumberOfVertices = meshSegment.DrawClusterSize;
 
-        printf("TX %i\n", meshSegment.TextureID);
-
-
         PXMaterial material;
-        PXModelMaterialGet(model, meshSegment.TextureID, &material);
+        const PXBool fetchMaterialSuccess = PXModelMaterialGet(model, meshSegment.TextureID, &material);
 
+        if (fetchMaterialSuccess)
+        {
+            PXTexture pxTexture;
 
+            PXTextureConstruct(&pxTexture);
 
-        PXTexture pxTexture;
+            pxTexture.Type = GraphicImageTypeTexture2D;
+            pxTexture.Filter = GraphicRenderFilterNoFilter;
+            pxTexture.LayoutNear = GraphicImageLayoutNearest;
+            pxTexture.LayoutFar = GraphicImageLayoutNearest;
+            pxTexture.WrapHeight = GraphicImageWrapRepeat;
+            pxTexture.WrapWidth = GraphicImageWrapRepeat;
 
-        PXTextureConstruct(&pxTexture);
+            GraphicTextureRegisterA(graphicContext, &pxTexture, material.DiffuseTextureFilePath);
 
-        pxTexture.Type = GraphicImageTypeTexture2D;
-        pxTexture.Filter = GraphicRenderFilterNoFilter;
-        pxTexture.LayoutNear = GraphicImageLayoutNearest;
-        pxTexture.LayoutFar = GraphicImageLayoutNearest;
-        pxTexture.WrapHeight = GraphicImageWrapRepeat;
-        pxTexture.WrapWidth = GraphicImageWrapRepeat;
-
-        GraphicTextureRegisterA(graphicContext, &pxTexture, material.DiffuseTextureFilePath);
-
-        pxRenderableMeshSegment->TextureID = pxTexture.ID;
+            pxRenderableMeshSegment->TextureID = pxTexture.ID;
+        }
+      
         pxRenderableMeshSegment->DoRendering = PXYes;
     }
     //-------------------------------------------------------------------------
 
-
-
-
     // Model is not fully registered and ready to be rendered
     renderable->DoRendering = 1u;
+
+    return ActionSuccessful;
 }
 
 ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize)
@@ -512,9 +772,17 @@ ActionResult GraphicUIPanelRegister(GraphicContext* const graphicContext, PXUIPa
 
     ModelConstruct(&model);
 
-    model.Data = 0;
+
+    const unsigned char modelData[] = 
+    {
+        1
+    };
+    const size_t modelDataSize = sizeof(modelData) / sizeof(unsigned char);
+
+    model.Data = modelData;
     model.MaterialList = 0;
-    model.DataVertexListSize = vertexData;
+    model.DataVertexList = vertexData;
+    model.DataVertexListSize = vertexDataSize;
 
     model.DataVertexWidth = 3u;
     model.DataVertexSize = vertexDataSize;
@@ -607,6 +875,18 @@ OpenGLTextureType ImageTypeGraphicToOpenGL(const GraphicImageType graphicImageTy
 
 void GraphicInstantiate(GraphicContext* const graphicContext)
 {
+    PXLockCreate(&graphicContext->_resourceLock);
+
+    char* memww = (char*)MemoryAllocate(2048); // TODO: Fix this
+
+    PXLinkedListFixedNodeSet(&graphicContext->_renderList, memww, 2, sizeof(PXRenderable)); 
+    PXLinkedListFixedNodeSet(&graphicContext->_pxModelList, memww + 64, 2, sizeof(PXModel));
+    PXLinkedListFixedNodeSet(&graphicContext->_textureList, memww + 128, 2, sizeof(PXTexture));
+    PXLinkedListFixedNodeSet(&graphicContext->_fontList, memww + 256, 2, sizeof(PXFont));
+    PXLinkedListFixedNodeSet(&graphicContext->_shaderProgramList, memww + 1024, 2, sizeof(ShaderProgram));
+
+
+
     graphicContext->OpenGLInstance.AttachedWindow = graphicContext->AttachedWindow;
 
     OpenGLContextCreate(&graphicContext->OpenGLInstance);
@@ -669,7 +949,69 @@ ActionResult GraphicShaderUse(GraphicContext* const graphicContext, const unsign
     return ActionSuccessful;
 }
 
-ActionResult GraphicShaderProgramCreateVFPath(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)
+ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const char* vertexShaderFilePath, const char* fragmentShaderFilePath)
+{
+    Shader vertexShader;
+    Shader fragmentShader;
+    DataStream vertexShaderFile;
+    DataStream fragmentFile;
+
+    DataStreamConstruct(&vertexShaderFile);
+    DataStreamConstruct(&fragmentFile);
+
+    {
+        const unsigned char isAlreadyLoaded = shaderProgram->ID != -1;
+        const unsigned char hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
+
+        if (isAlreadyLoaded)
+        {
+            return ActionSuccessful;
+        }
+
+        if (hasEmptyPaths)
+        {
+            return ActionSuccessful;
+        }
+    }
+
+    {
+        const ActionResult actionResult = DataStreamMapToMemoryA(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
+        const unsigned char sucessful = ActionSuccessful == actionResult;
+
+        if (!sucessful)
+        {
+            return actionResult;
+        }
+
+        vertexShader.Type = ShaderTypeVertex;
+        vertexShader.Content = (char*)vertexShaderFile.Data;
+        vertexShader.ContentSize = vertexShaderFile.DataSize;
+    }
+
+
+    {
+        const ActionResult actionResult = DataStreamMapToMemoryA(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
+        const unsigned char sucessful = ActionSuccessful == actionResult;
+
+        if (!sucessful)
+        {
+            return actionResult;
+        }
+
+        fragmentShader.Type = ShaderTypeFragment;
+        fragmentShader.Content = (char*)fragmentFile.Data;
+        fragmentShader.ContentSize = fragmentFile.DataSize;
+    }
+    //-----
+
+    GraphicShaderProgramCreateVFData(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
+
+
+    DataStreamDestruct(&vertexShaderFile);
+    DataStreamDestruct(&fragmentFile);
+}
+
+ActionResult GraphicShaderProgramCreateVFPathW(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)
 {
     Shader vertexShader;
     Shader fragmentShader;
@@ -789,6 +1131,10 @@ ActionResult GraphicShaderProgramCreateVFData(GraphicContext* const graphicConte
     {
         return ActionInvalid;
     }
+
+    PXLockEngage(&graphicContext->_resourceLock);
+    PXLinkedListFixedNodeAdd(&graphicContext->_shaderProgramList, shaderProgram);
+    PXLockRelease(&graphicContext->_resourceLock);
 
     return ActionSuccessful;
 }

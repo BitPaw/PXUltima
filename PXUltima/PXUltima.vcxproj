@@ -52,7 +52,7 @@
     <ClInclude Include="Source\OS\ClipBoard.h" />
     <ClInclude Include="Source\Math\PXMatrix.h" />
     <ClInclude Include="Source\Format\PHP\PHP.h" />
-    <ClInclude Include="Source\Compiler\Compiler.h" />
+    <ClInclude Include="Source\Compiler\PXCompiler.h" />
     <ClInclude Include="Source\Async\Await.h" />
     <ClInclude Include="Source\Async\PXLock.h" />
     <ClInclude Include="Source\Async\PXThread.h" />
@@ -180,7 +180,7 @@
     <ClCompile Include="Source\OS\ClipBoard.c" />
     <ClCompile Include="Source\Math\PXMatrix.c" />
     <ClCompile Include="Source\Format\PHP\PHP.c" />
-    <ClCompile Include="Source\Compiler\Compiler.c" />
+    <ClCompile Include="Source\Compiler\PXCompiler.c" />
     <ClCompile Include="Source\Async\PXLock.c" />
     <ClCompile Include="Source\Async\PXThread.c" />
     <ClCompile Include="Source\Container\BinaryTree\BinaryTree.c" />
@@ -282,13 +282,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -300,7 +300,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>

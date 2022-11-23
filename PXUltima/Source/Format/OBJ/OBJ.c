@@ -1,6 +1,6 @@
 #include "OBJ.h"
 
-#include <Compiler/Compiler.h>
+#include <Compiler/PXCompiler.h>
 #include <File/DataStream.h>
 #include <Memory/PXMemory.h>
 #include <Container/ClusterValue.h>

@@ -19,27 +19,41 @@ void ModelDestruct(PXModel* const model)
 
 size_t PXModelMaterialAmount(PXModel* const model)
 {
-    DataStream materialData;
+    // Has materials?
+    {
+        const PXBool hasMaterial = model->MaterialList;
 
-    DataStreamFromExternal(&materialData, model->MaterialList, -1);
+        if (!hasMaterial)
+        {
+            return 0; // No material
+        }
+    } 
+       
+    // Fetch materials
+    {
+        DataStream materialData;
+        unsigned int amount = 0;
 
-    unsigned int amount = 0;
+        DataStreamFromExternal(&materialData, model->MaterialList, -1);
+        DataStreamReadIU(&materialData, &amount, EndianLittle);
 
-    DataStreamReadIU(&materialData, &amount, EndianLittle);
-
-    return amount;    
+        return amount;
+    }  
 }
 
 PXBool PXModelMaterialGet(PXModel* const model, const size_t materialID, PXMaterial* const pxMaterial)
 {
     const size_t amount = PXModelMaterialAmount(model);
-    const PXBool isInRange = amount >= materialID;
 
-    MemorySet(pxMaterial, sizeof(PXMaterial), 0);
-
-    if (!isInRange)
     {
-        return PXNo;
+        const PXBool isInRange = amount >= materialID;
+
+        MemoryClear(pxMaterial, sizeof(PXMaterial));
+
+        if (!isInRange)
+        {
+            return PXNo;
+        }
     }
 
     DataStream materialData;

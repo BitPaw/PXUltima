@@ -273,7 +273,7 @@
     <ClInclude Include="Source\Format\Type.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Compiler\Compiler.h">
+    <ClInclude Include="Source\Compiler\PXCompiler.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\File\DataStream.h">
@@ -641,7 +641,7 @@
     <ClCompile Include="Source\Format\Type.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Compiler\Compiler.c">
+    <ClCompile Include="Source\Compiler\PXCompiler.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\File\DataStream.c">

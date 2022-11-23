@@ -13,7 +13,7 @@ void PXCameraConstruct(PXCamera* const camera)
 	camera->FieldOfView = 60;
 	camera->Height = 1;
 	camera->Width = 1;
-	camera->Near = 0.00001f;
+	camera->Near = 0;
 	camera->Far = 100000;
 
 	PXMatrix4x4FIdentity(&camera->MatrixModel);
