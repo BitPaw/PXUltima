@@ -101,32 +101,51 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Unit filename="Source/Async/Await.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="Source/Async/Await.h" />
-		<Unit filename="Source/Async/Lock.c">
+		<Unit filename="Source/Async/PXLock.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Async/Lock.h" />
-		<Unit filename="Source/Async/Thread.c">
+		<Unit filename="Source/Async/PXLock.h" />
+		<Unit filename="Source/Async/PXThread.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Async/Thread.h" />
-		<Unit filename="Source/Compiler/Compiler.c">
+		<Unit filename="Source/Async/PXThread.h" />
+		<Unit filename="Source/Compiler/PXCompiler.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Compiler/Compiler.h" />
+		<Unit filename="Source/Compiler/PXCompiler.h" />
 		<Unit filename="Source/Container/BinaryTree/BinaryTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Container/BinaryTree/BinaryTree.h" />
 		<Unit filename="Source/Container/ClusterValue.h" />
-		<Unit filename="Source/Container/PXDictionary/PXDictionary.c">
+		<Unit filename="Source/Container/Dictionary/PXDictionary.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Container/PXDictionary/PXDictionary.h" />
+		<Unit filename="Source/Container/Dictionary/PXDictionary.h" />
+		<Unit filename="Source/Container/LinkedList/PXLinkedList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Container/LinkedList/PXLinkedList.h" />
+		<Unit filename="Source/Container/List/PXList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Container/List/PXList.h" />
 		<Unit filename="Source/Container/QuadTree/QuadTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Container/QuadTree/QuadTree.h" />
+		<Unit filename="Source/Container/Queue/PXQueue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Container/Queue/PXQueue.h" />
+		<Unit filename="Source/Container/RingBuffer/PXRingBuffer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Container/RingBuffer/PXRingBuffer.h" />
 		<Unit filename="Source/DataBase/DataBase.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -159,10 +178,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Event/Event.h" />
-		<Unit filename="Source/File/BitStream.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/File/BitStream.h" />
 		<Unit filename="Source/File/DataStream.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -219,6 +234,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/DLL/DLL.h" />
+		<Unit filename="Source/Format/ELF/ELF.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/ELF/ELF.h" />
 		<Unit filename="Source/Format/EML/EML.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -291,6 +310,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/M4A/M4A.h" />
+		<Unit filename="Source/Format/MD5/MD5.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/MD5/MD5.h" />
 		<Unit filename="Source/Format/MID/MID.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -303,10 +326,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/MP4/MP4.h" />
-		<Unit filename="Source/Format/MSI/MSI.c">
+		<Unit filename="Source/Format/MSI/PXMSI.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/MSI/MSI.h" />
+		<Unit filename="Source/Format/MSI/PXMSI.h" />
 		<Unit filename="Source/Format/MTL/MTL.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -347,6 +370,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/RIFF/RIFF.h" />
+		<Unit filename="Source/Format/RSA/RSA.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/RSA/RSA.h" />
+		<Unit filename="Source/Format/SHA/PXSHA.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/SHA/PXSHA.h" />
 		<Unit filename="Source/Format/STEP/STEP.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -431,6 +462,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Graphic/OpenGL/OpenGL.h" />
+		<Unit filename="Source/Graphic/PXCamera.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/PXCamera.h" />
 		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -443,30 +478,46 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Library/Library.h" />
-		<Unit filename="Source/Math/Math.c">
+		<Unit filename="Source/Math/PXDiagram.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Math/Math.h" />
-		<Unit filename="Source/Math/Matrix.c">
+		<Unit filename="Source/Math/PXDiagram.h" />
+		<Unit filename="Source/Math/PXMath.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Math/Matrix.h" />
-		<Unit filename="Source/Memory/Memory.c">
+		<Unit filename="Source/Math/PXMath.h" />
+		<Unit filename="Source/Math/PXMatrix.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Memory/Memory.h" />
-		<Unit filename="Source/Network/CSocket.c">
+		<Unit filename="Source/Math/PXMatrix.h" />
+		<Unit filename="Source/Math/PXPhysic.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Network/CSocket.h" />
-		<Unit filename="Source/Network/Client.c">
+		<Unit filename="Source/Math/PXPhysic.h" />
+		<Unit filename="Source/Math/PXVector.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Network/Client.h" />
+		<Unit filename="Source/Math/PXVector.h" />
+		<Unit filename="Source/Memory/PXMemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Memory/PXMemory.h" />
 		<Unit filename="Source/Network/IP.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Network/IP.h" />
+		<Unit filename="Source/Network/PXClient.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/PXClient.h" />
+		<Unit filename="Source/Network/PXServer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/PXServer.h" />
+		<Unit filename="Source/Network/PXSocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/PXSocket.h" />
 		<Unit filename="Source/Network/SBP/SBPClient.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -479,10 +530,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Network/SBP/SBPServer.h" />
-		<Unit filename="Source/Network/Server.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Network/Server.h" />
 		<Unit filename="Source/OS/Bash.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -491,6 +538,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/OS/ClipBoard.h" />
+		<Unit filename="Source/OS/HardDrive.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/HardDrive.h" />
 		<Unit filename="Source/OS/Monitor.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -504,6 +555,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/OS/OpenFileDialog.h" />
+		<Unit filename="Source/OS/PXProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/PXProcess.h" />
 		<Unit filename="Source/OS/PXWindow.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -524,14 +579,22 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Processor/Processor.h" />
+		<Unit filename="Source/Serialization/Serialization.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Serialization/Serialization.h" />
 		<Unit filename="Source/Text/Text.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Text/Text.h" />
-		<Unit filename="Source/Time/Time.c">
+		<Unit filename="Source/Time/PXStopWatch.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Time/Time.h" />
+		<Unit filename="Source/Time/PXStopWatch.h" />
+		<Unit filename="Source/Time/PXTime.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Time/PXTime.h" />
 		<Unit filename="Source/UI/UI.c">
 			<Option compilerVar="CC" />
 		</Unit>

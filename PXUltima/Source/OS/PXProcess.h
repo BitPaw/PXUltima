@@ -5,6 +5,14 @@
 #include <Format/Type.h>
 #include <Time/PXTime.h>
 
+
+
+#if OSUnix
+#include <unistd.h>
+#elif OSWindows
+#include <windows.h>
+#endif
+
 typedef
 #if OSUnix
 pid_t
@@ -25,7 +33,7 @@ extern "C"
 	}
 	PXProcess;
 
-	typedef struct PXProcessMemoryInfo_ 
+	typedef struct PXProcessMemoryInfo_
 	{
 		PXTime ExecuteStartTime;
 		PXTime ExecuteTimeUser;
@@ -49,7 +57,7 @@ extern "C"
 		size_t PagefileUsage;
 		size_t PeakPagefileUsage; // The peak value in bytes of the Commit Charge during the lifetime of this process.
 		size_t PrivateUsage; // Windows new value
-	} 
+	}
 	PXProcessMemoryInfo;
 
 

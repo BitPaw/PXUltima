@@ -154,7 +154,7 @@ extern "C"
 		KeyBoard KeyBoardCurrentInput;
 		Mouse MouseCurrentInput;
 
-	
+
 
 		GraphicContext GraphicInstance;
 
@@ -190,7 +190,7 @@ extern "C"
 	PXWindow;
 
 #if OSUnix
-	CPrivate void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event);
+	CPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
 #elif OSWindows
 	PXPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
 #endif

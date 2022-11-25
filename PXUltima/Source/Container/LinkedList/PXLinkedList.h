@@ -3,8 +3,8 @@
 
 #include <Format/Type.h>
 
-#define PXLinkedListNodeNotUsed (void*)-1
-#define PXLinkedListNodeNoNext (void*)0
+#define PXLinkedListNodeNotUsed (size_t)-1
+#define PXLinkedListNodeNoNext (size_t)0
 
 #ifdef __cplusplus
 extern "C"
@@ -14,9 +14,9 @@ extern "C"
 	typedef struct PXLinkedListNodeFixed_ PXLinkedListNodeFixed;
 
 	typedef struct PXLinkedListNodeFixed_
-	{		
+	{
 		void* BlockData;
-		PXLinkedListNodeFixed* NodeNext; // 0=No Next 0xFFF=InvalidData 
+		PXLinkedListNodeFixed* NodeNext; // 0=No Next 0xFFF=InvalidData
 	}
 	PXLinkedListNodeFixed;
 
@@ -26,7 +26,7 @@ extern "C"
 		size_t BlockSize;
 	}
 	PXLinkedListNodeDynamic;
-	
+
 	typedef struct PXLinkedListFixed_
 	{
 		void* Data;

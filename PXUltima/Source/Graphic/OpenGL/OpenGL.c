@@ -1497,11 +1497,11 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
             OpenGLCacheFunction(functionNameList, &length, "glVertexAttribIPointer", &openGLContext->OpenGLVertexAttribIPointerCallBack);
 
 
-           
+
 
 
                 // Fall though1
-            
+
         }
         case OpenGLVersion2x1x0:
         {
@@ -1772,7 +1772,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
 
 
-        }   
+        }
 
     }
 #endif
@@ -3114,12 +3114,12 @@ void OpenGLVertexArrayGenerate(OpenGLContext* const openGLContext, const unsigne
 
 void OpenGLVertexArrayBind(OpenGLContext* const openGLContext, const unsigned int vaoID)
 {
-    openGLContext->OpenGLBindVertexArrayCallBack(openGLContext, vaoID);
+    openGLContext->OpenGLBindVertexArrayCallBack(vaoID);
 }
 
 void OpenGLVertexArrayUnbind(OpenGLContext* const openGLContext)
 {
-    openGLContext->OpenGLBindVertexArrayCallBack(openGLContext, 0);
+    openGLContext->OpenGLBindVertexArrayCallBack(0);
 }
 
 void OpenGLVertexArrayAttributeDefine(OpenGLContext* const openGLContext, const unsigned int index, const unsigned int size, const OpenGLDataType datatype, const unsigned char normalized, const unsigned int stride, const size_t offset)

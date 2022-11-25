@@ -443,7 +443,7 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 		dataStream->Data = mappedData;
 	}
 
-	dataStream->_fileLocation = FileLocationMappedFromDisk;
+	dataStream->DataLocation = FileLocationMappedFromDisk;
 
 	close(dataStream->IDMapping);
 
@@ -467,7 +467,7 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 }
 
 
-
+#if OSWindows
 ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
 {
 	HANDLE           hToken;
@@ -478,7 +478,7 @@ ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
 	// open process token
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
 		return GetCurrentError(); // OpenProcessToken
-	 
+
 	// get the luid
 	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
 		return GetCurrentError();  // LookupPrivilegeValue
@@ -506,6 +506,7 @@ ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
 
 	return ActionSuccessful;
 }
+#endif // OSWindows
 
 ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode)
 {
@@ -535,7 +536,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 	dataStream->MemoryMode = protectionMode;
 	dataStream->DataSize = fileSize;
-	
+
 
 	// Create mapping
 	{
@@ -578,10 +579,10 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 #if MemoryPageLargeEnable
 		// Check if large pages can be used
 		{
-			const size_t largePageMinimumSize = GetLargePageMinimum(); // [Kernel32.dll] OS minimum: Windows Vista 
+			const size_t largePageMinimumSize = GetLargePageMinimum(); // [Kernel32.dll] OS minimum: Windows Vista
 			const PXBool hasLargePageSupport = largePageMinimumSize != 0u;
-			
-			useLargeMemoryPages = hasLargePageSupport && (dataStream->DataSize > (largePageMinimumSize * 0.5f)); // if the allocation is atleah half of a big page, use that.		
+
+			useLargeMemoryPages = hasLargePageSupport && (dataStream->DataSize > (largePageMinimumSize * 0.5f)); // if the allocation is atleah half of a big page, use that.
 
 			if (useLargeMemoryPages)
 			{
@@ -591,7 +592,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 				flProtect |= SEC_COMMIT | SEC_LARGE_PAGES;
 			}
-		}	
+		}
 #endif
 
 		switch (protectionMode)
@@ -623,7 +624,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 			0 // No Name
 		);
 
-		// check if successful 
+		// check if successful
 		{
 			const PXBool successful = fileMappingHandleResult;
 
@@ -635,7 +636,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 			}
 
 			dataStream->IDMapping = fileMappingHandleResult; // Mapping [OK]
-		}	
+		}
 	}
 
 	{
@@ -956,7 +957,7 @@ size_t DataStreamSkipToNextBlock(DataStream* const dataStream)
 	const size_t oldPosition = dataStream->DataCursor;
 
 	DataStreamSkipBlock(dataStream);
-	
+
 	DataStreamSkipEmptySpace(dataStream);
 
 	return dataStream->DataCursor - oldPosition;
@@ -1458,7 +1459,11 @@ size_t DataStreamWriteBits(DataStream* const dataStream, const size_t bitData, c
 
 size_t DataStreamFilePathGetA(DataStream* const dataStream, char* const filePath, const size_t filePathMaxSize)
 {
-	const DWORD length = GetFinalPathNameByHandleA(dataStream->FileHandle, filePath, filePathMaxSize, VOLUME_NAME_DOS); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
+#if OSUnix
+    return 0; // TODO
+
+#elif OSWindows
+	const size_t length = GetFinalPathNameByHandleA(dataStream->FileHandle, filePath, filePathMaxSize, VOLUME_NAME_DOS); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
 	const PXBool sucessful = 0u == length;
 
 	if (!sucessful)
@@ -1469,10 +1474,15 @@ size_t DataStreamFilePathGetA(DataStream* const dataStream, char* const filePath
 	}
 
 	return ActionSuccessful;
+#endif
 }
 
 size_t DataStreamFilePathGetW(DataStream* const dataStream, wchar_t* const filePath, const size_t filePathMaxSize)
 {
+#if OSUnix
+    return 0; // TODO
+
+#elif OSWindows
 	const DWORD flags = VOLUME_NAME_DOS | FILE_NAME_NORMALIZED;
 	const DWORD length = GetFinalPathNameByHandleW(dataStream->FileHandle, filePath, filePathMaxSize, flags); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
 	const PXBool sucessful = 0u != length;
@@ -1493,4 +1503,5 @@ size_t DataStreamFilePathGetW(DataStream* const dataStream, wchar_t* const fileP
 	}
 
 	return ActionSuccessful;
+#endif
 }

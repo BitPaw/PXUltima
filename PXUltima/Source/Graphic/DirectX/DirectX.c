@@ -1,27 +1,34 @@
 #include "DirectX.h"
 
-#include <Windows.h>
-#include <stdio.h>
+#if OSUnix
+#elif OSWindows
+#include <windows.h>
+#pragma comment(lib, "D3d9.lib")
+#endif
 
 #include <Memory/PXMemory.h>
 #include <Text/Text.h>
 
-#pragma comment(lib, "D3d9.lib")
+#include <stdio.h>
 
 void DirectXContextConstruct(DirectXContext* const directXContext)
 {
-	MemorySet(directXContext, sizeof(DirectXContext), 0);
+	MemoryClear(directXContext, sizeof(DirectXContext));
 }
 
 void DirectXContextDestruct(DirectXContext* const directXContext)
 {
-
+	#if OSUnix
+	#elif OSWindows
+	#endif
 }
 
 void DirectXContextCreate(DirectXContext* const directXContext)
 {
 	DirectXContextConstruct(directXContext);
 
+#if OSUnix
+#elif OSWindows
 	IDirect3D9* const context = Direct3DCreate9(D3D_SDK_VERSION);
 	const PXBool success = context;
 
@@ -72,4 +79,5 @@ void DirectXContextCreate(DirectXContext* const directXContext)
 	if (FAILED(g_pD3D.CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,	D3DCREATE_SOFTWARE_VERTEXPROCESSING,&d3dpp, &d3dDevice)))
 		return E_FAIL;* /
 	*/
+#endif
 }

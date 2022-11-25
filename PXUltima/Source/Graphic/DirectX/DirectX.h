@@ -3,7 +3,14 @@
 
 #include <Format/Type.h>
 
+#if OSUnix
+// UNIX has no DirectX support
+typedef unsigned int  IDirect3D9; // Dummy value
+#define MAX_DEVICE_IDENTIFIER_STRING 32
+#elif OSWindows
 #include <d3d9.h>
+#endif
+
 
 #ifdef __cplusplus
 extern "C"

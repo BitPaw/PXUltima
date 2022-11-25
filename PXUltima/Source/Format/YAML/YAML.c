@@ -63,9 +63,9 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
     size_t errorCounter = 0;
     DataStream tokenSteam;
 
-    // Lexer - Level I 
+    // Lexer - Level I
     {
-        PXCompilerSettings compilerSettings;        
+        PXCompilerSettings compilerSettings;
         compilerSettings.KeepWhiteSpace = PXYes;
         compilerSettings.KeepWhiteSpaceIndentationLeft = PXYes;
         compilerSettings.TryAnalyseTypes = PXYes;
@@ -91,7 +91,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
         PXCompilerSymbolEntry compilerSymbolEntry;
 
         PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-  
+
         switch (compilerSymbolEntry.ID)
         {
             case PXCompilerSymbolLexerWhiteSpace:
@@ -126,7 +126,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                         const YAMLLineType lineType = YAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
                         const PXBool isColonSymbol = YAMLLineTypeKeyValueSeperator == lineType;
 
-                        if (!isColonSymbol) // Format: xxxx : 
+                        if (!isColonSymbol) // Format: xxxx :
                         {
                             // Error
                             continue;
@@ -206,7 +206,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
     // Comment
     // # Text
 
-    // List 
+    // List
     // - Text
 
 
@@ -263,7 +263,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                     {
                         unsigned char x = 0;
 
-                        DataStreamReadCU(outputStream, &x, EndianLittle);
+                        DataStreamReadCU(outputStream, &x);
                         sprintf(textB, "%x", x);
                         break;
                     }
@@ -295,7 +295,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                         break;
                     }
                 }
-            }          
+            }
 
             printf("[YAML][%i] %s %s:%s\n", depth, emotySpace, textA, textB);
         }
@@ -311,7 +311,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
 
 ActionResult YAMLFileParse(DataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const size_t serializationTypeInfoListSize)
 {
-    
+
 
     return ActionSuccessful;
 }

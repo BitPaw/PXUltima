@@ -36,11 +36,13 @@ void PXMatrix4x4FPosition(const PXMatrix4x4F* const matrix, PXVector3F* const po
 	position->Z = matrix->Data[TransformZ];
 }
 
-void PXMatrix4x4FMoveTo(PXMatrix4x4F* const matrix, const PXVector3F* const position)
+void PXMatrix4x4FMoveTo(PXMatrix4x4F* const matrixInput, const PXVector3F* const position, PXMatrix4x4F* const matrixResult)
 {
-	matrix->Data[TransformX] = position->X;
-	matrix->Data[TransformY] = position->Y;
-	matrix->Data[TransformZ] = position->Z;
+    MemoryCopy(matrixInput, sizeof(PXMatrix4x4F), matrixResult, sizeof(PXMatrix4x4F));
+
+	matrixResult->Data[TransformX] = position->X;
+	matrixResult->Data[TransformY] = position->Y;
+	matrixResult->Data[TransformZ] = position->Z;
 }
 
 void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult)

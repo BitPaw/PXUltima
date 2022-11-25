@@ -900,9 +900,9 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
             break;
         }
-        case PXClientMessage:
+        case ClientMessage:
         {
-            printf("[Event] PXClientMessage \n");
+            printf("[Event] ClientMessage \n");
 
             break;
         }
@@ -1790,7 +1790,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
         if(!successful)
         {
-            return ThreadSucessful; // printf("\n\tcannot connect to X server\n\n");
+            return PXThreadSucessful; // printf("\n\tcannot connect to X server\n\n");
         }
 
         window->DisplayCurrent = display;
@@ -1814,7 +1814,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
         if(!successful)
         {
-            return ThreadSucessful; // no appropriate visual found
+            return PXThreadSucessful; // no appropriate visual found
         }
     }
 
@@ -2090,7 +2090,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
         if (!isHidden)
         {
-            ShowWindow(window->ID, SW_SHOW);         
+            ShowWindow(window->ID, SW_SHOW);
         }
     }
     #endif
@@ -2217,7 +2217,7 @@ void PXWindowConstruct(PXWindow* const window)
 }
 
 void PXWindowCreateA(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
-{     
+{
     TextCopyAW(title, 256u, window->Title, 256u);
 
     PXWindowCreate(window, width, height, async);

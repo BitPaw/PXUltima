@@ -811,11 +811,11 @@ void PXSocketClose(PXSocket* const pxSocket)
         }
     }
 
-#ifdef OSWindows
+#if OSUnix
+    close(pxSocket->ID);
+#elif OSWindows
     shutdown(pxSocket->ID, SD_SEND);
     closesocket(pxSocket->ID);
-#elif OSUnix
-    close(pxSocket->ID);
 #endif
 
     InvokeEvent(pxSocket->ConnectionTerminatedCallback, pxSocket);

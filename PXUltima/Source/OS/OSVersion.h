@@ -59,7 +59,7 @@
         #define OSWindows32B 1u
     #endif
 #else
-#pragma PX Windows Bit version cant be detected? This can not happen   
+#pragma PX Windows Bit version cant be detected? This can not happen
 #endif
 
 #if (OSWindows64B || OSWindows32B)
@@ -76,7 +76,7 @@
 
 
 //-----------------------------------------------------------------------------
-#if ÓSVersionOutput
+#if OSVersionOutput
 #if OSUnix
     #pragma message("[PX] Operating system: UNIX")
 #elif OSLinux
@@ -118,62 +118,62 @@
 
     #if Version_Windows >= Version_Windows_NT
         #define WindowsAtleastNT 1u
-    #else 
+    #else
         #define WindowsAtleastNT 0u
     #endif
 
     #if Version_Windows >= Version_Windows_2000
         #define WindowsAtleast2000 1u
-    #else 
+    #else
         #define WindowsAtleast2000 0u
     #endif
 
     #if Version_Windows >= Version_Windows_XP
         #define WindowsAtleastXP 1u
-    #else 
+    #else
         #define WindowsAtleastXP 0u
     #endif
 
     #if Version_Windows >= Version_Windows_Vista
         #define WindowsAtleastVista 1u
-    #else 
+    #else
         #define WindowsAtleastVista 0u
     #endif
 
     #if Version_Windows >= Version_Windows_7
         #define WindowsAtleast7 1u
-    #else 
+    #else
         #define WindowsAtleast7 0u
     #endif
 
     #if Version_Windows >= Version_Windows_8
         #define WindowsAtleast8 1u
-    #else 
+    #else
         #define WindowsAtleast8 0u
     #endif
 
     #if Version_Windows >= Version_Windows_10
         #define WindowsAtleast10 1u
-    #else 
+    #else
         #define WindowsAtleast10 0u
     #endif
 
     #if Version_Windows == Version_Windows_XP
         #define OSWindowsXP 1u
         typedef struct IUnknown IUnknown;
-    #else 
+    #else
         #define OSWindowsXP 0u
     #endif
 
     #if Version_Windows == Version_Windows_7
         #define OSWindows7 1u
-    #else 
+    #else
         #define OSWindows7 0u
     #endif
 
     #if Version_Windows == Version_Windows_10
         #define OSWindows10 1u
-    #else 
+    #else
         #define OSWindows10 0u
     #endif
 //-----------------------------------------------------------------------------

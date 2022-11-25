@@ -5,7 +5,7 @@
 void PXLockClear(PXLock* const lock)
 {
 #if OSUnix
-    MemorySet(lock->PXLockID, sizeof(LockID), 0);
+    MemoryClear(&lock->PXLockID, sizeof(PXLock));
 #elif OSWindows
 	lock->PXLockID = 0;
 #endif
@@ -17,7 +17,7 @@ ActionResult PXLockCreate(PXLock* const lock)
 	int sharedPointer = 0;
 	unsigned int value = 1;
 
-	const int resultID = sem_init(lock->PXLockID, sharedPointer, value);
+	const int resultID = sem_init(&lock->PXLockID, sharedPointer, value);
 	const unsigned char sucessful = resultID == 0; // 0=sucessful, -1=Error
 
 #elif OSWindows
@@ -49,7 +49,7 @@ ActionResult PXLockDelete(PXLock* const lock)
 	int closingResult = -1;
 
 #if OSUnix
-	closingResult = sem_destroy(lock->PXLockID);
+	closingResult = sem_destroy(&lock->PXLockID);
 #elif OSWindows
 	closingResult = CloseHandle(lock->PXLockID);
 #endif
@@ -64,7 +64,7 @@ ActionResult PXLockEngage(PXLock* const lock)
 	int lockResult = -1;
 
 #if OSUnix
-	lockResult = sem_wait(lock->PXLockID);
+	lockResult = sem_wait(&lock->PXLockID);
 #elif OSWindows
 	lockResult = WaitForSingleObject(lock->PXLockID, INFINITE);
 #endif
@@ -77,7 +77,7 @@ ActionResult PXLockRelease(PXLock* const lock)
 	int releaseResult = -1;
 
 #if OSUnix
-	releaseResult = sem_post(lock->PXLockID);
+	releaseResult = sem_post(&lock->PXLockID);
 #elif OSWindows
 	releaseResult = ReleaseSemaphore(lock->PXLockID, 1, 0);
 #endif
