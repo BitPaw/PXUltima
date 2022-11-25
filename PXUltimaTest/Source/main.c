@@ -10,6 +10,8 @@
 
 #include <Graphic/DirectX/DirectX.h>
 
+#include <OS/PXProcess.h>
+
 int main()
 {
 	printf("[i] Starting testing...\n");

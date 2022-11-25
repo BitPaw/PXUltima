@@ -390,6 +390,9 @@
     <ClInclude Include="Source\Format\ELF\ELF.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\OS\PXProcess.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -759,6 +762,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Async\Await.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\PXProcess.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

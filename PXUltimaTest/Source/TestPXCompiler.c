@@ -2,7 +2,7 @@
 
 #include <File/DataStream.h>
 
-#include <Compiler/Compiler.h>
+#include <Compiler/PXCompiler.h>
 #include <Format/YAML/YAML.h>
 #include <Format/OBJ/OBJ.h>
 #include <Format/XML/XML.h>

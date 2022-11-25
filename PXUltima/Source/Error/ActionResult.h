@@ -179,6 +179,7 @@ extern "C"
 	ActionResult;
 
 #define ActionExitOnError(actionResult) if (ActionSuccessful != actionResult) return actionResult;
+#define ActionOnErrorFetchAndExit(b) if(b) { return GetCurrentError(); }
 
 	PXPublic ActionResult ConvertErrorCode(const int errorCode);
 	PXPublic ActionResult GetCurrentError();
