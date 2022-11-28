@@ -181,11 +181,7 @@ extern "C"
 	}
 	CSprite;
 
-	typedef	struct PXSkyBox_
-	{
-		PXTextureCube TextureCube;
-	}
-	PXSkyBox;
+
 
 	typedef enum RefreshRateMode_
 	{
@@ -233,6 +229,16 @@ extern "C"
 	}
 	PXRenderable;
 
+	PXPublic void PXRenderableConstruct(PXRenderable* const pxRenderable);
+
+
+	typedef	struct PXSkyBox_
+	{
+		PXRenderable Renderable;
+		PXTextureCube TextureCube;
+	}
+	PXSkyBox;
+
 	//---<UI Elements>---------------------------------------------------------
 
 	typedef struct PXUIPanel_
@@ -267,6 +273,8 @@ extern "C"
 		void* AttachedWindow;
 
 		PXLock _resourceLock;
+
+		PXSkyBox* _currentSkyBox;
 
 		//---<Registered Objects>---
 		PXLinkedListFixed _renderList; // PXRenderable
@@ -314,6 +322,8 @@ extern "C"
 
 
 	//---<OpenGL Translate>----------------
+	PXPrivate OpenGLDataType GraphicDataTypeToOpenGL(const ImageDataFormat imageDataFormat);
+	PXPrivate OpenGLImageFormat GraphicImageFormatToOpenGL(const ImageDataFormat imageDataFormat);
 	PXPrivate OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType);
 	PXPrivate OpenGLTextureType ImageTypeGraphicToOpenGL(const GraphicImageType graphicImageType);
 	//-------------------------------------

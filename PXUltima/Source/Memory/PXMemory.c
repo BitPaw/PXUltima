@@ -190,7 +190,19 @@ void* MemoryStackAllocate(const size_t size)
 	return stackAllocated;
 }
 
-void* MemoryAllocate(const size_t requestedSizeInBytes)
+#include <stdio.h>
+
+
+void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char* function, const size_t line)
+{
+	void* adress = MemoryHeapAllocate(size);
+
+	printf("[i][Memory] Allocation <%i> from <%s:%s:%i>\n", (unsigned int)size, file, function, (unsigned int)line);
+
+	return adress;
+}
+
+void* MemoryHeapAllocate(const size_t requestedSizeInBytes)
 {
 	if(!requestedSizeInBytes)
 	{

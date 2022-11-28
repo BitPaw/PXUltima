@@ -1,6 +1,19 @@
 #ifndef OSVersionINCLUDE
 #define OSVersionINCLUDE
 
+/*
+#define OSUnixCheck (defined(unix) || defined(__unix) || defined(__unix__))
+#define OSLinuxCheck (defined(linux) || defined(__linux) || defined(__linux__))
+#define OSAppleCheck (defined(__APPLE__) || defined(__MACH__))
+#define OSAndroidCheck (defined(__ANDROID__))
+
+#define OSWindows64BCheck (defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__))
+#define OSWindows32BCheck !OSWindows64B && (defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__WIN32__))
+
+#define OSWindows (OSWindows64B || OSWindows32B)
+
+*/
+
 //---<Detect OS version>----------------------------------------------------
 #if defined(unix) || defined(__unix) || defined(__unix__)
     #ifndef OSUnix

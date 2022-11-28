@@ -14,7 +14,7 @@ extern "C"
 	typedef struct PXFont_ PXFont; // Avoid inclusion loop
 #endif
 
-	typedef  enum ImageDataFormat_
+	typedef enum ImageDataFormat_
 	{
 		ImageDataFormatInvalid,
 		ImageDataFormatAlphaMaskBinary,

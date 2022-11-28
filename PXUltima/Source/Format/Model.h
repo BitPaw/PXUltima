@@ -96,9 +96,11 @@ extern "C"
 		// struct		-> Material
 		// 
 
+		//---<Material>---
+		void* MaterialList;	
+		//----------------
 
-		void* MaterialList;
-
+		//----------------
 		void* DataVertexList;
 		size_t DataVertexListSize;
 		
@@ -113,10 +115,14 @@ extern "C"
 
 		size_t DataColorWidth;
 		size_t DataColorSize;
+		//----------------
 
+
+		//----------------
+		void* IndexList;
 		size_t DataIndexWidth;
 		size_t DataIndexSize;
-		//---------------------------------------------------------------------
+		//--------------------
 	}
 	PXModel;
 

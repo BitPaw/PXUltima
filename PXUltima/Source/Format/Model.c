@@ -63,11 +63,10 @@ PXBool PXModelMaterialGet(PXModel* const model, const size_t materialID, PXMater
 
     for (size_t i = 0; i < amount; ++i)
     {
+        const PXBool isGoal = i == materialID;
         unsigned short materialSize = 0;
 
-        DataStreamReadSU(&materialData, &materialSize, EndianLittle); // Total size
-
-        PXBool isGoal = i == materialID;
+        DataStreamReadSU(&materialData, &materialSize, EndianLittle); // Total size    
 
         if (isGoal)
         {
@@ -100,7 +99,12 @@ PXBool PXModelMaterialGet(PXModel* const model, const size_t materialID, PXMater
 
 unsigned char ModelSegmentsAmount(const PXModel* const model)
 {
-	return *(unsigned char*)model->Data;
+    if (!model->Data) // Has data
+    {
+        return 0;
+    }
+
+	return *(PXAdress)model->Data;
 }
 
 void ModelSegmentsGet(const PXModel* const model, const size_t index, MeshSegment* const meshSegment)

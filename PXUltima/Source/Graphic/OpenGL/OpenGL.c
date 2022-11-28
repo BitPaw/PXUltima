@@ -349,6 +349,20 @@
 #define GL_STENCIL_BACK_REF 0x8CA3
 #define GL_STENCIL_BACK_VALUE_MASK 0x8CA4
 #define GL_STENCIL_BACK_WRITEMASK 0x8CA5
+
+
+// Extensions for 2.0
+
+#define GL_TEXTURE_SWIZZLE_R 0x8E42
+#define GL_TEXTURE_SWIZZLE_G 0x8E43
+#define GL_TEXTURE_SWIZZLE_B 0x8E44
+#define GL_TEXTURE_SWIZZLE_A 0x8E45
+#define GL_TEXTURE_SWIZZLE_RGBA 0x8E46
+
+
+#define GL_DEPTH_STENCIL_TEXTURE_MODE 0x90EA
+
+#define GL_MIRROR_CLAMP_TO_EDGE 0x8743
 //----------------------------------
 
 
@@ -1003,6 +1017,18 @@ unsigned int OpenGLRenderBufferAttachmentPointToID(const OpenGLRenderBufferAttac
     }
 }
 
+GLenum OpenGLPolygonRenderOrderModeToID(const OpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode)
+{
+    switch (openGLPolygonRenderOrderMode)
+    {
+        case OpenGLPolygonRenderOrderModeClockwise: return GL_CW;
+        case OpenGLPolygonRenderOrderModeCounterClockwise: return GL_CCW;
+
+        default:
+            return -1;
+    }
+}
+
 int OpenGLImageFormatToID(const OpenGLImageFormat imageFormat)
 {
     switch (imageFormat)
@@ -1058,12 +1084,42 @@ int OpenGLDataTypeToID(const OpenGLDataType dataType)
     }
 }
 
-PXPrivate int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataType)
+int OpenGLRenderBufferFormatToID(const OpenGLRenderBufferFormat dataType)
 {
     switch (dataType)
     {
         case OpenGLRenderBufferFormatDepth24Stencil8: return GL_DEPTH24_STENCIL8;
         case OpenGLRenderBufferFormatInvalid:
+        default:
+            return -1;
+    }
+}
+
+GLenum OpenGLTextureParameterModeToID(const OpenGLTextureParameterMode textureParameterMode)
+{
+    switch (textureParameterMode)
+    {
+        case OpenGLDEPTH_STENCIL_TextureMODE: return GL_DEPTH_STENCIL_TEXTURE_MODE;
+        case OpenGLTextureBASE_LEVEL: return  GL_TEXTURE_BASE_LEVEL;
+        case OpenGLTextureCOMPARE_FUNC: return  GL_TEXTURE_COMPARE_FUNC;
+        case OpenGLTextureCOMPARE_MODE: return GL_TEXTURE_COMPARE_MODE;
+        case OpenGLTextureLOD_BIAS: return  GL_TEXTURE_LOD_BIAS;
+        case OpenGLTextureMIN_FILTER: return  GL_TEXTURE_MIN_FILTER;
+        case OpenGLTextureMAG_FILTER: return  GL_TEXTURE_MAG_FILTER;
+        case OpenGLTextureMIN_LOD: return  GL_TEXTURE_MIN_LOD;
+        case OpenGLTextureMAX_LOD: return  GL_TEXTURE_MAX_LOD;
+        case OpenGLTextureMAX_LEVEL: return  GL_TEXTURE_MAX_LEVEL;
+        case OpenGLTextureSWIZZLE_R: return  GL_TEXTURE_SWIZZLE_R;
+        case OpenGLTextureSWIZZLE_G: return GL_TEXTURE_SWIZZLE_G;
+        case OpenGLTextureSWIZZLE_B: return GL_TEXTURE_SWIZZLE_B;
+        case OpenGLTextureSWIZZLE_A: return  GL_TEXTURE_SWIZZLE_A;
+        case OpenGLTextureWRAP_S: return  GL_TEXTURE_WRAP_S;
+        case OpenGLTextureWRAP_T: return  GL_TEXTURE_WRAP_T;
+        case OpenGLTextureWRAP_R: return  GL_TEXTURE_WRAP_R;
+        case OpenGLTextureBORDER_COLOR: return  GL_TEXTURE_BORDER_COLOR;
+        case OpenGLTextureSWIZZLE_RGBA: return  GL_TEXTURE_SWIZZLE_RGBA;
+
+        case OpenGLTextureParameterModoInvalid:
         default:
             return -1;
     }
@@ -1113,6 +1169,27 @@ int OpenGLBufferTypeToID(const OpenGLBufferType openGLBufferType)
     }
 }
 
+GLint OpenGLTextureParameterValueToID(const OpenGLTextureParameterValue openGLTextureParameterValue)
+{
+    switch (openGLTextureParameterValue)
+    {
+        case OpenGLTextureParameterValueNEAREST: return GL_NEAREST;
+        case OpenGLTextureParameterValueLINEAR: return GL_LINEAR;
+
+        case OpenGLTextureParameterValueClampToEdge: return GL_CLAMP_TO_EDGE;
+        case OpenGLTextureParameterValueClampToBorder: return GL_CLAMP_TO_BORDER;
+        case OpenGLTextureParameterValueMirroredRepeat: return  GL_MIRRORED_REPEAT;
+        case OpenGLTextureParameterValueRepeat: return GL_REPEAT;
+        case OpenGLTextureParameterValueMirrorClampToEdge: return  GL_MIRROR_CLAMP_TO_EDGE;
+        case OpenGLTextureParameterValueWrapS: return GL_TEXTURE_WRAP_S;
+        case OpenGLTextureParameterValueWrapR: return GL_TEXTURE_WRAP_T;
+
+        case OpenGLTextureParameterValueInvalid:
+        default:
+            return -1;
+    }
+}
+
 int OpenGLStoreModeToID(const OpenGLStoreMode openGLStoreMode)
 {
     switch (openGLStoreMode)
@@ -1128,6 +1205,18 @@ int OpenGLStoreModeToID(const OpenGLStoreMode openGLStoreMode)
         case OpenGLStoreDynamicCopy: return GL_DYNAMIC_COPY;
 
         default:
+            return -1;
+    }
+}
+
+GLenum OpenGLDrawOrderToID(const OpenGLDrawOrderMode openGLDrawOrderMode)
+{
+    switch (openGLDrawOrderMode)
+    {
+        case OpenGLDrawOrderModeClockwise: return GL_CW;
+        case OpenGLDrawOrderModeCounterClockwise: return GL_CCW;
+
+        case OpenGLDrawOrderModeInvalid:
             return -1;
     }
 }
@@ -1824,11 +1913,11 @@ void OpenGLContextSelect(OpenGLContext* const openGLContext)
 #endif
 }
 
-unsigned char OpenGLContextDeselect(OpenGLContext* const openGLContext)
+PXBool OpenGLContextDeselect(OpenGLContext* const openGLContext)
 {
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
-    const unsigned char successful =
+    const PXBool successful =
 #if OSUnix
         glXMakeCurrent(0, window->ID, openGLContext->OpenGLConext);
 #elif OSWindows
@@ -1874,11 +1963,30 @@ void OpenGLViewSize(OpenGLContext* const openGLContext, const size_t x, const si
     glViewport(x, y, width, height);
 }
 
-void OpenGLEnable(OpenGLContext* const openGLContext, const OpenGLToggle toggle)
+void OpenGLPolygonRenderOrder(const OpenGLContext* const openGLContext, const OpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode)
 {
-    const unsigned int toggleID = OpenGLToggleToID(toggle);
+    const GLenum openGLPolygonRenderOrderModeID = OpenGLPolygonRenderOrderModeToID(openGLPolygonRenderOrderMode);
 
-    glEnable(toggleID);
+    glFrontFace(openGLPolygonRenderOrderModeID);
+}
+
+void OpenGLSettingChange(OpenGLContext* const openGLContext, const OpenGLToggle toggle, const PXBool state)
+{
+    const GLenum settingID = OpenGLToggleToID(toggle);
+
+    if (state)
+    {
+        glEnable(settingID);
+    }
+    else
+    {
+        glDisable(settingID);
+    }
+}
+
+void OpenGLDrawOrder(OpenGLContext* const openGLContext, const OpenGLDrawOrderMode openGLDrawOrderMode)
+{
+ 
 }
 
 void OpenGLClearColor(OpenGLContext* const openGLContext, const float red, const float green, const float blue, const float alpha)
@@ -1918,20 +2026,27 @@ void OpenGLDrawEnd(OpenGLContext* const openGLContext)
     glEnd();
 }
 
-void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, GLenum pname, GLint param)
+void OpenGLTextureParameter(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const OpenGLTextureParameterValue openGLTextureParameterValue)
 {
-    /*
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
+    const GLint openGLTextureParameterValueID = OpenGLTextureParameterValueToID(openGLTextureParameterValue);
 
+    OpenGLTextureParameterI(openGLContext, textureType, pname, openGLTextureParameterValueID);
+}
 
-    */
+void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const int param)
+{
+    const GLenum textureTypeID = OpenGLTextureTypeToID(textureType);
+    const GLenum pnameID = OpenGLTextureParameterModeToID(pname);    
 
+    glTexParameteri(textureTypeID, pnameID, param);
+}
+
+void OpenGLTextureParameterF(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const float param)
+{
+    const GLenum textureTypeID = OpenGLTextureTypeToID(textureType);
+    const GLenum pnameID = OpenGLTextureParameterModeToID(pname);
+
+    glTexParameterf(textureTypeID, pnameID, param);
 }
 
 void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
@@ -2884,6 +2999,14 @@ void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenG
     openGLContext->OpenGLValidateProgramCallBack(shaderID);
 }
 
+void OpenGLDrawElements(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const size_t amount, const OpenGLDataType openGLDataType, const void* const indexList)
+{
+    const GLenum renderModeID = OpenGLRenderModeToID(renderMode);
+    const GLenum openGLDataTypeID = OpenGLDataTypeToID(openGLDataType);
+
+    glDrawElements(renderModeID, amount, openGLDataTypeID, indexList);
+}
+
 void OpenGLTextureActivate(OpenGLContext* const openGLContext, const unsigned int index)
 {
     unsigned int indexID = GL_TEXTURE0 + index;
@@ -2905,6 +3028,11 @@ void OpenGLTextureBind(OpenGLContext* const openGLContext, const OpenGLTextureTy
 
     const unsigned int textureTypeID = OpenGLTextureTypeToID(textureType);
     openGLContext->OpenGLTextureBindCallBack(textureTypeID, texture);
+}
+
+void OpenGLTextureUnbind(OpenGLContext* const openGLContext, const OpenGLTextureType textureType)
+{
+    OpenGLTextureBind(openGLContext, textureType, 0u);
 }
 
 void OpenGLTextureDelete(OpenGLContext* const openGLContext, GLsizei n, const GLuint* textures)
@@ -2929,6 +3057,8 @@ void OpenGLTextureData2D
     const int glImageFormatInternalID = OpenGLImageFormatToID(glImageFormatInternal);
     const int glImageFormatInputID = OpenGLImageFormatToID(glImageFormatInput);
     const int glDataTypeID = OpenGLDataTypeToID(glDataType);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // This is needed to state we have tightly packed image data. If not, the GPU expects padding bytes and will crash.
 
     glTexImage2D(glTextureTypeID, levelOfDetail, glImageFormatInternalID, width, height, 0, glImageFormatInputID, glDataTypeID, imageData);
 }

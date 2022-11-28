@@ -19,6 +19,18 @@
 #define MemorySanitise 0
 //----------------
 
+#define _PX_FILEPATH_ __FILE__
+#define _PX_FILENAME_ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#define _PX_FUNCTION_ __FUNCTION__
+#define _PX_LINE_ __LINE__
+
+#if 1//MemoryDebugLeakDetection
+#define MemoryAllocate(size) MemoryHeapAllocateDetailed(size, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_) // maybe you need to turn on "Keep comments"
+#else
+#define MemoryAllocate(size) MemoryAllocate(size)
+#endif
+
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -89,7 +101,8 @@ extern "C"
 	PXPublic void* MemoryStackAllocate(const size_t size);
 	//PXPublic void* MemoryStackRelease(void* const adress);
 
-	PXPublic void* MemoryAllocate(const size_t size);
+	PXPublic void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char* function, const size_t line);
+	PXPublic void* MemoryHeapAllocate(const size_t size);
 
 	// Allocate memory and clear is after. Its just a combination of malloc and memset
 	PXPublic void* MemoryAllocateClear(const size_t size);

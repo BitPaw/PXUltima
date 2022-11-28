@@ -4,6 +4,7 @@
 #include <File/DataStream.h>
 #include <OS/PXWindow.h>
 #include <Format/Font.h>
+#include <Container/ClusterValue.h>
 
 ActionResult GraphicTextureScreenShot(GraphicContext* const graphicContext, Image* const image)
 {
@@ -186,68 +187,54 @@ ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, PX
     OpenGLTextureCreate(&graphicContext->OpenGLInstance, 1u, &textureID);
     OpenGLTextureBind(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, textureID);
 
+    OpenGLTextureParameter(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWRAP_S, OpenGLTextureParameterValueClampToEdge);
+    OpenGLTextureParameter(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWRAP_T, OpenGLTextureParameterValueClampToEdge);
+    OpenGLTextureParameter(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWRAP_R, OpenGLTextureParameterValueClampToEdge);
+    OpenGLTextureParameter(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureMAG_FILTER, OpenGLTextureParameterValueLINEAR);
+    OpenGLTextureParameter(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureMIN_FILTER, OpenGLTextureParameterValueLINEAR);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureBASE_LEVEL, 0);
+    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureMAX_LEVEL, 0);
 
-    /*
+    
+    OpenGLSettingChange(&graphicContext->OpenGLInstance, OpenGLToggleTextureCubeMapSeamless, PXTrue);
 
-    typedef enum OpenGLTextureSettingName_
+    const OpenGLTextureType openGLTextureTypeList[6] =
+    { 
+        OpenGLTextureTypeCubeMapTop,
+        OpenGLTextureTypeCubeMapBottom,
+        OpenGLTextureTypeCubeMapFront,
+        OpenGLTextureTypeCubeMapBack,
+        OpenGLTextureTypeCubeMapLeft,
+        OpenGLTextureTypeCubeMapRight
+    };
+
+    for (size_t i = 0; i < 6u; ++i)
     {
-        OpenGLTextureSettingNameInvalid,
+        const Image* const image = &textureCube->ImageList[i];
+        const OpenGLTextureType textureTypeID = openGLTextureTypeList[i];
+        const OpenGLImageFormat openGLImageFormat = GraphicImageFormatToOpenGL(image->Format);
+        const OpenGLDataType openGLDataType = GraphicDataTypeToOpenGL(image->Format);        
+        const int levelOfDetail = 0;
 
-        OpenGLTextureWrapAxisS,
-        OpenGLTextureWrapAxisT,
-        OpenGLTextureWrapAxisR,
-
-        OpenGLTextureFilterTypeMinimation,
-        OpenGLTextureFilterTypeMagnification
-
+        OpenGLTextureData2D
+        (
+            &graphicContext->OpenGLInstance,
+            textureTypeID,
+            levelOfDetail,
+            OpenGLImageFormatRGB,
+            image->Width,
+            image->Height,
+            openGLImageFormat,
+            openGLDataType,
+            image->PixelData
+        );
     }
-    OpenGLTextureSettingName;
 
-    typedef enum OpenGLTextureSettingValue_
-    {
-        OpenGLTextureFilterInvalid,
-        OpenGLTextureFilterNear,
-        OpenGLTextureFilterLiniar,
-        OpenGLTextureFilterBiliniar,
-        OpenGLTextureFilterTriliniar,
-
-        OpenGLTextureWrapClampToEdge,
-
-        OpenGLTextureBaseLevel,
-        OpenGLTextureMaxLevel
-    }
-    OpenGLTextureSettingValue;
-
-
-
-
-
-    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWrapAxisS, OpenGLTextureWrapClampToEdge);
-    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWrapAxisT, OpenGLTextureWrapClampToEdge);
-    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureWrapAxisR, OpenGLTextureWrapClampToEdge);
-    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureFilterTypeMagnification, OpenGLTextureFilterLiniar);
-    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureFilterTypeMinimation, OpenGLTextureFilterLiniar);
-    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureBaseLevel, 0);
-    OpenGLTextureParameterI(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, OpenGLTextureMaxLevel, 0);
-
-    OpenGLEnable(&graphicContext->OpenGLInstance, OpenGLToggleTextureCubeMapSeamless);
-
-    for (size_t i = 0; i < 6; i++)
-    {
-        Image* image = &textureCube->ImageList[i];
-        const unsigned int textureTypeID = (unsigned int)GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
-        const unsigned int imageFormat = OpenGLToImageFormat(image->Format);
-        //const OpenGLTextureType imageType = OpenGLTextureTypeToID(textureTypeID);
-        
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(textureTypeID, 0, GL_RGB, image->Width, image->Height, 0, imageFormat, GL_UNSIGNED_BYTE, image->PixelData);
-    }*/
-
-    OpenGLTextureBind(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap, 0);
+    OpenGLTextureUnbind(&graphicContext->OpenGLInstance, OpenGLTextureTypeCubeMap);
 
     textureCube->ID = textureID;
 
-    return ActionInvalid;
+    return ActionSuccessful;
 }
 
 ActionResult GraphicTextureCubeRegisterUse(GraphicContext* const graphicContext, PXTextureCube* const textureCube)
@@ -284,15 +271,49 @@ ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, PXSkyBo
     };
     const size_t vertexDataSize = sizeof(vertexData) / sizeof(float);
     const size_t indexListSize = sizeof(indexList) / sizeof(unsigned int);
-    //PXTextureCube* textureCube = skyBox->Texture;
-    //Renderable* renderable = &skyBox->RenderInfo;
 
-    //GraphicModelRegisterFromData(renderable, vertexData, vertexDataSize, indexList, indexListSize);
-    //GraphicTextureCubeRegister(textureCube);
 
-    //renderable.TextureUse(textureCube.ID);
 
-    return ActionInvalid;
+
+    {
+
+        PXModel pxModel;
+
+        ModelConstruct(&pxModel);
+
+         
+
+        unsigned char dataModel[11] = 
+        {
+            1u,
+            vertexDataSize            
+        };
+
+        SplittInt(-1, dataModel[3], dataModel[4], dataModel[5], dataModel[6]);
+        SplittInt(-1, dataModel[7], dataModel[8], dataModel[9], dataModel[10]);
+
+        pxModel.Data = dataModel;
+
+        pxModel.DataVertexList = vertexData;
+        pxModel.DataVertexListSize = vertexDataSize;
+
+        pxModel.DataVertexWidth = 3u;
+        pxModel.DataVertexSize = vertexDataSize;
+
+        pxModel.IndexList = indexList;
+        pxModel.DataIndexWidth = 4u;
+        pxModel.DataIndexSize = indexListSize;
+
+        GraphicModelRegisterFromModel(graphicContext, &skyBox->Renderable, &pxModel);
+    }
+
+
+    // Register Cube Texture
+    GraphicTextureCubeRegister(graphicContext, &skyBox->TextureCube);
+
+    graphicContext->_currentSkyBox = skyBox;
+
+    return ActionSuccessful;
 }
 
 ActionResult GraphicSkyboxRegisterA
@@ -309,27 +330,49 @@ ActionResult GraphicSkyboxRegisterA
     const char* textureFront
 )
 {
+    PXSkyBox* skyBoxCurrent = *skyBox;
 
-    //ShaderProgram& shaderProgram = skyBox.Shader;
+    // Load Textures
+    {
+        const char* const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
+        ActionResult resultList[6];    
 
- // Load(shaderProgram, shaderVertex, shaderFragment);
+        {
+            const PXBool hasSkybox = skyBoxCurrent;
 
-  /*
+            if (!hasSkybox)// Generate Skybox object 
+            {
 
-  Image* imageList = skyBox.Texture.ImageList;
 
-  const ActionResult textureRightResult = ImageLoadW(&imageList[0], textureRight);
-  const ActionResult textureLeftResult = ImageLoadW(&imageList[1], textureLeft);
-  const ActionResult textureTopResult = ImageLoadW(&imageList[2], textureTop);
-  const ActionResult textureBottomResult = ImageLoadW(&imageList[3], textureBottom);
-  const ActionResult textureBackResult = ImageLoadW(&imageList[4], textureBack);
-  const ActionResult textureFrontResult = ImageLoadW(&imageList[5],textureFront);
+                *skyBox = 0;
+            }
+        }
 
-  //GraphicSkyboxRegister(&skyBox);
+        for (size_t i = 0; i < 6u; ++i)
+        {
+            Image* const image = &skyBoxCurrent->TextureCube.ImageList[i];
+            const char* const filePath = filePathList[i];
+            const ActionResult textureRightResult = ImageLoadA(image, filePath);
 
-  DefaultSkyBox = &skyBox;
+            resultList[i] = textureRightResult;
+        }
+    }     
 
-  */
+    // Register skybox
+    {
+        const ActionResult registerResult = GraphicSkyboxRegister(graphicContext, skyBoxCurrent);
+
+    }
+
+    // Register Shaders
+    {
+        ShaderProgram shaderProgram;
+        shaderProgram.ID = -1;
+
+        const ActionResult shaderResult = GraphicShaderProgramCreateVFPathA(graphicContext, &shaderProgram, shaderVertex, shaderFragment);
+
+        skyBoxCurrent->Renderable.MeshSegmentList[0].ShaderID = shaderProgram.ID;
+    }
 
     return ActionSuccessful;
 }
@@ -438,7 +481,7 @@ PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicCont
 }
 
 ActionResult GraphicModelCreate(GraphicContext* const graphicContext, PXModel** const pxModel)
-{
+{   
     PXModel* const model = (PXModel* const)MemoryAllocate(sizeof(PXModel) * 1u);
 
     if (!model)
@@ -529,27 +572,27 @@ ActionResult GraphicModelRegisterA(GraphicContext* const graphicContext, PXRende
 
 ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model)
 {       
-    PXMatrix4x4FIdentity(&renderable->MatrixModel);
+    OpenGLContext* const openGLContext = &graphicContext->OpenGLInstance;
 
-    OpenGLVertexArrayGenerate(&graphicContext->OpenGLInstance, 1u, &renderable->VAO);
+    PXRenderableConstruct(renderable);   
+
+    OpenGLVertexArrayGenerate(openGLContext, 1u, &renderable->VAO);
 
     OpenGLID vbo = 0;
 
     // Create VBO Buffers
-    OpenGLBufferGenerate(&graphicContext->OpenGLInstance, 1u, &vbo);
+    OpenGLBufferGenerate(openGLContext, 1u, &vbo);
     renderable->VBO = vbo;
 
 
 
-    //OpenGLVertexArrayBind(&graphicContext->OpenGLInstance, renderable->ID);
+    OpenGLVertexArrayBind(openGLContext, renderable->VAO);
 
     const size_t stride = ModelVertexDataStride(model);
     const size_t vertexListSize = model->DataVertexListSize * stride;
 
-    OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferArray, renderable->VBO);
-    OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferArray, vertexListSize, model->DataVertexList, OpenGLStoreStaticDraw);
-
-    //renderable->RenderSize = model->DataIndexSize;
+    OpenGLBufferBind(openGLContext, OpenGLBufferArray, renderable->VBO);
+    OpenGLBufferData(openGLContext, OpenGLBufferArray, vertexListSize, model->DataVertexList, OpenGLStoreStaticDraw);
 
 #if 0
     printf
@@ -591,44 +634,45 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 
     if (model->DataVertexWidth)
     {
-        OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, model->DataVertexWidth, OpenGLTypeFloat, 0, stride, 0u);
-        OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+        OpenGLVertexArrayAttributeDefine(openGLContext, index, model->DataVertexWidth, OpenGLTypeFloat, 0, stride, 0u);
+        OpenGLVertexArrayEnable(openGLContext, index++);
     }
 
     if (model->DataNormalWidth)
     {
-        OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, model->DataNormalWidth, OpenGLTypeFloat, 0, stride, sizeof(float) * 3u);
-        OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+        OpenGLVertexArrayAttributeDefine(openGLContext, index, model->DataNormalWidth, OpenGLTypeFloat, 0, stride, sizeof(float) * 3u);
+        OpenGLVertexArrayEnable(openGLContext, index++);
     }
 
     if (model->DataTextureWidth)
     {
-        OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, model->DataTextureWidth, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u + 3u));
-        OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
+        OpenGLVertexArrayAttributeDefine(openGLContext, index, model->DataTextureWidth, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u + 3u));
+        OpenGLVertexArrayEnable(openGLContext, index++);
     }
 
     // Color?    
 
-    OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferArray);
-   
+    OpenGLBufferUnbind(openGLContext, OpenGLBufferArray);
 
+    if (model->DataIndexWidth)
+    {
+        OpenGLBufferGenerate(openGLContext, 1u, &renderable->IBO);
 
-    //OpenGLBufferGenerate(&graphicContext->OpenGLInstance, 1u, &vbo);
-    //OpenGLBufferBind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray, vbo);
-   // OpenGLBufferData(&graphicContext->OpenGLInstance, OpenGLBufferElementArray, model->DataIndexSize * sizeof(unsigned int), model->DataVertex, OpenGLStoreStaticDraw);
-   // OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferElementArray);
+        OpenGLBufferBind(openGLContext, OpenGLBufferElementArray, renderable->IBO);
 
-    //  OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
+        OpenGLBufferData(openGLContext, OpenGLBufferElementArray, sizeof(unsigned int) * model->DataIndexSize, model->IndexList, OpenGLStoreStaticDraw);
 
- 
+        OpenGLBufferUnbind(openGLContext, OpenGLBufferElementArray);
+    }
 
-
+    OpenGLVertexArrayUnbind(openGLContext);
+    //-------------------------------------------------------------------------
 
     //---<Register all textures>-----------------------------------------------
     const size_t segmentsListSize = ModelSegmentsAmount(model);
     const size_t modelListSize = PXModelMaterialAmount(model);
 
-    renderable->MeshSegmentListSize = modelListSize;
+    renderable->MeshSegmentListSize = segmentsListSize;
     renderable->MeshSegmentList = (PXRenderableMeshSegment*)MemoryAllocate(sizeof(PXRenderableMeshSegment) * segmentsListSize);
 
     for (size_t i = 0; i < segmentsListSize; ++i)
@@ -757,6 +801,17 @@ void PXTextureDestruct(PXTexture* const texture)
 	
 }
 
+void PXRenderableConstruct(PXRenderable* const pxRenderable)
+{
+    MemoryClear(pxRenderable, sizeof(PXRenderable));
+
+    PXMatrix4x4FIdentity(&pxRenderable->MatrixModel);
+
+    pxRenderable->VAO = -1;
+    pxRenderable->VBO = -1;
+    pxRenderable->IBO = -1;
+}
+
 ActionResult GraphicUIPanelRegister(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
 {
     const float vertexData[] =
@@ -809,6 +864,60 @@ void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderabl
     pxRenderableMeshSegment->ShaderID = (unsigned int)-1;
     pxRenderableMeshSegment->RenderMode = GraphicRenderModeInvalid;
     pxRenderableMeshSegment->DoRendering = PXNo;
+}
+
+OpenGLDataType GraphicDataTypeToOpenGL(const ImageDataFormat imageDataFormat)
+{
+    switch (imageDataFormat)
+    {       
+        case ImageDataFormatAlphaMaskBinary: 
+        case ImageDataFormatAlphaMask: 
+            return OpenGLTypeInvalid;
+
+        case ImageDataFormatRGB8:
+        case ImageDataFormatRGBA8: 
+        case ImageDataFormatBGR8: 
+        case ImageDataFormatBGRA8: 
+            return OpenGLTypeByteUnsigned;
+
+        case ImageDataFormatRGB16:
+        case ImageDataFormatRGBA16: 
+            return OpenGLTypeShortUnsigned;
+
+        case ImageDataFormatRGBFloat:
+        case ImageDataFormatRGBAFloat: 
+            return OpenGLTypeFloat;
+
+        case ImageDataFormatInvalid:
+        default:
+            return OpenGLTypeInvalid;
+    }
+}
+
+OpenGLImageFormat GraphicImageFormatToOpenGL(const ImageDataFormat imageDataFormat)
+{
+    switch (imageDataFormat)
+    {               
+        case ImageDataFormatRGB8:
+        case ImageDataFormatRGB16:
+        case ImageDataFormatRGBFloat:
+            return OpenGLImageFormatRGB;
+
+        case ImageDataFormatRGBA8:
+        case ImageDataFormatRGBA16:
+        case ImageDataFormatRGBAFloat:
+            return OpenGLImageFormatRGBA;
+
+        case ImageDataFormatBGR8:
+            return OpenGLImageFormatBGR;
+
+        case ImageDataFormatBGRA8:
+            return OpenGLImageFormatBGRA;
+
+        case ImageDataFormatInvalid:
+        default:
+            return OpenGLImageFormatInvalid;
+    }
 }
 
 OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType)
@@ -864,12 +973,12 @@ OpenGLTextureType ImageTypeGraphicToOpenGL(const GraphicImageType graphicImageTy
         case GraphicImageTypeTexture2D: return OpenGLTextureType2D;
         case GraphicImageTypeTexture3D: return OpenGLTextureType3D;
         case GraphicImageTypeTextureCubeContainer: return OpenGLTextureTypeCubeMap;
-        //case GraphicImageTypeTextureCubeRight: return OpenGLTextureTypeInvalid;
-        //case GraphicImageTypeTextureCubeLeft: return OpenGLTextureTypeInvalid;
-        //case GraphicImageTypeTextureCubeTop: return OpenGLTextureTypeInvalid;
-        //case GraphicImageTypeTextureCubeDown: return OpenGLTextureTypeInvalid;
-        //case GraphicImageTypeTextureCubeBack: return OpenGLTextureTypeInvalid;
-        //case GraphicImageTypeTextureCubeFront: return OpenGLTextureTypeInvalid;
+        case GraphicImageTypeTextureCubeRight: return OpenGLTextureTypeCubeMapRight;
+        case GraphicImageTypeTextureCubeLeft: return OpenGLTextureTypeCubeMapLeft;
+        case GraphicImageTypeTextureCubeTop: return OpenGLTextureTypeCubeMapTop;
+        case GraphicImageTypeTextureCubeDown: return OpenGLTextureTypeCubeMapBottom;
+        case GraphicImageTypeTextureCubeBack: return OpenGLTextureTypeCubeMapBack;
+        case GraphicImageTypeTextureCubeFront: return OpenGLTextureTypeCubeMapFront;
     }
 }
 
@@ -965,12 +1074,12 @@ ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicCont
 
         if (isAlreadyLoaded)
         {
-            return ActionSuccessful;
+            return ActionInvalid;
         }
 
         if (hasEmptyPaths)
         {
-            return ActionSuccessful;
+            return ActionInvalid;
         }
     }
 

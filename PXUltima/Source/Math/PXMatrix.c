@@ -1,6 +1,7 @@
 #include "PXMatrix.h"
 
 #include <Math/PXMath.h>
+#include <Memory/PXMemory.h>
 
 void PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
 {
@@ -157,6 +158,13 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 	}
 
 	//PXMatrix4x4FMultiply(xRotation);
+}
+
+void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, const PXMatrix4x4F* const matrixResult)
+{
+	const size_t sizeOfMatrix = sizeof(PXMatrix4x4F);
+
+	MemoryCopy(matrixA, sizeOfMatrix, matrixResult, sizeOfMatrix);
 }
 
 void PXMatrix4x4FMove3F(const PXMatrix4x4F* const matrixA, const PXVector3F* const vector3F, PXMatrix4x4F* const matrixResult)

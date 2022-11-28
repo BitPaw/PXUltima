@@ -8,6 +8,20 @@
 #define MakeShortBE(a, b) (((unsigned short)a << 8) | ((unsigned short)b))
 #define MakeShortLE(a, b) (((unsigned short)a) | ((unsigned short)b << 8))
 
+
+#define SplittIntLEA(i) ((i) & 0xFF)
+#define SplittIntLEB(i) ((i >>  8u) & 0xFF)
+#define SplittIntLEC(i) ((i >> 16u) & 0xFF)
+#define SplittIntLED(i) ((i >> 24u) & 0xFF)
+
+#define SplittIntLE(i, a, b, c, d)\
+a = SplittIntLEA(i);\
+b = SplittIntLEB(i);\
+c = SplittIntLEC(i);\
+d = SplittIntLED(i);
+
+#define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, d)
+
 #define MakeInt(a, b, c, d) MakeIntLE(a, b, c, d)
 #define MakeIntBE(a, b, c, d) (((unsigned int)a << 24) | ((unsigned int)b << 16) | ((unsigned int)c << 8) | ((unsigned int)d))
 #define MakeIntLE(a, b, c, d) (((unsigned int)a) | ((unsigned int)b << 8) | ((unsigned int)c << 16) | ((unsigned int)d << 24))
