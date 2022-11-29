@@ -9,12 +9,12 @@
 
 #if OSUnix
 #include <unistd.h>
-#define ProcessHandle pid_t
-#define ProcessID unsigned int
+typedef pid_t ProcessHandle;
+typedef unsigned int ProcessID;
 #elif OSWindows
 #include <windows.h>
-#define ProcessHandle HANDLE
-#define ProcessID DWORD
+typedef HANDLE ProcessHandle;
+typedef DWORD ProcessID;
 #endif
 
 #ifdef __cplusplus

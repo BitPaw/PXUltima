@@ -6,13 +6,13 @@
 #include <Format/Type.h>
 #include <Graphic/OpenGL/OpenGL.h>
 #include <Math/PXMatrix.h>
+#include <Container/LinkedList/PXLinkedList.h>
+#include <Async/PXLock.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-#include <Container/LinkedList/PXLinkedList.h>
-#include <Async/PXLock.h>
 
 	typedef enum GraphicRenderFilter_
 	{

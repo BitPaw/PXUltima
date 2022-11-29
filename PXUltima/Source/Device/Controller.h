@@ -1,17 +1,17 @@
 #ifndef ControllerInclude
 #define ControllerInclude
 
-#include <OS/OSVersion.h>
-#include <OS/PXWindow.h>
-
-#define ControllerID unsigned int
-
 #define ControllerAxisX 0
 #define ControllerAxisY 1
 #define ControllerAxisZ 2
 #define ControllerAxisR 3
 #define ControllerAxisU 4
 #define ControllerAxisV 5
+
+typedef unsigned int ControllerID;
+
+#include <OS/OSVersion.h>
+#include <OS/PXWindow.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -31,10 +31,10 @@ extern "C"
 
 	typedef void (*NewControllerDetectedCallback)(ControllerID controllerID);
 
-	PXPublic unsigned char ControllerScanDevices(NewControllerDetectedCallback callback);
-	PXPublic unsigned char ControllerDataGet(Controller* controller);
-	PXPublic unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID);
-	PXPublic unsigned char ControllerDetachToWindow(const ControllerID controllerID);
+	PXPublic PXBool ControllerScanDevices(NewControllerDetectedCallback callback);
+	PXPublic PXBool ControllerDataGet(Controller* controller);
+	PXPublic PXBool ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID);
+	PXPublic PXBool ControllerDetachToWindow(const ControllerID controllerID);
 
 #ifdef __cplusplus
 }

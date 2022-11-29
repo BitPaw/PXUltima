@@ -8,10 +8,10 @@
 #include <OS/OSVersion.h>
 
 #if OSUnix
-#define UIElementID unsigned int
+typedef unsigned int UIElementID;
 #elif OSWindows
 #include <Windows.h>
-#define UIElementID HWND
+typedef HWND UIElementID;
 #endif
 
 

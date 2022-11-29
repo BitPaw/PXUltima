@@ -246,7 +246,7 @@ size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t
 
 void JPEGConstruct(JPEG* const jpeg)
 {
-    MemorySet(jpeg, sizeof(JPEG), 0);
+    MemoryClear(jpeg, sizeof(JPEG));
 }
 
 void JPEGDestruct(JPEG* const jpeg)

@@ -1,13 +1,6 @@
 #ifndef KeyBoardInclude
 #define KeyBoardInclude
 
-#include "VirtualKey.h"
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #define KeyBoardIDCommandEscape (1 << 0)
 #define KeyBoardIDCommandEnter (1 << 1)
 #define KeyBoardIDCommandTab (1 << 2)
@@ -135,6 +128,13 @@ extern "C"
 #define KeyBoardIDNumberKeyPadSUBTRACT (1 << 29)
 #define KeyBoardIDNumberKeyPadADD (1 << 30)		
 #define KeyBoardIDNumberKeyPadEQUAL (1 << 31)
+
+#include "VirtualKey.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 	typedef struct KeyBoard_
 	{

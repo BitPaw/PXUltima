@@ -8,15 +8,15 @@
 #if OSUnix
 #include <pthread.h>
 #include <unistd.h>
-#define PXThreadResult void*
+typedef void* PXThreadResult;
+typedef pthread_t PXThreadIDType;
 #define PXThreadSucessful 0 // Adress
-#define PXThreadIDType pthread_t
 #define PXThreadIDUnused 0
 #elif OSWindows
 #include <windows.h>
-#define PXThreadResult unsigned long
+typedef unsigned long PXThreadResult;
+typedef HANDLE PXThreadIDType;
 #define PXThreadSucessful 0
-#define PXThreadIDType HANDLE
 #define PXThreadIDUnused nullptr
 #if OSWindowsXP
 typedef struct IUnknown IUnknown;

@@ -509,7 +509,7 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
 
 void BMPConstruct(BMP* const bmp)
 {
-    MemorySet(bmp, sizeof(BMP), 0);
+    MemoryClear(bmp, sizeof(BMP));
 }
 
 void BMPDestruct(BMP* const bmp)

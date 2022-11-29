@@ -47,7 +47,7 @@ const SQLType SQLTypeFromID(const unsigned int sqlType)
 
 void DataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection)
 {
-    MemorySet(dataBaseConnection, sizeof(DataBaseConnection), 0);
+    MemoryClear(dataBaseConnection, sizeof(DataBaseConnection));
 }
 
 void DataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection)

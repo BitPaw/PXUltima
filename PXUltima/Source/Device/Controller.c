@@ -12,7 +12,7 @@
 #pragma comment( lib, "winmm.lib" )
 #endif
 
-unsigned char ControllerScanDevices(NewControllerDetectedCallback callback)
+PXBool ControllerScanDevices(NewControllerDetectedCallback callback)
 {
 #if OSUnix
 #elif OSWindowsEE
@@ -81,7 +81,7 @@ const size_t amountOfJoySticksSupported = joyGetNumDevs();
 #endif
 }
 
-unsigned char ControllerDataGet(Controller* controller)
+PXBool ControllerDataGet(Controller* controller)
 {
 #if OSUnix
     return 0u;
@@ -131,7 +131,7 @@ unsigned char ControllerDataGet(Controller* controller)
 #endif
 }
 
-unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID)
+PXBool ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID)
 {
 #if OSUnix
     return 0u;
@@ -147,7 +147,7 @@ unsigned char ControllerAttachToWindow(const ControllerID controllerID, const PX
 #endif
 }
 
-unsigned char ControllerDetachToWindow(const ControllerID controllerID)
+PXBool ControllerDetachToWindow(const ControllerID controllerID)
 {
 #if OSUnix
     return 0u;

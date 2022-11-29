@@ -37,11 +37,13 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #define AdressInfoDelete FreeAddrInfoA
 #endif
 
+//-----------------------------------------------
+
 #include <Async/PXThread.h>
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
 
-#define PXSocketID size_t
+typedef size_t PXSocketID;
 #define SocketDebug 0
 #define SocketIDOffline -1
 #define IPv6LengthMax 65
@@ -255,7 +257,7 @@ extern "C"
 		ProtocolMode protocolMode
 	);
 
-	PXPublic unsigned char PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
+	PXPublic PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
 	PXPublic void PXSocketClose(PXSocket* const pxSocket);
 
 	PXPublic ActionResult PXSocketBind(PXSocket* const pxSocket);

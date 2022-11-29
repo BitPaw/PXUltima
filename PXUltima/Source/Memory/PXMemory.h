@@ -1,14 +1,13 @@
 #ifndef MemoryINCLUDE
 #define MemoryINCLUDE
 
+#include <OS/OSVersion.h>
 #include <Format/Type.h>
 
-#include <OS/OSVersion.h>
-
 #if OSUnix
-#define MemoryProtectionModeType int
+typedef int MemoryProtectionModeType;
 #elif OSWindows
-#define MemoryProtectionModeType unsigned long // DWORD
+typedef unsigned long MemoryProtectionModeType;// DWORD
 #endif
 
 //---<Settings>---
@@ -23,13 +22,6 @@
 #define _PX_FILENAME_ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #define _PX_FUNCTION_ __FUNCTION__
 #define _PX_LINE_ __LINE__
-
-#if 1//MemoryDebugLeakDetection
-#define MemoryAllocate(size) MemoryHeapAllocateDetailed(size, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_) // maybe you need to turn on "Keep comments"
-#else
-#define MemoryAllocate(size) MemoryAllocate(size)
-#endif
-
 
 #ifdef __cplusplus
 extern "C"
@@ -89,7 +81,7 @@ extern "C"
 
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!
-	PXPublic unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize);
+	PXPublic PXBool MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize);
 
 	PXPublic size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize);
 
@@ -123,5 +115,13 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+
+
+#if _DEBUG //1//MemoryDebugLeakDetection
+#define MemoryAllocate(size) MemoryHeapAllocateDetailed(size, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+#else
+#define MemoryAllocate(size) MemoryHeapAllocate(size)
+#endif
+
 
 #endif

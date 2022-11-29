@@ -55,6 +55,29 @@
     #endif
 #endif
 //-----------------------------------------------------------------------------
+#if defined(__x86_64__ ) || defined(__ppc64__) // Linux 64-Bit
+#ifndef OSLinux64B
+#define OSLinux64B 1u
+#endif
+
+#ifndef OSLinux32B
+#define OSLinux32B 0u
+#endif
+#elif  defined(__x86__ ) || defined(__ppc86__)
+#ifndef OSLinux64B
+#define OSLinux64B 1u
+#endif
+
+#ifndef OSLinux64B
+#define OSLinux64B 0u
+#endif
+#else
+#define OSLinux64B 0u
+#define OSLinux32B 0u
+#endif
+
+
+
 #if defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__)
     #ifndef OSWindows64B
         #define OSWindows64B 1u
@@ -72,7 +95,8 @@
         #define OSWindows32B 1u
     #endif
 #else
-#pragma PX Windows Bit version cant be detected? This can not happen
+#define OSWindows64B 0u
+#define OSWindows32B 0u
 #endif
 
 #if (OSWindows64B || OSWindows32B)
@@ -83,6 +107,18 @@
     #ifndef OSWindows
         #define OSWindows 0u
     #endif
+#endif
+
+
+// Bit
+#if (OSWindows64B || OSLinux64B)
+#ifndef OS64Bit
+#define OS64Bit 1u
+#endif
+#elif (OSWindows32B || OSLinux32B)
+#ifndef OS32Bit
+#define OS32Bit 1u
+#endif
 #endif
 //-----------------------------------------------------------------------------
 

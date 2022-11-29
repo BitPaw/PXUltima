@@ -20,16 +20,16 @@
 #include <libgen.h>
 #include <dirent.h>
 
-#define FileHandleType FILE*
-#define FileMappingID int
+typedef FILE* FileHandleType;
+typedef int FileMappingID;
 
 #elif OSWindows
 
 #include <windows.h>
 #include <direct.h>
 
-#define FileHandleType HANDLE
-#define FileMappingID HANDLE
+typedef HANDLE FileHandleType;
+typedef HANDLE FileMappingID;
 
 #endif
 

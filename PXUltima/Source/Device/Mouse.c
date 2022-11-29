@@ -1,6 +1,7 @@
 #include "Mouse.h"
 
 #include <Text/Text.h>
+#include <stdio.h>
 
 void MouseInputReset(Mouse* mouse)
 {

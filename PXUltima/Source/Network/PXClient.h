@@ -2,10 +2,8 @@
 #define PXClientInclude
 
 #include <Format/Type.h>
-
 #include <Error/ActionResult.h>
-
-#include "PXSocket.h"
+#include <Network/PXSocket.h>
 
 #ifdef __cplusplus
 extern "C"

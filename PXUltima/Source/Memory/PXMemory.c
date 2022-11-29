@@ -124,7 +124,7 @@ void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigne
 #endif
 }
 
-unsigned char MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize)
+PXBool MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize)
 {
 	const size_t bufferSize = MathMinimumIU(bufferASize, bufferBSize);
 	size_t counter = bufferSize;

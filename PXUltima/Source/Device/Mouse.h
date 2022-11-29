@@ -1,13 +1,6 @@
 #ifndef MouseInclude
 #define MouseInclude
 
-#include <Format/Type.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-	
 #define ButtonLeft    0b00000001
 #define ButtonMiddle  0b00000010
 #define ButtonRight   0b00000100
@@ -25,6 +18,13 @@ extern "C"
 #define IsPressedButtonCustomC(mouse) ((mouse->Buttons & ButtonCustomC) >> 5)
 #define IsPressedButtonCustomD(mouse) ((mouse->Buttons & ButtonCustomD) >> 6)
 #define IsPressedButtonCustomE(mouse) ((mouse->Buttons & ButtonCustomE) >> 7)
+
+#include <Format/Type.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 	typedef struct Mouse_
 	{

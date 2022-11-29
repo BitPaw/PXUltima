@@ -4,13 +4,13 @@
 #include <Format/Type.h>
 
 #if OSUnix
-#define RegistryID unsigned int
+typedef unsigned int RegistryID;
 
 #elif OSWindows
 #include <Windows.h>
 #include <winreg.h>
 
-#define RegistryID HKEY
+typedef HKEY RegistryID;
 #endif
 
 #ifdef __cplusplus

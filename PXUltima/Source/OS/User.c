@@ -8,7 +8,7 @@
 #include <Windows.h>
 #endif
 
-unsigned char UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSizeWritten)
+PXBool UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSizeWritten)
 {
 #if OSUnix
 
@@ -17,7 +17,7 @@ unsigned char UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSiz
 #elif OSWindows
 	DWORD size = nameSizeMax;
 
-	const unsigned char sucessful = GetComputerNameA(name, &size);
+	const PXBool sucessful = GetComputerNameA(name, &size);
 
 	nameSizeWritten = sucessful * size;
 
@@ -25,7 +25,7 @@ unsigned char UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSiz
 #endif
 }
 
-unsigned char UserNameGetW(wchar_t* name, const size_t nameSizeMax, size_t* nameSizeWritten)
+PXBool UserNameGetW(wchar_t* name, const size_t nameSizeMax, size_t* nameSizeWritten)
 {
 #if OSUnix
 
@@ -34,7 +34,7 @@ unsigned char UserNameGetW(wchar_t* name, const size_t nameSizeMax, size_t* name
 #elif OSWindows
 	DWORD size = nameSizeMax;
 
-	const unsigned char sucessful = GetComputerNameW(name, &size);
+	const PXBool sucessful = GetComputerNameW(name, &size);
 
 	nameSizeWritten = sucessful * size;
 

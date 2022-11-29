@@ -57,7 +57,7 @@
 
 void DataStreamConstruct(DataStream* const dataStream)
 {
-	MemorySet(dataStream, sizeof(DataStream), 0);
+	MemoryClear(dataStream, sizeof(DataStream));
 }
 
 void DataStreamDestruct(DataStream* const dataStream)

@@ -71,7 +71,7 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 	return ErrorCode::Successful;
 }*/
 
-unsigned char LibraryOpenA(LibraryHandle* Handle, const char* filePath)
+PXBool LibraryOpenA(LibraryHandle* Handle, const char* filePath)
 {
 #if OSUnix
 	const int mode = RTLD_NOW;
@@ -83,7 +83,7 @@ unsigned char LibraryOpenA(LibraryHandle* Handle, const char* filePath)
 #endif
 
 	{
-		const unsigned char sucessful = libraryHandle != 0;
+		const PXBool sucessful = libraryHandle != 0;
 
 		if(!sucessful)
 		{
@@ -96,7 +96,7 @@ unsigned char LibraryOpenA(LibraryHandle* Handle, const char* filePath)
 	return 1u;
 }
 
-unsigned char LibraryOpenW(LibraryHandle* Handle, const wchar_t* filePath)
+PXBool LibraryOpenW(LibraryHandle* Handle, const wchar_t* filePath)
 {
 #if OSUnix
 	return Open((char*)filePath);
@@ -104,7 +104,7 @@ unsigned char LibraryOpenW(LibraryHandle* Handle, const wchar_t* filePath)
 	const LibraryHandle libraryHandle = LoadLibraryW(filePath);
 
 	{
-		const unsigned char sucessful = libraryHandle != 0;
+		const PXBool sucessful = libraryHandle != 0;
 
 		if(!sucessful)
 		{
@@ -118,12 +118,13 @@ unsigned char LibraryOpenW(LibraryHandle* Handle, const wchar_t* filePath)
 #endif
 }
 
-unsigned char LibraryClose(LibraryHandle* Handle)
+PXBool LibraryClose(LibraryHandle* Handle)
 {
+	const PXBool result =
 #if OSUnix
-	const unsigned char result = dlclose(Handle);
+	dlclose(Handle);
 #elif OSWindows
-	const unsigned char result = FreeLibrary(Handle);
+	FreeLibrary(Handle);
 #endif
 
 	Handle = 0;
@@ -131,15 +132,15 @@ unsigned char LibraryClose(LibraryHandle* Handle)
 	return result;
 }
 
-unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName)
+PXBool LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName)
 {
 #if OSUnix
 	const LibraryFunction functionPointer = (LibraryFunction*)dlsym(handle, symbolName);
 	const char* errorString = dlerror();
-	const unsigned char successful = errorString;
+	const PXBool successful = errorString;
 #elif OSWindows
 	const LibraryFunction functionPointer = GetProcAddress(handle, symbolName);
-	const unsigned char successful = functionPointer;
+	const PXBool successful = functionPointer;
 #endif
 
 #if OSUnix

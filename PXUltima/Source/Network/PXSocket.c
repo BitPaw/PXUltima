@@ -794,7 +794,7 @@ ActionResult PXSocketSetupAdress
     return ActionSuccessful;
 }
 
-unsigned char PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
+PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
 {
     return pxSocket->ID != -1;
 }

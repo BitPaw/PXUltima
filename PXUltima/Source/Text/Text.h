@@ -1,4 +1,4 @@
-#if !defined(TextInclude)
+#ifndef TextInclude
 #define TextInclude
 
 #include <Format/Type.h>
@@ -20,9 +20,7 @@ extern "C"
 {
 #endif
 
-	typedef char TextASCII;
-	typedef char TextUTF8;
-	typedef wchar_t TextUNICODE;
+	
 
 	typedef struct ParsingTokenA_
 	{

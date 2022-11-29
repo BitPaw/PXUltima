@@ -10,13 +10,13 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-#define PXWindowID XID // XID is PXWindow
-#define OpenGLConextID GLXContext
+typedef XID PXWindowID;// XID is PXWindow
+typedef GLXContext OpenGLConextID;
 
 #elif OSWindows
 #include <Windows.h>
-#define PXWindowID HWND
-#define OpenGLConextID HGLRC
+typedef HWND PXWindowID;
+typedef HGLRC OpenGLConextID;
 #endif
 
 #include <Device/VirtualKey.h>
@@ -190,7 +190,7 @@ extern "C"
 	PXWindow;
 
 #if OSUnix
-	CPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
+	PXPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
 #elif OSWindows
 	PXPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
 #endif

@@ -13,7 +13,7 @@
 #include <shobjidl.h> 
 #endif
 
-unsigned char FileOpenDialogA(char* filePathOutput)
+PXBool FileOpenDialogA(char* filePathOutput)
 {
     wchar_t pathW[_MAX_PATH];
 
@@ -22,9 +22,9 @@ unsigned char FileOpenDialogA(char* filePathOutput)
     return FileOpenDialogW(pathW);
 }
 
-unsigned char FileOpenDialogW(wchar_t* filePathOutput)
+PXBool FileOpenDialogW(wchar_t* filePathOutput)
 {
-    unsigned char wasSuccesful = 0;
+    PXBool wasSuccesful = 0;
 
 #if OSWindows
 #if OSWindowsXP

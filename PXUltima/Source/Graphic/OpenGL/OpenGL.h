@@ -8,13 +8,13 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-#define PXWindowID XID // XID is PXWindow
-#define OpenGLConextID GLXContext
+typedef XID PXWindowID;// XID is PXWindow
+typedef GLXContext OpenGLConextID;
 
 #elif OSWindows
 #include <Windows.h>
-#define PXWindowID HWND
-#define OpenGLConextID HGLRC
+typedef HWND PXWindowID;
+typedef HGLRC OpenGLConextID;
 #endif
 
 //---<OpenGL>----------------
@@ -30,9 +30,11 @@
 
 #include <Format/Type.h>
 
-#define OpenGLID unsigned int
-#define OpenGLShaderProgramID unsigned int
-#define OpenGLShaderID unsigned int
+typedef unsigned int OpenGLID;
+typedef unsigned int OpenGLShaderProgramID;
+typedef unsigned int OpenGLShaderID;
+typedef ptrdiff_t GLintptr;
+typedef ptrdiff_t GLsizeiptr;
 
 #ifdef __cplusplus
 extern "C"
@@ -40,9 +42,6 @@ extern "C"
 #endif
 
 	//-------------------------------------------------------------------------
-	typedef ptrdiff_t GLintptr;
-	typedef ptrdiff_t GLsizeiptr;
-
 	typedef enum OpenGLVersion_
 	{
 		OpenGLVersionInvalid,

@@ -3,34 +3,34 @@
 
 #include <OS/OSVersion.h>
 
-#include <Format/Type.h>
-
 #if OSUnix
 #include <sys/types.h>
 #include <dlfcn.h>
 
-#define LibraryHandle void*
-#define LibraryFunction void*
-#define LibraryDirectoryID void*
+typedef void* LibraryHandle;
+typedef void* LibraryFunction;
+typedef void* LibraryDirectoryID;
 
 #elif OSWindows
 #include <windows.h>
 
-#define LibraryHandle HMODULE // HINSTANCE (semms is also okey)
-#define LibraryFunction FARPROC
-#define LibraryDirectoryID DLL_DIRECTORY_COOKIE
+typedef HMODULE LibraryHandle;// HINSTANCE (semms is also okey)
+typedef FARPROC LibraryFunction;
+typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 #endif
+
+#include <Format/Type.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-    PXPublic unsigned char LibraryOpenA(LibraryHandle* handle, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic unsigned char LibraryOpenW(LibraryHandle* handle, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic unsigned char LibraryClose(LibraryHandle* handle); // close a dlopen object
-    PXPublic unsigned char LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
+    PXPublic PXBool LibraryOpenA(LibraryHandle* handle, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic PXBool LibraryOpenW(LibraryHandle* handle, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic PXBool LibraryClose(LibraryHandle* handle); // close a dlopen object
+    PXPublic PXBool LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
 
-    PXPublic unsigned char LibraryParseSymbols();
+    PXPublic PXBool LibraryParseSymbols();
 
    // void SymbolVector(); // Programming interface to dynamic linking loader.
 

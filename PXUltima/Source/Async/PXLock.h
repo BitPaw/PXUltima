@@ -6,11 +6,11 @@
 
 #if OSUnix
 #include <semaphore.h>
-#define PXLockIDType sem_t // is union, cannot be defined as "sem_t" only -> compile error
+typedef sem_t PXLockIDType; // is union, cannot be defined as "sem_t" only -> compile error
 #elif OSWindows
 #include <windows.h>
 //#include <process.h>
-#define PXLockIDType HANDLE // same as void*
+typedef HANDLE PXLockIDType; // same as void*
 #endif
 
 #ifdef __cplusplus
