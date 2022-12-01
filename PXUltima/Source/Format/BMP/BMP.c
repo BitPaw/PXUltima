@@ -366,19 +366,12 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
 
     // Generate imagedata
     {
-        size_t size = image->PixelDataSize = bmp.InfoHeader.Width * bmp.InfoHeader.Height * (bmp.InfoHeader.NumberOfBitsPerPixel / 8);
-        void* adress = MemoryAllocate(sizeof(unsigned char) * size);
+        const PXBool allocationSuccess = ImageResize(image, ImageDataFormatRGB8, bmp.InfoHeader.Width, bmp.InfoHeader.Height);
 
-        if(!adress) // Allocation failed
+        if(!allocationSuccess)
         {
             return ActionSystemOutOfMemory;
         }
-
-        image->PixelDataSize = size;
-        image->PixelData = adress;
-        image->Format = ImageDataFormatRGB8;
-        image->Width = bmp.InfoHeader.Width;
-        image->Height = bmp.InfoHeader.Height;
     }
 
     //---[ Pixel Data ]--------------------------------------------------------
@@ -386,16 +379,16 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
 
     BMPImageDataLayoutCalculate(&imageDataLayout, bmp.InfoHeader.Width, bmp.InfoHeader.Height, bmp.InfoHeader.NumberOfBitsPerPixel);
 
-    while(imageDataLayout.RowAmount--)
+    while(imageDataLayout.RowAmount--) // loop through each image row
     {
-        unsigned char* const data = (unsigned char* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount);
+        PXByte* const data = (PXByte* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
-        DataStreamReadP(&dataStream, data, imageDataLayout.RowImageDataSize);
-        DataStreamCursorAdvance(&dataStream, imageDataLayout.RowPaddingSize);
+        DataStreamReadP(&dataStream, data, imageDataLayout.RowImageDataSize); // Read/Write image data
+        DataStreamCursorAdvance(&dataStream, imageDataLayout.RowPaddingSize); // Skip padding
 
         for(size_t i = 0; i < imageDataLayout.RowImageDataSize; i += 3)
         {
-            const unsigned char swap = data[i]; // Save Blue(current)
+            const PXByte swap = data[i]; // Save Blue(current)
 
             data[i] = data[i + 2]; // Override Blue(current) with Red(new)
             data[i+2] = swap; // Override Red(current) with Blue(new) 

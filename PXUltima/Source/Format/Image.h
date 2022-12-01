@@ -72,7 +72,7 @@ extern "C"
 	PXPublic size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat);
 	PXPublic size_t ImageBitsPerPixel(const ImageDataFormat imageDataFormat);
 
-	PXPublic void ImageResize(Image* image, const ImageDataFormat format, const size_t width, const size_t height);
+	PXPublic PXBool ImageResize(Image* const image, const ImageDataFormat format, const size_t width, const size_t height);
 	PXPublic void ImageFlipHorizontal(Image* image);
 	PXPublic void ImageFlipVertical(Image* image);
 	PXPublic void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsigned char blue);

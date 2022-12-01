@@ -50,9 +50,9 @@ struct MemoryAllocationInfo
 #endif
 //-------------------------------------
 
-unsigned char MemoryScan(MemoryUsage* memoryUsage)
+PXBool MemoryScan(MemoryUsage* memoryUsage)
 {
-	MemorySet(memoryUsage, sizeof(MemoryUsage), 0);
+	MemoryClear(memoryUsage, sizeof(MemoryUsage));
 
 #if OSUnix
 #elif WindowsAtleastXP
@@ -61,7 +61,7 @@ unsigned char MemoryScan(MemoryUsage* memoryUsage)
 	MEMORYSTATUSEX memoryStatus;
 	memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
 
-	const unsigned char result = GlobalMemoryStatusEx(&memoryStatus);
+	const PXBool result = GlobalMemoryStatusEx(&memoryStatus);
 
 
 
@@ -197,7 +197,7 @@ void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char
 {
 	void* adress = MemoryHeapAllocate(size);
 
-	printf("[i][Memory] Allocation <%i> from <%s:%s:%i>\n", (unsigned int)size, file, function, (unsigned int)line);
+	printf("[+][Memory][%-13s|%-19s|%4i|%7iB|\n", file, function, (unsigned int)line, (unsigned int)size);
 
 	return adress;
 }
@@ -251,9 +251,9 @@ void* MemoryAllocateClear(const size_t requestedSizeInBytes)
 	return adress;
 }
 
-void* MemoryReallocate(void* adress, const size_t size)
+void* MemoryHeapReallocate(void* sourceAddress, const size_t size)
 {
-	const void* adressReallocated = realloc(adress, size);
+	const void* adressReallocated = realloc(sourceAddress, size);
 
 #if MemorySanitise
 	if (!adress)
@@ -267,20 +267,29 @@ void* MemoryReallocate(void* adress, const size_t size)
 
 	if(hasChanged)
 	{
-		printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", adress, size, adressReallocated);
+		printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", sourceAddress, size, adressReallocated);
 	}
 	else
 	{
-		printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", adress, size);
+		printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", sourceAddress, size);
 	}
 #endif
 
 	return adressReallocated;
 }
 
-void* MemoryReallocateClear(const void* const adress, const size_t sizeBefore, const size_t sizeAfter)
+void* MemoryHeapReallocateDetailed(void* sourceAddress, const size_t size, const char* file, const char* function, const size_t line)
 {
-	const void* adressReallocated = realloc(adress, sizeAfter);
+	void* adress = MemoryHeapReallocate(sourceAddress, size);
+
+	printf("[R][Memory][%-13s|%-19s|%4i|%7iB|\n", file, function, (unsigned int)line, (unsigned int)size);
+
+	return adress;
+}
+
+void* MemoryHeapReallocateClear(const void* const sourceAddress, const size_t sizeBefore, const size_t sizeAfter)
+{
+	const void* adressReallocated = realloc(sourceAddress, sizeAfter);
 	const unsigned char sizeIncredes = sizeAfter > sizeBefore;
 
 	if (sizeIncredes)

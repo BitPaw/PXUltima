@@ -245,7 +245,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 					const size_t sizeCurrent = currentPage->CharacteListSize * sizeof(FNTPage);
 					const size_t sizeNew = currentPage->CharacteListSize * sizeof(FNTPage) + 1;
 
-					FNTCharacter* characteListR = MemoryReallocateClear(currentPage->CharacteList, sizeCurrent, sizeNew);
+					FNTCharacter* characteListR = MemoryHeapReallocateClear(currentPage->CharacteList, sizeCurrent, sizeNew);
 					const unsigned char adresschanged = characteListR != currentPage->CharacteList;
 
 					if(!characteListR)

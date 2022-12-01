@@ -138,7 +138,9 @@ extern "C"
 
 
 	PXPublic unsigned char ModelSegmentsAmount(const PXModel* const model);
+	PXPrivate void* ModelSegmentsAdressGet(const PXModel* const model, const size_t index);
 	PXPublic void ModelSegmentsGet(const PXModel* const model, const size_t index, MeshSegment* const meshSegment);
+	PXPublic void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const unsigned int renderSize, const unsigned int renderMaterial);
 
 	PXPublic size_t ModelVertexDataStride(const PXModel* const model);
 

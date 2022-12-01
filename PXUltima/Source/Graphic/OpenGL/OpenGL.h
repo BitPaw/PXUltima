@@ -731,6 +731,7 @@ extern "C"
 
 	// render
 
+	PXPublic void OpenGLDrawArrays(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const size_t offset, const size_t amount);
 	PXPublic void OpenGLDrawElements(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const size_t amount, const OpenGLDataType openGLDataType, const void* const indexList);
 
 

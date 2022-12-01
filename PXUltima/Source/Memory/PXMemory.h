@@ -3,6 +3,7 @@
 
 #include <OS/OSVersion.h>
 #include <Format/Type.h>
+#include <Compiler/PXCompilerSettings.h>
 
 #if OSUnix
 typedef int MemoryProtectionModeType;
@@ -17,11 +18,6 @@ typedef unsigned long MemoryProtectionModeType;// DWORD
 #define MemoryUseSystemFunction 0
 #define MemorySanitise 0
 //----------------
-
-#define _PX_FILEPATH_ __FILE__
-#define _PX_FILENAME_ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
-#define _PX_FUNCTION_ __FUNCTION__
-#define _PX_LINE_ __LINE__
 
 #ifdef __cplusplus
 extern "C"
@@ -73,7 +69,7 @@ extern "C"
 	MemoryUsage;
 
 
-	PXPublic unsigned char MemoryScan(MemoryUsage* memoryUsage);
+	PXPublic PXBool MemoryScan(MemoryUsage* memoryUsage);
 
 
 	PXPublic void MemoryClear(void* const __restrict bufferA, const size_t bufferASize);
@@ -93,13 +89,15 @@ extern "C"
 	PXPublic void* MemoryStackAllocate(const size_t size);
 	//PXPublic void* MemoryStackRelease(void* const adress);
 
-	PXPublic void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char* function, const size_t line);
 	PXPublic void* MemoryHeapAllocate(const size_t size);
+	PXPublic void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char* function, const size_t line);
 
 	// Allocate memory and clear is after. Its just a combination of malloc and memset
 	PXPublic void* MemoryAllocateClear(const size_t size);
-	PXPublic void* MemoryReallocate(void* adress, const size_t size);
-	PXPublic void* MemoryReallocateClear(const void* const adress, const size_t sizeBefore, const size_t sizeAfter);
+
+	PXPublic void* MemoryHeapReallocate(void* sourceAddress, const size_t size);
+	PXPublic void* MemoryHeapReallocateDetailed(void* sourceAddress, const size_t size, const char* file, const char* function, const size_t line);
+	PXPublic void* MemoryHeapReallocateClear(const void* const adress, const size_t sizeBefore, const size_t sizeAfter);
 	PXPublic void MemoryRelease(const void* adress, const size_t size);
 
 	// Allocate memory in virtual memory space.
@@ -117,10 +115,12 @@ extern "C"
 #endif
 
 
-#if _DEBUG //1//MemoryDebugLeakDetection
-#define MemoryAllocate(size) MemoryHeapAllocateDetailed(size, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+#if _PX_DEBUG
+#define MemoryReallocate(address, dataSize) MemoryHeapReallocateDetailed(address, dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+#define MemoryAllocate(dataSize) MemoryHeapAllocateDetailed(dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #else
-#define MemoryAllocate(size) MemoryHeapAllocate(size)
+#define MemoryReallocate(address, dataSize) MemoryHeapReallocate(address, dataSize)
+#define MemoryAllocate(dataSize) MemoryHeapAllocate(dataSize)
 #endif
 
 

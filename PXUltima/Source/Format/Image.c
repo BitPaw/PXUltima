@@ -293,29 +293,39 @@ ActionResult ImageSaveD(Image* const image, void* const data, const size_t dataS
     return ActionInvalid;
 }
 
-void ImageResize(Image* image, const ImageDataFormat format, const size_t width, const size_t height)
+PXBool ImageResize(Image* const image, const ImageDataFormat format, const size_t width, const size_t height)
 {
     const size_t bbp = ImageBytePerPixel(format);
     const size_t newSize = width * height * bbp;
     const size_t oldSize = image->PixelDataSize;
 
-    if(newSize == oldSize)
+    // Do we need to realloc?
     {
-        return;
+        const PXBool isSizeAlreadyOK = newSize == oldSize;
+
+        if (isSizeAlreadyOK)
+        {
+            return PXYes;
+        }
     }
 
-    const void* newadress = MemoryReallocate(image->PixelData, sizeof(unsigned char) * newSize);
-
-    if(!newadress)
+    // reallocate
     {
-        return;
-    }
+        const void* newadress = MemoryReallocate(image->PixelData, sizeof(PXByte) * newSize);
 
-    image->Format = format;
-    image->Width = width;
-    image->Height = height;
-    image->PixelData = newadress;
-    image->PixelDataSize = newSize;
+        if (!newadress)
+        {
+            return PXFalse;
+        }
+
+        image->Format = format;
+        image->Width = width;
+        image->Height = height;
+        image->PixelData = newadress;
+        image->PixelDataSize = newSize;
+    } 
+
+    return PXTrue;
 } 
 
 void ImageFlipHorizontal(Image* image)

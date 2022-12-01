@@ -2999,6 +2999,13 @@ void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenG
     openGLContext->OpenGLValidateProgramCallBack(shaderID);
 }
 
+void OpenGLDrawArrays(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const size_t offset, const size_t amount)
+{
+    const GLenum renderModeID = OpenGLRenderModeToID(renderMode);
+
+    glDrawArrays(renderModeID, offset, amount);
+}
+
 void OpenGLDrawElements(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const size_t amount, const OpenGLDataType openGLDataType, const void* const indexList)
 {
     const GLenum renderModeID = OpenGLRenderModeToID(renderMode);
@@ -3234,6 +3241,11 @@ void OpenGLShaderVariableMatrix3fv(OpenGLContext* const openGLContext, GLint loc
 
 void OpenGLShaderVariableMatrix4fv(OpenGLContext* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 {
+    if (location == -1)
+    {
+        return;
+    }
+
     openGLContext->OpenGLUniformMatrix4fvCallBack(location, count, transpose, value);
 }
 

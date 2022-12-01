@@ -10,10 +10,10 @@ void PXCameraConstruct(PXCamera* const camera)
 	camera->WalkSpeed = 0.2;
 	camera->ViewSpeed = 0.5;
 	camera->FollowSpeed = 0.98f; 
-	camera->FieldOfView = 60;
+	camera->FieldOfView = 45;
 	camera->Height = 1;
 	camera->Width = 1;
-	camera->Near = 0;
+	camera->Near = -0.001;
 	camera->Far = 100000;
 
 	PXMatrix4x4FIdentity(&camera->MatrixModel);

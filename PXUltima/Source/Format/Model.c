@@ -4,12 +4,11 @@
 #include <File/File.h>
 #include <Text/Text.h>
 #include <File/DataStream.h>
-
 #include <Format/OBJ/OBJ.h>
 
 void ModelConstruct(PXModel* const model)
 {
-	MemorySet(model, sizeof(PXModel), 0);
+	MemoryClear(model, sizeof(PXModel));
 }
 
 void ModelDestruct(PXModel* const model)
@@ -107,19 +106,47 @@ unsigned char ModelSegmentsAmount(const PXModel* const model)
 	return *(PXAdress)model->Data;
 }
 
+void* ModelSegmentsAdressGet(const PXModel* const model, const size_t index)
+{
+    unsigned char* ancer = (unsigned char*)model->Data + 1 + (index * (sizeof(char) + sizeof(int) * 2u));
+
+    return ancer;
+}
+
 void ModelSegmentsGet(const PXModel* const model, const size_t index, MeshSegment* const meshSegment)
 {
-	unsigned char* ancer= (unsigned char*)model->Data +1 + (index * (sizeof(char) + sizeof(int) * 2u));
-
     DataStream dataStream;
 
-    DataStreamFromExternal(&dataStream, ancer, -1);
+    {
+        void* const segmentAdress = ModelSegmentsAdressGet(model, index);
+        DataStreamFromExternal(&dataStream, segmentAdress, -1);
+    }  
 
     DataStreamReadCU(&dataStream, &meshSegment->DrawStrideSize);
     DataStreamReadIU(&dataStream, &meshSegment->DrawClusterSize, EndianLittle);
     DataStreamReadIU(&dataStream, &meshSegment->TextureID, EndianLittle);
 
 	meshSegment->VertexData = model->DataVertexList;
+}
+
+void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const unsigned int renderSize, const unsigned int renderMaterial)
+{
+    const unsigned char amount = ModelSegmentsAmount(model);
+    const unsigned char segmentID = amount + 1u;
+
+    *(PXAdress)model->Data = segmentID;
+
+    DataStream dataStream;
+
+    {
+        void* const segmentAdress = ModelSegmentsAdressGet(model, segmentID-1u);
+        DataStreamFromExternal(&dataStream, segmentAdress, -1);
+    }
+
+    DataStreamWriteCU(&dataStream, renderMode);
+    DataStreamWriteIU(&dataStream, renderSize, EndianLittle);
+    DataStreamWriteIU(&dataStream, renderMaterial, EndianLittle);
+
 }
 
 size_t ModelVertexDataStride(const PXModel* const model)

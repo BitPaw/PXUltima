@@ -298,6 +298,7 @@ extern "C"
 	PXPublic ActionResult GraphicUIPanelRegister(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
 	PXPublic ActionResult GraphicUIPanelUpdate(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
 	PXPublic ActionResult GraphicUIPanelUnregister(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
+
 	// 
 	// Update
 	// Destroy
@@ -326,6 +327,7 @@ extern "C"
 	PXPrivate OpenGLImageFormat GraphicImageFormatToOpenGL(const ImageDataFormat imageDataFormat);
 	PXPrivate OpenGLShaderType GraphicShaderFromOpenGL(const ShaderType shaderType);
 	PXPrivate OpenGLTextureType ImageTypeGraphicToOpenGL(const GraphicImageType graphicImageType);
+	PXPublic OpenGLRenderMode GraphicRenderModeToOpenGL(const GraphicRenderMode graphicRenderMode);
 	//-------------------------------------
 
 	//-------------------------------------
@@ -392,8 +394,12 @@ extern "C"
 	PXPublic PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicContext, PXRenderable** pxRenderable, const size_t index);
 
 	PXPublic ActionResult GraphicModelCreate(GraphicContext* const graphicContext, PXModel** const pxModel);
+	PXPublic PXBool GraphicModelRegister(GraphicContext* const graphicContext, PXModel* const pxModel);
 	PXPublic ActionResult GraphicRenderableCreate(GraphicContext* const graphicContext, PXRenderable** const pxRenderable);
+	PXPublic PXBool GraphicRenderableRegister(GraphicContext* const graphicContext, PXRenderable* const pxRenderable);
 
+
+	PXPublic void GraphicModelShaderSet(GraphicContext* const graphicContext, PXRenderable* const renderable, const ShaderProgram* const shaderProgram);
 	PXPublic ActionResult GraphicModelRegisterA(GraphicContext* const graphicContext, PXRenderable** const renderable, const char* const filePath);
 	PXPublic ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);
 	PXPublic ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);

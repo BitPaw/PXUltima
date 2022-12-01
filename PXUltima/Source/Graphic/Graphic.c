@@ -272,27 +272,15 @@ ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, PXSkyBo
     const size_t vertexDataSize = sizeof(vertexData) / sizeof(float);
     const size_t indexListSize = sizeof(indexList) / sizeof(unsigned int);
 
-
-
-
     {
-
+        PXByte bufferData[32];
         PXModel pxModel;
 
         ModelConstruct(&pxModel);
-
-         
-
-        unsigned char dataModel[11] = 
-        {
-            1u,
-            vertexDataSize            
-        };
-
-        SplittInt(-1, dataModel[3], dataModel[4], dataModel[5], dataModel[6]);
-        SplittInt(-1, dataModel[7], dataModel[8], dataModel[9], dataModel[10]);
-
-        pxModel.Data = dataModel;
+        
+        pxModel.Data = bufferData;
+        
+        ModelSegmentsAdd(&pxModel, 3u, vertexDataSize, -1);       
 
         pxModel.DataVertexList = vertexData;
         pxModel.DataVertexListSize = vertexDataSize;
@@ -306,7 +294,6 @@ ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, PXSkyBo
 
         GraphicModelRegisterFromModel(graphicContext, &skyBox->Renderable, &pxModel);
     }
-
 
     // Register Cube Texture
     GraphicTextureCubeRegister(graphicContext, &skyBox->TextureCube);
@@ -409,35 +396,32 @@ PXBool GraphicModelListGetFromIndex(const GraphicContext* const graphicContext, 
 }
 
 size_t GraphicRenderableListSize(const GraphicContext* const graphicContext)
-{
-    size_t counter = 0;
-
-    PXLinkedListNodeFixed currentModel;
-
-    PXLinkedListFixedNodeAt(&graphicContext->_renderList, &currentModel, 0);
-
-    do
-    {
-        const PXRenderable* const pxRenderable = (const PXRenderable* const)currentModel.BlockData;
-
-        {
-            const PXBool skip = !pxRenderable;
-
-            if (skip)
-            {
-                return 0;
-            }
-        }
-
-        ++counter;
-
-    } while (PXLinkedListFixedNodeNext(&graphicContext->_renderList, &currentModel));
-       
-    return counter;
+{       
+    return graphicContext->_renderList.NodeListSizeCurrent;
 }
 
 PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicContext, PXRenderable** pxRenderable, const size_t index)
 {
+#if 1 //
+    PXLinkedListNodeFixed currentModel;
+
+    const PXBool successful = PXLinkedListFixedNodeAt(&graphicContext->_renderList, &currentModel, index);
+
+    if (!successful)
+    {
+        return PXNo;
+    }
+
+    {
+        const PXRenderable* const renderableCurrent = currentModel.BlockData;
+
+        *pxRenderable = renderableCurrent;
+
+        return PXYes;
+    }
+
+#else
+
     PXLinkedListNodeFixed currentModel;
 
     PXLinkedListFixedNodeAt(&graphicContext->_renderList, &currentModel, 0);
@@ -448,25 +432,7 @@ PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicCont
 
     do
     {
-        const PXRenderable* const renderableCurrent = (const PXRenderable* const)currentModel.BlockData;
-
-        {
-            const PXBool skip = !renderableCurrent;
-
-            if (skip)
-            {
-                return PXFalse;
-            }
-        }
-
-        {
-            const PXBool skip = !renderableCurrent->DoRendering;
-
-            if (skip)
-            {
-                continue;
-            }
-        }
+        const PXRenderable* const renderableCurrent = currentModel.BlockData;
 
         if (index == counter++)
         {
@@ -476,6 +442,7 @@ PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicCont
 
     } 
     while (PXLinkedListFixedNodeNext(&graphicContext->_renderList, &currentModel));
+#endif
 
     return PXNo;
 }
@@ -491,13 +458,20 @@ ActionResult GraphicModelCreate(GraphicContext* const graphicContext, PXModel** 
 
     ModelConstruct(model);
 
-    PXLockEngage(&graphicContext->_resourceLock);
-    PXLinkedListFixedNodeAdd(&graphicContext->_pxModelList, model);
-    PXLockRelease(&graphicContext->_resourceLock);
+    GraphicModelRegister(graphicContext, model);
 
     *pxModel = model;
 
     return ActionSuccessful;
+}
+
+PXBool GraphicModelRegister(GraphicContext* const graphicContext, PXModel* const pxModel)
+{
+    PXLockEngage(&graphicContext->_resourceLock);
+    PXLinkedListFixedNodeAdd(&graphicContext->_pxModelList, pxModel);
+    PXLockRelease(&graphicContext->_resourceLock);
+
+    return PXTrue;
 }
 
 ActionResult GraphicRenderableCreate(GraphicContext* const graphicContext, PXRenderable** const pxRenderable)
@@ -511,15 +485,31 @@ ActionResult GraphicRenderableCreate(GraphicContext* const graphicContext, PXRen
 
     MemoryClear(renderable, sizeof(PXRenderable));
 
-    PXLockEngage(&graphicContext->_resourceLock);
-    PXLinkedListFixedNodeAdd(&graphicContext->_renderList, renderable);
-    PXLockRelease(&graphicContext->_resourceLock);
+    GraphicRenderableRegister(graphicContext, pxRenderable);  
 
     *pxRenderable = renderable;  
 
     return ActionSuccessful;
 }
 
+PXBool GraphicRenderableRegister(GraphicContext* const graphicContext, PXRenderable* const pxRenderable)
+{
+    PXLockEngage(&graphicContext->_resourceLock);
+    PXLinkedListFixedNodeAdd(&graphicContext->_renderList, pxRenderable);
+    PXLockRelease(&graphicContext->_resourceLock);
+
+    return PXTrue;
+}
+
+void GraphicModelShaderSet(GraphicContext* const graphicContext, PXRenderable* const renderable, const ShaderProgram* const shaderProgram)
+{
+    for (size_t i = 0; i < renderable->MeshSegmentListSize; ++i)
+    {
+        PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
+
+        pxRenderableMeshSegment->ShaderID = shaderProgram->ID;
+    }  
+}
 
 ActionResult GraphicModelRegisterA(GraphicContext* const graphicContext, PXRenderable** const renderable, const char* const filePath)
 {
@@ -540,7 +530,7 @@ ActionResult GraphicModelRegisterA(GraphicContext* const graphicContext, PXRende
             pxRenderable = *renderable;
 
             PXLockEngage(&graphicContext->_resourceLock);
-            PXLinkedListFixedNodeAdd(&graphicContext->_renderList, renderable);
+            PXLinkedListFixedNodeAdd(&graphicContext->_renderList, pxRenderable);
             PXLockRelease(&graphicContext->_resourceLock);
         }
         else // No model, make one
@@ -823,28 +813,31 @@ ActionResult GraphicUIPanelRegister(GraphicContext* const graphicContext, PXUIPa
     };
     const size_t vertexDataSize = sizeof(vertexData) / sizeof(float);
 
+    PXByte bufferData[32];
     PXModel model;
 
     ModelConstruct(&model);
 
+    model.Data = bufferData;
 
-    const unsigned char modelData[] = 
-    {
-        1
-    };
-    const size_t modelDataSize = sizeof(modelData) / sizeof(unsigned char);
+    MemoryClear(bufferData, sizeof(bufferData));
+    ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
 
-    model.Data = modelData;
-    model.MaterialList = 0;
     model.DataVertexList = vertexData;
     model.DataVertexListSize = vertexDataSize;
 
     model.DataVertexWidth = 3u;
     model.DataVertexSize = vertexDataSize;
 
-    const ActionResult actionResult = GraphicModelRegisterFromModel(graphicContext, &pxUIPanel->Renderable, &model);
+    {
+        const ActionResult actionResult = GraphicModelRegisterFromModel(graphicContext, &pxUIPanel->Renderable, &model);
 
-    return actionResult;
+        ActionExitOnError(actionResult);
+    }
+    
+    GraphicRenderableRegister(graphicContext, &pxUIPanel->Renderable);
+
+    return ActionSuccessful;
 }
 
 ActionResult GraphicUIPanelUpdate(GraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
@@ -982,17 +975,43 @@ OpenGLTextureType ImageTypeGraphicToOpenGL(const GraphicImageType graphicImageTy
     }
 }
 
+OpenGLRenderMode GraphicRenderModeToOpenGL(const GraphicRenderMode graphicRenderMode)
+{
+      //  OpenGLRenderQuadStrip,
+     //   OpenGLRenderPolygon
+
+    switch (graphicRenderMode)
+    {
+        case GraphicRenderModePoint: return OpenGLRenderPoints;
+        case GraphicRenderModeLine: return OpenGLRenderLines;
+        case GraphicRenderModeLineLoop: return OpenGLRenderLineLoop;
+        case GraphicRenderModeLineStrip: return OpenGLRenderLineStrip;
+        //case GraphicRenderModeLineStripAdjacency: return xxxxx;
+        //case GraphicRenderModeLineAdjacency: return xxxxx;
+        case GraphicRenderModeTriangle: return OpenGLRenderTriangles;
+        //case GraphicRenderModeTriangleAdjacency: return xxxxx;
+        case GraphicRenderModeTriangleFAN: return OpenGLRenderTriangleFan;
+        case GraphicRenderModeTriangleStrip: return OpenGLRenderTriangleStrip;
+        //case GraphicRenderModeTriangleStripAdjacency: return xxxxx;
+        //case GraphicRenderModeWireFrame: return xxxxx;
+        case GraphicRenderModeSquare: return OpenGLRenderQuads;
+        //case GraphicRenderModePatches: return xxxxx;
+        default:
+            return OpenGLRenderInvalid;
+    }
+}
+
 void GraphicInstantiate(GraphicContext* const graphicContext)
 {
     PXLockCreate(&graphicContext->_resourceLock);
 
     char* memww = (char*)MemoryAllocate(2048); // TODO: Fix this
 
-    PXLinkedListFixedNodeSet(&graphicContext->_renderList, memww, 2, sizeof(PXRenderable)); 
-    PXLinkedListFixedNodeSet(&graphicContext->_pxModelList, memww + 64, 2, sizeof(PXModel));
-    PXLinkedListFixedNodeSet(&graphicContext->_textureList, memww + 128, 2, sizeof(PXTexture));
-    PXLinkedListFixedNodeSet(&graphicContext->_fontList, memww + 256, 2, sizeof(PXFont));
-    PXLinkedListFixedNodeSet(&graphicContext->_shaderProgramList, memww + 1024, 2, sizeof(ShaderProgram));
+    PXLinkedListFixedNodeSet(&graphicContext->_renderList, memww, 2, PXLinkedListUseAdress);
+    PXLinkedListFixedNodeSet(&graphicContext->_pxModelList, memww + 64, 2, PXLinkedListUseAdress);
+    PXLinkedListFixedNodeSet(&graphicContext->_textureList, memww + 128, 2, PXLinkedListUseAdress);
+    PXLinkedListFixedNodeSet(&graphicContext->_fontList, memww + 256, 2, PXLinkedListUseAdress);
+    PXLinkedListFixedNodeSet(&graphicContext->_shaderProgramList, memww + 1024, 2, PXLinkedListUseAdress);
 
 
 

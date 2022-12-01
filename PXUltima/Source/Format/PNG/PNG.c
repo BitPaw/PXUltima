@@ -1882,7 +1882,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         const size_t expectedzlibCacheSize = ZLIBCalculateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
 
         workingMemorySize = expectedzlibCacheSize;
-        workingMemory = MemoryReallocate(workingMemory, sizeof(unsigned char) * expectedzlibCacheSize);
+        workingMemory = MemoryReallocate(workingMemory, sizeof(PXByte) * expectedzlibCacheSize);
 
         const ActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
         const unsigned char sucess = actionResult == ActionSuccessful;
@@ -1895,7 +1895,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
         const size_t expectedadam7CacheSize = ADAM7CaluclateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel);
 
-        unsigned char* adam7Cache = MemoryAllocate(sizeof(unsigned char) * expectedadam7CacheSize);
+        PXByte* adam7Cache = (PXByte*)MemoryAllocate(sizeof(PXByte) * expectedadam7CacheSize);
 
         const unsigned int scanDecodeResult = ADAM7ScanlinesDecode(adam7Cache, workingMemory, png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
 

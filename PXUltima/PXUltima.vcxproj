@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Compiler\PXCompilerSettings.h" />
     <ClInclude Include="Source\OS\PXProcess.h" />
     <ClInclude Include="Source\Format\ELF\ELF.h" />
     <ClInclude Include="Source\Time\PXStopWatch.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="Source\Math\PXVector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Compiler\PXCompilerSettings.c" />
     <ClCompile Include="Source\OS\PXProcess.c" />
     <ClCompile Include="Source\Async\Await.c" />
     <ClCompile Include="Source\Format\ELF\ELF.c" />
