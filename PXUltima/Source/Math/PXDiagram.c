@@ -8,7 +8,7 @@ void PXBoxPlotConstruct(PXBoxPlot* const boxPlot)
     MemorySet(boxPlot, sizeof(PXBoxPlot), 0);
 }
 
-void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, const size_t inputDataSize)
+void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, const PXSize inputDataSize)
 {
     const int iqrFactor = 1;
     PXBool hasEvenLengh = 0;
@@ -38,7 +38,7 @@ void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, 
 
     //values.Sort();
 
-    for (size_t i = 0; i < inputDataSize; ++i)
+    for (PXSize i = 0; i < inputDataSize; ++i)
     {
         const float value = inputData[i];     
 
@@ -83,7 +83,7 @@ void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, 
     {
         unsigned int index = 0;
 
-        for (size_t i = 0; i < inputDataSize; ++i)
+        for (PXSize i = 0; i < inputDataSize; ++i)
         {
             const double value = inputData[i];
             const PXBool isStrayBullet = value > boxPlot->HigherWhisker || value < boxPlot->LowerWhisker;

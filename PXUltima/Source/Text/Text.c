@@ -6,6 +6,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define PXTextAssertEnable 0
 
@@ -19,10 +20,10 @@
 #define PrintSN sprintf_s
 #endif
 
-size_t TextToIntA(const char* string, const size_t dataSize, int* number)
+PXSize TextToIntA(const char* string, const PXSize dataSize, int* number)
 {
 	int accumulator = 0;
-	size_t index = 0;
+	PXSize index = 0;
 	unsigned char isNegative = 0;
 
 	if(!string)
@@ -63,9 +64,9 @@ size_t TextToIntA(const char* string, const size_t dataSize, int* number)
 	return index;
 }
 
-size_t TextToIntW(const wchar_t* string, const size_t dataSize, int* number)
+PXSize TextToIntW(const wchar_t* string, const PXSize dataSize, int* number)
 {
-	size_t index = 0;
+	PXSize index = 0;
 	unsigned char isNegative = 0;
 	int accumulator = 0;
 
@@ -107,7 +108,7 @@ size_t TextToIntW(const wchar_t* string, const size_t dataSize, int* number)
 	return index;
 }
 
-size_t TextToBoolA(const char* string, const size_t dataSize, unsigned char* number)
+PXSize TextToBoolA(const char* string, const PXSize dataSize, unsigned char* number)
 {
 	switch(string[0])
 	{
@@ -128,32 +129,32 @@ size_t TextToBoolA(const char* string, const size_t dataSize, unsigned char* num
 	return 1u;
 }
 
-size_t TextToBoolW(const wchar_t* string, const size_t dataSize, unsigned char* number)
+PXSize TextToBoolW(const wchar_t* string, const PXSize dataSize, unsigned char* number)
 {
 	return 0;
 }
 
-size_t TextToFloatA(const char* string, const size_t dataSize, float* number)
+PXSize TextToFloatA(const char* string, const PXSize dataSize, float* number)
 {
 	double x = 0;
 
-	const size_t readBytes = TextToDoubleA(string, dataSize, &x);
+	const PXSize readBytes = TextToDoubleA(string, dataSize, &x);
 
 	*number = (float)x;
 
 	return readBytes;
 }
 
-size_t TextToFloatW(const wchar_t* string, const size_t dataSize, float* number)
+PXSize TextToFloatW(const wchar_t* string, const PXSize dataSize, float* number)
 {
 	return 0;
 }
 
-size_t TextToDoubleA(const char* string, const size_t dataSize, double* number)
+PXSize TextToDoubleA(const char* string, const PXSize dataSize, double* number)
 {
 	int accumulator = 0;
-	size_t digitsAfterDot = 1;
-	size_t index = 0;
+	PXSize digitsAfterDot = 1;
+	PXSize index = 0;
 	unsigned char isNegative = 0;
 	unsigned char isWholeNumberChunk = 1;
 
@@ -217,70 +218,70 @@ size_t TextToDoubleA(const char* string, const size_t dataSize, double* number)
 	return index;
 }
 
-size_t TextToDoubleW(const wchar_t* string, const size_t dataSize, double* number)
+PXSize TextToDoubleW(const wchar_t* string, const PXSize dataSize, double* number)
 {
 	return 0;
 }
 
-size_t TextAppendW(wchar_t* const dataString, const size_t dataStringSize, const wchar_t* const appaendString, const size_t appaendStringSize)
+PXSize TextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize)
 {
-	const size_t length = TextLengthW(dataString, dataStringSize);
-	const size_t lengthAdded = TextCopyW(appaendString, appaendStringSize, &dataString[length], dataStringSize - length);
-	const size_t fullSize = length + lengthAdded;
+	const PXSize length = TextLengthW(dataString, dataStringSize);
+	const PXSize lengthAdded = TextCopyW(appaendString, appaendStringSize, &dataString[length], dataStringSize - length);
+	const PXSize fullSize = length + lengthAdded;
 
 	return fullSize;
 }
 
-size_t TextClearA(char* string, const size_t stringSize)
+PXSize TextClearA(char* string, const PXSize stringSize)
 {
 	MemorySet(string, stringSize * sizeof(char), 0x00);
 
 	return stringSize;
 }
 
-size_t TextClearW(wchar_t* string, const size_t stringSize)
+PXSize TextClearW(wchar_t* string, const PXSize stringSize)
 {
 	MemorySet(string, stringSize * sizeof(wchar_t), 0x00);
 
 	return stringSize;
 }
 
-size_t TextLengthA(const char* string, const size_t stringSize)
+PXSize TextLengthA(const char* string, const PXSize stringSize)
 {
-	size_t index = 0;
+	PXSize index = 0;
 
 	for(; (string[index] != '\0') && (index < stringSize); ++index);
 
 	return index;
 }
 
-size_t TextLengthW(const wchar_t* string, const size_t stringSize)
+PXSize TextLengthW(const wchar_t* string, const PXSize stringSize)
 {
-	size_t index = 0;
+	PXSize index = 0;
 
 	for(; (string[index] != L'\0') && (index < stringSize); ++index);
 
 	return index;
 }
 
-size_t TextLengthUntilA(const char* string, const size_t stringSize, const char character)
+PXSize TextLengthUntilA(const char* string, const PXSize stringSize, const char character)
 {
-	size_t index = 0;
+	PXSize index = 0;
 
 	for(; (index < stringSize) && (string[index] != '\0') && (string[index] != character); ++index);
 
 	return index;
 }
 
-size_t TextLengthUntilW(const wchar_t* string, const size_t stringSize, const wchar_t character)
+PXSize TextLengthUntilW(const wchar_t* string, const PXSize stringSize, const wchar_t character)
 {
 	return 0;
 }
 
-size_t TextCopyA(const char* source, const size_t sourceLength, char* destination, const size_t destinationLength)
+PXSize TextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength)
 {
-	const size_t minLength = MathMinimumIU(sourceLength, destinationLength);
-	size_t i = 0;
+	const PXSize minLength = MathMinimumIU(sourceLength, destinationLength);
+	PXSize i = 0;
 
 #if PXTextAssertEnable
 	assert(destination);
@@ -302,11 +303,11 @@ size_t TextCopyA(const char* source, const size_t sourceLength, char* destinatio
 	return i;
 }
 
-size_t TextCopyAW(const char* source, const size_t sourceLength, wchar_t* destination, const size_t destinationLength)
+PXSize TextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength)
 {
-	const size_t minLength = MathMinimum(sourceLength, destinationLength);
+	const PXSize minLength = MathMinimum(sourceLength, destinationLength);
 	const PXBool validCall = source && destination && minLength;
-	size_t i = 0;
+	PXSize i = 0;
 
 	if (!validCall)
 	{
@@ -328,10 +329,10 @@ size_t TextCopyAW(const char* source, const size_t sourceLength, wchar_t* destin
 	return i;
 }
 
-size_t TextCopyWA(const wchar_t* source, const size_t sourceLength, char* destination, const size_t destinationLength)
+PXSize TextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength)
 {
-	const size_t minLength = MathMinimum(sourceLength, destinationLength);
-	size_t i = 0;
+	const PXSize minLength = MathMinimum(sourceLength, destinationLength);
+	PXSize i = 0;
 
 #if PXTextAssertEnable
 	assert(destination);
@@ -348,10 +349,10 @@ size_t TextCopyWA(const wchar_t* source, const size_t sourceLength, char* destin
 	return i;
 }
 
-size_t TextCopyW(const wchar_t* source, const size_t sourceLength, wchar_t* destination, const size_t destinationLength)
+PXSize TextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength)
 {
-	const size_t minLength = MathMinimum(sourceLength, destinationLength);
-	size_t i = 0;
+	const PXSize minLength = MathMinimumIU(sourceLength, destinationLength);
+	PXSize i = 0;
 
 #if PXTextAssertEnable
 	assert(destination);
@@ -368,52 +369,139 @@ size_t TextCopyW(const wchar_t* source, const size_t sourceLength, wchar_t* dest
 	return i;
 }
 
-size_t TextCountA(const char* text, const size_t textSize, const char target)
+void TextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* dataBufferSize)
 {
-	size_t samecounter = 0;
+	const char utfTrailBytesAmount =
+		0u * (symbol >= 0 && symbol < 128u) + // 7-bit
+		1u * (symbol >= 128u && symbol < 2048u) +  // 11-Bit
+		2u * (symbol >= 2048u && symbol < 65535u) + // 16-Bit
+		3u * (symbol >= 65535u && symbol < 2097152u); // 21-Bit
 
-	for (size_t index = 0; (index < textSize) && (text[index] != '\0'); ++index)
+	switch (utfTrailBytesAmount)
+	{
+		case 0u:
+		{
+			dataBufferSize[0] = (PXByte)symbol;  // 0xxxxxxx - 
+			break;
+		}
+		case 1u:
+		{
+			dataBufferSize[0] = 0b11000000 | ((symbol & (0b11111 << 6u)) >> 6u);  // 110xxxxx
+			break;
+		}
+		case 2u:
+		{
+			dataBufferSize[0] = 0b11100000 | ((symbol & (0b1111 << 12u)) >> 12u); // 1110xxxx
+			break;
+		}
+		case 3u:
+		{
+			dataBufferSize[0] = 0b11110000 | ((symbol & (0b111 << 18u)) >> 18u); // 1110xxxx
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < utfTrailBytesAmount; ++i)
+	{
+		dataBufferSize[i] = 0b10000000 | ((symbol & (0b111111 << 6u * i)) >> 6u * i);
+	}
+}
+
+PXSize TextCopyAU(const PXASCIIChar source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
+{
+	const PXSize minimalSize = MathMinimumIU(sourceLength, destinationLength);
+	PXSize destinationIndex = 0;
+	PXSize offset = 0;
+
+	for (PXSize sourceIndex = 0; (sourceIndex < minimalSize) && (destinationIndex < destinationLength) && (source[sourceIndex] != '\0'); ++sourceIndex)
+	{
+		const char wideCharacter = source[sourceIndex];
+		PXByte buffer[4];
+		PXSize size = 0;
+
+		TextToUTFConvert(wideCharacter, buffer, &size);
+
+		offset += MemoryCopy(buffer, size, destination + offset, destinationLength - offset);
+	}
+
+	return destinationIndex;
+}
+
+
+
+PXSize TextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
+{
+#if 1
+	const PXSize minimalSize = MathMinimumIU(sourceLength, destinationLength);
+	PXSize destinationIndex = 0;
+	PXSize offset = 0;
+
+	for (PXSize sourceIndex = 0; (sourceIndex < minimalSize) && (destinationIndex < destinationLength) && (source[sourceIndex] != '\0'); ++sourceIndex)
+	{
+		const PXCharUNICODE wideCharacter = source[sourceIndex];
+		PXByte buffer[4];
+		PXSize size = 0;
+
+		TextToUTFConvert(wideCharacter, buffer, &size);
+
+		offset += MemoryCopy(buffer, size, destination + offset, destinationLength - offset);
+	}
+
+	return destinationIndex;
+
+#else
+	const PXSize copyedBytes = wcstombs(destination, source, destinationLength);
+
+	return copyedBytes;
+#endif
+}
+
+PXSize TextCountA(const char* text, const PXSize textSize, const char target)
+{
+	PXSize samecounter = 0;
+
+	for (PXSize index = 0; (index < textSize) && (text[index] != '\0'); ++index)
 		samecounter += target == text[index];
 
 	return samecounter;
 }
 
-size_t TextCountW(const wchar_t* text, const size_t textSize, const wchar_t target)
+PXSize TextCountW(const wchar_t* text, const PXSize textSize, const wchar_t target)
 {
-	size_t samecounter = 0;
+	PXSize samecounter = 0;
 
-	for (size_t index = 0; (index < textSize) && (text[index] != '\0'); ++index)
+	for (PXSize index = 0; (index < textSize) && (text[index] != '\0'); ++index)
 		samecounter += target == text[index];
 
 	return samecounter;
 }
 
-size_t TextCountUntilA(const char* text, const size_t textSize, const char target, const char stopAt)
+PXSize TextCountUntilA(const char* text, const PXSize textSize, const char target, const char stopAt)
 {
-	size_t samecounter = 0;
+	PXSize samecounter = 0;
 
-	for(size_t index = 0; (index < textSize) && (text[index] != '\0' && text[index] != stopAt); ++index)
+	for(PXSize index = 0; (index < textSize) && (text[index] != '\0' && text[index] != stopAt); ++index)
 		samecounter += target == text[index];
 
 	return samecounter;
 }
 
-size_t TextCountUntilW(const wchar_t* text, const size_t textSize, const wchar_t target, const wchar_t stopAt)
+PXSize TextCountUntilW(const wchar_t* text, const PXSize textSize, const wchar_t target, const wchar_t stopAt)
 {
-	size_t samecounter = 0;
+	PXSize samecounter = 0;
 
-	for(size_t index = 0; (index < textSize) && (text[index] != '\0' && text[index] != stopAt); ++index)
+	for(PXSize index = 0; (index < textSize) && (text[index] != '\0' && text[index] != stopAt); ++index)
 		samecounter += target == text[index];
 
 	return samecounter;
 }
 
-PXBool TextCompareA(const char* a, const size_t aSize, const char* b, const size_t bSize)
+PXBool TextCompareA(const char* a, const PXSize aSize, const char* b, const PXSize bSize)
 {
-	const size_t textSize = MathMinimumIU(aSize, bSize);
+	const PXSize textSize = MathMinimumIU(aSize, bSize);
 
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
@@ -446,12 +534,12 @@ PXBool TextCompareA(const char* a, const size_t aSize, const char* b, const size
 	return (index == samecounter);
 }
 
-PXBool TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize)
+PXBool TextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const size_t textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = MathMinimum(aSize, bSize);
 
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
@@ -459,12 +547,12 @@ PXBool TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const 
 	return (index == samecounter);
 }
 
-PXBool TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize)
+PXBool TextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const size_t textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = MathMinimum(aSize, bSize);
 
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
@@ -472,12 +560,12 @@ PXBool TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, cons
 	return (index == samecounter);
 }
 
-PXBool TextCompareWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize)
+PXBool TextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize)
 {
-	const size_t textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = MathMinimum(aSize, bSize);
 
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
@@ -485,12 +573,12 @@ PXBool TextCompareWA(const wchar_t* a, const size_t aSize, const char* b, const 
 	return (index == samecounter);
 }
 
-char TextCompareIgnoreCaseA(const char* a, const size_t aSize, const char* b, const size_t bSize)
+char TextCompareIgnoreCaseA(const char* a, const PXSize aSize, const char* b, const PXSize bSize)
 {
-	const size_t textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = MathMinimum(aSize, bSize);
 
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
@@ -502,12 +590,12 @@ char TextCompareIgnoreCaseA(const char* a, const size_t aSize, const char* b, co
 	return index == samecounter;
 }
 
-char TextCompareIgnoreCaseW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize)
+char TextCompareIgnoreCaseW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const size_t textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = MathMinimum(aSize, bSize);
 
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
@@ -519,12 +607,12 @@ char TextCompareIgnoreCaseW(const wchar_t* a, const size_t aSize, const wchar_t*
 	return index == samecounter;
 }
 
-char TextCompareIgnoreCaseAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize)
+char TextCompareIgnoreCaseAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const size_t textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = MathMinimum(aSize, bSize);
 
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
 	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
@@ -536,10 +624,10 @@ char TextCompareIgnoreCaseAW(const char* a, const size_t aSize, const wchar_t* b
 	return index == samecounter;
 }
 
-char TextCompareIgnoreCaseWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize)
+char TextCompareIgnoreCaseWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize)
 {
-	size_t index = 0;
-	size_t samecounter = 0;
+	PXSize index = 0;
+	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
 	for(; (index < aSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
@@ -551,25 +639,25 @@ char TextCompareIgnoreCaseWA(const wchar_t* a, const size_t aSize, const char* b
 	return index == samecounter;
 }
 
-char* TextFindPositionA(const char* data, size_t dataSize, const char* target, size_t targetSize)
+char* TextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize)
 {
 	const char* source = 0;
 	unsigned char found = 0;
 
-	for(size_t i = 0; (data[i] != '\0') && (i + targetSize) < dataSize && !found; i++)
+	for(PXSize i = 0; (data[i] != '\0') && (i + targetSize) < dataSize && !found; i++)
 	{
 		source = data + i;
 		found = TextCompareA(source, targetSize-i, target, targetSize);
 	}
 
-	return (char*)(found * (size_t)source);
+	return (char*)(found * (PXSize)source);
 }
 
-size_t TextFindFirstA(const char* string, const size_t dataSize, const char character)
+PXSize TextFindFirstA(const char* string, const PXSize dataSize, const char character)
 {
 	PXBool found = 0;
 
-	size_t index = 0;
+	PXSize index = 0;
 
 	for (; index < dataSize && !found; ++index)
 	{
@@ -579,10 +667,10 @@ size_t TextFindFirstA(const char* string, const size_t dataSize, const char char
 	return found ? index -1 : TextIndexNotFound;
 }
 
-size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_t character)
+PXSize TextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character)
 {
 	PXBool found = 0;
-	size_t i = TextLengthW(string, dataSize);
+	PXSize i = TextLengthW(string, dataSize);
 
 	for (; i > 0 && !found; --i)
 	{
@@ -594,10 +682,10 @@ size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_
 	return found ? i + 1 : TextIndexNotFound;
 }
 
-size_t TextFindLastA(const char* string, const size_t dataSize, const char character)
+PXSize TextFindLastA(const char* string, const PXSize dataSize, const char character)
 {
 	PXBool found = 0;
-	size_t i = TextLengthA(string, dataSize);
+	PXSize i = TextLengthA(string, dataSize);
 
 	for(; i > 0 && !found; --i)
 	{
@@ -609,10 +697,10 @@ size_t TextFindLastA(const char* string, const size_t dataSize, const char chara
 	return found ? i+1 : TextIndexNotFound;
 }
 
-size_t TextFindLastW(const wchar_t* string, const size_t dataSize, const wchar_t character)
+PXSize TextFindLastW(const wchar_t* string, const PXSize dataSize, const wchar_t character)
 {
 	unsigned char found = 0;
-	size_t i = TextLengthW(string, dataSize);
+	PXSize i = TextLengthW(string, dataSize);
 
 	for(; i > 0 && !found; --i)
 	{
@@ -622,9 +710,9 @@ size_t TextFindLastW(const wchar_t* string, const size_t dataSize, const wchar_t
 	return found ? i+1 : TextIndexNotFound;
 }
 
-void TextTerminateBeginFromFirstA(char* string, const size_t dataSize, const char character)
+void TextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const char character)
 {
-	size_t index = TextFindFirstA(string, dataSize, character);
+	PXSize index = TextFindFirstA(string, dataSize, character);
 
 	if(index != -1)
 	{
@@ -632,19 +720,19 @@ void TextTerminateBeginFromFirstA(char* string, const size_t dataSize, const cha
 	}
 }
 
-void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax, ...)
+void TextParseA(const char* buffer, const PXSize bufferSize, const char* syntax, ...)
 {
 	va_list args;
 	va_start(args, syntax);
 
-	size_t offsetData = 0;
+	PXSize offsetData = 0;
 
-	for(size_t commandIndex = 0; syntax[commandIndex] != '\0'; ++commandIndex)
+	for(PXSize commandIndex = 0; syntax[commandIndex] != '\0'; ++commandIndex)
 	{
 		const char commandKey = syntax[commandIndex];
 		//const bool commandIsNumber = commandKey == 'i' || commandKey == 'f' || commandKey == 'u';
 
-		size_t offsetLength = offsetData;
+		PXSize offsetLength = offsetData;
 
 		// Get length until new block
 		{
@@ -675,7 +763,7 @@ void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax,
 				char* destination = va_arg(args, char*);
 				const char* source = buffer + offsetData;
 
-				const size_t readBytes = TextCopyA(source, offsetLength, destination, -1);
+				const PXSize readBytes = TextCopyA(source, offsetLength, destination, -1);
 
 				offsetData += readBytes;
 
@@ -688,7 +776,7 @@ void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax,
 				int* i = va_arg(args, int*);
 				const char* source = buffer + offsetData;
 
-				const size_t readBytes = TextToIntA(source, offsetLength, i);
+				const PXSize readBytes = TextToIntA(source, offsetLength, i);
 
 #if PXTextAssertEnable
 				assert(readBytes);
@@ -703,7 +791,7 @@ void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax,
 				float* number = va_arg(args, float*);
 				const char* source = buffer + offsetData;
 
-				const size_t readBytes = TextToFloatA(source, offsetLength, number);
+				const PXSize readBytes = TextToFloatA(source, offsetLength, number);
 
 #if PXTextAssertEnable
 				assert(readBytes);
@@ -743,28 +831,28 @@ void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax,
 	va_end(args);
 }
 
-void TextParseFindAllA(const char* string, const size_t stringSize, const ParsingTokenA* parsingTokenList, const size_t parsingTokenListSize)
+void TextParseFindAllA(const char* string, const PXSize stringSize, const ParsingTokenA* parsingTokenList, const PXSize parsingTokenListSize)
 {
 	unsigned char finished = 0;
 	unsigned char foundItem = 0;
-	size_t foundTargets = 0;
+	PXSize foundTargets = 0;
 
-	for(size_t i = 0; (i < stringSize) && (string[i] != '\0') && !finished; ++i)
+	for(PXSize i = 0; (i < stringSize) && (string[i] != '\0') && !finished; ++i)
 	{
 		foundItem = 0;
 
-		for(size_t t = 0; (t < parsingTokenListSize) && (string[i] != ' ') && !foundItem; t++)
+		for(PXSize t = 0; (t < parsingTokenListSize) && (string[i] != ' ') && !foundItem; t++)
 		{
 			const ParsingTokenA* parsingToken = &parsingTokenList[t];
 			const char* targetString = parsingToken->String;
-			const size_t targetStringSize = TextLengthA(targetString, -1);
+			const PXSize targetStringSize = TextLengthA(targetString, -1);
 			const char* sourceString = string + i;
 
 			foundItem = TextCompareA(sourceString, stringSize, targetString, targetStringSize); // Compare whole word
 
 			if(foundItem)
 			{
-				size_t lengthTag = TextLengthUntilA(sourceString, stringSize, '=');
+				PXSize lengthTag = TextLengthUntilA(sourceString, stringSize, '=');
 				const char* valueString = sourceString + lengthTag + 1;
 
 				i += lengthTag + 1;
@@ -781,35 +869,35 @@ void TextParseFindAllA(const char* string, const size_t stringSize, const Parsin
 	}
 }
 
-size_t TextFromIntA(const int number, char* string, const size_t dataSize)
+PXSize TextFromIntA(const int number, char* string, const PXSize dataSize)
 {
 	int bytesWritten = PrintSN(string, dataSize, "%i", &number);
 
 	return bytesWritten;
 }
 
-size_t TextFromIntW(const int number, wchar_t* string, const size_t dataSize)
+PXSize TextFromIntW(const int number, wchar_t* string, const PXSize dataSize)
 {
 	int bytesWritten = PrintSN(string, dataSize, "%i", &number);
 
 	return bytesWritten;
 }
 
-size_t TextFromBoolA(const unsigned char number, char* string, const size_t dataSize)
+PXSize TextFromBoolA(const unsigned char number, char* string, const PXSize dataSize)
 {
 	string[0] = number ? '1' : '0';
 
 	return 1u;
 }
 
-size_t TextFromBoolW(const unsigned char number, wchar_t* string, const size_t dataSize)
+PXSize TextFromBoolW(const unsigned char number, wchar_t* string, const PXSize dataSize)
 {
 	string[0] = number ? '1' : '0';
 
 	return 1u;
 }
 
-size_t TextFromFloatA(const float number, char* string, const size_t dataSize)
+PXSize TextFromFloatA(const float number, char* string, const PXSize dataSize)
 {
 #if OSUnix
 	int bytesWritten = snprintf(string, dataSize, "%f", number);
@@ -819,7 +907,7 @@ size_t TextFromFloatA(const float number, char* string, const size_t dataSize)
 	return bytesWritten;
 }
 
-size_t TextFromFloatW(const float number, wchar_t* string, const size_t dataSize)
+PXSize TextFromFloatW(const float number, wchar_t* string, const PXSize dataSize)
 {
 #if OSUnix
 	int bytesWritten = snprintf(string, dataSize, "%f", number);
@@ -830,7 +918,7 @@ size_t TextFromFloatW(const float number, wchar_t* string, const size_t dataSize
 	return bytesWritten;
 }
 
-size_t TextFromDoubleA(const double number, char* string, const size_t dataSize)
+PXSize TextFromDoubleA(const double number, char* string, const PXSize dataSize)
 {
 #if OSUnix
 	int bytesWritten = snprintf(string, dataSize, "%li", number);
@@ -840,7 +928,7 @@ size_t TextFromDoubleA(const double number, char* string, const size_t dataSize)
 	return bytesWritten;
 }
 
-size_t TextFromDoubleW(const double number, wchar_t* string, const size_t dataSize)
+PXSize TextFromDoubleW(const double number, wchar_t* string, const PXSize dataSize)
 {
 #if OSUnix
     int bytesWritten = snprintf(string, dataSize, "%lf", number);
@@ -850,17 +938,17 @@ size_t TextFromDoubleW(const double number, wchar_t* string, const size_t dataSi
 	return bytesWritten;
 }
 
-size_t TextFromBinaryDataA(const void* data, const size_t dataSize, char* string, const size_t stringSize)
+PXSize TextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize)
 {
-	const size_t length = MathMinimum(dataSize, stringSize);
-	size_t outputIndex = 0;
+	const PXSize length = MathMinimum(dataSize, stringSize);
+	PXSize outputIndex = 0;
 
 	MemorySet(string, stringSize, 0);
 
 	string[outputIndex++] = '0';
 	string[outputIndex++] = 'b';
 
-	for(size_t dataIndex = 0; dataIndex < length; ++dataIndex)
+	for(PXSize dataIndex = 0; dataIndex < length; ++dataIndex)
 	{
 		const unsigned char dataElement = ((unsigned char*)data)[dataIndex];
 

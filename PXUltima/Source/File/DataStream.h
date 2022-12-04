@@ -55,9 +55,9 @@ extern "C"
 	{
 		//---<Raw Data>--------------------------------------------------------
 		void* Data;
-		size_t DataSize;
-		size_t DataCursor;
-		size_t DataCursorBitOffset;
+		PXSize DataSize;
+		PXSize DataCursor;
+		PXSize DataCursorBitOffset;
 		//---------------------------------------------------------------------
 
 		//---<Extended Settings>-----------------------------------------------
@@ -89,7 +89,7 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Set>-------------------------------------------------------------
-	PXPublic void DataStreamFromExternal(DataStream* const dataStream, void* const data, const size_t dataSize);
+	PXPublic void DataStreamFromExternal(DataStream* const dataStream, void* const data, const PXSize dataSize);
 	//---------------------------------------------------------------------
 
 	//---<Open>------------------------------------------------------------
@@ -102,114 +102,114 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Mapping>---------------------------------------------------------
-	PXPublic ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode);
-	PXPublic ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t* filePath, const size_t fileSize, const MemoryProtectionMode protectionMode);
-	PXPublic ActionResult DataStreamMapToMemory(DataStream* const dataStream, const size_t size, const MemoryProtectionMode protectionMode);
+	PXPublic ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t* filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic ActionResult DataStreamMapToMemory(DataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode);
 	PXPublic ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream);
 	//---------------------------------------------------------------------
 
 	//---<Parsing Utility>-----------------------------------------------------
-	PXPublic size_t DataStreamRemainingSize(DataStream* const dataStream);
+	PXPublic PXSize DataStreamRemainingSize(DataStream* const dataStream);
 	PXPublic unsigned char DataStreamIsAtEnd(DataStream* const dataStream);
 
 	PXPublic void* DataStreamCursorPosition(DataStream* const dataStream);
 	PXPublic void DataStreamCursorToBeginning(DataStream* const dataStream);
-	PXPublic void DataStreamCursorAdvance(DataStream* const dataStream, const size_t steps);
-	PXPublic void DataStreamCursorRewind(DataStream* const dataStream, const size_t steps);
+	PXPublic void DataStreamCursorAdvance(DataStream* const dataStream, const PXSize steps);
+	PXPublic void DataStreamCursorRewind(DataStream* const dataStream, const PXSize steps);
 	PXPublic void DataStreamCursorToEnd(DataStream* const dataStream);	
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
-	PXPublic size_t DataStreamSkipEndOfLineCharacters(DataStream* const  DataStream);
-	PXPublic size_t DataStreamSkipEmptySpace(DataStream* const dataStream);
+	PXPublic PXSize DataStreamSkipEndOfLineCharacters(DataStream* const  DataStream);
+	PXPublic PXSize DataStreamSkipEmptySpace(DataStream* const dataStream);
 
-	PXPublic size_t DataStreamReadNextLineInto(DataStream* const dataStream, void* exportBuffer, const size_t exportBufferSize);
+	PXPublic PXSize DataStreamReadNextLineInto(DataStream* const dataStream, void* exportBuffer, const PXSize exportBufferSize);
 
 
 	// Skips current block thats seperated with spaces.
 	// Example : '|' is the cursor.
 	// Before : |AAAA  BBBB CCC
 	// After :  AAAA |BBBB CCC
-	PXPublic size_t DataStreamSkipBlock(DataStream* const dataStream);
-	PXPublic size_t DataStreamSkipToNextBlock(DataStream* const dataStream);
-	PXPublic size_t DataStreamSkipLine(DataStream* const dataStream);
+	PXPublic PXSize DataStreamSkipBlock(DataStream* const dataStream);
+	PXPublic PXSize DataStreamSkipToNextBlock(DataStream* const dataStream);
+	PXPublic PXSize DataStreamSkipLine(DataStream* const dataStream);
 
-	PXPublic size_t DataStreamReadC(DataStream* const dataStream, char* const value);
-	PXPublic size_t DataStreamReadCU(DataStream* const dataStream, unsigned char* const value);
-	PXPublic size_t DataStreamReadS(DataStream* const dataStream, short* const value, const Endian endian);
-	PXPublic size_t DataStreamReadSU(DataStream* const dataStream, unsigned short* const value, const Endian endian);
-	PXPublic size_t DataStreamReadI(DataStream* const dataStream, int* const value, const  Endian endian);
-	PXPublic size_t DataStreamReadIU(DataStream* const dataStream, unsigned int* const value, const Endian endian);
-	PXPublic size_t DataStreamReadLL(DataStream* const dataStream, long long* const value, const Endian endian);
-	PXPublic size_t DataStreamReadLLU(DataStream* const dataStream, unsigned long long* const value, const  Endian endian);
-	PXPublic size_t DataStreamReadF(DataStream* const dataStream, float* const value);
-	PXPublic size_t DataStreamReadD(DataStream* const dataStream, double* const value);
-	PXPublic size_t DataStreamReadP(DataStream* const dataStream, void* const value, const size_t length);
-	PXPublic size_t DataStreamRead(DataStream* const dataStream, const void* const format, const size_t length, ...);
+	PXPublic PXSize DataStreamReadC(DataStream* const dataStream, char* const value);
+	PXPublic PXSize DataStreamReadCU(DataStream* const dataStream, unsigned char* const value);
+	PXPublic PXSize DataStreamReadS(DataStream* const dataStream, short* const value, const Endian endian);
+	PXPublic PXSize DataStreamReadSU(DataStream* const dataStream, unsigned short* const value, const Endian endian);
+	PXPublic PXSize DataStreamReadI(DataStream* const dataStream, int* const value, const  Endian endian);
+	PXPublic PXSize DataStreamReadIU(DataStream* const dataStream, unsigned int* const value, const Endian endian);
+	PXPublic PXSize DataStreamReadLL(DataStream* const dataStream, long long* const value, const Endian endian);
+	PXPublic PXSize DataStreamReadLLU(DataStream* const dataStream, unsigned long long* const value, const  Endian endian);
+	PXPublic PXSize DataStreamReadF(DataStream* const dataStream, float* const value);
+	PXPublic PXSize DataStreamReadD(DataStream* const dataStream, double* const value);
+	PXPublic PXSize DataStreamReadP(DataStream* const dataStream, void* const value, const PXSize length);
+	PXPublic PXSize DataStreamRead(DataStream* const dataStream, const void* const format, const PXSize length, ...);
 
-	PXPublic size_t DataStreamReadA(DataStream* const dataStream, char* const value, const size_t length);
-	PXPublic size_t DataStreamReadW(DataStream* const dataStream, wchar_t* const value, const size_t length);
+	PXPublic PXSize DataStreamReadA(DataStream* const dataStream, char* const value, const PXSize length);
+	PXPublic PXSize DataStreamReadW(DataStream* const dataStream, wchar_t* const value, const PXSize length);
 
-	PXPublic void DataStreamReadUntil(DataStream* const dataStream, void* value, const size_t length, const char character);
+	PXPublic void DataStreamReadUntil(DataStream* const dataStream, void* value, const PXSize length, const char character);
 
 
 
 	// Additional check how many bytes are read.
 	// Slower version of Read(), this function can't fail.
-	//size_t ReadSafe(Byte__* value, const size_t length);
+	//PXSize ReadSafe(Byte__* value, const PXSize length);
 
 
-	PXPublic unsigned char DataStreamReadAndCompare(DataStream* const dataStream, const void* value, const size_t length);
+	PXPublic unsigned char DataStreamReadAndCompare(DataStream* const dataStream, const void* value, const PXSize length);
 	//unsigned char DataStreamReadAndCompareC(DataStream* DataStream, const char value);
 	//unsigned char DataStreamReadAndCompareIU(DataStream* DataStream, const unsigned int value);
 
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
-	PXPublic size_t DataStreamWriteC(DataStream* const dataStream, const char value);
-	PXPublic size_t DataStreamWriteCU(DataStream* const dataStream, const unsigned char value);
-	PXPublic size_t DataStreamWriteS(DataStream* const dataStream, const short value, const Endian endian);
-	PXPublic size_t DataStreamWriteSU(DataStream* const dataStream, const unsigned short value, const Endian endian);
-	PXPublic size_t DataStreamWriteI(DataStream* const dataStream, const int value, const Endian endian);
-	PXPublic size_t DataStreamWriteIU(DataStream* const dataStream, const unsigned int value, const Endian endian);
-	PXPublic size_t DataStreamWriteLL(DataStream* const dataStream, const long long value, const Endian endian);
-	PXPublic size_t DataStreamWriteLLU(DataStream* const dataStream, const unsigned long long value, const Endian endian);
+	PXPublic PXSize DataStreamWriteC(DataStream* const dataStream, const char value);
+	PXPublic PXSize DataStreamWriteCU(DataStream* const dataStream, const unsigned char value);
+	PXPublic PXSize DataStreamWriteS(DataStream* const dataStream, const short value, const Endian endian);
+	PXPublic PXSize DataStreamWriteSU(DataStream* const dataStream, const unsigned short value, const Endian endian);
+	PXPublic PXSize DataStreamWriteI(DataStream* const dataStream, const int value, const Endian endian);
+	PXPublic PXSize DataStreamWriteIU(DataStream* const dataStream, const unsigned int value, const Endian endian);
+	PXPublic PXSize DataStreamWriteLL(DataStream* const dataStream, const long long value, const Endian endian);
+	PXPublic PXSize DataStreamWriteLLU(DataStream* const dataStream, const unsigned long long value, const Endian endian);
 
-	PXPublic size_t DataStreamWriteF(DataStream* const dataStream, const float value);
-	PXPublic size_t DataStreamWriteD(DataStream* const dataStream, const double value);
+	PXPublic PXSize DataStreamWriteF(DataStream* const dataStream, const float value);
+	PXPublic PXSize DataStreamWriteD(DataStream* const dataStream, const double value);
 
 	// Write ASCII string \0 terminated.
-	PXPublic size_t DataStreamWriteA(DataStream* const dataStream, const char* const text, size_t textSize);
+	PXPublic PXSize DataStreamWriteA(DataStream* const dataStream, const char* const text, PXSize textSize);
 
 	// Write UNICODE string \0 terminated
-	PXPublic size_t DataStreamWriteW(DataStream* const dataStream, const wchar_t* const text, size_t textSize);
+	PXPublic PXSize DataStreamWriteW(DataStream* const dataStream, const wchar_t* const text, PXSize textSize);
 
-	PXPublic size_t DataStreamWriteP(DataStream* const dataStream, const void* value, const size_t length);
-	PXPublic size_t DataStreamWriteFill(DataStream* const dataStream, const unsigned char value, const size_t length);
-	PXPublic size_t DataStreamWrite(DataStream* const dataStream, const char* format, ...);
+	PXPublic PXSize DataStreamWriteP(DataStream* const dataStream, const void* value, const PXSize length);
+	PXPublic PXSize DataStreamWriteFill(DataStream* const dataStream, const unsigned char value, const PXSize length);
+	PXPublic PXSize DataStreamWrite(DataStream* const dataStream, const char* format, ...);
 
-	PXPublic size_t DataStreamWriteAtP(DataStream* const dataStream, const void* const data, const size_t dataSize, const size_t index);
-	PXPublic size_t DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const size_t index);
-	PXPublic size_t DataStreamWriteAtSU(DataStream* const dataStream, const unsigned short value, const Endian endian, const size_t index);
-	PXPublic size_t DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const size_t index);
+	PXPublic PXSize DataStreamWriteAtP(DataStream* const dataStream, const void* const data, const PXSize dataSize, const PXSize index);
+	PXPublic PXSize DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const PXSize index);
+	PXPublic PXSize DataStreamWriteAtSU(DataStream* const dataStream, const unsigned short value, const Endian endian, const PXSize index);
+	PXPublic PXSize DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const PXSize index);
 	//-------------------------------------------------------------------------
 
 
 
 	//---<Extra bit stuff>-----------------------------------------------------
-	PXPublic size_t DataStreamSkipBitsToNextByte(DataStream* const dataStream);
-	PXPublic size_t DataStreamCursorMoveBits(DataStream* const dataStream, const size_t amountOfBits);
-	PXPublic size_t DataStreamBitsAllign(DataStream* const dataStream);
+	PXPublic PXSize DataStreamSkipBitsToNextByte(DataStream* const dataStream);
+	PXPublic PXSize DataStreamCursorMoveBits(DataStream* const dataStream, const PXSize amountOfBits);
+	PXPublic PXSize DataStreamBitsAllign(DataStream* const dataStream);
 
-	PXPublic size_t DataStreamPeekBits(DataStream* const dataStream, const size_t amountOfBits);
-	PXPublic size_t DataStreamReadBits(DataStream* const dataStream, const size_t amountOfBits);
+	PXPublic PXSize DataStreamPeekBits(DataStream* const dataStream, const PXSize amountOfBits);
+	PXPublic PXSize DataStreamReadBits(DataStream* const dataStream, const PXSize amountOfBits);
 
-	PXPublic size_t DataStreamWriteBits(DataStream* const dataStream, const size_t bitData, const size_t amountOfBits);
+	PXPublic PXSize DataStreamWriteBits(DataStream* const dataStream, const PXSize bitData, const PXSize amountOfBits);
 	//-------------------------------------------------------------------------
 
 
-	PXPublic size_t DataStreamFilePathGetA(DataStream* const dataStream, char* const filePath, const size_t filePathMaxSize);
-	PXPublic size_t DataStreamFilePathGetW(DataStream* const dataStream, wchar_t* const filePath, const size_t filePathMaxSize);
+	PXPublic PXSize DataStreamFilePathGetA(DataStream* const dataStream, char* const filePath, const PXSize filePathMaxSize);
+	PXPublic PXSize DataStreamFilePathGetW(DataStream* const dataStream, wchar_t* const filePath, const PXSize filePathMaxSize);
 
 #ifdef __cplusplus
 }

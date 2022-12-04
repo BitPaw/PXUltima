@@ -45,7 +45,7 @@ void TestPXCompilerOBJ()
 
 void TestPXCompilerYAML()
 {
-	size_t size = 1024 * 2;
+	PXSize size = 1024 * 2;
 	char buffer[1024*2];
 
 	MemorySet(buffer, size, 0);

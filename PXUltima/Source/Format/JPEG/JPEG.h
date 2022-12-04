@@ -162,14 +162,14 @@ extern "C"
 
 		unsigned char QuantizationTable[2][64];
 
-		size_t HuffmanTableSize;
+		PXSize HuffmanTableSize;
 		JPEGHuffmanTable* HuffmanTable;
 		JPEGScanStart ScanStart;
 
-		size_t CompressedImageDataSize;
+		PXSize CompressedImageDataSize;
 		unsigned char* CompressedImageData;
 
-		size_t CommentSize;
+		PXSize CommentSize;
 		char* Comment;
 	}
 	JPEG;
@@ -181,12 +181,12 @@ extern "C"
 	PXPublic void JPEGConstruct(JPEG* const jpeg);
 	PXPublic void JPEGDestruct(JPEG* const jpeg);
 
-	PXPublic size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	PXPublic PXSize JPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 	
-	PXPublic ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead);
-	PXPublic ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult JPEGParse(JPEG* jpeg, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic ActionResult JPEGParseToImage(Image* const image, DataStream* const dataStream);
 
-	PXPublic ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

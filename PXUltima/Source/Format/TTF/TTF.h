@@ -657,7 +657,7 @@ extern "C"
     PXPublic void TTFConstruct(TTF* const ttf);
     PXPublic void TTFDestruct(TTF* const ttf);
 
-	PXPublic ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult TTFParse(TTF* ttf, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

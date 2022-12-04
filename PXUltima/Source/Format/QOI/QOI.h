@@ -15,7 +15,7 @@ extern "C"
 	}
 	QOI;
 
-	PXPublic ActionResult QOIParse(QOI* qoi, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult QOIParse(QOI* qoi, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

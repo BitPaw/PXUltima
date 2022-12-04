@@ -11,7 +11,7 @@ void FMTConstruct(FMT* const fmt)
 	MemorySet(fmt, sizeof(FMT), 0);
 }
 
-ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, size_t* dataRead, const Endian endian)
+ActionResult FMTParse(FMT* const fmt, const void* data, const PXSize dataSize, PXSize* dataRead, const Endian endian)
 {
 	DataStream dataStream;
 

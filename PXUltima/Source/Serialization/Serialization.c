@@ -5,7 +5,7 @@ void SerializationTypeInfoSet
 	SerializationTypeInfo* serializationTypeInfo, 
 	const char* name, 
 	void* adress, 
-	const size_t size, 
+	const PXSize size, 
 	SerializationType type, 
 	SerializationTypeInfo* parent, 
 	unsigned char depth

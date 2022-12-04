@@ -35,7 +35,7 @@
 
 
 #if OSWindows
-void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferRead)
+void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead)
 {
     const int textLength = GetWindowTextLengthW(uiElementID) + 1;
     const int maximum = MathMinimum(textLength, bufferSize);
@@ -44,7 +44,7 @@ void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, co
     *bufferRead = lengthRead;
 }
 
-void OSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferWritten)
+void OSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten)
 {
     //const int lengthWrittem = SetWindowTextW(uiElementID, buffer, bufferSize);
 
@@ -198,7 +198,7 @@ void TextEditConstruct(const PXWindowID window, OSTextEdit* textEdit, const unsi
 #endif
 }
 
-void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const size_t bufferSize, size_t* bufferWritten)
+void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten)
 {
     OSUIElementTextGet(textEdit->ID, buffer, bufferSize, bufferWritten);
 }

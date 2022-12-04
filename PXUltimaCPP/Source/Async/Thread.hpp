@@ -9,7 +9,7 @@ namespace PX
 		public:
 		ActionResult Run(const ThreadFunction threadFunction, const void* parameter);
 
-		static size_t CurrentID();
+		static PXSize CurrentID();
 		void CurrentGet();
 
 		void WaitForFinish();

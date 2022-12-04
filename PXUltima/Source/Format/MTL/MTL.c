@@ -42,7 +42,7 @@ IlluminationMode MTLIlluminationModeFromID(const unsigned int illuminationModeID
 	}
 }
 
-MTLLineType MTLPeekLine(const char* const line, const size_t lineSize)
+MTLLineType MTLPeekLine(const char* const line, const PXSize lineSize)
 {
 	const unsigned short tagID = MakeShort(line[0], line[1]);
 
@@ -68,13 +68,13 @@ ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const out
 	DataStream tokenSteam;
 	DataStream headerStream;
 
-	const size_t startoffset = outputStream->DataCursor;
+	const PXSize startoffset = outputStream->DataCursor;
 
 	// temo
 	unsigned int materialAmount = 0;
 	unsigned int materialSizeDelta = 0;
 
-	const size_t headerOffset = 1024;
+	const PXSize headerOffset = 1024;
 
 
 	DataStreamFromExternal(&headerStream, (unsigned char*)outputStream->Data + startoffset, headerOffset);
@@ -141,8 +141,8 @@ ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const out
 				char text[256];
 
 				//char* dataPosition = DataStreamCursorPosition(outputStream);
-				//const size_t dataSize = DataStreamRemainingSize(outputStream);
-				size_t dataSizeWritten = 0;
+				//const PXSize dataSize = DataStreamRemainingSize(outputStream);
+				PXSize dataSizeWritten = 0;
 				const PXBool isText = PXCompilerParseStringUntilNewLine(&tokenSteam, &compilerSymbolEntry, text, 256, &dataSizeWritten);
 
 				if (!isText)
@@ -177,8 +177,8 @@ ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const out
 			case MTLLineColorSpecular:
 			case MTLLineColorEmission:
 			{
-				size_t valuesDetected = 0;
-				const size_t colorVectorSize = 3u;
+				PXSize valuesDetected = 0;
+				const PXSize colorVectorSize = 3u;
 				float colorVector[3] = { -1, -1, -1 };
 
 				const PXBool listParsed = PXCompilerParseFloatList(&tokenSteam, &compilerSymbolEntry, colorVector, colorVectorSize, &valuesDetected);
@@ -226,7 +226,7 @@ ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const out
 		unsigned int sizeA = 0;
 		unsigned int sizeB = 0;
 
-		for (size_t i = 0; i < materialAmount-1; ++i)
+		for (PXSize i = 0; i < materialAmount-1; ++i)
 		{
 			DataStreamReadIU(&headerStream, &sizeA, EndianLittle);
 			DataStreamReadIU(&headerStream, &sizeB, EndianLittle);
@@ -236,7 +236,7 @@ ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const out
 			DataStreamWriteIU(&headerStream, sizeB - sizeA, EndianLittle);
 		}
 
-		const size_t positionA = headerStream.DataCursor;
+		const PXSize positionA = headerStream.DataCursor;
 
 		DataStreamReadIU(&headerStream, &sizeA, EndianLittle);
 
@@ -248,7 +248,7 @@ ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const out
 	return ActionSuccessful;
 }
 
-size_t MTLFetchAmount(const void* const data, const size_t dataSize)
+PXSize MTLFetchAmount(const void* const data, const PXSize dataSize)
 {
 	DataStream mtlStream;
 
@@ -266,9 +266,9 @@ size_t MTLFetchAmount(const void* const data, const size_t dataSize)
 	return materialListSize;
 }
 
-PXBool MTLFetchMaterial(const void* const data, const size_t dataSize, const size_t materialID, MTLMaterial* const mtlMaterial)
+PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, MTLMaterial* const mtlMaterial)
 {
-	const size_t amount = MTLFetchAmount(data, dataSize);
+	const PXSize amount = MTLFetchAmount(data, dataSize);
 
 	MemorySet(mtlMaterial, sizeof(MTLMaterial), 0);
 
@@ -283,7 +283,7 @@ PXBool MTLFetchMaterial(const void* const data, const size_t dataSize, const siz
 	DataStreamFromExternal(&mtlDataStream, (unsigned char*)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
 	DataStreamFromExternal(&mtlHeaderStream, (unsigned char*)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
 
-	for (size_t i = 0; i <= materialID; ++i)
+	for (PXSize i = 0; i <= materialID; ++i)
 	{
 		const PXBool isTarget = materialID == i;
 		unsigned int materialDataSize = 0;
@@ -422,7 +422,7 @@ ActionResult MTLParseToMaterial(DataStream* const inputStream, PXMaterialList* c
 
 
 /*
-ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 
@@ -433,7 +433,7 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 
 	// Count How many materials are needed
 	{
-		size_t materialCounter = 0;
+		PXSize materialCounter = 0;
 
 		do
 		{
@@ -457,7 +457,7 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 
 	// Raw Parse
 	MTLMaterial* material = 0; // current material, has to be here, its state dependend
-	size_t materialIndex = 0;
+	PXSize materialIndex = 0;
 
 	do
 	{
@@ -467,8 +467,8 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 		DataStreamSkipBlock(&dataStream); // Skip first element
 
 		const char* dataPoint = DataStreamCursorPosition(&dataStream);
-		const size_t maxSize = DataStreamRemainingSize(&dataStream);
-		const size_t lineSize = TextLengthUntilA(dataPoint, maxSize, '\n');
+		const PXSize maxSize = DataStreamRemainingSize(&dataStream);
+		const PXSize lineSize = TextLengthUntilA(dataPoint, maxSize, '\n');
 
 		switch(lineType)
 		{
@@ -482,7 +482,7 @@ ActionResult MTLParse(MTL* mtl, const void* data, const size_t dataSize, size_t*
 				material = &mtl->MaterialList[materialIndex++];
 
 				const char CPrivateText[] = "<CPrivate>";
-				const size_t CPrivateTextSize = sizeof(CPrivateText);
+				const PXSize CPrivateTextSize = sizeof(CPrivateText);
 
 				TextCopyA(CPrivateText, CPrivateTextSize, material->TextureFilePath, MTLFilePath);
 
@@ -610,7 +610,7 @@ void BF::MTL::PrintContent()
 {
 	printf("===[Material]===\n");
 
-	for (size_t i = 0; i < MaterialListSize; i++)
+	for (PXSize i = 0; i < MaterialListSize; i++)
 	{
 		MTLMaterial& material = MaterialList[i];
 

@@ -2,8 +2,8 @@
 #define BMPInclude
 
 #include <Format/Type.h>
-
 #include <Error/ActionResult.h>
+#include <File/DataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -83,48 +83,45 @@ extern "C"
 		BMPInfoHeaderType InfoHeaderType;
 		BMPInfoHeader InfoHeader;
 
-		size_t PixelDataSize;
+		PXSize PixelDataSize;
 		unsigned char* PixelData;
 	}
 	BMP;
 
 	typedef struct BMPImageDataLayout_
 	{
-		size_t ImageSize;
-		size_t RowImageDataSize;
-		size_t RowPaddingSize;
-		size_t RowFullSize;
-		size_t RowAmount;
+		PXSize ImageSize;
+		PXSize RowImageDataSize;
+		PXSize RowPaddingSize;
+		PXSize RowFullSize;
+		PXSize RowAmount;
 	}
 	BMPImageDataLayout;
 
 	//---<Private Functions>------------------------------------------------------
+	PXPrivate BMPType ConvertToBMPType(const unsigned short bmpTypeID);
+	PXPrivate unsigned short ConvertFromBMPType(const BMPType headerType);
 
-	static BMPType ConvertToBMPType(const unsigned short bmpTypeID);
-	static unsigned short ConvertFromBMPType(const BMPType headerType);
-
-	static BMPInfoHeaderType ConvertToBMPInfoHeaderType(const unsigned int infoHeaderType);
-	static unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType);
-
+	PXPrivate BMPInfoHeaderType ConvertToBMPInfoHeaderType(const unsigned int infoHeaderType);
+	PXPrivate unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType);
 	//----------------------------------------------------------------------------
 
 	//---<Public Functions--------------------------------------------------------
-
 	PXPublic void BMPConstruct(BMP* const bmp);
 	PXPublic void BMPDestruct(BMP* const bmp);
 
 	// Calculate information about the layout how the raw image data is stored.
 	// There will be "amount of vertical rows", and "pixeldata" + "padding" .
-	PXPublic void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const size_t width, const size_t height, const size_t bbp);
+	PXPublic void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
 
 	//----------------------------------------------------------------------------
-	PXPublic size_t BMPFilePredictSize(const size_t width, const size_t height, const size_t bitsPerPixel);
+	PXPublic PXSize BMPFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-	PXPublic ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t* dataRead); 	
-	PXPublic ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult BMPParse(BMP* const bmp, DataStream* const dataStream);
+	PXPublic ActionResult BMPParseToImage(Image* const image, DataStream* const dataStream);
 
-	PXPublic ActionResult BMPSerialize(const BMP* const bmp, void* data, const size_t dataSize, size_t* dataWritten);
-	PXPublic ActionResult BMPSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult BMPSerialize(const BMP* const bmp, DataStream* const dataStream);
+	PXPublic ActionResult BMPSerializeFromImage(const Image* const image, DataStream* const dataStream);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

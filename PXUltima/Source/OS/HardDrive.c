@@ -8,17 +8,17 @@
 #include <direct.h>
 #endif
 
-size_t HardDriveListSize()
+PXSize HardDriveListSize()
 {
 #if OSUnix
-    const size_t numberOfDrives = 0;
+    const PXSize numberOfDrives = 0;
 
 #elif OSWindows
 
-    size_t bitmaskDrives = _getdrives();
-    size_t numberOfDrives = 0;
+    PXSize bitmaskDrives = _getdrives();
+    PXSize numberOfDrives = 0;
 
-    for (size_t indexDrive = 1; indexDrive <= 26u; ++indexDrive)
+    for (PXSize indexDrive = 1; indexDrive <= 26u; ++indexDrive)
     {
         numberOfDrives += bitmaskDrives & 1;
 
@@ -30,9 +30,9 @@ size_t HardDriveListSize()
     return numberOfDrives;
 }
 
-ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const size_t hardDriveListMaxSize, size_t* hardDriveListSize)
+ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
 {
-    const size_t numberOfDrives = HardDriveListSize();
+    const PXSize numberOfDrives = HardDriveListSize();
 
     MemoryClear(hardDriveList, sizeof(HardDrive) * hardDriveListMaxSize);
 
@@ -51,9 +51,9 @@ ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const size_t hard
 
 #elif OSWindows   
 
-    size_t bitmaskDrives = _getdrives();
+    PXSize bitmaskDrives = _getdrives();
 
-    for (size_t indexDrive = 1; numberOfDrives; ++indexDrive)
+    for (PXSize indexDrive = 1; numberOfDrives; ++indexDrive)
     {
         const PXBool isUsed = bitmaskDrives & 1;
 

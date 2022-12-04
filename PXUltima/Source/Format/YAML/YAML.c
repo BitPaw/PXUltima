@@ -3,7 +3,7 @@
 #include <Compiler/PXCompiler.h>
 #include <Container/ClusterValue.h>
 
-YAMLLineType YAMLPeekLine(const void* line, const size_t size)
+YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
 {
     if (!(line && size))
     {
@@ -60,7 +60,7 @@ YAMLLineType YAMLPeekLine(const void* line, const size_t size)
 
 ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const outputStream)
 {
-    size_t errorCounter = 0;
+    PXSize errorCounter = 0;
     DataStream tokenSteam;
 
     // Lexer - Level I
@@ -212,7 +212,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
 
     // [milk, pumpkin pie, eggs, juice]
 
-    size_t oldpos = outputStream->DataCursor;
+    PXSize oldpos = outputStream->DataCursor;
 
     outputStream->DataCursor = 0;
 
@@ -243,7 +243,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
             DataStreamReadP(outputStream, textA, textASize);
             DataStreamReadSU(outputStream, &textBSize, EndianLittle);
 
-            for (size_t i = 0; i < depth; i++)
+            for (PXSize i = 0; i < depth; i++)
             {
                 emotySpace[i] = ' ';
             }
@@ -309,7 +309,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
     outputStream->DataCursor = oldpos;
 }
 
-ActionResult YAMLFileParse(DataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const size_t serializationTypeInfoListSize)
+ActionResult YAMLFileParse(DataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
 {
 
 

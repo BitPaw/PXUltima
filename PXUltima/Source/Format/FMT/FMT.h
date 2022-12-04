@@ -26,7 +26,7 @@ extern "C"
 
 	PXPublic void FMTConstruct(FMT* const fmt);
 
-	PXPublic ActionResult FMTParse(FMT* const fmt, const void* data, const size_t dataSize, size_t* dataRead, const Endian endian);
+	PXPublic ActionResult FMTParse(FMT* const fmt, const void* data, const PXSize dataSize, PXSize* dataRead, const Endian endian);
 
 #ifdef __cplusplus
 }

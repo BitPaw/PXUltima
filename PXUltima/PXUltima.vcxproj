@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Audio\PXAudio.h" />
     <ClInclude Include="Source\Compiler\PXCompilerSettings.h" />
     <ClInclude Include="Source\OS\PXProcess.h" />
     <ClInclude Include="Source\Format\ELF\ELF.h" />
@@ -107,7 +108,7 @@
     <ClInclude Include="Source\Format\PNG\PNG.h" />
     <ClInclude Include="Source\Format\QOI\QOI.h" />
     <ClInclude Include="Source\Format\RIFF\RIFF.h" />
-    <ClInclude Include="Source\Format\Sound.h" />
+    <ClInclude Include="Source\Format\PXSound.h" />
     <ClInclude Include="Source\Format\STEP\STEP.h" />
     <ClInclude Include="Source\Format\STL\STL.h" />
     <ClInclude Include="Source\Format\SVG\SVG.h" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Source\Math\PXVector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Audio\PXAudio.c" />
     <ClCompile Include="Source\Compiler\PXCompilerSettings.c" />
     <ClCompile Include="Source\OS\PXProcess.c" />
     <ClCompile Include="Source\Async\Await.c" />
@@ -235,7 +237,7 @@
     <ClCompile Include="Source\Format\PNG\PNG.c" />
     <ClCompile Include="Source\Format\QOI\QOI.c" />
     <ClCompile Include="Source\Format\RIFF\RIFF.c" />
-    <ClCompile Include="Source\Format\Sound.c" />
+    <ClCompile Include="Source\Format\PXSound.c" />
     <ClCompile Include="Source\Format\STEP\STEP.c" />
     <ClCompile Include="Source\Format\STL\STL.c" />
     <ClCompile Include="Source\Format\SVG\SVG.c" />
@@ -275,6 +277,7 @@
     <ClCompile Include="Source\Math\PXVector.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Audio\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
     <None Include="Source\Format\PDF\README.md" />
   </ItemGroup>

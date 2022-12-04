@@ -1398,9 +1398,9 @@ PXPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID)
     }
 }
 
-void OpenGLCacheFunction(void** loadList, size_t* currentSize, char* name, void* functionADress)
+void OpenGLCacheFunction(void** loadList, PXSize* currentSize, char* name, void* functionADress)
 {
-    size_t index = *currentSize;
+    PXSize index = *currentSize;
 
     loadList[index] = functionADress;
     loadList[index + 1] = name;
@@ -1416,7 +1416,7 @@ const void* const OpenGLFunctionAdressFetch(const char* const functionName)
 #elif OSWindows
     (const void* const)wglGetProcAddress(functionName);
 
-    switch ((size_t)functionAdress)
+    switch ((PXSize)functionAdress)
     {
         case -1: // fall though
         case 0x0: // fall though
@@ -1499,7 +1499,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         int versionMajor = 0;
         int versionMinor = 0;
         int versionPatch = 0;
-        size_t offset = 0;
+        PXSize offset = 0;
 
         offset += TextToIntA(version + offset, 64, &versionMajor);
         offset += 1u; // dot
@@ -1514,7 +1514,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
     // Fetch functions
 
-    size_t length = 0;
+    PXSize length = 0;
     void* functionNameList[128];
 
     switch (openGLContext->Version)
@@ -1767,7 +1767,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
             functionNameList[0] = "glViewport";
             functionNameList[0] = "glWeightPointer";
 
-            for (size_t i = 0; i < length; ++i)
+            for (PXSize i = 0; i < length; ++i)
             {
                 const char* const functioName = functionNameList[i];
 
@@ -1783,7 +1783,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         }
     }
 
-    for (size_t i = 0; i < length; i += 2)
+    for (PXSize i = 0; i < length; i += 2)
     {
         void** functionAdress = functionNameList[i];
         const char* functionName = functionNameList[i + 1];
@@ -1807,10 +1807,10 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
             {
                 DataStream dataStream;
 
-                const size_t teextSize = TextFindFirstA(teeext, 0xFFFF, '\0');
+                const PXSize teextSize = TextFindFirstA(teeext, 0xFFFF, '\0');
                 DataStreamFromExternal(&dataStream, teeext, teextSize);
 
-                size_t x = 99999;
+                PXSize x = 99999;
 
                 char wurst[256];
 
@@ -1820,7 +1820,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
                     char* adres = DataStreamCursorPosition(&dataStream);
 
-                    size_t textSize = 0;
+                    PXSize textSize = 0;
 
                     x = DataStreamSkipBlock(&dataStream);
 
@@ -1847,7 +1847,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
         printf("Extensions detected %i.\n", NumberOfExtensions);
 
-        for (size_t i = 0; i < NumberOfExtensions; ++i)
+        for (PXSize i = 0; i < NumberOfExtensions; ++i)
         {
             const char* ccc = OpenGLStringGetI(openGLContext, OpenGLStringNameExtensions, i);
 
@@ -1876,7 +1876,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     OpenGLViewSize(openGLContext, 0, 0, window->Width, window->Height);
 }
 
-void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const size_t width, const size_t height)
+void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const PXSize width, const PXSize height)
 {
 #if OSWindows
 
@@ -1958,7 +1958,7 @@ void OpenGLFlush(OpenGLContext* const openGLContext)
     glFlush();
 }
 
-void OpenGLViewSize(OpenGLContext* const openGLContext, const size_t x, const size_t y, const size_t width, const size_t height)
+void OpenGLViewSize(OpenGLContext* const openGLContext, const PXSize x, const PXSize y, const PXSize width, const PXSize height)
 {
     glViewport(x, y, width, height);
 }
@@ -2370,9 +2370,9 @@ windows only
 
 * /
 
-void OpenGLAddFunction(void** loadList, size_t* currentSize, char* name, void* functionADress)
+void OpenGLAddFunction(void** loadList, PXSize* currentSize, char* name, void* functionADress)
 {
-    size_t index = *currentSize;
+    PXSize index = *currentSize;
 
     loadList[index] = functionADress;
     loadList[index + 1] = name;
@@ -2599,13 +2599,13 @@ void OpenGLShaderDelete(OpenGL* const openGL, const OpenGLShaderID shaderID)
     (openGL->OpenGLShaderDeleteCallBack)(shaderID);
 }
 
-void OpenGLVertexAttributeArrayDefine(OpenGL* const openGL, const size_t sizeOfElement, const size_t listSize, const unsigned int* list)
+void OpenGLVertexAttributeArrayDefine(OpenGL* const openGL, const PXSize sizeOfElement, const PXSize listSize, const unsigned int* list)
 {
-    size_t offset = 0;
-    size_t wholeBlockSize = 0;
-    size_t currentBlockSize = 0;
+    PXSize offset = 0;
+    PXSize wholeBlockSize = 0;
+    PXSize currentBlockSize = 0;
 
-    for (size_t vertexAtributeIndex = 0; vertexAtributeIndex < listSize; vertexAtributeIndex++)
+    for (PXSize vertexAtributeIndex = 0; vertexAtributeIndex < listSize; vertexAtributeIndex++)
     {
         const unsigned int vertexSize = list[vertexAtributeIndex];
 
@@ -2614,7 +2614,7 @@ void OpenGLVertexAttributeArrayDefine(OpenGL* const openGL, const size_t sizeOfE
 
     wholeBlockSize *= sizeOfElement;
 
-    for (size_t vertexAtributeIndex = 0; vertexAtributeIndex < listSize; vertexAtributeIndex++)
+    for (PXSize vertexAtributeIndex = 0; vertexAtributeIndex < listSize; vertexAtributeIndex++)
     {
         const unsigned int  vertexSize = list[vertexAtributeIndex];
 
@@ -2752,7 +2752,7 @@ void BF::OpenGL::GLSLVersionsSupported(const char*** shaderList, int shaderListS
 
     (*shaderList) = Memory::Allocate<const char*>(shaderListSize);
 
-    for (size_t i = 0; i < shaderListSize; i++)
+    for (PXSize i = 0; i < shaderListSize; i++)
     {
         const char* shaderVersion = (const char*)glGetStringi(GL_SHADING_LANGUAGE_VERSION, i);
 
@@ -2951,7 +2951,7 @@ OpenGLShaderID OpenGLShaderCreate(OpenGLContext* const openGLContext, const Open
     return shaderID;
 }
 
-void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, const size_t count, const char** string, size_t* const length)
+void OpenGLShaderSource(OpenGLContext* const openGLContext, const OpenGLShaderID shaderID, const PXSize count, const char** string, PXSize* const length)
 {
     openGLContext->OpenGLShaderSourceCallBack(shaderID, count, string, length);
 }
@@ -2999,14 +2999,14 @@ void OpenGLShaderProgramValidate(OpenGLContext* const openGLContext, const OpenG
     openGLContext->OpenGLValidateProgramCallBack(shaderID);
 }
 
-void OpenGLDrawArrays(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const size_t offset, const size_t amount)
+void OpenGLDrawArrays(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const PXSize offset, const PXSize amount)
 {
     const GLenum renderModeID = OpenGLRenderModeToID(renderMode);
 
     glDrawArrays(renderModeID, offset, amount);
 }
 
-void OpenGLDrawElements(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const size_t amount, const OpenGLDataType openGLDataType, const void* const indexList)
+void OpenGLDrawElements(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const PXSize amount, const OpenGLDataType openGLDataType, const void* const indexList)
 {
     const GLenum renderModeID = OpenGLRenderModeToID(renderMode);
     const GLenum openGLDataTypeID = OpenGLDataTypeToID(openGLDataType);
@@ -3053,8 +3053,8 @@ void OpenGLTextureData2D
     const OpenGLTextureType glTextureType,
     const unsigned int levelOfDetail,
     const OpenGLImageFormat glImageFormatInternal,
-    const size_t width,
-    const size_t height,
+    const PXSize width,
+    const PXSize height,
     const OpenGLImageFormat glImageFormatInput,
     const OpenGLDataType glDataType,
     const void* const imageData
@@ -3264,7 +3264,7 @@ void OpenGLVertexArrayUnbind(OpenGLContext* const openGLContext)
     openGLContext->OpenGLBindVertexArrayCallBack(0);
 }
 
-void OpenGLVertexArrayAttributeDefine(OpenGLContext* const openGLContext, const unsigned int index, const unsigned int size, const OpenGLDataType datatype, const unsigned char normalized, const unsigned int stride, const size_t offset)
+void OpenGLVertexArrayAttributeDefine(OpenGLContext* const openGLContext, const unsigned int index, const unsigned int size, const OpenGLDataType datatype, const unsigned char normalized, const unsigned int stride, const PXSize offset)
 {
     const unsigned int openGLDataTypeID = OpenGLDataTypeToID(datatype);
 

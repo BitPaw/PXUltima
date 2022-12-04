@@ -233,13 +233,13 @@ unsigned short ConvertFromJPEGMarker(const JPEGMarker jpegMarker)
     }
 }
 
-size_t JPEGFilePredictSize(const size_t width, const size_t height, const size_t bbp)
+PXSize JPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
-    const size_t beginning = 2;
-    const size_t end = 2;
-    const size_t app0 = 20;
+    const PXSize beginning = 2;
+    const PXSize end = 2;
+    const PXSize app0 = 20;
 
-    const size_t sum = beginning + end + app0 + (height * width * 3u) + 0xFFFF * 2;
+    const PXSize sum = beginning + end + app0 + (height * width * 3u) + 0xFFFF * 2;
 
     return sum;
 }
@@ -254,7 +254,7 @@ void JPEGDestruct(JPEG* const jpeg)
 
 }
 
-ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult JPEGParse(JPEG* jpeg, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 
 
@@ -262,22 +262,18 @@ ActionResult JPEGParse(JPEG* jpeg, const void* data, const size_t dataSize, size
 }
 
 
-ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult JPEGParseToImage(Image* const image, DataStream* const dataStream)
 {
-    DataStream dataStream;
     JPEG jpeXg;
     JPEG* jpeg = &jpeXg;
 
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, data, dataSize);
     JPEGConstruct(jpeg);
-    *dataRead = 0;
 
     // Check Start of Image
     {
         ClusterShort startBlock;
 
-        DataStreamReadP(&dataStream, startBlock.Data, 2u);
+        DataStreamReadP(dataStream, startBlock.Data, 2u);
 
         const JPEGMarker marker = ConvertToJPEGMarker(startBlock.Value);
         const unsigned char validStart = marker == JPEGMarkerStartOfImage;
@@ -292,17 +288,17 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 #endif
     }
 
-    while(!DataStreamIsAtEnd(&dataStream))
+    while(!DataStreamIsAtEnd(dataStream))
     {
         JPEGMarker chunkMarker = JPEGMarkerInvalid;
         unsigned short chunkLength = -1;
-        size_t expectedOffset = -1;
+        PXSize expectedOffset = -1;
 
         // Parse info
         {
             ClusterShort markerData;
 
-            DataStreamReadP(&dataStream, markerData.Data, 2u);
+            DataStreamReadP(dataStream, markerData.Data, 2u);
 
             chunkMarker = ConvertToJPEGMarker(markerData.Value);
 
@@ -315,15 +311,15 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                 return ActionSuccessful;
             }
 
-            DataStreamReadSU(&dataStream, &chunkLength, EndianBig);
+            DataStreamReadSU(dataStream, &chunkLength, EndianBig);
 
             chunkLength -= 2u; // dont count header
 
-            expectedOffset = dataStream.DataCursor + chunkLength;
+            expectedOffset = dataStream->DataCursor + chunkLength;
 
 #if JPGDebug
 
-            unsigned int percentage = (dataStream.DataCursor / (float)dataStream.DataSize) * 100;
+            unsigned int percentage = (dataStream->DataCursor / (float)dataStream->DataSize) * 100;
 
             printf("\n[i][JPG] Chunk <%2x%2x> deteced. Size:%i Bytes (Parsed : %i%%)\n", markerData.A, markerData.B, chunkLength, percentage);
 #endif
@@ -341,19 +337,19 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             {
                 JPEGFrame frame;
 
-                DataStreamReadCU(&dataStream, &frame.Precision);
-                DataStreamReadSU(&dataStream, &frame.Height, EndianBig);
-                DataStreamReadSU(&dataStream, &frame.Width, EndianBig);
-                DataStreamReadCU(&dataStream, &frame.ComponentListSize);
+                DataStreamReadCU(dataStream, &frame.Precision);
+                DataStreamReadSU(dataStream, &frame.Height, EndianBig);
+                DataStreamReadSU(dataStream, &frame.Width, EndianBig);
+                DataStreamReadCU(dataStream, &frame.ComponentListSize);
 
-                for(size_t i = 0; i < frame.ComponentListSize; ++i)
+                for(PXSize i = 0; i < frame.ComponentListSize; ++i)
                 {
                     JPEGFrameComponent* frameComponent = &frame.ComponentList[i];
                     unsigned char samplingFactor = 0;
 
-                    DataStreamReadC(&dataStream, &frameComponent->ID);
-                    DataStreamReadC(&dataStream, &samplingFactor);
-                    DataStreamReadC(&dataStream, &frameComponent->QuantizationTableID);
+                    DataStreamReadC(dataStream, &frameComponent->ID);
+                    DataStreamReadC(dataStream, &samplingFactor);
+                    DataStreamReadC(dataStream, &frameComponent->QuantizationTableID);
 
                     frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
                     frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
@@ -377,7 +373,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             }
             case JPEGMarkerDefineQuantizationTableList:
             {
-                size_t remainingBytes = chunkLength;
+                PXSize remainingBytes = chunkLength;
 
                 while(remainingBytes)
                 {
@@ -388,7 +384,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     {
                         unsigned char cluster = 0;
 
-                        remainingBytes -= DataStreamReadCU(&dataStream, &cluster);
+                        remainingBytes -= DataStreamReadCU(dataStream, &cluster);
 
                         precision = (cluster & 0b11110000) >> 4;
                         matixID = (cluster & 0b00001111);
@@ -396,18 +392,18 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 
                     unsigned char* matrixAdress = jpeg->QuantizationTable[matixID];
 
-                    remainingBytes -= DataStreamReadP(&dataStream, matrixAdress, 64u);
+                    remainingBytes -= DataStreamReadP(dataStream, matrixAdress, 64u);
 
 #if JPGDebug
                     printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
 
 
 
-                    for(size_t y = 0; y < 8u; ++y)
+                    for(PXSize y = 0; y < 8u; ++y)
                     {
                         printf("|");
 
-                        for(size_t x = 0; x < 8u; ++x)
+                        for(PXSize x = 0; x < 8u; ++x)
                         {
                             printf("%3i |", matrixAdress[y * 8u + x]);
                         }
@@ -424,7 +420,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             }
             case JPEGMarkerDefineHuffmanTableList:
             {
-                size_t remainingBytes = chunkLength;
+                PXSize remainingBytes = chunkLength;
 
                 while(remainingBytes)
                 {
@@ -433,7 +429,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     {
                         unsigned char huffmanTableInfo;
 
-                        remainingBytes -= DataStreamReadCU(&dataStream, &huffmanTableInfo);
+                        remainingBytes -= DataStreamReadCU(dataStream, &huffmanTableInfo);
 
                         jpegHuffmanTable.ID = (huffmanTableInfo & 0b00001111);
                         jpegHuffmanTable.Type = (huffmanTableInfo & 0b00010000) >> 4u;
@@ -450,15 +446,15 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     );
 #endif
 
-                    size_t symbolSum = 0;
+                    PXSize symbolSum = 0;
 
                     // 16 Bytes symbopls
                     //
-                    for(size_t i = 0; i < 16u; ++i)
+                    for(PXSize i = 0; i < 16u; ++i)
                     {
                         unsigned char symbol = 0;
 
-                        remainingBytes -= DataStreamReadCU(&dataStream, &symbol);
+                        remainingBytes -= DataStreamReadCU(dataStream, &symbol);
 
 #if JPGDebug
                         printf
@@ -481,11 +477,11 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 
 
                     // n bytes from that data
-                    for(size_t i = 0; i < symbolSum; ++i)
+                    for(PXSize i = 0; i < symbolSum; ++i)
                     {
                         unsigned char symbol = 0;
 
-                        remainingBytes -= DataStreamReadCU(&dataStream, &symbol);
+                        remainingBytes -= DataStreamReadCU(dataStream, &symbol);
 
 #if JPGDebug
                         printf
@@ -503,21 +499,21 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             }
             case JPEGMarkerStartOfScan:
             {
-                DataStreamReadCU(&dataStream, &jpeg->ScanStart.ScanSelectorSize);
+                DataStreamReadCU(dataStream, &jpeg->ScanStart.ScanSelectorSize);
 
-                for(size_t i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
+                for(PXSize i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
                 {
                     JPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
                     unsigned char huffmanTableUsed = 0;
 
-                    DataStreamReadCU(&dataStream, &scanSelector->ID);
-                    DataStreamReadCU(&dataStream, &huffmanTableUsed);
+                    DataStreamReadCU(dataStream, &scanSelector->ID);
+                    DataStreamReadCU(dataStream, &huffmanTableUsed);
 
                     scanSelector->DC = ((huffmanTableUsed & 0b11110000) >> 4u);
                     scanSelector->ACTable = (huffmanTableUsed & 0b00001111);
                 }
 
-                DataStreamCursorAdvance(&dataStream, 3u); // mandatorily to skip these, why?
+                DataStreamCursorAdvance(dataStream, 3u); // mandatorily to skip these, why?
 
                 // Compressed image data starts here --------------------------------
 
@@ -530,7 +526,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
 
                 //DataStreamReadP(&DataStream, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
 
-                const size_t imageDataSize = DataStreamRemainingSize(&dataStream) - 2u;
+                const PXSize imageDataSize = DataStreamRemainingSize(dataStream) - 2u;
 
                 // Correct expected offset, as the "chunk length" seems to be only considering the data iself and not the whole chunk.
 
@@ -544,7 +540,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                     imageDataSize
                 );
 #endif
-                DataStreamCursorAdvance(&dataStream, imageDataSize);
+                DataStreamCursorAdvance(dataStream, imageDataSize);
 
                 break;
             }
@@ -552,14 +548,14 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
             {
                 char identifier[5];
 
-                DataStreamReadP(&dataStream, identifier, 5u);
-                DataStreamReadCU(&dataStream, &jpeg->FileInfo.VersionMajor);
-                DataStreamReadCU(&dataStream, &jpeg->FileInfo.VersionMinor);
-                DataStreamReadCU(&dataStream, &jpeg->FileInfo.DensityUnits);
-                DataStreamReadSU(&dataStream, &jpeg->FileInfo.DensityX, EndianLittle);
-                DataStreamReadSU(&dataStream, &jpeg->FileInfo.DensityY, EndianLittle);
-                DataStreamReadCU(&dataStream, &jpeg->FileInfo.ThumbnailX);
-                DataStreamReadCU(&dataStream, &jpeg->FileInfo.ThumbnailY);
+                DataStreamReadP(dataStream, identifier, 5u);
+                DataStreamReadCU(dataStream, &jpeg->FileInfo.VersionMajor);
+                DataStreamReadCU(dataStream, &jpeg->FileInfo.VersionMinor);
+                DataStreamReadCU(dataStream, &jpeg->FileInfo.DensityUnits);
+                DataStreamReadSU(dataStream, &jpeg->FileInfo.DensityX, EndianLittle);
+                DataStreamReadSU(dataStream, &jpeg->FileInfo.DensityY, EndianLittle);
+                DataStreamReadCU(dataStream, &jpeg->FileInfo.ThumbnailX);
+                DataStreamReadCU(dataStream, &jpeg->FileInfo.ThumbnailY);
 
 #if JPGDebug
                 printf
@@ -590,7 +586,7 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                         jpeg->FileInfo.ThumbnailDataSize = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
                         jpeg->FileInfo.ThumbnailData = MemoryAllocate(sizeof(unsigned char) * jpeg->FileInfo.ThumbnailDataSize);
 
-                        DataStreamReadP(&dataStream, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
+                        DataStreamReadP(dataStream, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
                     }
                 }
 
@@ -601,20 +597,20 @@ ActionResult JPEGParseToImage(Image* const image, const void* data, const size_t
                 jpeg->CommentSize = chunkLength;
                 jpeg->Comment = MemoryAllocate(sizeof(char) * chunkLength);
 
-                DataStreamReadP(&dataStream, jpeg->Comment, chunkLength);
+                DataStreamReadP(dataStream, jpeg->Comment, chunkLength);
 
                 break;
             }
         }
 
 #if JPGDebug
-        if(dataStream.DataCursor != expectedOffset)
+        if(dataStream->DataCursor != expectedOffset)
         {
-            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - dataStream.DataCursor);
+            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - dataStream->DataCursor);
         }
 #endif
         //--<Allign>----
-        dataStream.DataCursor = expectedOffset;
+        dataStream->DataCursor = expectedOffset;
         //--------------
     }
 
@@ -856,14 +852,14 @@ short JPEGEncodeBlock
     float* block64 = block;
 
     // DCT: rows
-    for(size_t offset = 0; offset < 8; offset++)
+    for(PXSize offset = 0; offset < 8; offset++)
         DCT(1u, block64 + offset * 8);
     // DCT: columns
-    for(size_t offset = 0; offset < 8; offset++)
+    for(PXSize offset = 0; offset < 8; offset++)
         DCT(8u, block64 + offset * 1);
 
     // scale
-    for(size_t i = 0; i < 8 * 8; i++)
+    for(PXSize i = 0; i < 8 * 8; i++)
         block64[i] *= scaled[i];
 
     // encode DC (the first coefficient is the "average color" of the 8x8 block)
@@ -881,9 +877,9 @@ short JPEGEncodeBlock
     }
 
     // quantize and zigzag the other 63 coefficients
-    size_t posNonZero = 0; // find last coefficient which is not zero (because trailing zeros are encoded very efficiently)
+    PXSize posNonZero = 0; // find last coefficient which is not zero (because trailing zeros are encoded very efficiently)
     int16_t quantized[8 * 8];
-    for(size_t i = 1; i < 8 * 8; i++) // start at 1 because block64[0]=DC was already processed
+    for(PXSize i = 1; i < 8 * 8; i++) // start at 1 because block64[0]=DC was already processed
     {
         float value = block64[ZigZagInv[i]];
         // round to nearest integer (actually, rounding is performed by casting from float to int16)
@@ -894,10 +890,10 @@ short JPEGEncodeBlock
     }
 
     // encode ACs (Q[1..63])
-    for(size_t i = 1; i <= posNonZero; i++) // Q[0] was already written, start at Q[1] and skip all trailing zeros
+    for(PXSize i = 1; i <= posNonZero; i++) // Q[0] was already written, start at Q[1] and skip all trailing zeros
     {
         // zeros are encoded in a special way
-        size_t offset = 0; // upper 4 bits count the number of consecutive zeros
+        PXSize offset = 0; // upper 4 bits count the number of consecutive zeros
         while(quantized[i] == 0) // found a few zeros, let's count them
         {
             i++;
@@ -947,7 +943,7 @@ void generateHuffmanTable(const uint8_t numCodes[16], const uint8_t* values, Bit
 
 
 
-ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
+ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
     unsigned char isRGB = 1u;
     unsigned char quality = 100u;
@@ -1001,7 +997,7 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     // adjust quantization tables to desired quality
     uint8_t quantLuminance[8 * 8];
     uint8_t quantChrominance[8 * 8];
-    for(size_t i = 0; i < 8 * 8; i++)
+    for(PXSize i = 0; i < 8 * 8; i++)
     {
         const unsigned char luminance = (DefaultQuantLuminance[ZigZagInv[i]] * quality + 50u) / 100u;
         const unsigned char chrominance = (DefaultQuantChrominance[ZigZagInv[i]] * quality + 50u) / 100u;
@@ -1045,7 +1041,7 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     DataStreamWriteCU(&dataStream, numComponents);
 
 
-    for(size_t id = 1; id <= numComponents; ++id)
+    for(PXSize id = 1; id <= numComponents; ++id)
     {
         DataStreamWriteCU(&dataStream, id);                    // component ID (Y=1, Cb=2, Cr=3)
         // bitmasks for sampling: highest 4 bits: horizontal, lowest 4 bits: vertical
@@ -1118,7 +1114,7 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     // assign Huffman tables to each component
     DataStreamWriteCU(&dataStream, numComponents);
 
-    for(size_t id = 1; id <= numComponents; ++id)
+    for(PXSize id = 1; id <= numComponents; ++id)
     {
         // component ID (Y=1, Cb=2, Cr=3)
         DataStreamWriteCU(&dataStream, id);
@@ -1162,8 +1158,8 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
     int16_t lastYDC = 0, lastCbDC = 0, lastCrDC = 0;
 
     // downsampling of Cb and Cr channels, if sampling = 2 then 2x2 samples are used
-    const size_t sampling = downsample ? 2 : 1;
-    const size_t numSamples = sampling * sampling; // 1 (grayscale, YCbCr444) or 4 (YCbCr420)
+    const PXSize sampling = downsample ? 2 : 1;
+    const PXSize numSamples = sampling * sampling; // 1 (grayscale, YCbCr444) or 4 (YCbCr420)
     // only for downsampled: sum of four pixels' red, green, blue components
     float red[8][8];
     float green[8][8];

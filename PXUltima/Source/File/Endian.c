@@ -1,6 +1,6 @@
 #include "Endian.h"
 
-void EndianSwap(void* data, const size_t dataSize, const Endian endianFrom, const Endian endianTo)
+void EndianSwap(void* data, const PXSize dataSize, const Endian endianFrom, const Endian endianTo)
 {
 	{
 		const unsigned char inoutIsOutput = endianFrom == endianTo;
@@ -10,10 +10,10 @@ void EndianSwap(void* data, const size_t dataSize, const Endian endianFrom, cons
 			return;
 		}
 	}
-	size_t runntime = dataSize / 2;
+	PXSize runntime = dataSize / 2;
 	const unsigned char* endAdress = (unsigned char*)data + (dataSize - 1);
 
-	for(size_t i = 0; i < runntime; ++i)
+	for(PXSize i = 0; i < runntime; ++i)
 	{
 		unsigned char* a = (unsigned char*)data + i;
 		unsigned char* b = (unsigned char*)endAdress - i;

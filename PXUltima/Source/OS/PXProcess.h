@@ -48,15 +48,15 @@ extern "C"
 		long ContextSwapInvoluntary;
 
 
-		size_t PeakWorkingSetSize; // The peak working set size, in bytes.
-		size_t WorkingSetSize; // The current working set size, in bytes.
-		size_t QuotaPeakPagedPoolUsage; // The peak paged pool usage, in bytes.
-		size_t QuotaPagedPoolUsage; // The current paged pool usage, in bytes.
-		size_t QuotaPeakNonPagedPoolUsage; // The peak nonpaged pool usage, in bytes.
-		size_t QuotaNonPagedPoolUsage; // The peak value in bytes of the Commit Charge during the lifetime of this process.
-		size_t PagefileUsage;
-		size_t PeakPagefileUsage; // The peak value in bytes of the Commit Charge during the lifetime of this process.
-		size_t PrivateUsage; // Windows new value
+		PXSize PeakWorkingSetSize; // The peak working set size, in bytes.
+		PXSize WorkingSetSize; // The current working set size, in bytes.
+		PXSize QuotaPeakPagedPoolUsage; // The peak paged pool usage, in bytes.
+		PXSize QuotaPagedPoolUsage; // The current paged pool usage, in bytes.
+		PXSize QuotaPeakNonPagedPoolUsage; // The peak nonpaged pool usage, in bytes.
+		PXSize QuotaNonPagedPoolUsage; // The peak value in bytes of the Commit Charge during the lifetime of this process.
+		PXSize PagefileUsage;
+		PXSize PeakPagefileUsage; // The peak value in bytes of the Commit Charge during the lifetime of this process.
+		PXSize PrivateUsage; // Windows new value
 	}
 	PXProcessMemoryInfo;
 

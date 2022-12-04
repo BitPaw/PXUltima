@@ -127,7 +127,7 @@ void DataBaseConnectionConnect
         SQLWCHAR connectionStringResult[2048];
         const SQLSMALLINT connectionStringResultSize = sizeof(connectionStringResult) / sizeof(SQLWCHAR);
         SQLSMALLINT connectionStringResultWrittenSize = 0;
-        const size_t connectionStringSize = wsprintf
+        const PXSize connectionStringSize = wsprintf
         (
             connectionString,
             L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
@@ -292,8 +292,8 @@ void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, con
 #if OSUnix
 #elif OSWindows
     SQLHSTMT handleStatement = 0;
-    size_t colums = 0;
-    size_t rows = 0;
+    PXSize colums = 0;
+    PXSize rows = 0;
 
     // Check connection
     {
@@ -350,7 +350,7 @@ void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, con
 
     printf("|");
 
-    for (size_t columIndex = 1; columIndex <= colums; ++columIndex)
+    for (PXSize columIndex = 1; columIndex <= colums; ++columIndex)
     {
         wchar_t columnName[1024];
         const SQLSMALLINT columnNameSize = sizeof(columnName) / sizeof(wchar_t);
@@ -418,14 +418,14 @@ void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, con
     printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
     SQLRETURN resultFetch = 0;
-    for (size_t rowIndex = 0; SQL_SUCCEEDED(resultFetch = SQLFetch(handleStatement)); ++rowIndex)
+    for (PXSize rowIndex = 0; SQL_SUCCEEDED(resultFetch = SQLFetch(handleStatement)); ++rowIndex)
     {
         printf("|");
 
-        for (size_t columIndex = 1; columIndex <= colums; ++columIndex)
+        for (PXSize columIndex = 1; columIndex <= colums; ++columIndex)
         {
             wchar_t fieldBuffer[1048];
-            const size_t fieldBufferSize = sizeof(fieldBuffer) / sizeof(wchar_t);
+            const PXSize fieldBufferSize = sizeof(fieldBuffer) / sizeof(wchar_t);
             SQLLEN readLength = 0;
 
             const SQLRETURN resultData = SQLGetData(handleStatement, columIndex, SQL_UNICODE_CHAR, fieldBuffer, fieldBufferSize, &readLength);

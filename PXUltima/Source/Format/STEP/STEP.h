@@ -17,7 +17,7 @@ extern "C"
 	}
 	STEP;
 
-	PXPublic ActionResult STEPParse(STEP* step, const void* data, const size_t dataSize, size_t* dataRead);	
+	PXPublic ActionResult STEPParse(STEP* step, const void* data, const PXSize dataSize, PXSize* dataRead);	
 
 #ifdef __cplusplus
 }

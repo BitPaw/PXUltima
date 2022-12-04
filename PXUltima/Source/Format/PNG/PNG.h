@@ -84,7 +84,7 @@ extern "C"
 
 	typedef struct PNGPaletteHistogram_
 	{
-		size_t ColorFrequencyListSize;
+		PXSize ColorFrequencyListSize;
 		unsigned short* ColorFrequencyList;
 	}
 	PNGPaletteHistogram;
@@ -230,11 +230,11 @@ extern "C"
 		//---------------------------------------------------------------------------
 
 		//---[ IDAT - Image Data (Compressed)]---------------------------------------
-		//size_t ZLIBHeaderListSize;
+		//PXSize ZLIBHeaderListSize;
 		//ZLIBHeader* ZLIBHeaderList;
 		//---------------------------------------------------------------------------
 
-		size_t PixelDataSize;
+		PXSize PixelDataSize;
 		unsigned char* PixelData;
 
 		//---------------------------------------------------------------------------
@@ -283,7 +283,7 @@ extern "C"
 		The palette is only supported for color type 3.
 		*/
 		unsigned char* palette; /*palette in RGBARGBA... order. Must be either 0, or when allocated must have 1024 bytes*/
-		size_t palettesize; /*palette size in number of colors (amount of used bytes is 4 * palettesize)*/
+		PXSize palettesize; /*palette size in number of colors (amount of used bytes is 4 * palettesize)*/
 
 		/*
 		transparent color key (tRNS)
@@ -334,49 +334,49 @@ node has 16 instead of 8 children.
 
 	static unsigned getNumColorChannels(LodePNGColorType colortype);
 
-	static size_t lodepng_get_bpp_lct(LodePNGColorType colortype, size_t bitdepth);
+	static PXSize lodepng_get_bpp_lct(LodePNGColorType colortype, PXSize bitdepth);
 
 	static int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* b);
 
 	/*Get RGBA16 color of pixel with index i (y * width + x) from the raw image with
 given color type, but the given color type must be 16-bit itself.*/
 	static void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a,
-									const unsigned char* in, size_t i, const LodePNGColorMode* mode);
+									const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
 
 
 	/*put a pixel, given its RGBA16 color, into image of any color 16-bitdepth type*/
-	static void rgba16ToPixel(unsigned char* out, size_t i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a);
+	static void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a);
 
 
 	/*Similar to getPixelColorRGBA8, but with all the for loops inside of the color
 mode test cases, optimized to convert the colors much faster, when converting
 to the common case of RGBA with 8 bit per channel. buffer must be RGBA with
 enough memory.*/
-	static void getPixelColorsRGBA8(unsigned char* buffer, size_t numpixels, const unsigned char* in, const LodePNGColorMode* mode);
+	static void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode);
 
 
 	/*Similar to getPixelColorsRGBA8, but with 3-channel RGB output.*/
-	static void getPixelColorsRGB8(unsigned char* buffer, size_t numpixels, const unsigned char* in, const LodePNGColorMode* mode);
+	static void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode);
 
 	/*Get RGBA8 color of pixel with index i (y * width + x) from the raw image with given color type.*/
-	static void getPixelColorRGBA8(unsigned char* r, unsigned char* g,								   unsigned char* b, unsigned char* a,								   const unsigned char* in, size_t i,								   const LodePNGColorMode* mode);
+	static void getPixelColorRGBA8(unsigned char* r, unsigned char* g,								   unsigned char* b, unsigned char* a,								   const unsigned char* in, PXSize i,								   const LodePNGColorMode* mode);
 
 
 	/*put a pixel, given its RGBA color, into image of any color type*/
-	static unsigned rgba8ToPixel(unsigned char* out, size_t i,								 const LodePNGColorMode* mode, PNGColorTree* tree /*for palette*/,								 unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+	static unsigned rgba8ToPixel(unsigned char* out, PXSize i,								 const LodePNGColorMode* mode, PNGColorTree* tree /*for palette*/,								 unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 
-	PXPublic size_t lodepng_get_raw_size_lct(size_t w, size_t h, LodePNGColorType colortype, size_t bitdepth);
-	PXPublic size_t lodepng_get_raw_size(size_t w, size_t h, const LodePNGColorMode* color);
+	PXPublic PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth);
+	PXPublic PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color);
 
 	/*returns -1 if color not present, its index otherwise*/
 	PXPublic int color_tree_get(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 	/*index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to*/
-	PXPublic void addColorBits(unsigned char* out, size_t index, unsigned int bits, unsigned int in);
+	PXPublic void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in);
 
-	PXPublic unsigned char readBitFromReversedStream(size_t* bitpointer, const unsigned char* bitstream);
-	PXPublic unsigned readBitsFromReversedStream(size_t* bitpointer, const unsigned char* bitstream, size_t nbits);
+	PXPublic unsigned char readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream);
+	PXPublic unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream, PXSize nbits);
 
 
 
@@ -398,16 +398,16 @@ enough memory.*/
 	PXPublic void PNGDestruct(PNG* const png);
 
 
-	PXPublic size_t NumberOfColorChannels(const PNGColorType pngColorType);
-	PXPublic size_t BitsPerPixel(const PNG* const png);
+	PXPublic PXSize NumberOfColorChannels(const PNGColorType pngColorType);
+	PXPublic PXSize BitsPerPixel(const PNG* const png);
 
-	PXPublic size_t PNGFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	PXPublic PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t* dataRead);
-	PXPublic ActionResult PNGParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic ActionResult PNGParseToImage(Image* const image, DataStream* const dataStream);
 
-	PXPublic ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* dataWritten);
-	PXPublic ActionResult PNGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic ActionResult PNGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

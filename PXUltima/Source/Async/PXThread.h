@@ -38,7 +38,7 @@ extern "C"
 
 	PXPublic ActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter);
 
-	PXPublic size_t PXThreadCurrentID();
+	PXPublic PXSize PXThreadCurrentID();
 	PXPublic void PXThreadCurrentGet(PXThread* const pxThread);
 
 	PXPublic void PXThreadWaitForFinish(PXThread* const pxThread);

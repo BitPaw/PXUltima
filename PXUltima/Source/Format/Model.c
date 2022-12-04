@@ -16,7 +16,7 @@ void ModelDestruct(PXModel* const model)
 	
 }
 
-size_t PXModelMaterialAmount(PXModel* const model)
+PXSize PXModelMaterialAmount(PXModel* const model)
 {
     // Has materials?
     {
@@ -40,9 +40,9 @@ size_t PXModelMaterialAmount(PXModel* const model)
     }  
 }
 
-PXBool PXModelMaterialGet(PXModel* const model, const size_t materialID, PXMaterial* const pxMaterial)
+PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial)
 {
-    const size_t amount = PXModelMaterialAmount(model);
+    const PXSize amount = PXModelMaterialAmount(model);
 
     {
         const PXBool isInRange = amount >= materialID;
@@ -60,7 +60,7 @@ PXBool PXModelMaterialGet(PXModel* const model, const size_t materialID, PXMater
     DataStreamFromExternal(&materialData, model->MaterialList, -1);
     DataStreamCursorAdvance(&materialData, sizeof(unsigned int));
 
-    for (size_t i = 0; i < amount; ++i)
+    for (PXSize i = 0; i < amount; ++i)
     {
         const PXBool isGoal = i == materialID;
         unsigned short materialSize = 0;
@@ -106,14 +106,14 @@ unsigned char ModelSegmentsAmount(const PXModel* const model)
 	return *(PXAdress)model->Data;
 }
 
-void* ModelSegmentsAdressGet(const PXModel* const model, const size_t index)
+void* ModelSegmentsAdressGet(const PXModel* const model, const PXSize index)
 {
     unsigned char* ancer = (unsigned char*)model->Data + 1 + (index * (sizeof(char) + sizeof(int) * 2u));
 
     return ancer;
 }
 
-void ModelSegmentsGet(const PXModel* const model, const size_t index, MeshSegment* const meshSegment)
+void ModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegment* const meshSegment)
 {
     DataStream dataStream;
 
@@ -149,7 +149,7 @@ void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const
 
 }
 
-size_t ModelVertexDataStride(const PXModel* const model)
+PXSize ModelVertexDataStride(const PXModel* const model)
 {
     return sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
 }
@@ -214,7 +214,7 @@ ActionResult ModelLoadD(PXModel* const model, DataStream* const fileStream, cons
 {
     DataStream modelCompileCache;
 
-    size_t bytesRead = 0;
+    PXSize bytesRead = 0;
     ModelCompilerFunction modelCompilerFunction = 0;
     ModelParserFunction modelParserFunction = 0;
 

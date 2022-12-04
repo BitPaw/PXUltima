@@ -13,7 +13,7 @@ void PXLinkedListFixedNodeDestruct(PXLinkedListFixed* const linkedListFixed)
     
 }
 
-void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* const data, const size_t dataSize, const size_t nodeSize)
+void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* const data, const PXSize dataSize, const PXSize nodeSize)
 {
     linkedListFixed->Data = data;
     linkedListFixed->DataSize = dataSize;
@@ -32,15 +32,15 @@ void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* co
     }
 }
 
-PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const size_t index)
+PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const PXSize index)
 {
-    const size_t nodeBlockSize = PXLinkedListFixedNodeStride(linkedListFixed);
+    const PXSize nodeBlockSize = PXLinkedListFixedNodeStride(linkedListFixed);
     const void* const data = (PXAdress)linkedListFixed->Data + nodeBlockSize * index;
 
     MemoryCopy(data, sizeof(void*), &pxLinkedListNodeFixed->BlockData, sizeof(void*));
 
     {
-        const size_t dataSize = PXLinkedListFixedDataSize(linkedListFixed);
+        const PXSize dataSize = PXLinkedListFixedDataSize(linkedListFixed);
 
         pxLinkedListNodeFixed->NodeNext = (PXAdress)pxLinkedListNodeFixed->BlockData + dataSize;
     }    
@@ -114,9 +114,9 @@ PXBool PXLinkedListFixedIsDataEmbedded(const PXLinkedListFixed* const linkedList
     return linkedListFixed->NodeSize != (void*)-1;
 }
 
-size_t PXLinkedListFixedNodeStride(const PXLinkedListFixed* const linkedListFixed)
+PXSize PXLinkedListFixedNodeStride(const PXLinkedListFixed* const linkedListFixed)
 {
-    const size_t dataSize = PXLinkedListFixedDataSize(linkedListFixed);
+    const PXSize dataSize = PXLinkedListFixedDataSize(linkedListFixed);
 
     return sizeof(void*) + dataSize;
 }
@@ -139,8 +139,8 @@ PXBool PXLinkedListFixedNodeAdd(PXLinkedListFixed* const linkedListFixed, void* 
         return PXNo;
     }
 
-    const size_t dataBlockSize = PXLinkedListFixedDataSize(linkedListFixed);
-    const size_t nodeStride = PXLinkedListFixedNodeStride(linkedListFixed);
+    const PXSize dataBlockSize = PXLinkedListFixedDataSize(linkedListFixed);
+    const PXSize nodeStride = PXLinkedListFixedNodeStride(linkedListFixed);
     void* data = (PXAdress)linkedListFixed->Data + (nodeStride * linkedListFixed->NodeListSizeCurrent);
    
     // Add current data/adress
@@ -153,7 +153,7 @@ PXBool PXLinkedListFixedNodeAdd(PXLinkedListFixed* const linkedListFixed, void* 
 
     // Add next pointer
     {
-        const size_t targetSize = sizeof(void*);
+        const PXSize targetSize = sizeof(void*);
         const void* value = PXLinkedListNodeNoNext;
         void* const target = (PXAdress)data + dataBlockSize;
 
@@ -177,7 +177,7 @@ PXBool PXLinkedListFixedNodeAdd(PXLinkedListFixed* const linkedListFixed, void* 
     return PXYes;
 }
 
-PXBool PXLinkedListFixedNodeRemoveAt(PXLinkedListFixed* const linkedListFixed, const size_t index)
+PXBool PXLinkedListFixedNodeRemoveAt(PXLinkedListFixed* const linkedListFixed, const PXSize index)
 {
     PXLinkedListNodeFixed pxLinkedListNodeFixed;
 

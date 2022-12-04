@@ -15,7 +15,7 @@
 #include <Format/FNT/FNT.h>
 #include <Format/Font.h>
 
-size_t ImageBitDepth(const ImageDataFormat imageDataFormat)
+PXSize ImageBitDepth(const ImageDataFormat imageDataFormat)
 {
     switch (imageDataFormat)
     {
@@ -39,7 +39,7 @@ size_t ImageBitDepth(const ImageDataFormat imageDataFormat)
     }
 }
 
-size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat)
+PXSize ImageBytePerPixel(const ImageDataFormat imageDataFormat)
 {
     switch(imageDataFormat)
     {
@@ -61,7 +61,7 @@ size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat)
     }
 }
 
-size_t ImageBitsPerPixel(const ImageDataFormat imageDataFormat)
+PXSize ImageBitsPerPixel(const ImageDataFormat imageDataFormat)
 {
     return ImageBytePerPixel(imageDataFormat) * 8u;
 }
@@ -108,7 +108,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
 
     {
         const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryW(filePath, PathMaxSize);
-        const ActionResult fileParsingResult = ImageLoadD(image, dataStream.Data, dataStream.DataSize, imageFormatHint);
+        const ActionResult fileParsingResult = ImageLoadD(image, &dataStream, imageFormatHint);
         const PXBool success = fileParsingResult == ActionSuccessful;
 
         if(success)
@@ -135,9 +135,9 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
     DataStreamDestruct(&dataStream);
 }
 
-ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const FileFormatExtension guessedFormat)
+ActionResult ImageLoadD(Image* const image, DataStream* const dataStream, const FileFormatExtension guessedFormat)
 {
-    size_t bytesRead = 0;
+    PXSize bytesRead = 0;
     ParseToImage parseToImage = 0;
 
     switch(guessedFormat)
@@ -178,7 +178,7 @@ ActionResult ImageLoadD(Image* const image, const void* const data, const size_t
         }
     }
 
-    const ActionResult actionResult = parseToImage(image, data, dataSize, &bytesRead);
+    const ActionResult actionResult = parseToImage(image, dataStream);
 
     return actionResult;
 }
@@ -199,8 +199,8 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
     wchar_t filePathW[PathMaxSize];
     wchar_t* fileExtension = 0;
 
-    size_t fileSize = 0;
-    size_t writtenBytes = 0;
+    PXSize fileSize = 0;
+    PXSize writtenBytes = 0;
     DataStream dataStream;  
 
     SerializeFromImage serializeFromImageFunction = 0;
@@ -288,16 +288,16 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
     return ActionSuccessful;
 }
 
-ActionResult ImageSaveD(Image* const image, void* const data, const size_t dataSize, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+ActionResult ImageSaveD(Image* const image, void* const data, const PXSize dataSize, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     return ActionInvalid;
 }
 
-PXBool ImageResize(Image* const image, const ImageDataFormat format, const size_t width, const size_t height)
+PXBool ImageResize(Image* const image, const ImageDataFormat format, const PXSize width, const PXSize height)
 {
-    const size_t bbp = ImageBytePerPixel(format);
-    const size_t newSize = width * height * bbp;
-    const size_t oldSize = image->PixelDataSize;
+    const PXSize bbp = ImageBytePerPixel(format);
+    const PXSize newSize = width * height * bbp;
+    const PXSize oldSize = image->PixelDataSize;
 
     // Do we need to realloc?
     {
@@ -330,18 +330,18 @@ PXBool ImageResize(Image* const image, const ImageDataFormat format, const size_
 
 void ImageFlipHorizontal(Image* image)
 {
-    const size_t bbp = ImageBytePerPixel(image->Format);
-    const size_t rowSize = (image->Width * bbp);
-    const size_t length = (image->Width * bbp) / 2;
+    const PXSize bbp = ImageBytePerPixel(image->Format);
+    const PXSize rowSize = (image->Width * bbp);
+    const PXSize length = (image->Width * bbp) / 2;
 
-    for(size_t x = 0; x < length; x += bbp) // 
+    for(PXSize x = 0; x < length; x += bbp) // 
     {
-        const size_t xB = rowSize - x - bbp;
+        const PXSize xB = rowSize - x - bbp;
 
-        for(size_t y = 0; y < image->Height; y++)
+        for(PXSize y = 0; y < image->Height; y++)
         {
-            const size_t indexA = x + (y * rowSize);
-            const size_t indexB = xB + (y * rowSize);
+            const PXSize indexA = x + (y * rowSize);
+            const PXSize indexB = xB + (y * rowSize);
             unsigned char tempByte[4] = { 0,0,0,0 };
             unsigned char* pixelA = (unsigned char*)image->PixelData + indexA;
             unsigned char* pixelB = (unsigned char*)image->PixelData + indexB;
@@ -355,9 +355,9 @@ void ImageFlipHorizontal(Image* image)
 
 void ImageFlipVertical(Image* image)
 {
-    const size_t bbp = ImageBytePerPixel(image->Format);;
-    const size_t scanLineWidthSize = image->Width * bbp;
-    const size_t scanLinesToSwap = image->Height / 2u;
+    const PXSize bbp = ImageBytePerPixel(image->Format);;
+    const PXSize scanLineWidthSize = image->Width * bbp;
+    const PXSize scanLinesToSwap = image->Height / 2u;
     unsigned char* copyBufferRow = MemoryAllocate(sizeof(unsigned char) * scanLineWidthSize);
 
     if(!copyBufferRow)
@@ -365,7 +365,7 @@ void ImageFlipVertical(Image* image)
         return;
     }
 
-    for(size_t scanlineIndex = 0; scanlineIndex < scanLinesToSwap; scanlineIndex++)
+    for(PXSize scanlineIndex = 0; scanlineIndex < scanLinesToSwap; scanlineIndex++)
     {
         unsigned char* bufferA = (unsigned char*)image->PixelData + (scanlineIndex * scanLineWidthSize);
         unsigned char* bufferB = (unsigned char*)image->PixelData + ((image->Height - scanlineIndex) * scanLineWidthSize) - scanLineWidthSize;
@@ -384,7 +384,7 @@ void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsi
 
 void ImageFillColorRGBA8(Image* const image, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)
 {
-    for (size_t i = 0; i < image->PixelDataSize; i += 4u)
+    for (PXSize i = 0; i < image->PixelDataSize; i += 4u)
     {
         unsigned char* const data = (unsigned char*)image->PixelData + i;
 
@@ -395,18 +395,18 @@ void ImageFillColorRGBA8(Image* const image, const PXByte red, const PXByte gree
     }
 }
 
-void* ImageDataPoint(const Image* const image, const size_t x, const size_t y)
+void* ImageDataPoint(const Image* const image, const PXSize x, const PXSize y)
 {
-    const size_t bytesPerPixel = ImageBytePerPixel(image->Format);
-    const size_t index = x * bytesPerPixel + y * image->Width;
+    const PXSize bytesPerPixel = ImageBytePerPixel(image->Format);
+    const PXSize index = x * bytesPerPixel + y * image->Width;
 
     return (unsigned char*)image->PixelData + index;
 }
 
-size_t ImagePixelPosition(const Image* const image, const size_t x, const size_t y)
+PXSize ImagePixelPosition(const Image* const image, const PXSize x, const PXSize y)
 {
-    const size_t bytesPerPixel = ImageBytePerPixel(image->Format);
-    const size_t index = x * bytesPerPixel + y * bytesPerPixel * image->Width;
+    const PXSize bytesPerPixel = ImageBytePerPixel(image->Format);
+    const PXSize index = x * bytesPerPixel + y * bytesPerPixel * image->Width;
 
     return index;
 }
@@ -414,14 +414,14 @@ size_t ImagePixelPosition(const Image* const image, const size_t x, const size_t
 void ImagePixelSetRGB8
 (
     Image* const image, 
-    const size_t x,
-    const size_t y,
+    const PXSize x,
+    const PXSize y,
     const unsigned char red, 
     const unsigned char green,
     const unsigned char blue
 )
 {
-    const size_t index = ImagePixelPosition(image, x, y);
+    const PXSize index = ImagePixelPosition(image, x, y);
     unsigned char* const pixelData = (unsigned char* const)image->PixelData + index;
     
     pixelData[0] = red;
@@ -432,10 +432,10 @@ void ImagePixelSetRGB8
 void ImageDrawRectangle
 (
     Image* const image, 
-    const size_t x,
-    const size_t y,
-    const size_t width, 
-    const size_t height, 
+    const PXSize x,
+    const PXSize y,
+    const PXSize width, 
+    const PXSize height, 
     const unsigned char red, 
     const unsigned char green, 
     const unsigned char blue, 
@@ -444,15 +444,15 @@ void ImageDrawRectangle
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 
-    const size_t mimimumInBoundsX = MathMinimum(x + width, image->Width);
-    const size_t mimimumInBoundsY = MathMinimum(y + height, image->Height);
-    const size_t bytePerPixel = ImageBytePerPixel(image->Format);
+    const PXSize mimimumInBoundsX = MathMinimum(x + width, image->Width);
+    const PXSize mimimumInBoundsY = MathMinimum(y + height, image->Height);
+    const PXSize bytePerPixel = ImageBytePerPixel(image->Format);
 
-    for (size_t cy = y; cy < mimimumInBoundsY; ++cy)
+    for (PXSize cy = y; cy < mimimumInBoundsY; ++cy)
     {
-        for (size_t cx = x; cx < mimimumInBoundsX; ++cx)
+        for (PXSize cx = x; cx < mimimumInBoundsX; ++cx)
         {
-            const size_t index = cx * bytePerPixel + cy * image->Width* bytePerPixel;
+            const PXSize index = cx * bytePerPixel + cy * image->Width* bytePerPixel;
 
             ((unsigned char*)image->PixelData)[index+0] = red;
             ((unsigned char*)image->PixelData)[index+1] = green;
@@ -461,7 +461,7 @@ void ImageDrawRectangle
     }      
 }
 
-void ImageDrawTextA(Image* const image, const size_t x, const size_t y, const size_t width, const size_t height, const PXFont* const font, const char* text)
+void ImageDrawTextA(Image* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const char* text)
 {
     wchar_t textW[1024];
 
@@ -473,10 +473,10 @@ void ImageDrawTextA(Image* const image, const size_t x, const size_t y, const si
 void ImageDrawTextW
 (
     Image* const image,
-    const size_t x,
-    const size_t y,
-    const size_t width,
-    const size_t height,
+    const PXSize x,
+    const PXSize y,
+    const PXSize width,
+    const PXSize height,
     const PXFont* const font,
     const wchar_t* text
 )
@@ -484,7 +484,7 @@ void ImageDrawTextW
     float fontSize = 0.002;
     float lastPositionX = x;
 
-    for (size_t i = 0; (i < 1024u) && (text[i] != '\0'); ++i)
+    for (PXSize i = 0; (i < 1024u) && (text[i] != '\0'); ++i)
     {
         const wchar_t character = text[i];
         const FNTCharacter* fntCharacter = FNTGetCharacter(&font->FontElement[0], character);
@@ -537,33 +537,33 @@ void ImageDrawTextW
 void ImageMerge
 (
     Image* const image,
-    const size_t x,
-    const size_t y,
-    const size_t insertX,
-    const size_t insertY,
-    const size_t insertWidth,
-    const size_t insertHeight,
+    const PXSize x,
+    const PXSize y,
+    const PXSize insertX,
+    const PXSize insertY,
+    const PXSize insertWidth,
+    const PXSize insertHeight,
     const Image* const imageInsert
 )
 {
 
     //unsigned char* data = ImageDataPoint(image, x, y);
 
-    const size_t sourceMimimumInBoundsX = MathMinimum(x + insertWidth, image->Width);
-    const size_t sourceMimimumInBoundsY = MathMinimum(y + insertHeight, image->Height);
-    const size_t targetMimimumInBoundsX = MathMinimum(insertX + insertWidth, imageInsert->Width);
-    const size_t targetMimimumInBoundsY = MathMinimum(insertY + insertHeight, imageInsert->Height);
+    const PXSize sourceMimimumInBoundsX = MathMinimum(x + insertWidth, image->Width);
+    const PXSize sourceMimimumInBoundsY = MathMinimum(y + insertHeight, image->Height);
+    const PXSize targetMimimumInBoundsX = MathMinimum(insertX + insertWidth, imageInsert->Width);
+    const PXSize targetMimimumInBoundsY = MathMinimum(insertY + insertHeight, imageInsert->Height);
 
-    const size_t sourceBytesPerPixel = ImageBytePerPixel(image->Format);
-    const size_t targetBytesPerPixel = ImageBytePerPixel(imageInsert->Format);
-    const size_t bytesPerPixel = MathMinimum(sourceBytesPerPixel, targetBytesPerPixel);
+    const PXSize sourceBytesPerPixel = ImageBytePerPixel(image->Format);
+    const PXSize targetBytesPerPixel = ImageBytePerPixel(imageInsert->Format);
+    const PXSize bytesPerPixel = MathMinimum(sourceBytesPerPixel, targetBytesPerPixel);
 
-    for (size_t cy = 0u; cy < insertHeight; ++cy)
+    for (PXSize cy = 0u; cy < insertHeight; ++cy)
     {
-        for (size_t cx = 0u; cx < insertWidth; ++cx)
+        for (PXSize cx = 0u; cx < insertWidth; ++cx)
         {
-            const size_t indexSource = (cx + x) * sourceBytesPerPixel + (cy + y) * image->Width * sourceBytesPerPixel;
-            const size_t indexTarget = (cx + insertX) * targetBytesPerPixel + (cy + insertY) * imageInsert->Width * targetBytesPerPixel;
+            const PXSize indexSource = (cx + x) * sourceBytesPerPixel + (cy + y) * image->Width * sourceBytesPerPixel;
+            const PXSize indexTarget = (cx + insertX) * targetBytesPerPixel + (cy + insertY) * imageInsert->Width * targetBytesPerPixel;
 
             unsigned char* source = ((unsigned char*)image->PixelData) + indexSource;
             unsigned char* target = ((unsigned char*)imageInsert->PixelData) + indexTarget;
@@ -576,7 +576,7 @@ void ImageMerge
                 }
             }
 
-            for(size_t i = 0; i < bytesPerPixel; ++i)
+            for(PXSize i = 0; i < bytesPerPixel; ++i)
             {
                 source[i] = target[i];
             }

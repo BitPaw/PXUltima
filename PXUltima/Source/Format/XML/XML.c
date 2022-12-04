@@ -3,7 +3,7 @@
 #include <Compiler/PXCompiler.h>
 #include <Text/Text.h>
 
-XMLSymbol XMLPeekLine(const char* const text, const size_t textSize)
+XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize)
 {
     const PXBool isOpenTag = text[0] == '<';
     const PXBool isSlashTag = text[1] == '/';
@@ -13,9 +13,9 @@ XMLSymbol XMLPeekLine(const char* const text, const size_t textSize)
 
     PXBool isAttributeCalc = 0;
 
-    size_t indexEqual = TextFindFirstA(text, textSize, '=');
+    PXSize indexEqual = TextFindFirstA(text, textSize, '=');
 
-    if (indexEqual != (size_t)-1)
+    if (indexEqual != (PXSize)-1)
     {
         isAttributeCalc = text[indexEqual + 1] == '\"';
     }
@@ -48,7 +48,7 @@ XMLSymbol XMLPeekLine(const char* const text, const size_t textSize)
 
 ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const outputStream)
 {
-    size_t errorCounter = 0;
+    PXSize errorCounter = 0;
     DataStream tokenSteam;
 
     // Lexer - Level I 
@@ -94,12 +94,12 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                 {
                     case XMLSymbolAttribute:
                     {
-                        const size_t offsetEqualSign = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '=');                                        
-                        const size_t endOfValue = TextFindFirstA(compilerSymbolEntry.Source+ offsetEqualSign+2, compilerSymbolEntry.Size- offsetEqualSign-2, '\"');
+                        const PXSize offsetEqualSign = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '=');                                        
+                        const PXSize endOfValue = TextFindFirstA(compilerSymbolEntry.Source+ offsetEqualSign+2, compilerSymbolEntry.Size- offsetEqualSign-2, '\"');
 
-                        const size_t nameSize = offsetEqualSign;
+                        const PXSize nameSize = offsetEqualSign;
                         const char* const nameAdress = compilerSymbolEntry.Source;
-                        const size_t valueSize = endOfValue;
+                        const PXSize valueSize = endOfValue;
                         const char* const valueAdrees = compilerSymbolEntry.Source + offsetEqualSign + 2u;
                         
                         //-----------------------------------------------------
@@ -112,22 +112,22 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                         //-----------------------------------------------------
 
                         const char* startAfterValue = valueAdrees + valueSize;
-                        const size_t startAfterValueSize = compilerSymbolEntry.Size - (nameSize + valueSize + 3u);
+                        const PXSize startAfterValueSize = compilerSymbolEntry.Size - (nameSize + valueSize + 3u);
 
-                        const size_t indexOfCloseTagSymbol = TextFindFirstA(startAfterValue, startAfterValueSize, '/');
-                        const PXBool hasCloseTag = indexOfCloseTagSymbol != (size_t)-1;
+                        const PXSize indexOfCloseTagSymbol = TextFindFirstA(startAfterValue, startAfterValueSize, '/');
+                        const PXBool hasCloseTag = indexOfCloseTagSymbol != (PXSize)-1;
 
                         if (hasCloseTag)
                         {
-                            const size_t curSize = startAfterValueSize - indexOfCloseTagSymbol;
-                            const size_t indexOfCloseTagSymbolEE = TextFindFirstA(startAfterValue, curSize, '>');
-                            const PXBool hasCloseTagEEE = indexOfCloseTagSymbolEE != (size_t)-1;
+                            const PXSize curSize = startAfterValueSize - indexOfCloseTagSymbol;
+                            const PXSize indexOfCloseTagSymbolEE = TextFindFirstA(startAfterValue, curSize, '>');
+                            const PXBool hasCloseTagEEE = indexOfCloseTagSymbolEE != (PXSize)-1;
 
                             if (hasCloseTagEEE)
                             {       
                                 if (indexOfCloseTagSymbolEE < compilerSymbolEntry.Size) // Has even more data
                                 {
-                                    const size_t offset = (nameSize + valueSize + 3u);
+                                    const PXSize offset = (nameSize + valueSize + 3u);
 
                                     reuseModifiedToken = 1;
 
@@ -141,9 +141,9 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                     }
                     case XMLSymbolTagOpenBegin:
                     {         
-                        const size_t indexOfCloseTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '>');
-                        const PXBool doesContainMoreData = indexOfCloseTagSymbol != (size_t)-1;
-                        const size_t cutIndex = doesContainMoreData ? indexOfCloseTagSymbol - 1u : compilerSymbolEntry.Size - 1;
+                        const PXSize indexOfCloseTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '>');
+                        const PXBool doesContainMoreData = indexOfCloseTagSymbol != (PXSize)-1;
+                        const PXSize cutIndex = doesContainMoreData ? indexOfCloseTagSymbol - 1u : compilerSymbolEntry.Size - 1;
 
                         // Data
                         DataStreamWriteCU(outputStream, depthCounter);
@@ -167,7 +167,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                     case XMLSymbolTagOpenFull:
                     {
                         const char* openTagName = compilerSymbolEntry.Source + 1u;
-                        const size_t openTagNameSize = compilerSymbolEntry.Size - 2u;    
+                        const PXSize openTagNameSize = compilerSymbolEntry.Size - 2u;    
 
                         ++depthCounter;
 
@@ -194,7 +194,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
 
                         //-----------------------------------------------------
                         const char* closeTagName = compilerSymbolEntry.Source + 2u;
-                        const size_t closeTagNameSize = compilerSymbolEntry.Size - 3u;
+                        const PXSize closeTagNameSize = compilerSymbolEntry.Size - 3u;
 
                         DataStreamWriteCU(outputStream, depthCounter);
                         DataStreamWriteCU(outputStream, xmlTag);
@@ -210,15 +210,15 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                         DataStreamWriteCU(outputStream, depthCounter);
                         DataStreamWriteCU(outputStream, XMLSymbolRawData);
 
-                        size_t sizePositionOffset = outputStream->DataCursor;
-                        size_t sizeWritten = 0;
+                        PXSize sizePositionOffset = outputStream->DataCursor;
+                        PXSize sizeWritten = 0;
 
                         DataStreamWriteSU(outputStream, 0xFFFF, EndianLittle);
 
                         do
                         {
-                            size_t indexOfOpenTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '<');
-                            const PXBool found = indexOfOpenTagSymbol != (size_t)-1;
+                            PXSize indexOfOpenTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '<');
+                            const PXBool found = indexOfOpenTagSymbol != (PXSize)-1;
 
                             if (found)
                             {
@@ -233,8 +233,8 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                             }
                             else
                             {
-                                size_t indexOfCloseInlineTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '/');
-                                const PXBool found = indexOfCloseInlineTagSymbol > 0 && indexOfCloseInlineTagSymbol != (size_t)-1;
+                                PXSize indexOfCloseInlineTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '/');
+                                const PXBool found = indexOfCloseInlineTagSymbol > 0 && indexOfCloseInlineTagSymbol != (PXSize)-1;
 
                                 if (found)
                                 {
@@ -266,7 +266,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
     outputStream->DataSize = outputStream->DataCursor;
 
 
-    size_t currentPosition = outputStream->DataCursor;
+    PXSize currentPosition = outputStream->DataCursor;
 
     outputStream->DataCursor = 0;
 
@@ -283,7 +283,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
         DataStreamReadCU(outputStream, &depth);
         DataStreamReadCU(outputStream, &mode);
 
-        for (size_t i = 0; i < depth+1; ++i)
+        for (PXSize i = 0; i < depth+1; ++i)
         {
             printf("  ");
         }
@@ -354,7 +354,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                 DataStreamReadSU(outputStream, &size, EndianLittle);
                 DataStreamReadP(outputStream, textBuffer, size);
 
-                for (size_t i = 0; i < size; i++)
+                for (PXSize i = 0; i < size; i++)
                 {
                     textBuffer[i] = textBuffer[i] == '\n' ? ' ' : textBuffer[i];
                 }

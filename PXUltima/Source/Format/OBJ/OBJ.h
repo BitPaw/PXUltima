@@ -39,8 +39,8 @@ extern "C"
 
 	typedef struct OBJElementMaterialInfo_
 	{
-		size_t MaterialIndex;
-		size_t Size; // Size of buffer to use given material		
+		PXSize MaterialIndex;
+		PXSize Size; // Size of buffer to use given material		
 	}
 	OBJElementMaterialInfo;
 
@@ -50,21 +50,21 @@ extern "C"
 		float Smoothing;
 
 		OBJElementMaterialInfo* MaterialInfo;
-		size_t MaterialInfoSize;
+		PXSize MaterialInfoSize;
 
-		size_t VertexPositionListSize;
+		PXSize VertexPositionListSize;
 		float* VertexPositionList; 	// List of geometric vertices, with (x, y, z [,w]) coordinates, w is optional and defaults to 1.
 
-		size_t TextureCoordinateListSize;
+		PXSize TextureCoordinateListSize;
 		float* TextureCoordinateList; 	// List of texture coordinates, in (u, [,v ,w]) coordinates, these will vary between 0 and 1. v, w are optional and default to 0.
 
-		size_t VertexNormalPositionListSize;
+		PXSize VertexNormalPositionListSize;
 		float* VertexNormalPositionList; 	// List of vertex normals in (x,y,z) form; normals might not be unit vectors.
 
-		size_t VertexParameterListSize;
+		PXSize VertexParameterListSize;
 		float* VertexParameterList; // Parameter space vertices in ( u [,v] [,w] ) form; free form geometry statement.
 
-		size_t FaceElementListSize;
+		PXSize FaceElementListSize;
 		unsigned int* FaceElementList; // Polygonal face element.	
 	}
 	OBJElement;
@@ -78,10 +78,10 @@ extern "C"
 		wchar_t Name[OBJNameSize];
 		unsigned char VertexStructureSize;
 
-		size_t MaterialFileListSize;
+		PXSize MaterialFileListSize;
 		MTL* MaterialFileList;
 
-		size_t ElementListSize;
+		PXSize ElementListSize;
 		OBJElement* ElementList;
 	}
 	OBJ;
@@ -89,7 +89,7 @@ extern "C"
 	PXPublic void OBJConstruct(OBJ* const obj);
 	PXPublic void OBJDestruct(OBJ* const obj);
 
-	PXPrivate OBJLineType OBJPeekLine(const void* line, const size_t size);
+	PXPrivate OBJLineType OBJPeekLine(const void* line, const PXSize size);
 
 	PXPublic ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const outputStream);
 

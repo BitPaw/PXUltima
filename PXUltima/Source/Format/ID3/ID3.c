@@ -95,7 +95,7 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
     }
 }
 
-ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
     DataStream dataStream;
 
@@ -110,7 +110,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
     {
         // Einen ID3v2-Block erkennt man am Header, dessen erste fünf Bytes aus der Zeichenkette „ID3“ und der ID3v2-Version (z. B. $04 00 für ID3v2.4) bestehen
         const unsigned char signbature[3] = ID3HeaderSignature;
-        const size_t signbatureSize = sizeof(signbature);  
+        const PXSize signbatureSize = sizeof(signbature);  
         const unsigned char isValidHeader = DataStreamReadAndCompare(&dataStream, signbature, signbatureSize);
         
         if(!isValidHeader)
@@ -250,8 +250,8 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                 case ID3Versionv2x3:
                 case ID3Versionv2x4:
                 {
-                    const size_t posCurrent = dataStream.DataSize;
-                    const size_t posExpectedMax = dataStream.DataCursor + sizeOfDataSegment;
+                    const PXSize posCurrent = dataStream.DataSize;
+                    const PXSize posExpectedMax = dataStream.DataCursor + sizeOfDataSegment;
 
                     dataStream.DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
 
@@ -292,7 +292,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                         );
 #endif
 
-                        size_t posAfterChunk = dataStream.DataCursor + frameSize;
+                        PXSize posAfterChunk = dataStream.DataCursor + frameSize;
 
 
 #if 0 // Skip
@@ -314,7 +314,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                                 dataStream.Read(textEncoding);
                                 dataStream.Read(language, 3u);
 
-                                size_t insertOffset = 0;
+                                PXSize insertOffset = 0;
 
                                 while(dataStream.DataCursor < posAfterChunk) // There can be multible comments, but only one language.
                                 {
@@ -358,8 +358,8 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, s
                             case Popularimeter:
                             {
                                 const unsigned char* emailToUser = DataStreamCursorPosition(&dataStream);
-                                const size_t maximalToRead = DataStreamRemainingSize(&dataStream) - 6u;
-                                const size_t emailToUserSize = TextLengthA((char*)emailToUser, maximalToRead);
+                                const PXSize maximalToRead = DataStreamRemainingSize(&dataStream) - 6u;
+                                const PXSize emailToUserSize = TextLengthA((char*)emailToUser, maximalToRead);
                                 unsigned char rating = 0;
                                 // counter?
 

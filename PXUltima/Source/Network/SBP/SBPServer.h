@@ -34,7 +34,7 @@ extern "C"
 		const PXSocketID clientID,
 		const ResponseID responseID,
 		const unsigned char* buffer,
-		const size_t* bufferSize
+		const PXSize* bufferSize
 	);
 
 	PXPublic void SBPServerSendTextToAll(const char* text);

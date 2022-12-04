@@ -2,7 +2,7 @@
 
 #include <File/DataStream.h>
 
-ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 

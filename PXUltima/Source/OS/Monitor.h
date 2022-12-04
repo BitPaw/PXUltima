@@ -32,7 +32,7 @@ extern "C"
 	PXPrivate BOOL _stdcall MonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data);
 #endif
 
-	PXPublic void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, const size_t monitorListSize);
+	PXPublic void MonitorFetchAll(Monitor* monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize);
 
 	PXPublic void MonitorGetSize(unsigned int* width, unsigned int* height);
 

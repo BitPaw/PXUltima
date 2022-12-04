@@ -33,7 +33,7 @@ switch (midiCommand)
 		break;
 }*/
 
-ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 
@@ -46,7 +46,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 
 		{
 			const unsigned char headerSignature[] = MIDITrackHeaderID;
-			const size_t headerSignatureSize = sizeof(headerSignature);
+			const PXSize headerSignatureSize = sizeof(headerSignature);
 			const unsigned char isValid = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
@@ -69,14 +69,14 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 	mid->TrackList = MemoryAllocate(sizeof(MIDITrack) * mid->TrackListSize);
 
 	// Parse Track Header
-	for(size_t i = 0; i < mid->TrackListSize; ++i)
+	for(PXSize i = 0; i < mid->TrackListSize; ++i)
 	{
 		MIDITrack* track = &mid->TrackList[i];
 		unsigned int chunkLength = 0;
 
 		{
 			const unsigned char headerSignature[] = MIDITrackChunkID;
-			const size_t headerSignatureSize = sizeof(headerSignature);
+			const PXSize headerSignatureSize = sizeof(headerSignature);
 			const unsigned char isValid = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
@@ -99,7 +99,7 @@ ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t*
 	return ActionSuccessful;
 }
 
-ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* dataWritten)
+ActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
 	/*
 	File file;
@@ -122,7 +122,7 @@ ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* d
 	file.WriteToDisk(TrackListSize, EndianBig);
 	file.WriteToDisk(MusicSpeed, EndianBig);
 
-	for(size_t i = 0; i < TrackListSize; i++)
+	for(PXSize i = 0; i < TrackListSize; i++)
 	{
 		const char midiTrackTag[] = MIDITrackChunkID;
 

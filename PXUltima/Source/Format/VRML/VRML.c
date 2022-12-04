@@ -1,6 +1,6 @@
 #include "VRML.h"
 
-ActionResult VRMLParse(const void* data, const size_t dataSize)
+ActionResult VRMLParse(const void* data, const PXSize dataSize)
 {
 	return ActionInvalid;
 }

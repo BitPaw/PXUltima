@@ -2,7 +2,7 @@
 
 #include <Format/RIFF/RIFF.h>
 
-ActionResult AVIParse(AVI* avi, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
     /*
    DataStream dataStream;

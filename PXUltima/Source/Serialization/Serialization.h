@@ -41,7 +41,7 @@ extern "C"
 		// Field Info
 		char* Name; // Name a field
 		void* Adress; // Adress of field		
-		size_t Size; // Size of field
+		PXSize Size; // Size of field
 		SerializationType Type; // Type of field
 
 		SerializationTypeInfo* Parent;
@@ -55,7 +55,7 @@ extern "C"
 		SerializationTypeInfo* serializationTypeInfo,
 		const char* name, 
 		void* adress, 
-		const size_t size, 
+		const PXSize size, 
 		SerializationType type,
 		SerializationTypeInfo* parent,
 		unsigned char depth

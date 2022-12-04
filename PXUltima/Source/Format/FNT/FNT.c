@@ -15,11 +15,11 @@ FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character)
 		return 0;
 	}
 
-	for (size_t pageIndex = 0; pageIndex < fnt->FontPageListSize; ++pageIndex)
+	for (PXSize pageIndex = 0; pageIndex < fnt->FontPageListSize; ++pageIndex)
 	{
 		const FNTPage* page = &fnt->FontPageList[pageIndex];
 
-		for (size_t i = 0; i < page->CharacteListSize; ++i)
+		for (PXSize i = 0; i < page->CharacteListSize; ++i)
 		{
 			const FNTCharacter* bitMapFontCharacter = &page->CharacteList[i];
 			const unsigned char target = bitMapFontCharacter->ID;
@@ -35,11 +35,11 @@ FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character)
 	return 0;
 }
 
-ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize, size_t* readBytes, const wchar_t* filePath)
+ActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSize, PXSize* readBytes, const wchar_t* filePath)
 {
 	DataStream dataStream;
 	FNTPage* currentPage = 0;
-	size_t characterIndex = 0;
+	PXSize characterIndex = 0;
 
 	DataStreamConstruct(&dataStream);
 	DataStreamFromExternal(&dataStream, fileData, fileDataSize);
@@ -49,7 +49,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 	while(!DataStreamIsAtEnd(&dataStream))
 	{
 		const unsigned char* currentPosition = DataStreamCursorPosition(&dataStream);
-		const size_t currentReadableBytes = DataStreamRemainingSize(&dataStream);
+		const PXSize currentReadableBytes = DataStreamRemainingSize(&dataStream);
 		const FNTLineType lineType = PeekLineType(currentPosition, currentReadableBytes);
 
 		switch(lineType)
@@ -72,7 +72,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 					{parsingData + 65, &indexPosition[9]},
 					{parsingData + 74, &indexPosition[10]}
 				};
-				const size_t values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
+				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
 				DataStreamCursorAdvance(&dataStream, 5u);
 							
@@ -112,7 +112,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 					{parsingData + 34, &indexPosition[4]},
 					{parsingData + 41, &indexPosition[5]}
 				};
-				const size_t values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
+				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
 				DataStreamCursorAdvance(&dataStream, 6u);
 
@@ -124,7 +124,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 					values
 				);
 
-				const size_t readableSize = DataStreamRemainingSize(&dataStream);
+				const PXSize readableSize = DataStreamRemainingSize(&dataStream);
 
 				TextToIntA(indexPosition[0], readableSize, &fnt->CommonData.LineHeight);
 				TextToIntA(indexPosition[1], readableSize, &fnt->CommonData.Base);
@@ -135,8 +135,8 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 
 				// Allocate
 				{
-					const size_t size = fnt->CommonData.AmountOfPages;
-					const size_t sizeInBytes = sizeof(FNTPage) * size;
+					const PXSize size = fnt->CommonData.AmountOfPages;
+					const PXSize sizeInBytes = sizeof(FNTPage) * size;
 					FNTPage* pageList = MemoryAllocateClear(sizeInBytes);					
 
 					fnt->FontPageListSize = size;
@@ -156,7 +156,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 					{parsingData + 0, &indexPosition[0]},
 					{parsingData + 4, &indexPosition[1]}
 				};
-				const size_t values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
+				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
 				DataStreamCursorAdvance(&dataStream, 5u);
 
@@ -176,7 +176,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 					char fullPath[PathMaxSize];
 					char pageFileName[FNTPageFileNameSize];					
 
-					const size_t length = TextCopyWA(filePath, PathMaxSize, fullPath, FNTPageFileNameSize);
+					const PXSize length = TextCopyWA(filePath, PathMaxSize, fullPath, FNTPageFileNameSize);
 
 					TextCopyA
 					(
@@ -226,7 +226,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 						&size
 					);
 
-					const size_t sizeInBytes = sizeof(FNTCharacter) * size;
+					const PXSize sizeInBytes = sizeof(FNTCharacter) * size;
 
 					currentPage->CharacteListSize = size;
 					currentPage->CharacteList = MemoryAllocateClear(sizeInBytes);
@@ -242,8 +242,8 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 
 				if(acessCharacterOutofBounce)
 				{
-					const size_t sizeCurrent = currentPage->CharacteListSize * sizeof(FNTPage);
-					const size_t sizeNew = currentPage->CharacteListSize * sizeof(FNTPage) + 1;
+					const PXSize sizeCurrent = currentPage->CharacteListSize * sizeof(FNTPage);
+					const PXSize sizeNew = currentPage->CharacteListSize * sizeof(FNTPage) + 1;
 
 					FNTCharacter* characteListR = MemoryHeapReallocateClear(currentPage->CharacteList, sizeCurrent, sizeNew);
 					const unsigned char adresschanged = characteListR != currentPage->CharacteList;
@@ -274,7 +274,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 					{parsingData + 53, &indexPosition[8]},
 					{parsingData + 59, &indexPosition[9]}
 				};
-				const size_t values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
+				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
 				DataStreamCursorAdvance(&dataStream, 5u);
 
@@ -309,7 +309,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const size_t fileDataSize,
 	return ActionSuccessful;
 }
 
-FNTLineType PeekLineType(const void* line, const size_t fileDataSize)
+FNTLineType PeekLineType(const void* line, const PXSize fileDataSize)
 {
 	const unsigned char* data = line;
 	const unsigned char isCommonLine = data[0] == 'c' && data[1] == 'o' && data[2] == 'm' && data[3] == 'm' && data[4] == 'o' && data[5] == 'n' && data[6] == ' ';

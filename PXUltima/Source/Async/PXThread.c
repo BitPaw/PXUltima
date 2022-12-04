@@ -32,7 +32,7 @@ ActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFu
 	return ActionSuccessful;
 }
 
-size_t PXThreadCurrentID()
+PXSize PXThreadCurrentID()
 {
 #if OSUnix
 	const __pid_t threadID = getpid();

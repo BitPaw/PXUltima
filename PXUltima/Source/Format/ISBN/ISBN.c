@@ -1,6 +1,6 @@
 #include "ISBN.h"
 
-unsigned char ISBNIsValid(const void* data, const size_t dataSize)
+unsigned char ISBNIsValid(const void* data, const PXSize dataSize)
 {
     // Splitt
 

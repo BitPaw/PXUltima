@@ -15,7 +15,7 @@ extern "C"
 	}
 	A3DS;
 
-	PXPublic ActionResult A3DSParse(const void* data, const size_t dataSize);
+	PXPublic ActionResult A3DSParse(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }

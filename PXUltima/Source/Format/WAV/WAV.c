@@ -8,7 +8,7 @@
 
 #define WAVListMarker MakeInt('L', 'I', 'S', 'T')
 
-ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 	Endian endian = EndianInvalid;
@@ -23,8 +23,8 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 	{
 		RIFF riff;
 		const unsigned char* riffHeaderStart = DataStreamCursorPosition(&dataStream);
-		const size_t maximalSize = DataStreamRemainingSize(&dataStream);
-		size_t parsedBytes = 0;
+		const PXSize maximalSize = DataStreamRemainingSize(&dataStream);
+		PXSize parsedBytes = 0;
 
 		const ActionResult actionResult = RIFFParse(&riff, riffHeaderStart, maximalSize, &parsedBytes);
 
@@ -42,8 +42,8 @@ ActionResult WAVParse(WAV* wav, const void* data, const size_t dataSize, size_t*
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
 		const unsigned char* fmtHeaderStart = DataStreamCursorPosition(&dataStream);
-		const size_t maximalSize = DataStreamRemainingSize(&dataStream);
-		size_t parsedBytes = 0;
+		const PXSize maximalSize = DataStreamRemainingSize(&dataStream);
+		PXSize parsedBytes = 0;
 	
 		const ActionResult actionResult = FMTParse(&wav->Format, fmtHeaderStart, maximalSize, &parsedBytes, endian);
 		const unsigned char sucessful = actionResult == ActionSuccessful;

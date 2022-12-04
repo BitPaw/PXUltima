@@ -76,7 +76,7 @@ extern "C"
 
 	typedef struct MTL_
 	{
-		size_t MaterialListSize;
+		PXSize MaterialListSize;
 		MTLMaterial* MaterialList;
 	}
 	MTL;
@@ -86,10 +86,10 @@ extern "C"
 
 	PXPrivate IlluminationMode MTLIlluminationModeFromID(const unsigned int illuminationModeID);
 
-	PXPrivate MTLLineType MTLPeekLine(const char* const line, const size_t lineSize);
+	PXPrivate MTLLineType MTLPeekLine(const char* const line, const PXSize lineSize);
 
-	PXPublic size_t MTLFetchAmount(const void* const data, const size_t dataSize);
-	PXPublic PXBool MTLFetchMaterial(const void* const data, const size_t dataSize, const size_t materialID, MTLMaterial* const mtlMaterial);
+	PXPublic PXSize MTLFetchAmount(const void* const data, const PXSize dataSize);
+	PXPublic PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, MTLMaterial* const mtlMaterial);
 
 	PXPublic ActionResult MTLFileCompile(DataStream* const inputStream, DataStream* const outputStream);
 

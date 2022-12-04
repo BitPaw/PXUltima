@@ -15,7 +15,7 @@ extern "C"
 	}
 	FBX;
 
-	PXPublic ActionResult FBXParse(const void* data, const size_t dataSize);
+	PXPublic ActionResult FBXParse(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }

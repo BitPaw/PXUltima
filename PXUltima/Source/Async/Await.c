@@ -3,7 +3,7 @@
 #include <OS/OSVersion.h>
 #include <Memory/PXMemory.h>
 
-PXBool PXAwaitChange(const volatile void* const dataAdress, const size_t dataSize)
+PXBool PXAwaitChange(const volatile void* const dataAdress, const PXSize dataSize)
 {
 #if OSUnix
 

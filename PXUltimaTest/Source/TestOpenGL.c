@@ -198,8 +198,8 @@ void TestOpenGLTextDraw()
 
 	//---<Draw text into texture>----------------------------------------------
 	{
-		size_t textWidth = 1024u;
-		size_t textHeight = 1024;
+		PXSize textWidth = 1024u;
+		PXSize textHeight = 1024;
 
 		OpenGLTextureCreate(&openGLContext, 1u, &textureText.ID);
 		OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureText.ID);

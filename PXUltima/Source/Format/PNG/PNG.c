@@ -19,7 +19,7 @@
 
 unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
 {
-    for(size_t bit = 0; bit < 8; ++bit)
+    for(PXSize bit = 0; bit < 8; ++bit)
     {
         int i = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
         if(!tree->children[i])
@@ -83,9 +83,9 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
    // colorModeOut.colortype = colorModeIn.colortype;
 
     PNGColorTree tree;
-    const size_t width = png->ImageHeader.Width;
-    const size_t height = png->ImageHeader.Height;
-    const size_t numpixels = width * height ;
+    const PXSize width = png->ImageHeader.Width;
+    const PXSize height = png->ImageHeader.Height;
+    const PXSize numpixels = width * height ;
     unsigned error = 0;
 
     colorModeIn.palettesize = png->PaletteSize;
@@ -98,16 +98,16 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
 
     if(lodepng_color_mode_equal(&colorModeOut, &colorModeIn))
     {
-        size_t numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
+        PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
         MemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
         return 0;
     }
 
     if(colorModeOut.colortype == LCT_PALETTE)
     {
-        size_t palettesize = colorModeOut.palettesize;
+        PXSize palettesize = colorModeOut.palettesize;
         const unsigned char* palette = colorModeOut.palette;
-        size_t palsize = (size_t)1u << colorModeOut.bitdepth;
+        PXSize palsize = (PXSize)1u << colorModeOut.bitdepth;
         /*if the user specified output palette but did not give the values, assume
         they want the values of the input color type (assuming that one is palette).
         Note that we never create a new palette ourselves.*/
@@ -120,7 +120,7 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
             even in case there are duplicate colors in the palette.*/
             if(colorModeIn.colortype == LCT_PALETTE && colorModeIn.bitdepth == colorModeOut.bitdepth)
             {
-                size_t numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
+                PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
                 MemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
                 return 0;
             }
@@ -129,7 +129,7 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
 
         // color_tree_init(&tree);
 
-        for(size_t i = 0; i != palsize; ++i)
+        for(PXSize i = 0; i != palsize; ++i)
         {
             const unsigned char* p = &palette[i * 4];
             error = color_tree_add(&tree, p[0], p[1], p[2], p[3], i);
@@ -141,7 +141,7 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
     {
         if(colorModeIn.bitdepth == 16 && colorModeOut.bitdepth == 16)
         {
-            for(size_t i = 0; i != numpixels; ++i)
+            for(PXSize i = 0; i != numpixels; ++i)
             {
                 unsigned short r = 0, g = 0, b = 0, a = 0;
                 getPixelColorRGBA16(&r, &g, &b, &a, pixelDataIn, i, &colorModeIn);
@@ -159,7 +159,7 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
         else
         {
             unsigned char r = 0, g = 0, b = 0, a = 0;
-            for(size_t i = 0; i != numpixels; ++i)
+            for(PXSize i = 0; i != numpixels; ++i)
             {
                 getPixelColorRGBA8(&r, &g, &b, &a, pixelDataIn, i, &colorModeIn);
                 error = rgba8ToPixel(pixelDataOut, i, &colorModeOut, &tree, r, g, b, a);
@@ -191,7 +191,7 @@ unsigned getNumColorChannels(LodePNGColorType colortype)
     }
 }
 
-size_t lodepng_get_bpp_lct(LodePNGColorType colortype, size_t bitdepth)
+PXSize lodepng_get_bpp_lct(LodePNGColorType colortype, PXSize bitdepth)
 {
     /*bits per pixel is amount of channels * bits per channel*/
     return getNumColorChannels(colortype) * bitdepth;
@@ -199,7 +199,7 @@ size_t lodepng_get_bpp_lct(LodePNGColorType colortype, size_t bitdepth)
 
 int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* b)
 {
-    size_t i;
+    PXSize i;
     if(a->colortype != b->colortype) return 0;
     if(a->bitdepth != b->bitdepth) return 0;
     if(a->key_defined != b->key_defined) return 0;
@@ -217,7 +217,7 @@ int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* 
     return 1;
 }
 
-void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a, const unsigned char* in, size_t i, const LodePNGColorMode* mode)
+void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
 {
     if(mode->colortype == LCT_GREY)
     {
@@ -250,7 +250,7 @@ void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b
     }
 }
 
-void rgba16ToPixel(unsigned char* out, size_t i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a)
+void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a)
 {
     if(mode->colortype == LCT_GREY)
     {
@@ -288,10 +288,10 @@ void rgba16ToPixel(unsigned char* out, size_t i, const LodePNGColorMode* mode, u
     }
 }
 
-void getPixelColorsRGBA8(unsigned char* buffer, size_t numpixels, const unsigned char* in, const LodePNGColorMode* mode)
+void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode)
 {
     unsigned num_channels = 4;
-    size_t i;
+    PXSize i;
     if(mode->colortype == LCT_GREY)
     {
         if(mode->bitdepth == 8)
@@ -321,7 +321,7 @@ void getPixelColorsRGBA8(unsigned char* buffer, size_t numpixels, const unsigned
         else
         {
             unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
-            size_t j = 0;
+            PXSize j = 0;
             for(i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
@@ -375,7 +375,7 @@ void getPixelColorsRGBA8(unsigned char* buffer, size_t numpixels, const unsigned
         }
         else
         {
-            size_t j = 0;
+            PXSize j = 0;
             for(i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
@@ -422,10 +422,10 @@ void getPixelColorsRGBA8(unsigned char* buffer, size_t numpixels, const unsigned
     }
 }
 
-void getPixelColorsRGB8(unsigned char* buffer, size_t numpixels, const unsigned char* in, const LodePNGColorMode* mode)
+void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode)
 {
     const unsigned num_channels = 3;
-    size_t i;
+    PXSize i;
     if(mode->colortype == LCT_GREY)
     {
         if(mode->bitdepth == 8)
@@ -445,7 +445,7 @@ void getPixelColorsRGB8(unsigned char* buffer, size_t numpixels, const unsigned 
         else
         {
             unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
-            size_t j = 0;
+            PXSize j = 0;
             for(i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
@@ -482,7 +482,7 @@ void getPixelColorsRGB8(unsigned char* buffer, size_t numpixels, const unsigned 
         }
         else
         {
-            size_t j = 0;
+            PXSize j = 0;
             for(i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
@@ -529,7 +529,7 @@ void getPixelColorsRGB8(unsigned char* buffer, size_t numpixels, const unsigned 
     }
 }
 
-void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, unsigned char* a, const unsigned char* in, size_t i, const LodePNGColorMode* mode)
+void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, unsigned char* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
 {
     if(mode->colortype == LCT_GREY)
     {
@@ -548,7 +548,7 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
         else
         {
             unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
-            size_t j = i * mode->bitdepth;
+            PXSize j = i * mode->bitdepth;
             unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
             *r = *g = *b = (value * 255) / highest;
             if(mode->key_defined && value == mode->key_r) *a = 0;
@@ -580,7 +580,7 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
         if(mode->bitdepth == 8) index = in[i];
         else
         {
-            size_t j = i * mode->bitdepth;
+            PXSize j = i * mode->bitdepth;
             index = readBitsFromReversedStream(&j, in, mode->bitdepth);
         }
         /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
@@ -621,7 +621,7 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
     }
 }
 
-unsigned rgba8ToPixel(unsigned char* out, size_t i, const LodePNGColorMode* mode, PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+unsigned rgba8ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
     if(mode->colortype == LCT_GREY)
     {
@@ -692,15 +692,15 @@ unsigned rgba8ToPixel(unsigned char* out, size_t i, const LodePNGColorMode* mode
     return 0; /*no error*/
 }
 
-size_t lodepng_get_raw_size_lct(size_t w, size_t h, LodePNGColorType colortype, size_t bitdepth)
+PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth)
 {
-    size_t bpp = lodepng_get_bpp_lct(colortype, bitdepth);
-    size_t n = w * h;
+    PXSize bpp = lodepng_get_bpp_lct(colortype, bitdepth);
+    PXSize n = w * h;
 
     return ((n / 8u) * bpp) + ((n & 7u) * bpp + 7u) / 8u;
 }
 
-size_t lodepng_get_raw_size(size_t w, size_t h, const LodePNGColorMode* color)
+PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color)
 {
     return lodepng_get_raw_size_lct(w, h, color->colortype, color->bitdepth);
 }
@@ -717,7 +717,7 @@ int color_tree_get(PNGColorTree* tree, unsigned char r, unsigned char g, unsigne
     return tree ? tree->index : -1;
 }
 
-void addColorBits(unsigned char* out, size_t index, unsigned int bits, unsigned int in)
+void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in)
 {
     unsigned int m = bits == 1 ? 7 : bits == 2 ? 3 : 1; /*8 / bits - 1*/
 /*p = the partial index in the byte, e.g. with 4 palettebits it is 0 for first half or 1 for second half*/
@@ -736,17 +736,17 @@ void addColorBits(unsigned char* out, size_t index, unsigned int bits, unsigned 
     }
 }
 
-unsigned char readBitFromReversedStream(size_t* bitpointer, const unsigned char* bitstream)
+unsigned char readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream)
 {
     unsigned char result = (unsigned char)((bitstream[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
     ++(*bitpointer);
     return result;
 }
 
-unsigned readBitsFromReversedStream(size_t* bitpointer, const unsigned char* bitstream, size_t nbits)
+unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream, PXSize nbits)
 {
     unsigned result = 0;
-    size_t i;
+    PXSize i;
     for(i = 0; i < nbits; ++i)
     {
         result <<= 1u;
@@ -880,7 +880,7 @@ void PNGDestruct(PNG* const png)
     png->PixelData = 0;
 }
 
-size_t NumberOfColorChannels(const PNGColorType pngColorType)
+PXSize NumberOfColorChannels(const PNGColorType pngColorType)
 {
     switch(pngColorType)
     {
@@ -903,27 +903,27 @@ size_t NumberOfColorChannels(const PNGColorType pngColorType)
     }
 }
 
-size_t BitsPerPixel(const PNG* const png)
+PXSize BitsPerPixel(const PNG* const png)
 {
-    const size_t numberOfColorChannels = NumberOfColorChannels(png->ImageHeader.ColorType);
+    const PXSize numberOfColorChannels = NumberOfColorChannels(png->ImageHeader.ColorType);
 
     return png->ImageHeader.BitDepth * numberOfColorChannels;
 }
 
-size_t PNGFilePredictSize(const size_t width, const size_t height, const size_t bbp)
+PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
-    const size_t signature = 8;
-    const size_t header = 25;
-    const size_t time = 19;
-    const size_t end = 12;
-    const size_t idat = 32768;
+    const PXSize signature = 8;
+    const PXSize header = 25;
+    const PXSize time = 19;
+    const PXSize end = 12;
+    const PXSize idat = 32768;
 
-    const size_t sum = signature + header + time + end + height* width* bbp + 1024u;
+    const PXSize sum = signature + header + time + end + height* width* bbp + 1024u;
 
     return sum;
 }
 
-ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
     DataStream dataStream;
 
@@ -932,9 +932,9 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
     PNGConstruct(png);
     *dataRead = 0;
 
-    size_t imageDataCounter = 0;
-    size_t imageDataChunkCacheSizeUSED = 0;
-    size_t imageDataChunkCacheSizeMAX = 0u;
+    PXSize imageDataCounter = 0;
+    PXSize imageDataChunkCacheSizeUSED = 0;
+    PXSize imageDataChunkCacheSizeMAX = 0u;
     unsigned char* imageDataChunkCache = 0;
 
     //---<Parse PNG File>------------------------------------------------------
@@ -944,7 +944,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
         //---<Check PNG Header>------------------------------------------------
         {
             const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
-            const size_t pngFileHeaderSize = sizeof(pngFileHeader);
+            const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
             const unsigned char isValidHeader = DataStreamReadAndCompare(&dataStream, pngFileHeader, pngFileHeaderSize);
 
             if(!isValidHeader)
@@ -972,7 +972,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
         while(!parseFinished)
         {
             PNGChunk chunk;
-            size_t predictedOffset = 0;
+            PXSize predictedOffset = 0;
 
             MemorySet(&chunk, sizeof(PNGChunk), 0);
 
@@ -1249,14 +1249,14 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
                 }
                 case PNGChunkPaletteHistogram:
                 {
-                    const size_t listSize = chunk.Lengh / 2;
+                    const PXSize listSize = chunk.Lengh / 2;
 
                     unsigned short* list = MemoryAllocate(sizeof(unsigned short) * listSize);
 
                     png->PaletteHistogram.ColorFrequencyListSize = listSize;
                     png->PaletteHistogram.ColorFrequencyList = list;
 
-                    for(size_t i = 0; i < listSize; i++)
+                    for(PXSize i = 0; i < listSize; i++)
                     {
                         DataStreamReadSU(&dataStream, &list[i], EndianBig);
                     }
@@ -1308,14 +1308,14 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
     //---<Unpack compressed data>----------------------------------------------
 
     unsigned char* workingMemory = 0;
-    size_t workingMemorySize = 0;
-    const size_t bitsPerPixel = BitsPerPixel(png);
+    PXSize workingMemorySize = 0;
+    const PXSize bitsPerPixel = BitsPerPixel(png);
 
     // ZLIB
     {
-        size_t writtenBytes = 0;
+        PXSize writtenBytes = 0;
 
-        const size_t expectedzlibCacheSize = ZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
+        const PXSize expectedzlibCacheSize = ZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
 
         workingMemorySize = expectedzlibCacheSize;
         workingMemory = MemoryReallocate(workingMemory, sizeof(unsigned char) * expectedzlibCacheSize);
@@ -1330,7 +1330,7 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
     }
 
     // ADAM
-    const size_t expectedadam7CacheSize = ADAM7CaluclateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel);
+    const PXSize expectedadam7CacheSize = ADAM7CaluclateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel);
 
     unsigned char* adam7Cache = MemoryAllocate(sizeof(unsigned char) * expectedadam7CacheSize);
 
@@ -1349,19 +1349,15 @@ ActionResult PNGParse(PNG* png, const void* data, const size_t dataSize, size_t*
     return ActionSuccessful;
 }
 
-ActionResult PNGParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
+ActionResult PNGParseToImage(Image* const image, DataStream* const dataStream)
 {
-    DataStream dataStream;
     PNG png;
 
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, data, dataSize);
     PNGConstruct(&png);
-    *dataRead = 0;
 
-    size_t imageDataCounter = 0;
-    size_t imageDataChunkCacheSizeUSED = 0;
-    size_t imageDataChunkCacheSizeMAX = 0u;
+    PXSize imageDataCounter = 0;
+    PXSize imageDataChunkCacheSizeUSED = 0;
+    PXSize imageDataChunkCacheSizeMAX = 0u;
     unsigned char* imageDataChunkCache = 0;
 
     //---<Parse PNG File>------------------------------------------------------
@@ -1371,8 +1367,8 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         //---<Check PNG Header>------------------------------------------------
         {
             const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
-            const size_t pngFileHeaderSize = sizeof(pngFileHeader);
-            const unsigned char isValidHeader = DataStreamReadAndCompare(&dataStream, pngFileHeader, pngFileHeaderSize);
+            const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
+            const unsigned char isValidHeader = DataStreamReadAndCompare(dataStream, pngFileHeader, pngFileHeaderSize);
 
             if(!isValidHeader)
             {
@@ -1381,7 +1377,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         }
 
         // Allocate Memory for later ImageData Chunks
-        imageDataChunkCacheSizeMAX = dataStream.DataSize - 0u;
+        imageDataChunkCacheSizeMAX = dataStream->DataSize - 0u;
         imageDataChunkCache = MemoryAllocate(sizeof(unsigned char) * imageDataChunkCacheSizeMAX);
 
         //---------------------------------------------------------------------
@@ -1399,14 +1395,14 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         while(!parseFinished)
         {
             PNGChunk chunk;
-            size_t predictedOffset = 0;
+            PXSize predictedOffset = 0;
 
             MemorySet(&chunk, sizeof(PNGChunk), 0);
 
             //chunk.ChunkData = dataStream.Data + dataStream.DataCursor;
 
-            DataStreamReadIU(&dataStream, &chunk.Lengh, EndianBig);
-            DataStreamReadP(&dataStream, chunk.ChunkTypeRaw, 4u);
+            DataStreamReadIU(dataStream, &chunk.Lengh, EndianBig);
+            DataStreamReadP(dataStream, chunk.ChunkTypeRaw, 4u);
 
             // Check
             {
@@ -1426,7 +1422,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
                 chunk.ChunkType = ConvertToChunkType(ChunkTypeID);
 
-                predictedOffset = dataStream.DataCursor + chunk.Lengh;
+                predictedOffset = dataStream->DataCursor + chunk.Lengh;
             }
 
 #if PNGDebugInfo
@@ -1453,14 +1449,14 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     unsigned char colorTypeRaw = 0;
                     unsigned char interlaceMethodRaw = 0;
 
-                    DataStreamReadIU(&dataStream, &png.ImageHeader.Width, EndianBig); // 4 Bytes
-                    DataStreamReadIU(&dataStream, &png.ImageHeader.Height, EndianBig); // 4 Bytes
+                    DataStreamReadIU(dataStream, &png.ImageHeader.Width, EndianBig); // 4 Bytes
+                    DataStreamReadIU(dataStream, &png.ImageHeader.Height, EndianBig); // 4 Bytes
 
-                    DataStreamReadCU(&dataStream, &png.ImageHeader.BitDepth); // 1 Byte__
-                    DataStreamReadCU(&dataStream, &colorTypeRaw); // 1 Byte__
-                    DataStreamReadCU(&dataStream, &png.ImageHeader.CompressionMethod); // 1 Byte__
-                    DataStreamReadCU(&dataStream, &png.ImageHeader.FilterMethod); // 1 Byte__
-                    DataStreamReadCU(&dataStream, &interlaceMethodRaw); // 1 Byte__
+                    DataStreamReadCU(dataStream, &png.ImageHeader.BitDepth); // 1 Byte__
+                    DataStreamReadCU(dataStream, &colorTypeRaw); // 1 Byte__
+                    DataStreamReadCU(dataStream, &png.ImageHeader.CompressionMethod); // 1 Byte__
+                    DataStreamReadCU(dataStream, &png.ImageHeader.FilterMethod); // 1 Byte__
+                    DataStreamReadCU(dataStream, &interlaceMethodRaw); // 1 Byte__
 
                     png.ImageHeader.ColorType = ConvertToPNGColorType(colorTypeRaw);
                     png.ImageHeader.InterlaceMethod = ConvertToPNGInterlaceMethod(interlaceMethodRaw);
@@ -1470,7 +1466,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 case PNGChunkPalette:
                 {
                     unsigned pos = 0;
-                    const size_t palettSize = chunk.Lengh / 3u;
+                    const PXSize palettSize = chunk.Lengh / 3u;
                     const unsigned char validSize = palettSize != 0 && palettSize <= 256;
 
                     if(!validSize)
@@ -1478,11 +1474,11 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
                     png.PaletteSize = palettSize;
 
-                    for(size_t i = 0; i < palettSize; ++i)
+                    for(PXSize i = 0; i < palettSize; ++i)
                     {
                         unsigned char* paletteInsertion = png.Palette + i*4;
 
-                        DataStreamReadP(&dataStream, paletteInsertion, 3u); // Read RGB value
+                        DataStreamReadP(dataStream, paletteInsertion, 3u); // Read RGB value
 
                         paletteInsertion[3] = 0xFF; // Add alpha
                     }
@@ -1530,7 +1526,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                     //zlib.Unpack(imageDataChunkCache, imageDataChunkCacheSizeUSED);
 
 
-                    DataStreamReadP(&dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
+                    DataStreamReadP(dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
 
                     imageDataChunkCacheSizeUSED += chunk.Lengh;
 
@@ -1554,7 +1550,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
 
                             unsigned short value;
 
-                            DataStreamReadSU(&dataStream, &value, EndianBig);
+                            DataStreamReadSU(dataStream, &value, EndianBig);
 
                            // color->key_defined = 1;
                             //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
@@ -1570,9 +1566,9 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                             unsigned short green;
                             unsigned short blue;
 
-                            DataStreamReadSU(&dataStream, &red, EndianBig);
-                            DataStreamReadSU(&dataStream, &green, EndianBig);
-                            DataStreamReadSU(&dataStream, &blue, EndianBig);
+                            DataStreamReadSU(dataStream, &red, EndianBig);
+                            DataStreamReadSU(dataStream, &green, EndianBig);
+                            DataStreamReadSU(dataStream, &blue, EndianBig);
 
                             //color->key_defined = 1;
                             //color->key_r = 256u * data[0] + data[1];
@@ -1586,13 +1582,13 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                             /*error: more alpha values given than there are palette entries*/
                             //if(chunkLength > color->palettesize) return 39;
 
-                            //for(size_t i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
+                            //for(PXSize i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
 
-                            for(size_t i = 0; i < chunk.Lengh; ++i)
+                            for(PXSize i = 0; i < chunk.Lengh; ++i)
                             {
                                 unsigned char value = 0;
 
-                                DataStreamReadCU(&dataStream, &value);
+                                DataStreamReadCU(dataStream, &value);
 
                                 png.Palette[i * 4 + 3] = value;
                             }
@@ -1610,20 +1606,20 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 }
                 case PNGChunkImageGamma:
                 {
-                    DataStreamReadIU(&dataStream, &png.Gamma, EndianBig);
+                    DataStreamReadIU(dataStream, &png.Gamma, EndianBig);
 
                     break;
                 }
                 case PNGChunkPrimaryChromaticities:
                 {
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.WhiteX, EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.WhiteY, EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.RedX, EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.RedY, EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.GreenX, EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.GreenY, EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.BlueX, EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PrimaryChromatics.BlueY, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.WhiteX, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.WhiteY, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.RedX, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.RedY, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.GreenX, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.GreenY, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.BlueX, EndianBig);
+                    DataStreamReadIU(dataStream, &png.PrimaryChromatics.BlueY, EndianBig);
 
                     break;
                 }
@@ -1700,9 +1696,9 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 {
                     unsigned char unitSpecifier = 0;
 
-                    DataStreamReadIU(&dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], EndianBig);
-                    DataStreamReadIU(&dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
-                    DataStreamReadCU(&dataStream, &unitSpecifier);
+                    DataStreamReadIU(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], EndianBig);
+                    DataStreamReadIU(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
+                    DataStreamReadCU(dataStream, &unitSpecifier);
 
                     switch(unitSpecifier)
                     {
@@ -1766,35 +1762,35 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 }
                 case PNGChunkPaletteHistogram:
                 {
-                    const size_t listSize = chunk.Lengh / 2;
+                    const PXSize listSize = chunk.Lengh / 2;
 
                     unsigned short* list = MemoryAllocate(sizeof(unsigned short) * listSize);
 
                     png.PaletteHistogram.ColorFrequencyListSize = listSize;
                     png.PaletteHistogram.ColorFrequencyList = list;
 
-                    for(size_t i = 0; i < listSize; i++)
+                    for(PXSize i = 0; i < listSize; i++)
                     {
-                        DataStreamReadSU(&dataStream, &list[i], EndianBig);
+                        DataStreamReadSU(dataStream, &list[i], EndianBig);
                     }
 
                     break;
                 }
                 case PNGChunkLastModificationTime:
                 {
-                    DataStreamReadSU(&dataStream, &png.LastModificationTime.Year, EndianBig);
-                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Month);
-                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Day);
-                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Hour);
-                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Minute);
-                    DataStreamReadCU(&dataStream, &png.LastModificationTime.Second);
+                    DataStreamReadSU(dataStream, &png.LastModificationTime.Year, EndianBig);
+                    DataStreamReadCU(dataStream, &png.LastModificationTime.Month);
+                    DataStreamReadCU(dataStream, &png.LastModificationTime.Day);
+                    DataStreamReadCU(dataStream, &png.LastModificationTime.Hour);
+                    DataStreamReadCU(dataStream, &png.LastModificationTime.Minute);
+                    DataStreamReadCU(dataStream, &png.LastModificationTime.Second);
 
                     break;
                 }
                 case PNGChunkCustom:
                 default:
                 {
-                    DataStreamCursorAdvance(&dataStream, chunk.Lengh);
+                    DataStreamCursorAdvance(dataStream, chunk.Lengh);
                     break;
                 }
             }
@@ -1806,9 +1802,9 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
                 printf("[i][PNG] Chunk did not handle all Bytes\n");
             }
 #endif
-            dataStream.DataCursor = predictedOffset;
+            dataStream->DataCursor = predictedOffset;
 
-            DataStreamReadIU(&dataStream, &chunk.CRC, EndianBig); // 4 Bytes
+            DataStreamReadIU(dataStream, &chunk.CRC, EndianBig); // 4 Bytes
 
             //---<Check CRC>---
             // TODO: Yes
@@ -1822,7 +1818,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
      {
 
 
-        size_t size = png.ImageHeader.Width * png.ImageHeader.Height * NumberOfColorChannels(png.ImageHeader.ColorType);
+        PXSize size = png.ImageHeader.Width * png.ImageHeader.Height * NumberOfColorChannels(png.ImageHeader.ColorType);
 
         if(png.ImageHeader.ColorType == PNGColorPalette)
         {
@@ -1872,14 +1868,14 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
     //---<Unpack compressed data>----------------------------------------------
    {
     unsigned char* workingMemory = 0;
-    size_t workingMemorySize = 0;
-    const size_t bitsPerPixel = BitsPerPixel(&png);
+    PXSize workingMemorySize = 0;
+    const PXSize bitsPerPixel = BitsPerPixel(&png);
 
     // ZLIB
 
-        size_t writtenBytes = 0;
+        PXSize writtenBytes = 0;
 
-        const size_t expectedzlibCacheSize = ZLIBCalculateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
+        const PXSize expectedzlibCacheSize = ZLIBCalculateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
 
         workingMemorySize = expectedzlibCacheSize;
         workingMemory = MemoryReallocate(workingMemory, sizeof(PXByte) * expectedzlibCacheSize);
@@ -1893,7 +1889,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
         }
 
 
-        const size_t expectedadam7CacheSize = ADAM7CaluclateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel);
+        const PXSize expectedadam7CacheSize = ADAM7CaluclateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel);
 
         PXByte* adam7Cache = (PXByte*)MemoryAllocate(sizeof(PXByte) * expectedadam7CacheSize);
 
@@ -1916,7 +1912,7 @@ ActionResult PNGParseToImage(Image* const image, const void* const data, const s
     return ActionSuccessful;
 }
 
-ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* dataWritten)
+ActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
     DataStream dataStream;
 
@@ -1928,7 +1924,7 @@ ActionResult PNGSerialize(PNG* png, void* data, const size_t dataSize, size_t* d
     //---<Signature>---
     {
         const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
-        const size_t pngFileHeaderSize = sizeof(pngFileHeader);
+        const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
 
         DataStreamWriteP(&dataStream, pngFileHeader, pngFileHeaderSize);
     }
@@ -2016,9 +2012,9 @@ typedef enum LodePNGFilterStrategy
 
 
 /* integer binary logarithm, max return value is 31 */
-static size_t ilog2(size_t i)
+static PXSize ilog2(PXSize i)
 {
-    size_t result = 0;
+    PXSize result = 0;
     if(i >= 65536) { result += 16; i >>= 16; }
     if(i >= 256) { result += 8; i >>= 8; }
     if(i >= 16) { result += 4; i >>= 4; }
@@ -2028,9 +2024,9 @@ static size_t ilog2(size_t i)
 }
 
 /* integer approximation for i * log2(i), helper function for LFS_ENTROPY */
-static size_t ilog2i(size_t i)
+static PXSize ilog2i(PXSize i)
 {
-    size_t l;
+    PXSize l;
     if(i == 0) return 0;
     l = ilog2(i);
     /* approximate i*log2(i): l is integer logarithm, ((i - (1u << l)) << 1u)
@@ -2039,9 +2035,9 @@ static size_t ilog2i(size_t i)
 }
 
 void filterScanline(unsigned char* out, const unsigned char* scanline, const unsigned char* prevline,
-                           size_t length, size_t bytewidth, unsigned char filterType)
+                           PXSize length, PXSize bytewidth, unsigned char filterType)
 {
-    size_t i;
+    PXSize i;
     switch(filterType)
     {
         case 0: /*None*/
@@ -2110,14 +2106,14 @@ struct LodePNGCompressSettings /*deflate = compress*/
     unsigned lazymatching; /*use lazy matching: better compression but a bit slower. Default: true*/
 
     /*use custom zlib encoder instead of built in one (default: null)*/
-    unsigned (*custom_zlib)(unsigned char**, size_t*,
-                            const unsigned char*, size_t,
+    unsigned (*custom_zlib)(unsigned char**, PXSize*,
+                            const unsigned char*, PXSize,
                             const LodePNGCompressSettings*);
     /*use custom deflate encoder instead of built in one (default: null)
     if custom_zlib is used, custom_deflate is ignored since only the built in
     zlib function will call custom_deflate*/
-    unsigned (*custom_deflate)(unsigned char**, size_t*,
-                               const unsigned char*, size_t,
+    unsigned (*custom_deflate)(unsigned char**, PXSize*,
+                               const unsigned char*, PXSize,
                                const LodePNGCompressSettings*);
 
     const void* custom_context; /*optional custom settings for custom functions*/
@@ -2127,12 +2123,12 @@ struct LodePNGCompressSettings /*deflate = compress*/
 /*in an idat chunk, each scanline is a multiple of 8 bits, unlike the lodepng output buffer,
 and in addition has one extra byte per line: the filter byte. So this gives a larger
 result than lodepng_get_raw_size. Set h to 1 to get the size of 1 row including filter byte. */
-static size_t lodepng_get_raw_size_idat(unsigned w, unsigned h, unsigned bpp)
+static PXSize lodepng_get_raw_size_idat(unsigned w, unsigned h, unsigned bpp)
 {
     /* + 1 for the filter byte, and possibly plus padding bits per line. */
     /* Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp */
-    size_t line = ((size_t)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
-    return (size_t)h * line;
+    PXSize line = ((PXSize)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
+    return (PXSize)h * line;
 }
 
 /*Settings for the encoder.*/
@@ -2175,9 +2171,9 @@ static unsigned filter
 (
     unsigned char* out,
     const unsigned char* in,
-    size_t width,
-    size_t height,
-    size_t bpp,
+    PXSize width,
+    PXSize height,
+    PXSize bpp,
    // const LodePNGColorMode* color,
     LodePNGFilterStrategy strategy
 )
@@ -2191,10 +2187,10 @@ the scanlines with 1 extra byte per scanline
 
     //                   unsigned bpp = lodepng_get_bpp(color);
     /*the width of a scanline in bytes, not including the filter type*/
-    size_t linebytes = lodepng_get_raw_size_idat(width, 1, bpp) - 1u;
+    PXSize linebytes = lodepng_get_raw_size_idat(width, 1, bpp) - 1u;
 
     /*bytewidth is used for filtering, is 1 when bpp < 8, number of bytes per pixel otherwise*/
-    size_t bytewidth = (bpp + 7u) / 8u;
+    PXSize bytewidth = (bpp + 7u) / 8u;
     const unsigned char* prevline = 0;
     unsigned x, y;
     unsigned error = 0;
@@ -2230,8 +2226,8 @@ the scanlines with 1 extra byte per scanline
         unsigned char type = (unsigned char)strategy;
         for(y = 0; y != height; ++y)
         {
-            size_t outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
-            size_t inindex = linebytes * y;
+            PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
+            PXSize inindex = linebytes * y;
             out[outindex] = type; /*filter type byte*/
             filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
             prevline = &in[inindex];
@@ -2241,7 +2237,7 @@ the scanlines with 1 extra byte per scanline
     {
         /*adaptive filtering*/
         unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
-        size_t smallest = 0;
+        PXSize smallest = 0;
         unsigned char type, bestType = 0;
 
         for(type = 0; type != 5; ++type)
@@ -2257,7 +2253,7 @@ the scanlines with 1 extra byte per scanline
                 /*try the 5 filter types*/
                 for(type = 0; type != 5; ++type)
                 {
-                    size_t sum = 0;
+                    PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
 
                     /*calculate the sum of the result*/
@@ -2298,7 +2294,7 @@ the scanlines with 1 extra byte per scanline
     else if(strategy == LFS_ENTROPY)
     {
         unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
-        size_t bestSum = 0;
+        PXSize bestSum = 0;
         unsigned type, bestType = 0;
         unsigned count[256];
 
@@ -2315,7 +2311,7 @@ the scanlines with 1 extra byte per scanline
                 /*try the 5 filter types*/
                 for(type = 0; type != 5; ++type)
                 {
-                    size_t sum = 0;
+                    PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
                     memset(count, 0, 256 * sizeof(*count));
                     for(x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
@@ -2346,8 +2342,8 @@ the scanlines with 1 extra byte per scanline
     {
         for(y = 0; y != height; ++y)
         {
-            size_t outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
-            size_t inindex = linebytes * y;
+            PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
+            PXSize inindex = linebytes * y;
     // unsigned char type = settings->predefined_filters[y];
          //   out[outindex] = type; /*filter type byte*/
           //  filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
@@ -2359,9 +2355,9 @@ the scanlines with 1 extra byte per scanline
         /*brute force filter chooser.
         deflate the scanline after every filter attempt to see which one deflates best.
         This is very slow and gives only slightly smaller, sometimes even larger, result*/
-        size_t size[5];
+        PXSize size[5];
         unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
-        size_t smallest = 0;
+        PXSize smallest = 0;
         unsigned type = 0, bestType = 0;
         unsigned char* dummy;
         LodePNGCompressSettings zlibsettings;
@@ -2393,10 +2389,10 @@ the scanlines with 1 extra byte per scanline
                     size[type] = 0;
                     dummy = 0;
 
-                    const size_t sizeAA = 0xFFFF * 2;
+                    const PXSize sizeAA = 0xFFFF * 2;
                     dummy = MemoryAllocate(sizeAA);
 
-                    size_t written = 0;
+                    PXSize written = 0;
                     ZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
                    // zlib_compress( , &zlibsettings);
 
@@ -2420,7 +2416,7 @@ the scanlines with 1 extra byte per scanline
     return error;
 }
 
-void setBitOfReversedStream(size_t* bitpointer, unsigned char* bitstream, unsigned char bit)
+void setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
 {
     /*the current bit in bitstream may be 0 or 1 for this to work*/
     if(bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
@@ -2431,16 +2427,16 @@ void setBitOfReversedStream(size_t* bitpointer, unsigned char* bitstream, unsign
 
 
 void addPaddingBits(unsigned char* out, const unsigned char* in,
-                           size_t olinebits, size_t ilinebits, unsigned h)
+                           PXSize olinebits, PXSize ilinebits, unsigned h)
 {
     /*The opposite of the removePaddingBits function
     olinebits must be >= ilinebits*/
     unsigned y;
-    size_t diff = olinebits - ilinebits;
-    size_t obp = 0, ibp = 0; /*bit pointers*/
+    PXSize diff = olinebits - ilinebits;
+    PXSize obp = 0, ibp = 0; /*bit pointers*/
     for(y = 0; y != h; ++y)
     {
-        size_t x;
+        PXSize x;
         for(x = 0; x < ilinebits; ++x)
         {
             unsigned char bit = readBitFromReversedStream(&ibp, in);
@@ -2457,16 +2453,16 @@ void addPaddingBits(unsigned char* out, const unsigned char* in,
 
 /*out must be buffer big enough to contain uncompressed IDAT chunk data, and in must contain the full image.
 return value is error**/
-size_t preProcessScanlines
+PXSize preProcessScanlines
 (
     PNGInterlaceMethod interlaceMethod,
-    size_t width,
-    size_t height,
-    size_t bpp,
+    PXSize width,
+    PXSize height,
+    PXSize bpp,
     PNGColorType colorType,
-    size_t bitDepth,
+    PXSize bitDepth,
     unsigned char** out,
-    size_t* outsize,
+    PXSize* outsize,
     const unsigned char* in
 )
 {
@@ -2491,7 +2487,7 @@ size_t preProcessScanlines
                 /*non multiple of 8 bits per scanline, padding bits needed per scanline*/
                 if(bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u)
                 {
-                    const size_t size = height * ((width * bpp + 7u) / 8u);
+                    const PXSize size = height * ((width * bpp + 7u) / 8u);
                     unsigned char* padded = (unsigned char*)MemoryAllocate(sizeof(unsigned char) * size);
                     if(!padded) error = 83; /*alloc fail*/
                     if(!error)
@@ -2514,7 +2510,7 @@ size_t preProcessScanlines
         case PNGInterlaceADAM7:
         {
             unsigned passw[7], passh[7];
-            size_t filter_passstart[8], padded_passstart[8], passstart[8];
+            PXSize filter_passstart[8], padded_passstart[8], passstart[8];
             unsigned char* adam7;
 
             ADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart,width,height, bpp);
@@ -2567,7 +2563,7 @@ size_t preProcessScanlines
     return error;
 }
 
-ActionResult PNGSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
+ActionResult PNGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
     DataStream dataStream;
 
@@ -2579,7 +2575,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
     //---<Signature>--- 8 Bytes
     {
         const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
-        const size_t pngFileHeaderSize = sizeof(pngFileHeader);
+        const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
 
         DataStreamWriteP(&dataStream, pngFileHeader, pngFileHeaderSize);
     }
@@ -2750,7 +2746,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
         pngLastModificationTime.Second = time.Second;
 
         const unsigned char* chunkStart = DataStreamCursorPosition(&dataStream);
-        const size_t chunkLength = 7u;
+        const PXSize chunkLength = 7u;
 
         DataStreamWriteIU(&dataStream, chunkLength, EndianBig);
         DataStreamWriteP(&dataStream, "tIME", 4u);
@@ -2771,18 +2767,18 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
 
     // [IDAT] Image data
     {
-        const size_t offsetSizeofChunk = dataStream.DataCursor;
+        const PXSize offsetSizeofChunk = dataStream.DataCursor;
 
         const unsigned char* chunkStart = DataStreamCursorPosition(&dataStream);
 
-        size_t chunkLength = 0;
+        PXSize chunkLength = 0;
 
         DataStreamWriteIU(&dataStream, 0u, EndianBig); // Length
         DataStreamWriteP(&dataStream, "IDAT", 4u);
 
 
         unsigned char* scanlines = 0;
-        size_t scanlinesSize = 0;
+        PXSize scanlinesSize = 0;
 
 
         // Preprocess scanlines
@@ -2830,7 +2826,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const s
     //---<IEND>---------------------------------------------------------------- 12 Bytes
     {
         const unsigned char imageEndChunk[13] = "\0\0\0\0IEND\xAE\x42\x60\x82"; // Combined write, as this is constand
-        const size_t imageEndChunkSize = sizeof(imageEndChunk)-1;
+        const PXSize imageEndChunkSize = sizeof(imageEndChunk)-1;
 
         DataStreamWriteP(&dataStream, imageEndChunk, imageEndChunkSize);
     }

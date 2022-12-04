@@ -208,7 +208,7 @@ ActionResult GraphicTextureCubeRegister(GraphicContext* const graphicContext, PX
         OpenGLTextureTypeCubeMapRight
     };
 
-    for (size_t i = 0; i < 6u; ++i)
+    for (PXSize i = 0; i < 6u; ++i)
     {
         const Image* const image = &textureCube->ImageList[i];
         const OpenGLTextureType textureTypeID = openGLTextureTypeList[i];
@@ -269,8 +269,8 @@ ActionResult GraphicSkyboxRegister(GraphicContext* const graphicContext, PXSkyBo
         0,2,6,4, // Front OK
         5,7,3,1 // Back OK
     };
-    const size_t vertexDataSize = sizeof(vertexData) / sizeof(float);
-    const size_t indexListSize = sizeof(indexList) / sizeof(unsigned int);
+    const PXSize vertexDataSize = sizeof(vertexData) / sizeof(float);
+    const PXSize indexListSize = sizeof(indexList) / sizeof(unsigned int);
 
     {
         PXByte bufferData[32];
@@ -335,7 +335,7 @@ ActionResult GraphicSkyboxRegisterA
             }
         }
 
-        for (size_t i = 0; i < 6u; ++i)
+        for (PXSize i = 0; i < 6u; ++i)
         {
             Image* const image = &skyBoxCurrent->TextureCube.ImageList[i];
             const char* const filePath = filePathList[i];
@@ -383,24 +383,24 @@ ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* co
     return ActionInvalid;
 }
 
-size_t GraphicModelListSize(const GraphicContext* const graphicContext)
+PXSize GraphicModelListSize(const GraphicContext* const graphicContext)
 {
 
 
     return PXYes;
 }
 
-PXBool GraphicModelListGetFromIndex(const GraphicContext* const graphicContext, PXModel** pxModel, const size_t index)
+PXBool GraphicModelListGetFromIndex(const GraphicContext* const graphicContext, PXModel** pxModel, const PXSize index)
 {
     return PXYes;
 }
 
-size_t GraphicRenderableListSize(const GraphicContext* const graphicContext)
+PXSize GraphicRenderableListSize(const GraphicContext* const graphicContext)
 {       
     return graphicContext->_renderList.NodeListSizeCurrent;
 }
 
-PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicContext, PXRenderable** pxRenderable, const size_t index)
+PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicContext, PXRenderable** pxRenderable, const PXSize index)
 {
 #if 1 //
     PXLinkedListNodeFixed currentModel;
@@ -428,7 +428,7 @@ PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicCont
 
     *pxRenderable = 0;
 
-    size_t counter = 0;
+    PXSize counter = 0;
 
     do
     {
@@ -503,7 +503,7 @@ PXBool GraphicRenderableRegister(GraphicContext* const graphicContext, PXRendera
 
 void GraphicModelShaderSet(GraphicContext* const graphicContext, PXRenderable* const renderable, const ShaderProgram* const shaderProgram)
 {
-    for (size_t i = 0; i < renderable->MeshSegmentListSize; ++i)
+    for (PXSize i = 0; i < renderable->MeshSegmentListSize; ++i)
     {
         PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
 
@@ -578,8 +578,8 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
 
     OpenGLVertexArrayBind(openGLContext, renderable->VAO);
 
-    const size_t stride = ModelVertexDataStride(model);
-    const size_t vertexListSize = model->DataVertexListSize * stride;
+    const PXSize stride = ModelVertexDataStride(model);
+    const PXSize vertexListSize = model->DataVertexListSize * stride;
 
     OpenGLBufferBind(openGLContext, OpenGLBufferArray, renderable->VBO);
     OpenGLBufferData(openGLContext, OpenGLBufferArray, vertexListSize, model->DataVertexList, OpenGLStoreStaticDraw);
@@ -598,7 +598,7 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
         "Ty"
     );
 
-    for (size_t i = 0; i < model->DataIndexSize * stride; i+=8)
+    for (PXSize i = 0; i < model->DataIndexSize * stride; i+=8)
     {
         float* data = &(((float*)model->DataVertex)[i]);
 
@@ -659,13 +659,13 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     //-------------------------------------------------------------------------
 
     //---<Register all textures>-----------------------------------------------
-    const size_t segmentsListSize = ModelSegmentsAmount(model);
-    const size_t modelListSize = PXModelMaterialAmount(model);
+    const PXSize segmentsListSize = ModelSegmentsAmount(model);
+    const PXSize modelListSize = PXModelMaterialAmount(model);
 
     renderable->MeshSegmentListSize = segmentsListSize;
     renderable->MeshSegmentList = (PXRenderableMeshSegment*)MemoryAllocate(sizeof(PXRenderableMeshSegment) * segmentsListSize);
 
-    for (size_t i = 0; i < segmentsListSize; ++i)
+    for (PXSize i = 0; i < segmentsListSize; ++i)
     {
         PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
         MeshSegment meshSegment;
@@ -707,7 +707,7 @@ ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext,
     return ActionSuccessful;
 }
 
-ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize)
+ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const PXSize vertexDataSize, const unsigned int* indexList, const PXSize indexListSize)
 {
     /*
     // Check
@@ -757,7 +757,7 @@ ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, 
     return ActionInvalid;
 }
 
-ActionResult GraphicUIRectangleCreate(GraphicContext* const graphicContext, PXRenderable* const renderable, const size_t x, const size_t y, const size_t sidth, const size_t height)
+ActionResult GraphicUIRectangleCreate(GraphicContext* const graphicContext, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
 {
     PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y, &renderable->MatrixModel);
     PXMatrix4x4FScaleSet(sidth, height, 1, &renderable->MatrixModel);
@@ -773,9 +773,16 @@ ActionResult GraphicUIRectangleCreate(GraphicContext* const graphicContext, PXRe
     return ActionSuccessful;
 }
 
-void ShaderDataSet(Shader* const shader, const ShaderType type, const size_t size, const char* data)
+void PXShaderConstruct(Shader* const shader)
 {
-    shader->ID = -1;
+    MemoryClear(shader, sizeof(Shader));
+
+    shader->ID = PXShaderNotRegisterd;
+}
+
+void ShaderDataSet(Shader* const shader, const ShaderType type, const char* data, const PXSize size)
+{
+    shader->ID = PXShaderNotRegisterd;
     shader->Type = type;
     shader->ContentSize = size;
     shader->Content = data;
@@ -811,7 +818,7 @@ ActionResult GraphicUIPanelRegister(GraphicContext* const graphicContext, PXUIPa
          1, 1,  0,
         -1, 1,  0
     };
-    const size_t vertexDataSize = sizeof(vertexData) / sizeof(float);
+    const PXSize vertexDataSize = sizeof(vertexData) / sizeof(float);
 
     PXByte bufferData[32];
     PXModel model;
@@ -1079,17 +1086,14 @@ ActionResult GraphicShaderUse(GraphicContext* const graphicContext, const unsign
 
 ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const char* vertexShaderFilePath, const char* fragmentShaderFilePath)
 {
-    Shader vertexShader;
-    Shader fragmentShader;
-    DataStream vertexShaderFile;
-    DataStream fragmentFile;
-
-    DataStreamConstruct(&vertexShaderFile);
-    DataStreamConstruct(&fragmentFile);
+    Shader vertexShader; PXShaderConstruct(&vertexShader);
+    Shader fragmentShader; PXShaderConstruct(&fragmentShader);
+    DataStream vertexShaderFile; DataStreamConstruct(&vertexShaderFile);
+    DataStream fragmentFile; DataStreamConstruct(&fragmentFile);  
 
     {
-        const unsigned char isAlreadyLoaded = shaderProgram->ID != -1;
-        const unsigned char hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
+        const PXBool isAlreadyLoaded = shaderProgram->ID != -1;
+        const PXBool hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
 
         if (isAlreadyLoaded)
         {
@@ -1104,31 +1108,27 @@ ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicCont
 
     {
         const ActionResult actionResult = DataStreamMapToMemoryA(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = ActionSuccessful == actionResult;
+        const PXBool sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
         {
             return actionResult;
         }
 
-        vertexShader.Type = ShaderTypeVertex;
-        vertexShader.Content = (char*)vertexShaderFile.Data;
-        vertexShader.ContentSize = vertexShaderFile.DataSize;
+        ShaderDataSet(&vertexShader, ShaderTypeVertex, vertexShaderFile.Data, vertexShaderFile.DataSize);
     }
 
 
     {
         const ActionResult actionResult = DataStreamMapToMemoryA(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = ActionSuccessful == actionResult;
+        const PXBool sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
         {
             return actionResult;
         }
 
-        fragmentShader.Type = ShaderTypeFragment;
-        fragmentShader.Content = (char*)fragmentFile.Data;
-        fragmentShader.ContentSize = fragmentFile.DataSize;
+        ShaderDataSet(&fragmentShader, ShaderTypeFragment, fragmentFile.Data, fragmentFile.DataSize);
     }
     //-----
 
@@ -1203,13 +1203,13 @@ ActionResult GraphicShaderProgramCreateVFPathW(GraphicContext* const graphicCont
 
 ActionResult GraphicShaderProgramCreateVFData(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, Shader* vertexShader, Shader* fragmentShader)
 {
-    const size_t shaderListSize = 2;
+    const PXSize shaderListSize = 2;
     Shader* const shaderList[2] = { vertexShader, fragmentShader };
     const OpenGLID shaderProgrammID = OpenGLShaderProgramCreate(&graphicContext->OpenGLInstance);
     unsigned int  sucessfulCounter = 0;
     unsigned char isValidShader = 1;
 
-    for (size_t i = 0; i < shaderListSize; ++i)
+    for (PXSize i = 0; i < shaderListSize; ++i)
     {
         Shader* const shader = shaderList[i];
         const OpenGLShaderType openGLShaderType = GraphicShaderFromOpenGL(shader->Type);
@@ -1239,7 +1239,7 @@ ActionResult GraphicShaderProgramCreateVFData(GraphicContext* const graphicConte
     }
 
     // We used the Shaders above to compile, these elements are not used anymore.
-    for (size_t i = 0; i < shaderListSize; ++i)
+    for (PXSize i = 0; i < shaderListSize; ++i)
     {
         Shader* const shader = shaderList[i];
         const unsigned char isLoaded = shader->ID != -1;
@@ -1267,7 +1267,7 @@ ActionResult GraphicShaderProgramCreateVFData(GraphicContext* const graphicConte
     return ActionSuccessful;
 }
 
-ActionResult GraphicRender(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount)
+ActionResult GraphicRender(GraphicContext* const graphicContext, GraphicRenderMode renderMode, PXSize start, PXSize amount)
 {
     return ActionInvalid;
 }
@@ -1289,12 +1289,12 @@ void GraphicShaderProgramUse(GraphicContext* const graphicContext, const unsigne
     OpenGLShaderProgramUse(&graphicContext->OpenGLInstance, shaderID);
 }
 
-ActionResult GraphicRenderElement(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount)
+ActionResult GraphicRenderElement(GraphicContext* const graphicContext, GraphicRenderMode renderMode, PXSize start, PXSize amount)
 {
     return ActionInvalid;
 }
 
-ActionResult GraphicRenderList(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount)
+ActionResult GraphicRenderList(GraphicContext* const graphicContext, GraphicRenderMode renderMode, PXSize start, PXSize amount)
 {
     return ActionInvalid;
 }

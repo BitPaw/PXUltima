@@ -3,10 +3,10 @@
 
 #include <Format/Type.h>
 
-#define PXLinkedListNodeNotUsed (size_t)-1
-#define PXLinkedListNodeNoNext (size_t)0
+#define PXLinkedListNodeNotUsed (PXSize)-1
+#define PXLinkedListNodeNoNext (PXSize)0
 
-#define PXLinkedListUseAdress (size_t)-1
+#define PXLinkedListUseAdress (PXSize)-1
 
 #ifdef __cplusplus
 extern "C"
@@ -25,18 +25,18 @@ extern "C"
 	typedef struct PXLinkedListNodeDynamic_
 	{
 		void* BlockData;
-		size_t BlockSize;
+		PXSize BlockSize;
 	}
 	PXLinkedListNodeDynamic;
 
 	typedef struct PXLinkedListFixed_
 	{
 		void* Data;
-		size_t DataSize;
+		PXSize DataSize;
 
-		size_t NodeSize; // if size is -1, we will store the data pointer itself
-		size_t NodeListSizeCurrent;
-		size_t NodeListSizeMaximal;
+		PXSize NodeSize; // if size is -1, we will store the data pointer itself
+		PXSize NodeListSizeCurrent;
+		PXSize NodeListSizeMaximal;
 
 
 		void* DataEntryLast;
@@ -47,20 +47,20 @@ extern "C"
 	PXPublic void PXLinkedListFixedNodeDestruct(PXLinkedListFixed* const linkedListFixed);
 	
 
-	PXPublic void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* const data, const size_t dataSize, const size_t nodeSize);
+	PXPublic void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* const data, const PXSize dataSize, const PXSize nodeSize);
 
-	PXPublic PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const size_t index);
+	PXPublic PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const PXSize index);
 	PXPublic PXBool PXLinkedListFixedNodeNext(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed);
 
 	//PXPublic PXBool PXLinkedListFixedNodeFetch(PXLinkedListFixed* const linkedListFixed, void* const element);
 
 	PXPrivate PXBool PXLinkedListFixedDataSize(const PXLinkedListFixed* const linkedListFixed);
 	PXPrivate PXBool PXLinkedListFixedIsDataEmbedded(const PXLinkedListFixed* const linkedListFixed);
-	PXPrivate size_t PXLinkedListFixedNodeStride(const PXLinkedListFixed* const linkedListFixed);
+	PXPrivate PXSize PXLinkedListFixedNodeStride(const PXLinkedListFixed* const linkedListFixed);
 	PXPrivate void* PXLinkedListFixedNodeEmptySlotFetch(const PXLinkedListFixed* const linkedListFixed);
 
 	PXPublic PXBool PXLinkedListFixedNodeAdd(PXLinkedListFixed* const linkedListFixed, void* const element);
-	PXPublic PXBool PXLinkedListFixedNodeRemoveAt(PXLinkedListFixed* const linkedListFixed, const size_t index);
+	PXPublic PXBool PXLinkedListFixedNodeRemoveAt(PXLinkedListFixed* const linkedListFixed, const PXSize index);
 #ifdef __cplusplus
 }
 #endif

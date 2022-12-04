@@ -65,10 +65,10 @@ extern "C"
 		PXBool IntrepredTabsAsWhiteSpace;
 		
 		PXBool CommentsKeep;
-		size_t CommentSingleLineSize;
+		PXSize CommentSingleLineSize;
 		char* CommentSingleLine;
 
-		size_t CommentMultibleLineSize;
+		PXSize CommentMultibleLineSize;
 		char* CommentMultibleLine;
 	}
 	PXCompilerSettings;
@@ -85,17 +85,17 @@ extern "C"
 		PXCompilerSymbolEntry* compilerSymbolEntry
 	);
 
-	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const size_t textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
+	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
 	PXPublic void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const outputStream, const PXCompilerSettings* const compilerSettings);
 
 
-	PXPublic PXBool PXCompilerParseStringUntilNewLine(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, char* const text, const size_t textMaxSize, size_t* const textSize);
+	PXPublic PXBool PXCompilerParseStringUntilNewLine(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, char* const text, const PXSize textMaxSize, PXSize* const textSize);
 	
 	PXPublic PXBool PXCompilerParseIntUnsignedSingle(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value);
 
 	PXPublic PXBool PXCompilerParseFloatSingle(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values);
-	PXPublic PXBool PXCompilerParseFloatList(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values, const size_t valuesMaxSize, size_t* const valuesSize);
+	PXPublic PXBool PXCompilerParseFloatList(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 
 #ifdef __cplusplus
 }

@@ -80,7 +80,7 @@ unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressi
     }
 }
 
-ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeRead)
+ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeRead)
 {
     DataStream dataStream;
     ZLIB zlib;
@@ -88,8 +88,8 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
     DataStreamConstruct(&dataStream);
     DataStreamFromExternal(&dataStream, inputData, inputDataSize);
 
-    const size_t headerSize = 2u;
-    const size_t adlerSize = 4u;    
+    const PXSize headerSize = 2u;
+    const PXSize adlerSize = 4u;    
 
     // Parse header ->     Header.Parse(compressionFormatByte, flagByte);
     {
@@ -197,7 +197,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataS
     return ActionSuccessful;
 }
 
-ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeWritten)
+ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten)
 {
     DataStream parsingSteam;
 
@@ -237,7 +237,7 @@ ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSiz
 
     // Wirte Data
     {
-        size_t sizeWritten = 0;
+        PXSize sizeWritten = 0;
 
         const unsigned int value = DEFLATESerialize(inputData, inputDataSize, (const unsigned char* const)outputData + 2u, outputDataSize - 4u, &sizeWritten);
 
@@ -256,9 +256,9 @@ ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSiz
     return ActionSuccessful;
 }
 
-size_t ZLIBCalculateExpectedSize(const size_t width, const size_t height, const size_t bpp, const PNGInterlaceMethod interlaceMethod)
+PXSize ZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PNGInterlaceMethod interlaceMethod)
 {
-    size_t expected_size = 0;
+    PXSize expected_size = 0;
 
     switch(interlaceMethod)
     {
@@ -292,10 +292,10 @@ size_t ZLIBCalculateExpectedSize(const size_t width, const size_t height, const 
     return expected_size;
 }
 
-size_t CalculateRawSizeIDAT(const size_t w, const size_t h, const size_t bpp)
+PXSize CalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp)
 {
     /* + 1 for the filter byte, and possibly plus padding bits per line. */
            /* Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp */
-    size_t line = ((size_t)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
-    return (size_t)h * line;
+    PXSize line = ((PXSize)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
+    return (PXSize)h * line;
 }

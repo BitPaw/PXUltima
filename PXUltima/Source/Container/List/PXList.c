@@ -10,7 +10,7 @@ void PXListDestruct(PXList* const list)
 
 }
 
-void PXListInitialize(PXList* const list, void* const data, const size_t dataTypeSize, const size_t sizeAllocated)
+void PXListInitialize(PXList* const list, void* const data, const PXSize dataTypeSize, const PXSize sizeAllocated)
 {
 
 }

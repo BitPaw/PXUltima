@@ -1,6 +1,6 @@
 #include "SVG.h"
 
-ActionResult SVGParse(SVG* svg, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult SVGParse(SVG* svg, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	return ActionInvalid;
 }

@@ -18,9 +18,9 @@ void PXCompilerSymbolEntryAdd(DataStream* const dataStream, const PXCompilerSymb
 
 
 #if 0
-	size_t idBufferSize = 10;
+	PXSize idBufferSize = 10;
 	char idbuffer[15];
-	size_t textBufferSize = 20;
+	PXSize textBufferSize = 20;
 	char textbuffer[25];
 
 	MemorySet(idbuffer, sizeof(idbuffer), 0);
@@ -88,7 +88,7 @@ void PXCompilerSymbolEntryAdd(DataStream* const dataStream, const PXCompilerSymb
 void PXCompilerSymbolEntryExtract(DataStream* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
 	void* const oldPos = DataStreamCursorPosition(dataStream);
-	size_t size = 0;
+	PXSize size = 0;
 
 	unsigned char symbolID = 0;
 
@@ -103,7 +103,7 @@ void PXCompilerSymbolEntryExtract(DataStream* const dataStream, PXCompilerSymbol
 	MemorySet(oldPos, size, '#');
 }
 
-PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const size_t textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
+PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	switch (text[0])
 	{
@@ -161,15 +161,15 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 		case '9':
 		{
 			// Probe for number
-			const size_t dotIndex = TextFindFirstA(text, textSize, '.');
-			const PXBool probablyFloat = dotIndex != (size_t)-1;
-			size_t writtenNumbers = 0;			
+			const PXSize dotIndex = TextFindFirstA(text, textSize, '.');
+			const PXBool probablyFloat = dotIndex != (PXSize)-1;
+			PXSize writtenNumbers = 0;			
 
 			if (probablyFloat)
 			{
 				float value = 0;
 
-				const size_t writtenNumbers = TextToFloatA(text, textSize, &value);
+				const PXSize writtenNumbers = TextToFloatA(text, textSize, &value);
 				const PXBool isFloat = textSize == writtenNumbers;
 
 				if (isFloat)
@@ -184,7 +184,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 			{
 				unsigned int value = 0;
 
-				const size_t writtenNumbers = TextToIntA(text, textSize, &value);
+				const PXSize writtenNumbers = TextToIntA(text, textSize, &value);
 				const PXBool isInteger = textSize == writtenNumbers;
 
 				if (isInteger)
@@ -210,8 +210,8 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const siz
 
 void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const outputStream, const PXCompilerSettings* const compilerSettings)
 {
-	size_t currentLine = 0;
-	size_t currentColoum = 0;
+	PXSize currentLine = 0;
+	PXSize currentColoum = 0;
 	PXBool isFirstWhiteSpaceInLine = 1u;
 
 	const PXCompilerSymbolLexer newLineSymbol = compilerSettings->IntrepredNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;
@@ -225,7 +225,7 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 
 		// Consume whitespace
 		{
-			const size_t whiteSpaceSize = DataStreamSkipEmptySpace(inputStream);
+			const PXSize whiteSpaceSize = DataStreamSkipEmptySpace(inputStream);
 
 			currentColoum += whiteSpaceSize;
 
@@ -249,11 +249,11 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 
 		// Consume new line
 		{
-			const size_t endofLineSize = DataStreamSkipEndOfLineCharacters(inputStream);
+			const PXSize endofLineSize = DataStreamSkipEndOfLineCharacters(inputStream);
 
 			if (endofLineSize)
 			{
-				const size_t linesSkipped = TextCountA(compilerSymbolEntry.Source, endofLineSize, '\n');
+				const PXSize linesSkipped = TextCountA(compilerSymbolEntry.Source, endofLineSize, '\n');
 
 				compilerSymbolEntry.ID = newLineSymbol;
 				compilerSymbolEntry.Line = currentLine;
@@ -308,11 +308,11 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 						{
 							++compilerSymbolEntry.Source;
 
-							const size_t blockSizeCUr = DataStreamRemainingSize(inputStream) + compilerSymbolEntry.Size;
-							const size_t symbolPositionApostrophe = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\'');
-							const size_t symbolPositionQuotationMark = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\"');
-							const size_t symbolPosition = MathMinimumIU(symbolPositionApostrophe, symbolPositionQuotationMark);
-							const PXBool hasIndex = symbolPosition != (size_t)-1;
+							const PXSize blockSizeCUr = DataStreamRemainingSize(inputStream) + compilerSymbolEntry.Size;
+							const PXSize symbolPositionApostrophe = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\'');
+							const PXSize symbolPositionQuotationMark = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\"');
+							const PXSize symbolPosition = MathMinimumIU(symbolPositionApostrophe, symbolPositionQuotationMark);
+							const PXBool hasIndex = symbolPosition != (PXSize)-1;
 
 							if (!hasIndex)
 							{
@@ -348,7 +348,7 @@ void PXCompilerLexicalAnalysis(DataStream* const inputStream, DataStream* const 
 	//printf("||=====================================================||\n");
 }
 
-PXBool PXCompilerParseStringUntilNewLine(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, char* const text, const size_t textMaxSize, size_t* const textSize)
+PXBool PXCompilerParseStringUntilNewLine(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, char* const text, const PXSize textMaxSize, PXSize* const textSize)
 {
 	PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Expect a name.    
 
@@ -371,7 +371,7 @@ PXBool PXCompilerParseStringUntilNewLine(DataStream* const inputStream, PXCompil
 
 		if (isElement)
 		{
-			const size_t namelength = ((size_t)compilerSymbolEntry->Source + (size_t)compilerSymbolEntry->Size) - (size_t)nameAdressStart;
+			const PXSize namelength = ((PXSize)compilerSymbolEntry->Source + (PXSize)compilerSymbolEntry->Size) - (PXSize)nameAdressStart;
 
 			*textSize = TextCopyA(nameAdressStart, namelength, text, textMaxSize);
 		}
@@ -406,9 +406,9 @@ PXBool PXCompilerParseFloatSingle(DataStream* const inputStream, PXCompilerSymbo
 	return isFloat;
 }
 
-PXBool PXCompilerParseFloatList(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values, const size_t valuesMaxSize, size_t* const valuesSize)
+PXBool PXCompilerParseFloatList(DataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
 {
-	for (size_t i = 0; i < valuesMaxSize; ++i)
+	for (PXSize i = 0; i < valuesMaxSize; ++i)
 	{
 		const PXBool isFloat = PXCompilerParseFloatSingle(inputStream, compilerSymbolEntry, &values[*valuesSize]);
 	

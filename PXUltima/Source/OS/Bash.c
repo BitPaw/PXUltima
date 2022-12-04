@@ -5,7 +5,7 @@ ActionResult BashExecuteA(const char* programPath, const unsigned char syncronou
 	/*
 	Pipe pipe;
 	ActionResult result = pipe.Open(programPath, FileOpenMode::Read);
-	size_t dataLength = 0;
+	PXSize dataLength = 0;
 	unsigned char* data = 0;
 
 	if(result != ActionSuccessful)

@@ -53,7 +53,7 @@ void PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOf
 	PXMatrix4x4FPerspective(&camera->MatrixProjection, fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
-void PXCameraAspectRatioChange(PXCamera* const camera, const size_t width, const size_t height)
+void PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height)
 {
 	camera->Width = width;
 	camera->Height = height;

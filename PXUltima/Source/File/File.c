@@ -67,7 +67,7 @@
 
 
 
-void FilePathSplittA(const char* fullPath, size_t fullPathMaxSize, char* drive, size_t driveMaxSize, char* directory, size_t directoryMaxSize, char* fileName, size_t fileNameMaxSize, char* extension, size_t extensionMaxSize)
+void FilePathSplittA(const char* fullPath, PXSize fullPathMaxSize, char* drive, PXSize driveMaxSize, char* directory, PXSize directoryMaxSize, char* fileName, PXSize fileNameMaxSize, char* extension, PXSize extensionMaxSize)
 {
 #if OSUnix
 	char directoryNameCache[PathMaxSize];
@@ -79,10 +79,10 @@ void FilePathSplittA(const char* fullPath, size_t fullPathMaxSize, char* drive, 
 	char* dirNameResult = dirname(directoryNameCache);
 	char* baseNameResult = basename(baseNameCache);
 
-	size_t directoryLength = TextCopyA(dirNameResult, DirectoryMaxSize, directory, DirectoryMaxSize);
-	size_t fileNameLength = TextCopyA(baseNameResult, FileNameMaxSize, fileName, FileNameMaxSize);
+	PXSize directoryLength = TextCopyA(dirNameResult, DirectoryMaxSize, directory, DirectoryMaxSize);
+	PXSize fileNameLength = TextCopyA(baseNameResult, FileNameMaxSize, fileName, FileNameMaxSize);
 
-	for(size_t i = fileNameLength - 1; i > 0; --i)
+	for(PXSize i = fileNameLength - 1; i > 0; --i)
 	{
 		const unsigned char isDot = fileName[i] == '.';
 
@@ -104,7 +104,7 @@ void FilePathSplittA(const char* fullPath, size_t fullPathMaxSize, char* drive, 
 		extension, extensionMaxSize
 	);
 
-	for(size_t i = 0; fileName[i] != '\0'; i++)
+	for(PXSize i = 0; fileName[i] != '\0'; i++)
 	{
 		const unsigned char isDot = fileName[i] == '.';
 
@@ -118,7 +118,7 @@ void FilePathSplittA(const char* fullPath, size_t fullPathMaxSize, char* drive, 
 #endif
 }
 
-void FilePathSplittW(const wchar_t* fullPath, size_t fullPathMaxSize, wchar_t* drive, size_t driveMaxSize, wchar_t* directory, size_t directoryMaxSize, wchar_t* fileName, size_t fileNameMaxSize, wchar_t* extension, size_t extensionMaxSize)
+void FilePathSplittW(const wchar_t* fullPath, PXSize fullPathMaxSize, wchar_t* drive, PXSize driveMaxSize, wchar_t* directory, PXSize directoryMaxSize, wchar_t* fileName, PXSize fileNameMaxSize, wchar_t* extension, PXSize extensionMaxSize)
 {
 #if OSUnix
 	char fullPathA[PathMaxSize];
@@ -154,7 +154,7 @@ void FilePathSplittW(const wchar_t* fullPath, size_t fullPathMaxSize, wchar_t* d
 		extension, extensionMaxSize
 	);
 
-	for(size_t i = 0; extension[i] != '\0'; i++)
+	for(PXSize i = 0; extension[i] != '\0'; i++)
 	{
 		const unsigned char isDot = extension[i] == '.';
 
@@ -168,13 +168,13 @@ void FilePathSplittW(const wchar_t* fullPath, size_t fullPathMaxSize, wchar_t* d
 #endif
 }
 
-void FilePathSplittPositionW(const wchar_t* fullPath, size_t fullPathMaxSize, size_t* drivePos, size_t driveSize, size_t* directory, size_t directorySize, size_t* fileName, size_t fileNameSize, size_t* extension, size_t extensionSize)
+void FilePathSplittPositionW(const wchar_t* fullPath, PXSize fullPathMaxSize, PXSize* drivePos, PXSize driveSize, PXSize* directory, PXSize directorySize, PXSize* fileName, PXSize fileNameSize, PXSize* extension, PXSize extensionSize)
 {
 }
 
-size_t FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax)
+PXSize FilePathExtensionGetA(const char* filePath, const PXSize filePathSize, char* extension, const PXSize extensionSizeMax)
 {
-	const size_t index = TextFindLastA(filePath, filePathSize, '.');
+	const PXSize index = TextFindLastA(filePath, filePathSize, '.');
 	const unsigned char hasExtension = index != TextIndexNotFound;
 
 	if(!hasExtension)
@@ -183,14 +183,14 @@ size_t FilePathExtensionGetA(const char* filePath, const size_t filePathSize, ch
 		return;
 	}
 
-	const size_t writtenBytes = TextCopyA(filePath + index, filePathSize - index, extension, extensionSizeMax);
+	const PXSize writtenBytes = TextCopyA(filePath + index, filePathSize - index, extension, extensionSizeMax);
 
 	return writtenBytes;
 }
 
-size_t FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax)
+PXSize FilePathExtensionGetW(const wchar_t* filePath, const PXSize filePathSize, wchar_t* extension, const PXSize extensionSizeMax)
 {
-	const size_t index = TextFindLastW(filePath, filePathSize, '.');
+	const PXSize index = TextFindLastW(filePath, filePathSize, '.');
 	const unsigned char hasExtension = index != TextIndexNotFound;
 
 	if(!hasExtension)
@@ -199,46 +199,46 @@ size_t FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize,
 		return;
 	}
 
-	const size_t writtenBytes = TextCopyW(filePath + index + 1, filePathSize - index, extension, extensionSizeMax);
+	const PXSize writtenBytes = TextCopyW(filePath + index + 1, filePathSize - index, extension, extensionSizeMax);
 
 	return writtenBytes;
 }
 
-FileFormatExtension FilePathExtensionDetectTryA(const char* const filePath, const size_t filePathSize)
+FileFormatExtension FilePathExtensionDetectTryA(const char* const filePath, const PXSize filePathSize)
 {
 	char extensionA[ExtensionMaxSize];
 
-	const size_t writtenBytes = FilePathExtensionGetA(filePath, filePathSize, extensionA, ExtensionMaxSize);
+	const PXSize writtenBytes = FilePathExtensionGetA(filePath, filePathSize, extensionA, ExtensionMaxSize);
 
 	FileFormatExtension fileFormatExtension = FileExtensionDetectTryA(extensionA, writtenBytes);
 
 	return fileFormatExtension;
 }
 
-FileFormatExtension FilePathExtensionDetectTryW(const wchar_t* const filePath, const size_t filePathSize)
+FileFormatExtension FilePathExtensionDetectTryW(const wchar_t* const filePath, const PXSize filePathSize)
 {
 	wchar_t extensionW[ExtensionMaxSize];
 
-	const size_t writtenBytes = FilePathExtensionGetW(filePath, filePathSize, extensionW, ExtensionMaxSize);
+	const PXSize writtenBytes = FilePathExtensionGetW(filePath, filePathSize, extensionW, ExtensionMaxSize);
 
 	FileFormatExtension fileFormatExtension = FileExtensionDetectTryW(extensionW, writtenBytes);
 
 	return fileFormatExtension;
 }
 
-FileFormatExtension FileExtensionDetectTryA(const char* const extension, const size_t extensionSize)
+FileFormatExtension FileExtensionDetectTryA(const char* const extension, const PXSize extensionSize)
 {
 	wchar_t extensionW[ExtensionMaxSize];
 
-	const size_t extensionWSize = TextCopyAW(extension, extensionSize, extensionW, ExtensionMaxSize);
+	const PXSize extensionWSize = TextCopyAW(extension, extensionSize, extensionW, ExtensionMaxSize);
 	const FileFormatExtension format = FileExtensionDetectTryW(extensionW, extensionWSize);
 
 	return format;
 }
 
-FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const size_t extensionSizeC)
+FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const PXSize extensionSizeC)
 {
-	const size_t extensionSize = MathMinimumIU(extensionSizeC, ExtensionMaxSize);
+	const PXSize extensionSize = MathMinimumIU(extensionSizeC, ExtensionMaxSize);
 
 	switch (extensionSize)
 	{
@@ -287,6 +287,7 @@ FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, cons
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "QUI", 3u))  return FileFormatQOI;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "STL", 4u))  return FileFormatSTL;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "SVG", 4u))  return FileFormatSVG;
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TIF", 4u))  return FileFormatTagImage;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TGA", 4u))  return FileFormatTGA;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TTF", 4u))  return FileFormatTrueTypeFont;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WAV", 4u))  return FileFormatWave;
@@ -373,7 +374,7 @@ ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePa
 	FILE* fileDestination = fopen(destinationFilePath, FileWriteMode);
 	const unsigned char fileOpenSuccesful = fileSource && fileDestination;
 
-	const size_t swapBufferSize = 2048;
+	const PXSize swapBufferSize = 2048;
 	unsigned char swapBuffer[swapBufferSize];
 
 	if(!fileOpenSuccesful)
@@ -383,8 +384,8 @@ ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePa
 
 	while(!feof(fileSource))
 	{
-		size_t readBytes = fread(swapBuffer, sizeof(char), swapBufferSize, fileSource);
-		size_t writtenBytes = fwrite(swapBuffer, sizeof(char), readBytes, fileDestination);
+		PXSize readBytes = fread(swapBuffer, sizeof(char), swapBufferSize, fileSource);
+		PXSize writtenBytes = fwrite(swapBuffer, sizeof(char), readBytes, fileDestination);
 	}
 
 	fclose(fileSource);
@@ -430,13 +431,13 @@ ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destination
 
 void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName)
 {
-	const size_t index = TextFindLastW(currnetPath, PathMaxSize, '/');
+	const PXSize index = TextFindLastW(currnetPath, PathMaxSize, '/');
 	const unsigned char found = index != -1;
 
 	if(found)
 	{
-		const size_t copyedBytes = TextCopyW(currnetPath, index + 1, targetPath, index + 1);
-		const size_t toCopy = PathMaxSize - copyedBytes;
+		const PXSize copyedBytes = TextCopyW(currnetPath, index + 1, targetPath, index + 1);
+		const PXSize toCopy = PathMaxSize - copyedBytes;
 
 		TextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
 	}
@@ -464,7 +465,7 @@ void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const export
 	}
 
 	{
-		size_t offset = 0;
+		PXSize offset = 0;
 
 		offset += TextCopyW(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
 		offset += TextCopyW(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
@@ -476,7 +477,7 @@ void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const export
 
 void FilePathSwapExtensionW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileExtension)
 {
-	const size_t index = TextFindLastW(inputPath, PathMaxSize, '.'); // Find last dot
+	const PXSize index = TextFindLastW(inputPath, PathMaxSize, '.'); // Find last dot
 	const unsigned char found = index != -1;
 
 	if (!found)
@@ -484,8 +485,8 @@ void FilePathSwapExtensionW(const wchar_t* const inputPath, wchar_t* const expor
 		return;
 	}
 
-	const size_t written = TextCopyW(inputPath, index+1, exportPath, PathMaxSize); // Copy filePath without extension
-	const size_t writtenFull = TextCopyW(fileExtension , PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
+	const PXSize written = TextCopyW(inputPath, index+1, exportPath, PathMaxSize); // Copy filePath without extension
+	const PXSize writtenFull = TextCopyW(fileExtension , PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
 }
 
 ActionResult DirectoryCreateA(const char* directoryName)
@@ -504,12 +505,12 @@ ActionResult DirectoryCreateA(const char* directoryName)
 ActionResult DirectoryCreateW(const wchar_t* directoryName)
 {
 	wchar_t directoryNameSegment[PathMaxSize];
-	size_t starPos = 0;
-	size_t successful = 0;
+	PXSize starPos = 0;
+	PXSize successful = 0;
 
 	do
 	{
-		size_t offset = TextFindFirstW(directoryName + starPos, PathMaxSize - starPos, '/');
+		PXSize offset = TextFindFirstW(directoryName + starPos, PathMaxSize - starPos, '/');
 
 		if (offset == -1)
 		{
@@ -540,7 +541,7 @@ ActionResult WorkingDirectoryChange(const char* directoryName)
 	return ActionInvalid;
 }
 
-ActionResult WorkingDirectoryGetA(char* workingDirectory, size_t workingDirectorySize)
+ActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize)
 {
 	char* workingDirectoryResult = OSWorkingDirectoryCurrentA(workingDirectory, workingDirectorySize);
 	const unsigned char  wasSuccesful = workingDirectoryResult;
@@ -553,7 +554,7 @@ ActionResult WorkingDirectoryGetA(char* workingDirectory, size_t workingDirector
 	return ActionSuccessful;
 }
 
-ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, size_t workingDirectorySize)
+ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize)
 {
 	wchar_t* workingDirectoryResult = OSWorkingDirectoryCurrentW(workingDirectory, workingDirectorySize);
 	const unsigned char  wasSuccesful = workingDirectoryResult;
@@ -581,12 +582,12 @@ ActionResult DirectoryDeleteW(const wchar_t* directoryName)
 	return ActionInvalid;
 }
 
-ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, size_t* listSize)
+ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
 {
 	return ActionInvalid;
 }
 
-ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, size_t* listSize)
+ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize)
 {
 	return ActionInvalid;
 }
@@ -655,7 +656,7 @@ ActionResult FileMapToVirtualMemoryW(const wchar_t* filePath, const MemoryProtec
 
 }
 
-ActionResult FileMapToVirtualMemory(const size_t size, const MemoryProtectionMode protectionMode)
+ActionResult FileMapToVirtualMemory(const PXSize size, const MemoryProtectionMode protectionMode)
 {
 
 }
@@ -738,7 +739,7 @@ ActionResult FileReadFromDisk(const wchar_t* filePath, bool addNullTerminator, F
 	return ActionSuccessful;
 }
 
-ActionResult FileReadFromDisk(FILE* file, Byte__** targetBuffer, size_t& bufferSize, bool addNullTerminator)
+ActionResult FileReadFromDisk(FILE* file, Byte__** targetBuffer, PXSize& bufferSize, bool addNullTerminator)
 {
 	fseek(file, 0, SEEK_END); // Jump to end of file
 	bufferSize = ftell(file); // Get current 'data-cursor' position
@@ -770,15 +771,15 @@ ActionResult FileReadFromDisk(FILE* file, Byte__** targetBuffer, size_t& bufferS
 		--bufferSize;
 	}
 
-	size_t readBytes = fread(dataBuffer, 1u, bufferSize, file);
-	size_t overAllocatedBytes = bufferSize - readBytes; // if overAllocatedBytes > 0 there was a reading error.
+	PXSize readBytes = fread(dataBuffer, 1u, bufferSize, file);
+	PXSize overAllocatedBytes = bufferSize - readBytes; // if overAllocatedBytes > 0 there was a reading error.
 
 	assert(bufferSize == readBytes);
 
 	return ActionSuccessful;
 }
 
-ActionResult FileReadFromDisk(const wchar_t* filePath, Byte__** targetBuffer, size_t& bufferSize, bool addNullTerminator, FilePersistence filePersistence)
+ActionResult FileReadFromDisk(const wchar_t* filePath, Byte__** targetBuffer, PXSize& bufferSize, bool addNullTerminator, FilePersistence filePersistence)
 {
 	File file;
 	ActionResult result = file.Open(filePath, FileOpenMode::Read);
@@ -832,12 +833,12 @@ ActionResult FileWriteToDisk(const unsigned int value, const Endian endian)
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const char* string, const size_t length)
+ActionResult FileWriteToDisk(const char* string, const PXSize length)
 {
 	return WriteToDisk(string, length);
 }
 
-ActionResult FileWriteToDisk(const unsigned char* string, const size_t length)
+ActionResult FileWriteToDisk(const unsigned char* string, const PXSize length)
 {
 	return WriteToDisk(string, length);
 }
@@ -847,7 +848,7 @@ ActionResult FileWriteToDisk(const unsigned long long& value, const Endian endia
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const void* value, const size_t length)
+ActionResult FileWriteToDisk(const void* value, const PXSize length)
 {
 #if OSUnix
 FILE* fileHandle = FileHandle;
@@ -855,7 +856,7 @@ FILE* fileHandle = FileHandle;
 FILE* fileHandle = FileHandleCStyle;
 #endif
 
-	const size_t writtenSize = fwrite(value, sizeof(Byte__), length, fileHandle);
+	const PXSize writtenSize = fwrite(value, sizeof(Byte__), length, fileHandle);
 
 	if(writtenSize > 0)
 	{
@@ -891,10 +892,10 @@ ActionResult FileWriteToDisk(const char* format, ...)
 	return ActionSuccessful;
 }
 
-ActionResult FileWriteIntoFile(const void* data, const size_t dataSize)
+ActionResult FileWriteIntoFile(const void* data, const PXSize dataSize)
 {
 #if OSUnix
-	size_t writtenBytes = fwrite(data, sizeof(char), dataSize, FileHandle);
+	PXSize writtenBytes = fwrite(data, sizeof(char), dataSize, FileHandle);
 #elif OSWindows
 	DWORD writtenBytes = 0;
 	const bool successful = WriteFile(FileHandle, data, dataSize, &writtenBytes, nullptr);
@@ -935,7 +936,7 @@ ActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersis
 	}
 
 #if OSUnix
-	size_t writtenBytes = fwrite(Data, sizeof(char), DataCursorPosition, file.FileHandle);
+	PXSize writtenBytes = fwrite(Data, sizeof(char), DataCursorPosition, file.FileHandle);
 #elif OSWindows
 	DWORD writtenBytes = 0;
 	const bool successful = WriteFile(file.FileHandle, Data, DataCursor, &writtenBytes, nullptr);
@@ -954,7 +955,7 @@ ActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersis
 	return ActionSuccessful;
 }
 
-ActionResult FileReadFromDisk(unsigned char** outPutBuffer, size_t& outPutBufferSize, const bool addTerminatorByte)
+ActionResult FileReadFromDisk(unsigned char** outPutBuffer, PXSize& outPutBufferSize, const bool addTerminatorByte)
 {
 #if OSUnix
 	fseek(FileHandle, 0, SEEK_END); // Jump to end of file
@@ -987,8 +988,8 @@ ActionResult FileReadFromDisk(unsigned char** outPutBuffer, size_t& outPutBuffer
 		--outPutBufferSize;
 	}
 
-	size_t readBytes = fread(dataBuffer, 1u, outPutBufferSize, FileHandle);
-	size_t overAllocatedBytes = outPutBufferSize - readBytes; // if overAllocatedBytes > 0 there was a reading error.
+	PXSize readBytes = fread(dataBuffer, 1u, outPutBufferSize, FileHandle);
+	PXSize overAllocatedBytes = outPutBufferSize - readBytes; // if overAllocatedBytes > 0 there was a reading error.
 
 	assert(outPutBufferSize == readBytes);
 
@@ -999,7 +1000,7 @@ ActionResult FileReadFromDisk(unsigned char** outPutBuffer, size_t& outPutBuffer
 	OVERLAPPED* overlapped = nullptr;
 	//LARGE_INTEGER size;
 	//bool succesSize = GetFileSizeEx(FileHandle, &size);
-	size_t allocationSize = fileSize;
+	PXSize allocationSize = fileSize;
 
 	if (addTerminatorByte)
 	{
@@ -1038,19 +1039,19 @@ ActionResult FileReadFromDisk(unsigned char** outPutBuffer, size_t& outPutBuffer
 
 void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName)
 {
-	const size_t index = TextFindLastW(currnetPath, PathMaxSize, '/');
+	const PXSize index = TextFindLastW(currnetPath, PathMaxSize, '/');
 	const bool found = index != -1;
 
 	if (found)
 	{
-		const size_t copyedBytes = TextCopyW(currnetPath, index + 1, targetPath, index + 1);
-		const size_t toCopy = PathMaxSize - copyedBytes;
+		const PXSize copyedBytes = TextCopyW(currnetPath, index + 1, targetPath, index + 1);
+		const PXSize toCopy = PathMaxSize - copyedBytes;
 
 		TextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
 	}
 }
 
-void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize)
+void FileFilesInFolder(const char* folderPath, wchar_t*** list, PXSize& listSize)
 {
 #if OSUnix
 	DIR* directory = opendir(folderPath);
@@ -1068,14 +1069,14 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize
 
 		(*list) = Memory::Allocate<wchar_t*>(listSize);
 
-		for (size_t index = 0; directoryInfo = readdir(directory); index++)
+		for (PXSize index = 0; directoryInfo = readdir(directory); index++)
 		{
 			const bool isFile = directoryInfo->d_type == DT_REG || true;
 
 			if (isFile)
 			{
 				const char* fileName = directoryInfo->d_name;
-				const size_t length = Text::Length(fileName);
+				const PXSize length = Text::Length(fileName);
 				wchar_t* newString = Memory::Allocate<wchar_t>(length + 1);
 				wchar_t** target = &(*list)[index];
 
@@ -1085,7 +1086,7 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize
 				}
 
 				(*target) = newString;
-				size_t writtenBytes = Text::Copy(fileName, length, *target, length);
+				PXSize writtenBytes = Text::Copy(fileName, length, *target, length);
 			}
 		}
 
@@ -1093,7 +1094,7 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize
 	}
 #elif OSWindows
 	wchar_t folderPathW[PathMaxSize];
-	size_t writtenBytes = TextCopyAW(folderPath, PathMaxSize, folderPathW, PathMaxSize);
+	PXSize writtenBytes = TextCopyAW(folderPath, PathMaxSize, folderPathW, PathMaxSize);
 
 	WIN32_FIND_DATA dataCursour{0};
 	HANDLE hFind = 0;
@@ -1118,11 +1119,11 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize
 	(*list) = Memory::Allocate<wchar_t*>(listSize);
 
 	hFind = FindFirstFile(folderPathW, &dataCursour); // Expected "." Folder
-	size_t fileIndex = 0;
+	PXSize fileIndex = 0;
 
 	do
 	{
-		const size_t length = TextLengthW(dataCursour.cFileName);
+		const PXSize length = TextLengthW(dataCursour.cFileName);
 		const wchar_t* filePathSource = dataCursour.cFileName;
 		wchar_t* newString = Memory::Allocate<wchar_t>(length + 1);
 
@@ -1143,7 +1144,7 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, size_t& listSize
 #endif
 }
 
-void FileFilesInFolder(const wchar_t* folderPath, wchar_t*** list, size_t& listSize)
+void FileFilesInFolder(const wchar_t* folderPath, wchar_t*** list, PXSize& listSize)
 {
 
 }

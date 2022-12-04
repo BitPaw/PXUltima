@@ -10,13 +10,13 @@ extern "C"
 
 	typedef struct PXDictionary_
 	{
-		size_t EntryAmountCurrent;
-		size_t EntryAmountMaximal;
+		PXSize EntryAmountCurrent;
+		PXSize EntryAmountMaximal;
 
-		size_t KeyTypeSize;
-		size_t ValueTypeSize;
+		PXSize KeyTypeSize;
+		PXSize ValueTypeSize;
 
-		size_t DataSize;
+		PXSize DataSize;
 		void* Data;
 	}
 	PXDictionary;
@@ -24,7 +24,7 @@ extern "C"
 	PXPublic void PXDictionaryConstruct(PXDictionary* const dictionary);
 	PXPublic void PXDictionaryDestruct(PXDictionary* const dictionary);
 
-	PXPublic void PXDictionaryResize(PXDictionary* const dictionary, const size_t entrys);
+	PXPublic void PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys);
 	PXPublic void PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);
 	PXPublic void PXDictionaryRemove(PXDictionary* const dictionary, const void* key);
 	PXPublic void PXDictionaryFind(PXDictionary* const dictionary, const void* key, void* value);

@@ -1,6 +1,6 @@
 #include "STEP.h"
 
-ActionResult STEPParse(STEP* step, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult STEPParse(STEP* step, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	return ActionInvalid;
 }

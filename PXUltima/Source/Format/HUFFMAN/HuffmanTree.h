@@ -75,7 +75,7 @@ extern "C"
 	PXPublic void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree);
 	PXPublic void GenerateFixedDistanceTree(HuffmanTree* huffmanTree);
 
-	PXPublic int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, size_t numcodes, size_t maxbitlen);
+	PXPublic int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, PXSize numcodes, PXSize maxbitlen);
 
 
 
@@ -83,8 +83,8 @@ extern "C"
 	PXPublic unsigned int GenerateDynamicTree(DataStream* const dataStream, HuffmanTree* treeLength, HuffmanTree* treeDistance);
 
 	/* Safely check if a + b > c, even if overflow could happen. */
-	PXPublic int lodepng_gtofl(size_t a, size_t b, size_t c);
-	PXPublic int lodepng_addofl(size_t a, size_t b, size_t* result);
+	PXPublic int lodepng_gtofl(PXSize a, PXSize b, PXSize c);
+	PXPublic int lodepng_addofl(PXSize a, PXSize b, PXSize* result);
 	PXPublic unsigned int huffmanDecodeSymbol(DataStream* const dataStream, HuffmanTree* codetree);
 
 

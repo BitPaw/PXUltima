@@ -62,17 +62,17 @@ void PXTimeNow(PXTime* time)
 #endif
 }
 
-size_t PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
+PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 {
 	//Year = -1;
 //Month = Month::Invalid;
 //DayOfWeek = DayOfWeek::Invalid;;
 
-	const size_t dayDelta = (timeB->Day - timeA->Day);
-	const size_t hourDelta = (timeB->Hour - timeA->Hour) * (dayDelta * 24);
-	const size_t minuteDelta = (timeB->Minute - timeA->Minute) * (hourDelta * 60);
-	const size_t secondsDelta = (timeB->Second - timeA->Second) + (minuteDelta * 60);
-	const size_t millisecondsDelta = (timeB->Milliseconds - timeA->Milliseconds) + (secondsDelta * 1000);
+	const PXSize dayDelta = (timeB->Day - timeA->Day);
+	const PXSize hourDelta = (timeB->Hour - timeA->Hour) * (dayDelta * 24);
+	const PXSize minuteDelta = (timeB->Minute - timeA->Minute) * (hourDelta * 60);
+	const PXSize secondsDelta = (timeB->Second - timeA->Second) + (minuteDelta * 60);
+	const PXSize millisecondsDelta = (timeB->Milliseconds - timeA->Milliseconds) + (secondsDelta * 1000);
 
 	return millisecondsDelta;
 }

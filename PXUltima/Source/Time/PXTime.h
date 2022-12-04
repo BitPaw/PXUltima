@@ -57,7 +57,7 @@ extern "C"
 	PXPublic TimeMonth ConvertToDay(unsigned short dayID);
 
 	PXPublic void PXTimeNow(PXTime* time);
-	PXPublic size_t PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
+	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
 	
 
 #ifdef __cplusplus

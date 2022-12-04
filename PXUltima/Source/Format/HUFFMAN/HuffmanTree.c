@@ -13,7 +13,7 @@ which is possible in case of only 0 or 1 present symbols. */
 #define LODEPNG_MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define LODEPNG_ABS(x) ((x) < 0 ? -(x) : (x))
 
-int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, size_t numcodes, size_t maxbitlen)
+int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, PXSize numcodes, PXSize maxbitlen)
 {
 	// HuffmanTree_makeFromLengths()
 	huffmanTree->lengths = MemoryAllocate(sizeof(unsigned int) * numcodes);
@@ -35,16 +35,16 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 
 	if (!error)
 	{
-		for (size_t n = 0; n != maxbitlen + 1; n++) blcount[n] = nextcode[n] = 0;
+		for (PXSize n = 0; n != maxbitlen + 1; n++) blcount[n] = nextcode[n] = 0;
 		/*step 1: count number of instances of each code length*/
-		for (size_t bits = 0; bits != numcodes; ++bits) ++blcount[huffmanTree->lengths[bits]];
+		for (PXSize bits = 0; bits != numcodes; ++bits) ++blcount[huffmanTree->lengths[bits]];
 		/*step 2: generate the nextcode values*/
-		for (size_t bits = 1; bits <= maxbitlen; ++bits)
+		for (PXSize bits = 1; bits <= maxbitlen; ++bits)
 		{
 			nextcode[bits] = (nextcode[bits - 1] + blcount[bits - 1]) << 1u;
 		}
 		/*step 3: generate all the codes*/
-		for (size_t n = 0; n != numcodes; ++n)
+		for (PXSize n = 0; n != numcodes; ++n)
 		{
 			if (huffmanTree->lengths[n] != 0)
 			{
@@ -63,9 +63,9 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 	// HuffmanTree_makeTable()
 	static const unsigned headsize = 1u << FIRSTBITS; /*size of the first table*/
 	static const unsigned mask = (1u << FIRSTBITS) /*headsize*/ - 1u;
-	size_t numpresent, pointer, size; /*total table size*/
+	PXSize numpresent, pointer, size; /*total table size*/
 
-	const size_t maxlensSize = sizeof(unsigned int) * headsize;
+	const PXSize maxlensSize = sizeof(unsigned int) * headsize;
 	unsigned int* maxlens = MemoryAllocate(maxlensSize);
 
 
@@ -76,7 +76,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 	//memset(maxlens, 0, headsize * sizeof(*maxlens));
 	MemorySet(maxlens, maxlensSize, 0);
 
-	for (size_t i = 0; i < numcodes; i++)
+	for (PXSize i = 0; i < numcodes; i++)
 	{
 		unsigned int symbol = huffmanTree->codes[i];
 		unsigned int l = huffmanTree->lengths[i];
@@ -88,9 +88,9 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 	}
 	/* compute total table size: size of first table plus all secondary tables for symbols longer than FIRSTBITS */
 	size = headsize;
-	for (size_t i = 0; i < headsize; ++i)
+	for (PXSize i = 0; i < headsize; ++i)
 	{
-		size_t l = maxlens[i];
+		PXSize l = maxlens[i];
 
 		if (l > FIRSTBITS)
 		{
@@ -106,13 +106,13 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 		return 83; /*alloc fail*/
 	}
 	/*initialize with an invalid length to indicate unused entries*/
-	for (size_t i = 0; i < size; ++i) huffmanTree->table_len[i] = 16;
+	for (PXSize i = 0; i < size; ++i) huffmanTree->table_len[i] = 16;
 
 	/*fill in the first table for long symbols: max prefix size and pointer to secondary tables*/
 	pointer = headsize;
-	for (size_t i = 0; i < headsize; ++i)
+	for (PXSize i = 0; i < headsize; ++i)
 	{
-		size_t l = maxlens[i];
+		PXSize l = maxlens[i];
 
 		if (l <= FIRSTBITS) continue;
 
@@ -126,7 +126,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 
 	/*fill in the first table for short symbols, or secondary table for long symbols*/
 	numpresent = 0;
-	for (size_t i = 0; i < numcodes; ++i)
+	for (PXSize i = 0; i < numcodes; ++i)
 	{
 		unsigned l = huffmanTree->lengths[i];
 		unsigned symbol = huffmanTree->codes[i]; /*the huffman bit pattern. i itself is the value.*/
@@ -140,7 +140,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 			/*short symbol, fully in first table, replicated num times if l < FIRSTBITS*/
 			unsigned num = 1u << (FIRSTBITS - l);
 
-			for (size_t j = 0; j < num; ++j)
+			for (PXSize j = 0; j < num; ++j)
 			{
 				/*bit reader will read the l bits of symbol first, the remaining FIRSTBITS - l bits go to the MSB's*/
 				unsigned index = reverse | (j << l);
@@ -161,7 +161,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 			unsigned num = 1u << (tablelen - (l - FIRSTBITS)); /*amount of entries of this symbol in secondary table*/
 
 			if (maxlen < l) return 55; /*invalid tree: long symbol shares prefix with short symbol*/
-			for (size_t j = 0; j < num; ++j)
+			for (PXSize j = 0; j < num; ++j)
 			{
 				unsigned reverse2 = reverse >> FIRSTBITS; /* l - FIRSTBITS bits */
 				unsigned index2 = start + (reverse2 | (j << (l - FIRSTBITS)));
@@ -179,7 +179,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 		codes are never used). In both cases, not all symbols of the table will be
 		filled in. Fill them in with an invalid symbol value so returning them from
 		huffmanDecodeSymbol will cause error. */
-		for (size_t i = 0; i < size; ++i)
+		for (PXSize i = 0; i < size; ++i)
 		{
 			if (huffmanTree->table_len[i] == 16)
 			{
@@ -197,7 +197,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, si
 		If that is not the case (due to too long length codes), the table will not
 		have been fully used, and this is an error (not all bit combinations can be
 		decoded): an oversubscribed huffman tree, indicated by error 55. */
-		for (size_t i = 0; i < size; ++i)
+		for (PXSize i = 0; i < size; ++i)
 		{
 			if (huffmanTree->table_len[i] == 16) return 55;
 		}
@@ -258,12 +258,12 @@ tree of the dynamic huffman tree lengths is generated*/
 		{
 			// throw(50); // error: the bit pointer is or will go past the memory* AAAA/
 		}*/
-		for (size_t index = 0; index != HCLEN; ++index)
+		for (PXSize index = 0; index != HCLEN; ++index)
 		{
 			//ensureBits9(reader, 3); /*out of bounds already checked above */
 			bitlen_cl[CLCL_ORDER[index]] = DataStreamReadBits(dataStream, 3u);
 		}
-		for (size_t index = HCLEN; index != NUM_CODE_LENGTH_CODES; ++index)
+		for (PXSize index = HCLEN; index != NUM_CODE_LENGTH_CODES; ++index)
 		{
 			bitlen_cl[CLCL_ORDER[index]] = 0;
 		}
@@ -280,7 +280,7 @@ tree of the dynamic huffman tree lengths is generated*/
 
 		/*i is the current symbol we're reading in the part that contains the code lengths of lit/len and dist codes*/
 
-		for (size_t i = 0; i < HLIT + HDIST; )
+		for (PXSize i = 0; i < HLIT + HDIST; )
 		{
 			unsigned code;
 			//ensureBits25(reader, 22); /* up to 15 bits for huffman code, up to 7 extra bits below*/
@@ -313,7 +313,7 @@ tree of the dynamic huffman tree lengths is generated*/
 			}
 			else if (code == 17) /*repeat "0" 3-10 times*/
 			{
-				size_t replength = 3; /*read in the bits that indicate repeat length*/
+				PXSize replength = 3; /*read in the bits that indicate repeat length*/
 				replength += DataStreamReadBits(dataStream, 3u);
 
 				/*repeat this value in the next lengths*/
@@ -374,14 +374,14 @@ tree of the dynamic huffman tree lengths is generated*/
 	return error;
 }
 
-int lodepng_gtofl(size_t a, size_t b, size_t c)
+int lodepng_gtofl(PXSize a, PXSize b, PXSize c)
 {
-	size_t d;
+	PXSize d;
 	if (lodepng_addofl(a, b, &d)) return 1;
 	return d > c;
 }
 
-int lodepng_addofl(size_t a, size_t b, size_t* result)
+int lodepng_addofl(PXSize a, PXSize b, PXSize* result)
 {
 	*result = a + b; /* Unsigned addition is well defined and safe in C90 */
 	return *result < a;
@@ -421,8 +421,8 @@ unsigned int huffmanDecodeSymbol(DataStream* const dataStream, HuffmanTree* code
 unsigned reverseBits(unsigned bits, unsigned num)
 {
 	/*TODO: implement faster lookup table based version when needed*/
-	size_t result = 0;
-	for (size_t i = 0; i < num; i++) result |= ((bits >> (num - i - 1u)) & 1u) << i;
+	PXSize result = 0;
+	for (PXSize i = 0; i < num; i++) result |= ((bits >> (num - i - 1u)) & 1u) << i;
 	return result;
 }
 
@@ -430,14 +430,14 @@ void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree)
 {
 	//------------------------------------------- generateFixedLitLenTree()
 	const unsigned int maxbitlen = 15;
-	const size_t numcodes = NUM_DEFLATE_CODE_SYMBOLS;
+	const PXSize numcodes = NUM_DEFLATE_CODE_SYMBOLS;
 	unsigned int bitlen[NUM_DEFLATE_CODE_SYMBOLS];
 
 	/*288 possible codes: 0-255=literals, 256=endcode, 257-285=lengthcodes, 286-287=unused*/
-	for (size_t i = 0; i <= 143; ++i) bitlen[i] = 8;
-	for (size_t i = 144; i <= 255; ++i) bitlen[i] = 9;
-	for (size_t i = 256; i <= 279; ++i) bitlen[i] = 7;
-	for (size_t i = 280; i <= 287; ++i) bitlen[i] = 8;
+	for (PXSize i = 0; i <= 143; ++i) bitlen[i] = 8;
+	for (PXSize i = 144; i <= 255; ++i) bitlen[i] = 9;
+	for (PXSize i = 256; i <= 279; ++i) bitlen[i] = 7;
+	for (PXSize i = 280; i <= 287; ++i) bitlen[i] = 8;
 	//---------------------------------------------------------------------------
 
 	GenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);
@@ -446,11 +446,11 @@ void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree)
 void GenerateFixedDistanceTree(HuffmanTree* huffmanTree)
 {
 	const unsigned int maxbitlen = 15;
-	const size_t numcodes = NUM_DISTANCE_SYMBOLS;
+	const PXSize numcodes = NUM_DISTANCE_SYMBOLS;
 	unsigned int bitlen[NUM_DISTANCE_SYMBOLS];
 
 	/*there are 32 distance codes, but 30-31 are unused*/
-	for (size_t i = 0; i < numcodes; i++)
+	for (PXSize i = 0; i < numcodes; i++)
 	{
 		bitlen[i] = 5;
 	}

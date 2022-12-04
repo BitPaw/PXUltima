@@ -60,11 +60,11 @@ extern "C"
 		//---------------------------------
 
 		//---[Image specification]---------
-		size_t ImageInformationSize;
+		PXSize ImageInformationSize;
 		char ImageInformation[255]; // Optional field containing identifying information
-		size_t ColorMapDataSize;
+		PXSize ColorMapDataSize;
 		unsigned char* ColorMapData; // Look-up table containing color map data
-		size_t ImageDataSize;
+		PXSize ImageDataSize;
 		unsigned char* ImageData; // Stored according to the image descriptor 	
 		//----------------------------------
 
@@ -109,17 +109,17 @@ extern "C"
 	static unsigned char ConvertFromImageDataType(const TGAImageDataType imageDataType);
 
 
-	PXPublic size_t TGAFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	PXPublic PXSize TGAFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
 
 	PXPublic void TGAConstruct(TGA* const tga); 
 	PXPublic void TGADestruct(TGA* const tga);
 
 
-	PXPublic ActionResult TGAParse(TGA* tga, const void* data, const size_t dataSize, size_t* dataRead);
-	PXPublic ActionResult TGAParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic ActionResult TGAParseToImage(Image* const image, DataStream* const dataStream);
 
-	PXPublic ActionResult TGASerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

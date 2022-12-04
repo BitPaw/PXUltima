@@ -7,7 +7,7 @@ int MathMinimumI(const int a, const int b)
 	return MathMinimum(a, b);
 }
 
-size_t MathMinimumIU(const size_t a, const size_t b)
+PXSize MathMinimumIU(const PXSize a, const PXSize b)
 {
 	return MathMinimum(a, b);
 }
@@ -27,7 +27,7 @@ int MathFloorD(const double a)
 	return MathFloor(a);
 }
 
-size_t MathAbsoluteI(const int a)
+PXSize MathAbsoluteI(const int a)
 {
 	return MathAbsolute(a);
 }
@@ -52,7 +52,7 @@ int MathLimitI(const int value, const int minimum, const int maximum)
 	return MathLimit(value, minimum, maximum);
 }
 
-size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum)
+PXSize MathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum)
 {
 	return MathLimit(value, minimum, maximum);
 }

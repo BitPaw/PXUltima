@@ -36,8 +36,8 @@ extern "C"
 	}
 	SBPDataPackage;
 
-	size_t SBPDataPackageParse(const void* inputData, const size_t inputDataSize);
-	size_t SBPDataPackageSerialize(void* outputData, const size_t outputDataSize);
+	PXSize SBPDataPackageParse(const void* inputData, const PXSize inputDataSize);
+	PXSize SBPDataPackageSerialize(void* outputData, const PXSize outputDataSize);
 
 
 
@@ -149,13 +149,13 @@ extern "C"
 
 	PXPublic void SBPDataPrint(SBPData* const sbpData);
 
-	PXPublic size_t PackageParse(SBPData* data, const void* inputBuffer, const size_t* inputBufferSize);
-	PXPublic size_t PackageSerialize(const SBPData* data, void* outputBuffer, const size_t outputBufferSize);
+	PXPublic PXSize PackageParse(SBPData* data, const void* inputBuffer, const PXSize* inputBufferSize);
+	PXPublic PXSize PackageSerialize(const SBPData* data, void* outputBuffer, const PXSize outputBufferSize);
 	/*
-	CPublic size_t PackageSerialize
+	CPublic PXSize PackageSerialize
 	(
 		void* outputBuffer,
-		const size_t outputBufferSize,
+		const PXSize outputBufferSize,
 		const unsigned int source,
 		const unsigned int target,
 		const SBPDataPackage* dataPackage,
@@ -193,8 +193,8 @@ extern "C"
 
 	PXPublic void SBPDataPackageConnectionCreateFill(const SBPConnectionCreateReason reason);
 
-	PXPublic size_t SBPDataPackageConnectionCreateParse(const void* inputData, const size_t inputDataSize);
-	PXPublic size_t SBPDataPackageConnectionCreateSerialize(void* outputData, const size_t outputDataSize);
+	PXPublic PXSize SBPDataPackageConnectionCreateParse(const void* inputData, const PXSize inputDataSize);
+	PXPublic PXSize SBPDataPackageConnectionCreateSerialize(void* outputData, const PXSize outputDataSize);
 
 
 
@@ -225,7 +225,7 @@ extern "C"
 			SBPDataPackageFileMode Mode;
 
 			TextFormat FilePathSourceFormat;
-			size_t FilePathSourceSize;
+			PXSize FilePathSourceSize;
 			union
 			{
 				char FilePathSourceA[PathMaxSize];
@@ -233,14 +233,14 @@ extern "C"
 			};
 
 			TextFormat FilePathTargetFormat;
-			size_t FilePathTargetSize;
+			PXSize FilePathTargetSize;
 			union
 			{
 				char FilePathTargetA[PathMaxSize];
 				wchar_t FilePathTargetW[PathMaxSize];
 			};
 
-			size_t FileSize; // HAs to be 8 Byte__!
+			PXSize FileSize; // HAs to be 8 Byte__!
 		}
 		SBPDataPackageFile;
 
@@ -255,8 +255,8 @@ extern "C"
 
 		PXPublic void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const SBPDataPackageFileMode mode, const char* source, const char* target);
 
-		PXPublic size_t SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const size_t inputDataSize);
-		PXPublic size_t SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const size_t outputDataSize);
+		PXPublic PXSize SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const PXSize inputDataSize);
+		PXPublic PXSize SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const PXSize outputDataSize);
 
 
 
@@ -267,7 +267,7 @@ extern "C"
 	typedef struct SBPDataPackageIam_
 	{
 		TextFormat Format;
-		size_t NameSize;
+		PXSize NameSize;
 		union
 		{
 			char NameA[PathMaxSize];
@@ -281,8 +281,8 @@ extern "C"
 
 	PXPublic void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam);
 
-	PXPublic size_t SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const size_t inputDataSize);
-	PXPublic size_t SBPDataPackageIamSerialize(SBPDataPackageIam* const sbpDataPackageIam, void* outputData, const size_t outputDataSize);
+	PXPublic PXSize SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const PXSize inputDataSize);
+	PXPublic PXSize SBPDataPackageIamSerialize(SBPDataPackageIam* const sbpDataPackageIam, void* outputData, const PXSize outputDataSize);
 
 
 
@@ -309,8 +309,8 @@ extern "C"
 
 		PXPublic void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse);
 
-		PXPublic size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const size_t inputDataSize);
-		PXPublic size_t SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const size_t outputDataSize);
+		PXPublic PXSize SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const PXSize inputDataSize);
+		PXPublic PXSize SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const PXSize outputDataSize);
 
 
 
@@ -325,8 +325,8 @@ extern "C"
 	PXPublic void SBPDataPackageTextConstruct(SBPDataPackageText* const sbpDataPackageText);
 	PXPublic void SBPDataPackageTextDestruct(SBPDataPackageText* const sbpDataPackageText);
 
-	PXPublic size_t SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const size_t inputDataSize);
-	PXPublic size_t SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const size_t outputDataSize);
+	PXPublic PXSize SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const PXSize inputDataSize);
+	PXPublic PXSize SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const PXSize outputDataSize);
 
 
 

@@ -1238,7 +1238,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         case WindowEventINPUT:
         {
              // MISSING
-            const size_t inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
+            const PXSize inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
             const HRAWINPUT handle = (HRAWINPUT)lParam;
             const UINT uiCommand = RID_INPUT; // RID_HEADER
 
@@ -1312,8 +1312,8 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
                 }
             }
 
-            const size_t character = wParam;
-            const size_t characterInfo = lParam;
+            const PXSize character = wParam;
+            const PXSize characterInfo = lParam;
             const VirtualKey virtualKey = ConvertToVirtualKey(character);
 
             KeyBoardKeyPressedSet(&window->KeyBoardCurrentInput, virtualKey, mode == ButtonStateRelease);
@@ -1930,7 +1930,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
     // Raw mouse movement
     XIEventMask eventmask;
-    const size_t maskLength = (XI_LASTEVENT + 7) / 8;
+    const PXSize maskLength = (XI_LASTEVENT + 7) / 8;
     unsigned char mask[maskLength];
 
     MemorySet(mask, sizeof(mask), 0);

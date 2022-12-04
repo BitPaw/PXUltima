@@ -112,7 +112,7 @@ unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod defla
     }
 }
 
-int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, void* const outputBuffer, const size_t outputBufferSize, size_t* const outputBufferSizeRead)
+int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead)
 {
     DataStream dataStream;
     DeflateBlock deflateBlock;
@@ -146,7 +146,7 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
                 const unsigned short lengthInverse = DataStreamReadBits(&dataStream, 16u);
                 const void* sourceAdress = DataStreamCursorPosition(&dataStream);
                 const unsigned char validLength = (length + lengthInverse) == 65535;
-                //const size_t bitsToJump = (size_t)length * 8;
+                //const PXSize bitsToJump = (PXSize)length * 8;
 
                 //assert(validLength);
 
@@ -211,10 +211,10 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
                         {
                             // printf("[Symbol] <%2x>(%3i) Length.\n", resultLengthCode, resultLengthCode);
 
-                            size_t distance = 0;
-                            size_t numextrabits_l = 0;
-                            size_t numextrabits_d = 0; /*extra bits for length and distance*/
-                            size_t start, backward, length;
+                            PXSize distance = 0;
+                            PXSize numextrabits_l = 0;
+                            PXSize numextrabits_d = 0; /*extra bits for length and distance*/
+                            PXSize start, backward, length;
 
                             /*the base lengths represented by codes 257-285*/
                             const unsigned int LENGTHBASE[29] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258 };
@@ -291,7 +291,7 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
 
                                 start += distance;
 
-                                for(size_t forward = distance; forward < length; ++forward)
+                                for(PXSize forward = distance; forward < length; ++forward)
                                 {
                                     ((unsigned char*)outputBuffer)[start++] = ((unsigned char*)outputBuffer)[backward++];
                                 }
@@ -339,8 +339,8 @@ int DEFLATEParse(const void* const inputBuffer, const size_t inputBufferSize, vo
 typedef struct uivector
 {
     unsigned* data;
-    size_t size; /*size in number of unsigned longs*/
-    size_t allocsize; /*allocated size in bytes*/
+    PXSize size; /*size in number of unsigned longs*/
+    PXSize allocsize; /*allocated size in bytes*/
 } uivector;
 
 static void uivector_cleanup(void* p)
@@ -351,12 +351,12 @@ static void uivector_cleanup(void* p)
 }
 
 /*returns 1 if success, 0 if failure ==> nothing done*/
-static unsigned uivector_resize(uivector* p, size_t size)
+static unsigned uivector_resize(uivector* p, PXSize size)
 {
-    size_t allocsize = size * sizeof(unsigned);
+    PXSize allocsize = size * sizeof(unsigned);
     if(allocsize > p->allocsize)
     {
-        size_t newsize = allocsize + (p->allocsize >> 1u);
+        PXSize newsize = allocsize + (p->allocsize >> 1u);
         void* data = realloc(p->data, newsize);
         if(data)
         {
@@ -400,14 +400,14 @@ struct LodePNGCompressSettings /*deflate = compress*/
     unsigned lazymatching; /*use lazy matching: better compression but a bit slower. Default: true*/
 
     /*use custom zlib encoder instead of built in one (default: null)*/
-    unsigned (*custom_zlib)(unsigned char**, size_t*,
-                            const unsigned char*, size_t,
+    unsigned (*custom_zlib)(unsigned char**, PXSize*,
+                            const unsigned char*, PXSize,
                             const LodePNGCompressSettings*);
     /*use custom deflate encoder instead of built in one (default: null)
     if custom_zlib is used, custom_deflate is ignored since only the built in
     zlib function will call custom_deflate*/
-    unsigned (*custom_deflate)(unsigned char**, size_t*,
-                               const unsigned char*, size_t,
+    unsigned (*custom_deflate)(unsigned char**, PXSize*,
+                               const unsigned char*, PXSize,
                                const LodePNGCompressSettings*);
 
     const void* custom_context; /*optional custom settings for custom functions*/
@@ -424,7 +424,7 @@ void lodepng_compress_settings_init(LodePNGCompressSettings* settings);
 bytes as input because 3 is the minimum match length for deflate*/
 const unsigned HASH_NUM_VALUES = 65536;
 const unsigned HASH_BIT_MASK = 65535; /*HASH_NUM_VALUES - 1, but C90 does not like that as initializer*/
-const size_t MAX_SUPPORTED_DEFLATE_LENGTH = 258;
+const PXSize MAX_SUPPORTED_DEFLATE_LENGTH = 258;
 
 typedef struct Hash
 {
@@ -442,7 +442,7 @@ typedef struct Hash
 
 unsigned hash_init(Hash* hash, unsigned windowsize)
 {
-    size_t i;
+    PXSize i;
     hash->head = (int*)MemoryAllocate(sizeof(int) * HASH_NUM_VALUES);
     hash->val = (int*)MemoryAllocate(sizeof(int) * windowsize);
     hash->chain = (unsigned short*)MemoryAllocate(sizeof(unsigned short) * windowsize);
@@ -480,7 +480,7 @@ void hash_cleanup(Hash* hash)
 
 
 
-unsigned getHash(const unsigned char* data, size_t size, size_t pos)
+unsigned getHash(const unsigned char* data, PXSize size, PXSize pos)
 {
     unsigned result = 0;
     if(pos + 2 < size)
@@ -495,7 +495,7 @@ unsigned getHash(const unsigned char* data, size_t size, size_t pos)
     }
     else
     {
-        size_t amount, i;
+        PXSize amount, i;
         if(pos >= size) return 0;
         amount = size - pos;
         for(i = 0; i != amount; ++i) result ^= ((unsigned)data[pos + i] << (i * 8u));
@@ -509,16 +509,16 @@ unsigned getHash(const unsigned char* data, size_t size, size_t pos)
 typedef struct ucvector
 {
     unsigned char* data;
-    size_t size; /*used size*/
-    size_t allocsize; /*allocated size*/
+    PXSize size; /*used size*/
+    PXSize allocsize; /*allocated size*/
 } ucvector;
 
 /*returns 1 if success, 0 if failure ==> nothing done*/
-unsigned ucvector_reserve(ucvector* p, size_t size)
+unsigned ucvector_reserve(ucvector* p, PXSize size)
 {
     if(size > p->allocsize)
     {
-        size_t newsize = size + (p->allocsize >> 1u);
+        PXSize newsize = size + (p->allocsize >> 1u);
         void* data = realloc(p->data, newsize);
         if(data)
         {
@@ -531,13 +531,13 @@ unsigned ucvector_reserve(ucvector* p, size_t size)
 }
 
 /*returns 1 if success, 0 if failure ==> nothing done*/
-unsigned ucvector_resize(ucvector* p, size_t size)
+unsigned ucvector_resize(ucvector* p, PXSize size)
 {
     p->size = size;
     return ucvector_reserve(p, size);
 }
 
-ucvector ucvector_init(unsigned char* buffer, size_t size)
+ucvector ucvector_init(unsigned char* buffer, PXSize size)
 {
     ucvector v;
     v.data = buffer;
@@ -571,7 +571,7 @@ void LodePNGBitWriter_init(LodePNGBitWriter* writer, ucvector* data)
 }
 
 /* LSB of value is written first, and LSB of bytes is used first */
-void PNGwriteBits(LodePNGBitWriter* writer, unsigned value, size_t nbits)
+void PNGwriteBits(LodePNGBitWriter* writer, unsigned value, PXSize nbits)
 {
     if(nbits == 1)
     { /* compiler should statically compile this case if nbits == 1 */
@@ -580,7 +580,7 @@ void PNGwriteBits(LodePNGBitWriter* writer, unsigned value, size_t nbits)
     else
     {
         /* TODO: increase output size only once here rather than in each WRITEBIT */
-        size_t i;
+        PXSize i;
         for(i = 0; i != nbits; ++i)
         {
             WRITEBIT(writer, (unsigned char)((value >> i) & 1));
@@ -589,9 +589,9 @@ void PNGwriteBits(LodePNGBitWriter* writer, unsigned value, size_t nbits)
 }
 
 /* This one is to use for adding huffman symbol, the value bits are written MSB first */
-void writeBitsReversed(LodePNGBitWriter* writer, unsigned value, size_t nbits)
+void writeBitsReversed(LodePNGBitWriter* writer, unsigned value, PXSize nbits)
 {
-    size_t i;
+    PXSize i;
     for(i = 0; i != nbits; ++i)
     {
         /* TODO: increase output size only once here rather than in each WRITEBIT */
@@ -604,9 +604,9 @@ void writeBitsReversed(LodePNGBitWriter* writer, unsigned value, size_t nbits)
 
 
 
-void addLengthDistance(uivector* values, size_t length, size_t distance);
-void updateHashChain(Hash* hash, size_t wpos, unsigned hashval, unsigned short numzeros);
-size_t countZeros(const unsigned char* data, size_t size, size_t pos);
+void addLengthDistance(uivector* values, PXSize length, PXSize distance);
+void updateHashChain(Hash* hash, PXSize wpos, unsigned hashval, unsigned short numzeros);
+PXSize countZeros(const unsigned char* data, PXSize size, PXSize pos);
 
 
 
@@ -627,22 +627,22 @@ void writeLZ77data
     const HuffmanTree* tree_d
 )
 {
-    size_t i = 0;
+    PXSize i = 0;
     for(i = 0; i != lz77_encoded->size; ++i)
     {
-        size_t val = lz77_encoded->data[i];
+        PXSize val = lz77_encoded->data[i];
         writeBitsReversed(writer, tree_ll->codes[val], tree_ll->lengths[val]);
         if(val > 256) /*for a length code, 3 more things have to be added*/
         {
-            size_t length_index = val - FIRST_LENGTH_CODE_INDEX;
-            size_t n_length_extra_bits = LENGTHEXTRA[length_index];
-            size_t length_extra_bits = lz77_encoded->data[++i];
+            PXSize length_index = val - FIRST_LENGTH_CODE_INDEX;
+            PXSize n_length_extra_bits = LENGTHEXTRA[length_index];
+            PXSize length_extra_bits = lz77_encoded->data[++i];
 
-            size_t distance_code = lz77_encoded->data[++i];
+            PXSize distance_code = lz77_encoded->data[++i];
 
-            size_t distance_index = distance_code;
-            size_t n_distance_extra_bits = DISTANCEEXTRA[distance_index];
-            size_t distance_extra_bits = lz77_encoded->data[++i];
+            PXSize distance_index = distance_code;
+            PXSize n_distance_extra_bits = DISTANCEEXTRA[distance_index];
+            PXSize distance_extra_bits = lz77_encoded->data[++i];
 
             PNGwriteBits(writer, length_extra_bits, n_length_extra_bits);
             writeBitsReversed(writer, tree_d->codes[distance_code], tree_d->lengths[distance_code]);
@@ -656,32 +656,32 @@ unsigned encodeLZ77
     uivector* out,
     Hash* hash,
     const unsigned char* in,
-    size_t inpos,
-    size_t insize,
-    size_t windowsize,
-    size_t minmatch,
-    size_t nicematch,
-    size_t lazymatching
+    PXSize inpos,
+    PXSize insize,
+    PXSize windowsize,
+    PXSize minmatch,
+    PXSize nicematch,
+    PXSize lazymatching
 )
 {
-    size_t pos;
-    size_t i, error = 0;
+    PXSize pos;
+    PXSize i, error = 0;
     /*for large window lengths, assume the user wants no compression loss. Otherwise, max hash chain length speedup.*/
-    size_t maxchainlength = windowsize >= 8192 ? windowsize : windowsize / 8u;
-    size_t maxlazymatch = windowsize >= 8192 ? MAX_SUPPORTED_DEFLATE_LENGTH : 64;
+    PXSize maxchainlength = windowsize >= 8192 ? windowsize : windowsize / 8u;
+    PXSize maxlazymatch = windowsize >= 8192 ? MAX_SUPPORTED_DEFLATE_LENGTH : 64;
 
-    size_t usezeros = 1; /*not sure if setting it to false for windowsize < 8192 is better or worse*/
-    size_t numzeros = 0;
+    PXSize usezeros = 1; /*not sure if setting it to false for windowsize < 8192 is better or worse*/
+    PXSize numzeros = 0;
 
-    size_t offset; /*the offset represents the distance in LZ77 terminology*/
-    size_t length;
-    size_t lazy = 0;
-    size_t lazylength = 0, lazyoffset = 0;
-    size_t hashval;
-    size_t current_offset, current_length;
-    size_t prev_offset;
+    PXSize offset; /*the offset represents the distance in LZ77 terminology*/
+    PXSize length;
+    PXSize lazy = 0;
+    PXSize lazylength = 0, lazyoffset = 0;
+    PXSize hashval;
+    PXSize current_offset, current_length;
+    PXSize prev_offset;
     const unsigned char* lastptr, * foreptr, * backptr;
-    size_t hashpos;
+    PXSize hashpos;
 
     if(windowsize == 0 || windowsize > 32768) return 60; /*error: windowsize smaller/larger than allowed*/
     if((windowsize & (windowsize - 1)) != 0) return 90; /*error: must be power of two*/
@@ -690,8 +690,8 @@ unsigned encodeLZ77
 
     for(pos = inpos; pos < insize; ++pos)
     {
-        size_t wpos = pos & (windowsize - 1); /*position for in 'circular' hash buffers*/
-        size_t chainlength = 0;
+        PXSize wpos = pos & (windowsize - 1); /*position for in 'circular' hash buffers*/
+        PXSize chainlength = 0;
 
         hashval = getHash(in, insize, pos);
 
@@ -842,18 +842,18 @@ unsigned encodeLZ77
 
 
 
-unsigned deflateNoCompression(ucvector* out, const unsigned char* data, size_t datasize)
+unsigned deflateNoCompression(ucvector* out, const unsigned char* data, PXSize datasize)
 {
     /*non compressed deflate block data: 1 bit BFINAL,2 bits BTYPE,(5 bits): it jumps to start of next byte,
   2 bytes LEN, 2 bytes NLEN, LEN bytes literal DATA*/
 
-    size_t i, numdeflateblocks = (datasize + 65534u) / 65535u;
+    PXSize i, numdeflateblocks = (datasize + 65534u) / 65535u;
     unsigned datapos = 0;
     for(i = 0; i != numdeflateblocks; ++i)
     {
         unsigned BFINAL, BTYPE, LEN, NLEN;
         unsigned char firstbyte;
-        size_t pos = out->size;
+        PXSize pos = out->size;
 
         BFINAL = (i == numdeflateblocks - 1);
         BTYPE = 0;
@@ -882,17 +882,17 @@ unsigned deflateFixed
     LodePNGBitWriter* writer,
     Hash* hash,
     const unsigned char* data,
-    size_t datapos, size_t dataend,
+    PXSize datapos, PXSize dataend,
     const LodePNGCompressSettings* settings,
-    size_t final
+    PXSize final
 )
 {
     HuffmanTree tree_ll; /*tree for literal values and length codes*/
     HuffmanTree tree_d; /*tree for distance codes*/
 
-    size_t BFINAL = final;
-    size_t error = 1;
-    size_t i;
+    PXSize BFINAL = final;
+    PXSize error = 1;
+    PXSize i;
 
     HuffmanTreeConstruct(&tree_ll);
     HuffmanTreeConstruct(&tree_d);
@@ -934,7 +934,7 @@ unsigned deflateFixed
 }
 
 
-size_t countZeros(const unsigned char* data, size_t size, size_t pos)
+PXSize countZeros(const unsigned char* data, PXSize size, PXSize pos)
 {
     const unsigned char* start = data + pos;
     const unsigned char* end = start + MAX_SUPPORTED_DEFLATE_LENGTH;
@@ -946,7 +946,7 @@ size_t countZeros(const unsigned char* data, size_t size, size_t pos)
 }
 
 /*wpos = pos & (windowsize - 1)*/
-void updateHashChain(Hash* hash, size_t wpos, unsigned hashval, unsigned short numzeros)
+void updateHashChain(Hash* hash, PXSize wpos, unsigned hashval, unsigned short numzeros)
 {
     hash->val[wpos] = (int)hashval;
     if(hash->head[hashval] != -1) hash->chain[wpos] = hash->head[hashval];
@@ -957,15 +957,15 @@ void updateHashChain(Hash* hash, size_t wpos, unsigned hashval, unsigned short n
     hash->headz[numzeros] = (int)wpos;
 }
 
-size_t searchCodeIndex(const unsigned* array, size_t array_size, size_t value)
+PXSize searchCodeIndex(const unsigned* array, PXSize array_size, PXSize value)
 {
     /*binary search (only small gain over linear). TODO: use CPU log2 instruction for getting symbols instead*/
-    size_t left = 1;
-    size_t right = array_size - 1;
+    PXSize left = 1;
+    PXSize right = array_size - 1;
 
     while(left <= right)
     {
-        size_t mid = (left + right) >> 1;
+        PXSize mid = (left + right) >> 1;
         if(array[mid] >= value) right = mid - 1;
         else left = mid + 1;
     }
@@ -974,7 +974,7 @@ size_t searchCodeIndex(const unsigned* array, size_t array_size, size_t value)
 }
 
 
-void addLengthDistance(uivector* values, size_t length, size_t distance)
+void addLengthDistance(uivector* values, PXSize length, PXSize distance)
 {
     /*values in encoded vector are those used by deflate:
  0-255: literal bytes
@@ -987,7 +987,7 @@ void addLengthDistance(uivector* values, size_t length, size_t distance)
     unsigned dist_code = (unsigned)searchCodeIndex(DISTANCEBASE, 30, distance);
     unsigned extra_distance = (unsigned)(distance - DISTANCEBASE[dist_code]);
 
-    size_t pos = values->size;
+    PXSize pos = values->size;
     /*TODO: return error when this fails (out of memory)*/
     unsigned ok = uivector_resize(values, values->size + 4);
     if(ok)
@@ -1072,20 +1072,20 @@ BPMNode* bpmnode_create(BPMLists* lists, int weight, unsigned index, BPMNode* ta
 }
 
 /*sort the leaves with stable mergesort*/
-void bpmnode_sort(BPMNode* leaves, size_t num)
+void bpmnode_sort(BPMNode* leaves, PXSize num)
 {
     BPMNode* mem = (BPMNode*)MemoryAllocate(sizeof(*leaves) * num);
-    size_t width, counter = 0;
+    PXSize width, counter = 0;
     for(width = 1; width < num; width *= 2)
     {
         BPMNode* a = (counter & 1) ? mem : leaves;
         BPMNode* b = (counter & 1) ? leaves : mem;
-        size_t p;
+        PXSize p;
         for(p = 0; p < num; p += 2 * width)
         {
-            size_t q = (p + width > num) ? num : (p + width);
-            size_t r = (p + 2 * width > num) ? num : (p + 2 * width);
-            size_t i = p, j = q, k;
+            PXSize q = (p + width > num) ? num : (p + width);
+            PXSize r = (p + 2 * width > num) ? num : (p + 2 * width);
+            PXSize i = p, j = q, k;
             for(k = p; k < r; k++)
             {
                 if(i < q && (j >= r || a[i].weight <= a[j].weight)) b[k] = a[i++];
@@ -1100,7 +1100,7 @@ void bpmnode_sort(BPMNode* leaves, size_t num)
 }
 
 /*Boundary Package Merge step, numpresent is the amount of leaves, and c is the current chain.*/
-void boundaryPM(BPMLists* lists, BPMNode* leaves, size_t numpresent, int c, int num)
+void boundaryPM(BPMLists* lists, BPMNode* leaves, PXSize numpresent, int c, int num)
 {
     unsigned lastindex = lists->chains1[c]->index;
 
@@ -1136,7 +1136,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
 {
     static const unsigned headsize = 1u << FIRSTBITS; /*size of the first table*/
     static const unsigned mask = (1u << FIRSTBITS) /*headsize*/ - 1u;
-    size_t i, numpresent, pointer, size; /*total table size*/
+    PXSize i, numpresent, pointer, size; /*total table size*/
     unsigned* maxlens = (unsigned*)MemoryAllocate(headsize * sizeof(unsigned));
     if(!maxlens) return 83; /*alloc fail*/
 
@@ -1308,11 +1308,11 @@ static unsigned HuffmanTree_makeFromLengths2(HuffmanTree* tree)
 }
 
 unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequencies,
-                                      size_t numcodes, unsigned maxbitlen)
+                                      PXSize numcodes, unsigned maxbitlen)
 {
     unsigned error = 0;
     unsigned i;
-    size_t numpresent = 0; /*number of symbols with non-zero frequency*/
+    PXSize numpresent = 0; /*number of symbols with non-zero frequency*/
     BPMNode* leaves; /*the symbols, only those with > 0 frequency*/
 
     if(numcodes == 0) return 80; /*error: a tree of 0 symbols is not supposed to be made*/
@@ -1397,7 +1397,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
 }
 
 unsigned HuffmanTree_makeFromFrequencies(HuffmanTree* tree, const unsigned* frequencies,
-                                                size_t mincodes, size_t numcodes, unsigned maxbitlen)
+                                                PXSize mincodes, PXSize numcodes, unsigned maxbitlen)
 {
     unsigned error = 0;
     while(!frequencies[numcodes - 1] && numcodes > mincodes) --numcodes; /*trim zeroes*/
@@ -1418,8 +1418,8 @@ unsigned deflateDynamic
     LodePNGBitWriter* writer,
     Hash* hash,
     const unsigned char* data,
-    size_t datapos,
-    size_t dataend,
+    PXSize datapos,
+    PXSize dataend,
     const LodePNGCompressSettings* settings,
     unsigned final
 )
@@ -1447,7 +1447,7 @@ unsigned deflateDynamic
     unsigned* frequencies_cl = 0; /*frequency of code length codes*/
     unsigned* bitlen_lld = 0; /*lit,len,dist code lengths (int bits), literally (without repeat codes).*/
     unsigned* bitlen_lld_e = 0; /*bitlen_lld encoded with repeat codes (this is a rudimentary run length compression)*/
-    size_t datasize = dataend - datapos;
+    PXSize datasize = dataend - datapos;
 
     /*
     If we could call "bitlen_cl" the the code length code lengths ("clcl"), that is the bit lengths of codes to represent
@@ -1459,8 +1459,8 @@ unsigned deflateDynamic
     */
 
     unsigned BFINAL = final;
-    size_t i;
-    size_t numcodes_ll, numcodes_d, numcodes_lld, numcodes_lld_e, numcodes_cl;
+    PXSize i;
+    PXSize numcodes_ll, numcodes_d, numcodes_lld, numcodes_lld_e, numcodes_cl;
     unsigned HLIT, HDIST, HCLEN;
 
     uivector_init(&lz77_encoded);
@@ -1553,7 +1553,7 @@ unsigned deflateDynamic
             }
             else if(j >= 3) /*repeat code for value other than zero*/
             {
-                size_t k;
+                PXSize k;
                 unsigned num = j / 6u, rest = j % 6u;
                 bitlen_lld_e[numcodes_lld_e++] = bitlen_lld[i];
                 for(k = 0; k < num; ++k)
@@ -1665,10 +1665,10 @@ unsigned deflateDynamic
 
 #define DEFAULT_WINDOWSIZE 2048
 
-int DEFLATESerialize(const void* const inputBuffer, const size_t inputBufferSize, void* const outputBuffer, const size_t outputBufferSize, size_t* const outputBufferSizeWritten)
+int DEFLATESerialize(const void* const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeWritten)
 {
     unsigned error = 0;
-    size_t i, blocksize, numdeflateblocks;
+    PXSize i, blocksize, numdeflateblocks;
     Hash hash;
     LodePNGBitWriter writer;
 
@@ -1713,9 +1713,9 @@ int DEFLATESerialize(const void* const inputBuffer, const size_t inputBufferSize
     {
         for(i = 0; i != numdeflateblocks && !error; ++i)
         {
-            size_t final = (i == numdeflateblocks - 1);
-            size_t start = i * blocksize;
-            size_t end = start + blocksize;
+            PXSize final = (i == numdeflateblocks - 1);
+            PXSize start = i * blocksize;
+            PXSize end = start + blocksize;
             if(end > inputBufferSize) end = inputBufferSize;
 
             if(lodePNGCompressSettings.btype == 1) error = deflateFixed(&writer, &hash, inputBuffer, start, end, &lodePNGCompressSettings, final);

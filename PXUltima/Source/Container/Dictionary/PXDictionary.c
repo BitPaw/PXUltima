@@ -12,7 +12,7 @@ void PXDictionaryDestruct(PXDictionary* const dictionary)
 
 }
 
-void PXDictionaryResize(PXDictionary* const dictionary, const size_t entrys)
+void PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys)
 {
 
 }

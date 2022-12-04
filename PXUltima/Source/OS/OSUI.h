@@ -21,8 +21,8 @@ extern "C"
 #endif
 
 #if OSWindows
-	PXPublic void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferRead);
-	PXPublic void OSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const size_t bufferSize, size_t* bufferWritten);
+	PXPublic void OSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead);
+	PXPublic void OSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten);
 #endif
 
 	PXPublic void OSUIElementEnable();
@@ -116,7 +116,7 @@ extern "C"
 		const unsigned int height,
 		const wchar_t* buttonText
 	);
-	PXPublic void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const size_t bufferSize, size_t* bufferWritten);
+	PXPublic void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten);
 
 	//-------------------------------------------------------------------------
 

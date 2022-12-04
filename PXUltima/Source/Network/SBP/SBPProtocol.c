@@ -149,7 +149,7 @@ void SBPDataPrint(SBPData* const sbpData)
 	if(sbpData->DataSize)
 	{
 		printf("+-------------------[Payload Data]--------------------+\n");
-		for(size_t i = 0; i < sbpData->DataSize; ++i)
+		for(PXSize i = 0; i < sbpData->DataSize; ++i)
 		{
 			const char* text = (char*)sbpData->Data;
 			const char byte = text[i];
@@ -170,11 +170,11 @@ void SBPDataPrint(SBPData* const sbpData)
 
 /*
 
-size_t SBPDataPackageParse(SBPData* data, const void* inputBuffer, const size_t* inputBufferSize)
+PXSize SBPDataPackageParse(SBPData* data, const void* inputBuffer, const PXSize* inputBufferSize)
 {
 	DataStream dataStream(inputBuffer, inputBufferSize);
 
-	size_t bufferSize = 0;
+	PXSize bufferSize = 0;
 
 	data.Clear();
 
@@ -206,7 +206,7 @@ size_t SBPDataPackageParse(SBPData* data, const void* inputBuffer, const size_t*
 	return dataStream.DataCursor;
 }
 
-size_t SBPDataPackageSerialize(const SBPData& data, void* outputBuffer, const size_t outputBufferSize)
+PXSize SBPDataPackageSerialize(const SBPData& data, void* outputBuffer, const PXSize outputBufferSize)
 {
 	DataStreamX stream(outputBuffer, outputBufferSize);
 
@@ -221,10 +221,10 @@ size_t SBPDataPackageSerialize(const SBPData& data, void* outputBuffer, const si
 	return stream.DataCursor;
 }
 
-size_t BF::SBPData::PackageSerialize
+PXSize BF::SBPData::PackageSerialize
 (
 	void* outputBuffer,
-	const size_t outputBufferSize,
+	const PXSize outputBufferSize,
 	const unsigned int source,
 	const unsigned int target,
 	const SBPDataPackage* dataPackage,
@@ -239,13 +239,13 @@ size_t BF::SBPData::PackageSerialize
 	data.CommandID.Value = dataPackage->SymbolID.Value;
 
 
-	const size_t bufferSize = 512u;
+	const PXSize bufferSize = 512u;
 	char buffer[bufferSize]{ 0 };
 
 	data.DataSize = dataPackage->Serialize(buffer, bufferSize);
 	data.Data = buffer;
 
-	const size_t result = PackageSerialize(data, outputBuffer, outputBufferSize);
+	const PXSize result = PackageSerialize(data, outputBuffer, outputBufferSize);
 
 	return result;
 }
@@ -290,7 +290,7 @@ void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const 
 	FileSize = 0;
 }
 
-size_t SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const size_t inputDataSize)
+PXSize SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const PXSize inputDataSize)
 {
 	DataStreamX byteStream(inputData, inputDataSize);
 
@@ -365,7 +365,7 @@ size_t SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, con
 	return byteStream.DataCursor;
 }
 
-size_t SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const size_t outputDataSize) const
+PXSize SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const PXSize outputDataSize) const
 {
 	DataStreamX byteStream(outputData, outputDataSize);
 
@@ -451,7 +451,7 @@ void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam)
 	UserNameGetW(NameW, PathMaxSize, &NameSize);
 }
 
-size_t SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const size_t inputDataSize)
+PXSize SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const PXSize inputDataSize)
 {
 	DataStreamX DataStream(inputData, inputDataSize);
 
@@ -486,7 +486,7 @@ size_t SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const 
 	return DataStream.DataCursor;
 }
 
-size_t SBPDataPackageIamSerialize(SBPDataPackageIam* cosnt sbpDataPackageIam, void* outputData, const size_t outputDataSize) const
+PXSize SBPDataPackageIamSerialize(SBPDataPackageIam* cosnt sbpDataPackageIam, void* outputData, const PXSize outputDataSize) const
 {
 	DataStreamX DataStream(outputData, outputDataSize);
 
@@ -509,7 +509,7 @@ void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackag
 	SymbolID.Value = SBPDataPackageResponseID;
 }
 
-size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const size_t inputDataSize)
+PXSize SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const PXSize inputDataSize)
 {
 	DataStreamX DataStream(inputData, inputDataSize);
 
@@ -541,7 +541,7 @@ size_t SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageR
 	return DataStream.DataCursor;
 }
 
-size_t SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const size_t outputDataSize)
+PXSize SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const PXSize outputDataSize)
 {
 	DataStreamX DataStream(outputData, outputDataSize);
 
@@ -580,7 +580,7 @@ void SBPDataPackageTextDestruct(SBPDataPackageText* const sbpDataPackageText)
 {
 }
 
-size_t SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const size_t inputDataSize)
+PXSize SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const PXSize inputDataSize)
 {
 	DataStreamX DataStream(inputData, inputDataSize);
 
@@ -598,7 +598,7 @@ size_t SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, con
 	return DataStream.DataCursor;
 }
 
-size_t SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const size_t outputDataSize)
+PXSize SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const PXSize outputDataSize)
 {
 	DataStreamX DataStream(outputData, outputDataSize);
 
@@ -616,13 +616,13 @@ void SBPDataPackageConnectionCreateFill(const SBPConnectionCreateReason reason)
 
 }
 
-size_t SBPDataPackageConnectionCreateParse(const void* inputData, const size_t inputDataSize)
+PXSize SBPDataPackageConnectionCreateParse(const void* inputData, const PXSize inputDataSize)
 {
-	return size_t();
+	return PXSize();
 }
 
-size_t SBPDataPackageConnectionCreateSerialize(void* outputData, const size_t outputDataSize)
+PXSize SBPDataPackageConnectionCreateSerialize(void* outputData, const PXSize outputDataSize)
 {
-	return size_t();
+	return PXSize();
 }
 */

@@ -619,7 +619,7 @@ ActionResult PXSocketCreate
 #endif
 
     {
-        const size_t socketIDResult = socket(ipAdressFamilyID, socketTypeID, protocolModeID);
+        const PXSize socketIDResult = socket(ipAdressFamilyID, socketTypeID, protocolModeID);
         const unsigned char wasSucessful = socketIDResult != -1;
 
         if(!wasSucessful)
@@ -654,8 +654,8 @@ ActionResult PXSocketConnect(PXSocket* const pxSocket)
 ActionResult PXSocketSetupAdress
 (
     PXSocket* const pxSocketList,
-    const size_t PXSocketListSizeMax,
-    size_t* PXSocketListSize,
+    const PXSize PXSocketListSizeMax,
+    PXSize* PXSocketListSize,
     const char* const ip, // null for any ipAdress
     unsigned short port, // -1 for no port
     IPAdressFamily ipMode,
@@ -748,7 +748,7 @@ ActionResult PXSocketSetupAdress
         }
     }
 
-    size_t index = 0;
+    PXSize index = 0;
 
     for(AdressInfoType* adressInfo = adressResult; adressInfo; adressInfo = adressInfo->ai_next)
     {
@@ -901,7 +901,7 @@ ActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
     return ActionSuccessful;
 }
 
-ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const size_t inputBufferSize, size_t* inputBytesWritten)
+ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten)
 {
     // Check if socket is active and ready to send
     {
@@ -952,7 +952,7 @@ ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, con
     return ActionSuccessful;
 }
 
-ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const size_t outputBufferSize, size_t* outputBytesWritten)
+ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten)
 {
     // I did not read any data yet
     *outputBytesWritten = 0;

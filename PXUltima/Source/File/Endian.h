@@ -29,7 +29,7 @@ extern "C"
 
 #define EndianCurrentSystem EndianLittle
 
-	PXPublic void EndianSwap(void* data, const size_t dataSize, const Endian endianFrom, const Endian endianTo);
+	PXPublic void EndianSwap(void* data, const PXSize dataSize, const Endian endianFrom, const Endian endianTo);
 
 #ifdef __cplusplus
 }

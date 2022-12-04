@@ -11,10 +11,15 @@
 #include <Graphic/DirectX/DirectX.h>
 
 #include <OS/PXProcess.h>
+#include <Format/TIFF/TIFF.h>
 
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+	Image image;
+
+	ImageLoadA(&image, "A:/_WorkSpace/Download/at3_1m4_03.tif");
 
 	//TestYAMLAll();
 	//TestSystemInfoAll();

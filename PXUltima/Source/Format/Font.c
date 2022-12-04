@@ -38,7 +38,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 
     {
         const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
+        const PXBool sucessful = ActionSuccessful == fileLoadingResult;
 
         if(!sucessful)
         {
@@ -49,7 +49,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
     {
         wchar_t filePathDirectory[PathMaxSize];
 
-        size_t index = TextFindLastW(filePath, PathMaxSize, '/');
+        PXSize index = TextFindLastW(filePath, PathMaxSize, '/');
 
         if (index == -1)
         {
@@ -91,7 +91,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
     DataStreamDestruct(&dataStream);
 }
 
-ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath)
+ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath)
 {
     PXFontConstruct(font);
 
@@ -104,7 +104,7 @@ ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedForm
 
             {
 
-                size_t readBytes = 0;
+                PXSize readBytes = 0;
                 const ActionResult fileActionResult = FNTParse(font->FontElement, data, dataSize, &readBytes, sourcePath);
                 const unsigned char sucessful = ActionSuccessful == fileActionResult;
 
@@ -123,7 +123,7 @@ ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedForm
             TTFConstruct(&ttf);
 
             {
-                size_t readBytes = 0;
+                PXSize readBytes = 0;
                 const ActionResult fileActionResult = TTFParse(&ttf, data, dataSize, &readBytes);
                 const unsigned char sucessful = fileActionResult == ActionSuccessful;
 

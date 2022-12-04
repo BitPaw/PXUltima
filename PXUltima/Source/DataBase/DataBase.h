@@ -72,19 +72,19 @@ extern "C"
 			);
 
 	typedef void (*DriverDetectedEvent)(const wchar_t* driverName, const wchar_t* driverAttribte);
-	typedef void (*ResultEvent)(const size_t columSize, const size_t rowSize);
+	typedef void (*ResultEvent)(const PXSize columSize, const PXSize rowSize);
 	typedef void (*ColumInfoEvent)
 		(
-			const size_t columIndex,
+			const PXSize columIndex,
 			const SQLType type,
 			const unsigned char canBeNull,
 			const wchar_t* name,
-			const size_t nameLength
+			const PXSize nameLength
 			);
 	typedef void (*RowDataEvent)
 		(
-			const size_t rowIndex,
-			const size_t columIndex,
+			const PXSize rowIndex,
+			const PXSize columIndex,
 			const wchar_t* fieldString
 			);
 

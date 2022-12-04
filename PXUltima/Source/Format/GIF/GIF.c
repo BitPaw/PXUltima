@@ -9,19 +9,14 @@
 #define GIFVersionB {'8','9','a'}
 #define GIFEOF 0x3B
 
-size_t GIFFilePredictSize(const size_t width, const size_t height, const size_t bbp)
+PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
     return 0;
 }
 
-ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult GIFLoad(GIF* gif, DataStream* const dataStream)
 {
-    DataStream dataStream;
-
-    MemorySet(gif, sizeof(GIF), 0);
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, data, dataSize);
-    *dataRead = 0;
+    MemoryClear(gif, sizeof(GIF));
 
     // Check Header
     {
@@ -30,9 +25,9 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
         const char headerTag[3] = GIFHeader;
         char version[3] = { '#','#','#' };
 
-        const unsigned char validHeader = DataStreamReadAndCompare(&dataStream, headerTag, sizeof(headerTag));
+        const unsigned char validHeader = DataStreamReadAndCompare(dataStream, headerTag, sizeof(headerTag));
 
-        DataStreamReadP(&dataStream, version, sizeof(version));
+        DataStreamReadP(dataStream, version, sizeof(version));
 
         const unsigned char validVersion =
             version[0] == versionA[0] &&
@@ -56,14 +51,14 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
 
     // Logical Screen Descriptor.
     {
-        DataStreamReadSU(&dataStream, &gif->Width, EndianLittle);
-        DataStreamReadSU(&dataStream, &gif->Height, EndianLittle);
+        DataStreamReadSU(dataStream, &gif->Width, EndianLittle);
+        DataStreamReadSU(dataStream, &gif->Height, EndianLittle);
 
         unsigned char packedFields = 0;
 
-        DataStreamReadCU(&dataStream, &packedFields);
-        DataStreamReadCU(&dataStream, &gif->BackgroundColorIndex);
-        DataStreamReadCU(&dataStream, &gif->PixelAspectRatio);
+        DataStreamReadCU(dataStream, &packedFields);
+        DataStreamReadCU(dataStream, &gif->BackgroundColorIndex);
+        DataStreamReadCU(dataStream, &gif->PixelAspectRatio);
 
         gif->GlobalColorTableSize = packedFields & 0b00000111;
         gif->IsSorted = (packedFields & 0b00001000) >> 3;
@@ -75,18 +70,18 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
             //---<Image Descriptor>--------------------------------------------
 
             // 3 x 2^(Size of Global Color Table+1).
-            size_t size = 3 * MathPowerOfTwo(gif->GlobalColorTableSize + 1); // ???
+            PXSize size = 3 * MathPowerOfTwo(gif->GlobalColorTableSize + 1); // ???
 
             GIFImageDescriptor imageDescriptor;
 
             unsigned char packedFields = 0;
 
-            DataStreamReadCU(&dataStream, &imageDescriptor.Separator);
-            DataStreamReadSU(&dataStream, &imageDescriptor.LeftPosition, EndianLittle);
-            DataStreamReadSU(&dataStream, &imageDescriptor.TopPosition, EndianLittle);
-            DataStreamReadSU(&dataStream, &imageDescriptor.Width, EndianLittle);
-            DataStreamReadSU(&dataStream, &imageDescriptor.Height, EndianLittle);
-            DataStreamReadCU(&dataStream, &packedFields);
+            DataStreamReadCU(dataStream, &imageDescriptor.Separator);
+            DataStreamReadSU(dataStream, &imageDescriptor.LeftPosition, EndianLittle);
+            DataStreamReadSU(dataStream, &imageDescriptor.TopPosition, EndianLittle);
+            DataStreamReadSU(dataStream, &imageDescriptor.Width, EndianLittle);
+            DataStreamReadSU(dataStream, &imageDescriptor.Height, EndianLittle);
+            DataStreamReadCU(dataStream, &packedFields);
 
             imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
             imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;
@@ -113,12 +108,12 @@ ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* 
     return ActionSuccessful;
 }
 
-ActionResult GIFParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
+ActionResult GIFParseToImage(Image* const image, const void* const data, const PXSize dataSize, PXSize* dataRead)
 {
     return ActionInvalid;
 }
 
-ActionResult GIFSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
+ActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
     return ActionInvalid;
 }

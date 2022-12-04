@@ -1,6 +1,6 @@
 #include "WMA.h"
 
-ActionResult WMAParse(WMA* wma, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult WMAParse(WMA* wma, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	return ActionInvalid;
 }

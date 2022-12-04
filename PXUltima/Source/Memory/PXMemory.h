@@ -55,16 +55,16 @@ extern "C"
 
 	typedef struct MemoryUsage_
 	{
-		size_t PhysicalRAMSize;
+		PXSize PhysicalRAMSize;
 
-		size_t PercentInUse;
-		size_t PhysicalTotal;
-		size_t PhysicalAvailable;
-		size_t VirtualTotal;
-		size_t VirtualAvailable;
-		size_t PageFileTotal;
-		size_t PageFileAvailable;
-		size_t ExtendedVirtualAvailable;
+		PXSize PercentInUse;
+		PXSize PhysicalTotal;
+		PXSize PhysicalAvailable;
+		PXSize VirtualTotal;
+		PXSize VirtualAvailable;
+		PXSize PageFileTotal;
+		PXSize PageFileAvailable;
+		PXSize ExtendedVirtualAvailable;
 	}
 	MemoryUsage;
 
@@ -72,40 +72,40 @@ extern "C"
 	PXPublic PXBool MemoryScan(MemoryUsage* memoryUsage);
 
 
-	PXPublic void MemoryClear(void* const __restrict bufferA, const size_t bufferASize);
-	PXPublic void MemorySet(void* const __restrict bufferA, const size_t bufferASize, const unsigned char value);
+	PXPublic void MemoryClear(void* const __restrict bufferA, const PXSize bufferASize);
+	PXPublic void MemorySet(void* const __restrict bufferA, const PXSize bufferASize, const unsigned char value);
 
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!
-	PXPublic PXBool MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize);
+	PXPublic PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize);
 
-	PXPublic size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize);
+	PXPublic PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
-	//CPublic char MemoryAdvice(const void* adress, const size_t length, const FileCachingMode fileCachingMode);
+	//CPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
 
 	// Allocates size bytes on the program stack.
 	// The allocated space is automatically freed when the calling function exits
 	// (not when the allocation merely passes out of scope).
-	PXPublic void* MemoryStackAllocate(const size_t size);
+	PXPublic void* MemoryStackAllocate(const PXSize size);
 	//PXPublic void* MemoryStackRelease(void* const adress);
 
-	PXPublic void* MemoryHeapAllocate(const size_t size);
-	PXPublic void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char* function, const size_t line);
+	PXPublic void* MemoryHeapAllocate(const PXSize size);
+	PXPublic void* MemoryHeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line);
 
 	// Allocate memory and clear is after. Its just a combination of malloc and memset
-	PXPublic void* MemoryAllocateClear(const size_t size);
+	PXPublic void* MemoryAllocateClear(const PXSize size);
 
-	PXPublic void* MemoryHeapReallocate(void* sourceAddress, const size_t size);
-	PXPublic void* MemoryHeapReallocateDetailed(void* sourceAddress, const size_t size, const char* file, const char* function, const size_t line);
-	PXPublic void* MemoryHeapReallocateClear(const void* const adress, const size_t sizeBefore, const size_t sizeAfter);
-	PXPublic void MemoryRelease(const void* adress, const size_t size);
+	PXPublic void* MemoryHeapReallocate(void* sourceAddress, const PXSize size);
+	PXPublic void* MemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line);
+	PXPublic void* MemoryHeapReallocateClear(const void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
+	PXPublic void MemoryRelease(const void* adress, const PXSize size);
 
 	// Allocate memory in virtual memory space.
 	// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 	// Only use for bigger datablocks as thic has very hi overhead.
-	PXPublic void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memoryProtectionMode);
-	PXPublic void MemoryVirtualPrefetch(const void* adress, const size_t size);
-	PXPublic void MemoryVirtualRelease(const void* adress, const size_t size);
+	PXPublic void* MemoryVirtualAllocate(const PXSize size, const MemoryProtectionMode memoryProtectionMode);
+	PXPublic void MemoryVirtualPrefetch(const void* adress, const PXSize size);
+	PXPublic void MemoryVirtualRelease(const void* adress, const PXSize size);
 
 
 	PXPublic MemoryProtectionModeType ConvertFromMemoryProtectionMode(const MemoryProtectionMode memoryProtectionMode);

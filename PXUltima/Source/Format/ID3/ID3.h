@@ -131,7 +131,7 @@ extern "C"
 
 	PXPublic ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID);
 
-	PXPublic ActionResult ID3Parse(ID3* const id3, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

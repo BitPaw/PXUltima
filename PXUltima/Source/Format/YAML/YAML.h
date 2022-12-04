@@ -27,11 +27,11 @@ extern "C"
 	}
 	YAMLLineType;
 
-	PXPrivate YAMLLineType YAMLPeekLine(const void* line, const size_t size);
+	PXPrivate YAMLLineType YAMLPeekLine(const void* line, const PXSize size);
 
 	PXPublic ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const outputStream);
 
-	PXPublic ActionResult YAMLFileParse(DataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const size_t serializationTypeInfoListSize);
+	PXPublic ActionResult YAMLFileParse(DataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
 
 #ifdef __cplusplus
 }

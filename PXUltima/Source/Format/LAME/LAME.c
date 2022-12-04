@@ -3,7 +3,7 @@
 #include <File/DataStream.h>
 #include <Text/Text.h>
 
-ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult LAMEParse(LAME* lame, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 
@@ -13,7 +13,7 @@ ActionResult LAMEParse(LAME* lame, const void* data, const size_t dataSize, size
 	// Check signature (4 Bytes)
 	{
 		const char signature[] = { 'L', 'A', 'M', 'E' };
-		const size_t signatueSize = sizeof(signature);
+		const PXSize signatueSize = sizeof(signature);
 		const unsigned char isValid = DataStreamReadAndCompare(&dataStream, signature, signatueSize);
 
 		if(!isValid)

@@ -9,7 +9,7 @@ void MouseInputReset(Mouse* mouse)
 
 void MouseInputPrint(Mouse* mouse)
 {
-	const size_t buttonTextSize = 2 + 4 * 8+1;
+	const PXSize buttonTextSize = 2 + 4 * 8+1;
 	char buttons[34+1];
 	
 	TextFromBinaryDataA(&mouse->Buttons, sizeof(unsigned int), buttons, buttonTextSize);

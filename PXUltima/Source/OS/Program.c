@@ -84,7 +84,7 @@ ActionResult ProgramExecuteAS(Program* program, const char* programPath, const c
     // Add ""
     {
         program->ParameterList[0] = '\"';
-        size_t copyedBytes = TextCopyA(&program->ParameterList[1], 1024, programPath, 1024);
+        PXSize copyedBytes = TextCopyA(&program->ParameterList[1], 1024, programPath, 1024);
         program->ParameterList[copyedBytes] = '\"';
     }
 
@@ -95,7 +95,7 @@ ActionResult ProgramExecuteAS(Program* program, const char* programPath, const c
     return actionResult;
 }
 
-ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, size_t parameterListSize, ProgramExecutedEvent* callback)
+ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, PXSize parameterListSize, ProgramExecutedEvent* callback)
 {
     TextCopyA(program->FilePath, 260, programPath, 260);
 
@@ -105,7 +105,7 @@ ActionResult ProgramExecuteAL(Program* program, const char* programPath, const c
     program->ParameterList = (char**)MemoryAllocate(sizeof(char*) * program->ParameterListSize + 1);
     //memset(programExecuteInfo->ParameterList, '#', programExecuteInfo->ParameterListSize + 1);
 
-    for(size_t i = 0; i < parameterListSize; ++i)
+    for(PXSize i = 0; i < parameterListSize; ++i)
     {
         char* newData = (char*)MemoryAllocate(sizeof(char) * 1024);
 
@@ -114,7 +114,7 @@ ActionResult ProgramExecuteAL(Program* program, const char* programPath, const c
 
     // Copy
     {
-        size_t i = 0;
+        PXSize i = 0;
 
         TextCopyA(programPath, 1024, program->ParameterList[i++], 1024);
 

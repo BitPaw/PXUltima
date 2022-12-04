@@ -49,8 +49,8 @@ void SBPServerSendFile(const PXClientID clientID, const char* text)
 			&id
 		);
 
-		const size_t bufferSizeMax = 2048;
-		size_t bufferSize = 0;
+		const PXSize bufferSizeMax = 2048;
+		PXSize bufferSize = 0;
 		Byte__ buffer[bufferSizeMax];*/
 
 		//SBPDataGenerateMessage(data, buffer, bufferSize, bufferSizeMax);
@@ -73,7 +73,7 @@ void SBPServerSendFile(const PXClientID clientID, const char* text)
 
 
 	/*
-	for(size_t i = 0; i < _server.NumberOfConnectedPXClients; i++)
+	for(PXSize i = 0; i < _server.NumberOfConnectedPXClients; i++)
 	{
 		auto& client = _server.PXClientList[i];
 
@@ -81,14 +81,14 @@ void SBPServerSendFile(const PXClientID clientID, const char* text)
 	}	* /
 }
 
-size_t randomIDGenerator = 420;
+PXSize randomIDGenerator = 420;
 
 const ResponseID SBPServerGenerateResponseID()
 {
 	return randomIDGenerator++;
 }
 
-bool SBPServerSendMessageWaitResponse(const PXClientID clientID, const ResponseID responseID, const Byte__* buffer, const size_t& bufferSize)
+bool SBPServerSendMessageWaitResponse(const PXClientID clientID, const ResponseID responseID, const Byte__* buffer, const PXSize& bufferSize)
 {
 	_responseLookup.Add(responseID, nullptr);
 
@@ -109,8 +109,8 @@ bool SBPServerSendMessageWaitResponse(const PXClientID clientID, const ResponseI
 
 void SBPServerSendTextToAll(const char* text)
 {
-	const size_t bufferSize = 2048;
-	size_t size = 0;
+	const PXSize bufferSize = 2048;
+	PXSize size = 0;
 	Byte__ buffer[bufferSize]{ 0 };
 
 	//CreateText(text, buffer, size, bufferSize);
@@ -120,8 +120,8 @@ void SBPServerSendTextToAll(const char* text)
 
 void SBPServerSendTextToAll(const wchar_t* text)
 {
-	const size_t bufferSize = 2048;
-	size_t size = 0;
+	const PXSize bufferSize = 2048;
+	PXSize size = 0;
 	Byte__ buffer[bufferSize]{ 0 };
 	
 	//CreateText(text, buffer, size, bufferSize);
@@ -140,8 +140,8 @@ void SBPServerSendTextToPXClient(const unsigned int clientID, const char* text)
 
 void SBPServerSendTextToPXClient(const unsigned int clientID, const wchar_t* text)
 {
-	const size_t bufferSize = 2048;
-	size_t size = 0;
+	const PXSize bufferSize = 2048;
+	PXSize size = 0;
 	Byte__ buffer[bufferSize]{ 0 };
 
 	//CreateText(text, buffer, size, bufferSize);
@@ -177,7 +177,7 @@ void SBPServerOnMessageReceive(IOSocketMessage socketMessage)
 #endif
 
 	SBPData data;
-	const size_t read = SBPDataPackageParse(data, socketMessage.Message, socketMessage.MessageSize);
+	const PXSize read = SBPDataPackageParse(data, socketMessage.Message, socketMessage.MessageSize);
 
 	if(read)
 	{
@@ -190,15 +190,15 @@ void SBPServerOnMessageReceive(IOSocketMessage socketMessage)
 		{	
 			case SBPDataPackageIamID:
 			{
-				const size_t bufferSize = 1024u;
-				size_t bufferActural = 0;
+				const PXSize bufferSize = 1024u;
+				PXSize bufferActural = 0;
 				Byte__ buffer[bufferSize]{0};			
 
 				SBPDataPackageResponse packageResponse;
 
 				packageResponse.Type = SBPDataPackageResponseTypeOK;
 
-				const size_t written = SBPDataPackageSerialize(buffer, bufferSize, SourceMe, TargetYou, &packageResponse, data.ID);
+				const PXSize written = SBPDataPackageSerialize(buffer, bufferSize, SourceMe, TargetYou, &packageResponse, data.ID);
 
 #if SocketDebug
 				printf("[i][SBP-Server] Sending response\n");

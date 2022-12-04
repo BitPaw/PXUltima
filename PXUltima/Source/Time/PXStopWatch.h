@@ -12,14 +12,14 @@ extern "C"
 	typedef struct PXStopWatch_
 	{
 		PXTime* TimeStampData;
-		size_t TimeStampDataSizeUsed;
-		size_t TimeStampDataSizeAllocated;
+		PXSize TimeStampDataSizeUsed;
+		PXSize TimeStampDataSizeAllocated;
 	}
 	PXStopWatch;
 
 	PXPublic void PXStopWatchConstruct(PXStopWatch* const stopWatch);
 
-	PXPublic void PXStopWatchSet(PXStopWatch* const stopWatch, void* const data, const size_t dataSize);
+	PXPublic void PXStopWatchSet(PXStopWatch* const stopWatch, void* const data, const PXSize dataSize);
 
 	PXPublic void PXStopWatchStart(PXStopWatch* const stopWatch);
 	PXPublic PXBool PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time);

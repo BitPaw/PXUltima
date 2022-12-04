@@ -20,10 +20,10 @@ extern "C"
 	typedef struct PXServer_
 	{
 		PXSocket* ServerSocketList;
-		size_t ServerSocketListSize;
+		PXSize ServerSocketListSize;
 
 		PXSocket* PXClientSocketList;
-		size_t PXClientSocketListSize;
+		PXSize PXClientSocketListSize;
 
 		PXClientConnectedEvent PXClientConnectedCallback;
 		PXClientDisconnectedEvent PXClientDisconnectedCallback;
@@ -41,13 +41,13 @@ extern "C"
 
 	PXPublic void PXServerRegisterPXClient(PXServer* const server, PXClient* const client);
 
-	//CPublic ActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const size_t dataSize);
-//	CPublic ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const size_t dataSize);
+	//CPublic ActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const PXSize dataSize);
+//	CPublic ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize);
 
 	//CPublic ActionResult PXServerSendFileToPXClient(PXServer* server, int clientID, const char* filePath);
 	//CPublic ActionResult PXServerSendFileToPXClient(PXServer* server, int clientID, const wchar_t* filePath);
 
-	//CPublic ActionResult PXServerBroadcastMessageToPXClients(PXServer* server, char* message, size_t messageLength);
+	//CPublic ActionResult PXServerBroadcastMessageToPXClients(PXServer* server, char* message, PXSize messageLength);
 	//CPublic ActionResult PXServerBroadcastFileToPXClients(PXServer* server, const char* filePath);
 
 	static PXThreadResult PXServerPXClientListeningThread(void* server);

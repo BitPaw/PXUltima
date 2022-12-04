@@ -16,9 +16,9 @@ PXBool ControllerScanDevices(NewControllerDetectedCallback callback)
 {
 #if OSUnix
 #elif OSWindowsEE
-const size_t amountOfJoySticksSupported = joyGetNumDevs();
+const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 
-	for (size_t i = 0; i < amountOfJoySticksSupported; i++)
+	for (PXSize i = 0; i < amountOfJoySticksSupported; i++)
 	{
 		const ControllerID joyID = i;
 		JOYCAPSW pjc;

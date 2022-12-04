@@ -69,7 +69,7 @@ ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemory
 
 	// Process memory info
 	{
-		const size_t processMemoryCountersExSize = sizeof(PROCESS_MEMORY_COUNTERS_EX); // minimum: Windows XP SP2, SP1 does not support EX version
+		const PXSize processMemoryCountersExSize = sizeof(PROCESS_MEMORY_COUNTERS_EX); // minimum: Windows XP SP2, SP1 does not support EX version
 
 		PROCESS_MEMORY_COUNTERS_EX processMemoryCountersEx;
 
@@ -115,7 +115,7 @@ ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemory
 		ActionOnErrorFetchAndExit(!success);
 
 		// Convert
-		for (size_t i = 0; i < 4u; i++)
+		for (PXSize i = 0; i < 4u; i++)
 		{
 			SYSTEMTIME systemTime;
 

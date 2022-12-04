@@ -5,9 +5,9 @@
 
 void PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
 {
-	for (size_t y = 0; y < 4u; ++y)
+	for (PXSize y = 0; y < 4u; ++y)
 	{
-		for (size_t x = 0; x < 4u; ++x)
+		for (PXSize x = 0; x < 4u; ++x)
 		{
 			matrix4x4F->Data[x + y * 4u] = y == x;
 		}
@@ -162,7 +162,7 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 
 void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, const PXMatrix4x4F* const matrixResult)
 {
-	const size_t sizeOfMatrix = sizeof(PXMatrix4x4F);
+	const PXSize sizeOfMatrix = sizeof(PXMatrix4x4F);
 
 	MemoryCopy(matrixA, sizeOfMatrix, matrixResult, sizeOfMatrix);
 }
@@ -257,7 +257,7 @@ PXBool PXMatrix4x4FInverse(const PXMatrix4x4F* const matrix4x4FInput, PXMatrix4x
 
 	det = 1.0 / det;
 
-	for (size_t i = 0; i < 16u; ++i)
+	for (PXSize i = 0; i < 16u; ++i)
 	{
 		matrix4x4FResult->Data[i] = temp.Data[i] * det;
 	}

@@ -12,11 +12,11 @@ void TestSystemInfoAll()
 void TestSystemInfoHardDrive()
 {
 	HardDrive hardDrive[26];
-	size_t hardDriveSize = 0;
+	PXSize hardDriveSize = 0;
 
 	HardDriveFetchAll(&hardDrive, 26u, &hardDriveSize);
 
-	for (size_t i = 0; i < hardDriveSize; i++)
+	for (PXSize i = 0; i < hardDriveSize; i++)
 	{
 		HardDrive* harddrive = &hardDrive[i];
 

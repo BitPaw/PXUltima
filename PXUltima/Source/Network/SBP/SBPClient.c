@@ -20,9 +20,9 @@ SBPResult SBPPXClientSendAndWaitResponse
 (
 	SBPPXClient* const sbpPXClient,
 	void* inputData,
-	const size_t inputDataSize,
+	const PXSize inputDataSize,
 	void* responseData,
-	size_t* responseDataSize,
+	PXSize* responseDataSize,
 	const unsigned int sourceID,
 	const unsigned int targetID,
 	const SBPDataPackage* dataPackage
@@ -33,7 +33,7 @@ SBPResult SBPPXClientSendAndWaitResponse
 
 	const ResponseID responseID = _responseCache.Register();
 
-	const size_t writtenBytes = SBPDataPackageSerialize(inputData, inputDataSize, SourceMe, TargetServer, dataPackage, responseID);
+	const PXSize writtenBytes = SBPDataPackageSerialize(inputData, inputDataSize, SourceMe, TargetServer, dataPackage, responseID);
 
 	// Send stuff
 	{
@@ -69,7 +69,7 @@ SBPResult SBPPXClientSendAndWaitResponse
 		{
 			TimeNow(&timestampCurrent);
 
-			const size_t millisecondsDelta = TimeMillisecondsDelta(&timestampStart, &timestampCurrent);
+			const PXSize millisecondsDelta = TimeMillisecondsDelta(&timestampStart, &timestampCurrent);
 
 			// Check if timeout
 			{			
@@ -123,9 +123,9 @@ void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const char* ip, 
 	}
 
 	char inputBuffer[2048] = { 0 };
-	size_t inputBufferSize = 2024;
+	PXSize inputBufferSize = 2024;
 	char outputBuffer[2048] = { 0 };
-	size_t outputBufferSize = 2024;
+	PXSize outputBufferSize = 2024;
 
 	//StopWatch stopwatch;
 
@@ -189,9 +189,9 @@ void SBPPXClientSendFile(const char* filePath)
 	// Request new connection
 	{
 		char inputBuffer[2048]{ 0 };
-		size_t inputBufferSize = 2024;
+		PXSize inputBufferSize = 2024;
 		char outputBuffer[2048]{ 0 };
-		size_t outputBufferSize = 2024;
+		PXSize outputBufferSize = 2024;
 
 		const SBPResult result = SendAndWaitResponse
 		(
@@ -243,9 +243,9 @@ void SBPPXClientSendFile(const char* filePath)
 	// Send file info
 	{
 		char inputBuffer[2048]{ 0 };
-		size_t inputBufferSize = 2024;
+		PXSize inputBufferSize = 2024;
 		char outputBuffer[2048]{ 0 };
-		size_t outputBufferSize = 2024;
+		PXSize outputBufferSize = 2024;
 
 		const SBPResult result = SendAndWaitResponse
 		(
@@ -274,14 +274,14 @@ void SBPPXClientSendFile(const char* filePath)
 			}
 		}
 
-		const size_t fileBufferSize = 2048u;
+		const PXSize fileBufferSize = 2048u;
 		char fileBuffer[fileBufferSize]{ 0 };
 
 		do
 		{
 			const Byte__* start = file.CursorCurrentAdress();
-			const size_t canRead = file.ReadPossibleSize();
-			const size_t sendSize = canRead < fileBufferSize ? canRead : fileBufferSize;
+			const PXSize canRead = file.ReadPossibleSize();
+			const PXSize sendSize = canRead < fileBufferSize ? canRead : fileBufferSize;
 
 			clientFileSender.Send(start, sendSize);
 
@@ -352,8 +352,8 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 	SBPPXClient& client = *(SBPPXClient*)sbpPXClientAdress;
 
 	char buffer[1024]{ 0 };
-	size_t bufferSizeMax = 1024;
-	size_t bufferSize = 0;
+	PXSize bufferSizeMax = 1024;
+	PXSize bufferSize = 0;
 
 	while(client._client.IsCurrentlyUsed())
 	{
@@ -363,7 +363,7 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 		const auto receiveingResult = client._client.Receive(buffer, bufferSizeMax, bufferSize);
 
 		// Convert raw bytes into data object
-		const size_t parsedBytes = SBPData::PackageParse(data, buffer, bufferSize);
+		const PXSize parsedBytes = SBPData::PackageParse(data, buffer, bufferSize);
 
 		if(parsedBytes)
 		{

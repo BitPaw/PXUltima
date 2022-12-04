@@ -64,7 +64,7 @@ M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID)
 	}
 }
 
-ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 
@@ -83,7 +83,7 @@ ActionResult M4AParse(M4A* m4a, const void* data, const size_t dataSize, size_t*
 		DataStreamReadIU(&dataStream, &chunkSize, EndianBig);
 		DataStreamReadP(&dataStream, typePrimaryID.Data, 4u);
 
-		const size_t positionPrediction = dataStream.DataCursor + chunkSize - 8;
+		const PXSize positionPrediction = dataStream.DataCursor + chunkSize - 8;
 		const M4AChunkID typePrimary = ConvertToM4AChunkID(typePrimaryID.Value);
 
 #if M4ADebugLog

@@ -9,6 +9,8 @@
 #include <Container/LinkedList/PXLinkedList.h>
 #include <Async/PXLock.h>
 
+#define PXShaderNotRegisterd (unsigned int)-1
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -134,12 +136,15 @@ extern "C"
 	{
 		unsigned int ID;
 		ShaderType Type;
-		size_t ContentSize;
+		PXSize ContentSize;
 		char* Content;
 	}
 	Shader;
 
-	PXPublic void ShaderDataSet(Shader* const shader, const ShaderType type, const size_t size, const char* data);
+
+	PXPublic void PXShaderConstruct(Shader* const shader);
+
+	PXPublic void ShaderDataSet(Shader* const shader, const ShaderType type, const char* data, const PXSize size);
 
 
 	typedef struct ShaderProgram_
@@ -222,7 +227,7 @@ extern "C"
 		unsigned int VBO;
 		unsigned int IBO;
 
-		size_t MeshSegmentListSize;
+		PXSize MeshSegmentListSize;
 		PXRenderableMeshSegment* MeshSegmentList;
 
 		PXBool DoRendering;
@@ -303,7 +308,7 @@ extern "C"
 	// Update
 	// Destroy
 
-	PXPublic ActionResult GraphicUITextRegister(GraphicContext* const graphicContext, PXUIText* const pxUIText, const size_t x, const size_t y, const size_t sidth, const size_t height);
+	PXPublic ActionResult GraphicUITextRegister(GraphicContext* const graphicContext, PXUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height);
 
 
 
@@ -350,8 +355,8 @@ extern "C"
 
 	//---<Rendering>-----------------------------------------------------------
 	PXPublic unsigned char GraphicImageBufferSwap(GraphicContext* const graphicContext);
-	PXPublic ActionResult GraphicRenderElement(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount);
-	PXPublic ActionResult GraphicRenderList(GraphicContext* const graphicContext, GraphicRenderMode renderMode, size_t start, size_t amount);
+	PXPublic ActionResult GraphicRenderElement(GraphicContext* const graphicContext, GraphicRenderMode renderMode, PXSize start, PXSize amount);
+	PXPublic ActionResult GraphicRenderList(GraphicContext* const graphicContext, GraphicRenderMode renderMode, PXSize start, PXSize amount);
 	//-------------------------------------------------------------------------
 	
 
@@ -387,11 +392,11 @@ extern "C"
 	PXPublic ActionResult GraphicSkyboxUse(GraphicContext* const graphicContext, PXSkyBox* const skyBox);
 	PXPublic ActionResult GraphicSkyboxRelease(GraphicContext* const graphicContext, PXSkyBox* const skyBox);
 
-	PXPublic size_t GraphicModelListSize(const GraphicContext* const graphicContext);
-	PXPublic PXBool GraphicModelListGetFromIndex(const GraphicContext* const graphicContext, PXModel** pxModel, const size_t index);
+	PXPublic PXSize GraphicModelListSize(const GraphicContext* const graphicContext);
+	PXPublic PXBool GraphicModelListGetFromIndex(const GraphicContext* const graphicContext, PXModel** pxModel, const PXSize index);
 
-	PXPublic size_t GraphicRenderableListSize(const GraphicContext* const graphicContext);
-	PXPublic PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicContext, PXRenderable** pxRenderable, const size_t index);
+	PXPublic PXSize GraphicRenderableListSize(const GraphicContext* const graphicContext);
+	PXPublic PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicContext, PXRenderable** pxRenderable, const PXSize index);
 
 	PXPublic ActionResult GraphicModelCreate(GraphicContext* const graphicContext, PXModel** const pxModel);
 	PXPublic PXBool GraphicModelRegister(GraphicContext* const graphicContext, PXModel* const pxModel);
@@ -402,12 +407,12 @@ extern "C"
 	PXPublic void GraphicModelShaderSet(GraphicContext* const graphicContext, PXRenderable* const renderable, const ShaderProgram* const shaderProgram);
 	PXPublic ActionResult GraphicModelRegisterA(GraphicContext* const graphicContext, PXRenderable** const renderable, const char* const filePath);
 	PXPublic ActionResult GraphicModelRegisterFromModel(GraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);
-	PXPublic ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);
+	PXPublic ActionResult GraphicModelRegisterFromData(GraphicContext* const graphicContext, PXRenderable* const renderable, const float* vertexData, const PXSize vertexDataSize, const unsigned int* indexList, const PXSize indexListSize);
 	//-------------------------------------------------------------------------
 
 	//PXPublic ActionResult Load(PXModel& model, const wchar_t* filePath, const bool loadAsynchronously = true);
 	//PXPublic ActionResult Load(PXRenderable& renderable, PXModel* model, const wchar_t* filePath, bool loadAsynchronously = true);
-	//PXPublic ActionResult Load(PXRenderable& renderable, const float* vertexData, const size_t vertexDataSize, const unsigned int* indexList, const size_t indexListSize);
+	//PXPublic ActionResult Load(PXRenderable& renderable, const float* vertexData, const PXSize vertexDataSize, const unsigned int* indexList, const PXSize indexListSize);
 
 
 	//PXPublic ActionResult Load(Level& level, const wchar_t* filePath, const bool loadAsynchronously = true);

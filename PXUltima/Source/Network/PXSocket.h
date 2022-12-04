@@ -43,7 +43,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
 
-typedef size_t PXSocketID;
+typedef PXSize PXSocketID;
 #define SocketDebug 0
 #define SocketIDOffline -1
 #define IPv6LengthMax 65
@@ -172,8 +172,8 @@ extern "C"
 	typedef void (*SocketCreatingEvent)(const PXSocket* const pxSocket, unsigned char* use);
 	typedef void (*SocketCreatedEvent)(const PXSocket* const pxSocket);
 
-	typedef void (*MessageSendEvent)(const PXSocket* const pxSocket, const void* message, const size_t messageSize);
-	typedef void (*MessageReceiveEvent)(const PXSocket* const pxSocket, const void* message, const size_t messageSize);
+	typedef void (*MessageSendEvent)(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
+	typedef void (*MessageReceiveEvent)(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
 
 	// PXServer Only
 	typedef void (*ConnectionListeningEvent)(const PXSocket* const pxSocket);
@@ -192,7 +192,7 @@ extern "C"
 		IPAdressFamily Family;
 		PXSocketType Type;
 		char IP[IPv6LengthMax];
-		size_t IPSize;
+		PXSize IPSize;
 		unsigned short Port;
 
 		//----------------------------
@@ -248,8 +248,8 @@ extern "C"
 	PXPublic ActionResult PXSocketSetupAdress
 	(
 		PXSocket* const pxSocketList,
-		const size_t PXSocketListSizeMax,
-		size_t* PXSocketListSize,
+		const PXSize PXSocketListSizeMax,
+		PXSize* PXSocketListSize,
 		const char* const ip, // null for any ipAdress
 		unsigned short port, // -1 for no port
 		IPAdressFamily ipMode,
@@ -265,8 +265,8 @@ extern "C"
 	PXPublic ActionResult PXSocketListen(PXSocket* const pxSocket);
 	PXPublic ActionResult PXSocketAccept(PXSocket* server, PXSocket* client);
 
-	PXPublic ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const size_t inputBufferSize, size_t* inputBytesWritten);
-	PXPublic ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const size_t outputBufferSize, size_t* outputBytesWritten);
+	PXPublic ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
+	PXPublic ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
 
 #if OSWindows
 	PXPrivate ActionResult WindowsSocketAgentStartup();

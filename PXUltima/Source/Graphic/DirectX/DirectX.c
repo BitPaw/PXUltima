@@ -39,7 +39,7 @@ void DirectXContextCreate(DirectXContext* const directXContext)
 
 	const unsigned int amountOfAdapters = context->lpVtbl->GetAdapterCount(context);
 
-	for (size_t i = 0; i < amountOfAdapters; ++i)
+	for (PXSize i = 0; i < amountOfAdapters; ++i)
 	{
 		D3DADAPTER_IDENTIFIER9 aDAPTER_IDENTIFIER9;
 

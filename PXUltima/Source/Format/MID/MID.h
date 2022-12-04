@@ -61,8 +61,8 @@ extern "C"
 	}
 	MID;
 
-	PXPublic ActionResult MIDParse(MID* mid, const void* data, const size_t dataSize, size_t* dataRead);
-	PXPublic ActionResult MIDSerialize(MID* mid, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic ActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

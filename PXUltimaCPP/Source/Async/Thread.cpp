@@ -5,7 +5,7 @@ ActionResult PX::Thread::Run(const ThreadFunction threadFunction, const void* pa
 	return PXThreadRun(this, threadFunction, parameter);
 }
 
-size_t PX::Thread::CurrentID()
+PXSize PX::Thread::CurrentID()
 {
 	return PXThreadCurrentID();
 }

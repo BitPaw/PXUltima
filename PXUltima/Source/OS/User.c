@@ -8,7 +8,7 @@
 #include <Windows.h>
 #endif
 
-PXBool UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSizeWritten)
+PXBool UserNameGetA(char* name, const PXSize nameSizeMax, PXSize* nameSizeWritten)
 {
 #if OSUnix
 
@@ -25,7 +25,7 @@ PXBool UserNameGetA(char* name, const size_t nameSizeMax, size_t* nameSizeWritte
 #endif
 }
 
-PXBool UserNameGetW(wchar_t* name, const size_t nameSizeMax, size_t* nameSizeWritten)
+PXBool UserNameGetW(wchar_t* name, const PXSize nameSizeMax, PXSize* nameSizeWritten)
 {
 #if OSUnix
 

@@ -15,7 +15,7 @@ extern "C"
 	}
 	PLY;
 
-	PXPublic ActionResult PLYParse(PLY* ply, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult PLYParse(PLY* ply, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

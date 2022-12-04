@@ -244,7 +244,7 @@ void ProcessorModelNameGet(const ProcessorModelName processorModelName, char* co
 
 ProcessorBrand ProcessorBrandDetect(const char* name)
 {
-    const size_t bufferSize = 13;
+    const PXSize bufferSize = 13;
 
     if (TextCompareA("AMDisbetter!", bufferSize, name, bufferSize)) return ProcessorBrandAMD;
     if (TextCompareA("AuthenticAMD", bufferSize, name, bufferSize)) return ProcessorBrandAMD;
@@ -505,11 +505,11 @@ void ProcessorFetchInfo(Processor* const processor)
 
         __cpuid(CPUInfo, 0x80000000);
 
-        size_t offset = 0;
+        PXSize offset = 0;
 
         nExIds = CPUInfo[0];
         // Interpret CPU brand string
-        for (size_t i = 0x80000000; i <= nExIds; ++i)
+        for (PXSize i = 0x80000000; i <= nExIds; ++i)
         {
             __cpuid(CPUInfo, i);
 
@@ -574,8 +574,8 @@ unsigned int ProcessorFrequencyCurrent()
         return -1;
     }
 
-    const size_t deltaTimeIU = d.dwLowDateTime | ((unsigned long long)d.dwHighDateTime << 32);
-    const size_t deltaTimeD = deltaTimeIU * 0.0000001;
+    const PXSize deltaTimeIU = d.dwLowDateTime | ((unsigned long long)d.dwHighDateTime << 32);
+    const PXSize deltaTimeD = deltaTimeIU * 0.0000001;
 
     //  Returns total user time.
     //  Can be tweaked to include kernel times as well.

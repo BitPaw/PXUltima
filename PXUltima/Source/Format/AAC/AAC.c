@@ -1,6 +1,6 @@
 #include "AAC.h"
 
-ActionResult AACParse(const void* data, const size_t dataSize)
+ActionResult AACParse(const void* data, const PXSize dataSize)
 {
 	return ActionInvalid;
 }

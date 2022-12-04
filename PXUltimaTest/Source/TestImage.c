@@ -16,8 +16,8 @@ void TestSaveImageSmal()
 
     // Write image data
     {
-        const size_t width = 2u * 1u;
-        const size_t height = 2u * 1u;
+        const PXSize width = 2u * 1u;
+        const PXSize height = 2u * 1u;
 
         ImageResize(&image, ImageDataFormatRGB8, width, height);
 
@@ -67,16 +67,16 @@ void TestSaveImage()
 
     // Write image data
     {
-        const size_t width = 512u * 1;
-        const size_t height = 512u * 1;
+        const PXSize width = 512u * 1;
+        const PXSize height = 512u * 1;
 
         ImageResize(&image, ImageDataFormatRGB8, width, height);
 
         int dimension = 3;
 
-        for(size_t y = 0; y < height; y++)
+        for(PXSize y = 0; y < height; y++)
         {
-            for(size_t x = 0; x < width; x++)
+            for(PXSize x = 0; x < width; x++)
             {
                 const unsigned char a = 0xFF * !(x & y); // Triangle part
                 const unsigned char b = x | y; // pri
@@ -142,8 +142,8 @@ void ImageWriteText()
 
     // Write image data
     {
-        const size_t width = 512u * 1;
-        const size_t height = 512u * 1;
+        const PXSize width = 512u * 1;
+        const PXSize height = 512u * 1;
 
         ImageResize(&image, ImageDataFormatRGB8, width, height);
 

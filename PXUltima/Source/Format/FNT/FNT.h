@@ -85,7 +85,7 @@ extern "C"
 	typedef struct FNTPage_
 	{
 		int PageID;	
-		size_t CharacteListSize;
+		PXSize CharacteListSize;
 		FNTCharacter* CharacteList;
 		Image FontTextureMap;
 	}
@@ -95,7 +95,7 @@ extern "C"
 	{
 		FNTInfo Info;
 		FNTCommonData CommonData;
-		size_t FontPageListSize;
+		PXSize FontPageListSize;
 		FNTPage* FontPageList;
 	}
 	FNT;
@@ -106,12 +106,12 @@ extern "C"
 	(
 		FNT* fnt,
 		const void* fileData,
-		const size_t fileDataSize,
-		size_t* readBytes, 
+		const PXSize fileDataSize,
+		PXSize* readBytes, 
 		const wchar_t* filePath
 	);
 
-	static FNTLineType PeekLineType(const void* line, const size_t fileDataSize);
+	static FNTLineType PeekLineType(const void* line, const PXSize fileDataSize);
 
 	PXPublic void FNTPrtinf(const FNT* fnt);
 

@@ -5,6 +5,7 @@
 
 #include <Error/ActionResult.h>
 #include <Format/Image.h>
+#include <File/DataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -41,13 +42,13 @@ extern "C"
 	}
 	GIF;
 
-	PXPublic size_t GIFFilePredictSize(const size_t width, const size_t height, const size_t bbp);
+	PXPublic PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic ActionResult GIFLoad(GIF* gif, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult GIFLoad(GIF* gif, const void* data, const PXSize dataSize, PXSize* dataRead);
 
-	PXPublic ActionResult GIFParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult GIFParseToImage(Image* const image, DataStream* const dataStream);
 
-	PXPublic ActionResult GIFSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	PXPublic ActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

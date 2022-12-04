@@ -1,6 +1,6 @@
 #include "CRC32.h"
 
-unsigned int CRC32Generate(const unsigned char* const data, const size_t length)
+unsigned int CRC32Generate(const unsigned char* const data, const PXSize length)
 {
     unsigned int r = 0xffffffffu;
 
@@ -40,7 +40,7 @@ unsigned int CRC32Generate(const unsigned char* const data, const size_t length)
       3009837614u, 3294710456u, 1567103746u,  711928724u, 3020668471u, 3272380065u, 1510334235u,  755167117u
     };
 
-    for (size_t i = 0; i < length; ++i)
+    for (PXSize i = 0; i < length; ++i)
     {
         r = table[(r ^ data[i]) & 0xffu] ^ (r >> 8u);
     }

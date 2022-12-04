@@ -106,11 +106,11 @@ extern "C"
 	}
 	FileFormatExtension;
 
-	PXPublic FileFormatExtension FilePathExtensionDetectTryA(const char* const filePath, const size_t filePathSize);
-	PXPublic FileFormatExtension FilePathExtensionDetectTryW(const wchar_t* const filePath, const size_t filePathSize);
+	PXPublic FileFormatExtension FilePathExtensionDetectTryA(const char* const filePath, const PXSize filePathSize);
+	PXPublic FileFormatExtension FilePathExtensionDetectTryW(const wchar_t* const filePath, const PXSize filePathSize);
 
-	PXPublic FileFormatExtension FileExtensionDetectTryA(const char* const extension, const size_t extensionSize);
-	PXPublic FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const size_t extensionSize);
+	PXPublic FileFormatExtension FileExtensionDetectTryA(const char* const extension, const PXSize extensionSize);
+	PXPublic FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const PXSize extensionSize);
 
 
 
@@ -145,44 +145,44 @@ extern "C"
 	PXPublic ActionResult DirectoryCreateA(const char* directoryName);
 	PXPublic ActionResult DirectoryCreateW(const wchar_t* directoryName);
 	PXPublic ActionResult WorkingDirectoryChange(const char* directoryName);
-	PXPublic ActionResult WorkingDirectoryGetA(char* workingDirectory, size_t workingDirectorySize);
-	PXPublic ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, size_t workingDirectorySize);
+	PXPublic ActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize);
+	PXPublic ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize);
 	PXPublic ActionResult WorkingDirectoryChangeW(const wchar_t* directoryName);
 	PXPublic ActionResult DirectoryDeleteA(const char* directoryName);
 	PXPublic ActionResult DirectoryDeleteW(const wchar_t* directoryName);
-	PXPublic ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, size_t* listSize);
-	PXPublic ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, size_t* listSize);
+	PXPublic ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
+	PXPublic ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize);
 	//---------------------------------------------------------------------
 
 	PXPublic void FilePathSplittA
 	(
-		const char* fullPath, size_t fullPathMaxSize,
-		char* drive, size_t driveMaxSize,
-		char* directory, size_t directoryMaxSize,
-		char* fileName, size_t fileNameMaxSize,
-		char* extension, size_t extensionMaxSize
+		const char* fullPath, PXSize fullPathMaxSize,
+		char* drive, PXSize driveMaxSize,
+		char* directory, PXSize directoryMaxSize,
+		char* fileName, PXSize fileNameMaxSize,
+		char* extension, PXSize extensionMaxSize
 	);
 
 	PXPublic void FilePathSplittW
 	(
-		const wchar_t* fullPath, size_t fullPathMaxSize,
-		wchar_t* drive, size_t driveMaxSize,
-		wchar_t* directory, size_t directoryMaxSize,
-		wchar_t* fileName, size_t fileNameMaxSize,
-		wchar_t* extension, size_t extensionMaxSize
+		const wchar_t* fullPath, PXSize fullPathMaxSize,
+		wchar_t* drive, PXSize driveMaxSize,
+		wchar_t* directory, PXSize directoryMaxSize,
+		wchar_t* fileName, PXSize fileNameMaxSize,
+		wchar_t* extension, PXSize extensionMaxSize
 	);
 
 	PXPublic void FilePathSplittPositionW
 	(
-		const wchar_t* fullPath, size_t fullPathMaxSize,
-		size_t* drivePos, size_t driveSize,
-		size_t* directory, size_t directorySize,
-		size_t* fileName, size_t fileNameSize,
-		size_t* extension, size_t extensionSize
+		const wchar_t* fullPath, PXSize fullPathMaxSize,
+		PXSize* drivePos, PXSize driveSize,
+		PXSize* directory, PXSize directorySize,
+		PXSize* fileName, PXSize fileNameSize,
+		PXSize* extension, PXSize extensionSize
 	);
 
-	PXPublic size_t FilePathExtensionGetA(const char* filePath, const size_t filePathSize, char* extension, const size_t extensionSizeMax);
-	PXPublic size_t FilePathExtensionGetW(const wchar_t* filePath, const size_t filePathSize, wchar_t* extension, const size_t extensionSizeMax);
+	PXPublic PXSize FilePathExtensionGetA(const char* filePath, const PXSize filePathSize, char* extension, const PXSize extensionSizeMax);
+	PXPublic PXSize FilePathExtensionGetW(const wchar_t* filePath, const PXSize filePathSize, wchar_t* extension, const PXSize extensionSizeMax);
 
 	PXPublic void FileExtensionDetect();
 

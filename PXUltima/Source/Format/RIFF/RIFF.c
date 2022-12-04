@@ -18,7 +18,7 @@
 #define RIFFSubTypeRMID MakeInt('R', 'M', 'I', 'D')
 #define RIFFSubTypeWAVE MakeInt('W', 'A', 'V', 'E')
 
-ActionResult RIFFParse(RIFF* riff, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 

@@ -10,8 +10,8 @@ ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned 
     ProtocolMode protocolMode = ProtocolModeTCP;
 
     PXSocket PXSocketList[5];
-    size_t PXSocketListSizeMax = 5;
-    size_t PXSocketListSize = 0;
+    PXSize PXSocketListSizeMax = 5;
+    PXSize PXSocketListSize = 0;
 
     MemorySet(PXSocketList,sizeof(PXSocket)* PXSocketListSizeMax, 0);
 
@@ -29,7 +29,7 @@ ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned 
 
     unsigned char wasSucessful = 0;
 
-    for (size_t i = 0; i < PXSocketListSize; ++i)
+    for (PXSize i = 0; i < PXSocketListSize; ++i)
     {
         PXSocket* const pxSocket = &PXSocketList[i];
         const ActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
@@ -68,8 +68,8 @@ PXThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
 
     while (PXSocketIsCurrentlyUsed(pxSocket))
     {
-        const size_t bufferSizeMax = 2048;
-        size_t bufferSize = 0;
+        const PXSize bufferSizeMax = 2048;
+        PXSize bufferSize = 0;
         unsigned char buffer[PXClientBufferSize];
 
         MemorySet(buffer, sizeof(unsigned char) * PXClientBufferSize, 0);

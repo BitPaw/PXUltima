@@ -13,7 +13,7 @@ static const unsigned ADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; /*y start values*/
 static const unsigned ADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; /*x delta values*/
 static const unsigned ADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
 
-unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, size_t width, size_t height, size_t bpp, PNGInterlaceMethod interlaceMethod)
+unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bpp, PNGInterlaceMethod interlaceMethod)
 {
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
@@ -50,11 +50,11 @@ unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, size_t 
         case PNGInterlaceADAM7:
         {
             unsigned passw[7], passh[7];
-            size_t filter_passstart[8], padded_passstart[8], passstart[8];
+            PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
             ADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
 
-            for (size_t i = 0; i != 7u; ++i)
+            for (PXSize i = 0; i != 7u; ++i)
             {
                 CERROR_TRY_RETURN(ADAM7unfilter(&in[padded_passstart[i]], &in[filter_passstart[i]], passw[i], passh[i], bpp));
                 /*TODO: possible efficiency improvement: if in this reduced image the bits fit nicely in 1 scanline,
@@ -76,14 +76,14 @@ unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, size_t 
     return 0;
 }
 
-unsigned int ADAM7ScanlinesEncode(unsigned char* out, unsigned char* in, size_t width, size_t height, size_t bbp, PNGInterlaceMethod interlaceMethod)
+unsigned int ADAM7ScanlinesEncode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bbp, PNGInterlaceMethod interlaceMethod)
 {
     return 0;
 }
 
-size_t ADAM7CaluclateExpectedSize(size_t width, size_t height, size_t bpp)
+PXSize ADAM7CaluclateExpectedSize(PXSize width, PXSize height, PXSize bpp)
 {
-    size_t n = width * height;
+    PXSize n = width * height;
     return ((n / 8u) * bpp) + ((n & 7u) * bpp + 7u) / 8u;
 }
 
@@ -101,7 +101,7 @@ unsigned char ADAM7paethPredictor(short a, short b, short c)
     return (pc < pa) ? c : a;
 }
 
-unsigned ADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, size_t bytewidth, unsigned char filterType, size_t length)
+unsigned ADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length)
 {
     /*
  For PNG filter method 0
@@ -115,30 +115,30 @@ unsigned ADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanli
     switch (filterType)
     {
         case 0:
-            for (size_t i = 0; i != length; ++i) recon[i] = scanline[i];
+            for (PXSize i = 0; i != length; ++i) recon[i] = scanline[i];
             break;
         case 1:
         {
-            size_t j = 0;
-            for (size_t i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
-            for (size_t i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + recon[j];
+            PXSize j = 0;
+            for (PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
+            for (PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + recon[j];
             break;
         }
         case 2:
             if (precon)
             {
-                for (size_t i = 0; i != length; ++i) recon[i] = scanline[i] + precon[i];
+                for (PXSize i = 0; i != length; ++i) recon[i] = scanline[i] + precon[i];
             }
             else
             {
-                for (size_t i = 0; i != length; ++i) recon[i] = scanline[i];
+                for (PXSize i = 0; i != length; ++i) recon[i] = scanline[i];
             }
             break;
         case 3:
             if (precon)
             {
-                size_t j = 0;
-                size_t i = 0;
+                PXSize j = 0;
+                PXSize i = 0;
                 for (i = 0; i != bytewidth; ++i) recon[i] = scanline[i] + (precon[i] >> 1u);
                 /* Unroll independent paths of this predictor. A 6x and 8x version is also possible but that adds
                 too much code. Whether this speeds up anything depends on compiler and settings. */
@@ -182,16 +182,16 @@ unsigned ADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanli
             }
             else
             {
-                size_t j = 0;
-                for (size_t i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
-                for (size_t i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + (recon[j] >> 1u);
+                PXSize j = 0;
+                for (PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
+                for (PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + (recon[j] >> 1u);
             }
             break;
         case 4:
             if (precon)
             {
-                size_t j = 0;
-                size_t i = 0;
+                PXSize j = 0;
+                PXSize i = 0;
                 for (i = 0; i != bytewidth; ++i)
                 {
                     recon[i] = (scanline[i] + precon[i]); /*paethPredictor(0, precon[i], 0) is always precon[i]*/
@@ -246,12 +246,12 @@ unsigned ADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanli
             }
             else
             {
-                size_t j = 0;
-                for (size_t i = 0; i != bytewidth; ++i)
+                PXSize j = 0;
+                for (PXSize i = 0; i != bytewidth; ++i)
                 {
                     recon[i] = scanline[i];
                 }
-                for (size_t i = bytewidth; i != length; ++i, ++j)
+                for (PXSize i = bytewidth; i != length; ++i, ++j)
                 {
                     /*paethPredictor(recon[i - bytewidth], 0, 0) is always recon[i - bytewidth]*/
                     recon[i] = (scanline[i] + recon[j]);
@@ -263,15 +263,15 @@ unsigned ADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanli
     return 0;
 }
 
-size_t ADAM7lodepng_get_raw_size_idat(size_t w, size_t h, size_t bpp)
+PXSize ADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
 {
     /* + 1 for the filter byte, and possibly plus padding bits per line. */
   /* Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp */
-    size_t line = ((size_t)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
-    return (size_t)h * line;
+    PXSize line = ((PXSize)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
+    return (PXSize)h * line;
 }
 
-unsigned ADAM7unfilter(unsigned char* out, const unsigned char* in, size_t w, size_t h, size_t bpp)
+unsigned ADAM7unfilter(unsigned char* out, const unsigned char* in, PXSize w, PXSize h, PXSize bpp)
 {
     /*
   For PNG filter method 0
@@ -283,16 +283,16 @@ unsigned ADAM7unfilter(unsigned char* out, const unsigned char* in, size_t w, si
   
 
     /*bytewidth is used for filtering, is 1 when bpp < 8, number of bytes per pixel otherwise*/
-    const size_t bytewidth = (bpp + 7u) / 8u;
+    const PXSize bytewidth = (bpp + 7u) / 8u;
     /*the width of a scanline in bytes, not including the filter type*/
-    const size_t linebytes = ADAM7lodepng_get_raw_size_idat(w, 1, bpp) - 1u;
+    const PXSize linebytes = ADAM7lodepng_get_raw_size_idat(w, 1, bpp) - 1u;
 
     unsigned char* prevline = 0;
 
-    for (size_t y = 0; y < h; ++y)
+    for (PXSize y = 0; y < h; ++y)
     {
-        const size_t outindex = linebytes * y;
-        const size_t inindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
+        const PXSize outindex = linebytes * y;
+        const PXSize inindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
         const unsigned char filterType = in[inindex];
 
         CERROR_TRY_RETURN(ADAM7unfilterScanline(&out[outindex], &in[inindex + 1], prevline, bytewidth, filterType, linebytes));
@@ -303,7 +303,7 @@ unsigned ADAM7unfilter(unsigned char* out, const unsigned char* in, size_t w, si
     return 0;
 }
 
-void ADAM7removePaddingBits(unsigned char* out, const unsigned char* in, size_t olinebits, size_t ilinebits, size_t h)
+void ADAM7removePaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, PXSize h)
 {
     /*
   After filtering there are still padding bits if scanlines have non multiple of 8 bit amounts. They need
@@ -315,13 +315,13 @@ void ADAM7removePaddingBits(unsigned char* out, const unsigned char* in, size_t 
   only useful if (ilinebits - olinebits) is a value in the range 1..7
   */
 
-    size_t diff = ilinebits - olinebits;
-    size_t ibp = 0;
-    size_t obp = 0; /*input and output bit pointers*/
+    PXSize diff = ilinebits - olinebits;
+    PXSize ibp = 0;
+    PXSize obp = 0; /*input and output bit pointers*/
 
-    for (size_t y = 0; y < h; ++y)
+    for (PXSize y = 0; y < h; ++y)
     {
-        for (size_t x = 0; x < olinebits; ++x)
+        for (PXSize x = 0; x < olinebits; ++x)
         {
             unsigned char bit = readBitFromReversedStream(&ibp, in);
             ADAM7setBitOfReversedStream(&obp, out, bit);
@@ -330,14 +330,14 @@ void ADAM7removePaddingBits(unsigned char* out, const unsigned char* in, size_t 
     }
 }
 
-unsigned char ADAM7readBitFromReversedStream(size_t* bitpointer, const unsigned char* bitstream)
+unsigned char ADAM7readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream)
 {
     unsigned char result = (unsigned char)((bitstream[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
     ++(*bitpointer);
     return result;
 }
 
-void ADAM7setBitOfReversedStream(size_t* bitpointer, unsigned char* bitstream, unsigned char bit)
+void ADAM7setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
 {
     /*the current bit in bitstream may be 0 or 1 for this to work*/
     if (bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
@@ -345,7 +345,7 @@ void ADAM7setBitOfReversedStream(size_t* bitpointer, unsigned char* bitstream, u
     ++(*bitpointer);
 }
 
-void ADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], size_t filter_passstart[8], size_t padded_passstart[8], size_t passstart[8], size_t w, size_t h, size_t bpp)
+void ADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize filter_passstart[8], PXSize padded_passstart[8], PXSize passstart[8], PXSize w, PXSize h, PXSize bpp)
 {
    
 
@@ -353,7 +353,7 @@ void ADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], size_t filter_pas
     //unsigned i;
 
     /*calculate width and height in pixels of each pass*/
-    for (size_t i = 0; i != 7; ++i)
+    for (PXSize i = 0; i != 7; ++i)
     {
         passw[i] = (w + ADAM7_DX[i] - ADAM7_IX[i] - 1) / ADAM7_DX[i];
         passh[i] = (h + ADAM7_DY[i] - ADAM7_IY[i] - 1) / ADAM7_DY[i];
@@ -363,7 +363,7 @@ void ADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], size_t filter_pas
 
     filter_passstart[0] = padded_passstart[0] = passstart[0] = 0;
 
-    for (size_t i = 0; i != 7; ++i)
+    for (PXSize i = 0; i != 7; ++i)
     {
         /*if passw[i] is 0, it's 0 bytes, not 1 (no filtertype-byte)*/
         filter_passstart[i + 1] = filter_passstart[i] + ((passw[i] && passh[i]) ? passh[i] * (1u + (passw[i] * bpp + 7u) / 8u) : 0);
@@ -374,28 +374,28 @@ void ADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], size_t filter_pas
     }
 }
 
-void ADAM7_deinterlace(unsigned char* out, const unsigned char* in, size_t w, unsigned h, unsigned bpp)
+void ADAM7_deinterlace(unsigned char* out, const unsigned char* in, PXSize w, unsigned h, unsigned bpp)
 {
     unsigned int passw[7];
     unsigned int passh[7];
-    size_t filter_passstart[8], padded_passstart[8], passstart[8];
+    PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
     ADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, w, h, bpp);
 
     if (bpp >= 8)
     {
-        for (size_t i = 0; i != 7; ++i)
+        for (PXSize i = 0; i != 7; ++i)
         {
-            size_t bytewidth = bpp / 8u;
+            PXSize bytewidth = bpp / 8u;
 
-            for (size_t y = 0; y < passh[i]; ++y)
+            for (PXSize y = 0; y < passh[i]; ++y)
             {
-                for (size_t x = 0; x < passw[i]; ++x)
+                for (PXSize x = 0; x < passw[i]; ++x)
                 {
-                    size_t pixelinstart = passstart[i] + (y * passw[i] + x) * bytewidth;
-                    size_t pixeloutstart = ((ADAM7_IY[i] + y * ADAM7_DY[i]) * w + ADAM7_IX[i] + x * ADAM7_DX[i]) * bytewidth;
+                    PXSize pixelinstart = passstart[i] + (y * passw[i] + x) * bytewidth;
+                    PXSize pixeloutstart = ((ADAM7_IY[i] + y * ADAM7_DY[i]) * w + ADAM7_IX[i] + x * ADAM7_DX[i]) * bytewidth;
                   
-                    for (size_t b = 0; b < bytewidth; ++b)
+                    for (PXSize b = 0; b < bytewidth; ++b)
                     {
                         out[pixeloutstart + b] = in[pixelinstart + b];
                     }
@@ -405,17 +405,17 @@ void ADAM7_deinterlace(unsigned char* out, const unsigned char* in, size_t w, un
     }
     else /*bpp < 8: Adam7 with pixels < 8 bit is a bit trickier: with bit pointers*/
     {
-        for (size_t i = 0; i != 7; ++i)
+        for (PXSize i = 0; i != 7; ++i)
         {
             unsigned x, y, b;
             unsigned ilinebits = bpp * passw[i];
             unsigned olinebits = bpp * w;
-            size_t obp, ibp; /*bit pointers (for out and in buffer)*/
+            PXSize obp, ibp; /*bit pointers (for out and in buffer)*/
             for (y = 0; y < passh[i]; ++y)
                 for (x = 0; x < passw[i]; ++x)
                 {
                     ibp = (8 * passstart[i]) + (y * ilinebits + x * bpp);
-                    obp = (ADAM7_IY[i] + (size_t)y * ADAM7_DY[i]) * olinebits + (ADAM7_IX[i] + (size_t)x * ADAM7_DX[i]) * bpp;
+                    obp = (ADAM7_IY[i] + (PXSize)y * ADAM7_DY[i]) * olinebits + (ADAM7_IX[i] + (PXSize)x * ADAM7_DX[i]) * bpp;
                     for (b = 0; b < bpp; ++b)
                     {
                         unsigned char bit = readBitFromReversedStream(&ibp, in);

@@ -43,7 +43,7 @@ PXDictionary _memoryAdressLookup;
 struct MemoryAllocationInfo
 {
 	Time TimeLastChanged; // When
-	size_t Size;
+	PXSize Size;
 	const char* Source;
 };
 
@@ -94,12 +94,12 @@ PXBool MemoryScan(MemoryUsage* memoryUsage)
 #endif
 }
 
-void MemoryClear(void* const __restrict bufferA, const size_t bufferASize)
+void MemoryClear(void* const __restrict bufferA, const PXSize bufferASize)
 {
 	return MemorySet(bufferA, bufferASize, 0u);
 }
 
-void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigned char value)
+void MemorySet(void* __restrict bufferA, const PXSize bufferASize, const unsigned char value)
 {
 //#if MemoryAssertEnable
 //	assert(bufferA);
@@ -117,18 +117,18 @@ void MemorySet(void* __restrict bufferA, const size_t bufferASize, const unsigne
 #if MemoryUseSystemFunction
 	memset(bufferA, value, bufferASize);
 #else
-	for(size_t i = 0; i < bufferASize; ++i)
+	for(PXSize i = 0; i < bufferASize; ++i)
 	{
 		((PXAdress)bufferA)[i] = value;
 	}
 #endif
 }
 
-PXBool MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, const void* __restrict bufferB, const size_t bufferBSize)
+PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
 {
-	const size_t bufferSize = MathMinimumIU(bufferASize, bufferBSize);
-	size_t counter = bufferSize;
-	size_t equalSum = 0;
+	const PXSize bufferSize = MathMinimumIU(bufferASize, bufferBSize);
+	PXSize counter = bufferSize;
+	PXSize equalSum = 0;
 
 #if MemoryAssertEnable
 	assert(bufferA);
@@ -152,10 +152,10 @@ PXBool MemoryCompare(const void* __restrict bufferA, const size_t bufferASize, c
 #endif
 }
 
-size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSize, void* outputBuffer, const size_t outputBufferSize)
+PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
-	const size_t bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
-	size_t index = bufferSize;
+	const PXSize bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
+	PXSize index = bufferSize;
 
 #if MemoryAssertEnable
 	assert(inputBuffer);
@@ -177,7 +177,7 @@ size_t MemoryCopy(const void* __restrict inputBuffer, const size_t inputBufferSi
 	return bufferSize;
 }
 
-void* MemoryStackAllocate(const size_t size)
+void* MemoryStackAllocate(const PXSize size)
 { 
 	void* const stackAllocated  =
 
@@ -193,7 +193,7 @@ void* MemoryStackAllocate(const size_t size)
 #include <stdio.h>
 
 
-void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char* function, const size_t line)
+void* MemoryHeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line)
 {
 	void* adress = MemoryHeapAllocate(size);
 
@@ -202,7 +202,7 @@ void* MemoryHeapAllocateDetailed(const size_t size, const char* file, const char
 	return adress;
 }
 
-void* MemoryHeapAllocate(const size_t requestedSizeInBytes)
+void* MemoryHeapAllocate(const PXSize requestedSizeInBytes)
 {
 	if(!requestedSizeInBytes)
 	{
@@ -235,7 +235,7 @@ void* MemoryHeapAllocate(const size_t requestedSizeInBytes)
 	return adress;
 }
 
-void* MemoryAllocateClear(const size_t requestedSizeInBytes)
+void* MemoryAllocateClear(const PXSize requestedSizeInBytes)
 {
 	if (!requestedSizeInBytes)
 	{
@@ -251,7 +251,7 @@ void* MemoryAllocateClear(const size_t requestedSizeInBytes)
 	return adress;
 }
 
-void* MemoryHeapReallocate(void* sourceAddress, const size_t size)
+void* MemoryHeapReallocate(void* sourceAddress, const PXSize size)
 {
 	const void* adressReallocated = realloc(sourceAddress, size);
 
@@ -278,7 +278,7 @@ void* MemoryHeapReallocate(void* sourceAddress, const size_t size)
 	return adressReallocated;
 }
 
-void* MemoryHeapReallocateDetailed(void* sourceAddress, const size_t size, const char* file, const char* function, const size_t line)
+void* MemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line)
 {
 	void* adress = MemoryHeapReallocate(sourceAddress, size);
 
@@ -287,7 +287,7 @@ void* MemoryHeapReallocateDetailed(void* sourceAddress, const size_t size, const
 	return adress;
 }
 
-void* MemoryHeapReallocateClear(const void* const sourceAddress, const size_t sizeBefore, const size_t sizeAfter)
+void* MemoryHeapReallocateClear(const void* const sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
 {
 	const void* adressReallocated = realloc(sourceAddress, sizeAfter);
 	const unsigned char sizeIncredes = sizeAfter > sizeBefore;
@@ -295,7 +295,7 @@ void* MemoryHeapReallocateClear(const void* const sourceAddress, const size_t si
 	if (sizeIncredes)
 	{
 		const PXAdress startAdress = (PXAdress)adressReallocated + sizeBefore;
-		const size_t sizeDelta = sizeAfter - sizeBefore;
+		const PXSize sizeDelta = sizeAfter - sizeBefore;
 
 		MemorySet(startAdress, sizeDelta, 0);
 	}
@@ -316,7 +316,7 @@ void* MemoryHeapReallocateClear(const void* const sourceAddress, const size_t si
 	return adressReallocated;
 }
 
-void MemoryRelease(const void* adress, const size_t size)
+void MemoryRelease(const void* adress, const PXSize size)
 {
 	if(!adress || !size)
 	{
@@ -338,7 +338,7 @@ void MemoryRelease(const void* adress, const size_t size)
 	free(adress);
 }
 
-void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memoryProtectionMode)
+void* MemoryVirtualAllocate(const PXSize size, const MemoryProtectionMode memoryProtectionMode)
 {
 	const void* addressPrefered = 0;
 	const MemoryProtectionModeType protectionModeID = ConvertFromMemoryProtectionMode(memoryProtectionMode);
@@ -402,15 +402,15 @@ void* MemoryVirtualAllocate(const size_t size, const MemoryProtectionMode memory
 	return (void*)addressAllocated;
 }
 
-void MemoryVirtualPrefetch(const void* adress, const size_t size)
+void MemoryVirtualPrefetch(const void* adress, const PXSize size)
 {
 #if OSUnix
 #elif OSWindows
 #if WindowsAtleast8
 	const HANDLE process = GetCurrentProcess();
-	const size_t numberOfEntries = 2;
+	const PXSize numberOfEntries = 2;
 	WIN32_MEMORY_RANGE_ENTRY memoryRangeEntry;
-	const size_t flags = 0; // reserved and needs to be 0
+	const PXSize flags = 0; // reserved and needs to be 0
 
 	memoryRangeEntry.VirtualAddress = (void*)adress;
 	memoryRangeEntry.NumberOfBytes = size;
@@ -430,7 +430,7 @@ void MemoryVirtualPrefetch(const void* adress, const size_t size)
 #endif
 }
 
-void MemoryVirtualRelease(const void* adress, const size_t size)
+void MemoryVirtualRelease(const void* adress, const PXSize size)
 {
 #if OSUnix
 	const unsigned char result = 1u;

@@ -25,14 +25,14 @@ extern "C"
         float LowerWhisker;
 
         float OutOfBounceList;
-        size_t OutOfBounceListSize;
+        PXSize OutOfBounceListSize;
     }
     PXBoxPlot;
     
     
     PXPublic void PXBoxPlotConstruct(PXBoxPlot* const boxPlot);    
 
-    PXPublic void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, const size_t inputDataSize);
+    PXPublic void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, const PXSize inputDataSize);
 
 #ifdef __cplusplus
 }

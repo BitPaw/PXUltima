@@ -9,7 +9,7 @@
 #define OGGHeaderTypeBeginningOfStream 0x02
 #define OGGHeaderTypeEndOfStream 0x04
 
-ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 
@@ -27,7 +27,7 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 			// Header tag does exist multible times.
 			// You can refocus it when the file is corrupted.
 			const unsigned char* headerSignature[] = OGGHeaderSignature;
-			const size_t headerSignatureSize = sizeof(headerSignature);
+			const PXSize headerSignatureSize = sizeof(headerSignature);
 			const unsigned char validHeaderSignature = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!validHeaderSignature)
@@ -69,7 +69,7 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 			page.PageSegments
 		);
 
-		for(size_t i = 0; i < page.PageSegments; ++i)
+		for(PXSize i = 0; i < page.PageSegments; ++i)
 		{
 			DataStreamReadCU(&dataStream, &segmentSizeList[i]);
 
@@ -83,11 +83,11 @@ ActionResult OGGParse(OGG* ogg, const void* data, const size_t dataSize, size_t*
 			);
 		}
 
-		for(size_t i = 0; i < page.PageSegments; ++i)
+		for(PXSize i = 0; i < page.PageSegments; ++i)
 		{
 			unsigned char x = segmentSizeList[i];
 
-			for(size_t i = 0; i < x; i++)
+			for(PXSize i = 0; i < x; i++)
 			{
 				unsigned char* currentPos = (unsigned char*)DataStreamCursorPosition(&dataStream) + i;
 

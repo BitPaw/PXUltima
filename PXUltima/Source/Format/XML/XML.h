@@ -28,7 +28,7 @@ extern "C"
 	}
 	XMLSymbol;
 
-	PXPublic XMLSymbol XMLPeekLine(const char* const text, const size_t textSize);
+	PXPublic XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize);
 
 	PXPublic ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const outputStream);
 

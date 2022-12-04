@@ -17,7 +17,7 @@ extern "C"
 	}
 	WMA;
 
-	PXPublic ActionResult WMAParse(WMA* wma, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult WMAParse(WMA* wma, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

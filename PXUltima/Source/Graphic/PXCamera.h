@@ -37,8 +37,8 @@ extern "C"
 		PXCameraPerspective Perspective;
 
 		float FieldOfView;
-		size_t Height;
-		size_t Width;
+		PXSize Height;
+		PXSize Width;
 		float Near;
 		float Far;	
 	}
@@ -50,7 +50,7 @@ extern "C"
 
 	//-----------
 	PXPublic float PXCameraAspectRatio(const PXCamera* const camera);
-	PXPublic void PXCameraAspectRatioChange(PXCamera* const camera, const size_t width, const size_t height);
+	PXPublic void PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height);
 
 	PXPublic void PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective cameraPerspective);
 	PXPublic void PXCameraViewChangeToOrthographic(PXCamera* const camera, const float width, const float height, const float nearPlane, const float farPlane);

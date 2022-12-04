@@ -19,7 +19,7 @@ void PXServerDestruct(PXServer* const server)
 
 ActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode)
 {
-    size_t adressInfoListSize = 0;
+    PXSize adressInfoListSize = 0;
 
     // Setup adress info
     {
@@ -42,7 +42,7 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
         }
     }
 
-    for(size_t i = 0; i < server->ServerSocketListSize; ++i)
+    for(PXSize i = 0; i < server->ServerSocketListSize; ++i)
     {
         PXSocket* const pxSocket = &server->ServerSocketList[i];
 
@@ -119,7 +119,7 @@ ActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socke
 
 PXSocket* PXServerGetPXClientViaID(PXServer* const server, const PXSocketID socketID)
 {
-    for(size_t i = 0; i < server->PXClientSocketListSize; i++)
+    for(PXSize i = 0; i < server->PXClientSocketListSize; i++)
     {
         const PXSocket* clientSocket = &server->PXClientSocketList[i];
         const PXSocketID clientSocketID = clientSocket->ID;
@@ -153,17 +153,17 @@ void PXServerRegisterPXClient(PXServer* const server, PXClient* const client)
     //indexedPXClient->CommunicationThread = ThreadRun(PXClient::CommunicationFunctionAsync, indexedPXClient);
 }
 
-ActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const size_t dataSize)
+ActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const PXSize dataSize)
 {
-    for(size_t i = 0; i < server->PXClientSocketListSize; ++i)
+    for(PXSize i = 0; i < server->PXClientSocketListSize; ++i)
     {
         PXSocket* serverSocket = &server->PXClientSocketList[i];
-        size_t writtenBytes = 0;
+        PXSize writtenBytes = 0;
         const ActionResult actionResult = PXSocketSend(serverSocket, data, dataSize, &writtenBytes);
     }
 }
 
-ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const size_t dataSize)
+ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize)
 {
     PXSocket* clientSocket = PXServerGetPXClientViaID(server, clientID);
 
@@ -172,7 +172,7 @@ ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID cl
         return NoPXClientWithThisID;
     }
 
-    size_t writtenBytes = 0;
+    PXSize writtenBytes = 0;
     const ActionResult actionResult = PXSocketSend(clientSocket, data, dataSize, &writtenBytes);
 
     return actionResult;
@@ -188,7 +188,7 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
         /* What does this do ??
         ThreadID threadID = PXThreadCurrentGet();
 
-        for(size_t i = 0; i < server->ServerSocketListSize; ++i)
+        for(PXSize i = 0; i < server->ServerSocketListSize; ++i)
         {
             PXSocket* serverSocket = &server->ServerSocketList[i];
 

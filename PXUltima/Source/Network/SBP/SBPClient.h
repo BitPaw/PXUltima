@@ -25,7 +25,7 @@ extern "C"
 		wchar_t Name[256];
 
 		SBPPXClient* SubConnectionList;
-		size_t SubConnectionListSize;
+		PXSize SubConnectionListSize;
 	}
 	SBPPXClient;
 
@@ -39,9 +39,9 @@ extern "C"
 	(
 		SBPPXClient* const sbpPXClient,
 		void* inputData,
-		const size_t inputDataSize,
+		const PXSize inputDataSize,
 		void* responseData,
-		size_t* responseDataSize,
+		PXSize* responseDataSize,
 
 		const unsigned int sourceID,
 		const unsigned int targetID,

@@ -207,7 +207,7 @@
     <ClInclude Include="Source\Format\Model.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Format\Sound.h">
+    <ClInclude Include="Source\Format\PXSound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Library\Library.h">
@@ -394,6 +394,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Compiler\PXCompilerSettings.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Audio\PXAudio.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -584,7 +587,7 @@
     <ClCompile Include="Source\Format\Model.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Format\Sound.c">
+    <ClCompile Include="Source\Format\PXSound.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Library\Library.c">
@@ -773,9 +776,13 @@
     <ClCompile Include="Source\Compiler\PXCompilerSettings.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Audio\PXAudio.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
+    <None Include="Source\Audio\README.md" />
   </ItemGroup>
 </Project>

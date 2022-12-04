@@ -29,20 +29,20 @@ extern "C"
 {
 #endif
 	PXPublic int MathMinimumI(const int a, const int b);
-	PXPublic size_t MathMinimumIU(const size_t a, const size_t b);
+	PXPublic PXSize MathMinimumIU(const PXSize a, const PXSize b);
 	PXPublic double MathMinimumD(const double a, const double b);
 
 	PXPublic int MathFloorI(const int a);
 	PXPublic int MathFloorD(const double a);
 
-	PXPublic size_t MathAbsoluteI(const int value);
+	PXPublic PXSize MathAbsoluteI(const int value);
 	PXPublic double MathAbsoluteD(const double value);
 
 
 	PXPublic char MathLimitC(const char value, const char minimum, const char maximum);
 	PXPublic unsigned char MathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
 	PXPublic int MathLimitI(const int value, const int minimum, const int maximum);
-	PXPublic size_t MathLimitIU(const size_t value, const size_t minimum, const size_t maximum);
+	PXPublic PXSize MathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum);
 
 	PXPublic float MathFastInverseSqaureRoot(float number);
 	PXPublic double MathPower(double base, double exponent);

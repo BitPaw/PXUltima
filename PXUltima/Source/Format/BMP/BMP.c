@@ -133,15 +133,9 @@ unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType
     }
 }
 
-ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult BMPParse(BMP* const bmp, DataStream* const dataStream)
 {
-    DataStream dataStream;
-
     BMPConstruct(bmp);
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, data, dataSize);
-
-    *dataRead = 0;
 
     //---[ Parsing Header ]----------------------------------------------------
     {
@@ -248,7 +242,7 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
 
     //---[ Pixel Data ]--------------------------------------------------------
     BMPImageDataLayout imageDataLayout;
-    size_t pixelDataOffset = 0;
+    PXSize pixelDataOffset = 0;
 
     BMPImageDataLayoutCalculate(&imageDataLayout, bmp->InfoHeader.Width, bmp->InfoHeader.Height, bmp->InfoHeader.NumberOfBitsPerPixel);
 
@@ -263,15 +257,11 @@ ActionResult BMPParse(BMP* bmp, const void* data, const size_t dataSize, size_t*
     return ActionSuccessful;
 }
 
-ActionResult BMPParseToImage(Image* const image, const void* const data, const size_t dataSize, size_t* dataRead)
+ActionResult BMPParseToImage(Image* const image, DataStream* const dataStream)
 {
-    DataStream dataStream;
     BMP bmp;
     
     BMPConstruct(&bmp);
-    DataStreamConstruct(&dataStream);   
-    DataStreamFromExternal(&dataStream, data, dataSize);
-    *dataRead = 0;
 
     //---[ Parsing Header ]----------------------------------------------------
     {
@@ -280,15 +270,15 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
         unsigned int reservedBlock = 0;
         unsigned int dataOffset = 0;
 
-        DataStreamReadP(&dataStream, byteCluster.Data, 2u);
-        DataStreamReadIU(&dataStream, &sizeOfFile, EndianLittle);
-        DataStreamReadIU(&dataStream, &reservedBlock, EndianLittle);
-        DataStreamReadIU(&dataStream, &dataOffset, EndianLittle);
+        DataStreamReadP(dataStream, byteCluster.Data, 2u);
+        DataStreamReadIU(dataStream, &sizeOfFile, EndianLittle);
+        DataStreamReadIU(dataStream, &reservedBlock, EndianLittle);
+        DataStreamReadIU(dataStream, &dataOffset, EndianLittle);
 
         const BMPType type = ConvertToBMPType(byteCluster.Value);
 
         {
-            const unsigned char isValidType = type != BMPInvalid;
+            const PXBool isValidType = type != BMPInvalid;
 
             if(!isValidType)
             {
@@ -302,7 +292,7 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
 
     //---[ DIP ]---------------------------------------------------------------
     {
-        DataStreamReadIU(&dataStream, &bmp.InfoHeader.HeaderSize, EndianLittle);
+        DataStreamReadIU(dataStream, &bmp.InfoHeader.HeaderSize, EndianLittle);
 
         bmp.InfoHeaderType = ConvertToBMPInfoHeaderType(bmp.InfoHeader.HeaderSize);
 
@@ -310,17 +300,16 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
         {
             case BitMapInfoHeader:
             {
-                DataStreamReadI(&dataStream, &bmp.InfoHeader.Width, EndianLittle);
-                DataStreamReadI(&dataStream, &bmp.InfoHeader.Height, EndianLittle);
-                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
-                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
-                DataStreamReadIU(&dataStream, &bmp.InfoHeader.CompressionMethod, EndianLittle);
-                DataStreamReadIU(&dataStream, &bmp.InfoHeader.ImageSize, EndianLittle);
-                DataStreamReadI(&dataStream, &bmp.InfoHeader.HorizontalResolution, EndianLittle);
-                DataStreamReadI(&dataStream, &bmp.InfoHeader.VerticalResolution, EndianLittle);
-                DataStreamReadIU(&dataStream, &bmp.InfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
-                DataStreamReadIU(&dataStream, &bmp.InfoHeader.NumberOfImportantColorsUsed, EndianLittle);
-
+                DataStreamReadI(dataStream, &bmp.InfoHeader.Width, EndianLittle);
+                DataStreamReadI(dataStream, &bmp.InfoHeader.Height, EndianLittle);
+                DataStreamReadSU(dataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
+                DataStreamReadSU(dataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
+                DataStreamReadIU(dataStream, &bmp.InfoHeader.CompressionMethod, EndianLittle);
+                DataStreamReadIU(dataStream, &bmp.InfoHeader.ImageSize, EndianLittle);
+                DataStreamReadI(dataStream, &bmp.InfoHeader.HorizontalResolution, EndianLittle);
+                DataStreamReadI(dataStream, &bmp.InfoHeader.VerticalResolution, EndianLittle);
+                DataStreamReadIU(dataStream, &bmp.InfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
+                DataStreamReadIU(dataStream, &bmp.InfoHeader.NumberOfImportantColorsUsed, EndianLittle);
                 break;
             }
             case OS21XBitMapHeader:
@@ -329,10 +318,10 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
                 unsigned short width = 0;
                 unsigned short height = 0;
 
-                DataStreamReadSU(&dataStream, &width, EndianLittle);
-                DataStreamReadSU(&dataStream, &height, EndianLittle);
-                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
-                DataStreamReadSU(&dataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
+                DataStreamReadSU(dataStream, &width, EndianLittle);
+                DataStreamReadSU(dataStream, &height, EndianLittle);
+                DataStreamReadSU(dataStream, &bmp.InfoHeader.NumberOfColorPlanes, EndianLittle);
+                DataStreamReadSU(dataStream, &bmp.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
 
                 bmp.InfoHeader.Width = width;
                 bmp.InfoHeader.Height = height;
@@ -341,15 +330,15 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
                 {
                     unsigned short paddingBytes = 0; // Padding.Ignored and should be zero
 
-                    DataStreamReadSU(&dataStream, &bmp.InfoHeader.HorizontalandVerticalResolutions, EndianLittle);
-                    DataStreamReadSU(&dataStream, &paddingBytes, EndianLittle);
-                    DataStreamReadSU(&dataStream, &bmp.InfoHeader.DirectionOfBits, EndianLittle);
-                    DataStreamReadSU(&dataStream, &bmp.InfoHeader.halftoningAlgorithm, EndianLittle);
+                    DataStreamReadSU(dataStream, &bmp.InfoHeader.HorizontalandVerticalResolutions, EndianLittle);
+                    DataStreamReadSU(dataStream, &paddingBytes, EndianLittle);
+                    DataStreamReadSU(dataStream, &bmp.InfoHeader.DirectionOfBits, EndianLittle);
+                    DataStreamReadSU(dataStream, &bmp.InfoHeader.halftoningAlgorithm, EndianLittle);
 
-                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.HalftoningParameterA, EndianLittle);
-                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.HalftoningParameterB, EndianLittle);
-                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.ColorEncoding, EndianLittle);
-                    DataStreamReadIU(&dataStream, &bmp.InfoHeader.ApplicationDefinedByte, EndianLittle);
+                    DataStreamReadIU(dataStream, &bmp.InfoHeader.HalftoningParameterA, EndianLittle);
+                    DataStreamReadIU(dataStream, &bmp.InfoHeader.HalftoningParameterB, EndianLittle);
+                    DataStreamReadIU(dataStream, &bmp.InfoHeader.ColorEncoding, EndianLittle);
+                    DataStreamReadIU(dataStream, &bmp.InfoHeader.ApplicationDefinedByte, EndianLittle);
                 }
 
                 break;
@@ -383,10 +372,10 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
     {
         PXByte* const data = (PXByte* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
-        DataStreamReadP(&dataStream, data, imageDataLayout.RowImageDataSize); // Read/Write image data
-        DataStreamCursorAdvance(&dataStream, imageDataLayout.RowPaddingSize); // Skip padding
+        DataStreamReadP(dataStream, data, imageDataLayout.RowImageDataSize); // Read/Write image data
+        DataStreamCursorAdvance(dataStream, imageDataLayout.RowPaddingSize); // Skip padding
 
-        for(size_t i = 0; i < imageDataLayout.RowImageDataSize; i += 3)
+        for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3)
         {
             const PXByte swap = data[i]; // Save Blue(current)
 
@@ -398,33 +387,30 @@ ActionResult BMPParseToImage(Image* const image, const void* const data, const s
     return ActionSuccessful;
 }
 
-ActionResult BMPSerialize(const BMP* const bmp, void* data, const size_t dataSize, size_t* dataWritten)
+ActionResult BMPSerialize(const BMP* const bmp, DataStream* const dataStream)
 {
     return ActionSuccessful;
 }
 
-ActionResult BMPSerializeFromImage(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten)
+ActionResult BMPSerializeFromImage(const Image* const image, DataStream* const dataStream)
 {
-    DataStream DataStream;
     BMPInfoHeader bmpInfoHeader;
 
-    DataStreamConstruct(&DataStream);
-    DataStreamFromExternal(&DataStream, data, dataSize);
-    *dataWritten = 0;
+    DataStreamConstruct(dataStream);
 
     //---<Header>-----
     {
         ClusterShort byteCluster;
-        unsigned int sizeOfFile = dataSize;
+        unsigned int sizeOfFile = dataStream->DataSize;
         unsigned int reservedBlock = 0;
         unsigned int dataOffset = 54u;
 
         byteCluster.Value = ConvertFromBMPType(BMPWindows);
 
-        DataStreamWriteP(&DataStream, byteCluster.Data, 2u);
-        DataStreamWriteIU(&DataStream, sizeOfFile, EndianLittle);
-        DataStreamWriteIU(&DataStream, reservedBlock, EndianLittle);
-        DataStreamWriteIU(&DataStream, dataOffset, EndianLittle);
+        DataStreamWriteP(dataStream, byteCluster.Data, 2u);
+        DataStreamWriteIU(dataStream, sizeOfFile, EndianLittle);
+        DataStreamWriteIU(dataStream, reservedBlock, EndianLittle);
+        DataStreamWriteIU(dataStream, dataOffset, EndianLittle);
     }
     //----------------
 
@@ -432,13 +418,13 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
     {
         const BMPInfoHeaderType bmpInfoHeaderType = BitMapInfoHeader; 
         
-        //---<Shared>---
+        //---<Shared>----------------------------------------------------------
         bmpInfoHeader.HeaderSize = ConvertFromBMPInfoHeaderType(bmpInfoHeaderType);
         bmpInfoHeader.NumberOfBitsPerPixel = ImageBytePerPixel(image->Format) * 8u;
         bmpInfoHeader.NumberOfColorPlanes = 1;
         bmpInfoHeader.Width = image->Width;
         bmpInfoHeader.Height = image->Height;
-        //------------
+        //---------------------------------------------------------------------
 
         //---<BitMapInfoHeader ONLY>-------------------------------------------	
         bmpInfoHeader.CompressionMethod = 0; // [4-Bytes] compression method being used.See the next table for a list of possible values	
@@ -449,24 +435,24 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
         bmpInfoHeader.NumberOfImportantColorsUsed = 0;
         //---------------------------------------------------------------------
 
-        DataStreamWriteIU(&DataStream, bmpInfoHeader.HeaderSize, EndianLittle);
+        DataStreamWriteIU(dataStream, bmpInfoHeader.HeaderSize, EndianLittle);
 
         switch (bmpInfoHeaderType)
         {
-        case BitMapInfoHeader:
-        {
-            DataStreamWriteI(&DataStream, bmpInfoHeader.Width, EndianLittle);
-            DataStreamWriteI(&DataStream, bmpInfoHeader.Height, EndianLittle);
-            DataStreamWriteSU(&DataStream, bmpInfoHeader.NumberOfColorPlanes, EndianLittle);
-            DataStreamWriteSU(&DataStream, bmpInfoHeader.NumberOfBitsPerPixel, EndianLittle);
-            DataStreamWriteIU(&DataStream, bmpInfoHeader.CompressionMethod, EndianLittle);
-            DataStreamWriteIU(&DataStream, bmpInfoHeader.ImageSize, EndianLittle);
-            DataStreamWriteI(&DataStream, bmpInfoHeader.HorizontalResolution, EndianLittle);
-            DataStreamWriteI(&DataStream, bmpInfoHeader.VerticalResolution, EndianLittle);
-            DataStreamWriteIU(&DataStream, bmpInfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
-            DataStreamWriteIU(&DataStream, bmpInfoHeader.NumberOfImportantColorsUsed, EndianLittle);
-            break;
-        }
+            case BitMapInfoHeader:
+            {
+                DataStreamWriteI(dataStream, bmpInfoHeader.Width, EndianLittle);
+                DataStreamWriteI(dataStream, bmpInfoHeader.Height, EndianLittle);
+                DataStreamWriteSU(dataStream, bmpInfoHeader.NumberOfColorPlanes, EndianLittle);
+                DataStreamWriteSU(dataStream, bmpInfoHeader.NumberOfBitsPerPixel, EndianLittle);
+                DataStreamWriteIU(dataStream, bmpInfoHeader.CompressionMethod, EndianLittle);
+                DataStreamWriteIU(dataStream, bmpInfoHeader.ImageSize, EndianLittle);
+                DataStreamWriteI(dataStream, bmpInfoHeader.HorizontalResolution, EndianLittle);
+                DataStreamWriteI(dataStream, bmpInfoHeader.VerticalResolution, EndianLittle);
+                DataStreamWriteIU(dataStream, bmpInfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
+                DataStreamWriteIU(dataStream, bmpInfoHeader.NumberOfImportantColorsUsed, EndianLittle);
+                break;
+            }
         }
     }
     //------------
@@ -476,26 +462,24 @@ ActionResult BMPSerializeFromImage(const Image* const image, void* data, const s
 
         BMPImageDataLayoutCalculate(&imageDataLayout, bmpInfoHeader.Width, bmpInfoHeader.Height, bmpInfoHeader.NumberOfBitsPerPixel);  
 
-        for (size_t row = imageDataLayout.RowAmount-1; row != (size_t)-1  ; --row)
+        for (PXSize row = imageDataLayout.RowAmount-1; row != (PXSize)-1  ; --row)
         {
-            unsigned char* const dataInsertPoint = (unsigned char* const)image->PixelData + (imageDataLayout.RowImageDataSize * row);
+            const PXByte* const dataInsertPoint = (const PXByte* const)image->PixelData + (imageDataLayout.RowImageDataSize * row);
 
-            for(size_t i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
+            for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {
-                unsigned char pixelBuffer[3u];
+                PXByte pixelBuffer[3u];
 
                 pixelBuffer[2u] = dataInsertPoint[i]; // Blue
                 pixelBuffer[1u] = dataInsertPoint[i+1u]; // Green 
                 pixelBuffer[0u] = dataInsertPoint[i+2u]; // Red
 
-                DataStreamWriteP(&DataStream, pixelBuffer, 3u);
+                DataStreamWriteP(dataStream, pixelBuffer, 3u);
             }
 
-            DataStreamWriteFill(&DataStream, 0, imageDataLayout.RowPaddingSize);
+            DataStreamWriteFill(dataStream, 0, imageDataLayout.RowPaddingSize);
         }
     }
-
-    *dataWritten = DataStream.DataCursor;
 
     return ActionSuccessful;
 }
@@ -513,7 +497,7 @@ void BMPDestruct(BMP* const bmp)
     bmp->PixelDataSize = 0;
 }
 
-void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const size_t width, const size_t height, const size_t bbp)
+void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp)
 {
     bmpImageDataLayout->RowImageDataSize = width * (bbp / 8u);
     bmpImageDataLayout->ImageSize = bmpImageDataLayout->RowImageDataSize * height;
@@ -523,12 +507,12 @@ void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, c
     bmpImageDataLayout->RowAmount = MathCeilingF(bmpImageDataLayout->ImageSize / (float)bmpImageDataLayout->RowFullSize);
 }
 
-size_t BMPFilePredictSize(const size_t width, const size_t height, const size_t bitsPerPixel)
+PXSize BMPFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)
 {
-    const size_t sizeBMPHeader = 14u;
-    const size_t sizeBMPDIP = 40u;
-    const size_t imageDataSize = (MathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height;
-    const size_t fullSize = sizeBMPHeader + sizeBMPDIP + imageDataSize+512u;
+    const PXSize sizeBMPHeader = 14u;
+    const PXSize sizeBMPDIP = 40u;
+    const PXSize imageDataSize = (MathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height;
+    const PXSize fullSize = sizeBMPHeader + sizeBMPDIP + imageDataSize+512u;
 
     return fullSize;
 }

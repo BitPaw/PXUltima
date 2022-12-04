@@ -172,7 +172,7 @@ void TTFDestruct(TTF* const ttf)
 	// TODO
 }
 
-ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult TTFParse(TTF* ttf, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 	TTFOffsetTable offsetTable;
@@ -188,7 +188,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 	DataStreamRead(&dataStream, &offsetTable.EntrySelctor, EndianBig);
 	DataStreamRead(&dataStream, &offsetTable.RangeShift, EndianBig);
 
-	for(size_t i = 0; i < offsetTable.NumberOfTables; i++)
+	for(PXSize i = 0; i < offsetTable.NumberOfTables; i++)
 	{
 		TTFTableEntry tableEntry;
 
@@ -427,7 +427,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 
 				Kerning.KerningSubtableList = new TTFKerningSubtable[Kerning.NumberOfSubtables];
 
-				for(size_t i = 0; i < Kerning.NumberOfSubtables; i++)
+				for(PXSize i = 0; i < Kerning.NumberOfSubtables; i++)
 				{
 					TTFKerningSubtable& kerningTable = Kerning.KerningSubtableList[i];
 
@@ -452,7 +452,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 
 							subtableFormat.KerningPairList = new TTFKerningPair[subtableFormat.NumberOfPairs];
 
-							for(size_t i = 0; i < subtableFormat.NumberOfPairs; i++)
+							for(PXSize i = 0; i < subtableFormat.NumberOfPairs; i++)
 							{
 								TTFKerningPair& kerningPair = subtableFormat.KerningPairList[i];
 
@@ -504,7 +504,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 
 				CharacterMapping.EncodingRecordList = new EncodingRecord[CharacterMapping.NumberOfTables];
 
-				for(size_t i = 0; i < CharacterMapping.NumberOfTables; i++)
+				for(PXSize i = 0; i < CharacterMapping.NumberOfTables; i++)
 				{
 					EncodingRecord& encodingRecord = CharacterMapping.EncodingRecordList[i];
 
@@ -545,7 +545,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 				DigitalSignature.SignatureRecordList = new TTFDigitalSignatureRecord[DigitalSignature.NumberOfSignatures];
 				DigitalSignature.SignatureBlockList = new TTFDigitalSignatureBlock[DigitalSignature.NumberOfSignatures];
 
-				for(size_t i = 0; i < DigitalSignature.NumberOfSignatures; i++)
+				for(PXSize i = 0; i < DigitalSignature.NumberOfSignatures; i++)
 				{
 					TTFDigitalSignatureRecord& signatureRecord = DigitalSignature.SignatureRecordList[i];
 
@@ -565,7 +565,7 @@ ActionResult TTFParse(TTF* ttf, const void* data, const size_t dataSize, size_t*
 
 						DataStreamReadSU(&DataStream, &ttf->signatureBlock.Signature, signatureBlock.SignatureLength);
 
-						for(size_t w = 0; w < signatureBlock.SignatureLength - 2; w++)
+						for(PXSize w = 0; w < signatureBlock.SignatureLength - 2; w++)
 						{
 							if(signatureBlock.Signature[w] == 0)
 							{

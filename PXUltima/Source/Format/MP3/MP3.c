@@ -786,7 +786,7 @@ unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre)
 	return -1; // MPEGGenreUnknown
 }
 
-ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const size_t dataSize, size_t* dataRead)
+ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const PXSize dataSize, PXSize* dataRead)
 {
 	// Parse First Byte__
 	{
@@ -1011,7 +1011,7 @@ ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, con
 	return ActionSuccessful;
 }
 
-ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t* dataRead)
+ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	DataStream dataStream;
 
@@ -1024,8 +1024,8 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t*
 
 	{
 		const unsigned char* dataPosition = DataStreamCursorPosition(&dataStream);
-		const size_t dataSize = DataStreamRemainingSize(&dataStream);
-		size_t parsedBytes = 0;
+		const PXSize dataSize = DataStreamRemainingSize(&dataStream);
+		PXSize parsedBytes = 0;
 
 		const ActionResult actionResult = ID3Parse(&mp3->ID3Info, dataPosition, dataSize, &parsedBytes);
 
@@ -1040,13 +1040,13 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t*
 		MemorySet(&mp3Header, sizeof(MP3Header), 0);
 		MemorySet(&xingInfo, sizeof(XingInfo), 0);
 
-		size_t cursorPositionPredict = 0;
+		PXSize cursorPositionPredict = 0;
 
 		// Parse mp3
 		{
 			const unsigned char* dataPosition = DataStreamCursorPosition(&dataStream);
-			const size_t dataSize = DataStreamRemainingSize(&dataStream);
-			size_t parsedBytes = 0;
+			const PXSize dataSize = DataStreamRemainingSize(&dataStream);
+			PXSize parsedBytes = 0;
 
 			MP3HeaderParse(&mp3->Header, dataPosition, dataSize, &parsedBytes);
 
@@ -1078,8 +1078,8 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t*
 		// info header
 		{
 			const unsigned char* dataPosition = DataStreamCursorPosition(&dataStream);
-			const size_t dataSize = DataStreamRemainingSize(&dataStream);
-			size_t parsedBytes = 0;
+			const PXSize dataSize = DataStreamRemainingSize(&dataStream);
+			PXSize parsedBytes = 0;
 
 			const ActionResult actionResult = XingInfoParse(&xingInfo, dataPosition, dataSize, &parsedBytes);
 
@@ -1101,7 +1101,7 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t*
 		// LACA??
 		{
 			const char tag[] = { 'L','a', 'v', 'c' };
-			const size_t tagSize = sizeof(tag);
+			const PXSize tagSize = sizeof(tag);
 			const unsigned char isTag = DataStreamReadAndCompare(&dataStream, tag, tagSize);
 
 			if(isTag)
@@ -1124,8 +1124,8 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t*
 			LAME lame;
 
 			const unsigned char* dataPosition = DataStreamCursorPosition(&dataStream);
-			const size_t dataSize = cursorPositionPredict - dataStream.DataCursor;
-			size_t parsedBytes = 0;
+			const PXSize dataSize = cursorPositionPredict - dataStream.DataCursor;
+			PXSize parsedBytes = 0;
 
 			const ActionResult actionResult = LAMEParse(&lame, dataPosition, dataSize, &parsedBytes);
 
@@ -1148,7 +1148,7 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const size_t dataSize, size_t*
 
 			if(tagDetected)
 			{
-				const size_t offset = DataStreamRemainingSize(&dataStream);
+				const PXSize offset = DataStreamRemainingSize(&dataStream);
 
 				// I currently dont know what this is.
 				// But it comes at the end of the file.. so i am finished?

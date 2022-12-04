@@ -15,7 +15,7 @@ extern "C"
 	}
 	WEBP;
 
-	PXPublic ActionResult WEBPParse(WEBP* webp, const void* data, const size_t dataSize, size_t* dataRead);
+	PXPublic ActionResult WEBPParse(WEBP* webp, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@ void PXStopWatchConstruct(PXStopWatch* const stopWatch)
     MemorySet(stopWatch, sizeof(PXStopWatch), 0);
 }
 
-void PXStopWatchSet(PXStopWatch* const stopWatch, void* const data, const size_t dataSize)
+void PXStopWatchSet(PXStopWatch* const stopWatch, void* const data, const PXSize dataSize)
 {
     stopWatch->TimeStampData = stopWatch;
     stopWatch->TimeStampDataSizeAllocated = dataSize;

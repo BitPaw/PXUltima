@@ -44,7 +44,7 @@ extern "C"
 		*/
 		unsigned char CompressionInfo;
 
-		size_t WindowSize;
+		PXSize WindowSize;
 		unsigned char  CheckFlag; // 5 Bits
 		unsigned char PXDictionaryPresent; // 1 Bit
 		ZLIBCompressionLevel CompressionLevel; // 2 Bits
@@ -55,7 +55,7 @@ extern "C"
 	{
 		ZLIBHeader Header;
 
-		size_t CompressedDataSize;
+		PXSize CompressedDataSize;
 		const unsigned char* CompressedData;
 
 		unsigned int AdlerChecksum;
@@ -68,16 +68,16 @@ extern "C"
 	static ZLIBCompressionMethod ConvertToCompressionMethod(const unsigned char compressionMethod);
 	static unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressionMethod);
 
-	PXPublic ActionResult ZLIBDecompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize,size_t* const outputDataSizeRead);
-	PXPublic ActionResult ZLIBCompress(const void* const inputData, const size_t inputDataSize, void* const outputData, const size_t outputDataSize, size_t* const outputDataSizeWritten);
+	PXPublic ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize,PXSize* const outputDataSizeRead);
+	PXPublic ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten);
 
 
-	PXPublic size_t ZLIBCalculateExpectedSize(const size_t width, const size_t height, const size_t bpp, const PNGInterlaceMethod interlaceMethod);
+	PXPublic PXSize ZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PNGInterlaceMethod interlaceMethod);
 
 	/*in an idat chunk, each scanline is a multiple of 8 bits, unlike the lodepng output buffer,
 and in addition has one extra byte per line: the filter byte. So this gives a larger
 result than lodepng_get_raw_size. Set h to 1 to get the size of 1 row including filter byte. */
-	PXPublic size_t CalculateRawSizeIDAT(const size_t w, const size_t h, const size_t bpp);
+	PXPublic PXSize CalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp);
 
 #ifdef __cplusplus
 }

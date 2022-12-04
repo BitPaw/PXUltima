@@ -51,9 +51,9 @@ extern "C"
 	typedef wchar_t PXCharUNICODE;
 	typedef PXInt32U PXCharUTF8;
 
-	typedef char* PXASCIIChar;
-	typedef char* PXTextUTF8;
-	typedef wchar_t* PXTextUNICODE;
+	typedef char* const PXASCIIChar;
+	typedef char* const PXTextUTF8;
+	typedef wchar_t* const PXTextUNICODE;
 
 #if OS32Bit
 	typedef PXInt32U PXSize;

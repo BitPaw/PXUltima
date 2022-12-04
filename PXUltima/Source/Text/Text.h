@@ -48,8 +48,8 @@ extern "C"
 	typedef struct Text_
 	{
 		TextFormat Format;
-		size_t SizeInCharacters;
-		size_t SizeInBytes;
+		PXSize SizeInCharacters;
+		PXSize SizeInBytes;
 
 		union
 		{
@@ -60,69 +60,72 @@ extern "C"
 	}
 	Text;
 
-	PXPublic size_t TextFromIntA(const int number,  char* string, const size_t dataSize);
-	PXPublic size_t TextFromIntW(const int number,  wchar_t* string, const size_t dataSize);
-	PXPublic size_t TextFromBoolA(const unsigned char number,  char* string, const size_t dataSize);
-	PXPublic size_t TextFromBoolW(const unsigned char number,  wchar_t* string, const size_t dataSize);
-	PXPublic size_t TextFromFloatA(const float number,  char* string, const size_t dataSize);
-	PXPublic size_t TextFromFloatW(const float number,  wchar_t* string, const size_t dataSize);
-	PXPublic size_t TextFromDoubleA(const double number,  char* string, const size_t dataSize);
-	PXPublic size_t TextFromDoubleW(const double number,  wchar_t* string, const size_t dataSize);
-	PXPublic size_t TextFromBinaryDataA(const void* data, const size_t dataSize, char* string, const size_t stringSize);
+	PXPublic PXSize TextFromIntA(const int number,  char* string, const PXSize dataSize);
+	PXPublic PXSize TextFromIntW(const int number,  wchar_t* string, const PXSize dataSize);
+	PXPublic PXSize TextFromBoolA(const unsigned char number,  char* string, const PXSize dataSize);
+	PXPublic PXSize TextFromBoolW(const unsigned char number,  wchar_t* string, const PXSize dataSize);
+	PXPublic PXSize TextFromFloatA(const float number,  char* string, const PXSize dataSize);
+	PXPublic PXSize TextFromFloatW(const float number,  wchar_t* string, const PXSize dataSize);
+	PXPublic PXSize TextFromDoubleA(const double number,  char* string, const PXSize dataSize);
+	PXPublic PXSize TextFromDoubleW(const double number,  wchar_t* string, const PXSize dataSize);
+	PXPublic PXSize TextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
 
-	PXPublic size_t TextToIntA(const char* string, const size_t dataSize, int* number);
-	PXPublic size_t TextToIntW(const wchar_t* string, const size_t dataSize, int* number);
-	PXPublic size_t TextToBoolA(const char* string, const size_t dataSize, unsigned char* number);
-	PXPublic size_t TextToBoolW(const wchar_t* string, const size_t dataSize, unsigned char* number);
-	PXPublic size_t TextToFloatA(const char* string, const size_t dataSize, float* number);
-	PXPublic size_t TextToFloatW(const wchar_t* string, const size_t dataSize, float* number);
-	PXPublic size_t TextToDoubleA(const char* string, const size_t dataSize, double* number);
-	PXPublic size_t TextToDoubleW(const wchar_t* string, const size_t dataSize, double* number);
+	PXPublic PXSize TextToIntA(const char* string, const PXSize dataSize, int* number);
+	PXPublic PXSize TextToIntW(const wchar_t* string, const PXSize dataSize, int* number);
+	PXPublic PXSize TextToBoolA(const char* string, const PXSize dataSize, unsigned char* number);
+	PXPublic PXSize TextToBoolW(const wchar_t* string, const PXSize dataSize, unsigned char* number);
+	PXPublic PXSize TextToFloatA(const char* string, const PXSize dataSize, float* number);
+	PXPublic PXSize TextToFloatW(const wchar_t* string, const PXSize dataSize, float* number);
+	PXPublic PXSize TextToDoubleA(const char* string, const PXSize dataSize, double* number);
+	PXPublic PXSize TextToDoubleW(const wchar_t* string, const PXSize dataSize, double* number);
 
-	PXPublic size_t TextAppendW(wchar_t* const dataString, const size_t dataStringSize, const wchar_t* const appaendString, const size_t appaendStringSize);
+	PXPublic PXSize TextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
-	PXPublic size_t TextClearA(char* string, const size_t stringSize);
-	PXPublic size_t TextClearW(wchar_t* string, const size_t stringSize);
+	PXPublic PXSize TextClearA(char* string, const PXSize stringSize);
+	PXPublic PXSize TextClearW(wchar_t* string, const PXSize stringSize);
 
-	PXPublic size_t TextLengthA(const char* string, const size_t stringSize);
-	PXPublic size_t TextLengthW(const wchar_t* string, const size_t stringSize);
+	PXPublic PXSize TextLengthA(const char* string, const PXSize stringSize);
+	PXPublic PXSize TextLengthW(const wchar_t* string, const PXSize stringSize);
 
-	PXPublic size_t TextLengthUntilA(const char* string, const size_t stringSize, const char character);
-	PXPublic size_t TextLengthUntilW(const wchar_t* string, const size_t stringSize, const wchar_t character);
+	PXPublic PXSize TextLengthUntilA(const char* string, const PXSize stringSize, const char character);
+	PXPublic PXSize TextLengthUntilW(const wchar_t* string, const PXSize stringSize, const wchar_t character);
 
-	PXPublic size_t TextCopyA(const char* source, const size_t sourceLength, char* destination, const size_t destinationLength);
-	PXPublic size_t TextCopyAW(const char* source, const size_t sourceLength, wchar_t* destination, const size_t destinationLength);
-	PXPublic size_t TextCopyWA(const wchar_t* source, const size_t sourceLength, char* destination, const size_t destinationLength);
-	PXPublic size_t TextCopyW(const wchar_t* source, const size_t sourceLength, wchar_t* destination, const size_t destinationLength);
+	PXPublic PXSize TextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
+	PXPublic PXSize TextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
+	PXPublic PXSize TextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
+	PXPublic PXSize TextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
 
-	PXPublic size_t TextCountA(const char* text, const size_t textSize, const char target);
-	PXPublic size_t TextCountW(const wchar_t* text, const size_t textSize, const wchar_t target);
+	PXPublic PXSize TextCopyAU(const PXASCIIChar source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
+	PXPublic PXSize TextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
 
-	PXPublic size_t TextCountUntilA(const char* text, const size_t textSize, const char target, const char stopAt);
-	PXPublic size_t TextCountUntilW(const wchar_t* text, const size_t textSize, const wchar_t target, const wchar_t stopAt);
+	PXPublic PXSize TextCountA(const char* text, const PXSize textSize, const char target);
+	PXPublic PXSize TextCountW(const wchar_t* text, const PXSize textSize, const wchar_t target);
 
-	PXPublic PXBool TextCompareA(const char* a, const size_t aSize, const char* b, const size_t bSize);
-	PXPublic PXBool TextCompareAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize);
-	PXPublic PXBool TextCompareW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize);
-	PXPublic PXBool TextCompareWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize);
+	PXPublic PXSize TextCountUntilA(const char* text, const PXSize textSize, const char target, const char stopAt);
+	PXPublic PXSize TextCountUntilW(const wchar_t* text, const PXSize textSize, const wchar_t target, const wchar_t stopAt);
 
-	PXPublic char TextCompareIgnoreCaseA(const char* a, const size_t aSize, const char* b, const size_t bSize);
-	PXPublic char TextCompareIgnoreCaseW(const wchar_t* a, const size_t aSize, const wchar_t* b, const size_t bSize);
-	PXPublic char TextCompareIgnoreCaseAW(const char* a, const size_t aSize, const wchar_t* b, const size_t bSize);
-	PXPublic char TextCompareIgnoreCaseWA(const wchar_t* a, const size_t aSize, const char* b, const size_t bSize);
+	PXPublic PXBool TextCompareA(const char* a, const PXSize aSize, const char* b, const PXSize bSize);
+	PXPublic PXBool TextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic PXBool TextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic PXBool TextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
 
-	PXPublic char* TextFindPositionA(const char* data, size_t dataSize, const char* target, size_t targetSize);
+	PXPublic char TextCompareIgnoreCaseA(const char* a, const PXSize aSize, const char* b, const PXSize bSize);
+	PXPublic char TextCompareIgnoreCaseW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic char TextCompareIgnoreCaseAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic char TextCompareIgnoreCaseWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
 
-	PXPublic size_t TextFindFirstA(const char* string, const size_t dataSize, const char character);
-	PXPublic size_t TextFindFirstW(const wchar_t* string, const size_t dataSize, const wchar_t character);
-	PXPublic size_t TextFindLastA(const char* string, const size_t dataSize, const char character);
-	PXPublic size_t TextFindLastW(const wchar_t* string, const size_t dataSize, const wchar_t character);
+	PXPublic char* TextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize);
 
-	PXPublic void TextTerminateBeginFromFirstA(char* string, const size_t dataSize, const char character);
+	PXPublic PXSize TextFindFirstA(const char* string, const PXSize dataSize, const char character);
+	PXPublic PXSize TextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
+	PXPublic PXSize TextFindLastA(const char* string, const PXSize dataSize, const char character);
+	PXPublic PXSize TextFindLastW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
 
-	PXPublic void TextParseA(const char* buffer, const size_t bufferSize, const char* syntax, ...);
+	PXPublic void TextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const char character);
 
-	PXPublic void TextParseFindAllA(const char* string, const size_t stringSize, const ParsingTokenA* parsingTokenList, const size_t parsingTokenListSize);
+	PXPublic void TextParseA(const char* buffer, const PXSize bufferSize, const char* syntax, ...);
+
+	PXPublic void TextParseFindAllA(const char* string, const PXSize stringSize, const ParsingTokenA* parsingTokenList, const PXSize parsingTokenListSize);
 
 #ifdef __cplusplus
 }

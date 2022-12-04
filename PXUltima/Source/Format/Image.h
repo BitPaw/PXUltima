@@ -4,6 +4,7 @@
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
 #include <File/File.h>
+#include <File/DataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -37,25 +38,25 @@ extern "C"
 
 	typedef struct Image_
 	{
-		size_t Width;
-		size_t Height;
+		PXSize Width;
+		PXSize Height;
 
 		ImageDataFormat Format;
 
-		size_t PixelDataSize;
+		PXSize PixelDataSize;
 		void* PixelData;
 	}
 	Image;
 
-	typedef  ActionResult(*ParseToImage)(Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
-	typedef  ActionResult(*SerializeFromImage)(const Image* const image, void* data, const size_t dataSize, size_t* dataWritten);
+	typedef  ActionResult(*ParseToImage)(Image* const image, DataStream* dataStream);
+	typedef  ActionResult(*SerializeFromImage)(const Image* const image, DataStream* dataStream);
 
 	PXPublic void ImageConstruct(Image* const image);
 	PXPublic void ImageDestruct(Image* const image);
 
 	PXPublic ActionResult ImageLoadA(Image* const image, const char* const filePath);
 	PXPublic ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath);
-	PXPublic ActionResult ImageLoadD(Image* const image, const void* const data, const size_t dataSize, const FileFormatExtension guessedFormat);
+	PXPublic ActionResult ImageLoadD(Image* const image, DataStream* const dataStream, const FileFormatExtension guessedFormat);
 
 	PXPublic ActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
 	PXPublic ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
@@ -63,34 +64,34 @@ extern "C"
 	(
 		Image* image,
 		void* const data,
-		const size_t dataSize,
+		const PXSize dataSize,
 		const FileFormatExtension fileFormat,
 		const ImageDataFormat dataFormat
 	);
 
-	PXPublic size_t ImageBitDepth(const ImageDataFormat imageDataFormat);
-	PXPublic size_t ImageBytePerPixel(const ImageDataFormat imageDataFormat);
-	PXPublic size_t ImageBitsPerPixel(const ImageDataFormat imageDataFormat);
+	PXPublic PXSize ImageBitDepth(const ImageDataFormat imageDataFormat);
+	PXPublic PXSize ImageBytePerPixel(const ImageDataFormat imageDataFormat);
+	PXPublic PXSize ImageBitsPerPixel(const ImageDataFormat imageDataFormat);
 
-	PXPublic PXBool ImageResize(Image* const image, const ImageDataFormat format, const size_t width, const size_t height);
+	PXPublic PXBool ImageResize(Image* const image, const ImageDataFormat format, const PXSize width, const PXSize height);
 	PXPublic void ImageFlipHorizontal(Image* image);
 	PXPublic void ImageFlipVertical(Image* image);
 	PXPublic void ImageRemoveColor(Image* image, unsigned char red, unsigned char green, unsigned char blue);
 	PXPublic void ImageFillColorRGBA8(Image* const image, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha);
 
-	PXPublic void* ImageDataPoint(const Image* const image, const size_t x, const size_t y);
+	PXPublic void* ImageDataPoint(const Image* const image, const PXSize x, const PXSize y);
 
-	PXPublic size_t ImagePixelPosition
+	PXPublic PXSize ImagePixelPosition
 	(
 		const Image* const image,
-		const size_t x,
-		const size_t y
+		const PXSize x,
+		const PXSize y
 	);
 	PXPublic void ImagePixelSetRGB8
 	(
 		Image* const image,
-		const size_t x,
-		const size_t y,
+		const PXSize x,
+		const PXSize y,
 		const unsigned char red,
 		const unsigned char green,
 		const unsigned char blue
@@ -99,10 +100,10 @@ extern "C"
 	PXPublic void ImageDrawRectangle
 	(
 		Image* const image,
-		const size_t x,
-		const size_t y,
-		const size_t width,
-		const size_t height,
+		const PXSize x,
+		const PXSize y,
+		const PXSize width,
+		const PXSize height,
 		const unsigned char red,
 		const unsigned char green,
 		const unsigned char blue,
@@ -111,32 +112,32 @@ extern "C"
 	PXPublic void ImageDrawTextA
 	(
 		Image* const image,
-		const size_t x,
-		const size_t y,
-		const size_t width,
-		const size_t height,
+		const PXSize x,
+		const PXSize y,
+		const PXSize width,
+		const PXSize height,
 		const PXFont* const font,
 		const char* text
 	);
 	PXPublic void ImageDrawTextW
 	(
 		Image* const image,
-		const size_t x,
-		const size_t y,
-		const size_t width,
-		const size_t height,
+		const PXSize x,
+		const PXSize y,
+		const PXSize width,
+		const PXSize height,
 		const PXFont* const font,
 		const wchar_t* text
 	);
 	PXPublic void ImageMerge
 	(
 		Image* const image,
-		const size_t x,
-		const size_t y,
-		const size_t InsertX,
-		const size_t InsertY,
-		const size_t InsertWidth,
-		const size_t InsertHeight,
+		const PXSize x,
+		const PXSize y,
+		const PXSize InsertX,
+		const PXSize InsertY,
+		const PXSize InsertWidth,
+		const PXSize InsertHeight,
 		const Image* const imageInsert
 	);
 

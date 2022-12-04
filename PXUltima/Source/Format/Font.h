@@ -26,7 +26,7 @@ extern "C"
 		unsigned short SizeBetweenLines;
 
 		FNT* FontElement;
-		size_t FontElementSize;
+		PXSize FontElementSize;
 	}
 	PXFont;
 
@@ -37,7 +37,7 @@ extern "C"
 
 	PXPublic ActionResult FontLoadA(PXFont* const font, const char* filePath);
 	PXPublic ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath);
-	PXPublic ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const size_t dataSize, const wchar_t* const sourcePath);
+	PXPublic ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath);
 
 
 #ifdef __cplusplus

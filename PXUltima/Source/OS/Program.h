@@ -22,7 +22,7 @@ extern "C"
 {
 #endif
 
-	typedef void (*ProgramExecutedEvent)(const unsigned char succesful, size_t returnResult, const ActionResult errorCode);
+	typedef void (*ProgramExecutedEvent)(const unsigned char succesful, PXSize returnResult, const ActionResult errorCode);
 
 	typedef struct Program_
 	{
@@ -32,11 +32,11 @@ extern "C"
 
 		ProgramExecutedEvent ProgramExecutedCallBack;
 
-		size_t ParameterListSize;
+		PXSize ParameterListSize;
 		char** ParameterList;
 
 		PXThread WorkingThread;
-		size_t ReturnValue;
+		PXSize ReturnValue;
 		unsigned char ExecutionSuccessfull;
 	}
 	Program;
@@ -47,7 +47,7 @@ extern "C"
 
 	// Execute function Asyncroinusly in another Thread.
 	PXPublic ActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback);
-	PXPublic ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, size_t parameterListSize, ProgramExecutedEvent* callback);
+	PXPublic ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, PXSize parameterListSize, ProgramExecutedEvent* callback);
 
 	PXPublic ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback);
 

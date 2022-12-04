@@ -38,7 +38,7 @@ BOOL _stdcall MonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT
 }
 #endif
 
-void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, const size_t monitorListSize)
+void MonitorFetchAll(Monitor* monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize)
 {
 #if OSUnix
 #elif OSWindows
@@ -59,7 +59,7 @@ void MonitorFetchAll(Monitor* monitorList, const size_t monitorListSizeMax, cons
 
 	displayDevice.cb = sizeof(DISPLAY_DEVICEW);
 
-	for(size_t deviceID = 0; EnumDisplayDevicesW(0, deviceID, &displayDevice, dwFlags); deviceID++)
+	for(PXSize deviceID = 0; EnumDisplayDevicesW(0, deviceID, &displayDevice, dwFlags); deviceID++)
 	{
 		printf
 		(

@@ -12,7 +12,7 @@ void PXQueueDestruct(PXQueue* const queue)
   
 }
 
-void PXQueueInitialize(PXQueue* const queue, void* const data, const size_t dataTypeSize, const size_t sizeAllocated)
+void PXQueueInitialize(PXQueue* const queue, void* const data, const PXSize dataTypeSize, const PXSize sizeAllocated)
 {
     queue->Data = data;
     queue->SizeAllocated = sizeAllocated;

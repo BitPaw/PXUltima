@@ -15,7 +15,7 @@ extern "C"
 	}
 	FLAC;
 
-	PXPublic ActionResult FLACParse(const void* data, const size_t dataSize);
+	PXPublic ActionResult FLACParse(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }
