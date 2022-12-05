@@ -157,25 +157,22 @@ ActionResult TIFFParse(TIFF* const tiff, DataStream* const dataStream)
         DataStreamReadSU(dataStream, &tIFFHeader.Version, tIFFHeader.Endianness); // Version, expect this to be "42"
         DataStreamReadIU(dataStream, &tIFFHeader.OffsetToIFD, tIFFHeader.Endianness);
 
-
-
         // Jump to adress
         dataStream->DataCursor = tIFFHeader.OffsetToIFD;
 
         // Now we are at IFD page 0
-
         while (!DataStreamIsAtEnd(dataStream))
         {
             TIFFPage tiffPage;
 
             MemoryClear(&tiffPage, sizeof(TIFFPage));
 
-            DataStreamReadSU(dataStream, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes
-
-            TIFFTag tiffTag;
+            DataStreamReadSU(dataStream, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes            
 
             for (unsigned short i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
+                TIFFTag tiffTag;
+
                 DataStreamReadSU(dataStream, &tiffTag.TypeID, tIFFHeader.Endianness); // 2-Bytes
                 DataStreamReadSU(dataStream, &tiffTag.DataTypeID, tIFFHeader.Endianness); // 2-Bytes
                 DataStreamReadIU(dataStream, &tiffTag.NumberOfValues, tIFFHeader.Endianness); // 4-Bytes
@@ -187,6 +184,7 @@ ActionResult TIFFParse(TIFF* const tiff, DataStream* const dataStream)
                 switch (tiffTag.Type)
                 {
                     case TIFFTagNewSubFileType:
+                    case TIFFTagSubfileType:
                     case TIFFTagImageWidth:
                     {
                         tiff->Width = tiffTag.DataOffset;
@@ -199,7 +197,7 @@ ActionResult TIFFParse(TIFF* const tiff, DataStream* const dataStream)
                     }
                     case TIFFTagBitsPerSample:
                     {
-                        for (size_t i = 0; i < tiffTag.NumberOfValues; ++i)
+                        for (PXSize i = 0; i < tiffTag.NumberOfValues; ++i)
                         {
                             tiff->BitsPerSample[i] = tiffTag.DataOffset; // Is this correct?
                         }
@@ -215,25 +213,78 @@ ActionResult TIFFParse(TIFF* const tiff, DataStream* const dataStream)
                     {
                         tiff->PhotometricInterpretation = TIFFColorFormatFromID(tiffTag.DataOffset);
                         break;
-                    }
+                    }         
+                    case TIFFTagThreshholding:
+                    case TIFFTagCellWidth:
+                    case TIFFTagCellLength:
+                    case TIFFTagFillOrder:
+                    case TIFFTagDocumentName:
+                    case TIFFTagImageDescription:
+                    case TIFFTagMake:
+                    case TIFFTagModel:
+                    case TIFFTagStripOffsets:
+                    case TIFFTagOrientation:
                     case TIFFTagSamplesPerPixel:
                     {
                         tiff->SamplesPerPixel = tiffTag.DataOffset;
                         break;
                     }
+                    case TIFFTagRowsPerStrip:
+                    case TIFFTagStripByteCounts:
+                    case TIFFTagMinSampleValue:
+                    case TIFFTagMaxSampleValue:
+                    case TIFFTagXResolution:
+                    case TIFFTagYResolution:
                     case TIFFTagPlanarConfiguration:
+                    case TIFFTagPageName:
+                    case TIFFTagXPosition:
+                    case TIFFTagYPosition:
+                    case TIFFTagFreeOffsets:
+                    case TIFFTagFreeByteCounts:
+                    case TIFFTagGrayResponseUnit:
+                    case TIFFTagGrayResponseCurve:
+                    case TIFFTagT4Options:
+                    case TIFFTagT6Options:
                     case TIFFTagResolutionUnit:
+                    case TIFFTagPageNumber:
+                    case TIFFTagTransferFunction:
+                    case TIFFTagSoftware:
+                    case TIFFTagDateTime:
+                    case TIFFTagArtist:
+                    case TIFFTagHostComputer:
+                    case TIFFTagPredictor:
+                    case TIFFTagWhitePoint:
+                    case TIFFTagPrimaryChromaticities:
+                    case TIFFTagColorMap:
+                    case TIFFTagHalftoneHints:
                     case TIFFTagTileWidth:
                     case TIFFTagTileLength:
                     case TIFFTagTileOffsets:
                     case TIFFTagTileByteCounts:
+                    case TIFFTagInkSet:
+                    case TIFFTagInkNames:
+                    case TIFFTagNumberOfInks:
+                    case TIFFTagDotRange:
+                    case TIFFTagTargetPrinter:
+                    case TIFFTagExtraSamples:
+                    case TIFFTagSampleFormat:
+                    case TIFFTagSMinSampleValue:
+                    case TIFFTagSMaxSampleValue:
+                    case TIFFTagTransferRange:
                     case TIFFTagJPEGProc:
+                    case TIFFTagJPEGInterchangeFormat:
+                    case TIFFTagJPEGInterchangeFormatLngth:
+                    case TIFFTagJPEGRestartInterval:
+                    case TIFFTagJPEGLosslessPredictors:
+                    case TIFFTagJPEGPointTransforms:
                     case TIFFTagJPEGQTables:
                     case TIFFTagJPEGDCTables:
                     case TIFFTagJPEGACTables:
-                    case TIFFTagRowsPerStrip:
-                    case TIFFTagStripOffsets:
-                    case TIFFTagStripByteCounts:
+                    case TIFFTagYCbCrCoefficients:
+                    case TIFFTagYCbCrSubSampling:
+                    case TIFFTagYCbCrPositioning:
+                    case TIFFTagReferenceBlackWhite:
+                    case TIFFTagCopyright:
 
                     default:
                         break;

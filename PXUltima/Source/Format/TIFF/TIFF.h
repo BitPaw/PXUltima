@@ -38,18 +38,14 @@ extern "C"
 	typedef enum TIFFTagType_
 	{
 		TIFFTagTypeInvalid,
-
 		TIFFTagTypeUnkown,
-
 		TIFFTagNewSubFileType,
 		TIFFTagSubfileType,
 		TIFFTagImageWidth,
 		TIFFTagImageLength,
 		TIFFTagBitsPerSample,
 		TIFFTagCompression,
-
 		TIFFTagPhotometricInterpretation,
-
 		TIFFTagThreshholding,//	263
 		TIFFTagCellWidth,//264
 		TIFFTagCellLength,//265
@@ -74,15 +70,12 @@ extern "C"
 		TIFFTagFreeOffsets,//288
 		TIFFTagFreeByteCounts,//289
 		TIFFTagGrayResponseUnit,//290
-
-
 		TIFFTagGrayResponseCurve,//291
 		TIFFTagT4Options,//292
 		TIFFTagT6Options,//293
 		TIFFTagResolutionUnit,//296
 		TIFFTagPageNumber,//297
 		TIFFTagTransferFunction,//301
-
 		TIFFTagSoftware,//305
 		TIFFTagDateTime,//306
 		TIFFTagArtist,//315
@@ -98,13 +91,10 @@ extern "C"
 		TIFFTagTileByteCounts,//325
 		TIFFTagInkSet,//332
 		TIFFTagInkNames,//333
-
-
 		TIFFTagNumberOfInks,//	334
 		TIFFTagDotRange,//336
 		TIFFTagTargetPrinter,//	337
 		TIFFTagExtraSamples,//338
-
 		TIFFTagSampleFormat,//339
 		TIFFTagSMinSampleValue,//340
 		TIFFTagSMaxSampleValue,//341
