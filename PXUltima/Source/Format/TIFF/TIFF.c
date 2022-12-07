@@ -291,6 +291,8 @@ ActionResult TIFFParse(TIFF* const tiff, DataStream* const dataStream)
                 }
             }
 
+            break; // TEST
+
             DataStreamReadIU(dataStream, &tiffPage.OffsetToNextIFD, tIFFHeader.Endianness); // 4-Bytes
         }
 

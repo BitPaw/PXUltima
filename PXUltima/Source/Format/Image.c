@@ -68,7 +68,7 @@ PXSize ImageBitsPerPixel(const ImageDataFormat imageDataFormat)
 
 void ImageConstruct(Image* const image)
 {
-    MemorySet(image, sizeof(Image), 0);
+    MemoryClear(image, sizeof(Image));
 }
 
 void ImageDestruct(Image* const image)
@@ -78,43 +78,50 @@ void ImageDestruct(Image* const image)
     ImageConstruct(image);
 }
 
-ActionResult ImageLoadA(Image* image, const char* filePath)
+ActionResult ImageLoadA(Image* const image, const PXTextASCII filePath)
 {
-    wchar_t filePathW[PathMaxSize];
+    PXByte filePathU[PathMaxSize];
 
-    TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
+    TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-    ActionResult actionResult = ImageLoadW(image, filePathW);
+    ActionResult actionResult = ImageLoadU(image, filePathU);
 
-    return actionResult;  
+    return actionResult;
 }
 
-ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
+ActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath)
+{
+    PXByte filePathU[PathMaxSize];
+
+    TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+
+    ActionResult actionResult = ImageLoadU(image, filePathU);
+
+    return actionResult;
+}
+
+ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
 {
     DataStream dataStream;
 
-    DataStreamConstruct(&dataStream);    
+    DataStreamConstruct(&dataStream);
     ImageConstruct(image);
 
     {
-        const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
-        const PXBool sucessful = fileLoadingResult == ActionSuccessful;
+        const ActionResult fileLoadingResult = DataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
 
-        if(!sucessful)
-        {
-            return fileLoadingResult;
-        }
+        ActionExitOnError(fileLoadingResult);
     }
 
     {
-        const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryW(filePath, PathMaxSize);
-        const ActionResult fileParsingResult = ImageLoadD(image, &dataStream, imageFormatHint);
-        const PXBool success = fileParsingResult == ActionSuccessful;
+        {  
+            const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
+            const ActionResult fileParsingResult = ImageLoadD(image, &dataStream, imageFormatHint);
 
-        if(success)
-        {
-            return ActionSuccessful;
+            ActionExitOnSuccess(fileParsingResult);
         }
+
+      
 
         ActionResult fileGuessResult = ActionInvalid;
         unsigned int fileFormatID = 1;
@@ -126,7 +133,7 @@ ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath)
             fileGuessResult = ImageLoadD(image, dataStream.Data, dataStream.DataSize, imageFileFormat);
 
             fileFormatID++;
-        }
+        } 
         while(fileGuessResult == ActionInvalidHeaderSignature);
 
         return fileGuessResult;

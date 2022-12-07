@@ -103,7 +103,7 @@
     <ClInclude Include="Source\Format\MTL\MTL.h" />
     <ClInclude Include="Source\Format\OBJ\OBJ.h" />
     <ClInclude Include="Source\Format\OGG\OGG.h" />
-    <ClInclude Include="Source\Format\PDF\PDF.h" />
+    <ClInclude Include="Source\Format\PDF\PXPDF.h" />
     <ClInclude Include="Source\Format\PLY\PLY.h" />
     <ClInclude Include="Source\Format\PNG\PNG.h" />
     <ClInclude Include="Source\Format\QOI\QOI.h" />
@@ -232,7 +232,7 @@
     <ClCompile Include="Source\Format\MTL\MTL.c" />
     <ClCompile Include="Source\Format\OBJ\OBJ.c" />
     <ClCompile Include="Source\Format\OGG\OGG.c" />
-    <ClCompile Include="Source\Format\PDF\PDF.c" />
+    <ClCompile Include="Source\Format\PDF\PXPDF.c" />
     <ClCompile Include="Source\Format\PLY\PLY.c" />
     <ClCompile Include="Source\Format\PNG\PNG.c" />
     <ClCompile Include="Source\Format\QOI\QOI.c" />

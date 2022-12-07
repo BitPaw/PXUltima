@@ -381,37 +381,43 @@ void TextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* dataBuffe
 	{
 		case 0u:
 		{
-			dataBufferSize[0] = (PXByte)symbol;  // 0xxxxxxx - 
+			dataBuffer[0] = (PXByte)symbol;  // 0xxxxxxx - 
 			break;
 		}
 		case 1u:
 		{
-			dataBufferSize[0] = 0b11000000 | ((symbol & (0b11111 << 6u)) >> 6u);  // 110xxxxx
+			dataBuffer[0] = 0b11000000 | ((symbol & (0b11111 << 6u)) >> 6u);  // 110xxxxx
 			break;
 		}
 		case 2u:
 		{
-			dataBufferSize[0] = 0b11100000 | ((symbol & (0b1111 << 12u)) >> 12u); // 1110xxxx
+			dataBuffer[0] = 0b11100000 | ((symbol & (0b1111 << 12u)) >> 12u); // 1110xxxx
 			break;
 		}
 		case 3u:
 		{
-			dataBufferSize[0] = 0b11110000 | ((symbol & (0b111 << 18u)) >> 18u); // 1110xxxx
+			dataBuffer[0] = 0b11110000 | ((symbol & (0b111 << 18u)) >> 18u); // 1110xxxx
 			break;
 		}
 	}
 
-	for (size_t i = 0; i < utfTrailBytesAmount; ++i)
+	for (size_t i = 1; i < utfTrailBytesAmount; ++i)
 	{
-		dataBufferSize[i] = 0b10000000 | ((symbol & (0b111111 << 6u * i)) >> 6u * i);
+		dataBuffer[i] = 0b10000000 | ((symbol & (0b111111 << 6u * i)) >> 6u * i);
 	}
+
+	*dataBufferSize = utfTrailBytesAmount+1u;
 }
 
-PXSize TextCopyAU(const PXASCIIChar source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
+PXSize TextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
 {
 	const PXSize minimalSize = MathMinimumIU(sourceLength, destinationLength);
 	PXSize destinationIndex = 0;
-	PXSize offset = 0;
+
+	if (!(source && destinationLength))
+	{
+		return 0;
+	}
 
 	for (PXSize sourceIndex = 0; (sourceIndex < minimalSize) && (destinationIndex < destinationLength) && (source[sourceIndex] != '\0'); ++sourceIndex)
 	{
@@ -421,8 +427,10 @@ PXSize TextCopyAU(const PXASCIIChar source, const PXSize sourceLength, PXTextUTF
 
 		TextToUTFConvert(wideCharacter, buffer, &size);
 
-		offset += MemoryCopy(buffer, size, destination + offset, destinationLength - offset);
+		destinationIndex += MemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
 	}
+
+	destination[destinationIndex++] = 0u;
 
 	return destinationIndex;
 }
@@ -434,7 +442,11 @@ PXSize TextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextU
 #if 1
 	const PXSize minimalSize = MathMinimumIU(sourceLength, destinationLength);
 	PXSize destinationIndex = 0;
-	PXSize offset = 0;
+
+	if (!(source && destinationLength))
+	{
+		return 0;
+	}
 
 	for (PXSize sourceIndex = 0; (sourceIndex < minimalSize) && (destinationIndex < destinationLength) && (source[sourceIndex] != '\0'); ++sourceIndex)
 	{
@@ -444,8 +456,10 @@ PXSize TextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextU
 
 		TextToUTFConvert(wideCharacter, buffer, &size);
 
-		offset += MemoryCopy(buffer, size, destination + offset, destinationLength - offset);
+		destinationIndex += MemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
 	}
+
+	destination[destinationIndex++] = 0u;
 
 	return destinationIndex;
 
@@ -940,22 +954,22 @@ PXSize TextFromDoubleW(const double number, wchar_t* string, const PXSize dataSi
 
 PXSize TextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize)
 {
-	const PXSize length = MathMinimum(dataSize, stringSize);
+	const PXSize length = MathMinimumIU(dataSize, stringSize);
 	PXSize outputIndex = 0;
 
-	MemorySet(string, stringSize, 0);
+	MemoryClear(string, stringSize);
 
 	string[outputIndex++] = '0';
 	string[outputIndex++] = 'b';
 
 	for(PXSize dataIndex = 0; dataIndex < length; ++dataIndex)
 	{
-		const unsigned char dataElement = ((unsigned char*)data)[dataIndex];
+		const PXByte dataElement = ((PXAdress)data)[dataIndex];
 
 		for(unsigned char bitIndex = 0; bitIndex < 8u; ++bitIndex)
 		{
-			const unsigned char bit = (dataElement & (1 << bitIndex)) >> bitIndex;
-			const unsigned char writeCharacter = bit ? '1' : '0';
+			const PXBool bit = (dataElement & (1 << bitIndex)) >> bitIndex;
+			const char writeCharacter = bit ? '1' : '0';
 
 			string[outputIndex++] = writeCharacter;
 		}

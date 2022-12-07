@@ -51,7 +51,7 @@ extern "C"
 	typedef wchar_t PXCharUNICODE;
 	typedef PXInt32U PXCharUTF8;
 
-	typedef char* const PXASCIIChar;
+	typedef char* const PXTextASCII;
 	typedef char* const PXTextUTF8;
 	typedef wchar_t* const PXTextUNICODE;
 

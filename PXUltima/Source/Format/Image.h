@@ -54,8 +54,9 @@ extern "C"
 	PXPublic void ImageConstruct(Image* const image);
 	PXPublic void ImageDestruct(Image* const image);
 
-	PXPublic ActionResult ImageLoadA(Image* const image, const char* const filePath);
-	PXPublic ActionResult ImageLoadW(Image* const image, const wchar_t* const filePath);
+	PXPublic ActionResult ImageLoadA(Image* const image, const PXTextASCII filePath);
+	PXPublic ActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath);
+	PXPublic ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath);
 	PXPublic ActionResult ImageLoadD(Image* const image, DataStream* const dataStream, const FileFormatExtension guessedFormat);
 
 	PXPublic ActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);

@@ -93,8 +93,9 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Open>------------------------------------------------------------
-	PXPublic ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode);
-	PXPublic ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode);
+	PXPublic ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode);
+	PXPublic ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode);
+	PXPublic ActionResult DataStreamOpenFromPathU(DataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode);
 	//---------------------------------------------------------------------
 
 	//---<Close>-----------------------------------------------------------
@@ -102,8 +103,9 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Mapping>---------------------------------------------------------
-	PXPublic ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-	PXPublic ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t* filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic ActionResult DataStreamMapToMemoryU(DataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
 	PXPublic ActionResult DataStreamMapToMemory(DataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode);
 	PXPublic ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream);
 	//---------------------------------------------------------------------
@@ -133,6 +135,9 @@ extern "C"
 	PXPublic PXSize DataStreamSkipBlock(DataStream* const dataStream);
 	PXPublic PXSize DataStreamSkipToNextBlock(DataStream* const dataStream);
 	PXPublic PXSize DataStreamSkipLine(DataStream* const dataStream);
+
+	PXPublic PXSize DataStreamReadTextIU8(DataStream* const dataStream, PXInt8U* const number);
+	PXPublic PXSize DataStreamReadTextI(DataStream* const dataStream, int* const number);
 
 	PXPublic PXSize DataStreamReadC(DataStream* const dataStream, char* const value);
 	PXPublic PXSize DataStreamReadCU(DataStream* const dataStream, unsigned char* const value);

@@ -270,7 +270,7 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 {
 	const PXSize amount = MTLFetchAmount(data, dataSize);
 
-	MemorySet(mtlMaterial, sizeof(MTLMaterial), 0);
+	MemoryClear(mtlMaterial, sizeof(MTLMaterial));
 
 	if (materialID > amount) // Material ID wrong/Too high
 	{
@@ -280,8 +280,8 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 	DataStream mtlDataStream;
 	DataStream mtlHeaderStream;
 
-	DataStreamFromExternal(&mtlDataStream, (unsigned char*)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
-	DataStreamFromExternal(&mtlHeaderStream, (unsigned char*)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
+	DataStreamFromExternal(&mtlDataStream, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
+	DataStreamFromExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
 
 	for (PXSize i = 0; i <= materialID; ++i)
 	{
@@ -372,7 +372,7 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 						DataStreamCursorAdvance(&mtlDataStream, sizeof(unsigned char)); // Handle
 						break;
 #else
-						MemorySet(mtlMaterial, sizeof(MTLMaterial), 0);
+						MemoryClear(mtlMaterial, sizeof(MTLMaterial));
 						return PXNo;
 #endif
 					}

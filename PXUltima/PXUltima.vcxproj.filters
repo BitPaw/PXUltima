@@ -141,7 +141,7 @@
     <ClInclude Include="Source\Format\OGG\OGG.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Format\PDF\PDF.h">
+    <ClInclude Include="Source\Format\PDF\PXPDF.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Format\PLY\PLY.h">
@@ -521,7 +521,7 @@
     <ClCompile Include="Source\Format\OGG\OGG.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Format\PDF\PDF.c">
+    <ClCompile Include="Source\Format\PDF\PXPDF.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\PLY\PLY.c">

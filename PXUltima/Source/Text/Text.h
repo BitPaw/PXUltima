@@ -95,7 +95,7 @@ extern "C"
 	PXPublic PXSize TextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
 	PXPublic PXSize TextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
 
-	PXPublic PXSize TextCopyAU(const PXASCIIChar source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
+	PXPublic PXSize TextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
 	PXPublic PXSize TextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
 
 	PXPublic PXSize TextCountA(const char* text, const PXSize textSize, const char target);

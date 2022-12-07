@@ -130,20 +130,42 @@ void DataStreamFromExternal(DataStream* const dataStream, void* const data, cons
 	dataStream->DataLocation = FileLocationExternal;
 }
 
-ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
+ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
+{
+	PXByte filePathU[PathMaxSize];
+
+	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
+
+	ActionResult actionResult = DataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
+
+	return actionResult;
+}
+
+ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
+{
+	PXCharUTF8 filePathU[PathMaxSize];
+
+	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+
+	ActionResult actionResult = DataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
+
+	return actionResult;
+}
+
+ActionResult DataStreamOpenFromPathU(DataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
 {
 #if OSUnix
 	const char* readMode = 0u;
 
 	switch (fileOpenMode)
 	{
-	case MemoryReadOnly:
-		readMode = "rb";
-		break;
+		case MemoryReadOnly:
+			readMode = "rb";
+			break;
 
-	case MemoryWriteOnly:
-		readMode = "wb";
-		break;
+		case MemoryWriteOnly:
+			readMode = "wb";
+			break;
 	}
 
 	assert(readMode != 0);
@@ -156,31 +178,7 @@ ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const char* f
 
 	return dataStream->FileHandle ? ActionSuccessful : ResultFileOpenFailure;
 
-#elif OSWindows
-	wchar_t filePathW[PathMaxSize];
 
-	TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
-
-	return DataStreamOpenFromPathW(dataStream, filePathW, fileOpenMode, dataStreamCachingMode);
-#endif
-}
-
-ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t* filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
-{
-#if OSUnix
-	char filePathA[PathMaxSize];
-
-	TextCopyWA(filePath, PathMaxSize, filePathA, PathMaxSize);
-
-	const ActionResult openResult = DataStreamOpenFromPathA(dataStream, filePathA, fileOpenMode, dataStreamCachingMode);
-	const unsigned char successful = openResult == ActionSuccessful;
-
-	if (!successful)
-	{
-		return openResult;
-	}
-
-	return ActionSuccessful;
 #elif OSWindows
 	DWORD dwDesiredAccess = 0;
 	DWORD dwShareMode = 0;
@@ -191,27 +189,27 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 
 	switch (fileOpenMode)
 	{
-	case MemoryReadOnly:
-	{
-		dwShareMode = FILE_SHARE_READ;
-		dwCreationDisposition = OPEN_EXISTING;
-		dwDesiredAccess = GENERIC_READ;
-		break;
-	}
-	case MemoryWriteOnly:
-	{
-		dwShareMode = FILE_SHARE_WRITE;
-		dwCreationDisposition = CREATE_ALWAYS;
-		dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
-		break;
-	}
-	case MemoryReadAndWrite:
-	{
-		dwShareMode = FILE_SHARE_WRITE | FILE_SHARE_READ;
-		dwCreationDisposition = CREATE_ALWAYS;
-		dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
-		break;
-	}
+		case MemoryReadOnly:
+		{
+			dwShareMode = FILE_SHARE_READ;
+			dwCreationDisposition = OPEN_EXISTING;
+			dwDesiredAccess = GENERIC_READ;
+			break;
+}
+		case MemoryWriteOnly:
+		{
+			dwShareMode = FILE_SHARE_WRITE;
+			dwCreationDisposition = CREATE_ALWAYS;
+			dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
+			break;
+		}
+		case MemoryReadAndWrite:
+		{
+			dwShareMode = FILE_SHARE_WRITE | FILE_SHARE_READ;
+			dwCreationDisposition = CREATE_ALWAYS;
+			dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
+			break;
+		}
 	}
 
 	dwFlagsAndAttributes |= ConvertFromFileCachingMode(dataStreamCachingMode);
@@ -219,17 +217,15 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 
 	// Make directory if needed
 	// FilePathExtensionGetW
-	{
-		const ActionResult directoryCreateResult = DirectoryCreateW(filePath);
-		const PXBool successful = ActionSuccessful == directoryCreateResult;
+	if(fileOpenMode == MemoryWriteOnly || fileOpenMode == MemoryReadAndWrite)
+	{		
+		const ActionResult directoryCreateResult = DirectoryCreateA(filePath);
 
-		if (!successful)
-		{
-			return directoryCreateResult;
-		}
+		ActionExitOnError(directoryCreateResult);
 	}
 
-	HANDLE fileHandle = CreateFileW
+	// UTF
+	HANDLE const fileHandle = CreateFileA 
 	(
 		filePath,
 		dwDesiredAccess,
@@ -247,11 +243,11 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 		{
 			switch (fileOpenMode)
 			{
-			case MemoryReadOnly:
-				return ResultFileNotFound;
+				case MemoryReadOnly:
+					return ResultFileNotFound;
 
-			case MemoryWriteOnly:
-				return ResultFileCreateFailure;
+				case MemoryWriteOnly:
+					return ResultFileCreateFailure;
 			}
 			/*
 			const ErrorCode error = GetCurrentError();
@@ -274,24 +270,24 @@ ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const wchar_t
 
 		switch (fileOpenMode)
 		{
-		case MemoryReadOnly:
-		{
-			osHandleMode = _O_RDONLY;
-			fdOpenMode = "rb";
-			break;
-		}
-		case  MemoryWriteOnly:
-		{
-			osHandleMode = _O_RDWR;//_O_WRONLY;
-			fdOpenMode = "wb";
-			break;
-		}
-		case  MemoryReadAndWrite:
-		{
-			osHandleMode = _O_RDWR;
-			fdOpenMode = "wb";
-			break;
-		}
+			case MemoryReadOnly:
+			{
+				osHandleMode = _O_RDONLY;
+				fdOpenMode = "rb";
+				break;
+			}
+			case  MemoryWriteOnly:
+			{
+				osHandleMode = _O_RDWR;//_O_WRONLY;
+				fdOpenMode = "wb";
+				break;
+			}
+			case  MemoryReadAndWrite:
+			{
+				osHandleMode = _O_RDWR;
+				fdOpenMode = "wb";
+				break;
+			}
 		}
 
 		const int nHandle = _open_osfhandle((intptr_t)fileHandle, osHandleMode);
@@ -359,11 +355,78 @@ ActionResult DataStreamClose(DataStream* const dataStream)
 #endif
 }
 
-ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+
+#if OSWindows
+ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
 {
+	HANDLE           hToken;
+	TOKEN_PRIVILEGES tp;
+	BOOL             status;
+	DWORD            error;
+
+	// open process token
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+		return GetCurrentError(); // OpenProcessToken
+
+	// get the luid
+	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
+		return GetCurrentError();  // LookupPrivilegeValue
+
+	tp.PrivilegeCount = 1;
+
+	// enable or disable privilege
+	if (bEnable)
+		tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	else
+		tp.Privileges[0].Attributes = 0;
+
+	// enable or disable privilege
+	status = AdjustTokenPrivileges(hToken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+
+	// It is possible for AdjustTokenPrivileges to return TRUE and still not succeed.
+	// So always check for the last error value.
+	error = GetLastError();
+	if (!status || (error != ERROR_SUCCESS))
+		return GetCurrentError();  // AdjustTokenPrivileges
+
+	// close the handle
+	if (!CloseHandle(hToken))
+		return GetCurrentError(); // CloseHandle
+
+	return ActionSuccessful;
+}
+#endif // OSWindows
+
+ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+{
+	PXByte filePathU[PathMaxSize];
+
+	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
+
+	ActionResult actionResult = DataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
+
+	return actionResult;
+}
+
+ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+{
+	PXCharUTF8 filePathU[PathMaxSize];
+
+	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+
+	ActionResult actionResult = DataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
+
+	return actionResult;
+}
+
+ActionResult DataStreamMapToMemoryU(DataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+{
+	PXBool useLargeMemoryPages = PXNo;
+
 	DataStreamConstruct(dataStream);
 
 #if OSUnix
+
 	int accessType = PROT_READ;
 	int flags = MAP_PRIVATE;// | MAP_POPULATE;
 	int fileDescriptor = 0;
@@ -375,21 +438,21 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 
 		switch (protectionMode)
 		{
-		case MemoryNoReadWrite:
-			openFlag = 0;
-			break;
+			case MemoryNoReadWrite:
+				openFlag = 0;
+				break;
 
-		case MemoryReadOnly:
-			openFlag = O_RDONLY;
-			break;
+			case MemoryReadOnly:
+				openFlag = O_RDONLY;
+				break;
 
-		case MemoryWriteOnly:
-			openFlag = O_WRONLY;
-			break;
+			case MemoryWriteOnly:
+				openFlag = O_WRONLY;
+				break;
 
-		case MemoryReadAndWrite:
-			openFlag = O_RDWR;
-			break;
+			case MemoryReadAndWrite:
+				openFlag = O_RDWR;
+				break;
 		}
 
 		const int fileDescriptor = open64(filePath, openFlag);
@@ -449,89 +512,14 @@ ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const char* fi
 
 	dataStream->IDMapping = 0;
 
-#if MemoryDebugOutput
-	printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", Data, DataSize, filePath);
-#endif
-
-	return ActionSuccessful;
-
-#elif OSWindows
-	wchar_t filePathW[PathMaxSize];
-
-	TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
-
-	const ActionResult fileActionResult = DataStreamMapToMemoryW(dataStream, filePathW, fileSize, protectionMode);
-
-	return fileActionResult;
-#endif
-}
-
-
-#if OSWindows
-ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
-{
-	HANDLE           hToken;
-	TOKEN_PRIVILEGES tp;
-	BOOL             status;
-	DWORD            error;
-
-	// open process token
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
-		return GetCurrentError(); // OpenProcessToken
-
-	// get the luid
-	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
-		return GetCurrentError();  // LookupPrivilegeValue
-
-	tp.PrivilegeCount = 1;
-
-	// enable or disable privilege
-	if (bEnable)
-		tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-	else
-		tp.Privileges[0].Attributes = 0;
-
-	// enable or disable privilege
-	status = AdjustTokenPrivileges(hToken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
-
-	// It is possible for AdjustTokenPrivileges to return TRUE and still not succeed.
-	// So always check for the last error value.
-	error = GetLastError();
-	if (!status || (error != ERROR_SUCCESS))
-		return GetCurrentError();  // AdjustTokenPrivileges
-
-	// close the handle
-	if (!CloseHandle(hToken))
-		return GetCurrentError(); // CloseHandle
-
-	return ActionSuccessful;
-}
-#endif // OSWindows
-
-ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t* filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
-{
-	PXBool useLargeMemoryPages = PXNo;
-
-	DataStreamConstruct(dataStream);
-
-#if OSUnix
-	char filePathA[PathMaxSize];
-
-	TextCopyWA(filePath, PathMaxSize, filePathA, PathMaxSize);
-
-	return DataStreamMapToMemoryA(dataStream, filePathA, fileSize, protectionMode);
 
 #elif OSWindows
 
 	// Open file
 	{
-		const ActionResult openResult = DataStreamOpenFromPathW(dataStream, filePath, protectionMode, FileCachingSequential);
-		const PXBool openSuccess = ActionSuccessful == openResult;
+		const ActionResult openResult = DataStreamOpenFromPathU(dataStream, filePath, protectionMode, FileCachingSequential);
 
-		if (!openSuccess)
-		{
-			return openResult; //openResult;
-		}
+		ActionExitOnError(openResult);
 	}
 
 	dataStream->MemoryMode = protectionMode;
@@ -548,31 +536,31 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 		switch (protectionMode)
 		{
-		case MemoryReadOnly:
-		{
-			LARGE_INTEGER largeInt;
+			case MemoryReadOnly:
+			{
+				LARGE_INTEGER largeInt;
 
-			const BOOL sizeResult = GetFileSizeEx(dataStream->FileHandle, &largeInt);
+				const BOOL sizeResult = GetFileSizeEx(dataStream->FileHandle, &largeInt);
 
-			dwMaximumSizeHigh = 0;
-			dwMaximumSizeLow = 0;
+				dwMaximumSizeHigh = 0;
+				dwMaximumSizeLow = 0;
 
-			dataStream->DataSize = largeInt.QuadPart;
-			break;
-		}
-		case MemoryWriteOnly:
-		{
-			dwMaximumSizeHigh = 0;
-			dwMaximumSizeLow = fileSize;
-			break;
-		}
-		case MemoryReadAndWrite:
-		{
-			break;
-		}
+				dataStream->DataSize = largeInt.QuadPart;
+				break;
+			}
+			case MemoryWriteOnly:
+			{
+				dwMaximumSizeHigh = 0;
+				dwMaximumSizeLow = fileSize;
+				break;
+			}
+			case MemoryReadAndWrite:
+			{
+				break;
+			}
 
-		default:
-			break;
+			default:
+				break;
 		}
 
 
@@ -614,7 +602,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 				break;
 		}
 
-		const HANDLE fileMappingHandleResult = CreateFileMappingW
+		const HANDLE fileMappingHandleResult = CreateFileMappingA
 		(
 			dataStream->FileHandle,
 			0, // No security attributes
@@ -637,7 +625,7 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 			dataStream->IDMapping = fileMappingHandleResult; // Mapping [OK]
 		}
-	}
+		}
 
 	{
 		DWORD desiredAccess = 0;
@@ -649,17 +637,17 @@ ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const wchar_t*
 
 		switch (protectionMode)
 		{
-		case MemoryReadOnly:
-			desiredAccess |= FILE_MAP_READ;
-			break;
+			case MemoryReadOnly:
+				desiredAccess |= FILE_MAP_READ;
+				break;
 
-		case MemoryWriteOnly:
-			desiredAccess |= FILE_MAP_WRITE;
-			break;
+			case MemoryWriteOnly:
+				desiredAccess |= FILE_MAP_WRITE;
+				break;
 
-		case MemoryReadAndWrite:
-			desiredAccess |= FILE_MAP_ALL_ACCESS;
-			break;
+			case MemoryReadAndWrite:
+				desiredAccess |= FILE_MAP_ALL_ACCESS;
+				break;
 		}
 
 		// if large pages are supported, anable if
@@ -985,6 +973,27 @@ PXSize DataStreamSkipLine(DataStream* const dataStream)
 	const PXSize skippedBytes = dataStream->DataCursor - positionBefore;
 
 	return skippedBytes;
+}
+
+PXSize DataStreamReadTextIU8(DataStream* const dataStream, PXInt8U* const number)
+{
+	unsigned int value = 0;
+	const PXSize size = DataStreamReadTextI(dataStream, &value);
+
+	*number = value;
+
+	return size;
+}
+
+PXSize DataStreamReadTextI(DataStream* const dataStream, int* const number)
+{
+	const void* const adress = DataStreamCursorPosition(dataStream);
+	const PXSize size = DataStreamRemainingSize(dataStream);
+	const PXSize sizeRead = TextToIntA(adress, size, number);
+
+	DataStreamCursorAdvance(dataStream, sizeRead);
+
+	return sizeRead;
 }
 
 PXSize DataStreamReadC(DataStream* const dataStream, char* const value)

@@ -178,6 +178,7 @@ extern "C"
 	}
 	ActionResult;
 
+#define ActionExitOnSuccess(actionResult) if (ActionSuccessful == actionResult) return ActionSuccessful;
 #define ActionExitOnError(actionResult) if (ActionSuccessful != actionResult) return actionResult;
 #define ActionOnErrorFetchAndExit(b) if(b) { return GetCurrentError(); }
 
