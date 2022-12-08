@@ -399,6 +399,9 @@
     <ClInclude Include="Source\Audio\PXAudio.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Language\PXTranslator.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -777,6 +780,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Audio\PXAudio.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Language\PXTranslator.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

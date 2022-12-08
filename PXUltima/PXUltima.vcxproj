@@ -147,6 +147,7 @@
     <ClInclude Include="Source\UI\UI.h" />
     <ClInclude Include="Source\Format\Type.h" />
     <ClInclude Include="Source\Math\PXVector.h" />
+    <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio\PXAudio.c" />
@@ -275,6 +276,7 @@
     <ClCompile Include="Source\UI\UI.c" />
     <ClCompile Include="Source\Format\Type.c" />
     <ClCompile Include="Source\Math\PXVector.c" />
+    <ClCompile Include="Source\Language\PXTranslator.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Audio\README.md" />

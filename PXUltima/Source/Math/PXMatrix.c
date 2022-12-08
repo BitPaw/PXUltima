@@ -115,8 +115,8 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 
 	//-----<X ROT>-----
 	{
-		float cosResult = MathCosinus(x);
-		float sinResult = MathSinus(x);
+		const float cosResult = MathCosinus(x);
+		const float sinResult = MathSinus(x);
 
 		xRotation.Data[5] = cosResult;
 		xRotation.Data[6] = sinResult;
@@ -127,8 +127,8 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 
 	//-----<X ROT>-----
 	{
-		float cosResult = MathCosinus(-y);
-		float sinResult = MathSinus(-y);
+		const float cosResult = MathCosinus(-y);
+		const float sinResult = MathSinus(-y);
 
 		yRotation.Data[0] = cosResult;
 		yRotation.Data[2] = -sinResult;
@@ -138,8 +138,8 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 
 	//-----<X ROT>-----
 	{
-		float cosResult = MathCosinus(z);
-		float sinResult = MathSinus(z);
+		const float cosResult = MathCosinus(z);
+		const float sinResult = MathSinus(z);
 
 		zRotation.Data[0] = cosResult;
 		zRotation.Data[1] = -sinResult;
@@ -156,8 +156,6 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
 		PXMatrix4x4FMultiply(&tempRotation, &xRotation, matrixResult);
 	}
-
-	//PXMatrix4x4FMultiply(xRotation);
 }
 
 void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, const PXMatrix4x4F* const matrixResult)
@@ -190,15 +188,15 @@ void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const
 void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, PXMatrix4x4F* const matrixResult)
 {
 	matrixResult->Data[ScaleX] = matrixA->Data[ScaleX] + scalar;
+	matrixResult->Data[ScaleY] = matrixA->Data[ScaleY] + scalar;
 	matrixResult->Data[ScaleZ] = matrixA->Data[ScaleZ] + scalar;
-	matrixResult->Data[ScaleW] = matrixA->Data[ScaleW] + scalar;
 }
 
 void PXMatrix4x4FScaleSet(const float x, const float y, const float z, PXMatrix4x4F* const matrixResult)
 {
 	matrixResult->Data[ScaleX] = x;
-	matrixResult->Data[ScaleZ] = y;
-	matrixResult->Data[ScaleW] = z;
+	matrixResult->Data[ScaleY] = y;
+	matrixResult->Data[ScaleZ] = z;
 }
 
 void PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane)

@@ -32,10 +32,10 @@ extern "C"
 
     PXPublic PXBool LibraryParseSymbols();
 
-   // void SymbolVector(); // Programming interface to dynamic linking loader.
+    // void SymbolVector(); // Programming interface to dynamic linking loader.
 
-    //static ErrorCode SearchDirectoryAdd(const wchar_t* directoryPath, LibraryDirectoryID& libraryDirectoryID);
-    //static ErrorCode SearchDirectoryRemove(LibraryDirectoryID& libraryDirectoryID);
+     //static ErrorCode SearchDirectoryAdd(const wchar_t* directoryPath, LibraryDirectoryID& libraryDirectoryID);
+     //static ErrorCode SearchDirectoryRemove(LibraryDirectoryID& libraryDirectoryID);
 
 #ifdef __cplusplus
 }
