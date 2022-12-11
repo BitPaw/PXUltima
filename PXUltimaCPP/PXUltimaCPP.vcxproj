@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\File\PXDataStream.hpp" />
     <ClInclude Include="Source\Math\Matrix.hpp" />
     <ClInclude Include="Source\Async\Lock.hpp" />
     <ClInclude Include="Source\Memory\Memory.hpp" />
@@ -27,6 +28,7 @@
     <ClInclude Include="Source\Math\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\File\PXDataStream.cpp" />
     <ClCompile Include="Source\Math\Matrix.cpp" />
     <ClCompile Include="Source\Async\Lock.cpp" />
     <ClCompile Include="Source\Memory\Memory.cpp" />

@@ -210,7 +210,7 @@
     <ClInclude Include="Source\Format\PXSound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Library\Library.h">
+    <ClInclude Include="Source\Library\PXLibrary.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Math\PXMath.h">
@@ -274,9 +274,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Compiler\PXCompiler.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\DataStream.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Format\PHP\PHP.h">
@@ -400,6 +397,15 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Language\PXTranslator.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Log\PXLog.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\Web\PXWebServer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\File\PXDataStream.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -593,7 +599,7 @@
     <ClCompile Include="Source\Format\PXSound.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Library\Library.c">
+    <ClCompile Include="Source\Library\PXLibrary.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Math\PXMath.c">
@@ -654,9 +660,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Compiler\PXCompiler.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\DataStream.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\PHP\PHP.c">
@@ -783,6 +786,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Language\PXTranslator.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Log\PXLog.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Web\PXWebServer.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File\PXDataStream.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

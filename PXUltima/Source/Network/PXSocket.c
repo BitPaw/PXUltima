@@ -803,7 +803,7 @@ void PXSocketClose(PXSocket* const pxSocket)
 {
     // If not used, we cant close.
     {
-        const unsigned char isSocketUsed = PXSocketIsCurrentlyUsed(pxSocket);
+        const PXBool isSocketUsed = PXSocketIsCurrentlyUsed(pxSocket);
 
         if(!isSocketUsed)
         {
@@ -826,7 +826,7 @@ void PXSocketClose(PXSocket* const pxSocket)
 ActionResult PXSocketBind(PXSocket* const pxSocket)
 {
     const int bindingResult = bind(pxSocket->ID, (struct sockaddr*)pxSocket->IP, pxSocket->IPSize);
-    const unsigned char sucessful = bindingResult == 0; //-1
+    const PXBool sucessful = bindingResult == 0; //-1
 
     if(!sucessful)
     {
@@ -853,7 +853,7 @@ ActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
 #endif
     const char opval = 1;
     const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(opval));
-    const unsigned char sucessful = optionsocketResult == 0;
+    const PXBool sucessful = optionsocketResult == 0;
 
     if(!sucessful)
     {
@@ -867,7 +867,7 @@ ActionResult PXSocketListen(PXSocket* const pxSocket)
 {
     const int maximalPXClientsWaitingInQueue = 10;
     const int listeningResult = listen(pxSocket->ID, maximalPXClientsWaitingInQueue);
-    const unsigned char sucessful = listeningResult == 0;
+    const PXBool sucessful = listeningResult == 0;
 
     if(listeningResult == -1)
     {
@@ -905,7 +905,7 @@ ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, con
 {
     // Check if socket is active and ready to send
     {
-        const unsigned char isReady = PXSocketIsCurrentlyUsed(pxSocket);
+        const PXBool isReady = PXSocketIsCurrentlyUsed(pxSocket);
 
         if(!isReady)
         {
@@ -915,7 +915,7 @@ ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, con
 
     // Do we even send anything? If not, quit
     {
-        const unsigned char hasDataToSend = inputBuffer && inputBufferSize > 0; // if NULL or 0 Bytes, return
+        const PXBool hasDataToSend = inputBuffer && inputBufferSize > 0; // if NULL or 0 Bytes, return
 
         if(!hasDataToSend)
         {
@@ -939,7 +939,7 @@ ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, con
 #elif OSWindows
             send(pxSocket->ID, data, inputBufferSize, 0);
 #endif
-        const unsigned char sucessfulSend = writtenBytes != -1;
+        const PXBool sucessfulSend = writtenBytes != -1;
 
         if(!sucessfulSend)
         {
@@ -959,7 +959,7 @@ ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer,
 
     // Check if socket is active and ready to send
     {
-        const unsigned char isReady = PXSocketIsCurrentlyUsed(pxSocket);
+        const PXBool isReady = PXSocketIsCurrentlyUsed(pxSocket);
 
         if(!isReady)
         {
@@ -1014,7 +1014,7 @@ ActionResult WindowsSocketAgentStartup()
 {
     WORD wVersionRequested = MAKEWORD(2, 2);
     WSADATA wsaData;
-    MemorySet(&wsaData, sizeof(WSADATA), 0);
+    MemoryClear(&wsaData, sizeof(WSADATA));
     const int result = WSAStartup(wVersionRequested, &wsaData);
 
     switch(result)

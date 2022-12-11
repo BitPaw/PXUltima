@@ -3,7 +3,7 @@
 
 #include <Error/ActionResult.h>
 #include <Format/Type.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Serialization/Serialization.h>
 
 #ifdef __cplusplus
@@ -29,9 +29,9 @@ extern "C"
 
 	PXPrivate YAMLLineType YAMLPeekLine(const void* line, const PXSize size);
 
-	PXPublic ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const outputStream);
+	PXPublic ActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
 
-	PXPublic ActionResult YAMLFileParse(DataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
+	PXPublic ActionResult YAMLFileParse(PXDataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
 
 #ifdef __cplusplus
 }

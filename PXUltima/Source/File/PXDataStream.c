@@ -1,4 +1,4 @@
-#include "DataStream.h"
+#include "PXDataStream.h"
 
 #include <OS/OSVersion.h>
 #include <Memory/PXMemory.h>
@@ -55,17 +55,17 @@
 #include <stdio.h>
 #endif
 
-void DataStreamConstruct(DataStream* const dataStream)
+void PXDataStreamConstruct(PXDataStream* const dataStream)
 {
-	MemoryClear(dataStream, sizeof(DataStream));
+	MemoryClear(dataStream, sizeof(PXDataStream));
 }
 
-void DataStreamDestruct(DataStream* const dataStream)
+void PXDataStreamDestruct(PXDataStream* const dataStream)
 {
 	switch (dataStream->DataLocation)
 	{
 	case FileLocationMappedFromDisk:
-		DataStreamUnmapFromMemory(dataStream);
+		PXDataStreamUnmapFromMemory(dataStream);
 		break;
 
 	case FileLocationMappedVirtual:
@@ -77,18 +77,18 @@ void DataStreamDestruct(DataStream* const dataStream)
 		break;
 
 	case FileLocationLinked:
-		DataStreamClose(dataStream);
+		PXDataStreamClose(dataStream);
 		break;
 	}
 }
 
 
-DataStreamCachingMode ConvertToFileCachingMode(const unsigned int value)
+PXDataStreamCachingMode ConvertToFileCachingMode(const unsigned int value)
 {
 	return FileCachingDefault;
 }
 
-unsigned int ConvertFromFileCachingMode(const DataStreamCachingMode fileCachingMode)
+unsigned int ConvertFromFileCachingMode(const PXDataStreamCachingMode fileCachingMode)
 {
 	switch (fileCachingMode)
 	{
@@ -120,9 +120,9 @@ unsigned int ConvertFromFileCachingMode(const DataStreamCachingMode fileCachingM
 }
 
 
-void DataStreamFromExternal(DataStream* const dataStream, void* const data, const PXSize dataSize)
+void PXDataStreamFromExternal(PXDataStream* const dataStream, void* const data, const PXSize dataSize)
 {
-	DataStreamConstruct(dataStream);
+	PXDataStreamConstruct(dataStream);
 
 	dataStream->Data = data;
 	dataStream->DataSize = dataSize;
@@ -130,29 +130,29 @@ void DataStreamFromExternal(DataStream* const dataStream, void* const data, cons
 	dataStream->DataLocation = FileLocationExternal;
 }
 
-ActionResult DataStreamOpenFromPathA(DataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
+ActionResult PXDataStreamOpenFromPathA(PXDataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
 {
 	PXByte filePathU[PathMaxSize];
 
 	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = DataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
+	ActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
 
 	return actionResult;
 }
 
-ActionResult DataStreamOpenFromPathW(DataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
+ActionResult PXDataStreamOpenFromPathW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
 {
 	PXCharUTF8 filePathU[PathMaxSize];
 
 	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = DataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
+	ActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
 
 	return actionResult;
 }
 
-ActionResult DataStreamOpenFromPathU(DataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const DataStreamCachingMode dataStreamCachingMode)
+ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
 {
 #if OSUnix
 	const char* readMode = 0u;
@@ -320,7 +320,7 @@ ActionResult DataStreamOpenFromPathU(DataStream* const dataStream, const PXTextU
 #endif
 }
 
-ActionResult DataStreamClose(DataStream* const dataStream)
+ActionResult PXDataStreamClose(PXDataStream* const dataStream)
 {
 #if OSUnix
 	const int closeResult = fclose(dataStream->FileHandle);
@@ -397,33 +397,33 @@ ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
 }
 #endif // OSWindows
 
-ActionResult DataStreamMapToMemoryA(DataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+ActionResult PXDataStreamMapToMemoryA(PXDataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
 {
 	PXByte filePathU[PathMaxSize];
 
 	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = DataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
+	ActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
 
 	return actionResult;
 }
 
-ActionResult DataStreamMapToMemoryW(DataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+ActionResult PXDataStreamMapToMemoryW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
 {
 	PXCharUTF8 filePathU[PathMaxSize];
 
 	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = DataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
+	ActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
 
 	return actionResult;
 }
 
-ActionResult DataStreamMapToMemoryU(DataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
 {
 	PXBool useLargeMemoryPages = PXNo;
 
-	DataStreamConstruct(dataStream);
+	PXDataStreamConstruct(dataStream);
 
 #if OSUnix
 
@@ -517,7 +517,7 @@ ActionResult DataStreamMapToMemoryU(DataStream* const dataStream, const PXTextUT
 
 	// Open file
 	{
-		const ActionResult openResult = DataStreamOpenFromPathU(dataStream, filePath, protectionMode, FileCachingSequential);
+		const ActionResult openResult = PXDataStreamOpenFromPathU(dataStream, filePath, protectionMode, FileCachingSequential);
 
 		ActionExitOnError(openResult);
 	}
@@ -681,7 +681,7 @@ ActionResult DataStreamMapToMemoryU(DataStream* const dataStream, const PXTextUT
 	return ActionSuccessful;
 }
 
-ActionResult DataStreamMapToMemory(DataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode)
+ActionResult PXDataStreamMapToMemory(PXDataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode)
 {
 	const void* data = MemoryVirtualAllocate(size, protectionMode);
 	const unsigned char successful = data != 0;
@@ -691,7 +691,7 @@ ActionResult DataStreamMapToMemory(DataStream* const dataStream, const PXSize si
 		return ActionSystemOutOfMemory;
 	}
 
-	DataStreamConstruct(dataStream);
+	PXDataStreamConstruct(dataStream);
 
 	dataStream->MemoryMode = protectionMode;
 	dataStream->DataLocation = FileLocationMappedVirtual;
@@ -701,7 +701,7 @@ ActionResult DataStreamMapToMemory(DataStream* const dataStream, const PXSize si
 	return ActionSuccessful;
 }
 
-ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
+ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 {
 	// Write pending data
 	unsigned char isWriteMapped = 0;
@@ -794,7 +794,7 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 			const BOOL endSuccessful = SetEndOfFile(dataStream->FileHandle);
 		}
 
-		const ActionResult closeFile = DataStreamClose(dataStream);
+		const ActionResult closeFile = PXDataStreamClose(dataStream);
 		const unsigned char sucessful = ActionSuccessful == closeFile;
 
 		if (!sucessful)
@@ -809,50 +809,56 @@ ActionResult DataStreamUnmapFromMemory(DataStream* const dataStream)
 #endif
 }
 
-PXSize DataStreamRemainingSize(DataStream* const dataStream)
+PXSize PXDataStreamRemainingSize(PXDataStream* const dataStream)
 {
 	return dataStream->DataSize - dataStream->DataCursor;
 }
 
-unsigned char DataStreamIsAtEnd(DataStream* const dataStream)
+unsigned char PXDataStreamIsAtEnd(PXDataStream* const dataStream)
 {
 	return dataStream->DataCursor >= dataStream->DataSize;
 }
 
-void* DataStreamCursorPosition(DataStream* const dataStream)
+void* PXDataStreamCursorPosition(PXDataStream* const dataStream)
 {
 	return  (unsigned char*)dataStream->Data + dataStream->DataCursor;
 }
 
-void DataStreamCursorToBeginning(DataStream* const dataStream)
+void PXDataStreamCursorToBeginning(PXDataStream* const dataStream)
 {
 	dataStream->DataCursor = 0;
 }
 
-void DataStreamCursorAdvance(DataStream* const dataStream, const PXSize steps)
+PXSize PXDataStreamCursorAdvance(PXDataStream* const dataStream, const PXSize steps)
 {
-	dataStream->DataCursor += steps; // Check overflow
+	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
+	const PXSize before = dataStream->DataCursor;
+	const PXSize maximalMove = MathMinimumIU(readableSize, steps); // Prevent cursor from going out of bounce
+
+	dataStream->DataCursor += maximalMove;
+
+	return maximalMove;
 }
 
-void DataStreamCursorRewind(DataStream* const dataStream, const PXSize steps)
+void PXDataStreamCursorRewind(PXDataStream* const dataStream, const PXSize steps)
 {
 	dataStream->DataCursor -= steps; // Check underflow
 }
 
-void DataStreamCursorToEnd(DataStream* const dataStream)
+void PXDataStreamCursorToEnd(PXDataStream* const dataStream)
 {
 	dataStream->DataCursor = dataStream->DataSize;
 }
 
-PXSize DataStreamReadNextLineInto(DataStream* const dataStream, void* exportBuffer, const PXSize exportBufferSize)
+PXSize PXDataStreamReadNextLineInto(PXDataStream* const dataStream, void* exportBuffer, const PXSize exportBufferSize)
 {
 	const PXSize dataPositionBefore = dataStream->DataCursor;
 
-	DataStreamSkipEndOfLineCharacters(dataStream);
+	PXDataStreamSkipEndOfLineCharacters(dataStream);
 
-	while (!DataStreamIsAtEnd(dataStream))
+	while (!PXDataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(dataStream);
+		const unsigned char* data = PXDataStreamCursorPosition(dataStream);
 		const unsigned char advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
@@ -860,7 +866,7 @@ PXSize DataStreamReadNextLineInto(DataStream* const dataStream, void* exportBuff
 			break;
 		}
 
-		DataStreamCursorAdvance(dataStream, 1u);
+		PXDataStreamCursorAdvance(dataStream, 1u);
 	}
 
 	const char* dataPoint = (char*)dataStream->Data + dataPositionBefore;
@@ -874,18 +880,18 @@ PXSize DataStreamReadNextLineInto(DataStream* const dataStream, void* exportBuff
 
 	TextCopyA(dataPoint, length, exportBuffer, length);
 
-	DataStreamSkipEndOfLineCharacters(dataStream);
+	PXDataStreamSkipEndOfLineCharacters(dataStream);
 
 	return length;
 }
 
-PXSize DataStreamSkipEndOfLineCharacters(DataStream* const dataStream)
+PXSize PXDataStreamSkipEndOfLineCharacters(PXDataStream* const dataStream)
 {
 	const PXSize dataPositionBefore = dataStream->DataCursor;
 
-	while (!DataStreamIsAtEnd(dataStream))
+	while (!PXDataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(dataStream);
+		const unsigned char* data = PXDataStreamCursorPosition(dataStream);
 		const unsigned char advance = IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
@@ -893,19 +899,19 @@ PXSize DataStreamSkipEndOfLineCharacters(DataStream* const dataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(dataStream, 1u);
+		PXDataStreamCursorAdvance(dataStream, 1u);
 	}
 
 	return dataStream->DataCursor - dataPositionBefore;
 }
 
-PXSize DataStreamSkipEmptySpace(DataStream* const dataStream)
+PXSize PXDataStreamSkipEmptySpace(PXDataStream* const dataStream)
 {
 	const PXSize oldPosition = dataStream->DataCursor;
 
-	while (!DataStreamIsAtEnd(dataStream))
+	while (!PXDataStreamIsAtEnd(dataStream))
 	{
-		const char* data = DataStreamCursorPosition(dataStream);
+		const char* data = PXDataStreamCursorPosition(dataStream);
 		const PXBool advance = IsEmptySpace(*data) || IsTab(*data);
 
 		if (!advance)
@@ -913,19 +919,19 @@ PXSize DataStreamSkipEmptySpace(DataStream* const dataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(dataStream, 1u);
+		PXDataStreamCursorAdvance(dataStream, 1u);
 	}
 
 	return dataStream->DataCursor - oldPosition;
 }
 
-PXSize DataStreamSkipBlock(DataStream* const dataStream)
+PXSize PXDataStreamSkipBlock(PXDataStream* const dataStream)
 {
 	const PXSize oldPosition = dataStream->DataCursor;
 
-	while (!DataStreamIsAtEnd(dataStream))
+	while (!PXDataStreamIsAtEnd(dataStream))
 	{
-		const char* data = DataStreamCursorPosition(dataStream);
+		const char* data = PXDataStreamCursorPosition(dataStream);
 		const char character = *data;
 		const PXBool advance = !IsEndOfString(character) and !IsEmptySpace(character) and !IsEndOfLineCharacter(character);
 
@@ -934,30 +940,30 @@ PXSize DataStreamSkipBlock(DataStream* const dataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(dataStream, 1u);
+		PXDataStreamCursorAdvance(dataStream, 1u);
 	}
 
 	return dataStream->DataCursor - oldPosition;
 }
 
-PXSize DataStreamSkipToNextBlock(DataStream* const dataStream)
+PXSize PXDataStreamSkipToNextBlock(PXDataStream* const dataStream)
 {
 	const PXSize oldPosition = dataStream->DataCursor;
 
-	DataStreamSkipBlock(dataStream);
+	PXDataStreamSkipBlock(dataStream);
 
-	DataStreamSkipEmptySpace(dataStream);
+	PXDataStreamSkipEmptySpace(dataStream);
 
 	return dataStream->DataCursor - oldPosition;
 }
 
-PXSize DataStreamSkipLine(DataStream* const dataStream)
+PXSize PXDataStreamSkipLine(PXDataStream* const dataStream)
 {
 	const PXSize positionBefore = dataStream->DataCursor;
 
-	while (!DataStreamIsAtEnd(dataStream))
+	while (!PXDataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(dataStream);
+		const unsigned char* data = PXDataStreamCursorPosition(dataStream);
 		const unsigned char advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
@@ -965,166 +971,418 @@ PXSize DataStreamSkipLine(DataStream* const dataStream)
 			break;
 		}
 
-		DataStreamCursorAdvance(dataStream, 1u);
+		PXDataStreamCursorAdvance(dataStream, 1u);
 	}
 
-	DataStreamSkipEndOfLineCharacters(dataStream);
+	PXDataStreamSkipEndOfLineCharacters(dataStream);
 
 	const PXSize skippedBytes = dataStream->DataCursor - positionBefore;
 
 	return skippedBytes;
 }
 
-PXSize DataStreamReadTextIU8(DataStream* const dataStream, PXInt8U* const number)
+PXSize PXDataStreamReadTextIU8(PXDataStream* const dataStream, PXInt8U* const number)
 {
 	unsigned int value = 0;
-	const PXSize size = DataStreamReadTextI(dataStream, &value);
+	const PXSize size = PXDataStreamReadTextI(dataStream, &value);
 
 	*number = value;
 
 	return size;
 }
 
-PXSize DataStreamReadTextI(DataStream* const dataStream, int* const number)
+PXSize PXDataStreamReadTextI(PXDataStream* const dataStream, int* const number)
 {
-	const void* const adress = DataStreamCursorPosition(dataStream);
-	const PXSize size = DataStreamRemainingSize(dataStream);
+	const void* const adress = PXDataStreamCursorPosition(dataStream);
+	const PXSize size = PXDataStreamRemainingSize(dataStream);
 	const PXSize sizeRead = TextToIntA(adress, size, number);
 
-	DataStreamCursorAdvance(dataStream, sizeRead);
+	PXDataStreamCursorAdvance(dataStream, sizeRead);
 
 	return sizeRead;
 }
 
-PXSize DataStreamReadC(DataStream* const dataStream, char* const value)
+PXSize PXDataStreamReadI8S(PXDataStream* const dataStream, PXInt8S* const value)
 {
-	return DataStreamReadP(dataStream, value, sizeof(char));
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt8S));
 }
 
-PXSize DataStreamReadCU(DataStream* const dataStream, unsigned char* const value)
+PXSize PXDataStreamReadI8SV(PXDataStream* const dataStream, PXInt8S* const valueList, const PXSize valueListSize)
 {
-	return DataStreamReadP(dataStream, value, sizeof(unsigned char));
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt8S) * valueListSize);
 }
 
-PXSize DataStreamReadS(DataStream* const dataStream, short* const value, const Endian endian)
+PXSize PXDataStreamReadI8U(PXDataStream* const dataStream, PXInt8U* const value)
 {
-	return DataStreamReadSU(dataStream, (unsigned short*)value, endian);
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt8U));
 }
 
-PXSize DataStreamReadSU(DataStream* const dataStream, unsigned short* const value, const Endian endian)
+PXSize PXDataStreamReadI8UV(PXDataStream* const dataStream, PXInt8U* const valueList, const PXSize valueListSize)
 {
-	const PXSize dataSize = sizeof(unsigned short);
-	const unsigned char* data = DataStreamCursorPosition(dataStream);
-	const unsigned short* dataValue = (unsigned short*)data;
-
-	*value = *dataValue;
-
-	EndianSwap(value, dataSize, endian, EndianCurrentSystem);
-
-	DataStreamCursorAdvance(dataStream, dataSize);
-
-	return dataSize;
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt8U) * valueListSize);
 }
 
-PXSize DataStreamReadI(DataStream* const dataStream, int* const value, const Endian endian)
+PXSize PXDataStreamReadI16S(PXDataStream* const dataStream, PXInt16S* const value)
 {
-	return DataStreamReadIU(dataStream, (unsigned int*)value, endian);
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt16S));
 }
 
-PXSize DataStreamReadIU(DataStream* const dataStream, unsigned int* const value, const Endian endian)
+PXSize PXDataStreamReadI16SV(PXDataStream* const dataStream, PXInt16S* const valueList, const PXSize valueListSize)
 {
-	const PXSize dataSize = sizeof(unsigned int);
-	const unsigned char* data = DataStreamCursorPosition(dataStream);
-	const unsigned int* dataValue = (unsigned int*)data;
-
-	*value = *dataValue;
-
-	EndianSwap(value, dataSize, endian, EndianCurrentSystem);
-
-	DataStreamCursorAdvance(dataStream, dataSize);
-
-	return dataSize;
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt16S) * valueListSize);
 }
 
-PXSize DataStreamReadLL(DataStream* const dataStream, long long* const value, const Endian endian)
+PXSize PXDataStreamReadI16SE(PXDataStream* const dataStream, PXInt16S* const value, const Endian endian)
 {
-	return DataStreamReadLLU(dataStream, (unsigned long long*)value, endian);
+	const PXSize dataSize = sizeof(PXInt16S);
+	const PXInt16S* const data = (const PXInt16S* const)PXDataStreamCursorPosition(dataStream);
+	const PXSize movedSteps = PXDataStreamCursorAdvance(dataStream, dataSize);
+
+	*value = *data;
+
+	EndianSwap(value, movedSteps, endian, EndianCurrentSystem);
+
+	return movedSteps;
 }
 
-PXSize DataStreamReadLLU(DataStream* const dataStream, unsigned long long* const value, const Endian endian)
+PXSize PXDataStreamReadI16SVE(PXDataStream* const dataStream, PXInt16S* const valueList, const PXSize valueListSize, const Endian endian)
 {
-	const PXSize dataSize = sizeof(unsigned long long);
-	const unsigned char* data = DataStreamCursorPosition(dataStream);
-	const unsigned long long* dataValue = (unsigned long long*)data;
+	PXSize accumulator = 0;
 
-	*value = *dataValue;
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXDataStreamReadI16SE(dataStream, &valueList[i], endian);
+	}
 
-	EndianSwap(value, dataSize, endian, EndianCurrentSystem);
-
-	DataStreamCursorAdvance(dataStream, dataSize);
-
-	return dataSize;
+	return accumulator;
 }
 
-PXSize DataStreamReadF(DataStream* const dataStream, float* const value)
+PXSize PXDataStreamReadI16U(PXDataStream* const dataStream, PXInt16U* const value)
 {
-	const PXSize dataSize = sizeof(float);
-	const PXSize writtenBytes = DataStreamReadP(dataStream, value, dataSize);
-
-	return writtenBytes;
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt16U));
 }
 
-PXSize DataStreamReadD(DataStream* const dataStream, double* const value)
+PXSize PXDataStreamReadI16UV(PXDataStream* const dataStream, PXInt16U* const valueList, const PXSize valueListSize)
 {
-	const PXSize dataSize = sizeof(double);
-	const PXSize writtenBytes = DataStreamReadP(dataStream, value, dataSize);
-
-	return writtenBytes;
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt16U) * valueListSize);
 }
 
-PXSize DataStreamReadP(DataStream* const dataStream, void* value, const PXSize length)
+PXSize PXDataStreamReadI16UE(PXDataStream* const dataStream, PXInt16U* const value, const Endian endian)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
-	const PXSize readableSize = DataStreamRemainingSize(dataStream);
-	const PXSize copyedBytes = MemoryCopy(currentPosition, readableSize, value, length);
+	const PXSize dataSize = sizeof(PXInt16U);
+	const PXInt16U* const data = (const PXInt16U* const)PXDataStreamCursorPosition(dataStream);
+	const PXSize movedSteps = PXDataStreamCursorAdvance(dataStream, dataSize);
 
-	DataStreamCursorAdvance(dataStream, copyedBytes);
+	*value = *data;
 
-	return copyedBytes;
+	EndianSwap(value, movedSteps, endian, EndianCurrentSystem);
+
+	return movedSteps;
 }
 
-PXSize DataStreamRead(DataStream* const dataStream, const void* format, const PXSize length, ...)
+PXSize PXDataStreamReadI16UVE(PXDataStream* const dataStream, PXInt16U* const valueList, const PXSize valueListSize, const Endian endian)
 {
-	return 0;
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXDataStreamReadI16UE(dataStream, &valueList[i], endian);
+	}
+
+	return accumulator;
 }
 
-PXSize DataStreamReadA(DataStream* const dataStream, char* const value, const PXSize length)
+PXSize PXDataStreamReadI32S(PXDataStream* const dataStream, PXInt32S* const value)
 {
-	const PXSize size = DataStreamReadP(dataStream, value, length);
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt32S));
+}
+
+PXSize PXDataStreamReadI32SV(PXDataStream* const dataStream, PXInt32S* const valueList, const PXSize valueListSize)
+{
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt32S) * valueListSize);
+}
+
+PXSize PXDataStreamReadI32SE(PXDataStream* const dataStream, PXInt32S* const value, const Endian endian)
+{
+	const PXSize dataSize = sizeof(PXInt32S);
+	const PXInt32S* const data = (const PXInt32S* const)PXDataStreamCursorPosition(dataStream);
+	const PXSize movedSteps = PXDataStreamCursorAdvance(dataStream, dataSize);
+
+	*value = *data;
+
+	EndianSwap(value, movedSteps, endian, EndianCurrentSystem);
+
+	return movedSteps;
+}
+
+PXSize PXDataStreamReadI32SVE(PXDataStream* const dataStream, PXInt32S* const valueList, const PXSize valueListSize, const Endian endian)
+{
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXDataStreamReadI32SE(dataStream, &valueList[i], endian);
+	}
+
+	return accumulator;
+}
+
+PXSize PXDataStreamReadI32U(PXDataStream* const dataStream, PXInt32U* const value)
+{
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt32U));
+}
+
+PXSize PXDataStreamReadI32UV(PXDataStream* const dataStream, PXInt32U* const valueList, const PXSize valueListSize)
+{
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt32U) * valueListSize);
+}
+
+PXSize PXDataStreamReadI32UE(PXDataStream* const dataStream, PXInt32U* const value, const Endian endian)
+{
+	const PXSize dataSize = sizeof(PXInt32U);
+	const PXInt32U* const data = (const PXInt32U* const)PXDataStreamCursorPosition(dataStream);
+	const PXSize movedSteps = PXDataStreamCursorAdvance(dataStream, dataSize);
+
+	*value = *data;
+
+	EndianSwap(value, movedSteps, endian, EndianCurrentSystem);
+
+	return movedSteps;
+}
+
+PXSize PXDataStreamReadI32UVE(PXDataStream* const dataStream, PXInt32U* const valueList, const PXSize valueListSize, const Endian endian)
+{
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXDataStreamReadI32UE(dataStream, &valueList[i], endian);
+	}
+
+	return accumulator;
+}
+
+PXSize PXDataStreamReadI64S(PXDataStream* const dataStream, PXInt64S* const value)
+{
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt64S));
+}
+
+PXSize PXDataStreamReadI64SV(PXDataStream* const dataStream, PXInt64S* const valueList, const PXSize valueListSize)
+{
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt64S) * valueListSize);
+}
+
+PXSize PXDataStreamReadI64SE(PXDataStream* const dataStream, PXInt64S* const value, const Endian endian)
+{
+	const PXSize dataSize = sizeof(PXInt64S);
+	const PXInt64S* const data = (const PXInt64S* const)PXDataStreamCursorPosition(dataStream);
+	const PXSize movedSteps = PXDataStreamCursorAdvance(dataStream, dataSize);
+
+	*value = *data;
+
+	EndianSwap(value, movedSteps, endian, EndianCurrentSystem);
+
+	return movedSteps;
+}
+
+PXSize PXDataStreamReadI64VE(PXDataStream* const dataStream, PXInt64S* const valueList, const PXSize valueListSize, const Endian endian)
+{
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXDataStreamReadI64SE(dataStream, &valueList[i], endian);
+	}
+
+	return accumulator;
+}
+
+PXSize PXDataStreamReadI64U(PXDataStream* const dataStream, PXInt64U* const value)
+{
+	return PXDataStreamReadB(dataStream, value, sizeof(PXInt64U));
+}
+
+PXSize PXDataStreamReadI64UV(PXDataStream* const dataStream, PXInt64U* const valueList, const PXSize valueListSize)
+{
+	return PXDataStreamReadB(dataStream, valueList, sizeof(PXInt64U) * valueListSize);
+}
+
+PXSize PXDataStreamReadI64UE(PXDataStream* const dataStream, PXInt64U* const value, const Endian endian)
+{
+	const PXSize dataSize = sizeof(PXInt64U);
+	const PXInt64U* const data = (const PXInt64U* const)PXDataStreamCursorPosition(dataStream);
+	const PXSize movedSteps = PXDataStreamCursorAdvance(dataStream, dataSize);
+
+	*value = *data;
+
+	EndianSwap(value, movedSteps, endian, EndianCurrentSystem);
+
+	return movedSteps;
+}
+
+PXSize PXDataStreamReadI64UVE(PXDataStream* const dataStream, PXInt64U* const valueList, const PXSize valueListSize, const Endian endian)
+{
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXDataStreamReadI64UE(dataStream, &valueList[i], endian);
+	}
+
+	return accumulator;
+}
+
+
+PXSize PXDataStreamReadF(PXDataStream* const dataStream, float* const value)
+{
+	return PXDataStreamReadB(dataStream, value, sizeof(float));
+}
+
+PXSize PXDataStreamReadFV(PXDataStream* const dataStream, float* const valueList, const PXSize valueListSize)
+{
+	return PXDataStreamReadB(dataStream, valueList, sizeof(float) * valueListSize);
+}
+
+PXSize PXDataStreamReadD(PXDataStream* const dataStream, double* const value)
+{
+	return PXDataStreamReadB(dataStream, value, sizeof(double));
+}
+
+PXSize PXDataStreamReadDV(PXDataStream* const dataStream, double* const valueList, const PXSize valueListSize)
+{
+	return PXDataStreamReadB(dataStream, valueList, sizeof(double) * valueListSize);
+}
+
+PXSize PXDataStreamReadMultible(PXDataStream* const dataStream, PXDataStreamElementType* const pxDataStreamElementList, const PXSize pxDataStreamElementListSize)
+{
+	PXSize totalReadBytes = 0;
+
+	for (size_t i = 0; i < pxDataStreamElementListSize; ++i)
+	{
+		PXDataStreamElementType* const dataStreamElement = &pxDataStreamElementList[i];
+		
+		switch (dataStreamElement->Type)
+		{
+			case PXDataTypeInt8S:
+				totalReadBytes += PXDataStreamReadI8S(dataStream, (PXInt8S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeInt8U:
+				totalReadBytes += PXDataStreamReadI8U(dataStream, (PXInt8S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt16S:
+				totalReadBytes += PXDataStreamReadI16S(dataStream, (PXInt16S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt16U:
+				totalReadBytes += PXDataStreamReadI16U(dataStream, (PXInt16U*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt32S:
+				totalReadBytes += PXDataStreamReadI32S(dataStream, (PXInt32S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt32U:
+				totalReadBytes += PXDataStreamReadI32U(dataStream, (PXInt32U*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt64S:
+				totalReadBytes += PXDataStreamReadI64S(dataStream, (PXInt64S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt64U:
+				totalReadBytes += PXDataStreamReadI64U(dataStream, (PXInt64U*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeBEInt16S:
+				totalReadBytes += PXDataStreamReadI16S(dataStream, (PXInt16S*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt16U:
+				totalReadBytes += PXDataStreamReadI16U(dataStream, (PXInt16U*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt32S:
+				totalReadBytes += PXDataStreamReadI32S(dataStream, (PXInt32S*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt32U:
+				totalReadBytes += PXDataStreamReadI32U(dataStream, (PXInt32U*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt64S:
+				totalReadBytes += PXDataStreamReadI64S(dataStream, (PXInt64S*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt64U:
+				totalReadBytes += PXDataStreamReadI64U(dataStream, (PXInt64U*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataStreamFloat:
+				totalReadBytes += PXDataStreamReadF(dataStream, (float*)dataStreamElement->Adress);
+				break;
+
+			case PXDataStreamDouble:
+				totalReadBytes += PXDataStreamReadD(dataStream, (double*)dataStreamElement->Adress);
+				break;
+
+			case PXDataTypeTypeInvalid:
+			default:
+				break;
+		}
+	}
+
+	return totalReadBytes;
+}
+
+
+PXSize PXDataStreamReadB(PXDataStream* const dataStream, void* value, const PXSize length)
+{
+	const void* currentPosition = PXDataStreamCursorPosition(dataStream);
+	const PXSize moveSize = PXDataStreamCursorAdvance(dataStream, length);
+
+	MemoryCopy(currentPosition, moveSize, value, moveSize);
+
+	return moveSize;
+}
+
+PXSize PXDataStreamReadTextA(PXDataStream* const dataStream, PXTextASCII value, const PXSize length)
+{
+	const PXSize size = PXDataStreamReadB(dataStream, value, length);
 
 	value[size] = 0;
 
 	return size;
 }
 
-PXSize DataStreamReadW(DataStream* const dataStream, wchar_t* const value, const PXSize length)
+PXSize PXDataStreamReadTextW(PXDataStream* const dataStream, PXTextUNICODE value, const PXSize length)
 {
-	const PXSize size = DataStreamReadP(dataStream, value, length);
+	const PXSize size = PXDataStreamReadB(dataStream, value, length);
 
 	value[size] = 0;
 
 	return size;
 }
 
-void DataStreamReadUntil(DataStream* const dataStream, void* value, const PXSize length, const char character)
+PXSize PXDataStreamReadTextU(PXDataStream* const dataStream, PXTextUNICODE value, const PXSize length)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
+	const PXSize size = PXDataStreamReadB(dataStream, value, length);
+
+	value[size] = 0;
+
+	return size;
+}
+
+void PXDataStreamReadUntil(PXDataStream* const dataStream, void* value, const PXSize length, const char character)
+{
+	const unsigned char* currentPosition = PXDataStreamCursorPosition(dataStream);
 
 	PXSize lengthCopy = 0;
 
-	while (!DataStreamIsAtEnd(dataStream))
+	while (!PXDataStreamIsAtEnd(dataStream))
 	{
-		const unsigned char* data = DataStreamCursorPosition(dataStream);
+		const unsigned char* data = PXDataStreamCursorPosition(dataStream);
 		const unsigned char advance = *data != character && length <= lengthCopy;
 
 		if (!advance)
@@ -1134,148 +1392,148 @@ void DataStreamReadUntil(DataStream* const dataStream, void* value, const PXSize
 
 		++lengthCopy;
 
-		DataStreamCursorAdvance(dataStream, 1u);
+		PXDataStreamCursorAdvance(dataStream, 1u);
 	}
 
-	const PXSize readableSize = DataStreamRemainingSize(dataStream);
+	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
 
 	MemoryCopy(currentPosition, readableSize, value, lengthCopy);
 }
 
-unsigned char DataStreamReadAndCompare(DataStream* const dataStream, const void* value, const PXSize length)
+unsigned char PXDataStreamReadAndCompare(PXDataStream* const dataStream, const void* value, const PXSize length)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
-	const PXSize readableSize = DataStreamRemainingSize(dataStream);
+	const unsigned char* currentPosition = PXDataStreamCursorPosition(dataStream);
+	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
 
 	const unsigned char result = MemoryCompare(currentPosition, readableSize, value, length);
 
 	if (result)
 	{
-		DataStreamCursorAdvance(dataStream, length);
+		PXDataStreamCursorAdvance(dataStream, length);
 	}
 
 	return result;
 }
 
-PXSize DataStreamWriteC(DataStream* const dataStream, const char value)
+PXSize PXDataStreamWriteC(PXDataStream* const dataStream, const char value)
 {
-	return DataStreamWriteCU(dataStream, value);
+	return PXDataStreamWriteCU(dataStream, value);
 }
 
-PXSize DataStreamWriteCU(DataStream* const dataStream, const unsigned char value)
+PXSize PXDataStreamWriteCU(PXDataStream* const dataStream, const unsigned char value)
 {
 	const PXSize dataSize = sizeof(unsigned char);
 
-	DataStreamWriteP(dataStream, &value, dataSize);
+	PXDataStreamWriteP(dataStream, &value, dataSize);
 
 	return dataSize;
 }
 
-PXSize DataStreamWriteS(DataStream* const dataStream, const short value, const Endian endian)
+PXSize PXDataStreamWriteS(PXDataStream* const dataStream, const short value, const Endian endian)
 {
-	return DataStreamWriteSU(dataStream, value, endian);
+	return PXDataStreamWriteSU(dataStream, value, endian);
 }
 
-PXSize DataStreamWriteSU(DataStream* const dataStream, const unsigned short value, const Endian endian)
+PXSize PXDataStreamWriteSU(PXDataStream* const dataStream, const unsigned short value, const Endian endian)
 {
 	const PXSize dataSize = sizeof(unsigned short);
 	unsigned short dataValue = value;
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteP(dataStream, &dataValue, dataSize);
+	PXDataStreamWriteP(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
 
-PXSize DataStreamWriteI(DataStream* const dataStream, const int value, const Endian endian)
+PXSize PXDataStreamWriteI(PXDataStream* const dataStream, const int value, const Endian endian)
 {
-	return DataStreamWriteIU(dataStream, value, endian);
+	return PXDataStreamWriteIU(dataStream, value, endian);
 }
 
-PXSize DataStreamWriteIU(DataStream* const dataStream, const unsigned int value, const Endian endian)
+PXSize PXDataStreamWriteIU(PXDataStream* const dataStream, const unsigned int value, const Endian endian)
 {
 	const PXSize dataSize = sizeof(unsigned int);
 	unsigned int dataValue = value;
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteP(dataStream, &dataValue, dataSize);
+	PXDataStreamWriteP(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
 
-PXSize DataStreamWriteLL(DataStream* const dataStream, const long long value, const Endian endian)
+PXSize PXDataStreamWriteLL(PXDataStream* const dataStream, const long long value, const Endian endian)
 {
-	return DataStreamWriteLLU(dataStream, value, endian);
+	return PXDataStreamWriteLLU(dataStream, value, endian);
 }
 
-PXSize DataStreamWriteLLU(DataStream* const dataStream, const unsigned long long value, const Endian endian)
+PXSize PXDataStreamWriteLLU(PXDataStream* const dataStream, const unsigned long long value, const Endian endian)
 {
 	const PXSize dataSize = sizeof(unsigned long long);
 	unsigned long long dataValue = value;
 
 	EndianSwap(&dataValue, dataSize, EndianCurrentSystem, endian);
 
-	DataStreamWriteP(dataStream, &dataValue, dataSize);
+	PXDataStreamWriteP(dataStream, &dataValue, dataSize);
 
 	return dataSize;
 }
 
-PXSize DataStreamWriteF(DataStream* const dataStream, const float value)
+PXSize PXDataStreamWriteF(PXDataStream* const dataStream, const float value)
 {
-	return DataStreamWriteP(dataStream, &value, sizeof(float));
+	return PXDataStreamWriteP(dataStream, &value, sizeof(float));
 }
 
-PXSize DataStreamWriteD(DataStream* const dataStream, const double value)
+PXSize PXDataStreamWriteD(PXDataStream* const dataStream, const double value)
 {
-	return DataStreamWriteP(dataStream, &value, sizeof(double));
+	return PXDataStreamWriteP(dataStream, &value, sizeof(double));
 }
 
-PXSize DataStreamWriteA(DataStream* const dataStream, const char* const text, PXSize textSize)
+PXSize PXDataStreamWriteA(PXDataStream* const dataStream, const char* const text, PXSize textSize)
 {
 #if 1
-	return DataStreamWriteP(dataStream, text, textSize);
+	return PXDataStreamWriteP(dataStream, text, textSize);
 #else
-	const PXSize writableSize = DataStreamRemainingSize(dataStream);
-	char* const currentPosition = (char* const)DataStreamCursorPosition(dataStream);
+	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
+	char* const currentPosition = (char* const)PXDataStreamCursorPosition(dataStream);
 
 	const PXSize writtenBytes = TextCopyA(text, textSize, currentPosition, writableSize);
 
-	DataStreamCursorAdvance(dataStream, writtenBytes);
+	PXDataStreamCursorAdvance(dataStream, writtenBytes);
 
 	return writtenBytes;
 #endif
 }
 
-PXSize DataStreamWriteW(DataStream* const dataStream, const wchar_t* const text, PXSize textSize)
+PXSize PXDataStreamWriteW(PXDataStream* const dataStream, const wchar_t* const text, PXSize textSize)
 {
-	const PXSize writableSize = DataStreamRemainingSize(dataStream);
-	wchar_t* const currentPosition = (wchar_t* const)DataStreamCursorPosition(dataStream);
+	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
+	wchar_t* const currentPosition = (wchar_t* const)PXDataStreamCursorPosition(dataStream);
 
 	const PXSize writtenBytes = TextCopyW(text, textSize, currentPosition, writableSize);
 
-	DataStreamCursorAdvance(dataStream, writtenBytes);
+	PXDataStreamCursorAdvance(dataStream, writtenBytes);
 
 	return writtenBytes;
 }
 
-PXSize DataStreamWriteP(DataStream* const dataStream, const void* value, const PXSize length)
+PXSize PXDataStreamWriteP(PXDataStream* const dataStream, const void* value, const PXSize length)
 {
-	const PXSize writableSize = DataStreamRemainingSize(dataStream);
-	unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
+	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
+	unsigned char* currentPosition = PXDataStreamCursorPosition(dataStream);
 
 	const PXSize copyedBytes = MemoryCopy(value, length, currentPosition, writableSize);
 
-	DataStreamCursorAdvance(dataStream, copyedBytes);
+	PXDataStreamCursorAdvance(dataStream, copyedBytes);
 
 	return copyedBytes;
 }
 
-PXSize DataStreamWriteFill(DataStream* const dataStream, const unsigned char value, const PXSize length)
+PXSize PXDataStreamWriteFill(PXDataStream* const dataStream, const unsigned char value, const PXSize length)
 {
-	const PXSize writableSize = DataStreamRemainingSize(dataStream);
-	unsigned char* beforePosition = DataStreamCursorPosition(dataStream);
+	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
+	unsigned char* beforePosition = PXDataStreamCursorPosition(dataStream);
 	const PXSize write = MathMinimumIU(writableSize, length);
 
 	for (PXSize i = 0; i < write; ++i)
@@ -1283,19 +1541,19 @@ PXSize DataStreamWriteFill(DataStream* const dataStream, const unsigned char val
 		beforePosition[i] = value;
 	}
 
-	DataStreamCursorAdvance(dataStream, write);
+	PXDataStreamCursorAdvance(dataStream, write);
 
 	return write;
 }
 
-PXSize DataStreamWrite(DataStream* const dataStream, const char* format, ...)
+PXSize PXDataStreamWrite(PXDataStream* const dataStream, const char* format, ...)
 {
-	const unsigned char* currentPosition = DataStreamCursorPosition(dataStream);
+	const unsigned char* currentPosition = PXDataStreamCursorPosition(dataStream);
 
 	va_list args;
 	va_start(args, format);
 
-	const PXSize writableSize = DataStreamRemainingSize(dataStream);
+	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
 	const int writtenBytes = PrintSVN(currentPosition, writableSize, format, args);
 
 	va_end(args);
@@ -1309,56 +1567,56 @@ PXSize DataStreamWrite(DataStream* const dataStream, const char* format, ...)
 		}
 	}
 
-	DataStreamCursorAdvance(dataStream, writtenBytes);
+	PXDataStreamCursorAdvance(dataStream, writtenBytes);
 
 	return writtenBytes;
 }
 
-PXSize DataStreamWriteAtP(DataStream* const dataStream, const void* const data, const PXSize dataSize, const PXSize index)
+PXSize PXDataStreamWriteAtP(PXDataStream* const dataStream, const void* const data, const PXSize dataSize, const PXSize index)
 {
 	const PXSize positionBefore = dataStream->DataCursor; // save current position
 
 	dataStream->DataCursor = index; // jump to offset
 
-	const PXSize writtenBytes = DataStreamWriteP(dataStream, data, dataSize); // Length
+	const PXSize writtenBytes = PXDataStreamWriteP(dataStream, data, dataSize); // Length
 
 	dataStream->DataCursor = positionBefore; // Reset old position
 
 	return writtenBytes;
 }
 
-PXSize DataStreamWriteAtCU(DataStream* const dataStream, const unsigned char value, const PXSize index)
+PXSize PXDataStreamWriteAtCU(PXDataStream* const dataStream, const unsigned char value, const PXSize index)
 {
-	return DataStreamWriteAtP(dataStream, &value, sizeof(unsigned char), index);
+	return PXDataStreamWriteAtP(dataStream, &value, sizeof(unsigned char), index);
 }
 
-PXSize DataStreamWriteAtSU(DataStream* const dataStream, const unsigned short value, const Endian endian, const PXSize index)
+PXSize PXDataStreamWriteAtSU(PXDataStream* const dataStream, const unsigned short value, const Endian endian, const PXSize index)
 {
 	const PXSize positionBefore = dataStream->DataCursor; // save current position
 
 	dataStream->DataCursor = index; // jump to offset
 
-	DataStreamWriteSU(dataStream, value, endian); // Length
+	PXDataStreamWriteSU(dataStream, value, endian); // Length
 
 	dataStream->DataCursor = positionBefore; // Reset old position
 
 	return 2u;
 }
 
-PXSize DataStreamWriteAtIU(DataStream* const dataStream, const unsigned int value, const Endian endian, const PXSize index)
+PXSize PXDataStreamWriteAtIU(PXDataStream* const dataStream, const unsigned int value, const Endian endian, const PXSize index)
 {
 	const PXSize positionBefore = dataStream->DataCursor; // save current position
 
 	dataStream->DataCursor = index; // jump to offset
 
-	DataStreamWriteIU(dataStream, value, endian); // Length
+	PXDataStreamWriteIU(dataStream, value, endian); // Length
 
 	dataStream->DataCursor = positionBefore; // Reset old position
 
 	return 4u;
 }
 
-PXSize DataStreamSkipBitsToNextByte(DataStream* const dataStream)
+PXSize PXDataStreamSkipBitsToNextByte(PXDataStream* const dataStream)
 {
 	const unsigned char hasAnyBitConsumed = dataStream->DataCursorBitOffset > 0;
 
@@ -1371,16 +1629,16 @@ PXSize DataStreamSkipBitsToNextByte(DataStream* const dataStream)
 	return 0;
 }
 
-PXSize DataStreamCursorMoveBits(DataStream* const dataStream, const PXSize amountOfBits)
+PXSize PXDataStreamCursorMoveBits(PXDataStream* const dataStream, const PXSize amountOfBits)
 {
 	dataStream->DataCursorBitOffset += amountOfBits;
 
-	DataStreamBitsAllign(dataStream);
+	PXDataStreamBitsAllign(dataStream);
 
 	return 0;
 }
 
-PXSize DataStreamBitsAllign(DataStream* const dataStream)
+PXSize PXDataStreamBitsAllign(PXDataStream* const dataStream)
 {
 	while (dataStream->DataCursorBitOffset >= 8u) // Move a Byte__ at the time forward, 8 Bits = 1 Byte__.
 	{
@@ -1389,11 +1647,11 @@ PXSize DataStreamBitsAllign(DataStream* const dataStream)
 	}
 }
 
-PXSize DataStreamPeekBits(DataStream* const dataStream, const PXSize amountOfBits)
+PXSize PXDataStreamPeekBits(PXDataStream* const dataStream, const PXSize amountOfBits)
 {
 	unsigned int bitMask = ((1u << amountOfBits) - 1u) << dataStream->DataCursorBitOffset; // 0000111111
 	unsigned int bitBlock;
-	unsigned char* a =  DataStreamCursorPosition(dataStream);
+	unsigned char* a =  PXDataStreamCursorPosition(dataStream);
 	unsigned char* b = a + 1;
 	unsigned char* c = a + 2;
 	unsigned char* d = a + 3;
@@ -1430,18 +1688,18 @@ PXSize DataStreamPeekBits(DataStream* const dataStream, const PXSize amountOfBit
 	return result;
 }
 
-PXSize DataStreamReadBits(DataStream* const dataStream, const PXSize amountOfBits)
+PXSize PXDataStreamReadBits(PXDataStream* const dataStream, const PXSize amountOfBits)
 {
-	const PXSize result = DataStreamPeekBits(dataStream, amountOfBits);
+	const PXSize result = PXDataStreamPeekBits(dataStream, amountOfBits);
 
-	DataStreamCursorMoveBits(dataStream, amountOfBits);
+	PXDataStreamCursorMoveBits(dataStream, amountOfBits);
 
 	return result;
 }
 
-PXSize DataStreamWriteBits(DataStream* const dataStream, const PXSize bitData, const PXSize amountOfBits)
+PXSize PXDataStreamWriteBits(PXDataStream* const dataStream, const PXSize bitData, const PXSize amountOfBits)
 {
-	unsigned char* currentPos = DataStreamCursorPosition(dataStream);
+	unsigned char* currentPos = PXDataStreamCursorPosition(dataStream);
 
 	unsigned char* a = currentPos;
 	unsigned char* b = currentPos + 1;
@@ -1461,12 +1719,12 @@ PXSize DataStreamWriteBits(DataStream* const dataStream, const PXSize bitData, c
 		moveCounter++;
 	}
 
-	DataStreamBitsAllign(dataStream);
+	PXDataStreamBitsAllign(dataStream);
 
 	return moveCounter;
 }
 
-PXSize DataStreamFilePathGetA(DataStream* const dataStream, char* const filePath, const PXSize filePathMaxSize)
+PXSize PXDataStreamFilePathGetA(PXDataStream* const dataStream, char* const filePath, const PXSize filePathMaxSize)
 {
 #if OSUnix
     return 0; // TODO
@@ -1486,7 +1744,7 @@ PXSize DataStreamFilePathGetA(DataStream* const dataStream, char* const filePath
 #endif
 }
 
-PXSize DataStreamFilePathGetW(DataStream* const dataStream, wchar_t* const filePath, const PXSize filePathMaxSize)
+PXSize PXDataStreamFilePathGetW(PXDataStream* const dataStream, wchar_t* const filePath, const PXSize filePathMaxSize)
 {
 #if OSUnix
     return 0; // TODO

@@ -38,22 +38,54 @@ extern "C"
 {
 #endif
 
+
+	typedef enum PXDataType_
+	{
+		PXDataTypeTypeInvalid,
+
+		PXDataTypeInt8S,
+		PXDataTypeInt8U,
+
+		PXDataTypeLEInt16S,
+		PXDataTypeLEInt16U,
+		PXDataTypeLEInt32S,
+		PXDataTypeLEInt32U,
+		PXDataTypeLEInt64S,
+		PXDataTypeLEInt64U,
+
+		PXDataTypeBEInt16S,
+		PXDataTypeBEInt16U,
+		PXDataTypeBEInt32S,
+		PXDataTypeBEInt32U,
+		PXDataTypeBEInt64S,
+		PXDataTypeBEInt64U,
+
+		PXDataStreamFloat,
+		PXDataStreamDouble
+	}
+	PXDataType;
+
+
+
 	typedef unsigned char PXByte;
 	typedef unsigned char PXBool;
 	typedef unsigned char* PXAdress;
 
+	// Integer 8-Bit 
+	typedef char PXInt8S;
 	typedef unsigned char PXInt8U;
+
+	// Integer 16-Bit, WORD
+	typedef short PXInt16S;
 	typedef unsigned short PXInt16U;
+
+	// Integer 8-Bit, DWORD
+	typedef int PXInt32S;
 	typedef unsigned int PXInt32U;
+
+	// Integer 64-Bit, QWORD
+	typedef __int64 PXInt64S;
 	typedef unsigned __int64 PXInt64U;
-
-	typedef char PXCharASCII;
-	typedef wchar_t PXCharUNICODE;
-	typedef PXInt32U PXCharUTF8;
-
-	typedef char* const PXTextASCII;
-	typedef char* const PXTextUTF8;
-	typedef wchar_t* const PXTextUNICODE;
 
 #if OS32Bit
 	typedef PXInt32U PXSize;
@@ -63,8 +95,14 @@ extern "C"
 #error Invalid Bit Version
 #endif
 
+	// Text
+	typedef char PXCharASCII;
+	typedef wchar_t PXCharUNICODE;
+	typedef PXInt32U PXCharUTF8;
 
-
+	typedef char* const PXTextASCII;
+	typedef char* const PXTextUTF8;
+	typedef wchar_t* const PXTextUNICODE;
 
 
 #ifdef __cplusplus

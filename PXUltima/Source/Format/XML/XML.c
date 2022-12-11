@@ -46,10 +46,10 @@ XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize)
 
 
 
-ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const outputStream)
+ActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXSize errorCounter = 0;
-    DataStream tokenSteam;
+    PXDataStream tokenSteam;
 
     // Lexer - Level I 
     {
@@ -63,7 +63,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
 
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-        DataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+        PXDataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
 
         outputStream->DataCursor = 0;
     }
@@ -72,7 +72,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
     unsigned char depthCounter = 0;
     PXBool reuseModifiedToken = 0;   
 
-    while (!DataStreamIsAtEnd(&tokenSteam))
+    while (!PXDataStreamIsAtEnd(&tokenSteam))
     {
         if (!reuseModifiedToken)
         {
@@ -103,12 +103,12 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                         const char* const valueAdrees = compilerSymbolEntry.Source + offsetEqualSign + 2u;
                         
                         //-----------------------------------------------------
-                        DataStreamWriteCU(outputStream, depthCounter);
-                        DataStreamWriteCU(outputStream, xmlTag);
-                        DataStreamWriteSU(outputStream, nameSize, EndianLittle);
-                        DataStreamWriteP(outputStream, nameAdress, nameSize);
-                        DataStreamWriteSU(outputStream, valueSize, EndianLittle);
-                        DataStreamWriteP(outputStream, valueAdrees, valueSize);
+                        PXDataStreamWriteCU(outputStream, depthCounter);
+                        PXDataStreamWriteCU(outputStream, xmlTag);
+                        PXDataStreamWriteSU(outputStream, nameSize, EndianLittle);
+                        PXDataStreamWriteP(outputStream, nameAdress, nameSize);
+                        PXDataStreamWriteSU(outputStream, valueSize, EndianLittle);
+                        PXDataStreamWriteP(outputStream, valueAdrees, valueSize);
                         //-----------------------------------------------------
 
                         const char* startAfterValue = valueAdrees + valueSize;
@@ -146,10 +146,10 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                         const PXSize cutIndex = doesContainMoreData ? indexOfCloseTagSymbol - 1u : compilerSymbolEntry.Size - 1;
 
                         // Data
-                        DataStreamWriteCU(outputStream, depthCounter);
-                        DataStreamWriteCU(outputStream, xmlTag);
-                        DataStreamWriteSU(outputStream, cutIndex, EndianLittle);
-                        DataStreamWriteP(outputStream, compilerSymbolEntry.Source + 1u, cutIndex);
+                        PXDataStreamWriteCU(outputStream, depthCounter);
+                        PXDataStreamWriteCU(outputStream, xmlTag);
+                        PXDataStreamWriteSU(outputStream, cutIndex, EndianLittle);
+                        PXDataStreamWriteP(outputStream, compilerSymbolEntry.Source + 1u, cutIndex);
                         //-----------------------------------------------------
 
                         ++depthCounter;
@@ -172,10 +172,10 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                         ++depthCounter;
 
                         //-----------------------------------------------------
-                        DataStreamWriteCU(outputStream, depthCounter);
-                        DataStreamWriteCU(outputStream, xmlTag);
-                        DataStreamWriteSU(outputStream, openTagNameSize, EndianLittle);
-                        DataStreamWriteP(outputStream, openTagName, openTagNameSize);
+                        PXDataStreamWriteCU(outputStream, depthCounter);
+                        PXDataStreamWriteCU(outputStream, xmlTag);
+                        PXDataStreamWriteSU(outputStream, openTagNameSize, EndianLittle);
+                        PXDataStreamWriteP(outputStream, openTagName, openTagNameSize);
                         //-----------------------------------------------------
 
                         break;
@@ -196,10 +196,10 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                         const char* closeTagName = compilerSymbolEntry.Source + 2u;
                         const PXSize closeTagNameSize = compilerSymbolEntry.Size - 3u;
 
-                        DataStreamWriteCU(outputStream, depthCounter);
-                        DataStreamWriteCU(outputStream, xmlTag);
-                        DataStreamWriteSU(outputStream, closeTagNameSize, EndianLittle);
-                        DataStreamWriteP(outputStream, closeTagName, closeTagNameSize);
+                        PXDataStreamWriteCU(outputStream, depthCounter);
+                        PXDataStreamWriteCU(outputStream, xmlTag);
+                        PXDataStreamWriteSU(outputStream, closeTagNameSize, EndianLittle);
+                        PXDataStreamWriteP(outputStream, closeTagName, closeTagNameSize);
                         //-----------------------------------------------------                 
 
                         break;
@@ -207,13 +207,13 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
 
                     case XMLSymbolUnkown:
                     {
-                        DataStreamWriteCU(outputStream, depthCounter);
-                        DataStreamWriteCU(outputStream, XMLSymbolRawData);
+                        PXDataStreamWriteCU(outputStream, depthCounter);
+                        PXDataStreamWriteCU(outputStream, XMLSymbolRawData);
 
                         PXSize sizePositionOffset = outputStream->DataCursor;
                         PXSize sizeWritten = 0;
 
-                        DataStreamWriteSU(outputStream, 0xFFFF, EndianLittle);
+                        PXDataStreamWriteSU(outputStream, 0xFFFF, EndianLittle);
 
                         do
                         {
@@ -222,7 +222,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
 
                             if (found)
                             {
-                                sizeWritten += DataStreamWriteP(outputStream, compilerSymbolEntry.Source, indexOfOpenTagSymbol);
+                                sizeWritten += PXDataStreamWriteP(outputStream, compilerSymbolEntry.Source, indexOfOpenTagSymbol);
 
                                 reuseModifiedToken = 1;
 
@@ -240,13 +240,13 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                                 {
                                     --depthCounter;
 
-                                    DataStreamWriteCU(outputStream, depthCounter);
-                                    DataStreamWriteCU(outputStream, XMLSymbolTagCloseCurrent);
-                                    DataStreamWriteSU(outputStream, 0, EndianLittle);
+                                    PXDataStreamWriteCU(outputStream, depthCounter);
+                                    PXDataStreamWriteCU(outputStream, XMLSymbolTagCloseCurrent);
+                                    PXDataStreamWriteSU(outputStream, 0, EndianLittle);
                                 }
                                 else
                                 {
-                                    sizeWritten += DataStreamWriteP(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                                    sizeWritten += PXDataStreamWriteP(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
                                 }
@@ -254,7 +254,7 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                         }
                         while (1u);         
 
-                        DataStreamWriteAtSU(outputStream, sizeWritten, EndianLittle, sizePositionOffset);
+                        PXDataStreamWriteAtSU(outputStream, sizeWritten, EndianLittle, sizePositionOffset);
 
                         break;
                     }
@@ -274,14 +274,14 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
 
     printf("[XML]\n");
 
-    while (!DataStreamIsAtEnd(outputStream))
+    while (!PXDataStreamIsAtEnd(outputStream))
     {
         unsigned char depth = 0;
         XMLSymbol mode = 0;
 
         TextClearA(textBuffer, 512);
-        DataStreamReadCU(outputStream, &depth);
-        DataStreamReadCU(outputStream, &mode);
+        PXDataStreamReadI8U(outputStream, &depth);
+        PXDataStreamReadI8U(outputStream, &mode);
 
         for (PXSize i = 0; i < depth+1; ++i)
         {
@@ -294,8 +294,8 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
             { 
                 unsigned short size = 0;
 
-                DataStreamReadSU(outputStream, &size, EndianLittle);
-                DataStreamReadP(outputStream, textBuffer, size);
+                PXDataStreamReadI16U(outputStream, &size, EndianLittle);
+                PXDataStreamReadB(outputStream, textBuffer, size);
 
                 printf("<%s>", textBuffer);
                 break;
@@ -304,8 +304,8 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
             {
                 unsigned short size = 0;
 
-                DataStreamReadSU(outputStream, &size, EndianLittle);
-                DataStreamReadP(outputStream, textBuffer, size);
+                PXDataStreamReadI16U(outputStream, &size, EndianLittle);
+                PXDataStreamReadB(outputStream, textBuffer, size);
 
                 printf("<%s>", textBuffer);
 
@@ -321,8 +321,8 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
             {
                 unsigned short size = 0;
 
-                DataStreamReadSU(outputStream, &size, EndianLittle);
-                DataStreamReadP(outputStream, textBuffer, size);
+                PXDataStreamReadI16U(outputStream, &size, EndianLittle);
+                PXDataStreamReadB(outputStream, textBuffer, size);
 
                 printf("</%s>", textBuffer);
                 break;
@@ -334,14 +334,14 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
                 char text[256];
                 TextClearA(text, 256);
 
-                DataStreamReadSU(outputStream, &size, EndianLittle);
-                DataStreamReadP(outputStream, textBuffer, size);
+                PXDataStreamReadI16U(outputStream, &size, EndianLittle);
+                PXDataStreamReadB(outputStream, textBuffer, size);
 
                 printf("A: %s:", textBuffer);
                 fflush(stdout);
 
-                DataStreamReadSU(outputStream, &size, EndianLittle);
-                DataStreamReadP(outputStream, text , size);
+                PXDataStreamReadI16U(outputStream, &size, EndianLittle);
+                PXDataStreamReadB(outputStream, text , size);
 
                 printf("%s", text);
 
@@ -351,8 +351,8 @@ ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const out
             {
                 unsigned short size = 0;
 
-                DataStreamReadSU(outputStream, &size, EndianLittle);
-                DataStreamReadP(outputStream, textBuffer, size);
+                PXDataStreamReadI16U(outputStream, &size, EndianLittle);
+                PXDataStreamReadB(outputStream, textBuffer, size);
 
                 for (PXSize i = 0; i < size; i++)
                 {

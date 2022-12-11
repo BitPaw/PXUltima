@@ -1,6 +1,6 @@
 #include "FMT.h"
 
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
 
@@ -13,13 +13,13 @@ void FMTConstruct(FMT* const fmt)
 
 ActionResult FMTParse(FMT* const fmt, const void* data, const PXSize dataSize, PXSize* dataRead, const Endian endian)
 {
-	DataStream dataStream;
+	PXDataStream dataStream;
 
 	FMTConstruct(fmt);
 	*dataRead = 0;
 
-	DataStreamConstruct(&dataStream);
-	DataStreamFromExternal(&dataStream, data, dataSize);
+	PXDataStreamConstruct(&dataStream);
+	PXDataStreamFromExternal(&dataStream, data, dataSize);
 
 	// Check header signature
 	{
@@ -27,7 +27,7 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const PXSize dataSize, P
 
 		ClusterInt fmtHeader;
 
-		DataStreamReadP(&dataStream, fmtHeader.Data, 4u);
+		PXDataStreamReadB(&dataStream, fmtHeader.Data, 4u);
 
 		const unsigned char valid =
 			expectedValue[0] == fmtHeader.A &&
@@ -41,13 +41,13 @@ ActionResult FMTParse(FMT* const fmt, const void* data, const PXSize dataSize, P
 		}
 	}
 
-	DataStreamReadP(&dataStream, &fmt->ChunkSize, endian);
-	DataStreamReadP(&dataStream, &fmt->AudioFormat, endian);
-	DataStreamReadP(&dataStream, &fmt->NumerOfChannels, endian);
-	DataStreamReadP(&dataStream, &fmt->SampleRate, endian);
-	DataStreamReadP(&dataStream, &fmt->ByteRate, endian);
-	DataStreamReadP(&dataStream, &fmt->BlockAllign, endian);
-	DataStreamReadP(&dataStream, &fmt->BitsPerSample, endian);
+	PXDataStreamReadB(&dataStream, &fmt->ChunkSize, endian);
+	PXDataStreamReadB(&dataStream, &fmt->AudioFormat, endian);
+	PXDataStreamReadB(&dataStream, &fmt->NumerOfChannels, endian);
+	PXDataStreamReadB(&dataStream, &fmt->SampleRate, endian);
+	PXDataStreamReadB(&dataStream, &fmt->ByteRate, endian);
+	PXDataStreamReadB(&dataStream, &fmt->BlockAllign, endian);
+	PXDataStreamReadB(&dataStream, &fmt->BitsPerSample, endian);
 
 	*dataRead = dataStream.DataCursor;
 

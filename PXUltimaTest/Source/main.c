@@ -19,7 +19,9 @@ int main()
 
 	Image image;
 
-	ImageLoadA(&image, "A:/_WorkSpace/Download/at3_1m4_03.tif");
+	ImageLoadA(&image, "D:/_Data/Git/PXUltima/PXUltimaTest/_TEST_DATA_INPUT_/ImageInput.bmp");
+
+	//ImageLoadA(&image, "A:/_WorkSpace/Download/at3_1m4_03.tif");
 
 	//TestYAMLAll();
 	//TestSystemInfoAll();

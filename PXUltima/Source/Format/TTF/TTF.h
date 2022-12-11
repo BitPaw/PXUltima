@@ -1,15 +1,14 @@
-#ifndef TTFInclude
-#define TTFInclude
+#ifndef PXTTFINCLUDE
+#define PXTTFINCLUDE
 
 #include <Format/Type.h>
-
 #include <Error/ActionResult.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 
     typedef enum TTFTableEntryType_
     {
@@ -657,7 +656,7 @@ extern "C"
     PXPublic void TTFConstruct(TTF* const ttf);
     PXPublic void TTFDestruct(TTF* const ttf);
 
-	PXPublic ActionResult TTFParse(TTF* ttf, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic ActionResult TTFParse(TTF* const ttf, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

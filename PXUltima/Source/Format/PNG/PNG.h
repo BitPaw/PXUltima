@@ -404,7 +404,7 @@ enough memory.*/
 	PXPublic PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
 	PXPublic ActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize* dataRead);
-	PXPublic ActionResult PNGParseToImage(Image* const image, DataStream* const dataStream);
+	PXPublic ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream);
 
 	PXPublic ActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize* dataWritten);
 	PXPublic ActionResult PNGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);

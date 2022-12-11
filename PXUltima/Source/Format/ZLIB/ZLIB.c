@@ -2,7 +2,7 @@
 
 #include <Container/ClusterValue.h>
 #include <Math/PXMath.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Format/DEFLATE/DEFLATE.h>
 #include <Format/ADLER/Adler32.h>
 
@@ -82,11 +82,11 @@ unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressi
 
 ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeRead)
 {
-    DataStream dataStream;
+    PXDataStream dataStream;
     ZLIB zlib;
 
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, inputData, inputDataSize);
+    PXDataStreamConstruct(&dataStream);
+    PXDataStreamFromExternal(&dataStream, inputData, inputDataSize);
 
     const PXSize headerSize = 2u;
     const PXSize adlerSize = 4u;    
@@ -96,12 +96,12 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
         unsigned char compressionFormatByte = 0;
         unsigned char flagByte = 0;
 
-        DataStreamReadCU(&dataStream, &compressionFormatByte);
-        DataStreamReadCU(&dataStream, &flagByte);
+        PXDataStreamReadI8U(&dataStream, &compressionFormatByte);
+        PXDataStreamReadI8U(&dataStream, &flagByte);
 
         // Valid Check
         {
-            const unsigned char validFlags = MakeShortBE(compressionFormatByte, flagByte) % 31u == 0;
+            const PXBool validFlags = MakeShortBE(compressionFormatByte, flagByte) % 31u == 0;
 
             if(!validFlags)
             {
@@ -120,7 +120,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
             // log_2(32768) - 8 = 7
             // 2^(CompressionInfo + 8)
 
-            const unsigned int isCompressionInfoValid = zlib.Header.CompressionInfo <= 7u;
+            const PXBool isCompressionInfoValid = zlib.Header.CompressionInfo <= 7u;
 
             if(!isCompressionInfoValid)
             {
@@ -160,8 +160,8 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
     }*/
 
 
-    zlib.CompressedDataSize = DataStreamRemainingSize(&dataStream) - adlerSize;
-    zlib.CompressedData = DataStreamCursorPosition(&dataStream);
+    zlib.CompressedDataSize = PXDataStreamRemainingSize(&dataStream) - adlerSize;
+    zlib.CompressedData = PXDataStreamCursorPosition(&dataStream);
 
     switch(zlib.Header.CompressionMethod)
     {
@@ -199,10 +199,10 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
 
 ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten)
 {
-    DataStream parsingSteam;
+    PXDataStream parsingSteam;
 
-    DataStreamConstruct(&parsingSteam);
-    DataStreamFromExternal(&parsingSteam, outputData, outputDataSize);
+    PXDataStreamConstruct(&parsingSteam);
+    PXDataStreamFromExternal(&parsingSteam, outputData, outputDataSize);
 
     // Write 1 Byte
     {
@@ -232,7 +232,7 @@ ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSiz
         }
     
 
-        DataStreamWriteP(&parsingSteam, buffer, 2u);
+        PXDataStreamWriteP(&parsingSteam, buffer, 2u);
     }
 
     // Wirte Data
@@ -241,14 +241,14 @@ ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSiz
 
         const unsigned int value = DEFLATESerialize(inputData, inputDataSize, (const unsigned char* const)outputData + 2u, outputDataSize - 4u, &sizeWritten);
 
-        DataStreamCursorAdvance(&parsingSteam, sizeWritten);
+        PXDataStreamCursorAdvance(&parsingSteam, sizeWritten);
     }
 
     // Write ADLER
     {
         const unsigned int adler = Adler32Create(1, inputData, inputDataSize);
 
-        DataStreamWriteIU(&parsingSteam, adler, EndianBig);
+        PXDataStreamWriteIU(&parsingSteam, adler, EndianBig);
     }
 
     *outputDataSizeWritten = parsingSteam.DataCursor;

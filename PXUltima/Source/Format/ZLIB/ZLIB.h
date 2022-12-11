@@ -2,7 +2,6 @@
 #define ZLIBInclude
 
 #include <Format/Type.h>
-
 #include <Error/ActionResult.h>
 #include <Format/PNG/PNG.h>
 

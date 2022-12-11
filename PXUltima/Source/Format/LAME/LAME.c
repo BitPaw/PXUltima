@@ -1,77 +1,66 @@
 #include "LAME.h"
 
-#include <File/DataStream.h>
 #include <Text/Text.h>
 
-ActionResult LAMEParse(LAME* lame, const void* data, const PXSize dataSize, PXSize* dataRead)
+ActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 {
-	DataStream dataStream;
-
-	DataStreamConstruct(&dataStream);
-	DataStreamFromExternal(&dataStream, data, dataSize);
-
 	// Check signature (4 Bytes)
 	{
 		const char signature[] = { 'L', 'A', 'M', 'E' };
 		const PXSize signatueSize = sizeof(signature);
-		const unsigned char isValid = DataStreamReadAndCompare(&dataStream, signature, signatueSize);
+		const PXBool isValid = PXDataStreamReadAndCompare(&dataStream, signature, signatueSize);
 
 		if(!isValid)
 		{
-			return 0;
+			return ActionInvalidHeaderSignature;
 		}
 	}
 
 	// Fetch version (5 Bytes)
 	{
-		char majorVersionText;
-		char minorVersionText[2];
-		char releaseVersionText = 0;
-
-		DataStreamReadC(&dataStream, &majorVersionText); // 1 character
-		const char isDot = DataStreamReadAndCompare(&dataStream, '.', sizeof(unsigned char));
-		DataStreamReadP(&dataStream, minorVersionText, 2u); // 2 character
-		DataStreamReadC(&dataStream, releaseVersionText); // letter
-
-		int a = 0;
-		int b = 0;
-
-		TextToIntA(&majorVersionText, 1u, &a);
-		TextToIntA(minorVersionText, 2u, &b);
-
-		lame->MajorVersion = a;
-		lame->MinorVersion = b;
-		lame->ReleaseVersion = releaseVersionText;
+		PXDataStreamReadTextIU8(&dataStream, &lame->MajorVersion); // 1 character
+		const char isDot = PXDataStreamReadAndCompare(&dataStream, '.', sizeof(unsigned char));
+		PXDataStreamReadTextIU8(&dataStream, lame->MinorVersion); // 2 character
+		PXDataStreamReadI8U(&dataStream, &lame->ReleaseVersion); // letter
 	}
 
-	DataStreamReadCU(&dataStream, &lame->Revision);
-	DataStreamReadCU(&dataStream, &lame->VBRType);
-	DataStreamReadCU(&dataStream, &lame->LowpassFrequency);
-	DataStreamReadIU(&dataStream, &lame->Peak_signal, EndianBig);
-	DataStreamReadSU(&dataStream, &lame->Radio_replay_pad, EndianBig);
-	DataStreamReadSU(&dataStream, &lame->Radio_replay_set_name, EndianBig);
-	DataStreamReadSU(&dataStream, &lame->Radio_replay_originator_code, EndianBig);
-	DataStreamReadSU(&dataStream, &lame->Radio_replay_gain, EndianBig);
-	DataStreamReadSU(&dataStream, &lame->Audiophile_replay_gain, EndianBig);
-	DataStreamReadCU(&dataStream, &lame->Flag_ath_type);
-	DataStreamReadCU(&dataStream, &lame->Flag_expn_psy_tune);
-	DataStreamReadCU(&dataStream, &lame->Flag_safe_joint);
-	DataStreamReadCU(&dataStream, &lame->Flag_no_gap_more);
-	DataStreamReadCU(&dataStream, &lame->Flag_no_gap_previous);
-	DataStreamReadCU(&dataStream, &lame->Average_bit_rate);
-	DataStreamReadCU(&dataStream, &lame->Delay_padding_delay_high);
-	DataStreamReadCU(&dataStream, &lame->Delay_padding_delay_low);
-	DataStreamReadCU(&dataStream, &lame->Delay_padding_padding_high);
-	DataStreamReadCU(&dataStream, &lame->Delay_padding_padding_low);
-	DataStreamReadCU(&dataStream, &lame->noise_shaping);
-	DataStreamReadCU(&dataStream, &lame->stereo_mode);
-	DataStreamReadCU(&dataStream, &lame->non_optimal);
+	{
+		const PXDataStreamElementType pxDataStreamElementList[] =
+		{
+			{PXDataTypeInt8U, &lame->Revision},
+			{PXDataTypeInt8U, &lame->VBRType },
+			{PXDataTypeInt8U, &lame->LowpassFrequency },
+			{PXDataTypeBEInt32U, &lame->Peak_signal},
+			{PXDataTypeBEInt16U, &lame->Radio_replay_pad },
+			{PXDataTypeBEInt16U, &lame->Radio_replay_set_name},
+			{PXDataTypeBEInt16U, &lame->Radio_replay_originator_code},
+			{PXDataTypeBEInt16U, &lame->Radio_replay_gain},
+			{PXDataTypeBEInt16U, &lame->Audiophile_replay_gain},
+			{PXDataTypeInt8U, &lame->Flag_ath_type},
+			{PXDataTypeInt8U, &lame->Flag_expn_psy_tune},
+			{PXDataTypeInt8U, &lame->Flag_safe_joint},
+			{PXDataTypeInt8U, &lame->Flag_no_gap_more},
+			{PXDataTypeInt8U, &lame->Flag_no_gap_previous},
+			{PXDataTypeInt8U, &lame->Average_bit_rate},
+			{PXDataTypeInt8U, &lame->Delay_padding_delay_high},
+			{PXDataTypeInt8U, &lame->Delay_padding_delay_low},
+			{PXDataTypeInt8U, &lame->Delay_padding_padding_high},
+			{PXDataTypeInt8U, &lame->Delay_padding_padding_low},
+			{PXDataTypeInt8U, &lame->noise_shaping},
+			{PXDataTypeInt8U, &lame->stereo_mode},
+			{PXDataTypeInt8U, &lame->non_optimal}
+		};
+		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
+
+		PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+
+	}
 
 	// Parse: source frequency
 	{
 		unsigned char sourcefrequencyID = 0;
 
-		DataStreamReadCU(&dataStream, &sourcefrequencyID);
+		PXDataStreamReadI8U(&dataStream, &sourcefrequencyID);
 
 		switch(sourcefrequencyID)
 		{
@@ -97,11 +86,17 @@ ActionResult LAMEParse(LAME* lame, const void* data, const PXSize dataSize, PXSi
 		}
 	}
 
-	DataStreamReadCU(&dataStream, &lame->Unused);
-	DataStreamReadSU(&dataStream, &lame->Preset, EndianBig);
-	DataStreamReadIU(&dataStream, &lame->MusicLength, EndianBig);
+	{
+		const PXDataStreamElementType pxDataStreamElementList[] =
+		{
+			{PXDataTypeInt8U, &lame->Unused},
+			{PXDataTypeBEInt16U, &lame->Preset },
+			{PXDataTypeBEInt32U, &lame->MusicLength}
+		};
+		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
 
-	*dataRead = dataStream.DataCursor;
+		PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+	}
 
     return ActionSuccessful;
 }

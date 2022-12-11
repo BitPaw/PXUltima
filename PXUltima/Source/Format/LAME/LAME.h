@@ -1,9 +1,9 @@
-#ifndef BMPInclude
-#define BMPInclude
-
-#include <Format/Type.h>
+#ifndef PXLAMEINCLUDE
+#define PXLAMEINCLUDE
 
 #include <Error/ActionResult.h>
+#include <Format/Type.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -22,9 +22,9 @@ extern "C"
 
 	typedef struct LAME_
 	{
-		unsigned short MajorVersion;
-		unsigned short MinorVersion;
-		char ReleaseVersion;
+		PXInt8U MajorVersion;
+		PXInt8U MinorVersion;
+		PXInt8U ReleaseVersion;
 		unsigned char Revision; // At this time these 4 bits are set to 0.
 		unsigned char VBRType;
 		unsigned char LowpassFrequency;
@@ -54,8 +54,7 @@ extern "C"
 	}
 	LAME;
 
-
-	PXPublic ActionResult LAMEParse(LAME* lame, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic ActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

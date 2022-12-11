@@ -3,7 +3,7 @@
 
 #include <Error/ActionResult.h>
 #include <Format/Type.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -30,7 +30,7 @@ extern "C"
 
 	PXPublic XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize);
 
-	PXPublic ActionResult XMLFileCompile(DataStream* const inputStream, DataStream* const outputStream);
+	PXPublic ActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
 
 #ifdef __cplusplus
 }

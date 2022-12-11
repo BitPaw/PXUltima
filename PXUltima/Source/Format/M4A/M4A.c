@@ -1,6 +1,6 @@
 #include "M4A.h"
 
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Container/ClusterValue.h>
 #include <Memory/PXMemory.h>
 
@@ -66,22 +66,22 @@ M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID)
 
 ActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	DataStream dataStream;
+	PXDataStream dataStream;
 
 	MemorySet(m4a, sizeof(M4A), 0);
 	*dataRead = 0;
-	DataStreamConstruct(&dataStream);
-	DataStreamFromExternal(&dataStream, data, dataSize);
+	PXDataStreamConstruct(&dataStream);
+	PXDataStreamFromExternal(&dataStream, data, dataSize);
 
-	while(!DataStreamIsAtEnd(&dataStream))
+	while(!PXDataStreamIsAtEnd(&dataStream))
 	{
 		M4AChunk chunk;
 
 		unsigned int chunkSize = 0;
 		ClusterInt typePrimaryID;
 
-		DataStreamReadIU(&dataStream, &chunkSize, EndianBig);
-		DataStreamReadP(&dataStream, typePrimaryID.Data, 4u);
+		PXDataStreamReadI32U(&dataStream, &chunkSize, EndianBig);
+		PXDataStreamReadB(&dataStream, typePrimaryID.Data, 4u);
 
 		const PXSize positionPrediction = dataStream.DataCursor + chunkSize - 8;
 		const M4AChunkID typePrimary = ConvertToM4AChunkID(typePrimaryID.Value);
@@ -105,9 +105,9 @@ ActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize*
 				unsigned int sizeB = 0;
 				char isoSignature[8]; // isom3gp4
 
-				DataStreamReadP(&dataStream, chunk.TypeSub, 4u);
-				DataStreamReadIU(&dataStream, &sizeB, EndianBig);
-				DataStreamReadP(&dataStream, isoSignature, 8u);
+				PXDataStreamReadB(&dataStream, chunk.TypeSub, 4u);
+				PXDataStreamReadI32U(&dataStream, &sizeB, EndianBig);
+				PXDataStreamReadB(&dataStream, isoSignature, 8u);
 
 				break;
 			}

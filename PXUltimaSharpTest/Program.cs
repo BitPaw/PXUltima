@@ -10,9 +10,12 @@ namespace PXTest
 
             Window window = new Window();
 
-            window.Create(UInt32.MaxValue, UInt32.MaxValue, "Test");
+            window.Create("Test");
 
             Console.WriteLine("Test");
+
+            
+
 
             while (true)
             {

@@ -1,7 +1,7 @@
 #include "Graphic.h"
 
 #include <Graphic/OpenGL/OpenGL.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <OS/PXWindow.h>
 #include <Format/Font.h>
 #include <Container/ClusterValue.h>
@@ -1088,8 +1088,8 @@ ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicCont
 {
     Shader vertexShader; PXShaderConstruct(&vertexShader);
     Shader fragmentShader; PXShaderConstruct(&fragmentShader);
-    DataStream vertexShaderFile; DataStreamConstruct(&vertexShaderFile);
-    DataStream fragmentFile; DataStreamConstruct(&fragmentFile);  
+    PXDataStream vertexShaderFile; PXDataStreamConstruct(&vertexShaderFile);
+    PXDataStream fragmentFile; PXDataStreamConstruct(&fragmentFile);  
 
     {
         const PXBool isAlreadyLoaded = shaderProgram->ID != -1;
@@ -1107,7 +1107,7 @@ ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicCont
     }
 
     {
-        const ActionResult actionResult = DataStreamMapToMemoryA(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
+        const ActionResult actionResult = PXDataStreamMapToMemoryA(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
         const PXBool sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -1120,7 +1120,7 @@ ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicCont
 
 
     {
-        const ActionResult actionResult = DataStreamMapToMemoryA(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
+        const ActionResult actionResult = PXDataStreamMapToMemoryA(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
         const PXBool sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -1135,19 +1135,19 @@ ActionResult GraphicShaderProgramCreateVFPathA(GraphicContext* const graphicCont
     GraphicShaderProgramCreateVFData(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
 
 
-    DataStreamDestruct(&vertexShaderFile);
-    DataStreamDestruct(&fragmentFile);
+    PXDataStreamDestruct(&vertexShaderFile);
+    PXDataStreamDestruct(&fragmentFile);
 }
 
 ActionResult GraphicShaderProgramCreateVFPathW(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath)
 {
     Shader vertexShader;
     Shader fragmentShader;
-    DataStream vertexShaderFile;
-    DataStream fragmentFile;
+    PXDataStream vertexShaderFile;
+    PXDataStream fragmentFile;
 
-    DataStreamConstruct(&vertexShaderFile);
-    DataStreamConstruct(&fragmentFile);
+    PXDataStreamConstruct(&vertexShaderFile);
+    PXDataStreamConstruct(&fragmentFile);
 
     {
         const unsigned char isAlreadyLoaded = shaderProgram->ID != -1;
@@ -1165,7 +1165,7 @@ ActionResult GraphicShaderProgramCreateVFPathW(GraphicContext* const graphicCont
     }
 
     {
-        const ActionResult actionResult = DataStreamMapToMemoryW(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
+        const ActionResult actionResult = PXDataStreamMapToMemoryW(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
         const unsigned char sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -1180,7 +1180,7 @@ ActionResult GraphicShaderProgramCreateVFPathW(GraphicContext* const graphicCont
 
 
     {
-        const ActionResult actionResult = DataStreamMapToMemoryW(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
+        const ActionResult actionResult = PXDataStreamMapToMemoryW(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
         const unsigned char sucessful = ActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -1197,8 +1197,8 @@ ActionResult GraphicShaderProgramCreateVFPathW(GraphicContext* const graphicCont
     GraphicShaderProgramCreateVFData(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
 
 
-    DataStreamDestruct(&vertexShaderFile);
-    DataStreamDestruct(&fragmentFile);
+    PXDataStreamDestruct(&vertexShaderFile);
+    PXDataStreamDestruct(&fragmentFile);
 }
 
 ActionResult GraphicShaderProgramCreateVFData(GraphicContext* const graphicContext, ShaderProgram* const shaderProgram, Shader* vertexShader, Shader* fragmentShader)

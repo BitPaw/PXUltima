@@ -9,8 +9,8 @@ void TestYAMLAll()
 
 void TestYAMLParse()
 {
-	DataStream inputStream;
-	DataStream compiledStream;
+	PXDataStream inputStream;
+	PXDataStream compiledStream;
 
 	struct MyStroage
 	{
@@ -28,8 +28,8 @@ void TestYAMLParse()
 	//------------------------------
 
 	//----<Load>--------------------------
-	DataStreamMapToMemoryA(&inputStream, "A:/config.yml", 0, MemoryReadOnly);
-	DataStreamMapToMemory(&compiledStream, inputStream.DataSize*7, MemoryReadAndWrite);
+	PXDataStreamMapToMemoryA(&inputStream, "A:/config.yml", 0, MemoryReadOnly);
+	PXDataStreamMapToMemory(&compiledStream, inputStream.DataSize*7, MemoryReadAndWrite);
 
 	YAMLFileCompile(&inputStream, &compiledStream);
 

@@ -23,6 +23,10 @@ namespace PX
         [DllImport("PXUltima.dll", EntryPoint = "PXWindowCreateW")]
         static extern unsafe void PXWindowCreateW(PXWindow* image, uint width, uint height, char* title, byte async);
 
+        public void Create(string title)
+        {
+            Create(uint.MaxValue, uint.MaxValue, title);
+        }
         public void Create(uint width, uint height, string title)
         {
             char[] filePathA = title.ToCharArray();

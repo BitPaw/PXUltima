@@ -2,7 +2,7 @@
 
 #include <Memory/PXMemory.h>
 #include <Text/Text.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #include <Format/FNT/FNT.h>
 #include <Format/TTF/TTF.h>
@@ -31,13 +31,13 @@ ActionResult FontLoadA(PXFont* const font, const char* filePath)
 
 ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 {
-    DataStream dataStream;
+    PXDataStream dataStream;
 
-    DataStreamConstruct(&dataStream);
+    PXDataStreamConstruct(&dataStream);
     PXFontConstruct(font);
 
     {
-        const ActionResult fileLoadingResult = DataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
+        const ActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
         const PXBool sucessful = ActionSuccessful == fileLoadingResult;
 
         if(!sucessful)
@@ -88,7 +88,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
         return fileGuessResult;
     }
 
-    DataStreamDestruct(&dataStream);
+    PXDataStreamDestruct(&dataStream);
 }
 
 ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath)

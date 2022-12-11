@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Text/Text.h>
 
 /*

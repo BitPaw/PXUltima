@@ -1,6 +1,6 @@
 #include "MID.h"
 
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Memory/PXMemory.h>
 
 
@@ -35,10 +35,10 @@ switch (midiCommand)
 
 ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	DataStream dataStream;
+	PXDataStream dataStream;
 
-	DataStreamConstruct(&dataStream);
-	DataStreamFromExternal(&dataStream, data, dataSize);
+	PXDataStreamConstruct(&dataStream);
+	PXDataStreamFromExternal(&dataStream, data, dataSize);
 
 	// Pasre Chunk header
 	{
@@ -47,7 +47,7 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 		{
 			const unsigned char headerSignature[] = MIDITrackHeaderID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const unsigned char isValid = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const unsigned char isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
@@ -55,10 +55,10 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 			}
 		}
 
-		DataStreamReadSU(&dataStream, chunkLength, EndianBig);
-		DataStreamReadSU(&dataStream, &mid->Format, EndianBig);
-		DataStreamReadSU(&dataStream, &mid->TrackListSize, EndianBig);
-		DataStreamReadSU(&dataStream, &mid->MusicSpeed, EndianBig);
+		PXDataStreamReadI16U(&dataStream, chunkLength, EndianBig);
+		PXDataStreamReadI16U(&dataStream, &mid->Format, EndianBig);
+		PXDataStreamReadI16U(&dataStream, &mid->TrackListSize, EndianBig);
+		PXDataStreamReadI16U(&dataStream, &mid->MusicSpeed, EndianBig);
 	}
 
 	if(!mid->TrackListSize)
@@ -77,7 +77,7 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 		{
 			const unsigned char headerSignature[] = MIDITrackChunkID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const unsigned char isValid = DataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const unsigned char isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
@@ -85,13 +85,13 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 			}
 		}
 
-		DataStreamReadIU(&dataStream, chunkLength, EndianBig);
+		PXDataStreamReadI32U(&dataStream, chunkLength, EndianBig);
 
 		track->ID = i;
 		track->EventData = MemoryAllocate(sizeof(unsigned char) * chunkLength);
 		track->EventDataSize = chunkLength;
 
-		DataStreamReadP(&dataStream, track->EventData, chunkLength);
+		PXDataStreamReadB(&dataStream, track->EventData, chunkLength);
 	}
 
 	*dataRead = dataStream.DataCursor;

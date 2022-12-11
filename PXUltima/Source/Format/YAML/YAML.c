@@ -58,10 +58,10 @@ YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
     return YAMLLineTypeUnkown;
 }
 
-ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const outputStream)
+ActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXSize errorCounter = 0;
-    DataStream tokenSteam;
+    PXDataStream tokenSteam;
 
     // Lexer - Level I
     {
@@ -79,14 +79,14 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
 
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-        DataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+        PXDataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
 
         outputStream->DataCursor = 0;
     }
 
     unsigned int indentCounter = 0;
 
-    while (!DataStreamIsAtEnd(&tokenSteam))
+    while (!PXDataStreamIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -139,10 +139,10 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                         char* declname = compilerSymbolEntry.Source;
                         unsigned short declSize = compilerSymbolEntry.Size - 1;
 
-                        DataStreamWriteCU(outputStream, YAMLLineTypeKeyValueDeclare);
-                        DataStreamWriteCU(outputStream, indentCounter);
-                        DataStreamWriteSU(outputStream, declSize, EndianLittle);
-                        DataStreamWriteP(outputStream, declname, declSize);
+                        PXDataStreamWriteCU(outputStream, YAMLLineTypeKeyValueDeclare);
+                        PXDataStreamWriteCU(outputStream, indentCounter);
+                        PXDataStreamWriteSU(outputStream, declSize, EndianLittle);
+                        PXDataStreamWriteP(outputStream, declname, declSize);
 
 
                         // Fetch next value
@@ -155,39 +155,39 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
 
                         case PXCompilerSymbolLexerNewLine:
                         case PXCompilerSymbolLexerWhiteSpace:
-                            DataStreamWriteSU(outputStream, 0, EndianLittle);
+                            PXDataStreamWriteSU(outputStream, 0, EndianLittle);
                             indentCounter = compilerSymbolEntry.Size;
                             break;
 
                         case PXCompilerSymbolLexerBool:
                         {
-                            DataStreamWriteSU(outputStream, sizeof(unsigned char), EndianLittle);
-                            DataStreamWriteCU(outputStream, PXCompilerSymbolLexerBool);
-                            DataStreamWriteCU(outputStream, compilerSymbolEntry.DataC);
+                            PXDataStreamWriteSU(outputStream, sizeof(unsigned char), EndianLittle);
+                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerBool);
+                            PXDataStreamWriteCU(outputStream, compilerSymbolEntry.DataC);
                             break;
                         }
 
                         case PXCompilerSymbolLexerInteger:
                         {
-                            DataStreamWriteSU(outputStream, sizeof(unsigned int), EndianLittle);
-                            DataStreamWriteCU(outputStream, PXCompilerSymbolLexerInteger);
-                            DataStreamWriteIU(outputStream, compilerSymbolEntry.DataI, EndianLittle);
+                            PXDataStreamWriteSU(outputStream, sizeof(unsigned int), EndianLittle);
+                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerInteger);
+                            PXDataStreamWriteIU(outputStream, compilerSymbolEntry.DataI, EndianLittle);
                             break;
                         }
 
                         case PXCompilerSymbolLexerFloat:
                         {
-                            DataStreamWriteSU(outputStream, sizeof(float), EndianLittle);
-                            DataStreamWriteCU(outputStream, PXCompilerSymbolLexerFloat);
-                            DataStreamWriteF(outputStream, compilerSymbolEntry.DataF);
+                            PXDataStreamWriteSU(outputStream, sizeof(float), EndianLittle);
+                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerFloat);
+                            PXDataStreamWriteF(outputStream, compilerSymbolEntry.DataF);
                             break;
                         }
                         case PXCompilerSymbolLexerGenericElement:
                         case PXCompilerSymbolLexerString:
                         {
-                            DataStreamWriteSU(outputStream, compilerSymbolEntry.Size, EndianLittle);
-                            DataStreamWriteCU(outputStream, PXCompilerSymbolLexerString);
-                            DataStreamWriteP(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                            PXDataStreamWriteSU(outputStream, compilerSymbolEntry.Size, EndianLittle);
+                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerString);
+                            PXDataStreamWriteP(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
                             break;
                         }
                         }
@@ -216,13 +216,13 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
 
     outputStream->DataCursor = 0;
 
-    while (!DataStreamIsAtEnd(outputStream))
+    while (!PXDataStreamIsAtEnd(outputStream))
     {
         unsigned char depth = 0;
         YAMLLineType lineType = 0;
 
-        DataStreamReadCU(outputStream, &lineType);
-        DataStreamReadCU(outputStream, &depth);
+        PXDataStreamReadI8U(outputStream, &lineType);
+        PXDataStreamReadI8U(outputStream, &depth);
 
         switch (lineType)
         {
@@ -239,9 +239,9 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
             MemorySet(textB, 256, 0);
             MemorySet(emotySpace, 25, 0);
 
-            DataStreamReadSU(outputStream, &textASize, EndianLittle);
-            DataStreamReadP(outputStream, textA, textASize);
-            DataStreamReadSU(outputStream, &textBSize, EndianLittle);
+            PXDataStreamReadI16U(outputStream, &textASize, EndianLittle);
+            PXDataStreamReadB(outputStream, textA, textASize);
+            PXDataStreamReadI16U(outputStream, &textBSize, EndianLittle);
 
             for (PXSize i = 0; i < depth; i++)
             {
@@ -253,7 +253,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                 PXCompilerSymbolLexer lexer;
                 unsigned char lx = 0;
 
-                DataStreamReadCU(outputStream, &lx);
+                PXDataStreamReadI8U(outputStream, &lx);
 
                 lexer = lx;
 
@@ -263,7 +263,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                     {
                         unsigned char x = 0;
 
-                        DataStreamReadCU(outputStream, &x);
+                        PXDataStreamReadI8U(outputStream, &x);
                         sprintf(textB, "%x", x);
                         break;
                     }
@@ -272,7 +272,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                     {
                         unsigned int x = 0;
 
-                        DataStreamReadIU(outputStream, &x, EndianLittle);
+                        PXDataStreamReadI32U(outputStream, &x, EndianLittle);
                         sprintf(textB, "%i", x);
 
                         break;
@@ -282,7 +282,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
                     {
                         float x = 0;
 
-                        DataStreamReadF(outputStream, &x);
+                        PXDataStreamReadF(outputStream, &x);
 
                         sprintf(textB, "%f", x);
 
@@ -291,7 +291,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
 
                     case PXCompilerSymbolLexerString:
                     {
-                        DataStreamReadP(outputStream, textB, textBSize);
+                        PXDataStreamReadB(outputStream, textB, textBSize);
                         break;
                     }
                 }
@@ -309,7 +309,7 @@ ActionResult YAMLFileCompile(DataStream* const inputStream, DataStream* const ou
     outputStream->DataCursor = oldpos;
 }
 
-ActionResult YAMLFileParse(DataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
+ActionResult YAMLFileParse(PXDataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
 {
 
 

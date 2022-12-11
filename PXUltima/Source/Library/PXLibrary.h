@@ -1,5 +1,5 @@
-#ifndef LibraryInclude
-#define LibraryInclude
+#ifndef PXLibraryINCLUDE
+#define PXLibraryINCLUDE
 
 #include <OS/OSVersion.h>
 

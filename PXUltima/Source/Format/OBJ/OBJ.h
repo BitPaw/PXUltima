@@ -1,11 +1,11 @@
 #ifndef OBJInclude
 #define OBJInclude
 
-#include <stddef.h>
-
 #include <Error/ActionResult.h>
+#include <Format/Type.h>
+#include <File/PXDataStream.h>
+
 #include <Format/MTL/MTL.h>
-#include <File/DataStream.h>
 #include <Format/Model.h>
 
 #define OBJNameSize 64u
@@ -91,9 +91,9 @@ extern "C"
 
 	PXPrivate OBJLineType OBJPeekLine(const void* line, const PXSize size);
 
-	PXPublic ActionResult OBJFileCompile(DataStream* const inputStream, DataStream* const outputStream);
+	PXPublic ActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
 
-	PXPublic ActionResult OBJParseToModel(DataStream* const inputStream, PXModel* const model);
+	PXPublic ActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const model);
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@
 
 #include <Error/ActionResult.h>
 #include <Format/Type.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -17,7 +17,7 @@ extern "C"
 	}
 	PXPDF;
 
-	PXPublic ActionResult PXPDFCompile(PXPDF* const pxPDF, DataStream* const fileStream);
+	PXPublic ActionResult PXPDFCompile(PXPDF* const pxPDF, PXDataStream* const fileStream);
 
 #ifdef __cplusplus
 }

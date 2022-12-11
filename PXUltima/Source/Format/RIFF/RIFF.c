@@ -1,6 +1,6 @@
 #include "RIFF.h"
 
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Container/ClusterValue.h>
 #include <Memory/PXMemory.h>
 
@@ -20,20 +20,20 @@
 
 ActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	DataStream dataStream;
+	PXDataStream dataStream;
 
 	MemorySet(riff, sizeof(RIFF), 0);
 	*dataRead = 0;
 
-	DataStreamConstruct(&dataStream);
-	DataStreamFromExternal(&dataStream, data, dataSize);
+	PXDataStreamConstruct(&dataStream);
+	PXDataStreamFromExternal(&dataStream, data, dataSize);
 
 	ClusterInt chunkID;
 	ClusterInt formatID;
 
-	DataStreamReadIU(&dataStream, chunkID.Data, 4u);
-	DataStreamReadIU(&dataStream, &riff->ChunkSize, EndianLittle);
-	DataStreamReadIU(&dataStream, formatID.Data, 4u);
+	PXDataStreamReadI32U(&dataStream, chunkID.Data, 4u);
+	PXDataStreamReadI32U(&dataStream, &riff->ChunkSize, EndianLittle);
+	PXDataStreamReadI32U(&dataStream, formatID.Data, 4u);
 
 	switch(chunkID.Value) // Detect Endiantype
 	{

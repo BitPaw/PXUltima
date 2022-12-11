@@ -4,7 +4,7 @@
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
 #include <Format/Image.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -198,8 +198,8 @@ extern "C"
 
 	PXPublic PXSize TIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic ActionResult TIFFParse(TIFF* const tiff, DataStream* const dataStream);
-	PXPublic ActionResult TIFFParseToImage(Image* const image, DataStream* const dataStream);
+	PXPublic ActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream);
+	PXPublic ActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream);
 
 	PXPublic ActionResult TIFFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 

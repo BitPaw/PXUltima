@@ -5,7 +5,7 @@
 
 #include <Memory/PXMemory.h>
 #include <Format/HUFFMAN/HuffmanTree.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Math/PXMath.h>
 
 #define DeflateEncodingInvalidID -1
@@ -114,18 +114,18 @@ unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod defla
 
 int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead)
 {
-    DataStream dataStream;
+    PXDataStream dataStream;
     DeflateBlock deflateBlock;
 
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, inputBuffer, inputBufferSize);
+    PXDataStreamConstruct(&dataStream);
+    PXDataStreamFromExternal(&dataStream, inputBuffer, inputBufferSize);
 
     do
     {
-        deflateBlock.IsLastBlock = DataStreamReadBits(&dataStream, 1u);
+        deflateBlock.IsLastBlock = PXDataStreamReadBits(&dataStream, 1u);
 
         {
-            const unsigned char encodingMethodValue = DataStreamReadBits(&dataStream, 2u);
+            const unsigned char encodingMethodValue = PXDataStreamReadBits(&dataStream, 2u);
 
             deflateBlock.EncodingMethod = ConvertToDeflateEncodingMethod(encodingMethodValue);
         }
@@ -140,21 +140,21 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
             }
             case DeflateEncodingLiteralRaw:
             {
-                DataStreamSkipBitsToNextByte(&dataStream); // Skip remaining Bytes
+                PXDataStreamSkipBitsToNextByte(&dataStream); // Skip remaining Bytes
 
-                const unsigned short length = DataStreamReadBits(&dataStream, 16u);
-                const unsigned short lengthInverse = DataStreamReadBits(&dataStream, 16u);
-                const void* sourceAdress = DataStreamCursorPosition(&dataStream);
+                const unsigned short length = PXDataStreamReadBits(&dataStream, 16u);
+                const unsigned short lengthInverse = PXDataStreamReadBits(&dataStream, 16u);
+                const void* sourceAdress = PXDataStreamCursorPosition(&dataStream);
                 const unsigned char validLength = (length + lengthInverse) == 65535;
                 //const PXSize bitsToJump = (PXSize)length * 8;
 
                 //assert(validLength);
 
-                MemoryCopy(sourceAdress, DataStreamRemainingSize(&dataStream), (unsigned char*)outputBuffer + *outputBufferSizeRead, length);
+                MemoryCopy(sourceAdress, PXDataStreamRemainingSize(&dataStream), (unsigned char*)outputBuffer + *outputBufferSizeRead, length);
 
                 *outputBufferSizeRead += length;
 
-                DataStreamCursorAdvance(&dataStream, length);
+                PXDataStreamCursorAdvance(&dataStream, length);
 
                 break;
             }
@@ -244,7 +244,7 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
                             if(numextrabits_l != 0)
                             {
                                 /* bits already ensured above */
-                                length += DataStreamReadBits(&dataStream, numextrabits_l);
+                                length += PXDataStreamReadBits(&dataStream, numextrabits_l);
                             }
 
                             /*part 3: get distance code*/
@@ -272,7 +272,7 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
                             if(numextrabits_d != 0)
                             {
                                 /* bits already ensured above */
-                                distance += DataStreamReadBits(&dataStream, numextrabits_d);
+                                distance += PXDataStreamReadBits(&dataStream, numextrabits_d);
                             }
 
                             /*part 5: fill in all the out[n] values based on the length and dist*/

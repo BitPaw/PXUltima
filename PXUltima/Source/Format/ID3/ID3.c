@@ -1,6 +1,5 @@
 #include "ID3.h"
 
-#include <File/DataStream.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
 
@@ -95,23 +94,16 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
     }
 }
 
-ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, PXSize* dataRead)
+ActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
 {
-    DataStream dataStream;
-
-    DataStreamConstruct(&dataStream);
-    DataStreamFromExternal(&dataStream, data, dataSize);
-
     ID3Version version = ID3VersionInvalid;
-
-    *dataRead = 0;
 
     //Check header
     {
         // Einen ID3v2-Block erkennt man am Header, dessen erste fünf Bytes aus der Zeichenkette „ID3“ und der ID3v2-Version (z. B. $04 00 für ID3v2.4) bestehen
-        const unsigned char signbature[3] = ID3HeaderSignature;
+        const char signbature[3] = ID3HeaderSignature;
         const PXSize signbatureSize = sizeof(signbature);  
-        const unsigned char isValidHeader = DataStreamReadAndCompare(&dataStream, signbature, signbatureSize);
+        const PXBool isValidHeader = PXDataStreamReadAndCompare(dataStream, signbature, signbatureSize);
         
         if(!isValidHeader)
         {
@@ -123,7 +115,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
     {
         char versionTag[2];
 
-        DataStreamReadP(&dataStream, versionTag, 2);
+        PXDataStreamReadB(&dataStream, versionTag, 2);
 
         switch(versionTag[0])
         {
@@ -145,9 +137,9 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
 
             default: // Version is probably 1.x
             {
-                const unsigned char* trackIDAdress = (unsigned char*)DataStreamCursorPosition(&dataStream) + ID3CommentSize - 2;
+                const PXByte* trackIDAdress = (PXByte*)PXDataStreamCursorPosition(dataStream) + ID3CommentSize - 2;
                 const unsigned short trackIDSymbol = ((unsigned short)trackIDAdress[0]) << 8 + trackIDAdress[1];
-                const unsigned char isVersion1x0 = trackIDSymbol == 0x0000;
+                const PXBool isVersion1x0 = trackIDSymbol == 0x0000;
 
                 if(isVersion1x0)
                 {
@@ -166,7 +158,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
 
         // Cancel if version is invalid
         {
-            const unsigned char isValidVersion = version != ID3VersionInvalid;
+            const PXBool isValidVersion = version != ID3VersionInvalid;
 
             if(!isValidVersion)
             {
@@ -177,28 +169,28 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
 
     // Parse
     {
-        const unsigned char useOldHeader = version == ID3Versionv1x0 || version == ID3Versionv1x1;
+        const PXBool useOldHeader = version == ID3Versionv1x0 || version == ID3Versionv1x1;
 
         if(useOldHeader)
         {
-            const unsigned char hasTrackID = version == ID3Versionv1x1;
+            const PXBool hasTrackID = version == ID3Versionv1x1;
 
-            DataStreamReadP(&dataStream, id3->Title, ID3TitleSize);
-            DataStreamReadP(&dataStream, id3->Artist, ID3TitleSize);
-            DataStreamReadP(&dataStream, id3->Album, ID3TitleSize);
-            DataStreamReadP(&dataStream, id3->Year, ID3TitleSize);
+            PXDataStreamReadTextU(&dataStream, id3->Title, ID3TitleSize);
+            PXDataStreamReadTextU(&dataStream, id3->Artist, ID3TitleSize);
+            PXDataStreamReadTextU(&dataStream, id3->Album, ID3TitleSize);
+            PXDataStreamReadTextU(&dataStream, id3->Year, ID3TitleSize);
 
             if(hasTrackID)
             {
-                DataStreamReadP(&dataStream, id3->Comment, ID3CommentSize - 1);
-                DataStreamReadC(&dataStream, &id3->TrackID);
+                PXDataStreamReadTextU(&dataStream, id3->Comment, ID3CommentSize - 1);
+                PXDataStreamReadI8U(&dataStream, &id3->TrackID);
             }
             else
             {
-                DataStreamReadP(&dataStream, id3->Comment, ID3CommentSize);
+                PXDataStreamReadTextU(&dataStream, id3->Comment, ID3CommentSize);
             }
 
-            DataStreamReadC(&dataStream, &id3->Genre);
+            PXDataStreamReadI8U(&dataStream, &id3->Genre);
         }
         else
         {
@@ -211,7 +203,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
             {
                 unsigned char flags = 0;
 
-                DataStreamReadC(&dataStream, &flags);
+                PXDataStreamReadI8U(&dataStream, &flags);
 
                 a = (flags & 0b10000000) >> 7;
                 b = (flags & 0b01000000) >> 6;
@@ -222,7 +214,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
             {
                 ClusterInt sizeCluster;
 
-                DataStreamReadP(&dataStream, sizeCluster.Data, 4u);
+                PXDataStreamReadB(&dataStream, sizeCluster.Data, 4u);
 
                 // Size format: x000 x000 x000 x000 => 28 Bit int
                 // The first bit of each byte not only unused but shall be merged!
@@ -250,32 +242,32 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
                 case ID3Versionv2x3:
                 case ID3Versionv2x4:
                 {
-                    const PXSize posCurrent = dataStream.DataSize;
-                    const PXSize posExpectedMax = dataStream.DataCursor + sizeOfDataSegment;
+                    const PXSize posCurrent = dataStream->DataSize;
+                    const PXSize posExpectedMax = dataStream->DataCursor + sizeOfDataSegment;
 
-                    dataStream.DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
+                    dataStream->DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
 
-                    while(!DataStreamIsAtEnd(&dataStream))
+                    while(!PXDataStreamIsAtEnd(&dataStream))
                     {
                         // Read 4 byte indexes
                         ClusterInt indentifier;
                         unsigned int frameSize = 0;
                         unsigned short frameFlags = 0;
 
-                        DataStreamReadP(&dataStream, indentifier.Data, 4u);
-                        DataStreamReadIU(&dataStream, frameSize, EndianBig);
-                        DataStreamReadIU(&dataStream, frameFlags, EndianBig);
+                        PXDataStreamReadB(&dataStream, indentifier.Data, 4u);
+                        PXDataStreamReadI32U(&dataStream, frameSize, EndianBig);
+                        PXDataStreamReadI32U(&dataStream, frameFlags, EndianBig);
     
                         const ID3v2xFrameTag frameTag = ConvertID3v2xFrameTag(indentifier.Value);
-                        const unsigned char unkownTag = frameTag == ID3v2xFrameTagInvalid;
+                        const PXBool unkownTag = frameTag == ID3v2xFrameTagInvalid;
 
                         if(unkownTag)
                         {
-                            const unsigned char emptyDataDertected = unkownTag && (frameSize == 0);
+                            const PXBool emptyDataDertected = unkownTag && (frameSize == 0);
 
                             if(emptyDataDertected)
                             {
-                                DataStreamCursorToEnd(&dataStream);
+                                PXDataStreamCursorToEnd(&dataStream);
                                 break; // Cancel while loop, as there is nothing else to parse.
                             }
                         }
@@ -292,7 +284,7 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
                         );
 #endif
 
-                        PXSize posAfterChunk = dataStream.DataCursor + frameSize;
+                        PXSize posAfterChunk = dataStream->DataCursor + frameSize;
 
 
 #if 0 // Skip
@@ -357,16 +349,16 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
                                 break;
                             case Popularimeter:
                             {
-                                const unsigned char* emailToUser = DataStreamCursorPosition(&dataStream);
-                                const PXSize maximalToRead = DataStreamRemainingSize(&dataStream) - 6u;
+                                const unsigned char* emailToUser = PXDataStreamCursorPosition(&dataStream);
+                                const PXSize maximalToRead = PXDataStreamRemainingSize(&dataStream) - 6u;
                                 const PXSize emailToUserSize = TextLengthA((char*)emailToUser, maximalToRead);
                                 unsigned char rating = 0;
                                 // counter?
 
                                 // Copy
 
-                                DataStreamCursorAdvance(&dataStream, emailToUserSize + 1);
-                                DataStreamReadC(&dataStream, rating);
+                                PXDataStreamCursorAdvance(&dataStream, emailToUserSize + 1);
+                                PXDataStreamReadI8U(&dataStream, &rating);
 
                                 break;
                             }
@@ -520,13 +512,13 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
                         }
 #endif
 
-                        const unsigned char hasUnhandleChunkDetected = dataStream.DataCursor < posAfterChunk;
+                        const PXBool hasUnhandleChunkDetected = dataStream->DataCursor < posAfterChunk;
 
                         if(hasUnhandleChunkDetected)
                         {
                             printf("Unhandle chunk detected!\n");
 
-                            dataStream.DataCursor = posAfterChunk;
+                            dataStream->DataCursor = posAfterChunk;
                         }
                     }
 
@@ -535,8 +527,6 @@ ActionResult ID3Parse(ID3* const id3, const void* data, const PXSize dataSize, P
             }
         }
     }
-
-    *dataRead = dataStream.DataCursor;
 
     return ActionSuccessful;
 }

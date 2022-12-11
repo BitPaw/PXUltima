@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Network\Web\PXWebServer.h" />
+    <ClInclude Include="Source\Log\PXLog.h" />
     <ClInclude Include="Source\Audio\PXAudio.h" />
     <ClInclude Include="Source\Compiler\PXCompilerSettings.h" />
     <ClInclude Include="Source\OS\PXProcess.h" />
@@ -72,7 +74,7 @@
     <ClInclude Include="Source\Event\Event.h" />
     <ClInclude Include="Source\File\Endian.h" />
     <ClInclude Include="Source\File\File.h" />
-    <ClInclude Include="Source\File\DataStream.h" />
+    <ClInclude Include="Source\File\PXDataStream.h" />
     <ClInclude Include="Source\Format\3DS\A3DS.h" />
     <ClInclude Include="Source\Format\AAC\AAC.h" />
     <ClInclude Include="Source\Format\ADAM7\ADAM7.h" />
@@ -123,7 +125,7 @@
     <ClInclude Include="Source\Format\WMA\WMA.h" />
     <ClInclude Include="Source\Format\XingInfo\XingInfo.h" />
     <ClInclude Include="Source\Format\ZLIB\ZLIB.h" />
-    <ClInclude Include="Source\Library\Library.h" />
+    <ClInclude Include="Source\Library\PXLibrary.h" />
     <ClInclude Include="Source\Math\PXMath.h" />
     <ClInclude Include="Source\Memory\PXMemory.h" />
     <ClInclude Include="Source\Network\PXClient.h" />
@@ -150,6 +152,8 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Network\Web\PXWebServer.c" />
+    <ClCompile Include="Source\Log\PXLog.c" />
     <ClCompile Include="Source\Audio\PXAudio.c" />
     <ClCompile Include="Source\Compiler\PXCompilerSettings.c" />
     <ClCompile Include="Source\OS\PXProcess.c" />
@@ -202,7 +206,7 @@
     <ClCompile Include="Source\Event\Event.c" />
     <ClCompile Include="Source\File\Endian.c" />
     <ClCompile Include="Source\File\File.c" />
-    <ClCompile Include="Source\File\DataStream.c" />
+    <ClCompile Include="Source\File\PXDataStream.c" />
     <ClCompile Include="Source\Format\3DS\A3DS.c" />
     <ClCompile Include="Source\Format\AAC\AAC.c" />
     <ClCompile Include="Source\Format\ADAM7\ADAM7.c" />
@@ -253,7 +257,7 @@
     <ClCompile Include="Source\Format\WMA\WMA.c" />
     <ClCompile Include="Source\Format\XingInfo\XingInfo.c" />
     <ClCompile Include="Source\Format\ZLIB\ZLIB.c" />
-    <ClCompile Include="Source\Library\Library.c" />
+    <ClCompile Include="Source\Library\PXLibrary.c" />
     <ClCompile Include="Source\Math\PXMath.c" />
     <ClCompile Include="Source\Memory\PXMemory.c" />
     <ClCompile Include="Source\Network\PXClient.c" />

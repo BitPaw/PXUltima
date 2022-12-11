@@ -3,15 +3,15 @@
 
 #include <Error/ActionResult.h>
 #include <Format/Type.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
    
-	PXPublic ActionResult PXTranslatorEnglishToGerman(DataStream* const inputStreamEnglish, DataStream* const outputStreamGerman);
-	PXPublic ActionResult PXTranslatorGermanToEnglish(DataStream* const inputStreamGerman, DataStream* const outputStreamEnglish);
+	PXPublic ActionResult PXTranslatorEnglishToGerman(PXDataStream* const inputStreamEnglish, PXDataStream* const outputStreamGerman);
+	PXPublic ActionResult PXTranslatorGermanToEnglish(PXDataStream* const inputStreamGerman, PXDataStream* const outputStreamEnglish);
 
 #ifdef __cplusplus
 }

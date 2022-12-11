@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <File/File.h>
 
 #ifdef __cplusplus
@@ -126,8 +126,8 @@ extern "C"
 	}
 	PXModel;
 
-	typedef ActionResult(*ModelCompilerFunction)(DataStream* const inputStream, DataStream* const outputStream);
-	typedef ActionResult(*ModelParserFunction)(DataStream* const inputStream, PXModel* const model);
+	typedef ActionResult(*ModelCompilerFunction)(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	typedef ActionResult(*ModelParserFunction)(PXDataStream* const inputStream, PXModel* const model);
 
 
 	PXPublic void ModelConstruct(PXModel* const model);
@@ -146,7 +146,7 @@ extern "C"
 
 	PXPublic ActionResult ModelLoadA(PXModel* const model, const char* const filePath);
 	PXPublic ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath);
-	PXPublic ActionResult ModelLoadD(PXModel* const model, DataStream* const fileStream, const FileFormatExtension modelType);
+	PXPublic ActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType);
 
 #ifdef __cplusplus
 }

@@ -5,7 +5,7 @@
 ActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
     /*
-   DataStream dataStream;
+   PXDataStream dataStream;
 
     {
         const ActionResult loadingResult = file.MapToVirtualMemory(filePath, MemoryReadOnly);

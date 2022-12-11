@@ -1,6 +1,6 @@
 #include "TestPXCompiler.h"
 
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #include <Compiler/PXCompiler.h>
 #include <Format/YAML/YAML.h>
@@ -16,13 +16,13 @@ void TestPXCompilerAll()
 
 void TestPXCompilerOBJ()
 {
-	DataStream inputStream;
-	DataStream outputStream;
+	PXDataStream inputStream;
+	PXDataStream outputStream;
 
-	DataStreamConstruct(&inputStream);
-	DataStreamConstruct(&outputStream);
+	PXDataStreamConstruct(&inputStream);
+	PXDataStreamConstruct(&outputStream);
 
-	DataStreamMapToMemoryA
+	PXDataStreamMapToMemoryA
 	(
 		&inputStream,
 		"B:/Daten/Objects/Moze/Moze.obj",
@@ -30,7 +30,7 @@ void TestPXCompilerOBJ()
 		MemoryReadOnly
 	);
 
-	DataStreamMapToMemory(&outputStream, inputStream.DataSize*4, MemoryReadAndWrite);
+	PXDataStreamMapToMemory(&outputStream, inputStream.DataSize*4, MemoryReadAndWrite);
 
 	OBJFileCompile(&inputStream, &outputStream);
 
@@ -50,13 +50,13 @@ void TestPXCompilerYAML()
 
 	MemorySet(buffer, size, 0);
 
-	DataStream inputStream;
-	DataStream outputStream;
+	PXDataStream inputStream;
+	PXDataStream outputStream;
 
-	DataStreamConstruct(&inputStream);
-	DataStreamConstruct(&outputStream);
+	PXDataStreamConstruct(&inputStream);
+	PXDataStreamConstruct(&outputStream);
 
-	DataStreamMapToMemoryA
+	PXDataStreamMapToMemoryA
 	(
 		&inputStream,
 		"A:/config.yml",
@@ -64,7 +64,7 @@ void TestPXCompilerYAML()
 		MemoryReadOnly		
 	);
 
-	DataStreamFromExternal(&outputStream, buffer, size);
+	PXDataStreamFromExternal(&outputStream, buffer, size);
 
 	PXCompilerSettings compilerSettings;
 
@@ -90,18 +90,18 @@ void TestPXCompilerXML()
 		"</description>\n"
 		"</part>\n";
 
-	DataStream inputStream;
-	DataStream outputStream;
+	PXDataStream inputStream;
+	PXDataStream outputStream;
 
-	DataStreamConstruct(&inputStream);
-	DataStreamConstruct(&outputStream);
+	PXDataStreamConstruct(&inputStream);
+	PXDataStreamConstruct(&outputStream);
 
 #if 1
-	DataStreamFromExternal(&inputStream, xmlData, 299-1);	
+	PXDataStreamFromExternal(&inputStream, xmlData, 299-1);	
 #else
-	DataStreamMapToMemoryA(&inputStream, "A:/index.php", MemoryReadOnly, FileCachingSequential);
+	PXDataStreamMapToMemoryA(&inputStream, "A:/index.php", MemoryReadOnly, FileCachingSequential);
 #endif
-	DataStreamMapToMemory(&outputStream, inputStream.DataSize * 8, MemoryReadAndWrite);
+	PXDataStreamMapToMemory(&outputStream, inputStream.DataSize * 8, MemoryReadAndWrite);
 
 	XMLFileCompile(&inputStream, &outputStream);
 

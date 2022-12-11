@@ -4,7 +4,7 @@
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
 #include <File/File.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -48,8 +48,8 @@ extern "C"
 	}
 	Image;
 
-	typedef  ActionResult(*ParseToImage)(Image* const image, DataStream* dataStream);
-	typedef  ActionResult(*SerializeFromImage)(const Image* const image, DataStream* dataStream);
+	typedef  ActionResult(*ParseToImage)(Image* const image, PXDataStream* dataStream);
+	typedef  ActionResult(*SerializeFromImage)(const Image* const image, PXDataStream* dataStream);
 
 	PXPublic void ImageConstruct(Image* const image);
 	PXPublic void ImageDestruct(Image* const image);
@@ -57,7 +57,7 @@ extern "C"
 	PXPublic ActionResult ImageLoadA(Image* const image, const PXTextASCII filePath);
 	PXPublic ActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath);
 	PXPublic ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath);
-	PXPublic ActionResult ImageLoadD(Image* const image, DataStream* const dataStream, const FileFormatExtension guessedFormat);
+	PXPublic ActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat);
 
 	PXPublic ActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
 	PXPublic ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);

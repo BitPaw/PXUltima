@@ -178,10 +178,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Event/Event.h" />
-		<Unit filename="Source/File/DataStream.c">
+		<Unit filename="Source/File/PXDataStream.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/File/DataStream.h" />
+		<Unit filename="Source/File/PXDataStream.h" />
 		<Unit filename="Source/File/Endian.c">
 			<Option compilerVar="CC" />
 		</Unit>

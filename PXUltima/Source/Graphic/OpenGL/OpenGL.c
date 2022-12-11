@@ -1805,31 +1805,31 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
             char* teeext = func(window->HandleDeviceContext);
 
             {
-                DataStream dataStream;
+                PXDataStream dataStream;
 
                 const PXSize teextSize = TextFindFirstA(teeext, 0xFFFF, '\0');
-                DataStreamFromExternal(&dataStream, teeext, teextSize);
+                PXDataStreamFromExternal(&dataStream, teeext, teextSize);
 
                 PXSize x = 99999;
 
                 char wurst[256];
 
-                while (!DataStreamIsAtEnd(&dataStream))
+                while (!PXDataStreamIsAtEnd(&dataStream))
                 {
                     MemorySet(wurst, sizeof(256), 0);
 
-                    char* adres = DataStreamCursorPosition(&dataStream);
+                    char* adres = PXDataStreamCursorPosition(&dataStream);
 
                     PXSize textSize = 0;
 
-                    x = DataStreamSkipBlock(&dataStream);
+                    x = PXDataStreamSkipBlock(&dataStream);
 
                     textSize = x + 1;
 
-                    DataStreamCursorRewind(&dataStream, x);
+                    PXDataStreamCursorRewind(&dataStream, x);
 
-                    DataStreamReadA(&dataStream, wurst, textSize - 1);
-                    DataStreamCursorAdvance(&dataStream, 1);
+                    PXDataStreamReadA(&dataStream, wurst, textSize - 1);
+                    PXDataStreamCursorAdvance(&dataStream, 1);
 
                     printf("%s\n", wurst);
                 }

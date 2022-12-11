@@ -3,7 +3,7 @@
 #include <Memory/PXMemory.h>
 #include <File/File.h>
 #include <Text/Text.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 #include <Math/PXMath.h>
 
 #include <Format/BMP/BMP.h>
@@ -102,13 +102,13 @@ ActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath)
 
 ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
 {
-    DataStream dataStream;
+    PXDataStream dataStream;
 
-    DataStreamConstruct(&dataStream);
+    PXDataStreamConstruct(&dataStream);
     ImageConstruct(image);
 
     {
-        const ActionResult fileLoadingResult = DataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
+        const ActionResult fileLoadingResult = PXDataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
 
         ActionExitOnError(fileLoadingResult);
     }
@@ -139,10 +139,10 @@ ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
         return fileGuessResult;
     }
 
-    DataStreamDestruct(&dataStream);
+    PXDataStreamDestruct(&dataStream);
 }
 
-ActionResult ImageLoadD(Image* const image, DataStream* const dataStream, const FileFormatExtension guessedFormat)
+ActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat)
 {
     PXSize bytesRead = 0;
     ParseToImage parseToImage = 0;
@@ -208,11 +208,11 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
     PXSize fileSize = 0;
     PXSize writtenBytes = 0;
-    DataStream dataStream;  
+    PXDataStream dataStream;  
 
     SerializeFromImage serializeFromImageFunction = 0;
 
-    DataStreamConstruct(&dataStream);
+    PXDataStreamConstruct(&dataStream);
 
     switch(fileFormat)
     {    
@@ -269,12 +269,12 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
     }
 
     {
-        const ActionResult mappingResult = DataStreamMapToMemoryW(&dataStream, filePathW, fileSize, MemoryWriteOnly);
+        const ActionResult mappingResult = PXDataStreamMapToMemoryW(&dataStream, filePathW, fileSize, MemoryWriteOnly);
         const unsigned char sucessful = ActionSuccessful == mappingResult;
 
         if(!sucessful)
         {
-            DataStreamDestruct(&dataStream);
+            PXDataStreamDestruct(&dataStream);
             return mappingResult;
         }
     }
@@ -285,12 +285,12 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
         if(!sucessful)
         {
-            DataStreamDestruct(&dataStream);
+            PXDataStreamDestruct(&dataStream);
             return serializeResult;
         }
     }
 
-    DataStreamDestruct(&dataStream);
+    PXDataStreamDestruct(&dataStream);
 
     return ActionSuccessful;
 }

@@ -117,7 +117,7 @@ extern "C"
 
 
 	PXPublic ActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead);
-	PXPublic ActionResult TGAParseToImage(Image* const image, DataStream* const dataStream);
+	PXPublic ActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream);
 
 	PXPublic ActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 

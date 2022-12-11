@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 #include <Error/ActionResult.h>
-#include <File/DataStream.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -117,11 +117,10 @@ extern "C"
 	//----------------------------------------------------------------------------
 	PXPublic PXSize BMPFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-	PXPublic ActionResult BMPParse(BMP* const bmp, DataStream* const dataStream);
-	PXPublic ActionResult BMPParseToImage(Image* const image, DataStream* const dataStream);
+	PXPublic ActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic ActionResult BMPSerialize(const BMP* const bmp, DataStream* const dataStream);
-	PXPublic ActionResult BMPSerializeFromImage(const Image* const image, DataStream* const dataStream);
+	PXPublic ActionResult BMPSerialize(const BMP* const bmp, PXDataStream* const dataStream);
+	PXPublic ActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus
