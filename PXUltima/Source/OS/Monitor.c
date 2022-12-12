@@ -47,7 +47,7 @@ void MonitorFetchAll(Monitor* monitorList, const PXSize monitorListSizeMax, cons
 	MONITORENUMPROC lpfnEnum = MonitorListCallBack;
 	LPARAM          dwData = 0;
 
-	MemorySet(&rectangleClip, sizeof(RECT), 0);
+	MemoryClear(&rectangleClip, sizeof(RECT));
 
 	while(EnumDisplayMonitors(hdc, &rectangleClip, lpfnEnum, dwData));
 
@@ -55,12 +55,24 @@ void MonitorFetchAll(Monitor* monitorList, const PXSize monitorListSizeMax, cons
 	DISPLAY_DEVICEW displayDevice;
 	DWORD            dwFlags = 0;
 
-	MemorySet(&displayDevice, sizeof(DISPLAY_DEVICEW), 0);
+	MemoryClear(&displayDevice, sizeof(DISPLAY_DEVICEW));
 
 	displayDevice.cb = sizeof(DISPLAY_DEVICEW);
 
 	for(PXSize deviceID = 0; EnumDisplayDevicesW(0, deviceID, &displayDevice, dwFlags); deviceID++)
 	{
+		DWORD    iModeNum = ENUM_CURRENT_SETTINGS;
+		DEVMODEW devMode = {0};
+		DWORD    dwFlags = EDS_RAWMODE;
+
+		const BOOL settingsResult = EnumDisplaySettingsExW
+		(
+			displayDevice.DeviceName,
+			iModeNum,
+			&devMode,
+			dwFlags
+		);
+
 		printf
 		(
 			"+------------------------\n"

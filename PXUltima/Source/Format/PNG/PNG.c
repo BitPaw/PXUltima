@@ -869,7 +869,7 @@ unsigned char ConvertFromPNGInterlaceMethod(const PNGInterlaceMethod interlaceMe
 
 void PNGConstruct(PNG* const png)
 {
-    MemorySet(png, sizeof(PNG), 0);
+    MemoryClear(png, sizeof(PNG));
 }
 
 void PNGDestruct(PNG* const png)
@@ -1366,7 +1366,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
 
         //---<Check PNG Header>------------------------------------------------
         {
-            const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
+            const char pngFileHeader[8] = PNGHeaderSequenz;
             const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
             const PXBool isValidHeader = PXDataStreamReadAndCompare(dataStream, pngFileHeader, pngFileHeaderSize);
 
@@ -1449,14 +1449,19 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                     unsigned char colorTypeRaw = 0;
                     unsigned char interlaceMethodRaw = 0;
 
-                    PXDataStreamReadI32UE(dataStream, &png.ImageHeader.Width, EndianBig); // 4 Bytes
-                    PXDataStreamReadI32UE(dataStream, &png.ImageHeader.Height, EndianBig); // 4 Bytes
+                    const PXDataStreamElementType pxDataStreamElementList[] =
+                    {
+                        {PXDataTypeBEInt32U, &png.ImageHeader.Width},
+                        {PXDataTypeBEInt32U, &png.ImageHeader.Height},
+                        {PXDataTypeInt8U, &png.ImageHeader.BitDepth},
+                        {PXDataTypeInt8U, &colorTypeRaw},
+                        {PXDataTypeInt8U, &png.ImageHeader.CompressionMethod},
+                        {PXDataTypeInt8U, &png.ImageHeader.FilterMethod},
+                        {PXDataTypeInt8U, &interlaceMethodRaw}
+                    };
+                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
 
-                    PXDataStreamReadI8U(dataStream, &png.ImageHeader.BitDepth); // 1 Byte__
-                    PXDataStreamReadI8U(dataStream, &colorTypeRaw); // 1 Byte__
-                    PXDataStreamReadI8U(dataStream, &png.ImageHeader.CompressionMethod); // 1 Byte__
-                    PXDataStreamReadI8U(dataStream, &png.ImageHeader.FilterMethod); // 1 Byte__
-                    PXDataStreamReadI8U(dataStream, &interlaceMethodRaw); // 1 Byte__
+                    PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
 
                     png.ImageHeader.ColorType = ConvertToPNGColorType(colorTypeRaw);
                     png.ImageHeader.InterlaceMethod = ConvertToPNGInterlaceMethod(interlaceMethodRaw);
@@ -1467,7 +1472,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                 {
                     unsigned pos = 0;
                     const PXSize palettSize = chunk.Lengh / 3u;
-                    const unsigned char validSize = palettSize != 0 && palettSize <= 256;
+                    const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
                     if(!validSize)
                         return ResultFormatNotAsExpected; // palette too small or big
@@ -1550,7 +1555,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
 
                             unsigned short value;
 
-                            PXDataStreamReadI16U(dataStream, &value, EndianBig);
+                            PXDataStreamReadI16UE(dataStream, &value, EndianBig);
 
                            // color->key_defined = 1;
                             //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
@@ -1566,9 +1571,9 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                             unsigned short green;
                             unsigned short blue;
 
-                            PXDataStreamReadI16U(dataStream, &red, EndianBig);
-                            PXDataStreamReadI16U(dataStream, &green, EndianBig);
-                            PXDataStreamReadI16U(dataStream, &blue, EndianBig);
+                            PXDataStreamReadI16UE(dataStream, &red, EndianBig);
+                            PXDataStreamReadI16UE(dataStream, &green, EndianBig);
+                            PXDataStreamReadI16UE(dataStream, &blue, EndianBig);
 
                             //color->key_defined = 1;
                             //color->key_r = 256u * data[0] + data[1];
@@ -1606,20 +1611,26 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                 }
                 case PNGChunkImageGamma:
                 {
-                    PXDataStreamReadI32U(dataStream, &png.Gamma, EndianBig);
+                    PXDataStreamReadI32UE(dataStream, &png.Gamma, EndianBig);
 
                     break;
                 }
                 case PNGChunkPrimaryChromaticities:
                 {
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.WhiteX, EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.WhiteY, EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.RedX, EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.RedY, EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.GreenX, EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.GreenY, EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.BlueX, EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PrimaryChromatics.BlueY, EndianBig);
+                    const PXDataStreamElementType pxDataStreamElementList[] =
+                    {
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.WhiteX},
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.WhiteY},
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.RedX},
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.RedY},
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.GreenX},
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.GreenY},
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.BlueX},
+                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.BlueY}
+                    };
+                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
+
+                    PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);              
 
                     break;
                 }
@@ -1696,8 +1707,8 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                 {
                     unsigned char unitSpecifier = 0;
 
-                    PXDataStreamReadI32U(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], EndianBig);
-                    PXDataStreamReadI32U(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
+                    PXDataStreamReadI32UE(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], EndianBig);
+                    PXDataStreamReadI32UE(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
                     PXDataStreamReadI8U(dataStream, &unitSpecifier);
 
                     switch(unitSpecifier)
@@ -1778,7 +1789,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                 }
                 case PNGChunkLastModificationTime:
                 {
-                    PXDataStreamReadI16U(dataStream, &png.LastModificationTime.Year, EndianBig);
+                    PXDataStreamReadI16UE(dataStream, &png.LastModificationTime.Year, EndianBig);
                     PXDataStreamReadI8U(dataStream, &png.LastModificationTime.Month);
                     PXDataStreamReadI8U(dataStream, &png.LastModificationTime.Day);
                     PXDataStreamReadI8U(dataStream, &png.LastModificationTime.Hour);
@@ -1817,50 +1828,39 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
 
      {
 
+     ImageDataFormat imageDataFormat;
 
-        PXSize size = png.ImageHeader.Width * png.ImageHeader.Height * NumberOfColorChannels(png.ImageHeader.ColorType);
+     switch (png.ImageHeader.ColorType)
+     {
+         case PNGColorGrayscale:
+             imageDataFormat = ImageDataFormatAlphaMask;
+             break;
 
-        if(png.ImageHeader.ColorType == PNGColorPalette)
-        {
-            size *= 4;
-        }
+         case PNGColorRGB:
+             imageDataFormat = ImageDataFormatRGB8;
+             break;
 
-        const unsigned char* data = MemoryAllocate(sizeof(unsigned char) * size);
+         case PNGColorInvalid:
+         case PNGColorGrayscaleAlpha:
+             imageDataFormat = ImageDataFormatInvalid;
+             break;
 
-        if(!data)
+         case PNGColorPalette:
+         case PNGColorRGBA:
+             imageDataFormat = ImageDataFormatRGBA8;
+             break;
+
+         default:
+             imageDataFormat = ImageDataFormatInvalid;
+             break;
+     }
+
+        const PXBool allocateResult = ImageResize(image, imageDataFormat, png.ImageHeader.Width, png.ImageHeader.Height);
+        
+        if (!allocateResult)
         {
             return ActionSystemOutOfMemory;
-        }
-
-        image->Width = png.ImageHeader.Width;
-        image->Height = png.ImageHeader.Height;
-        image->PixelDataSize = size;
-        image->PixelData = data;
-
-        switch(png.ImageHeader.ColorType)
-        {
-            case PNGColorGrayscale:
-                image->Format = ImageDataFormatAlphaMask;
-                break;
-
-            case PNGColorRGB:
-                image->Format = ImageDataFormatRGB8;
-                break;
-
-            case PNGColorInvalid:
-            case PNGColorGrayscaleAlpha:
-                image->Format = ImageDataFormatInvalid;
-                break;
-
-            case PNGColorPalette:
-            case PNGColorRGBA:
-                image->Format = ImageDataFormatRGBA8;
-                break;
-
-            default:
-                image->Format = ImageDataFormatInvalid;
-                break;
-        }
+        }   
      }
     //-------------------------------------------------------------------------
 

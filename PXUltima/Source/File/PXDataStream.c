@@ -1264,59 +1264,59 @@ PXSize PXDataStreamReadMultible(PXDataStream* const dataStream, PXDataStreamElem
 		switch (dataStreamElement->Type)
 		{
 			case PXDataTypeInt8S:
-				totalReadBytes += PXDataStreamReadI8S(dataStream, (PXInt8S*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI8S(dataStream, (PXInt8S*)dataStreamElement->Adress);
 				break;
 
 			case PXDataTypeInt8U:
-				totalReadBytes += PXDataStreamReadI8U(dataStream, (PXInt8S*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI8U(dataStream, (PXInt8S*)dataStreamElement->Adress);
 				break;
 
 			case PXDataTypeLEInt16S:
-				totalReadBytes += PXDataStreamReadI16S(dataStream, (PXInt16S*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI16SE(dataStream, (PXInt16S*)dataStreamElement->Adress, EndianLittle);
 				break;
 
 			case PXDataTypeLEInt16U:
-				totalReadBytes += PXDataStreamReadI16U(dataStream, (PXInt16U*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI16UE(dataStream, (PXInt16U*)dataStreamElement->Adress, EndianLittle);
 				break;
 
 			case PXDataTypeLEInt32S:
-				totalReadBytes += PXDataStreamReadI32S(dataStream, (PXInt32S*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI32SE(dataStream, (PXInt32S*)dataStreamElement->Adress, EndianLittle);
 				break;
 
 			case PXDataTypeLEInt32U:
-				totalReadBytes += PXDataStreamReadI32U(dataStream, (PXInt32U*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI32UE(dataStream, (PXInt32U*)dataStreamElement->Adress, EndianLittle);
 				break;
 
 			case PXDataTypeLEInt64S:
-				totalReadBytes += PXDataStreamReadI64S(dataStream, (PXInt64S*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI64SE(dataStream, (PXInt64S*)dataStreamElement->Adress, EndianLittle);
 				break;
 
 			case PXDataTypeLEInt64U:
-				totalReadBytes += PXDataStreamReadI64U(dataStream, (PXInt64U*)dataStreamElement->Adress, EndianLittle);
+				totalReadBytes += PXDataStreamReadI64UE(dataStream, (PXInt64U*)dataStreamElement->Adress, EndianLittle);
 				break;
 
 			case PXDataTypeBEInt16S:
-				totalReadBytes += PXDataStreamReadI16S(dataStream, (PXInt16S*)dataStreamElement->Adress, EndianBig);
+				totalReadBytes += PXDataStreamReadI16SE(dataStream, (PXInt16S*)dataStreamElement->Adress, EndianBig);
 				break;
 
 			case PXDataTypeBEInt16U:
-				totalReadBytes += PXDataStreamReadI16U(dataStream, (PXInt16U*)dataStreamElement->Adress, EndianBig);
+				totalReadBytes += PXDataStreamReadI16UE(dataStream, (PXInt16U*)dataStreamElement->Adress, EndianBig);
 				break;
 
 			case PXDataTypeBEInt32S:
-				totalReadBytes += PXDataStreamReadI32S(dataStream, (PXInt32S*)dataStreamElement->Adress, EndianBig);
+				totalReadBytes += PXDataStreamReadI32SE(dataStream, (PXInt32S*)dataStreamElement->Adress, EndianBig);
 				break;
 
 			case PXDataTypeBEInt32U:
-				totalReadBytes += PXDataStreamReadI32U(dataStream, (PXInt32U*)dataStreamElement->Adress, EndianBig);
+				totalReadBytes += PXDataStreamReadI32UE(dataStream, (PXInt32U*)dataStreamElement->Adress, EndianBig);
 				break;
 
 			case PXDataTypeBEInt64S:
-				totalReadBytes += PXDataStreamReadI64S(dataStream, (PXInt64S*)dataStreamElement->Adress, EndianBig);
+				totalReadBytes += PXDataStreamReadI64SE(dataStream, (PXInt64S*)dataStreamElement->Adress, EndianBig);
 				break;
 
 			case PXDataTypeBEInt64U:
-				totalReadBytes += PXDataStreamReadI64U(dataStream, (PXInt64U*)dataStreamElement->Adress, EndianBig);
+				totalReadBytes += PXDataStreamReadI64UE(dataStream, (PXInt64U*)dataStreamElement->Adress, EndianBig);
 				break;
 
 			case PXDataStreamFloat:

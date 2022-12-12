@@ -53,7 +53,6 @@ ActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
 
 		PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
-
 	}
 
 	// Parse: source frequency

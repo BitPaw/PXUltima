@@ -1123,23 +1123,15 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize*
 		{
 			LAME lame;
 
-			const unsigned char* dataPosition = PXDataStreamCursorPosition(&dataStream);
-			const PXSize dataSize = cursorPositionPredict - dataStream.DataCursor;
-			PXSize parsedBytes = 0;
+			const ActionResult actionResult = LAMEParse(&lame, &dataStream);
 
-			const ActionResult actionResult = LAMEParse(&lame, dataPosition, dataSize, &parsedBytes);
-
-			PXDataStreamCursorAdvance(&dataStream, parsedBytes);
-
-			if(parsedBytes)
-			{
 #if MP3Debug
 				printf
 				(
 					"[MP3][LAME] Chunk |\n"
 				);
-#endif	
-			}
+#endif
+			
 		}
 
 

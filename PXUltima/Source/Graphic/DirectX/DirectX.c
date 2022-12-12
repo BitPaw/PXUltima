@@ -6,6 +6,7 @@
 //#include <dxdiag.h>
 //#include <dsetup.h> // unsupported legacy lib, not updated
 //#include <d3d12.h>
+#include <d3d12.h>
 #pragma comment(lib, "D3d9.lib")
 #endif
 
@@ -32,8 +33,6 @@ void DirectXContextCreate(DirectXContext* const directXContext)
 
 #if OSUnix
 #elif OSWindows
-
-
 
 	IDirect3D9* const context = Direct3DCreate9(D3D_SDK_VERSION);
 	const PXBool success = context;

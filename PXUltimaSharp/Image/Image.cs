@@ -15,7 +15,7 @@ namespace PX
 
     public class Image //: IDisposable
     {
-        private CImage _cImage;
+        private CImage _cImage;        
 
         public ulong Width { get => _cImage.Width; }
         public ulong Height { get => _cImage.Height; }
