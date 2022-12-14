@@ -8,13 +8,14 @@ namespace PXTest
         static void Main(string[] args)
         {
 
-            Window window = new Window();
+            ///Window window = new Window();
 
-            window.Create("Test");
+            //window.Create("Test");
 
             Console.WriteLine("Test");
+            DataStream dataStream = new DataStream();
+            int x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
 
-            
 
 
             while (true)

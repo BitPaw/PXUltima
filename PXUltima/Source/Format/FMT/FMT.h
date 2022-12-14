@@ -2,9 +2,9 @@
 #define FMTInclude
 
 #include <Format/Type.h>
-
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/Endian.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -26,7 +26,7 @@ extern "C"
 
 	PXPublic void FMTConstruct(FMT* const fmt);
 
-	PXPublic ActionResult FMTParse(FMT* const fmt, const void* data, const PXSize dataSize, PXSize* dataRead, const Endian endian);
+	PXPublic PXActionResult FMTParse(FMT* const fmt, PXDataStream* const pxDataStream, const Endian endian);
 
 #ifdef __cplusplus
 }

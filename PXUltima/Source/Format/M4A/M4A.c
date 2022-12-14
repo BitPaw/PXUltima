@@ -64,7 +64,7 @@ M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID)
 	}
 }
 
-ActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -178,5 +178,5 @@ ActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize*
 		}
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

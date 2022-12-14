@@ -1,6 +1,5 @@
 #include "JPEG.h"
 
-#include <assert.h>
 #include <stdlib.h>
 
 #include <Container/ClusterValue.h>
@@ -254,15 +253,15 @@ void JPEGDestruct(JPEG* const jpeg)
 
 }
 
-ActionResult JPEGParse(JPEG* jpeg, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult JPEGParse(JPEG* jpeg, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 
 
-    return ActionInvalid;
+    return PXActionInvalid;
 }
 
 
-ActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream)
 {
     JPEG jpeXg;
     JPEG* jpeg = &jpeXg;
@@ -280,7 +279,7 @@ ActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream
 
         if(!validStart)
         {
-            return ActionInvalidHeaderSignature;
+            return PXActionRefusedInvalidHeaderSignature;
         }
 
 #if JPGDebug
@@ -308,7 +307,7 @@ ActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream
                 printf("[i][JPG] End of Image\n");
 #endif
 
-                return ActionSuccessful;
+                return PXActionSuccessful;
             }
 
             PXDataStreamReadI16UE(dataStream, &chunkLength, EndianBig);
@@ -330,7 +329,7 @@ ActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream
             case JPEGMarkerStartOfImage:
             {
                 // We read the start tag already. Reading it again is not valid.
-                return ResultFormatNotAsExpected;
+                return PXActionFailedFormatNotAsExpected;
             }
 
             case JPEGMarkerStartOfFrameHuffmanBaselineDCT:
@@ -638,7 +637,7 @@ ActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream
         //--------------
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
 
@@ -967,7 +966,7 @@ void generateHuffmanTable(const uint8_t numCodes[16], const uint8_t* values, Bit
 
 
 
-ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult JPEGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
     unsigned char isRGB = 1u;
     unsigned char quality = 100u;
@@ -1304,5 +1303,5 @@ ActionResult JPEGSerializeFromImage(const Image* const image, void* data, const 
 
     *dataWritten = dataStream.DataCursor;
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

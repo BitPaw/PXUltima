@@ -70,7 +70,7 @@
     <ClInclude Include="Source\Device\KeyBoard.h" />
     <ClInclude Include="Source\Device\Mouse.h" />
     <ClInclude Include="Source\Device\VirtualKey.h" />
-    <ClInclude Include="Source\Error\ActionResult.h" />
+    <ClInclude Include="Source\Error\PXActionResult.h" />
     <ClInclude Include="Source\Event\Event.h" />
     <ClInclude Include="Source\File\Endian.h" />
     <ClInclude Include="Source\File\File.h" />
@@ -202,7 +202,7 @@
     <ClCompile Include="Source\Device\KeyBoard.c" />
     <ClCompile Include="Source\Device\Mouse.c" />
     <ClCompile Include="Source\Device\VirtualKey.c" />
-    <ClCompile Include="Source\Error\ActionResult.c" />
+    <ClCompile Include="Source\Error\PXActionResult.c" />
     <ClCompile Include="Source\Event\Event.c" />
     <ClCompile Include="Source\File\Endian.c" />
     <ClCompile Include="Source\File\File.c" />

@@ -2,15 +2,15 @@
 
 #include <Format/RIFF/RIFF.h>
 
-ActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
     /*
    PXDataStream dataStream;
 
     {
-        const ActionResult loadingResult = file.MapToVirtualMemory(filePath, MemoryReadOnly);
+        const PXActionResult loadingResult = file.MapToVirtualMemory(filePath, MemoryReadOnly);
 
-        if(loadingResult != ActionSuccessful)
+        if(loadingResult != PXActionSuccessful)
         {
             return loadingResult;
         }
@@ -24,7 +24,7 @@ ActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize*
 
         if(!riff.Valid)
         {
-            return ResultFormatNotAsExpected;
+            return PXActionFailedFormatNotAsExpected;
         }
     }
 
@@ -33,5 +33,5 @@ ActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize*
     file.Read(size, EndianBig);
     */
 
-    return ActionInvalid;
+    return PXActionInvalid;
 }

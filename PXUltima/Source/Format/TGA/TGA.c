@@ -137,7 +137,7 @@ void TGADestruct(TGA* const tga)
 
 }
 
-ActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -225,7 +225,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize*
 
 		if(!isTGAVersionTwo) // Is this a TGA v.1.0 dataStream?
 		{
-			return ActionSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
+			return PXActionSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
 		}
 	}
 
@@ -259,7 +259,7 @@ ActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize*
 
 		if(!isExtensionSizeAsExpected)
 		{
-			return ResultFormatNotAsExpected;
+			return PXActionFailedFormatNotAsExpected;
 		}
 
 		PXDataStreamReadB(&dataStream, tga->AuthorName, 41u);
@@ -315,10 +315,10 @@ ActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize*
 	}
 	//-----------------------------------------------------------
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream)
 {
 	TGA tga;
 
@@ -407,7 +407,7 @@ ActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream)
 
 		if(!isTGAVersionTwo) // Is this a TGA v.1.0 dataStream?
 		{
-			return ActionSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
+			return PXActionSuccessful; // Parsing finished. There should be no more data to parse. End of dataStream.
 		}
 	}
 
@@ -437,11 +437,11 @@ ActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream)
 		dataStream->DataCursor = extensionOffset; // Jump to Extension Header
 		PXDataStreamReadI16U(dataStream, extensionSize, EndianLittle);
 
-		const unsigned char isExtensionSizeAsExpected = extensionSize == 495u;
+		const PXBool isExtensionSizeAsExpected = extensionSize == 495u;
 
 		if(!isExtensionSizeAsExpected)
 		{
-			return ResultFormatNotAsExpected;
+			return PXActionFailedFormatNotAsExpected;
 		}
 
 		PXDataStreamReadB(dataStream, tga.AuthorName, 41u);
@@ -497,18 +497,18 @@ ActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream)
 	}
 	//-----------------------------------------------------------
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
 
 
 /*
-ActionResult TGA::Save(const wchar_t* filePath)
+PXActionResult TGA::Save(const wchar_t* filePath)
 {
 	const char footer[18] = TGAFileIdentifier;
 	unsigned int fileLength = 500;
@@ -519,10 +519,10 @@ ActionResult TGA::Save(const wchar_t* filePath)
 
 	file.WriteToDisk(filePath);
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult TGA::ConvertTo(Image& image)
+PXActionResult TGA::ConvertTo(Image& image)
 {
 	ImageDataFormat imageFormat = ImageDataFormat::Invalid;
 	PXSize pixelDataLengh = 0;

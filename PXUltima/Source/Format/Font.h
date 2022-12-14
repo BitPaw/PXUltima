@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/File.h>
 
 #ifdef __cplusplus
@@ -35,9 +35,9 @@ extern "C"
 	PXPublic void PXFontConstruct(PXFont* const font);
 	PXPublic void PXFontDestruct(PXFont* const font);
 
-	PXPublic ActionResult FontLoadA(PXFont* const font, const char* filePath);
-	PXPublic ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath);
-	PXPublic ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath);
+	PXPublic PXActionResult FontLoadA(PXFont* const font, const char* filePath);
+	PXPublic PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath);
+	PXPublic PXActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath);
 
 
 #ifdef __cplusplus

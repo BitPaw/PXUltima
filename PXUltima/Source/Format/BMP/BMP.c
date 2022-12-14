@@ -133,7 +133,7 @@ unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType
     }
 }
 
-ActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
 {
     BMP bmp;
     
@@ -162,7 +162,7 @@ ActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
 
             if(!isValidType)
             {
-                return ActionInvalidHeaderSignature;
+                return PXActionRefusedInvalidHeaderSignature;
             }
         }
 
@@ -238,7 +238,7 @@ ActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
             default:
             {
                 // Unkown Header
-                return ResultFormatNotSupported;
+                return PXActionRefusedFormatNotSupported;
             }
         }
     }
@@ -251,7 +251,7 @@ ActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
 
         if(!allocationSuccess)
         {
-            return ActionSystemOutOfMemory;
+            return PXActionFailedAllocation;
         }
     }
 
@@ -276,15 +276,15 @@ ActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
         }
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult BMPSerialize(const BMP* const bmp, PXDataStream* const dataStream)
+PXActionResult BMPSerialize(const BMP* const bmp, PXDataStream* const dataStream)
 {
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
+PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
 {
     BMPInfoHeader bmpInfoHeader;
 
@@ -374,7 +374,7 @@ ActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const
         }
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
 void BMPConstruct(BMP* const bmp)

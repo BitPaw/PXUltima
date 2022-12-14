@@ -141,7 +141,7 @@ extern "C"
 		unsigned int Letters; // A, B, C, D, ...
 		unsigned int Numbers; // 0,1,2... and +, -, /, ...
 		unsigned int Commands; // Enter, Escape, ect..
-		unsigned int Actions; // F-01 to F-xx
+		unsigned int PXActions; // F-01 to F-xx
 	}
 	KeyBoard;
 

@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -35,7 +35,7 @@ extern "C"
 	}
 	AVI;
 
-	PXPublic ActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

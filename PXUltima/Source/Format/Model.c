@@ -154,18 +154,18 @@ PXSize ModelVertexDataStride(const PXModel* const model)
     return sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
 }
 
-ActionResult ModelLoadA(PXModel* const model, const char* const filePath)
+PXActionResult ModelLoadA(PXModel* const model, const char* const filePath)
 {
 	wchar_t filePathW[PathMaxSize];
 
 	TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
 
-	ActionResult actionResult = ModelLoadW(model, filePathW);
+	PXActionResult actionResult = ModelLoadW(model, filePathW);
 
 	return actionResult;
 }
 
-ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
+PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
 {
     PXDataStream dataStream;    
 
@@ -173,8 +173,8 @@ ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
     ModelConstruct(model);
 
     {
-        const ActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = fileLoadingResult == ActionSuccessful;
+        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
+        const unsigned char sucessful = fileLoadingResult == PXActionSuccessful;
 
         if (!sucessful)
         {
@@ -184,15 +184,15 @@ ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
 
     {
         const FileFormatExtension modelFileFormat = FilePathExtensionDetectTryW(filePath, PathMaxSize);
-        const ActionResult fileParsingResult = ModelLoadD(model, &dataStream, modelFileFormat);
-        const unsigned char success = fileParsingResult == ActionSuccessful;
+        const PXActionResult fileParsingResult = ModelLoadD(model, &dataStream, modelFileFormat);
+        const unsigned char success = fileParsingResult == PXActionSuccessful;
 
         if (success)
         {
-            return ActionSuccessful;
+            return PXActionSuccessful;
         }
 
-        ActionResult fileGuessResult = ActionInvalid;
+        PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;
 
         do
@@ -202,7 +202,7 @@ ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
             fileGuessResult = ModelLoadD(model, &dataStream, imageFileFormat);
 
             fileFormatID++;
-        } while (fileGuessResult == ActionInvalidHeaderSignature);
+        } while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
         return fileGuessResult;
     }
@@ -210,7 +210,7 @@ ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
     PXDataStreamDestruct(&dataStream);
 }
 
-ActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType)
+PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType)
 {
     PXDataStream modelCompileCache;
 
@@ -255,12 +255,12 @@ ActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, co
         }*/
         default:
         {
-            return ResultFormatNotSupported;
+            return PXActionRefusedFormatNotSupported;
         }
     }
 
-    const ActionResult actionResult = modelCompilerFunction(fileStream, &modelCompileCache);
-    const PXBool sucessfull = ActionSuccessful == actionResult;
+    const PXActionResult actionResult = modelCompilerFunction(fileStream, &modelCompileCache);
+    const PXBool sucessfull = PXActionSuccessful == actionResult;
 
     if (sucessfull)
     {

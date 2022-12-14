@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Network/PXSocket.h>
 
 #ifdef __cplusplus
@@ -34,21 +34,21 @@ extern "C"
 	PXPublic void PXServerConstruct(PXServer* const server);
 	PXPublic void PXServerDestruct(PXServer* const server);
 
-	PXPublic ActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode);
-	PXPublic ActionResult PXServerStop(PXServer* const server);
-	PXPublic ActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID);
+	PXPublic PXActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode);
+	PXPublic PXActionResult PXServerStop(PXServer* const server);
+	PXPublic PXActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID);
 	PXPublic PXSocket* PXServerGetPXClientViaID(PXServer* const server, const PXSocketID socketID);
 
 	PXPublic void PXServerRegisterPXClient(PXServer* const server, PXClient* const client);
 
-	//CPublic ActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const PXSize dataSize);
-//	CPublic ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize);
+	//CPublic PXActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const PXSize dataSize);
+//	CPublic PXActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize);
 
-	//CPublic ActionResult PXServerSendFileToPXClient(PXServer* server, int clientID, const char* filePath);
-	//CPublic ActionResult PXServerSendFileToPXClient(PXServer* server, int clientID, const wchar_t* filePath);
+	//CPublic PXActionResult PXServerSendFileToPXClient(PXServer* server, int clientID, const char* filePath);
+	//CPublic PXActionResult PXServerSendFileToPXClient(PXServer* server, int clientID, const wchar_t* filePath);
 
-	//CPublic ActionResult PXServerBroadcastMessageToPXClients(PXServer* server, char* message, PXSize messageLength);
-	//CPublic ActionResult PXServerBroadcastFileToPXClients(PXServer* server, const char* filePath);
+	//CPublic PXActionResult PXServerBroadcastMessageToPXClients(PXServer* server, char* message, PXSize messageLength);
+	//CPublic PXActionResult PXServerBroadcastFileToPXClients(PXServer* server, const char* filePath);
 
 	static PXThreadResult PXServerPXClientListeningThread(void* server);
 

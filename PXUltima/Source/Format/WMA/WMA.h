@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -17,7 +17,7 @@ extern "C"
 	}
 	WMA;
 
-	PXPublic ActionResult WMAParse(WMA* wma, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult WMAParse(WMA* wma, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

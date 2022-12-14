@@ -2,7 +2,7 @@
 #define MTLInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 #include <Format/Model.h>
 
@@ -91,9 +91,9 @@ extern "C"
 	PXPublic PXSize MTLFetchAmount(const void* const data, const PXSize dataSize);
 	PXPublic PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, MTLMaterial* const mtlMaterial);
 
-	PXPublic ActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	PXPublic PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
 
-	PXPublic ActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialList* const pxMaterialList);
+	PXPublic PXActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialList* const pxMaterialList);
 
 #ifdef __cplusplus
 }

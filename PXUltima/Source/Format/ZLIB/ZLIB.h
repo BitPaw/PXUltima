@@ -2,7 +2,7 @@
 #define ZLIBInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/PNG/PNG.h>
 
 #ifdef __cplusplus
@@ -67,8 +67,8 @@ extern "C"
 	static ZLIBCompressionMethod ConvertToCompressionMethod(const unsigned char compressionMethod);
 	static unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressionMethod);
 
-	PXPublic ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize,PXSize* const outputDataSizeRead);
-	PXPublic ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten);
+	PXPublic PXActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize,PXSize* const outputDataSizeRead);
+	PXPublic PXActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten);
 
 
 	PXPublic PXSize ZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PNGInterlaceMethod interlaceMethod);

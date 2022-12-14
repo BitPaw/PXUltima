@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\File\PXDataStream.hpp" />
+    <ClInclude Include="Source\File\DataStream.hpp" />
     <ClInclude Include="Source\Math\Matrix.hpp" />
     <ClInclude Include="Source\Async\Lock.hpp" />
     <ClInclude Include="Source\Memory\Memory.hpp" />
@@ -28,13 +28,18 @@
     <ClInclude Include="Source\Math\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\File\PXDataStream.cpp" />
+    <ClCompile Include="Source\File\DataStream.cpp" />
     <ClCompile Include="Source\Math\Matrix.cpp" />
     <ClCompile Include="Source\Async\Lock.cpp" />
     <ClCompile Include="Source\Memory\Memory.cpp" />
     <ClCompile Include="Source\OS\Window.cpp" />
     <ClCompile Include="Source\Async\Thread.cpp" />
     <ClCompile Include="Source\Math\Vector.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PXUltima\PXUltima.vcxproj">
+      <Project>{89e678ce-1213-4017-8633-7edf8def244c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -58,7 +63,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -141,9 +146,14 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>Default</ConformanceMode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PreprocessKeepComments>true</PreprocessKeepComments>
+      <TranslateIncludes>true</TranslateIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

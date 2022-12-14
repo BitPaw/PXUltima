@@ -18,18 +18,18 @@ void PXFontDestruct(PXFont* const font)
     MemoryRelease(font->FontElement, font->FontElementSize);
 }
 
-ActionResult FontLoadA(PXFont* const font, const char* filePath)
+PXActionResult FontLoadA(PXFont* const font, const char* filePath)
 {
     wchar_t filePathW[PathMaxSize];
 
     TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
 
-    ActionResult actionResult = FontLoadW(font, filePathW);
+    PXActionResult actionResult = FontLoadW(font, filePathW);
 
     return actionResult;
 }
 
-ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
+PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 {
     PXDataStream dataStream;
 
@@ -37,8 +37,8 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
     PXFontConstruct(font);
 
     {
-        const ActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
-        const PXBool sucessful = ActionSuccessful == fileLoadingResult;
+        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
+        const PXBool sucessful = PXActionSuccessful == fileLoadingResult;
 
         if(!sucessful)
         {
@@ -64,15 +64,15 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 
 
         const FileFormatExtension hint = FilePathExtensionDetectTryW(filePath, PathMaxSize);
-        const ActionResult fileParsingResult = FontLoadD(font, hint, dataStream.Data, dataStream.DataSize, filePathDirectory);
-        const unsigned char success = fileParsingResult == ActionSuccessful;
+        const PXActionResult fileParsingResult = FontLoadD(font, hint, dataStream.Data, dataStream.DataSize, filePathDirectory);
+        const unsigned char success = fileParsingResult == PXActionSuccessful;
 
         if(success)
         {
-            return ActionSuccessful;
+            return PXActionSuccessful;
         }
 
-        ActionResult fileGuessResult = ActionInvalid;
+        PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;
 
         do
@@ -83,7 +83,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 
             fileFormatID++;
         }
-        while(fileGuessResult == ActionInvalidHeaderSignature);
+        while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
         return fileGuessResult;
     }
@@ -91,7 +91,7 @@ ActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
     PXDataStreamDestruct(&dataStream);
 }
 
-ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath)
+PXActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath)
 {
     PXFontConstruct(font);
 
@@ -105,12 +105,12 @@ ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedForm
             {
 
                 PXSize readBytes = 0;
-                const ActionResult fileActionResult = FNTParse(font->FontElement, data, dataSize, &readBytes, sourcePath);
-                const unsigned char sucessful = ActionSuccessful == fileActionResult;
+                const PXActionResult filePXActionResult = FNTParse(font->FontElement, data, dataSize, &readBytes, sourcePath);
+                const unsigned char sucessful = PXActionSuccessful == filePXActionResult;
 
                 if(!sucessful)
                 {
-                    return fileActionResult;
+                    return filePXActionResult;
                 }
             }
 
@@ -124,15 +124,9 @@ ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedForm
 
             {
                 PXSize readBytes = 0;
-                const ActionResult fileActionResult = TTFParse(&ttf, data, dataSize, &readBytes);
-                const unsigned char sucessful = fileActionResult == ActionSuccessful;
+                const PXActionResult filePXActionResult = TTFParse(&ttf, data, dataSize, &readBytes);
 
-                if(sucessful)
-                {
-                   // ttf.ConvertTo(*this);
-
-                    return ActionSuccessful;
-                }
+                PXActionExitOnError(filePXActionResult);
             }
 
             TTFDestruct(&ttf);
@@ -141,9 +135,9 @@ ActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedForm
         }
         default:
         {
-            return ResultFormatNotSupported;
+            return PXActionRefusedFormatNotSupported;
         }
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

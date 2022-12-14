@@ -1,7 +1,7 @@
 #ifndef OBJInclude
 #define OBJInclude
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 #include <File/PXDataStream.h>
 
@@ -91,9 +91,9 @@ extern "C"
 
 	PXPrivate OBJLineType OBJPeekLine(const void* line, const PXSize size);
 
-	PXPublic ActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	PXPublic PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
 
-	PXPublic ActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const model);
+	PXPublic PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const model);
 
 #ifdef __cplusplus
 }

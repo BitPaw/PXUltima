@@ -30,7 +30,7 @@ PXSize HardDriveListSize()
     return numberOfDrives;
 }
 
-ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
+PXActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
 {
     const PXSize numberOfDrives = HardDriveListSize();
 
@@ -42,12 +42,12 @@ ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hard
 
         if (!hasEnoughSpace)
         {
-            return ActionFailedInputBufferTooSmal;
+            return PXActionRefuedInputBufferTooSmal;
         }
     }
 
 #if OSUnix
-    return ActionInvalid;
+    return PXActionInvalid;
 
 #elif OSWindows   
 
@@ -80,5 +80,5 @@ ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hard
 
     *hardDriveListSize = (numberOfDrives);
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

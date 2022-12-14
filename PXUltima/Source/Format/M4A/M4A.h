@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -56,7 +56,7 @@ extern "C"
 
 	static M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID);
 
-	PXPublic ActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

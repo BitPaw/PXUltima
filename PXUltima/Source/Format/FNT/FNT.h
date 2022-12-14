@@ -7,7 +7,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Image.h>
 
 #ifdef __cplusplus
@@ -102,7 +102,7 @@ extern "C"
 
 	PXPublic FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character);
 
-	PXPublic ActionResult FNTParse
+	PXPublic PXActionResult FNTParse
 	(
 		FNT* fnt,
 		const void* fileData,

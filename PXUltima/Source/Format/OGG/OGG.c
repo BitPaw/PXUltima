@@ -9,7 +9,7 @@
 #define OGGHeaderTypeBeginningOfStream 0x02
 #define OGGHeaderTypeEndOfStream 0x04
 
-ActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -33,7 +33,7 @@ ActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSize*
 			if(!validHeaderSignature)
 			{
 				printf("Chunk Index missing!\n");
-				return ActionInvalidHeaderSignature;
+				return PXActionRefusedInvalidHeaderSignature;
 			}
 		}
 
@@ -109,5 +109,5 @@ ActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSize*
 
 	*dataRead = dataStream.DataCursor;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

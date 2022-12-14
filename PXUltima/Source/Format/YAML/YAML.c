@@ -58,7 +58,7 @@ YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
     return YAMLLineTypeUnkown;
 }
 
-ActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXSize errorCounter = 0;
     PXDataStream tokenSteam;
@@ -309,9 +309,9 @@ ActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* cons
     outputStream->DataCursor = oldpos;
 }
 
-ActionResult YAMLFileParse(PXDataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
+PXActionResult YAMLFileParse(PXDataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
 {
 
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

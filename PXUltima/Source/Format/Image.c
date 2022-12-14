@@ -78,29 +78,29 @@ void ImageDestruct(Image* const image)
     ImageConstruct(image);
 }
 
-ActionResult ImageLoadA(Image* const image, const PXTextASCII filePath)
+PXActionResult ImageLoadA(Image* const image, const PXTextASCII filePath)
 {
     PXByte filePathU[PathMaxSize];
 
     TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-    ActionResult actionResult = ImageLoadU(image, filePathU);
+    PXActionResult actionResult = ImageLoadU(image, filePathU);
 
     return actionResult;
 }
 
-ActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath)
+PXActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath)
 {
     PXByte filePathU[PathMaxSize];
 
     TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-    ActionResult actionResult = ImageLoadU(image, filePathU);
+    PXActionResult actionResult = ImageLoadU(image, filePathU);
 
     return actionResult;
 }
 
-ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
+PXActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
 {
     PXDataStream dataStream;
 
@@ -108,22 +108,22 @@ ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
     ImageConstruct(image);
 
     {
-        const ActionResult fileLoadingResult = PXDataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
+        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
 
-        ActionExitOnError(fileLoadingResult);
+        PXActionExitOnError(fileLoadingResult);
     }
 
     {
         {  
             const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
-            const ActionResult fileParsingResult = ImageLoadD(image, &dataStream, imageFormatHint);
+            const PXActionResult fileParsingResult = ImageLoadD(image, &dataStream, imageFormatHint);
 
-            ActionExitOnSuccess(fileParsingResult);
+            PXActionExitOnSuccess(fileParsingResult);
         }
 
       
 
-        ActionResult fileGuessResult = ActionInvalid;
+        PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;
 
         do
@@ -134,7 +134,7 @@ ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
 
             fileFormatID++;
         } 
-        while(fileGuessResult == ActionInvalidHeaderSignature);
+        while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
         return fileGuessResult;
     }
@@ -142,7 +142,7 @@ ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
     PXDataStreamDestruct(&dataStream);
 }
 
-ActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat)
+PXActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat)
 {
     PXSize bytesRead = 0;
     ParseToImage parseToImage = 0;
@@ -181,27 +181,27 @@ ActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, cons
         }
         default:
         {
-            return ResultFormatNotSupported;
+            return PXActionRefusedFormatNotSupported;
         }
     }
 
-    const ActionResult actionResult = parseToImage(image, dataStream);
+    const PXActionResult actionResult = parseToImage(image, dataStream);
 
     return actionResult;
 }
 
-ActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+PXActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     wchar_t filePathW[PathMaxSize];
 
     TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
 
-    ActionResult actionResult = ImageSaveW(image, filePathW, fileFormat, dataFormat);
+    PXActionResult actionResult = ImageSaveW(image, filePathW, fileFormat, dataFormat);
 
     return actionResult;
 }
 
-ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     wchar_t filePathW[PathMaxSize];
     wchar_t* fileExtension = 0;
@@ -259,7 +259,7 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
             break;
         }
         default:
-            return ResultFormatNotSupported;
+            return PXActionRefusedFormatNotSupported;
     }
 
 
@@ -269,8 +269,8 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
     }
 
     {
-        const ActionResult mappingResult = PXDataStreamMapToMemoryW(&dataStream, filePathW, fileSize, MemoryWriteOnly);
-        const unsigned char sucessful = ActionSuccessful == mappingResult;
+        const PXActionResult mappingResult = PXDataStreamMapToMemoryW(&dataStream, filePathW, fileSize, MemoryWriteOnly);
+        const unsigned char sucessful = PXActionSuccessful == mappingResult;
 
         if(!sucessful)
         {
@@ -280,8 +280,8 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
     }
 
     {
-        const ActionResult serializeResult = serializeFromImageFunction(image, dataStream.Data, dataStream.DataSize, &dataStream.DataCursor);
-        const unsigned char sucessful = ActionSuccessful == serializeResult;
+        const PXActionResult serializeResult = serializeFromImageFunction(image, dataStream.Data, dataStream.DataSize, &dataStream.DataCursor);
+        const unsigned char sucessful = PXActionSuccessful == serializeResult;
 
         if(!sucessful)
         {
@@ -292,12 +292,12 @@ ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const
 
     PXDataStreamDestruct(&dataStream);
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult ImageSaveD(Image* const image, void* const data, const PXSize dataSize, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+PXActionResult ImageSaveD(Image* const image, void* const data, const PXSize dataSize, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
-    return ActionInvalid;
+    return PXActionInvalid;
 }
 
 PXBool ImageResize(Image* const image, const ImageDataFormat format, const PXSize width, const PXSize height)

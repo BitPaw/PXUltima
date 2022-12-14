@@ -2,7 +2,7 @@
 #define AACInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -15,7 +15,7 @@ extern "C"
 	}
 	AAC;
 
-	PXPublic ActionResult AACParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult AACParse(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }

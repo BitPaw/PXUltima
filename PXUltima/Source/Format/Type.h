@@ -10,8 +10,9 @@
 #define PXPrivate static 
 #define PXPublic extern 
 #elif OSWindows
+#define PXDLLExport __declspec(dllexport)
 #define PXPrivate static 
-#define PXPublic extern __declspec(dllexport) // The visual studio compiler also wants this definition, for microsoft stuff.
+#define PXPublic extern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
 #endif
 //-----------------------------------------------------------------------------
 
@@ -29,6 +30,10 @@
 
 #ifndef PXFalse
 #define PXFalse 0u
+#endif
+
+#ifndef PXNull
+#define PXNull 0u
 #endif
 
 

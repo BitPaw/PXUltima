@@ -3,7 +3,7 @@
 #include <Memory/PXMemory.h>
 #include <Event/Event.h>
 
-ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)
+PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)
 {
     IPAdressFamily ipAdressFamily = IPAdressFamilyUnspecified;
     PXSocketType socketType = PXSocketTypeStream;
@@ -32,19 +32,19 @@ ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned 
     for (PXSize i = 0; i < PXSocketListSize; ++i)
     {
         PXSocket* const pxSocket = &PXSocketList[i];
-        const ActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
-        const unsigned char creationSuccesful = ActionSuccessful == socketCreateResult;
+        const PXActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
+        const unsigned char creationSuccesful = PXActionSuccessful == socketCreateResult;
 
         if (creationSuccesful)
         {
-            const ActionResult connectResult = PXSocketConnect(pxSocket);
-            const unsigned char connected = ActionSuccessful == connectResult;
+            const PXActionResult connectResult = PXSocketConnect(pxSocket);
+            const unsigned char connected = PXActionSuccessful == connectResult;
 
             if (connected)
             {  
                 InvokeEvent(pxSocket->ConnectionEstablishedCallback, pxSocket);
 
-                const ActionResult ActionResult = PXThreadRun(&pxSocket->CommunicationThread, threadFunction, threadObject);
+                const PXActionResult PXActionResult = PXThreadRun(&pxSocket->CommunicationThread, threadFunction, threadObject);
 
                 wasSucessful = 1u;
                 break; // Connect only once. If this is not here, we would connect more than once (with different protocol)
@@ -54,10 +54,10 @@ ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned 
 
     if (!wasSucessful)
     {
-        return SocketConnectionFailure;
+        return PXActionFailedSocketConnect;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
 #define PXClientBufferSize 2048u
@@ -74,8 +74,8 @@ PXThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
 
         MemorySet(buffer, sizeof(unsigned char) * PXClientBufferSize, 0);
 
-        const ActionResult receiveingResult = PXSocketReceive(pxSocket, buffer, bufferSizeMax, &bufferSize);
-        const unsigned char sucessful = ActionSuccessful == receiveingResult;
+        const PXActionResult receiveingResult = PXSocketReceive(pxSocket, buffer, bufferSizeMax, &bufferSize);
+        const unsigned char sucessful = PXActionSuccessful == receiveingResult;
 
         if (!sucessful)
         {

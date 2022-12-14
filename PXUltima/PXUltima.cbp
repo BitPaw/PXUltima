@@ -170,10 +170,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Device/VirtualKey.h" />
-		<Unit filename="Source/Error/ActionResult.c">
+		<Unit filename="Source/Error/PXActionResult.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Error/ActionResult.h" />
+		<Unit filename="Source/Error/PXActionResult.h" />
 		<Unit filename="Source/Event/Event.c">
 			<Option compilerVar="CC" />
 		</Unit>

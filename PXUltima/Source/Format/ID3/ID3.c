@@ -94,7 +94,7 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
     }
 }
 
-ActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
+PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
 {
     ID3Version version = ID3VersionInvalid;
 
@@ -107,7 +107,7 @@ ActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
         
         if(!isValidHeader)
         {
-            return ActionInvalidHeaderSignature;
+            return PXActionRefusedInvalidHeaderSignature;
         }
     }
 
@@ -528,5 +528,5 @@ ActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
         }
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

@@ -2,7 +2,7 @@
 #define ImageInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/File.h>
 #include <File/PXDataStream.h>
 
@@ -48,20 +48,20 @@ extern "C"
 	}
 	Image;
 
-	typedef  ActionResult(*ParseToImage)(Image* const image, PXDataStream* dataStream);
-	typedef  ActionResult(*SerializeFromImage)(const Image* const image, PXDataStream* dataStream);
+	typedef  PXActionResult(*ParseToImage)(Image* const image, PXDataStream* dataStream);
+	typedef  PXActionResult(*SerializeFromImage)(const Image* const image, PXDataStream* dataStream);
 
 	PXPublic void ImageConstruct(Image* const image);
 	PXPublic void ImageDestruct(Image* const image);
 
-	PXPublic ActionResult ImageLoadA(Image* const image, const PXTextASCII filePath);
-	PXPublic ActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath);
-	PXPublic ActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath);
-	PXPublic ActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat);
+	PXPublic PXActionResult ImageLoadA(Image* const image, const PXTextASCII filePath);
+	PXPublic PXActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath);
+	PXPublic PXActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath);
+	PXPublic PXActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat);
 
-	PXPublic ActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
-	PXPublic ActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
-	PXPublic ActionResult ImageSaveD
+	PXPublic PXActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+	PXPublic PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+	PXPublic PXActionResult ImageSaveD
 	(
 		Image* image,
 		void* const data,

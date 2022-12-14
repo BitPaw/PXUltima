@@ -11,17 +11,8 @@
     <StartupObject></StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PXUltimaSharp\PXUltimaSharp.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="glew32.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Layers.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="PXUltima.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Reference Include="PXUltimaCLI">
+      <HintPath>..\x64\Debug\PXUltimaCLI.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

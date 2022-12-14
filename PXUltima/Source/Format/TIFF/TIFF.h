@@ -2,7 +2,7 @@
 #define QOIInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Image.h>
 #include <File/PXDataStream.h>
 
@@ -198,10 +198,10 @@ extern "C"
 
 	PXPublic PXSize TIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic ActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream);
-	PXPublic ActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream);
+	PXPublic PXActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic ActionResult TIFFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult TIFFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

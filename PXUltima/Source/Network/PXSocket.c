@@ -587,14 +587,14 @@ unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode)
 
 void PXSocketConstruct(PXSocket* const pxSocket)
 {
-    MemorySet(pxSocket, sizeof(PXSocket), 0);
+    MemoryClear(pxSocket, sizeof(PXSocket));
 }
 
 void PXSocketDestruct(PXSocket* const pxSocket)
 {
 }
 
-ActionResult PXSocketCreate
+PXActionResult PXSocketCreate
 (
     PXSocket* const pxSocket,
     const IPAdressFamily adressFamily,
@@ -608,23 +608,19 @@ ActionResult PXSocketCreate
 
 #if OSWindows
     {
-        const ActionResult permissionGranted = WindowsSocketAgentStartup();
-        const unsigned char sucessful = ActionSuccessful == permissionGranted;
+        const PXActionResult permissionGranted = WindowsSocketAgentStartup();
 
-        if(!sucessful)
-        {
-            return permissionGranted;
-        }
+        PXActionExitOnError(permissionGranted);
     }
 #endif
 
     {
         const PXSize socketIDResult = socket(ipAdressFamilyID, socketTypeID, protocolModeID);
-        const unsigned char wasSucessful = socketIDResult != -1;
+        const PXBool wasSucessful = socketIDResult != -1;
 
         if(!wasSucessful)
         {
-            return SocketCreationFailure;
+            return PXActionFailedSocketCreation;
         }
 
         pxSocket->ID = socketIDResult;
@@ -634,24 +630,23 @@ ActionResult PXSocketCreate
     pxSocket->Protocol = protocolMode;
     pxSocket->Type = socketType;
 
-
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXSocketConnect(PXSocket* const pxSocket)
+PXActionResult PXSocketConnect(PXSocket* const pxSocket)
 {
     const int serverSocketID = connect(pxSocket->ID, (struct sockaddr*)pxSocket->IP, pxSocket->IPSize);
-    const unsigned char connected = serverSocketID != -1;
+    const PXBool connected = serverSocketID != -1;
 
     if(!connected)
     {
-        return SocketConnectionFailure;
+        return PXActionFailedSocketConnect;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXSocketSetupAdress
+PXActionResult PXSocketSetupAdress
 (
     PXSocket* const pxSocketList,
     const PXSize PXSocketListSizeMax,
@@ -671,13 +666,9 @@ ActionResult PXSocketSetupAdress
 
 #if OSWindows
     {
-        const ActionResult wsaResult = WindowsSocketAgentStartup();
-        const unsigned char sucessful = wsaResult == ActionSuccessful;
+        const PXActionResult wsaResult = WindowsSocketAgentStartup();
 
-        if(!sucessful)
-        {
-            return wsaResult;
-        }
+        PXActionExitOnError(wsaResult);
     }
 #endif
 
@@ -706,34 +697,34 @@ ActionResult PXSocketSetupAdress
 
 #if OSWindows
         case EAI_ADDRFAMILY:
-            return HostHasNoNetworkAddresses;
+            return PXActionRefusedHostHasNoNetworkAddresses;
 #endif
         case EAI_AGAIN:
-            return NameServerReturnedTemporaryFailureIndication;
+            return PXActionRefusedNameServerIsTemporaryOffline;
 
         case EAI_BADFLAGS:
-            return SocketFlagsInvalid;
+            return PXActionRefusedSocketInvalidFlags;
 
         case EAI_FAIL:
-            return NameServerReturnedPermanentFailureIndication;
+            return PXActionRefusedNameServerIsPermanentOffline;
 
         case EAI_FAMILY:
-            return RequestedAddressFamilyNotSupported;
+            return PXActionRefusedRequestedAddressFamilyNotSupported;
 
         case EAI_MEMORY:
-            return OutOfMemory;
+            return PXActionFailedAllocation;
 
             // case EAI_NODATA:
-             //    return SocketActionResultHostExistsButHasNoData;
+             //    return SocketPXActionResultHostExistsButHasNoData;
 
              //case EAI_NONAME:
-               //  return SocketActionResultIPOrPortNotKnown;
+               //  return SocketPXActionResultIPOrPortNotKnown;
 
         case EAI_SERVICE:
             return RequestedServiceNotAvailableForSocket;
 
         case EAI_SOCKTYPE:
-            return SocketTypeNotSupported;
+            return PXActionRefusedSocketTypeNotSupported;
 
 #if OSWindows
         case WSANOTINITIALISED:
@@ -756,7 +747,7 @@ ActionResult PXSocketSetupAdress
         struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfo->ai_addr;
         const char* result = 0;
 
-        MemorySet(pxSocket->IP, IPv6LengthMax, 0);
+        MemoryClear(pxSocket->IP, IPv6LengthMax);
 
         result = inet_ntop(adressInfo->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
 
@@ -791,7 +782,7 @@ ActionResult PXSocketSetupAdress
 
     AdressInfoDelete(adressResult);
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
@@ -823,24 +814,24 @@ void PXSocketClose(PXSocket* const pxSocket)
     pxSocket->ID = SocketIDOffline;
 }
 
-ActionResult PXSocketBind(PXSocket* const pxSocket)
+PXActionResult PXSocketBind(PXSocket* const pxSocket)
 {
     const int bindingResult = bind(pxSocket->ID, (struct sockaddr*)pxSocket->IP, pxSocket->IPSize);
     const PXBool sucessful = bindingResult == 0; //-1
 
     if(!sucessful)
     {
-        return SocketBindingFailure;
+        return PXActionFailedSocketBinding;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
+PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
 {
     if(pxSocket->ID == -1)
     {
-        return ActionInvalid;
+        return PXActionInvalid;
     }
 
     const int level = SOL_SOCKET;
@@ -857,13 +848,13 @@ ActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
 
     if(!sucessful)
     {
-        return SocketOptionFailure;
+        return PXActionFailedSocketOption;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXSocketListen(PXSocket* const pxSocket)
+PXActionResult PXSocketListen(PXSocket* const pxSocket)
 {
     const int maximalPXClientsWaitingInQueue = 10;
     const int listeningResult = listen(pxSocket->ID, maximalPXClientsWaitingInQueue);
@@ -871,13 +862,13 @@ ActionResult PXSocketListen(PXSocket* const pxSocket)
 
     if(listeningResult == -1)
     {
-        return SocketListeningFailure;
+        return PXActionFailedSocketListening;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
+PXActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
 {
     client->IPSize = IPv6LengthMax; // Needed for accept(), means 'length i can use'. 0 means "I canot perform"
     client->ID = accept
@@ -891,17 +882,17 @@ ActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
 #endif
     );
 
-    const unsigned char sucessful = client->ID != -1;
+    const PXBool sucessful = client->ID != -1;
 
     if(!sucessful)
     {
-        return SocketBindingFailure;
+        return PXActionFailedSocketBinding;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten)
+PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten)
 {
     // Check if socket is active and ready to send
     {
@@ -909,7 +900,7 @@ ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, con
 
         if(!isReady)
         {
-            return SocketIsNotConnected;
+            return PXActionRefusedSocketNotConnected;
         }
     }
 
@@ -919,7 +910,7 @@ ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, con
 
         if(!hasDataToSend)
         {
-            return ActionSuccessful; // Do not send anything if the message is empty
+            return PXActionSuccessful; // Do not send anything if the message is empty
         }
     }
 
@@ -943,16 +934,16 @@ ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, con
 
         if(!sucessfulSend)
         {
-            return SocketSendFailure;
+            return PXActionFailedSocketSend;
         }
 
         *inputBytesWritten = writtenBytes;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten)
+PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten)
 {
     // I did not read any data yet
     *outputBytesWritten = 0;
@@ -963,7 +954,7 @@ ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer,
 
         if(!isReady)
         {
-            return SocketIsNotConnected;
+            return PXActionRefusedSocketNotConnected;
         }
     }
 
@@ -986,13 +977,13 @@ ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer,
         switch(byteRead)
         {
             case (unsigned int)-1:
-                return SocketRecieveFailure;
+                return PXActionFailedSocketRecieve;
 
             case 0:// endOfFile
             {
                 PXSocketClose(pxSocket);
 
-                return SocketRecieveConnectionClosed;
+                return PXActionRefusedSocketNotConnected; // How to handle, 0 means connected but this is not the terminating phase.
             }
             default:
             {
@@ -1006,11 +997,11 @@ ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer,
             }
         }
     }
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
 #if OSWindows
-ActionResult WindowsSocketAgentStartup()
+PXActionResult WindowsSocketAgentStartup()
 {
     WORD wVersionRequested = MAKEWORD(2, 2);
     WSADATA wsaData;
@@ -1036,11 +1027,11 @@ ActionResult WindowsSocketAgentStartup()
 
         case 0:
         default:
-            return ActionSuccessful;
+            return PXActionSuccessful;
     }
 }
 
-ActionResult WindowsSocketAgentShutdown()
+PXActionResult WindowsSocketAgentShutdown()
 {
     int result = WSACleanup();
 
@@ -1060,7 +1051,7 @@ ActionResult WindowsSocketAgentShutdown()
         }
         case 0:
         default:
-            return ActionSuccessful;
+            return PXActionSuccessful;
     }
 }
 #endif

@@ -2,7 +2,7 @@
 #define ClipBoardINCLUDE
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -53,14 +53,14 @@ extern "C"
 
 	// Open clipboard, close it imedidly after using!
 	// Fails if another window has the clipboard open.
-	PXPublic ActionResult ClipBoardOpen(ClipBoard* const clipBoard);
+	PXPublic PXActionResult ClipBoardOpen(ClipBoard* const clipBoard);
 
 	// Use this right after using!
-	PXPublic ActionResult ClipBoardClose(ClipBoard* const clipBoard);
+	PXPublic PXActionResult ClipBoardClose(ClipBoard* const clipBoard);
 
-	PXPublic ActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat format, const void* data);
+	PXPublic PXActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat format, const void* data);
 
-	PXPublic ActionResult ClipBoardClear(ClipBoard* const clipBoard);
+	PXPublic PXActionResult ClipBoardClear(ClipBoard* const clipBoard);
 
 
 #ifdef __cplusplus

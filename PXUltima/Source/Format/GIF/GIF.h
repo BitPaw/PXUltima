@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Image.h>
 #include <File/PXDataStream.h>
 
@@ -44,11 +44,11 @@ extern "C"
 
 	PXPublic PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic ActionResult GIFLoad(GIF* gif, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult GIFLoad(GIF* gif, const void* data, const PXSize dataSize, PXSize* dataRead);
 
-	PXPublic ActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic ActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

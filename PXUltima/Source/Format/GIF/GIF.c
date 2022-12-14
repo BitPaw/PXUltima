@@ -14,39 +14,34 @@ PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize 
     return 0;
 }
 
-ActionResult GIFLoad(GIF* gif, PXDataStream* const dataStream)
+PXActionResult GIFLoad(GIF* gif, PXDataStream* const dataStream)
 {
     MemoryClear(gif, sizeof(GIF));
 
     // Check Header
     {
-        const char versionA[3] = GIFVersionA;
-        const char versionB[3] = GIFVersionB;
-        const char headerTag[3] = GIFHeader;
-        char version[3] = { '#','#','#' };
-
-        const unsigned char validHeader = PXDataStreamReadAndCompare(dataStream, headerTag, sizeof(headerTag));
-
-        PXDataStreamReadB(dataStream, version, sizeof(version));
-
-        const unsigned char validVersion =
-            version[0] == versionA[0] &&
-            version[1] == versionA[1] &&
-            version[2] == versionA[2]
-            ||
-            version[0] == versionB[0] &&
-            version[1] == versionB[1] &&
-            version[2] == versionB[2];
-
-        if(!validHeader)
         {
-            return ActionInvalidHeaderSignature;
+            const char headerTag[3] = GIFHeader;
+            const PXBool validHeader = PXDataStreamReadAndCompare(dataStream, headerTag, sizeof(headerTag));
+
+            if (!validHeader)
+            {
+                return PXActionRefusedInvalidHeaderSignature;
+            }
         }
 
-        if(!validVersion)
         {
-            return ActionInvalidVersion;
-        }
+            const char versionA[3] = GIFVersionA;
+            const char versionB[3] = GIFVersionB;
+            const char* const versionList[2] = { versionA, versionB };
+            const PXSize versionListSize[2] = { sizeof(versionA),  sizeof(versionB) };
+            const PXBool validVersion = PXDataStreamReadAndCompareV(dataStream, versionList, versionListSize, 3u);
+
+            if (!validVersion)
+            {
+                return PXActionRefusedInvalidVersion;
+            }
+        }    
     }
 
     // Logical Screen Descriptor.
@@ -105,15 +100,15 @@ ActionResult GIFLoad(GIF* gif, PXDataStream* const dataStream)
     //-----------------------------------------------------------------
 
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult GIFParseToImage(Image* const image, const void* const data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult GIFParseToImage(Image* const image, const void* const data, const PXSize dataSize, PXSize* dataRead)
 {
-    return ActionInvalid;
+    return PXActionInvalid;
 }
 
-ActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
-    return ActionInvalid;
+    return PXActionInvalid;
 }

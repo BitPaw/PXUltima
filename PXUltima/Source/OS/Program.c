@@ -48,12 +48,12 @@ PXThreadResult ProgramExecuteThreadFunction(void* data)
     return PXThreadSucessful;
 }
 
-ActionResult ProgramExecute(Program* const program)
+PXActionResult ProgramExecute(Program* const program)
 {
     if (program->ProgramExecutedCallBack)
     {
-        const ActionResult actionResult = PXThreadRun(&program->WorkingThread, ProgramExecuteThreadFunction, program);
-        const PXBool sucessful = ActionSuccessful == actionResult;
+        const PXActionResult actionResult = PXThreadRun(&program->WorkingThread, ProgramExecuteThreadFunction, program);
+        const PXBool sucessful = PXActionSuccessful == actionResult;
 
         if (!sucessful)
         {
@@ -65,10 +65,10 @@ ActionResult ProgramExecute(Program* const program)
         ProgramExecuteThreadFunction(program);
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback)
+PXActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback)
 {
     TextCopyAW(programPath, 260, program->FilePath, 260);
 
@@ -90,12 +90,12 @@ ActionResult ProgramExecuteAS(Program* program, const char* programPath, const c
 
     TextCopyA(parameterString, 1024, program->ParameterList[1], 1024);
 
-    const ActionResult actionResult = ProgramExecute(program);
+    const PXActionResult actionResult = ProgramExecute(program);
 
     return actionResult;
 }
 
-ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, PXSize parameterListSize, ProgramExecutedEvent* callback)
+PXActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, PXSize parameterListSize, ProgramExecutedEvent* callback)
 {
     TextCopyA(program->FilePath, 260, programPath, 260);
 
@@ -129,12 +129,12 @@ ActionResult ProgramExecuteAL(Program* program, const char* programPath, const c
         program->ParameterList[i++] = 0;
     }
 
-    const ActionResult actionResult = ProgramExecute(program);
+    const PXActionResult actionResult = ProgramExecute(program);
 
     return actionResult;
 }
 
-ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback)
+PXActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback)
 {
     char programPathA[1024];
     char parameterListA[1024];
@@ -144,7 +144,7 @@ ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, cons
 
     //  return Program::Execute(programPathA, parameterListA, callback);
 
-    return ResultFormatNotSupported;
+    return PXActionRefusedFormatNotSupported;
 }
 
 ProcessHandle ProgramCurrentProcess()

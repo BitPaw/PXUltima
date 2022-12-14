@@ -35,7 +35,7 @@ FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character)
 	return 0;
 }
 
-ActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSize, PXSize* readBytes, const wchar_t* filePath)
+PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSize, PXSize* readBytes, const wchar_t* filePath)
 {
 	PXDataStream dataStream;
 	FNTPage* currentPage = 0;
@@ -196,7 +196,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSize,
 						FNTPageFileNameSize
 					);
 
-					const ActionResult actionResult = ImageLoadA(&currentPage->FontTextureMap, fullPath);
+					const PXActionResult actionResult = ImageLoadA(&currentPage->FontTextureMap, fullPath);
 				}				
 
 				break;
@@ -306,7 +306,7 @@ ActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSize,
 
 	*readBytes = dataStream.DataCursor;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
 FNTLineType PeekLineType(const void* line, const PXSize fileDataSize)
@@ -346,7 +346,7 @@ FNTLineType PeekLineType(const void* line, const PXSize fileDataSize)
 			return FNTLineUnkown;
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
 void FNTPrtinf(const FNT* fnt)

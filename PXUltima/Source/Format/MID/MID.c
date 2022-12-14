@@ -33,7 +33,7 @@ switch (midiCommand)
 		break;
 }*/
 
-ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -45,13 +45,13 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 		unsigned int chunkLength = 0;
 
 		{
-			const unsigned char headerSignature[] = MIDITrackHeaderID;
+			const char headerSignature[] = MIDITrackHeaderID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const unsigned char isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
-				return ActionInvalidHeaderSignature;
+				return PXActionRefusedInvalidHeaderSignature;
 			}
 		}
 
@@ -63,10 +63,10 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 
 	if(!mid->TrackListSize)
 	{
-		return ActionSuccessful;
+		return PXActionSuccessful;
 	}
 
-	mid->TrackList = MemoryAllocate(sizeof(MIDITrack) * mid->TrackListSize);
+	mid->TrackList = (MIDITrack*)MemoryAllocate(sizeof(MIDITrack) * mid->TrackListSize);
 
 	// Parse Track Header
 	for(PXSize i = 0; i < mid->TrackListSize; ++i)
@@ -75,20 +75,20 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 		unsigned int chunkLength = 0;
 
 		{
-			const unsigned char headerSignature[] = MIDITrackChunkID;
+			const char headerSignature[] = MIDITrackChunkID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const unsigned char isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
-				return ActionInvalidHeaderSignature;
+				return PXActionRefusedInvalidHeaderSignature;
 			}
 		}
 
 		PXDataStreamReadI32U(&dataStream, chunkLength, EndianBig);
 
 		track->ID = i;
-		track->EventData = MemoryAllocate(sizeof(unsigned char) * chunkLength);
+		track->EventData = (PXByte*)MemoryAllocate(sizeof(PXByte) * chunkLength);
 		track->EventDataSize = chunkLength;
 
 		PXDataStreamReadB(&dataStream, track->EventData, chunkLength);
@@ -96,17 +96,17 @@ ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize*
 
 	*dataRead = dataStream.DataCursor;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
 	/*
 	File file;
 
 	{
-		const ActionResult fileOpenResult = file.Open(filePath, FileOpenMode::Write);
-		const bool sucessful = fileOpenResult == ActionSuccessful;
+		const PXActionResult fileOpenResult = file.Open(filePath, FileOpenMode::Write);
+		const bool sucessful = fileOpenResult == PXActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -134,8 +134,8 @@ ActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* d
 	}
 
 	{
-		const ActionResult fileCloseResult = file.Close();
-		const bool sucessful = fileCloseResult == ActionSuccessful;
+		const PXActionResult fileCloseResult = file.Close();
+		const bool sucessful = fileCloseResult == PXActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -143,7 +143,7 @@ ActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* d
 		}
 	}
 
-	return ActionSuccessful;*/
+	return PXActionSuccessful;*/
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

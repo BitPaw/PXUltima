@@ -4,12 +4,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>
-#include <assert.h>
 
 #include <Format/Type.h>
 #include <OS/OSVersion.h>
 #include <Memory/PXMemory.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/Endian.h>
 
 #if OSUnix
@@ -129,12 +128,12 @@ extern "C"
 	PXPublic unsigned char FileDoesExistA(const char* filePath);
 	PXPublic unsigned char FileDoesExistW(const wchar_t* filePath);
 
-	PXPublic ActionResult FileRemoveA(const char* filePath);
-	PXPublic ActionResult FileRemoveW(const wchar_t* filePath);
-	PXPublic ActionResult FileRenameA(const char* oldName, const char* newName);
-	PXPublic ActionResult FileRenameW(const wchar_t* oldName, const wchar_t* newName);
-	PXPublic ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePath);
-	PXPublic ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinationFilePath);
+	PXPublic PXActionResult FileRemoveA(const char* filePath);
+	PXPublic PXActionResult FileRemoveW(const wchar_t* filePath);
+	PXPublic PXActionResult FileRenameA(const char* oldName, const char* newName);
+	PXPublic PXActionResult FileRenameW(const wchar_t* oldName, const wchar_t* newName);
+	PXPublic PXActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePath);
+	PXPublic PXActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinationFilePath);
 
 	PXPublic void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
 	PXPublic void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileName);
@@ -142,16 +141,16 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Directory>-------------------------------------------------------
-	PXPublic ActionResult DirectoryCreateA(const char* directoryName);
-	PXPublic ActionResult DirectoryCreateW(const wchar_t* directoryName);
-	PXPublic ActionResult WorkingDirectoryChange(const char* directoryName);
-	PXPublic ActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize);
-	PXPublic ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize);
-	PXPublic ActionResult WorkingDirectoryChangeW(const wchar_t* directoryName);
-	PXPublic ActionResult DirectoryDeleteA(const char* directoryName);
-	PXPublic ActionResult DirectoryDeleteW(const wchar_t* directoryName);
-	PXPublic ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
-	PXPublic ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize);
+	PXPublic PXActionResult DirectoryCreateA(const char* directoryName);
+	PXPublic PXActionResult DirectoryCreateW(const wchar_t* directoryName);
+	PXPublic PXActionResult WorkingDirectoryChange(const char* directoryName);
+	PXPublic PXActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize);
+	PXPublic PXActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize);
+	PXPublic PXActionResult WorkingDirectoryChangeW(const wchar_t* directoryName);
+	PXPublic PXActionResult DirectoryDeleteA(const char* directoryName);
+	PXPublic PXActionResult DirectoryDeleteW(const wchar_t* directoryName);
+	PXPublic PXActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
+	PXPublic PXActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize);
 	//---------------------------------------------------------------------
 
 	PXPublic void FilePathSplittA

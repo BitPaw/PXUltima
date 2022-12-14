@@ -30,14 +30,14 @@ void KeyBoardInputPrint(KeyBoard* keyBoard)
 	TextFromBinaryDataA(&keyBoard->Letters, sizeof(unsigned int), letters, 11u);
 	TextFromBinaryDataA(&keyBoard->Numbers, sizeof(unsigned int), numbers, 11u);
 	TextFromBinaryDataA(&keyBoard->Commands, sizeof(unsigned int), commands, 11u);
-	TextFromBinaryDataA(&keyBoard->Actions, sizeof(unsigned int), actions, 11u);
+	TextFromBinaryDataA(&keyBoard->PXActions, sizeof(unsigned int), actions, 11u);
 
 	printf
 	(
 		"| Letters  | %s |\n"
 		"| Numbers  | %s |\n"
 		"| Commands | %s |\n"
-		"| Actions  | %s |\n",
+		"| PXActions  | %s |\n",
 		letters,
 		numbers,
 		commands,

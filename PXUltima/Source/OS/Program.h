@@ -4,7 +4,7 @@
 #include <OS/OSVersion.h>
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Async/PXThread.h>
 
 #if OSUnix
@@ -22,7 +22,7 @@ extern "C"
 {
 #endif
 
-	typedef void (*ProgramExecutedEvent)(const unsigned char succesful, PXSize returnResult, const ActionResult errorCode);
+	typedef void (*ProgramExecutedEvent)(const unsigned char succesful, PXSize returnResult, const PXActionResult errorCode);
 
 	typedef struct Program_
 	{
@@ -43,13 +43,13 @@ extern "C"
 
 	PXPublic PXThreadResult  ProgramExecuteThreadFunction(void* data);
 
-	PXPrivate ActionResult ProgramExecute(Program* const program);
+	PXPrivate PXActionResult ProgramExecute(Program* const program);
 
 	// Execute function Asyncroinusly in another Thread.
-	PXPublic ActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback);
-	PXPublic ActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, PXSize parameterListSize, ProgramExecutedEvent* callback);
+	PXPublic PXActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback);
+	PXPublic PXActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, PXSize parameterListSize, ProgramExecutedEvent* callback);
 
-	PXPublic ActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback);
+	PXPublic PXActionResult ProgramExecuteWS(Program* program, const wchar_t* programPath, const wchar_t* parameterList, ProgramExecutedEvent* callback);
 
 
 	PXPublic ProcessHandle ProgramCurrentProcess();

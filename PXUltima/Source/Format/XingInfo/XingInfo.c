@@ -2,7 +2,7 @@
 
 #include <File/PXDataStream.h>
 
-ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -35,7 +35,7 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize da
 
 		if(!validHeader)
 		{
-			return ActionInvalidHeaderSignature;
+			return PXActionRefusedInvalidHeaderSignature;
 		}
 
 		if(isInfo)
@@ -85,5 +85,5 @@ ActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize da
 
 	*dataRead = dataStream.DataCursor;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

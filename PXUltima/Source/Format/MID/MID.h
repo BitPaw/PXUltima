@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -61,8 +61,8 @@ extern "C"
 	}
 	MID;
 
-	PXPublic ActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead);
-	PXPublic ActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

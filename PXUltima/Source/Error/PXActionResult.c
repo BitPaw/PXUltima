@@ -1,4 +1,4 @@
-#include "ActionResult.h"
+#include "PXActionResult.h"
 
 #include <OS/OSVersion.h>
 
@@ -10,7 +10,7 @@
 #elif OSWindows
 #endif
 
-ActionResult ConvertErrorCode(const int errorCode)
+PXActionResult ConvertErrorCode(const int errorCode)
 {
 	switch(errorCode)
 	{
@@ -154,7 +154,7 @@ ActionResult ConvertErrorCode(const int errorCode)
 	//		return LinkHasBeenSevered;
 
 		case ENOMEM:
-			return OutOfMemory;
+			return PXActionFailedAllocation;
 
 	//	case ENOMSG:
 	//		return NoMessageOfTheDesiredType;
@@ -265,10 +265,10 @@ ActionResult ConvertErrorCode(const int errorCode)
 	}
 }
 
-ActionResult GetCurrentError()
+PXActionResult GetCurrentError()
 {
 	const int errorID = errno;
-	const ActionResult actionResult = ConvertErrorCode(errorID);
+	const PXActionResult actionResult = ConvertErrorCode(errorID);
 
 	return actionResult;
 }

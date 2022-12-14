@@ -2,7 +2,7 @@
 #define PXDataStreamINCLUDE
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #include "Endian.h"
 #include "File.h"
@@ -99,21 +99,21 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Open>------------------------------------------------------------
-	PXPublic ActionResult PXDataStreamOpenFromPathA(PXDataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
-	PXPublic ActionResult PXDataStreamOpenFromPathW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
-	PXPublic ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
+	PXPublic PXActionResult PXDataStreamOpenFromPathA(PXDataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
+	PXPublic PXActionResult PXDataStreamOpenFromPathW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
+	PXPublic PXActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 	//---------------------------------------------------------------------
 
 	//---<Close>-----------------------------------------------------------
-	PXPublic ActionResult PXDataStreamClose(PXDataStream* const dataStream);
+	PXPublic PXActionResult PXDataStreamClose(PXDataStream* const dataStream);
 	//---------------------------------------------------------------------
 
 	//---<Mapping>---------------------------------------------------------
-	PXPublic ActionResult PXDataStreamMapToMemoryA(PXDataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-	PXPublic ActionResult PXDataStreamMapToMemoryW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-	PXPublic ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-	PXPublic ActionResult PXDataStreamMapToMemory(PXDataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode);
-	PXPublic ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream);
+	PXPublic PXActionResult PXDataStreamMapToMemoryA(PXDataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic PXActionResult PXDataStreamMapToMemoryW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+	PXPublic PXActionResult PXDataStreamMapToMemory(PXDataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode);
+	PXPublic PXActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream);
 	//---------------------------------------------------------------------
 
 	//---<Parsing Utility>-----------------------------------------------------
@@ -202,7 +202,8 @@ extern "C"
 	//PXSize ReadSafe(Byte__* value, const PXSize length);
 
 
-	PXPublic unsigned char PXDataStreamReadAndCompare(PXDataStream* const dataStream, const void* value, const PXSize length);
+	PXPublic PXBool PXDataStreamReadAndCompare(PXDataStream* const dataStream, const void* value, const PXSize length);
+	PXPublic PXBool PXDataStreamReadAndCompareV(PXDataStream* const dataStream, const void** value, const PXSize* valueElementSizeList, const PXSize valueLength);
 	//unsigned char PXDataStreamReadAndCompareC(PXDataStream* PXDataStream, const char value);
 	//unsigned char PXDataStreamReadAndCompareIU(PXDataStream* PXDataStream, const unsigned int value);
 

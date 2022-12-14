@@ -41,7 +41,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 
 #include <Async/PXThread.h>
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 typedef PXSize PXSocketID;
 #define SocketDebug 0
@@ -235,7 +235,7 @@ extern "C"
 	PXPublic void PXSocketConstruct(PXSocket* const pxSocket);
 	PXPublic void PXSocketDestruct(PXSocket* const pxSocket);
 
-	PXPublic ActionResult PXSocketCreate
+	PXPublic PXActionResult PXSocketCreate
 	(
 		PXSocket* const pxSocket,
 		const IPAdressFamily adressFamily,
@@ -243,9 +243,9 @@ extern "C"
 		const ProtocolMode protocolMode
 	);
 
-	PXPublic ActionResult PXSocketConnect(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXSocketConnect(PXSocket* const pxSocket);
 
-	PXPublic ActionResult PXSocketSetupAdress
+	PXPublic PXActionResult PXSocketSetupAdress
 	(
 		PXSocket* const pxSocketList,
 		const PXSize PXSocketListSizeMax,
@@ -260,17 +260,17 @@ extern "C"
 	PXPublic PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
 	PXPublic void PXSocketClose(PXSocket* const pxSocket);
 
-	PXPublic ActionResult PXSocketBind(PXSocket* const pxSocket);
-	PXPublic ActionResult PXSocketOptionsSet(PXSocket* const pxSocket);
-	PXPublic ActionResult PXSocketListen(PXSocket* const pxSocket);
-	PXPublic ActionResult PXSocketAccept(PXSocket* server, PXSocket* client);
+	PXPublic PXActionResult PXSocketBind(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXSocketListen(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXSocketAccept(PXSocket* server, PXSocket* client);
 
-	PXPublic ActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
-	PXPublic ActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
+	PXPublic PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
+	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
 
 #if OSWindows
-	PXPrivate ActionResult WindowsSocketAgentStartup();
-	PXPrivate ActionResult WindowsSocketAgentShutdown();
+	PXPrivate PXActionResult WindowsSocketAgentStartup();
+	PXPrivate PXActionResult WindowsSocketAgentShutdown();
 #endif
 
 #ifdef __cplusplus

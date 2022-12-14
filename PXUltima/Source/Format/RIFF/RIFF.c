@@ -18,7 +18,7 @@
 #define RIFFSubTypeRMID MakeInt('R', 'M', 'I', 'D')
 #define RIFFSubTypeWAVE MakeInt('W', 'A', 'V', 'E')
 
-ActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -85,5 +85,5 @@ ActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSi
 
 	*dataRead = dataStream.DataCursor;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

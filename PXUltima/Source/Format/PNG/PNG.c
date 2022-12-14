@@ -923,7 +923,7 @@ PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize 
     return sum;
 }
 
-ActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
     PXDataStream dataStream;
 
@@ -949,7 +949,7 @@ ActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize*
 
             if(!isValidHeader)
             {
-                return ActionInvalidHeaderSignature;
+                return PXActionRefusedInvalidHeaderSignature;
             }
         }
 
@@ -1320,8 +1320,8 @@ ActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize*
         workingMemorySize = expectedzlibCacheSize;
         workingMemory = MemoryReallocate(workingMemory, sizeof(unsigned char) * expectedzlibCacheSize);
 
-        const ActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
-        const unsigned char sucess = actionResult == ActionSuccessful;
+        const PXActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
+        const unsigned char sucess = actionResult == PXActionSuccessful;
 
         if(!sucess)
         {
@@ -1346,10 +1346,10 @@ ActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize*
     //-------------------------------------------------------------------------
 
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
 {
     PNG png;
 
@@ -1372,7 +1372,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
 
             if(!isValidHeader)
             {
-                return ActionInvalidHeaderSignature;
+                return PXActionRefusedInvalidHeaderSignature;
             }
         }
 
@@ -1475,7 +1475,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                     const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
                     if(!validSize)
-                        return ResultFormatNotAsExpected; // palette too small or big
+                        return PXActionFailedFormatNotAsExpected; // palette too small or big
 
                     png.PaletteSize = palettSize;
 
@@ -1604,7 +1604,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
                         case PNGColorRGBA:
                         case PNGColorInvalid:
                         default:
-                            return ResultFormatNotAsExpected; // tRNS chunk not allowed for other color models
+                            return PXActionFailedFormatNotAsExpected; // tRNS chunk not allowed for other color models
                     }
 
                     break;
@@ -1859,7 +1859,7 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
         
         if (!allocateResult)
         {
-            return ActionSystemOutOfMemory;
+            return PXActionFailedAllocation;
         }   
      }
     //-------------------------------------------------------------------------
@@ -1880,8 +1880,8 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
         workingMemorySize = expectedzlibCacheSize;
         workingMemory = MemoryReallocate(workingMemory, sizeof(PXByte) * expectedzlibCacheSize);
 
-        const ActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
-        const unsigned char sucess = actionResult == ActionSuccessful;
+        const PXActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
+        const unsigned char sucess = actionResult == PXActionSuccessful;
 
         if(!sucess)
         {
@@ -1909,10 +1909,10 @@ ActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
 
     PNGDestruct(&png);
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
     PXDataStream dataStream;
 
@@ -1980,7 +1980,7 @@ ActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize* d
 
     *dataWritten = dataStream.DataCursor;
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
 
@@ -2563,7 +2563,7 @@ PXSize preProcessScanlines
     return error;
 }
 
-ActionResult PNGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult PNGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
     PXDataStream dataStream;
 
@@ -2592,7 +2592,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const P
         switch(image->Format)
         {
             case ImageDataFormatInvalid:
-                return ResultFormatInvalid;
+                return PXActionFailedFormatInvalid;
 
             case ImageDataFormatAlphaMask:
                 colorType = PNGColorGrayscaleAlpha;
@@ -2648,7 +2648,7 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const P
         {
             default:
             case PNGColorInvalid:
-                return ActionInvalid;
+                return PXActionInvalid;
 
             case PNGColorGrayscale: // ColorType = 0
             case PNGColorGrayscaleAlpha:  // ColorType = 4
@@ -2833,5 +2833,5 @@ ActionResult PNGSerializeFromImage(const Image* const image, void* data, const P
 
     *dataWritten = dataStream.DataCursor;
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

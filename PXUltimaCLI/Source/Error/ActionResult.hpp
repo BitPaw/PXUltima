@@ -1,87 +1,56 @@
-#ifndef ActionResultInclude
-#define ActionResultInclude
+#pragma once
 
-#include <Format/Type.h>
-
-#ifdef __cplusplus
-extern "C"
+namespace PX
 {
-#endif
-
-	typedef enum ActionResult_
+	public enum class ActionResult
 	{
-		//---<General>-----------------------
-		ActionInvalid,
-		ActionSuccessful,
-		ActionSystemOutOfMemory,
-		ActionFailedInputBufferTooSmal,
-		//-----------------------------------
-
-		//---<File-General>------------------
-		ResultEmptyPath,
-		ResultFileNotFound,
-		ResultFileEmpty,
-		ResultFileOpenFailure,
-		ResultFileCloseFailure,
-		ResultFileReadFailure,
-		ResultFileCopyFailure,
-		ResultFileCreateFailure,
-		//-----------------------------------
-
-		// File-Mapping
-		ResultFileMemoryMappingFailed,
-		//-----------------------------------
-
-		// File-Parsing
-		ResultFormatNotSupported,
-		ResultFormatInvalid,
-		ResultFormatNotAsExpected,
-		ActionInvalidHeaderSignature,
-		ActionInvalidVersion,
-		//-----------------------------------
-
-		// I/O
-		ResultReadFailure,
-		ResultWriteFailure,
-		//-----------------------------------
-
-		// Socket
-		SocketOuputBufferTooSmal,
-		SocketInavlidAdressFamily,
-		SocketCreationFailure,
-		SocketOptionFailure,
-		SocketBindingFailure,
-		SocketListeningFailure,
-		SocketSendFailure,
-		SocketRecieveFailure,
-		SocketRecieveConnectionClosed,
-		SocketFlagsInvalid,
-		NameServerReturnedTemporaryFailureIndication,
-		NameServerReturnedPermanentFailureIndication,
-		SocketTypeNotSupported,
-		RequestedAddressFamilyNotSupported,
-		HostExistsButHasNoData,
-		HostHasNoNetworkAddresses,
-		IPOrPortNotKnown,
-		SocketIsNotConnected,
-		//-----------------------------------
-
+		Invalid, // Default iniitlialisation value, no not use.
+		Successful, //  finished successful
+		FailedAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
+		DeniedNoPermission,
+		RefuedInputBufferNull, // is NULL
+		RefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
+		RefuedInputBufferTooSmal, // cant 
+		RefuedOutputBufferNull, // is NULL 
+		RefuedOutputBufferTooSmal, // 
+		RefusedEmptyFilePath,
+		FailedFileNotFound,
+		FailedFileMapping,
+		FailedFileCreate,
+		FailedFileDelete,
+		FailedFileOpen,
+		FailedFileClose,
+		FailedFileWrite,
+		FailedFileRead,
+		FailedSocketRecieve,
+		FailedSocketSend,
+		RefusedSocketNotConnected,
+		FailedSocketConnect,
+		FailedSocketCreation,
+		FailedSocketOption,
+		FailedSocketBinding,
+		FailedSocketListening,
+		RefusedSocketInavlidAdressFamily,
+		RefusedSocketInvalidFlags,
+		RefusedNameServerIsTemporaryOffline,
+		RefusedNameServerIsPermanentOffline,
+		RefusedSocketTypeNotSupported,
+		RefusedRequestedAddressFamilyNotSupported,
+		RefusedHostExistsButHasNoData,
+		RefusedHostHasNoNetworkAddresses,
+		RefusedIPOrPortNotKnown,
+		FailedFormatNotDetected,
+		RefusedFormatNotSupported,
+		FailedFormatInvalid,
+		FailedFormatNotAsExpected,
+		RefusedInvalidHeaderSignature,
+		RefusedInvalidVersion,
+		FailedResourceRegister,
+		RefusedResourceRegister,
+		RefusedResourceDelete,
 		RequestedServiceNotAvailableForSocket,
-
-		//---<PXClient>------------------------
-		SocketConnectionFailure,
-		//-----------------------------------
-
-		//---<Server>------------------------
 		NoPXClientWithThisID,
-		NoSendEmptyData,
-		//-----------------------------------
-
-		//---<Compiler>----------------------
-		ActionCompilingError,
-		//-----------------------------------
-
-		//---[ Windows Only (WindowsSocketAgent) ]-------
+		CompilingError,
 		SubSystemNotReady,
 		VersionNotSupported,
 		BlockedByOtherOperation,
@@ -90,13 +59,10 @@ extern "C"
 		SubSystemNotInitialised,
 		SubSystemNetworkFailed,
 		SocketIsBlocking,
-
 		WindowsSocketSystemNotInitialized,
-		//----------------------------------------
 
 		// POSIX Error codes, these are pre-defined
 		UnkownError, // OTHER
-
 		PermissionDenied, // ACCES
 		AddressInUse, // ADDRINUSE
 		AddressNotAvailable, // ADDRNOTAVAIL
@@ -143,7 +109,6 @@ extern "C"
 		ExecutableFileFormatError, // NOEXEC
 		NoLocksAvailable, // NOLCK
 		LinkHasBeenSevered, // NOLINK
-		OutOfMemory, // NOMEM
 		NoMessageOfTheDesiredType, // NOMSG
 		ProtocolNotAvailable, // NOPROTOOPT
 		NoSpaceLeftOnDevice, // NOSPC
@@ -175,18 +140,5 @@ extern "C"
 		TextFileBusy, // TXTBSY
 		OperationWouldBlock, // WOULDBLOCK
 		CrossDeviceLink // XDEV
-	}
-	ActionResult;
-
-#define ActionExitOnSuccess(actionResult) if (ActionSuccessful == actionResult) return ActionSuccessful;
-#define ActionExitOnError(actionResult) if (ActionSuccessful != actionResult) return actionResult;
-#define ActionOnErrorFetchAndExit(b) if(b) { return GetCurrentError(); }
-
-	PXPublic ActionResult ConvertErrorCode(const int errorCode);
-	PXPublic ActionResult GetCurrentError();
-
-#ifdef __cplusplus
+	};
 }
-#endif
-
-#endif

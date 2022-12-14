@@ -1,7 +1,7 @@
 #ifndef YAMLINCLUDE
 #define YAMLINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 #include <File/PXDataStream.h>
 #include <Serialization/Serialization.h>
@@ -29,9 +29,9 @@ extern "C"
 
 	PXPrivate YAMLLineType YAMLPeekLine(const void* line, const PXSize size);
 
-	PXPublic ActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	PXPublic PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
 
-	PXPublic ActionResult YAMLFileParse(PXDataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
+	PXPublic PXActionResult YAMLFileParse(PXDataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
 
 #ifdef __cplusplus
 }

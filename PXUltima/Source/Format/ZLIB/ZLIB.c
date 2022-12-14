@@ -80,7 +80,7 @@ unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressi
     }
 }
 
-ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeRead)
+PXActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeRead)
 {
     PXDataStream dataStream;
     ZLIB zlib;
@@ -89,7 +89,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
     PXDataStreamFromExternal(&dataStream, inputData, inputDataSize);
 
     const PXSize headerSize = 2u;
-    const PXSize adlerSize = 4u;    
+    const PXSize adlerSize = 4u;
 
     // Parse header ->     Header.Parse(compressionFormatByte, flagByte);
     {
@@ -105,7 +105,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
 
             if(!validFlags)
             {
-                return ActionInvalidHeaderSignature;// assert(validFlags);
+                return PXActionRefusedInvalidHeaderSignature;// assert(validFlags);
             }
         }
 
@@ -124,7 +124,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
 
             if(!isCompressionInfoValid)
             {
-                return ActionInvalidVersion;
+                return PXActionRefusedInvalidVersion;
             }
 
             //assert(isCompressionInfoValid);
@@ -180,7 +180,7 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
         case ZLIBCompressionMethodReserved:
         case ZLIBCompressionMethodInvalid:
         {
-            return ResultFormatInvalid;
+            return PXActionFailedFormatInvalid;
         }
     }
 
@@ -194,10 +194,10 @@ ActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataS
         (unsigned int)inputData[dataSize - 1];    
     */
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten)
+PXActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten)
 {
     PXDataStream parsingSteam;
 
@@ -253,7 +253,7 @@ ActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSiz
 
     *outputDataSizeWritten = parsingSteam.DataCursor;
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXSize ZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PNGInterlaceMethod interlaceMethod)

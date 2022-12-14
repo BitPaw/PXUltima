@@ -1,7 +1,7 @@
 #ifndef PXCompilerINCLUDE
 #define PXCompilerINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus

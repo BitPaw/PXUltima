@@ -33,7 +33,7 @@
     <ClInclude Include="Source\Math\Matrix.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\PXDataStream.hpp">
+    <ClInclude Include="Source\File\DataStream.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,7 +56,7 @@
     <ClCompile Include="Source\Math\Matrix.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\File\PXDataStream.cpp">
+    <ClCompile Include="Source\File\DataStream.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

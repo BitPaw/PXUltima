@@ -2,7 +2,7 @@
 #define ModelINCLUDE
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 #include <File/File.h>
 
@@ -126,8 +126,8 @@ extern "C"
 	}
 	PXModel;
 
-	typedef ActionResult(*ModelCompilerFunction)(PXDataStream* const inputStream, PXDataStream* const outputStream);
-	typedef ActionResult(*ModelParserFunction)(PXDataStream* const inputStream, PXModel* const model);
+	typedef PXActionResult(*ModelCompilerFunction)(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	typedef PXActionResult(*ModelParserFunction)(PXDataStream* const inputStream, PXModel* const model);
 
 
 	PXPublic void ModelConstruct(PXModel* const model);
@@ -144,9 +144,9 @@ extern "C"
 
 	PXPublic PXSize ModelVertexDataStride(const PXModel* const model);
 
-	PXPublic ActionResult ModelLoadA(PXModel* const model, const char* const filePath);
-	PXPublic ActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath);
-	PXPublic ActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType);
+	PXPublic PXActionResult ModelLoadA(PXModel* const model, const char* const filePath);
+	PXPublic PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath);
+	PXPublic PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType);
 
 #ifdef __cplusplus
 }

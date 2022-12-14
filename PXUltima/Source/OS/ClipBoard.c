@@ -155,7 +155,7 @@ unsigned int ClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 ClipBoardFormat ClipBoardFormatFromID(const unsigned int clipBoardFormat)
 {
 #if OSUnix
-    return ActionInvalid;
+    return PXActionInvalid;
 
 #elif OSWindows
 	switch (clipBoardFormat)
@@ -247,10 +247,10 @@ ClipBoardFormat ClipBoardFormatFromID(const unsigned int clipBoardFormat)
 #endif // defined
 }
 
-ActionResult ClipBoardOpen(ClipBoard* const clipBoard)
+PXActionResult ClipBoardOpen(ClipBoard* const clipBoard)
 {
 #if OSUnix
-    return ActionInvalid;
+    return PXActionInvalid;
 
 #elif OSWindows
 	HWND PXWindowID = NULL;
@@ -261,25 +261,25 @@ ActionResult ClipBoardOpen(ClipBoard* const clipBoard)
 		return GetCurrentError();
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
-ActionResult ClipBoardClose(ClipBoard* const clipBoard)
+PXActionResult ClipBoardClose(ClipBoard* const clipBoard)
 {
 #if OSUnix
-    return ActionInvalid;
+    return PXActionInvalid;
 
 #elif OSWindows
 	return CloseClipboard();
 #endif
 }
 
-ActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat format, const void* data)
+PXActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat format, const void* data)
 {
 
 #if OSUnix
-	return ActionInvalid;
+	return PXActionInvalid;
 
 #elif OSWindows
 	// Alloc something with GlobalAlloc()
@@ -295,14 +295,14 @@ ActionResult ClipBoardSet(ClipBoard* const clipBoard, const ClipBoardFormat form
 		return GetCurrentError();
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
-ActionResult ClipBoardClear(ClipBoard* const clipBoard)
+PXActionResult ClipBoardClear(ClipBoard* const clipBoard)
 {
 #if OSUnix
-    return ActionInvalid;
+    return PXActionInvalid;
 
 #elif OSWindows
 	return EmptyClipboard();

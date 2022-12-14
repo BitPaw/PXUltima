@@ -1,55 +1,46 @@
 #include "FMT.h"
 
-#include <File/PXDataStream.h>
 #include <Memory/PXMemory.h>
-#include <Container/ClusterValue.h>
 
 #define FMTSignature {'f', 'm', 't', ' '}
 
 void FMTConstruct(FMT* const fmt)
 {
-	MemorySet(fmt, sizeof(FMT), 0);
+	MemoryClear(fmt, sizeof(FMT));
 }
 
-ActionResult FMTParse(FMT* const fmt, const void* data, const PXSize dataSize, PXSize* dataRead, const Endian endian)
+PXActionResult FMTParse(FMT* const fmt, PXDataStream* const pxDataStream, const Endian endian)
 {
-	PXDataStream dataStream;
-
 	FMTConstruct(fmt);
-	*dataRead = 0;
-
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
 
 	// Check header signature
 	{
-		const unsigned char expectedValue[] = FMTSignature;
-
-		ClusterInt fmtHeader;
-
-		PXDataStreamReadB(&dataStream, fmtHeader.Data, 4u);
-
-		const unsigned char valid =
-			expectedValue[0] == fmtHeader.A &&
-			expectedValue[1] == fmtHeader.B &&
-			expectedValue[2] == fmtHeader.C &&
-			expectedValue[3] == fmtHeader.D;
+		const char expectedValue[] = FMTSignature;
+		const PXSize size = sizeof(expectedValue);
+		const PXBool valid = PXDataStreamReadAndCompare(pxDataStream, expectedValue, size);
 
 		if(!valid)
 		{
-			return ActionInvalidHeaderSignature;
+			return PXActionRefusedInvalidHeaderSignature;
 		}
 	}
 
-	PXDataStreamReadB(&dataStream, &fmt->ChunkSize, endian);
-	PXDataStreamReadB(&dataStream, &fmt->AudioFormat, endian);
-	PXDataStreamReadB(&dataStream, &fmt->NumerOfChannels, endian);
-	PXDataStreamReadB(&dataStream, &fmt->SampleRate, endian);
-	PXDataStreamReadB(&dataStream, &fmt->ByteRate, endian);
-	PXDataStreamReadB(&dataStream, &fmt->BlockAllign, endian);
-	PXDataStreamReadB(&dataStream, &fmt->BitsPerSample, endian);
+	const PXDataType x16 = endian == EndianLittle ? PXDataTypeLEInt16U : PXDataTypeBEInt16U;
+	const PXDataType x32 = endian == EndianLittle ? PXDataTypeLEInt32U : PXDataTypeBEInt32U;
 
-	*dataRead = dataStream.DataCursor;
+	const PXDataStreamElementType pxDataStreamElementList[] =
+	{
+		{x32, &fmt->ChunkSize},
+		{x16, &fmt->AudioFormat},
+		{x16, &fmt->NumerOfChannels},
+		{x32, &fmt->SampleRate},
+		{x32, &fmt->ByteRate},
+		{x16, &fmt->BlockAllign},
+		{x16, &fmt->BitsPerSample}
+	};
+	const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
 
-	return ActionSuccessful;
+	PXDataStreamReadMultible(pxDataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+
+	return PXActionSuccessful;
 }

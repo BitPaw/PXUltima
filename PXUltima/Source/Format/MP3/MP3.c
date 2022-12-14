@@ -786,7 +786,7 @@ unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre)
 	return -1; // MPEGGenreUnknown
 }
 
-ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const PXSize dataSize, PXSize* dataRead)
 {
 	// Parse First Byte__
 	{
@@ -1008,10 +1008,10 @@ ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, con
 
 	*dataRead = 4u;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -1027,7 +1027,7 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize*
 		const PXSize dataSize = PXDataStreamRemainingSize(&dataStream);
 		PXSize parsedBytes = 0;
 
-		const ActionResult actionResult = ID3Parse(&mp3->ID3Info, dataPosition, dataSize, &parsedBytes);
+		const PXActionResult actionResult = ID3Parse(&mp3->ID3Info, dataPosition, dataSize, &parsedBytes);
 
 		PXDataStreamCursorAdvance(&dataStream, parsedBytes);
 	}
@@ -1055,7 +1055,7 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize*
 
 			if(!parsedBytes)
 			{
-				return ResultFormatNotAsExpected;
+				return PXActionFailedFormatNotAsExpected;
 			}
 
 			PXDataStreamCursorAdvance(&dataStream, parsedBytes);
@@ -1081,7 +1081,7 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize*
 			const PXSize dataSize = PXDataStreamRemainingSize(&dataStream);
 			PXSize parsedBytes = 0;
 
-			const ActionResult actionResult = XingInfoParse(&xingInfo, dataPosition, dataSize, &parsedBytes);
+			const PXActionResult actionResult = XingInfoParse(&xingInfo, dataPosition, dataSize, &parsedBytes);
 
 			PXDataStreamCursorAdvance(&dataStream, parsedBytes);
 
@@ -1123,7 +1123,7 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize*
 		{
 			LAME lame;
 
-			const ActionResult actionResult = LAMEParse(&lame, &dataStream);
+			const PXActionResult actionResult = LAMEParse(&lame, &dataStream);
 
 #if MP3Debug
 				printf
@@ -1169,5 +1169,5 @@ ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize*
 
 	*dataRead = dataStream.DataCursor;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

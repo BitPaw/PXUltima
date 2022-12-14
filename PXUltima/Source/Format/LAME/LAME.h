@@ -1,7 +1,7 @@
 #ifndef PXLAMEINCLUDE
 #define PXLAMEINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 #include <File/PXDataStream.h>
 
@@ -54,7 +54,7 @@ extern "C"
 	}
 	LAME;
 
-	PXPublic ActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream);
+	PXPublic PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

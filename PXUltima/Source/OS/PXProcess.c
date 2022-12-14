@@ -32,7 +32,7 @@ void PXProcessParent(PXProcess* const pxProcess)
 #endif
 }
 
-ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo)
+PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo)
 {
 	MemoryClear(pxProcessMemoryInfo, sizeof(PXProcessMemoryInfo));
 
@@ -42,7 +42,7 @@ ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemory
 	const int returnCode = getrusage(who, &rusageData);
 	const PXBool success = returnCode == 0;
 
-	ActionOnErrorFetchAndExit(!success);
+	PXActionOnErrorFetchAndExit(!success);
 
 	{
 		PXTime* pxTime = &pxProcessMemoryInfo->ExecuteTimeUser;
@@ -84,7 +84,7 @@ ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemory
 			&processMemoryCountersExSize
 		);
 
-		ActionOnErrorFetchAndExit(!success);
+		PXActionOnErrorFetchAndExit(!success);
 
 		pxProcessMemoryInfo->PageFaults = processMemoryCountersEx.PageFaultCount;
 		pxProcessMemoryInfo->PeakWorkingSetSize = processMemoryCountersEx.PeakWorkingSetSize;
@@ -112,7 +112,7 @@ ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemory
 			&timeStampList[3] // userTime
 		);
 		
-		ActionOnErrorFetchAndExit(!success);
+		PXActionOnErrorFetchAndExit(!success);
 
 		// Convert
 		for (PXSize i = 0; i < 4u; i++)
@@ -165,5 +165,5 @@ ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemory
 
 #endif
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

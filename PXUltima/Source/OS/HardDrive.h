@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -23,7 +23,7 @@ extern "C"
 
 	PXPublic PXSize HardDriveListSize();
 
-	PXPublic ActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
+	PXPublic PXActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
 
 #ifdef __cplusplus
 }

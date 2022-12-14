@@ -1,7 +1,7 @@
 #ifndef PXPDFINCLUDE
 #define PXPDFINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 #include <File/PXDataStream.h>
 
@@ -17,7 +17,7 @@ extern "C"
 	}
 	PXPDF;
 
-	PXPublic ActionResult PXPDFCompile(PXPDF* const pxPDF, PXDataStream* const fileStream);
+	PXPublic PXActionResult PXPDFCompile(PXPDF* const pxPDF, PXDataStream* const fileStream);
 
 #ifdef __cplusplus
 }

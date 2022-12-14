@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/Endian.h>
 
 #ifdef __cplusplus
@@ -34,7 +34,7 @@ extern "C"
 	}
 	RIFF;
 
-	PXPublic ActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

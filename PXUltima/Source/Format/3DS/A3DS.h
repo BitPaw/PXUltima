@@ -2,7 +2,7 @@
 #define A3DSInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -15,7 +15,7 @@ extern "C"
 	}
 	A3DS;
 
-	PXPublic ActionResult A3DSParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult A3DSParse(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }

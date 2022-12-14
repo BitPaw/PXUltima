@@ -51,7 +51,7 @@
     <ClInclude Include="Source\Device\VirtualKey.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Error\ActionResult.h">
+    <ClInclude Include="Source\Error\PXActionResult.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Event\Event.h">
@@ -440,7 +440,7 @@
     <ClCompile Include="Source\Device\VirtualKey.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Error\ActionResult.c">
+    <ClCompile Include="Source\Error\PXActionResult.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Event\Event.c">

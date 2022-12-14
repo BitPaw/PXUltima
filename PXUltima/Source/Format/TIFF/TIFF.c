@@ -3,8 +3,8 @@
 #include <File/PXDataStream.h>
 #include <Memory/PXMemory.h>
 
-#define GIFFormatA {'I','I'}
-#define GIFFormatB {'M','M'}
+#define TIFFormatA {'I','I'}
+#define TIFFormatB {'M','M'}
 
 TIFFType TIFFTypeFromID(const unsigned char tiffTypeID)
 {
@@ -117,7 +117,7 @@ PXSize TIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize
     return 0;
 }
 
-ActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
+PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
 {
     MemoryClear(tiff, sizeof(TIFF));
 
@@ -129,8 +129,8 @@ ActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
     {
         // Get engianess
         {
-            const char versionA[2] = GIFFormatA;
-            const char versionB[2] = GIFFormatB;
+            const char versionA[2] = TIFFormatA;
+            const char versionB[2] = TIFFormatB;
             char headerTag[2];
 
             PXDataStreamReadB(dataStream, headerTag, 2u);
@@ -150,7 +150,7 @@ ActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
                     break;
 
                 default:
-                    return ActionInvalidVersion;
+                    return ;
             }
         }
 
@@ -308,21 +308,21 @@ ActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
     }
 
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream)
 {
     TIFF tiff;
 
     TIFFParse(&tiff, dataStream);
 
-    return ActionInvalid;
+    return PXActionInvalid;
 }
 
-ActionResult TIFFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult TIFFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
 {
-    return ActionInvalid;
+    return PXActionInvalid;
 }
 
 TIFFCompression TIFFCompressionFromID(const unsigned short tiffCompressionID)

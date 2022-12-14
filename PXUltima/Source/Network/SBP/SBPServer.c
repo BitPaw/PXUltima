@@ -26,8 +26,8 @@ void SBPServerSendFile(const PXClientID clientID, const char* text)
 
 	// Check if file exists
 	{
-		const ActionResult fileActionResult = file.MapToVirtualMemory(text, MemoryReadOnly);
-		const bool sucessful = fileActionResult == ResultSuccessful;
+		const PXActionResult filePXActionResult = file.MapToVirtualMemory(text, MemoryReadOnly);
+		const bool sucessful = filePXActionResult == ResultSuccessful;
 
 		if(!sucessful)
 		{

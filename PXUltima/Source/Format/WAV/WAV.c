@@ -8,7 +8,7 @@
 
 #define WAVListMarker MakeInt('L', 'I', 'S', 'T')
 
-ActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 	Endian endian = EndianInvalid;
@@ -26,11 +26,11 @@ ActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize*
 		const PXSize maximalSize = PXDataStreamRemainingSize(&dataStream);
 		PXSize parsedBytes = 0;
 
-		const ActionResult actionResult = RIFFParse(&riff, riffHeaderStart, maximalSize, &parsedBytes);
+		const PXActionResult actionResult = RIFFParse(&riff, riffHeaderStart, maximalSize, &parsedBytes);
 
 		if(!riff.Valid)
 		{
-			return ActionInvalidHeaderSignature;
+			return PXActionRefusedInvalidHeaderSignature;
 		}
 
 		PXDataStreamCursorAdvance(&dataStream, parsedBytes);
@@ -45,12 +45,12 @@ ActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize*
 		const PXSize maximalSize = PXDataStreamRemainingSize(&dataStream);
 		PXSize parsedBytes = 0;
 	
-		const ActionResult actionResult = FMTParse(&wav->Format, fmtHeaderStart, maximalSize, &parsedBytes, endian);
-		const unsigned char sucessful = actionResult == ActionSuccessful;
+		const PXActionResult actionResult = FMTParse(&wav->Format, fmtHeaderStart, maximalSize, &parsedBytes, endian);
+		const unsigned char sucessful = actionResult == PXActionSuccessful;
 
 		if(!sucessful)
 		{
-			return ResultFormatNotAsExpected;
+			return PXActionFailedFormatNotAsExpected;
 		}
 
 		PXDataStreamCursorAdvance(&dataStream, parsedBytes);
@@ -74,7 +74,7 @@ ActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize*
 
 		if(!validDataChunk)
 		{
-			return ResultFormatNotAsExpected;
+			return PXActionFailedFormatNotAsExpected;
 		}
 	}
 
@@ -84,12 +84,12 @@ ActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize*
 
 	PXDataStreamReadB(&dataStream, wav->SoundData, wav->SoundDataSize);
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
 /*
 
-ActionResult BF::WAV::Save(const wchar_t* filePath)
+PXActionResult BF::WAV::Save(const wchar_t* filePath)
 {
 	// Note: The sample data must end on an even byte boundary. Whatever that means.
 	File fileStream;
@@ -118,10 +118,10 @@ ActionResult BF::WAV::Save(const wchar_t* filePath)
 
 	fileStream.WriteToDisk(filePath);
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult BF::WAV::ConvertTo(Sound& sound)
+PXActionResult BF::WAV::ConvertTo(Sound& sound)
 {
 	sound.NumerOfChannels = Format.NumerOfChannels;
 	sound.SampleRate = Format.SampleRate;
@@ -131,7 +131,7 @@ ActionResult BF::WAV::ConvertTo(Sound& sound)
 
 	MemoryCopy(SoundData, SoundDataSize, sound.Data, sound.DataSize);
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
 */

@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -15,7 +15,7 @@ extern "C"
 	}
 	PLY;
 
-	PXPublic ActionResult PLYParse(PLY* ply, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PLYParse(PLY* ply, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

@@ -2261,8 +2261,8 @@ void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsi
 
     if (async)
     {
-        const ActionResult actionResult = PXThreadRun(&window->MessageThread, PXWindowCreateThread, window);
-        const PXBool sucessful = ActionSuccessful == actionResult;
+        const PXActionResult actionResult = PXThreadRun(&window->MessageThread, PXWindowCreateThread, window);
+        const PXBool sucessful = PXActionSuccessful == actionResult;
     }
     else
     {

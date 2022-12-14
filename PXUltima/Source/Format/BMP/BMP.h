@@ -2,7 +2,7 @@
 #define BMPInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus
@@ -117,10 +117,10 @@ extern "C"
 	//----------------------------------------------------------------------------
 	PXPublic PXSize BMPFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-	PXPublic ActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic ActionResult BMPSerialize(const BMP* const bmp, PXDataStream* const dataStream);
-	PXPublic ActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult BMPSerialize(const BMP* const bmp, PXDataStream* const dataStream);
+	PXPublic PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

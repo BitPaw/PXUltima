@@ -2,7 +2,7 @@
 #define PXLockInclude
 
 #include <OS/OSVersion.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #if OSUnix
 #include <semaphore.h>
@@ -27,10 +27,10 @@ extern "C"
     // Clear value of lock, sets CPrivate data to 0.
     PXPublic void PXLockClear(PXLock* const lock);
 
-	PXPublic ActionResult PXLockCreate(PXLock* const lock);
-	PXPublic ActionResult PXLockDelete(PXLock* const lock);
-	PXPublic ActionResult PXLockEngage(PXLock* const lock);
-	PXPublic ActionResult PXLockRelease(PXLock* const lock);
+	PXPublic PXActionResult PXLockCreate(PXLock* const lock);
+	PXPublic PXActionResult PXLockDelete(PXLock* const lock);
+	PXPublic PXActionResult PXLockEngage(PXLock* const lock);
+	PXPublic PXActionResult PXLockRelease(PXLock* const lock);
 #ifdef __cplusplus
 }
 #endif

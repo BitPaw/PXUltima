@@ -1,14 +1,14 @@
 #include "Bash.h"
 
-ActionResult BashExecuteA(const char* programPath, const unsigned char syncronous)
+PXActionResult BashExecuteA(const char* programPath, const unsigned char syncronous)
 {
 	/*
 	Pipe pipe;
-	ActionResult result = pipe.Open(programPath, FileOpenMode::Read);
+	PXActionResult result = pipe.Open(programPath, FileOpenMode::Read);
 	PXSize dataLength = 0;
 	unsigned char* data = 0;
 
-	if(result != ActionSuccessful)
+	if(result != PXActionSuccessful)
 	{
 		return result;
 	}
@@ -21,10 +21,10 @@ ActionResult BashExecuteA(const char* programPath, const unsigned char syncronou
 
 	free(data);*/
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous)
+PXActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous)
 {
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

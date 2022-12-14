@@ -326,49 +326,48 @@ unsigned char FileDoesExistW(const wchar_t* filePath)
 	return 0;
 }
 
-ActionResult FileRemoveA(const char* filePath)
+PXActionResult FileRemoveA(const char* filePath)
 {
 	int removeResult = OSFileRemoveA(filePath);
 	//ErrorCode errorCode = ConvertErrorCode(removeResult);
 
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult FileRemoveW(const wchar_t* filePath)
+PXActionResult FileRemoveW(const wchar_t* filePath)
 {
 	int removeResult = OSFileRemoveW(filePath);
 	//ErrorCode errorCode = ConvertErrorCode(removeResult);
 
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult FileRenameA(const char* oldName, const char* newName)
+PXActionResult FileRenameA(const char* oldName, const char* newName)
 {
 	int renameResult = OSFileRenameA(oldName, newName);
 	//ErrorCode errorCode = ConvertErrorCode(renameResult);
 
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult FileRenameW(const wchar_t* oldName, const wchar_t* newName)
+PXActionResult FileRenameW(const wchar_t* oldName, const wchar_t* newName)
 {
 	int renameResult = OSFileRenameW(oldName, newName);
 	const unsigned char wasSuccesful = renameResult == 0;
 
 	if(!wasSuccesful)
 	{
-		return ActionInvalid;// GetCurrentError();
+		return PXActionInvalid;// GetCurrentError();
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePath)
+PXActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePath)
 {
-	if(!sourceFilePath || !destinationFilePath)
-	{
-		return ResultEmptyPath;
-	}
+	if (!sourceFilePath) return PXActionRefuedInputBufferNull;
+	if (!destinationFilePath) return PXActionRefuedOutputBufferNull;
+
 #if OSUnix
 	FILE* fileSource = fopen(sourceFilePath, FileReadMode);
 	FILE* fileDestination = fopen(destinationFilePath, FileWriteMode);
@@ -391,23 +390,23 @@ ActionResult FileCopyA(const char* sourceFilePath, const char* destinationFilePa
 	fclose(fileSource);
 	fclose(fileDestination);
 #elif OSWindows
-	unsigned char succesfull = CopyFileA(sourceFilePath, destinationFilePath, 0);
+	const PXBool succesfull = CopyFileA(sourceFilePath, destinationFilePath, 0);
 
 	if(!succesfull)
 	{
-		return ResultFileCopyFailure;
+		const PXActionResult resultError = GetCurrentError();
+
+		return resultError;
 	}
 #endif
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinationFilePath)
+PXActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinationFilePath)
 {
-	if(!sourceFilePath || !destinationFilePath)
-	{
-		return ResultEmptyPath;
-	}
+	if (!sourceFilePath) return PXActionRefuedInputBufferNull;
+	if (!destinationFilePath) return PXActionRefuedOutputBufferNull;
 
 #if OSUnix
 	char sourceFilePathA[PathMaxSize];
@@ -418,21 +417,23 @@ ActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destination
 
 	return FileCopyA(sourceFilePathA, destinationFilePathA);
 #elif OSWindows
-	const unsigned char succesfull = CopyFileW(sourceFilePath, destinationFilePath, 0);
+	const PXBool succesfull = CopyFileW(sourceFilePath, destinationFilePath, 0);
 
-	if(!succesfull)
+	if (!succesfull)
 	{
-		return ResultFileCopyFailure;
+		const PXActionResult resultError = GetCurrentError();
+
+		return resultError;
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
 void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName)
 {
 	const PXSize index = TextFindLastW(currnetPath, PathMaxSize, '/');
-	const unsigned char found = index != -1;
+	const PXBool found = index != -1;
 
 	if(found)
 	{
@@ -489,20 +490,20 @@ void FilePathSwapExtensionW(const wchar_t* const inputPath, wchar_t* const expor
 	const PXSize writtenFull = TextCopyW(fileExtension , PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
 }
 
-ActionResult DirectoryCreateA(const char* directoryName)
+PXActionResult DirectoryCreateA(const char* directoryName)
 {
 	const int creationResult = OSFileDirectoryCreateA(directoryName);
-	const unsigned char wasSuccesful = creationResult == 0;
+	const PXBool wasSuccesful = creationResult == 0;
 
 	if(!wasSuccesful)
 	{
-		return ActionInvalid; //GetCurrentError();
+		return PXActionInvalid; //GetCurrentError();
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult DirectoryCreateW(const wchar_t* directoryName)
+PXActionResult DirectoryCreateW(const wchar_t* directoryName)
 {
 	wchar_t directoryNameSegment[PathMaxSize];
 	PXSize starPos = 0;
@@ -525,7 +526,7 @@ ActionResult DirectoryCreateW(const wchar_t* directoryName)
 		if (!wasSuccesful)
 		{
 			break;
-			//return ActionInvalid; //GetCurrentError();
+			//return PXActionInvalid; //GetCurrentError();
 		}
 
 		starPos += offset;
@@ -533,69 +534,69 @@ ActionResult DirectoryCreateW(const wchar_t* directoryName)
 	} 
 	while (1);
 	   	
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult WorkingDirectoryChange(const char* directoryName)
+PXActionResult WorkingDirectoryChange(const char* directoryName)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize)
+PXActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize)
 {
 	char* workingDirectoryResult = OSWorkingDirectoryCurrentA(workingDirectory, workingDirectorySize);
 	const unsigned char  wasSuccesful = workingDirectoryResult;
 
 	if(!wasSuccesful)
 	{
-		return ActionInvalid; //GetCurrentError();
+		return PXActionInvalid; //GetCurrentError();
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize)
+PXActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize)
 {
 	wchar_t* workingDirectoryResult = OSWorkingDirectoryCurrentW(workingDirectory, workingDirectorySize);
 	const unsigned char  wasSuccesful = workingDirectoryResult;
 
 	if(!wasSuccesful)
 	{
-		return ActionInvalid; //GetCurrentError();
+		return PXActionInvalid; //GetCurrentError();
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult WorkingDirectoryChangeW(const wchar_t* directoryName)
+PXActionResult WorkingDirectoryChangeW(const wchar_t* directoryName)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult DirectoryDeleteA(const char* directoryName)
+PXActionResult DirectoryDeleteA(const char* directoryName)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult DirectoryDeleteW(const wchar_t* directoryName)
+PXActionResult DirectoryDeleteW(const wchar_t* directoryName)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
+PXActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize)
+PXActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
 
 /*
 
-ActionResult FileWorkingDirectoryChangeA(const char* directoryName)
+PXActionResult FileWorkingDirectoryChangeA(const char* directoryName)
 {
 	int creationResult = WorkingDirectoryChangeA(directoryName);
 	bool wasSuccesful = creationResult == 0;
@@ -608,7 +609,7 @@ ActionResult FileWorkingDirectoryChangeA(const char* directoryName)
 	return ErrorCode::Successful;
 }
 
-ActionResult FileWorkingDirectoryChangeW(const wchar_t* directoryName)
+PXActionResult FileWorkingDirectoryChangeW(const wchar_t* directoryName)
 {
 	int creationResult = WorkingDirectoryChangeW(directoryName);
 	bool wasSuccesful = creationResult == 0;
@@ -621,7 +622,7 @@ ActionResult FileWorkingDirectoryChangeW(const wchar_t* directoryName)
 	return ErrorCode::Successful;
 }
 
-ActionResult FileDirectoryDeleteA(const char* directoryName)
+PXActionResult FileDirectoryDeleteA(const char* directoryName)
 {
 	int creationResult = FileRemoveA(directoryName);
 	bool wasSuccesful = creationResult == 0;
@@ -634,7 +635,7 @@ ActionResult FileDirectoryDeleteA(const char* directoryName)
 	return ErrorCode::Successful;
 }
 
-ActionResult FileDirectoryDeleteW(const wchar_t* directoryName)
+PXActionResult FileDirectoryDeleteW(const wchar_t* directoryName)
 {
 	int creationResult = FileRemoveW(directoryName);
 	bool wasSuccesful = creationResult == 0;
@@ -647,33 +648,33 @@ ActionResult FileDirectoryDeleteW(const wchar_t* directoryName)
 	return ErrorCode::Successful;
 }
 
-ActionResult FileMapToVirtualMemoryA(const char* filePath, const MemoryProtectionMode protectionMode)
+PXActionResult FileMapToVirtualMemoryA(const char* filePath, const MemoryProtectionMode protectionMode)
 {
 }
 
-ActionResult FileMapToVirtualMemoryW(const wchar_t* filePath, const MemoryProtectionMode protectionMode)
-{
-
-}
-
-ActionResult FileMapToVirtualMemory(const PXSize size, const MemoryProtectionMode protectionMode)
+PXActionResult FileMapToVirtualMemoryW(const wchar_t* filePath, const MemoryProtectionMode protectionMode)
 {
 
 }
 
-ActionResult FileUnmapFromVirtualMemory()
+PXActionResult FileMapToVirtualMemory(const PXSize size, const MemoryProtectionMode protectionMode)
 {
 
 }
 
-ActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, FilePersistence filePersistence)
+PXActionResult FileUnmapFromVirtualMemory()
+{
+
+}
+
+PXActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, FilePersistence filePersistence)
 {
 	File file;
 
 	// Open file
 	{
-		const ActionResult result = file.Open(filePath, FileOpenMode::Read, FileCachingMode::Sequential);
-		const bool sucessful = result == ActionSuccessful;
+		const PXActionResult result = file.Open(filePath, FileOpenMode::Read, FileCachingMode::Sequential);
+		const bool sucessful = result == PXActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -683,8 +684,8 @@ ActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, File
 
 	// Read
 	{
-		const ActionResult result = file.ReadFromDisk(&Data, DataSize, addNullTerminator);
-		const bool sucessful = result == ActionSuccessful;
+		const PXActionResult result = file.ReadFromDisk(&Data, DataSize, addNullTerminator);
+		const bool sucessful = result == PXActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -695,8 +696,8 @@ ActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, File
 
 	// Close
 	{
-		const ActionResult result = file.Close();
-		const bool sucessful = result == ActionSuccessful;
+		const PXActionResult result = file.Close();
+		const bool sucessful = result == PXActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -706,22 +707,22 @@ ActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, File
 
 	_fileLocation = FileLocation::CachedFromDisk;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileReadFromDisk(const wchar_t* filePath, bool addNullTerminator, FilePersistence filePersistence)
+PXActionResult FileReadFromDisk(const wchar_t* filePath, bool addNullTerminator, FilePersistence filePersistence)
 {
 	File file;
-	ActionResult result = file.Open(filePath, FileOpenMode::Read, FileCachingMode::Sequential);
+	PXActionResult result = file.Open(filePath, FileOpenMode::Read, FileCachingMode::Sequential);
 
-	if(result != ActionSuccessful)
+	if(result != PXActionSuccessful)
 	{
 		return result;
 	}
 
 	result = file.ReadFromDisk(&Data, DataSize, addNullTerminator);
 
-	if(result != ActionSuccessful)
+	if(result != PXActionSuccessful)
 	{
 		file.Close();
 		return result;
@@ -729,17 +730,17 @@ ActionResult FileReadFromDisk(const wchar_t* filePath, bool addNullTerminator, F
 
 	result = file.Close();
 
-	if(result != ActionSuccessful)
+	if(result != PXActionSuccessful)
 	{
 		return result;
 	}
 
 	_fileLocation = FileLocation::CachedFromDisk;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileReadFromDisk(FILE* file, Byte__** targetBuffer, PXSize& bufferSize, bool addNullTerminator)
+PXActionResult FileReadFromDisk(FILE* file, Byte__** targetBuffer, PXSize& bufferSize, bool addNullTerminator)
 {
 	fseek(file, 0, SEEK_END); // Jump to end of file
 	bufferSize = ftell(file); // Get current 'data-cursor' position
@@ -776,15 +777,15 @@ ActionResult FileReadFromDisk(FILE* file, Byte__** targetBuffer, PXSize& bufferS
 
 	assert(bufferSize == readBytes);
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileReadFromDisk(const wchar_t* filePath, Byte__** targetBuffer, PXSize& bufferSize, bool addNullTerminator, FilePersistence filePersistence)
+PXActionResult FileReadFromDisk(const wchar_t* filePath, Byte__** targetBuffer, PXSize& bufferSize, bool addNullTerminator, FilePersistence filePersistence)
 {
 	File file;
-	ActionResult result = file.Open(filePath, FileOpenMode::Read);
+	PXActionResult result = file.Open(filePath, FileOpenMode::Read);
 
-	if(result != ActionSuccessful)
+	if(result != PXActionSuccessful)
 	{
 		return result;
 	}
@@ -795,60 +796,60 @@ ActionResult FileReadFromDisk(const wchar_t* filePath, Byte__** targetBuffer, PX
 
 	result = file.Close();
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileWriteToDisk(const bool value)
+PXActionResult FileWriteToDisk(const bool value)
 {
 	return WriteToDisk(&value, sizeof(bool));
 }
 
-ActionResult FileWriteToDisk(const char value)
+PXActionResult FileWriteToDisk(const char value)
 {
 	return WriteToDisk(&value, sizeof(char));
 }
 
-ActionResult FileWriteToDisk(const unsigned char value)
+PXActionResult FileWriteToDisk(const unsigned char value)
 {
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const short value, const Endian endian)
+PXActionResult FileWriteToDisk(const short value, const Endian endian)
 {
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const unsigned short value, const Endian endian)
+PXActionResult FileWriteToDisk(const unsigned short value, const Endian endian)
 {
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const int value, const Endian endian)
+PXActionResult FileWriteToDisk(const int value, const Endian endian)
 {
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const unsigned int value, const Endian endian)
+PXActionResult FileWriteToDisk(const unsigned int value, const Endian endian)
 {
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const char* string, const PXSize length)
+PXActionResult FileWriteToDisk(const char* string, const PXSize length)
 {
 	return WriteToDisk(string, length);
 }
 
-ActionResult FileWriteToDisk(const unsigned char* string, const PXSize length)
+PXActionResult FileWriteToDisk(const unsigned char* string, const PXSize length)
 {
 	return WriteToDisk(string, length);
 }
 
-ActionResult FileWriteToDisk(const unsigned long long& value, const Endian endian)
+PXActionResult FileWriteToDisk(const unsigned long long& value, const Endian endian)
 {
 	return WriteToDisk(&value, sizeof(unsigned char));
 }
 
-ActionResult FileWriteToDisk(const void* value, const PXSize length)
+PXActionResult FileWriteToDisk(const void* value, const PXSize length)
 {
 #if OSUnix
 FILE* fileHandle = FileHandle;
@@ -860,7 +861,7 @@ FILE* fileHandle = FileHandleCStyle;
 
 	if(writtenSize > 0)
 	{
-		return ActionSuccessful;
+		return PXActionSuccessful;
 	}
 	else
 	{
@@ -868,7 +869,7 @@ FILE* fileHandle = FileHandleCStyle;
 	}
 }
 
-ActionResult FileWriteToDisk(const char* format, ...)
+PXActionResult FileWriteToDisk(const char* format, ...)
 {
 #if OSUnix
     FILE* fileHandle = FileHandle;
@@ -889,10 +890,10 @@ ActionResult FileWriteToDisk(const char* format, ...)
 		return ResultWriteFailure;
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileWriteIntoFile(const void* data, const PXSize dataSize)
+PXActionResult FileWriteIntoFile(const void* data, const PXSize dataSize)
 {
 #if OSUnix
 	PXSize writtenBytes = fwrite(data, sizeof(char), dataSize, FileHandle);
@@ -901,37 +902,37 @@ ActionResult FileWriteIntoFile(const void* data, const PXSize dataSize)
 	const bool successful = WriteFile(FileHandle, data, dataSize, &writtenBytes, nullptr);
 #endif
 
-	return ActionResult();
+	return PXActionResult();
 }
 
-ActionResult FileWriteToDisk(const char* filePath, FilePersistence filePersistence)
+PXActionResult FileWriteToDisk(const char* filePath, FilePersistence filePersistence)
 {
 	File file;
-	ActionResult fileActionResult = file.Open(filePath, FileOpenMode::Write);
+	PXActionResult filePXActionResult = file.Open(filePath, FileOpenMode::Write);
 
-	if(fileActionResult != ActionSuccessful)
+	if(filePXActionResult != PXActionSuccessful)
 	{
-		return fileActionResult;
+		return filePXActionResult;
 	}
 
 	WriteIntoFile(Data, DataSize);
 
-	fileActionResult = file.Close();
+	filePXActionResult = file.Close();
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersistence)
+PXActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersistence)
 {
 	File file;
 
 	{
-		const ActionResult fileActionResult = file.Open(filePath, FileOpenMode::Write);
-		const bool sucessful = fileActionResult == ActionSuccessful;
+		const PXActionResult filePXActionResult = file.Open(filePath, FileOpenMode::Write);
+		const bool sucessful = filePXActionResult == PXActionSuccessful;
 
 		if(!sucessful)
 		{
-			return fileActionResult;
+			return filePXActionResult;
 		}
 	}
 
@@ -943,8 +944,8 @@ ActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersis
 #endif
 
 	{
-		const ActionResult closeResult = file.Close();
-		const bool sucessful = closeResult == ActionSuccessful;
+		const PXActionResult closeResult = file.Close();
+		const bool sucessful = closeResult == PXActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -952,10 +953,10 @@ ActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePersis
 		}
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult FileReadFromDisk(unsigned char** outPutBuffer, PXSize& outPutBufferSize, const bool addTerminatorByte)
+PXActionResult FileReadFromDisk(unsigned char** outPutBuffer, PXSize& outPutBufferSize, const bool addTerminatorByte)
 {
 #if OSUnix
 	fseek(FileHandle, 0, SEEK_END); // Jump to end of file
@@ -993,7 +994,7 @@ ActionResult FileReadFromDisk(unsigned char** outPutBuffer, PXSize& outPutBuffer
 
 	assert(outPutBufferSize == readBytes);
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #elif OSWindows
 	const DWORD fileSize = GetFileSize(FileHandle, nullptr);
 	DWORD numberOfBytesRead = 0;
@@ -1033,7 +1034,7 @@ ActionResult FileReadFromDisk(unsigned char** outPutBuffer, PXSize& outPutBuffer
 	(*outPutBuffer) = buffer;
 	outPutBufferSize = numberOfBytesRead;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 

@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/ID3/ID3.h>
 
 #define MP3Debug 1
@@ -225,9 +225,9 @@ extern "C"
 	
 	static MPEGGenre ConvertMPEGToGenre(const unsigned char mpegGenre);
 	static unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre);
-	static ActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const PXSize dataSize, PXSize* dataRead);
+	static PXActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const PXSize dataSize, PXSize* dataRead);
 
-	PXPublic ActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 
 #ifdef __cplusplus

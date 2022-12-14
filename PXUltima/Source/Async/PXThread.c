@@ -1,6 +1,6 @@
 #include "PXThread.h"
 
-ActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter)
+PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter)
 {
 #if OSUnix
 	const int result = pthread_create(&pxThread->ThreadID, 0, threadFunction, (void*)parameter);
@@ -17,7 +17,7 @@ ActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFu
 
 	if (!wasSucessful)
 	{
-		const ActionResult actionResult = GetCurrentError();
+		const PXActionResult actionResult = GetCurrentError();
 
 		return actionResult;
 	}
@@ -29,7 +29,7 @@ ActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFu
 
 #endif
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
 PXSize PXThreadCurrentID()

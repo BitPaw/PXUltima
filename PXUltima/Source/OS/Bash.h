@@ -3,15 +3,15 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	PXPublic ActionResult BashExecuteA(const char* programPath, const unsigned char syncronous);
-	PXPublic ActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous);
+	PXPublic PXActionResult BashExecuteA(const char* programPath, const unsigned char syncronous);
+	PXPublic PXActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous);
 
 #ifdef __cplusplus
 }

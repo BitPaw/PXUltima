@@ -46,7 +46,7 @@ XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize)
 
 
 
-ActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXSize errorCounter = 0;
     PXDataStream tokenSteam;
@@ -368,5 +368,5 @@ ActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* const
     }
 
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

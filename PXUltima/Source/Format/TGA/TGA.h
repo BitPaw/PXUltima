@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Image.h>
 
 #ifdef __cplusplus
@@ -116,10 +116,10 @@ extern "C"
 	PXPublic void TGADestruct(TGA* const tga);
 
 
-	PXPublic ActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead);
-	PXPublic ActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic ActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
 
 #ifdef __cplusplus
 }

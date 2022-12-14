@@ -37,8 +37,8 @@ SBPResult SBPPXClientSendAndWaitResponse
 
 	// Send stuff
 	{
-		const ActionResult sendResult = _client.Send(inputData, writtenBytes);
-		const unsigned char sucessful = sendResult == ActionSuccessful;
+		const PXActionResult sendResult = _client.Send(inputData, writtenBytes);
+		const unsigned char sucessful = sendResult == PXActionSuccessful;
 
 		if(!sucessful)
 		{
@@ -114,8 +114,8 @@ SBPResult SBPPXClientSendAndWaitResponse
 
 void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const char* ip, const unsigned short port)
 {
-	const ActionResult connectResult = _client.ConnectToServer(ip, port, this, ReciveDataThread);
-	const unsigned char sucessful = connectResult == ActionSuccessful;
+	const PXActionResult connectResult = _client.ConnectToServer(ip, port, this, ReciveDataThread);
+	const unsigned char sucessful = connectResult == PXActionSuccessful;
 
 	if(!sucessful)
 	{
@@ -230,8 +230,8 @@ void SBPPXClientSendFile(const char* filePath)
 		const unsigned short port = _client.AdressInfo.Port;
 
 		{
-			const SocketActionResult connectResult = clientFileSender.ConnectToServer(ip, port, &clientFileSender, PXClient::CommunicationFunctionAsync);
-			const bool sucessful = connectResult == SocketActionResult::Successful;
+			const SocketPXActionResult connectResult = clientFileSender.ConnectToServer(ip, port, &clientFileSender, PXClient::CommunicationFunctionAsync);
+			const bool sucessful = connectResult == SocketPXActionResult::Successful;
 
 			if(!sucessful)
 			{
@@ -265,8 +265,8 @@ void SBPPXClientSendFile(const char* filePath)
 		File file;	
 
 		{
-			const ActionResult fileActionResult = file.MapToVirtualMemory(filePath, MemoryProtectionMode::ReadOnly);
-			const bool isLoaded = fileActionResult == ResultSuccessful;
+			const PXActionResult filePXActionResult = file.MapToVirtualMemory(filePath, MemoryProtectionMode::ReadOnly);
+			const bool isLoaded = filePXActionResult == ResultSuccessful;
 
 			if(!isLoaded)
 			{

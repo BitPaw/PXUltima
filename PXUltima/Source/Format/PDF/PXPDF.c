@@ -1,6 +1,6 @@
 #include "PXPDF.h"
 
-ActionResult PXPDFCompile(PXPDF* const pxPDF, PXDataStream* const fileStream)
+PXActionResult PXPDFCompile(PXPDF* const pxPDF, PXDataStream* const fileStream)
 {
     // Check for header
     {
@@ -9,7 +9,7 @@ ActionResult PXPDFCompile(PXPDF* const pxPDF, PXDataStream* const fileStream)
 
         if (!validSignature)
         {
-            return ActionInvalidHeaderSignature;
+            return PXActionRefusedInvalidHeaderSignature;
         }
     }
 
@@ -22,5 +22,5 @@ ActionResult PXPDFCompile(PXPDF* const pxPDF, PXDataStream* const fileStream)
     }
 
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

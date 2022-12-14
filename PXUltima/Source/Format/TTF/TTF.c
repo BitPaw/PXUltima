@@ -171,7 +171,7 @@ void TTFDestruct(TTF* const ttf)
 	// TODO
 }
 
-ActionResult TTFParse(TTF* const ttf, PXDataStream* const dataStream)
+PXActionResult TTFParse(TTF* const ttf, PXDataStream* const dataStream)
 {
 	TTFOffsetTable offsetTable;
 
@@ -579,5 +579,5 @@ ActionResult TTFParse(TTF* const ttf, PXDataStream* const dataStream)
 	}
 	*/
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

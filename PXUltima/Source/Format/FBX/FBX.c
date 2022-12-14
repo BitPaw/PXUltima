@@ -1,6 +1,6 @@
 #include "FBX.h"
 
-ActionResult FBXParse(const void* data, const PXSize dataSize)
+PXActionResult FBXParse(const void* data, const PXSize dataSize)
 {
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

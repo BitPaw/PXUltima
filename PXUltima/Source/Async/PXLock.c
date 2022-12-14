@@ -11,7 +11,7 @@ void PXLockClear(PXLock* const lock)
 #endif
 }
 
-ActionResult PXLockCreate(PXLock* const lock)
+PXActionResult PXLockCreate(PXLock* const lock)
 {
 #if OSUnix
 	int sharedPointer = 0;
@@ -34,17 +34,17 @@ ActionResult PXLockCreate(PXLock* const lock)
 
 	if (!sucessful)
 	{
-        const ActionResult actionResult = GetCurrentError();
+        const PXActionResult actionResult = GetCurrentError();
 
 		PXLockClear(lock);
 
         return actionResult;
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult PXLockDelete(PXLock* const lock)
+PXActionResult PXLockDelete(PXLock* const lock)
 {
 	int closingResult = -1;
 
@@ -59,7 +59,7 @@ ActionResult PXLockDelete(PXLock* const lock)
 	return closingResult;
 }
 
-ActionResult PXLockEngage(PXLock* const lock)
+PXActionResult PXLockEngage(PXLock* const lock)
 {
 	int lockResult = -1;
 
@@ -72,7 +72,7 @@ ActionResult PXLockEngage(PXLock* const lock)
 	return lockResult;
 }
 
-ActionResult PXLockRelease(PXLock* const lock)
+PXActionResult PXLockRelease(PXLock* const lock)
 {
 	int releaseResult = -1;
 

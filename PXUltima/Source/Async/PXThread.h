@@ -3,7 +3,7 @@
 
 #include <OS/OSVersion.h>
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #if OSUnix
 #include <pthread.h>
@@ -36,7 +36,7 @@ extern "C"
 	}
 	PXThread;	
 
-	PXPublic ActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter);
+	PXPublic PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter);
 
 	PXPublic PXSize PXThreadCurrentID();
 	PXPublic void PXThreadCurrentGet(PXThread* const pxThread);

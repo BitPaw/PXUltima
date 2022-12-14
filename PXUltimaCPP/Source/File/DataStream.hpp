@@ -2,14 +2,14 @@
 
 #include <File/PXDataStream.h>
 
-namespace BF
+namespace PX
 {
 	class DataStream : public PXDataStream
 	{
 		public:
 		//---------------------------------------------------------------------
-		DataStream();
-		~DataStream();
+		PXDLLExport DataStream();
+		PXDLLExport ~DataStream();
 		//---------------------------------------------------------------------
 
 		//---<Set>-------------------------------------------------------------
@@ -19,7 +19,7 @@ namespace BF
 		//---<Open>------------------------------------------------------------
 		ActionResult OpenFromPath(const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 		ActionResult OpenFromPath(const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
-		ActionResult OpenFromPath(const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
+		//ActionResult OpenFromPath(const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 		//---------------------------------------------------------------------
 
 		//---<Close>-----------------------------------------------------------
@@ -27,11 +27,11 @@ namespace BF
 		//---------------------------------------------------------------------
 
 		//---<Mapping>---------------------------------------------------------
-		ActionResult MapToMemory(const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-		ActionResult MapToMemory(const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-		ActionResult MapToMemory(const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-		ActionResult MapToMemory(const PXSize size, const MemoryProtectionMode protectionMode);
-		ActionResult UnmapFromMemory();
+		PXDLLExport ActionResult MapToMemory(const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+		PXDLLExport ActionResult MapToMemory(const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+		//ActionResult MapToMemory(const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+		PXDLLExport ActionResult MapToMemory(const PXSize size, const MemoryProtectionMode protectionMode);
+		PXDLLExport ActionResult UnmapFromMemory();
 		//---------------------------------------------------------------------
 
 		//---<Parsing Utility>-----------------------------------------------------

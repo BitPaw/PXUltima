@@ -2,7 +2,7 @@
 #define ID3Include
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 
 #define ID3TitleSize 30
@@ -131,7 +131,7 @@ extern "C"
 
 	PXPublic ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID);
 
-	PXPublic ActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream);
+	PXPublic PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

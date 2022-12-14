@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/FMT/FMT.h>
 
 #ifdef __cplusplus
@@ -21,7 +21,7 @@ extern "C"
 	}
 	WAV;
 
-	PXPublic ActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize* dataRead);
 
 #ifdef __cplusplus
 }

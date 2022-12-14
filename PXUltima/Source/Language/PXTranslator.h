@@ -1,7 +1,7 @@
 #ifndef PXTranslatorINCLUDE
 #define PXTranslatorINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 #include <File/PXDataStream.h>
 
@@ -10,8 +10,8 @@ extern "C"
 {
 #endif
    
-	PXPublic ActionResult PXTranslatorEnglishToGerman(PXDataStream* const inputStreamEnglish, PXDataStream* const outputStreamGerman);
-	PXPublic ActionResult PXTranslatorGermanToEnglish(PXDataStream* const inputStreamGerman, PXDataStream* const outputStreamEnglish);
+	PXPublic PXActionResult PXTranslatorEnglishToGerman(PXDataStream* const inputStreamEnglish, PXDataStream* const outputStreamGerman);
+	PXPublic PXActionResult PXTranslatorGermanToEnglish(PXDataStream* const inputStreamGerman, PXDataStream* const outputStreamEnglish);
 
 #ifdef __cplusplus
 }

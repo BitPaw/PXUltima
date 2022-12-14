@@ -130,29 +130,29 @@ void PXDataStreamFromExternal(PXDataStream* const dataStream, void* const data, 
 	dataStream->DataLocation = FileLocationExternal;
 }
 
-ActionResult PXDataStreamOpenFromPathA(PXDataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
+PXActionResult PXDataStreamOpenFromPathA(PXDataStream* const dataStream, const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
 {
 	PXByte filePathU[PathMaxSize];
 
 	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
+	PXActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
 
 	return actionResult;
 }
 
-ActionResult PXDataStreamOpenFromPathW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
+PXActionResult PXDataStreamOpenFromPathW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
 {
 	PXCharUTF8 filePathU[PathMaxSize];
 
 	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
+	PXActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
 
 	return actionResult;
 }
 
-ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
+PXActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
 {
 #if OSUnix
 	const char* readMode = 0u;
@@ -168,7 +168,8 @@ ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXT
 			break;
 	}
 
-	assert(readMode != 0);
+	
+	(readMode != 0);
 
 	// Use this somewhere here
 	// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
@@ -176,7 +177,7 @@ ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXT
 
 	dataStream->FileHandle = fopen(filePath, readMode);
 
-	return dataStream->FileHandle ? ActionSuccessful : ResultFileOpenFailure;
+	return dataStream->FileHandle ? PXActionSuccessful : ResultFileOpenFailure;
 
 
 #elif OSWindows
@@ -218,10 +219,10 @@ ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXT
 	// Make directory if needed
 	// FilePathExtensionGetW
 	if(fileOpenMode == MemoryWriteOnly || fileOpenMode == MemoryReadAndWrite)
-	{		
-		const ActionResult directoryCreateResult = DirectoryCreateA(filePath);
+	{
+		const PXActionResult directoryCreateResult = DirectoryCreateA(filePath);
 
-		ActionExitOnError(directoryCreateResult);
+		PXActionExitOnError(directoryCreateResult);
 	}
 
 	// UTF
@@ -244,10 +245,10 @@ ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXT
 			switch (fileOpenMode)
 			{
 				case MemoryReadOnly:
-					return ResultFileNotFound;
+					return PXActionFailedFileNotFound;
 
 				case MemoryWriteOnly:
-					return ResultFileCreateFailure;
+					return PXActionFailedFileCreate;
 			}
 			/*
 			const ErrorCode error = GetCurrentError();
@@ -316,11 +317,11 @@ ActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const PXT
 	dataStream->FileHandle = fileHandle;
 	dataStream->DataLocation = FileLocationLinked;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
-ActionResult PXDataStreamClose(PXDataStream* const dataStream)
+PXActionResult PXDataStreamClose(PXDataStream* const dataStream)
 {
 #if OSUnix
 	const int closeResult = fclose(dataStream->FileHandle);
@@ -328,7 +329,7 @@ ActionResult PXDataStreamClose(PXDataStream* const dataStream)
 	switch (closeResult)
 	{
 	case 0:
-		return ActionSuccessful;
+		return PXActionSuccessful;
 
 	default:
 		return ResultFileCloseFailure;
@@ -338,26 +339,29 @@ ActionResult PXDataStreamClose(PXDataStream* const dataStream)
 	{
 		_fclose_nolock(dataStream->FileHandleCStyle);
 
-		dataStream->FileHandleCStyle = 0;
-		dataStream->FileHandle = 0;
+		dataStream->FileHandleCStyle = PXNull;
+		dataStream->FileHandle = PXNull;
 	}
 
 	if (dataStream->FileHandle)
 	{
 		const PXBool successful = CloseHandle(dataStream->FileHandle);
 
-		dataStream->FileHandle = 0;
+		if (!successful)
+		{		
+			return PXActionFailedFileClose;
+		}
 
-		return successful ? ActionSuccessful : ResultFileCloseFailure;
+		dataStream->FileHandle = PXNull;
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
 
 #if OSWindows
-ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
+PXActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
 {
 	HANDLE           hToken;
 	TOKEN_PRIVILEGES tp;
@@ -393,33 +397,33 @@ ActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
 	if (!CloseHandle(hToken))
 		return GetCurrentError(); // CloseHandle
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 #endif // OSWindows
 
-ActionResult PXDataStreamMapToMemoryA(PXDataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+PXActionResult PXDataStreamMapToMemoryA(PXDataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
 {
 	PXByte filePathU[PathMaxSize];
 
 	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
+	const PXActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
 
 	return actionResult;
 }
 
-ActionResult PXDataStreamMapToMemoryW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+PXActionResult PXDataStreamMapToMemoryW(PXDataStream* const dataStream, const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
 {
 	PXCharUTF8 filePathU[PathMaxSize];
 
 	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-	ActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
+	const PXActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
 
 	return actionResult;
 }
 
-ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
 {
 	PXBool useLargeMemoryPages = PXNo;
 
@@ -460,7 +464,7 @@ ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTe
 
 		if (!sucessfulOpen)
 		{
-			const ActionResult actionResult = GetCurrentError(); // ResultFileOpenFailure
+			const PXActionResult actionResult = GetCurrentError(); // ResultFileOpenFailure
 
 			return actionResult;
 		}
@@ -517,9 +521,9 @@ ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTe
 
 	// Open file
 	{
-		const ActionResult openResult = PXDataStreamOpenFromPathU(dataStream, filePath, protectionMode, FileCachingSequential);
+		const PXActionResult openResult = PXDataStreamOpenFromPathU(dataStream, filePath, protectionMode, FileCachingSequential);
 
-		ActionExitOnError(openResult);
+		PXActionExitOnError(openResult);
 	}
 
 	dataStream->MemoryMode = protectionMode;
@@ -576,7 +580,7 @@ ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTe
 			{
 				dwMaximumSizeLow = largePageMinimumSize * ((dataStream->DataSize / largePageMinimumSize) + 1);
 
-				ActionResult actionResult = WindowsProcessPrivilege(L"SeLockMemoryPrivilege", TRUE);
+				PXActionResult actionResult = WindowsProcessPrivilege(L"SeLockMemoryPrivilege", TRUE);
 
 				flProtect |= SEC_COMMIT | SEC_LARGE_PAGES;
 			}
@@ -618,7 +622,7 @@ ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTe
 
 			if (!successful)
 			{
-				const ActionResult mappingError = GetCurrentError(); // File memory-mapping failed
+				const PXActionResult mappingError = GetCurrentError(); // File memory-mapping failed
 
 				return mappingError;
 			}
@@ -678,17 +682,17 @@ ActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PXTe
 	printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", dataStream->Data, dataStream->DataSize, filePath);
 #endif
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult PXDataStreamMapToMemory(PXDataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode)
+PXActionResult PXDataStreamMapToMemory(PXDataStream* const dataStream, const PXSize size, const MemoryProtectionMode protectionMode)
 {
 	const void* data = MemoryVirtualAllocate(size, protectionMode);
-	const unsigned char successful = data != 0;
+	const PXBool successful = data != 0;
 
 	if (!successful)
 	{
-		return ActionSystemOutOfMemory;
+		return PXActionFailedAllocation;
 	}
 
 	PXDataStreamConstruct(dataStream);
@@ -698,27 +702,27 @@ ActionResult PXDataStreamMapToMemory(PXDataStream* const dataStream, const PXSiz
 	dataStream->Data = data;
 	dataStream->DataSize = size;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
+PXActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 {
 	// Write pending data
-	unsigned char isWriteMapped = 0;
+	PXBool isWriteMapped = 0;
 
 	switch (dataStream->MemoryMode)
 	{
-	default:
-	case MemoryInvalid:
-	case MemoryNoReadWrite:
-	case MemoryReadOnly:
-		isWriteMapped = 0;
-		break;
+		default:
+		case MemoryInvalid:
+		case MemoryNoReadWrite:
+		case MemoryReadOnly:
+			isWriteMapped = PXFalse;
+			break;
 
-	case MemoryWriteOnly:
-	case MemoryReadAndWrite:
-		isWriteMapped = 1;
-		break;
+		case MemoryWriteOnly:
+		case MemoryReadAndWrite:
+			isWriteMapped = PXTrue;
+			break;
 	}
 
 
@@ -732,7 +736,7 @@ ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 
 	if (!sucessful)
 	{
-		const ActionResult errorCode = GetCurrentError(); // Not quite well
+		const PXActionResult errorCode = GetCurrentError(); // Not quite well
 
 		return ResultFileMemoryMappingFailed;
 	}
@@ -740,7 +744,7 @@ ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 	dataStream->Data = 0;
 	dataStream->DataSize = 0;
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 
 #elif OSWindows
 
@@ -761,7 +765,7 @@ ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 		{
 			//const ErrorCode error = GetCurrentError();
 
-			return ActionInvalid; // TODO: fix this
+			return PXActionInvalid; // TODO: fix this
 		}
 
 		dataStream->Data = 0;
@@ -772,7 +776,7 @@ ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 
 		if (!closeMappingSucessful)
 		{
-			return ActionInvalid; // TODO: fix this
+			return PXActionInvalid; // TODO: fix this
 		}
 
 		dataStream->IDMapping = 0;
@@ -794,8 +798,8 @@ ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 			const BOOL endSuccessful = SetEndOfFile(dataStream->FileHandle);
 		}
 
-		const ActionResult closeFile = PXDataStreamClose(dataStream);
-		const unsigned char sucessful = ActionSuccessful == closeFile;
+		const PXActionResult closeFile = PXDataStreamClose(dataStream);
+		const unsigned char sucessful = PXActionSuccessful == closeFile;
 
 		if (!sucessful)
 		{
@@ -805,7 +809,7 @@ ActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 		dataStream->FileHandle = 0;
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
@@ -1400,12 +1404,12 @@ void PXDataStreamReadUntil(PXDataStream* const dataStream, void* value, const PX
 	MemoryCopy(currentPosition, readableSize, value, lengthCopy);
 }
 
-unsigned char PXDataStreamReadAndCompare(PXDataStream* const dataStream, const void* value, const PXSize length)
+PXBool PXDataStreamReadAndCompare(PXDataStream* const dataStream, const void* value, const PXSize length)
 {
-	const unsigned char* currentPosition = PXDataStreamCursorPosition(dataStream);
+	const void* currentPosition = PXDataStreamCursorPosition(dataStream);
 	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
 
-	const unsigned char result = MemoryCompare(currentPosition, readableSize, value, length);
+	const PXBool result = MemoryCompare(currentPosition, readableSize, value, length);
 
 	if (result)
 	{
@@ -1413,6 +1417,27 @@ unsigned char PXDataStreamReadAndCompare(PXDataStream* const dataStream, const v
 	}
 
 	return result;
+}
+
+PXBool PXDataStreamReadAndCompareV(PXDataStream* const dataStream, const void** value, const PXSize* valueElementSizeList, const PXSize valueLength)
+{
+	const void* currentPosition = PXDataStreamCursorPosition(dataStream);
+	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
+
+	for (size_t i = 0; i < valueLength; ++i)
+	{
+		void* text = value[i];
+		PXSize size = valueElementSizeList[i];
+		const PXBool result = MemoryCompare(currentPosition, readableSize, text, size);
+
+		if (result)
+		{
+			PXDataStreamCursorAdvance(dataStream, size);
+			return PXTrue;
+		}
+	}
+
+	return PXFalse;
 }
 
 PXSize PXDataStreamWriteC(PXDataStream* const dataStream, const char value)
@@ -1735,12 +1760,12 @@ PXSize PXDataStreamFilePathGetA(PXDataStream* const dataStream, char* const file
 
 	if (!sucessful)
 	{
-		const ActionResult result = GetCurrentError();
+		const PXActionResult result = GetCurrentError();
 
 		return result;
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
@@ -1756,7 +1781,7 @@ PXSize PXDataStreamFilePathGetW(PXDataStream* const dataStream, wchar_t* const f
 
 	if (!sucessful)
 	{
-		const ActionResult result = GetCurrentError();
+		const PXActionResult result = GetCurrentError();
 
 		return result;
 	}
@@ -1769,6 +1794,6 @@ PXSize PXDataStreamFilePathGetW(PXDataStream* const dataStream, wchar_t* const f
 		TextCopyW(buffer, PathMaxSize, filePath, length-4);
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }

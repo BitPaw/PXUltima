@@ -1,86 +1,86 @@
 #include "Window.hpp"
 
-BF::Window::Window()
+PX::Window::Window()
 {
 }
 
-BF::Window::~Window()
+PX::Window::~Window()
 {
 }
 
-void BF::Window::Create(const unsigned int width, const unsigned int height, const char* title, bool async)
+void PX::Window::Create(const unsigned int width, const unsigned int height, const char* title, bool async)
 {
 	PXWindowCreateA(this, width, height, title, async);
 }
 
-void BF::Window::Destroy()
+void PX::Window::Destroy()
 {
 	PXWindowDestruct(this);
 }
 
-void BF::Window::IconCorner()
+void PX::Window::IconCorner()
 {
 	//PXWindowIconCorner();
 }
 
-void BF::Window::IconTaskBar()
+void PX::Window::IconTaskBar()
 {
 }
 
-void BF::Window::Size(unsigned int& x, unsigned int& y, unsigned int& width, unsigned int& height)
+void PX::Window::Size(unsigned int& x, unsigned int& y, unsigned int& width, unsigned int& height)
 {
 	PXWindowSize(this, &x, &y, &width, &height);
 }
 
-void BF::Window::SizeChange(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
+void PX::Window::SizeChange(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
 {
 }
 
-void BF::Window::Position(unsigned int& x, unsigned int& y)
+void PX::Window::Position(unsigned int& x, unsigned int& y)
 {
 }
 
-void BF::Window::PositionChange(const unsigned int x, const unsigned int y)
+void PX::Window::PositionChange(const unsigned int x, const unsigned int y)
 {
 }
 
-void BF::Window::PositonCenterScreen()
+void PX::Window::PositonCenterScreen()
 {
 }
 
-void BF::Window::Cursor()
+void PX::Window::Cursor()
 {
 }
 
-void BF::Window::CursorTexture()
+void PX::Window::CursorTexture()
 {
 }
 
-void BF::Window::CursorCaptureMode(const PXWindowCursorMode cursorMode)
+void PX::Window::CursorCaptureMode(const PXWindowCursorMode cursorMode)
 {
 }
 
-int BF::Window::FrameBufferInitialize()
+int PX::Window::FrameBufferInitialize()
 {
 	return 0;
 }
 
-bool BF::Window::FrameBufferSwap()
+bool PX::Window::FrameBufferSwap()
 {
 	return false;
 }
 
-bool BF::Window::FrameBufferContextRegister()
+bool PX::Window::FrameBufferContextRegister()
 {
 	return false;
 }
 
-bool BF::Window::FrameBufferContextRelease()
+bool PX::Window::FrameBufferContextRelease()
 {
 	return false;
 }
 
-bool BF::Window::Interactable()
+bool PX::Window::Interactable()
 {
 	return false;
 }

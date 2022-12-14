@@ -3,7 +3,7 @@
 // wingdi.h
 #include <stdio.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Memory/PXMemory.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
@@ -1460,7 +1460,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
         if (!successful)
         {
-            const ActionResult actionResult = GetCurrentError();
+            const PXActionResult actionResult = GetCurrentError();
 
             // return actionResult;
         }
@@ -2709,7 +2709,8 @@ char BF::OpenGL::UseShaderProgram(int shaderProgramID)
 
 void BF::OpenGL::VertexArrayBind(int vertexArrayID)
 {
-    assert(vertexArrayID != -1);
+    
+    (vertexArrayID != -1);
 
     glBindVertexArray(vertexArrayID);
 }

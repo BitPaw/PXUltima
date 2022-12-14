@@ -120,7 +120,7 @@ void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned 
     );
 }
 
-ActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXSize errorCounter = 0;
     PXDataStream tokenSteam;   
@@ -413,15 +413,15 @@ ActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const
             FilePathSwapFileNameW(currentWorkPath, currentMTLFileW, currentMTLFileW);
 
             {
-                const ActionResult materialFileLoadResult = PXDataStreamMapToMemoryW(&materialFileStream, currentMTLFileW, 0, MemoryReadOnly);
-                const PXBool sucessful = ActionSuccessful == materialFileLoadResult;
+                const PXActionResult materialFileLoadResult = PXDataStreamMapToMemoryW(&materialFileStream, currentMTLFileW, 0, MemoryReadOnly);
+                const PXBool sucessful = PXActionSuccessful == materialFileLoadResult;
 
                 if (!sucessful)
                 {
                     continue;
                 }
 
-                const ActionResult materialFileCompileResult = MTLFileCompile(&materialFileStream, outputStream);
+                const PXActionResult materialFileCompileResult = MTLFileCompile(&materialFileStream, outputStream);
 
                 PXDataStreamDestruct(&materialFileStream);
             }
@@ -458,13 +458,13 @@ ActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const
 
     if (errorCounter)
     {
-        return ActionCompilingError;
+        return PXActionCompilingError;
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const model)
+PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const model)
 {
     ModelConstruct(model);
 
@@ -814,5 +814,5 @@ ActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const mod
         }
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

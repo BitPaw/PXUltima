@@ -16,7 +16,7 @@
 // V <=> B
 // GHT <=> CHT
 
-ActionResult PXTranslatorEnglishToGerman(PXDataStream* const inputStreamEnglish, PXDataStream* const outputStreamGerman)
+PXActionResult PXTranslatorEnglishToGerman(PXDataStream* const inputStreamEnglish, PXDataStream* const outputStreamGerman)
 {
 	while (!PXDataStreamIsAtEnd(inputStreamEnglish))
 	{
@@ -28,10 +28,10 @@ ActionResult PXTranslatorEnglishToGerman(PXDataStream* const inputStreamEnglish,
 		TextCopyA(text, textSize, buffer, 1024u);		
 	}
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
-ActionResult PXTranslatorGermanToEnglish(PXDataStream* const inputStreamGerman, PXDataStream* const outputStreamEnglish)
+PXActionResult PXTranslatorGermanToEnglish(PXDataStream* const inputStreamGerman, PXDataStream* const outputStreamEnglish)
 {
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }

@@ -3,7 +3,7 @@
 
 #include <Format/Type.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -15,7 +15,7 @@ extern "C"
 	}
 	VRML;
 
-	PXPublic ActionResult VRMLParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult VRMLParse(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }

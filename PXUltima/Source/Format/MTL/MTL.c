@@ -63,7 +63,7 @@ MTLLineType MTLPeekLine(const char* const line, const PXSize lineSize)
 	}
 }
 
-ActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
 	PXDataStream tokenSteam;
 	PXDataStream headerStream;
@@ -245,7 +245,7 @@ ActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* const
 
 	//outputStream->DataCursor = startoffset + tokenSteam.DataCursor; // Only save the actuan size
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
 PXSize MTLFetchAmount(const void* const data, const PXSize dataSize)
@@ -389,7 +389,7 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 	return PXYes;
 }
 
-ActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialList* const pxMaterialList)
+PXActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialList* const pxMaterialList)
 {
 	/*
 	PXDataStream
@@ -422,7 +422,7 @@ ActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialList*
 
 
 /*
-ActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
 	PXDataStream dataStream;
 
@@ -599,7 +599,7 @@ ActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSize*
 	}
 	while(PXDataStreamSkipLine(&dataStream));
 
-	return ActionSuccessful;
+	return PXActionSuccessful;
 }
 
 

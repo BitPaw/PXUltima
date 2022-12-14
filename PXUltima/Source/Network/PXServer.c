@@ -17,13 +17,13 @@ void PXServerDestruct(PXServer* const server)
 
 }
 
-ActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode)
+PXActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode)
 {
     PXSize adressInfoListSize = 0;
 
     // Setup adress info
     {
-        const ActionResult adressResult = PXSocketSetupAdress
+        const PXActionResult adressResult = PXSocketSetupAdress
         (
             server->ServerSocketList,
             -1,
@@ -34,7 +34,7 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
             PXSocketTypeStream,
             protocolMode
         );
-        const unsigned char adressSetupSucessful = ActionSuccessful == adressResult;
+        const unsigned char adressSetupSucessful = PXActionSuccessful == adressResult;
 
         if(!adressSetupSucessful)
         {
@@ -57,8 +57,8 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
 
         // Create socket
         {
-            const ActionResult socketCreateResult = PXSocketCreate(&pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
-            const unsigned char sucessful = ActionSuccessful == socketCreateResult;
+            const PXActionResult socketCreateResult = PXSocketCreate(&pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
+            const unsigned char sucessful = PXActionSuccessful == socketCreateResult;
 
             if(!sucessful)
             {
@@ -68,8 +68,8 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
 
         // Set Socket Options
         {
-            const ActionResult actionResult = PXSocketOptionsSet(&pxSocket);
-            const unsigned char sucessful = ActionSuccessful == actionResult;
+            const PXActionResult actionResult = PXSocketOptionsSet(&pxSocket);
+            const unsigned char sucessful = PXActionSuccessful == actionResult;
 
             if(!sucessful)
             {
@@ -79,8 +79,8 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
 
         // Bind Socket
         {
-            const ActionResult actionResult = PXSocketBind(&pxSocket);
-            const unsigned char sucessful = ActionSuccessful == actionResult;
+            const PXActionResult actionResult = PXSocketBind(&pxSocket);
+            const unsigned char sucessful = PXActionSuccessful == actionResult;
 
             if(!sucessful)
             {
@@ -90,8 +90,8 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
 
         // Listen
         {
-            const ActionResult actionResult = PXSocketListen(&pxSocket);
-            const unsigned char sucessful = ActionSuccessful == actionResult;
+            const PXActionResult actionResult = PXSocketListen(&pxSocket);
+            const unsigned char sucessful = PXActionSuccessful == actionResult;
 
             if(!sucessful)
             {
@@ -101,20 +101,20 @@ ActionResult PXServerStart(PXServer* const server, const unsigned short port, co
 
         InvokeEvent(pxSocket->ConnectionListeningCallback, pxSocket);
 
-        const ActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, pxSocket);
+        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, pxSocket);
     }
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }
 
-ActionResult PXServerStop(PXServer* const server)
+PXActionResult PXServerStop(PXServer* const server)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
-ActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID)
+PXActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID)
 {
-	return ActionInvalid;
+	return PXActionInvalid;
 }
 
 PXSocket* PXServerGetPXClientViaID(PXServer* const server, const PXSocketID socketID)
@@ -153,17 +153,17 @@ void PXServerRegisterPXClient(PXServer* const server, PXClient* const client)
     //indexedPXClient->CommunicationThread = ThreadRun(PXClient::CommunicationFunctionAsync, indexedPXClient);
 }
 
-ActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const PXSize dataSize)
+PXActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const PXSize dataSize)
 {
     for(PXSize i = 0; i < server->PXClientSocketListSize; ++i)
     {
         PXSocket* serverSocket = &server->PXClientSocketList[i];
         PXSize writtenBytes = 0;
-        const ActionResult actionResult = PXSocketSend(serverSocket, data, dataSize, &writtenBytes);
+        const PXActionResult actionResult = PXSocketSend(serverSocket, data, dataSize, &writtenBytes);
     }
 }
 
-ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize)
+PXActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize)
 {
     PXSocket* clientSocket = PXServerGetPXClientViaID(server, clientID);
 
@@ -173,7 +173,7 @@ ActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID cl
     }
 
     PXSize writtenBytes = 0;
-    const ActionResult actionResult = PXSocketSend(clientSocket, data, dataSize, &writtenBytes);
+    const PXActionResult actionResult = PXSocketSend(clientSocket, data, dataSize, &writtenBytes);
 
     return actionResult;
 }
@@ -213,8 +213,8 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
 
         // Set Events
 
-        const ActionResult actionResult = PXSocketAccept(serverSocket, &clientSocket);
-        const unsigned char successful = ActionSuccessful == actionResult;
+        const PXActionResult actionResult = PXSocketAccept(serverSocket, &clientSocket);
+        const unsigned char successful = PXActionSuccessful == actionResult;
 
 
         if(!successful)

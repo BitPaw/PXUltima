@@ -2,7 +2,7 @@
 
 #include <Text/Text.h>
 
-ActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
+PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 {
 	// Check signature (4 Bytes)
 	{
@@ -12,7 +12,7 @@ ActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 
 		if(!isValid)
 		{
-			return ActionInvalidHeaderSignature;
+			return PXActionRefusedInvalidHeaderSignature;
 		}
 	}
 
@@ -97,5 +97,5 @@ ActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 		PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
 	}
 
-    return ActionSuccessful;
+    return PXActionSuccessful;
 }

@@ -1,7 +1,7 @@
 #ifndef PXProcessINCLUDE
 #define PXProcessINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 #include <Time/PXTime.h>
 
@@ -65,7 +65,7 @@ extern "C"
 	PXPublic void PXProcessCurrent(PXProcess* const pxProcess);
 	PXPublic void PXProcessParent(PXProcess* const pxProcess);
 
-	PXPublic ActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
+	PXPublic PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 
 #ifdef __cplusplus
 }

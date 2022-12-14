@@ -2,7 +2,7 @@
 #define PXClientInclude
 
 #include <Format/Type.h>
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Network/PXSocket.h>
 
 #ifdef __cplusplus
@@ -23,7 +23,7 @@ extern "C"
 	}
 	PXClient;
 
-	PXPublic ActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
+	PXPublic PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
 
 	PXPublic PXThreadResult CommunicationFunctionAsync(void* ioSocket);
 

@@ -1,7 +1,7 @@
 #ifndef PXWebServerINCLUDE
 #define PXWebServerINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 
 #ifdef __cplusplus
@@ -15,8 +15,8 @@ extern "C"
 	}
 	PXWebServer;
 
-	PXPublic ActionResult PXWebServerStart(PXWebServer* const pxWebServer);
-	PXPublic ActionResult PXWebServerStop(PXWebServer* const pxWebServer);
+	PXPublic PXActionResult PXWebServerStart(PXWebServer* const pxWebServer);
+	PXPublic PXActionResult PXWebServerStop(PXWebServer* const pxWebServer);
 
 
 #ifdef __cplusplus

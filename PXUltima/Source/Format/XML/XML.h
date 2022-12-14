@@ -1,7 +1,7 @@
 #ifndef XMLINCLUDE
 #define XMLINCLUDE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Type.h>
 #include <File/PXDataStream.h>
 
@@ -30,7 +30,7 @@ extern "C"
 
 	PXPublic XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize);
 
-	PXPublic ActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	PXPublic PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
 
 #ifdef __cplusplus
 }
