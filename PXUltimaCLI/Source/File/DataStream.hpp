@@ -1,6 +1,7 @@
 #pragma once
 
 #include <File/PXDataStream.h>
+#include "../Error/ActionResult.hpp"
 
 namespace PX
 {
@@ -40,13 +41,13 @@ namespace PX
 			}
 		}
 
-		int OpenFromPathReadOnly(System::String^ filePath);
-		ActionResult OpenFromPath(System::String^ filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
-		ActionResult Close();
+		PX::ActionResult  OpenFromPathReadOnly(System::String^ filePath);
+		PX::ActionResult OpenFromPath(System::String^ filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
+		PX::ActionResult Close();
 
-		int MapToMemoryReadOnly(System::String^ filePath);
-		ActionResult MapToMemory(System::String^ filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-		ActionResult MapToMemory(const PXSize size, const MemoryProtectionMode protectionMode);
-		ActionResult UnmapFromMemory();
+		PX::ActionResult  MapToMemoryReadOnly(System::String^ filePath);
+		PX::ActionResult MapToMemory(System::String^ filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
+		PX::ActionResult MapToMemory(const PXSize size, const MemoryProtectionMode protectionMode);
+		PX::ActionResult UnmapFromMemory();
 	};
 }

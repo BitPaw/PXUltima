@@ -14,7 +14,7 @@ namespace PXTest
 
             Console.WriteLine("Test");
             DataStream dataStream = new DataStream();
-            int x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
+            ActionResult x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
 
 
 
