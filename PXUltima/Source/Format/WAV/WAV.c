@@ -41,23 +41,17 @@ PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSiz
 
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
-		const unsigned char* fmtHeaderStart = PXDataStreamCursorPosition(&dataStream);
-		const PXSize maximalSize = PXDataStreamRemainingSize(&dataStream);
-		PXSize parsedBytes = 0;
-	
-		const PXActionResult actionResult = FMTParse(&wav->Format, fmtHeaderStart, maximalSize, &parsedBytes, endian);
-		const unsigned char sucessful = actionResult == PXActionSuccessful;
+		const PXActionResult actionResult = FMTParse(&wav->Format, &dataStream, endian);
+		const PXBool sucessful = PXActionSuccessful == actionResult;
 
 		if(!sucessful)
 		{
 			return PXActionFailedFormatNotAsExpected;
 		}
-
-		PXDataStreamCursorAdvance(&dataStream, parsedBytes);
 	}
 	//---------------------------------------
 
-	//---------------------------------------	
+	//---------------------------------------
 	{
 		const unsigned int value = WAVListMarker;
 		const unsigned char isRIFFListChunk = PXDataStreamReadAndCompare(&dataStream, &value, sizeof(unsigned int));
@@ -78,7 +72,7 @@ PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSiz
 		}
 	}
 
-	PXDataStreamReadI32U(&dataStream, wav->SoundDataSize, endian);
+	PXDataStreamReadI32UE(&dataStream, wav->SoundDataSize, endian);
 
 	wav->SoundData = MemoryAllocate(sizeof(unsigned char) * wav->SoundDataSize);
 

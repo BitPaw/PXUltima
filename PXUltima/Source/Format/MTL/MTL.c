@@ -228,8 +228,8 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 		for (PXSize i = 0; i < materialAmount-1; ++i)
 		{
-			PXDataStreamReadI32U(&headerStream, &sizeA, EndianLittle);
-			PXDataStreamReadI32U(&headerStream, &sizeB, EndianLittle);
+			PXDataStreamReadI32U(&headerStream, &sizeA);
+			PXDataStreamReadI32U(&headerStream, &sizeB);
 
 			headerStream.DataCursor -= sizeof(unsigned int) * 2u;
 
@@ -238,7 +238,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 		const PXSize positionA = headerStream.DataCursor;
 
-		PXDataStreamReadI32U(&headerStream, &sizeA, EndianLittle);
+		PXDataStreamReadI32U(&headerStream, &sizeA);
 
         PXDataStreamWriteAtIU(&headerStream, materialSizeDelta- sizeA, EndianLittle, positionA);
 	}
@@ -261,7 +261,7 @@ PXSize MTLFetchAmount(const void* const data, const PXSize dataSize)
 
 	unsigned int materialListSize = 0;
 
-	PXDataStreamReadI32U(&mtlStream, &materialListSize, EndianLittle);
+	PXDataStreamReadI32U(&mtlStream, &materialListSize);
 
 	return materialListSize;
 }
@@ -288,7 +288,7 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 		const PXBool isTarget = materialID == i;
 		unsigned int materialDataSize = 0;
 
-		PXDataStreamReadI32U(&mtlHeaderStream, &materialDataSize, EndianLittle);
+		PXDataStreamReadI32U(&mtlHeaderStream, &materialDataSize);
 
 		if (isTarget)
 		{

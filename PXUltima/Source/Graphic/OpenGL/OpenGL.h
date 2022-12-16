@@ -7,6 +7,7 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <GL/glx.h>
 
 typedef XID PXWindowID;// XID is PXWindow
 typedef GLXContext OpenGLConextID;
@@ -199,21 +200,21 @@ extern "C"
 	{
 		OpenGLTextureParameterModoInvalid,
 		OpenGLDEPTH_STENCIL_TextureMODE,
-		OpenGLTextureBASE_LEVEL, 
-		OpenGLTextureCOMPARE_FUNC, 
+		OpenGLTextureBASE_LEVEL,
+		OpenGLTextureCOMPARE_FUNC,
 		OpenGLTextureCOMPARE_MODE,
 		OpenGLTextureLOD_BIAS,
 		OpenGLTextureMIN_FILTER,
 		OpenGLTextureMAG_FILTER,
 		OpenGLTextureMIN_LOD,
 		OpenGLTextureMAX_LOD,
-		OpenGLTextureMAX_LEVEL, 
+		OpenGLTextureMAX_LEVEL,
 		OpenGLTextureSWIZZLE_R,
-		OpenGLTextureSWIZZLE_G, 
+		OpenGLTextureSWIZZLE_G,
 		OpenGLTextureSWIZZLE_B,
 		OpenGLTextureSWIZZLE_A,
-		OpenGLTextureWRAP_S, 
-		OpenGLTextureWRAP_T, 
+		OpenGLTextureWRAP_S,
+		OpenGLTextureWRAP_T,
 		OpenGLTextureWRAP_R,
 		OpenGLTextureBORDER_COLOR,
 		OpenGLTextureSWIZZLE_RGBA,

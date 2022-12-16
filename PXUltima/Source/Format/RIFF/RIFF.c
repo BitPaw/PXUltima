@@ -22,7 +22,7 @@ PXActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PX
 {
 	PXDataStream dataStream;
 
-	MemorySet(riff, sizeof(RIFF), 0);
+	MemoryClear(riff, sizeof(RIFF));
 	*dataRead = 0;
 
 	PXDataStreamConstruct(&dataStream);
@@ -31,9 +31,9 @@ PXActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PX
 	ClusterInt chunkID;
 	ClusterInt formatID;
 
-	PXDataStreamReadI32U(&dataStream, chunkID.Data, 4u);
-	PXDataStreamReadI32U(&dataStream, &riff->ChunkSize, EndianLittle);
-	PXDataStreamReadI32U(&dataStream, formatID.Data, 4u);
+	PXDataStreamReadB(&dataStream, chunkID.Data, 4u);
+	PXDataStreamReadI32UE(&dataStream, &riff->ChunkSize, EndianLittle);
+	PXDataStreamReadB(&dataStream, formatID.Data, 4u);
 
 	switch(chunkID.Value) // Detect Endiantype
 	{

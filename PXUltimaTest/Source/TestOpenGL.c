@@ -100,13 +100,13 @@ void TestOpenGLRenderToTexture()
 
 	CreateRenderableTexture(&openGLContext, width, height);
 
-	//------------------------------	
+	//------------------------------
 
 	OpenGLDrawBegin(&openGLContext, OpenGLRenderPolygon);
 	//glPixelZoom(1, -1);
 	//glPerspective(-45.0, width / height, 1.0, 100.0);
 
-	
+
 
 	OpenGLDrawColorRGBF(&openGLContext, 0, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0, 0.75, 0);
 	OpenGLDrawColorRGBF(&openGLContext, 1, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0.8, 0.8, 0);
@@ -146,7 +146,7 @@ void RenderRectangle(float postionX, float postionY, float textureScaleX, float 
 void DrawStructure(OpenGLContext* const openGLContext,float* modelMatrix,  float* vertexList, float* texturePositionList, float* colorList, unsigned int textureID)
 {
 	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, textureID);
-	
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(modelMatrix);
 	//glPushMatrix();
@@ -191,10 +191,10 @@ void TestOpenGLTextDraw()
 	OpenGLContext openGLContext;
 	CreateRenderableTexture(&openGLContext, width, height);
 
-	//------------------------------	
+	//------------------------------
 
 
-	
+
 
 	//---<Draw text into texture>----------------------------------------------
 	{
@@ -301,7 +301,7 @@ void TestOpenGLTextDraw()
 #endif
 
 
-	
+
 	/*
 	OpenGLDrawBegin(&openGLContext, OpenGLRenderLineLoop);
 	OpenGLDrawVertexXYZF(&openGLContext, -.1, .1, 0);
@@ -425,7 +425,7 @@ void TestOpenGLVBO()
 
 	ShaderProgram shaderProgram;
 	shaderProgram.ID = -1;
-	
+
 	Shader vertexShader;
 	Shader fragmentShader;
 
@@ -483,7 +483,7 @@ void TestOpenGLVBO()
 	OpenGLBufferGenerate(glContext, 1, &EBO);
 
 	//Make the VAO the current Vertex Array Object by binding it.
-	// 
+	//
 #if useVAO
 	OpenGLVertexArrayBind(glContext, VAO);
 #endif
@@ -493,7 +493,7 @@ void TestOpenGLVBO()
 
 	OpenGLBufferBind(glContext, OpenGLBufferElementArray, EBO);
 	OpenGLBufferData(glContext, OpenGLBufferElementArray, sizeof(indices), indices, OpenGLStoreStaticDraw);
-	OpenGLBufferUnbind(glContext, OpenGLBufferElementArray, 0);
+	OpenGLBufferUnbind(glContext, OpenGLBufferElementArray);
 
 	OpenGLBufferBind(glContext, OpenGLBufferArray, VBO);
 	OpenGLBufferData(glContext, OpenGLBufferArray, sizeof(vertices), vertices, OpenGLStoreStaticDraw);
@@ -501,13 +501,13 @@ void TestOpenGLVBO()
 	OpenGLVertexArrayAttributeDefine(glContext, 0, 3, OpenGLTypeFloat, GL_FALSE, 3 * sizeof(float), (void*)0);
 	OpenGLVertexArrayEnable(glContext, 0);
 
-	OpenGLBufferUnbind(glContext, OpenGLBufferArray, 0);
+	OpenGLBufferUnbind(glContext, OpenGLBufferArray);
 
 #if useVAO
 	OpenGLVertexArrayUnbind(glContext);
 #endif
 
-	
+
 
 
 
@@ -533,7 +533,7 @@ void TestOpenGLVBO()
 	{
 		glClearColor(0.20f, 0.20f, 0.20f, 1.0f); //The 3 first values signify RGB numbers and the last digit stand for the Alpha
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		//glDrawBuffer(GL_POINTS);
 		//glDrawArrays(GL_POINTS, 0, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);

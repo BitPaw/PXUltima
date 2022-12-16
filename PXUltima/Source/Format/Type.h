@@ -7,11 +7,11 @@
 
 //-- Reivented public / private. The keywords are reserved, so we need other names.
 #if OSUnix
-#define PXPrivate static 
-#define PXPublic extern 
+#define PXPrivate static
+#define PXPublic extern
 #elif OSWindows
 #define PXDLLExport __declspec(dllexport)
-#define PXPrivate static 
+#define PXPrivate static
 #define PXPublic extern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
 #endif
 //-----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ extern "C"
 	typedef unsigned char PXBool;
 	typedef unsigned char* PXAdress;
 
-	// Integer 8-Bit 
+	// Integer 8-Bit
 	typedef char PXInt8S;
 	typedef unsigned char PXInt8U;
 
@@ -89,8 +89,13 @@ extern "C"
 	typedef unsigned int PXInt32U;
 
 	// Integer 64-Bit, QWORD
+#if OSUnix
+    typedef long long PXInt64S;
+	typedef unsigned long long PXInt64U;
+#elif OSWindows
 	typedef __int64 PXInt64S;
 	typedef unsigned __int64 PXInt64U;
+#endif // OSUnix
 
 #if OS32Bit
 	typedef PXInt32U PXSize;

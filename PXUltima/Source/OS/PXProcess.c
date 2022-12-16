@@ -12,7 +12,7 @@
 
 void PXProcessCurrent(PXProcess* const pxProcess)
 {
-#if OSUnix	
+#if OSUnix
 	pxProcess->Context = 0;
 	pxProcess->ID = getpid();
 #elif OSWindows
@@ -36,7 +36,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 {
 	MemoryClear(pxProcessMemoryInfo, sizeof(PXProcessMemoryInfo));
 
-#if OSUnix
+#if OSUnixx
 	const int who = RUSAGE_SELF;
 	rusage rusageData;
 	const int returnCode = getrusage(who, &rusageData);
@@ -64,7 +64,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 	pxProcessMemoryInfo->ContextSwapInvoluntary = rusageData.ru_nivcsw;
 
 #elif OSWindows
-	
+
 	const HANDLE currentProcess = GetCurrentProcess();
 
 	// Process memory info
@@ -111,7 +111,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 			&timeStampList[2], // kernelTime
 			&timeStampList[3] // userTime
 		);
-		
+
 		PXActionOnErrorFetchAndExit(!success);
 
 		// Convert
@@ -119,7 +119,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 		{
 			SYSTEMTIME systemTime;
 
-			const BOOL convert = FileTimeToSystemTime(&timeStampList[i], &systemList[i]); // expressed as the amount of time that has elapsed since midnight on January 1, 1601 at Greenwich, England. 
+			const BOOL convert = FileTimeToSystemTime(&timeStampList[i], &systemList[i]); // expressed as the amount of time that has elapsed since midnight on January 1, 1601 at Greenwich, England.
 		}
 
 
@@ -160,7 +160,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 			pxTime->Minute = systemTime->wMinute;
 			pxTime->Second = systemTime->wSecond;
 			pxTime->Milliseconds = systemTime->wMilliseconds;
-		}	
+		}
 	}
 
 #endif

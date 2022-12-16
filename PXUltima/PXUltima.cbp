@@ -7,9 +7,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Windows 32 Bit - Debug">
-				<Option output="../__Export__/x86 Debug - Windows/PXUltima_DEBUG.lib" prefix_auto="0" extension_auto="0" />
+				<Option output="../[Export]/x86 Debug - Windows/libPXUltima_DEBUG.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="../__Temp__/x86 Debug - Windows/PXUltima/" />
+				<Option object_output="../[Temp]/x86 Debug - Windows/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -37,9 +37,9 @@
 				</Environment>
 			</Target>
 			<Target title="Windows 32 Bit - Release">
-				<Option output="../__Export__/x86 Debug - Windows/PXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />
+				<Option output="../[Export]/x86 Debug - Windows/PXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="../__Temp__/x86 Release - Windows/PXUltima/" />
+				<Option object_output="../[Temp]/x86 Release - Windows/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -59,9 +59,9 @@
 				</Linker>
 			</Target>
 			<Target title="Linux 64 Bit - Debug">
-				<Option output="../__Export__/x64 Debug - Linux/PXUltima_DEBUG.lib" prefix_auto="0" extension_auto="0" />
+				<Option output="../[Export]/x64 Debug - Linux/libPXUltima_DEBUG.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="../__Temp__/x64 Debug - Linux/PXUltima/" />
+				<Option object_output="../[Temp]/x64 Debug - Linux/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -71,11 +71,11 @@
 					<Add option="-m64" />
 					<Add option="-Og" />
 					<Add option="-g" />
+					<Add option="-fPIC" />
 					<Add directory="../PXUltima/Source" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg" />
-					<Add option="-static-libgcc" />
 					<Add option="-m64" />
 				</Linker>
 				<Environment>
@@ -83,9 +83,9 @@
 				</Environment>
 			</Target>
 			<Target title="Linux 64 Bit - Release">
-				<Option output="../__Export__/x64 Release - Linux/PXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />
+				<Option output="../[Export]/x64 Release - Linux/libPXUltima_RELEASE.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="../__Temp__/x64 Release - Linux/PXUltima/" />
+				<Option object_output="../[Temp]/x64 Release - Linux/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -101,6 +101,10 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Unit filename="Source/AI/KalmanFilter/PXKalmanFilter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/AI/KalmanFilter/PXKalmanFilter.h" />
 		<Unit filename="Source/Async/Await.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -113,10 +117,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Async/PXThread.h" />
+		<Unit filename="Source/Audio/PXAudio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Audio/PXAudio.h" />
 		<Unit filename="Source/Compiler/PXCompiler.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Compiler/PXCompiler.h" />
+		<Unit filename="Source/Compiler/PXCompilerSettings.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Compiler/PXCompilerSettings.h" />
 		<Unit filename="Source/Container/BinaryTree/BinaryTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -178,10 +190,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Event/Event.h" />
-		<Unit filename="Source/File/PXDataStream.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/File/PXDataStream.h" />
 		<Unit filename="Source/File/Endian.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -190,6 +198,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/File/File.h" />
+		<Unit filename="Source/File/PXDataStream.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/File/PXDataStream.h" />
 		<Unit filename="Source/Format/3DS/A3DS.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -346,10 +358,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/OGG/OGG.h" />
-		<Unit filename="Source/Format/PDF/PDF.c">
+		<Unit filename="Source/Format/PDF/PXPDF.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/PDF/PDF.h" />
+		<Unit filename="Source/Format/PDF/PXPDF.h" />
 		<Unit filename="Source/Format/PHP/PHP.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -362,6 +374,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/PNG/PNG.h" />
+		<Unit filename="Source/Format/PXSound.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/PXSound.h" />
 		<Unit filename="Source/Format/QOI/QOI.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -390,10 +406,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/SVG/SVG.h" />
-		<Unit filename="Source/Format/Sound.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Format/Sound.h" />
 		<Unit filename="Source/Format/TGA/TGA.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -474,10 +486,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Graphic/Vulcan/Vulcan.h" />
-		<Unit filename="Source/Library/Library.c">
+		<Unit filename="Source/Language/PXTranslator.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Library/Library.h" />
+		<Unit filename="Source/Language/PXTranslator.h" />
+		<Unit filename="Source/Library/PXLibrary.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Library/PXLibrary.h" />
 		<Unit filename="Source/Math/PXDiagram.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -530,6 +546,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Network/SBP/SBPServer.h" />
+		<Unit filename="Source/Network/Web/PXWebServer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/Web/PXWebServer.h" />
 		<Unit filename="Source/OS/Bash.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -546,6 +566,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/OS/Monitor.h" />
+		<Unit filename="Source/OS/OSSignal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/OSSignal.h" />
 		<Unit filename="Source/OS/OSUI.c">
 			<Option compilerVar="CC" />
 		</Unit>

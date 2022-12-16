@@ -168,7 +168,7 @@ PXActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const P
 			break;
 	}
 
-	
+
 	(readMode != 0);
 
 	// Use this somewhere here
@@ -177,7 +177,7 @@ PXActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const P
 
 	dataStream->FileHandle = fopen(filePath, readMode);
 
-	return dataStream->FileHandle ? PXActionSuccessful : ResultFileOpenFailure;
+	return dataStream->FileHandle ? PXActionSuccessful : PXActionFailedFileOpen;
 
 
 #elif OSWindows
@@ -226,7 +226,7 @@ PXActionResult PXDataStreamOpenFromPathU(PXDataStream* const dataStream, const P
 	}
 
 	// UTF
-	HANDLE const fileHandle = CreateFileA 
+	HANDLE const fileHandle = CreateFileA
 	(
 		filePath,
 		dwDesiredAccess,
@@ -328,11 +328,11 @@ PXActionResult PXDataStreamClose(PXDataStream* const dataStream)
 
 	switch (closeResult)
 	{
-	case 0:
-		return PXActionSuccessful;
+        case 0:
+            return PXActionSuccessful;
 
-	default:
-		return ResultFileCloseFailure;
+        default:
+            return PXActionFailedFileClose;
 	}
 #elif OSWindows
 	if (dataStream->FileHandleCStyle)
@@ -348,7 +348,7 @@ PXActionResult PXDataStreamClose(PXDataStream* const dataStream)
 		const PXBool successful = CloseHandle(dataStream->FileHandle);
 
 		if (!successful)
-		{		
+		{
 			return PXActionFailedFileClose;
 		}
 
@@ -460,14 +460,9 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 		}
 
 		const int fileDescriptor = open64(filePath, openFlag);
-		const unsigned char sucessfulOpen = fileDescriptor != -1;
+		const PXBool sucessfulOpen = fileDescriptor != -1;
 
-		if (!sucessfulOpen)
-		{
-			const PXActionResult actionResult = GetCurrentError(); // ResultFileOpenFailure
-
-			return actionResult;
-		}
+		PXActionOnErrorFetchAndExit(!sucessfulOpen)
 
 		dataStream->IDMapping = fileDescriptor;
 	}
@@ -475,11 +470,11 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 	// Get file length
 	{
 		const PXSize fileLength = lseek64(dataStream->IDMapping, 0, SEEK_END);
-		const unsigned char sucessful = fileLength > 0;
+		const PXBool sucessful = fileLength > 0;
 
 		if (!sucessful)
 		{
-			return ResultFileReadFailure;
+			return PXActionFailedFileRead;
 		}
 
 		dataStream->DataSize = fileLength;
@@ -500,11 +495,11 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 			dataStream->IDMapping, // fileDescriptor
 			offset
 		);
-		const unsigned char successfulMapping = mappedData != 0;
+		const PXBool successfulMapping = mappedData != 0;
 
 		if (!successfulMapping)
 		{
-			return ResultFileMemoryMappingFailed;
+			return PXActionFailedFileMapping;
 		}
 
 		dataStream->Data = mappedData;
@@ -732,16 +727,11 @@ PXActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 
 #if OSUnix
 	const int result = munmap(dataStream->Data, dataStream->DataSize);
-	const unsigned char sucessful = result != -1;
+	const PXBool sucessful = result != -1;
 
-	if (!sucessful)
-	{
-		const PXActionResult errorCode = GetCurrentError(); // Not quite well
+    PXActionOnErrorFetchAndExit(!sucessful)
 
-		return ResultFileMemoryMappingFailed;
-	}
-
-	dataStream->Data = 0;
+	dataStream->Data = PXNull;
 	dataStream->DataSize = 0;
 
 	return PXActionSuccessful;
@@ -1252,7 +1242,7 @@ PXSize PXDataStreamReadMultible(PXDataStream* const dataStream, PXDataStreamElem
 	for (size_t i = 0; i < pxDataStreamElementListSize; ++i)
 	{
 		PXDataStreamElementType* const dataStreamElement = &pxDataStreamElementList[i];
-		
+
 		switch (dataStreamElement->Type)
 		{
 			case PXDataTypeInt8S:

@@ -248,7 +248,7 @@ FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, cons
 		case 1u:
 		{
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "O", 1u))  return FileFormatLinuxExecutableAndLinkable;
-			break; 
+			break;
 		}
 		case 2u:
 		{
@@ -298,9 +298,9 @@ FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, cons
 			break;
 		}
 		case 4u:
-		{			
+		{
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "FLAC", 4u))  return FileFormatFLAC;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MIDI", 4u))  return FileFormatMIDI; 
+			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MIDI", 4u))  return FileFormatMIDI;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "STEP", 4u))  return FileFormatSTEP;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TIFF", 4u))  return FileFormatTagImage;
 			if (TextCompareIgnoreCaseWA(extension, extensionSize, "JPEG", 4u))  return FileFormatJPEG;
@@ -378,7 +378,7 @@ PXActionResult FileCopyA(const char* sourceFilePath, const char* destinationFile
 
 	if(!fileOpenSuccesful)
 	{
-		return ResultFileOpenFailure;
+		return PXActionFailedFileOpen;
 	}
 
 	while(!feof(fileSource))
@@ -531,9 +531,9 @@ PXActionResult DirectoryCreateW(const wchar_t* directoryName)
 
 		starPos += offset;
 		++successful;
-	} 
+	}
 	while (1);
-	   	
+
 	return PXActionSuccessful;
 }
 

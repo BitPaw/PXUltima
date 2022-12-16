@@ -51,7 +51,7 @@ PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize 
 
 	unsigned int flags = 0;
 
-	PXDataStreamReadI32U(&dataStream, &flags, EndianBig);
+	PXDataStreamReadI32UE(&dataStream, &flags, EndianBig);
 
 	const unsigned char hasNumberOfFrames = flags & 0b00000001;
 	const unsigned char hasSizeInBytes = (flags & 0b00000010) >> 1;
@@ -62,15 +62,15 @@ PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize 
 	// It represents the total number of frames in the Audio file.
 	if(hasNumberOfFrames)
 	{
-		PXDataStreamReadI32U(&dataStream, &xingInfo->NumberOfFrames, EndianBig);
+		PXDataStreamReadI32UE(&dataStream, &xingInfo->NumberOfFrames, EndianBig);
 	}
 
-	// (0x0002) is set, then read one 32 bit integer in Big Endian. 
-	// It represents the total number of bytes of MPEG Audio in the file. 
+	// (0x0002) is set, then read one 32 bit integer in Big Endian.
+	// It represents the total number of bytes of MPEG Audio in the file.
 	// This does not include the ID3 tag, however, it includes this very tag.
 	if(hasSizeInBytes)
 	{
-		PXDataStreamReadI32U(&dataStream, &xingInfo->SizeInBytes, EndianBig);
+		PXDataStreamReadI32UE(&dataStream, &xingInfo->SizeInBytes, EndianBig);
 	}
 
 	if(hasTOCData)
@@ -80,7 +80,7 @@ PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize 
 
 	if(hasVBRScale)
 	{
-		PXDataStreamReadI32U(&dataStream, &xingInfo->VBRScale, EndianBig);
+		PXDataStreamReadI32UE(&dataStream, &xingInfo->VBRScale, EndianBig);
 	}
 
 	*dataRead = dataStream.DataCursor;

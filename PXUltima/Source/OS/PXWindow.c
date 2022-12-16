@@ -1770,7 +1770,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 PXThreadResult PXWindowCreateThread(void* const windowAdress)
 {
     PXWindow* const window = (PXWindow*)windowAdress;
-    const unsigned char isHidden = window->Title[0] == '\0';
+    const PXBool isHidden = window->Title[0] == '\0';
 
     if(!windowAdress)
     {
@@ -1786,7 +1786,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     // Create display
     {
         const Display* const display = XOpenDisplay(0);   // Create Window
-        const unsigned char successful = display != 0;
+        const PXBool successful = display != 0;
 
         if(!successful)
         {
@@ -1799,7 +1799,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     // Get root window
     {
         const XID windowRoot = DefaultRootWindow(window->DisplayCurrent); // Make windows root
-        const unsigned char successful = windowRoot != 0;
+        const PXBool successful = windowRoot != 0;
 
         window->WindowRoot = successful ? windowRoot : 0;
     }
@@ -1810,7 +1810,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     const XVisualInfo* const visualInfo = glXChooseVisual(window->DisplayCurrent, 0, attributeList);
 
     {
-        const unsigned char successful = visualInfo != 0;
+        const PXBool successful = visualInfo != 0;
 
         if(!successful)
         {
@@ -1889,6 +1889,8 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
         window->ID = sucessful ? PXWindowID : 0;
     }
 
+    // Giving the graphic system window context
+    window->GraphicInstance.AttachedWindow = window;
 
     // Set Title
     {
@@ -1899,14 +1901,6 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
         XMapWindow(window->DisplayCurrent, window->ID);
         XStoreName(window->DisplayCurrent, window->ID, windowTitleA);
     }
-
-    // Create OpenGL contect
-    {
-        GLXContext glContext = glXCreateContext(window->DisplayCurrent, visualInfo, NULL, GL_TRUE);
-
-        window->GraphicInstance.OpenGLInstance.OpenGLConext = glContext;
-    }
-
 
 #if 0 // Grab means literally Drag%Drop grab. This is not mouse motion
     //bool   ret    = false;

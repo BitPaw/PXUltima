@@ -81,7 +81,7 @@ void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSy
 		compilerSymbolEntry->Size,
 		idbuffer,
 		textbuffer
-	);	
+	);
 #endif
 }
 
@@ -93,9 +93,9 @@ void PXCompilerSymbolEntryExtract(PXDataStream* const dataStream, PXCompilerSymb
 	unsigned char symbolID = 0;
 
 	size += PXDataStreamReadI8U(dataStream, &symbolID);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Coloum, EndianLittle);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Line, EndianLittle);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Size, EndianLittle);
+	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Coloum);
+	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Line);
+	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Size);
 	size += PXDataStreamReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
 	compilerSymbolEntry->ID = symbolID;
@@ -163,7 +163,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			// Probe for number
 			const PXSize dotIndex = TextFindFirstA(text, textSize, '.');
 			const PXBool probablyFloat = dotIndex != (PXSize)-1;
-			PXSize writtenNumbers = 0;			
+			PXSize writtenNumbers = 0;
 
 			if (probablyFloat)
 			{
@@ -221,7 +221,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 	while (!PXDataStreamIsAtEnd(inputStream))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
-		compilerSymbolEntry.Source = (const char*)PXDataStreamCursorPosition(inputStream);	
+		compilerSymbolEntry.Source = (const char*)PXDataStreamCursorPosition(inputStream);
 
 		// Consume whitespace
 		{
@@ -241,7 +241,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 				if (compilerSettings->KeepWhiteSpace || isFirstWhiteSpaceInLine)
 				{
 					PXCompilerSymbolEntryAdd(outputStream, &compilerSymbolEntry);
-				}	
+				}
 
 				continue;
 			}
@@ -284,7 +284,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 			{
 				if (compilerSettings->TryAnalyseTypes)
 				{
-					compilerSymbolEntry.ID = PXCompilerTryAnalyseType(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);		
+					compilerSymbolEntry.ID = PXCompilerTryAnalyseType(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);
 
 					switch (compilerSymbolEntry.ID)
 					{
@@ -350,13 +350,13 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 
 PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, char* const text, const PXSize textMaxSize, PXSize* const textSize)
 {
-	PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Expect a name.    
+	PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Expect a name.
 
 	const PXBool isText = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry->ID;
 
 	if (!isText)
 	{
-		return PXNo; 
+		return PXNo;
 	}
 
 	*textSize = TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, text, textMaxSize);
@@ -411,7 +411,7 @@ PXBool PXCompilerParseFloatList(PXDataStream* const inputStream, PXCompilerSymbo
 	for (PXSize i = 0; i < valuesMaxSize; ++i)
 	{
 		const PXBool isFloat = PXCompilerParseFloatSingle(inputStream, compilerSymbolEntry, &values[*valuesSize]);
-	
+
 		if (!isFloat)
 		{
 			// we are at the line end

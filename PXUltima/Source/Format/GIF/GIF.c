@@ -48,8 +48,8 @@ PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStrea
 
     // Logical Screen Descriptor.
     {
-        PXDataStreamReadI16U(dataStream, &gif.Width, EndianLittle);
-        PXDataStreamReadI16U(dataStream, &gif.Height, EndianLittle);
+        PXDataStreamReadI16UE(dataStream, &gif.Width, EndianLittle);
+        PXDataStreamReadI16UE(dataStream, &gif.Height, EndianLittle);
 
         unsigned char packedFields = 0;
 
@@ -74,10 +74,10 @@ PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStrea
             unsigned char packedFields = 0;
 
             PXDataStreamReadI8U(dataStream, &imageDescriptor.Separator);
-            PXDataStreamReadI16U(dataStream, &imageDescriptor.LeftPosition, EndianLittle);
-            PXDataStreamReadI16U(dataStream, &imageDescriptor.TopPosition, EndianLittle);
-            PXDataStreamReadI16U(dataStream, &imageDescriptor.Width, EndianLittle);
-            PXDataStreamReadI16U(dataStream, &imageDescriptor.Height, EndianLittle);
+            PXDataStreamReadI16UE(dataStream, &imageDescriptor.LeftPosition, EndianLittle);
+            PXDataStreamReadI16UE(dataStream, &imageDescriptor.TopPosition, EndianLittle);
+            PXDataStreamReadI16UE(dataStream, &imageDescriptor.Width, EndianLittle);
+            PXDataStreamReadI16UE(dataStream, &imageDescriptor.Height, EndianLittle);
             PXDataStreamReadI8U(dataStream, &packedFields);
 
             imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);

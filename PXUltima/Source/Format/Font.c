@@ -123,10 +123,10 @@ PXActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFo
             TTFConstruct(&ttf);
 
             {
-                PXSize readBytes = 0;
-                const PXActionResult filePXActionResult = TTFParse(&ttf, data, dataSize, &readBytes);
+               // PXSize readBytes = 0;
+                //const PXActionResult filePXActionResult = TTFParse(&ttf, data, dataSize, &readBytes);
 
-                PXActionExitOnError(filePXActionResult);
+                //PXActionExitOnError(filePXActionResult);
             }
 
             TTFDestruct(&ttf);

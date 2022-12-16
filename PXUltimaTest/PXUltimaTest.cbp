@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Windows 32  -  Debug">
-				<Option output="../__Export__/x86 Debug - Linux/PXUltima_DEBUG.run" prefix_auto="0" extension_auto="0" />
-				<Option object_output="../__Temp__/x86 Debug - Windows/PXUltima/" />
+				<Option output="../[Export]/x86 Debug - Linux/PXUltima_DEBUG.run" prefix_auto="0" extension_auto="0" />
+				<Option object_output="../[Temp]/x86 Debug - Windows/PXUltima/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -27,8 +27,8 @@
 				</Linker>
 			</Target>
 			<Target title="Windows 32  -  Release">
-				<Option output="../__Export__/x86 Release - Windows/PXUltima_RELEASE.run" prefix_auto="0" extension_auto="0" />
-				<Option object_output="../__Temp__/x86 Release - Windows/PXUltima/" />
+				<Option output="../[Export]/x86 Release - Windows/PXUltima_RELEASE.run" prefix_auto="0" extension_auto="0" />
+				<Option object_output="../[Temp]/x86 Release - Windows/PXUltima/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -40,8 +40,8 @@
 				</Linker>
 			</Target>
 			<Target title="Linux 64 - Debug">
-				<Option output="../__Export__/x64 Debug - Linux/PXUltima_DEBUG.run.run" prefix_auto="0" extension_auto="0" />
-				<Option object_output="../__Temp__/x64 Debug - Linux/PXUltima/" />
+				<Option output="../[Export]/x64 Debug - Linux/PXUltima_DEBUG.run.run" prefix_auto="0" extension_auto="0" />
+				<Option object_output="../[Temp]/x64 Debug - Linux/PXUltima/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -49,7 +49,7 @@
 					<Add directory="../PXUltima/Source" />
 				</Compiler>
 				<Linker>
-					<Add library="../__Export__/x64 Debug - Linux/PXUltima_DEBUG.lib" />
+					<Add library="../[Export]/x64 Debug - Linux/libPXUltima_DEBUG.a" />
 					<Add library="GL" />
 					<Add library="X11" />
 					<Add library="pthread" />
@@ -59,8 +59,8 @@
 				</Linker>
 			</Target>
 			<Target title="Linux 64 - Release">
-				<Option output="../__Export__/x64 Release - Linux/PXUltima_RELEASE.run" prefix_auto="0" extension_auto="0" />
-				<Option object_output="../__Temp__/x64 Release - Linux/PXUltima/" />
+				<Option output="../[Export]/x64 Release - Linux/PXUltima_RELEASE.run" prefix_auto="0" extension_auto="0" />
+				<Option object_output="../[Temp]/x64 Release - Linux/PXUltima/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -79,14 +79,26 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/TestOpenGL.h" />
+		<Unit filename="Source/TestPXCompiler.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/TestPXCompiler.h" />
 		<Unit filename="Source/TestSBP.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/TestSBP.h" />
+		<Unit filename="Source/TestSystemInfo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/TestSystemInfo.h" />
 		<Unit filename="Source/TestWindow.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/TestWindow.h" />
+		<Unit filename="Source/TestYAML.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/TestYAML.h" />
 		<Unit filename="Source/main.c">
 			<Option compilerVar="CC" />
 		</Unit>

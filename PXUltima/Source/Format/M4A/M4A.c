@@ -80,7 +80,7 @@ PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSiz
 		unsigned int chunkSize = 0;
 		ClusterInt typePrimaryID;
 
-		PXDataStreamReadI32U(&dataStream, &chunkSize, EndianBig);
+		PXDataStreamReadI32UE(&dataStream, &chunkSize, EndianBig);
 		PXDataStreamReadB(&dataStream, typePrimaryID.Data, 4u);
 
 		const PXSize positionPrediction = dataStream.DataCursor + chunkSize - 8;
@@ -106,7 +106,7 @@ PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSiz
 				char isoSignature[8]; // isom3gp4
 
 				PXDataStreamReadB(&dataStream, chunk.TypeSub, 4u);
-				PXDataStreamReadI32U(&dataStream, &sizeB, EndianBig);
+				PXDataStreamReadI32UE(&dataStream, &sizeB, EndianBig);
 				PXDataStreamReadB(&dataStream, isoSignature, 8u);
 
 				break;

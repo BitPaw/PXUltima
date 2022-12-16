@@ -239,9 +239,9 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
             MemorySet(textB, 256, 0);
             MemorySet(emotySpace, 25, 0);
 
-            PXDataStreamReadI16U(outputStream, &textASize, EndianLittle);
+            PXDataStreamReadI16U(outputStream, &textASize);
             PXDataStreamReadB(outputStream, textA, textASize);
-            PXDataStreamReadI16U(outputStream, &textBSize, EndianLittle);
+            PXDataStreamReadI16U(outputStream, &textBSize);
 
             for (PXSize i = 0; i < depth; i++)
             {
@@ -272,7 +272,7 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
                     {
                         unsigned int x = 0;
 
-                        PXDataStreamReadI32U(outputStream, &x, EndianLittle);
+                        PXDataStreamReadI32U(outputStream, &x);
                         sprintf(textB, "%i", x);
 
                         break;

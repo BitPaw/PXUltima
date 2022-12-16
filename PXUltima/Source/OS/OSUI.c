@@ -200,7 +200,10 @@ void TextEditConstruct(const PXWindowID window, OSTextEdit* textEdit, const unsi
 
 void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten)
 {
+#if OSUnix
+#elif OSWindows
     OSUIElementTextGet(textEdit->ID, buffer, bufferSize, bufferWritten);
+#endif
 }
 
 void RichEditConstruct(const PXWindowID window, OSRichEdit* richEdit, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)

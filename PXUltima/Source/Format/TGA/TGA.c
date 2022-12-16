@@ -165,14 +165,14 @@ PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSiz
 		PXDataStreamReadI8U(&dataStream, &tga->ColorPaletteType);
 		PXDataStreamReadI8U(&dataStream, &imageTypeValue);
 
-		PXDataStreamReadI16U(&dataStream, &colorPaletteChunkEntryIndex, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &colorPaletteChunkSize, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &colorPaletteChunkEntryIndex, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &colorPaletteChunkSize, EndianLittle);
 		PXDataStreamReadI8U(&dataStream, &colorPaletteEntrySizeInBits);
 
-		PXDataStreamReadI16U(&dataStream, &tga->OriginX, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->OriginY, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->Width, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->Height, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->OriginX, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->OriginY, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->Width, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->Height, EndianLittle);
 		PXDataStreamReadI8U(&dataStream, &pixelDepth);
 		PXDataStreamReadI8U(&dataStream, &tga->ImageDescriptor);
 
@@ -234,8 +234,8 @@ PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSiz
 	//---[ Parse Footer ]--------------------------------------------------------
 	dataStream.DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the TGA-Footer.
 
-	PXDataStreamReadI32U(&dataStream, &extensionOffset, EndianLittle);
-	PXDataStreamReadI32U(&dataStream, &developerAreaOffset, EndianLittle);
+	PXDataStreamReadI32UE(&dataStream, &extensionOffset, EndianLittle);
+	PXDataStreamReadI32UE(&dataStream, &developerAreaOffset, EndianLittle);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
@@ -253,7 +253,7 @@ PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSiz
 		unsigned short extensionSize = 0;
 
 		dataStream.DataCursor = extensionOffset; // Jump to Extension Header
-		PXDataStreamReadI16U(&dataStream,extensionSize, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream,extensionSize, EndianLittle);
 
 		const unsigned char isExtensionSizeAsExpected = extensionSize == 495u;
 
@@ -266,35 +266,35 @@ PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSiz
 		PXDataStreamReadB(&dataStream, tga->AuthorComment, 324u);
 
 		// 12 Bytes
-		PXDataStreamReadI16U(&dataStream, &tga->DateTimeMonth, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeDay, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeYear, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeHour, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeMinute, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeSecond, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->DateTimeMonth, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeDay, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeYear, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeHour, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeMinute, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeSecond, EndianLittle);
 
 		PXDataStreamReadB(&dataStream, tga->JobID, 41u);
 
 		// 6 Bytes
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeHours, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeMinutes, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->JobTimeSeconds, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeHours, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeMinutes, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->JobTimeSeconds, EndianLittle);
 
 		dataStream.DataCursor += 12u;
 
 		PXDataStreamReadB(&dataStream, tga->SoftwareName, 41u);
 
-		PXDataStreamReadI16U(&dataStream, &tga->VersionNumber, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->VersionNumber, EndianLittle);
 		PXDataStreamReadI8U(&dataStream, &tga->SoftwareVersion);
 
-		PXDataStreamReadI32U(&dataStream, &tga->BackGroundColor, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->PixelAspectRatioCounter, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->PixelAspectRatioDenominator, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->GammaCounter, EndianLittle);
-		PXDataStreamReadI16U(&dataStream, &tga->GammaDenominator, EndianLittle);
-		PXDataStreamReadI32U(&dataStream, tga->ColorCorrectionOffset, EndianLittle);
-		PXDataStreamReadI32U(&dataStream, tga->PostagestampOffset, EndianLittle);
-		PXDataStreamReadI32U(&dataStream, tga->ScanlineOffset, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, &tga->BackGroundColor, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->PixelAspectRatioCounter, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->PixelAspectRatioDenominator, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->GammaCounter, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, &tga->GammaDenominator, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, tga->ColorCorrectionOffset, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, tga->PostagestampOffset, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, tga->ScanlineOffset, EndianLittle);
 		PXDataStreamReadI8U(&dataStream,tga->AttributesType);
 
 		/*
@@ -343,14 +343,14 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 		PXDataStreamReadI8U(dataStream, &tga.ColorPaletteType);
 		PXDataStreamReadI8U(dataStream, &imageTypeValue);
 
-		PXDataStreamReadI16U(dataStream, &colorPaletteChunkEntryIndex, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &colorPaletteChunkSize, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &colorPaletteChunkEntryIndex, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &colorPaletteChunkSize, EndianLittle);
 		PXDataStreamReadI8U(dataStream, &colorPaletteEntrySizeInBits);
 
-		PXDataStreamReadI16U(dataStream, &tga.OriginX, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.OriginY, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.Width, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.Height, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.OriginX, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.OriginY, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.Width, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.Height, EndianLittle);
 		PXDataStreamReadI8U(dataStream, &pixelDepth);
 		PXDataStreamReadI8U(dataStream, &tga.ImageDescriptor);
 
@@ -403,7 +403,7 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 
 		footerEntryIndex = dataStream->DataSize - (26u - 1u);
 
-		const unsigned char isTGAVersionTwo = MemoryCompare(TGAFileIdentifier, TGAFileIdentifierSize, string, compareLength - 1); // Is this string at this address?;
+		const PXBool isTGAVersionTwo = MemoryCompare(TGAFileIdentifier, TGAFileIdentifierSize, string, compareLength - 1); // Is this string at this address?;
 
 		if(!isTGAVersionTwo) // Is this a TGA v.1.0 dataStream?
 		{
@@ -416,8 +416,8 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 	//---[ Parse Footer ]--------------------------------------------------------
 	dataStream->DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the TGA-Footer.
 
-	PXDataStreamReadI32U(dataStream, &extensionOffset, EndianLittle);
-	PXDataStreamReadI32U(dataStream, &developerAreaOffset, EndianLittle);
+	PXDataStreamReadI32UE(dataStream, &extensionOffset, EndianLittle);
+	PXDataStreamReadI32UE(dataStream, &developerAreaOffset, EndianLittle);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
@@ -435,7 +435,7 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 		unsigned short extensionSize = 0;
 
 		dataStream->DataCursor = extensionOffset; // Jump to Extension Header
-		PXDataStreamReadI16U(dataStream, extensionSize, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, extensionSize, EndianLittle);
 
 		const PXBool isExtensionSizeAsExpected = extensionSize == 495u;
 
@@ -448,35 +448,35 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 		PXDataStreamReadB(dataStream, tga.AuthorComment, 324u);
 
 		// 12 Bytes
-		PXDataStreamReadI16U(dataStream, &tga.DateTimeMonth, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeDay, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeYear, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeHour, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeMinute, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeSecond, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.DateTimeMonth, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeDay, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeYear, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeHour, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeMinute, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeSecond, EndianLittle);
 
 		PXDataStreamReadB(dataStream, tga.JobID, 41u);
 
 		// 6 Bytes
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeHours, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeMinutes, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.JobTimeSeconds, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeHours, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeMinutes, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.JobTimeSeconds, EndianLittle);
 
 		dataStream->DataCursor += 12u;
 
 		PXDataStreamReadB(dataStream, tga.SoftwareName, 41u);
 
-		PXDataStreamReadI16U(dataStream, &tga.VersionNumber, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.VersionNumber, EndianLittle);
 		PXDataStreamReadI8U(dataStream, &tga.SoftwareVersion);
 
-		PXDataStreamReadI32U(dataStream, &tga.BackGroundColor, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.PixelAspectRatioCounter, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.PixelAspectRatioDenominator, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.GammaCounter, EndianLittle);
-		PXDataStreamReadI16U(dataStream, &tga.GammaDenominator, EndianLittle);
-		PXDataStreamReadI32U(dataStream, tga.ColorCorrectionOffset, EndianLittle);
-		PXDataStreamReadI32U(dataStream, tga.PostagestampOffset, EndianLittle);
-		PXDataStreamReadI32U(dataStream, tga.ScanlineOffset, EndianLittle);
+		PXDataStreamReadI32UE(dataStream, &tga.BackGroundColor, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.PixelAspectRatioCounter, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.PixelAspectRatioDenominator, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.GammaCounter, EndianLittle);
+		PXDataStreamReadI16UE(dataStream, &tga.GammaDenominator, EndianLittle);
+		PXDataStreamReadI32UE(dataStream, tga.ColorCorrectionOffset, EndianLittle);
+		PXDataStreamReadI32UE(dataStream, tga.PostagestampOffset, EndianLittle);
+		PXDataStreamReadI32UE(dataStream, tga.ScanlineOffset, EndianLittle);
 		PXDataStreamReadI8U(dataStream, tga.AttributesType);
 
 		/*

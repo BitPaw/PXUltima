@@ -136,7 +136,7 @@ unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType
 PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
 {
     BMP bmp;
-    
+
     BMPConstruct(&bmp);
 
     unsigned int sizeOfFile = 0;
@@ -146,7 +146,7 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
     //---[ Parsing Header ]----------------------------------------------------
     {
         ClusterShort byteCluster;
-        unsigned int valueList[3];  
+        unsigned int valueList[3];
 
         PXDataStreamReadB(dataStream, byteCluster.Data, 2u);
         PXDataStreamReadI32UVE(dataStream, valueList, 3u, EndianLittle);
@@ -172,7 +172,7 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
 
     //---[ DIP ]---------------------------------------------------------------
     {
-        PXDataStreamReadI32U(dataStream, &bmp.InfoHeader.HeaderSize, EndianLittle);
+        PXDataStreamReadI32UE(dataStream, &bmp.InfoHeader.HeaderSize, EndianLittle);
 
         bmp.InfoHeaderType = ConvertToBMPInfoHeaderType(bmp.InfoHeader.HeaderSize);
 
@@ -272,7 +272,7 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
             const PXByte swap = data[i]; // Save Blue(current)
 
             data[i] = data[i + 2]; // Override Blue(current) with Red(new)
-            data[i+2] = swap; // Override Red(current) with Blue(new) 
+            data[i+2] = swap; // Override Red(current) with Blue(new)
         }
     }
 
@@ -308,8 +308,8 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
 
     //---<DIP>
     {
-        const BMPInfoHeaderType bmpInfoHeaderType = BitMapInfoHeader; 
-        
+        const BMPInfoHeaderType bmpInfoHeaderType = BitMapInfoHeader;
+
         //---<Shared>----------------------------------------------------------
         bmpInfoHeader.HeaderSize = ConvertFromBMPInfoHeaderType(bmpInfoHeaderType);
         bmpInfoHeader.NumberOfBitsPerPixel = ImageBytePerPixel(image->Format) * 8u;
@@ -318,10 +318,10 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
         bmpInfoHeader.Height = image->Height;
         //---------------------------------------------------------------------
 
-        //---<BitMapInfoHeader ONLY>-------------------------------------------	
-        bmpInfoHeader.CompressionMethod = 0; // [4-Bytes] compression method being used.See the next table for a list of possible values	
+        //---<BitMapInfoHeader ONLY>-------------------------------------------
+        bmpInfoHeader.CompressionMethod = 0; // [4-Bytes] compression method being used.See the next table for a list of possible values
         bmpInfoHeader.ImageSize = 0; 	// [4-Bytes] image size.This is the size of the raw bitmap data; a dummy 0 can be given for BI_RGB bitmaps.
-        bmpInfoHeader.HorizontalResolution = 1u;	
+        bmpInfoHeader.HorizontalResolution = 1u;
         bmpInfoHeader.VerticalResolution = 1u;
         bmpInfoHeader.NumberOfColorsInTheColorPalette = 0;
         bmpInfoHeader.NumberOfImportantColorsUsed = 0;
@@ -349,11 +349,11 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
         }
     }
     //------------
-    
+
     {
         BMPImageDataLayout imageDataLayout;
 
-        BMPImageDataLayoutCalculate(&imageDataLayout, bmpInfoHeader.Width, bmpInfoHeader.Height, bmpInfoHeader.NumberOfBitsPerPixel);  
+        BMPImageDataLayoutCalculate(&imageDataLayout, bmpInfoHeader.Width, bmpInfoHeader.Height, bmpInfoHeader.NumberOfBitsPerPixel);
 
         for (PXSize row = imageDataLayout.RowAmount-1; row != (PXSize)-1  ; --row)
         {
@@ -364,7 +364,7 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
                 PXByte pixelBuffer[3u];
 
                 pixelBuffer[2u] = dataInsertPoint[i]; // Blue
-                pixelBuffer[1u] = dataInsertPoint[i+1u]; // Green 
+                pixelBuffer[1u] = dataInsertPoint[i+1u]; // Green
                 pixelBuffer[0u] = dataInsertPoint[i+2u]; // Red
 
                 PXDataStreamWriteP(dataStream, pixelBuffer, 3u);

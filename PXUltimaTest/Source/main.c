@@ -12,14 +12,15 @@
 
 #include <OS/PXProcess.h>
 #include <Format/TIFF/TIFF.h>
+#include <Format/Image.h>
 
 int main()
 {
 	printf("[i] Starting testing...\n");
 
-	Image image;
+	//Image image;
 
-	ImageLoadA(&image, "D:/_Data/Git/PXUltima/PXUltimaTest/_TEST_DATA_INPUT_/ImageInput.bmp");
+	//ImageLoadA(&image, "D:/_Data/Git/PXUltima/PXUltimaTest/_TEST_DATA_INPUT_/ImageInput.bmp");
 
 	//ImageLoadA(&image, "A:/_WorkSpace/Download/at3_1m4_03.tif");
 

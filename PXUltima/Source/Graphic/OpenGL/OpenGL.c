@@ -1433,7 +1433,7 @@ const void* const OpenGLFunctionAdressFetch(const char* const functionName)
 
 void OpenGLContextConstruct(OpenGLContext* const openGLContext)
 {
-    MemorySet(openGLContext, sizeof(OpenGLContext), 0);
+    MemoryClear(openGLContext, sizeof(OpenGLContext));
 }
 
 void OpenGLContextDestruct(OpenGLContext* const openGLContext)
@@ -1446,27 +1446,32 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
     PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
 
 #if OSUnix
-    //glXCreateContext(window->DisplayCurren, ) // TODO:::
+    const int attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 
-    glXMakeCurrent(window->DisplayCurrent, window->ID, openGLContext->OpenGLConext);
+    const XVisualInfo* const visualInfo = glXChooseVisual(window->DisplayCurrent, 0, attributeList);
 
-#elif OSWindows
-
-    const HGLRC handle = wglCreateContext(window->HandleDeviceContext);
-
-    // Check if failed
     {
-        const unsigned char successful = handle != 0;
+        const PXBool successful = visualInfo != 0;
 
-        if (!successful)
+        if(!successful)
         {
-            const PXActionResult actionResult = GetCurrentError();
-
-            // return actionResult;
+            return; // no appropriate visual found
         }
     }
 
-    openGLContext->OpenGLConext = handle;
+   openGLContext->OpenGLConext = glXCreateContext(window->DisplayCurrent, visualInfo, NULL, GL_TRUE);
+
+#elif OSWindows
+
+    // Check if failed
+    {
+        const HGLRC handle = wglCreateContext(window->HandleDeviceContext);
+        const PXBool successful = handle != 0;
+
+        PXActionOnErrorFetchAndExit(!successful);
+
+        openGLContext->OpenGLConext = handle;
+    }
 
 #endif
 
@@ -1986,7 +1991,7 @@ void OpenGLSettingChange(OpenGLContext* const openGLContext, const OpenGLToggle 
 
 void OpenGLDrawOrder(OpenGLContext* const openGLContext, const OpenGLDrawOrderMode openGLDrawOrderMode)
 {
- 
+
 }
 
 void OpenGLClearColor(OpenGLContext* const openGLContext, const float red, const float green, const float blue, const float alpha)
@@ -2036,7 +2041,7 @@ void OpenGLTextureParameter(OpenGLContext* const openGLContext, const OpenGLText
 void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const int param)
 {
     const GLenum textureTypeID = OpenGLTextureTypeToID(textureType);
-    const GLenum pnameID = OpenGLTextureParameterModeToID(pname);    
+    const GLenum pnameID = OpenGLTextureParameterModeToID(pname);
 
     glTexParameteri(textureTypeID, pnameID, param);
 }
@@ -2709,7 +2714,7 @@ char BF::OpenGL::UseShaderProgram(int shaderProgramID)
 
 void BF::OpenGL::VertexArrayBind(int vertexArrayID)
 {
-    
+
     (vertexArrayID != -1);
 
     glBindVertexArray(vertexArrayID);

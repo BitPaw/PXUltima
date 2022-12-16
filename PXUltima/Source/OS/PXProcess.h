@@ -13,13 +13,11 @@
 #include <windows.h>
 #endif
 
-typedef
 #if OSUnix
-pid_t
+typedef __pid_t PXProcessID;
 #elif OSWindows
-HANDLE
+typedef HANDLE PXProcessID;
 #endif
-PXProcessID;
 
 #ifdef __cplusplus
 extern "C"

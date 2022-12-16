@@ -96,11 +96,11 @@ extern "C"
 
 		//--------------------------------------------------------------------------
 		// [Critical chunks]
-		//--------------------------------------------------------------------------	
+		//--------------------------------------------------------------------------
 
-		PNGChunkImageHeader,	// [IHDR] The chunk will appear first.	
-		PNGChunkPalette,	// [PLTE] Palette	
-		PNGChunkImageData,	// [IDAT] Image data	
+		PNGChunkImageHeader,	// [IHDR] The chunk will appear first.
+		PNGChunkPalette,	// [PLTE] Palette
+		PNGChunkImageData,	// [IDAT] Image data
 		PNGChunkImageEnd,	// [IEND] The chunk appears LAST. It marks the end of the PNG datastream.
 
 		//--------------------------------------------------------------------------
@@ -108,36 +108,36 @@ extern "C"
 		//--------------------------------------------------------------------------
 		// Transparency information
 		//--------------------------------------------------------------------------
-			
+
 		PNGChunkTransparency, 	// [tRNS] Transparency
 
 		//--------------------------------------------------------------------------
 		// Color space information
 		//--------------------------------------------------------------------------
-			
+
 		PNGChunkImageGamma, 	// [gAMA] Image gamma
-		PNGChunkPrimaryChromaticities,		// [cHRM] -  
+		PNGChunkPrimaryChromaticities,		// [cHRM] -
 		PNGChunkStandardRGBColorSpace,		// [sRGB] -
-		PNGChunkEmbeddedICCProfile,		// [iCCP] - 
+		PNGChunkEmbeddedICCProfile,		// [iCCP] -
 
 		//--------------------------------------------------------------------------
 		// Textual, information
 		//--------------------------------------------------------------------------
-			
-		PNGChunkTextualData,	// [tEXt] - 		
-		PNGChunkCompressedTextualData,// [zTXt] - 	
-		PNGChunkInternationalTextualData,	// [iTXt] - 
+
+		PNGChunkTextualData,	// [tEXt] -
+		PNGChunkCompressedTextualData,// [zTXt] -
+		PNGChunkInternationalTextualData,	// [iTXt] -
 
 		//--------------------------------------------------------------------------
 		// Miscellaneous information
 		//--------------------------------------------------------------------------
-			
-		PNGChunkBackgroundColor, 	// [bKGD] - 	
-		PNGChunkPhysicalPixelDimensions, 	// [pHYs] - 
-		PNGChunkSignificantBits, 		// [sBIT] - 
-		PNGChunkSuggestedPalette,		// [sPLT] - 	
-		PNGChunkPaletteHistogram,	// [hIST] - 	
-		PNGChunkLastModificationTime,	// [tIME] - 
+
+		PNGChunkBackgroundColor, 	// [bKGD] -
+		PNGChunkPhysicalPixelDimensions, 	// [pHYs] -
+		PNGChunkSignificantBits, 		// [sBIT] -
+		PNGChunkSuggestedPalette,		// [sPLT] -
+		PNGChunkPaletteHistogram,	// [hIST] -
+		PNGChunkLastModificationTime,	// [tIME] -
 
 		//--------------------------------------------------------------------------
 		// Additional chunk types
@@ -151,10 +151,10 @@ extern "C"
 	typedef	struct PNGChunk_
 	{
 		unsigned char IsEssential; // Ancillary Bit - Is this chunk not replaceable?.
-		unsigned char IsRegisteredStandard; // Private Bit - Is this chunk in the offically registered in any way?  
+		unsigned char IsRegisteredStandard; // Private Bit - Is this chunk in the offically registered in any way?
 		unsigned char IsSafeToCopy;  // Can this cunk be modifyed anyhow or does it have a depecdency on the imagedata?
 
-		// [4-byte] Giving the number of bytes in the chunk's data field. The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned, its value must not exceed 231 bytes. 
+		// [4-byte] Giving the number of bytes in the chunk's data field. The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned, its value must not exceed 231 bytes.
 		unsigned int Lengh;
 
 		char ChunkTypeRaw[4];
@@ -162,10 +162,10 @@ extern "C"
 		// [4-byte] uppercase and lowercase ASCII letters (A-Z and a-z, or 65-90 and 97-122 decimal).
 		PNGChunkType ChunkType;
 
-		// The data bytes appropriate to the chunk type, if any. This field can be of zero length. 
+		// The data bytes appropriate to the chunk type, if any. This field can be of zero length.
 		unsigned char* ChunkData;
 
-		// A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type code and chunk data fields, but not including the length field. The CRC is always present, even for chunks containing no data. See CRC algorithm. 
+		// A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type code and chunk data fields, but not including the length field. The CRC is always present, even for chunks containing no data. See CRC algorithm.
 
 		unsigned char CRCOK;
 		unsigned int CRC;
@@ -218,7 +218,7 @@ extern "C"
 		//PNGSuggestedPalette SuggestedPalette; // sPLT
 		PNGLastModificationTime LastModificationTime; // tIME
 		// XXXXXXXXXXXXXX XXXXXXXXXXXXXX // iTXt
-		// 
+		//
 		//---[ oFFs - xxxxxxxxxxxxxxxxxxxxxxx ]--------------------------------------
 		//---[ sCAL - xxxxxxxxxxxxxxxxxxxxxxx ]--------------------------------------
 		//---[ tEXt - xxxxxxxxxxxxxxxxxxxxxxx ]--------------------------------------
@@ -312,7 +312,7 @@ node has 16 instead of 8 children.
 	typedef struct PNGColorTree_
 	{
 		struct PNGColorTree_* children[16]; /*up to 16 pointers to ColorTree of next level*/
-		int index; /*the payload. Only has a meaningful value if this is in the last level*/	
+		int index; /*the payload. Only has a meaningful value if this is in the last level*/
 	}
 	PNGColorTree;
 
@@ -329,8 +329,8 @@ node has 16 instead of 8 children.
 
 
 	static unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index);
-	
-	
+
+
 
 	static unsigned getNumColorChannels(LodePNGColorType colortype);
 
@@ -403,7 +403,6 @@ enough memory.*/
 
 	PXPublic PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PNGParse(PNG* png, const void* data, const PXSize dataSize, PXSize* dataRead);
 	PXPublic PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream);
 
 	PXPublic PXActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize* dataWritten);

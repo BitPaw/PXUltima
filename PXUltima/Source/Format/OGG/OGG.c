@@ -39,10 +39,10 @@ PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSiz
 
 		PXDataStreamReadI8U(&dataStream, &page.Version);
 		PXDataStreamReadI8U(&dataStream, &page.HeaderType);
-		PXDataStreamReadI32U(&dataStream, &page.GranulePosition, EndianLittle);
-		PXDataStreamReadI32U(&dataStream, &page.SerialNumber, EndianLittle);
-		PXDataStreamReadI32U(&dataStream, &page.SequenceNumber, EndianLittle);
-		PXDataStreamReadI32U(&dataStream, &page.CRC32CheckSum, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, &page.GranulePosition, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, &page.SerialNumber, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, &page.SequenceNumber, EndianLittle);
+		PXDataStreamReadI32UE(&dataStream, &page.CRC32CheckSum, EndianLittle);
 		PXDataStreamReadI8U(&dataStream, &page.PageSegments);
 
 		unsigned char segmentSizeList[0xFF];

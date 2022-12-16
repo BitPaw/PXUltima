@@ -914,7 +914,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
         }
     }
 
-    InvokeEvent(pxSocket->MessageSendCallback, pxSocket->ID, inputBuffer, inputBufferSize);
+    InvokeEvent(pxSocket->MessageSendCallback, pxSocket, inputBuffer, inputBufferSize);
 
 #if SocketDebug
     printf("[#][Socket][Send] You >>> <%zi> %li Bytes\n", pxSocket->ID, inputBufferSize);
@@ -993,7 +993,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
                 printf("[#][Socket][Read] You <<< <%li> %i Bytes\n", pxSocket->ID, byteRead);
 #endif
 
-                InvokeEvent(pxSocket->MessageReceiveCallback, pxSocket->ID, outputBuffer, byteRead);
+                InvokeEvent(pxSocket->MessageReceiveCallback, pxSocket, outputBuffer, byteRead);
             }
         }
     }

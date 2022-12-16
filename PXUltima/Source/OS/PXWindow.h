@@ -7,8 +7,10 @@
 
 #if OSUnix
 
+#include <GL/glx.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
+
 
 typedef XID PXWindowID;// XID is PXWindow
 typedef GLXContext OpenGLConextID;

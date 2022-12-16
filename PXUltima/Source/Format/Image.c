@@ -114,14 +114,14 @@ PXActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
     }
 
     {
-        {  
+        {
             const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
             const PXActionResult fileParsingResult = ImageLoadD(image, &dataStream, imageFormatHint);
 
             PXActionExitOnSuccess(fileParsingResult);
         }
 
-      
+
 
         PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;
@@ -130,10 +130,10 @@ PXActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
         {
             const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
 
-            fileGuessResult = ImageLoadD(image, dataStream.Data, dataStream.DataSize, imageFileFormat);
+            fileGuessResult = ImageLoadD(image, &dataStream, imageFileFormat);
 
             fileFormatID++;
-        } 
+        }
         while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
         PXDataStreamDestruct(&dataStream);
@@ -208,14 +208,14 @@ PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, con
 
     PXSize fileSize = 0;
     PXSize writtenBytes = 0;
-    PXDataStream dataStream;  
+    PXDataStream dataStream;
 
     SerializeFromImage serializeFromImageFunction = 0;
 
     PXDataStreamConstruct(&dataStream);
 
     switch(fileFormat)
-    {    
+    {
         case FileFormatBitMap:
         {
             fileSize = BMPFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
@@ -270,7 +270,7 @@ PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, con
 
     {
         const PXActionResult mappingResult = PXDataStreamMapToMemoryW(&dataStream, filePathW, fileSize, MemoryWriteOnly);
-        const unsigned char sucessful = PXActionSuccessful == mappingResult;
+        const PXBool sucessful = PXActionSuccessful == mappingResult;
 
         if(!sucessful)
         {
@@ -280,8 +280,8 @@ PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, con
     }
 
     {
-        const PXActionResult serializeResult = serializeFromImageFunction(image, dataStream.Data, dataStream.DataSize, &dataStream.DataCursor);
-        const unsigned char sucessful = PXActionSuccessful == serializeResult;
+        const PXActionResult serializeResult = serializeFromImageFunction(image, &dataStream);
+        const PXBool sucessful = PXActionSuccessful == serializeResult;
 
         if(!sucessful)
         {
@@ -330,10 +330,10 @@ PXBool ImageResize(Image* const image, const ImageDataFormat format, const PXSiz
         image->Height = height;
         image->PixelData = newadress;
         image->PixelDataSize = newSize;
-    } 
+    }
 
     return PXTrue;
-} 
+}
 
 void ImageFlipHorizontal(Image* image)
 {
@@ -341,7 +341,7 @@ void ImageFlipHorizontal(Image* image)
     const PXSize rowSize = (image->Width * bbp);
     const PXSize length = (image->Width * bbp) / 2;
 
-    for(PXSize x = 0; x < length; x += bbp) // 
+    for(PXSize x = 0; x < length; x += bbp) //
     {
         const PXSize xB = rowSize - x - bbp;
 
@@ -420,17 +420,17 @@ PXSize ImagePixelPosition(const Image* const image, const PXSize x, const PXSize
 
 void ImagePixelSetRGB8
 (
-    Image* const image, 
+    Image* const image,
     const PXSize x,
     const PXSize y,
-    const unsigned char red, 
+    const unsigned char red,
     const unsigned char green,
     const unsigned char blue
 )
 {
     const PXSize index = ImagePixelPosition(image, x, y);
     unsigned char* const pixelData = (unsigned char* const)image->PixelData + index;
-    
+
     pixelData[0] = red;
     pixelData[1] = green;
     pixelData[2] = blue;
@@ -438,14 +438,14 @@ void ImagePixelSetRGB8
 
 void ImageDrawRectangle
 (
-    Image* const image, 
+    Image* const image,
     const PXSize x,
     const PXSize y,
-    const PXSize width, 
-    const PXSize height, 
-    const unsigned char red, 
-    const unsigned char green, 
-    const unsigned char blue, 
+    const PXSize width,
+    const PXSize height,
+    const unsigned char red,
+    const unsigned char green,
+    const unsigned char blue,
     const unsigned char alpha
 )
 {
@@ -465,7 +465,7 @@ void ImageDrawRectangle
             ((unsigned char*)image->PixelData)[index+1] = green;
             ((unsigned char*)image->PixelData)[index+2] = blue;
         }
-    }      
+    }
 }
 
 void ImageDrawTextA(Image* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const char* text)
@@ -509,30 +509,30 @@ void ImageDrawTextW
         float positionY = fntCharacter->Position[1];
         float sizeX = fntCharacter->Size[0];
         float sizeY = fntCharacter->Size[1];
-             
+
 #if 0
         ImageDrawRectangle
         (
-            image, 
-            lastPositionX+ offsetX, 
+            image,
+            lastPositionX+ offsetX,
             y+ offsetY,
             sizeX,
-            sizeY, 
+            sizeY,
             0xFF,
             0,
-            0xFF, 
+            0xFF,
             0
         );
 #endif
         ImageMerge
         (
             image,
-            lastPositionX + offsetX, 
-            y + offsetY, 
+            lastPositionX + offsetX,
+            y + offsetY,
             positionX,
             positionY,
             sizeX,
-            sizeY,       
+            sizeY,
             &font->FontElement[0].FontPageList[0].FontTextureMap
         );
 

@@ -51,7 +51,7 @@ extern "C"
 	PXDataStreamCachingMode;
 
 	typedef struct PXDataStreamElementType_
-	{	
+	{
 		PXDataType Type;
 		void* Adress;
 	}
@@ -79,7 +79,7 @@ extern "C"
 
 #elif OSWindows
 		FILE* FileHandleCStyle; // Used for writing only, usage of fprintf()
-#endif	
+#endif
 		//---------------------------------------------------------------------
 	}
 	PXDataStream;
@@ -117,14 +117,14 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Parsing Utility>-----------------------------------------------------
-	PXPublic inline PXSize PXDataStreamRemainingSize(const PXDataStream* __restrict const dataStream);
-	PXPublic inline PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream);
+	PXPublic PXSize PXDataStreamRemainingSize(const PXDataStream* __restrict const dataStream);
+	PXPublic PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream);
 
 	PXPublic void* PXDataStreamCursorPosition(PXDataStream* const dataStream);
 	PXPublic void PXDataStreamCursorToBeginning(PXDataStream* const dataStream);
 	PXPublic PXSize PXDataStreamCursorAdvance(PXDataStream* const dataStream, const PXSize steps);
 	PXPublic void PXDataStreamCursorRewind(PXDataStream* const dataStream, const PXSize steps);
-	PXPublic void PXDataStreamCursorToEnd(PXDataStream* const dataStream);	
+	PXPublic void PXDataStreamCursorToEnd(PXDataStream* const dataStream);
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
@@ -145,7 +145,7 @@ extern "C"
 	PXPublic PXSize PXDataStreamReadTextIU8(PXDataStream* const dataStream, PXInt8U* const number);
 	PXPublic PXSize PXDataStreamReadTextI(PXDataStream* const dataStream, int* const number);
 
-	
+
 	PXPublic PXSize PXDataStreamReadI8S(PXDataStream* const dataStream, PXInt8S* const value);
 	PXPublic PXSize PXDataStreamReadI8SV(PXDataStream* const dataStream, PXInt8S* const valueList, const PXSize valueListSize);
 	PXPublic PXSize PXDataStreamReadI8U(PXDataStream* const dataStream, PXInt8U* const value);

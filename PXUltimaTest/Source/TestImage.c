@@ -59,7 +59,7 @@ void TestSaveImageSmal()
 void TestSaveImage()
 {
     Image image;
-    
+
     DirectoryCreateA("_TEST_DATA_OUTPUT_");
 
 
@@ -83,7 +83,7 @@ void TestSaveImage()
                 const unsigned char c = x ^ y; // Sec
 
                 unsigned char* data = (unsigned char*)image.PixelData + dimension * width * y + dimension * x;
-                
+
                 *(data + 0) = a;
                 *(data + 1) = c;
                 *(data + 2) = b;
@@ -92,19 +92,19 @@ void TestSaveImage()
     }
 
     const PXActionResult saveBMP = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageBMP.bmp", FileFormatBitMap, ImageDataFormatRGB8);
-    
+
     if(saveBMP != PXActionSuccessful)
     {
         return saveBMP;
     }
-    
+
     const PXActionResult savePNG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImagePNG.png", FileFormatPNG, ImageDataFormatRGB8);
-    
+
     if(savePNG != PXActionSuccessful)
     {
         return savePNG;
     }
-    
+
     const PXActionResult saveJPG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageJPG.jpg", FileFormatJPEG, ImageDataFormatRGB8);
 
     if(saveJPG != PXActionSuccessful)
@@ -138,7 +138,7 @@ void ImageWriteText()
         {
             return loadResult;
         }
-    } 
+    }
 
     // Write image data
     {
@@ -165,7 +165,7 @@ void ImageWriteText()
         }
     }
 
-  
+
     {
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_JPG.jpeg";
         const PXActionResult saveJPEG = ImageSaveTest(&image, path, FileFormatJPEG, ImageDataFormatRGB8);
@@ -185,9 +185,9 @@ void ImageWriteText()
             return savePNG;
         }
     }
-  
 
-    ImageDestruct(&image);  
+
+    ImageDestruct(&image);
 }
 
 void TestImageAll()

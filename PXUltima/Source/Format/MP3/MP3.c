@@ -1023,13 +1023,10 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 
 
 	{
-		const unsigned char* dataPosition = PXDataStreamCursorPosition(&dataStream);
-		const PXSize dataSize = PXDataStreamRemainingSize(&dataStream);
-		PXSize parsedBytes = 0;
 
-		const PXActionResult actionResult = ID3Parse(&mp3->ID3Info, dataPosition, dataSize, &parsedBytes);
+		const PXActionResult actionResult = ID3Parse(&mp3->ID3Info, &dataStream);
 
-		PXDataStreamCursorAdvance(&dataStream, parsedBytes);
+
 	}
 
 	while(!PXDataStreamIsAtEnd(&dataStream))
@@ -1072,7 +1069,7 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 				mp3Header.SampleRate,
 				mp3Header.FrameLength
 			);
-#endif	
+#endif
 		}
 
 		// info header
@@ -1094,7 +1091,7 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 					xingInfo.NumberOfFrames,
 					xingInfo.SizeInBytes
 				);
-#endif	
+#endif
 			}
 		}
 
@@ -1111,7 +1108,7 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 				(
 					"[MP3][???] Lavc chunk... what is that? |\n"
 				);
-#endif	
+#endif
 
 				PXDataStreamCursorAdvance(&dataStream, 257u);
 
@@ -1131,7 +1128,7 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 					"[MP3][LAME] Chunk |\n"
 				);
 #endif
-			
+
 		}
 
 

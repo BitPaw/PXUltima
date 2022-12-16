@@ -57,52 +57,36 @@ PXActionResult PXServerStart(PXServer* const server, const unsigned short port, 
 
         // Create socket
         {
-            const PXActionResult socketCreateResult = PXSocketCreate(&pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
-            const unsigned char sucessful = PXActionSuccessful == socketCreateResult;
+            const PXActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
 
-            if(!sucessful)
-            {
-                return socketCreateResult;
-            }
+            PXActionExitOnError(socketCreateResult);
         }
 
         // Set Socket Options
         {
-            const PXActionResult actionResult = PXSocketOptionsSet(&pxSocket);
-            const unsigned char sucessful = PXActionSuccessful == actionResult;
+            const PXActionResult actionResult = PXSocketOptionsSet(pxSocket);
 
-            if(!sucessful)
-            {
-                return actionResult;
-            }
+            PXActionExitOnError(actionResult);
         }
 
         // Bind Socket
         {
-            const PXActionResult actionResult = PXSocketBind(&pxSocket);
-            const unsigned char sucessful = PXActionSuccessful == actionResult;
+            const PXActionResult actionResult = PXSocketBind(pxSocket);
 
-            if(!sucessful)
-            {
-                return actionResult;
-            }
+            PXActionExitOnError(actionResult);
         }
 
         // Listen
         {
-            const PXActionResult actionResult = PXSocketListen(&pxSocket);
-            const unsigned char sucessful = PXActionSuccessful == actionResult;
+            const PXActionResult actionResult = PXSocketListen(pxSocket);
 
-            if(!sucessful)
-            {
-                return actionResult;
-            }
+            PXActionExitOnError(actionResult);
         }
 
         InvokeEvent(pxSocket->ConnectionListeningCallback, pxSocket);
 
         const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, pxSocket);
-      
+
     }
 
     return PXActionSuccessful;
@@ -122,9 +106,9 @@ PXSocket* PXServerGetPXClientViaID(PXServer* const server, const PXSocketID sock
 {
     for(PXSize i = 0; i < server->PXClientSocketListSize; i++)
     {
-        const PXSocket* clientSocket = &server->PXClientSocketList[i];
+        PXSocket* const clientSocket = &server->PXClientSocketList[i];
         const PXSocketID clientSocketID = clientSocket->ID;
-        const unsigned char foundTarget = clientSocketID == socketID;
+        const PXBool foundTarget = clientSocketID == socketID;
 
         if(foundTarget)
         {
@@ -132,7 +116,7 @@ PXSocket* PXServerGetPXClientViaID(PXServer* const server, const PXSocketID sock
         }
     }
 
-    return 0;
+    return PXNull;
 }
 
 void PXServerRegisterPXClient(PXServer* const server, PXClient* const client)
@@ -166,7 +150,7 @@ PXActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* d
 
 PXActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize)
 {
-    PXSocket* clientSocket = PXServerGetPXClientViaID(server, clientID);
+    PXSocket* const clientSocket = PXServerGetPXClientViaID(server, clientID);
 
     if(!clientSocket)
     {
@@ -215,12 +199,11 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
         // Set Events
 
         const PXActionResult actionResult = PXSocketAccept(serverSocket, &clientSocket);
-        const unsigned char successful = PXActionSuccessful == actionResult;
-
+        const PXBool successful = PXActionSuccessful == actionResult;
 
         if(!successful)
         {
-            InvokeEvent(server->PXClientAcceptFailureCallback, &serverSocket);
+            InvokeEvent(server->PXClientAcceptFailureCallback, serverSocket);
 
             continue; // failed.. retry?
         }
@@ -231,7 +214,7 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
 
         InvokeEvent(server->PXClientConnectedCallback, serverSocket, &clientSocket);
 
-        PXServerRegisterPXClient(serverSocket , &clientSocket);
+        PXServerRegisterPXClient(server, &clientSocket);
     }
 
     return PXThreadSucessful;

@@ -55,10 +55,10 @@ PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSiz
 			}
 		}
 
-		PXDataStreamReadI16U(&dataStream, chunkLength, EndianBig);
-		PXDataStreamReadI16U(&dataStream, &mid->Format, EndianBig);
-		PXDataStreamReadI16U(&dataStream, &mid->TrackListSize, EndianBig);
-		PXDataStreamReadI16U(&dataStream, &mid->MusicSpeed, EndianBig);
+		PXDataStreamReadI16UE(&dataStream, chunkLength, EndianBig);
+		PXDataStreamReadI16UE(&dataStream, &mid->Format, EndianBig);
+		PXDataStreamReadI16UE(&dataStream, &mid->TrackListSize, EndianBig);
+		PXDataStreamReadI16UE(&dataStream, &mid->MusicSpeed, EndianBig);
 	}
 
 	if(!mid->TrackListSize)
@@ -85,7 +85,7 @@ PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSiz
 			}
 		}
 
-		PXDataStreamReadI32U(&dataStream, chunkLength, EndianBig);
+		PXDataStreamReadI32UE(&dataStream, chunkLength, EndianBig);
 
 		track->ID = i;
 		track->EventData = (PXByte*)MemoryAllocate(sizeof(PXByte) * chunkLength);

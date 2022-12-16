@@ -393,3 +393,336 @@
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Processor/Processor.h
 	<Format/Type.h>
 
+1671211104 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/main.c
+	<stdio.h>
+	"TestSystemInfo.h"
+	"TestWindow.h"
+	"TestOpenGL.h"
+	"TestPXCompiler.h"
+	"TestImage.h"
+	"TestYAML.h"
+	<Graphic/DirectX/DirectX.h>
+	<OS/PXProcess.h>
+	<Format/TIFF/TIFF.h>
+	<Format/Image.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestSystemInfo.h
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Error/PXActionResult.h
+	<Format/Type.h>
+
+1671187520 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/Type.h
+	<stddef.h>
+	<OS/OSVersion.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/OS/OSVersion.h
+	<Windows.h>
+	<SdkDdkVer.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/Image.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<File/File.h>
+	<File/PXDataStream.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/File.h
+	<stdlib.h>
+	<stdio.h>
+	<wchar.h>
+	<Format/Type.h>
+	<OS/OSVersion.h>
+	<Memory/PXMemory.h>
+	<Error/PXActionResult.h>
+	<File/Endian.h>
+	<sys/stat.h>
+	<sys/mman.h>
+	<unistd.h>
+	<libgen.h>
+	<dirent.h>
+	<windows.h>
+	<direct.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Memory/PXMemory.h
+	<OS/OSVersion.h>
+	<Format/Type.h>
+	<Compiler/PXCompilerSettings.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Compiler/PXCompilerSettings.h
+	<OS/OSVersion.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/Endian.h
+	<Format/Type.h>
+
+1671208513 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/PXDataStream.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	"Endian.h"
+	"File.h"
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestWindow.h
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestOpenGL.h
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestPXCompiler.h
+	<stddef.h>
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestImage.h
+	<stddef.h>
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+	<File/File.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestYAML.h
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Graphic/DirectX/DirectX.h
+	<Format/Type.h>
+	<d3d9.h>
+
+1671214919 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/OS/PXProcess.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<Time/PXTime.h>
+	<unistd.h>
+	<windows.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Time/PXTime.h
+	<Format/Type.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/TIFF/TIFF.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+	<File/PXDataStream.h>
+
+1671211163 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestImage.c
+	"TestImage.h"
+	<stdio.h>
+	<Format/Image.h>
+	<Format/Font.h>
+	<File/File.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/Font.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<File/File.h>
+
+1669938255 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestSBP.c
+	"TestSBP.h"
+	<stdio.h>
+	<Network/SBP/SBPClient.h>
+	<Network/SBP/SBPServer.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestSBP.h
+	<stddef.h>
+	<Error/PXActionResult.h>
+	<Format/Image.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Network/SBP/SBPClient.h
+	<Format/Type.h>
+	"SBPProtocol.h"
+	<Network/PXClient.h>
+	<Async/PXThread.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Network/SBP/SBPProtocol.h
+	<Format/Type.h>
+	<Container/ClusterValue.h>
+	<File/File.h>
+	<Text/Text.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Container/ClusterValue.h
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Text/Text.h
+	<Format/Type.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Network/PXClient.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<Network/PXSocket.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Network/PXSocket.h
+	<OS/OSVersion.h>
+	<arpa/inet.h>
+	<netinet/in.h>
+	<netdb.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<unistd.h>
+	<windows.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<iphlpapi.h>
+	<Async/PXThread.h>
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Async/PXThread.h
+	<OS/OSVersion.h>
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<pthread.h>
+	<unistd.h>
+	<windows.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Network/SBP/SBPServer.h
+	<Format/Type.h>
+	"SBPProtocol.h"
+	<Container/Dictionary/PXDictionary.h>
+	<Network/PXServer.h>
+	<Network/PXClient.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Container/Dictionary/PXDictionary.h
+	<Format/Type.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Network/PXServer.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<Network/PXSocket.h>
+
+1669938255 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestWindow.c
+	"TestWindow.h"
+	<stdio.h>
+	<OS/PXWindow.h>
+	<Processor/Processor.h>
+	<Memory/PXMemory.h>
+	<Graphic/DirectX/DirectX.h>
+
+1671211028 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/OS/PXWindow.h
+	<Format/Type.h>
+	<OS/OSVersion.h>
+	<GL/glx.h>
+	<X11/X.h>
+	<X11/Xlib.h>
+	<Windows.h>
+	<Device/VirtualKey.h>
+	<Async/PXThread.h>
+	<Device/Mouse.h>
+	<Device/KeyBoard.h>
+	<Graphic/Graphic.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Device/VirtualKey.h
+	<Format/Type.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Device/Mouse.h
+	<Format/Type.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Device/KeyBoard.h
+	"VirtualKey.h"
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Graphic/Graphic.h
+	<Format/Image.h>
+	<Format/Model.h>
+	<Format/Type.h>
+	<Graphic/OpenGL/OpenGL.h>
+	<Math/PXMatrix.h>
+	<Container/LinkedList/PXLinkedList.h>
+	<Async/PXLock.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/Model.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
+	<File/File.h>
+
+1671214736 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Graphic/OpenGL/OpenGL.h
+	<OS/OSVersion.h>
+	<X11/X.h>
+	<X11/Xlib.h>
+	<GL/glx.h>
+	<Windows.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	<Format/Type.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXMatrix.h
+	<Format/Type.h>
+	<Math/PXVector.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXVector.h
+	<Format/Type.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.h
+	<Format/Type.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Async/PXLock.h
+	<OS/OSVersion.h>
+	<Error/PXActionResult.h>
+	<semaphore.h>
+	<windows.h>
+
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Processor/Processor.h
+	<Format/Type.h>
+
+1671211063 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestOpenGL.c
+	"TestOpenGL.h"
+	<Format/Image.h>
+	<Memory/PXMemory.h>
+	<stdio.h>
+	<float.h>
+	<OS/PXWindow.h>
+	<Format/Font.h>
+	<Math/PXMatrix.h>
+	<Graphic/Graphic.h>
+	<Graphic/OpenGL/OpenGL.h>
+
+1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestPXCompiler.c
+	"TestPXCompiler.h"
+	<File/PXDataStream.h>
+	<Compiler/PXCompiler.h>
+	<Format/YAML/YAML.h>
+	<Format/OBJ/OBJ.h>
+	<Format/XML/XML.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Compiler/PXCompiler.h
+	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/YAML/YAML.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<File/PXDataStream.h>
+	<Serialization/Serialization.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Serialization/Serialization.h
+	<Format/Type.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/OBJ/OBJ.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<File/PXDataStream.h>
+	<Format/MTL/MTL.h>
+	<Format/Model.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/MTL/MTL.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
+	<Format/Model.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Format/XML/XML.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<File/PXDataStream.h>
+
+1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestYAML.c
+	"TestYAML.h"
+	<Format/YAML/YAML.h>
+
+1671211205 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestSystemInfo.c
+	"TestSystemInfo.h"
+	<stdio.h>
+	<OS/HardDrive.h>
+
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/OS/HardDrive.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+

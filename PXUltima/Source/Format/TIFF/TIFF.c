@@ -137,7 +137,7 @@ PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
 
             const char select =
                 'B' * (headerTag[0] == versionB[0] && headerTag[1] == versionB[1]) + // big
-                'L' * (headerTag[0] == versionA[0] && headerTag[1] == versionA[1]); // little 
+                'L' * (headerTag[0] == versionA[0] && headerTag[1] == versionA[1]); // little
 
             switch (select)
             {
@@ -154,8 +154,8 @@ PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
             }
         }
 
-        PXDataStreamReadI16U(dataStream, &tIFFHeader.Version, tIFFHeader.Endianness); // Version, expect this to be "42"
-        PXDataStreamReadI32U(dataStream, &tIFFHeader.OffsetToIFD, tIFFHeader.Endianness);
+        PXDataStreamReadI16UE(dataStream, &tIFFHeader.Version, tIFFHeader.Endianness); // Version, expect this to be "42"
+        PXDataStreamReadI32UE(dataStream, &tIFFHeader.OffsetToIFD, tIFFHeader.Endianness);
 
         // Jump to adress
         dataStream->DataCursor = tIFFHeader.OffsetToIFD;
@@ -167,16 +167,16 @@ PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
 
             MemoryClear(&tiffPage, sizeof(TIFFPage));
 
-            PXDataStreamReadI16U(dataStream, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes            
+            PXDataStreamReadI16UE(dataStream, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes
 
             for (unsigned short i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
                 TIFFTag tiffTag;
 
-                PXDataStreamReadI16U(dataStream, &tiffTag.TypeID, tIFFHeader.Endianness); // 2-Bytes
-                PXDataStreamReadI16U(dataStream, &tiffTag.DataTypeID, tIFFHeader.Endianness); // 2-Bytes
-                PXDataStreamReadI32U(dataStream, &tiffTag.NumberOfValues, tIFFHeader.Endianness); // 4-Bytes
-                PXDataStreamReadI32U(dataStream, &tiffTag.DataOffset, tIFFHeader.Endianness); // 4-Bytes
+                PXDataStreamReadI16UE(dataStream, &tiffTag.TypeID, tIFFHeader.Endianness); // 2-Bytes
+                PXDataStreamReadI16UE(dataStream, &tiffTag.DataTypeID, tIFFHeader.Endianness); // 2-Bytes
+                PXDataStreamReadI32UE(dataStream, &tiffTag.NumberOfValues, tIFFHeader.Endianness); // 4-Bytes
+                PXDataStreamReadI32UE(dataStream, &tiffTag.DataOffset, tIFFHeader.Endianness); // 4-Bytes
 
                 tiffTag.Type = TIFFTagTypeFromID(tiffTag.TypeID);
                 tiffTag.DataType = TIFFTypeFromID(tiffTag.DataTypeID);
@@ -213,7 +213,7 @@ PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
                     {
                         tiff->PhotometricInterpretation = TIFFColorFormatFromID(tiffTag.DataOffset);
                         break;
-                    }         
+                    }
                     case TIFFTagThreshholding:
                     case TIFFTagCellWidth:
                     case TIFFTagCellLength:
@@ -291,7 +291,7 @@ PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
                 }
             }
 
-            PXDataStreamReadI32U(dataStream, &tiffPage.OffsetToNextIFD, tIFFHeader.Endianness); // 4-Bytes
+            PXDataStreamReadI32UE(dataStream, &tiffPage.OffsetToNextIFD, tIFFHeader.Endianness); // 4-Bytes
         }
 
 

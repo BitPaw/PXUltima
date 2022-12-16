@@ -102,9 +102,9 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
     {
         // Einen ID3v2-Block erkennt man am Header, dessen erste fünf Bytes aus der Zeichenkette „ID3“ und der ID3v2-Version (z. B. $04 00 für ID3v2.4) bestehen
         const char signbature[3] = ID3HeaderSignature;
-        const PXSize signbatureSize = sizeof(signbature);  
+        const PXSize signbatureSize = sizeof(signbature);
         const PXBool isValidHeader = PXDataStreamReadAndCompare(dataStream, signbature, signbatureSize);
-        
+
         if(!isValidHeader)
         {
             return PXActionRefusedInvalidHeaderSignature;
@@ -255,9 +255,9 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                         unsigned short frameFlags = 0;
 
                         PXDataStreamReadB(&dataStream, indentifier.Data, 4u);
-                        PXDataStreamReadI32U(&dataStream, frameSize, EndianBig);
-                        PXDataStreamReadI32U(&dataStream, frameFlags, EndianBig);
-    
+                        PXDataStreamReadI32UE(&dataStream, frameSize, EndianBig);
+                        PXDataStreamReadI32UE(&dataStream, frameFlags, EndianBig);
+
                         const ID3v2xFrameTag frameTag = ConvertID3v2xFrameTag(indentifier.Value);
                         const PXBool unkownTag = frameTag == ID3v2xFrameTagInvalid;
 

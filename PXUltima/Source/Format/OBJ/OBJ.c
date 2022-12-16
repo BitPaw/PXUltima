@@ -44,7 +44,7 @@ void OBJDestruct(OBJ* const obj)
 
 OBJLineType OBJPeekLine(const void* line, const PXSize size)
 {
-    const char* const text = (const char* const)line;   
+    const char* const text = (const char* const)line;
 
     switch (size)
     {
@@ -57,7 +57,7 @@ OBJLineType OBJPeekLine(const void* line, const PXSize size)
                 case '#': return OBJLineComment;
                 case 'o': return OBJLineObjectName;
                 case 's': return OBJLineSmoothShading;
-                case 'g': return OBJLineObjectGroup;               
+                case 'g': return OBJLineObjectGroup;
             }
 
             break;
@@ -71,7 +71,7 @@ OBJLineType OBJPeekLine(const void* line, const PXSize size)
                 case MakeShort('v', 't'): return OBJLineVertexTexture;
                 case MakeShort('v', 'n'): return OBJLineVertexNormal;
                 case MakeShort('v', 'p'): return OBJLineVertexParameter;
-            }      
+            }
 
             break;
         }
@@ -123,7 +123,7 @@ void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned 
 PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXSize errorCounter = 0;
-    PXDataStream tokenSteam;   
+    PXDataStream tokenSteam;
 
     unsigned int vertexListSize = 0;
     unsigned int normalListSize = 0;
@@ -147,7 +147,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
     const PXSize headerOffset = 1024;
     PXSize headerCacheOffset = 0;
 
-    // Lexer - Level I 
+    // Lexer - Level I
     {
         PXCompilerSettings compilerSettings;
         compilerSettings.KeepWhiteSpace = PXNo;
@@ -169,7 +169,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
         outputStream->DataCursor = 0;
     }
-       
+
 
     // Write 0'ed data to later jump back to to change.
     PXDataStreamCursorAdvance(outputStream, headerOffset);
@@ -178,8 +178,8 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
     {
         PXCompilerSymbolEntry compilerSymbolEntry;
 
-        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);      
-      
+        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+
         switch (compilerSymbolEntry.ID)
         {
             case PXCompilerSymbolLexerComment:
@@ -195,7 +195,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
         {
             case OBJLineSmoothShading:
             {
-                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.    
+                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
 
                 PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerInteger);
                 PXDataStreamWriteIU(outputStream, compilerSymbolEntry.DataI, EndianLittle);
@@ -204,7 +204,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
             }
             case OBJLineMaterialLibraryInclude:
             case OBJLineMaterialLibraryUse:
-            case OBJLineObjectName:  
+            case OBJLineObjectName:
             case OBJLineObjectGroup:
             {
                 char namedElement[256];
@@ -246,7 +246,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 }
 
                 break; // [OK]
-            }    
+            }
             case OBJLineVertexTexture:
             case OBJLineVertexGeometric:
             case OBJLineVertexNormal:
@@ -281,9 +281,9 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                     PXDataStreamWriteCU(outputStream, valuesDetected);
                     PXDataStreamWriteP(outputStream, vector, sizeof(float) * valuesDetected);
                 }
-           
+
                 break; // [OK]
-            }          
+            }
             case OBJLineFaceElement:
             {
                 PXSize cornerPoints = 0;
@@ -325,12 +325,12 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                             if (!isSlashC)
                             {
                                 // error
-                            } 
+                            }
                             //else ok
                         }
-                       
-                        PXSize offsetB = TextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[2]); // read             
-                        
+
+                        PXSize offsetB = TextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[2]); // read
+
                         if (!offsetB)
                         {
                             ++errorCounter;
@@ -347,8 +347,8 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                   //  printf("Face _> %i, %i, %i\n", vertexData[0], vertexData[1], vertexData[2]);
 
-                    //----------------------------------             
-                    
+                    //----------------------------------
+
                     ++cornerPoints;
                 }
 
@@ -369,11 +369,11 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 do
                 {
                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                } 
+                }
                 while (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLine);
 
                 break;
-            } 
+            }
         }
     }
 
@@ -385,14 +385,14 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
     //const PXSize offset = outputStream->DataCursor; // Save old position
     //outputStream->DataCursor = 0; // Jump to beginning, parsing temp headerInfo
 
-    // Begin loading MTL files    
+    // Begin loading MTL files
 #if OBJDetectMaterial
-    {        
+    {
         PXDataStream materialNameFetchStream;
         PXDataStream materialFileStream;
 
         PXDataStreamFromExternal(&materialNameFetchStream, outputStream->Data, outputStream->DataCursor);
-            
+
         wchar_t currentWorkPath[PathMaxSize];
         wchar_t currentMTLFileW[PathMaxSize];
         char currentMTLFileA[PathMaxSize];
@@ -405,7 +405,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
             PXDataStreamWriteCU(outputStream, OBJEmbeddedMTL);
 
-            PXDataStreamReadI16U(&materialNameFetchStream, &length, EndianLittle);
+            PXDataStreamReadI16U(&materialNameFetchStream, &length);
             PXDataStreamReadB(&materialNameFetchStream, currentMTLFileA, PathMaxSize);
 
             TextCopyAW(currentMTLFileA, length, currentMTLFileW, PathMaxSize);
@@ -425,11 +425,11 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                 PXDataStreamDestruct(&materialFileStream);
             }
-        }    
+        }
     }
 #endif
     // MTL loading finished
-    
+
 
 
     {
@@ -490,24 +490,24 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
     for (PXSize i = 0; i < numberOfMeshes; ++i)
     {
         PXDataStreamReadI8U(inputStream, &renderMode[i]);
-        PXDataStreamReadI32U(inputStream, &renderSize[i], EndianLittle);
+        PXDataStreamReadI32U(inputStream, &renderSize[i]);
     }
-    
-    PXDataStreamReadI32U(inputStream, &vertexListSize, EndianLittle);
-    PXDataStreamReadI32U(inputStream, &normalListSize, EndianLittle);
-    PXDataStreamReadI32U(inputStream, &textureListSize, EndianLittle);
-    PXDataStreamReadI32U(inputStream, &parameterListSize, EndianLittle);
-    PXDataStreamReadI32U(inputStream, &indexListSize, EndianLittle);
-    PXDataStreamReadI32U(inputStream, &mtlInlclueesListSize, EndianLittle);
-    PXDataStreamReadI64U(inputStream, &mtlEmbeddedDataOffset, EndianLittle);
+
+    PXDataStreamReadI32U(inputStream, &vertexListSize);
+    PXDataStreamReadI32U(inputStream, &normalListSize);
+    PXDataStreamReadI32U(inputStream, &textureListSize);
+    PXDataStreamReadI32U(inputStream, &parameterListSize);
+    PXDataStreamReadI32U(inputStream, &indexListSize);
+    PXDataStreamReadI32U(inputStream, &mtlInlclueesListSize);
+    PXDataStreamReadI64U(inputStream, &mtlEmbeddedDataOffset);
 
     model->DataVertexListSize = sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize);
 
     PXSize expectedMaterialSize = (sizeof(PXMaterial) + 256)* 40;
     PXSize infoHeaderSize = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int)) + expectedMaterialSize;
     PXSize expectedSize = 40 * model->DataVertexListSize + infoHeaderSize;// +indexListSize;
-      
-   
+
+
     model->Data = MemoryAllocate(expectedSize);
     //---<End header>----------------------------------------------------------
 
@@ -516,7 +516,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
     //---<Lookup materials>----------------------------------------------------
 
     {
-        PXDataStream modelHeaderStream;      
+        PXDataStream modelHeaderStream;
 
         PXDataStreamFromExternal(&modelHeaderStream, model->Data, infoHeaderSize);
 
@@ -526,7 +526,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
         {
             PXDataStreamWriteCU(&modelHeaderStream, renderMode[meshIndex]); // Draw mode
             PXDataStreamWriteIU(&modelHeaderStream, renderSize[meshIndex], EndianLittle); // Draw amount
-            PXDataStreamWriteIU(&modelHeaderStream,(unsigned int)-1, EndianLittle); // Material ID, set later   
+            PXDataStreamWriteIU(&modelHeaderStream,(unsigned int)-1, EndianLittle); // Material ID, set later
         }
 #if OBJDetectMaterial
         //---<MTL to PXMaterial>-----------------------------------------------
@@ -574,7 +574,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                     }
                 }
             }
-        }    
+        }
 #endif
     }
 
@@ -593,7 +593,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
     PXDataStreamFromExternal(&materialIDLookupStream, (PXAdress)model->Data+1, infoHeaderSize);
     PXDataStreamFromExternal(&vertexArrayData, model->DataVertexList, expectedSize);
-     
+
 
     // Format: Ver Nor Tx Colo
     //         XYZ XYZ XY RGBA
@@ -646,11 +646,11 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
         {
             unsigned char lineTypeID = 0;
 
-            PXDataStreamReadI8U(inputStream, &lineTypeID); // Line Type     
+            PXDataStreamReadI8U(inputStream, &lineTypeID); // Line Type
 
             objLineType = lineTypeID;
         }
-   
+
         switch (objLineType)
         {
             //case OBJEmbeddedMTL:
@@ -675,7 +675,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                     case PXCompilerSymbolLexerInteger:
                     {
                         unsigned int value = 0;
-                        PXDataStreamReadI32U(inputStream, &value, EndianLittle);
+                        PXDataStreamReadI32U(inputStream, &value);
                         break;
                     }
 
@@ -693,7 +693,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                             const PXSize sizeEE = inputStream->DataSize - mtlEmbeddedDataOffset;
                             const PXSize amount = MTLFetchAmount(data, sizeEE);
 
-                            PXDataStreamReadI16U(inputStream, &size, EndianLittle);
+                            PXDataStreamReadI16U(inputStream, &size);
                             PXDataStreamReadTextA(inputStream, materialName, size);
 
                             PXDataStreamCursorAdvance(&materialIDLookupStream, sizeof(unsigned char) + sizeof(unsigned int));
@@ -709,10 +709,10 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
                                 if (isValid)
                                 {
-                                    PXDataStreamWriteIU(&materialIDLookupStream, i, EndianLittle); // Material ID, set later   
+                                    PXDataStreamWriteIU(&materialIDLookupStream, i, EndianLittle); // Material ID, set later
                                     break;
                                 }
-      
+
                             }
 #else
                             PXDataStreamReadI16U(inputStream, &size, EndianLittle);
@@ -723,7 +723,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                         {
                             unsigned char tttt[260];
 
-                            PXDataStreamReadI16U(inputStream, &size, EndianLittle);
+                            PXDataStreamReadI16U(inputStream, &size);
                             PXDataStreamReadTextA(inputStream, tttt, size);
                         }
 
@@ -740,7 +740,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
             case OBJLineVertexGeometric:
             case OBJLineVertexNormal:
             case OBJLineVertexParameter:
-            {       
+            {
                 unsigned char amountofValues;
                 float* adress;
                 PXSize* offset;
@@ -774,12 +774,12 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                         adress = 0;
                         offset = 0;
                         break;
-                }       
+                }
 
-                adress = &adress[*offset];           
+                adress = &adress[*offset];
 
                 PXDataStreamReadI8U(inputStream, &amountofValues);
-                PXDataStreamReadB(inputStream, adress, sizeof(float) * amountofValues);            
+                PXDataStreamReadB(inputStream, adress, sizeof(float) * amountofValues);
 
                 *offset += amountofValues;
 
@@ -788,17 +788,15 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
             case OBJLineFaceElement:
             {
-                unsigned char amountofValues = 0;            
+                unsigned char amountofValues = 0;
 
                 PXDataStreamReadI8U(inputStream, &amountofValues);
 
                 for (PXSize nodeIndex = 0; nodeIndex < amountofValues; ++nodeIndex)
                 {
-                    unsigned int indexList[3] = { -1, -1, -1 };
+                    PXInt32U indexList[3] = { -1, -1, -1 };
 
-                    PXDataStreamReadI32U(inputStream, &indexList[0], EndianLittle);
-                    PXDataStreamReadI32U(inputStream, &indexList[1], EndianLittle);
-                    PXDataStreamReadI32U(inputStream, &indexList[2], EndianLittle);
+                    PXDataStreamReadI32UV(inputStream, indexList, 3u);
 
                     const float* vertexValueIndex = &vertexValueList[indexList[0] * (3u)];
                     const float* textureValueIndex = &textureList[indexList[1] * (2u)];
@@ -807,7 +805,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                     PXDataStreamWriteP(&vertexArrayData, vertexValueIndex, sizeof(float) * 3u);
                     PXDataStreamWriteP(&vertexArrayData, normalValueIndex, sizeof(float) * 3u);
                     PXDataStreamWriteP(&vertexArrayData, textureValueIndex, sizeof(float) * 2u);
-                } 
+                }
 
                 break;
             }

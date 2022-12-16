@@ -13,7 +13,7 @@ void ModelConstruct(PXModel* const model)
 
 void ModelDestruct(PXModel* const model)
 {
-	
+
 }
 
 PXSize PXModelMaterialAmount(PXModel* const model)
@@ -26,18 +26,18 @@ PXSize PXModelMaterialAmount(PXModel* const model)
         {
             return 0; // No material
         }
-    } 
-       
+    }
+
     // Fetch materials
     {
         PXDataStream materialData;
         unsigned int amount = 0;
 
         PXDataStreamFromExternal(&materialData, model->MaterialList, -1);
-        PXDataStreamReadI32U(&materialData, &amount, EndianLittle);
+        PXDataStreamReadI32U(&materialData, &amount);
 
         return amount;
-    }  
+    }
 }
 
 PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial)
@@ -65,18 +65,18 @@ PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMater
         const PXBool isGoal = i == materialID;
         unsigned short materialSize = 0;
 
-        PXDataStreamReadI16U(&materialData, &materialSize, EndianLittle); // Total size    
+        PXDataStreamReadI16U(&materialData, &materialSize); // Total size
 
         if (isGoal)
         {
             unsigned short range = 0;
-            PXDataStreamReadI16U(&materialData, &range, EndianLittle);
+            PXDataStreamReadI16U(&materialData, &range);
             pxMaterial->Name = PXDataStreamCursorPosition(&materialData);
             pxMaterial->NameSize = range;
 
             PXDataStreamCursorAdvance(&materialData, range);
 
-            PXDataStreamReadI16U(&materialData, &range, EndianLittle);
+            PXDataStreamReadI16U(&materialData, &range);
             pxMaterial->DiffuseTextureFilePath = PXDataStreamCursorPosition(&materialData);
             pxMaterial->DiffuseTextureFilePathSize = range;
 
@@ -120,11 +120,11 @@ void ModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegmen
     {
         void* const segmentAdress = ModelSegmentsAdressGet(model, index);
         PXDataStreamFromExternal(&dataStream, segmentAdress, -1);
-    }  
+    }
 
     PXDataStreamReadI8U(&dataStream, &meshSegment->DrawStrideSize);
-    PXDataStreamReadI32U(&dataStream, &meshSegment->DrawClusterSize, EndianLittle);
-    PXDataStreamReadI32U(&dataStream, &meshSegment->TextureID, EndianLittle);
+    PXDataStreamReadI32U(&dataStream, &meshSegment->DrawClusterSize);
+    PXDataStreamReadI32U(&dataStream, &meshSegment->TextureID);
 
 	meshSegment->VertexData = model->DataVertexList;
 }
@@ -167,7 +167,7 @@ PXActionResult ModelLoadA(PXModel* const model, const char* const filePath)
 
 PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
 {
-    PXDataStream dataStream;    
+    PXDataStream dataStream;
 
     PXDataStreamConstruct(&dataStream);
     ModelConstruct(model);
@@ -181,7 +181,7 @@ PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
     {
         const FileFormatExtension modelFileFormat = FilePathExtensionDetectTryW(filePath, PathMaxSize);
         const PXActionResult fileParsingResult = ModelLoadD(model, &dataStream, modelFileFormat);
-       
+
         PXActionExitOnSuccess(fileParsingResult);
 
         PXActionResult fileGuessResult = PXActionInvalid;
@@ -199,7 +199,7 @@ PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
         PXDataStreamDestruct(&dataStream);
 
         return fileGuessResult;
-    }   
+    }
 }
 
 PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType)
@@ -216,12 +216,12 @@ PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, 
     {
  /*       case FileFormatA3DS:
         {
-           
+
             break;
         }
         case FileFormatFimBox:
         {
-           
+
             break;
         }*/
         case FileFormatOBJ:
@@ -232,17 +232,17 @@ PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, 
         }
    /*     case FileFormatPLY:
         {
-            
+
             break;
         }
         case FileFormatSTL:
         {
-            
+
             break;
         }
         case FileFormatVRML:
         {
-         
+
             break;
         }*/
         default:
