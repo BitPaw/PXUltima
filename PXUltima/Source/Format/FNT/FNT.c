@@ -345,8 +345,6 @@ FNTLineType PeekLineType(const void* line, const PXSize fileDataSize)
 		default:
 			return FNTLineUnkown;
 	}
-
-	return PXActionSuccessful;
 }
 
 void FNTPrtinf(const FNT* fnt)

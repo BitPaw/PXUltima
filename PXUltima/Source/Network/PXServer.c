@@ -102,6 +102,7 @@ PXActionResult PXServerStart(PXServer* const server, const unsigned short port, 
         InvokeEvent(pxSocket->ConnectionListeningCallback, pxSocket);
 
         const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, pxSocket);
+      
     }
 
     return PXActionSuccessful;

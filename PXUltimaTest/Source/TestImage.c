@@ -30,25 +30,25 @@ void TestSaveImageSmal()
     }
 
     const char* pathBMP = "_TEST_DATA_OUTPUT_/Smal_ImageBMP.bmp";
-    const ActionResult saveBMP = ImageSaveTest(&image, pathBMP, FileFormatBitMap, ImageDataFormatRGB8);
+    const PXActionResult saveBMP = ImageSaveTest(&image, pathBMP, FileFormatBitMap, ImageDataFormatRGB8);
 
-    if(saveBMP != ActionSuccessful)
+    if(saveBMP != PXActionSuccessful)
     {
         return saveBMP;
     }
 
     const char* pathPNG = "_TEST_DATA_OUTPUT_/Smal_ImagePNG.png";
-    const ActionResult savePNG = ImageSaveTest(&image, pathPNG, FileFormatPNG, ImageDataFormatRGB8);
+    const PXActionResult savePNG = ImageSaveTest(&image, pathPNG, FileFormatPNG, ImageDataFormatRGB8);
 
-    if(savePNG != ActionSuccessful)
+    if(savePNG != PXActionSuccessful)
     {
         return savePNG;
     }
 
     const char* pathJPG = "_TEST_DATA_OUTPUT_/Smal_ImageJPG.jpg";
-    const ActionResult saveJPG = ImageSaveTest(&image, pathJPG, FileFormatJPEG, ImageDataFormatRGB8);
+    const PXActionResult saveJPG = ImageSaveTest(&image, pathJPG, FileFormatJPEG, ImageDataFormatRGB8);
 
-    if(saveJPG != ActionSuccessful)
+    if(saveJPG != PXActionSuccessful)
     {
         return saveJPG;
     }
@@ -91,23 +91,23 @@ void TestSaveImage()
         }
     }
 
-    const ActionResult saveBMP = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageBMP.bmp", FileFormatBitMap, ImageDataFormatRGB8);
+    const PXActionResult saveBMP = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageBMP.bmp", FileFormatBitMap, ImageDataFormatRGB8);
     
-    if(saveBMP != ActionSuccessful)
+    if(saveBMP != PXActionSuccessful)
     {
         return saveBMP;
     }
     
-    const ActionResult savePNG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImagePNG.png", FileFormatPNG, ImageDataFormatRGB8);
+    const PXActionResult savePNG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImagePNG.png", FileFormatPNG, ImageDataFormatRGB8);
     
-    if(savePNG != ActionSuccessful)
+    if(savePNG != PXActionSuccessful)
     {
         return savePNG;
     }
     
-    const ActionResult saveJPG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageJPG.jpg", FileFormatJPEG, ImageDataFormatRGB8);
+    const PXActionResult saveJPG = ImageSaveTest(&image, "_TEST_DATA_OUTPUT_/Complex_ImageJPG.jpg", FileFormatJPEG, ImageDataFormatRGB8);
 
-    if(saveJPG != ActionSuccessful)
+    if(saveJPG != PXActionSuccessful)
     {
         return saveJPG;
     }
@@ -121,8 +121,8 @@ void ImageWriteText()
     PXFont font;
 
     {
-        const ActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
-        const PXBool successful = ActionSuccessful == actionResult;
+        const PXActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
+        const PXBool successful = PXActionSuccessful == actionResult;
 
         if (!successful)
         {
@@ -131,8 +131,8 @@ void ImageWriteText()
     }
 
     {
-        const ActionResult loadResult = ImageLoadTest(&image, "_TEST_DATA_INPUT_/ImageInput.bmp");
-        const PXBool successful = ActionSuccessful == loadResult;
+        const PXActionResult loadResult = ImageLoadTest(&image, "_TEST_DATA_INPUT_/ImageInput.bmp");
+        const PXBool successful = PXActionSuccessful == loadResult;
 
         if (!successful)
         {
@@ -157,9 +157,9 @@ void ImageWriteText()
 
     {
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_BMP.bmp";
-        const ActionResult saveBMP = ImageSaveTest(&image, path, FileFormatBitMap, ImageDataFormatRGB8);
+        const PXActionResult saveBMP = ImageSaveTest(&image, path, FileFormatBitMap, ImageDataFormatRGB8);
 
-        if(saveBMP != ActionSuccessful)
+        if(saveBMP != PXActionSuccessful)
         {
             return saveBMP;
         }
@@ -168,9 +168,9 @@ void ImageWriteText()
   
     {
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_JPG.jpeg";
-        const ActionResult saveJPEG = ImageSaveTest(&image, path, FileFormatJPEG, ImageDataFormatRGB8);
+        const PXActionResult saveJPEG = ImageSaveTest(&image, path, FileFormatJPEG, ImageDataFormatRGB8);
 
-        if(saveJPEG != ActionSuccessful)
+        if(saveJPEG != PXActionSuccessful)
         {
             return saveJPEG;
         }
@@ -178,9 +178,9 @@ void ImageWriteText()
 
     {
         const char* path = "_TEST_DATA_OUTPUT_/TextWrite_TEST_TextWrite_PNG.png";
-        const ActionResult savePNG = ImageSaveTest(&image, path, FileFormatPNG, ImageDataFormatRGBA8);
+        const PXActionResult savePNG = ImageSaveTest(&image, path, FileFormatPNG, ImageDataFormatRGBA8);
 
-        if(savePNG != ActionSuccessful)
+        if(savePNG != PXActionSuccessful)
         {
             return savePNG;
         }
@@ -201,11 +201,11 @@ void TestImageAll()
     printf("[i] Test image finished\n");
 }
 
-ActionResult ImageLoadTest(Image* const image, const char* const filePath)
+PXActionResult ImageLoadTest(Image* const image, const char* const filePath)
 {
-    const ActionResult savePNG = ImageLoadA(image, filePath);
+    const PXActionResult savePNG = ImageLoadA(image, filePath);
 
-    if(savePNG != ActionSuccessful)
+    if(savePNG != PXActionSuccessful)
     {
         printf("[x][Error] Image loading FAILED! ErrorID:%i Path:\"%s\"\n", savePNG, filePath);
     }
@@ -218,11 +218,11 @@ ActionResult ImageLoadTest(Image* const image, const char* const filePath)
     return savePNG;
 }
 
-ActionResult ImageSaveTest(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+PXActionResult ImageSaveTest(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
-    const ActionResult savePNG = ImageSaveA(image, filePath, fileFormat, dataFormat);
+    const PXActionResult savePNG = ImageSaveA(image, filePath, fileFormat, dataFormat);
 
-    if (savePNG != ActionSuccessful)
+    if (savePNG != PXActionSuccessful)
     {
         printf("[x][Error] Image saving FAILED! ErrorID:%i Path:\"%s\"\n", savePNG, filePath);
     }

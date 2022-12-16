@@ -4,8 +4,8 @@
 #include <Format/Type.h>
 
 
-#define PitchMaximum 2.9
-#define PitchMinimum 0.2
+#define PitchMaximum 2.9f
+#define PitchMinimum 0.2f
 #define SoundDeviceProductName 32u
 
 #if OSUnix
@@ -190,7 +190,7 @@ extern "C"
 		const unsigned int loopControlCounter
 	);
 	PXPublic AudioResult AudioOutputClose(AudioDeviceOutput* const audioDeviceOutput);
-	PXPublic AudioResult AudioOutputVolumeGet(AudioDeviceOutput* const audioDeviceOutput, const unsigned short* volume);
+	PXPublic AudioResult AudioOutputVolumeGet(AudioDeviceOutput* const audioDeviceOutput, unsigned short* const volume);
 
 	PXPublic AudioResult AudioOutputVolumeSetEqual(AudioDeviceOutput* const audioDeviceOutput, const unsigned int volume);
 	PXPublic AudioResult AudioOutputVolumeSetIndividual(AudioDeviceOutput* const audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight);

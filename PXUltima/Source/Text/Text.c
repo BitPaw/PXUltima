@@ -401,7 +401,7 @@ void TextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* dataBuffe
 		}
 	}
 
-	for (size_t i = 1; i < utfTrailBytesAmount; ++i)
+	for (PXSize i = 1; i < (PXSize)utfTrailBytesAmount; ++i)
 	{
 		dataBuffer[i] = 0b10000000 | ((symbol & (0b111111 << 6u * i)) >> 6u * i);
 	}

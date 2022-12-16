@@ -136,10 +136,10 @@ PXActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
         } 
         while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
+        PXDataStreamDestruct(&dataStream);
+
         return fileGuessResult;
     }
-
-    PXDataStreamDestruct(&dataStream);
 }
 
 PXActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat)

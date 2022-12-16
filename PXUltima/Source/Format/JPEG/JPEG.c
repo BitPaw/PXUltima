@@ -784,7 +784,7 @@ void writeBits(PXDataStream* PXDataStream, BitBuffer* buffer, BitCode data)
     {
         // extract highest 8 bits
         buffer->numBits -= 8;
-        auto oneByte = (buffer->bits >> buffer->numBits) & 0xFF;
+        const PXInt8U oneByte = (buffer->bits >> buffer->numBits) & 0xFF;
         PXDataStreamWriteCU(PXDataStream, oneByte);
 
         if(oneByte == 0xFF) // 0xFF has a special meaning for JPEGs (it's a block marker)
@@ -950,12 +950,12 @@ void generateHuffmanTable(const uint8_t numCodes[16], const uint8_t* values, Bit
 {
     uint16_t huffmanCode = 0; // no JPEG Huffman code exceeds 16 bits
     // process all bitsizes 1 thru 16
-    for(auto numBits = 1; numBits <= 16; numBits++)
+    for(PXInt8U numBits = 1; numBits <= 16; numBits++)
     {
         // ... and each code of these bitsizes
-        for(auto i = 0; i < numCodes[numBits - 1]; i++) // note: numCodes array starts at zero, but smallest bitsize is 1
+        for(PXInt8U i = 0; i < numCodes[numBits - 1]; i++) // note: numCodes array starts at zero, but smallest bitsize is 1
         {
-            auto current = *values++;
+            const PXInt8U current = *values++;
             result[current].code = huffmanCode++;
             result[current].numBits = numBits;
         }
@@ -1151,12 +1151,13 @@ PXActionResult JPEGSerializeFromImage(const Image* const image, void* data, cons
     PXDataStreamWriteCU(&dataStream, 0u); // successive approximation: must be  0
 
     // adjust quantization tables with AAN scaling factors to simplify DCT
-    float scaledLuminance[8 * 8];
-    float scaledChrominance[8 * 8];
-    for(auto i = 0; i < 8 * 8; ++i)
+    float scaledLuminance[64u];
+    float scaledChrominance[64u];
+  
+    for(PXSize i = 0; i < 64u; ++i)
     {
-        auto row = ZigZagInv[i] / 8; // same as i >> 3
-        auto column = ZigZagInv[i] % 8; // same as i &  7
+        const PXInt8U row = ZigZagInv[i] / 8; // same as i >> 3
+        const PXInt8U column = ZigZagInv[i] % 8; // same as i &  7
         float factor = 1 / (AanScaleFactors[row] * AanScaleFactors[column] * 8);
         scaledLuminance[ZigZagInv[i]] = factor / quantLuminance[i];
         scaledChrominance[ZigZagInv[i]] = factor / quantChrominance[i];
@@ -1193,25 +1194,25 @@ PXActionResult JPEGSerializeFromImage(const Image* const image, void* data, cons
     MemorySet(blue, sizeof(float) * 8 * 8, 0);
 
     // process MCUs (minimum codes units)
-    for(int mcuY = 0; mcuY < image->Height; mcuY += 8u * sampling)
-        for(int mcuX = 0; mcuX < image->Width; mcuX += 8u * sampling)
+    for(PXSize mcuY = 0; mcuY < image->Height; mcuY += 8u * sampling)
+        for(PXSize mcuX = 0; mcuX < image->Width; mcuX += 8u * sampling)
         {
             // YCbCr 4:4:4 format: each MCU is a 8x8 block - the same applies to grayscale images, too
             // YCbCr 4:2:0 format: each MCU represents a 16x16 block, stored as 4x 8x8 Y-blocks plus 1x 8x8 Cb and 1x 8x8 Cr blocks)
-            for(int block = 0; block < numSamples; block++) // this loop is iterated once (grayscale, 4:4:4) or four times (4:2:0)
+            for(PXSize block = 0; block < numSamples; block++) // this loop is iterated once (grayscale, 4:4:4) or four times (4:2:0)
             {
                 // subdivide into 8x8 blocks where blockX and blockY indicate the minimum x and y of the current block
-                int blockX = 8 * (block & 1); // same as 8 * (block % 2) => { 0, 8, 0, 8 }
-                int blockY = 4 * (block & 2); // same as 8 * (block / 2) => { 0, 0, 8, 8 }
+                PXSize blockX = 8 * (block & 1); // same as 8 * (block % 2) => { 0, 8, 0, 8 }
+                PXSize blockY = 4 * (block & 2); // same as 8 * (block / 2) => { 0, 0, 8, 8 }
 
                 // now we finally have an 8x8 block ...
-                for(int deltaY = 0; deltaY < 8; deltaY++)
-                    for(int deltaX = 0; deltaX < 8; deltaX++)
+                for(PXSize deltaY = 0; deltaY < 8; deltaY++)
+                    for(PXSize deltaX = 0; deltaX < 8; deltaX++)
                     {
                         // find actual pixel position within the current image
-                        int column = MathMinimumI(mcuX + blockX + deltaX, image->Width - 1); // must not exceed image borders, replicate last row/column if needed
-                        int row = MathMinimumI(mcuY + blockY + deltaY, image->Height - 1);
-                        int pixelPos = row * image->Width + column; // the cast ensures that we don't run into multiplication overflows
+                        PXSize column = MathMinimumI(mcuX + blockX + deltaX, image->Width - 1); // must not exceed image borders, replicate last row/column if needed
+                        PXSize row = MathMinimumI(mcuY + blockY + deltaY, image->Height - 1);
+                        PXSize pixelPos = row * image->Width + column; // the cast ensures that we don't run into multiplication overflows
 
                         // grayscale images have solely a Y channel which can be easily derived from the input pixel by shifting it by 128
                         if(!isRGB)
@@ -1232,8 +1233,8 @@ PXActionResult JPEGSerializeFromImage(const Image* const image, void* data, cons
                         if(downsample)
                         {
                             // defer Cb/Cr computation if YCbCr420 mode: we must average 2x2 pixels, so let's "shrink" a 16x16 area to 8x8
-                            int x = (blockX + deltaX) / 2;
-                            int y = (blockY + deltaY) / 2;
+                            PXSize x = (blockX + deltaX) / 2;
+                            PXSize y = (blockY + deltaY) / 2;
 
                             // add red, green, blue (note: each number should be weighted by 1/4, this is done later)
                             red[y][x] += r;
@@ -1259,9 +1260,9 @@ PXActionResult JPEGSerializeFromImage(const Image* const image, void* data, cons
             // YCbCr420 / downsampled: convert summed RGB values to Cb and Cr
             if(downsample)
             {
-                for(int y = 0; y < 8; y++)
+                for(PXSize y = 0; y < 8; y++)
                 {
-                    for(int x = 0; x < 8; x++)
+                    for(PXSize x = 0; x < 8; x++)
                     {
                         // each number in the arrays "red", "green" and "blue" consists of the summed values of four pixels
                         // so I still have to divide them by 4 to get their average value

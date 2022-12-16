@@ -269,8 +269,8 @@ extern "C"
 	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
 
 #if OSWindows
-	PXPrivate PXActionResult WindowsSocketAgentStartup();
-	PXPrivate PXActionResult WindowsSocketAgentShutdown();
+	PXPrivate PXActionResult WindowsSocketAgentStartup(void);
+	PXPrivate PXActionResult WindowsSocketAgentShutdown(void);
 #endif
 
 #ifdef __cplusplus

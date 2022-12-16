@@ -444,9 +444,9 @@ PXBool GraphicRenderableListGetFromIndex(const GraphicContext* const graphicCont
 
     } 
     while (PXLinkedListFixedNodeNext(&graphicContext->_renderList, &currentModel));
-#endif
 
     return PXNo;
+#endif  
 }
 
 PXActionResult GraphicModelCreate(GraphicContext* const graphicContext, PXModel** const pxModel)

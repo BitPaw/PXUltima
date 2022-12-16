@@ -28,7 +28,7 @@ void PXCameraDestruct(PXCamera* const camera)
 
 }
 
-void PXCameraViewChangeToOrthographic(PXCamera* const camera, const float width, const float height, const float nearPlane, const float farPlane)
+void PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane)
 {
 	const float scaling = 0.10;
 	const float left = -(width / 2.0f) * scaling;

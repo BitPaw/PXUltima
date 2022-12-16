@@ -53,7 +53,7 @@ extern "C"
 	PXPublic void PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height);
 
 	PXPublic void PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective cameraPerspective);
-	PXPublic void PXCameraViewChangeToOrthographic(PXCamera* const camera, const float width, const float height, const float nearPlane, const float farPlane);
+	PXPublic void PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane);
 	PXPublic void PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOfView, const float aspectRatio, const float nearPlane, const float farPlane);
 	//-----------
 

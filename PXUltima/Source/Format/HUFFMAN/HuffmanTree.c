@@ -293,8 +293,8 @@ tree of the dynamic huffman tree lengths is generated*/
 			}
 			else if (code == 16) /*repeat previous*/
 			{
-				unsigned replength = 3; /*read in the 2 bits that indicate repeat length (3-6)*/
-				unsigned value; /*set value to the previous code*/
+				PXSize replength = 3; /*read in the 2 bits that indicate repeat length (3-6)*/
+				PXSize value; /*set value to the previous code*/
 
 				if (i == 0) return(54); /*can't repeat previous if i is 0*/
 
@@ -328,7 +328,7 @@ tree of the dynamic huffman tree lengths is generated*/
 			}
 			else if (code == 18) /*repeat "0" 11-138 times*/
 			{
-				unsigned replength = 11; /*read in the bits that indicate repeat length*/
+				PXSize replength = 11; /*read in the bits that indicate repeat length*/
 				replength += PXDataStreamReadBits(dataStream, 7u);
 
 				/*repeat this value in the next lengths*/

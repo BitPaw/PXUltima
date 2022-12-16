@@ -2086,11 +2086,11 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
     #if OSWindows
     {
-        UpdateWindow(window->ID);
+        UpdateWindow(windowID);
 
         if (!isHidden)
         {
-            ShowWindow(window->ID, SW_SHOW);
+            ShowWindow(windowID, SW_SHOW);
         }
     }
     #endif

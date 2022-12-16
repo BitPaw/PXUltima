@@ -14,9 +14,11 @@ PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize 
     return 0;
 }
 
-PXActionResult GIFLoad(GIF* gif, PXDataStream* const dataStream)
+PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStream)
 {
-    MemoryClear(gif, sizeof(GIF));
+    GIF gif;
+
+    MemoryClear(&gif, sizeof(GIF));
 
     // Check Header
     {
@@ -41,31 +43,31 @@ PXActionResult GIFLoad(GIF* gif, PXDataStream* const dataStream)
             {
                 return PXActionRefusedInvalidVersion;
             }
-        }    
+        }
     }
 
     // Logical Screen Descriptor.
     {
-        PXDataStreamReadI16U(dataStream, &gif->Width, EndianLittle);
-        PXDataStreamReadI16U(dataStream, &gif->Height, EndianLittle);
+        PXDataStreamReadI16U(dataStream, &gif.Width, EndianLittle);
+        PXDataStreamReadI16U(dataStream, &gif.Height, EndianLittle);
 
         unsigned char packedFields = 0;
 
         PXDataStreamReadI8U(dataStream, &packedFields);
-        PXDataStreamReadI8U(dataStream, &gif->BackgroundColorIndex);
-        PXDataStreamReadI8U(dataStream, &gif->PixelAspectRatio);
+        PXDataStreamReadI8U(dataStream, &gif.BackgroundColorIndex);
+        PXDataStreamReadI8U(dataStream, &gif.PixelAspectRatio);
 
-        gif->GlobalColorTableSize = packedFields & 0b00000111;
-        gif->IsSorted = (packedFields & 0b00001000) >> 3;
-        gif->ColorResolution = (packedFields & 0b01110000) >> 4;
-        gif->IsGlobalColorTablePresent = (packedFields & 0b10000000) >> 7;
+        gif.GlobalColorTableSize = packedFields & 0b00000111;
+        gif.IsSorted = (packedFields & 0b00001000) >> 3;
+        gif.ColorResolution = (packedFields & 0b01110000) >> 4;
+        gif.IsGlobalColorTablePresent = (packedFields & 0b10000000) >> 7;
 
-        if(gif->IsGlobalColorTablePresent)
+        if (gif.IsGlobalColorTablePresent)
         {
             //---<Image Descriptor>--------------------------------------------
 
             // 3 x 2^(Size of Global Color Table+1).
-            PXSize size = 3 * MathPowerOfTwo(gif->GlobalColorTableSize + 1); // ???
+            PXSize size = 3 * MathPowerOfTwo(gif.GlobalColorTableSize + 1); // ???
 
             GIFImageDescriptor imageDescriptor;
 
@@ -84,7 +86,7 @@ PXActionResult GIFLoad(GIF* gif, PXDataStream* const dataStream)
             imageDescriptor.InterlaceFlag = (packedFields & 0b01000000) >> 6;
             imageDescriptor.LocalColorTableFlag = (packedFields & 0b10000000) >> 7;
 
-            if(imageDescriptor.LocalColorTableFlag)
+            if (imageDescriptor.LocalColorTableFlag)
             {
                 //---<Local Color Table>---------------------------------------
 
@@ -101,11 +103,6 @@ PXActionResult GIFLoad(GIF* gif, PXDataStream* const dataStream)
 
 
     return PXActionSuccessful;
-}
-
-PXActionResult GIFParseToImage(Image* const image, const void* const data, const PXSize dataSize, PXSize* dataRead)
-{
-    return PXActionInvalid;
 }
 
 PXActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)

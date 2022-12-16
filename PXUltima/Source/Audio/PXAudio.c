@@ -81,9 +81,9 @@ void AudioSourceConstruct(AudioSource* const audioSource)
 {
 	MemoryClear(audioSource, sizeof(AudioSource));
 
-	audioSource->Pitch = 0.4;
-	audioSource->Volume = 0.02;
-	audioSource->Looping = 1;
+	audioSource->Pitch = 0.4f;
+	audioSource->Volume = 0.02f;
+	audioSource->Looping = PXTrue;
 }
 
 void AudioSourcePitchIncrease(AudioSource* const audioSource, float amount)
@@ -216,7 +216,7 @@ AudioResult AudioOutputClose(AudioDeviceOutput* audioDeviceOutput)
 #endif
 }
 
-AudioResult AudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigned short* volume)
+AudioResult AudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigned short* const volume)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -251,8 +251,6 @@ AudioResult AudioOutputVolumeSetEqual(AudioDeviceOutput* audioDeviceOutput, cons
 
 	return audioResult;
 #endif
-
-	return AudioResultInvalid;
 }
 
 AudioResult AudioOutputVolumeSetIndividual(AudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight)

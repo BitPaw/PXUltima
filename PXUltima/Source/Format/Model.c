@@ -174,23 +174,15 @@ PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
 
     {
         const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
-        const unsigned char sucessful = fileLoadingResult == PXActionSuccessful;
 
-        if (!sucessful)
-        {
-            return fileLoadingResult;
-        }
+        PXActionExitOnError(fileLoadingResult);
     }
 
     {
         const FileFormatExtension modelFileFormat = FilePathExtensionDetectTryW(filePath, PathMaxSize);
         const PXActionResult fileParsingResult = ModelLoadD(model, &dataStream, modelFileFormat);
-        const unsigned char success = fileParsingResult == PXActionSuccessful;
-
-        if (success)
-        {
-            return PXActionSuccessful;
-        }
+       
+        PXActionExitOnSuccess(fileParsingResult);
 
         PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;
@@ -204,10 +196,10 @@ PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
             fileFormatID++;
         } while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
-        return fileGuessResult;
-    }
+        PXDataStreamDestruct(&dataStream);
 
-    PXDataStreamDestruct(&dataStream);
+        return fileGuessResult;
+    }   
 }
 
 PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType)

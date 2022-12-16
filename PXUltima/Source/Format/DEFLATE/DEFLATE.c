@@ -1144,9 +1144,9 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
     memset(maxlens, 0, headsize * sizeof(*maxlens));
     for(i = 0; i < tree->numcodes; i++)
     {
-        unsigned symbol = tree->codes[i];
-        unsigned l = tree->lengths[i];
-        unsigned index;
+        PXSize symbol = tree->codes[i];
+        PXSize l = tree->lengths[i];
+        PXSize index;
         if(l <= FIRSTBITS) continue; /*symbols that fit in first table don't increase secondary table size*/
         /*get the FIRSTBITS MSBs, the MSBs of the symbol are encoded first. See later comment about the reversing*/
         index = reverseBits(symbol >> (l - FIRSTBITS), FIRSTBITS);
@@ -1156,7 +1156,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
     size = headsize;
     for(i = 0; i < headsize; ++i)
     {
-        unsigned l = maxlens[i];
+        unsigned int l = maxlens[i];
         if(l > FIRSTBITS) size += (1u << (l - FIRSTBITS));
     }
     tree->table_len = (unsigned char*)MemoryAllocate(size * sizeof(*tree->table_len));
@@ -1174,7 +1174,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
     pointer = headsize;
     for(i = 0; i < headsize; ++i)
     {
-        unsigned l = maxlens[i];
+        PXSize l = maxlens[i];
         if(l <= FIRSTBITS) continue;
         tree->table_len[i] = l;
         tree->table_value[i] = pointer;
@@ -1187,8 +1187,8 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
     numpresent = 0;
     for(i = 0; i < tree->numcodes; ++i)
     {
-        unsigned l = tree->lengths[i];
-        unsigned symbol, reverse;
+        PXSize l = tree->lengths[i];
+        PXSize symbol, reverse;
         if(l == 0) continue;
         symbol = tree->codes[i]; /*the huffman bit pattern. i itself is the value.*/
         /*reverse bits, because the huffman bits are given in MSB first order but the bit reader reads LSB first*/
@@ -1198,12 +1198,12 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
         if(l <= FIRSTBITS)
         {
             /*short symbol, fully in first table, replicated num times if l < FIRSTBITS*/
-            unsigned num = 1u << (FIRSTBITS - l);
-            unsigned j;
+            PXSize num = 1u << (FIRSTBITS - l);
+            PXSize j;
             for(j = 0; j < num; ++j)
             {
                 /*bit reader will read the l bits of symbol first, the remaining FIRSTBITS - l bits go to the MSB's*/
-                unsigned index = reverse | (j << l);
+                PXSize index = reverse | (j << l);
                 if(tree->table_len[index] != 16) return 55; /*invalid tree: long symbol shares prefix with short symbol*/
                 tree->table_len[index] = l;
                 tree->table_value[index] = i;
@@ -1213,18 +1213,18 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
         {
             /*long symbol, shares prefix with other long symbols in first lookup table, needs second lookup*/
             /*the FIRSTBITS MSBs of the symbol are the first table index*/
-            unsigned index = reverse & mask;
-            unsigned maxlen = tree->table_len[index];
+            PXSize index = reverse & mask;
+            PXSize maxlen = tree->table_len[index];
             /*log2 of secondary table length, should be >= l - FIRSTBITS*/
-            unsigned tablelen = maxlen - FIRSTBITS;
-            unsigned start = tree->table_value[index]; /*starting index in secondary table*/
-            unsigned num = 1u << (tablelen - (l - FIRSTBITS)); /*amount of entries of this symbol in secondary table*/
-            unsigned j;
+            PXSize tablelen = maxlen - FIRSTBITS;
+            PXSize start = tree->table_value[index]; /*starting index in secondary table*/
+            PXSize num = 1u << (tablelen - (l - FIRSTBITS)); /*amount of entries of this symbol in secondary table*/
+            PXSize j;
             if(maxlen < l) return 55; /*invalid tree: long symbol shares prefix with short symbol*/
             for(j = 0; j < num; ++j)
             {
-                unsigned reverse2 = reverse >> FIRSTBITS; /* l - FIRSTBITS bits */
-                unsigned index2 = start + (reverse2 | (j << (l - FIRSTBITS)));
+                PXSize reverse2 = reverse >> FIRSTBITS; /* l - FIRSTBITS bits */
+                PXSize index2 = start + (reverse2 | (j << (l - FIRSTBITS)));
                 tree->table_len[index2] = l;
                 tree->table_value[index2] = i;
             }
@@ -1268,28 +1268,27 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
 
 static unsigned HuffmanTree_makeFromLengths2(HuffmanTree* tree)
 {
-    unsigned* blcount;
-    unsigned* nextcode;
-    unsigned error = 0;
-    unsigned bits, n;
+    unsigned int* blcount;
+    unsigned int* nextcode;
+    PXSize error = 0;
 
-    tree->codes = (unsigned*)MemoryAllocate(tree->numcodes * sizeof(unsigned));
-    blcount = (unsigned*)MemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned));
-    nextcode = (unsigned*)MemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned));
+    tree->codes = (unsigned int*)MemoryAllocate(tree->numcodes * sizeof(unsigned int));
+    blcount = (unsigned int*)MemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned int));
+    nextcode = (unsigned int*)MemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned int));
     if(!tree->codes || !blcount || !nextcode) error = 83; /*alloc fail*/
 
     if(!error)
     {
-        for(n = 0; n != tree->maxbitlen + 1; n++) blcount[n] = nextcode[n] = 0;
+        for(PXSize n = 0; n != tree->maxbitlen + 1; n++) blcount[n] = nextcode[n] = 0;
         /*step 1: count number of instances of each code length*/
-        for(bits = 0; bits != tree->numcodes; ++bits) ++blcount[tree->lengths[bits]];
+        for(PXSize bits = 0; bits != tree->numcodes; ++bits) ++blcount[tree->lengths[bits]];
         /*step 2: generate the nextcode values*/
-        for(bits = 1; bits <= tree->maxbitlen; ++bits)
+        for(PXSize bits = 1; bits <= tree->maxbitlen; ++bits)
         {
             nextcode[bits] = (nextcode[bits - 1] + blcount[bits - 1]) << 1u;
         }
         /*step 3: generate all the codes*/
-        for(n = 0; n != tree->numcodes; ++n)
+        for(PXSize n = 0; n != tree->numcodes; ++n)
         {
             if(tree->lengths[n] != 0)
             {

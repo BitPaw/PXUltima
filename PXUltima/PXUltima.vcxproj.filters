@@ -408,6 +408,9 @@
     <ClInclude Include="Source\File\PXDataStream.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\AI\KalmanFilter\PXKalmanFilter.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -797,10 +800,14 @@
     <ClCompile Include="Source\File\PXDataStream.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AI\KalmanFilter\PXKalmanFilter.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
     <None Include="Source\Audio\README.md" />
+    <None Include="Source\AI\KalmanFilter\README.md" />
   </ItemGroup>
 </Project>

@@ -85,10 +85,10 @@ PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
         }
         while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
+        PXDataStreamDestruct(&dataStream);
+
         return fileGuessResult;
     }
-
-    PXDataStreamDestruct(&dataStream);
 }
 
 PXActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath)

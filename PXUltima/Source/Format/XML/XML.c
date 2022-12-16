@@ -70,7 +70,9 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
     PXCompilerSymbolEntry compilerSymbolEntry;
     unsigned char depthCounter = 0;
-    PXBool reuseModifiedToken = 0;   
+    PXBool reuseModifiedToken = 0;
+
+    MemoryClear(&compilerSymbolEntry, sizeof(PXCompilerSymbolEntry));
 
     while (!PXDataStreamIsAtEnd(&tokenSteam))
     {
@@ -283,7 +285,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
         PXDataStreamReadI8U(outputStream, &depth);
         PXDataStreamReadI8U(outputStream, &mode);
 
-        for (PXSize i = 0; i < depth+1; ++i)
+        for (PXSize i = 0; i < (PXSize)depth+1; ++i)
         {
             printf("  ");
         }

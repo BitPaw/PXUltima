@@ -1,6 +1,5 @@
 #include "PXLibrary.h"
 
-
 #if OSUnix
 
 #elif OSWindows
@@ -21,7 +20,6 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 }*/
 
 #endif
-
 
 /*
 dlopen() - gain access to an executable object file
@@ -71,75 +69,52 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 	return ErrorCode::Successful;
 }*/
 
-PXBool LibraryOpenA(LibraryHandle* Handle, const char* filePath)
+PXBool LibraryOpenA(PXLibrary* const pxLibrary, const char* filePath)
 {
 #if OSUnix
 	const int mode = RTLD_NOW;
-	LibraryHandle libraryHandle = dlopen(filePath, mode);
+	pxLibrary->ID = dlopen(filePath, mode);
 
 #elif OSWindows
-	const LibraryHandle libraryHandle = LoadLibraryA(filePath);
-
+	pxLibrary->ID = LoadLibraryA(filePath);
 #endif
 
-	{
-		const PXBool sucessful = libraryHandle != 0;
-
-		if(!sucessful)
-		{
-			return 0;
-		}
-	}
-
-	Handle = libraryHandle;
-
-	return 1u;
+	return pxLibrary->ID != PXNull;
 }
 
-PXBool LibraryOpenW(LibraryHandle* Handle, const wchar_t* filePath)
+PXBool LibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* filePath)
 {
 #if OSUnix
 	return Open((char*)filePath);
 #elif OSWindows
-	const LibraryHandle libraryHandle = LoadLibraryW(filePath);
+	pxLibrary->ID = LoadLibraryW(filePath);
 
-	{
-		const PXBool sucessful = libraryHandle != 0;
-
-		if(!sucessful)
-		{
-			return 0;
-		}
-	}
-
-	Handle = libraryHandle;
-
-	return 1u;
+	return pxLibrary->ID != PXNull;
 #endif
 }
 
-PXBool LibraryClose(LibraryHandle* Handle)
+PXBool LibraryClose(PXLibrary* const pxLibrary)
 {
 	const PXBool result =
 #if OSUnix
-	dlclose(Handle);
+		dlclose(pxLibrary->ID);
 #elif OSWindows
-	FreeLibrary(Handle);
+		FreeLibrary(pxLibrary->ID);
 #endif
 
-	Handle = 0;
+	pxLibrary->ID = PXNull;
 
 	return result;
 }
 
-PXBool LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName)
+PXBool LibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const char* symbolName)
 {
 #if OSUnix
-	const LibraryFunction functionPointer = (LibraryFunction*)dlsym(handle, symbolName);
+	const LibraryFunction functionPointer = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName);
 	const char* errorString = dlerror();
 	const PXBool successful = errorString;
 #elif OSWindows
-	const LibraryFunction functionPointer = GetProcAddress(handle, symbolName);
+	const LibraryFunction functionPointer = GetProcAddress(pxLibrary->ID, symbolName);
 	const PXBool successful = functionPointer;
 #endif
 
@@ -155,7 +130,7 @@ PXBool LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction,
 unsigned char LibraryParseSymbols()
 {
 #if OSUnix
-
+	return PXFalse;
 
 #elif OSWindows
 	/*

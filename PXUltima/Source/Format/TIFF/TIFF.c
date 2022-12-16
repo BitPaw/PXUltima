@@ -291,8 +291,6 @@ PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
                 }
             }
 
-            break; // TEST
-
             PXDataStreamReadI32U(dataStream, &tiffPage.OffsetToNextIFD, tIFFHeader.Endianness); // 4-Bytes
         }
 

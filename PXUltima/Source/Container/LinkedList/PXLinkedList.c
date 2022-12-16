@@ -22,7 +22,7 @@ void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* co
     linkedListFixed->NodeSize = nodeSize;
     linkedListFixed->DataEntryLast = data;
 
-    if(nodeSize != (void*)nodeSize)
+    if(nodeSize != (void*)-1)
     {
         MemoryClear(data, nodeSize * dataSize);
     }

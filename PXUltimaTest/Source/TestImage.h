@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Image.h>
 #include <File/File.h>
 
@@ -14,13 +14,13 @@ extern "C"
 
     extern void TestImageAll();
 
-    extern ActionResult ImageLoadTest(Image* const image, const char* const filePath);
+    extern PXActionResult ImageLoadTest(Image* const image, const char* const filePath);
     extern void TestSaveImageSmal();
     extern void TestSaveImage();
     extern void ImageWriteText();
 
-    ActionResult ImageLoadTest(Image* const image, const char* const filePath);
-    ActionResult ImageSaveTest(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+    PXActionResult ImageLoadTest(Image* const image, const char* const filePath);
+    PXActionResult ImageSaveTest(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
 
 #ifdef __cplusplus
 }

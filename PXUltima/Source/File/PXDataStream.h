@@ -117,8 +117,8 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Parsing Utility>-----------------------------------------------------
-	PXPublic PXSize PXDataStreamRemainingSize(PXDataStream* const dataStream);
-	PXPublic unsigned char PXDataStreamIsAtEnd(PXDataStream* const dataStream);
+	PXPublic inline PXSize PXDataStreamRemainingSize(const PXDataStream* __restrict const dataStream);
+	PXPublic inline PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream);
 
 	PXPublic void* PXDataStreamCursorPosition(PXDataStream* const dataStream);
 	PXPublic void PXDataStreamCursorToBeginning(PXDataStream* const dataStream);

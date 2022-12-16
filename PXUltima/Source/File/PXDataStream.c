@@ -754,32 +754,24 @@ PXActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 		{
 			const BOOL flushSuccessful = FlushViewOfFile(dataStream->Data, dataStream->DataCursor);
 
-			printf("");
+			PXActionOnErrorFetchAndExit(flushSuccessful);
 		}
 	}
 
 	{
-		const unsigned char unmappingSucessful = UnmapViewOfFile(dataStream->Data);
+		const PXBool unmappingSucessful = UnmapViewOfFile(dataStream->Data);
 
-		if (!unmappingSucessful)
-		{
-			//const ErrorCode error = GetCurrentError();
+		PXActionOnErrorFetchAndExit(unmappingSucessful);
 
-			return PXActionInvalid; // TODO: fix this
-		}
-
-		dataStream->Data = 0;
+		dataStream->Data = PXNull;
 	}
 
 	{
-		const unsigned char closeMappingSucessful = CloseHandle(dataStream->IDMapping);
+		const PXBool closeMappingSucessful = CloseHandle(dataStream->IDMapping);
 
-		if (!closeMappingSucessful)
-		{
-			return PXActionInvalid; // TODO: fix this
-		}
+		PXActionOnErrorFetchAndExit(closeMappingSucessful);
 
-		dataStream->IDMapping = 0;
+		dataStream->IDMapping = PXNull;
 	}
 
 	// Close
@@ -799,26 +791,22 @@ PXActionResult PXDataStreamUnmapFromMemory(PXDataStream* const dataStream)
 		}
 
 		const PXActionResult closeFile = PXDataStreamClose(dataStream);
-		const unsigned char sucessful = PXActionSuccessful == closeFile;
 
-		if (!sucessful)
-		{
+		PXActionExitOnError(closeFile);
 
-		}
-
-		dataStream->FileHandle = 0;
+		dataStream->FileHandle = PXNull;
 	}
 
 	return PXActionSuccessful;
 #endif
 }
 
-PXSize PXDataStreamRemainingSize(PXDataStream* const dataStream)
+PXSize PXDataStreamRemainingSize(const PXDataStream* __restrict const dataStream)
 {
 	return dataStream->DataSize - dataStream->DataCursor;
 }
 
-unsigned char PXDataStreamIsAtEnd(PXDataStream* const dataStream)
+PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream)
 {
 	return dataStream->DataCursor >= dataStream->DataSize;
 }
@@ -863,7 +851,7 @@ PXSize PXDataStreamReadNextLineInto(PXDataStream* const dataStream, void* export
 	while (!PXDataStreamIsAtEnd(dataStream))
 	{
 		const unsigned char* data = PXDataStreamCursorPosition(dataStream);
-		const unsigned char advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
+		const PXBool advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
 		{
@@ -896,7 +884,7 @@ PXSize PXDataStreamSkipEndOfLineCharacters(PXDataStream* const dataStream)
 	while (!PXDataStreamIsAtEnd(dataStream))
 	{
 		const unsigned char* data = PXDataStreamCursorPosition(dataStream);
-		const unsigned char advance = IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
+		const PXBool advance = IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
 		{
@@ -968,7 +956,7 @@ PXSize PXDataStreamSkipLine(PXDataStream* const dataStream)
 	while (!PXDataStreamIsAtEnd(dataStream))
 	{
 		const unsigned char* data = PXDataStreamCursorPosition(dataStream);
-		const unsigned char advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
+		const PXBool advance = !IsEndOfLineCharacter(*data) and !IsEndOfString(*data);
 
 		if (!advance)
 		{
@@ -1738,7 +1726,7 @@ PXSize PXDataStreamWriteBits(PXDataStream* const dataStream, const PXSize bitDat
 		unsigned char bit = bitData << i;
 
 		*currentPos += bit;
-		*currentPos << 1;
+		*currentPos <<= 1;
 
 		dataStream->DataCursorBitOffset++;
 		moveCounter++;

@@ -44,8 +44,6 @@ extern "C"
 
 	PXPublic PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult GIFLoad(GIF* gif, const void* data, const PXSize dataSize, PXSize* dataRead);
-
 	PXPublic PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStream);
 
 	PXPublic PXActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);

@@ -25,10 +25,18 @@ typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 extern "C"
 {
 #endif
-    PXPublic PXBool LibraryOpenA(LibraryHandle* handle, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic PXBool LibraryOpenW(LibraryHandle* handle, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic PXBool LibraryClose(LibraryHandle* handle); // close a dlopen object
-    PXPublic PXBool LibraryGetSymbol(LibraryHandle* handle, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
+
+    typedef struct PXLibrary_
+    {
+        LibraryHandle ID;
+    }
+    PXLibrary;
+
+
+    PXPublic PXBool LibraryOpenA(PXLibrary* const pxLibrary, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic PXBool LibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic PXBool LibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
+    PXPublic PXBool LibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
 
     PXPublic PXBool LibraryParseSymbols();
 

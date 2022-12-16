@@ -1001,7 +1001,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
 }
 
 #if OSWindows
-PXActionResult WindowsSocketAgentStartup()
+PXActionResult WindowsSocketAgentStartup(void)
 {
     WORD wVersionRequested = MAKEWORD(2, 2);
     WSADATA wsaData;
@@ -1031,7 +1031,7 @@ PXActionResult WindowsSocketAgentStartup()
     }
 }
 
-PXActionResult WindowsSocketAgentShutdown()
+PXActionResult WindowsSocketAgentShutdown(void)
 {
     int result = WSACleanup();
 

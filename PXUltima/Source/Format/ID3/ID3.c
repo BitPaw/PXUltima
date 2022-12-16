@@ -138,7 +138,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
             default: // Version is probably 1.x
             {
                 const PXByte* trackIDAdress = (PXByte*)PXDataStreamCursorPosition(dataStream) + ID3CommentSize - 2;
-                const unsigned short trackIDSymbol = ((unsigned short)trackIDAdress[0]) << 8 + trackIDAdress[1];
+                const unsigned short trackIDSymbol = (((unsigned short)trackIDAdress[0]) << 8u) + trackIDAdress[1];
                 const PXBool isVersion1x0 = trackIDSymbol == 0x0000;
 
                 if(isVersion1x0)

@@ -1,7 +1,7 @@
 #ifndef TestWindowDEFINE
 #define TestWindowDEFINE
 
-#include <Error/ActionResult.h>
+#include <Error/PXActionResult.h>
 #include <Format/Image.h>
 
 #ifdef __cplusplus
