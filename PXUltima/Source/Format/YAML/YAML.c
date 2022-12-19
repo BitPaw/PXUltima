@@ -139,10 +139,10 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
                         char* declname = compilerSymbolEntry.Source;
                         unsigned short declSize = compilerSymbolEntry.Size - 1;
 
-                        PXDataStreamWriteCU(outputStream, YAMLLineTypeKeyValueDeclare);
-                        PXDataStreamWriteCU(outputStream, indentCounter);
-                        PXDataStreamWriteSU(outputStream, declSize, EndianLittle);
-                        PXDataStreamWriteP(outputStream, declname, declSize);
+                        PXDataStreamWriteI8U(outputStream, YAMLLineTypeKeyValueDeclare);
+                        PXDataStreamWriteI8U(outputStream, indentCounter);
+                        PXDataStreamWriteI16U(outputStream, declSize);
+                        PXDataStreamWriteB(outputStream, declname, declSize);
 
 
                         // Fetch next value
@@ -155,39 +155,39 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
                         case PXCompilerSymbolLexerNewLine:
                         case PXCompilerSymbolLexerWhiteSpace:
-                            PXDataStreamWriteSU(outputStream, 0, EndianLittle);
+                            PXDataStreamWriteI16U(outputStream, 0);
                             indentCounter = compilerSymbolEntry.Size;
                             break;
 
                         case PXCompilerSymbolLexerBool:
                         {
-                            PXDataStreamWriteSU(outputStream, sizeof(unsigned char), EndianLittle);
-                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerBool);
-                            PXDataStreamWriteCU(outputStream, compilerSymbolEntry.DataC);
+                            PXDataStreamWriteI16U(outputStream, sizeof(unsigned char));
+                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerBool);
+                            PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.DataC);
                             break;
                         }
 
                         case PXCompilerSymbolLexerInteger:
                         {
-                            PXDataStreamWriteSU(outputStream, sizeof(unsigned int), EndianLittle);
-                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerInteger);
-                            PXDataStreamWriteIU(outputStream, compilerSymbolEntry.DataI, EndianLittle);
+                            PXDataStreamWriteI16U(outputStream, sizeof(unsigned int));
+                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                            PXDataStreamWriteI32U(outputStream, compilerSymbolEntry.DataI);
                             break;
                         }
 
                         case PXCompilerSymbolLexerFloat:
                         {
-                            PXDataStreamWriteSU(outputStream, sizeof(float), EndianLittle);
-                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerFloat);
+                            PXDataStreamWriteI16U(outputStream, sizeof(float), EndianLittle);
+                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
                             PXDataStreamWriteF(outputStream, compilerSymbolEntry.DataF);
                             break;
                         }
                         case PXCompilerSymbolLexerGenericElement:
                         case PXCompilerSymbolLexerString:
                         {
-                            PXDataStreamWriteSU(outputStream, compilerSymbolEntry.Size, EndianLittle);
-                            PXDataStreamWriteCU(outputStream, PXCompilerSymbolLexerString);
-                            PXDataStreamWriteP(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                            PXDataStreamWriteI16U(outputStream, compilerSymbolEntry.Size);
+                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerString);
+                            PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
                             break;
                         }
                         }
@@ -235,9 +235,9 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
             char emotySpace[25];
 
-            MemorySet(textA, 256, 0);
-            MemorySet(textB, 256, 0);
-            MemorySet(emotySpace, 25, 0);
+            MemoryClear(textA, 256u);
+            MemoryClear(textB, 256u);
+            MemoryClear(emotySpace, 25u);
 
             PXDataStreamReadI16U(outputStream, &textASize);
             PXDataStreamReadB(outputStream, textA, textASize);

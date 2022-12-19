@@ -73,7 +73,7 @@ extern "C"
 
 
 	PXPublic void MemoryClear(void* const __restrict bufferA, const PXSize bufferASize);
-	PXPublic void MemorySet(void* const __restrict bufferA, const PXSize bufferASize, const unsigned char value);
+	PXPublic void MemorySet(void* const __restrict bufferA, const unsigned char value, const PXSize bufferSize);
 
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!

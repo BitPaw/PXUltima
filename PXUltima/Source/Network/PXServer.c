@@ -8,8 +8,8 @@
 #endif
 
 void PXServerConstruct(PXServer* const server)
-{
-    MemorySet(server, sizeof(PXServer), 0);
+{    
+    MemoryClear(server, sizeof(PXServer));
 }
 
 void PXServerDestruct(PXServer* const server)

@@ -119,7 +119,7 @@ extern "C"
 	PXPublic PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead);
 	PXPublic PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult TGASerializeFromImage(const Image* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

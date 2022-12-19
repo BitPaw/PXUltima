@@ -78,7 +78,7 @@ void RegistryKeyCreate(Registry* const registry)
 	PHKEY phkResult = 0;
 	DWORD dwDisposition = 0;
 
-	MemorySet(&securityAttributes, sizeof(SECURITY_ATTRIBUTES), 0);
+	MemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
 
 	const LSTATUS status = RegCreateKeyExW
 	(
@@ -103,7 +103,7 @@ void RegistryKeyLoad(Registry* const registry, const wchar_t* file)
 	SECURITY_ATTRIBUTES securityAttributes;
 	DWORD Flags = 0;
 
-	MemorySet(&securityAttributes, sizeof(SECURITY_ATTRIBUTES), 0);
+	MemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
 
 	const LSTATUS status = RegSaveKeyExW(hKey, file, &securityAttributes, Flags);
 #endif

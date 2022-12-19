@@ -186,7 +186,7 @@ extern "C"
 	PXPublic PXActionResult JPEGParse(JPEG* jpeg, const void* data, const PXSize dataSize, PXSize* dataRead);
 	PXPublic PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult JPEGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult JPEGSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

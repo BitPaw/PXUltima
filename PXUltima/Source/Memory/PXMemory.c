@@ -96,10 +96,10 @@ PXBool MemoryScan(MemoryUsage* memoryUsage)
 
 void MemoryClear(void* const __restrict bufferA, const PXSize bufferASize)
 {
-	return MemorySet(bufferA, bufferASize, 0u);
+	return MemorySet(bufferA, 0u, bufferASize);
 }
 
-void MemorySet(void* __restrict bufferA, const PXSize bufferASize, const unsigned char value)
+void MemorySet(void* __restrict buffer, const unsigned char value, const PXSize bufferSize)
 {
 //#if MemoryAssertEnable
 //	assert(bufferA);
@@ -109,7 +109,7 @@ void MemorySet(void* __restrict bufferA, const PXSize bufferASize, const unsigne
 	//printf("[#][Memory] 0x%p (%10zi B) Set to %2x\n", bufferA, bufferASize, value);
 #endif
 
-	if(!bufferA)
+	if(!buffer)
 	{
 		return;
 	}
@@ -117,9 +117,9 @@ void MemorySet(void* __restrict bufferA, const PXSize bufferASize, const unsigne
 #if MemoryUseSystemFunction
 	memset(bufferA, value, bufferASize);
 #else
-	for(PXSize i = 0; i < bufferASize; ++i)
+	for(PXSize i = 0; i < bufferSize; ++i)
 	{
-		((PXAdress)bufferA)[i] = value;
+		((PXAdress)buffer)[i] = value;
 	}
 #endif
 }
@@ -221,7 +221,7 @@ void* MemoryHeapAllocate(const PXSize requestedSizeInBytes)
 	}
 
 #if MemorySanitise
-	MemorySet(adress, requestedSizeInBytes, '#');
+	MemorySet(adress, '#', requestedSizeInBytes);
 #endif
 
 #if MemoryDebugOutput
@@ -258,7 +258,7 @@ void* MemoryHeapReallocate(void* sourceAddress, const PXSize size)
 #if MemorySanitise
 	if (!adress)
 	{
-		MemorySet(adressReallocated, size, '#');
+		MemorySet(adressReallocated, '#', size);
 	}
 #endif
 
@@ -297,7 +297,7 @@ void* MemoryHeapReallocateClear(const void* const sourceAddress, const PXSize si
 		const PXAdress startAdress = (PXAdress)adressReallocated + sizeBefore;
 		const PXSize sizeDelta = sizeAfter - sizeBefore;
 
-		MemorySet(startAdress, sizeDelta, 0);
+		MemoryClear(startAdress, sizeDelta);
 	}
 
 #if MemoryDebugOutput
@@ -328,7 +328,7 @@ void MemoryRelease(const void* adress, const PXSize size)
 #endif
 
 #if MemorySanitise
-	MemorySet(adress, size, '#');
+	MemorySet(adress, '#', size);
 #endif
 
 #if MemoryDebugLeakDetection

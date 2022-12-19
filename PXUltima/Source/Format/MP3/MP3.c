@@ -1015,7 +1015,7 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 {
 	PXDataStream dataStream;
 
-	MemorySet(mp3, sizeof(MP3), 0);
+	MemoryClear(mp3, sizeof(MP3));
 	*dataRead = 0;
 
 	PXDataStreamConstruct(&dataStream);
@@ -1034,8 +1034,8 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 		MP3Header mp3Header;
 		XingInfo xingInfo;
 
-		MemorySet(&mp3Header, sizeof(MP3Header), 0);
-		MemorySet(&xingInfo, sizeof(XingInfo), 0);
+		MemoryClear(&mp3Header, sizeof(MP3Header));
+		MemoryClear(&xingInfo, sizeof(XingInfo));
 
 		PXSize cursorPositionPredict = 0;
 

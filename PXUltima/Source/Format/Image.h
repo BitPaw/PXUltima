@@ -59,13 +59,13 @@ extern "C"
 	PXPublic PXActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath);
 	PXPublic PXActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat);
 
-	PXPublic PXActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
-	PXPublic PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+	PXPublic PXActionResult ImageSaveA(Image* const image, const PXTextASCII filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+	PXPublic PXActionResult ImageSaveW(Image* const image, const PXTextUNICODE filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+	PXPublic PXActionResult ImageSaveU(Image* const image, const PXTextUTF8 filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
 	PXPublic PXActionResult ImageSaveD
 	(
 		Image* image,
-		void* const data,
-		const PXSize dataSize,
+		PXDataStream* const pxDataStream,
 		const FileFormatExtension fileFormat,
 		const ImageDataFormat dataFormat
 	);

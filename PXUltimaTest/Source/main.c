@@ -28,8 +28,8 @@ int main()
 	//TestSystemInfoAll();
 	//TestPXCompilerAll();
 	//TestOpenGLAll();
-	TestWindowAll();
-	//TestImageAll();
+	//TestWindowAll();
+	TestImageAll();
 	//TestSBPAll();
 
 	printf("[i] Finished testing...\n");

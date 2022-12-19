@@ -1821,7 +1821,7 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
 
                 while (!PXDataStreamIsAtEnd(&dataStream))
                 {
-                    MemorySet(wurst, sizeof(256), 0);
+                    MemoryClear(wurst, sizeof(256));
 
                     char* adres = PXDataStreamCursorPosition(&dataStream);
 

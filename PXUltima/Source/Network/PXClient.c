@@ -13,7 +13,7 @@ PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigne
     PXSize PXSocketListSizeMax = 5;
     PXSize PXSocketListSize = 0;
 
-    MemorySet(PXSocketList,sizeof(PXSocket)* PXSocketListSizeMax, 0);
+    MemoryClear(PXSocketList,sizeof(PXSocket)* PXSocketListSizeMax);
 
     PXSocketSetupAdress
     (
@@ -72,7 +72,7 @@ PXThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
         PXSize bufferSize = 0;
         unsigned char buffer[PXClientBufferSize];
 
-        MemorySet(buffer, sizeof(unsigned char) * PXClientBufferSize, 0);
+        MemoryClear(buffer, sizeof(unsigned char) * PXClientBufferSize);
 
         const PXActionResult receiveingResult = PXSocketReceive(pxSocket, buffer, bufferSizeMax, &bufferSize);
         const unsigned char sucessful = PXActionSuccessful == receiveingResult;

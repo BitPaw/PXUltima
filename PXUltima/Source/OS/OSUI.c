@@ -131,7 +131,7 @@ void UIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layo
 
 void ButtonConstruct(const PXWindowID window, OSButton* button, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(button, sizeof(OSButton), 0);
+    MemoryClear(button, sizeof(OSButton));
 
 #if OSUnix
 #elif OSWindows
@@ -147,7 +147,7 @@ void ButtonConstruct(const PXWindowID window, OSButton* button, const unsigned i
 
 void ComboBoxConstruct(const PXWindowID window, OSComboBox* comboBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(comboBox, sizeof(OSComboBox), 0);
+    MemoryClear(comboBox, sizeof(OSComboBox));
 
 #if OSUnix
 #elif OSWindows
@@ -166,7 +166,7 @@ void ComboBoxConstruct(const PXWindowID window, OSComboBox* comboBox, const unsi
 
 void ListBoxConstruct(const PXWindowID window, OSListBox* listBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(listBox, sizeof(OSListBox), 0);
+    MemoryClear(listBox, sizeof(OSListBox));
 
 #if OSUnix
 #elif OSWindows
@@ -183,7 +183,7 @@ void ListBoxConstruct(const PXWindowID window, OSListBox* listBox, const unsigne
 
 void TextEditConstruct(const PXWindowID window, OSTextEdit* textEdit, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(textEdit, sizeof(OSTextEdit), 0);
+    MemoryClear(textEdit, sizeof(OSTextEdit));
 
 #if OSUnix
 #elif OSWindows
@@ -208,7 +208,7 @@ void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const PXSiz
 
 void RichEditConstruct(const PXWindowID window, OSRichEdit* richEdit, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(richEdit, sizeof(OSRichEdit), 0);
+    MemoryClear(richEdit, sizeof(OSRichEdit));
 
 #if OSUnix
 #elif OSWindows
@@ -225,7 +225,7 @@ void RichEditConstruct(const PXWindowID window, OSRichEdit* richEdit, const unsi
 
 void ScrollBarConstruct(const PXWindowID window, OSScrollBar* scrollBar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(scrollBar, sizeof(OSScrollBar), 0);
+    MemoryClear(scrollBar, sizeof(OSScrollBar));
 
 #if OSUnix
 #elif OSWindows
@@ -242,7 +242,7 @@ void ScrollBarConstruct(const PXWindowID window, OSScrollBar* scrollBar, const u
 
 void OSUITextConstruct(const PXWindowID window, OSUIText* uiText, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(uiText, sizeof(OSUIText), 0);
+    MemoryClear(uiText, sizeof(OSUIText));
 
 #if OSUnix
 #elif OSWindows
@@ -260,7 +260,7 @@ void OSUITextConstruct(const PXWindowID window, OSUIText* uiText, const unsigned
 
 void OSCheckBoxConstruct(const PXWindowID window, OSUICheckBox* uiCheckBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemorySet(uiCheckBox, sizeof(OSUICheckBox), 0);
+    MemoryClear(uiCheckBox, sizeof(OSUICheckBox));
 
 #if OSUnix
 #elif OSWindows

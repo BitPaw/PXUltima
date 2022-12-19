@@ -4,7 +4,7 @@
 
 void PXDictionaryConstruct(PXDictionary* const dictionary)
 {
-	MemorySet(dictionary, sizeof(PXDictionary), 0);
+	MemoryClear(dictionary, sizeof(PXDictionary));
 }
 
 void PXDictionaryDestruct(PXDictionary* const dictionary)

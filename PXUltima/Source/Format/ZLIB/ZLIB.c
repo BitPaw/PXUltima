@@ -232,7 +232,7 @@ PXActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataS
         }
     
 
-        PXDataStreamWriteP(&parsingSteam, buffer, 2u);
+        PXDataStreamWriteB(&parsingSteam, buffer, 2u);
     }
 
     // Wirte Data
@@ -248,7 +248,7 @@ PXActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataS
     {
         const unsigned int adler = Adler32Create(1, inputData, inputDataSize);
 
-        PXDataStreamWriteIU(&parsingSteam, adler, EndianBig);
+        PXDataStreamWriteI32UE(&parsingSteam, adler, EndianBig);
     }
 
     *outputDataSizeWritten = parsingSteam.DataCursor;

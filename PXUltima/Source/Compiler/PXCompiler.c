@@ -10,11 +10,11 @@ void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSy
 {
 	const unsigned char symbolID = compilerSymbolEntry->ID;
 
-	PXDataStreamWriteCU(dataStream, symbolID);
-	PXDataStreamWriteIU(dataStream, compilerSymbolEntry->Coloum, EndianLittle);
-	PXDataStreamWriteIU(dataStream, compilerSymbolEntry->Line, EndianLittle);
-	PXDataStreamWriteIU(dataStream, compilerSymbolEntry->Size, EndianLittle);
-	PXDataStreamWriteP(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
+	PXDataStreamWriteI8U(dataStream, symbolID);
+	PXDataStreamWriteI32U(dataStream, compilerSymbolEntry->Coloum);
+	PXDataStreamWriteI32U(dataStream, compilerSymbolEntry->Line);
+	PXDataStreamWriteI32U(dataStream, compilerSymbolEntry->Size);
+	PXDataStreamWriteB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
 
 #if 0
@@ -23,8 +23,8 @@ void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSy
 	PXSize textBufferSize = 20;
 	char textbuffer[25];
 
-	MemorySet(idbuffer, sizeof(idbuffer), 0);
-	MemorySet(textbuffer, sizeof(textbuffer), 0);
+	MemoryClear(idbuffer, sizeof(idbuffer));
+	MemoryClear(textbuffer, sizeof(textbuffer));
 
 	switch (compilerSymbolEntry->ID)
 	{
@@ -100,7 +100,9 @@ void PXCompilerSymbolEntryExtract(PXDataStream* const dataStream, PXCompilerSymb
 
 	compilerSymbolEntry->ID = symbolID;
 
-	MemorySet(oldPos, size, '#');
+#if 0
+	MemorySet(oldPos, '#', size);
+#endif
 }
 
 PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)

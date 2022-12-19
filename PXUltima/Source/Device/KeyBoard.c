@@ -7,7 +7,7 @@
 
 void KeyBoardInputReset(KeyBoard* keyBoard)
 {
-	MemorySet(keyBoard, sizeof(KeyBoard), 0);
+	MemoryClear(keyBoard, sizeof(KeyBoard));
 }
 
 unsigned char KeyBoardKeyPressedGet(KeyBoard* keyBoard, const VirtualKey virtualKey)

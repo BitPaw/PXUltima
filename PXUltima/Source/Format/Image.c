@@ -190,21 +190,32 @@ PXActionResult ImageLoadD(Image* const image, PXDataStream* const dataStream, co
     return actionResult;
 }
 
-PXActionResult ImageSaveA(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+PXActionResult ImageSaveA(Image* const image, const PXTextASCII filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
-    wchar_t filePathW[PathMaxSize];
+    PXByte filePathU[PathMaxSize];
 
-    TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
+    TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-    PXActionResult actionResult = ImageSaveW(image, filePathW, fileFormat, dataFormat);
+    PXActionResult actionResult = ImageSaveU(image, filePathU, fileFormat, dataFormat);
 
     return actionResult;
 }
 
-PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+PXActionResult ImageSaveW(Image* const image, const PXTextUNICODE filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
-    wchar_t filePathW[PathMaxSize];
-    wchar_t* fileExtension = 0;
+    PXByte filePathU[PathMaxSize];
+
+    TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+
+    PXActionResult actionResult = ImageSaveU(image, filePathU, fileFormat, dataFormat);
+
+    return actionResult;
+}
+
+PXActionResult ImageSaveU(Image* const image, const PXTextUTF8 filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+{
+    PXByte filePathW[PathMaxSize];
+    PXByte* fileExtension = 0;
 
     PXSize fileSize = 0;
     PXSize writtenBytes = 0;
@@ -214,48 +225,48 @@ PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, con
 
     PXDataStreamConstruct(&dataStream);
 
-    switch(fileFormat)
+    switch (fileFormat)
     {
         case FileFormatBitMap:
         {
             fileSize = BMPFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = BMPSerializeFromImage;
-            fileExtension = L"bmp";
+            fileExtension = "bmp";
             break;
         }
         case FileFormatPNG:
         {
             fileSize = PNGFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = PNGSerializeFromImage;
-            fileExtension = L"png";
+            fileExtension = "png";
             break;
         }
         case FileFormatTGA:
         {
             fileSize = TGAFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = TGASerializeFromImage;
-            fileExtension = L"tga";
+            fileExtension = "tga";
             break;
         }
         case FileFormatJPEG:
         {
             fileSize = JPEGFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = JPEGSerializeFromImage;
-            fileExtension = L"jpg";
+            fileExtension = "jpg";
             break;
         }
         case FileFormatTagImage:
         {
             fileSize = TIFFFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = TIFFSerializeFromImage;
-            fileExtension = L"tiff";
+            fileExtension = "tiff";
             break;
         }
         case FileFormatGIF:
         {
             fileSize = GIFFilePredictSize(image->Width, image->Height, ImageBitsPerPixel(dataFormat));
             serializeFromImageFunction = GIFSerializeFromImage;
-            fileExtension = L"gif";
+            fileExtension = "gif";
             break;
         }
         default:
@@ -265,14 +276,14 @@ PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, con
 
     // Chnage file extension
     {
-        FilePathSwapExtensionW(filePath, filePathW, fileExtension);
+        FilePathSwapExtensionU(filePath, filePathW, fileExtension);
     }
 
     {
-        const PXActionResult mappingResult = PXDataStreamMapToMemoryW(&dataStream, filePathW, fileSize, MemoryWriteOnly);
+        const PXActionResult mappingResult = PXDataStreamMapToMemoryU(&dataStream, filePathW, fileSize, MemoryWriteOnly);
         const PXBool sucessful = PXActionSuccessful == mappingResult;
 
-        if(!sucessful)
+        if (!sucessful)
         {
             PXDataStreamDestruct(&dataStream);
             return mappingResult;
@@ -283,7 +294,7 @@ PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, con
         const PXActionResult serializeResult = serializeFromImageFunction(image, &dataStream);
         const PXBool sucessful = PXActionSuccessful == serializeResult;
 
-        if(!sucessful)
+        if (!sucessful)
         {
             PXDataStreamDestruct(&dataStream);
             return serializeResult;
@@ -295,7 +306,7 @@ PXActionResult ImageSaveW(Image* const image, const wchar_t* const filePath, con
     return PXActionSuccessful;
 }
 
-PXActionResult ImageSaveD(Image* const image, void* const data, const PXSize dataSize, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
+PXActionResult ImageSaveD(Image* const image, PXDataStream* const pxDataStream, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat)
 {
     return PXActionInvalid;
 }

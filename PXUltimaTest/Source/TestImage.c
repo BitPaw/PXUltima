@@ -36,6 +36,7 @@ void TestSaveImageSmal()
     {
         return saveBMP;
     }
+    
 
     const char* pathPNG = "_TEST_DATA_OUTPUT_/Smal_ImagePNG.png";
     const PXActionResult savePNG = ImageSaveTest(&image, pathPNG, FileFormatPNG, ImageDataFormatRGB8);

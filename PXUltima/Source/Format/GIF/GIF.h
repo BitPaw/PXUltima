@@ -46,7 +46,7 @@ extern "C"
 
 	PXPublic PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult GIFSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

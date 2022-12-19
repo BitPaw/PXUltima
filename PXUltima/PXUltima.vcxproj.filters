@@ -408,7 +408,10 @@
     <ClInclude Include="Source\File\PXDataStream.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AI\KalmanFilter\PXKalmanFilter.h">
+    <ClInclude Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Algorithm\Dijkstra\PXDijkstra.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -800,7 +803,10 @@
     <ClCompile Include="Source\File\PXDataStream.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AI\KalmanFilter\PXKalmanFilter.c">
+    <ClCompile Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Algorithm\Dijkstra\PXDijkstra.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -808,6 +814,7 @@
     <None Include="Source\Format\PDF\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
     <None Include="Source\Audio\README.md" />
-    <None Include="Source\AI\KalmanFilter\README.md" />
+    <None Include="Source\Algorithm\KalmanFilter\README.md" />
+    <None Include="Source\Algorithm\Dijkstra\README.md" />
   </ItemGroup>
 </Project>

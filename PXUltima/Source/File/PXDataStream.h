@@ -186,9 +186,9 @@ extern "C"
 
 	PXPublic PXSize PXDataStreamReadMultible(PXDataStream* const dataStream, PXDataStreamElementType* const pxDataStreamElementList, const PXSize pxDataStreamElementListSize);
 
-
 	PXPublic PXSize PXDataStreamReadB(PXDataStream* const dataStream, void* const value, const PXSize length);
-
+	
+	// read Text
 	PXPublic PXSize PXDataStreamReadTextA(PXDataStream* const dataStream, PXTextASCII value, const PXSize length);
 	PXPublic PXSize PXDataStreamReadTextW(PXDataStream* const dataStream, PXTextUNICODE value, const PXSize length);
 	PXPublic PXSize PXDataStreamReadTextU(PXDataStream* const dataStream, PXTextUNICODE value, const PXSize length);
@@ -210,17 +210,54 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
-	PXPublic PXSize PXDataStreamWriteC(PXDataStream* const dataStream, const char value);
-	PXPublic PXSize PXDataStreamWriteCU(PXDataStream* const dataStream, const unsigned char value);
-	PXPublic PXSize PXDataStreamWriteS(PXDataStream* const dataStream, const short value, const Endian endian);
-	PXPublic PXSize PXDataStreamWriteSU(PXDataStream* const dataStream, const unsigned short value, const Endian endian);
-	PXPublic PXSize PXDataStreamWriteI(PXDataStream* const dataStream, const int value, const Endian endian);
-	PXPublic PXSize PXDataStreamWriteIU(PXDataStream* const dataStream, const unsigned int value, const Endian endian);
-	PXPublic PXSize PXDataStreamWriteLL(PXDataStream* const dataStream, const long long value, const Endian endian);
-	PXPublic PXSize PXDataStreamWriteLLU(PXDataStream* const dataStream, const unsigned long long value, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI8S(PXDataStream* const dataStream, const PXInt8S value);
+	PXPublic PXSize PXDataStreamWriteI8SV(PXDataStream* const dataStream, const PXInt8S* const valueList, const PXSize valueListSize);
+	PXPublic PXSize PXDataStreamWriteI8U(PXDataStream* const dataStream, const PXInt8U value);
+	PXPublic PXSize PXDataStreamWriteAtI8U(PXDataStream* const dataStream, const PXInt8U value, const PXSize index);
+	PXPublic PXSize PXDataStreamWriteI8UV(PXDataStream* const dataStream, const PXInt8U* const valueList, const PXSize valueListSize);
+
+	PXPublic PXSize PXDataStreamWriteI16S(PXDataStream* const dataStream, const PXInt16S const value);
+	PXPublic PXSize PXDataStreamWriteI16SV(PXDataStream* const dataStream, const PXInt16S* const valueList, const PXSize valueListSize);
+	PXPublic PXSize PXDataStreamWriteI16SE(PXDataStream* const dataStream, const PXInt16S const value, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI16SVE(PXDataStream* const dataStream, const PXInt16S* const valueList, const PXSize valueListSize, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI16U(PXDataStream* const dataStream, const PXInt16U const value);
+	PXPublic PXSize PXDataStreamWriteAtI16U(PXDataStream* const dataStream, const PXInt16U const value, const PXSize index);
+	PXPublic PXSize PXDataStreamWriteI16UV(PXDataStream* const dataStream, const PXInt16U* const valueList, const PXSize valueListSize);
+	PXPublic PXSize PXDataStreamWriteI16UE(PXDataStream* const dataStream, const PXInt16U const value, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI16UVE(PXDataStream* const dataStream, const PXInt16U* const valueList, const PXSize valueListSize, const Endian endian);
+
+	PXPublic PXSize PXDataStreamWriteI32S(PXDataStream* const dataStream, const PXInt32S value);
+	PXPublic PXSize PXDataStreamWriteI32SV(PXDataStream* const dataStream, const PXInt32S* const valueList, const PXSize valueListSize);
+	PXPublic PXSize PXDataStreamWriteI32SE(PXDataStream* const dataStream, const PXInt32S value, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI32SVE(PXDataStream* const dataStream, const PXInt32S* const valueList, const PXSize valueListSize, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI32U(PXDataStream* const dataStream, const PXInt32U value);
+	PXPublic PXSize PXDataStreamWriteAtI32U(PXDataStream* const dataStream, const PXInt32U value, const PXSize index);
+	PXPublic PXSize PXDataStreamWriteI32UV(PXDataStream* const dataStream, const PXInt32U* const valueList, const PXSize valueListSize);
+	PXPublic PXSize PXDataStreamWriteI32UE(PXDataStream* const dataStream, const PXInt32U value, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteAtI32UE(PXDataStream* const dataStream, const PXInt32U value, const Endian endian, const PXSize index);
+	PXPublic PXSize PXDataStreamWriteI32UVE(PXDataStream* const dataStream, const PXInt32U* const valueList, const PXSize valueListSize, const Endian endian);
+
+	PXPublic PXSize PXDataStreamWriteI64S(PXDataStream* const dataStream, const PXInt64S const value);
+	PXPublic PXSize PXDataStreamWriteI64SV(PXDataStream* const dataStream, const PXInt64S* const valueList, const PXSize valueListSize);
+	PXPublic PXSize PXDataStreamWriteI64SE(PXDataStream* const dataStream, const PXInt64S const value, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI64VE(PXDataStream* const dataStream, const PXInt64S* const valueList, const PXSize valueListSize, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI64U(PXDataStream* const dataStream, const PXInt64U const value);
+	PXPublic PXSize PXDataStreamWriteI64UV(PXDataStream* const dataStream, const PXInt64U* const valueList, const PXSize valueListSize);
+	PXPublic PXSize PXDataStreamWriteI64UE(PXDataStream* const dataStream, const PXInt64U const value, const Endian endian);
+	PXPublic PXSize PXDataStreamWriteI64UVE(PXDataStream* const dataStream, const PXInt64U* const valueList, const PXSize valueListSize, const Endian endian);
 
 	PXPublic PXSize PXDataStreamWriteF(PXDataStream* const dataStream, const float value);
+	PXPublic PXSize PXDataStreamWriteFV(PXDataStream* const dataStream, const float* const valueList, const PXSize valueListSize);
+
 	PXPublic PXSize PXDataStreamWriteD(PXDataStream* const dataStream, const double value);
+	PXPublic PXSize PXDataStreamWriteDV(PXDataStream* const dataStream, const double* const valueList, const PXSize valueListSize);
+
+	PXPublic PXSize PXDataStreamWriteB(PXDataStream* const dataStream, const void* const value, const PXSize length);
+	PXPublic PXSize PXDataStreamWriteAtB(PXDataStream* const dataStream, const void* const data, const PXSize dataSize, const PXSize index);
+
+	PXPublic PXSize PXDataStreamWriteMultible(PXDataStream* const dataStream, const PXDataStreamElementType* const pxDataStreamElementList, const PXSize pxDataStreamElementListSize);
+
+	PXPublic PXSize PXDataStreamWriteFill(PXDataStream* const dataStream, const unsigned char value, const PXSize length);
 
 	// Write ASCII string \0 terminated.
 	PXPublic PXSize PXDataStreamWriteA(PXDataStream* const dataStream, const char* const text, PXSize textSize);
@@ -228,14 +265,10 @@ extern "C"
 	// Write UNICODE string \0 terminated
 	PXPublic PXSize PXDataStreamWriteW(PXDataStream* const dataStream, const wchar_t* const text, PXSize textSize);
 
-	PXPublic PXSize PXDataStreamWriteP(PXDataStream* const dataStream, const void* value, const PXSize length);
-	PXPublic PXSize PXDataStreamWriteFill(PXDataStream* const dataStream, const unsigned char value, const PXSize length);
-	PXPublic PXSize PXDataStreamWrite(PXDataStream* const dataStream, const char* format, ...);
 
-	PXPublic PXSize PXDataStreamWriteAtP(PXDataStream* const dataStream, const void* const data, const PXSize dataSize, const PXSize index);
-	PXPublic PXSize PXDataStreamWriteAtCU(PXDataStream* const dataStream, const unsigned char value, const PXSize index);
-	PXPublic PXSize PXDataStreamWriteAtSU(PXDataStream* const dataStream, const unsigned short value, const Endian endian, const PXSize index);
-	PXPublic PXSize PXDataStreamWriteAtIU(PXDataStream* const dataStream, const unsigned int value, const Endian endian, const PXSize index);
+
+
+	PXPublic PXSize PXDataStreamWrite(PXDataStream* const dataStream, const char* format, ...);
 	//-------------------------------------------------------------------------
 
 

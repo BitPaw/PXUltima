@@ -4,7 +4,7 @@
 
 void PXStopWatchConstruct(PXStopWatch* const stopWatch)
 {
-    MemorySet(stopWatch, sizeof(PXStopWatch), 0);
+    MemoryClear(stopWatch, sizeof(PXStopWatch));
 }
 
 void PXStopWatchSet(PXStopWatch* const stopWatch, void* const data, const PXSize dataSize)
@@ -31,7 +31,7 @@ PXBool PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time)
    
     if (!canDo)
     {
-        MemorySet(time, sizeof(PXTime), 0);
+        MemoryClear(time, sizeof(PXTime));
 
         return PXNo;
     }
@@ -47,7 +47,7 @@ PXBool PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time)
 
 void PXStopWatchReset(PXStopWatch* const stopWatch)
 {
-    MemorySet(stopWatch->TimeStampData, sizeof(PXTime) * stopWatch->TimeStampDataSizeAllocated, 0);
+    MemoryClear(stopWatch->TimeStampData, sizeof(PXTime) * stopWatch->TimeStampDataSizeAllocated);
 
     stopWatch->TimeStampDataSizeUsed = 0;
 }

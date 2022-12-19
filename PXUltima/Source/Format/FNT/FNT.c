@@ -43,7 +43,7 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 
 	PXDataStreamConstruct(&dataStream);
 	PXDataStreamFromExternal(&dataStream, fileData, fileDataSize);
-	MemorySet(fnt, sizeof(FNT), 0);
+	MemoryClear(fnt, sizeof(FNT));
 	*readBytes = 0;
 
 	while(!PXDataStreamIsAtEnd(&dataStream))

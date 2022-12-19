@@ -201,7 +201,7 @@ extern "C"
 	PXPublic PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream);
 	PXPublic PXActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult TIFFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult TIFFSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

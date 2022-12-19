@@ -13,7 +13,7 @@ PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSiz
 {
 	PXDataStream dataStream;
 
-	MemorySet(ogg, sizeof(OGG), 0);
+	MemoryClear(ogg, sizeof(OGG));
 	*dataRead = 0;
 	PXDataStreamConstruct(&dataStream);
 	PXDataStreamFromExternal(&dataStream, data, dataSize);

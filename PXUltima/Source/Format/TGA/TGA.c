@@ -129,7 +129,7 @@ PXSize TGAFilePredictSize(const PXSize width, const PXSize height, const PXSize 
 
 void TGAConstruct(TGA* const tga)
 {
-	MemorySet(tga, sizeof(TGA), 0);
+	MemoryClear(tga, sizeof(TGA));
 }
 
 void TGADestruct(TGA* const tga)
@@ -500,7 +500,7 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 	return PXActionSuccessful;
 }
 
-PXActionResult TGASerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult TGASerializeFromImage(const Image* const image, PXDataStream* const dataStream)
 {
 	return PXActionInvalid;
 }

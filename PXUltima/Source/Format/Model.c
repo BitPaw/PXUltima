@@ -143,9 +143,9 @@ void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const
         PXDataStreamFromExternal(&dataStream, segmentAdress, -1);
     }
 
-    PXDataStreamWriteCU(&dataStream, renderMode);
-    PXDataStreamWriteIU(&dataStream, renderSize, EndianLittle);
-    PXDataStreamWriteIU(&dataStream, renderMaterial, EndianLittle);
+    PXDataStreamWriteI8U(&dataStream, renderMode);
+    PXDataStreamWriteI32U(&dataStream, renderSize);
+    PXDataStreamWriteI32U(&dataStream, renderMaterial);
 
 }
 

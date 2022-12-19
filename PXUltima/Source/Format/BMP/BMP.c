@@ -288,8 +288,6 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
 {
     BMPInfoHeader bmpInfoHeader;
 
-    PXDataStreamConstruct(dataStream);
-
     //---<Header>-----
     {
         ClusterShort byteCluster;
@@ -299,10 +297,10 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
 
         byteCluster.Value = ConvertFromBMPType(BMPWindows);
 
-        PXDataStreamWriteP(dataStream, byteCluster.Data, 2u);
-        PXDataStreamWriteIU(dataStream, sizeOfFile, EndianLittle);
-        PXDataStreamWriteIU(dataStream, reservedBlock, EndianLittle);
-        PXDataStreamWriteIU(dataStream, dataOffset, EndianLittle);
+        PXDataStreamWriteB(dataStream, byteCluster.Data, 2u);
+        PXDataStreamWriteI32UE(dataStream, sizeOfFile, EndianLittle);
+        PXDataStreamWriteI32UE(dataStream, reservedBlock, EndianLittle);
+        PXDataStreamWriteI32UE(dataStream, dataOffset, EndianLittle);
     }
     //----------------
 
@@ -327,23 +325,22 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
         bmpInfoHeader.NumberOfImportantColorsUsed = 0;
         //---------------------------------------------------------------------
 
-        PXDataStreamWriteIU(dataStream, bmpInfoHeader.HeaderSize, EndianLittle);
+        PXDataStreamWriteI32UE(dataStream, bmpInfoHeader.HeaderSize, EndianLittle);
 
         switch (bmpInfoHeaderType)
         {
             case BitMapInfoHeader:
             {
-
-                PXDataStreamWriteI(dataStream, bmpInfoHeader.Width, EndianLittle);
-                PXDataStreamWriteI(dataStream, bmpInfoHeader.Height, EndianLittle);
-                PXDataStreamWriteSU(dataStream, bmpInfoHeader.NumberOfColorPlanes, EndianLittle);
-                PXDataStreamWriteSU(dataStream, bmpInfoHeader.NumberOfBitsPerPixel, EndianLittle);
-                PXDataStreamWriteIU(dataStream, bmpInfoHeader.CompressionMethod, EndianLittle);
-                PXDataStreamWriteIU(dataStream, bmpInfoHeader.ImageSize, EndianLittle);
-                PXDataStreamWriteI(dataStream, bmpInfoHeader.HorizontalResolution, EndianLittle);
-                PXDataStreamWriteI(dataStream, bmpInfoHeader.VerticalResolution, EndianLittle);
-                PXDataStreamWriteIU(dataStream, bmpInfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
-                PXDataStreamWriteIU(dataStream, bmpInfoHeader.NumberOfImportantColorsUsed, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.Width, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.Height, EndianLittle);
+                PXDataStreamWriteI16UE(dataStream, bmpInfoHeader.NumberOfColorPlanes, EndianLittle);
+                PXDataStreamWriteI16UE(dataStream, bmpInfoHeader.NumberOfBitsPerPixel, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.CompressionMethod, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.ImageSize, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.HorizontalResolution, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.VerticalResolution, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.NumberOfImportantColorsUsed, EndianLittle);
                 break;
             }
         }
@@ -361,13 +358,14 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
 
             for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {
-                PXByte pixelBuffer[3u];
+                const PXByte pixelBuffer[3u] = 
+                {                 
+                    dataInsertPoint[i+2u], 
+                    dataInsertPoint[i+1u],
+                    dataInsertPoint[i]
+                };
 
-                pixelBuffer[2u] = dataInsertPoint[i]; // Blue
-                pixelBuffer[1u] = dataInsertPoint[i+1u]; // Green
-                pixelBuffer[0u] = dataInsertPoint[i+2u]; // Red
-
-                PXDataStreamWriteP(dataStream, pixelBuffer, 3u);
+                PXDataStreamWriteB(dataStream, pixelBuffer, 3u);
             }
 
             PXDataStreamWriteFill(dataStream, 0, imageDataLayout.RowPaddingSize);

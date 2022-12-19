@@ -74,7 +74,7 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, PX
 
 	/* compute maxlens: max total bit length of symbols sharing prefix in the first table*/
 	//memset(maxlens, 0, headsize * sizeof(*maxlens));
-	MemorySet(maxlens, maxlensSize, 0);
+	MemoryClear(maxlens, maxlensSize);
 
 	for (PXSize i = 0; i < numcodes; i++)
 	{
@@ -275,8 +275,9 @@ tree of the dynamic huffman tree lengths is generated*/
 		bitlen_ll = MemoryAllocate(sizeof(unsigned int) * NUM_DEFLATE_CODE_SYMBOLS);
 		bitlen_d = MemoryAllocate(sizeof(unsigned int) * NUM_DISTANCE_SYMBOLS);
 		if(!bitlen_ll || !bitlen_d) return 83;// /*alloc fail*/);
-		memset(bitlen_ll, 0, NUM_DEFLATE_CODE_SYMBOLS * sizeof(*bitlen_ll));
-		memset(bitlen_d, 0, NUM_DISTANCE_SYMBOLS * sizeof(*bitlen_d));
+
+		MemoryClear(bitlen_ll, NUM_DEFLATE_CODE_SYMBOLS * sizeof(*bitlen_ll));
+		MemoryClear(bitlen_d, NUM_DISTANCE_SYMBOLS * sizeof(*bitlen_d));
 
 		/*i is the current symbol we're reading in the part that contains the code lengths of lit/len and dist codes*/
 
@@ -459,8 +460,8 @@ void GenerateFixedDistanceTree(HuffmanTree* huffmanTree)
 }
 
 void HuffmanTreeConstruct(HuffmanTree* const huffmanTree)
-{
-	MemorySet(huffmanTree, sizeof(HuffmanTree), 0);
+{	
+	MemoryClear(huffmanTree, sizeof(HuffmanTree));
 }
 
 void HuffmanTreeDestruct(HuffmanTree* const huffmanTree)

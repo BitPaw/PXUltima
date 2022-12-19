@@ -4,7 +4,7 @@
 
 void PXQueueConstruct(PXQueue* const queue)
 {
-    MemorySet(queue, sizeof(PXQueue), 0);
+    MemoryClear(queue, sizeof(PXQueue));
 }
 
 void PXQueueDestruct(PXQueue* const queue)

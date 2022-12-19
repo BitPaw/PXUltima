@@ -476,18 +476,37 @@ void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const export
 	}
 }
 
-void FilePathSwapExtensionW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileExtension)
+void FilePathSwapExtensionA(const PXTextASCII inputPath, PXTextASCII exportPath, const PXTextASCII fileExtension)
 {
-	const PXSize index = TextFindLastW(inputPath, PathMaxSize, '.'); // Find last dot
-	const unsigned char found = index != -1;
+	const PXSize index = TextFindLastA(inputPath, PathMaxSize, '.'); // Find last dot
+	const PXBool found = index != -1;
 
 	if (!found)
 	{
 		return;
 	}
 
-	const PXSize written = TextCopyW(inputPath, index+1, exportPath, PathMaxSize); // Copy filePath without extension
-	const PXSize writtenFull = TextCopyW(fileExtension , PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
+	const PXSize written = TextCopyA(inputPath, index, exportPath, PathMaxSize); // Copy filePath without extension
+	const PXSize writtenFull = TextCopyA(fileExtension, PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
+}
+
+void FilePathSwapExtensionW(const PXTextUNICODE inputPath, PXTextUNICODE exportPath, const PXTextUNICODE fileExtension)
+{
+	const PXSize index = TextFindLastW(inputPath, PathMaxSize, '.'); // Find last dot
+	const PXBool found = index != -1;
+
+	if (!found)
+	{
+		return;
+	}
+
+	const PXSize written = TextCopyW(inputPath, index + 1, exportPath, PathMaxSize); // Copy filePath without extension
+	const PXSize writtenFull = TextCopyW(fileExtension, PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
+}
+
+void FilePathSwapExtensionU(const PXTextUTF8 inputPath, PXTextUTF8 exportPath, const PXTextUTF8 fileExtension)
+{
+	FilePathSwapExtensionA(inputPath, exportPath, fileExtension);
 }
 
 PXActionResult DirectoryCreateA(const char* directoryName)
@@ -495,10 +514,7 @@ PXActionResult DirectoryCreateA(const char* directoryName)
 	const int creationResult = OSFileDirectoryCreateA(directoryName);
 	const PXBool wasSuccesful = creationResult == 0;
 
-	if(!wasSuccesful)
-	{
-		return PXActionInvalid; //GetCurrentError();
-	}
+	PXActionOnErrorFetchAndExit(!wasSuccesful);
 
 	return PXActionSuccessful;
 }
@@ -521,13 +537,9 @@ PXActionResult DirectoryCreateW(const wchar_t* directoryName)
 		TextCopyW(directoryName + starPos, offset-1, directoryNameSegment, PathMaxSize);
 
 		const int creationResult = OSFileDirectoryCreateW(directoryNameSegment);
-		const unsigned char wasSuccesful = creationResult == 0;
+		const PXBool wasSuccesful = creationResult == 0;
 
-		if (!wasSuccesful)
-		{
-			break;
-			//return PXActionInvalid; //GetCurrentError();
-		}
+		PXActionOnErrorFetchAndExit(!wasSuccesful);
 
 		starPos += offset;
 		++successful;
@@ -545,12 +557,9 @@ PXActionResult WorkingDirectoryChange(const char* directoryName)
 PXActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize)
 {
 	char* workingDirectoryResult = OSWorkingDirectoryCurrentA(workingDirectory, workingDirectorySize);
-	const unsigned char  wasSuccesful = workingDirectoryResult;
+	const PXBool wasSuccesful = workingDirectoryResult;
 
-	if(!wasSuccesful)
-	{
-		return PXActionInvalid; //GetCurrentError();
-	}
+	PXActionOnErrorFetchAndExit(!wasSuccesful);
 
 	return PXActionSuccessful;
 }
@@ -558,12 +567,9 @@ PXActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirect
 PXActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize)
 {
 	wchar_t* workingDirectoryResult = OSWorkingDirectoryCurrentW(workingDirectory, workingDirectorySize);
-	const unsigned char  wasSuccesful = workingDirectoryResult;
+	const PXBool wasSuccesful = workingDirectoryResult;
 
-	if(!wasSuccesful)
-	{
-		return PXActionInvalid; //GetCurrentError();
-	}
+	PXActionOnErrorFetchAndExit(!wasSuccesful);
 
 	return PXActionSuccessful;
 }

@@ -105,7 +105,7 @@ PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStrea
     return PXActionSuccessful;
 }
 
-PXActionResult GIFSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult GIFSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
 {
     return PXActionInvalid;
 }

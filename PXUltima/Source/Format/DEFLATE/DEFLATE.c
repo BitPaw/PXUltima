@@ -571,7 +571,7 @@ void LodePNGBitWriter_init(LodePNGBitWriter* writer, ucvector* data)
 }
 
 /* LSB of value is written first, and LSB of bytes is used first */
-void PNGwriteBits(LodePNGBitWriter* writer, unsigned value, PXSize nbits)
+void PNGwriteBits(LodePNGBitWriter* writer, PXSize value, PXSize nbits)
 {
     if(nbits == 1)
     { /* compiler should statically compile this case if nbits == 1 */
@@ -580,8 +580,7 @@ void PNGwriteBits(LodePNGBitWriter* writer, unsigned value, PXSize nbits)
     else
     {
         /* TODO: increase output size only once here rather than in each WRITEBIT */
-        PXSize i;
-        for(i = 0; i != nbits; ++i)
+        for(PXSize i = 0; i != nbits; ++i)
         {
             WRITEBIT(writer, (unsigned char)((value >> i) & 1));
         }
@@ -589,10 +588,9 @@ void PNGwriteBits(LodePNGBitWriter* writer, unsigned value, PXSize nbits)
 }
 
 /* This one is to use for adding huffman symbol, the value bits are written MSB first */
-void writeBitsReversed(LodePNGBitWriter* writer, unsigned value, PXSize nbits)
+void writeBitsReversed(LodePNGBitWriter* writer, PXSize value, PXSize nbits)
 {
-    PXSize i;
-    for(i = 0; i != nbits; ++i)
+    for(PXSize i = 0; i != nbits; ++i)
     {
         /* TODO: increase output size only once here rather than in each WRITEBIT */
         WRITEBIT(writer, (unsigned char)((value >> (nbits - 1u - i)) & 1u));
@@ -1141,7 +1139,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
     if(!maxlens) return 83; /*alloc fail*/
 
     /* compute maxlens: max total bit length of symbols sharing prefix in the first table*/
-    memset(maxlens, 0, headsize * sizeof(*maxlens));
+    MemoryClear(maxlens, headsize * sizeof(*maxlens));
     for(i = 0; i < tree->numcodes; i++)
     {
         PXSize symbol = tree->codes[i];
@@ -1168,7 +1166,8 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
         return 83; /*alloc fail*/
     }
     /*initialize with an invalid length to indicate unused entries*/
-    for(i = 0; i < size; ++i) tree->table_len[i] = 16;
+    //for(i = 0; i < size; ++i) tree->table_len[i] = 16;
+    MemorySet(tree->table_len, 16u, size);
 
     /*fill in the first table for long symbols: max prefix size and pointer to secondary tables*/
     pointer = headsize;

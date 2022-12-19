@@ -5,7 +5,7 @@
 
 void PXBoxPlotConstruct(PXBoxPlot* const boxPlot)
 {
-    MemorySet(boxPlot, sizeof(PXBoxPlot), 0);
+    MemoryClear(boxPlot, sizeof(PXBoxPlot));
 }
 
 void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, const PXSize inputDataSize)

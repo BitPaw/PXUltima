@@ -13,7 +13,7 @@ PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSiz
 	PXDataStream dataStream;
 	Endian endian = EndianInvalid;
 
-	MemorySet(wav, sizeof(WAV), 0);
+	MemoryClear(wav, sizeof(WAV));
 	*dataRead = 0;
 
 	PXDataStreamConstruct(&dataStream);

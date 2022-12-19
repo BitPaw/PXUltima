@@ -68,7 +68,7 @@ PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSiz
 {
 	PXDataStream dataStream;
 
-	MemorySet(m4a, sizeof(M4A), 0);
+	MemoryClear(m4a, sizeof(M4A));
 	*dataRead = 0;
 	PXDataStreamConstruct(&dataStream);
 	PXDataStreamFromExternal(&dataStream, data, dataSize);

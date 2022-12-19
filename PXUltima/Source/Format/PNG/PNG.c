@@ -39,8 +39,8 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
     LodePNGColorMode colorModeIn;
     LodePNGColorMode colorModeOut;
 
-    MemorySet(&colorModeIn, sizeof(LodePNGColorMode), 0);
-    MemorySet(&colorModeOut, sizeof(LodePNGColorMode), 0);
+    MemoryClear(&colorModeIn, sizeof(LodePNGColorMode));
+    MemoryClear(&colorModeOut, sizeof(LodePNGColorMode));
 
     colorModeIn.bitdepth = bitDepth;
     colorModeIn.colortype = LCT_RGBA;
@@ -1455,9 +1455,9 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
         workingMemory = MemoryReallocate(workingMemory, sizeof(PXByte) * expectedzlibCacheSize);
 
         const PXActionResult actionResult = ZLIBDecompress(imageDataChunkCache, imageDataChunkCacheSizeUSED, workingMemory, expectedzlibCacheSize, &writtenBytes);
-        const unsigned char sucess = actionResult == PXActionSuccessful;
+        const PXBool success = actionResult == PXActionSuccessful;
 
-        if(!sucess)
+        if(!success)
         {
             return actionResult;
         }
@@ -1500,7 +1500,7 @@ PXActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize*
         const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
         const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
 
-        PXDataStreamWriteP(&dataStream, pngFileHeader, pngFileHeaderSize);
+        PXDataStreamWriteB(&dataStream, pngFileHeader, pngFileHeaderSize);
     }
 
     //---<IHDR> (Image Header)---
@@ -1509,21 +1509,21 @@ PXActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize*
         const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(png->ImageHeader.InterlaceMethod);
         const unsigned char* chunkStart = PXDataStreamCursorPosition(&dataStream);
 
-        PXDataStreamWriteIU(&dataStream, 13u, EndianBig);
-        PXDataStreamWriteP(&dataStream, "IHDR", 4u);
+        PXDataStreamWriteI32UE(&dataStream, 13u, EndianBig);
+        PXDataStreamWriteB(&dataStream, "IHDR", 4u);
 
-        PXDataStreamWriteIU(&dataStream, png->ImageHeader.Width, EndianBig);
-        PXDataStreamWriteIU(&dataStream, png->ImageHeader.Height, EndianBig);
+        PXDataStreamWriteI32UE(&dataStream, png->ImageHeader.Width, EndianBig);
+        PXDataStreamWriteI32UE(&dataStream, png->ImageHeader.Height, EndianBig);
 
-        PXDataStreamWriteCU(&dataStream, png->ImageHeader.BitDepth);
-        PXDataStreamWriteCU(&dataStream, colorType);
-        PXDataStreamWriteCU(&dataStream, png->ImageHeader.CompressionMethod);
-        PXDataStreamWriteCU(&dataStream, png->ImageHeader.FilterMethod);
-        PXDataStreamWriteCU(&dataStream, interlaceMethod);
+        PXDataStreamWriteI8U(&dataStream, png->ImageHeader.BitDepth);
+        PXDataStreamWriteI8U(&dataStream, colorType);
+        PXDataStreamWriteI8U(&dataStream, png->ImageHeader.CompressionMethod);
+        PXDataStreamWriteI8U(&dataStream, png->ImageHeader.FilterMethod);
+        PXDataStreamWriteI8U(&dataStream, interlaceMethod);
 
         const unsigned int crc = CRC32Generate(chunkStart, 13 + 4);
 
-        PXDataStreamWriteIU(&dataStream, crc, EndianBig);
+        PXDataStreamWriteI32UE(&dataStream, crc, EndianBig);
     }
 
     // iCCP
@@ -1547,9 +1547,9 @@ PXActionResult PNGSerialize(PNG* png, void* data, const PXSize dataSize, PXSize*
 
     //---<>---
     {
-        PXDataStreamWriteIU(&dataStream, 0u, EndianBig);
-        PXDataStreamWriteP(&dataStream, "IEND", 4u);
-        PXDataStreamWriteIU(&dataStream, 2923585666u, EndianBig);
+        PXDataStreamWriteI32UE(&dataStream, 0u, EndianBig);
+        PXDataStreamWriteB(&dataStream, "IEND", 4u);
+        PXDataStreamWriteI32UE(&dataStream, 2923585666u, EndianBig);
     }
 
     *dataWritten = dataStream.DataCursor;
@@ -1887,7 +1887,7 @@ the scanlines with 1 extra byte per scanline
                 {
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
-                    memset(count, 0, 256 * sizeof(*count));
+                    MemoryClear(count, 256 * sizeof(*count));
                     for(x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
                     ++count[type]; /*the filter type itself is part of the scanline*/
                     for(x = 0; x != 256; ++x)
@@ -2137,28 +2137,21 @@ PXSize preProcessScanlines
     return error;
 }
 
-PXActionResult PNGSerializeFromImage(const Image* const image, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
 {
-    PXDataStream dataStream;
-
-    PXDataStreamConstruct(&dataStream);
-    PXDataStreamFromExternal(&dataStream, data, dataSize);
-
-    *dataWritten = 0;
-
     //---<Signature>--- 8 Bytes
     {
-        const unsigned char pngFileHeader[8] = PNGHeaderSequenz;
+        const PXByte pngFileHeader[8] = PNGHeaderSequenz;
         const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
 
-        PXDataStreamWriteP(&dataStream, pngFileHeader, pngFileHeaderSize);
+        PXDataStreamWriteB(dataStream, pngFileHeader, pngFileHeaderSize);
     }
 
     //---<IHDR> (Image Header)--- 21 Bytes
         {
         unsigned char colorType = 0;
         const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(PNGInterlaceNone);
-        const unsigned char* chunkStart = PXDataStreamCursorPosition(&dataStream);
+        const unsigned char* chunkStart = PXDataStreamCursorPosition(dataStream);
 
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
@@ -2184,27 +2177,27 @@ PXActionResult PNGSerializeFromImage(const Image* const image, void* data, const
         }
         const unsigned int chunkLength = 13u;
 
-        PXDataStreamWriteIU(&dataStream, chunkLength, EndianBig);
-        PXDataStreamWriteP(&dataStream, "IHDR", 4u);
+        PXDataStreamWriteI32UE(dataStream, chunkLength, EndianBig);
+        PXDataStreamWriteB(dataStream, "IHDR", 4u);
 
-        PXDataStreamWriteIU(&dataStream, image->Width, EndianBig);
-        PXDataStreamWriteIU(&dataStream, image->Height, EndianBig);
+        PXDataStreamWriteI32UE(dataStream, image->Width, EndianBig);
+        PXDataStreamWriteI32UE(dataStream, image->Height, EndianBig);
 
         {
             const unsigned char bitDepth = ImageBitDepth(image->Format);
 
-            PXDataStreamWriteCU(&dataStream, bitDepth);
+            PXDataStreamWriteI8U(dataStream, bitDepth);
         }
 
-        PXDataStreamWriteCU(&dataStream, colorType);
-        PXDataStreamWriteCU(&dataStream, compressionMethod);
-        PXDataStreamWriteCU(&dataStream, filterMethod);
-        PXDataStreamWriteCU(&dataStream, interlaceMethod);
+        PXDataStreamWriteI8U(dataStream, colorType);
+        PXDataStreamWriteI8U(dataStream, compressionMethod);
+        PXDataStreamWriteI8U(dataStream, filterMethod);
+        PXDataStreamWriteI8U(dataStream, interlaceMethod);
 
         {
             const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            PXDataStreamWriteIU(&dataStream, crc, EndianBig);
+            PXDataStreamWriteI32UE(dataStream, crc, EndianBig);
         }
 
 
@@ -2319,36 +2312,36 @@ PXActionResult PNGSerializeFromImage(const Image* const image, void* data, const
         pngLastModificationTime.Minute = time.Minute;
         pngLastModificationTime.Second = time.Second;
 
-        const unsigned char* chunkStart = PXDataStreamCursorPosition(&dataStream);
+        const unsigned char* chunkStart = PXDataStreamCursorPosition(dataStream);
         const PXSize chunkLength = 7u;
 
-        PXDataStreamWriteIU(&dataStream, chunkLength, EndianBig);
-        PXDataStreamWriteP(&dataStream, "tIME", 4u);
-        PXDataStreamWriteSU(&dataStream, pngLastModificationTime.Year, EndianBig);
-        PXDataStreamWriteCU(&dataStream, pngLastModificationTime.Month);
-        PXDataStreamWriteCU(&dataStream, pngLastModificationTime.Day);
-        PXDataStreamWriteCU(&dataStream, pngLastModificationTime.Hour);
-        PXDataStreamWriteCU(&dataStream, pngLastModificationTime.Minute);
-        PXDataStreamWriteCU(&dataStream, pngLastModificationTime.Second);
+        PXDataStreamWriteI32UE(dataStream, chunkLength, EndianBig);
+        PXDataStreamWriteB(dataStream, "tIME", 4u);
+        PXDataStreamWriteI16U(dataStream, pngLastModificationTime.Year, EndianBig);
+        PXDataStreamWriteI8U(dataStream, pngLastModificationTime.Month);
+        PXDataStreamWriteI8U(dataStream, pngLastModificationTime.Day);
+        PXDataStreamWriteI8U(dataStream, pngLastModificationTime.Hour);
+        PXDataStreamWriteI8U(dataStream, pngLastModificationTime.Minute);
+        PXDataStreamWriteI8U(dataStream, pngLastModificationTime.Second);
 
         {
             const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            PXDataStreamWriteIU(&dataStream, crc, EndianBig);
+            PXDataStreamWriteI32UE(dataStream, crc, EndianBig);
         }
     }
 #endif
 
     // [IDAT] Image data
     {
-        const PXSize offsetSizeofChunk = dataStream.DataCursor;
+        const PXSize offsetSizeofChunk = dataStream->DataCursor;
 
-        const unsigned char* chunkStart = PXDataStreamCursorPosition(&dataStream);
+        const unsigned char* chunkStart = PXDataStreamCursorPosition(dataStream);
 
         PXSize chunkLength = 0;
 
-        PXDataStreamWriteIU(&dataStream, 0u, EndianBig); // Length
-        PXDataStreamWriteP(&dataStream, "IDAT", 4u);
+        PXDataStreamWriteI32UE(dataStream, 0u, EndianBig); // Length
+        PXDataStreamWriteB(dataStream, "IDAT", 4u);
 
 
         unsigned char* scanlines = 0;
@@ -2381,11 +2374,11 @@ PXActionResult PNGSerializeFromImage(const Image* const image, void* data, const
 
         // ZLIB
         {
-            ZLIBCompress(scanlines, scanlinesSize, PXDataStreamCursorPosition(&dataStream), PXDataStreamRemainingSize(&dataStream), &chunkLength);
+            ZLIBCompress(scanlines, scanlinesSize, PXDataStreamCursorPosition(dataStream), PXDataStreamRemainingSize(dataStream), &chunkLength);
 
-            dataStream.DataCursor += chunkLength;
+            dataStream->DataCursor += chunkLength;
 
-            PXDataStreamWriteAtIU(&dataStream, chunkLength, EndianBig, offsetSizeofChunk); // override length
+            PXDataStreamWriteAtI32UE(dataStream, chunkLength, EndianBig, offsetSizeofChunk); // override length
         }
 
         MemoryReallocate(scanlines, -1);
@@ -2393,7 +2386,7 @@ PXActionResult PNGSerializeFromImage(const Image* const image, void* data, const
         {
             const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            PXDataStreamWriteIU(&dataStream, crc, EndianBig);
+            PXDataStreamWriteI32UE(dataStream, crc, EndianBig);
         }
     }
 
@@ -2402,10 +2395,8 @@ PXActionResult PNGSerializeFromImage(const Image* const image, void* data, const
         const unsigned char imageEndChunk[13] = "\0\0\0\0IEND\xAE\x42\x60\x82"; // Combined write, as this is constand
         const PXSize imageEndChunkSize = sizeof(imageEndChunk)-1;
 
-        PXDataStreamWriteP(&dataStream, imageEndChunk, imageEndChunkSize);
+        PXDataStreamWriteB(dataStream, imageEndChunk, imageEndChunkSize);
     }
-
-    *dataWritten = dataStream.DataCursor;
 
     return PXActionSuccessful;
 }

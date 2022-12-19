@@ -1927,8 +1927,8 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     const PXSize maskLength = (XI_LASTEVENT + 7) / 8;
     unsigned char mask[maskLength];
 
-    MemorySet(mask, sizeof(mask), 0);
-    MemorySet(&eventmask, sizeof(XIEventMask), 0);
+    MemoryClear(mask, sizeof(mask));
+    MemoryClear(&eventmask, sizeof(XIEventMask));
 
     XISetMask(mask, XI_RawMotion);
     //XISetMask(mask, XI_RawButtonPress);
@@ -1959,7 +1959,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
     WNDCLASSW wndclass;
 
-    MemorySet(&wndclass, sizeof(WNDCLASSW), 0);
+    MemoryClear(&wndclass, sizeof(WNDCLASSW));
 
     wndclass.style = CS_OWNDC; //  CS_HREDRAW | CS_VREDRAW;
     wndclass.lpfnWndProc = PXWindowEventHandler;
@@ -1995,7 +1995,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
         hMenu,
         hInstance,
         lpParam
-    );
+    );   
 
     {
         if(!windowID)
@@ -2207,7 +2207,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
 void PXWindowConstruct(PXWindow* const window)
 {
-    MemorySet(window, sizeof(PXWindow), 0);
+    MemoryClear(window, sizeof(PXWindow));
 }
 
 void PXWindowCreateA(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)

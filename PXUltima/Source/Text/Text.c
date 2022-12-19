@@ -234,14 +234,14 @@ PXSize TextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const
 
 PXSize TextClearA(char* string, const PXSize stringSize)
 {
-	MemorySet(string, stringSize * sizeof(char), 0x00);
+	MemoryClear(string, stringSize * sizeof(char));
 
 	return stringSize;
 }
 
 PXSize TextClearW(wchar_t* string, const PXSize stringSize)
 {
-	MemorySet(string, stringSize * sizeof(wchar_t), 0x00);
+	MemoryClear(string, stringSize * sizeof(wchar_t));
 
 	return stringSize;
 }
