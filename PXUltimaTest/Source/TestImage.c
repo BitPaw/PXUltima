@@ -195,9 +195,9 @@ void TestImageAll()
 {
     printf("[#] Test for images...\n");
 
-    TestSaveImageSmal();
+    //TestSaveImageSmal();
     TestSaveImage();
-    ImageWriteText();
+    //ImageWriteText();
 
     printf("[i] Test image finished\n");
 }

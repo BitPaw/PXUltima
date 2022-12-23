@@ -2,9 +2,9 @@
 #define RIFFInclude
 
 #include <Format/Type.h>
-
 #include <Error/PXActionResult.h>
 #include <File/Endian.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -27,14 +27,14 @@ extern "C"
 	// Resource Interchange File Format. 
 	typedef struct RIFF_
 	{
-		unsigned char Valid;
+		PXBool Valid;
 		Endian EndianFormat;
 		unsigned int ChunkSize;
 		RIFFFormat Format;
 	}
 	RIFF;
 
-	PXPublic PXActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream);
 
 #ifdef __cplusplus
 }

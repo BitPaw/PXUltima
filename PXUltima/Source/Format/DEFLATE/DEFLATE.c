@@ -7,6 +7,7 @@
 #include <Format/HUFFMAN/HuffmanTree.h>
 #include <File/PXDataStream.h>
 #include <Math/PXMath.h>
+#include <Format/LZ77/PXLZ77.h>
 
 #define DeflateEncodingInvalidID -1
 #define DeflateEncodingLiteralRawID 0b00
@@ -112,20 +113,22 @@ unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod defla
     }
 }
 
-int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead)
-{
-    PXDataStream dataStream;
-    DeflateBlock deflateBlock;
 
-    PXDataStreamConstruct(&dataStream);
-    PXDataStreamFromExternal(&dataStream, inputBuffer, inputBufferSize);
+
+
+
+
+
+int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead)
+{
+    DeflateBlock deflateBlock;
 
     do
     {
-        deflateBlock.IsLastBlock = PXDataStreamReadBits(&dataStream, 1u);
+        deflateBlock.IsLastBlock = PXDataStreamReadBits(pxInputStream, 1u);
 
         {
-            const unsigned char encodingMethodValue = PXDataStreamReadBits(&dataStream, 2u);
+            const unsigned char encodingMethodValue = PXDataStreamReadBits(pxInputStream, 2u);
 
             deflateBlock.EncodingMethod = ConvertToDeflateEncodingMethod(encodingMethodValue);
         }
@@ -140,30 +143,30 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
             }
             case DeflateEncodingLiteralRaw:
             {
-                PXDataStreamSkipBitsToNextByte(&dataStream); // Skip remaining Bytes
+                PXDataStreamSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
 
-                const unsigned short length = PXDataStreamReadBits(&dataStream, 16u);
-                const unsigned short lengthInverse = PXDataStreamReadBits(&dataStream, 16u);
-                const void* sourceAdress = PXDataStreamCursorPosition(&dataStream);
+                const unsigned short length = PXDataStreamReadBits(pxInputStream, 16u);
+                const unsigned short lengthInverse = PXDataStreamReadBits(pxInputStream, 16u);
+                const void* sourceAdress = PXDataStreamCursorPosition(pxInputStream);
                 const unsigned char validLength = (length + lengthInverse) == 65535;
                 //const PXSize bitsToJump = (PXSize)length * 8;
 
                 //assert(validLength);
 
-                MemoryCopy(sourceAdress, PXDataStreamRemainingSize(&dataStream), (unsigned char*)outputBuffer + *outputBufferSizeRead, length);
+                MemoryCopy(sourceAdress, PXDataStreamRemainingSize(pxInputStream), (PXAdress)outputBuffer + *outputBufferSizeRead, length);
 
                 *outputBufferSizeRead += length;
 
-                PXDataStreamCursorAdvance(&dataStream, length);
+                PXDataStreamCursorAdvance(pxInputStream, length);
 
                 break;
             }
             case DeflateEncodingHuffmanDynamic:
             case DeflateEncodingHuffmanStatic:
             {
+                PXBool foundEndOFBlock = PXFalse;
                 HuffmanTree literalAndLengthCodes;
-                HuffmanTree distanceCodes;
-                unsigned char foundEndOFBlock = 0;
+                HuffmanTree distanceCodes;               
 
                 HuffmanTreeConstruct(&literalAndLengthCodes);
                 HuffmanTreeConstruct(&distanceCodes);
@@ -172,7 +175,7 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
                 {
                     case DeflateEncodingHuffmanDynamic:
                     {
-                        const unsigned int result = GenerateDynamicTree(&dataStream, &literalAndLengthCodes, &distanceCodes);
+                        const unsigned int result = GenerateDynamicTree(pxInputStream, &literalAndLengthCodes, &distanceCodes);
 
                         if(result != 0)
                         {
@@ -184,15 +187,15 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
                     case DeflateEncodingHuffmanStatic:
                     {
                         GenerateFixedLiteralLengthTree(&literalAndLengthCodes);
-                        GenerateFixedDistanceTree(&distanceCodes);
+                        HuffmanDistanceTreeGenerateFixed(&distanceCodes);
                         break;
                     }
                 }
 
                 while(!foundEndOFBlock)
                 {
-                    unsigned int resultLengthCode = huffmanDecodeSymbol(&dataStream, &literalAndLengthCodes);
-                    HuffmanCodeType huffmanCodeType = HuffmanCodeTypeFromCode(resultLengthCode);
+                    const unsigned int resultLengthCode = HuffmanSymbolDecode(pxInputStream, &literalAndLengthCodes);
+                    const HuffmanCodeType huffmanCodeType = HuffmanCodeTypeFromCode(resultLengthCode);
 
                     switch(huffmanCodeType)
                     {
@@ -223,10 +226,10 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
                             const unsigned int LENGTHEXTRA[29] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0 };
 
                             /*the base backwards distances (the bits of distance codes appear after length codes and use their own huffman tree)*/
-                            static const unsigned DISTANCEBASE[30] = { 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513,                                           769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577 };
+                            const unsigned DISTANCEBASE[30] = { 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513,                                           769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577 };
 
                             /*the extra bits of backwards distances (added to base)*/
-                            static const unsigned DISTANCEEXTRA[30] = { 0, 0, 0, 0, 1, 1, 2,  2,  3,  3,  4,  4,  5,  5,   6,   6,   7,   7,   8, 8,    9,    9,   10,   10,   11,   11,   12,    12,    13,    13 };
+                            const unsigned DISTANCEEXTRA[30] = { 0, 0, 0, 0, 1, 1, 2,  2,  3,  3,  4,  4,  5,  5,   6,   6,   7,   7,   8, 8,    9,    9,   10,   10,   11,   11,   12,    12,    13,    13 };
 
 
                             {
@@ -244,14 +247,14 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
                             if(numextrabits_l != 0)
                             {
                                 /* bits already ensured above */
-                                length += PXDataStreamReadBits(&dataStream, numextrabits_l);
+                                length += PXDataStreamReadBits(pxInputStream, numextrabits_l);
                             }
 
                             /*part 3: get distance code*/
                             //ensureBits32(reader, 28); /* up to 15 for the huffman symbol, up to 13 for the extra bits */
-                            unsigned int resultDistanceCode = huffmanDecodeSymbol(&dataStream, &distanceCodes);
-                            unsigned char isUnsupportedCode = resultDistanceCode > 29;
-                            unsigned char isIllegalCode = resultDistanceCode > 31;
+                            const unsigned int resultDistanceCode = HuffmanSymbolDecode(pxInputStream, &distanceCodes);
+                            PXBool isUnsupportedCode = resultDistanceCode > 29u;
+                            PXBool isIllegalCode = resultDistanceCode > 31u;
 
                             if(isUnsupportedCode)
                             {
@@ -272,7 +275,7 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
                             if(numextrabits_d != 0)
                             {
                                 /* bits already ensured above */
-                                distance += PXDataStreamReadBits(&dataStream, numextrabits_d);
+                                distance += PXDataStreamReadBits(pxInputStream, numextrabits_d);
                             }
 
                             /*part 5: fill in all the out[n] values based on the length and dist*/
@@ -287,18 +290,18 @@ int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, vo
 
                             if(distance < length)
                             {
-                                MemoryCopy((unsigned char*)outputBuffer + backward, distance, (unsigned char*)outputBuffer + start, distance);
+                                MemoryCopy((PXAdress)outputBuffer + backward, distance, (PXAdress)outputBuffer + start, distance);
 
                                 start += distance;
 
                                 for(PXSize forward = distance; forward < length; ++forward)
                                 {
-                                    ((unsigned char*)outputBuffer)[start++] = ((unsigned char*)outputBuffer)[backward++];
+                                    ((PXAdress)outputBuffer)[start++] = ((PXAdress)outputBuffer)[backward++];
                                 }
                             }
                             else
                             {
-                                MemoryCopy((unsigned char*)outputBuffer + backward, length, (unsigned char*)outputBuffer + start, length);
+                                MemoryCopy((PXAdress)outputBuffer + backward, length, (PXAdress)outputBuffer + start, length);
                             }
                             break;
                         }
@@ -495,10 +498,10 @@ unsigned getHash(const unsigned char* data, PXSize size, PXSize pos)
     }
     else
     {
-        PXSize amount, i;
+        PXSize amount;
         if(pos >= size) return 0;
         amount = size - pos;
-        for(i = 0; i != amount; ++i) result ^= ((unsigned)data[pos + i] << (i * 8u));
+        for(PXSize i = 0; i != amount; ++i) result ^= ((unsigned)data[pos + i] << (i * 8u));
     }
     return result & HASH_BIT_MASK;
 }
@@ -606,316 +609,72 @@ void addLengthDistance(uivector* values, PXSize length, PXSize distance);
 void updateHashChain(Hash* hash, PXSize wpos, unsigned hashval, unsigned short numzeros);
 PXSize countZeros(const unsigned char* data, PXSize size, PXSize pos);
 
+void writeLZ77data(LodePNGBitWriter* writer, const uivector* lz77_encoded, const HuffmanTree* tree_ll, const HuffmanTree* tree_d);
+unsigned encodeLZ77(uivector* out, Hash* hash, const unsigned char* in, PXSize inpos, PXSize insize, PXSize windowsize, PXSize minmatch, PXSize nicematch, PXSize lazymatching);
 
 
 
 
-
-
-/*
-write the lz77-encoded data, which has lit, len and dist codes, to compressed stream using huffman trees.
-tree_ll: the tree for lit and len codes.
-tree_d: the tree for distance codes.
-*/
-void writeLZ77data
-(
-    LodePNGBitWriter* writer,
-    const uivector* lz77_encoded,
-    const HuffmanTree* tree_ll,
-    const HuffmanTree* tree_d
-)
-{
-    PXSize i = 0;
-    for(i = 0; i != lz77_encoded->size; ++i)
-    {
-        PXSize val = lz77_encoded->data[i];
-        writeBitsReversed(writer, tree_ll->codes[val], tree_ll->lengths[val]);
-        if(val > 256) /*for a length code, 3 more things have to be added*/
-        {
-            PXSize length_index = val - FIRST_LENGTH_CODE_INDEX;
-            PXSize n_length_extra_bits = LENGTHEXTRA[length_index];
-            PXSize length_extra_bits = lz77_encoded->data[++i];
-
-            PXSize distance_code = lz77_encoded->data[++i];
-
-            PXSize distance_index = distance_code;
-            PXSize n_distance_extra_bits = DISTANCEEXTRA[distance_index];
-            PXSize distance_extra_bits = lz77_encoded->data[++i];
-
-            PNGwriteBits(writer, length_extra_bits, n_length_extra_bits);
-            writeBitsReversed(writer, tree_d->codes[distance_code], tree_d->lengths[distance_code]);
-            PNGwriteBits(writer, distance_extra_bits, n_distance_extra_bits);
-        }
-    }
-}
-
-unsigned encodeLZ77
-(
-    uivector* out,
-    Hash* hash,
-    const unsigned char* in,
-    PXSize inpos,
-    PXSize insize,
-    PXSize windowsize,
-    PXSize minmatch,
-    PXSize nicematch,
-    PXSize lazymatching
-)
-{
-    PXSize pos;
-    PXSize i, error = 0;
-    /*for large window lengths, assume the user wants no compression loss. Otherwise, max hash chain length speedup.*/
-    PXSize maxchainlength = windowsize >= 8192 ? windowsize : windowsize / 8u;
-    PXSize maxlazymatch = windowsize >= 8192 ? MAX_SUPPORTED_DEFLATE_LENGTH : 64;
-
-    PXSize usezeros = 1; /*not sure if setting it to false for windowsize < 8192 is better or worse*/
-    PXSize numzeros = 0;
-
-    PXSize offset; /*the offset represents the distance in LZ77 terminology*/
-    PXSize length;
-    PXSize lazy = 0;
-    PXSize lazylength = 0, lazyoffset = 0;
-    PXSize hashval;
-    PXSize current_offset, current_length;
-    PXSize prev_offset;
-    const unsigned char* lastptr, * foreptr, * backptr;
-    PXSize hashpos;
-
-    if(windowsize == 0 || windowsize > 32768) return 60; /*error: windowsize smaller/larger than allowed*/
-    if((windowsize & (windowsize - 1)) != 0) return 90; /*error: must be power of two*/
-
-    if(nicematch > MAX_SUPPORTED_DEFLATE_LENGTH) nicematch = MAX_SUPPORTED_DEFLATE_LENGTH;
-
-    for(pos = inpos; pos < insize; ++pos)
-    {
-        PXSize wpos = pos & (windowsize - 1); /*position for in 'circular' hash buffers*/
-        PXSize chainlength = 0;
-
-        hashval = getHash(in, insize, pos);
-
-        if(usezeros && hashval == 0)
-        {
-            if(numzeros == 0) numzeros = countZeros(in, insize, pos);
-            else if(pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
-        }
-        else
-        {
-            numzeros = 0;
-        }
-
-        updateHashChain(hash, wpos, hashval, numzeros);
-
-        /*the length and offset found for the current position*/
-        length = 0;
-        offset = 0;
-
-        hashpos = hash->chain[wpos];
-
-        lastptr = &in[insize < pos + MAX_SUPPORTED_DEFLATE_LENGTH ? insize : pos + MAX_SUPPORTED_DEFLATE_LENGTH];
-
-        /*search for the longest string*/
-        prev_offset = 0;
-        for(;;)
-        {
-            if(chainlength++ >= maxchainlength) break;
-            current_offset = (unsigned)(hashpos <= wpos ? wpos - hashpos : wpos - hashpos + windowsize);
-
-            if(current_offset < prev_offset) break; /*stop when went completely around the circular buffer*/
-            prev_offset = current_offset;
-            if(current_offset > 0)
-            {
-                /*test the next characters*/
-                foreptr = &in[pos];
-                backptr = &in[pos - current_offset];
-
-                /*common case in PNGs is lots of zeros. Quickly skip over them as a speedup*/
-                if(numzeros >= 3)
-                {
-                    unsigned skip = hash->zeros[hashpos];
-                    if(skip > numzeros) skip = numzeros;
-                    backptr += skip;
-                    foreptr += skip;
-                }
-
-                while(foreptr != lastptr && *backptr == *foreptr) /*maximum supported length by deflate is max length*/
-                {
-                    ++backptr;
-                    ++foreptr;
-                }
-                current_length = (unsigned)(foreptr - &in[pos]);
-
-                if(current_length > length)
-                {
-                    length = current_length; /*the longest length*/
-                    offset = current_offset; /*the offset that is related to this longest length*/
-                    /*jump out once a length of max length is found (speed gain). This also jumps
-                    out if length is MAX_SUPPORTED_DEFLATE_LENGTH*/
-                    if(current_length >= nicematch) break;
-                }
-            }
-
-            if(hashpos == hash->chain[hashpos]) break;
-
-            if(numzeros >= 3 && length > numzeros)
-            {
-                hashpos = hash->chainz[hashpos];
-                if(hash->zeros[hashpos] != numzeros) break;
-            }
-            else
-            {
-                hashpos = hash->chain[hashpos];
-                /*outdated hash value, happens if particular value was not encountered in whole last window*/
-                if(hash->val[hashpos] != (int)hashval) break;
-            }
-        }
-
-        if(lazymatching)
-        {
-            if(!lazy && length >= 3 && length <= maxlazymatch && length < MAX_SUPPORTED_DEFLATE_LENGTH)
-            {
-                lazy = 1;
-                lazylength = length;
-                lazyoffset = offset;
-                continue; /*try the next byte*/
-            }
-            if(lazy)
-            {
-                lazy = 0;
-                if(pos == 0) ERROR_BREAK(81);
-                if(length > lazylength + 1)
-                {
-                    /*push the previous character as literal*/
-                    if(!uivector_push_back(out, in[pos - 1])) ERROR_BREAK(83 /*alloc fail*/);
-                }
-                else
-                {
-                    length = lazylength;
-                    offset = lazyoffset;
-                    hash->head[hashval] = -1; /*the same hashchain update will be done, this ensures no wrong alteration*/
-                    hash->headz[numzeros] = -1; /*idem*/
-                    --pos;
-                }
-            }
-        }
-        if(length >= 3 && offset > windowsize) ERROR_BREAK(86 /*too big (or overflown negative) offset*/);
-
-        /*encode it as length/distance pair or literal value*/
-        if(length < 3) /*only lengths of 3 or higher are supported as length/distance pair*/
-        {
-            if(!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
-        }
-        else if(length < minmatch || (length == 3 && offset > 4096))
-        {
-            /*compensate for the fact that longer offsets have more extra bits, a
-            length of only 3 may be not worth it then*/
-            if(!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
-        }
-        else
-        {
-            addLengthDistance(out, length, offset);
-            for(i = 1; i < length; ++i)
-            {
-                ++pos;
-                wpos = pos & (windowsize - 1);
-                hashval = getHash(in, insize, pos);
-                if(usezeros && hashval == 0)
-                {
-                    if(numzeros == 0) numzeros = countZeros(in, insize, pos);
-                    else if(pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
-                }
-                else
-                {
-                    numzeros = 0;
-                }
-                updateHashChain(hash, wpos, hashval, numzeros);
-            }
-        }
-    } /*end of the loop through each character of input*/
-
-    return error;
-}
-
-
-
-
-
-
-unsigned deflateNoCompression(ucvector* out, const unsigned char* data, PXSize datasize)
-{
-    /*non compressed deflate block data: 1 bit BFINAL,2 bits BTYPE,(5 bits): it jumps to start of next byte,
-  2 bytes LEN, 2 bytes NLEN, LEN bytes literal DATA*/
-
-    PXSize i, numdeflateblocks = (datasize + 65534u) / 65535u;
-    unsigned datapos = 0;
-    for(i = 0; i != numdeflateblocks; ++i)
-    {
-        unsigned BFINAL, BTYPE, LEN, NLEN;
-        unsigned char firstbyte;
-        PXSize pos = out->size;
-
-        BFINAL = (i == numdeflateblocks - 1);
-        BTYPE = 0;
-
-        LEN = 65535;
-        if(datasize - datapos < 65535u) LEN = (unsigned)datasize - datapos;
-        NLEN = 65535 - LEN;
-
-        if(!ucvector_resize(out, out->size + LEN + 5)) return 83; /*alloc fail*/
-
-        firstbyte = (unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
-        out->data[pos + 0] = firstbyte;
-        out->data[pos + 1] = (unsigned char)(LEN & 255);
-        out->data[pos + 2] = (unsigned char)(LEN >> 8u);
-        out->data[pos + 3] = (unsigned char)(NLEN & 255);
-        out->data[pos + 4] = (unsigned char)(NLEN >> 8u);
-        memcpy(out->data + pos + 5, data + datapos, LEN);
-        datapos += LEN;
-    }
-
-    return 0;
-}
 
 unsigned deflateFixed
 (
-    LodePNGBitWriter* writer,
+    PXDataStream* const pxDataStream,
     Hash* hash,
     const unsigned char* data,
-    PXSize datapos, PXSize dataend,
-    const LodePNGCompressSettings* settings,
-    PXSize final
+    PXSize datapos, 
+    PXSize dataend,
+    const LodePNGCompressSettings* settings
 )
 {
+    LodePNGBitWriter writerThing;
+
+    LodePNGBitWriter* writer = &writerThing;
+    ucvector aaucvector;
+
+    aaucvector.data = (PXAdress)pxDataStream->Data + pxDataStream->DataCursor;
+    aaucvector.size = 0;
+    aaucvector.allocsize = pxDataStream->DataSize;
+
+    LodePNGBitWriter_init(writer, &aaucvector);
+    writer->bp = pxDataStream->DataCursorBitOffset + 16u;
+
+    //--------------------------
+
+
     HuffmanTree tree_ll; /*tree for literal values and length codes*/
     HuffmanTree tree_d; /*tree for distance codes*/
 
-    PXSize BFINAL = final;
-    PXSize error = 1;
-    PXSize i;
+    PXSize error = 0;
 
     HuffmanTreeConstruct(&tree_ll);
     HuffmanTreeConstruct(&tree_d);
 
     GenerateFixedLiteralLengthTree(&tree_ll);
-    GenerateFixedDistanceTree(&tree_d);
+    HuffmanDistanceTreeGenerateFixed(&tree_d);
 
     if(!error)
     {
-        PNGwriteBits(writer, BFINAL, 1);
-        PNGwriteBits(writer, 1, 1); /*first bit of BTYPE*/
-        PNGwriteBits(writer, 0, 1); /*second bit of BTYPE*/
-
         if(settings->use_lz77) /*LZ77 encoded*/
         {
             uivector lz77_encoded;
             uivector_init(&lz77_encoded);
             error = encodeLZ77(&lz77_encoded, hash, data, datapos, dataend, settings->windowsize,
                                settings->minmatch, settings->nicematch, settings->lazymatching);
-            if(!error) writeLZ77data(writer, &lz77_encoded, &tree_ll, &tree_d);
+            if (!error) writeLZ77data(writer, &lz77_encoded, &tree_ll, &tree_d);
             uivector_cleanup(&lz77_encoded);
+
+
+            //PXLZ77ESetting pxLZ77ESetting;
+            //pxLZ77ESetting.Windowsize = settings->windowsize;
+            //pxLZ77ESetting.Minmatch = settings->minmatch;
+            //pxLZ77ESetting.Nicematch = settings->nicematch;
+            //pxLZ77ESetting.Lazymatching = settings->lazymatching;
+
+            //error = PXLZ77Encode(writer, hash, data, datapos, dataend, &tree_ll, &tree_d, &pxLZ77ESetting);
         }
         else /*no LZ77, but still will be Huffman compressed*/
         {
-            for(i = datapos; i < dataend; ++i)
+            for(PXSize i = datapos; i < dataend; ++i)
             {
                 writeBitsReversed(writer, tree_ll.codes[data[i]], tree_ll.lengths[data[i]]);
             }
@@ -927,6 +686,9 @@ unsigned deflateFixed
     /*cleanup*/
     HuffmanTreeDestruct(&tree_ll);
     HuffmanTreeDestruct(&tree_d);
+
+    pxDataStream->DataCursorBitOffset = writer->bp;
+    pxDataStream->DataCursor += aaucvector.size;
 
     return error;
 }
@@ -1413,15 +1175,37 @@ unsigned HuffmanTree_makeFromFrequencies(HuffmanTree* tree, const unsigned* freq
 
 unsigned deflateDynamic
 (
-    LodePNGBitWriter* writer,
+    PXDataStream* const pxDataStream,
     Hash* hash,
     const unsigned char* data,
     PXSize datapos,
     PXSize dataend,
     const LodePNGCompressSettings* settings,
-    unsigned final
+    unsigned char BFINAL
 )
 {
+
+
+
+
+
+    LodePNGBitWriter writerThing;
+
+    LodePNGBitWriter* writer = &writerThing;
+    ucvector aaucvector;
+
+    aaucvector.data = (PXAdress)pxDataStream->Data + pxDataStream->DataCursor;
+    aaucvector.size = 0;
+    aaucvector.allocsize = pxDataStream->DataSize;
+
+    LodePNGBitWriter_init(writer, &aaucvector);
+    writer->bp = pxDataStream->DataCursorBitOffset;// +(2 * 8u);
+
+    //-------------------------
+
+
+
+
     unsigned error = 0;
 
     /*
@@ -1436,7 +1220,10 @@ unsigned deflateDynamic
     */
 
     /*The lz77 encoded data, represented with integers since there will also be length and distance codes in it*/
-    uivector lz77_encoded;
+    uivector lz77_encoded;    uivector_init(&lz77_encoded);
+    //PXDataStream lz77CacheStream;     PXDataStreamConstruct(&lz77CacheStream);
+
+
     HuffmanTree tree_ll; /*tree for lit,len values*/
     HuffmanTree tree_d; /*tree for distance codes*/
     HuffmanTree tree_cl; /*tree for encoding the code lengths representing tree_ll and tree_d*/
@@ -1456,12 +1243,11 @@ unsigned deflateDynamic
     bitlen_cl is to bitlen_lld_e what bitlen_lld is to lz77_encoded.
     */
 
-    unsigned BFINAL = final;
     PXSize i;
     PXSize numcodes_ll, numcodes_d, numcodes_lld, numcodes_lld_e, numcodes_cl;
     unsigned HLIT, HDIST, HCLEN;
 
-    uivector_init(&lz77_encoded);
+ 
     HuffmanTreeConstruct(&tree_ll);
     HuffmanTreeConstruct(&tree_d);
     HuffmanTreeConstruct(&tree_cl);
@@ -1476,34 +1262,61 @@ unsigned deflateDynamic
     allow breaking out of it to the cleanup phase on error conditions.*/
     while(!error)
     {
-        memset(frequencies_ll, 0, 286 * sizeof(*frequencies_ll));
-        memset(frequencies_d, 0, 30 * sizeof(*frequencies_d));
-        memset(frequencies_cl, 0, NUM_CODE_LENGTH_CODES * sizeof(*frequencies_cl));
+        MemoryClear(frequencies_ll, 286 * sizeof(*frequencies_ll));
+        MemoryClear(frequencies_d, 30 * sizeof(*frequencies_d));
+        MemoryClear(frequencies_cl, NUM_CODE_LENGTH_CODES * sizeof(*frequencies_cl));
 
         if(settings->use_lz77)
         {
-            error = encodeLZ77(&lz77_encoded, hash, data, datapos, dataend, settings->windowsize,
-                               settings->minmatch, settings->nicematch, settings->lazymatching);
+            //PXLZ77ESetting pxLZ77ESetting;
+            //pxLZ77ESetting.Windowsize = settings->windowsize;
+            //pxLZ77ESetting.Minmatch = settings->minmatch;
+            //pxLZ77ESetting.Nicematch = settings->nicematch;
+            //pxLZ77ESetting.Lazymatching = settings->lazymatching;
+
+            //error = PXLZ77Encode(&lz77CacheStream, hash, data, datapos, dataend, &tree_ll, &tree_d, &pxLZ77ESetting);
+
+            error = encodeLZ77(&lz77_encoded, hash, data, datapos, dataend, settings->windowsize, settings->minmatch, settings->nicematch, settings->lazymatching);
             if(error) break;
         }
         else
         {
-            if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
-            for(i = datapos; i < dataend; ++i) lz77_encoded.data[i - datapos] = data[i]; /*no LZ77, but still will be Huffman compressed*/
+
+            if (!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
+            for (i = datapos; i < dataend; ++i) lz77_encoded.data[i - datapos] = data[i]; /*no LZ77, but still will be Huffman compressed*/
+
+           //if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
+           // for (PXSize index = datapos; index < dataend; ++index) // Data must be atleast "datasize"
+           // {
+           //     ((PXAdress)lz77CacheStream.Data)[index - datapos] = data[index]; // no LZ77, but still will be Huffman compressed
+           // }   
         }
 
         /*Count the frequencies of lit, len and dist codes*/
-        for(i = 0; i != lz77_encoded.size; ++i)
+       /* for (i = 0; i != lz77CacheStream.DataSize; ++i)
+        {
+            unsigned int symbol = ((PXAdress)lz77CacheStream.Data)[i];
+            ++frequencies_ll[symbol];
+            if(symbol > 256)
+            {
+                unsigned int dist = ((PXAdress)lz77CacheStream.Data)[i + 2];
+                ++frequencies_d[dist];
+                i += 3;
+            }
+        }*/
+        for (i = 0; i != lz77_encoded.size; ++i)
         {
             unsigned symbol = lz77_encoded.data[i];
             ++frequencies_ll[symbol];
-            if(symbol > 256)
+            if (symbol > 256)
             {
                 unsigned dist = lz77_encoded.data[i + 2];
                 ++frequencies_d[dist];
                 i += 3;
             }
         }
+
+
         frequencies_ll[256] = 1; /*there will be exactly 1 end code, at the end of the block*/
 
         /*Make both huffman trees, one for the lit and len codes, one for the dist codes*/
@@ -1513,8 +1326,8 @@ unsigned deflateDynamic
         error = HuffmanTree_makeFromFrequencies(&tree_d, frequencies_d, 2, 30, 15);
         if(error) break;
 
-        numcodes_ll = MathMinimum(tree_ll.numcodes, 286);
-        numcodes_d = MathMinimum(tree_d.numcodes, 30);
+        numcodes_ll = MathMinimumIU(tree_ll.numcodes, 286);
+        numcodes_d = MathMinimumIU(tree_d.numcodes, 30);
         /*store the code lengths of both generated trees in bitlen_lld*/
         numcodes_lld = numcodes_ll + numcodes_d;
         bitlen_lld = (unsigned*)MemoryAllocate(numcodes_lld * sizeof(*bitlen_lld));
@@ -1582,8 +1395,7 @@ unsigned deflateDynamic
             if(bitlen_lld_e[i] >= 16) ++i;
         }
 
-        error = HuffmanTree_makeFromFrequencies(&tree_cl, frequencies_cl,
-                                                NUM_CODE_LENGTH_CODES, NUM_CODE_LENGTH_CODES, 7);
+        error = HuffmanTree_makeFromFrequencies(&tree_cl, frequencies_cl, NUM_CODE_LENGTH_CODES, NUM_CODE_LENGTH_CODES, 7);
         if(error) break;
 
         /*compute amount of code-length-code-lengths to output*/
@@ -1638,6 +1450,9 @@ unsigned deflateDynamic
 
         /*write the compressed data symbols*/
         writeLZ77data(writer, &lz77_encoded, &tree_ll, &tree_d);
+
+
+
         /*error: the length of the end code 256 must be larger than 0*/
         if(tree_ll.lengths[256] == 0) ERROR_BREAK(64);
 
@@ -1658,25 +1473,19 @@ unsigned deflateDynamic
     free(bitlen_lld);
     free(bitlen_lld_e);
 
+    pxDataStream->DataCursorBitOffset = writer->bp;
+    pxDataStream->DataCursor += aaucvector.size;
+
     return error;
 }
 
 #define DEFAULT_WINDOWSIZE 2048
 
-int DEFLATESerialize(const void* const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeWritten)
+PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream)
 {
     unsigned error = 0;
-    PXSize i, blocksize, numdeflateblocks;
-    Hash hash;
-    LodePNGBitWriter writer;
-
-    ucvector aaucvector;
-
-    aaucvector.data = outputBuffer;
-    aaucvector.size = 0;
-    aaucvector.allocsize = outputBufferSize;
-
-    LodePNGBitWriter_init(&writer, &aaucvector);
+    PXSize blocksize;
+    Hash hash; 
 
     LodePNGCompressSettings lodePNGCompressSettings;
 
@@ -1690,40 +1499,362 @@ int DEFLATESerialize(const void* const inputBuffer, const PXSize inputBufferSize
     lodePNGCompressSettings.custom_deflate = 0;
     lodePNGCompressSettings.custom_context = 0;
 
+    DeflateEncodingMethod deflateEncodingMethod = DeflateEncodingHuffmanDynamic;// DeflateEncodingHuffmanDynamic;
 
-    if(lodePNGCompressSettings.btype > 2) return 61;
-    else if(lodePNGCompressSettings.btype == 0) return deflateNoCompression(outputBuffer, inputBuffer, inputBufferSize);
-    else if(lodePNGCompressSettings.btype == 1) blocksize = inputBufferSize;
-    else /*if(settings->btype == 2)*/
+    switch (deflateEncodingMethod)
     {
-        /*on PNGs, deflate blocks of 65-262k seem to give most dense encoding*/
-        blocksize = inputBufferSize / 8u + 8;
-        if(blocksize < 65536) blocksize = 65536;
-        if(blocksize > 262144) blocksize = 262144;
-    }
-
-    numdeflateblocks = (inputBufferSize + blocksize - 1) / blocksize;
-    if(numdeflateblocks == 0) numdeflateblocks = 1;
-
-    error = hash_init(&hash, lodePNGCompressSettings.windowsize);
-
-    if(!error)
-    {
-        for(i = 0; i != numdeflateblocks && !error; ++i)
+        case DeflateEncodingLiteralRaw:
         {
-            PXSize final = (i == numdeflateblocks - 1);
-            PXSize start = i * blocksize;
-            PXSize end = start + blocksize;
-            if(end > inputBufferSize) end = inputBufferSize;
+            const PXSize numdeflateblocks = (pxInputStream->DataSize + 65534u) / 65535u;
+            PXSize datapos = 0;
 
-            if(lodePNGCompressSettings.btype == 1) error = deflateFixed(&writer, &hash, inputBuffer, start, end, &lodePNGCompressSettings, final);
-            else if(lodePNGCompressSettings.btype == 2) error = deflateDynamic(&writer, &hash, inputBuffer, start, end, &lodePNGCompressSettings, final);
+            for (PXSize i = 0; i != numdeflateblocks; ++i)
+            {
+                const PXBool BFINAL = (i == numdeflateblocks - 1);
+                const PXInt16U chunkLength = MathMinimumIU(65535, pxInputStream->DataSize - datapos);
+                const PXInt16U chunkLengthNegated = 65535 - chunkLength;
+
+                const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
+
+                PXDataStreamWriteI8U(pxOutputStream, firstbyte);
+                PXDataStreamWriteI16U(pxOutputStream, chunkLength);
+                PXDataStreamWriteI16U(pxOutputStream, chunkLengthNegated);
+
+                PXDataStreamWriteB(pxOutputStream, (PXAdress)pxInputStream->Data + datapos, chunkLength);
+
+                datapos += chunkLength;
+            }
+        }
+        case DeflateEncodingHuffmanStatic:
+        case DeflateEncodingHuffmanDynamic:
+        {
+            switch (deflateEncodingMethod)
+            {
+                case DeflateEncodingHuffmanStatic:
+                {
+                    blocksize = pxInputStream->DataSize;
+                    break;
+                }
+                case DeflateEncodingHuffmanDynamic:
+                {
+                    /*on PNGs, deflate blocks of 65-262k seem to give most dense encoding*/
+                    blocksize = pxInputStream->DataSize / 8u + 8u;
+                    if (blocksize < 65536) blocksize = 65536;
+                    if (blocksize > 262144) blocksize = 262144;
+
+                    break;
+                }
+            }
+
+            PXSize numdeflateblocks = (pxInputStream->DataSize + blocksize - 1) / blocksize;
+            if (numdeflateblocks == 0) numdeflateblocks = 1;
+
+            error = hash_init(&hash, lodePNGCompressSettings.windowsize);
+
+            for (PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
+            {
+                const PXSize indexStart = i * blocksize;
+                const PXSize indexEnd = MathMinimumIU(indexStart + blocksize, pxInputStream->DataSize);
+                const PXBool finalBlock = (i == numdeflateblocks - 1);
+
+                // PXDataStreamWriteBits(pxOutputStream, finalBlock, 1u);
+
+                switch (deflateEncodingMethod)
+                {
+                    case DeflateEncodingHuffmanStatic:
+                    {
+                        PXDataStreamWriteBits(pxOutputStream, 1u, 2u);
+                        error = deflateFixed(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings);
+                        break;
+                    }
+                    case DeflateEncodingHuffmanDynamic:
+                    {
+                        //PXDataStreamWriteBits(pxOutputStream, 2u, 2u);
+                        error = deflateDynamic(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings, finalBlock);
+                        break;
+                    }
+                }
+            }
+
+            hash_cleanup(&hash);
+
+            break;
+        }
+        case DeflateEncodingReserverd:
+        case DeflateEncodingInvalid:
+        default:
+            return PXActionRefusedFormatSettingNotAllowed;
+    }  
+
+    return PXActionSuccessful;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PXPublic PXActionResult PXLZ77Encode
+(
+    //PXDataStream* const pxOutputStream,
+    PXDataStream* const pxCacheStream,
+    Hash* hash,
+    const unsigned char* in,
+    PXSize inpos,
+    PXSize insize,
+    const HuffmanTree* tree_ll,
+    const HuffmanTree* tree_d,
+    const PXLZ77ESetting* const pxLZ77ESetting
+)
+{
+
+}
+PXPublic PXActionResult PXLZ77Decode()
+{
+
+}
+
+
+
+
+
+/*
+write the lz77-encoded data, which has lit, len and dist codes, to compressed stream using huffman trees.
+tree_ll: the tree for lit and len codes.
+tree_d: the tree for distance codes.
+*/
+void writeLZ77data
+(
+    LodePNGBitWriter* writer,
+    const uivector* lz77_encoded,
+    const HuffmanTree* tree_ll,
+    const HuffmanTree* tree_d
+)
+{
+    PXSize i = 0;
+    for (i = 0; i != lz77_encoded->size; ++i)
+    {
+        PXSize val = lz77_encoded->data[i];
+        writeBitsReversed(writer, tree_ll->codes[val], tree_ll->lengths[val]);
+        if (val > 256) /*for a length code, 3 more things have to be added*/
+        {
+            PXSize length_index = val - FIRST_LENGTH_CODE_INDEX;
+            PXSize n_length_extra_bits = LENGTHEXTRA[length_index];
+            PXSize length_extra_bits = lz77_encoded->data[++i];
+
+            PXSize distance_code = lz77_encoded->data[++i];
+
+            PXSize distance_index = distance_code;
+            PXSize n_distance_extra_bits = DISTANCEEXTRA[distance_index];
+            PXSize distance_extra_bits = lz77_encoded->data[++i];
+
+            PNGwriteBits(writer, length_extra_bits, n_length_extra_bits);
+            writeBitsReversed(writer, tree_d->codes[distance_code], tree_d->lengths[distance_code]);
+            PNGwriteBits(writer, distance_extra_bits, n_distance_extra_bits);
         }
     }
+}
 
-    hash_cleanup(&hash);
+unsigned encodeLZ77
+(
+    uivector* out,
+    Hash* hash,
+    const unsigned char* in,
+    PXSize inpos,
+    PXSize insize,
+    PXSize windowsize,
+    PXSize minmatch,
+    PXSize nicematch,
+    PXSize lazymatching
+)
+{
+    PXSize pos;
+    PXSize i, error = 0;
+    /*for large window lengths, assume the user wants no compression loss. Otherwise, max hash chain length speedup.*/
+    PXSize maxchainlength = windowsize >= 8192 ? windowsize : windowsize / 8u;
+    PXSize maxlazymatch = windowsize >= 8192 ? MAX_SUPPORTED_DEFLATE_LENGTH : 64;
 
-    *outputBufferSizeWritten = writer.data->size;
+    PXSize usezeros = 1; /*not sure if setting it to false for windowsize < 8192 is better or worse*/
+    PXSize numzeros = 0;
+
+    PXSize offset; /*the offset represents the distance in LZ77 terminology*/
+    PXSize length;
+    PXSize lazy = 0;
+    PXSize lazylength = 0, lazyoffset = 0;
+    PXSize hashval;
+    PXSize current_offset, current_length;
+    PXSize prev_offset;
+    const unsigned char* lastptr, * foreptr, * backptr;
+    PXSize hashpos;
+
+    if (windowsize == 0 || windowsize > 32768) return 60; /*error: windowsize smaller/larger than allowed*/
+    if ((windowsize & (windowsize - 1)) != 0) return 90; /*error: must be power of two*/
+
+    if (nicematch > MAX_SUPPORTED_DEFLATE_LENGTH) nicematch = MAX_SUPPORTED_DEFLATE_LENGTH;
+
+    for (pos = inpos; pos < insize; ++pos)
+    {
+        PXSize wpos = pos & (windowsize - 1); /*position for in 'circular' hash buffers*/
+        PXSize chainlength = 0;
+
+        hashval = getHash(in, insize, pos);
+
+        if (usezeros && hashval == 0)
+        {
+            if (numzeros == 0) numzeros = countZeros(in, insize, pos);
+            else if (pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
+        }
+        else
+        {
+            numzeros = 0;
+        }
+
+        updateHashChain(hash, wpos, hashval, numzeros);
+
+        /*the length and offset found for the current position*/
+        length = 0;
+        offset = 0;
+
+        hashpos = hash->chain[wpos];
+
+        lastptr = &in[insize < pos + MAX_SUPPORTED_DEFLATE_LENGTH ? insize : pos + MAX_SUPPORTED_DEFLATE_LENGTH];
+
+        /*search for the longest string*/
+        prev_offset = 0;
+        for (;;)
+        {
+            if (chainlength++ >= maxchainlength) break;
+            current_offset = (unsigned)(hashpos <= wpos ? wpos - hashpos : wpos - hashpos + windowsize);
+
+            if (current_offset < prev_offset) break; /*stop when went completely around the circular buffer*/
+            prev_offset = current_offset;
+            if (current_offset > 0)
+            {
+                /*test the next characters*/
+                foreptr = &in[pos];
+                backptr = &in[pos - current_offset];
+
+                /*common case in PNGs is lots of zeros. Quickly skip over them as a speedup*/
+                if (numzeros >= 3)
+                {
+                    unsigned skip = hash->zeros[hashpos];
+                    if (skip > numzeros) skip = numzeros;
+                    backptr += skip;
+                    foreptr += skip;
+                }
+
+                while (foreptr != lastptr && *backptr == *foreptr) /*maximum supported length by deflate is max length*/
+                {
+                    ++backptr;
+                    ++foreptr;
+                }
+                current_length = (unsigned)(foreptr - &in[pos]);
+
+                if (current_length > length)
+                {
+                    length = current_length; /*the longest length*/
+                    offset = current_offset; /*the offset that is related to this longest length*/
+                    /*jump out once a length of max length is found (speed gain). This also jumps
+                    out if length is MAX_SUPPORTED_DEFLATE_LENGTH*/
+                    if (current_length >= nicematch) break;
+                }
+            }
+
+            if (hashpos == hash->chain[hashpos]) break;
+
+            if (numzeros >= 3 && length > numzeros)
+            {
+                hashpos = hash->chainz[hashpos];
+                if (hash->zeros[hashpos] != numzeros) break;
+            }
+            else
+            {
+                hashpos = hash->chain[hashpos];
+                /*outdated hash value, happens if particular value was not encountered in whole last window*/
+                if (hash->val[hashpos] != (int)hashval) break;
+            }
+        }
+
+        if (lazymatching)
+        {
+            if (!lazy && length >= 3 && length <= maxlazymatch && length < MAX_SUPPORTED_DEFLATE_LENGTH)
+            {
+                lazy = 1;
+                lazylength = length;
+                lazyoffset = offset;
+                continue; /*try the next byte*/
+            }
+            if (lazy)
+            {
+                lazy = 0;
+                if (pos == 0) ERROR_BREAK(81);
+                if (length > lazylength + 1)
+                {
+                    /*push the previous character as literal*/
+                    if (!uivector_push_back(out, in[pos - 1])) ERROR_BREAK(83 /*alloc fail*/);
+                }
+                else
+                {
+                    length = lazylength;
+                    offset = lazyoffset;
+                    hash->head[hashval] = -1; /*the same hashchain update will be done, this ensures no wrong alteration*/
+                    hash->headz[numzeros] = -1; /*idem*/
+                    --pos;
+                }
+            }
+        }
+        if (length >= 3 && offset > windowsize) ERROR_BREAK(86 /*too big (or overflown negative) offset*/);
+
+        /*encode it as length/distance pair or literal value*/
+        if (length < 3) /*only lengths of 3 or higher are supported as length/distance pair*/
+        {
+            if (!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
+        }
+        else if (length < minmatch || (length == 3 && offset > 4096))
+        {
+            /*compensate for the fact that longer offsets have more extra bits, a
+            length of only 3 may be not worth it then*/
+            if (!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
+        }
+        else
+        {
+            addLengthDistance(out, length, offset);
+            for (i = 1; i < length; ++i)
+            {
+                ++pos;
+                wpos = pos & (windowsize - 1);
+                hashval = getHash(in, insize, pos);
+                if (usezeros && hashval == 0)
+                {
+                    if (numzeros == 0) numzeros = countZeros(in, insize, pos);
+                    else if (pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
+                }
+                else
+                {
+                    numzeros = 0;
+                }
+                updateHashChain(hash, wpos, hashval, numzeros);
+            }
+        }
+    } /*end of the loop through each character of input*/
 
     return error;
 }

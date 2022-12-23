@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Format\LZ77\PXLZ77.h" />
     <ClInclude Include="Source\Algorithm\Dijkstra\PXDijkstra.h" />
     <ClInclude Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.h" />
     <ClInclude Include="Source\Network\Web\PXWebServer.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Format\LZ77\PXLZ77.c" />
     <ClCompile Include="Source\Algorithm\Dijkstra\PXDijkstra.c" />
     <ClCompile Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.c" />
     <ClCompile Include="Source\Network\Web\PXWebServer.c" />

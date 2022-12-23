@@ -414,6 +414,9 @@
     <ClInclude Include="Source\Algorithm\Dijkstra\PXDijkstra.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Format\LZ77\PXLZ77.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -807,6 +810,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Algorithm\Dijkstra\PXDijkstra.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\LZ77\PXLZ77.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

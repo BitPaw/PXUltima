@@ -2,8 +2,8 @@
 #define DeflateInclude
 
 #include <Format/Type.h>
-
 #include <Error/PXActionResult.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -31,8 +31,8 @@ extern "C"
 	PXPublic DeflateEncodingMethod ConvertToDeflateEncodingMethod(const unsigned char deflateEncodingMethod);
 	PXPublic unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEncodingMethod);
 
-	PXPublic int DEFLATEParse(const void* const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead);
-	PXPublic int DEFLATESerialize(const void* const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeWritten);
+	PXPublic int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead);
+	PXPublic PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream);
 
 #ifdef __cplusplus
 }

@@ -80,13 +80,9 @@ unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressi
     }
 }
 
-PXActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeRead)
+PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeRead)
 {
-    PXDataStream dataStream;
     ZLIB zlib;
-
-    PXDataStreamConstruct(&dataStream);
-    PXDataStreamFromExternal(&dataStream, inputData, inputDataSize);
 
     const PXSize headerSize = 2u;
     const PXSize adlerSize = 4u;
@@ -96,8 +92,8 @@ PXActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDat
         unsigned char compressionFormatByte = 0;
         unsigned char flagByte = 0;
 
-        PXDataStreamReadI8U(&dataStream, &compressionFormatByte);
-        PXDataStreamReadI8U(&dataStream, &flagByte);
+        PXDataStreamReadI8U(pxInputSteam, &compressionFormatByte);
+        PXDataStreamReadI8U(pxInputSteam, &flagByte);
 
         // Valid Check
         {
@@ -160,14 +156,14 @@ PXActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDat
     }*/
 
 
-    zlib.CompressedDataSize = PXDataStreamRemainingSize(&dataStream) - adlerSize;
-    zlib.CompressedData = PXDataStreamCursorPosition(&dataStream);
+    zlib.CompressedDataSize = PXDataStreamRemainingSize(pxInputSteam) - adlerSize;
+    zlib.CompressedData = PXDataStreamCursorPosition(pxInputSteam);
 
     switch(zlib.Header.CompressionMethod)
     {
         case ZLIBCompressionMethodDeflate:
         {
-            int deflateResult = DEFLATEParse(zlib.CompressedData, zlib.CompressedDataSize, outputData, outputDataSize, outputDataSizeRead);
+            int deflateResult = DEFLATEParse(pxInputSteam, outputData, outputDataSize, outputDataSizeRead);
 
             if(deflateResult)
             {
@@ -197,61 +193,56 @@ PXActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDat
     return PXActionSuccessful;
 }
 
-PXActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten)
+PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
 {
-    PXDataStream parsingSteam;
-
-    PXDataStreamConstruct(&parsingSteam);
-    PXDataStreamFromExternal(&parsingSteam, outputData, outputDataSize);
-
     // Write 1 Byte
     {
-        unsigned char buffer[2];
-        buffer[0] = 0u;
-        buffer[1] = 0u;
-    
-        const unsigned char compressionMethod = ConvertFromCompressionMethod(ZLIBCompressionMethodDeflate);
-        const unsigned char compressionInfo = 7u; // 1-7
+        const PXByte compressionMethod = ConvertFromCompressionMethod(ZLIBCompressionMethodDeflate);
+        const PXByte compressionInfo = 7u; // 1-7
 
-        const unsigned char dictionary = 0;
-        const unsigned char level = ConvertFromCompressionLevel(ZLIBCompressionLevelFastest);
+        const PXByte dictionary = 0;
+        const PXByte level = ConvertFromCompressionLevel(ZLIBCompressionLevelFastest);
+
+        // Byte 1
+        // 0b00001111
+        // 0b11110000
+
+        // Byte 2
+        // 0b11000000
+        // 0b00100000
+
+        PXByte buffer[2] = 
+        {
+            compressionMethod | compressionInfo << 4u,
+            (level & 0b11) << 6u | (dictionary & 0b01) << 5u
+        };
         
-        buffer[0] |= compressionMethod |  // 0b00001111
-                     compressionInfo << 4u; // 0b11110000
-
-        buffer[1] |= (level & 0b11) << 6u | // 0b11000000
-                    (dictionary & 0b01) << 5u; // 0b00100000
-
-
         // Check
         {
             const unsigned short checksum = MakeShortBE(buffer[0], buffer[1]);
             const unsigned char multble = 31-checksum % 31;
 
             buffer[1] += multble;
-        }
-    
+        }    
 
-        PXDataStreamWriteB(&parsingSteam, buffer, 2u);
+        PXDataStreamWriteB(pxOutputSteam, buffer, 2u);
     }
 
     // Wirte Data
     {
         PXSize sizeWritten = 0;
 
-        const unsigned int value = DEFLATESerialize(inputData, inputDataSize, (const unsigned char* const)outputData + 2u, outputDataSize - 4u, &sizeWritten);
+        const unsigned int value = DEFLATESerialize(pxInputSteam, pxOutputSteam);
 
-        PXDataStreamCursorAdvance(&parsingSteam, sizeWritten);
+        PXDataStreamCursorAdvance(pxOutputSteam, sizeWritten);
     }
 
     // Write ADLER
     {
-        const unsigned int adler = Adler32Create(1, inputData, inputDataSize);
+        const unsigned int adler = Adler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
 
-        PXDataStreamWriteI32UE(&parsingSteam, adler, EndianBig);
+        PXDataStreamWriteI32UE(pxOutputSteam, adler, EndianBig);
     }
-
-    *outputDataSizeWritten = parsingSteam.DataCursor;
 
     return PXActionSuccessful;
 }
@@ -294,8 +285,7 @@ PXSize ZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const 
 
 PXSize CalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp)
 {
-    /* + 1 for the filter byte, and possibly plus padding bits per line. */
-           /* Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp */
-    PXSize line = ((PXSize)(w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u;
-    return (PXSize)h * line;
+    // + 1 for the filter byte, and possibly plus padding bits per line.
+    // Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp
+    return (((w / 8u) * bpp) + 1u + ((w & 7u) * bpp + 7u) / 8u) * h;
 }

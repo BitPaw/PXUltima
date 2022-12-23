@@ -1,6 +1,6 @@
 #include "Adler32.h"
 
-unsigned int Adler32Check(unsigned char* data, PXSize length)
+unsigned int Adler32Check(const void* const data, const PXSize length)
 {
     const PXSize adlerModolo = 65521u;
     PXSize a = 1;
@@ -8,14 +8,14 @@ unsigned int Adler32Check(unsigned char* data, PXSize length)
 
     for (PXSize index = 0; index < length; ++index)
     {
-        a = (a + data[index]) % adlerModolo;
+        a = (a + ((PXAdress)data)[index]) % adlerModolo;
         b = (b + a) % adlerModolo;
     }
 
     return (b << 16) | a;
 }
 
-unsigned int Adler32Create(PXSize adler, const unsigned char* data, PXSize length)
+unsigned int Adler32Create(const PXSize adler, const unsigned char* data, PXSize length)
 {
     PXSize s1 = adler & 0xffffu;
     PXSize s2 = (adler >> 16u) & 0xffffu;
@@ -23,7 +23,8 @@ unsigned int Adler32Create(PXSize adler, const unsigned char* data, PXSize lengt
     while (length != 0u)
     {
         /*at least 5552 sums can be done before the sums overflow, saving a lot of module divisions*/
-        PXSize amount = length > 5552u ? 5552u : length;
+        const PXSize amount = length > 5552u ? 5552u : length;
+        
         length -= amount;
 
         for (PXSize i = 0; i != amount; ++i)

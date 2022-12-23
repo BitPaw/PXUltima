@@ -21,7 +21,7 @@ extern "C"
 	}
 	WAV;
 
-	PXPublic PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream);
 
 #ifdef __cplusplus
 }

@@ -69,6 +69,10 @@ extern "C"
 		PXActionRefusedInvalidVersion,
 		//-----------------------------------
 
+		//---<File-Writing>------------------
+		PXActionRefusedFormatSettingNotAllowed,
+		//-----------------------------------
+
 
 		//---<Graphics>-----------------------
 		PXActionFailedResourceRegister,

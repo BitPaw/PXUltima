@@ -18,22 +18,16 @@
 #define RIFFSubTypeRMID MakeInt('R', 'M', 'I', 'D')
 #define RIFFSubTypeWAVE MakeInt('W', 'A', 'V', 'E')
 
-PXActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream)
 {
-	PXDataStream dataStream;
-
 	MemoryClear(riff, sizeof(RIFF));
-	*dataRead = 0;
-
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
 
 	ClusterInt chunkID;
 	ClusterInt formatID;
 
-	PXDataStreamReadB(&dataStream, chunkID.Data, 4u);
-	PXDataStreamReadI32UE(&dataStream, &riff->ChunkSize, EndianLittle);
-	PXDataStreamReadB(&dataStream, formatID.Data, 4u);
+	PXDataStreamReadB(pxDataStream, chunkID.Data, 4u);
+	PXDataStreamReadI32UE(pxDataStream, &riff->ChunkSize, EndianLittle);
+	PXDataStreamReadB(pxDataStream, formatID.Data, 4u);
 
 	switch(chunkID.Value) // Detect Endiantype
 	{
@@ -82,8 +76,6 @@ PXActionResult RIFFParse(RIFF* riff, const void* data, const PXSize dataSize, PX
 	}
 
 	riff->Valid = (riff->EndianFormat != EndianInvalid) && (riff->Format != RIFFInvalid);
-
-	*dataRead = dataStream.DataCursor;
 
 	return PXActionSuccessful;
 }

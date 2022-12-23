@@ -4,6 +4,7 @@
 #include <Format/Type.h>
 #include <Error/PXActionResult.h>
 #include <Format/PNG/PNG.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -67,8 +68,8 @@ extern "C"
 	static ZLIBCompressionMethod ConvertToCompressionMethod(const unsigned char compressionMethod);
 	static unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressionMethod);
 
-	PXPublic PXActionResult ZLIBDecompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize,PXSize* const outputDataSizeRead);
-	PXPublic PXActionResult ZLIBCompress(const void* const inputData, const PXSize inputDataSize, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeWritten);
+	PXPublic PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, void* const outputData, const PXSize outputDataSize,PXSize* const outputDataSizeRead);
+	PXPublic PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam);
 
 
 	PXPublic PXSize ZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PNGInterlaceMethod interlaceMethod);

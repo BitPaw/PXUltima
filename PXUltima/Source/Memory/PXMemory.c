@@ -196,8 +196,10 @@ void* MemoryStackAllocate(const PXSize size)
 void* MemoryHeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line)
 {
 	void* adress = MemoryHeapAllocate(size);
+	char buffer[60];
 
-	printf("[+][Memory][%-13s|%-19s|%4i|%7iB|\n", file, function, (unsigned int)line, (unsigned int)size);
+	sprintf(buffer, "%s:%s:%i", file, function, (unsigned int)line);
+	printf("[+][Memory][%-37.37s|%7iB|\n", buffer, (unsigned int)size);
 
 	return adress;
 }
@@ -281,8 +283,10 @@ void* MemoryHeapReallocate(void* sourceAddress, const PXSize size)
 void* MemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line)
 {
 	void* adress = MemoryHeapReallocate(sourceAddress, size);
+	char buffer[60];
 
-	printf("[R][Memory][%-13s|%-19s|%4i|%7iB|\n", file, function, (unsigned int)line, (unsigned int)size);
+	sprintf(buffer, "%s:%s:%i", file, function, (unsigned int)line);
+	printf("[+][Memory][%-37.37s|%7iB|\n", buffer, (unsigned int)size);
 
 	return adress;
 }

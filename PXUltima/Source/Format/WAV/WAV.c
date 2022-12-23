@@ -8,32 +8,18 @@
 
 #define WAVListMarker MakeInt('L', 'I', 'S', 'T')
 
-PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 {
-	PXDataStream dataStream;
 	Endian endian = EndianInvalid;
 
 	MemoryClear(wav, sizeof(WAV));
-	*dataRead = 0;
-
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
 
 	// RIFF
 	{
 		RIFF riff;
-		const unsigned char* riffHeaderStart = PXDataStreamCursorPosition(&dataStream);
-		const PXSize maximalSize = PXDataStreamRemainingSize(&dataStream);
-		PXSize parsedBytes = 0;
+		const PXActionResult actionResult = RIFFParse(&riff, pxDataStream);
 
-		const PXActionResult actionResult = RIFFParse(&riff, riffHeaderStart, maximalSize, &parsedBytes);
-
-		if(!riff.Valid)
-		{
-			return PXActionRefusedInvalidHeaderSignature;
-		}
-
-		PXDataStreamCursorAdvance(&dataStream, parsedBytes);
+		PXActionExitOnError(actionResult);
 
 		endian = riff.EndianFormat;
 	}
@@ -41,30 +27,26 @@ PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSiz
 
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
-		const PXActionResult actionResult = FMTParse(&wav->Format, &dataStream, endian);
-		const PXBool sucessful = PXActionSuccessful == actionResult;
+		const PXActionResult actionResult = FMTParse(&wav->Format, pxDataStream, endian);
 
-		if(!sucessful)
-		{
-			return PXActionFailedFormatNotAsExpected;
-		}
+		PXActionExitOnError(actionResult);
 	}
 	//---------------------------------------
 
 	//---------------------------------------
 	{
 		const unsigned int value = WAVListMarker;
-		const unsigned char isRIFFListChunk = PXDataStreamReadAndCompare(&dataStream, &value, sizeof(unsigned int));
+		const PXBool isRIFFListChunk = PXDataStreamReadAndCompare(pxDataStream, &value, sizeof(unsigned int));
 
 		if(isRIFFListChunk)
 		{
-			PXDataStreamCursorAdvance(&dataStream, 30u);
+			PXDataStreamCursorAdvance(pxDataStream, 30u);
 		}
 	}
 	//---------------------------------------
 	{
 		const unsigned int value = MakeInt('d', 'a', 't', 'a');
-		const unsigned char validDataChunk = PXDataStreamReadAndCompare(&dataStream, &value, sizeof(unsigned int));
+		const PXBool validDataChunk = PXDataStreamReadAndCompare(pxDataStream, &value, sizeof(unsigned int));
 
 		if(!validDataChunk)
 		{
@@ -72,11 +54,11 @@ PXActionResult WAVParse(WAV* wav, const void* data, const PXSize dataSize, PXSiz
 		}
 	}
 
-	PXDataStreamReadI32UE(&dataStream, wav->SoundDataSize, endian);
+	PXDataStreamReadI32UE(pxDataStream, wav->SoundDataSize, endian);
 
-	wav->SoundData = MemoryAllocate(sizeof(unsigned char) * wav->SoundDataSize);
+	wav->SoundData = MemoryAllocate(sizeof(PXByte) * wav->SoundDataSize);
 
-	PXDataStreamReadB(&dataStream, wav->SoundData, wav->SoundDataSize);
+	PXDataStreamReadB(pxDataStream, wav->SoundData, wav->SoundDataSize);
 
 	return PXActionSuccessful;
 }

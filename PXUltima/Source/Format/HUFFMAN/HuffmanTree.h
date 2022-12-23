@@ -73,7 +73,7 @@ extern "C"
 
 
 	PXPublic void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree);
-	PXPublic void GenerateFixedDistanceTree(HuffmanTree* huffmanTree);
+	PXPublic void HuffmanDistanceTreeGenerateFixed(HuffmanTree* const huffmanTree);
 
 	PXPublic int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, PXSize numcodes, PXSize maxbitlen);
 
@@ -85,7 +85,7 @@ extern "C"
 	/* Safely check if a + b > c, even if overflow could happen. */
 	PXPublic int lodepng_gtofl(PXSize a, PXSize b, PXSize c);
 	PXPublic int lodepng_addofl(PXSize a, PXSize b, PXSize* result);
-	PXPublic unsigned int huffmanDecodeSymbol(PXDataStream* const dataStream, HuffmanTree* codetree);
+	PXPublic unsigned int HuffmanSymbolDecode(PXDataStream* const dataStream, const HuffmanTree* const codetree);
 
 
 #ifdef __cplusplus

@@ -1488,11 +1488,17 @@ PXSize PXDataStreamCursorMoveBits(PXDataStream* const dataStream, const PXSize a
 
 PXSize PXDataStreamBitsAllign(PXDataStream* const dataStream)
 {
+	PXSize accumulator = 0;
+
 	while (dataStream->DataCursorBitOffset >= 8u) // Move a Byte__ at the time forward, 8 Bits = 1 Byte__.
 	{
 		dataStream->DataCursor++;
 		dataStream->DataCursorBitOffset -= 8u;
+
+		++accumulator;
 	}
+
+	return accumulator;
 }
 
 PXSize PXDataStreamPeekBits(PXDataStream* const dataStream, const PXSize amountOfBits)
@@ -1547,29 +1553,21 @@ PXSize PXDataStreamReadBits(PXDataStream* const dataStream, const PXSize amountO
 
 PXSize PXDataStreamWriteBits(PXDataStream* const dataStream, const PXSize bitData, const PXSize amountOfBits)
 {
-	unsigned char* currentPos = PXDataStreamCursorPosition(dataStream);
+	PXSize* const currentPos = (PXSize* const)PXDataStreamCursorPosition(dataStream);
+	PXSize bitBlockCache = 0;
 
-	unsigned char* a = currentPos;
-	unsigned char* b = currentPos + 1;
-	unsigned char* c = currentPos + 2;
-	unsigned char* d = currentPos + 3;
-
-	PXSize moveCounter = 0;
-
-	for (PXSize i = 1; i <= amountOfBits; i++)
+	for (PXSize i = 0; i < amountOfBits; i++)
 	{
-		unsigned char bit = bitData << i;
-
-		*currentPos += bit;
-		*currentPos <<= 1;
-
-		dataStream->DataCursorBitOffset++;
-		moveCounter++;
+		// Data = current bit << current offset
+		bitBlockCache |= (bitData & ((PXSize)1u << i));
 	}
 
-	PXDataStreamBitsAllign(dataStream);
+	*currentPos |= bitBlockCache << dataStream->DataCursorBitOffset;
+	dataStream->DataCursorBitOffset += amountOfBits;
 
-	return moveCounter;
+	const PXSize movedBytes = PXDataStreamBitsAllign(dataStream);
+
+	return amountOfBits;
 }
 
 PXSize PXDataStreamFilePathGetA(PXDataStream* const dataStream, char* const filePath, const PXSize filePathMaxSize)

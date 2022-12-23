@@ -230,7 +230,7 @@ tree of the dynamic huffman tree lengths is generated*/
 
 	HuffmanTreeConstruct(&tree_cl);
 
-	HuffmanNumberCode huffmanNumberCode; 
+	HuffmanNumberCode huffmanNumberCode;
 	huffmanNumberCode.NumberOfLiteralCodes = PXDataStreamReadBits(dataStream, 5u) + 257u;
 	huffmanNumberCode.NumberOfDistanceCodes = PXDataStreamReadBits(dataStream, 5u) + 1u;
 	huffmanNumberCode.NumberOfLengthCodes = PXDataStreamReadBits(dataStream, 4u) + 4u;
@@ -285,7 +285,7 @@ tree of the dynamic huffman tree lengths is generated*/
 		{
 			unsigned code;
 			//ensureBits25(reader, 22); /* up to 15 bits for huffman code, up to 7 extra bits below*/
-			code =  huffmanDecodeSymbol(dataStream, &tree_cl);
+			code =  HuffmanSymbolDecode(dataStream, &tree_cl);
 			if (code <= 15) /*a length code*/
 			{
 				if (i < HLIT) bitlen_ll[i] = code;
@@ -388,14 +388,14 @@ int lodepng_addofl(PXSize a, PXSize b, PXSize* result)
 	return *result < a;
 }
 
-unsigned int huffmanDecodeSymbol(PXDataStream* const dataStream, HuffmanTree* codetree)
+unsigned int HuffmanSymbolDecode(PXDataStream* const dataStream, const HuffmanTree* const codetree)
 {
 	HuffmanSymbol huffmanSymbol;
 	huffmanSymbol.Code = PXDataStreamPeekBits(dataStream, FIRSTBITS);
 	huffmanSymbol.Length = codetree->table_len[huffmanSymbol.Code];
 	huffmanSymbol.Value = codetree->table_value[huffmanSymbol.Code];
 
-	const unsigned char finished = huffmanSymbol.Length <= FIRSTBITS;
+	const PXBool finished = huffmanSymbol.Length <= FIRSTBITS;
 
 	if (finished)
 	{
@@ -407,11 +407,11 @@ unsigned int huffmanDecodeSymbol(PXDataStream* const dataStream, HuffmanTree* co
 	{
 		PXDataStreamCursorMoveBits(dataStream, FIRSTBITS);
 
-		unsigned int extraBitsToRead = huffmanSymbol.Length - FIRSTBITS;
-		unsigned int extraBits = PXDataStreamPeekBits(dataStream, extraBitsToRead);
-		unsigned int index2 = huffmanSymbol.Value + extraBits;
-		unsigned int moveBits = codetree->table_len[index2] - FIRSTBITS;
-		unsigned int result = codetree->table_value[index2];
+		const unsigned int extraBitsToRead = huffmanSymbol.Length - FIRSTBITS;
+		const unsigned int extraBits = PXDataStreamPeekBits(dataStream, extraBitsToRead);
+		const unsigned int index2 = huffmanSymbol.Value + extraBits;
+		const unsigned int moveBits = codetree->table_len[index2] - FIRSTBITS;
+		const unsigned int result = codetree->table_value[index2];
 
 		PXDataStreamCursorMoveBits(dataStream, moveBits);
 
@@ -444,17 +444,19 @@ void GenerateFixedLiteralLengthTree(HuffmanTree* huffmanTree)
 	GenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);
 }
 
-void GenerateFixedDistanceTree(HuffmanTree* huffmanTree)
+void HuffmanDistanceTreeGenerateFixed(HuffmanTree* const huffmanTree)
 {
-	const unsigned int maxbitlen = 15;
-	const PXSize numcodes = NUM_DISTANCE_SYMBOLS;
-	unsigned int bitlen[NUM_DISTANCE_SYMBOLS];
+	// there are 32 distance codes, but 30-31 are unused
 
-	/*there are 32 distance codes, but 30-31 are unused*/
-	for (PXSize i = 0; i < numcodes; i++)
+	const PXSize maxbitlen = 15;
+	const PXSize numcodes = NUM_DISTANCE_SYMBOLS;
+	const unsigned int bitlen[NUM_DISTANCE_SYMBOLS] =
 	{
-		bitlen[i] = 5;
-	}
+		5u,5u,5u,5u,5u,5u,5u,5u,
+		5u,5u,5u,5u,5u,5u,5u,5u,
+		5u,5u,5u,5u,5u,5u,5u,5u,
+		5u,5u,5u,5u,5u,5u,5u,5u
+	};
 
 	GenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);
 }
@@ -474,24 +476,18 @@ void HuffmanTreeDestruct(HuffmanTree* const huffmanTree)
 
 HuffmanCodeType HuffmanCodeTypeFromCode(const unsigned short code)
 {
-	unsigned char isLiteralSymbol = code <= 255u;
-	unsigned char isLengthCode = code >= 257u && code <= 285u;
-	unsigned char isEndBlock = code == 256u;
+	const char symbolType = 
+		'I' * (code <= 255u) +  // isLiteralSymbol
+		'L' * (code >= 257u && code <= 285u) +  // isLengthCode
+		'E' * (code == 256u); // isEndBlock
 
-	if(isLiteralSymbol)
+	switch (symbolType)
 	{
-		return HuffmanCodeLiteral;
-	}
+		case 'I': return HuffmanCodeLiteral;
+		case 'L': return HuffmanCodeLength;
+		case 'E': return HuffmanCodeEndOfBlock;
 
-	if(isLengthCode)
-	{
-		return HuffmanCodeLength;
+		default:
+			return HuffmanCodeInvalid;
 	}
-
-	if(isEndBlock)
-	{
-		return HuffmanCodeEndOfBlock;
-	}
-
-	return HuffmanCodeInvalid;
 }
