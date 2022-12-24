@@ -6,28 +6,26 @@
 #include <Container/ClusterValue.h>
 #include <Format/RIFF/RIFF.h>
 
-#define WAVListMarker MakeInt('L', 'I', 'S', 'T')
+#define WAVSignatureLIST { 'L', 'I', 'S', 'T' }
+#define WAVSignatureData { 'd', 'a', 't', 'a' }
 
 PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 {
-	Endian endian = EndianInvalid;
+	RIFF riff;
 
 	MemoryClear(wav, sizeof(WAV));
 
 	// RIFF
 	{
-		RIFF riff;
 		const PXActionResult actionResult = RIFFParse(&riff, pxDataStream);
 
 		PXActionExitOnError(actionResult);
-
-		endian = riff.EndianFormat;
 	}
 	//-------------------------------------------------------------------------
 
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
-		const PXActionResult actionResult = FMTParse(&wav->Format, pxDataStream, endian);
+		const PXActionResult actionResult = FMTParse(&wav->Format, pxDataStream, riff.EndianFormat);
 
 		PXActionExitOnError(actionResult);
 	}
@@ -35,8 +33,9 @@ PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 
 	//---------------------------------------
 	{
-		const unsigned int value = WAVListMarker;
-		const PXBool isRIFFListChunk = PXDataStreamReadAndCompare(pxDataStream, &value, sizeof(unsigned int));
+		const char signature[] = WAVSignatureLIST;
+		const PXSize signatureSize = sizeof(signature);
+		const PXBool isRIFFListChunk = PXDataStreamReadAndCompare(pxDataStream, signature, signatureSize);
 
 		if(isRIFFListChunk)
 		{
@@ -45,8 +44,9 @@ PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 	}
 	//---------------------------------------
 	{
-		const unsigned int value = MakeInt('d', 'a', 't', 'a');
-		const PXBool validDataChunk = PXDataStreamReadAndCompare(pxDataStream, &value, sizeof(unsigned int));
+		const char signature[] = WAVSignatureData;
+		const PXSize signatureSize = sizeof(signature);
+		const PXBool validDataChunk = PXDataStreamReadAndCompare(pxDataStream, signature, signatureSize);
 
 		if(!validDataChunk)
 		{
@@ -54,7 +54,7 @@ PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 		}
 	}
 
-	PXDataStreamReadI32UE(pxDataStream, wav->SoundDataSize, endian);
+	PXDataStreamReadI32UE(pxDataStream, wav->SoundDataSize, riff.EndianFormat);
 
 	wav->SoundData = MemoryAllocate(sizeof(PXByte) * wav->SoundDataSize);
 

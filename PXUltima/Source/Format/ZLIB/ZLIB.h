@@ -68,7 +68,7 @@ extern "C"
 	static ZLIBCompressionMethod ConvertToCompressionMethod(const unsigned char compressionMethod);
 	static unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressionMethod);
 
-	PXPublic PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, void* const outputData, const PXSize outputDataSize,PXSize* const outputDataSizeRead);
+	PXPublic PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam);
 	PXPublic PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam);
 
 

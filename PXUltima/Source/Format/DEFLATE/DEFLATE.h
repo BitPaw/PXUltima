@@ -31,7 +31,7 @@ extern "C"
 	PXPublic DeflateEncodingMethod ConvertToDeflateEncodingMethod(const unsigned char deflateEncodingMethod);
 	PXPublic unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEncodingMethod);
 
-	PXPublic int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead);
+	PXPublic PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream);
 	PXPublic PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream);
 
 #ifdef __cplusplus

@@ -942,6 +942,15 @@ PXSize PXDataStreamSkipLine(PXDataStream* const dataStream)
 	return skippedBytes;
 }
 
+PXSize PXDataStreamDataCopy(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream, const PXSize length)
+{
+	void* const insertionPoint = PXDataStreamCursorPosition(pxOutputStream); // Position of output
+	const PXSize copyedBytes = PXDataStreamReadB(pxInputStream, insertionPoint, length); // Copy from input to output
+	const PXSize movedBytes = PXDataStreamCursorAdvance(pxOutputStream, copyedBytes); // Move output by copyed amount
+
+	return movedBytes; // return moved amount of bytes
+}
+
 PXSize PXDataStreamReadTextIU8(PXDataStream* const dataStream, PXInt8U* const number)
 {
 	unsigned int value = 0;

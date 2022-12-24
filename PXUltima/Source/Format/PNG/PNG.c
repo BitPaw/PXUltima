@@ -19,14 +19,14 @@
 
 unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
 {
-    for(PXSize bit = 0; bit < 8; ++bit)
+    for (PXSize bit = 0; bit < 8; ++bit)
     {
         int i = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
-        if(!tree->children[i])
+        if (!tree->children[i])
         {
             tree->children[i] = MemoryAllocate(sizeof(PNGColorTree) * 1);
 
-            if(!tree->children[i]) return 83; /*alloc fail*/
+            if (!tree->children[i]) return 83; /*alloc fail*/
         }
         tree = tree->children[i];
     }
@@ -48,7 +48,7 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
     colorModeOut.bitdepth = bitDepth;
     colorModeOut.colortype = LCT_RGBA;
 
-    switch(colorType)
+    switch (colorType)
     {
         default:
         case PNGColorInvalid:
@@ -80,30 +80,30 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
     }
 
     colorModeOut.bitdepth = colorModeIn.bitdepth;
-   // colorModeOut.colortype = colorModeIn.colortype;
+    // colorModeOut.colortype = colorModeIn.colortype;
 
     PNGColorTree tree;
     const PXSize width = png->ImageHeader.Width;
     const PXSize height = png->ImageHeader.Height;
-    const PXSize numpixels = width * height ;
+    const PXSize numpixels = width * height;
     unsigned error = 0;
 
     colorModeIn.palettesize = png->PaletteSize;
     colorModeIn.palette = png->Palette;
 
-    if(colorModeIn.colortype == LCT_PALETTE && !colorModeIn.palette)
+    if (colorModeIn.colortype == LCT_PALETTE && !colorModeIn.palette)
     {
         return 107; /* error: must provide palette if input mode is palette */
     }
 
-    if(lodepng_color_mode_equal(&colorModeOut, &colorModeIn))
+    if (lodepng_color_mode_equal(&colorModeOut, &colorModeIn))
     {
         PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
         MemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
         return 0;
     }
 
-    if(colorModeOut.colortype == LCT_PALETTE)
+    if (colorModeOut.colortype == LCT_PALETTE)
     {
         PXSize palettesize = colorModeOut.palettesize;
         const unsigned char* palette = colorModeOut.palette;
@@ -111,59 +111,59 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
         /*if the user specified output palette but did not give the values, assume
         they want the values of the input color type (assuming that one is palette).
         Note that we never create a new palette ourselves.*/
-        if(palettesize == 0)
+        if (palettesize == 0)
         {
             palettesize = colorModeIn.palettesize;
             palette = colorModeIn.palette;
             /*if the input was also palette with same bitdepth, then the color types are also
             equal, so copy literally. This to preserve the exact indices that were in the PNG
             even in case there are duplicate colors in the palette.*/
-            if(colorModeIn.colortype == LCT_PALETTE && colorModeIn.bitdepth == colorModeOut.bitdepth)
+            if (colorModeIn.colortype == LCT_PALETTE && colorModeIn.bitdepth == colorModeOut.bitdepth)
             {
                 PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
                 MemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
                 return 0;
             }
         }
-        if(palettesize < palsize) palsize = palettesize;
+        if (palettesize < palsize) palsize = palettesize;
 
         // color_tree_init(&tree);
 
-        for(PXSize i = 0; i != palsize; ++i)
+        for (PXSize i = 0; i != palsize; ++i)
         {
             const unsigned char* p = &palette[i * 4];
             error = color_tree_add(&tree, p[0], p[1], p[2], p[3], i);
-            if(error) break;
+            if (error) break;
         }
     }
 
-    if(!error)
+    if (!error)
     {
-        if(colorModeIn.bitdepth == 16 && colorModeOut.bitdepth == 16)
+        if (colorModeIn.bitdepth == 16 && colorModeOut.bitdepth == 16)
         {
-            for(PXSize i = 0; i != numpixels; ++i)
+            for (PXSize i = 0; i != numpixels; ++i)
             {
                 unsigned short r = 0, g = 0, b = 0, a = 0;
                 getPixelColorRGBA16(&r, &g, &b, &a, pixelDataIn, i, &colorModeIn);
                 rgba16ToPixel(pixelDataOut, i, &colorModeOut, r, g, b, a);
             }
         }
-        else if(colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGBA)
+        else if (colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGBA)
         {
             getPixelColorsRGBA8(pixelDataOut, numpixels, pixelDataIn, &colorModeIn);
         }
-        else if(colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGB)
+        else if (colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGB)
         {
             getPixelColorsRGB8(pixelDataOut, numpixels, pixelDataIn, &colorModeIn);
         }
         else
         {
             unsigned char r = 0, g = 0, b = 0, a = 0;
-            for(PXSize i = 0; i != numpixels; ++i)
+            for (PXSize i = 0; i != numpixels; ++i)
             {
                 getPixelColorRGBA8(&r, &g, &b, &a, pixelDataIn, i, &colorModeIn);
                 error = rgba8ToPixel(pixelDataOut, i, &colorModeOut, &tree, r, g, b, a);
-                if(error) break;
+                if (error) break;
             }
         }
     }
@@ -179,7 +179,7 @@ unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixe
 
 unsigned getNumColorChannels(LodePNGColorType colortype)
 {
-    switch(colortype)
+    switch (colortype)
     {
         case LCT_GREY: return 1;
         case LCT_RGB: return 3;
@@ -200,48 +200,48 @@ PXSize lodepng_get_bpp_lct(LodePNGColorType colortype, PXSize bitdepth)
 int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* b)
 {
     PXSize i;
-    if(a->colortype != b->colortype) return 0;
-    if(a->bitdepth != b->bitdepth) return 0;
-    if(a->key_defined != b->key_defined) return 0;
-    if(a->key_defined)
+    if (a->colortype != b->colortype) return 0;
+    if (a->bitdepth != b->bitdepth) return 0;
+    if (a->key_defined != b->key_defined) return 0;
+    if (a->key_defined)
     {
-        if(a->key_r != b->key_r) return 0;
-        if(a->key_g != b->key_g) return 0;
-        if(a->key_b != b->key_b) return 0;
+        if (a->key_r != b->key_r) return 0;
+        if (a->key_g != b->key_g) return 0;
+        if (a->key_b != b->key_b) return 0;
     }
-    if(a->palettesize != b->palettesize) return 0;
-    for(i = 0; i != a->palettesize * 4; ++i)
+    if (a->palettesize != b->palettesize) return 0;
+    for (i = 0; i != a->palettesize * 4; ++i)
     {
-        if(a->palette[i] != b->palette[i]) return 0;
+        if (a->palette[i] != b->palette[i]) return 0;
     }
     return 1;
 }
 
 void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
 {
-    if(mode->colortype == LCT_GREY)
+    if (mode->colortype == LCT_GREY)
     {
         *r = *g = *b = 256 * in[i * 2 + 0] + in[i * 2 + 1];
-        if(mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r) *a = 0;
+        if (mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r) *a = 0;
         else *a = 65535;
     }
-    else if(mode->colortype == LCT_RGB)
+    else if (mode->colortype == LCT_RGB)
     {
         *r = 256u * in[i * 6 + 0] + in[i * 6 + 1];
         *g = 256u * in[i * 6 + 2] + in[i * 6 + 3];
         *b = 256u * in[i * 6 + 4] + in[i * 6 + 5];
-        if(mode->key_defined
-           && 256u * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-           && 256u * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-           && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
+        if (mode->key_defined
+            && 256u * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
+            && 256u * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+            && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
         else *a = 65535;
     }
-    else if(mode->colortype == LCT_GREY_ALPHA)
+    else if (mode->colortype == LCT_GREY_ALPHA)
     {
         *r = *g = *b = 256u * in[i * 4 + 0] + in[i * 4 + 1];
         *a = 256u * in[i * 4 + 2] + in[i * 4 + 3];
     }
-    else if(mode->colortype == LCT_RGBA)
+    else if (mode->colortype == LCT_RGBA)
     {
         *r = 256u * in[i * 8 + 0] + in[i * 8 + 1];
         *g = 256u * in[i * 8 + 2] + in[i * 8 + 3];
@@ -252,13 +252,13 @@ void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b
 
 void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a)
 {
-    if(mode->colortype == LCT_GREY)
+    if (mode->colortype == LCT_GREY)
     {
         unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
         out[i * 2 + 0] = (gray >> 8) & 255;
         out[i * 2 + 1] = gray & 255;
     }
-    else if(mode->colortype == LCT_RGB)
+    else if (mode->colortype == LCT_RGB)
     {
         out[i * 6 + 0] = (r >> 8) & 255;
         out[i * 6 + 1] = r & 255;
@@ -267,7 +267,7 @@ void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, u
         out[i * 6 + 4] = (b >> 8) & 255;
         out[i * 6 + 5] = b & 255;
     }
-    else if(mode->colortype == LCT_GREY_ALPHA)
+    else if (mode->colortype == LCT_GREY_ALPHA)
     {
         unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
         out[i * 4 + 0] = (gray >> 8) & 255;
@@ -275,7 +275,7 @@ void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, u
         out[i * 4 + 2] = (a >> 8) & 255;
         out[i * 4 + 3] = a & 255;
     }
-    else if(mode->colortype == LCT_RGBA)
+    else if (mode->colortype == LCT_RGBA)
     {
         out[i * 8 + 0] = (r >> 8) & 255;
         out[i * 8 + 1] = r & 255;
@@ -292,27 +292,27 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
 {
     unsigned num_channels = 4;
     PXSize i;
-    if(mode->colortype == LCT_GREY)
+    if (mode->colortype == LCT_GREY)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i];
                 buffer[3] = 255;
             }
-            if(mode->key_defined)
+            if (mode->key_defined)
             {
                 buffer -= numpixels * num_channels;
-                for(i = 0; i != numpixels; ++i, buffer += num_channels)
+                for (i = 0; i != numpixels; ++i, buffer += num_channels)
                 {
-                    if(buffer[0] == mode->key_r) buffer[3] = 0;
+                    if (buffer[0] == mode->key_r) buffer[3] = 0;
                 }
             }
         }
-        else if(mode->bitdepth == 16)
+        else if (mode->bitdepth == 16)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i * 2];
                 buffer[3] = mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r ? 0 : 255;
@@ -322,7 +322,7 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
         {
             unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
             PXSize j = 0;
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
                 buffer[0] = buffer[1] = buffer[2] = (value * 255) / highest;
@@ -330,27 +330,27 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
             }
         }
     }
-    else if(mode->colortype == LCT_RGB)
+    else if (mode->colortype == LCT_RGB)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 MemoryCopy(&in[i * 3], 3, buffer, 3);
                 buffer[3] = 255;
             }
-            if(mode->key_defined)
+            if (mode->key_defined)
             {
                 buffer -= numpixels * num_channels;
-                for(i = 0; i != numpixels; ++i, buffer += num_channels)
+                for (i = 0; i != numpixels; ++i, buffer += num_channels)
                 {
-                    if(buffer[0] == mode->key_r && buffer[1] == mode->key_g && buffer[2] == mode->key_b) buffer[3] = 0;
+                    if (buffer[0] == mode->key_r && buffer[1] == mode->key_g && buffer[2] == mode->key_b) buffer[3] = 0;
                 }
             }
         }
         else
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = in[i * 6 + 0];
                 buffer[1] = in[i * 6 + 2];
@@ -362,11 +362,11 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
             }
         }
     }
-    else if(mode->colortype == LCT_PALETTE)
+    else if (mode->colortype == LCT_PALETTE)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned index = in[i];
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
@@ -376,7 +376,7 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
         else
         {
             PXSize j = 0;
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
@@ -384,11 +384,11 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
             }
         }
     }
-    else if(mode->colortype == LCT_GREY_ALPHA)
+    else if (mode->colortype == LCT_GREY_ALPHA)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i * 2 + 0];
                 buffer[3] = in[i * 2 + 1];
@@ -396,22 +396,22 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
         }
         else
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i * 4 + 0];
                 buffer[3] = in[i * 4 + 2];
             }
         }
     }
-    else if(mode->colortype == LCT_RGBA)
+    else if (mode->colortype == LCT_RGBA)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             memcpy(buffer, in, numpixels * 4);
         }
         else
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = in[i * 8 + 0];
                 buffer[1] = in[i * 8 + 2];
@@ -426,18 +426,18 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
 {
     const unsigned num_channels = 3;
     PXSize i;
-    if(mode->colortype == LCT_GREY)
+    if (mode->colortype == LCT_GREY)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i];
             }
         }
-        else if(mode->bitdepth == 16)
+        else if (mode->bitdepth == 16)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i * 2];
             }
@@ -446,22 +446,22 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
         {
             unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
             PXSize j = 0;
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
                 buffer[0] = buffer[1] = buffer[2] = (value * 255) / highest;
             }
         }
     }
-    else if(mode->colortype == LCT_RGB)
+    else if (mode->colortype == LCT_RGB)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             memcpy(buffer, in, numpixels * 3);
         }
         else
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = in[i * 6 + 0];
                 buffer[1] = in[i * 6 + 2];
@@ -469,11 +469,11 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
             }
         }
     }
-    else if(mode->colortype == LCT_PALETTE)
+    else if (mode->colortype == LCT_PALETTE)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned index = in[i];
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
@@ -483,7 +483,7 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
         else
         {
             PXSize j = 0;
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
@@ -491,35 +491,35 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
             }
         }
     }
-    else if(mode->colortype == LCT_GREY_ALPHA)
+    else if (mode->colortype == LCT_GREY_ALPHA)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i * 2 + 0];
             }
         }
         else
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = buffer[1] = buffer[2] = in[i * 4 + 0];
             }
         }
     }
-    else if(mode->colortype == LCT_RGBA)
+    else if (mode->colortype == LCT_RGBA)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 memcpy(buffer, &in[i * 4], 3);
             }
         }
         else
         {
-            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
                 buffer[0] = in[i * 8 + 0];
                 buffer[1] = in[i * 8 + 2];
@@ -531,18 +531,18 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
 
 void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, unsigned char* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
 {
-    if(mode->colortype == LCT_GREY)
+    if (mode->colortype == LCT_GREY)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             *r = *g = *b = in[i];
-            if(mode->key_defined && *r == mode->key_r) *a = 0;
+            if (mode->key_defined && *r == mode->key_r) *a = 0;
             else *a = 255;
         }
-        else if(mode->bitdepth == 16)
+        else if (mode->bitdepth == 16)
         {
             *r = *g = *b = in[i * 2 + 0];
-            if(mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r) *a = 0;
+            if (mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r) *a = 0;
             else *a = 255;
         }
         else
@@ -551,16 +551,16 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
             PXSize j = i * mode->bitdepth;
             unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
             *r = *g = *b = (value * 255) / highest;
-            if(mode->key_defined && value == mode->key_r) *a = 0;
+            if (mode->key_defined && value == mode->key_r) *a = 0;
             else *a = 255;
         }
     }
-    else if(mode->colortype == LCT_RGB)
+    else if (mode->colortype == LCT_RGB)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             *r = in[i * 3 + 0]; *g = in[i * 3 + 1]; *b = in[i * 3 + 2];
-            if(mode->key_defined && *r == mode->key_r && *g == mode->key_g && *b == mode->key_b) *a = 0;
+            if (mode->key_defined && *r == mode->key_r && *g == mode->key_g && *b == mode->key_b) *a = 0;
             else *a = 255;
         }
         else
@@ -568,16 +568,16 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
             *r = in[i * 6 + 0];
             *g = in[i * 6 + 2];
             *b = in[i * 6 + 4];
-            if(mode->key_defined && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-               && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-               && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
+            if (mode->key_defined && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
+                && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+                && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
             else *a = 255;
         }
     }
-    else if(mode->colortype == LCT_PALETTE)
+    else if (mode->colortype == LCT_PALETTE)
     {
         unsigned index;
-        if(mode->bitdepth == 8) index = in[i];
+        if (mode->bitdepth == 8) index = in[i];
         else
         {
             PXSize j = i * mode->bitdepth;
@@ -589,9 +589,9 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
         *b = mode->palette[index * 4 + 2];
         *a = mode->palette[index * 4 + 3];
     }
-    else if(mode->colortype == LCT_GREY_ALPHA)
+    else if (mode->colortype == LCT_GREY_ALPHA)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             *r = *g = *b = in[i * 2 + 0];
             *a = in[i * 2 + 1];
@@ -602,9 +602,9 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
             *a = in[i * 4 + 2];
         }
     }
-    else if(mode->colortype == LCT_RGBA)
+    else if (mode->colortype == LCT_RGBA)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             *r = in[i * 4 + 0];
             *g = in[i * 4 + 1];
@@ -623,11 +623,11 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
 
 unsigned rgba8ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-    if(mode->colortype == LCT_GREY)
+    if (mode->colortype == LCT_GREY)
     {
         unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
-        if(mode->bitdepth == 8) out[i] = gray;
-        else if(mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
+        if (mode->bitdepth == 8) out[i] = gray;
+        else if (mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
         else
         {
             /*take the most significant bits of gray*/
@@ -635,9 +635,9 @@ unsigned rgba8ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode
             addColorBits(out, i, mode->bitdepth, gray);
         }
     }
-    else if(mode->colortype == LCT_RGB)
+    else if (mode->colortype == LCT_RGB)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             out[i * 3 + 0] = r;
             out[i * 3 + 1] = g;
@@ -650,30 +650,30 @@ unsigned rgba8ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode
             out[i * 6 + 4] = out[i * 6 + 5] = b;
         }
     }
-    else if(mode->colortype == LCT_PALETTE)
+    else if (mode->colortype == LCT_PALETTE)
     {
         int index = color_tree_get(tree, r, g, b, a);
-        if(index < 0) return 82; /*color not in palette*/
-        if(mode->bitdepth == 8) out[i] = index;
+        if (index < 0) return 82; /*color not in palette*/
+        if (mode->bitdepth == 8) out[i] = index;
         else addColorBits(out, i, mode->bitdepth, (unsigned)index);
     }
-    else if(mode->colortype == LCT_GREY_ALPHA)
+    else if (mode->colortype == LCT_GREY_ALPHA)
     {
         unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             out[i * 2 + 0] = gray;
             out[i * 2 + 1] = a;
         }
-        else if(mode->bitdepth == 16)
+        else if (mode->bitdepth == 16)
         {
             out[i * 4 + 0] = out[i * 4 + 1] = gray;
             out[i * 4 + 2] = out[i * 4 + 3] = a;
         }
     }
-    else if(mode->colortype == LCT_RGBA)
+    else if (mode->colortype == LCT_RGBA)
     {
-        if(mode->bitdepth == 8)
+        if (mode->bitdepth == 8)
         {
             out[i * 4 + 0] = r;
             out[i * 4 + 1] = g;
@@ -707,10 +707,10 @@ PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color)
 
 int color_tree_get(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-    for(PXSize bit = 0; bit < 8u; ++bit)
+    for (PXSize bit = 0; bit < 8u; ++bit)
     {
         int i = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
-        if(!tree->children[i]) return -1;
+        if (!tree->children[i]) return -1;
         else tree = tree->children[i];
     }
 
@@ -726,7 +726,7 @@ void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned 
     in &= (1u << bits) - 1u; /*filter out any other bits of the input value*/
     in = in << (bits * (m - p));
 
-    if(p == 0)
+    if (p == 0)
     {
         out[index * bits / 8u] = in;
     }
@@ -747,7 +747,7 @@ unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bit
 {
     unsigned int result = 0;
 
-    for(PXSize i = 0; i < nbits; ++i)
+    for (PXSize i = 0; i < nbits; ++i)
     {
         result <<= 1u;
         result |= (unsigned int)readBitFromReversedStream(bitpointer, bitstream);
@@ -758,7 +758,7 @@ unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bit
 
 PNGChunkType ConvertToChunkType(const unsigned int pngchunkType)
 {
-    switch(pngchunkType)
+    switch (pngchunkType)
     {
         case MakeInt('I', 'H', 'D', 'R'): return PNGChunkImageHeader; // IHDR
         case MakeInt('I', 'D', 'A', 'T'): return PNGChunkImageData; // PLTE
@@ -790,7 +790,7 @@ unsigned int ConvertFromChunkType(const PNGChunkType pngchunkType)
 
 PNGColorType ConvertToPNGColorType(const unsigned int colorType)
 {
-    switch(colorType)
+    switch (colorType)
     {
         case 0u:
             return PNGColorGrayscale;
@@ -814,7 +814,7 @@ PNGColorType ConvertToPNGColorType(const unsigned int colorType)
 
 unsigned int ConvertFromPNGColorType(const PNGColorType colorType)
 {
-    switch(colorType)
+    switch (colorType)
     {
         default:
         case PNGColorInvalid:
@@ -839,7 +839,7 @@ unsigned int ConvertFromPNGColorType(const PNGColorType colorType)
 
 PNGInterlaceMethod ConvertToPNGInterlaceMethod(const unsigned char interlaceMethod)
 {
-    switch(interlaceMethod)
+    switch (interlaceMethod)
     {
         case 0u:
             return PNGInterlaceNone;
@@ -854,7 +854,7 @@ PNGInterlaceMethod ConvertToPNGInterlaceMethod(const unsigned char interlaceMeth
 
 unsigned char ConvertFromPNGInterlaceMethod(const PNGInterlaceMethod interlaceMethod)
 {
-    switch(interlaceMethod)
+    switch (interlaceMethod)
     {
         default:
         case PNGInterlaceInvalid:
@@ -883,7 +883,7 @@ void PNGDestruct(PNG* const png)
 
 PXSize NumberOfColorChannels(const PNGColorType pngColorType)
 {
-    switch(pngColorType)
+    switch (pngColorType)
     {
         default:
         case PNGColorInvalid:
@@ -919,7 +919,7 @@ PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize 
     const PXSize end = 12;
     const PXSize idat = 32768;
 
-    const PXSize sum = signature + header + time + end + height* width* bbp + 1024u;
+    const PXSize sum = signature + header + time + end + height * width * bbp + 1024u;
 
     return sum;
 }
@@ -941,11 +941,11 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 
         //---<Check PNG Header>------------------------------------------------
         {
-            const char pngFileHeader[8] = PNGHeaderSequenz;
+            const char pngFileHeader[] = PNGHeaderSequenz;
             const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
             const PXBool isValidHeader = PXDataStreamReadAndCompare(dataStream, pngFileHeader, pngFileHeaderSize);
 
-            if(!isValidHeader)
+            if (!isValidHeader)
             {
                 return PXActionRefusedInvalidHeaderSignature;
             }
@@ -967,7 +967,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 #endif
 
         // Parse every chunk until finished.
-        while(!parseFinished)
+        while (!parseFinished)
         {
             PNGChunk chunk;
             PXSize predictedOffset = 0;
@@ -1017,7 +1017,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 #endif
 
             //---Get Chunk Data------------------------------------------
-            switch(chunk.ChunkType)
+            switch (chunk.ChunkType)
             {
                 case PNGChunkImageHeader:
                 {
@@ -1049,14 +1049,14 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
                     const PXSize palettSize = chunk.Lengh / 3u;
                     const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
-                    if(!validSize)
+                    if (!validSize)
                         return PXActionFailedFormatNotAsExpected; // palette too small or big
 
                     png.PaletteSize = palettSize;
 
-                    for(PXSize i = 0; i < palettSize; ++i)
+                    for (PXSize i = 0; i < palettSize; ++i)
                     {
-                        unsigned char* paletteInsertion = png.Palette + i*4;
+                        unsigned char* paletteInsertion = png.Palette + i * 4;
 
                         PXDataStreamReadB(dataStream, paletteInsertion, 3u); // Read RGB value
 
@@ -1121,26 +1121,26 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
                 }
                 case PNGChunkTransparency:
                 {
-                    switch(png.ImageHeader.ColorType)
+                    switch (png.ImageHeader.ColorType)
                     {
                         case PNGColorGrayscale:
                         {
                             /*error: this chunk must be 2 bytes for grayscale image*/
-                            if(chunk.Lengh != 2) return 30;
+                            if (chunk.Lengh != 2) return 30;
 
                             unsigned short value;
 
                             PXDataStreamReadI16UE(dataStream, &value, EndianBig);
 
-                           // color->key_defined = 1;
-                            //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
+                            // color->key_defined = 1;
+                             //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
 
                             break;
                         }
                         case PNGColorRGB:
                         {
                             /*error: this chunk must be 6 bytes for RGB image*/
-                            if(chunk.Lengh != 6) return 41;
+                            if (chunk.Lengh != 6) return 41;
 
                             unsigned short red;
                             unsigned short green;
@@ -1164,7 +1164,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 
                             //for(PXSize i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
 
-                            for(PXSize i = 0; i < chunk.Lengh; ++i)
+                            for (PXSize i = 0; i < chunk.Lengh; ++i)
                             {
                                 unsigned char value = 0;
 
@@ -1249,7 +1249,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
                 }
                 case PNGChunkBackgroundColor:
                 {
-                    switch(png.ImageHeader.ColorType)
+                    switch (png.ImageHeader.ColorType)
                     {
                         default:
                         case PNGColorInvalid:
@@ -1286,7 +1286,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
                     PXDataStreamReadI32UE(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], EndianBig);
                     PXDataStreamReadI8U(dataStream, &unitSpecifier);
 
-                    switch(unitSpecifier)
+                    switch (unitSpecifier)
                     {
                         case 0:
                             png.PhysicalPixelDimension.UnitSpecifier = PNGUnitSpecifierUnkown;
@@ -1355,7 +1355,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
                     png.PaletteHistogram.ColorFrequencyListSize = listSize;
                     png.PaletteHistogram.ColorFrequencyList = list;
 
-                    for(PXSize i = 0; i < listSize; i++)
+                    for (PXSize i = 0; i < listSize; i++)
                     {
                         PXDataStreamReadI16UE(dataStream, &list[i], EndianBig);
                     }
@@ -1383,7 +1383,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
             //---------------------------------------------------------------
 
 #if PNGDebugInfo
-            if(PXDataStream.DataCursor != predictedOffset)
+            if (PXDataStream.DataCursor != predictedOffset)
             {
                 printf("[i][PNG] Chunk did not handle all Bytes\n");
             }
@@ -1401,34 +1401,34 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
     //---<Allocate>------------------------------------------------------------
 
 
-     {
+    {
 
-     ImageDataFormat imageDataFormat;
+        ImageDataFormat imageDataFormat;
 
-     switch (png.ImageHeader.ColorType)
-     {
-         case PNGColorGrayscale:
-             imageDataFormat = ImageDataFormatAlphaMask;
-             break;
+        switch (png.ImageHeader.ColorType)
+        {
+            case PNGColorGrayscale:
+                imageDataFormat = ImageDataFormatAlphaMask;
+                break;
 
-         case PNGColorRGB:
-             imageDataFormat = ImageDataFormatRGB8;
-             break;
+            case PNGColorRGB:
+                imageDataFormat = ImageDataFormatRGB8;
+                break;
 
-         case PNGColorInvalid:
-         case PNGColorGrayscaleAlpha:
-             imageDataFormat = ImageDataFormatInvalid;
-             break;
+            case PNGColorInvalid:
+            case PNGColorGrayscaleAlpha:
+                imageDataFormat = ImageDataFormatInvalid;
+                break;
 
-         case PNGColorPalette:
-         case PNGColorRGBA:
-             imageDataFormat = ImageDataFormatRGBA8;
-             break;
+            case PNGColorPalette:
+            case PNGColorRGBA:
+                imageDataFormat = ImageDataFormatRGBA8;
+                break;
 
-         default:
-             imageDataFormat = ImageDataFormatInvalid;
-             break;
-     }
+            default:
+                imageDataFormat = ImageDataFormatInvalid;
+                break;
+        }
 
         const PXBool allocateResult = ImageResize(image, imageDataFormat, png.ImageHeader.Width, png.ImageHeader.Height);
 
@@ -1436,51 +1436,48 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
         {
             return PXActionFailedAllocation;
         }
-     }
+    }
     //-------------------------------------------------------------------------
 
 
     //---<Unpack compressed data>----------------------------------------------
-   {
-    unsigned char* workingMemory = 0;
-    PXSize workingMemorySize = 0;
-    const PXSize bitsPerPixel = BitsPerPixel(&png);
+    {
+        PXSize workingMemorySize = 0;
+        const PXSize bitsPerPixel = BitsPerPixel(&png);
 
-    // ZLIB
-
-    PXDataStream zlibStream;
-    PXDataStreamFromExternal(&zlibStream, imageDataChunkCache, imageDataChunkCacheSizeUSED);
-
-        PXSize writtenBytes = 0;
-
+        // ZLIB
         const PXSize expectedzlibCacheSize = ZLIBCalculateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
 
-        workingMemorySize = expectedzlibCacheSize;
-        workingMemory = MemoryReallocate(workingMemory, sizeof(PXByte) * expectedzlibCacheSize);
 
-        const PXActionResult actionResult = ZLIBDecompress(&zlibStream, workingMemory, expectedzlibCacheSize, &writtenBytes);
-        const PXBool success = actionResult == PXActionSuccessful;
+        PXDataStream zlibResultStream;
+        PXDataStreamMapToMemory(&zlibResultStream, expectedzlibCacheSize, MemoryReadAndWrite);
 
-        if(!success)
+        PXDataStream zlibStream;
+        PXDataStreamFromExternal(&zlibStream, imageDataChunkCache, imageDataChunkCacheSizeUSED);
+
+
+
+        const PXActionResult actionResult = ZLIBDecompress(&zlibStream, &zlibResultStream);
+        const PXBool success = PXActionSuccessful == actionResult;
+
+        if (!success)
         {
             return actionResult;
         }
-
 
         const PXSize expectedadam7CacheSize = ADAM7CaluclateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel);
 
         PXByte* adam7Cache = (PXByte*)MemoryAllocate(sizeof(PXByte) * expectedadam7CacheSize);
 
-        const unsigned int scanDecodeResult = ADAM7ScanlinesDecode(adam7Cache, workingMemory, png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
+        const unsigned int scanDecodeResult = ADAM7ScanlinesDecode(adam7Cache, zlibResultStream.Data, png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
 
 
         // Color COmprerss
         const unsigned int decompress = ImageDataDecompress(&png, adam7Cache, image->PixelData, png.ImageHeader.BitDepth, png.ImageHeader.ColorType);
 
-
         MemoryRelease(adam7Cache, expectedadam7CacheSize);
-        MemoryRelease(workingMemory, workingMemorySize);
 
+        PXDataStreamDestruct(&zlibResultStream);
     }
 
     //-------------------------------------------------------------------------
@@ -1532,11 +1529,11 @@ typedef enum LodePNGFilterStrategy
 static PXSize ilog2(PXSize i)
 {
     PXSize result = 0;
-    if(i >= 65536) { result += 16; i >>= 16; }
-    if(i >= 256) { result += 8; i >>= 8; }
-    if(i >= 16) { result += 4; i >>= 4; }
-    if(i >= 4) { result += 2; i >>= 2; }
-    if(i >= 2) { result += 1; /*i >>= 1;*/ }
+    if (i >= 65536) { result += 16; i >>= 16; }
+    if (i >= 256) { result += 8; i >>= 8; }
+    if (i >= 16) { result += 4; i >>= 4; }
+    if (i >= 4) { result += 2; i >>= 2; }
+    if (i >= 2) { result += 1; /*i >>= 1;*/ }
     return result;
 }
 
@@ -1544,7 +1541,7 @@ static PXSize ilog2(PXSize i)
 static PXSize ilog2i(PXSize i)
 {
     PXSize l;
-    if(i == 0) return 0;
+    if (i == 0) return 0;
     l = ilog2(i);
     /* approximate i*log2(i): l is integer logarithm, ((i - (1u << l)) << 1u)
     linearly approximates the missing fractional part multiplied by i */
@@ -1554,52 +1551,52 @@ static PXSize ilog2i(PXSize i)
 void filterScanline(unsigned char* out, const unsigned char* scanline, const unsigned char* prevline, PXSize length, PXSize bytewidth, unsigned char filterType)
 {
     PXSize i;
-    switch(filterType)
+    switch (filterType)
     {
         case 0: /*None*/
-            for(i = 0; i != length; ++i) out[i] = scanline[i];
+            for (i = 0; i != length; ++i) out[i] = scanline[i];
             break;
         case 1: /*Sub*/
-            for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
-            for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - scanline[i - bytewidth];
+            for (i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+            for (i = bytewidth; i < length; ++i) out[i] = scanline[i] - scanline[i - bytewidth];
             break;
         case 2: /*Up*/
-            if(prevline)
+            if (prevline)
             {
-                for(i = 0; i != length; ++i) out[i] = scanline[i] - prevline[i];
+                for (i = 0; i != length; ++i) out[i] = scanline[i] - prevline[i];
             }
             else
             {
-                for(i = 0; i != length; ++i) out[i] = scanline[i];
+                for (i = 0; i != length; ++i) out[i] = scanline[i];
             }
             break;
         case 3: /*Average*/
-            if(prevline)
+            if (prevline)
             {
-                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i] - (prevline[i] >> 1);
-                for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - ((scanline[i - bytewidth] + prevline[i]) >> 1);
+                for (i = 0; i != bytewidth; ++i) out[i] = scanline[i] - (prevline[i] >> 1);
+                for (i = bytewidth; i < length; ++i) out[i] = scanline[i] - ((scanline[i - bytewidth] + prevline[i]) >> 1);
             }
             else
             {
-                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
-                for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - (scanline[i - bytewidth] >> 1);
+                for (i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+                for (i = bytewidth; i < length; ++i) out[i] = scanline[i] - (scanline[i - bytewidth] >> 1);
             }
             break;
         case 4: /*Paeth*/
-            if(prevline)
+            if (prevline)
             {
                 /*paethPredictor(0, prevline[i], 0) is always prevline[i]*/
-                for(i = 0; i != bytewidth; ++i) out[i] = (scanline[i] - prevline[i]);
-                for(i = bytewidth; i < length; ++i)
+                for (i = 0; i != bytewidth; ++i) out[i] = (scanline[i] - prevline[i]);
+                for (i = bytewidth; i < length; ++i)
                 {
                     out[i] = (scanline[i] - ADAM7paethPredictor(scanline[i - bytewidth], prevline[i], prevline[i - bytewidth]));
                 }
             }
             else
             {
-                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+                for (i = 0; i != bytewidth; ++i) out[i] = scanline[i];
                 /*paethPredictor(scanline[i - bytewidth], 0, 0) is always scanline[i - bytewidth]*/
-                for(i = bytewidth; i < length; ++i) out[i] = (scanline[i] - scanline[i - bytewidth]);
+                for (i = bytewidth; i < length; ++i) out[i] = (scanline[i] - scanline[i - bytewidth]);
             }
             break;
         default: return; /*invalid filter type given*/
@@ -1690,7 +1687,7 @@ static unsigned filter
     PXSize width,
     PXSize height,
     PXSize bpp,
-   // const LodePNGColorMode* color,
+    // const LodePNGColorMode* color,
     LodePNGFilterStrategy strategy
 )
 {
@@ -1701,8 +1698,8 @@ out must be a buffer with as size: h + (w * h * bpp + 7u) / 8u, because there ar
 the scanlines with 1 extra byte per scanline
 */
 
-    //                   unsigned bpp = lodepng_get_bpp(color);
-    /*the width of a scanline in bytes, not including the filter type*/
+//                   unsigned bpp = lodepng_get_bpp(color);
+/*the width of a scanline in bytes, not including the filter type*/
     PXSize linebytes = lodepng_get_raw_size_idat(width, 1, bpp) - 1u;
 
     /*bytewidth is used for filtering, is 1 when bpp < 8, number of bytes per pixel otherwise*/
@@ -1728,19 +1725,19 @@ the scanlines with 1 extra byte per scanline
 
 
 
-   // if(settings->filter_palette_zero &&
-   //    (color->colortype == LCT_PALETTE || color->bitdepth < 8)) strategy = LFS_ZERO;
+    // if(settings->filter_palette_zero &&
+    //    (color->colortype == LCT_PALETTE || color->bitdepth < 8)) strategy = LFS_ZERO;
 
 
 
 
 
-    if(bpp == 0) return 31; /*error: invalid color type*/
+    if (bpp == 0) return 31; /*error: invalid color type*/
 
-    if(strategy >= LFS_ZERO && strategy <= LFS_FOUR)
+    if (strategy >= LFS_ZERO && strategy <= LFS_FOUR)
     {
         unsigned char type = (unsigned char)strategy;
-        for(y = 0; y != height; ++y)
+        for (y = 0; y != height; ++y)
         {
             PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
             PXSize inindex = linebytes * y;
@@ -1749,37 +1746,37 @@ the scanlines with 1 extra byte per scanline
             prevline = &in[inindex];
         }
     }
-    else if(strategy == LFS_MINSUM)
+    else if (strategy == LFS_MINSUM)
     {
         /*adaptive filtering*/
         unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
         PXSize smallest = 0;
         unsigned char type, bestType = 0;
 
-        for(type = 0; type != 5; ++type)
+        for (type = 0; type != 5; ++type)
         {
             attempt[type] = (unsigned char*)MemoryAllocate(linebytes);
-            if(!attempt[type]) error = 83; /*alloc fail*/
+            if (!attempt[type]) error = 83; /*alloc fail*/
         }
 
-        if(!error)
+        if (!error)
         {
-            for(y = 0; y != height; ++y)
+            for (y = 0; y != height; ++y)
             {
                 /*try the 5 filter types*/
-                for(type = 0; type != 5; ++type)
+                for (type = 0; type != 5; ++type)
                 {
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
 
                     /*calculate the sum of the result*/
-                    if(type == 0)
+                    if (type == 0)
                     {
-                        for(x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[type][x]);
+                        for (x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[type][x]);
                     }
                     else
                     {
-                        for(x = 0; x != linebytes; ++x)
+                        for (x = 0; x != linebytes; ++x)
                         {
                             /*For differences, each byte should be treated as signed, values above 127 are negative
                             (converted to signed char). Filtertype 0 isn't a difference though, so use unsigned there.
@@ -1790,7 +1787,7 @@ the scanlines with 1 extra byte per scanline
                     }
 
                     /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
-                    if(type == 0 || sum < smallest)
+                    if (type == 0 || sum < smallest)
                     {
                         bestType = type;
                         smallest = sum;
@@ -1801,43 +1798,43 @@ the scanlines with 1 extra byte per scanline
 
                 /*now fill the out values*/
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for(x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
-        for(type = 0; type != 5; ++type) MemoryReallocate(attempt[type], -1);
+        for (type = 0; type != 5; ++type) MemoryReallocate(attempt[type], -1);
     }
-    else if(strategy == LFS_ENTROPY)
+    else if (strategy == LFS_ENTROPY)
     {
         unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
         PXSize bestSum = 0;
         unsigned type, bestType = 0;
         unsigned count[256];
 
-        for(type = 0; type != 5; ++type)
+        for (type = 0; type != 5; ++type)
         {
             attempt[type] = (unsigned char*)MemoryAllocate(linebytes);
-            if(!attempt[type]) error = 83; /*alloc fail*/
+            if (!attempt[type]) error = 83; /*alloc fail*/
         }
 
-        if(!error)
+        if (!error)
         {
-            for(y = 0; y != height; ++y)
+            for (y = 0; y != height; ++y)
             {
                 /*try the 5 filter types*/
-                for(type = 0; type != 5; ++type)
+                for (type = 0; type != 5; ++type)
                 {
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
                     MemoryClear(count, 256 * sizeof(*count));
-                    for(x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
+                    for (x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
                     ++count[type]; /*the filter type itself is part of the scanline*/
-                    for(x = 0; x != 256; ++x)
+                    for (x = 0; x != 256; ++x)
                     {
                         sum += ilog2i(count[x]);
                     }
                     /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
-                    if(type == 0 || sum > bestSum)
+                    if (type == 0 || sum > bestSum)
                     {
                         bestType = type;
                         bestSum = sum;
@@ -1848,25 +1845,25 @@ the scanlines with 1 extra byte per scanline
 
                 /*now fill the out values*/
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for(x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
-        for(type = 0; type != 5; ++type) MemoryRelease(attempt[type], -1);
+        for (type = 0; type != 5; ++type) MemoryRelease(attempt[type], -1);
     }
-    else if(strategy == LFS_PREDEFINED)
+    else if (strategy == LFS_PREDEFINED)
     {
-        for(y = 0; y != height; ++y)
+        for (y = 0; y != height; ++y)
         {
             PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
             PXSize inindex = linebytes * y;
-    // unsigned char type = settings->predefined_filters[y];
-         //   out[outindex] = type; /*filter type byte*/
-          //  filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
+            // unsigned char type = settings->predefined_filters[y];
+                 //   out[outindex] = type; /*filter type byte*/
+                  //  filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
             prevline = &in[inindex];
         }
     }
-    else if(strategy == LFS_BRUTE_FORCE)
+    else if (strategy == LFS_BRUTE_FORCE)
     {
         /*brute force filter chooser.
         deflate the scanline after every filter attempt to see which one deflates best.
@@ -1887,16 +1884,16 @@ the scanlines with 1 extra byte per scanline
         images only, so disable it*/
         zlibsettings.custom_zlib = 0;
         zlibsettings.custom_deflate = 0;
-        for(type = 0; type != 5; ++type)
+        for (type = 0; type != 5; ++type)
         {
             attempt[type] = (unsigned char*)MemoryAllocate(linebytes);
-            if(!attempt[type]) error = 83; /*alloc fail*/
+            if (!attempt[type]) error = 83; /*alloc fail*/
         }
-        if(!error)
+        if (!error)
         {
-            for(y = 0; y != height; ++y) /*try the 5 filter types*/
+            for (y = 0; y != height; ++y) /*try the 5 filter types*/
             {
-                for(type = 0; type != 5; ++type)
+                for (type = 0; type != 5; ++type)
                 {
                     unsigned testsize = (unsigned)linebytes;
                     /*if(testsize > 8) testsize /= 8;*/ /*it already works good enough by testing a part of the row*/
@@ -1910,11 +1907,11 @@ the scanlines with 1 extra byte per scanline
 
                     PXSize written = 0;
                     ZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
-                   // zlib_compress( , &zlibsettings);
+                    // zlib_compress( , &zlibsettings);
 
                     MemoryRelease(dummy, -1);
                     /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
-                    if(type == 0 || size[type] < smallest)
+                    if (type == 0 || size[type] < smallest)
                     {
                         bestType = type;
                         smallest = size[type];
@@ -1922,51 +1919,50 @@ the scanlines with 1 extra byte per scanline
                 }
                 prevline = &in[y * linebytes];
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for(x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
-        for(type = 0; type != 5; ++type) MemoryRelease(attempt[type], -1);
+        for (type = 0; type != 5; ++type) MemoryRelease(attempt[type], -1);
     }
-    else return 88; /* unknown filter strategy */
+    else return 88; // unknown filter strategy
 
     return error;
 }
 
 void setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
 {
-    /*the current bit in bitstream may be 0 or 1 for this to work*/
-    if(bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
+    // the current bit in bitstream may be 0 or 1 for this to work
+    if (bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
     else         bitstream[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
     ++(*bitpointer);
 }
 
 
 
-void addPaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, unsigned h)
+void addPaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, PXSize h)
 {
-    /*The opposite of the removePaddingBits function olinebits must be >= ilinebits*/
+    // The opposite of the removePaddingBits function olinebits must be >= ilinebits
 
     PXSize diff = olinebits - ilinebits;
-    PXSize obp = 0, ibp = 0; /*bit pointers*/
+    PXSize obp = 0, ibp = 0; // bit pointers
 
-    for(PXSize y = 0; y != h; ++y)
+    for (PXSize y = 0; y != h; ++y)
     {
-        for(PXSize x = 0; x < ilinebits; ++x)
+        for (PXSize x = 0; x < ilinebits; ++x)
         {
             unsigned char bit = readBitFromReversedStream(&ibp, in);
             setBitOfReversedStream(&obp, out, bit);
         }
-        /*obp += diff; --> no, fill in some value in the padding bits too, to avoid
-        "Use of uninitialised value of size ###" warning from valgrind*/
-        for(PXSize x = 0; x != diff; ++x) setBitOfReversedStream(&obp, out, 0);
+        // obp += diff; --> no, fill in some value in the padding bits too, to avoid
+        // "Use of uninitialised value of size ###" warning from valgrind
+        for (PXSize x = 0; x != diff; ++x) setBitOfReversedStream(&obp, out, 0);
     }
 }
 
 
 
 
-/*out must be buffer big enough to contain uncompressed IDAT chunk data, and in must contain the full image.
-return value is error**/
+// out must be buffer big enough to contain uncompressed IDAT chunk data, and in must contain the full image. return value is error
 PXSize preProcessScanlines
 (
     PNGInterlaceMethod interlaceMethod,
@@ -1987,11 +1983,11 @@ PXSize preProcessScanlines
     */
     unsigned error = 0;
 
-    switch(interlaceMethod)
+    switch (interlaceMethod)
     {
         case PNGInterlaceNone:
         {
-            const PXSize outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/  
+            const PXSize outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
             const PXActionResult allocationResult = PXDataStreamMapToMemory(pxScanlineStream, outsize, MemoryReadAndWrite);
 
             PXActionExitOnError(allocationResult);
@@ -2014,7 +2010,7 @@ PXSize preProcessScanlines
             }
             else
             {
-                /*we can immediately filter into the out buffer, no other steps needed*/
+                // we can immediately filter into the out buffer, no other steps needed
                 error = filter(pxScanlineStream->Data, in, width, height, bpp, LFS_MINSUM);
             }
 
@@ -2025,7 +2021,7 @@ PXSize preProcessScanlines
             unsigned passw[7], passh[7];
             PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
-            ADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart,width,height, bpp);
+            ADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
 
             const PXSize outsize = filter_passstart[7]; // image size plus an extra byte per scanline + possible padding bits
             const PXActionResult allocationResult = PXDataStreamMapToMemory(pxScanlineStream, outsize, MemoryReadAndWrite);
@@ -2033,15 +2029,15 @@ PXSize preProcessScanlines
             PXActionExitOnError(allocationResult);
 
             unsigned char* adam7 = (unsigned char*)MemoryAllocate(passstart[7]);
-           
-            if(!adam7 && passstart[7]) error = 83; //alloc fail
 
-            if(!error)
+            if (!adam7 && passstart[7]) error = 83; //alloc fail
+
+            if (!error)
             {
                 //Adam7_interlace(adam7, in, png->ImageHeader.Width, png->ImageHeader.Height, bpp);
-                for(PXSize i = 0; i != 7u; ++i)
+                for (PXSize i = 0; i != 7u; ++i)
                 {
-                    if(bpp < 8)
+                    if (bpp < 8)
                     {
                         unsigned char* padded = (unsigned char*)MemoryAllocate(padded_passstart[i + 1] - padded_passstart[i]);
                         //  if(!padded) ERROR_BREAK(83); //alloc fail
@@ -2051,10 +2047,10 @@ PXSize preProcessScanlines
                     }
                     else
                     {
-                       //error = filter(&(*out)[filter_passstart[i]], &adam7[padded_passstart[i]], passw[i], passh[i], &info_png->color, settings);
+                        //error = filter(&(*out)[filter_passstart[i]], &adam7[padded_passstart[i]], passw[i], passh[i], &info_png->color, settings);
                     }
 
-                    if(error) break;
+                    if (error) break;
                 }
             }
 
@@ -2083,7 +2079,7 @@ PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* con
     }
 
     //---<IHDR> (Image Header)--- 21 Bytes
-        {
+    {
         unsigned char colorType = 0;
         const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(PNGInterlaceNone);
         const unsigned char* chunkStart = PXDataStreamCursorPosition(pxExportStream);
@@ -2091,7 +2087,7 @@ PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* con
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
 
-        switch(image->Format)
+        switch (image->Format)
         {
             case ImageDataFormatInvalid:
                 return PXActionFailedFormatInvalid;
@@ -2146,7 +2142,7 @@ PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* con
         // 2 = definitly
         unsigned char shouldPrint = 0;
 
-        switch(colorType)
+        switch (colorType)
         {
             default:
             case PNGColorInvalid:
@@ -2284,23 +2280,23 @@ PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* con
         // Preprocess scanlines
         {
             // check if colormodes are equal
-            if(0)
+            if (0)
             {
 
             }
             else
             {
-               preProcessScanlines
-               (
-                   PNGInterlaceNone,
-                   image->Width,
-                   image->Height,
-                   ImageBitsPerPixel(image->Format),
-                   PNGColorRGB,
-                   8,
-                   &pxScanlineStream,
-                   image->PixelData
-               );
+                preProcessScanlines
+                (
+                    PNGInterlaceNone,
+                    image->Width,
+                    image->Height,
+                    ImageBitsPerPixel(image->Format),
+                    PNGColorRGB,
+                    8,
+                    &pxScanlineStream,
+                    image->PixelData
+                );
             }
         }
 
@@ -2327,7 +2323,7 @@ PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* con
     //---<IEND>---------------------------------------------------------------- 12 Bytes
     {
         const unsigned char imageEndChunk[13] = "\0\0\0\0IEND\xAE\x42\x60\x82"; // Combined write, as this is constand
-        const PXSize imageEndChunkSize = sizeof(imageEndChunk)-1;
+        const PXSize imageEndChunkSize = sizeof(imageEndChunk) - 1;
 
         PXDataStreamWriteB(pxExportStream, imageEndChunk, imageEndChunkSize);
     }

@@ -142,6 +142,9 @@ extern "C"
 	PXPublic PXSize PXDataStreamSkipToNextBlock(PXDataStream* const dataStream);
 	PXPublic PXSize PXDataStreamSkipLine(PXDataStream* const dataStream);
 
+
+	PXPublic PXSize PXDataStreamDataCopy(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream, const PXSize length);
+
 	PXPublic PXSize PXDataStreamReadTextIU8(PXDataStream* const dataStream, PXInt8U* const number);
 	PXPublic PXSize PXDataStreamReadTextI(PXDataStream* const dataStream, int* const number);
 

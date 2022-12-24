@@ -1,6 +1,6 @@
 #include "Adler32.h"
 
-unsigned int Adler32Check(const void* const data, const PXSize length)
+PXSize Adler32Check(const void* const data, const PXSize length)
 {
     const PXSize adlerModolo = 65521u;
     PXSize a = 1;
@@ -15,7 +15,7 @@ unsigned int Adler32Check(const void* const data, const PXSize length)
     return (b << 16) | a;
 }
 
-unsigned int Adler32Create(const PXSize adler, const unsigned char* data, PXSize length)
+PXSize Adler32Create(const PXSize adler, const unsigned char* data, PXSize length)
 {
     PXSize s1 = adler & 0xffffu;
     PXSize s2 = (adler >> 16u) & 0xffffu;

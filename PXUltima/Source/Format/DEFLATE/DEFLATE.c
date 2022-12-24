@@ -113,13 +113,7 @@ unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod defla
     }
 }
 
-
-
-
-
-
-
-int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, const PXSize outputBufferSize, PXSize* const outputBufferSizeRead)
+PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream)
 {
     DeflateBlock deflateBlock;
 
@@ -139,7 +133,7 @@ int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, co
             case DeflateEncodingReserverd:
             case DeflateEncodingInvalid:
             {
-                return -1; // Invalid Mode
+                return PXActionRefusedFormatSettingNotAllowed;
             }
             case DeflateEncodingLiteralRaw:
             {
@@ -147,17 +141,12 @@ int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, co
 
                 const unsigned short length = PXDataStreamReadBits(pxInputStream, 16u);
                 const unsigned short lengthInverse = PXDataStreamReadBits(pxInputStream, 16u);
-                const void* sourceAdress = PXDataStreamCursorPosition(pxInputStream);
                 const unsigned char validLength = (length + lengthInverse) == 65535;
                 //const PXSize bitsToJump = (PXSize)length * 8;
 
                 //assert(validLength);
 
-                MemoryCopy(sourceAdress, PXDataStreamRemainingSize(pxInputStream), (PXAdress)outputBuffer + *outputBufferSizeRead, length);
-
-                *outputBufferSizeRead += length;
-
-                PXDataStreamCursorAdvance(pxInputStream, length);
+                PXDataStreamDataCopy(pxInputStream, pxOutputStream, length);
 
                 break;
             }
@@ -206,8 +195,8 @@ int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, co
                         }
                         case HuffmanCodeLiteral:
                         {
-                            // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);
-                            ((unsigned char*)outputBuffer)[(*outputBufferSizeRead)++] = resultLengthCode;
+                            // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);                           
+                            PXDataStreamWriteI8U(pxOutputStream, resultLengthCode);
                             break;
                         }
                         case HuffmanCodeLength:
@@ -279,29 +268,29 @@ int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, co
                             }
 
                             /*part 5: fill in all the out[n] values based on the length and dist*/
-                            start = (*outputBufferSizeRead);
+                            start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
                             if(distance > start) return (52); /*too long backward distance*/
                             backward = start - distance;
 
-                            (*outputBufferSizeRead) += length;
+                            /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
 
                             // if (!ucvector_resize(out, out->size + length)) ERROR_BREAK(83 /*alloc fail*/);
 
 
                             if(distance < length)
                             {
-                                MemoryCopy((PXAdress)outputBuffer + backward, distance, (PXAdress)outputBuffer + start, distance);
+                                MemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
 
                                 start += distance;
 
                                 for(PXSize forward = distance; forward < length; ++forward)
                                 {
-                                    ((PXAdress)outputBuffer)[start++] = ((PXAdress)outputBuffer)[backward++];
+                                    ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
                                 }
                             }
                             else
                             {
-                                MemoryCopy((PXAdress)outputBuffer + backward, length, (PXAdress)outputBuffer + start, length);
+                                MemoryCopy((PXAdress)pxOutputStream->Data + backward, length, (PXAdress)pxOutputStream->Data + start, length);
                             }
                             break;
                         }
@@ -323,7 +312,7 @@ int DEFLATEParse(PXDataStream* const pxInputStream, void* const outputBuffer, co
 
     //*outputBufferSizeRead = dataStream.DataCursor;
 
-    return 0;
+    return PXActionSuccessful;
 }
 
 

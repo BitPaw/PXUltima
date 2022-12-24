@@ -80,7 +80,7 @@ unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressi
     }
 }
 
-PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, void* const outputData, const PXSize outputDataSize, PXSize* const outputDataSizeRead)
+PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
 {
     ZLIB zlib;
 
@@ -163,7 +163,7 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, void* const outp
     {
         case ZLIBCompressionMethodDeflate:
         {
-            int deflateResult = DEFLATEParse(pxInputSteam, outputData, outputDataSize, outputDataSizeRead);
+            int deflateResult = DEFLATEParse(pxInputSteam, pxOutputSteam);
 
             if(deflateResult)
             {
@@ -195,7 +195,7 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, void* const outp
 
 PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
 {
-    // Write 1 Byte
+    // Write ZLIB Header
     {
         const PXByte compressionMethod = ConvertFromCompressionMethod(ZLIBCompressionMethodDeflate);
         const PXByte compressionInfo = 7u; // 1-7
@@ -228,18 +228,16 @@ PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* cons
         PXDataStreamWriteB(pxOutputSteam, buffer, 2u);
     }
 
-    // Wirte Data
+    // Write DEFLATE
     {
-        PXSize sizeWritten = 0;
+        const PXActionResult delfateResult = DEFLATESerialize(pxInputSteam, pxOutputSteam);
 
-        const unsigned int value = DEFLATESerialize(pxInputSteam, pxOutputSteam);
-
-        PXDataStreamCursorAdvance(pxOutputSteam, sizeWritten);
+        PXActionExitOnError(delfateResult);
     }
 
     // Write ADLER
     {
-        const unsigned int adler = Adler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
+        const unsigned int adler = (unsigned int)Adler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
 
         PXDataStreamWriteI32UE(pxOutputSteam, adler, EndianBig);
     }
