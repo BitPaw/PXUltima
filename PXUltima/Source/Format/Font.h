@@ -2,9 +2,8 @@
 #define PXFontInclude
 
 #include <Format/Type.h>
-
 #include <Error/PXActionResult.h>
-#include <File/File.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -16,7 +15,7 @@ extern "C"
 #endif
 
 #ifndef FNT_
-	typedef struct FNT_ FNT;
+	typedef struct PXFNT_ PXFNT;
 #endif
 
 	typedef struct PXFont_
@@ -25,7 +24,7 @@ extern "C"
 		unsigned short SizeBetweenCharacters;
 		unsigned short SizeBetweenLines;
 
-		FNT* FontElement;
+		PXFNT* FontElement;
 		PXSize FontElementSize;
 	}
 	PXFont;
@@ -35,9 +34,10 @@ extern "C"
 	PXPublic void PXFontConstruct(PXFont* const font);
 	PXPublic void PXFontDestruct(PXFont* const font);
 
-	PXPublic PXActionResult FontLoadA(PXFont* const font, const char* filePath);
-	PXPublic PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath);
-	PXPublic PXActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath);
+	PXPublic PXActionResult FontLoadA(PXFont* const font, const PXTextASCII filePath);
+	PXPublic PXActionResult FontLoadW(PXFont* const font, const PXTextUNICODE filePath);
+	PXPublic PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath);
+	PXPublic PXActionResult FontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat);
 
 
 #ifdef __cplusplus

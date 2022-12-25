@@ -2,36 +2,26 @@
 
 #include <Format/RIFF/RIFF.h>
 
-PXActionResult AVIParse(AVI* avi, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult AVIParse(AVI* const avi, PXDataStream* const pxDataStream)
 {
-    /*
-   PXDataStream dataStream;
-
-    {
-        const PXActionResult loadingResult = file.MapToVirtualMemory(filePath, MemoryReadOnly);
-
-        if(loadingResult != PXActionSuccessful)
-        {
-            return loadingResult;
-        }
-    }
+    RIFF riff;
 
     // RIFF
     {
-        RIFF riff;
+        const PXActionResult riffResult = RIFFParse(&riff, pxDataStream);
 
-        // riff.Parse(fileStream);
+        PXActionExitOnError(riffResult);
 
-        if(!riff.Valid)
+        // Valid RIFF
         {
-            return PXActionFailedFormatNotAsExpected;
+            const PXBool isAVI = riff.Format == RIFFAudioVideoInterleave;
+
+            if (!isAVI)
+            {
+                return PXActionRefusedInvalidHeaderSignature;
+            }
         }
-    }
+    }  
 
-    unsigned int size = 0;
-
-    file.Read(size, EndianBig);
-    */
-
-    return PXActionInvalid;
+    return PXActionSuccessful;
 }

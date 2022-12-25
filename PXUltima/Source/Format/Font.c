@@ -18,18 +18,29 @@ void PXFontDestruct(PXFont* const font)
     MemoryRelease(font->FontElement, font->FontElementSize);
 }
 
-PXActionResult FontLoadA(PXFont* const font, const char* filePath)
+PXActionResult FontLoadA(PXFont* const font, const PXTextASCII filePath)
 {
-    wchar_t filePathW[PathMaxSize];
+    PXByte filePathU[PathMaxSize];
 
-    TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
+    TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-    PXActionResult actionResult = FontLoadW(font, filePathW);
+    PXActionResult actionResult = FontLoadU(font, filePathU);
 
     return actionResult;
 }
 
-PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
+PXActionResult FontLoadW(PXFont* const font, const PXTextUNICODE filePath)
+{
+    PXByte filePathU[PathMaxSize];
+
+    TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+
+    PXActionResult actionResult = FontLoadU(font, filePathU);
+
+    return actionResult;
+}
+
+PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath)
 {
     PXDataStream dataStream;
 
@@ -38,36 +49,18 @@ PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
 
     {
         const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
-        const PXBool sucessful = PXActionSuccessful == fileLoadingResult;
 
-        if(!sucessful)
-        {
-            return fileLoadingResult;
-        }
+        PXActionExitOnError(fileLoadingResult);
     }
 
+    dataStream.FilePath = filePath;
+
     {
-        wchar_t filePathDirectory[PathMaxSize];
-
-        PXSize index = TextFindLastW(filePath, PathMaxSize, '/');
-
-        if (index == -1)
-        {
-            index = 0;
-        }
-        else
-        {
-            index += 1;
-        }
-
-        TextCopyW(filePath, index, filePathDirectory, 256);
-
-
         const FileFormatExtension hint = FilePathExtensionDetectTryW(filePath, PathMaxSize);
-        const PXActionResult fileParsingResult = FontLoadD(font, hint, dataStream.Data, dataStream.DataSize, filePathDirectory);
+        const PXActionResult fileParsingResult = FontLoadD(font, &dataStream, hint);
         const unsigned char success = fileParsingResult == PXActionSuccessful;
 
-        if(success)
+        if (success)
         {
             return PXActionSuccessful;
         }
@@ -79,11 +72,10 @@ PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
         {
             const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
 
-            fileGuessResult = FontLoadD(font, imageFileFormat, dataStream.Data, dataStream.DataSize, filePathDirectory);
+            fileGuessResult = FontLoadD(font, &imageFileFormat, hint);
 
             fileFormatID++;
-        }
-        while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
+        } while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
         PXDataStreamDestruct(&dataStream);
 
@@ -91,7 +83,7 @@ PXActionResult FontLoadW(PXFont* const font, const wchar_t* filePath)
     }
 }
 
-PXActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFormat, const void* data, const PXSize dataSize, const wchar_t* const sourcePath)
+PXActionResult FontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat)
 {
     PXFontConstruct(font);
 
@@ -100,12 +92,12 @@ PXActionResult FontLoadD(PXFont* const font, const FileFormatExtension guessedFo
         case FileFormatSpriteFont:
         {
             font->FontElementSize = 1u;
-            font->FontElement = MemoryAllocateClear(sizeof(FNT) * 1u);
+            font->FontElement = MemoryAllocateClear(sizeof(PXFNT) * 1u);
 
             {
 
                 PXSize readBytes = 0;
-                const PXActionResult filePXActionResult = FNTParse(font->FontElement, data, dataSize, &readBytes, sourcePath);
+                const PXActionResult filePXActionResult = FNTParse(font->FontElement, pxDataStream);
                 const unsigned char sucessful = PXActionSuccessful == filePXActionResult;
 
                 if(!sucessful)

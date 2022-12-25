@@ -9,6 +9,7 @@
 
 //#define RIFFSubTypeANI MakeInt('x', 'x', 'x', 'x')
 #define RIFFSubTypeAVI MakeInt('A', 'V', 'I', ' ')
+#define RIFFSubTypeAVIX MakeInt('A', 'V', 'I', 'X')
 #define RIFFSubTypeRDIB MakeInt('R', 'D', 'I', 'B')
 //#define RIFFSubTypeBND MakeInt('x', 'x', 'x', 'x')
 //#define RIFFSubTypeDXR MakeInt('x', 'x', 'x', 'x')
@@ -48,6 +49,10 @@ PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream)
 	{
 		case RIFFSubTypeAVI:
 			riff->Format = RIFFAudioVideoInterleave;
+			break;
+
+		case RIFFSubTypeAVIX:
+			riff->Format = RIFFAudioVideoInterleave; // Is this a different version?
 			break;
 
 		case RIFFSubTypeRDIB:

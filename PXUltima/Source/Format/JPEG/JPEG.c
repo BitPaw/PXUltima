@@ -253,14 +253,6 @@ void JPEGDestruct(JPEG* const jpeg)
 
 }
 
-PXActionResult JPEGParse(JPEG* jpeg, const void* data, const PXSize dataSize, PXSize* dataRead)
-{
-
-
-    return PXActionInvalid;
-}
-
-
 PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream)
 {
     JPEG jpeXg;

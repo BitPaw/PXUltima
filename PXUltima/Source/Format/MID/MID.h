@@ -2,8 +2,8 @@
 #define MIDInclude
 
 #include <Format/Type.h>
-
 #include <Error/PXActionResult.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -61,8 +61,8 @@ extern "C"
 	}
 	MID;
 
-	PXPublic PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead);
-	PXPublic PXActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten);
+	PXPublic PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult MIDSerialize(MID* mid, PXDataStream* const pxDataStream);
 
 #ifdef __cplusplus
 }

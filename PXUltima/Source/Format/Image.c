@@ -113,6 +113,8 @@ PXActionResult ImageLoadU(Image* const image, const PXTextUTF8 filePath)
         PXActionExitOnError(fileLoadingResult);
     }
 
+    dataStream.FilePath = filePath;
+
     {
         {
             const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error

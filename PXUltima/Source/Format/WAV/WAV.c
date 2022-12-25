@@ -20,6 +20,16 @@ PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 		const PXActionResult actionResult = RIFFParse(&riff, pxDataStream);
 
 		PXActionExitOnError(actionResult);
+
+		// Valid RIFF
+		{
+			const PXBool isAVI = riff.Format == RIFFWaveformAudio;
+
+			if (!isAVI)
+			{
+				return PXActionRefusedInvalidHeaderSignature;
+			}
+		}
 	}
 	//-------------------------------------------------------------------------
 

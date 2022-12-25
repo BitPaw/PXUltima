@@ -183,9 +183,7 @@ extern "C"
 
 	PXPublic PXSize JPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 	
-	PXPublic PXActionResult JPEGParse(JPEG* jpeg, const void* data, const PXSize dataSize, PXSize* dataRead);
 	PXPublic PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream);
-
 	PXPublic PXActionResult JPEGSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus

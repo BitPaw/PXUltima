@@ -24,7 +24,8 @@ PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStrea
     {
         {
             const char headerTag[3] = GIFHeader;
-            const PXBool validHeader = PXDataStreamReadAndCompare(dataStream, headerTag, sizeof(headerTag));
+            const PXSize headerTagSize = sizeof(headerTag);
+            const PXBool validHeader = PXDataStreamReadAndCompare(dataStream, headerTag, headerTagSize);
 
             if (!validHeader)
             {
@@ -35,9 +36,10 @@ PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStrea
         {
             const char versionA[3] = GIFVersionA;
             const char versionB[3] = GIFVersionB;
-            const char* const versionList[2] = { versionA, versionB };
-            const PXSize versionListSize[2] = { sizeof(versionA),  sizeof(versionB) };
-            const PXBool validVersion = PXDataStreamReadAndCompareV(dataStream, versionList, versionListSize, 3u);
+            const char* const versionDataList[2] = { versionA, versionB };
+            const PXSize versionSizeList[2] = { sizeof(versionA),  sizeof(versionB) };
+            const PXSize versionSizeListSize = sizeof(versionDataList) / sizeof(void*);
+            const PXBool validVersion = PXDataStreamReadAndCompareV(dataStream, versionDataList, versionSizeList, versionSizeListSize);
 
             if (!validVersion)
             {

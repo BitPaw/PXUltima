@@ -33,21 +33,16 @@ switch (midiCommand)
 		break;
 }*/
 
-PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream)
 {
-	PXDataStream dataStream;
-
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
-
-	// Pasre Chunk header
+	// Parse Chunk header
 	{
 		unsigned int chunkLength = 0;
 
 		{
 			const char headerSignature[] = MIDITrackHeaderID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const PXBool isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXDataStreamReadAndCompare(pxDataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
@@ -55,10 +50,10 @@ PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSiz
 			}
 		}
 
-		PXDataStreamReadI16UE(&dataStream, chunkLength, EndianBig);
-		PXDataStreamReadI16UE(&dataStream, &mid->Format, EndianBig);
-		PXDataStreamReadI16UE(&dataStream, &mid->TrackListSize, EndianBig);
-		PXDataStreamReadI16UE(&dataStream, &mid->MusicSpeed, EndianBig);
+		PXDataStreamReadI16UE(pxDataStream, chunkLength, EndianBig);
+		PXDataStreamReadI16UE(pxDataStream, &mid->Format, EndianBig);
+		PXDataStreamReadI16UE(pxDataStream, &mid->TrackListSize, EndianBig);
+		PXDataStreamReadI16UE(pxDataStream, &mid->MusicSpeed, EndianBig);
 	}
 
 	if(!mid->TrackListSize)
@@ -77,29 +72,27 @@ PXActionResult MIDParse(MID* mid, const void* data, const PXSize dataSize, PXSiz
 		{
 			const char headerSignature[] = MIDITrackChunkID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const PXBool isValid = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXDataStreamReadAndCompare(pxDataStream, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
-				return PXActionRefusedInvalidHeaderSignature;
+				return PXActionFailedFormatNotAsExpected;
 			}
 		}
 
-		PXDataStreamReadI32UE(&dataStream, chunkLength, EndianBig);
+		PXDataStreamReadI32UE(pxDataStream, chunkLength, EndianBig);
 
 		track->ID = i;
 		track->EventData = (PXByte*)MemoryAllocate(sizeof(PXByte) * chunkLength);
 		track->EventDataSize = chunkLength;
 
-		PXDataStreamReadB(&dataStream, track->EventData, chunkLength);
+		PXDataStreamReadB(pxDataStream, track->EventData, chunkLength);
 	}
-
-	*dataRead = dataStream.DataCursor;
 
 	return PXActionSuccessful;
 }
 
-PXActionResult MIDSerialize(MID* mid, void* data, const PXSize dataSize, PXSize* dataWritten)
+PXActionResult MIDSerialize(MID* mid, PXDataStream* const pxDataStream)
 {
 	/*
 	File file;

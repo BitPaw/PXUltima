@@ -8,7 +8,17 @@
 #include <File/File.h>
 #include <Format/Image.h>
 
-FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character)
+void PXFNTConstruct(PXFNT* const pxFNT)
+{
+	MemoryClear(pxFNT, sizeof(PXFNT));
+}
+
+void PXFNTDestruct(PXFNT* const pxFNT)
+{
+
+}
+
+FNTCharacter* FNTGetCharacter(PXFNT* fnt, const wchar_t character)
 {
 	if(!fnt)
 	{
@@ -35,25 +45,21 @@ FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character)
 	return 0;
 }
 
-PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSize, PXSize* readBytes, const wchar_t* filePath)
+PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 {
-	PXDataStream dataStream;
 	FNTPage* currentPage = 0;
 	PXSize characterIndex = 0;
 
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, fileData, fileDataSize);
-	MemoryClear(fnt, sizeof(FNT));
-	*readBytes = 0;
+	PXFNTConstruct(fnt);
 
-	while(!PXDataStreamIsAtEnd(&dataStream))
+	while (!PXDataStreamIsAtEnd(pxDataStream))
 	{
-		const unsigned char* currentPosition = PXDataStreamCursorPosition(&dataStream);
-		const PXSize currentReadableBytes = PXDataStreamRemainingSize(&dataStream);
+		const unsigned char* currentPosition = PXDataStreamCursorPosition(pxDataStream);
+		const PXSize currentReadableBytes = PXDataStreamRemainingSize(pxDataStream);
 		const FNTLineType lineType = PeekLineType(currentPosition, currentReadableBytes);
 
-		switch(lineType)
-		{		
+		switch (lineType)
+		{
 			case FNTLineInfo:
 			{
 				const char parsingData[] = "face=\0size=\0bold=\0italic\0charset=\0unicode=\0stretchH=\0smooth=\0aa=\0padding=\0spacing=\0";
@@ -74,12 +80,12 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXDataStreamCursorAdvance(&dataStream, 5u);
-							
+				PXDataStreamCursorAdvance(pxDataStream, 5u);
+
 				TextParseFindAllA
 				(
-					PXDataStreamCursorPosition(&dataStream),
-					PXDataStreamRemainingSize(&dataStream),
+					PXDataStreamCursorPosition(pxDataStream),
+					PXDataStreamRemainingSize(pxDataStream),
 					parsingTokenList,
 					values
 				);
@@ -114,17 +120,17 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXDataStreamCursorAdvance(&dataStream, 6u);
+				PXDataStreamCursorAdvance(pxDataStream, 6u);
 
 				TextParseFindAllA
 				(
-					PXDataStreamCursorPosition(&dataStream),
-					PXDataStreamRemainingSize(&dataStream),
+					PXDataStreamCursorPosition(pxDataStream),
+					PXDataStreamRemainingSize(pxDataStream),
 					parsingTokenList,
 					values
 				);
 
-				const PXSize readableSize = PXDataStreamRemainingSize(&dataStream);
+				const PXSize readableSize = PXDataStreamRemainingSize(pxDataStream);
 
 				TextToIntA(indexPosition[0], readableSize, &fnt->CommonData.LineHeight);
 				TextToIntA(indexPosition[1], readableSize, &fnt->CommonData.Base);
@@ -137,7 +143,7 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 				{
 					const PXSize size = fnt->CommonData.AmountOfPages;
 					const PXSize sizeInBytes = sizeof(FNTPage) * size;
-					FNTPage* pageList = MemoryAllocateClear(sizeInBytes);					
+					FNTPage* pageList = MemoryAllocateClear(sizeInBytes);
 
 					fnt->FontPageListSize = size;
 					fnt->FontPageList = pageList;
@@ -158,12 +164,12 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXDataStreamCursorAdvance(&dataStream, 5u);
+				PXDataStreamCursorAdvance(pxDataStream, 5u);
 
 				TextParseFindAllA
 				(
-					PXDataStreamCursorPosition(&dataStream),
-					PXDataStreamRemainingSize(&dataStream),
+					PXDataStreamCursorPosition(pxDataStream),
+					PXDataStreamRemainingSize(pxDataStream),
 					parsingTokenList,
 					values
 				);
@@ -174,14 +180,14 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 				// Loadin Image
 				{
 					char fullPath[PathMaxSize];
-					char pageFileName[FNTPageFileNameSize];					
+					char pageFileName[FNTPageFileNameSize];
 
-					const PXSize length = TextCopyWA(filePath, PathMaxSize, fullPath, FNTPageFileNameSize);
+					const PXSize length = TextCopyA(pxDataStream->FilePath, PathMaxSize, fullPath, FNTPageFileNameSize);
 
 					TextCopyA
 					(
 						indexPosition[1] + 1,
-						PXDataStreamRemainingSize(&dataStream),
+						PXDataStreamRemainingSize(pxDataStream),
 						pageFileName,
 						FNTPageFileNameSize - 1
 					);
@@ -197,7 +203,7 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 					);
 
 					const PXActionResult actionResult = ImageLoadA(&currentPage->FontTextureMap, fullPath);
-				}				
+				}
 
 				break;
 			}
@@ -205,13 +211,13 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 			{
 				const char countText[] = "count=";
 
-				PXDataStreamCursorAdvance(&dataStream, 6u);
+				PXDataStreamCursorAdvance(pxDataStream, 6u);
 
 				char* count = TextFindPositionA
 				(
-					PXDataStreamCursorPosition(&dataStream),
-					PXDataStreamRemainingSize(&dataStream),
-					countText, 
+					PXDataStreamCursorPosition(pxDataStream),
+					PXDataStreamRemainingSize(pxDataStream),
+					countText,
 					sizeof(countText) - 1
 				);
 
@@ -222,7 +228,7 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 					TextToIntA
 					(
 						count + sizeof(countText) - 1,
-						PXDataStreamRemainingSize(&dataStream) - sizeof(countText),
+						PXDataStreamRemainingSize(pxDataStream) - sizeof(countText),
 						&size
 					);
 
@@ -230,7 +236,7 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 
 					currentPage->CharacteListSize = size;
 					currentPage->CharacteList = MemoryAllocateClear(sizeInBytes);
-				}				
+				}
 
 				characterIndex = 0;
 
@@ -240,15 +246,15 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 			{
 				const unsigned char acessCharacterOutofBounce = characterIndex >= currentPage->CharacteListSize;
 
-				if(acessCharacterOutofBounce)
+				if (acessCharacterOutofBounce)
 				{
 					const PXSize sizeCurrent = currentPage->CharacteListSize * sizeof(FNTPage);
 					const PXSize sizeNew = currentPage->CharacteListSize * sizeof(FNTPage) + 1;
 
 					FNTCharacter* characteListR = MemoryHeapReallocateClear(currentPage->CharacteList, sizeCurrent, sizeNew);
-					const unsigned char adresschanged = characteListR != currentPage->CharacteList;
+					const PXBool adresschanged = characteListR != currentPage->CharacteList;
 
-					if(!characteListR)
+					if (!characteListR)
 					{
 						// Error, out of memeory
 					}
@@ -276,12 +282,12 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXDataStreamCursorAdvance(&dataStream, 5u);
+				PXDataStreamCursorAdvance(pxDataStream, 5u);
 
 				TextParseFindAllA
 				(
-					PXDataStreamCursorPosition(&dataStream),
-					PXDataStreamRemainingSize(&dataStream),
+					PXDataStreamCursorPosition(pxDataStream),
+					PXDataStreamRemainingSize(pxDataStream),
 					parsingTokenList,
 					values
 				);
@@ -301,10 +307,8 @@ PXActionResult FNTParse(FNT* fnt, const void* fileData, const PXSize fileDataSiz
 			}
 		}
 
-		PXDataStreamSkipLine(&dataStream);
+		PXDataStreamSkipLine(pxDataStream);
 	}
-
-	*readBytes = dataStream.DataCursor;
 
 	return PXActionSuccessful;
 }
@@ -347,7 +351,7 @@ FNTLineType PeekLineType(const void* line, const PXSize fileDataSize)
 	}
 }
 
-void FNTPrtinf(const FNT* fnt)
+void FNTPrtinf(const PXFNT* fnt)
 {
 	printf(" +-------------------------------------------------------------------------+\n");
 	printf(" | Font (%s) : %s\n", &fnt->Info.CharSet[0], &fnt->Info.Name[0]);

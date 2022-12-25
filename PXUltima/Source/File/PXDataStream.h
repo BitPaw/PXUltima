@@ -66,6 +66,10 @@ extern "C"
 		PXSize DataCursorBitOffset;
 		//---------------------------------------------------------------------
 
+		//---<Temporal>--------------------------------------------------------
+		PXByte* FilePath; // Temporal refrence to the source data, link needs to be removed afetr use!
+		//---------------------------------------------------------------------
+
 		//---<Extended Settings>-----------------------------------------------
 		MemoryProtectionMode MemoryMode;
 		PXDataStreamLocation DataLocation; // Where the is stored, used as indicator how to clean up.

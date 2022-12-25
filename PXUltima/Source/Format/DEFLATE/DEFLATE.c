@@ -139,9 +139,9 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
             {
                 PXDataStreamSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
 
-                const unsigned short length = PXDataStreamReadBits(pxInputStream, 16u);
-                const unsigned short lengthInverse = PXDataStreamReadBits(pxInputStream, 16u);
-                const unsigned char validLength = (length + lengthInverse) == 65535;
+                const PXInt16U length = PXDataStreamReadBits(pxInputStream, 16u);
+                const PXInt16U lengthInverse = PXDataStreamReadBits(pxInputStream, 16u);
+                const PXBool validLength = (length + lengthInverse) == 65535;
                 //const PXSize bitsToJump = (PXSize)length * 8;
 
                 //assert(validLength);
@@ -309,8 +309,6 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
         }
     }
     while(!deflateBlock.IsLastBlock);
-
-    //*outputBufferSizeRead = dataStream.DataCursor;
 
     return PXActionSuccessful;
 }

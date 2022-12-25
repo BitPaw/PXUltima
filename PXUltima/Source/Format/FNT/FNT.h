@@ -6,8 +6,8 @@
 #define FNTPageFileNameSize 128
 
 #include <Format/Type.h>
-
 #include <Error/PXActionResult.h>
+#include <File/PXDataStream.h>
 #include <Format/Image.h>
 
 #ifdef __cplusplus
@@ -91,29 +91,25 @@ extern "C"
 	}
 	FNTPage;
 
-	typedef struct FNT_
+	typedef struct PXFNT_
 	{
 		FNTInfo Info;
 		FNTCommonData CommonData;
 		PXSize FontPageListSize;
 		FNTPage* FontPageList;
 	}
-	FNT;
+	PXFNT;
 
-	PXPublic FNTCharacter* FNTGetCharacter(FNT* fnt, const wchar_t character);
+	PXPublic void PXFNTConstruct(PXFNT* const pxFNT);
+	PXPublic void PXFNTDestruct(PXFNT* const pxFNT);
 
-	PXPublic PXActionResult FNTParse
-	(
-		FNT* fnt,
-		const void* fileData,
-		const PXSize fileDataSize,
-		PXSize* readBytes, 
-		const wchar_t* filePath
-	);
+	PXPublic FNTCharacter* FNTGetCharacter(PXFNT* fnt, const wchar_t character);
+
+	PXPublic PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream);
 
 	static FNTLineType PeekLineType(const void* line, const PXSize fileDataSize);
 
-	PXPublic void FNTPrtinf(const FNT* fnt);
+	PXPublic void FNTPrtinf(const PXFNT* fnt);
 
 #ifdef __cplusplus
 }
