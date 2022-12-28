@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <float.h>
 #include <OS/PXWindow.h>
-#include <Format/Font.h>
+#include <Format/PXFont.h>
 #include <Math/PXMatrix.h>
 
 #include <Graphic/Graphic.h>
@@ -183,7 +183,7 @@ void TestOpenGLTextDraw()
 	unsigned int height = 600 * scale;
 
 	PXFont font;
-	FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
+	PXFontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
 
 	PXTexture textureText;
 	PXTextureConstruct(&textureText);

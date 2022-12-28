@@ -73,7 +73,7 @@ which is possible in case of only 0 or 1 present symbols. */
 #define INVALIDSYMBOL 65535u
 
 
-DeflateEncodingMethod ConvertToDeflateEncodingMethod(const unsigned char deflateEncodingMethod)
+DeflateEncodingMethod ConvertToDeflateEncodingMethod(const PXInt8U deflateEncodingMethod)
 {
     switch(deflateEncodingMethod)
     {
@@ -94,7 +94,7 @@ DeflateEncodingMethod ConvertToDeflateEncodingMethod(const unsigned char deflate
     }
 }
 
-unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEncodingMethod)
+PXInt8U ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEncodingMethod)
 {
     switch(deflateEncodingMethod)
     {
@@ -122,7 +122,7 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
         deflateBlock.IsLastBlock = PXDataStreamReadBits(pxInputStream, 1u);
 
         {
-            const unsigned char encodingMethodValue = PXDataStreamReadBits(pxInputStream, 2u);
+            const PXInt8U encodingMethodValue = PXDataStreamReadBits(pxInputStream, 2u);
 
             deflateBlock.EncodingMethod = ConvertToDeflateEncodingMethod(encodingMethodValue);
         }

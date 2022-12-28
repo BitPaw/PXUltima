@@ -61,6 +61,7 @@ extern "C"
 		CopyrightMessage,//4.2.1   TCOP[#TCOP Copyright message]
 		Date,//4.2.1   TDAT[#TDAT Date]
 		PlaylistDelay,//4.2.1   TDLY[#TDLY Playlist delay]
+		TaggingTime, // TDTG
 		EncodedBy,//4.2.1   TENC[#TENC Encoded by]
 		Lyricist,//4.2.1   TEXT[#TEXT Lyricist / Text writer]
 		FileType,//4.2.1   TFLT[#TFLT File type]
@@ -131,7 +132,7 @@ extern "C"
 
 	PXPublic ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID);
 
-	PXPublic PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream);
+	PXPublic PXActionResult ID3Parse(ID3* const id3, PXDataStream* const pxDataStream);
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,4 @@
-#include "Font.h"
+#include "PXFont.h"
 
 #include <Memory/PXMemory.h>
 #include <Text/Text.h>
@@ -18,29 +18,29 @@ void PXFontDestruct(PXFont* const font)
     MemoryRelease(font->FontElement, font->FontElementSize);
 }
 
-PXActionResult FontLoadA(PXFont* const font, const PXTextASCII filePath)
+PXActionResult PXFontLoadA(PXFont* const font, const PXTextASCII filePath)
 {
     PXByte filePathU[PathMaxSize];
 
     TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-    PXActionResult actionResult = FontLoadU(font, filePathU);
+    PXActionResult actionResult = PXFontLoadU(font, filePathU);
 
     return actionResult;
 }
 
-PXActionResult FontLoadW(PXFont* const font, const PXTextUNICODE filePath)
+PXActionResult PXFontLoadW(PXFont* const font, const PXTextUNICODE filePath)
 {
     PXByte filePathU[PathMaxSize];
 
     TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
-    PXActionResult actionResult = FontLoadU(font, filePathU);
+    PXActionResult actionResult = PXFontLoadU(font, filePathU);
 
     return actionResult;
 }
 
-PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath)
+PXActionResult PXFontLoadU(PXFont* const font, const PXTextUTF8 filePath)
 {
     PXDataStream dataStream;
 
@@ -48,7 +48,7 @@ PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath)
     PXFontConstruct(font);
 
     {
-        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
+        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
 
         PXActionExitOnError(fileLoadingResult);
     }
@@ -56,8 +56,8 @@ PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath)
     dataStream.FilePath = filePath;
 
     {
-        const FileFormatExtension hint = FilePathExtensionDetectTryW(filePath, PathMaxSize);
-        const PXActionResult fileParsingResult = FontLoadD(font, &dataStream, hint);
+        const FileFormatExtension hint = FilePathExtensionDetectTryA(filePath, PathMaxSize);
+        const PXActionResult fileParsingResult = PXFontLoadD(font, &dataStream, hint);
         const unsigned char success = fileParsingResult == PXActionSuccessful;
 
         if (success)
@@ -72,7 +72,7 @@ PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath)
         {
             const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
 
-            fileGuessResult = FontLoadD(font, &imageFileFormat, hint);
+            fileGuessResult = PXFontLoadD(font, &imageFileFormat, hint);
 
             fileFormatID++;
         } while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
@@ -83,7 +83,7 @@ PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath)
     }
 }
 
-PXActionResult FontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat)
+PXActionResult PXFontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat)
 {
     PXFontConstruct(font);
 
@@ -98,7 +98,7 @@ PXActionResult FontLoadD(PXFont* const font, PXDataStream* const pxDataStream, c
 
                 PXSize readBytes = 0;
                 const PXActionResult filePXActionResult = FNTParse(font->FontElement, pxDataStream);
-                const unsigned char sucessful = PXActionSuccessful == filePXActionResult;
+                const PXBool sucessful = PXActionSuccessful == filePXActionResult;
 
                 if(!sucessful)
                 {

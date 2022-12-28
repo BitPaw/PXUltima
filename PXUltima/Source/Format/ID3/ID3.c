@@ -44,6 +44,7 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
         case MakeInt('T', 'C', 'O', 'P'): return CopyrightMessage;
         case MakeInt('T', 'D', 'A', 'T'): return Date;
         case MakeInt('T', 'D', 'L', 'Y'): return PlaylistDelay;
+        //case MakeInt('T', 'D', 'T', 'G'): return TaggingTime;
         case MakeInt('T', 'E', 'N', 'C'): return EncodedBy;
         case MakeInt('T', 'E', 'X', 'T'): return Lyricist;
         case MakeInt('T', 'F', 'L', 'T'): return FileType;
@@ -94,7 +95,7 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
     }
 }
 
-PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
+PXActionResult ID3Parse(ID3* const id3, PXDataStream* const pxDataStream)
 {
     ID3Version version = ID3VersionInvalid;
 
@@ -103,7 +104,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
         // Einen ID3v2-Block erkennt man am Header, dessen erste fünf Bytes aus der Zeichenkette „ID3“ und der ID3v2-Version (z. B. $04 00 für ID3v2.4) bestehen
         const char signbature[3] = ID3HeaderSignature;
         const PXSize signbatureSize = sizeof(signbature);
-        const PXBool isValidHeader = PXDataStreamReadAndCompare(dataStream, signbature, signbatureSize);
+        const PXBool isValidHeader = PXDataStreamReadAndCompare(pxDataStream, signbature, signbatureSize);
 
         if(!isValidHeader)
         {
@@ -115,7 +116,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
     {
         char versionTag[2];
 
-        PXDataStreamReadB(&dataStream, versionTag, 2);
+        PXDataStreamReadB(pxDataStream, versionTag, 2);
 
         switch(versionTag[0])
         {
@@ -137,7 +138,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
 
             default: // Version is probably 1.x
             {
-                const PXByte* trackIDAdress = (PXByte*)PXDataStreamCursorPosition(dataStream) + ID3CommentSize - 2;
+                const PXByte* trackIDAdress = (PXByte*)PXDataStreamCursorPosition(pxDataStream) + ID3CommentSize - 2;
                 const unsigned short trackIDSymbol = (((unsigned short)trackIDAdress[0]) << 8u) + trackIDAdress[1];
                 const PXBool isVersion1x0 = trackIDSymbol == 0x0000;
 
@@ -150,7 +151,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                     version = ID3Versionv1x1;
                 }
 
-                //dataStream.CursorRewind(2u); // Go the steps back from the version, as 1.x does not have this field.
+                //pxDataStream.CursorRewind(2u); // Go the steps back from the version, as 1.x does not have this field.
 
                 break;
             }
@@ -175,22 +176,22 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
         {
             const PXBool hasTrackID = version == ID3Versionv1x1;
 
-            PXDataStreamReadTextU(&dataStream, id3->Title, ID3TitleSize);
-            PXDataStreamReadTextU(&dataStream, id3->Artist, ID3TitleSize);
-            PXDataStreamReadTextU(&dataStream, id3->Album, ID3TitleSize);
-            PXDataStreamReadTextU(&dataStream, id3->Year, ID3TitleSize);
+            PXDataStreamReadTextU(pxDataStream, id3->Title, ID3TitleSize);
+            PXDataStreamReadTextU(pxDataStream, id3->Artist, ID3TitleSize);
+            PXDataStreamReadTextU(pxDataStream, id3->Album, ID3TitleSize);
+            PXDataStreamReadTextU(pxDataStream, id3->Year, ID3TitleSize);
 
             if(hasTrackID)
             {
-                PXDataStreamReadTextU(&dataStream, id3->Comment, ID3CommentSize - 1);
-                PXDataStreamReadI8U(&dataStream, &id3->TrackID);
+                PXDataStreamReadTextU(pxDataStream, id3->Comment, ID3CommentSize - 1);
+                PXDataStreamReadI8U(pxDataStream, &id3->TrackID);
             }
             else
             {
-                PXDataStreamReadTextU(&dataStream, id3->Comment, ID3CommentSize);
+                PXDataStreamReadTextU(pxDataStream, id3->Comment, ID3CommentSize);
             }
 
-            PXDataStreamReadI8U(&dataStream, &id3->Genre);
+            PXDataStreamReadI8U(pxDataStream, &id3->Genre);
         }
         else
         {
@@ -203,7 +204,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
             {
                 unsigned char flags = 0;
 
-                PXDataStreamReadI8U(&dataStream, &flags);
+                PXDataStreamReadI8U(pxDataStream, &flags);
 
                 a = (flags & 0b10000000) >> 7;
                 b = (flags & 0b01000000) >> 6;
@@ -214,7 +215,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
             {
                 ClusterInt sizeCluster;
 
-                PXDataStreamReadB(&dataStream, sizeCluster.Data, 4u);
+                PXDataStreamReadB(pxDataStream, sizeCluster.Data, 4u);
 
                 // Size format: x000 x000 x000 x000 => 28 Bit int
                 // The first bit of each byte not only unused but shall be merged!
@@ -242,33 +243,39 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                 case ID3Versionv2x3:
                 case ID3Versionv2x4:
                 {
-                    const PXSize posCurrent = dataStream->DataSize;
-                    const PXSize posExpectedMax = dataStream->DataCursor + sizeOfDataSegment;
+                    const PXSize posCurrent = pxDataStream->DataSize;
+                    const PXSize posExpectedMax = pxDataStream->DataCursor + sizeOfDataSegment;
 
-                    dataStream->DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
+                   // pxDataStream->DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
 
-                    while(!PXDataStreamIsAtEnd(&dataStream))
+                    while(pxDataStream->DataCursor < sizeOfDataSegment) // until the offset is reached
                     {
                         // Read 4 byte indexes
                         ClusterInt indentifier;
-                        unsigned int frameSize = 0;
-                        unsigned short frameFlags = 0;
+                        PXInt32U frameSize = 0;
+                        PXInt16U frameFlags = 0;
 
-                        PXDataStreamReadB(&dataStream, indentifier.Data, 4u);
-                        PXDataStreamReadI32UE(&dataStream, frameSize, EndianBig);
-                        PXDataStreamReadI32UE(&dataStream, frameFlags, EndianBig);
+                        PXDataStreamReadB(pxDataStream, indentifier.Data, 4u);
+                        PXDataStreamReadI32UE(pxDataStream, &frameSize, EndianBig);
+                        PXDataStreamReadI16UE(pxDataStream, &frameFlags, EndianBig);
 
                         const ID3v2xFrameTag frameTag = ConvertID3v2xFrameTag(indentifier.Value);
                         const PXBool unkownTag = frameTag == ID3v2xFrameTagInvalid;
 
+                        const PXSize expectedOffset = pxDataStream->DataCursor + frameSize;
+
                         if(unkownTag)
                         {
-                            const PXBool emptyDataDertected = unkownTag && (frameSize == 0);
+                            const PXBool emptyDataDertected = (frameSize == 0);
 
                             if(emptyDataDertected)
                             {
-                                PXDataStreamCursorToEnd(&dataStream);
+                                PXDataStreamCursorToEnd(pxDataStream);
                                 break; // Cancel while loop, as there is nothing else to parse.
+                            }
+                            else
+                            {
+                                PXDataStreamCursorMoveTo(pxDataStream, expectedOffset);
                             }
                         }
 
@@ -284,13 +291,6 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                         );
 #endif
 
-                        PXSize posAfterChunk = dataStream->DataCursor + frameSize;
-
-
-#if 0 // Skip
-                        dataStream.CursorAdvance(frameSize);
-#else
-
                         switch(frameTag)
                         {
                             case AudioEncryption:
@@ -303,18 +303,18 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                                 char language[3];
 
                                 /*
-                                dataStream.Read(textEncoding);
-                                dataStream.Read(language, 3u);
+                                pxDataStream.Read(textEncoding);
+                                pxDataStream.Read(language, 3u);
 
                                 PXSize insertOffset = 0;
 
-                                while(dataStream.DataCursor < posAfterChunk) // There can be multible comments, but only one language.
+                                while(pxDataStream.DataCursor < posAfterChunk) // There can be multible comments, but only one language.
                                 {
                                     char stringEncoding[2];
 
-                                    dataStream.Read(stringEncoding, 2u);
+                                    pxDataStream.Read(stringEncoding, 2u);
 
-                                    dataStream.ReadUntil(Comment + insertOffset, frameSize - 3, L'\0');
+                                    pxDataStream.ReadUntil(Comment + insertOffset, frameSize - 3, L'\0');
                                 }
                                 */
                                 break;
@@ -349,16 +349,16 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                                 break;
                             case Popularimeter:
                             {
-                                const unsigned char* emailToUser = PXDataStreamCursorPosition(&dataStream);
-                                const PXSize maximalToRead = PXDataStreamRemainingSize(&dataStream) - 6u;
+                                const unsigned char* emailToUser = PXDataStreamCursorPosition(pxDataStream);
+                                const PXSize maximalToRead = PXDataStreamRemainingSize(pxDataStream) - 6u;
                                 const PXSize emailToUserSize = TextLengthA((char*)emailToUser, maximalToRead);
                                 unsigned char rating = 0;
                                 // counter?
 
                                 // Copy
 
-                                PXDataStreamCursorAdvance(&dataStream, emailToUserSize + 1);
-                                PXDataStreamReadI8U(&dataStream, &rating);
+                                PXDataStreamCursorAdvance(pxDataStream, emailToUserSize + 1);
+                                PXDataStreamReadI8U(pxDataStream, &rating);
 
                                 break;
                             }
@@ -376,8 +376,8 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                                 break;
                             case Album:
                             {
-                               // dataStream.CursorAdvance(3u);
-                                //dataStream.Read(Album, frameSize - 3);
+                               // pxDataStream.CursorAdvance(3u);
+                                //pxDataStream.Read(Album, frameSize - 3);
 
                                 break;
                             }
@@ -389,8 +389,8 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                             }
                             case Composer:
                             {
-                               // dataStream.CursorAdvance(3u);
-                               // dataStream.Read(Composer, frameSize - 3);
+                               // pxDataStream.CursorAdvance(3u);
+                               // pxDataStream.Read(Composer, frameSize - 3);
                                 break;
                             }
                             case ContentType:
@@ -416,8 +416,8 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                                 break;
                             case Title:
                             {
-                               // dataStream.CursorAdvance(3u);
-                                //dataStream.Read(Title, frameSize - 3);
+                               // pxDataStream.CursorAdvance(3u);
+                                //pxDataStream.Read(Title, frameSize - 3);
                                 break;
                             }
                             case Subtitle:
@@ -446,8 +446,8 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                                 break;
                             case LeadPerformer:
                             {
-                                //dataStream.CursorAdvance(3u);
-                               // dataStream.Read(Artist, frameSize - 3);
+                                //pxDataStream.CursorAdvance(3u);
+                               // pxDataStream.Read(Artist, frameSize - 3);
                                 break;
                             }
                             case Band:
@@ -457,8 +457,8 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                             }
                             case Conductor:
                             {
-                                //dataStream.CursorAdvance(3u);
-                                //dataStream.Read(Album, frameSize - 3);
+                                //pxDataStream.CursorAdvance(3u);
+                                //pxDataStream.Read(Album, frameSize - 3);
                                 break;
                             }
                             case InterpretedBy:
@@ -510,15 +510,14 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const dataStream)
                             case UserDefinedURLLinkFrame:
                                 break;
                         }
-#endif
 
-                        const PXBool hasUnhandleChunkDetected = dataStream->DataCursor < posAfterChunk;
+                        const PXBool hasUnhandleChunkDetected = pxDataStream->DataCursor < expectedOffset;
 
                         if(hasUnhandleChunkDetected)
                         {
                             printf("Unhandle chunk detected!\n");
 
-                            dataStream->DataCursor = posAfterChunk;
+                            PXDataStreamCursorMoveTo(pxDataStream, expectedOffset);
                         }
                     }
 

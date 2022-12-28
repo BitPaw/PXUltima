@@ -2,9 +2,9 @@
 
 #include <File/PXDataStream.h>
 #include <Memory/PXMemory.h>
-
 #include <Format/XingInfo/XingInfo.h>
 #include <Format/LAME/LAME.h>
+#include <Container/ClusterValue.h>
 
 #define MPEGGenreIDBlues 0u
 #define MPEGGenreIDClassicRock 1u
@@ -786,320 +786,288 @@ unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre)
 	return -1; // MPEGGenreUnknown
 }
 
-PXActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 {
-	// Parse First Byte__
-	{
-		const unsigned short byteA = data[0];
-		const unsigned short byteB = data[1];
-		const unsigned short signature = (byteA << 8) + byteB;
-		const unsigned int filterMask = 0b1111111111100000;
-		const unsigned char validSignature = (signature & filterMask) == filterMask;
-
-		if(!validSignature)
-		{
-			return 0;
-		}
-	}
-
-	// Parse secound Byte__
-	{
-		const unsigned char byteB = data[1];
-
-		const unsigned char mpegAudioVersionID = (byteB & 0b00011000) >> 3;
-		const unsigned char layerID = (byteB & 0b00000110) >> 1;
-
-		mp3Header->CRCErrorProtection = (byteB & 0b00000001);
-
-		switch(mpegAudioVersionID)
-		{
-			default:
-			case 0b00:
-				mp3Header->MPEGVersion = MPEGVersion25;
-				break;
-
-			case 0b01:
-				mp3Header->MPEGVersion = MPEGVersionReserved;
-				break;
-
-			case 0b10:
-				mp3Header->MPEGVersion = MPEGVersion2;
-				break;
-
-			case 0b11:
-				mp3Header->MPEGVersion = MPEGVersion1;
-				break;
-		}
-
-		switch(layerID)
-		{
-			default:
-			case 0b00:
-				mp3Header->Layer = MP3LayerReserved;
-				break;
-
-			case 0b01:
-				mp3Header->Layer = MP3LayerIII;
-				break;
-
-			case 0b10:
-				mp3Header->Layer = MP3LayerII;
-				break;
-
-			case 0b11:
-				mp3Header->Layer = MP3LayerI;
-				break;
-		}
-	}
-
-	// Parse third Byte__
-	{
-		const unsigned char byteC = data[2];
-		const unsigned char isMPEGVersion1 = mp3Header->MPEGVersion == MPEGVersion1;
-		const unsigned char isMPEGVersion2 = mp3Header->MPEGVersion == MPEGVersion2;
-		const unsigned char isMPEGVersion25 = mp3Header->MPEGVersion == MPEGVersion25;
-
-		// Bit lookup
-		{
-			const unsigned char bitRateTag = (byteC & 0b11110000) >> 4;
-
-			const unsigned char bad = 0x00;
-			const unsigned short bitRateKBpsLookup[16][5]=
-			{
-				{bad, 	bad, 	bad ,	bad ,	bad},
-				{  32, 	32, 	32 ,	32 ,	8},
-				{  64, 	48, 	40 ,	48 ,	16},
-				{  96, 	56, 	48 ,	56 ,	24},
-				{ 128, 	64, 	56 ,	64 ,	32},
-				{ 160, 	80, 	64 ,	80 ,	48},
-				{ 192, 	96, 	80 ,	96 ,	48},
-				{ 224, 	112, 	96 ,	112 ,	56},
-				{ 256, 	128, 	112 ,	128 ,	64 },
-				{ 288, 	160, 	128 ,	144 ,	80 },
-				{ 320, 	192, 	160 ,	160 ,	96 },
-				{ 352, 	224, 	192 ,	176 ,	112 },
-				{ 384, 	256, 	224 ,	192 ,	128 },
-				{ 416, 	320, 	256 ,	224 ,	144 },
-				{ 448, 	384, 	320 ,	256 ,	160 },
-				{ bad, 	bad, 	bad ,	bad ,	bad }
-			};
-
-			const unsigned char isLayer1 = mp3Header->Layer == MP3LayerI;
-			const unsigned char isLayer2 = mp3Header->Layer == MP3LayerII;
-			const unsigned char isLayer3 = mp3Header->Layer == MP3LayerIII;
-
-			unsigned char yPos = bitRateTag;
-			unsigned char xPos =
-				0 * (isMPEGVersion1 && isLayer1) +
-				1 * (isMPEGVersion1 && isLayer2) +
-				2 * (isMPEGVersion1 && isLayer3) +
-				3 * (isMPEGVersion2 && isLayer1) +
-				4 * ((isMPEGVersion2 || isMPEGVersion25) && (isLayer2 || isLayer3));
-
-			const unsigned short bitRateKBps = bitRateKBpsLookup[yPos][xPos];
-
-			mp3Header->BitRate = (unsigned int)bitRateKBps * 1000;
-		}
-
-		//For Layer II there are some combinations of bitrate and mode which are not allowed.
-
-		{
-			const unsigned char sampleRateID = (byteC & 0b00001100) >> 2;
-
-			const unsigned short reserverdValue = -1;
-			const unsigned short sampleRateLookup[4][3]=
-			{
-				{	44100, 22050, 11025 },
-				{	48000, 24000, 12000 },
-				{	32000, 16000, 8000 },
-				{	reserverdValue,	reserverdValue,	reserverdValue }
-			};
-
-			unsigned char yPos = sampleRateID;
-			unsigned char xPos =
-				0 * isMPEGVersion1 +
-				1 * isMPEGVersion2 +
-				2 * isMPEGVersion25;
-
-
-			const unsigned short sampleRateKBps = sampleRateLookup[yPos][xPos];
-
-			mp3Header->SampleRate = sampleRateKBps;
-		}
-
-		mp3Header->UsePadding = (byteC & 0b00000010) >> 1;
-		mp3Header->IsPrivate = (byteC & 0b00000001);
-	}
-
-	// Parse forth Byte__
-	{
-		const unsigned char byteD = data[3];
-
-		const unsigned char channalMode = (byteD & 0b11000000) >> 6;
-		mp3Header->AudioModeIntensity = (byteD & 0b00100000) >> 5;
-		mp3Header->AudioModeMS = (byteD & 0b00010000) >> 4;
-		mp3Header->Copyrighted = (byteD & 0b00001000) >> 3;
-		mp3Header->CopyOfOriginal = (byteD & 0b00000100) >> 2;
-		const unsigned char emphasis = (byteD & 0b00000011);
-
-		switch(channalMode)
-		{
-			default:
-			case 0b00:
-				mp3Header->ChannelMode = MP3ChannelStereo;
-				break;
-
-			case 0b01:
-				mp3Header->ChannelMode = MP3ChannelJointStereo;
-				break;
-
-			case 0b10:
-				mp3Header->ChannelMode = MP3ChannelDual;
-				break;
-
-			case 0b11:
-				mp3Header->ChannelMode = MP3ChannelSingle;
-				break;
-		}
-
-		switch(emphasis)
-		{
-			default:
-			case 0b00:
-				mp3Header->Emphasis = MP3EmphasisNone;
-				break;
-
-			case 0b01:
-				mp3Header->Emphasis = MP3Emphasisms5015;
-				break;
-
-			case 0b10:
-				mp3Header->Emphasis = MP3EmphasisReserved;
-				break;
-
-			case 0b11:
-				mp3Header->Emphasis = MP3EmphasisCCITJ17;
-				break;
-		}
-	}
-
-	const float bitratePerSample = mp3Header->BitRate / ((float)mp3Header->SampleRate + mp3Header->UsePadding);
-
-	switch(mp3Header->Layer)
-	{
-		case MP3LayerI:
-		{
-			mp3Header->FrameLength = ((12 * bitratePerSample) * 4) - 4;
-			break;
-		}
-		case MP3LayerII:
-		case MP3LayerIII:
-		{
-			mp3Header->FrameLength = (144 * bitratePerSample) - 4 + mp3Header->UsePadding;
-			break;
-		}
-		case MP3LayerReserved:
-		default:
-		{
-			mp3Header->FrameLength = 0;
-			break;
-		}
-	}
-
-	*dataRead = 4u;
-
-	return PXActionSuccessful;
-}
-
-PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize* dataRead)
-{
-	PXDataStream dataStream;
-
 	MemoryClear(mp3, sizeof(MP3));
-	*dataRead = 0;
-
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
-
 
 	{
 
-		const PXActionResult actionResult = ID3Parse(&mp3->ID3Info, &dataStream);
+		const PXActionResult actionResult = ID3Parse(&mp3->ID3Info, pxDataStream);
 
-
+		PXActionExitOnError(actionResult);
 	}
 
-	while(!PXDataStreamIsAtEnd(&dataStream))
+	while(!PXDataStreamIsAtEnd(pxDataStream))
 	{
-		MP3Header mp3Header;
 		XingInfo xingInfo;
 
-		MemoryClear(&mp3Header, sizeof(MP3Header));
 		MemoryClear(&xingInfo, sizeof(XingInfo));
 
 		PXSize cursorPositionPredict = 0;
 
 		// Parse mp3
 		{
-			const unsigned char* dataPosition = PXDataStreamCursorPosition(&dataStream);
-			const PXSize dataSize = PXDataStreamRemainingSize(&dataStream);
-			PXSize parsedBytes = 0;
+			const PXByte* const mp3HeaderDataBlock = (const PXByte* const)PXDataStreamCursorPosition(pxDataStream);
 
-			MP3HeaderParse(&mp3->Header, dataPosition, dataSize, &parsedBytes);
-
-			PXDataStreamCursorAdvance(&dataStream, parsedBytes);
-
-
-			if(!parsedBytes)
+			// Parse Byte 1/4
 			{
-				return PXActionFailedFormatNotAsExpected;
+				const PXBool validSignature = (mp3HeaderDataBlock[0] == 0xFF) && ((mp3HeaderDataBlock[1] & 0xF0) == 0xF0);
+
+				if (!validSignature)
+				{
+					return PXActionRefusedInvalidHeaderSignature;
+				}
 			}
 
-			PXDataStreamCursorAdvance(&dataStream, parsedBytes);
+			// Parse Byte 2/4
+			{
+				const PXByte byteB = mp3HeaderDataBlock[1];
+				const PXByte mpegAudioVersionID = (byteB & 0b00011000) >> 3;
+				const PXByte layerID = (byteB & 0b00000110) >> 1;
 
-			cursorPositionPredict = dataStream.DataCursor + mp3Header.FrameLength;
+				mp3->Header.CRCErrorProtection = (byteB & 0b00000001);
 
-			PXDataStreamCursorAdvance(&dataStream, 32u);
+				switch (mpegAudioVersionID)
+				{
+					default:
+					case 0b00:
+						mp3->Header.MPEGVersion = MPEGVersion25;
+						break;
+
+					case 0b01:
+						mp3->Header.MPEGVersion = MPEGVersionReserved;
+						break;
+
+					case 0b10:
+						mp3->Header.MPEGVersion = MPEGVersion2;
+						break;
+
+					case 0b11:
+						mp3->Header.MPEGVersion = MPEGVersion1;
+						break;
+				}
+
+				switch (layerID)
+				{
+					default:
+					case 0b00:
+						mp3->Header.Layer = MP3LayerReserved;
+						break;
+
+					case 0b01:
+						mp3->Header.Layer = MP3LayerIII;
+						break;
+
+					case 0b10:
+						mp3->Header.Layer = MP3LayerII;
+						break;
+
+					case 0b11:
+						mp3->Header.Layer = MP3LayerI;
+						break;
+				}
+			}
+
+			// Parse Byte 3/3
+			{
+				const PXByte byteC = mp3HeaderDataBlock[2];
+				const PXBool isMPEGVersion1 = mp3->Header.MPEGVersion == MPEGVersion1;
+				const PXBool isMPEGVersion2 = mp3->Header.MPEGVersion == MPEGVersion2;
+				const PXBool isMPEGVersion25 = mp3->Header.MPEGVersion == MPEGVersion25;
+				const PXBool isLayer1 = mp3->Header.Layer == MP3LayerI;
+				const PXBool isLayer2 = mp3->Header.Layer == MP3LayerII;
+				const PXBool isLayer3 = mp3->Header.Layer == MP3LayerIII;
+
+				// Bit lookup
+				{
+					const PXByte bitRateTag = (byteC & 0b11110000) >> 4;
+
+					const PXInt16U bad = 0x00;
+					const PXInt16U bitRateKBpsLookup[16][5] =
+					{
+						{bad, 	bad, 	bad ,	bad ,	bad},
+						{  32, 	32, 	32 ,	32 ,	8},
+						{  64, 	48, 	40 ,	48 ,	16},
+						{  96, 	56, 	48 ,	56 ,	24},
+						{ 128, 	64, 	56 ,	64 ,	32},
+						{ 160, 	80, 	64 ,	80 ,	48},
+						{ 192, 	96, 	80 ,	96 ,	48},
+						{ 224, 	112, 	96 ,	112 ,	56},
+						{ 256, 	128, 	112 ,	128 ,	64 },
+						{ 288, 	160, 	128 ,	144 ,	80 },
+						{ 320, 	192, 	160 ,	160 ,	96 },
+						{ 352, 	224, 	192 ,	176 ,	112 },
+						{ 384, 	256, 	224 ,	192 ,	128 },
+						{ 416, 	320, 	256 ,	224 ,	144 },
+						{ 448, 	384, 	320 ,	256 ,	160 },
+						{ bad, 	bad, 	bad ,	bad ,	bad }
+					};
+
+					const PXInt8U yPos = bitRateTag;
+					const PXInt8U xPos =
+						0 * (isMPEGVersion1 && isLayer1) +
+						1 * (isMPEGVersion1 && isLayer2) +
+						2 * (isMPEGVersion1 && isLayer3) +
+						3 * (isMPEGVersion2 && isLayer1) +
+						4 * ((isMPEGVersion2 || isMPEGVersion25) && (isLayer2 || isLayer3));
+
+					const PXInt16U bitRateKBps = bitRateKBpsLookup[yPos][xPos];
+
+					mp3->Header.BitRate = (unsigned int)bitRateKBps * 1000;
+				}
+
+				//For Layer II there are some combinations of bitrate and mode which are not allowed.
+
+				{
+					const unsigned char sampleRateID = (byteC & 0b00001100) >> 2;
+
+					const unsigned short reserverdValue = -1;
+					const unsigned short sampleRateLookup[4][3] =
+					{
+						{	44100, 22050, 11025 },
+						{	48000, 24000, 12000 },
+						{	32000, 16000, 8000 },
+						{	reserverdValue,	reserverdValue,	reserverdValue }
+					};
+
+					unsigned char yPos = sampleRateID;
+					unsigned char xPos =
+						0 * isMPEGVersion1 +
+						1 * isMPEGVersion2 +
+						2 * isMPEGVersion25;
+
+
+					const unsigned short sampleRateKBps = sampleRateLookup[yPos][xPos];
+
+					mp3->Header.SampleRate = sampleRateKBps;
+				}
+
+				mp3->Header.UsePadding = (byteC & 0b00000010) >> 1;
+				mp3->Header.IsPrivate = (byteC & 0b00000001);
+			}
+
+			// Parse Byte 4/4
+			{
+				const PXByte byteD = mp3HeaderDataBlock[3];
+
+				const PXByte channalMode = (byteD & 0b11000000) >> 6;
+				mp3->Header.AudioModeIntensity = (byteD & 0b00100000) >> 5;
+				mp3->Header.AudioModeMS = (byteD & 0b00010000) >> 4;
+				mp3->Header.Copyrighted = (byteD & 0b00001000) >> 3;
+				mp3->Header.CopyOfOriginal = (byteD & 0b00000100) >> 2;
+				const PXByte emphasis = (byteD & 0b00000011);
+
+				switch (channalMode)
+				{
+					default:
+					case 0b00:
+						mp3->Header.ChannelMode = MP3ChannelStereo;
+						break;
+
+					case 0b01:
+						mp3->Header.ChannelMode = MP3ChannelJointStereo;
+						break;
+
+					case 0b10:
+						mp3->Header.ChannelMode = MP3ChannelDual;
+						break;
+
+					case 0b11:
+						mp3->Header.ChannelMode = MP3ChannelSingle;
+						break;
+				}
+
+				switch (emphasis)
+				{
+					default:
+					case 0b00:
+						mp3->Header.Emphasis = MP3EmphasisNone;
+						break;
+
+					case 0b01:
+						mp3->Header.Emphasis = MP3Emphasisms5015;
+						break;
+
+					case 0b10:
+						mp3->Header.Emphasis = MP3EmphasisReserved;
+						break;
+
+					case 0b11:
+						mp3->Header.Emphasis = MP3EmphasisCCITJ17;
+						break;
+				}
+			}
+
+			const float bitratePerSample = mp3->Header.BitRate / ((float)mp3->Header.SampleRate + mp3->Header.UsePadding);
+
+			switch (mp3->Header.Layer)
+			{
+				case MP3LayerI:
+				{
+					mp3->Header.FrameLength = ((12 * bitratePerSample) * 4) - 4;
+					break;
+				}
+				case MP3LayerII:
+				case MP3LayerIII:
+				{
+					mp3->Header.FrameLength = (144 * bitratePerSample) - 4 + mp3->Header.UsePadding;
+					break;
+				}
+				case MP3LayerReserved:
+				default:
+				{
+					mp3->Header.FrameLength = 0;
+					break;
+				}
+			}
+
+			PXDataStreamCursorAdvance(pxDataStream, 4u);
+
+			// Header parsing finished..
+
+		
+
+
+
+
+
+
+			//cursorPositionPredict = dataStream.DataCursor + mp3Header.FrameLength;
+
+			PXDataStreamCursorAdvance(pxDataStream, 32u);
 
 #if MP3Debug
 			printf
 			(
 				"[MP3][Frame] Bitrate : %6i | SampleRate : %5i | FrameLength : %5i |\n",
-				mp3Header.BitRate,
-				mp3Header.SampleRate,
-				mp3Header.FrameLength
+				mp3->Header.BitRate,
+				mp3->Header.SampleRate,
+				mp3->Header.FrameLength
 			);
 #endif
 		}
 
 		// info header
 		{
-			const unsigned char* dataPosition = PXDataStreamCursorPosition(&dataStream);
-			const PXSize dataSize = PXDataStreamRemainingSize(&dataStream);
-			PXSize parsedBytes = 0;
+			const PXActionResult actionResult = XingInfoParse(&xingInfo, pxDataStream);
 
-			const PXActionResult actionResult = XingInfoParse(&xingInfo, dataPosition, dataSize, &parsedBytes);
-
-			PXDataStreamCursorAdvance(&dataStream, parsedBytes);
-
-			if(parsedBytes)
-			{
+			PXActionExitOnError(actionResult);
+	
 #if MP3Debug
-				printf
-				(
-					"[MP3][Info] Number of Frames : %6i | %6i Bytes |\n",
-					xingInfo.NumberOfFrames,
-					xingInfo.SizeInBytes
-				);
+			printf
+			(
+				"[MP3][Info] Number of Frames : %6i | %6i Bytes |\n",
+				xingInfo.NumberOfFrames,
+				xingInfo.SizeInBytes
+			);
 #endif
-			}
 		}
 
 		// LACA??
 		{
 			const char tag[] = { 'L','a', 'v', 'c' };
 			const PXSize tagSize = sizeof(tag);
-			const unsigned char isTag = PXDataStreamReadAndCompare(&dataStream, tag, tagSize);
+			const unsigned char isTag = PXDataStreamReadAndCompare(pxDataStream, tag, tagSize);
 
 			if(isTag)
 			{
@@ -1110,7 +1078,7 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 				);
 #endif
 
-				PXDataStreamCursorAdvance(&dataStream, 257u);
+				PXDataStreamCursorAdvance(pxDataStream, 257u);
 
 				continue; // After this header there is a MP3 header next, so parse it.
 			}
@@ -1120,7 +1088,9 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 		{
 			LAME lame;
 
-			const PXActionResult actionResult = LAMEParse(&lame, &dataStream);
+			const PXActionResult actionResult = LAMEParse(&lame, pxDataStream);
+
+			PXActionExitOnError(actionResult);
 
 #if MP3Debug
 				printf
@@ -1133,38 +1103,36 @@ PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSiz
 
 
 		{
-			const unsigned char tagDetected = PXDataStreamReadAndCompare(&dataStream,"TAG", 3u);
+			const PXBool tagDetected = PXDataStreamReadAndCompare(pxDataStream,"TAG", 3u);
 
 			if(tagDetected)
 			{
-				const PXSize offset = PXDataStreamRemainingSize(&dataStream);
+				const PXSize offset = PXDataStreamRemainingSize(pxDataStream);
 
 				// I currently dont know what this is.
 				// But it comes at the end of the file.. so i am finished?
 
-				PXDataStreamCursorAdvance(&dataStream, offset);
+				PXDataStreamCursorAdvance(pxDataStream, offset);
 			}
 		}
 
 		// Check if reader is still alligned
 		{
-			const unsigned char isAlligned = cursorPositionPredict == dataStream.DataCursor;
+			const PXBool isAlligned = cursorPositionPredict == pxDataStream->DataCursor;
 
 			if(!isAlligned)
 			{
-				int offset = cursorPositionPredict - dataStream.DataCursor;
+				int offset = cursorPositionPredict - pxDataStream->DataCursor;
 
 #if MP3Debug
 				printf("[MP3] detected failed allignment! Off by : %i Bytes\n", offset);
 #endif
 
-				dataStream.DataCursor = cursorPositionPredict;
+				pxDataStream->DataCursor = cursorPositionPredict;
 				//dataStream.CursorAdvance(mp3Header.FrameLength);
 			}
 		}
 	}
-
-	*dataRead = dataStream.DataCursor;
 
 	return PXActionSuccessful;
 }

@@ -173,6 +173,8 @@
     <ClCompile Include="Source\TestPXCompiler.c" />
     <ClCompile Include="Source\TestSystemInfo.c" />
     <ClCompile Include="Source\TestYAML.c" />
+    <ClCompile Include="Source\TestSound.c" />
+    <ClCompile Include="Source\TestFont.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\TestImage.h" />
@@ -182,6 +184,8 @@
     <ClInclude Include="Source\TestPXCompiler.h" />
     <ClInclude Include="Source\TestSystemInfo.h" />
     <ClInclude Include="Source\TestYAML.h" />
+    <ClInclude Include="Source\TestSound.h" />
+    <ClInclude Include="Source\TestFont.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PXUltima\PXUltima.vcxproj">

@@ -13,29 +13,29 @@
 #include <Format/TGA/TGA.h>
 #include <Format/TIFF/TIFF.h>
 #include <Format/FNT/FNT.h>
-#include <Format/Font.h>
+#include <Format/PXFont.h>
 
 PXSize ImageBitDepth(const ImageDataFormat imageDataFormat)
 {
     switch (imageDataFormat)
     {
-    default:
-    case ImageDataFormatInvalid:
-        return 0;
+        default:
+        case ImageDataFormatInvalid:
+            return 0;
 
-    case ImageDataFormatAlphaMask:
-    case ImageDataFormatAlphaMaskBinary:
-        return 1;
+        case ImageDataFormatAlphaMask:
+        case ImageDataFormatAlphaMaskBinary:
+            return 1;
 
-    case ImageDataFormatBGR8:
-    case ImageDataFormatRGB8:
-    case ImageDataFormatRGBA8:
-    case ImageDataFormatBGRA8:
-        return 8;
+        case ImageDataFormatBGR8:
+        case ImageDataFormatRGB8:
+        case ImageDataFormatRGBA8:
+        case ImageDataFormatBGRA8:
+            return 8;
 
-    case ImageDataFormatRGB16:
-    case ImageDataFormatRGBA16:
-        return 16;
+        case ImageDataFormatRGB16:
+        case ImageDataFormatRGBA16:
+            return 16;
     }
 }
 

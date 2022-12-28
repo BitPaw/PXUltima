@@ -175,7 +175,6 @@ extern "C"
 	}
 	MP3Emphasis;
 
-
 	typedef enum MP3Layer_
 	{
 		MP3LayerReserved,
@@ -191,7 +190,8 @@ extern "C"
 		MPEGVersion1,
 		MPEGVersion2,
 		MPEGVersion25
-	}MP3MPEGVersion;
+	}
+	MP3MPEGVersion;
 
 	typedef struct MP3Header_
 	{
@@ -204,11 +204,11 @@ extern "C"
 		unsigned char UsePadding;
 		unsigned char IsPrivate; // Unused
 		MP3ChannelMode ChannelMode;
-		unsigned char AudioModeIntensity;
-		unsigned char AudioModeMS;
+		PXBool AudioModeIntensity;
+		PXBool AudioModeMS;
 
-		unsigned char Copyrighted;
-		unsigned char CopyOfOriginal;
+		PXBool Copyrighted;
+		PXBool CopyOfOriginal;
 		MP3Emphasis Emphasis;
 
 		unsigned int FrameLength;
@@ -225,9 +225,8 @@ extern "C"
 	
 	static MPEGGenre ConvertMPEGToGenre(const unsigned char mpegGenre);
 	static unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre);
-	static PXActionResult MP3HeaderParse(MP3Header* mp3Header, const unsigned char* data, const PXSize dataSize, PXSize* dataRead);
 
-	PXPublic PXActionResult MP3Parse(MP3* mp3, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream);
 
 
 #ifdef __cplusplus

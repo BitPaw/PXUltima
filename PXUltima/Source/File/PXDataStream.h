@@ -60,10 +60,12 @@ extern "C"
 	typedef struct PXDataStream_
 	{
 		//---<Raw Data>--------------------------------------------------------
-		void* Data;
-		PXSize DataSize;
-		PXSize DataCursor;
-		PXSize DataCursorBitOffset;
+		void* Data; // [Do not use directly] Data from where to read/write depending on the used method of linking.
+		PXSize DataCursor; // [Do not use directly] Current position of the data.
+		PXSize DataCursorBitOffset; // [Do not use directly] Current offset in bits of current byte
+		PXSize DataSize; // [Do not use directly] The total size of the data block.
+		PXSize DataAllocated; // [Do not use directly] The size of the data pace in which you can move without triggering an invalid access.
+
 		//---------------------------------------------------------------------
 
 		//---<Temporal>--------------------------------------------------------
@@ -125,6 +127,7 @@ extern "C"
 	PXPublic PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream);
 
 	PXPublic void* PXDataStreamCursorPosition(PXDataStream* const dataStream);
+	PXPublic void PXDataStreamCursorMoveTo(PXDataStream* const dataStream, const PXSize position);
 	PXPublic void PXDataStreamCursorToBeginning(PXDataStream* const dataStream);
 	PXPublic PXSize PXDataStreamCursorAdvance(PXDataStream* const dataStream, const PXSize steps);
 	PXPublic void PXDataStreamCursorRewind(PXDataStream* const dataStream, const PXSize steps);

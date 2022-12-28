@@ -178,6 +178,11 @@ void PXMatrix4x4FMoveXY(const PXMatrix4x4F* const matrixA, const float x, const 
 	matrixResult->Data[TransformY] = matrixA->Data[TransformY] + y;
 }
 
+void PXMatrix4x4FMoveToScaleXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult)
+{
+	PXMatrix4x4FMoveXY(matrixA, x * (1-matrixA->Data[ScaleX]), y * (1 - matrixA->Data[ScaleY]), matrixResult);
+}
+
 void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult)
 {
 	matrixResult->Data[TransformX] = matrixA->Data[TransformX] + x;

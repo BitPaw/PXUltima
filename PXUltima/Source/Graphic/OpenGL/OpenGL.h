@@ -503,10 +503,17 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.3.1.0>------------------------------------------------------
+	typedef void (OpenGLAPICallType* OpenGLDrawArraysInstancedFunction)(GLenum mode, GLint first, GLsizei count, GLsizei instancecount); // glDrawArraysInstanced
 	//-------------------------------------------------------------------------
 
 	//---<OpenGL v.3.2.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
+
+	//---<OpenGL v.3.3.0>------------------------------------------------------
+	typedef void  (OpenGLAPICallType* OpenGLVertexAttribDivisorFunction)(GLuint index, GLuint divisor); // glVertexAttribDivisor
+	//-------------------------------------------------------------------------
+
+
 
 	//---<OpenGL v.4.0.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
@@ -658,10 +665,15 @@ extern "C"
 		//-------------------------------------------------------------------------
 
 		//---<OpenGL v.3.1.0>------------------------------------------------------
+		OpenGLDrawArraysInstancedFunction OpenGLDrawArraysInstancedCallBack;
 		//-------------------------------------------------------------------------
 
 		//---<OpenGL v.3.2.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
+
+		//---<OpenGL v.3.3.0>------------------------------------------------------
+		OpenGLVertexAttribDivisorFunction OpenGLVertexAttribDivisorCallBack;
+		//-------------------------------------------------------------------------		
 
 		//---<OpenGL v.4.0.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
@@ -735,6 +747,9 @@ extern "C"
 	PXPublic void OpenGLDrawArrays(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const PXSize offset, const PXSize amount);
 	PXPublic void OpenGLDrawElements(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const PXSize amount, const OpenGLDataType openGLDataType, const void* const indexList);
 
+
+	
+	PXPublic void OpenGLDrawArraysInstanced(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount);
 
 	//---<Texture>-------------------------------------------------------------
 	PXPublic void OpenGLTextureActivate(OpenGLContext* const openGLContext, const unsigned int index);
@@ -810,6 +825,7 @@ extern "C"
 		const unsigned int stride,
 		const PXSize offset
 	);
+	PXPublic void OpenGLVertexAttributeDivisor(OpenGLContext* const openGLContext, const PXSize index, const PXSize divisor);
 	PXPublic void OpenGLVertexArrayEnable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID);
 	PXPublic void OpenGLVertexArrayDisable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID);
 

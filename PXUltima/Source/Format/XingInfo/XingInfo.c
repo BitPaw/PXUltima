@@ -2,36 +2,32 @@
 
 #include <File/PXDataStream.h>
 
-PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize dataSize, PXSize* dataRead)
+#define XingInfoSignatureInfo { 'I', 'n', 'f', 'o' }
+#define XingInfoSignatureXing { 'X', 'i', 'n', 'g' }
+
+PXActionResult XingInfoParse(XingInfo* const xingInfo, PXDataStream* const pxDataStream)
 {
-	PXDataStream dataStream;
-
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
-
-	*dataRead = 0;
-
 	// parse signature
 	{
-		const char infoTag[] = { 'I', 'n', 'f', 'o' };
-		const char xingTag[] = { 'X', 'i', 'n', 'g' };
+		const char infoTag[] = XingInfoSignatureInfo;
+		const char xingTag[] = XingInfoSignatureXing;
 		char indetifier[4];
 
-		PXDataStreamReadB(&dataStream, indetifier, 4u);
+		PXDataStreamReadB(pxDataStream, indetifier, 4u);
 
-		const unsigned char isInfo =
+		const PXBool isInfo =
 			indetifier[0] == infoTag[0] &&
 			indetifier[1] == infoTag[1] &&
 			indetifier[2] == infoTag[2] &&
 			indetifier[3] == infoTag[3];
 
-		const unsigned char isXing =
+		const PXBool isXing =
 			indetifier[0] == xingTag[0] &&
 			indetifier[1] == xingTag[1] &&
 			indetifier[2] == xingTag[2] &&
 			indetifier[3] == xingTag[3];
 
-		const unsigned char validHeader = isInfo || isXing;
+		const PXBool validHeader = isInfo || isXing;
 
 		if(!validHeader)
 		{
@@ -51,18 +47,18 @@ PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize 
 
 	unsigned int flags = 0;
 
-	PXDataStreamReadI32UE(&dataStream, &flags, EndianBig);
+	PXDataStreamReadI32UE(pxDataStream, &flags, EndianBig);
 
-	const unsigned char hasNumberOfFrames = flags & 0b00000001;
-	const unsigned char hasSizeInBytes = (flags & 0b00000010) >> 1;
-	const unsigned char hasTOCData = (flags & 0b00000100) >> 2;
-	const unsigned char hasVBRScale = (flags & 0b00001000) >> 3;
+	const PXBool hasNumberOfFrames = flags & 0b00000001;
+	const PXBool hasSizeInBytes = (flags & 0b00000010) >> 1;
+	const PXBool hasTOCData = (flags & 0b00000100) >> 2;
+	const PXBool hasVBRScale = (flags & 0b00001000) >> 3;
 
 	// (0x0001) if set, then read one 32 bit integer in Big Endian.
 	// It represents the total number of frames in the Audio file.
 	if(hasNumberOfFrames)
 	{
-		PXDataStreamReadI32UE(&dataStream, &xingInfo->NumberOfFrames, EndianBig);
+		PXDataStreamReadI32UE(pxDataStream, &xingInfo->NumberOfFrames, EndianBig);
 	}
 
 	// (0x0002) is set, then read one 32 bit integer in Big Endian.
@@ -70,20 +66,18 @@ PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize 
 	// This does not include the ID3 tag, however, it includes this very tag.
 	if(hasSizeInBytes)
 	{
-		PXDataStreamReadI32UE(&dataStream, &xingInfo->SizeInBytes, EndianBig);
+		PXDataStreamReadI32UE(pxDataStream, &xingInfo->SizeInBytes, EndianBig);
 	}
 
 	if(hasTOCData)
 	{
-		PXDataStreamReadB(&dataStream, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
+		PXDataStreamReadB(pxDataStream, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
 	}
 
 	if(hasVBRScale)
 	{
-		PXDataStreamReadI32UE(&dataStream, &xingInfo->VBRScale, EndianBig);
+		PXDataStreamReadI32UE(pxDataStream, &xingInfo->VBRScale, EndianBig);
 	}
-
-	*dataRead = dataStream.DataCursor;
 
 	return PXActionSuccessful;
 }

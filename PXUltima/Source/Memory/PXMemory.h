@@ -115,7 +115,7 @@ extern "C"
 #endif
 
 
-#if _PX_DEBUG
+#if 0//_PX_DEBUG
 #define MemoryReallocate(address, dataSize) MemoryHeapReallocateDetailed(address, dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #define MemoryAllocate(dataSize) MemoryHeapAllocateDetailed(dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #else

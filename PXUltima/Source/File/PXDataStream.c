@@ -782,7 +782,12 @@ PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream)
 
 void* PXDataStreamCursorPosition(PXDataStream* const dataStream)
 {
-	return  (unsigned char*)dataStream->Data + dataStream->DataCursor;
+	return (PXAdress)dataStream->Data + dataStream->DataCursor;
+}
+
+void PXDataStreamCursorMoveTo(PXDataStream* const dataStream, const PXSize position)
+{
+	dataStream->DataCursor = MathMinimumIU(position, dataStream->DataSize);
 }
 
 void PXDataStreamCursorToBeginning(PXDataStream* const dataStream)

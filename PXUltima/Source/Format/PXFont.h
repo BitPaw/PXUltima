@@ -34,10 +34,10 @@ extern "C"
 	PXPublic void PXFontConstruct(PXFont* const font);
 	PXPublic void PXFontDestruct(PXFont* const font);
 
-	PXPublic PXActionResult FontLoadA(PXFont* const font, const PXTextASCII filePath);
-	PXPublic PXActionResult FontLoadW(PXFont* const font, const PXTextUNICODE filePath);
-	PXPublic PXActionResult FontLoadU(PXFont* const font, const PXTextUTF8 filePath);
-	PXPublic PXActionResult FontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat);
+	PXPublic PXActionResult PXFontLoadA(PXFont* const font, const PXTextASCII filePath);
+	PXPublic PXActionResult PXFontLoadW(PXFont* const font, const PXTextUNICODE filePath);
+	PXPublic PXActionResult PXFontLoadU(PXFont* const font, const PXTextUTF8 filePath);
+	PXPublic PXActionResult PXFontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat);
 
 
 #ifdef __cplusplus

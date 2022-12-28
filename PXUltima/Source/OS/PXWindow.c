@@ -2237,7 +2237,7 @@ void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsi
     window->Height = height;
 
     {
-        const unsigned char isDefaultSize = width == -1 && height == -1;
+        const PXBool isDefaultSize = width == -1 && height == -1;
 
         if (isDefaultSize)
         {

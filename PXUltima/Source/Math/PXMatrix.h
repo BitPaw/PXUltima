@@ -93,6 +93,7 @@ extern "C"
 
 	PXPublic void PXMatrix4x4FMove3F(const PXMatrix4x4F* const matrixA, const PXVector3F* const vector3F, PXMatrix4x4F* const matrixResult);
 	PXPublic void PXMatrix4x4FMoveXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FMoveToScaleXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult);
 	PXPublic void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
 
 	PXPublic void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, PXMatrix4x4F* const matrixResult);

@@ -32,8 +32,8 @@ FNTCharacter* FNTGetCharacter(PXFNT* fnt, const wchar_t character)
 		for (PXSize i = 0; i < page->CharacteListSize; ++i)
 		{
 			const FNTCharacter* bitMapFontCharacter = &page->CharacteList[i];
-			const unsigned char target = bitMapFontCharacter->ID;
-			const unsigned char isSameCharacter = target == character;
+			const PXInt32U target = bitMapFontCharacter->ID;
+			const PXBool isSameCharacter = target == character;
 
 			if (isSameCharacter)
 			{
@@ -54,7 +54,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 	while (!PXDataStreamIsAtEnd(pxDataStream))
 	{
-		const unsigned char* currentPosition = PXDataStreamCursorPosition(pxDataStream);
+		const char* currentPosition = (char*)PXDataStreamCursorPosition(pxDataStream);
 		const PXSize currentReadableBytes = PXDataStreamRemainingSize(pxDataStream);
 		const FNTLineType lineType = PeekLineType(currentPosition, currentReadableBytes);
 
@@ -177,12 +177,10 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 				TextToIntA(indexPosition[0], 5, &currentPage->PageID);
 
 
-				// Loadin Image
+				// Loading Image
 				{
 					char fullPath[PathMaxSize];
 					char pageFileName[FNTPageFileNameSize];
-
-					const PXSize length = TextCopyA(pxDataStream->FilePath, PathMaxSize, fullPath, FNTPageFileNameSize);
 
 					TextCopyA
 					(
@@ -194,13 +192,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 					TextTerminateBeginFromFirstA(pageFileName, FNTPageFileNameSize, '\"');
 
-					TextCopyA
-					(
-						pageFileName,
-						FNTPageFileNameSize,
-						fullPath + length,
-						FNTPageFileNameSize
-					);
+					FilePathSwapFileNameA(pxDataStream->FilePath, fullPath, pageFileName);
 
 					const PXActionResult actionResult = ImageLoadA(&currentPage->FontTextureMap, fullPath);
 				}

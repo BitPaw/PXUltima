@@ -7,6 +7,8 @@
 #include "TestPXCompiler.h"
 #include "TestImage.h"
 #include "TestYAML.h"
+#include "TestSound.h"
+#include "TestFont.h"
 
 #include <Graphic/DirectX/DirectX.h>
 
@@ -17,6 +19,12 @@
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+#if 1
+	TestFontAll();
+#endif // 
+
+
 
 	//Image image;
 
@@ -29,8 +37,17 @@ int main()
 	//TestPXCompilerAll();
 	//TestOpenGLAll();
 	//TestWindowAll();
-	TestImageAll();
+	//TestImageAll();
+	// 
+	// 
+	// 
 	//TestSBPAll();
+
+
+#if 1
+	TestSoundAll();
+#endif
+
 
 	printf("[i] Finished testing...\n");
 

@@ -64,7 +64,7 @@ PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 		}
 	}
 
-	PXDataStreamReadI32UE(pxDataStream, wav->SoundDataSize, riff.EndianFormat);
+	PXDataStreamReadI32UE(pxDataStream, &wav->SoundDataSize, riff.EndianFormat);
 
 	wav->SoundData = MemoryAllocate(sizeof(PXByte) * wav->SoundDataSize);
 

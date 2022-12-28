@@ -1558,8 +1558,10 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         {
             // Fall though1
         }
-        case OpenGLVersion3x3x0:
+        case OpenGLVersion3x3x0: 
         {
+            OpenGLCacheFunction(functionNameList, &length, "glVertexAttribDivisor", &openGLContext->OpenGLVertexAttribDivisorCallBack);
+
             // Fall though1
         }
         case OpenGLVersion3x2x0:
@@ -1568,6 +1570,8 @@ void OpenGLContextCreate(OpenGLContext* const openGLContext)
         }
         case OpenGLVersion3x1x0:
         {
+            OpenGLCacheFunction(functionNameList, &length, "glDrawArraysInstanced", &openGLContext->OpenGLDrawArraysInstancedCallBack);            
+
             // Fall though1
         }
         case OpenGLVersion3x0x0:
@@ -3020,6 +3024,24 @@ void OpenGLDrawElements(const OpenGLContext* const openGLContext, const OpenGLRe
     glDrawElements(renderModeID, amount, openGLDataTypeID, indexList);
 }
 
+void OpenGLDrawArraysInstanced(const OpenGLContext* const openGLContext, const OpenGLRenderMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount)
+{
+    const PXBool isSupported = openGLContext->OpenGLDrawArraysInstancedCallBack != PXNull;
+    const GLenum renderModeID = OpenGLRenderModeToID(renderMode);
+
+    if (isSupported)
+    {   
+        openGLContext->OpenGLDrawArraysInstancedCallBack(renderModeID, startOffset, amount, instanceAmount);
+    }
+    else
+    {
+        for (PXSize i = 0; i < instanceAmount; ++i)
+        {
+            glDrawArrays(renderModeID, startOffset, amount);
+        }
+    }
+}
+
 void OpenGLTextureActivate(OpenGLContext* const openGLContext, const unsigned int index)
 {
     unsigned int indexID = GL_TEXTURE0 + index;
@@ -3275,6 +3297,11 @@ void OpenGLVertexArrayAttributeDefine(OpenGLContext* const openGLContext, const 
     const unsigned int openGLDataTypeID = OpenGLDataTypeToID(datatype);
 
     openGLContext->OpenGLVertexAttribPointerCallBack(index, size, openGLDataTypeID, normalized, stride, offset);
+}
+
+void OpenGLVertexAttributeDivisor(OpenGLContext* const openGLContext, const PXSize index, const PXSize divisor)
+{
+    openGLContext->OpenGLVertexAttribDivisorCallBack(index, divisor);
 }
 
 void OpenGLVertexArrayEnable(OpenGLContext* const openGLContext, const unsigned int vertexArrayAtributeID)

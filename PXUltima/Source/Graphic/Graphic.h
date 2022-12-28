@@ -267,6 +267,7 @@ extern "C"
 	typedef struct PXUIText_
 	{
 		PXRenderable Renderable;
+		PXFont* TextFont;
 	}
 	PXUIText;
 
@@ -308,7 +309,7 @@ extern "C"
 	// Update
 	// Destroy
 
-	PXPublic PXActionResult GraphicUITextRegister(GraphicContext* const graphicContext, PXUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height);
+	PXPublic PXActionResult GraphicUITextRegister(GraphicContext* const graphicContext, PXUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text);
 
 
 

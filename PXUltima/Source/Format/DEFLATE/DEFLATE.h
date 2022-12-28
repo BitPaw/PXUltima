@@ -22,14 +22,13 @@ extern "C"
 
 	typedef struct DeflateBlock_
 	{
-		unsigned char IsLastBlock;
+		PXBool IsLastBlock;
 		DeflateEncodingMethod EncodingMethod;
 	}
 	DeflateBlock;
 
-
-	PXPublic DeflateEncodingMethod ConvertToDeflateEncodingMethod(const unsigned char deflateEncodingMethod);
-	PXPublic unsigned char ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEncodingMethod);
+	PXPublic DeflateEncodingMethod ConvertToDeflateEncodingMethod(const PXInt8U deflateEncodingMethod);
+	PXPublic PXInt8U ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEncodingMethod);
 
 	PXPublic PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream);
 	PXPublic PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream);

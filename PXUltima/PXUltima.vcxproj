@@ -92,7 +92,7 @@
     <ClInclude Include="Source\Format\FLAC\FLAC.h" />
     <ClInclude Include="Source\Format\FMT\FMT.h" />
     <ClInclude Include="Source\Format\FNT\FNT.h" />
-    <ClInclude Include="Source\Format\Font.h" />
+    <ClInclude Include="Source\Format\PXFont.h" />
     <ClInclude Include="Source\Format\GIF\GIF.h" />
     <ClInclude Include="Source\Format\HUFFMAN\HuffmanTree.h" />
     <ClInclude Include="Source\Format\ID3\ID3.h" />
@@ -227,7 +227,7 @@
     <ClCompile Include="Source\Format\FLAC\FLAC.c" />
     <ClCompile Include="Source\Format\FMT\FMT.c" />
     <ClCompile Include="Source\Format\FNT\FNT.c" />
-    <ClCompile Include="Source\Format\Font.c" />
+    <ClCompile Include="Source\Format\PXFont.c" />
     <ClCompile Include="Source\Format\GIF\GIF.c" />
     <ClCompile Include="Source\Format\HUFFMAN\HuffmanTree.c" />
     <ClCompile Include="Source\Format\ID3\ID3.c" />
@@ -293,6 +293,8 @@
     <None Include="Source\Algorithm\KalmanFilter\README.md" />
     <None Include="Source\Audio\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
+    <None Include="Source\Format\LAME\README.md" />
+    <None Include="Source\Format\LZ77\README.md" />
     <None Include="Source\Format\PDF\README.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

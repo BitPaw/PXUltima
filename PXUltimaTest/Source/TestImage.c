@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include <Format/Image.h>
-#include <Format/Font.h>
+#include <Format/PXFont.h>
 #include <File/File.h>
 
 void TestSaveImageSmal()
@@ -122,7 +122,7 @@ void ImageWriteText()
     PXFont font;
 
     {
-        const PXActionResult actionResult = FontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
+        const PXActionResult actionResult = PXFontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
         const PXBool successful = PXActionSuccessful == actionResult;
 
         if (!successful)

@@ -2,8 +2,8 @@
 #define XingInfoInclude
 
 #include <Format/Type.h>
-
 #include <Error/PXActionResult.h>
+#include <File/PXDataStream.h>
 
 #define XingInfoTOCBufferSize 100u
 
@@ -30,7 +30,7 @@ extern "C"
 	}
 	XingInfo;
 
-	PXPublic PXActionResult XingInfoParse(XingInfo* xingInfo, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult XingInfoParse(XingInfo* const xingInfo, PXDataStream* const pxDataStream);
 
 #ifdef __cplusplus
 }

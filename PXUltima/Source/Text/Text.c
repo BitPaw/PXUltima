@@ -851,6 +851,11 @@ void TextParseFindAllA(const char* string, const PXSize stringSize, const Parsin
 	unsigned char foundItem = 0;
 	PXSize foundTargets = 0;
 
+	for (size_t i = 0; i < parsingTokenListSize; i++)
+	{
+		MemorySet(parsingTokenList[i].Value, 0, sizeof(void*));
+	}
+
 	for(PXSize i = 0; (i < stringSize) && (string[i] != '\0') && !finished; ++i)
 	{
 		foundItem = 0;
@@ -861,8 +866,8 @@ void TextParseFindAllA(const char* string, const PXSize stringSize, const Parsin
 			const char* targetString = parsingToken->String;
 			const PXSize targetStringSize = TextLengthA(targetString, -1);
 			const char* sourceString = string + i;
-
-			foundItem = TextCompareA(sourceString, stringSize, targetString, targetStringSize); // Compare whole word
+			
+			foundItem = MemoryCompare(sourceString, stringSize, targetString, targetStringSize); // Compare whole word
 
 			if(foundItem)
 			{

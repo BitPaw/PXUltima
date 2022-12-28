@@ -444,7 +444,39 @@ void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wch
 	}
 }
 
-void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const exportPath, const wchar_t* const fileName)
+void FilePathSwapFileNameA(const PXTextASCII inputPath, PXTextASCII exportPath, const PXTextASCII fileName)
+{
+	PXCharASCII finalPath[PathMaxSize];
+
+	PXCharASCII driveW[DriveMaxSize];
+	PXCharASCII directoryW[DirectoryMaxSize];
+
+	{
+		PXCharASCII fileNameW[FileNameMaxSize];
+		PXCharASCII extensionW[ExtensionMaxSize];
+
+		FilePathSplittA
+		(
+			inputPath, PathMaxSize,
+			driveW, DriveMaxSize,
+			directoryW, DirectoryMaxSize,
+			fileNameW, FileNameMaxSize,
+			extensionW, ExtensionMaxSize
+		);
+	}
+
+	{
+		PXSize offset = 0;
+
+		offset += TextCopyA(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
+		offset += TextCopyA(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
+		offset += TextCopyA(fileName, PathMaxSize, finalPath + offset, PathMaxSize - offset);
+
+		TextCopyA(finalPath, offset, exportPath, PathMaxSize);
+	}
+}
+
+void FilePathSwapFileNameW(const PXTextUNICODE inputPath, PXTextUNICODE exportPath, const PXTextUNICODE fileName)
 {
 	wchar_t finalPath[PathMaxSize];
 
@@ -475,6 +507,12 @@ void FilePathSwapFileNameW(const wchar_t* const inputPath, wchar_t* const export
 		TextCopyW(finalPath, offset, exportPath, PathMaxSize);
 	}
 }
+
+void FilePathSwapFileNameU(const PXTextUTF8 inputPath, PXTextUTF8 exportPath, const PXTextUTF8 fileName)
+{
+	FilePathSwapFileNameA(inputPath, exportPath, fileName);
+}
+
 
 void FilePathSwapExtensionA(const PXTextASCII inputPath, PXTextASCII exportPath, const PXTextASCII fileExtension)
 {

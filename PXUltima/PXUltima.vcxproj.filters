@@ -198,7 +198,7 @@
     <ClInclude Include="Source\Format\Color.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Format\Font.h">
+    <ClInclude Include="Source\Format\PXFont.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Format\Image.h">
@@ -596,7 +596,7 @@
     <ClCompile Include="Source\Format\Color.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Format\Font.c">
+    <ClCompile Include="Source\Format\PXFont.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\Image.c">
@@ -822,5 +822,7 @@
     <None Include="Source\Audio\README.md" />
     <None Include="Source\Algorithm\KalmanFilter\README.md" />
     <None Include="Source\Algorithm\Dijkstra\README.md" />
+    <None Include="Source\Format\LZ77\README.md" />
+    <None Include="Source\Format\LAME\README.md" />
   </ItemGroup>
 </Project>
