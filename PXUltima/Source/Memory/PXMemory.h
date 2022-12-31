@@ -103,9 +103,10 @@ extern "C"
 	// Allocate memory in virtual memory space.
 	// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 	// Only use for bigger datablocks as thic has very hi overhead.
-	PXPublic void* MemoryVirtualAllocate(const PXSize size, const MemoryProtectionMode memoryProtectionMode);
+	PXPublic void* MemoryVirtualAllocate(PXSize size, const MemoryProtectionMode memoryProtectionMode);
 	PXPublic void MemoryVirtualPrefetch(const void* adress, const PXSize size);
 	PXPublic void MemoryVirtualRelease(const void* adress, const PXSize size);
+	PXPublic void* MemoryVirtualReallocate(const void* adress, const PXSize size);
 
 
 	PXPublic MemoryProtectionModeType ConvertFromMemoryProtectionMode(const MemoryProtectionMode memoryProtectionMode);
@@ -114,6 +115,7 @@ extern "C"
 }
 #endif
 
+#if 1 // Use default allocator
 
 #if 0//_PX_DEBUG
 #define MemoryReallocate(address, dataSize) MemoryHeapReallocateDetailed(address, dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
@@ -121,6 +123,12 @@ extern "C"
 #else
 #define MemoryReallocate(address, dataSize) MemoryHeapReallocate(address, dataSize)
 #define MemoryAllocate(dataSize) MemoryHeapAllocate(dataSize)
+#endif
+
+#else // Use virtual alloc
+
+#define MemoryReallocate(address, dataSize) MemoryVirtualReallocate(address, dataSize)
+#define MemoryAllocate(dataSize) MemoryVirtualAllocate(dataSize, MemoryReadAndWrite)
 #endif
 
 

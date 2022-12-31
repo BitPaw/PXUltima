@@ -1,6 +1,7 @@
 #include "PXMemory.h"
 
 #include <Math/PXMath.h>
+#include <Error/PXActionResult.h>
 
 #include <stdlib.h>
 #include <malloc.h>
@@ -21,6 +22,47 @@
 #define ProtectionIDRead PAGE_READONLY
 #define ProtectionIDWrite PAGE_READWRITE
 #define ProtectionIDReadWrite PAGE_READWRITE
+
+
+PXActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
+{
+	HANDLE           hToken;
+	TOKEN_PRIVILEGES tp;
+	BOOL             status;
+	DWORD            error;
+
+	// open process token
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+		return GetCurrentError(); // OpenProcessToken
+
+	// get the luid
+	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
+		return GetCurrentError();  // LookupPrivilegeValue
+
+	tp.PrivilegeCount = 1;
+
+	// enable or disable privilege
+	if (bEnable)
+		tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	else
+		tp.Privileges[0].Attributes = 0;
+
+	// enable or disable privilege
+	status = AdjustTokenPrivileges(hToken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+
+	// It is possible for AdjustTokenPrivileges to return TRUE and still not succeed.
+	// So always check for the last error value.
+	error = GetLastError();
+	if (!status || (error != ERROR_SUCCESS))
+		return GetCurrentError();  // AdjustTokenPrivileges
+
+	// close the handle
+	if (!CloseHandle(hToken))
+		return GetCurrentError(); // CloseHandle
+
+	return PXActionSuccessful;
+}
+
 
 #endif
 
@@ -342,7 +384,7 @@ void MemoryRelease(const void* adress, const PXSize size)
 	free(adress);
 }
 
-void* MemoryVirtualAllocate(const PXSize size, const MemoryProtectionMode memoryProtectionMode)
+void* MemoryVirtualAllocate(PXSize size, const MemoryProtectionMode memoryProtectionMode)
 {
 	const void* addressPrefered = 0;
 	const MemoryProtectionModeType protectionModeID = ConvertFromMemoryProtectionMode(memoryProtectionMode);
@@ -375,7 +417,36 @@ void* MemoryVirtualAllocate(const PXSize size, const MemoryProtectionMode memory
 #elif OSWindows
 	DWORD allocationType = MEM_COMMIT | MEM_RESERVE;
 
+
+#if 0 //MemoryPageLargeEnable
+	// Check if large pages can be used
+	{
+		const PXSize largePageMinimumSize = GetLargePageMinimum(); // [Kernel32.dll] OS minimum: Windows Vista
+		const PXBool hasLargePageSupport = largePageMinimumSize != 0u;
+
+		const PXBool useLargeMemoryPages = hasLargePageSupport && (size > (largePageMinimumSize * 0.5f)); // if the allocation is atleah half of a big page, use that.
+
+		if (useLargeMemoryPages)
+		{
+			const PXSize newSize = largePageMinimumSize * ((size / largePageMinimumSize) + 1);
+
+			//PXActionResult actionResult = WindowsProcessPrivilege(L"SeLockMemoryPrivilege", TRUE);
+
+			allocationType |= SEC_LARGE_PAGES;
+
+			PXActionResult actionResult = WindowsProcessPrivilege(L"SeLockMemoryPrivilege", TRUE);
+
+			printf("[i][Memory] Using large page.. size increased %i -> %i\n", (unsigned int)size, (unsigned int)newSize);
+
+			size = newSize;
+		}
+	}
+#endif
+
 	const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, protectionModeID);
+
+	PXActionResult x = GetCurrentError();
+
 #endif
 
 #if MemoryDebugOutput
@@ -449,6 +520,18 @@ void MemoryVirtualRelease(const void* adress, const PXSize size)
 #endif
 
 	return result;
+}
+
+void* MemoryVirtualReallocate(const void* adress, const PXSize size)
+{
+	const PXBool newAllocation = adress == PXNull;
+
+	if (newAllocation)
+	{
+		return MemoryVirtualAllocate(size, MemoryReadAndWrite);
+	}
+
+	return 0;
 }
 
 MemoryProtectionModeType ConvertFromMemoryProtectionMode(const MemoryProtectionMode memoryProtectionMode)

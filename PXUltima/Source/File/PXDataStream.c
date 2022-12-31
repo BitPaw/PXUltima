@@ -338,48 +338,6 @@ PXActionResult PXDataStreamClose(PXDataStream* const dataStream)
 #endif
 }
 
-
-#if OSWindows
-PXActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
-{
-	HANDLE           hToken;
-	TOKEN_PRIVILEGES tp;
-	BOOL             status;
-	DWORD            error;
-
-	// open process token
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
-		return GetCurrentError(); // OpenProcessToken
-
-	// get the luid
-	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
-		return GetCurrentError();  // LookupPrivilegeValue
-
-	tp.PrivilegeCount = 1;
-
-	// enable or disable privilege
-	if (bEnable)
-		tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-	else
-		tp.Privileges[0].Attributes = 0;
-
-	// enable or disable privilege
-	status = AdjustTokenPrivileges(hToken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
-
-	// It is possible for AdjustTokenPrivileges to return TRUE and still not succeed.
-	// So always check for the last error value.
-	error = GetLastError();
-	if (!status || (error != ERROR_SUCCESS))
-		return GetCurrentError();  // AdjustTokenPrivileges
-
-	// close the handle
-	if (!CloseHandle(hToken))
-		return GetCurrentError(); // CloseHandle
-
-	return PXActionSuccessful;
-}
-#endif // OSWindows
-
 PXActionResult PXDataStreamMapToMemoryA(PXDataStream* const dataStream, const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
 {
 	PXByte filePathU[PathMaxSize];
@@ -502,14 +460,14 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 
 	dataStream->MemoryMode = protectionMode;
 	dataStream->DataSize = fileSize;
-
+	dataStream->DataAllocated = fileSize;
 
 	// Create mapping
 	{
 		SECURITY_ATTRIBUTES	fileMappingAttributes;
-		DWORD				flProtect = 0;
-		DWORD				dwMaximumSizeHigh = 0;
-		DWORD				dwMaximumSizeLow = 0; // Problem if file is 0 Length
+		DWORD flProtect = SEC_COMMIT;
+		DWORD dwMaximumSizeHigh = 0;
+		DWORD dwMaximumSizeLow = 0; // Problem if file is 0 Length
 		wchar_t* name = filePath;
 
 		switch (protectionMode)
@@ -524,12 +482,18 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 				dwMaximumSizeLow = 0;
 
 				dataStream->DataSize = largeInt.QuadPart;
+				dataStream->DataAllocated = largeInt.QuadPart;
 				break;
 			}
 			case MemoryWriteOnly:
 			{
+#if OS64Bit
+				dwMaximumSizeHigh = (fileSize & (0xFFFFFFFF00000000)) >> 32u;
+				dwMaximumSizeLow = fileSize & 0x00000000FFFFFFFF;
+#elif OS32Bit
 				dwMaximumSizeHigh = 0;
-				dwMaximumSizeLow = fileSize;
+				dwMaximumSizeLow = fileSize & 0xFFFFFFFF;
+#endif
 				break;
 			}
 			case MemoryReadAndWrite:
@@ -540,26 +504,6 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 			default:
 				break;
 		}
-
-
-#if MemoryPageLargeEnable
-		// Check if large pages can be used
-		{
-			const PXSize largePageMinimumSize = GetLargePageMinimum(); // [Kernel32.dll] OS minimum: Windows Vista
-			const PXBool hasLargePageSupport = largePageMinimumSize != 0u;
-
-			useLargeMemoryPages = hasLargePageSupport && (dataStream->DataSize > (largePageMinimumSize * 0.5f)); // if the allocation is atleah half of a big page, use that.
-
-			if (useLargeMemoryPages)
-			{
-				dwMaximumSizeLow = largePageMinimumSize * ((dataStream->DataSize / largePageMinimumSize) + 1);
-
-				PXActionResult actionResult = WindowsProcessPrivilege(L"SeLockMemoryPrivilege", TRUE);
-
-				flProtect |= SEC_COMMIT | SEC_LARGE_PAGES;
-			}
-		}
-#endif
 
 		switch (protectionMode)
 		{
@@ -580,6 +524,8 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 				break;
 		}
 
+		// [i] I want to add LargePage support but it seems you cant do that with files.
+
 		const HANDLE fileMappingHandleResult = CreateFileMappingA
 		(
 			dataStream->FileHandle,
@@ -594,16 +540,11 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 		{
 			const PXBool successful = fileMappingHandleResult;
 
-			if (!successful)
-			{
-				const PXActionResult mappingError = GetCurrentError(); // File memory-mapping failed
-
-				return mappingError;
-			}
+			PXActionOnErrorFetchAndExit(!successful); // File memory-mapping failed
 
 			dataStream->IDMapping = fileMappingHandleResult; // Mapping [OK]
 		}
-		}
+	}
 
 	{
 		DWORD desiredAccess = 0;
@@ -634,7 +575,7 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 			desiredAccess |= FILE_MAP_LARGE_PAGES;
 		}
 
-		void* const fileMapped = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista
+		void* const fileMapped = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
 		(
 			dataStream->IDMapping,
 			desiredAccess,

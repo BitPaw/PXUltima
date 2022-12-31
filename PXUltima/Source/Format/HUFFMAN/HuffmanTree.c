@@ -53,10 +53,10 @@ int GenerateFromLengths(HuffmanTree* huffmanTree, const unsigned int* bitlen, PX
 				huffmanTree->codes[n] &= ((1u << huffmanTree->lengths[n]) - 1u);
 			}
 		}
-	}
+	} 
 
-	free(blcount);
-	free(nextcode);
+	MemoryRelease(blcount, -1);
+	MemoryRelease(nextcode, -1);
 	//-------------------------------------------------
 
 
@@ -368,9 +368,9 @@ tree of the dynamic huffman tree lengths is generated*/
 		break; /*end of error-while*/
 	}
 
-	free(bitlen_cl);
-	free(bitlen_ll);
-	free(bitlen_d);
+	MemoryRelease(bitlen_cl, -1);
+	MemoryRelease(bitlen_ll, -1);
+	MemoryRelease(bitlen_d, -1);
 
 	return error;
 }

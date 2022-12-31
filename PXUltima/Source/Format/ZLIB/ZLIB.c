@@ -163,12 +163,9 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* co
     {
         case ZLIBCompressionMethodDeflate:
         {
-            int deflateResult = DEFLATEParse(pxInputSteam, pxOutputSteam);
+            const PXActionResult deflateResult = DEFLATEParse(pxInputSteam, pxOutputSteam);
 
-            if(deflateResult)
-            {
-                deflateResult += 2;
-            }
+            PXActionExitOnError(deflateResult);
 
             break;
         }
@@ -180,15 +177,7 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* co
         }
     }
 
-
-    //AdlerChecksum.;
-    /*
-    unsigned int adler32CheckSum =
-        (unsigned int)inputData[dataSize - 4] << 24 +
-        (unsigned int)inputData[dataSize - 3] << 16 +
-        (unsigned int)inputData[dataSize - 2] << 8 +
-        (unsigned int)inputData[dataSize - 1];    
-    */
+    PXDataStreamReadI32UE(pxInputSteam, &zlib.AdlerChecksum, EndianBig);
 
     return PXActionSuccessful;
 }

@@ -788,7 +788,7 @@ unsigned int ConvertFromChunkType(const PNGChunkType pngchunkType)
     return 0;
 }
 
-PNGColorType ConvertToPNGColorType(const unsigned int colorType)
+PNGColorType ConvertToPNGColorType(const PXInt8U colorType)
 {
     switch (colorType)
     {
@@ -837,7 +837,7 @@ unsigned int ConvertFromPNGColorType(const PNGColorType colorType)
     }
 }
 
-PNGInterlaceMethod ConvertToPNGInterlaceMethod(const unsigned char interlaceMethod)
+PNGInterlaceMethod ConvertToPNGInterlaceMethod(const PXInt8U interlaceMethod)
 {
     switch (interlaceMethod)
     {
@@ -930,6 +930,10 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 
     PNGConstruct(&png);
 
+    PXDataStream imageDataCache;
+
+
+
     PXSize imageDataCounter = 0;
     PXSize imageDataChunkCacheSizeUSED = 0;
     PXSize imageDataChunkCacheSizeMAX = 0u;
@@ -937,7 +941,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 
     //---<Parse PNG File>------------------------------------------------------
     {
-        unsigned char parseFinished = 0;
+        PXBool parseFinished = 0;
 
         //---<Check PNG Header>------------------------------------------------
         {
@@ -1021,8 +1025,8 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
             {
                 case PNGChunkImageHeader:
                 {
-                    unsigned char colorTypeRaw = 0;
-                    unsigned char interlaceMethodRaw = 0;
+                    PXInt8U colorTypeRaw = 0;
+                    PXInt8U interlaceMethodRaw = 0;
 
                     const PXDataStreamElementType pxDataStreamElementList[] =
                     {

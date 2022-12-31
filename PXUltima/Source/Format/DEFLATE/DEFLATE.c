@@ -117,6 +117,8 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
 {
     DeflateBlock deflateBlock;
 
+    //(PXAdress)pxOutputStream->Data += 2;
+
     do
     {
         deflateBlock.IsLastBlock = PXDataStreamReadBits(pxInputStream, 1u);
@@ -297,7 +299,7 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
                         case HuffmanCodeEndOfBlock:
                         {
                             //printf("[Symbol] <%2x>(%3i) End of Block.\n", resultLengthCode, resultLengthCode);
-                            foundEndOFBlock = 1u;
+                            foundEndOFBlock = PXTrue;
 
                             break; // FINISHED!
                         }
@@ -309,6 +311,8 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
         }
     }
     while(!deflateBlock.IsLastBlock);
+
+    //(PXAdress)pxOutputStream->Data -= 2;
 
     return PXActionSuccessful;
 }

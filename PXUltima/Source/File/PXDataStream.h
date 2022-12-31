@@ -65,7 +65,6 @@ extern "C"
 		PXSize DataCursorBitOffset; // [Do not use directly] Current offset in bits of current byte
 		PXSize DataSize; // [Do not use directly] The total size of the data block.
 		PXSize DataAllocated; // [Do not use directly] The size of the data pace in which you can move without triggering an invalid access.
-
 		//---------------------------------------------------------------------
 
 		//---<Temporal>--------------------------------------------------------
