@@ -21,6 +21,10 @@ int main()
 	printf("[i] Starting testing...\n");
 
 #if 0
+	TestSoundAll();
+#endif
+
+#if 0
 	TestFontAll();
 #endif // 
 
@@ -48,9 +52,7 @@ int main()
 	//TestSBPAll();
 
 
-#if 1
-	TestSoundAll();
-#endif
+
 
 
 	printf("[i] Finished testing...\n");

@@ -37,6 +37,35 @@ VirtualKey ConvertToVirtualKey(const char character)
 #elif OSWindows
 	switch(character)
 	{
+		case VK_SPACE: return KeySpace; // 0x20
+		//case VK_PRIOR: return KeyPri;          // 0x21
+		//case VK_NEXT: return KeyNex;           // 0x22
+		//case VK_END: return yyyyyyyyyyyyyy;            // 0x23
+		//case VK_HOME: return yyyyyyyyyyyyyy;           // 0x24
+		//case VK_LEFT: return yyyyyyyyyyyyyy;           // 0x25
+		//case VK_UP: return yyyyyyyyyyyyyy;           // 0x26
+		//case VK_RIGHT: return yyyyyyyyyyyyyy;           // 0x27
+		//case VK_DOWN: return yyyyyyyyyyyyyy;          // 0x28
+		//case VK_SELECT: return yyyyyyyyyyyyyy;          // 0x29
+		//case VK_PRINT: return yyyyyyyyyyyyyy;         // 0x2A
+		//ase VK_EXECUTE: return yyyyyyyyyyyyyy;         // 0x2B
+		//case VK_SNAPSHOT: return yyyyyyyyyyyyyy;        // 0x2C
+		//case VK_INSERT: return yyyyyyyyyyyyyy;         // 0x2D
+		//case VK_DELETE: return yyyyyyyyyyyyyy;         // 0x2E
+		//case VK_HELP: return yyyyyyyyyyyyyy;         // 0x2F
+
+
+		case VK_SHIFT: // consider shift as left shift
+		case VK_LSHIFT: return KeyShiftLeft; // 0xA0
+		case VK_RSHIFT: return KeyShiftRight; // 0xA1
+
+		case VK_LCONTROL: return KeyControlLeft; // 0xA2
+		case VK_RCONTROL: return KeyControlRight; // 0xA3
+
+		case VK_LMENU: return KeyMenu; // 0xA4
+		case VK_RMENU: return KeyMenu; // 0xA5
+
+
 		/*
 		case VK_LBUTTON:
 		case VK_RBUTTON:
@@ -89,23 +118,6 @@ VirtualKey ConvertToVirtualKey(const char character)
 		case VK_NONCONVERT:
 		case VK_ACCEPT:
 		case VK_MODECHANGE:
-
-		case VK_SPACE:
-		case VK_PRIOR:
-		case VK_NEXT:
-		case VK_END:
-		case VK_HOME:
-		case VK_LEFT:
-		case VK_UP:
-		case VK_RIGHT:
-		case VK_DOWN:
-		case VK_SELECT:
-		case VK_PRINT:
-		case VK_EXECUTE:
-		case VK_SNAPSHOT:
-		case VK_INSERT:
-		case VK_DELETE:
-		case VK_HELP:
 		*/
 
 		// VK_0 - VK_9 are the same as ASCII '0' - '9' (0x30 - 0x39)
