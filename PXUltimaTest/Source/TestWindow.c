@@ -111,7 +111,7 @@ void TestWindowOpen()
 
 
 
-	GraphicContext* graphicContext = &window.GraphicInstance;
+	PXGraphicContext* graphicContext = &window.GraphicInstance;
 
 	printf
 	(

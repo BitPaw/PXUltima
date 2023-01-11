@@ -11,6 +11,8 @@ extern "C"
 
     extern void TestSoundAll();
 
+    extern void TestSoundWAVWrite();
+
     extern void TestSoundWAV();
     extern void TestSoundMP3();
 

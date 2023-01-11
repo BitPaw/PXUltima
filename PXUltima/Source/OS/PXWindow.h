@@ -25,7 +25,7 @@ typedef HGLRC OpenGLConextID;
 #include <Async/PXThread.h>
 #include <Device/Mouse.h>
 #include <Device/KeyBoard.h>
-#include <Graphic/Graphic.h>
+#include <Graphic/PXGraphic.h>
 
 #define UseRawMouseData 1
 #define PXWindowTitleSizeMax 256
@@ -158,7 +158,7 @@ extern "C"
 
 
 
-		GraphicContext GraphicInstance;
+		PXGraphicContext GraphicInstance;
 
 #if OSUnix
 		Display* DisplayCurrent;

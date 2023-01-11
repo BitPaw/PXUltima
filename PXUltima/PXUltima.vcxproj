@@ -53,7 +53,7 @@
     <ClInclude Include="Source\Format\XML\XML.h" />
     <ClInclude Include="Source\Format\YAML\YAML.h" />
     <ClInclude Include="Source\Graphic\DirectX\DirectX.h" />
-    <ClInclude Include="Source\Graphic\Graphic.h" />
+    <ClInclude Include="Source\Graphic\PXGraphic.h" />
     <ClInclude Include="Source\Graphic\OpenGL\OpenGL.h" />
     <ClInclude Include="Source\Graphic\SoftwareRender\SoftwareRender.h" />
     <ClInclude Include="Source\Graphic\Vulcan\Vulcan.h" />
@@ -190,7 +190,7 @@
     <ClCompile Include="Source\Format\XML\XML.c" />
     <ClCompile Include="Source\Format\YAML\YAML.c" />
     <ClCompile Include="Source\Graphic\DirectX\DirectX.c" />
-    <ClCompile Include="Source\Graphic\Graphic.c" />
+    <ClCompile Include="Source\Graphic\PXGraphic.c" />
     <ClCompile Include="Source\Graphic\OpenGL\OpenGL.c" />
     <ClCompile Include="Source\Graphic\SoftwareRender\SoftwareRender.c" />
     <ClCompile Include="Source\Graphic\Vulcan\Vulcan.c" />

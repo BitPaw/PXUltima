@@ -20,9 +20,13 @@ int main()
 {
 	printf("[i] Starting testing...\n");
 
-#if 1
+#if 0
 	TestFontAll();
 #endif // 
+
+#if 0 // OpenGL Test
+	TestOpenGLAll();
+#endif
 
 
 
@@ -35,7 +39,7 @@ int main()
 	//TestYAMLAll();
 	//TestSystemInfoAll();
 	//TestPXCompilerAll();
-	//TestOpenGLAll();
+	//
 	//TestWindowAll();
 	//TestImageAll();
 	// 

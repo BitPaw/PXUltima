@@ -150,9 +150,9 @@ extern "C"
 
 	typedef	struct PNGChunk_
 	{
-		unsigned char IsEssential; // Ancillary Bit - Is this chunk not replaceable?.
-		unsigned char IsRegisteredStandard; // Private Bit - Is this chunk in the offically registered in any way?
-		unsigned char IsSafeToCopy;  // Can this cunk be modifyed anyhow or does it have a depecdency on the imagedata?
+		PXBool IsEssential; // Ancillary Bit - Is this chunk not replaceable?.
+		PXBool IsRegisteredStandard; // Private Bit - Is this chunk in the offically registered in any way?
+		PXBool IsSafeToCopy;  // Can this cunk be modifyed anyhow or does it have a depecdency on the imagedata?
 
 		// [4-byte] Giving the number of bytes in the chunk's data field. The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned, its value must not exceed 231 bytes.
 		unsigned int Lengh;
@@ -174,14 +174,14 @@ extern "C"
 
 	typedef struct PNGImageHeader_
 	{
-		unsigned int Width;
-		unsigned int Height;
+		PXInt32U Width;
+		PXInt32U Height;
 
 		/*
 			Bit depth is a single-byte integer giving the number of bits per sample or per palette index (not per pixel).
 			Valid values are 1, 2, 4, 8, and 16, although not all values are allowed for all color types.
 		*/
-		unsigned char BitDepth;
+		PXInt8U BitDepth;
 
 		/*
 			Color type is a single-byte integer that describes the interpretation of the image data.
@@ -189,8 +189,8 @@ extern "C"
 			and 4 (alpha channel used). Valid values are 0, 2, 3, 4, and 6.
 		*/
 		PNGColorType ColorType;
-		unsigned char CompressionMethod;
-		unsigned char FilterMethod;
+		PXInt8U CompressionMethod;
+		PXInt8U FilterMethod;
 		PNGInterlaceMethod InterlaceMethod;
 	}
 	PNGImageHeader;

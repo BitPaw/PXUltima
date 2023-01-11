@@ -705,6 +705,10 @@ extern "C"
 	PXPublic void OpenGLContextConstruct(OpenGLContext* const openGLContext);
 	PXPublic void OpenGLContextDestruct(OpenGLContext* const openGLContext);
 
+
+	PXPublic void OpenGLContextSet(OpenGLContext* const openGLContext, const OpenGLContext* const openGLContextSoure);
+	PXPublic void OpenGLContextCopy(OpenGLContext* const openGLContext, const OpenGLContext* const openGLContextSoure);
+
 	PXPublic void OpenGLContextCreate(OpenGLContext* const openGLContext);
 	PXPublic void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const PXSize width, const PXSize height);
 	PXPublic void OpenGLContextSelect(OpenGLContext* const openGLContext);
@@ -937,12 +941,12 @@ PXPublic const char* OpenGLStringGetI(OpenGLContext* const openGLContext, const 
 
 
 	/*
-	CPublic OpenGLID OpenGLToRenderMode(const GraphicRenderMode renderMode);
+	CPublic OpenGLID OpenGLToRenderMode(const PXGraphicRenderMode renderMode);
 	CPublic OpenGLID OpenGLToShaderType(const ShaderType shaderType);
 	CPublic OpenGLID OpenGLToImageFormat(const ImageDataFormat imageFormat);
-	CPublic OpenGLID OpenGLToImageType(const GraphicImageType imageType);
-	CPublic OpenGLID OpenGLToImageWrap(const GraphicImageWrap imageWrap);
-	CPublic OpenGLID OpenGLToImageLayout(const GraphicImageLayout layout);
+	CPublic OpenGLID OpenGLToImageType(const PXGraphicImageType imageType);
+	CPublic OpenGLID OpenGLToImageWrap(const PXGraphicImageWrap imageWrap);
+	CPublic OpenGLID OpenGLToImageLayout(const PXGraphicImageLayout layout);
 
 
 

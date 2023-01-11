@@ -1,4 +1,4 @@
-# Scalable Vector Graphics (SVG)
+# Scalable Vector PXGraphics (SVG)
 
 ## Info
 |||

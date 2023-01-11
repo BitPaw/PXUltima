@@ -28,6 +28,8 @@ extern "C"
 
 	PXPublic PXActionResult FMTParse(FMT* const fmt, PXDataStream* const pxDataStream, const Endian endian);
 
+	PXPublic PXActionResult FMTSerialize(const FMT* const fmt, PXDataStream* const pxDataStream, const Endian endian);
+
 #ifdef __cplusplus
 }
 #endif

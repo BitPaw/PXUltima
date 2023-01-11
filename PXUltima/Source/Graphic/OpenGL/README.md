@@ -1,7 +1,7 @@
-# Open Graphics Library (OpenGL)
+# Open PXGraphics Library (OpenGL)
 
 ## Info
-Installed on most systems. Graphics cards support it for a long time.<br>
+Installed on most systems. PXGraphics cards support it for a long time.<br>
 Very old ones only support version 1.x, after Version 2.0 its downwards compartible, meaning Version 1.0 stays in the dust.
 
 ## Dependencies

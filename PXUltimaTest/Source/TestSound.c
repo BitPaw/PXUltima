@@ -8,12 +8,30 @@
 void TestSoundAll()
 {
 #if 1
+	TestSoundWAVWrite();
+#endif // 1
+
+#if 1
 	TestSoundWAV();
 #endif // 0
 
 #if 1
 	TestSoundMP3();
 #endif // 0
+}
+
+void TestSoundWAVWrite()
+{
+	WAV wav;
+
+	PXDataStream waveStream;
+
+	const PXActionResult mappingResult = PXDataStreamMapToMemoryA(&waveStream, "A:/TestWav.wav", 1024*8000, MemoryReadAndWrite);
+	const PXActionResult pxActionResult = WAVSerialize(&wav, &waveStream);
+
+	PXDataStreamDestruct(&waveStream);
+
+	printf("\n");
 }
 
 void TestSoundWAV()

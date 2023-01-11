@@ -16,12 +16,13 @@ extern "C"
 	{
 		FMT Format;
 
-		unsigned int SoundDataSize; // 32-Bit
-		unsigned char* SoundData;
+		PXInt32U SoundDataSize; // 32-Bit
+		void* SoundData;
 	}
 	WAV;
 
 	PXPublic PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult WAVSerialize(WAV* const wav, PXDataStream* const pxDataStream);
 
 #ifdef __cplusplus
 }

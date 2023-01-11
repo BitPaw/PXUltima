@@ -7,7 +7,7 @@
 #include <OS/Monitor.h>
 #include <Text/Text.h>
 #include <Async/Await.h>
-#include <Graphic/Graphic.h>
+#include <Graphic/PXGraphic.h>
 
 #if OSUnix
 
@@ -774,9 +774,9 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
             break;
         }
-        case GraphicsExpose:
+        case PXGraphicsExpose:
         {
-            printf("[Event] GraphicsExpose \n");
+            printf("[Event] PXGraphicsExpose \n");
 
             break;
         }
@@ -1948,7 +1948,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     DWORD dwStyle = 0;
     HWND hWndParent = 0;
     HINSTANCE hInstance = GetModuleHandle(NULL);
-    const wchar_t* lpClassName = L"PXWindow::AsyncThread";
+    const wchar_t* lpClassName = L"PXUltima_WindowCreationAsyncThread";
     const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
     window->CursorID = cursorID;
 
@@ -1995,15 +1995,16 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
         hMenu,
         hInstance,
         lpParam
-    );   
+    );
 
     {
         if(!windowID)
         {
-            DWORD error = GetLastError();
-            wchar_t errorBuffer[1024];
-            wsprintf(errorBuffer, L"Error creating window. Error code, decimal %d, hexadecimal %X.", error, error);
-            MessageBox(NULL, errorBuffer, L"Error", MB_ICONHAND);
+            const PXActionResult windowsCreateResult = GetCurrentError();
+
+            // Handle error?
+
+            return PXThreadActionFailed;
         }
 
         window->ID = windowID;
@@ -2072,7 +2073,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
 #endif
 
-    GraphicInstantiate(&window->GraphicInstance);
+    PXGraphicInstantiate(&window->GraphicInstance);
 
     PXWindowLookupAdd(window);
 
@@ -2183,11 +2184,11 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 #elif OSWindows
         MSG message;
 
-        const unsigned char peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);
+        const PXBool peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);
 
         if(peekResult)
         {
-            const unsigned char messageResult = GetMessageW(&message, 0, 0, 0);
+            const PXBool messageResult = GetMessageW(&message, 0, 0, 0);
 
             if(messageResult)
             {
@@ -2451,7 +2452,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 
 unsigned char PXWindowFrameBufferSwap(PXWindow* window)
 {
-    return GraphicImageBufferSwap(&window->GraphicInstance);
+    return PXGraphicImageBufferSwap(&window->GraphicInstance);
 }
 
 unsigned char PXWindowInteractable(PXWindow* window)

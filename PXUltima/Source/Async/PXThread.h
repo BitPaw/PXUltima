@@ -5,18 +5,22 @@
 #include <Format/Type.h>
 #include <Error/PXActionResult.h>
 
+// Return IDs
+
+#define PXThreadSucessful 0
+#define PXThreadActionFailed (void*)1
+
+
 #if OSUnix
 #include <pthread.h>
 #include <unistd.h>
 typedef void* PXThreadResult;
 typedef pthread_t PXThreadIDType;
-#define PXThreadSucessful 0 // Adress
-#define PXThreadIDUnused 0
+#define PXThreadIDUnused 0  // Adress
 #elif OSWindows
 #include <windows.h>
 typedef unsigned long PXThreadResult;
 typedef HANDLE PXThreadIDType;
-#define PXThreadSucessful 0
 #define PXThreadIDUnused nullptr
 #if OSWindowsXP
 typedef struct IUnknown IUnknown;

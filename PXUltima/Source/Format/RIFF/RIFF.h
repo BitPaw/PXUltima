@@ -34,7 +34,11 @@ extern "C"
 	}
 	RIFF;
 
+	PXPrivate void RIFFText();
+
 	PXPublic PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream);
+
+	PXPublic PXActionResult RIFFSerialize(const RIFF* const riff, PXDataStream* const pxDataStream);
 
 #ifdef __cplusplus
 }

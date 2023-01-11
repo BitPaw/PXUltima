@@ -10,8 +10,7 @@
 #include <Format/PXFont.h>
 #include <Math/PXMatrix.h>
 
-#include <Graphic/Graphic.h>
-#include <Graphic/OpenGL/OpenGL.h>
+#include <Graphic/PXGraphic.h>
 
 void TestOpenGLAll()
 {
@@ -355,7 +354,7 @@ void TestOpenGLVAO()
 
 	OpenGLContextSelect(&window.GraphicInstance.OpenGLInstance);
 
-	GraphicModelRegisterFromModel(&window.GraphicInstance, &renderable, &model);
+	PXGraphicModelRegisterFromModel(&window.GraphicInstance, &renderable, &model);
 
 
 	while (1)
@@ -429,10 +428,10 @@ void TestOpenGLVBO()
 	Shader vertexShader;
 	Shader fragmentShader;
 
-	ShaderDataSet(&vertexShader, ShaderTypeVertex, sizeof(VertexShaderSource), VertexShaderSource);
-	ShaderDataSet(&fragmentShader, ShaderTypeFragment, sizeof(fragmentShaderSource), fragmentShaderSource);
+	PXShaderDataSet(&vertexShader, PXShaderTypeVertex, VertexShaderSource, sizeof(VertexShaderSource));
+	PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, fragmentShaderSource, sizeof(fragmentShaderSource));
 
-	GraphicShaderProgramCreateVFData(&window.GraphicInstance, &shaderProgram, &vertexShader, &fragmentShader);
+	PXGraphicShaderProgramLoadGLSL(&window.GraphicInstance, &shaderProgram, &vertexShader, &fragmentShader);
 
 #if 0
 	//Vertices coordinates

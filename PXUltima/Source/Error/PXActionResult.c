@@ -270,5 +270,12 @@ PXActionResult GetCurrentError()
 	const int errorID = errno;
 	const PXActionResult actionResult = ConvertErrorCode(errorID);
 
+	/*
+			DWORD error = GetLastError();
+            wchar_t errorBuffer[1024];
+            wsprintf(errorBuffer, L"Error creating window. Error code, decimal %d, hexadecimal %X.", error, error);
+            MessageBox(NULL, errorBuffer, L"Error", MB_ICONHAND);
+	*/
+
 	return actionResult;
 }

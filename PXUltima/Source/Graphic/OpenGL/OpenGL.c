@@ -8,6 +8,7 @@
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
 #include <OS/PXWindow.h>
+#include <Async/Await.h>
 
 #if 0
 #include <GLEW/glew.h>
@@ -1441,6 +1442,18 @@ void OpenGLContextDestruct(OpenGLContext* const openGLContext)
 
 }
 
+void OpenGLContextSet(OpenGLContext* const openGLContext, const OpenGLContext* const openGLContextSoure)
+{
+    const PXSize sizeofOpenGLContext = sizeof(OpenGLContext);
+
+    MemoryCopy(openGLContextSoure, sizeofOpenGLContext, openGLContext, sizeofOpenGLContext);
+}
+
+void OpenGLContextCopy(OpenGLContext* const openGLContext, const OpenGLContext* const openGLContextSoure)
+{
+   
+}
+
 void OpenGLContextCreate(OpenGLContext* const openGLContext)
 {
     PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
@@ -1897,14 +1910,11 @@ void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const PXS
 
         PXWindowCreateHidden(window, width, height, 1u); // This will call this function again. Recursive
 
-        while (!window->IsRunning) // Wait
-        {
-            printf("");
-        }
+        PXAwaitChangeCU(&window->IsRunning); // Wait
 
         openGLContext->AttachedWindow = window;
 
-        MemoryCopy(&window->GraphicInstance.OpenGLInstance, sizeof(OpenGLContext), openGLContext, sizeof(OpenGLContext));
+        OpenGLContextSet(openGLContext, &window->GraphicInstance.OpenGLInstance);
 
         return; // We should have all data here, stoping.
     }
@@ -2175,51 +2185,51 @@ void APIENTRY OpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, 
 
 /*
 
-OpenGLID OpenGLToRenderMode(const GraphicRenderMode renderMode)
+OpenGLID OpenGLToRenderMode(const PXGraphicRenderMode renderMode)
 {
     switch (renderMode)
     {
-    case GraphicRenderModePoint:
+    case PXGraphicRenderModePoint:
         return GL_POINTS;
 
-    case GraphicRenderModeLine:
+    case PXGraphicRenderModeLine:
         return GL_LINES;
 
-        // case GraphicRenderModeLineAdjacency:
+        // case PXGraphicRenderModeLineAdjacency:
           //   return GL_LINES_ADJACENCY;
 
-       //  case GraphicRenderModeLineStripAdjacency:
+       //  case PXGraphicRenderModeLineStripAdjacency:
         //     return GL_LINE_STRIP_ADJACENCY;
 
-    case GraphicRenderModeLineLoop:
+    case PXGraphicRenderModeLineLoop:
         return GL_LINE_LOOP;
 
-    case GraphicRenderModeLineStrip:
+    case PXGraphicRenderModeLineStrip:
         return GL_LINE_STRIP;
 
-    case GraphicRenderModeTriangle:
+    case PXGraphicRenderModeTriangle:
         return GL_TRIANGLES;
 
-        // case GraphicRenderModeTriangleAdjacency:
+        // case PXGraphicRenderModeTriangleAdjacency:
         //     return GL_TRIANGLES_ADJACENCY;
 
-    case GraphicRenderModeTriangleFAN:
+    case PXGraphicRenderModeTriangleFAN:
         return GL_TRIANGLE_FAN;
 
-    case GraphicRenderModeTriangleStrip:
+    case PXGraphicRenderModeTriangleStrip:
         return GL_TRIANGLE_STRIP;
 
-        //   case GraphicRenderModeTriangleStripAdjacency:
+        //   case PXGraphicRenderModeTriangleStripAdjacency:
           //     return GL_TRIANGLE_STRIP_ADJACENCY;
 
-    case GraphicRenderModeSquare:
+    case PXGraphicRenderModeSquare:
         return GL_QUADS;
 
-        //  case GraphicRenderModePatches:
+        //  case PXGraphicRenderModePatches:
          //     return GL_PATCHES;
 
     default:
-    case GraphicRenderModeInvalid:
+    case PXGraphicRenderModeInvalid:
         return -1;
     };
 }
@@ -2439,35 +2449,35 @@ OpenGLID OpenGLToImageFormat(const ImageDataFormat imageFormat)
     }
 }
 
-OpenGLID OpenGLToImageType(const GraphicImageType imageType)
+OpenGLID OpenGLToImageType(const PXGraphicImageType imageType)
 {
     switch (imageType)
     {
-    case GraphicImageTypeTexture2D:
+    case PXGraphicImageTypeTexture2D:
         return GL_TEXTURE_2D;
 
-    //case GraphicImageTypeTexture3D:
+    //case PXGraphicImageTypeTexture3D:
    //     return GL_TEXTURE_3D;
 
-    case GraphicImageTypeTextureCubeContainer:
+    case PXGraphicImageTypeTextureCubeContainer:
         return GL_TEXTURE_CUBE_MAP;
 
-    case GraphicImageTypeTextureCubeRight:
+    case PXGraphicImageTypeTextureCubeRight:
         return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 
-    case GraphicImageTypeTextureCubeLeft:
+    case PXGraphicImageTypeTextureCubeLeft:
         return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
 
-    case GraphicImageTypeTextureCubeTop:
+    case PXGraphicImageTypeTextureCubeTop:
         return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
 
-    case GraphicImageTypeTextureCubeDown:
+    case PXGraphicImageTypeTextureCubeDown:
         return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
 
-    case GraphicImageTypeTextureCubeBack:
+    case PXGraphicImageTypeTextureCubeBack:
         return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
 
-    case GraphicImageTypeTextureCubeFront:
+    case PXGraphicImageTypeTextureCubeFront:
         return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
 
     default:
@@ -2475,49 +2485,49 @@ OpenGLID OpenGLToImageType(const GraphicImageType imageType)
     }
 }
 
-OpenGLID OpenGLToImageWrap(const GraphicImageWrap imageWrap)
+OpenGLID OpenGLToImageWrap(const PXGraphicImageWrap imageWrap)
 {
     switch (imageWrap)
     {
-    case GraphicImageWrapNoModification:
+    case PXGraphicImageWrapNoModification:
         return GL_CLAMP_TO_BORDER;
 
-   // case GraphicImageWrapStrechEdges:
+   // case PXGraphicImageWrapStrechEdges:
     //    return GL_CLAMP_TO_EDGE;
 
-   // case GraphicImageWrapStrechEdgesAndMirror:
+   // case PXGraphicImageWrapStrechEdgesAndMirror:
  //       return GL_MIRROR_CLAMP_TO_EDGE;
 
   //  caseGraphicImageWrapRepeat:
   //      return GL_REPEAT;
 
-   // case GraphicImageWrapRepeatAndMirror:
+   // case PXGraphicImageWrapRepeatAndMirror:
    //     return GL_MIRRORED_REPEAT;
     default:
         return -1;
     }
 }
 
-OpenGLID OpenGLToImageLayout(const GraphicImageLayout layout)
+OpenGLID OpenGLToImageLayout(const PXGraphicImageLayout layout)
 {
     switch (layout)
     {
-    case GraphicImageLayoutNearest:
+    case PXGraphicImageLayoutNearest:
         return GL_NEAREST;
 
-    case GraphicImageLayoutLinear:
+    case PXGraphicImageLayoutLinear:
         return GL_LINEAR;
 
-    case GraphicImageLayoutMipMapNearestNearest:
+    case PXGraphicImageLayoutMipMapNearestNearest:
         return GL_NEAREST_MIPMAP_NEAREST;
 
-    case GraphicImageLayoutMipMapLinearNearest:
+    case PXGraphicImageLayoutMipMapLinearNearest:
         return GL_LINEAR_MIPMAP_NEAREST;
 
-    case GraphicImageLayoutMipMapNNearestLinear:
+    case PXGraphicImageLayoutMipMapNNearestLinear:
         return GL_NEAREST_MIPMAP_LINEAR;
 
-    case GraphicImageLayoutMipMapLinearLinear:
+    case PXGraphicImageLayoutMipMapLinearLinear:
         return GL_LINEAR_MIPMAP_LINEAR;
 
     default:

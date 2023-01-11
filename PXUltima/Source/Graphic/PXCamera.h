@@ -12,7 +12,7 @@ extern "C"
 
 	typedef enum PXCameraPerspective_
 	{
-		PXCameraPerspective2D, // Orthographic
+		PXCameraPerspective2D,
 		PXCameraPerspective3D // Perspective
 	}
 	PXCameraPerspective;

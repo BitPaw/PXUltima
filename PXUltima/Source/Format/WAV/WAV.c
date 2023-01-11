@@ -5,6 +5,7 @@
 #include <File/Endian.h>
 #include <Container/ClusterValue.h>
 #include <Format/RIFF/RIFF.h>
+#include <Math/PXMath.h>
 
 #define WAVSignatureLIST { 'L', 'I', 'S', 'T' }
 #define WAVSignatureData { 'd', 'a', 't', 'a' }
@@ -73,51 +74,80 @@ PXActionResult WAVParse(WAV* const wav, PXDataStream* const pxDataStream)
 	return PXActionSuccessful;
 }
 
-/*
-
-PXActionResult BF::WAV::Save(const wchar_t* filePath)
+PXActionResult WAVSerialize(WAV* const wav, PXDataStream* const pxDataStream)
 {
-	// Note: The sample data must end on an even byte boundary. Whatever that means.
-	File fileStream;
+	unsigned int bitdepth = 16, bpm = 120;
+	float wave = 0, duration = 12;
+	float frequences[120] = { 523.251,/* 523.251, 523.251, 523.251, 523.251,*/ 0,/* 0, 0, 0, 0,*/ 554.365,/* 554.365, 554.365, 554.365, 554.365,*/
+		0,/* 0, 0, 0, 0,*/ 587.330, /*587.330, 587.330, 587.330, 587.330,*/ 0,/* 0, 0, 0, 0,*/ 622.254,/* 622.254, 622.254, 622.254, 622.254,*/
+		0,/* 0, 0, 0, 0,*/ 659.255, /*659.255, 659.255, 659.255, 659.255,*/ 0, /*0, 0, 0, 0,*/ 698.456, /*698.456, 698.456, 698.456, 698.456,*/
+		0, /*0, 0, 0, 0,*/ 739.989, /*739.989, 739.989, 739.989, 739.989,*/ 0, /*0, 0, 0, 0,*/ 783.991, /*783.991, 783.991, 783.991, 783.991,*/
+		0, /*0, 0, 0, 0,*/ 830.609, /*830.609, 830.609, 830.609, 830.609,*/ 0, /*0, 0, 0, 0,*/ 880, /*880, 880, 880, 880,*/ 0, /*0, 0, 0, 0,*/
+		932.328, /*932.328, 932.328, 932.328, 932.328,*/ 0, /*0, 0, 0, 0,*/ 987.767, /*987.767, 987.767, 987.767, 987.767*/ };
+	unsigned int maxAmp = 1;
 
-	const Endian endian = EndianLittle;
-	unsigned int riffSize = 0;
+	for (PXSize i = 0; i < bitdepth - 1; i++)
+	{
+		maxAmp = maxAmp << 1;
+	}
 
-	fileStream.Write("RIFF", 4);
-	fileStream.Write(riffSize, endian);
-	fileStream.Write("WAVE", 4);
+	maxAmp--;
+	int dataSize = (int)((duration * 44100) * (bitdepth / 8));
 
-	fileStream.Write("fmt ", 4u);
-	fileStream.Write(Format.ChunkSize, endian);
-	fileStream.Write(Format.AudioFormat, endian);
-	fileStream.Write(Format.NumerOfChannels, endian);
-	fileStream.Write(Format.SampleRate, endian);
-	fileStream.Write(Format.ByteRate, endian);
-	fileStream.Write(Format.BlockAllign, endian);
-	fileStream.Write(Format.BitsPerSample, endian);
+	/*
+	PXDataStream audioFile;
+	PXDataStreamMapToMemoryA(&audioFile, "C:/Users/Jona/Desktop/test.wav", dataSize + 44, MemoryWriteOnly);
 
-	// LIST?
+	if (&audioFile == 0) return 0;
+	*/
 
-	fileStream.Write("data", 4);
-	fileStream.Write(SoundDataSize, endian);
-	fileStream.Write(SoundData, SoundDataSize);
+	Endian targetEndian = EndianLittle;
 
-	fileStream.WriteToDisk(filePath);
+	// Write RIFF
+	{
+		RIFF riff;
+		riff.EndianFormat = targetEndian;
+		riff.ChunkSize = dataSize+36;
+		riff.Format = RIFFWaveformAudio;
+
+		const PXActionResult riffResult = RIFFSerialize(&riff, pxDataStream);
+	}
+
+	// Write Format chunk
+	{
+		const FMT fmt =
+		{
+			bitdepth, // ChunkSize;
+			1, // AudioFormat;
+			1, // NumerOfChannels;
+			44100, // SampleRate;
+			44100 * (bitdepth / 8), // ByteRate;
+			bitdepth / 8, // BlockAllign;
+			bitdepth// BitsPerSample;
+		};
+
+		const PXActionResult riffResult = FMTSerialize(&fmt, pxDataStream, targetEndian);
+	}
+
+
+	//Data chunk
+	{
+		const char data[] = WAVSignatureData;
+
+		PXDataStreamWriteB(pxDataStream, data, 4u);
+		PXDataStreamWriteI32U(pxDataStream, dataSize);
+	}
+
+	for (unsigned int section = 0; section < (duration / 60) * bpm; section++)
+	{
+		for (unsigned int i = 0; i < (44100 * 60) / bpm; i++)
+		{
+			float sample = (frequences[section] > 0) * 0.5f *  ((1 + MathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) +  MathSinus(wave);
+			unsigned int correctedsample = sample * maxAmp;
+			PXDataStreamWriteB(pxDataStream, &correctedsample, bitdepth / 8);
+			wave += 2 * 3.14159265358979323846 * frequences[section] * (100 / (((i >= ((44100 * 60) / bpm) * i) + 1))) / 44100;
+		}
+	}
 
 	return PXActionSuccessful;
 }
-
-PXActionResult BF::WAV::ConvertTo(Sound& sound)
-{
-	sound.NumerOfChannels = Format.NumerOfChannels;
-	sound.SampleRate = Format.SampleRate;
-	sound.BitsPerSample = Format.BitsPerSample;
-	sound.DataSize = SoundDataSize;
-	sound.Data = Memory::Allocate<unsigned char>(SoundDataSize);
-
-	MemoryCopy(SoundData, SoundDataSize, sound.Data, sound.DataSize);
-
-	return PXActionSuccessful;
-}
-
-*/

@@ -285,7 +285,7 @@
     <ClInclude Include="Source\OS\ClipBoard.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphic\Graphic.h">
+    <ClInclude Include="Source\Graphic\PXGraphic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphic\OpenGL\OpenGL.h">
@@ -680,7 +680,7 @@
     <ClCompile Include="Source\OS\ClipBoard.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\Graphic.c">
+    <ClCompile Include="Source\Graphic\PXGraphic.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphic\DirectX\DirectX.c">

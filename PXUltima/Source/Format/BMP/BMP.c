@@ -76,28 +76,28 @@ BMPInfoHeaderType ConvertToBMPInfoHeaderType(const unsigned int infoHeaderType)
     {
         case 12u:
             //const unsigned char bitMapCoreHeaderSize = 12;
-            return OS21XBitMapHeader;
+            return BMPHeaderOS21XBitMapHeader;
 
         case 16u:
-            return OS22XBitMapHeader;
+            return BMPHeaderOS22XBitMapHeader;
 
         case 40u:
-            return BitMapInfoHeader;
+            return BMPHeaderBitMapInfoHeader;
 
         case 52u:
-            return BitMapV2InfoHeader;
+            return BMPHeaderBitMapV2InfoHeader;
 
         case 56u:
-            return BitMapV3InfoHeader;
+            return BMPHeaderBitMapV3InfoHeader;
 
         case 108u:
-            return BitMapV4Header;
+            return BMPHeaderBitMapV4Header;
 
         case 124u:
-            return BitMapV5Header;
+            return BMPHeaderBitMapV5Header;
 
         default:
-            return UnkownOrInvalid;
+            return BMPHeaderUnkownOrInvalid;
     }
 }
 
@@ -106,29 +106,29 @@ unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType
     switch(infoHeaderType)
     {
         default:
-        case UnkownOrInvalid:
+        case BMPHeaderUnkownOrInvalid:
             return -1;
 
-        case BitMapCoreHeader:
-        case OS21XBitMapHeader:
+        case BMPHeaderBitMapCoreHeader:
+        case BMPHeaderOS21XBitMapHeader:
             return 12u;
 
-        case OS22XBitMapHeader:
+        case BMPHeaderOS22XBitMapHeader:
             return 16u;
 
-        case BitMapInfoHeader:
+        case BMPHeaderBitMapInfoHeader:
             return 40u;
 
-        case BitMapV2InfoHeader:
+        case BMPHeaderBitMapV2InfoHeader:
             return 52u;
 
-        case BitMapV3InfoHeader:
+        case BMPHeaderBitMapV3InfoHeader:
             return 56u;
 
-        case BitMapV4Header:
+        case BMPHeaderBitMapV4Header:
             return 108u;
 
-        case BitMapV5Header:
+        case BMPHeaderBitMapV5Header:
             return 124u;
     }
 }
@@ -139,14 +139,14 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
 
     BMPConstruct(&bmp);
 
-    unsigned int sizeOfFile = 0;
-    unsigned int reservedBlock = 0;
-    unsigned int dataOffset = 0;
+    PXInt32U sizeOfFile = 0;
+    PXInt32U reservedBlock = 0;
+    PXInt32U dataOffset = 0;
 
     //---[ Parsing Header ]----------------------------------------------------
     {
         ClusterShort byteCluster;
-        unsigned int valueList[3];
+        PXInt32U valueList[3];
 
         PXDataStreamReadB(dataStream, byteCluster.Data, 2u);
         PXDataStreamReadI32UVE(dataStream, valueList, 3u, EndianLittle);
@@ -178,7 +178,7 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
 
         switch(bmp.InfoHeaderType)
         {
-            case BitMapInfoHeader:
+            case BMPHeaderBitMapInfoHeader:
             {
                 const PXDataStreamElementType pxDataStreamElementList[] =
                 {
@@ -186,12 +186,12 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
                     {PXDataTypeLEInt32S, &bmp.InfoHeader.Height},
                     {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfColorPlanes},
                     {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfBitsPerPixel},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.CompressionMethod},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ImageSize},
-                    {PXDataTypeLEInt32S, &bmp.InfoHeader.HorizontalResolution},
-                    {PXDataTypeLEInt32S, &bmp.InfoHeader.VerticalResolution},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.NumberOfColorsInTheColorPalette},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.NumberOfImportantColorsUsed},
+                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod},
+                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize},
+                    {PXDataTypeLEInt32S, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution},
+                    {PXDataTypeLEInt32S, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution},
+                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette},
+                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed},
                 };
                 const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
 
@@ -199,8 +199,8 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
 
                 break;
             }
-            case OS21XBitMapHeader:
-            case OS22XBitMapHeader:
+            case BMPHeaderOS21XBitMapHeader:
+            case BMPHeaderOS22XBitMapHeader:
             {
                 {
                     PXInt16U valueList[4u];
@@ -213,20 +213,20 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
                     bmp.InfoHeader.NumberOfBitsPerPixel = valueList[3];
                 }
 
-                if(bmp.InfoHeaderType == OS22XBitMapHeader)
+                if(bmp.InfoHeaderType == BMPHeaderOS22XBitMapHeader)
                 {
                     unsigned short paddingBytes = 0; // Padding.Ignored and should be zero
 
                     const PXDataStreamElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.HorizontalandVerticalResolutions},
+                        {PXDataTypeLEInt16U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HorizontalandVerticalResolutions},
                         {PXDataTypeLEInt16U, &paddingBytes},
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.DirectionOfBits},
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.halftoningAlgorithm},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.HalftoningParameterA},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.HalftoningParameterB},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ColorEncoding},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ApplicationDefinedByte}
+                        {PXDataTypeLEInt16U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.DirectionOfBits},
+                        {PXDataTypeLEInt16U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.halftoningAlgorithm},
+                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HalftoningParameterA},
+                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HalftoningParameterB},
+                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.ColorEncoding},
+                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.ApplicationDefinedByte}
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
 
@@ -286,7 +286,9 @@ PXActionResult BMPSerialize(const BMP* const bmp, PXDataStream* const dataStream
 
 PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
 {
-    BMPInfoHeader bmpInfoHeader;
+    BMP bitMap;
+
+    BMPConstruct(&bitMap);
 
     //---<Header>-----
     {
@@ -306,41 +308,35 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
 
     //---<DIP>
     {
-        const BMPInfoHeaderType bmpInfoHeaderType = BitMapInfoHeader;
+        const BMPInfoHeaderType bmpInfoHeaderType = BMPHeaderBitMapInfoHeader;
 
         //---<Shared>----------------------------------------------------------
-        bmpInfoHeader.HeaderSize = ConvertFromBMPInfoHeaderType(bmpInfoHeaderType);
-        bmpInfoHeader.NumberOfBitsPerPixel = ImageBytePerPixel(image->Format) * 8u;
-        bmpInfoHeader.NumberOfColorPlanes = 1;
-        bmpInfoHeader.Width = image->Width;
-        bmpInfoHeader.Height = image->Height;
+        bitMap.InfoHeader.HeaderSize = ConvertFromBMPInfoHeaderType(bmpInfoHeaderType);
+        bitMap.InfoHeader.NumberOfBitsPerPixel = ImageBytePerPixel(image->Format) * 8u;
+        bitMap.InfoHeader.NumberOfColorPlanes = 1;
+        bitMap.InfoHeader.Width = image->Width;
+        bitMap.InfoHeader.Height = image->Height;
         //---------------------------------------------------------------------
 
-        //---<BitMapInfoHeader ONLY>-------------------------------------------
-        bmpInfoHeader.CompressionMethod = 0; // [4-Bytes] compression method being used.See the next table for a list of possible values
-        bmpInfoHeader.ImageSize = 0; 	// [4-Bytes] image size.This is the size of the raw bitmap data; a dummy 0 can be given for BI_RGB bitmaps.
-        bmpInfoHeader.HorizontalResolution = 1u;
-        bmpInfoHeader.VerticalResolution = 1u;
-        bmpInfoHeader.NumberOfColorsInTheColorPalette = 0;
-        bmpInfoHeader.NumberOfImportantColorsUsed = 0;
-        //---------------------------------------------------------------------
-
-        PXDataStreamWriteI32UE(dataStream, bmpInfoHeader.HeaderSize, EndianLittle);
+        PXDataStreamWriteI32UE(dataStream, bitMap.InfoHeader.HeaderSize, EndianLittle);
 
         switch (bmpInfoHeaderType)
         {
-            case BitMapInfoHeader:
+            case BMPHeaderBitMapInfoHeader:
             {
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.Width, EndianLittle);
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.Height, EndianLittle);
-                PXDataStreamWriteI16UE(dataStream, bmpInfoHeader.NumberOfColorPlanes, EndianLittle);
-                PXDataStreamWriteI16UE(dataStream, bmpInfoHeader.NumberOfBitsPerPixel, EndianLittle);
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.CompressionMethod, EndianLittle);
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.ImageSize, EndianLittle);
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.HorizontalResolution, EndianLittle);
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.VerticalResolution, EndianLittle);
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.NumberOfColorsInTheColorPalette, EndianLittle);
-                PXDataStreamWriteI32SE(dataStream, bmpInfoHeader.NumberOfImportantColorsUsed, EndianLittle);
+                bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution = 1u;
+                bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution = 1u;
+
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.Width, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.Height, EndianLittle);
+                PXDataStreamWriteI16UE(dataStream, bitMap.InfoHeader.NumberOfColorPlanes, EndianLittle);
+                PXDataStreamWriteI16UE(dataStream, bitMap.InfoHeader.NumberOfBitsPerPixel, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette, EndianLittle);
+                PXDataStreamWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed, EndianLittle);
                 break;
             }
         }
@@ -350,7 +346,7 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
     {
         BMPImageDataLayout imageDataLayout;
 
-        BMPImageDataLayoutCalculate(&imageDataLayout, bmpInfoHeader.Width, bmpInfoHeader.Height, bmpInfoHeader.NumberOfBitsPerPixel);
+        BMPImageDataLayoutCalculate(&imageDataLayout, bitMap.InfoHeader.Width, bitMap.InfoHeader.Height, bitMap.InfoHeader.NumberOfBitsPerPixel);
 
         for (PXSize row = imageDataLayout.RowAmount-1; row != (PXSize)-1  ; --row)
         {

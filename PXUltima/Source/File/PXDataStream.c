@@ -485,6 +485,7 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 				dataStream->DataAllocated = largeInt.QuadPart;
 				break;
 			}
+			case MemoryReadAndWrite:
 			case MemoryWriteOnly:
 			{
 #if OS64Bit
@@ -496,11 +497,6 @@ PXActionResult PXDataStreamMapToMemoryU(PXDataStream* const dataStream, const PX
 #endif
 				break;
 			}
-			case MemoryReadAndWrite:
-			{
-				break;
-			}
-
 			default:
 				break;
 		}

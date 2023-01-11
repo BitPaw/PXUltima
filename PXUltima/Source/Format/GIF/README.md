@@ -1,4 +1,4 @@
-# Graphics Interchange Format (GIF)
+# PXGraphics Interchange Format (GIF)
 
 ## Info
 This format is used mostly as animated pictures / very short videos.<br>

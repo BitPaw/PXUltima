@@ -84,3 +84,55 @@ PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream)
 
 	return PXActionSuccessful;
 }
+
+PXActionResult RIFFSerialize(const RIFF* const riff, PXDataStream* const pxDataStream)
+{
+	unsigned int riffSignature = 0;
+	unsigned int riffType = 0;
+
+	switch (riff->EndianFormat) // Detect Endiantype
+	{
+		case EndianBig:
+			riffSignature = RIFXSignature;
+			break;
+
+		case EndianLittle:
+			riffSignature = RIFFSignature;
+			break;
+
+		default:
+			return PXActionInvalid;
+	}
+
+	switch (riff->Format)
+	{
+		case RIFFWaveformAudio:
+			riffType = RIFFSubTypeWAVE;
+			break;
+		case RIFFMultimediaMovieFile:
+			riffType = RIFFSubTypeRMMP;
+			break;
+		case RIFFMIDI:
+			riffType = RIFFSubTypeRMID;
+			break;
+		case RIFFDeviceIndependentBitmap:
+			riffType = 0;
+			break;
+		case RIFFPalette:
+			riffType = 0;
+			break;
+		case RIFFAudioVideoInterleave:
+			riffType = RIFFSubTypeAVI;
+			break;
+
+		default:
+			return PXActionInvalid;
+	}
+
+
+	PXDataStreamWriteI32UE(pxDataStream, riffSignature, EndianLittle);
+	PXDataStreamWriteI32UE(pxDataStream, &riff->ChunkSize, EndianLittle);
+	PXDataStreamWriteI32UE(pxDataStream, riffType, EndianLittle);
+
+	return PXActionSuccessful;
+}
