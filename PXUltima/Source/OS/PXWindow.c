@@ -1041,15 +1041,15 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             break;
         case WindowEventClose:
         {
-            unsigned char closeWindow = 0;
+            PXBool closeWindow = 0;
 
             InvokeEvent(window->WindowClosingCallBack, window->EventReceiver, window, &closeWindow);
 
             if(closeWindow)
             {
-                const LRESULT result = DefWindowProc(windowsID, WM_CLOSE, wParam, lParam);
-
                 InvokeEvent(window->WindowClosedCallBack, window->EventReceiver, window);
+
+                const LRESULT result = DefWindowProc(windowsID, WM_CLOSE, wParam, lParam);              
 
                 return result;
             }
@@ -1108,17 +1108,18 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             break;
         case WindowEventQueueSync:
             break;
+
+#if 0 // Not useable for resize event. Its not what it seems
         case WindowEventSizeChange:
         {
             //wParam is unused
             const MINMAXINFO* minmaxInfo = (MINMAXINFO*)lParam;
             const LONG width = minmaxInfo->ptMaxSize.x;
-            const LONG height = minmaxInfo->ptMaxSize.y;
-
-            // Not useable for resize event. Its not what it seems
+            const LONG height = minmaxInfo->ptMaxSize.y;          
 
             break;
         }
+#endif 
         case WindowEventIconPaint:
             break;
         case WindowEventIconBackgroundErase:
@@ -1250,7 +1251,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
                     UINT rawInputSize = sizeof(RAWINPUT); // Can't be 'const' !
 
                     const UINT result = GetRawInputData(handle, uiCommand, &rawInput, &rawInputSize, sizeof(RAWINPUTHEADER));
-                    const unsigned char sucessful = result != -1;
+                    const PXBool sucessful = result != -1;
 
                     if(sucessful)
                     {
@@ -1270,8 +1271,8 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
                             // otherwise it'll overflow when going negative.
                             // Didn't happen before some minor changes in the code, doesn't seem to go away
                             // so it's going to have to be like this.
-                           // if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
-                           //     input.mouse.wheel = (*(short*)&raw->data.mouse.usButtonData) / WHEEL_DELTA;
+                            // if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
+                            //     input.mouse.wheel = (*(short*)&raw->data.mouse.usButtonData) / WHEEL_DELTA;
                         }
 #endif
                     }
@@ -2284,6 +2285,42 @@ void PXWindowDestruct(PXWindow* const window)
     window->ID = 0;
 }
 
+PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
+{
+#if OSUnix
+    return 0;
+#elif OSWindows
+    return GetWindowThreadProcessId(windowID, PXNull);
+#endif
+}
+
+PXWindowID PXWindowFindViaTitleA(const PXTextASCII windowTitle)
+{
+#if OSUnix
+    return 0;
+#elif OSWindows
+    return FindWindowA(0, windowTitle);
+#endif
+}
+
+PXWindowID PXWindowFindViaTitleW(const PXTextUNICODE windowTitle)
+{
+#if OSUnix
+    return 0;
+#elif OSWindows
+    return FindWindowW(0, windowTitle);
+#endif
+}
+
+PXWindowID PXWindowFindViaTitleU(const PXTextUTF8 windowTitle)
+{
+#if OSUnix
+    return 0;
+#elif OSWindows
+    return FindWindowA(0, windowTitle);
+#endif
+}
+
 void PXWindowIconCorner()
 {
 }
@@ -2613,7 +2650,9 @@ void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const 
     mouse->Position[0] = positionX;
     mouse->Position[1] = positionY;
     mouse->InputAxis[0] = deltaX;
-    mouse->InputAxis[1] = deltaY;
+    mouse->InputAxis[1] = deltaY;   
+    mouse->PositionNormalisized[0] = positionX / ((float)window->Width / 2) - 1;
+    mouse->PositionNormalisized[1] = positionY / ((float)window->Height / 2) - 1;
 
     InvokeEvent(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
 }

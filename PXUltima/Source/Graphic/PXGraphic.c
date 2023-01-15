@@ -149,7 +149,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
         glTexParameteri(openGLTextureTypeID, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(openGLTextureTypeID, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Remember! This stuff is required for some reason, its not optional!
         glTexParameteri(openGLTextureTypeID, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // if not done, textures might be black.
-       // glTexParameteri(openGLTextureTypeID, GL_GENERATE_MIPMAP, GL_FALSE);
+        //glTexParameteri(openGLTextureTypeID, GL_GENERATE_MIPMAP, GL_FALSE);
     }
 
     //glTexParameterf(textureType, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
@@ -162,9 +162,8 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
     // glTexImage2D(textureType, 0, GL_RGBA, image->Width, image->Height, 0, format, OpenGLTypeByteUnsigned, image->PixelData);
 
     //glGenerateMipmap(openGLTextureTypeID);
-
-
-    OpenGLTextureBind(graphicContext, openGLTextureType, 0);
+    
+    OpenGLTextureUnbind(graphicContext, openGLTextureType);
 
     return PXActionSuccessful;
 }
@@ -850,12 +849,12 @@ PXActionResult PXGraphicUIPanelRegister(PXGraphicContext* const graphicContext, 
     model.DataTextureSize = vertexDataSize;
 
     {
-        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIPanel->Renderable, &model);
+        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIPanel->UIElement.Renderable, &model);
 
         PXActionExitOnError(actionResult);
     }
     
-    PXGraphicRenderableRegister(graphicContext, &pxUIPanel->Renderable);
+    PXGraphicRenderableRegister(graphicContext, &pxUIPanel->UIElement.Renderable);
 
     return PXActionSuccessful;
 }
@@ -956,12 +955,12 @@ PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, P
     model.DataTextureSize = vertexDataSize;
 
     {
-        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIText->Renderable, &model);
+        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIText->UIElement.Renderable, &model);
 
         PXActionExitOnError(actionResult);
     }
 
-    PXGraphicRenderableRegister(graphicContext, &pxUIText->Renderable);
+    PXGraphicRenderableRegister(graphicContext, &pxUIText->UIElement.Renderable);
 
 
 
@@ -980,7 +979,7 @@ PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, P
 
     PXGraphicTextureRegister(graphicContext, &pxTexture, pxTexture);
 
-    pxUIText->Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
+    pxUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
 
 
     return PXActionSuccessful;
@@ -1070,6 +1069,18 @@ PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, P
 
     return PXActionInvalid;
         */
+}
+
+PXActionResult PXGraphicUIButtonRegister(PXGraphicContext* const graphicContext, PXUIButton* const pxButton, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text, const PXFont* const pxFont, const ShaderProgram* const shader)
+{
+    PXRenderable* renderable = &pxButton->UIElement.Renderable;
+
+    pxButton->TextFont = pxFont;
+    PXGraphicUITextRegister(graphicContext, renderable, 0, 0, 1, 1, text);
+    PXGraphicModelShaderSet(graphicContext, renderable, shader);
+    PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
+    PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
+    renderable->MeshSegmentList[0].RenderMode = PXGraphicRenderModeSquare;
 }
 
 void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)
@@ -1234,6 +1245,9 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXLinkedListFixedNodeSet(&graphicContext->_textureList, memww + 1128, 100, PXLinkedListUseAdress);
     PXLinkedListFixedNodeSet(&graphicContext->_fontList, memww + 1256, 100, PXLinkedListUseAdress);
     PXLinkedListFixedNodeSet(&graphicContext->_shaderProgramList, memww + 11024, 100, PXLinkedListUseAdress);
+    PXLinkedListFixedNodeSet(&graphicContext->_uiElementList, memww + 11050, 20, PXLinkedListUseAdress);
+
+    
 
 
 

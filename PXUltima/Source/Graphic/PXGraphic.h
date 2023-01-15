@@ -239,27 +239,44 @@ extern "C"
 
 	//---<UI Elements>---------------------------------------------------------
 
-	typedef struct PXUIPanel_
+	typedef struct PXUIElement_ PXUIElement;
+
+	typedef void (*PXUIOnClick)(PXUIElement* const pxUIElement);
+	typedef void (*PXUIOnMouseEnter)(PXUIElement* const pxUIElement);
+	typedef void (*PXUIOnMouseLeave)(PXUIElement* const pxUIElement);
+
+	typedef struct PXUIElement_
 	{
 		PXRenderable Renderable;
+
+		PXUIOnClick OnClickCallback;
+		PXUIOnMouseEnter OnMouseEnterCallback;
+		PXUIOnMouseLeave OnMouseLeaveCallback;
+	}
+	PXUIElement;
+
+	typedef struct PXUIPanel_
+	{
+		PXUIElement UIElement;
 	}
 	PXUIPanel;
 
 	typedef struct PXUIButton_
 	{
-		PXRenderable Renderable;
+		PXUIElement UIElement;
+		PXFont* TextFont;
 	}
 	PXUIButton;
 
 	typedef struct PXUIImage_
 	{
-		PXRenderable Renderable;
+		PXUIElement UIElement;
 	}
 	PXUIImage;
 
 	typedef struct PXUIText_
 	{
-		PXRenderable Renderable;
+		PXUIElement UIElement;
 		PXFont* TextFont;
 	}
 	PXUIText;
@@ -289,6 +306,8 @@ extern "C"
 		//LinkedList<Level*> _levelList;
 		//LinkedList<Collider*> _physicList;
 		//--------------------------
+
+		PXLinkedListFixed _uiElementList;
 	}
 	PXGraphicContext;
 
@@ -304,8 +323,7 @@ extern "C"
 
 	PXPublic PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text);
 
-
-
+	PXPublic PXActionResult PXGraphicUIButtonRegister(PXGraphicContext* const graphicContext, PXUIButton* const pxButton, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text, const PXFont* const pxFont, const ShaderProgram* const shader);
 	 
 	 
 	 

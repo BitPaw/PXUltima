@@ -30,6 +30,7 @@ extern "C"
 	{
 		int Position[2]; // Window-Position (0/0 to x/y)
 		int InputAxis[2]; // Relative Input (-x/-y to 0/0 to x/y)
+		float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
 		unsigned char Buttons;
 	}
 	Mouse;

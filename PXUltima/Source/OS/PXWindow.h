@@ -26,6 +26,8 @@ typedef HGLRC OpenGLConextID;
 #include <Device/Mouse.h>
 #include <Device/KeyBoard.h>
 #include <Graphic/PXGraphic.h>
+#include <OS/PXProcess.h>
+#include <Async/PXThread.h>
 
 #define UseRawMouseData 1
 #define PXWindowTitleSizeMax 256
@@ -131,7 +133,7 @@ extern "C"
 
 	typedef void (*WindowCreatedEvent)(const void* const receiver, const PXWindow* sender);
 	typedef void (*WindowSizeChangedEvent)(const void* const receiver, const PXWindow* sender, const PXSize width, const PXSize height);
-	typedef void (*WindowClosingEvent)(const void* const receiver, const PXWindow* sender, unsigned char* allowClosing);
+	typedef void (*WindowClosingEvent)(const void* const receiver, const PXWindow* sender, PXBool* const allowClosing);
 	typedef void (*WindowClosedEvent)(const void* const receiver, const PXWindow* sender);
 
 	// 	static PXDictionary<PXWindowID, PXWindow*> _windowLookup;
@@ -209,6 +211,12 @@ extern "C"
 	PXPublic void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async);
 	PXPublic void PXWindowCreateHidden(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async);
 	PXPublic void PXWindowDestruct(PXWindow* const window);
+
+	PXPublic PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID);
+
+	PXPublic PXWindowID PXWindowFindViaTitleA(const PXTextASCII windowTitle);
+	PXPublic PXWindowID PXWindowFindViaTitleW(const PXTextUNICODE windowTitle);
+	PXPublic PXWindowID PXWindowFindViaTitleU(const PXTextUTF8 windowTitle);
 
 	PXPublic void PXWindowIconCorner();
 	PXPublic void PXWindowIconTaskBar();

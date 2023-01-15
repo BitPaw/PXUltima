@@ -14,10 +14,10 @@ void PXProcessCurrent(PXProcess* const pxProcess)
 {
 #if OSUnix
 	pxProcess->Context = 0;
-	pxProcess->ID = getpid();
+	pxProcess->ThreadID = getpid();
 #elif OSWindows
 	pxProcess->Context = GetCurrentProcess(); // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
-	pxProcess->ID = GetProcessId(pxProcess->Context);
+	pxProcess->ThreadID = GetProcessId(pxProcess->Context);
 #endif
 }
 
@@ -25,10 +25,71 @@ void PXProcessParent(PXProcess* const pxProcess)
 {
 #if OSUnix
 	pxProcess->Context = 0;
-	pxProcess->ID = getppid();
+	pxProcess->ThreadID = getppid();
 #elif OSWindows
 	pxProcess->Context = 0;
-	pxProcess->ID = 0;
+	pxProcess->ThreadID = 0;
+#endif
+}
+
+PXActionResult PXProcessOpen(PXProcess* const pxProcess)
+{
+#if OSUnix
+	return PXActionInvalid;
+
+#elif OSWindows
+	const HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pxProcess->ThreadID);
+	const PXBool successful = processHandle != 0;
+
+	PXActionOnErrorFetchAndExit(!successful);
+
+	pxProcess->Context = processHandle;
+
+	return PXActionSuccessful;
+#endif
+}
+
+PXActionResult PXProcessClose(PXProcess* const pxProcess)
+{
+#if OSUnix
+	return PXActionInvalid;
+
+#elif OSWindows
+	const BOOL successful = CloseHandle(pxProcess->Context);
+
+	PXActionOnErrorFetchAndExit(!successful);
+
+	pxProcess->Context = PXNull;
+
+	return PXActionSuccessful;
+#endif
+}
+
+PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+{
+#if OSUnix
+	return PXActionInvalid;
+
+#elif OSWindows
+	const BOOL successful = WriteProcessMemory(pxProcess->Context, targetAdress, buffer, bufferSize, PXNull); // Windows XP 
+
+	PXActionOnErrorFetchAndExit(!successful);
+
+	return PXActionSuccessful;
+#endif
+}
+
+PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+{
+#if OSUnix
+	return PXActionInvalid;
+
+#elif OSWindows
+	const BOOL successful = ReadProcessMemory(pxProcess->Context, targetAdress, buffer, bufferSize, PXNull); // Windows XP
+
+	PXActionOnErrorFetchAndExit(!successful);
+
+	return PXActionSuccessful;
 #endif
 }
 

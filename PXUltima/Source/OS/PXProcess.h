@@ -15,8 +15,10 @@
 
 #if OSUnix
 typedef __pid_t PXProcessID;
+typedef unsigned int PXProcessThreadID;
 #elif OSWindows
 typedef HANDLE PXProcessID;
+typedef DWORD PXProcessThreadID;
 #endif
 
 #ifdef __cplusplus
@@ -26,7 +28,7 @@ extern "C"
 
 	typedef struct PXProcess_
 	{
-		unsigned int ID;
+		PXProcessThreadID ThreadID;
 		PXProcessID Context;
 	}
 	PXProcess;
@@ -62,6 +64,12 @@ extern "C"
 
 	PXPublic void PXProcessCurrent(PXProcess* const pxProcess);
 	PXPublic void PXProcessParent(PXProcess* const pxProcess);
+
+	PXPublic PXActionResult PXProcessOpen(PXProcess* const pxProcess);
+	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);
+
+	PXPublic PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
 
 	PXPublic PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 
