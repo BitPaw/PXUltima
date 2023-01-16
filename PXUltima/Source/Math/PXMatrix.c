@@ -204,6 +204,13 @@ void PXMatrix4x4FScaleSet(const float x, const float y, const float z, PXMatrix4
 	matrixResult->Data[ScaleZ] = z;
 }
 
+void PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z)
+{
+	*x = matrixResult->Data[ScaleX];
+	*y = matrixResult->Data[ScaleY];
+	*z = matrixResult->Data[ScaleZ];
+}
+
 void PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane)
 {
 	PXMatrix4x4FIdentity(matrix4x4F);

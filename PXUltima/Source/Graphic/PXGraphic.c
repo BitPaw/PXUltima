@@ -40,6 +40,14 @@ PXActionResult PXGraphicTextureUse(PXGraphicContext* const graphicContext, PXTex
 
 PXActionResult PXGraphicTextureLoadA(PXGraphicContext* const graphicContext, PXTexture* const texture, const PXTextASCII filePath)
 {
+    texture->Type = PXGraphicImageTypeTexture2D;
+    texture->Filter = PXGraphicRenderFilterNoFilter;
+    texture->LayoutNear = PXGraphicImageLayoutNearest;
+    texture->LayoutFar = PXGraphicImageLayoutNearest;
+    texture->WrapHeight = PXGraphicImageWrapRepeat;
+    texture->WrapWidth = PXGraphicImageWrapRepeat;
+
+
     // Load texture..
     {
         const PXActionResult loadResult = ImageLoadA(&texture->Image, filePath);
@@ -1081,6 +1089,10 @@ PXActionResult PXGraphicUIButtonRegister(PXGraphicContext* const graphicContext,
     PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
     PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
     renderable->MeshSegmentList[0].RenderMode = PXGraphicRenderModeSquare;
+
+    PXLockEngage(&graphicContext->_pxUIElements);
+    PXLinkedListFixedNodeAdd(&graphicContext->_pxUIElements, &pxButton->UIElement);
+    PXLockRelease(&graphicContext->_pxUIElements);
 }
 
 void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)
@@ -1245,10 +1257,9 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXLinkedListFixedNodeSet(&graphicContext->_textureList, memww + 1128, 100, PXLinkedListUseAdress);
     PXLinkedListFixedNodeSet(&graphicContext->_fontList, memww + 1256, 100, PXLinkedListUseAdress);
     PXLinkedListFixedNodeSet(&graphicContext->_shaderProgramList, memww + 11024, 100, PXLinkedListUseAdress);
-    PXLinkedListFixedNodeSet(&graphicContext->_uiElementList, memww + 11050, 20, PXLinkedListUseAdress);
-
+    PXLinkedListFixedNodeSet(&graphicContext->_pxUIElements, memww + 11050, 20, PXLinkedListUseAdress);
     
-
+    
 
 
     graphicContext->OpenGLInstance.AttachedWindow = graphicContext->AttachedWindow;

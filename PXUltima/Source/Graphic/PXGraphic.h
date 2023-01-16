@@ -249,6 +249,8 @@ extern "C"
 	{
 		PXRenderable Renderable;
 
+		PXBool HasMouseHover;
+
 		PXUIOnClick OnClickCallback;
 		PXUIOnMouseEnter OnMouseEnterCallback;
 		PXUIOnMouseLeave OnMouseLeaveCallback;
@@ -299,6 +301,10 @@ extern "C"
 
 		PXLinkedListFixed _pxModelList;
 
+
+		PXLinkedListFixed _pxUIElements;
+
+
 		//LinkedList<Sound*> _soundList;
 		PXLinkedListFixed _fontList; // PXFont
 		PXLinkedListFixed _shaderProgramList; // ShaderProgram;
@@ -306,8 +312,6 @@ extern "C"
 		//LinkedList<Level*> _levelList;
 		//LinkedList<Collider*> _physicList;
 		//--------------------------
-
-		PXLinkedListFixed _uiElementList;
 	}
 	PXGraphicContext;
 
