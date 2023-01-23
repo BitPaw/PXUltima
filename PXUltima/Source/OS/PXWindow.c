@@ -2282,7 +2282,7 @@ void PXWindowDestruct(PXWindow* const window)
     CloseWindow(window->ID);
 #endif
 
-    window->ID = 0;
+    window->ID = PXNull;
 }
 
 PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)

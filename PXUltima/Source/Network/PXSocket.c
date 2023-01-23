@@ -862,8 +862,16 @@ PXActionResult PXSocketListen(PXSocket* const pxSocket)
 
     if(listeningResult == -1)
     {
+#if SocketDebug
+        printf("[PXSocket] Listening failed!\n");
+#endif
+
         return PXActionFailedSocketListening;
     }
+
+#if SocketDebug
+    printf("[PXSocket] Listening for connections...\n");
+#endif
 
     return PXActionSuccessful;
 }
@@ -886,8 +894,16 @@ PXActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
 
     if(!sucessful)
     {
+#if SocketDebug
+        printf("[PXSocket] Connection accept failed!\n");
+#endif
+
         return PXActionFailedSocketBinding;
     }
+
+#if SocketDebug
+    printf("[PXSocket] Connection accepted successful.\n");
+#endif
 
     return PXActionSuccessful;
 }

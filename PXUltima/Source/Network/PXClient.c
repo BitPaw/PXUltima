@@ -27,18 +27,18 @@ PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigne
         protocolMode
     );
 
-    unsigned char wasSucessful = 0;
+    PXBool wasSucessful = 0;
 
     for (PXSize i = 0; i < PXSocketListSize; ++i)
     {
         PXSocket* const pxSocket = &PXSocketList[i];
         const PXActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
-        const unsigned char creationSuccesful = PXActionSuccessful == socketCreateResult;
+        const PXBool creationSuccesful = PXActionSuccessful == socketCreateResult;
 
         if (creationSuccesful)
         {
             const PXActionResult connectResult = PXSocketConnect(pxSocket);
-            const unsigned char connected = PXActionSuccessful == connectResult;
+            const PXBool connected = PXActionSuccessful == connectResult;
 
             if (connected)
             {  
@@ -70,12 +70,12 @@ PXThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
     {
         const PXSize bufferSizeMax = 2048;
         PXSize bufferSize = 0;
-        unsigned char buffer[PXClientBufferSize];
+        PXByte buffer[PXClientBufferSize];
 
         MemoryClear(buffer, sizeof(unsigned char) * PXClientBufferSize);
 
         const PXActionResult receiveingResult = PXSocketReceive(pxSocket, buffer, bufferSizeMax, &bufferSize);
-        const unsigned char sucessful = PXActionSuccessful == receiveingResult;
+        const PXBool sucessful = PXActionSuccessful == receiveingResult;
 
         if (!sucessful)
         {

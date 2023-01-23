@@ -440,14 +440,6 @@ extern "C"
 
 	//PXPublic PXActionResult Load(Image& image, const wchar_t* filePath, bool loadAsynchronously = true);
 
-
-
-
-
-
-	
-
-
 #ifdef __cplusplus
 }
 #endif

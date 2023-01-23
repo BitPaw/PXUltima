@@ -932,8 +932,6 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 
     PXDataStream imageDataCache;
 
-
-
     PXSize imageDataCounter = 0;
     PXSize imageDataChunkCacheSizeUSED = 0;
     PXSize imageDataChunkCacheSizeMAX = 0u;
@@ -986,7 +984,7 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
             // Check
             {
                 // Ancillary bit : bit 5 of first byte
-                 // 0 (uppercase) = critical, 1 (lowercase) = ancillary.
+                // 0 (uppercase) = critical, 1 (lowercase) = ancillary.
                 chunk.IsEssential = !((chunk.ChunkTypeRaw[0] & 0b00100000) >> 5);
 
                 // Private bit: bit 5 of second byte

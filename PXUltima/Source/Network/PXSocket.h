@@ -44,7 +44,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <Error/PXActionResult.h>
 
 typedef PXSize PXSocketID;
-#define SocketDebug 0
+#define SocketDebug 1
 #define SocketIDOffline -1
 #define IPv6LengthMax 65
 

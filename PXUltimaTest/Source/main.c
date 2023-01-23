@@ -2,13 +2,14 @@
 #include <stdio.h>
 
 #include "TestSystemInfo.h"
-#include "TestWindow.h"
-#include "TestOpenGL.h"
-#include "TestPXCompiler.h"
-#include "TestImage.h"
-#include "TestYAML.h"
-#include "TestSound.h"
-#include "TestFont.h"
+#include "Graphic/TestWindow.h"
+#include "Graphic/TestOpenGL.h"
+#include "Graphic/TestFont.h"
+#include "Compiler/TestPXCompiler.h"
+#include "Graphic/TestImage.h"
+#include "Compiler/TestYAML.h"
+#include "Sound/TestSound.h"
+#include "Network/TestSocket.h"
 
 #include <Graphic/DirectX/DirectX.h>
 
@@ -31,6 +32,11 @@ int main()
 #if 0 // OpenGL Test
 	TestOpenGLAll();
 #endif
+
+
+#if 1
+	TestSocket();
+#endif // 1
 
 
 

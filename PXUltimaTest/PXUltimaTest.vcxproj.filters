@@ -18,60 +18,66 @@
     <ClCompile Include="Source\main.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestImage.c">
+    <ClCompile Include="Source\Graphic\TestImage.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestSBP.c">
+    <ClCompile Include="Source\Network\TestSBP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestWindow.c">
+    <ClCompile Include="Source\Graphic\TestWindow.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestOpenGL.c">
+    <ClCompile Include="Source\Graphic\TestOpenGL.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestPXCompiler.c">
+    <ClCompile Include="Source\Compiler\TestPXCompiler.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\TestSystemInfo.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestYAML.c">
+    <ClCompile Include="Source\Compiler\TestYAML.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestSound.c">
+    <ClCompile Include="Source\Sound\TestSound.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TestFont.c">
+    <ClCompile Include="Source\Graphic\TestFont.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\TestSocket.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\TestImage.h">
+    <ClInclude Include="Source\Graphic\TestImage.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TestSBP.h">
+    <ClInclude Include="Source\Network\TestSBP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TestWindow.h">
+    <ClInclude Include="Source\Graphic\TestWindow.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TestOpenGL.h">
+    <ClInclude Include="Source\Graphic\TestOpenGL.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TestPXCompiler.h">
+    <ClInclude Include="Source\Compiler\TestPXCompiler.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\TestSystemInfo.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TestYAML.h">
+    <ClInclude Include="Source\Compiler\TestYAML.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TestSound.h">
+    <ClInclude Include="Source\Sound\TestSound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\TestFont.h">
+    <ClInclude Include="Source\Graphic\TestFont.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\TestSocket.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

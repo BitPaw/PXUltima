@@ -30,16 +30,12 @@ PXActionResult PXServerStart(PXServer* const server, const unsigned short port, 
             &server->ServerSocketListSize,
             0, // IP
             port,
-            IPAdressFamilyUnspecified,
+            IPAdressFamilyINET,
             PXSocketTypeStream,
             protocolMode
         );
-        const unsigned char adressSetupSucessful = PXActionSuccessful == adressResult;
 
-        if(!adressSetupSucessful)
-        {
-            return adressResult;
-        }
+        PXActionExitOnError(adressResult);
     }
 
     for(PXSize i = 0; i < server->ServerSocketListSize; ++i)
@@ -85,7 +81,7 @@ PXActionResult PXServerStart(PXServer* const server, const unsigned short port, 
 
         InvokeEvent(pxSocket->ConnectionListeningCallback, pxSocket);
 
-        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, pxSocket);
+        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, server);
 
     }
 
@@ -166,7 +162,7 @@ PXActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID 
 PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
 {
     PXServer* server = serverAdress;
-    PXSocket* serverSocket = 0;
+    PXSocket* serverSocket = &server->ServerSocketList[0];
 
     // Seek Socket
     {

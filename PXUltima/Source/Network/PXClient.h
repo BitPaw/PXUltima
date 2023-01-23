@@ -12,7 +12,7 @@ extern "C"
 
 	typedef struct PXClient_ PXClient;
 
-	typedef void (*ConnectedToServerEvent)(const PXClient* client);	
+	typedef void (*ConnectedToServerEvent)(const PXClient* client);
 
 	typedef struct PXClient_
 	{

@@ -163,11 +163,11 @@ extern "C"
 		PNGChunkType ChunkType;
 
 		// The data bytes appropriate to the chunk type, if any. This field can be of zero length.
-		unsigned char* ChunkData;
+		void* ChunkData;
 
 		// A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type code and chunk data fields, but not including the length field. The CRC is always present, even for chunks containing no data. See CRC algorithm.
 
-		unsigned char CRCOK;
+		PXBool CRCOK;
 		unsigned int CRC;
 	}
 	PNGChunk;

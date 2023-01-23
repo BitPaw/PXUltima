@@ -165,27 +165,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\TestImage.c" />
+    <ClCompile Include="Source\Graphic\TestImage.c" />
     <ClCompile Include="Source\main.c" />
-    <ClCompile Include="Source\TestSBP.c" />
-    <ClCompile Include="Source\TestWindow.c" />
-    <ClCompile Include="Source\TestOpenGL.c" />
-    <ClCompile Include="Source\TestPXCompiler.c" />
+    <ClCompile Include="Source\Network\TestSBP.c" />
+    <ClCompile Include="Source\Graphic\TestWindow.c" />
+    <ClCompile Include="Source\Graphic\TestOpenGL.c" />
+    <ClCompile Include="Source\Compiler\TestPXCompiler.c" />
     <ClCompile Include="Source\TestSystemInfo.c" />
-    <ClCompile Include="Source\TestYAML.c" />
-    <ClCompile Include="Source\TestSound.c" />
-    <ClCompile Include="Source\TestFont.c" />
+    <ClCompile Include="Source\Compiler\TestYAML.c" />
+    <ClCompile Include="Source\Sound\TestSound.c" />
+    <ClCompile Include="Source\Graphic\TestFont.c" />
+    <ClCompile Include="Source\Network\TestSocket.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\TestImage.h" />
-    <ClInclude Include="Source\TestSBP.h" />
-    <ClInclude Include="Source\TestWindow.h" />
-    <ClInclude Include="Source\TestOpenGL.h" />
-    <ClInclude Include="Source\TestPXCompiler.h" />
+    <ClInclude Include="Source\Graphic\TestImage.h" />
+    <ClInclude Include="Source\Network\TestSBP.h" />
+    <ClInclude Include="Source\Graphic\TestWindow.h" />
+    <ClInclude Include="Source\Graphic\TestOpenGL.h" />
+    <ClInclude Include="Source\Compiler\TestPXCompiler.h" />
     <ClInclude Include="Source\TestSystemInfo.h" />
-    <ClInclude Include="Source\TestYAML.h" />
-    <ClInclude Include="Source\TestSound.h" />
-    <ClInclude Include="Source\TestFont.h" />
+    <ClInclude Include="Source\Compiler\TestYAML.h" />
+    <ClInclude Include="Source\Sound\TestSound.h" />
+    <ClInclude Include="Source\Graphic\TestFont.h" />
+    <ClInclude Include="Source\Network\TestSocket.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PXUltima\PXUltima.vcxproj">
