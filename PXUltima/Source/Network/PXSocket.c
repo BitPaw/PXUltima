@@ -620,10 +620,18 @@ PXActionResult PXSocketCreate
 
         if(!wasSucessful)
         {
+#if SocketDebug
+            printf("[PXSocket] Failed create.\n");
+#endif
+
             return PXActionFailedSocketCreation;
         }
 
         pxSocket->ID = socketIDResult;
+
+#if SocketDebug
+        printf("[PXSocket] Created <%i>\n", pxSocket->ID);
+#endif
     }
 
     pxSocket->Family = adressFamily;
@@ -640,8 +648,16 @@ PXActionResult PXSocketConnect(PXSocket* const pxSocket)
 
     if(!connected)
     {
+#if SocketDebug
+        printf("[PXSocket] Connect to server failed!\n");
+#endif
+
         return PXActionFailedSocketConnect;
     }
+
+#if SocketDebug
+    printf("[PXSocket] Connected to server.\n");
+#endif
 
     return PXActionSuccessful;
 }
@@ -809,7 +825,11 @@ void PXSocketClose(PXSocket* const pxSocket)
     closesocket(pxSocket->ID);
 #endif
 
-    InvokeEvent(pxSocket->ConnectionTerminatedCallback, pxSocket);
+    InvokeEvent(pxSocket->EventList.ConnectionTerminatedCallback, pxSocket);
+
+#if SocketDebug
+    printf("[PXSocket] Closed <%i>.\n", pxSocket->ID);
+#endif
 
     pxSocket->ID = SocketIDOffline;
 }
@@ -821,8 +841,15 @@ PXActionResult PXSocketBind(PXSocket* const pxSocket)
 
     if(!sucessful)
     {
+#if SocketDebug
+        printf("[PXSocket] Binding <%i> failed!\n", pxSocket->ID);
+#endif
         return PXActionFailedSocketBinding;
     }
+
+#if SocketDebug
+    printf("[PXSocket] Bound <%i>.\n", pxSocket->ID);
+#endif
 
     return PXActionSuccessful;
 }
@@ -930,7 +957,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
         }
     }
 
-    InvokeEvent(pxSocket->MessageSendCallback, pxSocket, inputBuffer, inputBufferSize);
+    InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket, inputBuffer, inputBufferSize);
 
 #if SocketDebug
     printf("[#][Socket][Send] You >>> <%zi> %li Bytes\n", pxSocket->ID, inputBufferSize);
@@ -997,6 +1024,10 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
 
             case 0:// endOfFile
             {
+#if SocketDebug
+                printf("[PXSocket] Connection close signal detected!\n");
+#endif
+
                 PXSocketClose(pxSocket);
 
                 return PXActionRefusedSocketNotConnected; // How to handle, 0 means connected but this is not the terminating phase.
@@ -1009,7 +1040,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
                 printf("[#][Socket][Read] You <<< <%li> %i Bytes\n", pxSocket->ID, byteRead);
 #endif
 
-                InvokeEvent(pxSocket->MessageReceiveCallback, pxSocket, outputBuffer, byteRead);
+                InvokeEvent(pxSocket->EventList.MessageReceiveCallback, pxSocket, outputBuffer, byteRead);
             }
         }
     }

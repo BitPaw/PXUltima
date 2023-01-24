@@ -169,19 +169,39 @@ extern "C"
 
 	typedef struct PXSocket_ PXSocket;
 
-	typedef void (*SocketCreatingEvent)(const PXSocket* const pxSocket, unsigned char* use);
-	typedef void (*SocketCreatedEvent)(const PXSocket* const pxSocket);
+	typedef void (*PXSocketCreatingEvent)(const PXSocket* const pxSocket, unsigned char* use);
+	typedef void (*PXSocketCreatedEvent)(const PXSocket* const pxSocket);
 
-	typedef void (*MessageSendEvent)(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
-	typedef void (*MessageReceiveEvent)(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
+	typedef void (*PXSocketDataSendEvent)(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
+	typedef void (*PXSocketDataReceiveEvent)(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize);
 
 	// PXServer Only
-	typedef void (*ConnectionListeningEvent)(const PXSocket* const pxSocket);
-	typedef void (*ConnectionLinkedEvent)(const PXSocket* const pxSocket);
+	typedef void (*PXSocketListeningEvent)(const PXSocket* const pxSocket);
+	typedef void (*PXSocketLinkedEvent)(const PXSocket* const pxSocket);
 
 	// PXClient Only
-	typedef void (*ConnectionEstablishedEvent)(const PXSocket* const pxSocket);
-	typedef void (*ConnectionTerminatedEvent)(const PXSocket* const pxSocket);
+	typedef void (*PXSocketConnectionEstablishedEvent)(const PXSocket* const pxSocket);
+	typedef void (*PXSocketConnectionTerminatedEvent)(const PXSocket* const pxSocket);
+
+	typedef struct PXSocketEventListener_
+	{
+		//---<Event CallBack>---------
+		PXSocketCreatingEvent SocketCreatingCallback;
+		PXSocketCreatedEvent SocketCreatedCallback;
+
+		PXSocketDataSendEvent MessageSendCallback;
+		PXSocketDataReceiveEvent MessageReceiveCallback;
+
+		// PXServer Only
+		PXSocketListeningEvent ConnectionListeningCallback;
+		PXSocketLinkedEvent ConnectionLinkedCallback;
+
+		// PXClient Only
+		PXSocketConnectionEstablishedEvent ConnectionEstablishedCallback;
+		PXSocketConnectionTerminatedEvent ConnectionTerminatedCallback;
+		//----------------------------
+	}
+	PXSocketEventListener;
 
 
 	typedef struct PXSocket_
@@ -203,21 +223,7 @@ extern "C"
 		PXThread CommunicationThread;
 		//----------------------------
 
-		//---<Event CallBack>---------
-		SocketCreatingEvent SocketCreatingCallback;
-		SocketCreatedEvent SocketCreatedCallback;
-
-		MessageSendEvent MessageSendCallback;
-		MessageReceiveEvent MessageReceiveCallback;
-
-		// PXServer Only
-		ConnectionListeningEvent ConnectionListeningCallback;
-		ConnectionLinkedEvent ConnectionLinkedCallback;
-
-		// PXClient Only
-		ConnectionEstablishedEvent ConnectionEstablishedCallback;
-		ConnectionTerminatedEvent ConnectionTerminatedCallback;
-		//----------------------------
+		PXSocketEventListener EventList;
 	}
 	PXSocket;
 

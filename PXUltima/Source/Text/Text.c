@@ -888,16 +888,53 @@ void TextParseFindAllA(const char* string, const PXSize stringSize, const Parsin
 	}
 }
 
-PXSize TextFromIntA(const int number, char* string, const PXSize dataSize)
+PXSize TextFromIntA(int number, char* string, const PXSize dataSize)
 {
-	int bytesWritten = PrintSN(string, dataSize, "%i", &number);
+	PXBool isSigned = 0;
+	PXSize offset = 0;
 
-	return bytesWritten;
+	if (number < 0) // number negative
+	{
+		// write minus, then remove it
+		isSigned = '-';
+		number *= -1;
+	}
+
+	do
+	{
+		string[offset++] = number % 10 + '0';
+	} 
+	while ((number /= 10) > 0);
+
+	if (isSigned)
+	{
+		string[offset++] = '-';
+	}
+
+	string[offset] = 0;
+
+	PXSize halfSize = (offset) / 2;
+
+	for (size_t i = 0; i < halfSize; i++)
+	{
+		int x = string[offset-1 - i];
+
+		string[offset - 1 - i] = string[i];
+
+		string[i] = x;
+	}
+	
+
+	//itoa(number, string, dataSize);
+
+	//int bytesWritten = PrintSN(string, dataSize, "%i", number);
+
+	return offset;
 }
 
 PXSize TextFromIntW(const int number, wchar_t* string, const PXSize dataSize)
 {
-	int bytesWritten = PrintSN(string, dataSize, "%i", &number);
+	int bytesWritten = PrintSN(string, dataSize, "%i", number);
 
 	return bytesWritten;
 }

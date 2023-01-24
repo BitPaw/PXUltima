@@ -42,7 +42,7 @@ PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigne
 
             if (connected)
             {  
-                InvokeEvent(pxSocket->ConnectionEstablishedCallback, pxSocket);
+                InvokeEvent(pxSocket->EventList.ConnectionEstablishedCallback, pxSocket);
 
                 const PXActionResult PXActionResult = PXThreadRun(&pxSocket->CommunicationThread, threadFunction, threadObject);
 

@@ -25,9 +25,15 @@ extern "C"
 		PXSocket* PXClientSocketList;
 		PXSize PXClientSocketListSize;
 
+
+		fd_set SelectListenRead;
+		fd_set SelectListenWrite;
+
 		PXClientConnectedEvent PXClientConnectedCallback;
 		PXClientDisconnectedEvent PXClientDisconnectedCallback;
 		PXClientAcceptFailureEvent PXClientAcceptFailureCallback;
+
+		PXSocketEventListener SocketEventListener;
 	}
 	PXServer;
 

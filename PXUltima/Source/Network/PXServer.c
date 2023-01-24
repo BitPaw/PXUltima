@@ -79,7 +79,9 @@ PXActionResult PXServerStart(PXServer* const server, const unsigned short port, 
             PXActionExitOnError(actionResult);
         }
 
-        InvokeEvent(pxSocket->ConnectionListeningCallback, pxSocket);
+        InvokeEvent(pxSocket->EventList.ConnectionListeningCallback, pxSocket);
+
+        FD_SET(pxSocket->ID, &server->SelectListenRead);
 
         const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, server);
 
@@ -188,29 +190,64 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
 
     while(PXSocketIsCurrentlyUsed(serverSocket))
     {
-        PXSocket clientSocket;
+        const TIMEVAL time = {3,0};
 
-        PXSocketConstruct(&clientSocket);
+        fd_set selectListenRead;
 
-        // Set Events
+        MemoryCopy(&server->SelectListenRead, sizeof(fd_set),&selectListenRead, sizeof(fd_set));
 
-        const PXActionResult actionResult = PXSocketAccept(serverSocket, &clientSocket);
-        const PXBool successful = PXActionSuccessful == actionResult;
+        int numberOfSocketEvents = select(0, &selectListenRead, 0, 0, 0);
 
-        if(!successful)
+        for (size_t i = 0; i < numberOfSocketEvents; i++)
         {
-            InvokeEvent(server->PXClientAcceptFailureCallback, serverSocket);
+            SOCKET socketID = selectListenRead.fd_array[i];
 
-            continue; // failed.. retry?
-        }
+            if (socketID == serverSocket->ID) // Is Server
+            {
+                PXSocket clientSocket;
+
+                PXSocketConstruct(&clientSocket);
+
+                // Set Events
+
+                const PXActionResult actionResult = PXSocketAccept(serverSocket, &clientSocket);
+                const PXBool successful = PXActionSuccessful == actionResult;
+
+                if (!successful)
+                {
+                    InvokeEvent(server->PXClientAcceptFailureCallback, serverSocket);
+
+                    continue; // failed.. retry?
+                }
 
 #if SocketDebug
-        printf("[i][Server] New client accepted <%zi>\n", clientSocket.ID);
+                printf("[i][Server] New client accepted <%zi>\n", clientSocket.ID);
 #endif
 
-        InvokeEvent(server->PXClientConnectedCallback, serverSocket, &clientSocket);
+                InvokeEvent(server->PXClientConnectedCallback, serverSocket, &clientSocket);
 
-        PXServerRegisterPXClient(server, &clientSocket);
+                FD_SET(clientSocket.ID, &server->SelectListenRead);
+
+                PXServerRegisterPXClient(server, &clientSocket);
+            }
+            else
+            {
+                PXSocket clientSocket;
+
+                PXServerConstruct(&clientSocket);
+
+                clientSocket.ID = socketID;
+
+                char inputBuffer[256];
+                PXSize wrrit = 0;
+
+                PXSocketReceive(&clientSocket, inputBuffer, 256, &wrrit);
+
+               
+
+                FD_CLR(socketID, &server->SelectListenRead);
+            }
+        }       
     }
 
     return PXThreadSucessful;
