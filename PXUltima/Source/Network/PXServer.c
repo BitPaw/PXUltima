@@ -221,7 +221,7 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
                 }
 
 #if SocketDebug
-                printf("[i][Server] New client accepted <%zi>\n", clientSocket.ID);
+                printf("[PXServer] New client accepted <%zi>\n", clientSocket.ID);
 #endif
 
                 InvokeEvent(server->PXClientConnectedCallback, serverSocket, &clientSocket);
@@ -237,13 +237,12 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
                 PXServerConstruct(&clientSocket);
 
                 clientSocket.ID = socketID;
+                clientSocket.EventList = server->SocketEventListener;
 
-                char inputBuffer[256];
+                char inputBuffer[1024];
                 PXSize wrrit = 0;
 
-                PXSocketReceive(&clientSocket, inputBuffer, 256, &wrrit);
-
-               
+                PXSocketReceive(&clientSocket, inputBuffer, 1024, &wrrit);
 
                 FD_CLR(socketID, &server->SelectListenRead);
             }
