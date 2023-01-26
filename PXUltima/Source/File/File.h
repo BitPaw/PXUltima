@@ -17,7 +17,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <libgen.h>
-#include <dirent.h>
+//#include <dirent.h>
 
 typedef FILE* FileHandleType;
 typedef int FileMappingID;

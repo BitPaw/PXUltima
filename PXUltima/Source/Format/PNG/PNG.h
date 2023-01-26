@@ -383,14 +383,14 @@ enough memory.*/
 
 
 
-	static PNGChunkType ConvertToChunkType(const unsigned int pngchunkType);
-	static unsigned int ConvertFromChunkType(const PNGChunkType pngchunkType);
+	PXPublic PNGChunkType ConvertToChunkType(const unsigned int pngchunkType);
+	PXPublic unsigned int ConvertFromChunkType(const PNGChunkType pngchunkType);
 
-	static PNGColorType ConvertToPNGColorType(const unsigned int colorType);
-	static unsigned int ConvertFromPNGColorType(const PNGColorType colorType);
+	PXPublic PNGColorType ConvertToPNGColorType(const PXInt8U colorType);
+	PXPublic unsigned int ConvertFromPNGColorType(const PNGColorType colorType);
 
-	static PNGInterlaceMethod ConvertToPNGInterlaceMethod(const unsigned char interlaceMethod);
-	static unsigned char ConvertFromPNGInterlaceMethod(const PNGInterlaceMethod interlaceMethod);
+	PXPublic PNGInterlaceMethod ConvertToPNGInterlaceMethod(const unsigned char interlaceMethod);
+	PXPublic unsigned char ConvertFromPNGInterlaceMethod(const PNGInterlaceMethod interlaceMethod);
 
 
 

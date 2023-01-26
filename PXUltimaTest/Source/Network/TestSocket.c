@@ -72,7 +72,7 @@ void TestSocketServerGeneral()
 {
 	PXServer server;
 
-	PXServerConstruct(&server);    
+	PXServerConstruct(&server);
 
     server.SocketEventListener.MessageSendCallback = OnSocketDataSend;
     server.SocketEventListener.MessageReceiveCallback = OnSocketDataReceive;
@@ -84,7 +84,7 @@ void TestSocketServerGeneral()
 	server.PXClientSocketListSize = 5;
 	server.PXClientSocketList = MemoryAllocateClear(sizeof(PXSocket) * server.PXClientSocketListSize);
 
-	const PXActionResult startResult = PXServerStart(&server, 80, ProtocolModeTCP);
+	const PXActionResult startResult = PXServerStart(&server, 25565, ProtocolModeTCP);
 
 	while (1)
 	{

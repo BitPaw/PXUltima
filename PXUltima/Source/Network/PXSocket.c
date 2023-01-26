@@ -869,14 +869,11 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
 #elif OSWindows
         SO_EXCLUSIVEADDRUSE;
 #endif
-    const char opval = 1;
-    const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(opval));
+    const int opval = 1;
+    const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(int));
     const PXBool sucessful = optionsocketResult == 0;
 
-    if(!sucessful)
-    {
-        return PXActionFailedSocketOption;
-    }
+    PXActionOnErrorFetchAndExit(!sucessful)
 
     return PXActionSuccessful;
 }

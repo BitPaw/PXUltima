@@ -340,7 +340,7 @@ PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStre
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
 
                     PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
-                }            
+                }
 
                 for(PXSize i = 0; i < frame.ComponentListSize; ++i)
                 {
@@ -1138,7 +1138,7 @@ PXActionResult JPEGSerializeFromImage(const Image* const image, PXDataStream* co
     // adjust quantization tables with AAN scaling factors to simplify DCT
     float scaledLuminance[64u];
     float scaledChrominance[64u];
-  
+
     for(PXSize i = 0; i < 64u; ++i)
     {
         const PXInt8U row = ZigZagInv[i] / 8; // same as i >> 3
@@ -1284,7 +1284,7 @@ PXActionResult JPEGSerializeFromImage(const Image* const image, PXDataStream* co
 
     // End Tag
     {
-        PXDataStreamWriteI16U(dataStream, JPEGMarkerEndOfImageID, EndianCurrentSystem);
+        PXDataStreamWriteI16UE(dataStream, JPEGMarkerEndOfImageID, EndianLittle);
     }
 
     return PXActionSuccessful;

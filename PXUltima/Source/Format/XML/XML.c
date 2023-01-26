@@ -107,9 +107,9 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         //-----------------------------------------------------
                         PXDataStreamWriteI8U(outputStream, depthCounter);
                         PXDataStreamWriteI8U(outputStream, xmlTag);
-                        PXDataStreamWriteI16U(outputStream, nameSize, EndianLittle);
+                        PXDataStreamWriteI16U(outputStream, nameSize);
                         PXDataStreamWriteB(outputStream, nameAdress, nameSize);
-                        PXDataStreamWriteI16U(outputStream, valueSize, EndianLittle);
+                        PXDataStreamWriteI16U(outputStream, valueSize);
                         PXDataStreamWriteB(outputStream, valueAdrees, valueSize);
                         //-----------------------------------------------------
 
@@ -150,7 +150,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         // Data
                         PXDataStreamWriteI8U(outputStream, depthCounter);
                         PXDataStreamWriteI8U(outputStream, xmlTag);
-                        PXDataStreamWriteI16U(outputStream, cutIndex, EndianLittle);
+                        PXDataStreamWriteI16U(outputStream, cutIndex);
                         PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source + 1u, cutIndex);
                         //-----------------------------------------------------
 
@@ -176,7 +176,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         //-----------------------------------------------------
                         PXDataStreamWriteI8U(outputStream, depthCounter);
                         PXDataStreamWriteI8U(outputStream, xmlTag);
-                        PXDataStreamWriteI16U(outputStream, openTagNameSize, EndianLittle);
+                        PXDataStreamWriteI16U(outputStream, openTagNameSize);
                         PXDataStreamWriteB(outputStream, openTagName, openTagNameSize);
                         //-----------------------------------------------------
 
@@ -200,7 +200,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                         PXDataStreamWriteI8U(outputStream, depthCounter);
                         PXDataStreamWriteI8U(outputStream, xmlTag);
-                        PXDataStreamWriteI16U(outputStream, closeTagNameSize, EndianLittle);
+                        PXDataStreamWriteI16U(outputStream, closeTagNameSize);
                         PXDataStreamWriteB(outputStream, closeTagName, closeTagNameSize);
                         //-----------------------------------------------------
 
@@ -215,7 +215,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         PXSize sizePositionOffset = outputStream->DataCursor;
                         PXSize sizeWritten = 0;
 
-                        PXDataStreamWriteI16U(outputStream, 0xFFFF, EndianLittle);
+                        PXDataStreamWriteI16U(outputStream, 0xFFFF);
 
                         do
                         {
@@ -244,7 +244,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                                     PXDataStreamWriteI8U(outputStream, depthCounter);
                                     PXDataStreamWriteI8U(outputStream, XMLSymbolTagCloseCurrent);
-                                    PXDataStreamWriteI16U(outputStream, 0, EndianLittle);
+                                    PXDataStreamWriteI16U(outputStream, 0);
                                 }
                                 else
                                 {

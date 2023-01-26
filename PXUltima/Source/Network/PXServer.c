@@ -16,7 +16,7 @@
 #endif
 
 void PXServerConstruct(PXServer* const server)
-{    
+{
     MemoryClear(server, sizeof(PXServer));
 }
 
@@ -92,7 +92,7 @@ void PXSocketEventPull(PXServer* const server, void* const buffer, const PXSize 
 
     for (PXSize i = 0; i < amount; i++)
     {
-        const WSAPOLLFD* const currentPollData = &socketDataList[i];
+        const struct pollfd* const currentPollData = &socketDataList[i];
 
         switch (currentPollData->revents)
         {

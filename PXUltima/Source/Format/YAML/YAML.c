@@ -177,7 +177,7 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
                         case PXCompilerSymbolLexerFloat:
                         {
-                            PXDataStreamWriteI16U(outputStream, sizeof(float), EndianLittle);
+                            PXDataStreamWriteI16U(outputStream, sizeof(float));
                             PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
                             PXDataStreamWriteF(outputStream, compilerSymbolEntry.DataF);
                             break;

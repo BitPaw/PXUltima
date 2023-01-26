@@ -101,10 +101,14 @@
 				</Linker>
 			</Target>
 		</Build>
-		<Unit filename="Source/AI/KalmanFilter/PXKalmanFilter.c">
+		<Unit filename="Source/Algorithm/Dijkstra/PXDijkstra.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/AI/KalmanFilter/PXKalmanFilter.h" />
+		<Unit filename="Source/Algorithm/Dijkstra/PXDijkstra.h" />
+		<Unit filename="Source/Algorithm/KalmanFilter/PXKalmanFilter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Algorithm/KalmanFilter/PXKalmanFilter.h" />
 		<Unit filename="Source/Async/Await.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -274,10 +278,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/FNT/FNT.h" />
-		<Unit filename="Source/Format/Font.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Format/Font.h" />
 		<Unit filename="Source/Format/GIF/GIF.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -318,6 +318,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/LAME/LAME.h" />
+		<Unit filename="Source/Format/LZ77/PXLZ77.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/LZ77/PXLZ77.h" />
 		<Unit filename="Source/Format/M4A/M4A.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -374,6 +378,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/PNG/PNG.h" />
+		<Unit filename="Source/Format/PXFont.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/PXFont.h" />
 		<Unit filename="Source/Format/PXSound.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -466,10 +474,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Graphic/DirectX/DirectX.h" />
-		<Unit filename="Source/Graphic/Graphic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Graphic/Graphic.h" />
 		<Unit filename="Source/Graphic/OpenGL/OpenGL.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -478,6 +482,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Graphic/PXCamera.h" />
+		<Unit filename="Source/Graphic/PXGraphic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/PXGraphic.h" />
 		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -494,6 +502,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Library/PXLibrary.h" />
+		<Unit filename="Source/Log/PXLog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Log/PXLog.h" />
 		<Unit filename="Source/Math/PXDiagram.c">
 			<Option compilerVar="CC" />
 		</Unit>

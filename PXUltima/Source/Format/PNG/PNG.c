@@ -1908,7 +1908,8 @@ the scanlines with 1 extra byte per scanline
                     dummy = MemoryAllocate(sizeAA);
 
                     PXSize written = 0;
-                    ZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
+
+                    // fix this: ZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
                     // zlib_compress( , &zlibsettings);
 
                     MemoryRelease(dummy, -1);
@@ -2250,7 +2251,7 @@ PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* con
 
         PXDataStreamWriteI32UE(pxExportStream, chunkLength, EndianBig);
         PXDataStreamWriteB(pxExportStream, "tIME", 4u);
-        PXDataStreamWriteI16U(pxExportStream, pngLastModificationTime.Year, EndianBig);
+        PXDataStreamWriteI16UE(pxExportStream, pngLastModificationTime.Year, EndianBig);
         PXDataStreamWriteI8U(pxExportStream, pngLastModificationTime.Month);
         PXDataStreamWriteI8U(pxExportStream, pngLastModificationTime.Day);
         PXDataStreamWriteI8U(pxExportStream, pngLastModificationTime.Hour);

@@ -774,7 +774,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
             break;
         }
-        case PXGraphicsExpose:
+        case GraphicsExpose:
         {
             printf("[Event] PXGraphicsExpose \n");
 
@@ -1049,7 +1049,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             {
                 InvokeEvent(window->WindowClosedCallBack, window->EventReceiver, window);
 
-                const LRESULT result = DefWindowProc(windowsID, WM_CLOSE, wParam, lParam);              
+                const LRESULT result = DefWindowProc(windowsID, WM_CLOSE, wParam, lParam);
 
                 return result;
             }
@@ -1115,11 +1115,11 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             //wParam is unused
             const MINMAXINFO* minmaxInfo = (MINMAXINFO*)lParam;
             const LONG width = minmaxInfo->ptMaxSize.x;
-            const LONG height = minmaxInfo->ptMaxSize.y;          
+            const LONG height = minmaxInfo->ptMaxSize.y;
 
             break;
         }
-#endif 
+#endif
         case WindowEventIconPaint:
             break;
         case WindowEventIconBackgroundErase:
@@ -2650,7 +2650,7 @@ void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const 
     mouse->Position[0] = positionX;
     mouse->Position[1] = positionY;
     mouse->InputAxis[0] = deltaX;
-    mouse->InputAxis[1] = deltaY;   
+    mouse->InputAxis[1] = deltaY;
     mouse->PositionNormalisized[0] = positionX / ((float)window->Width / 2) - 1;
     mouse->PositionNormalisized[1] = positionY / ((float)window->Height / 2) - 1;
 

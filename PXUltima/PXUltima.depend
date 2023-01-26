@@ -1613,11 +1613,11 @@
 	<semaphore.h>
 	<windows.h>
 
-1669337314 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSVersion.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSVersion.h
 	<Windows.h>
 	<SdkDdkVer.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Error/PXActionResult.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Error/PXActionResult.h
 	<Format/Type.h>
 
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Memory/Memory.h
@@ -1634,7 +1634,7 @@
 	<unistd.h>
 	<windows.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/BinaryTree/BinaryTree.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/BinaryTree/BinaryTree.c
 	"BinaryTree.h"
 
 1662327724 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/BinaryTree/BinaryTree.h
@@ -1646,18 +1646,18 @@
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/PXDictionary/PXDictionary.h
 	<Format/Type.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/QuadTree/QuadTree.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/QuadTree/QuadTree.c
 	"QuadTree.h"
 
 1662327724 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/QuadTree/QuadTree.h
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Controller.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Controller.c
 	"Controller.h"
 	<OS/OSVersion.h>
 	<windows.h>
 	<joystickapi.h>
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Controller.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Controller.h
 	<OS/OSVersion.h>
 	<OS/PXWindow.h>
 
@@ -1678,10 +1678,10 @@
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/VirtualKey.h
 	<Format/Type.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Mouse.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Mouse.h
 	<Format/Type.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/KeyBoard.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/KeyBoard.h
 	"VirtualKey.h"
 
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/InputButton.c
@@ -1690,31 +1690,32 @@
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/InputButton.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/KeyBoard.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/KeyBoard.c
 	"KeyBoard.h"
 	<Memory/PXMemory.h>
 	<Text/Text.h>
 	<stdio.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Text/Text.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Text/Text.h
 	<Format/Type.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Mouse.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/Mouse.c
 	"Mouse.h"
 	<Text/Text.h>
+	<stdio.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/VirtualKey.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Device/VirtualKey.c
 	"VirtualKey.h"
 	<OS/OSVersion.h>
 	<Windows.h>
 	<WinUser.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Error/PXActionResult.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Error/PXActionResult.c
 	"PXActionResult.h"
 	<OS/OSVersion.h>
 	<errno.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Event/Event.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Event/Event.c
 	"Event.h"
 
 1662327724 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Event/Event.h
@@ -1727,13 +1728,13 @@
 	<Format/Type.h>
 	"Endian.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/Endian.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/Endian.h
 	<Format/Type.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/Endian.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/Endian.c
 	"Endian.h"
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/File.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/File.c
 	"File.h"
 	<Text/Text.h>
 	<Memory/PXMemory.h>
@@ -1744,11 +1745,10 @@
 	<sys/stat.h>
 	<io.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/File.h
+1674759027 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/File.h
 	<stdlib.h>
 	<stdio.h>
 	<wchar.h>
-	<assert.h>
 	<Format/Type.h>
 	<OS/OSVersion.h>
 	<Memory/PXMemory.h>
@@ -1758,7 +1758,6 @@
 	<sys/mman.h>
 	<unistd.h>
 	<libgen.h>
-	<dirent.h>
 	<windows.h>
 	<direct.h>
 
@@ -1779,58 +1778,61 @@
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/Math.h
 	<Format/Type.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/3DS/A3DS.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/3DS/A3DS.c
 	"A3DS.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/3DS/A3DS.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/3DS/A3DS.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AAC/AAC.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AAC/AAC.c
 	"AAC.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AAC/AAC.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AAC/AAC.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADAM7/ADAM7.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADAM7/ADAM7.c
 	"ADAM7.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADAM7/ADAM7.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADAM7/ADAM7.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/PNG/PNG.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PNG/PNG.h
+1674761297 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PNG/PNG.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/Image.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Image.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Image.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<File/File.h>
+	<File/PXDataStream.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADLER/Adler32.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADLER/Adler32.c
 	"Adler32.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADLER/Adler32.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ADLER/Adler32.h
 	<Format/Type.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AVI/AVI.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AVI/AVI.c
 	"AVI.h"
 	<Format/RIFF/RIFF.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AVI/AVI.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/AVI/AVI.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/RIFF/RIFF.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/RIFF/RIFF.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<File/Endian.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/BMP/BMP.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/BMP/BMP.c
 	"BMP.h"
 	<Container/ClusterValue.h>
 	<Container/ClusterValue.h>
@@ -1839,11 +1841,12 @@
 	<Math/PXMath.h>
 	<Format/Image.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/BMP/BMP.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/BMP/BMP.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 
-1662327724 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/ClusterValue.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/ClusterValue.h
 
 1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Color.c
 	"Color.h"
@@ -1851,10 +1854,10 @@
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Color.h
 	<Format/Type.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/CRC32/CRC32.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/CRC32/CRC32.c
 	"CRC32.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/CRC32/CRC32.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/CRC32/CRC32.h
 	<Format/Type.h>
 
 1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/EML/EML.c
@@ -1862,32 +1865,31 @@
 
 1662327724 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/EML/EML.h
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FBX/FBX.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FBX/FBX.c
 	"FBX.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FBX/FBX.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FBX/FBX.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FLAC/FLAC.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FLAC/FLAC.c
 	"FLAC.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FLAC/FLAC.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FLAC/FLAC.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FMT/FMT.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FMT/FMT.c
 	"FMT.h"
-	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
-	<Container/ClusterValue.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FMT/FMT.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FMT/FMT.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<File/Endian.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FNT/FNT.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FNT/FNT.c
 	"FNT.h"
 	<stdio.h>
 	<Text/Text.h>
@@ -1896,9 +1898,10 @@
 	<File/File.h>
 	<Format/Image.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FNT/FNT.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/FNT/FNT.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 	<Format/Image.h>
 
 1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Font.c
@@ -1915,43 +1918,45 @@
 	<Error/PXActionResult.h>
 	<File/File.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TTF/TTF.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TTF/TTF.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/GIF/GIF.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/GIF/GIF.c
 	"GIF.h"
 	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
 	<Math/PXMath.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/GIF/GIF.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/GIF/GIF.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/Image.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/HUFFMAN/HuffmanTree.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/HUFFMAN/HuffmanTree.c
 	"HuffmanTree.h"
 	<Memory/PXMemory.h>
 	<stdlib.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/HUFFMAN/HuffmanTree.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/HUFFMAN/HuffmanTree.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ID3/ID3.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ID3/ID3.c
 	"ID3.h"
-	<File/PXDataStream.h>
 	<Text/Text.h>
 	<Container/ClusterValue.h>
 	<cstdio>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ID3/ID3.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ID3/ID3.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Image.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Image.c
 	"Image.h"
 	<Memory/PXMemory.h>
 	<File/File.h>
@@ -1965,32 +1970,32 @@
 	<Format/TGA/TGA.h>
 	<Format/TIFF/TIFF.h>
 	<Format/FNT/FNT.h>
-	<Format/Font.h>
+	<Format/PXFont.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/JPEG/JPEG.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/JPEG/JPEG.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/Image.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TGA/TGA.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TGA/TGA.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/Image.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TIFF/TIFF.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TIFF/TIFF.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/Image.h>
+	<File/PXDataStream.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ISBN/ISBN.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ISBN/ISBN.c
 	"ISBN.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ISBN/ISBN.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ISBN/ISBN.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/JPEG/JPEG.c
+1674759180 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/JPEG/JPEG.c
 	"JPEG.h"
-	<assert.h>
 	<stdlib.h>
 	<Container/ClusterValue.h>
 	<Memory/PXMemory.h>
@@ -1999,35 +2004,36 @@
 	<Format/Color.h>
 	<stdio.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/LAME/LAME.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/LAME/LAME.c
 	"LAME.h"
-	<File/PXDataStream.h>
 	<Text/Text.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/LAME/LAME.h
-	<Format/Type.h>
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/LAME/LAME.h
 	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/M4A/M4A.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/M4A/M4A.c
 	"M4A.h"
 	<File/PXDataStream.h>
 	<Container/ClusterValue.h>
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/M4A/M4A.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/M4A/M4A.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MID/MID.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MID/MID.c
 	"MID.h"
 	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MID/MID.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MID/MID.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Model.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Model.c
 	"Model.h"
 	<Memory/PXMemory.h>
 	<File/File.h>
@@ -2035,36 +2041,38 @@
 	<File/PXDataStream.h>
 	<Format/OBJ/OBJ.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Model.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Model.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<File/PXDataStream.h>
 	<File/File.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MP3/MP3.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MP3/MP3.c
 	"MP3.h"
 	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
 	<Format/XingInfo/XingInfo.h>
 	<Format/LAME/LAME.h>
+	<Container/ClusterValue.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MP3/MP3.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MP3/MP3.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/ID3/ID3.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XingInfo/XingInfo.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XingInfo/XingInfo.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 
 1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MP4/MP4.c
 	"MP4.h"
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MP4/MP4.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MP4/MP4.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669337841 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MTL/MTL.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MTL/MTL.c
 	"MTL.h"
 	<File/PXDataStream.h>
 	<Text/Text.h>
@@ -2072,18 +2080,18 @@
 	<Memory/PXMemory.h>
 	<Compiler/PXCompiler.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MTL/MTL.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MTL/MTL.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<File/PXDataStream.h>
 	<Format/Model.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OGG/OGG.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OGG/OGG.c
 	"OGG.h"
 	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OGG/OGG.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OGG/OGG.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
@@ -2092,21 +2100,21 @@
 
 1662327724 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PDF/PDF.h
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PLY/PLY.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PLY/PLY.c
 	"PLY.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PLY/PLY.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PLY/PLY.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/QOI/QOI.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/QOI/QOI.c
 	"QOI.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/QOI/QOI.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/QOI/QOI.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/RIFF/RIFF.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/RIFF/RIFF.c
 	"RIFF.h"
 	<File/PXDataStream.h>
 	<Container/ClusterValue.h>
@@ -2124,28 +2132,28 @@
 	<Windows.h>
 	<mmeapi.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STEP/STEP.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STEP/STEP.c
 	"STEP.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STEP/STEP.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STEP/STEP.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STL/STL.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STL/STL.c
 	"STL.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STL/STL.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/STL/STL.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/SVG/SVG.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/SVG/SVG.c
 	"SVG.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/SVG/SVG.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/SVG/SVG.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/DEFLATE/DEFLATE.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/DEFLATE/DEFLATE.c
 	"DEFLATE.h"
 	<stdlib.h>
 	<string.h>
@@ -2153,26 +2161,27 @@
 	<Format/HUFFMAN/HuffmanTree.h>
 	<File/PXDataStream.h>
 	<Math/PXMath.h>
+	<Format/LZ77/PXLZ77.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/DEFLATE/DEFLATE.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/DEFLATE/DEFLATE.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TGA/TGA.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TGA/TGA.c
 	"TGA.h"
 	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TIFF/TIFF.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TIFF/TIFF.c
 	"TIFF.h"
 	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TTF/TTF.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/TTF/TTF.c
 	"TTF.h"
 	<File/File.h>
 	<Memory/PXMemory.h>
-	<File/PXDataStream.h>
 	<Container/ClusterValue.h>
 
 1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/UUID/UUID.c
@@ -2181,34 +2190,36 @@
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/UUID/UUID.h
 	<Format/Type.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/VRML/VRML.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/VRML/VRML.c
 	"VRML.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/VRML/VRML.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/VRML/VRML.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WAV/WAV.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WAV/WAV.c
 	"WAV.h"
 	<File/PXDataStream.h>
 	<Memory/PXMemory.h>
 	<File/Endian.h>
 	<Container/ClusterValue.h>
 	<Format/RIFF/RIFF.h>
+	<Math/PXMath.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WAV/WAV.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WAV/WAV.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
 	<Format/FMT/FMT.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WEBP/WEBP.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WEBP/WEBP.c
 	"WEBP.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WEBP/WEBP.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WEBP/WEBP.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PNG/PNG.c
+1674761627 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PNG/PNG.c
 	"PNG.h"
 	<stdlib.h>
 	<malloc.h>
@@ -2226,23 +2237,24 @@
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/Time.h
 	<Format/Type.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ZLIB/ZLIB.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ZLIB/ZLIB.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Format/PNG/PNG.h>
+	<File/PXDataStream.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WMA/WMA.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WMA/WMA.c
 	"WMA.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WMA/WMA.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WMA/WMA.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XingInfo/XingInfo.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XingInfo/XingInfo.c
 	"XingInfo.h"
 	<File/PXDataStream.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ZLIB/ZLIB.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ZLIB/ZLIB.c
 	"ZLIB.h"
 	<Container/ClusterValue.h>
 	<Math/PXMath.h>
@@ -2269,7 +2281,7 @@
 1662328622 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WEBM/WEBM.c
 	"WEBM.h"
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WEBM/WEBM.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/WEBM/WEBM.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
@@ -2336,7 +2348,7 @@
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/IP.c
 	"IP.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/IP.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/IP.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
@@ -2351,10 +2363,10 @@
 	<Error/PXActionResult.h>
 	<Network/CSocket.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Bash.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Bash.c
 	"Bash.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Bash.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Bash.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
@@ -2378,19 +2390,19 @@
 	<Async/Await.h>
 	<stdio.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Monitor.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Monitor.h
 	<Format/Type.h>
 	<OS/OSVersion.h>
 	<windows.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/Await.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/Await.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Monitor.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Monitor.c
 	"Monitor.h"
 	<Memory/PXMemory.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OpenFileDialog.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OpenFileDialog.c
 	"OpenFileDialog.h"
 	<OS/OSVersion.h>
 	<Text/Text.h>
@@ -2399,26 +2411,26 @@
 	<windows.h>
 	<shobjidl.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OpenFileDialog.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OpenFileDialog.h
 	<Format/Type.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSUI.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSUI.c
 	"OSUI.h"
 	<commctrl.h>
 	<commdlg.h>
-	<Memory/Memory.h>
+	<Memory/PXMemory.h>
 	<Text/Text.h>
-	<Math/Math.h>
+	<Math/PXMath.h>
 	<stdio.h>
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSUI.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSUI.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<OS/PXWindow.h>
 	<OS/OSVersion.h>
 	<Windows.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Program.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Program.c
 	"Program.h"
 	<stdio.h>
 	<spawn.h>
@@ -2427,7 +2439,7 @@
 	<Text/Text.h>
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Program.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Program.h
 	<OS/OSVersion.h>
 	<Format/Type.h>
 	<Error/PXActionResult.h>
@@ -2435,15 +2447,15 @@
 	<unistd.h>
 	<windows.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/User.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/User.c
 	"User.h"
 	<OS/OSVersion.h>
 	<Windows.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/User.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/User.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Processor/Processor.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Processor/Processor.c
 	"Processor.h"
 	<OS/OSVersion.h>
 	<Container/ClusterValue.h>
@@ -2456,13 +2468,14 @@
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Processor/Processor.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Text/Text.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Text/Text.c
 	"Text.h"
 	<OS/OSVersion.h>
 	<Memory/PXMemory.h>
 	<Math/PXMath.h>
 	<stdarg.h>
 	<stdio.h>
+	<stdlib.h>
 	<assert.h>
 
 1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/Time.c
@@ -4789,23 +4802,23 @@
 
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/Compiler.h
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Type.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Type.h
 	<stddef.h>
 	<OS/OSVersion.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/DataBase/DataBase.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/DataBase/DataBase.c
 	"DataBase.h"
 	<Memory/PXMemory.h>
 	<stdio.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/DataBase/DataBase.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/DataBase/DataBase.h
 	<OS/OSVersion.h>
 	<Windows.h>
 	<sqlext.h>
 	<sqltypes.h>
 	<Format/Type.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/PXDataStream.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/PXDataStream.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	"Endian.h"
@@ -4847,17 +4860,20 @@
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/JSON/JSON.h
 	<stddef.h>
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/PXWindow.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/PXWindow.h
 	<Format/Type.h>
 	<OS/OSVersion.h>
+	<GL/glx.h>
 	<X11/X.h>
 	<X11/Xlib.h>
 	<Windows.h>
 	<Device/VirtualKey.h>
-	<Async/Thread.h>
+	<Async/PXThread.h>
 	<Device/Mouse.h>
 	<Device/KeyBoard.h>
-	<Graphic/Graphic.h>
+	<Graphic/PXGraphic.h>
+	<OS/PXProcess.h>
+	<Async/PXThread.h>
 
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/Graphic.h
 	<Format/Image.h>
@@ -4865,10 +4881,11 @@
 	<Format/Type.h>
 	<Graphic/OpenGL/OpenGL.h>
 
-1664036697 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/OpenGL/OpenGL.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/OpenGL/OpenGL.h
 	<OS/OSVersion.h>
 	<X11/X.h>
 	<X11/Xlib.h>
+	<GL/glx.h>
 	<Windows.h>
 	<GL/gl.h>
 	<GL/glx.h>
@@ -4880,7 +4897,7 @@
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MSI/MSI.h
 	<stddef.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OBJ/OBJ.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OBJ/OBJ.c
 	"OBJ.h"
 	<Compiler/PXCompiler.h>
 	<File/PXDataStream.h>
@@ -4890,47 +4907,48 @@
 	<File/File.h>
 	<Math/PXMath.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OBJ/OBJ.h
-	<stddef.h>
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/OBJ/OBJ.h
 	<Error/PXActionResult.h>
-	<Format/MTL/MTL.h>
+	<Format/Type.h>
 	<File/PXDataStream.h>
+	<Format/MTL/MTL.h>
 	<Format/Model.h>
 
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PHP/PHP.c
 	"PHP.h"
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PHP/PHP.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PHP/PHP.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/Type.c
 	"Type.h"
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XML/XML.c
+1674761606 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XML/XML.c
 	"XML.h"
 	<Compiler/PXCompiler.h>
 	<Text/Text.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XML/XML.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/XML/XML.h
 	<Error/PXActionResult.h>
 	<Format/Type.h>
 	<File/PXDataStream.h>
 
-1669338154 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/YAML/YAML.c
+1674761523 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/YAML/YAML.c
 	"YAML.h"
 	<Compiler/PXCompiler.h>
 	<Container/ClusterValue.h>
 
-1669337848 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/YAML/YAML.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/YAML/YAML.h
 	<Error/PXActionResult.h>
 	<Format/Type.h>
 	<File/PXDataStream.h>
 	<Serialization/Serialization.h>
 
-1669338145 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/DirectX/DirectX.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/DirectX/DirectX.c
 	"DirectX.h"
 	<windows.h>
+	<d3d12.h>
 	<Memory/PXMemory.h>
 	<Text/Text.h>
 	<stdio.h>
@@ -4939,7 +4957,8 @@
 	<Format/Type.h>
 	<d3d9.h>
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/SoftwareRender/SoftwareRender.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/SoftwareRender/SoftwareRender.c
+	"SoftwareRender.h"
 
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/Vulcan/Vulcan.c
 	"Vulcan.h"
@@ -4957,71 +4976,71 @@
 	<File/PXDataStream.h>
 	<OS/PXWindow.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPClient.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPClient.c
 	"SBPClient.h"
 	<Memory/PXMemory.h>
 	<Text/Text.h>
 	<OS/User.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPClient.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPClient.h
 	<Format/Type.h>
 	"SBPProtocol.h"
 	<Network/PXClient.h>
 	<Async/PXThread.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPProtocol.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPProtocol.h
 	<Format/Type.h>
 	<Container/ClusterValue.h>
 	<File/File.h>
 	<Text/Text.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPProtocol.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPProtocol.c
 	"SBPProtocol.h"
 	<Memory/PXMemory.h>
 	<File/PXDataStream.h>
 	<OS/User.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPServer.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPServer.c
 	"SBPServer.h"
 	<stdio.h>
 	<File/PXDataStream.h>
 	<Text/Text.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPServer.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/SBP/SBPServer.h
 	<Format/Type.h>
 	"SBPProtocol.h"
 	<Container/Dictionary/PXDictionary.h>
 	<Network/PXServer.h>
 	<Network/PXClient.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/ClipBoard.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/ClipBoard.c
 	"ClipBoard.h"
 	<OS/OSVersion.h>
 	<Windows.h>
 	<WinUser.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/ClipBoard.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/ClipBoard.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Registry.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Registry.c
 	"Registry.h"
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Registry.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/Registry.h
 	<Format/Type.h>
 	<Windows.h>
 	<winreg.h>
 
-1664029545 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/PXWindow.c
+1674761678 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/PXWindow.c
 	"PXWindow.h"
 	<stdio.h>
 	<Event/Event.h>
-	<Memory/Memory.h>
+	<Memory/PXMemory.h>
 	<OS/Monitor.h>
 	<Text/Text.h>
 	<Async/Await.h>
-	<Graphic/Graphic.h>
+	<Graphic/PXGraphic.h>
 	<X11/cursorfont.h>
 	<X11/extensions/XInput.h>
 	<X11/extensions/XInput2.h>
@@ -5032,16 +5051,18 @@
 	<Dbt.h>
 	<winuser.rh>
 
-1664036961 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/OpenGL/OpenGL.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/OpenGL/OpenGL.c
 	"OpenGL.h"
 	<stdio.h>
 	<Error/PXActionResult.h>
-	<Memory/Memory.h>
+	<Memory/PXMemory.h>
 	<Text/Text.h>
 	<Container/ClusterValue.h>
 	<OS/PXWindow.h>
+	<Async/Await.h>
+	<GLEW/glew.h>
 
-1669338477 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/PXDataStream.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/PXDataStream.c
 	"PXDataStream.h"
 	<OS/OSVersion.h>
 	<Memory/PXMemory.h>
@@ -5053,19 +5074,20 @@
 	<fcntl.h>
 	<stdio.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/Await.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/Await.c
 	"Await.h"
 	<OS/OSVersion.h>
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Memory/PXMemory.h
-	<Format/Type.h>
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Memory/PXMemory.h
 	<OS/OSVersion.h>
+	<Format/Type.h>
+	<Compiler/PXCompilerSettings.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXThread.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXThread.c
 	"PXThread.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXThread.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXThread.h
 	<OS/OSVersion.h>
 	<Format/Type.h>
 	<Error/PXActionResult.h>
@@ -5073,62 +5095,62 @@
 	<unistd.h>
 	<windows.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompiler.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompiler.c
 	"PXCompiler.h"
 	<stdio.h>
 	<File/PXDataStream.h>
 	<Text/Text.h>
 	<Math/PXMath.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompiler.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompiler.h
 	<Error/PXActionResult.h>
 	<File/PXDataStream.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMath.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMath.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Dictionary/PXDictionary.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Dictionary/PXDictionary.c
 	"PXDictionary.h"
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Dictionary/PXDictionary.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Dictionary/PXDictionary.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Queue/PXQueue.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Queue/PXQueue.c
 	"PXQueue.h"
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Queue/PXQueue.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Queue/PXQueue.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/RingBuffer/PXRingBuffer.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/RingBuffer/PXRingBuffer.c
 	"PXRingBuffer.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/RingBuffer/PXRingBuffer.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/RingBuffer/PXRingBuffer.h
 	<Format/Type.h>
 
-1669337461 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXLock.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXLock.c
 	"PXLock.h"
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXLock.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Async/PXLock.h
 	<OS/OSVersion.h>
 	<Error/PXActionResult.h>
 	<semaphore.h>
 	<windows.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.c
 	"PXLinkedList.h"
 	<Memory/PXMemory.h>
 	<Math/PXMath.h>
 
-1669337517 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.h
 	<Format/Type.h>
 
-1669337559 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/List/PXList.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/List/PXList.c
 	"PXList.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/List/PXList.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/List/PXList.h
 	<Format/Type.h>
 
 1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/ELF/ELF.c
@@ -5148,7 +5170,7 @@
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/MSI/PXMSI.h
 	<Format/Type.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXTime.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXTime.h
 	<Format/Type.h>
 
 1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/RSA/RSA.c
@@ -5163,31 +5185,32 @@
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/SHA/PXSHA.h
 	<stddef.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXDiagram.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXDiagram.c
 	"PXDiagram.h"
 	<Memory/PXMemory.h>
 	<Math/PXMath.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXDiagram.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXDiagram.h
 	<Format/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMath.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMath.c
 	"PXMath.h"
 	<math.h>
 
-1669338437 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMatrix.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMatrix.c
 	"PXMatrix.h"
 	<Math/PXMath.h>
+	<Memory/PXMemory.h>
 	<stdio.h>
 
-1669338403 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMatrix.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMatrix.h
 	<Format/Type.h>
 	<Math/PXVector.h>
 
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXVector.h
 	<Format/Type.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Serialization/Serialization.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Serialization/Serialization.h
 	<Format/Type.h>
 
 1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXPhysic.c
@@ -5202,9 +5225,10 @@
 	"PXVector.h"
 	<Math/PXMath.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Memory/PXMemory.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Memory/PXMemory.c
 	"PXMemory.h"
 	<Math/PXMath.h>
+	<Error/PXActionResult.h>
 	<stdlib.h>
 	<malloc.h>
 	<sys/mman.h>
@@ -5214,18 +5238,19 @@
 	<stdio.h>
 	<Container/PXDictionary/PXDictionary.h>
 	<Time/Time.h>
+	<stdio.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXClient.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXClient.c
 	"PXClient.h"
 	<Memory/PXMemory.h>
 	<Event/Event.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXClient.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXClient.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
-	"PXSocket.h"
+	<Network/PXSocket.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXSocket.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXSocket.h
 	<OS/OSVersion.h>
 	<arpa/inet.h>
 	<netinet/in.h>
@@ -5241,56 +5266,58 @@
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXCamera.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXCamera.c
 	"PXCamera.h"
 	<Memory/PXMemory.h>
 	<Math/PXMath.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXCamera.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXCamera.h
 	<Format/Type.h>
 	<Math/PXMatrix.h>
 	<Math/PXVector.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXServer.c
+1674761651 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXServer.c
 	"PXServer.h"
 	<Event/Event.h>
 	<Memory/PXMemory.h>
+	<Math/PXMath.h>
+	<poll.h>
 	<stdio.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXServer.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXServer.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 	<Network/PXSocket.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/HardDrive.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/HardDrive.c
 	"HardDrive.h"
 	<OS/OSVersion.h>
 	<Memory/PXMemory.h>
 	<direct.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/HardDrive.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/HardDrive.h
 	<Format/Type.h>
 	<Error/PXActionResult.h>
 
-1669338527 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXSocket.c
+1674762769 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXSocket.c
 	"PXSocket.h"
 	<Memory/PXMemory.h>
 	<Text/Text.h>
 	<Event/Event.h>
 	<stdio.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Serialization/Serialization.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Serialization/Serialization.c
 	"Serialization.h"
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXStopWatch.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXStopWatch.c
 	"PXStopWatch.h"
 	<Memory/PXMemory.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXStopWatch.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXStopWatch.h
 	<Format/Type.h>
 	<Time/PXTime.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXTime.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/PXTime.c
 	"PXTime.h"
 	<OS/OSVersion.h>
 	<Windows.h>
@@ -6564,4 +6591,148 @@
 	<Time/PXTime.h>
 	<unistd.h>
 	<windows.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Algorithm/Dijkstra/PXDijkstra.c
+	"PXDijkstra.h"
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Algorithm/Dijkstra/PXDijkstra.h
+	<Format/Type.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Algorithm/KalmanFilter/PXKalmanFilter.c
+	"PXKalmanFilter.h"
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Algorithm/KalmanFilter/PXKalmanFilter.h
+	<Format/Type.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompilerSettings.h
+	<OS/OSVersion.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Audio/PXAudio.c
+	"PXAudio.h"
+	<Memory/PXMemory.h>
+	<Text/Text.h>
+	<stdio.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Audio/PXAudio.h
+	<Format/Type.h>
+	<windows.h>
+	<mmeapi.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompilerSettings.c
+	"PXCompilerSettings.h"
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXGraphic.h
+	<Format/Image.h>
+	<Format/Model.h>
+	<Format/Type.h>
+	<Graphic/OpenGL/OpenGL.h>
+	<Math/PXMatrix.h>
+	<Container/LinkedList/PXLinkedList.h>
+	<Async/PXLock.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/PXProcess.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<Time/PXTime.h>
+	<unistd.h>
+	<windows.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/LZ77/PXLZ77.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PXFont.h
+	<Format/Type.h>
+	<Error/PXActionResult.h>
+	<File/PXDataStream.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/LZ77/PXLZ77.c
+	"PXLZ77.h"
+	<Format/DEFLATE/DEFLATE.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PDF/PXPDF.c
+	"PXPDF.h"
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PDF/PXPDF.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<File/PXDataStream.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PXFont.c
+	"PXFont.h"
+	<Memory/PXMemory.h>
+	<Text/Text.h>
+	<File/PXDataStream.h>
+	<Format/FNT/FNT.h>
+	<Format/TTF/TTF.h>
+	<Format/Image.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PXSound.c
+	"PXSound.h"
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Format/PXSound.h
+	<Format/Type.h>
+
+1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/SoftwareRender/SoftwareRender.h
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Language/PXTranslator.c
+	"PXTranslator.h"
+	<Text/Text.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Language/PXTranslator.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+	<File/PXDataStream.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Library/PXLibrary.c
+	"PXLibrary.h"
+	<stdio.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Library/PXLibrary.h
+	<OS/OSVersion.h>
+	<sys/types.h>
+	<dlfcn.h>
+	<windows.h>
+	<Format/Type.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Log/PXLog.c
+	"PXLog.h"
+	<stdio.h>
+	<stdarg.h>
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Log/PXLog.h
+	<Format/Type.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/Web/PXWebServer.c
+	"PXWebServer.h"
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/Web/PXWebServer.h
+	<Error/PXActionResult.h>
+	<Format/Type.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSSignal.c
+	"OSSignal.h"
+
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSSignal.h
+	<OS/OSVersion.h>
+	<Format/Type.h>
+
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/PXProcess.c
+	"PXProcess.h"
+	<unistd.h>
+	<sys/resource.h>
+	<processthreadsapi.h>
+	<psapi.h>
+	<Memory/PXMemory.h>
+
+1674761664 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXGraphic.c
+	"PXGraphic.h"
+	<Graphic/OpenGL/OpenGL.h>
+	<File/PXDataStream.h>
+	<OS/PXWindow.h>
+	<Format/PXFont.h>
+	<Container/ClusterValue.h>
+	<Text/Text.h>
+	<Format/FNT/FNT.h>
 

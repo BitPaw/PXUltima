@@ -71,34 +71,46 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="Source/TestImage.c">
+		<Unit filename="Source/Compiler/TestPXCompiler.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/TestImage.h" />
-		<Unit filename="Source/TestOpenGL.c">
+		<Unit filename="Source/Compiler/TestPXCompiler.h" />
+		<Unit filename="Source/Compiler/TestYAML.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/TestOpenGL.h" />
-		<Unit filename="Source/TestPXCompiler.c">
+		<Unit filename="Source/Compiler/TestYAML.h" />
+		<Unit filename="Source/Graphic/TestFont.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/TestPXCompiler.h" />
-		<Unit filename="Source/TestSBP.c">
+		<Unit filename="Source/Graphic/TestFont.h" />
+		<Unit filename="Source/Graphic/TestImage.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/TestSBP.h" />
+		<Unit filename="Source/Graphic/TestImage.h" />
+		<Unit filename="Source/Graphic/TestOpenGL.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/TestOpenGL.h" />
+		<Unit filename="Source/Graphic/TestWindow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/TestWindow.h" />
+		<Unit filename="Source/Network/TestSBP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/TestSBP.h" />
+		<Unit filename="Source/Network/TestSocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/TestSocket.h" />
+		<Unit filename="Source/Sound/TestSound.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Sound/TestSound.h" />
 		<Unit filename="Source/TestSystemInfo.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/TestSystemInfo.h" />
-		<Unit filename="Source/TestWindow.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/TestWindow.h" />
-		<Unit filename="Source/TestYAML.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/TestYAML.h" />
 		<Unit filename="Source/main.c">
 			<Option compilerVar="CC" />
 		</Unit>
