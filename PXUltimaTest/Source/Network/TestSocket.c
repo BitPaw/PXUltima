@@ -51,15 +51,15 @@ void OnSocketDataReceive(const PXSocket* const pxSocket, const void* const messa
 
 void OnClientConnected(const PXSocket* serverSocket, const PXSocket* clientSocket)
 {
-	printf("[Server] Client connected.\n");
+	//printf("[Server] Client connected.\n");
 }
 void OnClientDisconnected(const PXSocket* serverSocket, const PXSocket* clientSocket)
 {
-	printf("[Server] Client disconnected.\n");
+	//printf("[Server] Client disconnected.\n");
 }
 void OnClientAcceptFailure(const PXSocket* serverSocket)
 {
-	printf("[Server] Client accepted failure.\n");
+	//printf("[Server] Client accepted failure.\n");
 }
 
 

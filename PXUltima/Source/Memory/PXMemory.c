@@ -219,6 +219,15 @@ PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSi
 	return bufferSize;
 }
 
+PXSize MemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
+{
+	const PXSize bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
+
+	memmove(outputBuffer, inputBuffer, bufferSize);
+
+	return bufferSize;
+}
+
 void* MemoryStackAllocate(const PXSize size)
 { 
 	void* const stackAllocated  =

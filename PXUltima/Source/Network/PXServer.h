@@ -26,8 +26,9 @@ extern "C"
 		PXSize PXClientSocketListSize;
 
 
-		fd_set SelectListenRead;
-		fd_set SelectListenWrite;
+		PXSize SocketPollingReadListSize;
+		PXSocketID* SocketPollingReadList;
+
 
 		PXClientConnectedEvent PXClientConnectedCallback;
 		PXClientDisconnectedEvent PXClientDisconnectedCallback;
@@ -39,6 +40,10 @@ extern "C"
 
 	PXPublic void PXServerConstruct(PXServer* const server);
 	PXPublic void PXServerDestruct(PXServer* const server);
+
+	PXPublic void PXSocketEventPull(PXServer* const server, void* const buffer, const PXSize bufferSize);
+	PXPublic void PXSocketEventReadRegister(PXServer* const server, const PXSocketID socketID);
+	PXPublic void PXSocketEventReadUnregister(PXServer* const server, const PXSocketID socketID);
 
 	PXPublic PXActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode);
 	PXPublic PXActionResult PXServerStop(PXServer* const server);

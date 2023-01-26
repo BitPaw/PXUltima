@@ -828,7 +828,7 @@ void PXSocketClose(PXSocket* const pxSocket)
     InvokeEvent(pxSocket->EventList.ConnectionTerminatedCallback, pxSocket);
 
 #if SocketDebug
-    printf("[PXSocket] Closed <%i>.\n", pxSocket->ID);
+    printf("[PXSocket] Closed <%i>\n", pxSocket->ID);
 #endif
 
     pxSocket->ID = SocketIDOffline;
@@ -929,7 +929,7 @@ PXActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
     }
 
 #if SocketDebug
-    printf("[PXSocket] Connection accepted successful.\n");
+    printf("[PXSocket] Connection accepted <%i>\n", client->ID);
 #endif
 
     return PXActionSuccessful;
@@ -960,7 +960,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
     InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket, inputBuffer, inputBufferSize);
 
 #if SocketDebug
-    printf("[#][Socket][Send] You >>> <%zi> %li Bytes\n", pxSocket->ID, inputBufferSize);
+    printf("[PXSocket] You --> <%zi> %li Bytes\n", pxSocket->ID, inputBufferSize);
 #endif
 
     // Send data
@@ -1037,7 +1037,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
                 *outputBytesWritten = byteRead;
 
 #if SocketDebug
-                printf("[#][Socket][Read] You <<< <%li> %i Bytes\n", pxSocket->ID, byteRead);
+                printf("[PXSocket] You <-- <%li> %i Bytes\n", pxSocket->ID, byteRead);
 #endif
 
                 InvokeEvent(pxSocket->EventList.MessageReceiveCallback, pxSocket, outputBuffer, byteRead);
