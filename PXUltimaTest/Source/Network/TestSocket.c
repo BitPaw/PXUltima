@@ -2,6 +2,7 @@
 
 #include <Network/PXServer.h>
 #include <Memory/PXMemory.h>
+#include <Format/HTTP/HTTP.h>
 
 #include <stdio.h>
 
@@ -13,6 +14,13 @@ void OnSocketDataSend(const PXSocket* const pxSocket, const void* message, const
 }
 void OnSocketDataReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize)
 {
+    //PXHTTPRequest pxHTTPRequest;
+    //PXDataStream pxDataStream;
+
+    //PXDataStreamFromExternal(&pxDataStream, message, messageSize);
+
+    //const PXActionResult actionResult = PXHTTPRequestParse(&pxHTTPRequest, &pxDataStream);
+
     const char exportBuffer[1024];
 
     const char buffer[] =

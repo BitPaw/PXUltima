@@ -977,7 +977,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
             return PXActionFailedSocketSend;
         }
 
-        *inputBytesWritten = writtenBytes;
+        if(inputBytesWritten) *inputBytesWritten = writtenBytes;
     }
 
     return PXActionSuccessful;

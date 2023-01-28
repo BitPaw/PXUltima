@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Network\Web\PXFTPClient.h" />
+    <ClInclude Include="Source\Format\FTP\FTP.h" />
+    <ClInclude Include="Source\Format\HTTP\HTTP.h" />
     <ClInclude Include="Source\Format\LZ77\PXLZ77.h" />
     <ClInclude Include="Source\Algorithm\Dijkstra\PXDijkstra.h" />
     <ClInclude Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.h" />
@@ -155,6 +158,9 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Network\Web\PXFTPClient.c" />
+    <ClCompile Include="Source\Format\FTP\FTP.c" />
+    <ClCompile Include="Source\Format\HTTP\HTTP.c" />
     <ClCompile Include="Source\Format\LZ77\PXLZ77.c" />
     <ClCompile Include="Source\Algorithm\Dijkstra\PXDijkstra.c" />
     <ClCompile Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.c" />
@@ -293,6 +299,8 @@
     <None Include="Source\Algorithm\KalmanFilter\README.md" />
     <None Include="Source\Audio\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
+    <None Include="Source\Format\FTP\README.md" />
+    <None Include="Source\Format\HTTP\README.md" />
     <None Include="Source\Format\LAME\README.md" />
     <None Include="Source\Format\LZ77\README.md" />
     <None Include="Source\Format\PDF\README.md" />

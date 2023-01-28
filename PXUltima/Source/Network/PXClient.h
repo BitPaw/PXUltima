@@ -19,9 +19,13 @@ extern "C"
 		PXSocket SocketPXClient;
 		PXSocket SocketConnectedServer;
 
+		PXSocketEventListener EventListener;
+
 		ConnectedToServerEvent ConnectedToServerCallback;
 	}
 	PXClient;
+
+	PXPublic PXActionResult PXClientConstruct(PXClient* const pxClient);
 
 	PXPublic PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
 

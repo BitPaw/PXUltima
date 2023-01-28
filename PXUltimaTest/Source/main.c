@@ -10,6 +10,7 @@
 #include "Compiler/TestYAML.h"
 #include "Sound/TestSound.h"
 #include "Network/TestSocket.h"
+#include "Network/TestFTP.h"
 
 #include <Graphic/DirectX/DirectX.h>
 
@@ -34,9 +35,14 @@ int main()
 #endif
 
 
-#if 1
+#if 0
 	TestSocket();
 #endif // 1
+
+
+#if 1
+	TestFTPAll();
+#endif // 0
 
 
 

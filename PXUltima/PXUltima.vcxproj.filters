@@ -417,6 +417,15 @@
     <ClInclude Include="Source\Format\LZ77\PXLZ77.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Format\HTTP\HTTP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\FTP\FTP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\Web\PXFTPClient.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -815,6 +824,15 @@
     <ClCompile Include="Source\Format\LZ77\PXLZ77.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Format\HTTP\HTTP.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Format\FTP\FTP.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Web\PXFTPClient.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
@@ -824,5 +842,7 @@
     <None Include="Source\Algorithm\Dijkstra\README.md" />
     <None Include="Source\Format\LZ77\README.md" />
     <None Include="Source\Format\LAME\README.md" />
+    <None Include="Source\Format\HTTP\README.md" />
+    <None Include="Source\Format\FTP\README.md" />
   </ItemGroup>
 </Project>
