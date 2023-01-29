@@ -45,7 +45,7 @@ void OnSocketDataReceiveFTP(const PXSocket* const pxSocket, const void* const me
 			}
 			case PXFTPResultPathNameCreated:
 			{
-				bufferOffset += PXFTPCommandBuildSYST(bufferThing, bufferOffset);
+				bufferOffset += PXFTPCommandBuildStat(bufferThing, bufferOffset);
 
 				PXSocketSend(pxSocket, bufferThing, bufferOffset, 0);
 
