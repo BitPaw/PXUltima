@@ -1,7 +1,7 @@
 #pragma once
 
 #include <File/PXDataStream.h>
-#include "../Error/ActionResult.hpp"
+#include <Error/ActionResult.hpp>
 
 namespace PX
 {
@@ -41,7 +41,7 @@ namespace PX
 			}
 		}
 
-		PX::ActionResult  OpenFromPathReadOnly(System::String^ filePath);
+		PX::ActionResult OpenFromPathReadOnly(System::String^ filePath);
 		PX::ActionResult OpenFromPath(System::String^ filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 		PX::ActionResult Close();
 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Error\ActionResult.hpp" />
     <ClInclude Include="Source\File\DataStream.hpp" />
     <ClInclude Include="Source\Math\Matrix.hpp" />
     <ClInclude Include="Source\Async\Lock.hpp" />
@@ -28,6 +29,7 @@
     <ClInclude Include="Source\Math\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Error\ActionResult.cpp" />
     <ClCompile Include="Source\File\DataStream.cpp" />
     <ClCompile Include="Source\Math\Matrix.cpp" />
     <ClCompile Include="Source\Async\Lock.cpp" />
@@ -96,18 +98,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)PXUltima/Source/;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)PXUltima/Source/;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)PXUltima/Source/;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)PXUltima/Source/;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

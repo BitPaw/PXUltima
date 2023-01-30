@@ -2,7 +2,7 @@
 
 namespace PX
 {
-	public enum class ActionResult
+	enum class ActionResult
 	{
 		Invalid, // Default iniitlialisation value, no not use.
 		Successful, //  finished successful

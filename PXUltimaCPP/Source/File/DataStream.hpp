@@ -17,7 +17,7 @@ namespace PX
 		//---------------------------------------------------------------------
 
 		//---<Open>------------------------------------------------------------
-		ActionResult OpenFromPath(const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
+		PXActionResult OpenFromPath(const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 		ActionResult OpenFromPath(const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 		//ActionResult OpenFromPath(const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 		//---------------------------------------------------------------------
