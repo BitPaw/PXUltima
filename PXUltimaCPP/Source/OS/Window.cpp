@@ -2,10 +2,12 @@
 
 PX::Window::Window()
 {
+	PXWindowConstruct(this);
 }
 
 PX::Window::~Window()
 {
+	PXWindowDestruct(this);
 }
 
 void PX::Window::Create(const unsigned int width, const unsigned int height, const char* title, bool async)

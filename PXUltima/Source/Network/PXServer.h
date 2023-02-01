@@ -2,7 +2,6 @@
 #define PXServerINCLUDE
 
 #include <Format/Type.h>
-
 #include <Error/PXActionResult.h>
 #include <Network/PXSocket.h>
 
@@ -13,26 +12,13 @@ extern "C"
 
 	typedef struct PXClient_ PXClient;
 
-	typedef void (*PXClientConnectedEvent)(const PXSocket* serverSocket, const PXSocket* clientSocket);
-	typedef void (*PXClientDisconnectedEvent)(const PXSocket* serverSocket, const PXSocket* clientSocket);
-	typedef void (*PXClientAcceptFailureEvent)(const PXSocket* serverSocket);
-
 	typedef struct PXServer_
 	{
+		PXSocketState State;
+
 		PXSocket* ServerSocketList;
 		PXSize ServerSocketListSize;
-
-		PXSocket* PXClientSocketList;
-		PXSize PXClientSocketListSize;
-
-
-		PXSize SocketPollingReadListSize;
-		PXSocketID* SocketPollingReadList;
-
-
-		PXClientConnectedEvent PXClientConnectedCallback;
-		PXClientDisconnectedEvent PXClientDisconnectedCallback;
-		PXClientAcceptFailureEvent PXClientAcceptFailureCallback;
+		PXSize ServerSocketListSizeAllocated;
 
 		PXSocketEventListener SocketEventListener;
 	}
@@ -41,16 +27,11 @@ extern "C"
 	PXPublic void PXServerConstruct(PXServer* const server);
 	PXPublic void PXServerDestruct(PXServer* const server);
 
-	PXPublic void PXSocketEventPull(PXServer* const server, void* const buffer, const PXSize bufferSize);
-	PXPublic void PXSocketEventReadRegister(PXServer* const server, const PXSocketID socketID);
-	PXPublic void PXSocketEventReadUnregister(PXServer* const server, const PXSocketID socketID);
+	PXPrivate PXBool PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID socketID, PXSocket** const pxSocket);
 
 	PXPublic PXActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode);
 	PXPublic PXActionResult PXServerStop(PXServer* const server);
 	PXPublic PXActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID);
-	PXPublic PXSocket* PXServerGetPXClientViaID(PXServer* const server, const PXSocketID socketID);
-
-	PXPublic void PXServerRegisterPXClient(PXServer* const server, PXClient* const client);
 
 	//CPublic PXActionResult PXServerSendMessageToAll(PXServer* server, const unsigned char* data, const PXSize dataSize);
 //	CPublic PXActionResult PXServerSendMessageToPXClient(PXServer* server, const PXSocketID clientID, const unsigned char* data, const PXSize dataSize);

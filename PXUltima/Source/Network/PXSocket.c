@@ -3,13 +3,17 @@
 #include <Memory/PXMemory.h>
 #include <Text/Text.h>
 #include <Event/Event.h>
+#include <Math/PXMath.h>
 #include <stdio.h>
 
 #if OSUnix
-
+#include <poll.h>
+#define OSSocketPoll poll
 #elif OSWindows
 #pragma comment(lib, "Ws2_32.lib")
+#define OSSocketPoll WSAPoll
 #endif
+
 
 #define ProtocolInvalid (unsigned int)-1
 #define ProtocolHOPOPTS 0
@@ -667,19 +671,10 @@ PXActionResult PXSocketSetupAdress
     PXSocket* const pxSocketList,
     const PXSize PXSocketListSizeMax,
     PXSize* PXSocketListSize,
-    const char* const ip, // null for any ipAdress
-    unsigned short port, // -1 for no port
-    IPAdressFamily ipMode,
-    PXSocketType socketType,
-    ProtocolMode protocolMode
+    PXSocketAdressSetupInfo* const pxSocketAdressSetupInfoList,
+    const PXSize pxSocketAdressSetupInfoListSize
 )
 {
-    char portNumberString[30];
-    char* portNumberStringAdress = 0;
-    AdressInfoType adressHints;
-    AdressInfoType* adressResult = 0;
-    // ADRRINFOW?
-
 #if OSWindows
     {
         const PXActionResult wsaResult = WindowsSocketAgentStartup();
@@ -688,115 +683,127 @@ PXActionResult PXSocketSetupAdress
     }
 #endif
 
-    if(port != -1)
+    MemoryClear(pxSocketList, sizeof(PXSocket) * PXSocketListSizeMax);
+
+    *PXSocketListSize = 0;
+
+    for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
     {
-        TextFromIntA(port, portNumberString, 30u);
+        PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo = &pxSocketAdressSetupInfoList[i];
 
-        portNumberStringAdress = portNumberString;
-    }
+        char portNumberString[30];
+        char* portNumberStringAdress = 0;
+        AdressInfoType adressHints;
+        AdressInfoType* adressResult = 0;
+        // ADRRINFOW?
 
-    adressHints.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
-    adressHints.ai_family = ConvertFromIPAdressFamily(ipMode);
-    adressHints.ai_socktype = ConvertFromSocketType(socketType); // Datagram socket
-    adressHints.ai_protocol = ConvertFromProtocolMode(protocolMode);
-    adressHints.ai_addrlen = 0;
-    adressHints.ai_canonname = 0;
-    adressHints.ai_addr = 0;
-    adressHints.ai_next = 0;
 
-    int adressInfoResult = getaddrinfo(ip, portNumberString, &adressHints, &adressResult);
-
-    switch(adressInfoResult)
-    {
-        case 0:
-            break; // OK - Sucess
-
-#if OSWindows
-        case EAI_ADDRFAMILY:
-            return PXActionRefusedHostHasNoNetworkAddresses;
-#endif
-        case EAI_AGAIN:
-            return PXActionRefusedNameServerIsTemporaryOffline;
-
-        case EAI_BADFLAGS:
-            return PXActionRefusedSocketInvalidFlags;
-
-        case EAI_FAIL:
-            return PXActionRefusedNameServerIsPermanentOffline;
-
-        case EAI_FAMILY:
-            return PXActionRefusedRequestedAddressFamilyNotSupported;
-
-        case EAI_MEMORY:
-            return PXActionFailedAllocation;
-
-            // case EAI_NODATA:
-             //    return SocketPXActionResultHostExistsButHasNoData;
-
-             //case EAI_NONAME:
-               //  return SocketPXActionResultIPOrPortNotKnown;
-
-        case EAI_SERVICE:
-            return RequestedServiceNotAvailableForSocket;
-
-        case EAI_SOCKTYPE:
-            return PXActionRefusedSocketTypeNotSupported;
-
-#if OSWindows
-        case WSANOTINITIALISED:
-            return WindowsSocketSystemNotInitialized;
-#endif
-        default:
-            // case EAI_SYSTEM:
+        if (pxSocketAdressSetupInfo->Port != -1)
         {
-            // ErrorCode error = GetCurrentError();
+            TextFromIntA(pxSocketAdressSetupInfo->Port, portNumberString, 30u);
 
-            break;
+            portNumberStringAdress = portNumberString;
         }
-    }
 
-    PXSize index = 0;
+        adressHints.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
+        adressHints.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
+        adressHints.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
+        adressHints.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
+        adressHints.ai_addrlen = 0;
+        adressHints.ai_canonname = 0;
+        adressHints.ai_addr = 0;
+        adressHints.ai_next = 0;
 
-    for(AdressInfoType* adressInfo = adressResult; adressInfo; adressInfo = adressInfo->ai_next)
-    {
-        PXSocket* const pxSocket = &pxSocketList[index++];
-        struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfo->ai_addr;
-        const char* result = 0;
+        int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP, portNumberString, &adressHints, &adressResult);
 
-        MemoryClear(pxSocket->IP, IPv6LengthMax);
-
-        result = inet_ntop(adressInfo->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
-
-        switch(adressInfo->ai_family)
+        switch (adressInfoResult)
         {
-            case AF_INET:
-            {
-                pxSocket->Port = ntohs((((struct sockaddr_in*)adressInfo->ai_addr)->sin_port));
-                break;
-            }
-            case AF_INET6:
-            {
-                pxSocket->Port = ntohs((((struct sockaddr_in6*)adressInfo->ai_addr)->sin6_port));
-                break;
-            }
+            case 0:
+                break; // OK - Sucess
+
+#if OSWindows
+            case EAI_ADDRFAMILY:
+                return PXActionRefusedHostHasNoNetworkAddresses;
+#endif
+            case EAI_AGAIN:
+                return PXActionRefusedNameServerIsTemporaryOffline;
+
+            case EAI_BADFLAGS:
+                return PXActionRefusedSocketInvalidFlags;
+
+            case EAI_FAIL:
+                return PXActionRefusedNameServerIsPermanentOffline;
+
+            case EAI_FAMILY:
+                return PXActionRefusedRequestedAddressFamilyNotSupported;
+
+            case EAI_MEMORY:
+                return PXActionFailedAllocation;
+
+                // case EAI_NODATA:
+                 //    return SocketPXActionResultHostExistsButHasNoData;
+
+                 //case EAI_NONAME:
+                   //  return SocketPXActionResultIPOrPortNotKnown;
+
+            case EAI_SERVICE:
+                return RequestedServiceNotAvailableForSocket;
+
+            case EAI_SOCKTYPE:
+                return PXActionRefusedSocketTypeNotSupported;
+
+#if OSWindows
+            case WSANOTINITIALISED:
+                return WindowsSocketSystemNotInitialized;
+#endif
             default:
+                // case EAI_SYSTEM:
             {
-                pxSocket->Port = 0;
+                // ErrorCode error = GetCurrentError();
+
                 break;
             }
         }
 
-        pxSocket->Protocol = protocolMode;
-        pxSocket->Family = ipMode;
-        pxSocket->Type = socketType;
+        for (AdressInfoType* adressInfo = adressResult; adressInfo; adressInfo = adressInfo->ai_next)
+        {
+            PXSocket* const pxSocket = &pxSocketList[(*PXSocketListSize)++];
+            struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfo->ai_addr;
+            const char* result = 0;
 
-        pxSocket->IPSize = adressInfo->ai_addrlen;
-        MemoryCopy(adressInfo->ai_addr, adressInfo->ai_addrlen, pxSocket->IP, IPv6LengthMax);
-    }
+            MemoryClear(pxSocket->IP, IPv6LengthMax);
 
-    *PXSocketListSize = index;
+            result = inet_ntop(adressInfo->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
 
-    AdressInfoDelete(adressResult);
+            switch (adressInfo->ai_family)
+            {
+                case AF_INET:
+                {
+                    pxSocket->Port = ntohs((((struct sockaddr_in*)adressInfo->ai_addr)->sin_port));
+                    break;
+                }
+                case AF_INET6:
+                {
+                    pxSocket->Port = ntohs((((struct sockaddr_in6*)adressInfo->ai_addr)->sin6_port));
+                    break;
+                }
+                default:
+                {
+                    pxSocket->Port = 0;
+                    break;
+                }
+            }
+
+            pxSocket->Protocol = pxSocketAdressSetupInfo->ProtocolMode;
+            pxSocket->Family = pxSocketAdressSetupInfo->IPMode;
+            pxSocket->Type = pxSocketAdressSetupInfo->SocketType;
+            pxSocket->IPSize = adressInfo->ai_addrlen;
+
+            MemoryCopy(adressInfo->ai_addr, adressInfo->ai_addrlen, pxSocket->IP, IPv6LengthMax);
+        }
+
+        AdressInfoDelete(adressResult);
+    }  
 
     return PXActionSuccessful;
 }
@@ -832,6 +839,221 @@ void PXSocketClose(PXSocket* const pxSocket)
 #endif
 
     pxSocket->ID = SocketIDOffline;
+}
+
+void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState)
+{
+    pxSocket->State = socketState;
+}
+
+void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize)
+{
+    PXSocketStateChange(pxSocket, SocketEventPolling);
+
+#if 0 // Use optimised OS function
+
+    struct pollfd* socketDataList = buffer;
+    PXSize socketDataListSize = pxSocket->SocketPollingReadListSize;
+    int timeout = 50;
+
+    for (PXSize i = 0; i < socketDataListSize; ++i)
+    {
+        struct pollfd* socketDataListCurrent = &socketDataList[i];
+
+        socketDataListCurrent->fd = pxSocket->SocketPollingReadList[i];
+        socketDataListCurrent->events = POLLRDNORM;
+        socketDataListCurrent->revents = 0;
+    }
+
+    const int amount = OSSocketPoll(socketDataList, socketDataListSize, timeout); // Not thread safe??
+    const PXBool success = amount != -1;
+
+#if OSWindows
+    if (!success)
+    {
+        const int wasError = WSAGetLastError();
+
+        switch (wasError)
+        {
+
+            case  WSAENETDOWN: //              The network subsystem has failed.
+                printf("[Polling] WSAENETDOWN\n");
+                break;
+
+
+            case      WSAEFAULT: //                An exception occurred while reading user input parameters.
+
+                printf("[Polling] WSAEFAULT\n");
+                break;
+
+            case  WSAEINVAL: //                 An invalid parameter was passed.This error is returned if the WSAPOLLFD structures pointed to by the fdarray parameter when requesting socket status.This error is also returned if none of the sockets specified in the fd member of any of the WSAPOLLFD structures pointed to by the fdarray parameter were valid.
+
+                printf("[Polling] WSAEINVAL\n");
+                break;
+
+            case  WSAENOBUFS: // The function was unable to allocate sufficient memory. 
+
+                printf("[Polling] WSAENOBUFS\n");
+                break;
+
+            default:
+                printf("[Polling] Error\n");
+                break;
+        }
+
+        // PXActionResult action = GetCurrentError();
+
+
+        return;
+    }
+#endif 
+
+    for (PXSize i = 0; i < amount; i++)
+    {
+        const struct pollfd* const currentPollData = &socketDataList[i];
+
+        switch (currentPollData->revents)
+        {
+            case POLLERR: // An error has occurred.
+            case POLLHUP: // A stream - oriented connection was either disconnected or aborted.
+            {
+                PXSocketEventReadUnregister(pxSocket, currentPollData->fd);
+                break;
+            }
+            case POLLNVAL: // An invalid socket was used.
+            case POLLPRI: // Priority data may be read without blocking.This flag is not returned by the Microsoft Winsock provider.
+            case POLLRDBAND: // Priority band(out - of - band) data may be read without blocking.
+            case POLLRDNORM: // Normal data may be read without blocking.
+            {
+                PXSocketReadPendingHandle(pxSocket, currentPollData->fd);
+                break;
+            }
+            case POLLWRNORM: // Normal data may be written without blocking.
+
+            default:
+                break;
+        }
+    }
+
+#else
+
+    const PXSize neededFetches = (pxSocket->SocketPollingReadListSize / FD_SETSIZE) + 1;
+
+    const TIMEVAL time = { 3,0 };
+
+    PXSize restValues = pxSocket->SocketPollingReadListSize;
+    fd_set selectListenRead;
+
+    for (PXSize i = 0; i < neededFetches; ++i)
+    {
+        const PXSocketID* const socketIDList = &pxSocket->SocketPollingReadList[i * FD_SETSIZE];
+        const PXSize fdBlockSize = MathMinimumIU(restValues, FD_SETSIZE);
+        const PXSize fdBlockSizeBytes = fdBlockSize * sizeof(PXSocketID);
+
+        restValues -= fdBlockSize;
+
+        selectListenRead.fd_count = fdBlockSize;
+
+        MemoryCopy(socketIDList, fdBlockSizeBytes, &selectListenRead.fd_array, fdBlockSizeBytes);
+
+        const int numberOfSocketEvents = select(0, &selectListenRead, 0, 0, 0);
+
+        for (PXSize l = 0; l < numberOfSocketEvents; ++l)
+        {
+            const PXSocketID socketID = selectListenRead.fd_array[i];
+
+            PXSocketReadPendingHandle(pxSocket, socketID);
+        }
+    }
+#endif
+
+    PXSocketStateChange(pxSocket, SocketIDLE);
+}
+
+void PXSocketEventReadRegister(PXSocket* const pxSocket, const PXSocketID socketID)
+{
+    PXSocketID* const socketIDRef = &pxSocket->SocketPollingReadList[pxSocket->SocketPollingReadListSize++];
+
+    *socketIDRef = socketID;
+}
+
+void PXSocketEventReadUnregister(PXSocket* const pxSocket, const PXSocketID socketID)
+{
+    PXSize offset = 0;
+    PXSocketID* socketIDRef = 0;
+
+    for (offset = 0; offset < pxSocket->SocketPollingReadListSize; ++offset)
+    {
+        const PXSocketID compareID = pxSocket->SocketPollingReadList[offset];
+
+        if (compareID == socketID)
+        {
+            // found
+            socketIDRef = &pxSocket->SocketPollingReadList[offset];
+            break;
+        }
+    }
+
+    if (!socketIDRef)
+    {
+        return;
+    }
+
+    PXBool endOfList = offset + 1 == pxSocket->SocketPollingReadListSize;
+
+    if (endOfList)
+    {
+        *socketIDRef = 0;
+    }
+    else
+    {
+        PXSize copySize = pxSocket->SocketPollingReadListSize - offset - 1;
+
+        MemoryMove(socketIDRef + 1, copySize, socketIDRef, copySize);
+    }
+
+    --(pxSocket->SocketPollingReadListSize);
+}
+
+void PXSocketReadPendingHandle(PXSocket* const pxSocket, const PXSocketID socketID)
+{
+    if (pxSocket->ID == socketID)
+    {
+        PXSocket clientSocket;
+
+        PXSocketConstruct(&clientSocket);
+
+        // Set Events
+
+        const PXActionResult actionResult = PXSocketAccept(pxSocket, &clientSocket);
+        const PXBool successful = PXActionSuccessful == actionResult;
+
+        if (!successful)
+        {
+            //InvokeEvent(server->PXClientAcceptFailureCallback, serverSocket);
+            return;
+        }
+
+        // InvokeEvent(server->PXClientConnectedCallback, serverSocket, &clientSocket);
+
+        PXSocketEventReadRegister(pxSocket, clientSocket.ID);
+    }
+    else
+    {
+        PXSocket clientSocket;
+
+        PXSocketConstruct(&clientSocket);
+
+        clientSocket.ID = socketID;
+        clientSocket.EventList = pxSocket->EventList;
+
+        char inputBuffer[1024];
+        PXSize wrrit = 0;
+
+        PXSocketEventReadUnregister(pxSocket, clientSocket.ID);
+
+        PXSocketReceive(&clientSocket, inputBuffer, 1024, &wrrit);
+    }
 }
 
 PXActionResult PXSocketBind(PXSocket* const pxSocket)

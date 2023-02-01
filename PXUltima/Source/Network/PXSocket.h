@@ -141,7 +141,7 @@ extern "C"
 		ProtocolModeRAW,
 		ProtocolModeMAX,
 		//
-		//  These are reserved for CPrivate use by Windows.
+		//  These are reserved for private use by Windows.
 		//
 		ProtocolModeWindowsRAW,
 		ProtocolModeWindowsIPSEC,
@@ -154,6 +154,11 @@ extern "C"
 	typedef enum PXSocketState_
 	{
 		SocketNotInitialised,
+
+		SocketIDLE, // Waiting for action, currently doing nothing
+		SocketEventPolling, // Polling for events on multible sockets
+		SocketOffline,
+
 		// PXClient only
 		SocketConnecting,
 		SocketConnected,
@@ -161,9 +166,8 @@ extern "C"
 		SocketDataSending,
 		SocketFileReceiving,
 		SocketFileSending,
+
 		// PXServer only
-		SocketWaitingForConnection, // listenung
-		SocketIDLE
 	}
 	PXSocketState;
 
@@ -182,6 +186,10 @@ extern "C"
 	// PXClient Only
 	typedef void (*PXSocketConnectionEstablishedEvent)(const PXSocket* const pxSocket);
 	typedef void (*PXSocketConnectionTerminatedEvent)(const PXSocket* const pxSocket);
+
+	typedef void (*PXClientConnectedEvent)(const PXSocket* serverSocket, const PXSocket* clientSocket);
+	typedef void (*PXClientDisconnectedEvent)(const PXSocket* serverSocket, const PXSocket* clientSocket);
+	typedef void (*PXClientAcceptFailureEvent)(const PXSocket* serverSocket);
 
 	typedef struct PXSocketEventListener_
 	{
@@ -206,6 +214,8 @@ extern "C"
 
 	typedef struct PXSocket_
 	{
+		PXSocketState State;
+
 		// Connection Info
 		PXSocketID ID;
 		ProtocolMode Protocol;
@@ -215,9 +225,12 @@ extern "C"
 		PXSize IPSize;
 		unsigned short Port;
 
-		//----------------------------
 
-		PXSocketState State;
+		void* Owner;
+
+		//----------------------------
+		PXSize SocketPollingReadListSize;
+		PXSocketID* SocketPollingReadList;
 
 		//---<CPrivate IO>------------
 		PXThread CommunicationThread;
@@ -226,6 +239,16 @@ extern "C"
 		PXSocketEventListener EventList;
 	}
 	PXSocket;
+
+	typedef struct PXSocketAdressSetupInfo_
+	{
+		const char* const IP; // null for any ipAdress
+		unsigned short Port; // -1 for no port
+		IPAdressFamily IPMode;
+		PXSocketType SocketType;
+		ProtocolMode ProtocolMode;
+	}
+	PXSocketAdressSetupInfo;
 
 
 	PXPrivate ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode);
@@ -256,15 +279,20 @@ extern "C"
 		PXSocket* const pxSocketList,
 		const PXSize PXSocketListSizeMax,
 		PXSize* PXSocketListSize,
-		const char* const ip, // null for any ipAdress
-		unsigned short port, // -1 for no port
-		IPAdressFamily ipMode,
-		PXSocketType socketType,
-		ProtocolMode protocolMode
+		PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo,
+		const PXSize pxSocketAdressSetupInfoSize
 	);
 
 	PXPublic PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
 	PXPublic void PXSocketClose(PXSocket* const pxSocket);
+
+	PXPublic void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState);
+
+	PXPublic void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize);
+	PXPublic void PXSocketEventReadRegister(PXSocket* const pxSocket, const PXSocketID socketID);
+	PXPublic void PXSocketEventReadUnregister(PXSocket* const pxSocket, const PXSocketID socketID);
+
+	PXPublic void PXSocketReadPendingHandle(PXSocket* const pxSocket, const PXSocketID socketID);
 
 	PXPublic PXActionResult PXSocketBind(PXSocket* const pxSocket);
 	PXPublic PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket);

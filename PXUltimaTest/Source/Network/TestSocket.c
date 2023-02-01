@@ -6,8 +6,6 @@
 
 #include <stdio.h>
 
-
-
 void OnSocketDataSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize)
 {
 
@@ -84,15 +82,14 @@ void TestSocketServerGeneral()
 
     server.SocketEventListener.MessageSendCallback = OnSocketDataSend;
     server.SocketEventListener.MessageReceiveCallback = OnSocketDataReceive;
-	server.PXClientConnectedCallback = OnClientConnected;
-	server.PXClientDisconnectedCallback = OnClientDisconnected;
-	server.PXClientAcceptFailureCallback = OnClientAcceptFailure;
-	server.ServerSocketListSize = 1;
+	//server.SocketEventListener.ConnectionLinkedCallback = OnClientConnected;
+	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientDisconnected;
+	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientAcceptFailure;
+	server.ServerSocketListSize = 5;
+    server.ServerSocketListSizeAllocated = server.ServerSocketListSize;
 	server.ServerSocketList = MemoryAllocateClear(sizeof(PXSocket) * server.ServerSocketListSize);
-	server.PXClientSocketListSize = 5;
-	server.PXClientSocketList = MemoryAllocateClear(sizeof(PXSocket) * server.PXClientSocketListSize);
 
-	const PXActionResult startResult = PXServerStart(&server, 25565, ProtocolModeTCP);
+	const PXActionResult startResult = PXServerStart(&server, 12345, ProtocolModeTCP);
 
 	while (1)
 	{

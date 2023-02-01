@@ -35,12 +35,12 @@ int main()
 #endif
 
 
-#if 0
+#if 1
 	TestSocket();
 #endif // 1
 
 
-#if 1
+#if 0
 	TestFTPAll();
 #endif // 0
 
