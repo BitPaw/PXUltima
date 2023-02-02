@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PXUltimaSharpTest": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

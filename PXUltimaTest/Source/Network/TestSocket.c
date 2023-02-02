@@ -85,9 +85,6 @@ void TestSocketServerGeneral()
 	//server.SocketEventListener.ConnectionLinkedCallback = OnClientConnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientDisconnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientAcceptFailure;
-	server.ServerSocketListSize = 5;
-    server.ServerSocketListSizeAllocated = server.ServerSocketListSize;
-	server.ServerSocketList = MemoryAllocateClear(sizeof(PXSocket) * server.ServerSocketListSize);
 
 	const PXActionResult startResult = PXServerStart(&server, 12345, ProtocolModeTCP);
 

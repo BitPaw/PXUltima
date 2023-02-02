@@ -47,6 +47,10 @@ PXActionResult PXServerStart(PXServer* const server, const unsigned short port, 
         };
         const PXSize pxSocketAdressSetupInfoListSize = sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
 
+        server->ServerSocketListSize = pxSocketAdressSetupInfoListSize;
+        server->ServerSocketListSizeAllocated = pxSocketAdressSetupInfoListSize;
+        server->ServerSocketList = MemoryAllocateClear(sizeof(PXSocket) * pxSocketAdressSetupInfoListSize);
+
         const PXActionResult adressResult = PXSocketSetupAdress
         (
             server->ServerSocketList,

@@ -12,10 +12,16 @@ namespace PXTest
 
             //window.Create("Test");
 
+#if false
+
             Console.WriteLine("Test");
             DataStream dataStream = new DataStream();
             ActionResult x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
+#endif
 
+            Server server = new Server();
+            server.Start(25565);
+            
 
 
             while (true)

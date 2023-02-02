@@ -1244,7 +1244,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
             case 0:// endOfFile
             {
 #if SocketDebug
-                printf("[PXSocket] Connection close signal detected!\n");
+                printf("[PXSocket] Connection <%i> close signal detected!\n", pxSocket->ID);
 #endif
 
                 PXSocketClose(pxSocket);
@@ -1299,7 +1299,7 @@ PXActionResult WindowsSocketAgentStartup(void)
 
 PXActionResult WindowsSocketAgentShutdown(void)
 {
-    int result = WSACleanup();
+    const int result = WSACleanup();
 
     switch(result)
     {
