@@ -1,10 +1,23 @@
-﻿using PX;
-using System;
+﻿using System;
 
 namespace PXTest
 {
     class Hello
     {
+        public static void SocketDataSendEvent(ulong pxSocket, byte[] buffer)
+        {
+            string result = System.Text.Encoding.UTF8.GetString(buffer);
+
+            Console.WriteLine("[C#] Message " + result);
+        }
+
+        public static void SocketDataReceiveEvent(ulong pxSocket, byte[] buffer)
+        {
+            string result = System.Text.Encoding.UTF8.GetString(buffer);
+
+            Console.WriteLine("[C#] Message " + result);
+        }
+
         static void Main(string[] args)
         {
 
@@ -19,7 +32,9 @@ namespace PXTest
             ActionResult x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
 #endif
 
-            Server server = new Server();
+            PX.Server server = new PX.Server();
+            server.OnDataReceive += SocketDataReceiveEvent;
+            server.OnDataSend += SocketDataSendEvent;
             server.Start(25565);
             
 
