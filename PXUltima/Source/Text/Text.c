@@ -223,6 +223,55 @@ PXSize TextToDoubleW(const wchar_t* string, const PXSize dataSize, double* numbe
 	return 0;
 }
 
+PXSize TextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number)
+{
+	const PXSize numberOfDigits = sizeof(PXInt8U) * 8u;
+	const PXSize written = TextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
+
+	return written;
+}
+
+PXSize TextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number)
+{
+	const PXSize numberOfDigits = sizeof(PXInt16U) * 8u;
+	const PXSize written = TextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
+
+	return written;
+}
+
+PXSize TextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXInt32U number)
+{
+	const PXSize numberOfDigits = sizeof(PXInt32U) * 8u;
+	const PXSize written = TextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
+
+	return written;
+}
+
+PXSize TextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXInt64U number)
+{
+	const PXSize numberOfDigits = sizeof(PXInt64U) * 8u;
+	const PXSize written = TextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
+
+	return written;
+}
+
+PXSize TextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXInt64U number, const unsigned char numberOfDigits)
+{
+	PXSize offset = 0;
+
+	string[offset++] = '0';
+	string[offset++] = 'b';
+
+	for (int i = numberOfDigits - 1u; i >= 0; --i)
+	{
+		string[offset++] = '0' + ((number & (1LLU << i)) >> i);
+	}
+
+	string[offset] = '\0';
+
+	return offset;
+}
+
 PXSize TextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize)
 {
 	const PXSize length = TextLengthW(dataString, dataStringSize);
@@ -890,40 +939,41 @@ void TextParseFindAllA(const char* string, const PXSize stringSize, const Parsin
 
 PXSize TextFromIntA(int number, char* string, const PXSize dataSize)
 {
-	PXBool isSigned = 0;
-	PXSize offset = 0;
+	PXBool isSigned = PXFalse;
+	PXSize offset = 0; // Current offset of the data buffer
 
 	if (number < 0) // number negative
 	{
-		// write minus, then remove it
-		isSigned = '-';
-		number *= -1;
+		isSigned = PXTrue; // Save state that we have a negative number
+		number *= -1; // Remove negative value
 	}
 
 	do
 	{
-		string[offset++] = number % 10 + '0';
+		string[offset++] = number % 10 + '0'; // Get the value of the most right digit and convert to ASCII-Number
 	} 
-	while ((number /= 10) > 0);
+	while ((number /= 10) > 0); // Remove the most right digit by interget division and check if we still have a number to process
 
-	if (isSigned)
+	if (isSigned) // if we had a minus, add it now
 	{
-		string[offset++] = '-';
+		string[offset++] = '-'; // Add the minus
 	}
 
-	string[offset] = 0;
+	string[offset] = '\0'; // Add the termination byte
 
-	PXSize halfSize = (offset) / 2;
-
-	for (size_t i = 0; i < halfSize; i++)
+	// Reverse the order of the string 
 	{
-		int x = string[offset-1 - i];
+		const PXSize halfSize = offset / 2u;
 
-		string[offset - 1 - i] = string[i];
+		for (PXSize i = 0; i < halfSize; i++)
+		{
+			const PXSize index = offset - 1 - i; // index from end position, before the \0
+			const PXByte temp = string[index];
 
-		string[i] = x;
-	}
-	
+			string[index] = string[i];
+			string[i] = temp;
+		}
+	}	
 
 	//itoa(number, string, dataSize);
 

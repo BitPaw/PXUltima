@@ -24,6 +24,12 @@
     <ClCompile Include="Source\CS\Network\Server.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CS\Graphics\OpenGL\OpenGL.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CS\Container\Dictionary\Dictionary.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CS\Error\ActionResult.hpp">
@@ -33,6 +39,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\CS\Network\Server.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CS\Graphics\OpenGL\OpenGL.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CS\Container\Dictionary\Dictionary.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

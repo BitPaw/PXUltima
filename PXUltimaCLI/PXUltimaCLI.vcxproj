@@ -176,11 +176,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CS\Container\Dictionary\Dictionary.cpp" />
+    <ClCompile Include="Source\CS\Graphics\OpenGL\OpenGL.cpp" />
     <ClCompile Include="Source\CS\Error\ActionResult.cpp" />
     <ClCompile Include="Source\CS\File\DataStream.cpp" />
     <ClCompile Include="Source\CS\Network\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\CS\Container\Dictionary\Dictionary.hpp" />
+    <ClInclude Include="Source\CS\Graphics\OpenGL\OpenGL.hpp" />
     <ClInclude Include="Source\CS\Error\ActionResult.hpp" />
     <ClInclude Include="Source\CS\File\DataStream.hpp" />
     <ClInclude Include="Source\CS\Network\Server.hpp" />

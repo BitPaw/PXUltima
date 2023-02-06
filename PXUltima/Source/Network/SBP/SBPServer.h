@@ -4,10 +4,12 @@
 #include <Format/Type.h>
 
 #include "SBPProtocol.h"
+#include "SBPDataChunk.h"
 
 #include <Container/Dictionary/PXDictionary.h>
 #include <Network/PXServer.h>
 #include <Network/PXClient.h>
+
 
 #ifdef __cplusplus
 extern "C"
@@ -17,15 +19,33 @@ extern "C"
 	typedef struct SBPServer_
 	{
 		PXServer PXServer;
-		//SBPQueue _inputQueue;
-		//PXDictionary<ResponseID, unsigned char*> _responseLookup;
+
+		SBPDataCache DataCache;
+
+		PXDictionary ChannalEntryLookup; // Look for active channels
 	}
 	SBPServer;
 
-	PXPublic void SBPServerStart(const unsigned short port);
-	PXPublic void SBPServerStop();
+	typedef struct SBPServerChannalEntry
+	{
+		int x;
+	};
 
-	PXPublic void SBPServerSendFile(const PXSocketID clientID, const char* text);
+
+	PXPrivate void OnSBPServerDataRawSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
+	PXPrivate void OnSBPServerDataRawReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize);
+
+	PXPrivate void OnSBPServerDataChunkRecived(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk);
+	PXPrivate void OnSBPServerChannalCreated(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const PXInt8U channalID);
+
+
+	PXPublic void SBPServerConstruct(SBPServer* const sbpServer);
+	PXPublic void SBPServerDestruct(SBPServer* const sbpServer);
+
+	PXPublic PXActionResult SBPServerStart(SBPServer* const sbpServer, const unsigned short port);
+	PXPublic PXActionResult SBPServerStop(SBPServer* const sbpServer);
+
+	PXPublic PXActionResult SBPServerSendFileA(SBPServer* const sbpServer, const PXSocketID clientID, const char* text);
 	//CPublic void SBPServerSendFile(const PXSocketID clientID, wchar_t* text);
 
 	PXPublic const ResponseID SBPServerGenerateResponseID();

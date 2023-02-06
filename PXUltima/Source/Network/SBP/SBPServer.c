@@ -5,20 +5,113 @@
 #include <File/PXDataStream.h>
 #include <Text/Text.h>
 
+void OnSBPServerDataRawSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize)
+{
+	
+}
+
+void OnSBPServerDataRawReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize)
+{
+	SBPServer* const server = (SBPServer* const)pxSocket->Owner;
+
+	const SBPDataChunkResult dataResult = SBPDataCacheAppend(&server->DataCache, message, messageSize);
+
+	switch (dataResult)
+	{
+		default:
+			break;
+	}
+}
+
+void OnSBPServerDataChunkRecived(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk)
+{
+	// Lookup who the reciever of this chunk data is.
+	const PXBool found = PXDictionaryFind(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal, 0);
+
+	if (!found)
+	{
+		// cant handle package, there is no reviever channel
+		return;
+	}
+
+	switch (sbpDataChunk->Order)
+	{
+		case SBPDataCacheChunkOrderClose:
+		case SBPDataCacheChunkOrderFirst:
+		case SBPDataCacheChunkOrderMiddle:
+		case SBPDataCacheChunkOrderFinal:
+		{
+			break;
+		}
+		default:
+			break;
+	}
+
+
+
+	// if we dont have one, ignore package and drop it.
+
+	// 
+}
+
+void OnSBPServerChannalCreated(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const PXInt8U channalID)
+{
+	
+}
+
+void SBPServerConstruct(SBPServer* const sbpServer)
+{
+	//---<Server construction>-------------------------------------------------
+	{
+		PXServer* const server = &sbpServer->PXServer;
+
+		PXServerConstruct(server);
+
+		server->Owner = sbpServer;
+		server->SocketEventListener.MessageSendCallback = OnSBPServerDataRawSend;
+		server->SocketEventListener.MessageReceiveCallback = OnSBPServerDataRawReceive;	
+	}
+	//-------------------------------------------------------------------------
+
+	//---<Data cache construction>---------------------------------------------
+	{
+		SBPDataCache* const dataCache = &sbpServer->DataCache;
+
+		SBPDataCacheConstruct(dataCache);
+
+		dataCache->Owmer = sbpServer;
+		dataCache->ChannalCreatedCallBack = OnSBPServerChannalCreated;
+		dataCache->DataChunkRecievedCallBack = OnSBPServerDataChunkRecived;
+	}
+	//-------------------------------------------------------------------------
+}
+
+void SBPServerDestruct(SBPServer* const sbpServer)
+{
+
+}
+
+PXActionResult SBPServerStart(SBPServer* const sbpServer, const unsigned short port)
+{
+	PXServer* server = &sbpServer->PXServer;
+
+	const PXActionResult result = PXServerStart(server, port, ProtocolModeTCP);
+
+	return result;
+}
+
+PXActionResult SBPServerStop(SBPServer* const sbpServer)
+{
+	return PXServerStop(&sbpServer->PXServer);
+}
+
+PXActionResult SBPServerSendFileA(SBPServer* const sbpServer, const PXSocketID clientID, const char* text)
+{
+	return PXActionInvalid;
+}
+
+
 /*
-
-void SBPServerStart(const unsigned short port)
-{
-	_server.EventCallBackSocket = this;
-
-	_server.Start(port);
-}
-
-void SBPServerStop()
-{
-	_server.Stop();
-}
-
 void SBPServerSendFile(const PXClientID clientID, const char* text)
 {
 	File file;

@@ -17,10 +17,24 @@
 #include <OS/PXProcess.h>
 #include <Format/TIFF/TIFF.h>
 #include <Format/Image.h>
+#include <Text/Text.h>
 
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+#if 0
+	char buffer[64];
+
+	for (size_t i = 0; i <= 0xFF; i++)
+	{
+		TextFromIntToBinary64U(buffer, 64, i);
+
+		printf("[%4i] %s\n", i, buffer);
+	}
+#endif
+	
+
 
 #if 0
 	TestSoundAll();
@@ -35,7 +49,7 @@ int main()
 #endif
 
 
-#if 1
+#if 0
 	TestSocket();
 #endif // 1
 

@@ -32,6 +32,11 @@ namespace PXTest
             ActionResult x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
 #endif
 
+            PX.Dictionary<int, string> dictionary = new PX.Dictionary<int, string>();
+
+            PX.OpenGL openGL = new PX.OpenGL();
+            openGL.ContextCreateWindowless(1024,1024);
+
             PX.Server server = new PX.Server();
             server.OnDataReceive += SocketDataReceiveEvent;
             server.OnDataSend += SocketDataSendEvent;

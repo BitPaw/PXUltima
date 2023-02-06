@@ -1264,7 +1264,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 
     graphicContext->OpenGLInstance.AttachedWindow = graphicContext->AttachedWindow;
 
-    OpenGLContextCreate(&graphicContext->OpenGLInstance);
+    OpenGLContextCreateForWindow(&graphicContext->OpenGLInstance);
 
     if (1)
     {

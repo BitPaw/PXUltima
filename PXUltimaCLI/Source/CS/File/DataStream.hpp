@@ -11,9 +11,6 @@ namespace PX
 		PXDataStream* _dataStream;
 
 		public:
-		delegate void PXDataStreamEventHandler(Object^ sender, unsigned int e);
-		event PXDataStreamEventHandler^ E;
-
 		DataStream()// : _dataSteam
 		{
 			_dataStream = new PXDataStream();
@@ -23,6 +20,7 @@ namespace PX
 		~DataStream()
 		{
 			PXDataStreamDestruct(_dataStream);
+			delete _dataStream;
 		}
 
 		property PXSize CursorPositionCurrent
@@ -45,7 +43,7 @@ namespace PX
 		PX::ActionResult OpenFromPath(System::String^ filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
 		PX::ActionResult Close();
 
-		PX::ActionResult  MapToMemoryReadOnly(System::String^ filePath);
+		PX::ActionResult MapToMemoryReadOnly(System::String^ filePath);
 		PX::ActionResult MapToMemory(System::String^ filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
 		PX::ActionResult MapToMemory(const PXSize size, const MemoryProtectionMode protectionMode);
 		PX::ActionResult UnmapFromMemory();

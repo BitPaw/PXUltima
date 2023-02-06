@@ -709,7 +709,7 @@ extern "C"
 	PXPublic void OpenGLContextSet(OpenGLContext* const openGLContext, const OpenGLContext* const openGLContextSoure);
 	PXPublic void OpenGLContextCopy(OpenGLContext* const openGLContext, const OpenGLContext* const openGLContextSoure);
 
-	PXPublic void OpenGLContextCreate(OpenGLContext* const openGLContext);
+	PXPublic PXBool OpenGLContextCreateForWindow(OpenGLContext* const openGLContext);
 	PXPublic void OpenGLContextCreateWindowless(OpenGLContext* const openGLContext, const PXSize width, const PXSize height);
 	PXPublic void OpenGLContextSelect(OpenGLContext* const openGLContext);
 	PXPublic PXBool OpenGLContextDeselect(OpenGLContext* const openGLContext);

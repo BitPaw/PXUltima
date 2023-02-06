@@ -1454,9 +1454,19 @@ void OpenGLContextCopy(OpenGLContext* const openGLContext, const OpenGLContext* 
    
 }
 
-void OpenGLContextCreate(OpenGLContext* const openGLContext)
+PXBool OpenGLContextCreateForWindow(OpenGLContext* const openGLContext)
 {
+    if (!openGLContext)
+    {
+        return 0;
+    }
+
     PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
+
+    if (!window)
+    {
+        return 0;
+    }
 
 #if OSUnix
     const int attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };

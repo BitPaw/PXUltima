@@ -20,6 +20,8 @@ extern "C"
 		PXSize ServerSocketListSize;
 		PXSize ServerSocketListSizeAllocated;
 
+		void* Owner;
+
 		PXSocketEventListener SocketEventListener;
 	}
 	PXServer;

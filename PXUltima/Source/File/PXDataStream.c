@@ -1895,5 +1895,83 @@ PXSize PXDataStreamWriteAtB(PXDataStream* const dataStream, const void* const da
 
 PXSize PXDataStreamWriteMultible(PXDataStream* const dataStream, const PXDataStreamElementType* const pxDataStreamElementList, const PXSize pxDataStreamElementListSize)
 {
-	return 0;
+	PXSize totalReadBytes = 0;
+
+	for (PXSize i = 0; i < pxDataStreamElementListSize; ++i)
+	{
+		PXDataStreamElementType* const dataStreamElement = &pxDataStreamElementList[i];
+
+		switch (dataStreamElement->Type)
+		{
+			case PXDataTypeInt8S:
+				totalReadBytes += PXDataStreamWriteI8S(dataStream, *(PXInt8S*)dataStreamElement->Adress);
+				break;
+
+			case PXDataTypeInt8U:
+				totalReadBytes += PXDataStreamWriteI8U(dataStream, *(PXInt8S*)dataStreamElement->Adress);
+				break;
+
+			case PXDataTypeLEInt16S:
+				totalReadBytes += PXDataStreamWriteI16SE(dataStream, *(PXInt16S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt16U:
+				totalReadBytes += PXDataStreamWriteI16UE(dataStream, *(PXInt16U*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt32S:
+				totalReadBytes += PXDataStreamWriteI32SE(dataStream, *(PXInt32S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt32U:
+				totalReadBytes += PXDataStreamWriteI32UE(dataStream, *(PXInt32U*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt64S:
+				totalReadBytes += PXDataStreamWriteI64SE(dataStream, *(PXInt64S*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeLEInt64U:
+				totalReadBytes += PXDataStreamWriteI64UE(dataStream, *(PXInt64U*)dataStreamElement->Adress, EndianLittle);
+				break;
+
+			case PXDataTypeBEInt16S:
+				totalReadBytes += PXDataStreamWriteI16SE(dataStream, *(PXInt16S*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt16U:
+				totalReadBytes += PXDataStreamWriteI16UE(dataStream, *(PXInt16U*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt32S:
+				totalReadBytes += PXDataStreamWriteI32SE(dataStream, *(PXInt32S*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt32U:
+				totalReadBytes += PXDataStreamWriteI32UE(dataStream, *(PXInt32U*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt64S:
+				totalReadBytes += PXDataStreamWriteI64SE(dataStream, *(PXInt64S*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataTypeBEInt64U:
+				totalReadBytes += PXDataStreamWriteI64UE(dataStream, *(PXInt64U*)dataStreamElement->Adress, EndianBig);
+				break;
+
+			case PXDataStreamFloat:
+				totalReadBytes += PXDataStreamWriteF(dataStream, *(float*)dataStreamElement->Adress);
+				break;
+
+			case PXDataStreamDouble:
+				totalReadBytes += PXDataStreamWriteD(dataStream, *(double*)dataStreamElement->Adress);
+				break;
+
+			case PXDataTypeTypeInvalid:
+			default:
+				break;
+		}
+	}
+
+	return totalReadBytes;
 }

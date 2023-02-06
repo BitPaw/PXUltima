@@ -79,6 +79,12 @@ extern "C"
 	PXPublic PXSize TextToDoubleA(const char* string, const PXSize dataSize, double* number);
 	PXPublic PXSize TextToDoubleW(const wchar_t* string, const PXSize dataSize, double* number);
 
+	PXPublic PXSize TextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
+	PXPublic PXSize TextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
+	PXPublic PXSize TextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXInt32U number);
+	PXPublic PXSize TextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXInt64U number);
+	PXPublic PXSize TextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXInt64U number, const unsigned char numberOfDigits);
+
 	PXPublic PXSize TextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
 	PXPublic PXSize TextClearA(char* string, const PXSize stringSize);
