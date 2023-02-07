@@ -4,19 +4,24 @@
 #include <File/PXDataStream.h>
 #include <OS/User.h>
 
-void SBPDataConstruct(SBPData* const sbpData)
+void SBPDataConstruct(SBPDataPackage* const sbpData)
 {
 	sbpData->SourceID = SourceInvalid;
 	sbpData->TargetID = TargetInvalid;
 	sbpData->CommandID.Value = MakeInt('#', '#', '#', '#');
 	sbpData->ID = 0;
-	sbpData->DataSize = 0;
+	sbpData->DataSizeCurrent = 0;
 	sbpData->Data = 0;
+}
+
+void SBPDataDestruct(SBPDataPackage* const sbpData)
+{
+	
 }
 
 void SBPDataSet
 (
-	SBPData* const sbpData,
+	SBPDataPackage* const sbpData,
 	const unsigned int command,
 	const unsigned int source,
 	const unsigned int target,
@@ -29,27 +34,32 @@ void SBPDataSet
 	sbpData->SourceID = source;
 	sbpData->TargetID = target;
 	sbpData->ID = id;
-	sbpData->DataSize = dataSize;
+	sbpData->DataSizeTotal = dataSize;
 	sbpData->Data = (void*)adress;
 }
 
-unsigned int SBPDataSize(SBPData* const sbpData)
+unsigned int SBPDataSize(SBPDataPackage* const sbpData)
 {
 	return 0;
 }
 
-void SBPDataClear(SBPData* const sbpData)
+PXBool PXSBPPackageIsConsumable(const SBPDataPackage* const sbpDataPackage)
+{
+	return sbpDataPackage->DataSizeCurrent == sbpDataPackage->DataSizeTotal;
+}
+
+void SBPDataClear(SBPDataPackage* const sbpData)
 {
 	sbpData->CommandID.Value = MakeInt('#', '#', '#', '#');
 	sbpData->SourceID = -1;
 	sbpData->TargetID = -1;
 	sbpData->ID = -1;
-	sbpData->DataSize = 0;
+	sbpData->DataSizeTotal = 0;
 	sbpData->Data = 0;
 }
 
 
-void SBPDataPrint(SBPData* const sbpData)
+void SBPDataPrint(SBPDataPackage* const sbpData)
 {
 	const char commandText[5]
 	={
@@ -143,13 +153,13 @@ void SBPDataPrint(SBPData* const sbpData)
 		sourceText,
 		targetText,
 		sbpData->ID,
-		sbpData->DataSize
+		sbpData->DataSizeCurrent
 	);
 
-	if(sbpData->DataSize)
+	if(sbpData->DataSizeCurrent)
 	{
 		printf("+-------------------[Payload Data]--------------------+\n");
-		for(PXSize i = 0; i < sbpData->DataSize; ++i)
+		for(PXSize i = 0; i < sbpData->DataSizeCurrent; ++i)
 		{
 			const char* text = (char*)sbpData->Data;
 			const char byte = text[i];
@@ -168,43 +178,50 @@ void SBPDataPrint(SBPData* const sbpData)
 	}
 }
 
-/*
-
-PXSize SBPDataPackageParse(SBPData* data, const void* inputBuffer, const PXSize* inputBufferSize)
+PXSize PXSBPPackageParse(SBPDataPackage* data, const void* inputBuffer, const PXSize inputBufferSize)
 {
-	PXDataStream dataStream(inputBuffer, inputBufferSize);
-
+	PXDataStream dataStream;
 	PXSize bufferSize = 0;
 
-	data.Clear();
+	PXDataStreamFromExternal(&dataStream, inputBuffer, inputBufferSize);
+	SBPDataClear(data);
 
-	// long engigh
+	// long enough
 
-	if(inputBufferSize < 22u)
+	if (inputBufferSize < 22u)
 	{
 		return 0;
 	}
 
 	// Check header
 	{
-		const bool validHeader = dataStream.ReadAndCompare("°°", 2u);
+		const PXBool validHeader = PXDataStreamReadAndCompare(&dataStream, "°°", 2u);
 
-		if(!validHeader)
+		if (!validHeader)
 		{
 			return 0;
 		}
 	}
 
-	dataStream.Read(data.CommandID.Data, 4u);
-	dataStream.Read(data.SourceID, EndianLittle);
-	dataStream.Read(data.TargetID, EndianLittle);
-	dataStream.Read(data.ID, EndianLittle);
-	dataStream.Read(data.DataSize, EndianLittle);
+	PXDataStreamReadB(&dataStream, data->CommandID.Data, 4u);
+	PXDataStreamReadI32U(&dataStream, &data->SourceID, EndianLittle);
+	PXDataStreamReadI32U(&dataStream, &data->TargetID, EndianLittle);
+	PXDataStreamReadI32U(&dataStream, &data->ID, EndianLittle);
+	PXDataStreamReadI32U(&dataStream, &data->DataSizeTotal, EndianLittle);
 
-	data.Data = dataStream.CursorCurrentAdress();
+	data->DataSizeCurrent = inputBufferSize;
+	data->Data = PXDataStreamCursorPosition(&dataStream);
 
 	return dataStream.DataCursor;
 }
+
+PXSize PXSBPPackageSerialize(const SBPDataPackage* data, void* outputBuffer, const PXSize outputBufferSize)
+{
+	return 0;
+}
+
+
+/*
 
 PXSize SBPDataPackageSerialize(const SBPData& data, void* outputBuffer, const PXSize outputBufferSize)
 {

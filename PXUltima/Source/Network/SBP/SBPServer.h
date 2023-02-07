@@ -26,18 +26,16 @@ extern "C"
 	}
 	SBPServer;
 
-	typedef struct SBPServerChannalEntry
-	{
-		int x;
-	};
-
-
 	PXPrivate void OnSBPServerDataRawSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
 	PXPrivate void OnSBPServerDataRawReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize);
 
 	PXPrivate void OnSBPServerDataChunkRecived(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk);
 	PXPrivate void OnSBPServerChannalCreated(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const PXInt8U channalID);
 
+	PXPrivate void OnSBPServerPackageRecived(SBPServer* const sbpServer, const SBPDataPackage* const sbpDataPackage);
+
+
+	PXPrivate void SBPServerPackageRecivedHandle(SBPServer* const sbpServer, const SBPDataPackage* const sbpDataPackage);
 
 	PXPublic void SBPServerConstruct(SBPServer* const sbpServer);
 	PXPublic void SBPServerDestruct(SBPServer* const sbpServer);

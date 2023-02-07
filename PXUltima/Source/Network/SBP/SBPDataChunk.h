@@ -49,19 +49,19 @@ extern "C"
 
 	typedef struct SBPDataChunk_
 	{
-		// Info
+		//---<Info>-----------------
 		SBPDataCacheChunkOrder Order;
 		PXInt8U Channal;
-		//----------------
+		//--------------------------
 
-		//--<Spesific temp data>---
+		//---<Spesific temp data>---
 		PXInt16U DataSizeCurrent;
 		PXInt16U DataSizeTotal;	
-		//-----------------------
+		//--------------------------
 
-		// Volitile data
+		//---<Volitile data>--------
 		PXByte* Data;
-		
+		//--------------------------
 	}
 	SBPDataChunk;
 

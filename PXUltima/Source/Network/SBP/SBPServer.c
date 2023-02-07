@@ -26,37 +26,75 @@ void OnSBPServerDataRawReceive(const PXSocket* const pxSocket, const void* const
 void OnSBPServerDataChunkRecived(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk)
 {
 	// Lookup who the reciever of this chunk data is.
-	const PXBool found = PXDictionaryFind(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal, 0);
+	SBPDataPackage sbpDataPackage;
+
+	const PXBool found = PXDictionaryFind(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal, &sbpDataPackage);
 
 	if (!found)
 	{
-		// cant handle package, there is no reviever channel
-		return;
-	}
-
-	switch (sbpDataChunk->Order)
-	{
-		case SBPDataCacheChunkOrderClose:
-		case SBPDataCacheChunkOrderFirst:
-		case SBPDataCacheChunkOrderMiddle:
-		case SBPDataCacheChunkOrderFinal:
+		// It is probably a new Package. So we try to parse the SBP header
+		
+		const PXSize size = PXSBPPackageParse(&sbpDataPackage, sbpDataChunk->Data, sbpDataChunk->DataSizeCurrent);
+		const PXSize successful = size > 0;
+		
+		if (!successful)
 		{
-			break;
+			return; // Drop package, illegal formatting and not expected.
 		}
-		default:
-			break;
+
+		{
+			const PXBool isFullyConsumable = PXSBPPackageIsConsumable(&sbpDataPackage);
+
+			if (isFullyConsumable)
+			{
+				SBPServerPackageRecivedHandle(sbpServer, &sbpDataPackage);
+				return; // Package is probably smal and caN be consumed at once.
+			}
+		}
+
+		// Register data, to access later
+		PXDictionaryAdd(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal, &sbpDataPackage);
+
+		// Package is big and not fully recieved at this time. Cache current package and wait for additional chunks.
+
+		// Store()
+
+		// trigger Event progress?
+
+		return; // New package handled
 	}
+	else
+	{
+		// Package is already registered
 
+		// Is the packe now compleate?
+		const PXBool isConsumable = PXSBPPackageIsConsumable(&sbpDataPackage);
 
+		// Copy anyway, to make it whole.
 
-	// if we dont have one, ignore package and drop it.
+		// UpdatePackage()
 
-	// 
+		// Handle Package
+		SBPServerPackageRecivedHandle(sbpServer, &sbpDataPackage);
+
+		// Package was handled. Now we can unregister it
+		PXDictionaryRemove(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal);
+	}
 }
 
 void OnSBPServerChannalCreated(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const PXInt8U channalID)
 {
 	
+}
+
+void OnSBPServerPackageRecived(SBPServer* const sbpServer, const SBPDataPackage* const sbpDataPackage)
+{
+
+}
+
+void SBPServerPackageRecivedHandle(SBPServer* const sbpServer, const SBPDataPackage* const sbpDataPackage)
+{
+
 }
 
 void SBPServerConstruct(SBPServer* const sbpServer)
@@ -69,7 +107,7 @@ void SBPServerConstruct(SBPServer* const sbpServer)
 
 		server->Owner = sbpServer;
 		server->SocketEventListener.MessageSendCallback = OnSBPServerDataRawSend;
-		server->SocketEventListener.MessageReceiveCallback = OnSBPServerDataRawReceive;	
+		server->SocketEventListener.MessageReceiveCallback = OnSBPServerDataRawReceive;
 	}
 	//-------------------------------------------------------------------------
 

@@ -30,17 +30,6 @@ extern "C"
 	}
 	SBPResult;
 
-	typedef struct SBPDataPackage_
-	{
-		ClusterInt SymbolID;
-	}
-	SBPDataPackage;
-
-	PXSize SBPDataPackageParse(const void* inputData, const PXSize inputDataSize);
-	PXSize SBPDataPackageSerialize(void* outputData, const PXSize outputDataSize);
-
-
-
 #define ConnectionCreateReasonFile 'F'
 #define ConnectionCreateReasonData 'D'
 
@@ -107,7 +96,7 @@ extern "C"
 	SBPTarget;
 
 
-	typedef struct SBPData_
+	typedef struct SBPDataPackage_
 	{
 		ClusterInt CommandID;
 
@@ -124,17 +113,18 @@ extern "C"
 		};
 
 		unsigned int ID;
-		unsigned int DataSize;
+		unsigned int DataSizeCurrent;
+		unsigned int DataSizeTotal;
 		void* Data;
 	}
-	SBPData;
+	SBPDataPackage;
 
-	PXPublic void SBPDataConstruct(SBPData* const sbpData);
-	PXPublic void SBPDataDestruct(SBPData* const sbpData);
+	PXPublic void SBPDataConstruct(SBPDataPackage* const sbpData);
+	PXPublic void SBPDataDestruct(SBPDataPackage* const sbpData);
 
 	PXPublic void SBPDataSet
 	(
-		SBPData* const sbpData,
+		SBPDataPackage* const sbpData,
 		const unsigned int command,
 		const unsigned int source,
 		const unsigned int target,
@@ -143,14 +133,16 @@ extern "C"
 		const void* adress
 	);
 
-	PXPublic unsigned int SBPDataSize(SBPData* const sbpData);
+	PXPublic unsigned int SBPDataSize(SBPDataPackage* const sbpData);
 
-	PXPublic void SBPDataClear(SBPData* const sbpData);
+	PXPublic PXBool PXSBPPackageIsConsumable(const SBPDataPackage* const sbpDataPackage);
 
-	PXPublic void SBPDataPrint(SBPData* const sbpData);
+	PXPublic void SBPDataClear(SBPDataPackage* const sbpData);
 
-	PXPublic PXSize PackageParse(SBPData* data, const void* inputBuffer, const PXSize* inputBufferSize);
-	PXPublic PXSize PackageSerialize(const SBPData* data, void* outputBuffer, const PXSize outputBufferSize);
+	PXPublic void SBPDataPrint(SBPDataPackage* const sbpData);
+
+	PXPublic PXSize PXSBPPackageParse(SBPDataPackage* data, const void* inputBuffer, const PXSize inputBufferSize);
+	PXPublic PXSize PXSBPPackageSerialize(const SBPDataPackage* data, void* outputBuffer, const PXSize outputBufferSize);
 	/*
 	CPublic PXSize PackageSerialize
 	(
@@ -163,7 +155,7 @@ extern "C"
 	);*/
 
 	// Recieve custom package, this is only called for unregistered packages
-	typedef void (*PackageRecieveEvent)(const SBPData* sbpData);
+	typedef void (*PackageRecieveEvent)(const SBPDataPackage* sbpData);
 
 
 
