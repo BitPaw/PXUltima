@@ -22,7 +22,7 @@ extern "C"
 
 		void* Owner;
 
-		PXSocketEventListener SocketEventListener;
+		PXSocketEventListener EventListener;
 	}
 	PXServer;
 

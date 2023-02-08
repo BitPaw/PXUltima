@@ -11,6 +11,7 @@
 #include "Sound/TestSound.h"
 #include "Network/TestSocket.h"
 #include "Network/TestFTP.h"
+#include "Network/TestSBP.h"
 
 #include <Graphic/DirectX/DirectX.h>
 
@@ -51,6 +52,11 @@ int main()
 
 #if 0
 	TestSocket();
+#endif // 1
+
+
+#if 1
+	TestSBPAll();
 #endif // 1
 
 

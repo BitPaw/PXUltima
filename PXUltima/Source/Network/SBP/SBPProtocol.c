@@ -468,57 +468,9 @@ void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam)
 	UserNameGetW(NameW, PathMaxSize, &NameSize);
 }
 
-PXSize SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const PXSize inputDataSize)
-{
-	PXDataStreamX PXDataStream(inputData, inputDataSize);
 
-	// Add name
-	{
-		unsigned char formatType = 0;
-		unsigned short size = 0;
 
-		PXDataStream.Read(formatType);
-		PXDataStream.Read(size, EndianLittle);
 
-		NameSize = size;
-		Format = (TextFormat)formatType;
-
-		const Byte__* nameStart = PXDataStream.CursorCurrentAdress();
-
-		switch (Format)
-		{
-		case TextFormatASCII:
-			MemoryCopy(nameStart, size, NameA, PathMaxSize);
-			break;
-
-		case TextFormatUNICODE:
-			MemoryCopy(nameStart, size, NameW, PathMaxSize);
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	return PXDataStream.DataCursor;
-}
-
-PXSize SBPDataPackageIamSerialize(SBPDataPackageIam* cosnt sbpDataPackageIam, void* outputData, const PXSize outputDataSize) const
-{
-	PXDataStreamX PXDataStream(outputData, outputDataSize);
-
-	// Add name
-	{
-		const unsigned char formatType = (TextFormat)Format;
-		unsigned short size = NameSize;
-
-		PXDataStream.Write(formatType);
-		PXDataStream.Write(size, EndianLittle);
-		PXDataStream.Write(NameW, size);
-	}
-
-	return PXDataStream.DataCursor;
-}
 
 void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse)
 {
@@ -643,3 +595,60 @@ PXSize SBPDataPackageConnectionCreateSerialize(void* outputData, const PXSize ou
 	return PXSize();
 }
 */
+
+PXSize SBPDataPackageIamParse(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam)
+{
+	PXDataStream dataStream;
+
+	PXDataStreamFromExternal(&dataStream, sbpDataPackage->Data, sbpDataPackage->DataSizeCurrent);
+
+	// Add name
+	{
+		unsigned char formatType = 0;
+		unsigned short size = 0;
+
+		PXDataStreamReadI8U(&dataStream, formatType);
+		PXDataStreamReadI16U(&dataStream, size, EndianLittle);
+
+		sbpDataPackageIam->Name.Format = formatType;
+		sbpDataPackageIam->Name.SizeInBytes = size;
+		sbpDataPackageIam->Name.TextData = PXDataStreamCursorPosition(&dataStream);
+
+		PXDataStreamCursorAdvance(&dataStream, size);
+	}
+
+	return dataStream.DataCursor;
+}
+
+PXSize SBPDataPackageIamSerialize(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam)
+{
+	PXDataStream dataStream;
+
+	if (!sbpDataPackage->Data)
+	{
+		return 0;
+	}
+
+	PXDataStreamFromExternal(&dataStream, sbpDataPackage->Data, sbpDataPackage->DataSizeCurrent);
+
+	// Add name	
+	wchar_t nameBuffer[128];
+	const PXSize nameBufferSize = UserNameGetW(nameBuffer, 128);
+
+	{
+		const unsigned char formatType = TextFormatUNICODE;
+
+		PXDataStreamWriteI8U(&dataStream, formatType);
+		PXDataStreamWriteI16U(&dataStream, nameBufferSize, EndianLittle);
+		PXDataStreamWriteB(&dataStream, nameBuffer, nameBufferSize);
+	}
+
+	sbpDataPackage->CommandID.Value = SBPDataPackageIamID;
+	sbpDataPackage->Source = SourceMe;
+	sbpDataPackage->Target = TargetServer;
+	sbpDataPackage->ID = -1;
+	sbpDataPackage->DataSizeCurrent = dataStream.DataCursor;
+	sbpDataPackage->DataSizeTotal = dataStream.DataCursor;
+
+	return dataStream.DataCursor;
+}

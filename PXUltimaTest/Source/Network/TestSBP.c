@@ -16,5 +16,18 @@ void TestSBPAll()
 
 void TestSBPClientServerResponse()
 {
+	PXSBPServer server;
+	PXSBPClient client;
 
+	SBPServerConstruct(&server);
+	PXSBPClientConstruct(&client);
+
+	SBPServerStart(&server, 13370);
+
+	SBPPXClientConnectToServer(&client, "127.0.0.1", 13370);
+
+	while (1)
+	{
+
+	}
 }

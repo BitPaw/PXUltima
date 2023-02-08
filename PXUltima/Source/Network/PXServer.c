@@ -67,7 +67,7 @@ PXActionResult PXServerStart(PXServer* const server, const unsigned short port, 
     {
         PXSocket* const pxSocket = &server->ServerSocketList[i];
 
-        pxSocket->EventList = server->SocketEventListener;
+        pxSocket->EventList = server->EventListener;
         pxSocket->Owner = server->Owner;
         pxSocket->SocketPollingReadList = MemoryAllocateClear(sizeof(PXSocketID) * 1024);
 

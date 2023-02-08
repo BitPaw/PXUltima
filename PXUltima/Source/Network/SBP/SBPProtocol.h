@@ -11,6 +11,18 @@ extern "C"
 {
 #endif
 
+
+#define SBPIDConnectionCreate MakeInt('C', 'o', 'n', '+')
+#define SBPIDConnectionResult MakeInt('C', 'o', 'n', '#')
+#define SBPIDConnectionKill MakeInt('C', 'o', 'n', '-')
+#define SBPIDText MakeInt('T', 'e', 'x', 't')
+#define SBPDataPackageIamID MakeInt('I', '\'', 'a', 'm')
+#define SBPDataPackageFileID MakeInt('F', 'i', 'l', 'e')
+
+
+#define ConnectionCreateReasonFile 'F'
+#define ConnectionCreateReasonData 'D'
+
 	typedef enum SBPResult_
 	{
 		SBPResultInvalid,
@@ -30,15 +42,10 @@ extern "C"
 	}
 	SBPResult;
 
-#define ConnectionCreateReasonFile 'F'
-#define ConnectionCreateReasonData 'D'
 
 
-#define SBPIDConnectionCreate MakeInt('C', 'o', 'n', '+')
-#define SBPIDConnectionResult MakeInt('C', 'o', 'n', '#')
-#define SBPIDConnectionKill MakeInt('C', 'o', 'n', '-')
 
-#define SBPIDText MakeInt('T', 'e', 'x', 't')
+
 
 
 
@@ -98,8 +105,11 @@ extern "C"
 
 	typedef struct SBPDataPackage_
 	{
+		//---------------------------------------
 		ClusterInt CommandID;
+		//---------------------------------------
 
+		//---------------------------------------
 		union
 		{
 			unsigned int SourceID;
@@ -111,11 +121,17 @@ extern "C"
 			unsigned int TargetID;
 			SBPTarget Target;
 		};
+		//---------------------------------------
 
+		//---------------------------------------
 		unsigned int ID;
+		//---------------------------------------
+
+		//---<Payload>---------------------------
 		unsigned int DataSizeCurrent;
 		unsigned int DataSizeTotal;
 		void* Data;
+		//---------------------------------------
 	}
 	SBPDataPackage;
 
@@ -190,7 +206,7 @@ extern "C"
 
 
 
-#define SBPDataPackageFileID MakeInt('F', 'i', 'l', 'e')
+
 
 
 #define SBPDataPackageFileModeIDCreate 0x01
@@ -253,29 +269,20 @@ extern "C"
 
 
 
-#define SBPDataPackageIamID MakeInt('I', '\'', 'a', 'm')
 
+
+	//-------------------------------------------------------------------------
 
 	typedef struct SBPDataPackageIam_
 	{
-		TextFormat Format;
-		PXSize NameSize;
-		union
-		{
-			char NameA[PathMaxSize];
-			wchar_t NameW[PathMaxSize];
-		};
+		Text Name;
 	}
 	SBPDataPackageIam;
 
+	PXPublic PXSize SBPDataPackageIamParse(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam);
+	PXPublic PXSize SBPDataPackageIamSerialize(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam);
 
-	PXPublic void SBPDataPackageIamConstruct(SBPDataPackageIam* const sbpDataPackageIam);
-
-	PXPublic void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam);
-
-	PXPublic PXSize SBPDataPackageIamParse(SBPDataPackageIam* const sbpDataPackageIam, const void* inputData, const PXSize inputDataSize);
-	PXPublic PXSize SBPDataPackageIamSerialize(SBPDataPackageIam* const sbpDataPackageIam, void* outputData, const PXSize outputDataSize);
-
+	//-------------------------------------------------------------------------
 
 
 #define SBPDataPackageResponseID MakeInt('R', 'e', 's', 'p')

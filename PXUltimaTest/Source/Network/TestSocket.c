@@ -80,8 +80,8 @@ void TestSocketServerGeneral()
 
 	PXServerConstruct(&server);
 
-    server.SocketEventListener.MessageSendCallback = OnSocketDataSend;
-    server.SocketEventListener.MessageReceiveCallback = OnSocketDataReceive;
+    server.EventListener.MessageSendCallback = OnSocketDataSend;
+    server.EventListener.MessageReceiveCallback = OnSocketDataReceive;
 	//server.SocketEventListener.ConnectionLinkedCallback = OnClientConnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientDisconnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientAcceptFailure;

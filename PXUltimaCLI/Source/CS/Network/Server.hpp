@@ -60,7 +60,7 @@ namespace PX
 
 
 			//_pxServer->SocketEventListener.MessageSendCallback = OnSocketDataRawSendManaged;
-			_pxServer->SocketEventListener.MessageReceiveCallback = cb;
+			_pxServer->EventListener.MessageReceiveCallback = cb;
 		}
 
 		~Server()

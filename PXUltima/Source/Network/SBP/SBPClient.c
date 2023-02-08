@@ -442,3 +442,60 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 }
 
 */
+
+void PXSBPClientConstruct(PXSBPClient* const sbpPXClient)
+{
+	PXSBPPackageProcessorConstruct(&sbpPXClient->PackageProcessor);
+
+	//---<Server construction>-------------------------------------------------
+	{
+		PXClient* const client = &sbpPXClient->Client;
+
+		PXClientConstruct(client);
+
+		client->Owner = sbpPXClient;
+		client->EventListener.MessageSendCallback = PXSBPPackageProcessorOnDataRawSend;
+		client->EventListener.MessageReceiveCallback = PXSBPPackageProcessorOnDataRawReceive;
+	}
+	//-------------------------------------------------------------------------
+}
+
+void PXSBPClientDestruct(PXSBPClient* const sbpPXClient)
+{
+	PXSBPPackageProcessorDestruct(&sbpPXClient->PackageProcessor);
+	PXClientDestruct(&sbpPXClient->Client);
+}
+
+PXActionResult SBPPXClientConnectToServer(PXSBPClient* const sbpPXClient, const char* ip, const unsigned short port)
+{
+	// Connect
+	{
+		const PXActionResult connectResult = PXClientConnectToServer(&sbpPXClient->Client, ip, port, &sbpPXClient->Client, CommunicationFunctionAsync);
+
+		PXActionExitOnError(connectResult);
+	}
+
+	// After connection, who are you?
+	{
+		SBPDataPackage sbpDataPackage;
+		SBPDataPackageIam sbpDataPackageIam;
+
+		char buffer[256];
+		PXSize bufferSize = 0;
+
+		sbpDataPackage.Data = buffer;
+		sbpDataPackage.DataSizeTotal = 256;
+
+		bufferSize = SBPDataPackageIamSerialize(&sbpDataPackage, &sbpDataPackageIam);
+
+		PXSBPPackageProcessorPackageExport(&sbpPXClient->PackageProcessor, &sbpDataPackage);
+	}
+
+
+	return PXActionSuccessful;
+}
+
+PXActionResult SBPPXClientDisconnectFromServer(PXSBPClient* const sbpPXClient)
+{
+	return PXClientDisconnectFromServer(&sbpPXClient->Client);
+}

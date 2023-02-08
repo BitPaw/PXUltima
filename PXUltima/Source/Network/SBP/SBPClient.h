@@ -2,42 +2,35 @@
 #define SBPPXClientINCLUDE
 
 #include <Format/Type.h>
-
-#include "SBPProtocol.h"
-
 #include <Network/PXClient.h>
 #include <Async/PXThread.h>
+
+#include "SBPProtocol.h"
+#include "PXSBPPackageProcessor.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef struct SBPPXClient_ SBPPXClient;
-
-	typedef struct SBPPXClient_
+	typedef struct PXSBPClient_
 	{
-		// private
-		//ResponseCache _responseCache;
-		PXClient _client;
+		// Private
+		PXSBPPackageProcessor PackageProcessor;
+		PXClient Client;
 
-		// public
-		wchar_t Name[256];
-
-		SBPPXClient* SubConnectionList;
-		PXSize SubConnectionListSize;
+		// Public
+		
 	}
-	SBPPXClient;
+	PXSBPClient;
 
-	PXThreadResult SBPPXClientReciveDataThread(void* sbpPXClient);
-
-	PXPublic void SBPPXClientConstruct(SBPPXClient* const sbpPXClient);
-	PXPublic void SBPPXClientDestruct(SBPPXClient* const sbpPXClient);
+	PXPublic void PXSBPClientConstruct(PXSBPClient* const sbpPXClient);
+	PXPublic void PXSBPClientDestruct(PXSBPClient* const sbpPXClient);
 
 	// Sending a message via a socket, await a response.
 	PXPublic SBPResult SendAndWaitResponse
 	(
-		SBPPXClient* const sbpPXClient,
+		PXSBPClient* const sbpPXClient,
 		void* inputData,
 		const PXSize inputDataSize,
 		void* responseData,
@@ -50,9 +43,11 @@ extern "C"
 
 
 
-	void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const char* ip, const unsigned short port);
+	PXPublic PXActionResult SBPPXClientConnectToServer(PXSBPClient* const sbpPXClient, const char* ip, const unsigned short port);
 //	void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const wchar_t* ip, const unsigned short port);
-	void SBPPXClientDisconnectFromServer(SBPPXClient* const sbpPXClient);
+	PXPublic PXActionResult SBPPXClientDisconnectFromServer(PXSBPClient* const sbpPXClient);
+
+	//PXPublic PXActionResult PXSBPClientSendPackage(PXSBPClient* const sbpPXClient, );
 
 	void SBPPXClientRegisterMe();
 	void SBPPXClientSendText(const char* text);

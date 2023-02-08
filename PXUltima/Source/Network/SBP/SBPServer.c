@@ -5,155 +5,48 @@
 #include <File/PXDataStream.h>
 #include <Text/Text.h>
 
-void OnSBPServerDataRawSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize)
+void SBPServerConstruct(PXSBPServer* const sbpServer)
 {
-	
-}
+	PXSBPPackageProcessorConstruct(&sbpServer->PackageProcessor);
 
-void OnSBPServerDataRawReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize)
-{
-	SBPServer* const server = (SBPServer* const)pxSocket->Owner;
-
-	const SBPDataChunkResult dataResult = SBPDataCacheAppend(&server->DataCache, message, messageSize);
-
-	switch (dataResult)
-	{
-		default:
-			break;
-	}
-}
-
-void OnSBPServerDataChunkRecived(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk)
-{
-	// Lookup who the reciever of this chunk data is.
-	SBPDataPackage sbpDataPackage;
-
-	const PXBool found = PXDictionaryFind(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal, &sbpDataPackage);
-
-	if (!found)
-	{
-		// It is probably a new Package. So we try to parse the SBP header
-		
-		const PXSize size = PXSBPPackageParse(&sbpDataPackage, sbpDataChunk->Data, sbpDataChunk->DataSizeCurrent);
-		const PXSize successful = size > 0;
-		
-		if (!successful)
-		{
-			return; // Drop package, illegal formatting and not expected.
-		}
-
-		{
-			const PXBool isFullyConsumable = PXSBPPackageIsConsumable(&sbpDataPackage);
-
-			if (isFullyConsumable)
-			{
-				SBPServerPackageRecivedHandle(sbpServer, &sbpDataPackage);
-				return; // Package is probably smal and caN be consumed at once.
-			}
-		}
-
-		// Register data, to access later
-		PXDictionaryAdd(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal, &sbpDataPackage);
-
-		// Package is big and not fully recieved at this time. Cache current package and wait for additional chunks.
-
-		// Store()
-
-		// trigger Event progress?
-
-		return; // New package handled
-	}
-	else
-	{
-		// Package is already registered
-
-		// Is the packe now compleate?
-		const PXBool isConsumable = PXSBPPackageIsConsumable(&sbpDataPackage);
-
-		// Copy anyway, to make it whole.
-
-		// UpdatePackage()
-
-		// Handle Package
-		SBPServerPackageRecivedHandle(sbpServer, &sbpDataPackage);
-
-		// Package was handled. Now we can unregister it
-		PXDictionaryRemove(&sbpServer->ChannalEntryLookup, sbpDataChunk->Channal);
-	}
-}
-
-void OnSBPServerChannalCreated(SBPServer* const sbpServer, SBPDataCache* const sbpDataCache, const PXInt8U channalID)
-{
-	
-}
-
-void OnSBPServerPackageRecived(SBPServer* const sbpServer, const SBPDataPackage* const sbpDataPackage)
-{
-
-}
-
-void SBPServerPackageRecivedHandle(SBPServer* const sbpServer, const SBPDataPackage* const sbpDataPackage)
-{
-
-}
-
-void SBPServerConstruct(SBPServer* const sbpServer)
-{
 	//---<Server construction>-------------------------------------------------
 	{
-		PXServer* const server = &sbpServer->PXServer;
+		PXServer* const server = &sbpServer->Server;
 
 		PXServerConstruct(server);
 
 		server->Owner = sbpServer;
-		server->SocketEventListener.MessageSendCallback = OnSBPServerDataRawSend;
-		server->SocketEventListener.MessageReceiveCallback = OnSBPServerDataRawReceive;
-	}
-	//-------------------------------------------------------------------------
-
-	//---<Data cache construction>---------------------------------------------
-	{
-		SBPDataCache* const dataCache = &sbpServer->DataCache;
-
-		SBPDataCacheConstruct(dataCache);
-
-		dataCache->Owmer = sbpServer;
-		dataCache->ChannalCreatedCallBack = OnSBPServerChannalCreated;
-		dataCache->DataChunkRecievedCallBack = OnSBPServerDataChunkRecived;
+		server->EventListener.MessageSendCallback = PXSBPPackageProcessorOnDataRawSend;
+		server->EventListener.MessageReceiveCallback = PXSBPPackageProcessorOnDataRawReceive;
 	}
 	//-------------------------------------------------------------------------
 }
 
-void SBPServerDestruct(SBPServer* const sbpServer)
+void SBPServerDestruct(PXSBPServer* const sbpServer)
 {
-
+	PXSBPPackageProcessorDestruct(&sbpServer->PackageProcessor);
+	PXServerDestruct(&sbpServer->Server);
 }
 
-PXActionResult SBPServerStart(SBPServer* const sbpServer, const unsigned short port)
+PXActionResult SBPServerStart(PXSBPServer* const sbpServer, const unsigned short port)
 {
-	PXServer* server = &sbpServer->PXServer;
+	PXServer* server = &sbpServer->Server;
 
 	const PXActionResult result = PXServerStart(server, port, ProtocolModeTCP);
 
 	return result;
 }
 
-PXActionResult SBPServerStop(SBPServer* const sbpServer)
+PXActionResult SBPServerStop(PXSBPServer* const sbpServer)
 {
-	return PXServerStop(&sbpServer->PXServer);
+	return PXServerStop(&sbpServer->Server);
 }
 
-PXActionResult SBPServerSendFileA(SBPServer* const sbpServer, const PXSocketID clientID, const char* text)
+PXActionResult SBPServerSendFileA(PXSBPServer* const sbpServer, const PXSocketID clientID, const char* text)
 {
-	return PXActionInvalid;
-}
 
-
-/*
-void SBPServerSendFile(const PXClientID clientID, const char* text)
-{
-	File file;
 	/*
+	* 	File file;
 
 	// Check if file exists
 	{
@@ -209,168 +102,9 @@ void SBPServerSendFile(const PXClientID clientID, const char* text)
 		auto& client = _server.PXClientList[i];
 
 		client.SendFile(text);
-	}	* /
-}
-
-PXSize randomIDGenerator = 420;
-
-const ResponseID SBPServerGenerateResponseID()
-{
-	return randomIDGenerator++;
-}
-
-bool SBPServerSendMessageWaitResponse(const PXClientID clientID, const ResponseID responseID, const Byte__* buffer, const PXSize& bufferSize)
-{
-	_responseLookup.Add(responseID, nullptr);
-
-
-
-	//_server.SendMessageToPXClient(clientID, buffer, bufferSize);
-
-	/*
-	// wait for message
-	while(true)
-	{
-		_responseLookup.
-	}* /
-
-
-	return false;
-}
-
-void SBPServerSendTextToAll(const char* text)
-{
-	const PXSize bufferSize = 2048;
-	PXSize size = 0;
-	Byte__ buffer[bufferSize]{ 0 };
-
-	//CreateText(text, buffer, size, bufferSize);
-
-	//_server.SendMessageToAll(buffer, size);
-}
-
-void SBPServerSendTextToAll(const wchar_t* text)
-{
-	const PXSize bufferSize = 2048;
-	PXSize size = 0;
-	Byte__ buffer[bufferSize]{ 0 };
-	
-	//CreateText(text, buffer, size, bufferSize);
-
-	//_server.SendMessageToAll(buffer, size);
-}
-
-void SBPServerSendTextToPXClient(const unsigned int clientID, const char* text)
-{
-
-
-	//CreateText(text, buffer, size, bufferSize);
-
-	//_server.SendMessageToPXClient(clientID, buffer, size);
-}
-
-void SBPServerSendTextToPXClient(const unsigned int clientID, const wchar_t* text)
-{
-	const PXSize bufferSize = 2048;
-	PXSize size = 0;
-	Byte__ buffer[bufferSize]{ 0 };
-
-	//CreateText(text, buffer, size, bufferSize);
-
-	//_server.SendMessageToPXClient(clientID, buffer, size);
-}
-
-void SBPServerOnSocketCreating(const IPAdressInfo& adressInfo, bool& use)
-{
-#if SocketDebug
-	printf("[i][SBP-Server] OnSocketCreating\n");
-#endif
-}
-
-void SBPServerOnSocketCreated(const IPAdressInfo& adressInfo, bool& use)
-{
-#if SocketDebug
-	printf("[i][SBP-Server] OnSocketCreated\n");
-#endif
-}
-
-void SBPServerOnMessageSend(IOSocketMessage socketMessage)
-{
-#if SocketDebug
-	printf("[i][SBP-Server] OnMessageSend\n");
-#endif
-}
-
-void SBPServerOnMessageReceive(IOSocketMessage socketMessage)
-{
-#if SocketDebug
-	printf("[i][SBP-Server] Message from <%i> %zi Bytes\n",socketMessage.SocketID, socketMessage.MessageSize);
-#endif
-
-	SBPData data;
-	const PXSize read = SBPDataPackageParse(data, socketMessage.Message, socketMessage.MessageSize);
-
-	if(read)
-	{
-#if SocketDebug
-		printf("[i][SBP-Server] SBP Pachage detected Command:%c%c%c%c\n", data.CommandID.A, data.CommandID.B, data.CommandID.C, data.CommandID.D);
-#endif
-		//data.Print();
-
-		switch(data.CommandID.Value)
-		{	
-			case SBPDataPackageIamID:
-			{
-				const PXSize bufferSize = 1024u;
-				PXSize bufferActural = 0;
-				Byte__ buffer[bufferSize]{0};			
-
-				SBPDataPackageResponse packageResponse;
-
-				packageResponse.Type = SBPDataPackageResponseTypeOK;
-
-				const PXSize written = SBPDataPackageSerialize(buffer, bufferSize, SourceMe, TargetYou, &packageResponse, data.ID);
-
-#if SocketDebug
-				printf("[i][SBP-Server] Sending response\n");
-#endif
-				_server.SendMessageToPXClient(socketMessage.SocketID, buffer, written);			
-
-				break;
-			}				
-			/*case SBPCommandConnectionCreate:
-				break;
-			case SBPCommandConnectionInfo:
-				break;
-			case SBPCommandConnectionQuit:
-				break;
-			case SBPCommandText:
-				break;
-			case SBPCommandFile:
-				break;* /
-
-			default: // Custom or unkownPackage
-				break;
-		}
 	}
-}
+	*/
 
-void SBPServerOnConnectionListening(const IPAdressInfo& adressInfo)
-{
-	printf("[i][SBP-Server][%zi] Listening on IP:%s Port:%i\n", adressInfo.SocketID, adressInfo.IP, adressInfo.Port);
-}
 
-void SBPServerOnConnectionLinked(const IPAdressInfo& adressInfo)
-{
-	printf("[i][SBP-Server] Linked \n");
+	return PXActionInvalid;
 }
-
-void SBPServerOnConnectionEstablished(const IPAdressInfo& adressInfo)
-{
-	printf("[i][SBP-Server]Established <%zi>\n", adressInfo.SocketID);
-}
-
-void SBPServerOnConnectionTerminated(const IPAdressInfo& adressInfo)
-{
-	printf("[-][SBP-Server] Terminated <%zi>\n", adressInfo.SocketID);
-}*/

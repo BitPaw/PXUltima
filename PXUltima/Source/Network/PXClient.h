@@ -22,12 +22,16 @@ extern "C"
 		PXSocketEventListener EventListener;
 
 		ConnectedToServerEvent ConnectedToServerCallback;
+
+		void* Owner;
 	}
 	PXClient;
 
 	PXPublic PXActionResult PXClientConstruct(PXClient* const pxClient);
+	PXPublic PXActionResult PXClientDestruct(PXClient* const pxClient);
 
-	PXPublic PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
+	PXPublic PXActionResult PXClientConnectToServer(PXClient* const client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
+	PXPublic PXActionResult PXClientDisconnectFromServer(PXClient* const client);
 
 	PXPublic PXThreadResult CommunicationFunctionAsync(void* ioSocket);
 

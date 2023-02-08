@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Network\SBP\PXSBPPackageProcessor.h" />
     <ClInclude Include="Source\Network\SBP\SBPDataChunk.h" />
     <ClInclude Include="Source\Network\Web\PXFTPClient.h" />
     <ClInclude Include="Source\Format\FTP\FTP.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Network\SBP\PXSBPPackageProcessor.c" />
     <ClCompile Include="Source\Network\SBP\SBPDataChunk.c" />
     <ClCompile Include="Source\Network\Web\PXFTPClient.c" />
     <ClCompile Include="Source\Format\FTP\FTP.c" />

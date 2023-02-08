@@ -8,28 +8,32 @@ PXActionResult PXClientConstruct(PXClient* const pxClient)
     MemoryClear(pxClient, sizeof(PXClient));
 }
 
-PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)
+PXActionResult PXClientDestruct(PXClient* const pxClient)
 {
-    IPAdressFamily ipAdressFamily = IPAdressFamilyUnspecified;
-    PXSocketType socketType = PXSocketTypeStream;
-    ProtocolMode protocolMode = ProtocolModeTCP;
+    
+}
 
+PXActionResult PXClientConnectToServer(PXClient* const client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)
+{
     PXSocket pxSocketList[5];
     PXSize pxSocketListSizeMax = 5;
     PXSize PXSocketListSize = 0;
 
     MemoryClear(pxSocketList,sizeof(PXSocket)* pxSocketListSizeMax);
 
+    const PXSocketAdressSetupInfo pxSocketAdressSetupInfoList[1] =
+    {
+          ip, port, IPAdressFamilyUnspecified, PXSocketTypeStream, ProtocolModeTCP
+    };
+    const PXSize pxSocketAdressSetupInfoListSize = sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
+
     PXSocketSetupAdress
     (
         pxSocketList,
         pxSocketListSizeMax,
         &PXSocketListSize,
-        ip,
-        port,
-        ipAdressFamily,
-        socketType,
-        protocolMode
+        pxSocketAdressSetupInfoList,
+        pxSocketAdressSetupInfoListSize
     );
 
     PXBool wasSucessful = 0;
@@ -47,7 +51,7 @@ PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigne
 
             if (connected)
             {  
-                MemoryCopy(pxSocket, sizeof(PXSocket), &client->SocketPXClient, sizeof(PXSocket));             
+                MemoryCopy(pxSocket, sizeof(PXSocket), &client->SocketPXClient, sizeof(PXSocket));
 
                 client->SocketPXClient.EventList = client->EventListener;
 
@@ -67,6 +71,11 @@ PXActionResult PXClientConnectToServer(PXClient* client, const char* ip, unsigne
     }
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXClientDisconnectFromServer(PXClient* const client)
+{
+    return PXActionInvalid;
 }
 
 #define PXClientBufferSize 2048u

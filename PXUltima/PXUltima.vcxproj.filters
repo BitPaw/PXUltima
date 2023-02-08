@@ -429,6 +429,9 @@
     <ClInclude Include="Source\Network\SBP\SBPDataChunk.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Network\SBP\PXSBPPackageProcessor.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -837,6 +840,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Network\SBP\SBPDataChunk.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\SBP\PXSBPPackageProcessor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
