@@ -11,7 +11,7 @@ Because of this history, bitmaps are used here and there but in the context of t
 ## Structure
 ### Bitmap Header (14 Bytes)
 |Name|Length|Type| Description |
-|:-:|:-:|:-:|:-:|
+|:-:|:-:|:-:|:-|
 |ID|2  Bytes| unsigned int | BM - Windows 3.1x, 95, NT, ... etc.<br>BA - OS/2 struct bitmap array<br>CI - OS/2 struct color icon<br>CP - OS/2 const color pointer<br>IC - OS/2 struct icon<br>PT - OS/2 pointer |
 |Size of file|4 Bytes | unsigned int | Notice: as this is a 32-Bit number, the file can only around 4 GB |
 |Reserved| 2 Bytes | unsigned short | usually 0 |
@@ -35,7 +35,7 @@ Then lets see what we get
 #### Windows BITMAPINFOHEADER (40 Bytes) [Most common version]
 
 |Name|Length|Type| Description |
-|:-:|:-:|:-:|:-:|
+|:-|:-:|:-:|:-:|
 |Width|4 Bytes | int | - |
 |Height|4 Bytes | int | - |
 |Number of color planes |2 Bytes | unsigned short | must be 1  |
@@ -65,4 +65,5 @@ ToDo
 ### Pixel data
 The data is stored depending on the layout described in the header. <br>
 
-
+## Link
+- https://en.wikipedia.org/wiki/BMP_file_format
