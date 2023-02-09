@@ -1,4 +1,4 @@
-# BitMap (.BMP) [RFC 797]
+# BitMap (.BMP)<br>[RFC 797]
 
 ## Info
 Bitmaps is an image format.<br>
