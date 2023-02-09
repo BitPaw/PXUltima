@@ -27,3 +27,6 @@ ToDo
 
 #### Compression - Dynamic Huffman codes (0b10)
 ToDo
+
+## Links
+- https://en.wikipedia.org/wiki/Deflate
