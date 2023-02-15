@@ -72,4 +72,4 @@
 |Windows 7 (x64)|Intel Pentium IV 3GHz|3GB DDR2|???|:heavy_check_mark:|
 |Windows XP (x86)|AMD Sempron |1GB DDR1|Nvidia FX5200 (64-Bit)| :warning:|
 |Windows XP (x86)|Intel Pentium II 233MHz|128MB SDRAM|Matrox G100|:warning:|
-|Windows 98 SE (x86)|Intel Pentium 90 MHz|??? MB EDORAM|S3 Trio32|:x:|
+|Windows 98 SE (x86)|Intel Pentium 90 MHz|128MB EDORAM|S3 Trio32|:x:|
