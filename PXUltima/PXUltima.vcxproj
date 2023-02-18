@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Debug\PXDebug.h" />
     <ClInclude Include="Source\Network\SBP\PXSBPPackageProcessor.h" />
     <ClInclude Include="Source\Network\SBP\SBPDataChunk.h" />
     <ClInclude Include="Source\Network\Web\PXFTPClient.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Debug\PXDebug.c" />
     <ClCompile Include="Source\Network\SBP\PXSBPPackageProcessor.c" />
     <ClCompile Include="Source\Network\SBP\SBPDataChunk.c" />
     <ClCompile Include="Source\Network\Web\PXFTPClient.c" />
@@ -303,6 +305,7 @@
     <None Include="Source\Algorithm\KalmanFilter\README.md" />
     <None Include="Source\Audio\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
+    <None Include="Source\Debug\README.md" />
     <None Include="Source\Format\FTP\README.md" />
     <None Include="Source\Format\HTTP\README.md" />
     <None Include="Source\Format\LAME\README.md" />

@@ -5,8 +5,6 @@
 #include <Format/Type.h>
 #include <Time/PXTime.h>
 
-
-
 #if OSUnix
 #include <unistd.h>
 #elif OSWindows
@@ -61,6 +59,7 @@ extern "C"
 	PXProcessMemoryInfo;
 
 
+	PXPublic void PXProcessConstruct(PXProcess* const pxProcess);
 
 	PXPublic void PXProcessCurrent(PXProcess* const pxProcess);
 	PXPublic void PXProcessParent(PXProcess* const pxProcess);
@@ -68,8 +67,8 @@ extern "C"
 	PXPublic PXActionResult PXProcessOpen(PXProcess* const pxProcess);
 	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);
 
-	PXPublic PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
-	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXSize PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
 
 	PXPublic PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 

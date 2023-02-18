@@ -7,7 +7,7 @@ void PXSBPPackageProcessorOnDataRawSend(const PXSocket* const pxSocket, const vo
 
 void PXSBPPackageProcessorOnDataRawReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize)
 {
-	const SBPDataChunkResult dataResult = SBPDataCacheAppend(pxSocket->Owner, message, messageSize);
+	const SBPPackageHeaderChunkResult dataResult = SBPPackageHeaderCacheAppend(pxSocket->Owner, message, messageSize);
 
 	switch (dataResult)
 	{
@@ -16,10 +16,10 @@ void PXSBPPackageProcessorOnDataRawReceive(const PXSocket* const pxSocket, const
 	}
 }
 
-void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk)
+void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderChunk* const sbpDataChunk)
 {
 	// Lookup who the reciever of this chunk data is.
-	SBPDataPackage sbpDataPackage;
+	SBPPackageHeader sbpDataPackage;
 
 	PXDictionary* const channalEntryLookup = &pxSBPPackageProcessor->ChannalEntryLookup;
 
@@ -38,7 +38,7 @@ void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPacka
 		}
 
 		{
-			const PXBool isFullyConsumable = PXSBPPackageIsConsumable(&sbpDataPackage);
+			const PXBool isFullyConsumable = 0;// PXSBPPackageIsConsumable(&sbpDataPackage);
 
 			if (isFullyConsumable)
 			{
@@ -63,7 +63,7 @@ void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPacka
 		// Package is already registered
 
 		// Is the packe now compleate?
-		const PXBool isConsumable = PXSBPPackageIsConsumable(&sbpDataPackage);
+		const PXBool isConsumable = 0;// PXSBPPackageIsConsumable(&sbpDataPackage);
 
 		// Copy anyway, to make it whole.
 
@@ -77,25 +77,25 @@ void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPacka
 	}
 }
 
-void PXSBPPackageProcessorOnPackageRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPDataPackage* const sbpDataPackage)
+void PXSBPPackageProcessorOnPackageRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPPackageHeader* const sbpDataPackage)
 {
 
 }
 
-void PXSBPPackageProcessorPackageHandle(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPDataPackage* const sbpDataPackage)
+void PXSBPPackageProcessorPackageHandle(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPPackageHeader* const sbpDataPackage)
 {
 	/*
 	switch (sbpDataPackage->CommandID.Value)
 	{
-		case SBPDataPackageIamID:
+		case SBPPackageHeaderPackageIamID:
 		{
 			const PXSize bufferSize = 1024u;
 			PXSize bufferActural = 0;
 			PXByte buffer[1024] = { 0 };
 
-			SBPDataPackageResponse packageResponse;
+			SBPPackageHeaderPackageResponse packageResponse;
 
-			packageResponse.Type = SBPDataPackageResponseTypeOK;
+			packageResponse.Type = SBPPackageHeaderPackageResponseTypeOK;
 
 			const PXSize written = PXSBPPackageSerialize(buffer, bufferSize, SourceMe, TargetYou, &packageResponse, data.ID);
 
@@ -124,24 +124,34 @@ void PXSBPPackageProcessorPackageHandle(PXSBPPackageProcessor* const pxSBPPackag
 	*/
 }
 
-void PXSBPPackageProcessorPackageExport(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPDataPackage* const sbpDataPackage)
+void PXSBPPackageProcessorPackageExport(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPPackageHeader* const sbpDataPackage)
 {
+	PXSocket* const socket = (PXSocket* const)pxSBPPackageProcessor->Owner;
 
+	char buffer[1024];
+
+	PXSize packageSize = PXSBPPackageSerialize(sbpDataPackage, buffer, 1024);
+
+	PXSocketSend(socket, buffer, packageSize, 0);
 }
 
 void PXSBPPackageProcessorConstruct(PXSBPPackageProcessor* const pxSBPPackageProcessor)
 {
 	//---<Data cache construction>---------------------------------------------
 	{
-		SBPDataCache* const dataCache = &pxSBPPackageProcessor->DataCache;
+		SBPPackageHeaderCache* const dataCache = &pxSBPPackageProcessor->DataCache;
 
-		SBPDataCacheConstruct(dataCache);
+		SBPPackageHeaderCacheConstruct(dataCache);
 
 		dataCache->Owmer = pxSBPPackageProcessor;
 		//dataCache->ChannalCreatedCallBack = OnSBPServerChannalCreated;
 		dataCache->DataChunkRecievedCallBack = PXSBPPackageProcessorOnChunkRecived;
 	}
 	//-------------------------------------------------------------------------
+
+	PXDictionaryConstruct(&pxSBPPackageProcessor->ChannalEntryLookup, sizeof(PXInt8U), sizeof(SBPPackageHeader));
+
+	pxSBPPackageProcessor->Owner = PXNull;
 }
 
 void PXSBPPackageProcessorDestruct(PXSBPPackageProcessor* const pxSBPPackageProcessor)

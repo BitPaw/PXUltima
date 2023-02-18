@@ -1044,6 +1044,7 @@ void PXSocketReadPendingHandle(PXSocket* const pxSocket, const PXSocketID socket
 
         PXSocketConstruct(&clientSocket);
 
+        clientSocket.Owner = pxSocket->Owner;
         clientSocket.ID = socketID;
         clientSocket.EventList = pxSocket->EventList;
 

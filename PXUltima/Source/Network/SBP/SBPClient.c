@@ -25,7 +25,7 @@ SBPResult SBPPXClientSendAndWaitResponse
 	PXSize* responseDataSize,
 	const unsigned int sourceID,
 	const unsigned int targetID,
-	const SBPDataPackage* dataPackage
+	const SBPPackageHeaderPackage* dataPackage
 )
 {
 	responseData = 0;
@@ -33,7 +33,7 @@ SBPResult SBPPXClientSendAndWaitResponse
 
 	const ResponseID responseID = _responseCache.Register();
 
-	const PXSize writtenBytes = SBPDataPackageSerialize(inputData, inputDataSize, SourceMe, TargetServer, dataPackage, responseID);
+	const PXSize writtenBytes = SBPPackageHeaderPackageSerialize(inputData, inputDataSize, SourceMe, TargetServer, dataPackage, responseID);
 
 	// Send stuff
 	{
@@ -133,7 +133,7 @@ void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const char* ip, 
 
 	//stopwatch.Start();
 
-	SBPDataPackageIam dataPackageIam;
+	SBPPackageHeaderPackageIam dataPackageIam;
 
 	dataPackageIam.Fill();
 
@@ -201,7 +201,7 @@ void SBPPXClientSendFile(const char* filePath)
 			outputBufferSize,7
 			SourceMe,
 			TargetServer,
-			SBPData::PackageCreateConnectionRequest
+			SBPPackageHeader::PackageCreateConnectionRequest
 		);
 		const bool sucessful = result == SBPResult::PackageAnswered;
 
@@ -215,9 +215,9 @@ void SBPPXClientSendFile(const char* filePath)
 
 		// Parse
 		{
-			SBPData data;
+			SBPPackageHeader data;
 
-			SBPData::PackageParse(data, outputBuffer, outputBufferSize);
+			SBPPackageHeader::PackageParse(data, outputBuffer, outputBufferSize);
 
 			bool isExpected = data.CommandID.Value == SBPIDResponse;
 		}
@@ -255,7 +255,7 @@ void SBPPXClientSendFile(const char* filePath)
 			outputBufferSize,
 			SourceMe,
 			TargetServer,
-			SBPData::PackageCreateFile
+			SBPPackageHeader::PackageCreateFile
 		);
 		const bool sucessful = result == SBPResult::PackageAnswered;
 	}
@@ -357,13 +357,13 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 
 	while(client._client.IsCurrentlyUsed())
 	{
-		SBPData data;
+		SBPPackageHeader data;
 
 		// Get raw bytes
 		const auto receiveingResult = client._client.Receive(buffer, bufferSizeMax, bufferSize);
 
 		// Convert raw bytes into data object
-		const PXSize parsedBytes = SBPData::PackageParse(data, buffer, bufferSize);
+		const PXSize parsedBytes = SBPPackageHeader::PackageParse(data, buffer, bufferSize);
 
 		if(parsedBytes)
 		{
@@ -377,7 +377,7 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 			// Handle packaage
 			switch(data.CommandID.Value)
 			{
-				case SBPDataPackageIamID:
+				case SBPPackageHeaderPackageIamID:
 				{
 					wchar_t* name = (wchar_t*)data.Data;
 
@@ -387,13 +387,13 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 
 					break;
 				}				
-				case SBPDataPackageResponseID:
+				case SBPPackageHeaderPackageResponseID:
 				{
 
 
 					break;
 				}
-				case SBPDataPackageFileID:
+				case SBPPackageHeaderPackageFileID:
 				{
 
 					break;
@@ -477,16 +477,22 @@ PXActionResult SBPPXClientConnectToServer(PXSBPClient* const sbpPXClient, const 
 
 	// After connection, who are you?
 	{
-		SBPDataPackage sbpDataPackage;
-		SBPDataPackageIam sbpDataPackageIam;
+		SBPPackageHeader sbpDataPackage;
+		SBPPackageHeaderPackageIam sbpDataPackageIam;
+
+		SBPPackageHeaderConstruct(&sbpDataPackage);
 
 		char buffer[256];
 		PXSize bufferSize = 0;
 
-		sbpDataPackage.Data = buffer;
-		sbpDataPackage.DataSizeTotal = 256;
+		sbpDataPackage.Command = buffer;
+		sbpDataPackage.CommandSize = 256;
 
-		bufferSize = SBPDataPackageIamSerialize(&sbpDataPackage, &sbpDataPackageIam);
+		bufferSize = SBPPackageHeaderPackageIamSerialize(&sbpDataPackage, &sbpDataPackageIam);
+
+		sbpPXClient->Client.SocketConnectedServer.Owner = &sbpPXClient->PackageProcessor.DataCache;
+		sbpPXClient->Client.SocketPXClient.Owner = &sbpPXClient->PackageProcessor.DataCache;
+		sbpPXClient->PackageProcessor.Owner = &sbpPXClient->Client.SocketPXClient;
 
 		PXSBPPackageProcessorPackageExport(&sbpPXClient->PackageProcessor, &sbpDataPackage);
 	}

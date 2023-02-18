@@ -38,10 +38,8 @@ extern "C"
 
 		const unsigned int sourceID,
 		const unsigned int targetID,
-		const SBPDataPackage* dataPackage
+		const SBPPackageHeader* dataPackage
 	);
-
-
 
 	PXPublic PXActionResult SBPPXClientConnectToServer(PXSBPClient* const sbpPXClient, const char* ip, const unsigned short port);
 //	void SBPPXClientConnectToServer(SBPPXClient* const sbpPXClient, const wchar_t* ip, const unsigned short port);

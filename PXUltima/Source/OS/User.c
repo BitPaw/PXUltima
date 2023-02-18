@@ -8,7 +8,7 @@
 #include <Windows.h>
 #endif
 
-PXSize UserNameGetA(char* name, const PXSize nameSizeMax)
+PXSize UserNameGetA(PXTextASCII* name, const PXSize nameSizeMax)
 {
 #if OSUnix
 
@@ -24,7 +24,7 @@ PXSize UserNameGetA(char* name, const PXSize nameSizeMax)
 #endif
 }
 
-PXSize UserNameGetW(wchar_t* name, const PXSize nameSizeMax)
+PXSize UserNameGetW(PXTextUNICODE* name, const PXSize nameSizeMax)
 {
 #if OSUnix
 
@@ -34,6 +34,22 @@ PXSize UserNameGetW(wchar_t* name, const PXSize nameSizeMax)
 	DWORD size = nameSizeMax;
 
 	const PXBool sucessful = GetComputerNameW(name, &size);
+	const PXSize sizeresult = sucessful * size;
+
+	return sizeresult;
+#endif
+}
+
+PXSize UserNameGetU(PXTextUTF8* name, const PXSize nameSizeMax)
+{
+#if OSUnix
+
+	return 0;
+
+#elif OSWindows
+	DWORD size = nameSizeMax;
+
+	const PXBool sucessful = GetComputerNameA(name, &size);
 	const PXSize sizeresult = sucessful * size;
 
 	return sizeresult;

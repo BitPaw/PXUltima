@@ -2,27 +2,28 @@
 
 #include <Container/ClusterValue.h>
 #include <Memory/PXMemory.h>
+#include <Network/SBP/SBPProtocol.h>
 
-void SBPDataCacheConstruct(SBPDataCache* const sbpDataCache)
+void SBPPackageHeaderCacheConstruct(SBPPackageHeaderCache* const sbpDataCache)
 {
 	PXDictionary* const pxDictionary = &sbpDataCache->DataCallBackLookup;
 
-	MemoryClear(sbpDataCache, sizeof(SBPDataCache));
+	MemoryClear(sbpDataCache, sizeof(SBPPackageHeaderCache));
 
-	PXDictionaryConstruct(pxDictionary, sizeof(PXInt8U), sizeof(SBPDataChunkIOEvent));
+	PXDictionaryConstruct(pxDictionary, sizeof(PXInt8U), sizeof(SBPPackageHeaderChunkIOEvent));
 }
 
-void SBPDataCacheDestruct(SBPDataCache* const sbpDataCache)
+void SBPPackageHeaderCacheDestruct(SBPPackageHeaderCache* const sbpDataCache)
 {
 	
 }
 
-void SBPDataCacheStateChange(SBPDataCache* const sbpDataCache, const SBPDataCacheState sbpDataCacheState)
+void SBPPackageHeaderCacheStateChange(SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderCacheState sbpDataCacheState)
 {
 	sbpDataCache->State = sbpDataCacheState;
 }
 
-void SBPDataCacheHandle(SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk)
+void SBPPackageHeaderCacheHandle(SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderChunk* const sbpDataChunk)
 {
 	PXDictionary* const pxDictionary = &sbpDataCache->DataCallBackLookup;
 		
@@ -30,7 +31,7 @@ void SBPDataCacheHandle(SBPDataCache* const sbpDataCache, const SBPDataChunk* co
 
 #if 0
 	// Lookup the callback function for the spesific channal
-	SBPDataChunkIOEvent sbpDataChunkIOEvent;
+	SBPPackageHeaderChunkIOEvent sbpDataChunkIOEvent;
 
 	const PXBool found = PXDictionaryFind(pxDictionary, &sbpDataChunk->Channal, &sbpDataChunkIOEvent);
 	
@@ -45,44 +46,63 @@ void SBPDataCacheHandle(SBPDataCache* const sbpDataCache, const SBPDataChunk* co
 #endif
 }
 
-void SBPDataCacheChannalCallBackRegister(SBPDataCache* const sbpDataCache, const PXInt8U channelID, const SBPDataChunkIOEvent sbpDataChunkIOEvent)
+void SBPPackageHeaderCacheChannalCallBackRegister(SBPPackageHeaderCache* const sbpDataCache, const PXInt8U channelID, const SBPPackageHeaderChunkIOEvent sbpDataChunkIOEvent)
 {
 	PXDictionary* const pxDictionary = &sbpDataCache->DataCallBackLookup;
 
 	PXDictionaryAdd(pxDictionary, &channelID, &sbpDataChunkIOEvent);
 }
 
-void SBPDataCacheChannalCallBackUnregister(SBPDataCache* const sbpDataCache, const PXInt8U channelID)
+void SBPPackageHeaderCacheChannalCallBackUnregister(SBPPackageHeaderCache* const sbpDataCache, const PXInt8U channelID)
 {
 	PXDictionary* const pxDictionary = &sbpDataCache->DataCallBackLookup;
 
 	PXDictionaryRemove(pxDictionary, &channelID);
 }
 
-#define SBPDataCacheHeaderSize 3u
+#define SBPPackageHeaderCacheHeaderSize 3u
 
-SBPDataChunkResult SBPDataCacheAppend(SBPDataCache* const sbpDataCache, const void* const data, const PXSize dataSize)
+SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* const sbpDataCache, const void* const data, const PXSize dataSize)
 {
+	PXDataStream dataStream;
+
+	PXDataStreamFromExternal(&dataStream, data, dataSize);
+
 	switch (sbpDataCache->State) // Check State
 	{
-		case SBPDataCacheStateAwaitHeaderStart:
+		case SBPPackageHeaderCacheStateAwaitHeaderStart:
 		{
 			const PXBool isLongEnough = dataSize >= 2u;
 
 			if (!isLongEnough)
 			{
-				SBPDataCacheStateChange(sbpDataCache, SBPDataCacheStateAwaitHeaderRemainingData);
-				return SBPDataChunkCached;
+				SBPPackageHeaderCacheStateChange(sbpDataCache, SBPPackageHeaderCacheStateAwaitHeaderRemainingData);
+				return SBPPackageHeaderChunkCached;
 			}
 
+
+
+
+			SBPPackageHeader sbpDataPackage;
+
+			const PXSize writtenBytes = PXSBPPackageParse(&sbpDataPackage, data, dataSize);
+			const PXBool sucessful = writtenBytes > 0;
+
+			if (!sucessful)
+			{
+				// Illegal Package
+			}
+
+
+
 			const PXByte* const header = (const PXByte* const)data;
-			const PXSize dataContentSize = dataSize - SBPDataCacheHeaderSize;
+			const PXSize dataContentSize = dataSize - SBPPackageHeaderCacheHeaderSize;
 			const PXInt16U sizeCurrent = MakeShortLE(header[1], header[2]);
-			const PXInt16U sizeTotal = header + SBPDataCacheHeaderSize;
+			const PXInt16U sizeTotal = header + SBPPackageHeaderCacheHeaderSize;
 			const PXBool isComplete = sizeCurrent >= sizeTotal; // Is the package fully
 			//const PXInt8U percentageWhole = (dataContentSize / (float)size) * 100;
-			const SBPDataCacheChunkOrder order = isComplete ? SBPDataCacheChunkOrderFirst : SBPDataCacheChunkOrderFinal;
-			const SBPDataChunk sbpDataChunk =
+			const SBPPackageHeaderCacheChunkOrder order = isComplete ? SBPPackageHeaderCacheChunkOrderFirst : SBPPackageHeaderCacheChunkOrderFinal;
+			const SBPPackageHeaderChunk sbpDataChunk =
 			{
 				order, // Info
 				header[0], // Channal 
@@ -94,9 +114,9 @@ SBPDataChunkResult SBPDataCacheAppend(SBPDataCache* const sbpDataCache, const vo
 			if (isComplete)
 			{
 				// Trigger event, that we can consume data imidiently
-				SBPDataCacheHandle(sbpDataCache, &sbpDataChunk);
+				SBPPackageHeaderCacheHandle(sbpDataCache, &sbpDataChunk);
 
-				return SBPDataChunkComsumeImmediately;
+				return SBPPackageHeaderChunkComsumeImmediately;
 			}
 
 			// Data is not yet compleate, cache for later
@@ -119,20 +139,20 @@ SBPDataChunkResult SBPDataCacheAppend(SBPDataCache* const sbpDataCache, const vo
 				PXDataStreamWriteB(dataStream, sbpDataChunk.Data, sbpDataChunk.DataSizeCurrent); // Write Data
 			}
 
-			SBPDataCacheStateChange(sbpDataCache, SBPDataCacheStateAwaitData);		
+			SBPPackageHeaderCacheStateChange(sbpDataCache, SBPPackageHeaderCacheStateAwaitData);		
 
-			return SBPDataChunkCached;
+			return SBPPackageHeaderChunkCached;
 		}
-		case SBPDataCacheStateAwaitHeaderRemainingData:
+		case SBPPackageHeaderCacheStateAwaitHeaderRemainingData:
 		{
 
 
 			break;
 		}
-		case SBPDataCacheStateAwaitData:
+		case SBPPackageHeaderCacheStateAwaitData:
 		{
 			PXDataStream* const dataStream = &sbpDataCache->Data;
-			SBPDataChunk sbpDataChunk = {0,0,0,0,0};
+			SBPPackageHeaderChunk sbpDataChunk = {0,0,0,0,0};
 			const PXDataStreamElementType pxDataStreamElementTypeList[4] =
 			{
 				PXDataTypeInt8U, &sbpDataChunk.Order,
@@ -168,21 +188,21 @@ SBPDataChunkResult SBPDataCacheAppend(SBPDataCache* const sbpDataCache, const vo
 				sbpDataCache->DataHeaderStartOffset = (PXSize)-1; // We dont have a startingpoint naymore
 
 				//-------
-				SBPDataCacheStateChange(sbpDataCache, SBPDataCacheStateAwaitHeaderStart);
+				SBPPackageHeaderCacheStateChange(sbpDataCache, SBPPackageHeaderCacheStateAwaitHeaderStart);
 				//-------
 
 				// handle now
-				SBPDataCacheHandle(sbpDataCache, &sbpDataChunk);
+				SBPPackageHeaderCacheHandle(sbpDataCache, &sbpDataChunk);
 				//-------
 
-				return SBPDataChunkComsumeImmediately;
+				return SBPPackageHeaderChunkComsumeImmediately;
 			}
 
-			return SBPDataChunkCached;
+			return SBPPackageHeaderChunkCached;
 		}
 		default:
-			return SBPDataChunkResultInvalid;
+			return SBPPackageHeaderChunkResultInvalid;
 	}
 
-	return SBPDataChunkResultInvalid;
+	return SBPPackageHeaderChunkResultInvalid;
 }

@@ -5,6 +5,7 @@
 #include <Container/ClusterValue.h>
 #include <File/File.h>
 #include <Text/Text.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -16,8 +17,8 @@ extern "C"
 #define SBPIDConnectionResult MakeInt('C', 'o', 'n', '#')
 #define SBPIDConnectionKill MakeInt('C', 'o', 'n', '-')
 #define SBPIDText MakeInt('T', 'e', 'x', 't')
-#define SBPDataPackageIamID MakeInt('I', '\'', 'a', 'm')
-#define SBPDataPackageFileID MakeInt('F', 'i', 'l', 'e')
+#define SBPPackageHeaderPackageIamID MakeInt('I', '\'', 'a', 'm')
+#define SBPPackageHeaderPackageFileID MakeInt('F', 'i', 'l', 'e')
 
 
 #define ConnectionCreateReasonFile 'F'
@@ -103,62 +104,61 @@ extern "C"
 	SBPTarget;
 
 
-	typedef struct SBPDataPackage_
+	// Size: 24 Byte
+	typedef struct PXSBPChannelHeader_
 	{
-		//---------------------------------------
-		ClusterInt CommandID;
-		//---------------------------------------
+		PXInt8U ID;
+		PXInt16U Size;
+		void* Data;
+	}
+	PXSBPChannelHeader;
 
-		//---------------------------------------
+	PXPublic PXSize PXSBPChannelHeaderParse(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream);
+	PXPublic PXSize PXSBPChannelHeaderSerialize(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream);
+
+	// 32-Bit: Size: 20 Byte
+	// 64-Bit: Size: 28 Byte
+	typedef struct SBPPackageHeader_
+	{
+		//--------------------------------------- Location info
 		union
 		{
-			unsigned int SourceID;
+			unsigned int SourceID; // Where is it from?
 			SBPSource Source;
 		};
 
 		union
 		{
-			unsigned int TargetID;
+			unsigned int TargetID; // Who is the reciever
 			SBPTarget Target;
 		};
 		//---------------------------------------
 
-		//---------------------------------------
-		unsigned int ID;
-		//---------------------------------------
-
-		//---<Payload>---------------------------
-		unsigned int DataSizeCurrent;
-		unsigned int DataSizeTotal;
-		void* Data;
+		//--------------------------------------- Payload
+		ClusterInt CommandID;
+		PXSize CommandSize;
+		void* Command;
 		//---------------------------------------
 	}
-	SBPDataPackage;
+	SBPPackageHeader;
 
-	PXPublic void SBPDataConstruct(SBPDataPackage* const sbpData);
-	PXPublic void SBPDataDestruct(SBPDataPackage* const sbpData);
+	PXPublic void SBPPackageHeaderConstruct(SBPPackageHeader* const sbpPackageHeader);
+	PXPublic void SBPPackageHeaderDestruct(SBPPackageHeader* const sbpPackageHeader);
 
-	PXPublic void SBPDataSet
+	PXPublic void SBPPackageHeaderSet
 	(
-		SBPDataPackage* const sbpData,
+		SBPPackageHeader* const sbpPackageHeader,
 		const unsigned int command,
 		const unsigned int source,
 		const unsigned int target,
-		const unsigned int id,
 		const unsigned int dataSize,
 		const void* adress
 	);
 
-	PXPublic unsigned int SBPDataSize(SBPDataPackage* const sbpData);
+	PXPublic void SBPPackageHeaderPrint(SBPPackageHeader* const sbpData);
 
-	PXPublic PXBool PXSBPPackageIsConsumable(const SBPDataPackage* const sbpDataPackage);
-
-	PXPublic void SBPDataClear(SBPDataPackage* const sbpData);
-
-	PXPublic void SBPDataPrint(SBPDataPackage* const sbpData);
-
-	PXPublic PXSize PXSBPPackageParse(SBPDataPackage* data, const void* inputBuffer, const PXSize inputBufferSize);
-	PXPublic PXSize PXSBPPackageSerialize(const SBPDataPackage* data, void* outputBuffer, const PXSize outputBufferSize);
+	PXPublic PXSize PXSBPPackageParse(SBPPackageHeader* const sbpPackageHeader, PXDataStream* const dataStream);
+	PXPublic PXSize PXSBPPackageSerialize(const SBPPackageHeader* const data, PXDataStream* const dataStream);
 	/*
 	CPublic PXSize PackageSerialize
 	(
@@ -166,12 +166,12 @@ extern "C"
 		const PXSize outputBufferSize,
 		const unsigned int source,
 		const unsigned int target,
-		const SBPDataPackage* dataPackage,
+		const SBPPackageHeaderPackage* dataPackage,
 		const ResponseID responseID
 	);*/
 
 	// Recieve custom package, this is only called for unregistered packages
-	typedef void (*PackageRecieveEvent)(const SBPDataPackage* sbpData);
+	typedef void (*PackageRecieveEvent)(const SBPPackageHeader* sbpData);
 
 
 
@@ -193,30 +193,30 @@ extern "C"
 	}
 	SBPConnectionCreateReason;
 
-	typedef struct SBPDataPackageConnectionCreate_
+	typedef struct SBPPackageHeaderPackageConnectionCreate_
 	{
 		SBPConnectionCreateReason Reason;
 	}
-	SBPDataPackageConnectionCreate;
+	SBPPackageHeaderPackageConnectionCreate;
 
-	PXPublic void SBPDataPackageConnectionCreateFill(const SBPConnectionCreateReason reason);
+	PXPublic void SBPPackageHeaderPackageConnectionCreateFill(const SBPConnectionCreateReason reason);
 
-	PXPublic PXSize SBPDataPackageConnectionCreateParse(const void* inputData, const PXSize inputDataSize);
-	PXPublic PXSize SBPDataPackageConnectionCreateSerialize(void* outputData, const PXSize outputDataSize);
-
-
+	PXPublic PXSize SBPPackageHeaderPackageConnectionCreateParse(const void* inputData, const PXSize inputDataSize);
+	PXPublic PXSize SBPPackageHeaderPackageConnectionCreateSerialize(void* outputData, const PXSize outputDataSize);
 
 
 
 
-#define SBPDataPackageFileModeIDCreate 0x01
-#define SBPDataPackageFileModeIDDelete 0x02
-#define SBPDataPackageFileModeIDUpdate 0x03
-#define SBPDataPackageFileModeIDMove 0x04
-#define SBPDataPackageFileModeIDCopy 0x05
-#define SBPDataPackageFileModeIDRename 0x06
 
-		typedef enum SBPDataPackageFileMode
+
+#define SBPPackageHeaderPackageFileModeIDCreate 0x01
+#define SBPPackageHeaderPackageFileModeIDDelete 0x02
+#define SBPPackageHeaderPackageFileModeIDUpdate 0x03
+#define SBPPackageHeaderPackageFileModeIDMove 0x04
+#define SBPPackageHeaderPackageFileModeIDCopy 0x05
+#define SBPPackageHeaderPackageFileModeIDRename 0x06
+
+		typedef enum SBPPackageHeaderPackageFileMode
 		{
 			Invalid,
 			Create, // Create a file and upload data to it
@@ -226,11 +226,11 @@ extern "C"
 			Copy, // Copy a file
 			Rename // rename the file, no not change data
 		}
-		SBPDataPackageFileMode;
+		SBPPackageHeaderPackageFileMode;
 
-		typedef struct SBPDataPackageFile_
+		typedef struct SBPPackageHeaderPackageFile_
 		{
-			SBPDataPackageFileMode Mode;
+			SBPPackageHeaderPackageFileMode Mode;
 
 			TextFormat FilePathSourceFormat;
 			PXSize FilePathSourceSize;
@@ -250,21 +250,21 @@ extern "C"
 
 			PXSize FileSize; // HAs to be 8 Byte__!
 		}
-		SBPDataPackageFile;
+		SBPPackageHeaderPackageFile;
 
 
 
-		PXPublic void SBPDataPackageFileConstruct(SBPDataPackageFile* const sbpDataPackageFile);
+		PXPublic void SBPPackageHeaderPackageFileConstruct(SBPPackageHeaderPackageFile* const sbpDataPackageFile);
 
 		// S:N T:N => Invalid
 		// S:N T:Y => Create
 		// S:Y T:N => Delete
 		// S:Y T:Y => Copy
 
-		PXPublic void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const SBPDataPackageFileMode mode, const char* source, const char* target);
+		PXPublic void SBPPackageHeaderPackageFileFill(SBPPackageHeaderPackageFile* const sbpDataPackageFile, const SBPPackageHeaderPackageFileMode mode, const char* source, const char* target);
 
-		PXPublic PXSize SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const PXSize inputDataSize);
-		PXPublic PXSize SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const PXSize outputDataSize);
+		PXPublic PXSize SBPPackageHeaderPackageFileParse(SBPPackageHeaderPackageFile* const sbpDataPackageFile, const void* inputData, const PXSize inputDataSize);
+		PXPublic PXSize SBPPackageHeaderPackageFileSerialize(SBPPackageHeaderPackageFile* const sbpDataPackageFile, void* outputData, const PXSize outputDataSize);
 
 
 
@@ -273,59 +273,58 @@ extern "C"
 
 	//-------------------------------------------------------------------------
 
-	typedef struct SBPDataPackageIam_
+	typedef struct SBPPackageHeaderPackageIam_
 	{
 		Text Name;
 	}
-	SBPDataPackageIam;
+	SBPPackageHeaderPackageIam;
 
-	PXPublic PXSize SBPDataPackageIamParse(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam);
-	PXPublic PXSize SBPDataPackageIamSerialize(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam);
-
+	PXPublic PXSize SBPPackageHeaderPackageIamParse(SBPPackageHeader* const sbpDataPackage, SBPPackageHeaderPackageIam* const sbpDataPackageIam);
+	PXPublic PXSize SBPPackageHeaderPackageIamSerialize(SBPPackageHeader* const sbpDataPackage, SBPPackageHeaderPackageIam* const sbpDataPackageIam);
 	//-------------------------------------------------------------------------
 
 
-#define SBPDataPackageResponseID MakeInt('R', 'e', 's', 'p')
+#define SBPPackageHeaderPackageResponseID MakeInt('R', 'e', 's', 'p')
 
-#define SBPDataPackageResponseTypeOKID 0x01
-#define SBPDataPackageResponseTypeNoPermissionID 0x02
-#define SBPDataPackageResponseTypeDeniedID 0x03
+#define SBPPackageHeaderPackageResponseTypeOKID 0x01
+#define SBPPackageHeaderPackageResponseTypeNoPermissionID 0x02
+#define SBPPackageHeaderPackageResponseTypeDeniedID 0x03
 
-		typedef enum SBPDataPackageResponseType_
+		typedef enum SBPPackageHeaderPackageResponseType_
 		{
 			SBPResponseInvalid,
 			SBPResponseOK,
 			SBPResponseNoPermission,
 			SBPResponseDenied
 		}
-		SBPDataPackageResponseType;
+		SBPPackageHeaderPackageResponseType;
 
-		typedef struct SBPDataPackageResponse_
+		typedef struct SBPPackageHeaderPackageResponse_
 		{
-			SBPDataPackageResponseType Type;
+			SBPPackageHeaderPackageResponseType Type;
 		}
-		SBPDataPackageResponse;
+		SBPPackageHeaderPackageResponse;
 
-		PXPublic void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse);
+		PXPublic void SBPPackageHeaderPackageResponseConstruct(SBPPackageHeaderPackageResponse* const sbpDataPackageResponse);
 
-		PXPublic PXSize SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const PXSize inputDataSize);
-		PXPublic PXSize SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const PXSize outputDataSize);
+		PXPublic PXSize SBPPackageHeaderPackageResponseParse(SBPPackageHeaderPackageResponse* const sbpDataPackageResponse, const void* inputData, const PXSize inputDataSize);
+		PXPublic PXSize SBPPackageHeaderPackageResponseSerialize(SBPPackageHeaderPackageResponse* const sbpDataPackageResponse, void* outputData, const PXSize outputDataSize);
 
 
 
-#define SBPDataPackageTextID MakeInt('T', 'e', 'x', 't')
+#define SBPPackageHeaderPackageTextID MakeInt('T', 'e', 'x', 't')
 
-	typedef struct SBPDataPackageText_
+	typedef struct SBPPackageHeaderPackageText_
 	{
 		Text TextData;
 	}
-	SBPDataPackageText;
+	SBPPackageHeaderPackageText;
 
-	PXPublic void SBPDataPackageTextConstruct(SBPDataPackageText* const sbpDataPackageText);
-	PXPublic void SBPDataPackageTextDestruct(SBPDataPackageText* const sbpDataPackageText);
+	PXPublic void SBPPackageHeaderPackageTextConstruct(SBPPackageHeaderPackageText* const sbpDataPackageText);
+	PXPublic void SBPPackageHeaderPackageTextDestruct(SBPPackageHeaderPackageText* const sbpDataPackageText);
 
-	PXPublic PXSize SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const PXSize inputDataSize);
-	PXPublic PXSize SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const PXSize outputDataSize);
+	PXPublic PXSize SBPPackageHeaderPackageTextParse(SBPPackageHeaderPackageText* const sbpDataPackageText, const void* inputData, const PXSize inputDataSize);
+	PXPublic PXSize SBPPackageHeaderPackageTextSerialize(SBPPackageHeaderPackageText* const sbpDataPackageText, void* outputData, const PXSize outputDataSize);
 
 
 

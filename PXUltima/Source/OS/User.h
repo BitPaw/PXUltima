@@ -8,8 +8,9 @@ extern "C"
 {
 #endif
 
-	PXPublic PXSize UserNameGetA(char* name, const PXSize nameSizeMax);
-	PXPublic PXSize UserNameGetW(wchar_t* name, const PXSize nameSizeMax);
+	PXPublic PXSize UserNameGetA(PXTextASCII* name, const PXSize nameSizeMax);
+	PXPublic PXSize UserNameGetW(PXTextUNICODE* name, const PXSize nameSizeMax);
+	PXPublic PXSize UserNameGetU(PXTextUTF8* name, const PXSize nameSizeMax);
 
 #ifdef __cplusplus
 }

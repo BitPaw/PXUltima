@@ -432,6 +432,9 @@
     <ClInclude Include="Source\Network\SBP\PXSBPPackageProcessor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Debug\PXDebug.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Async\PXLock.c">
@@ -845,6 +848,9 @@
     <ClCompile Include="Source\Network\SBP\PXSBPPackageProcessor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Debug\PXDebug.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
@@ -856,5 +862,6 @@
     <None Include="Source\Format\LAME\README.md" />
     <None Include="Source\Format\HTTP\README.md" />
     <None Include="Source\Format\FTP\README.md" />
+    <None Include="Source\Debug\README.md" />
   </ItemGroup>
 </Project>

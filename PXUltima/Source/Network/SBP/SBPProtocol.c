@@ -4,65 +4,73 @@
 #include <File/PXDataStream.h>
 #include <OS/User.h>
 
-void SBPDataConstruct(SBPDataPackage* const sbpData)
+PXSize PXSBPChannelHeaderParse(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream)
 {
-	sbpData->SourceID = SourceInvalid;
-	sbpData->TargetID = TargetInvalid;
-	sbpData->CommandID.Value = MakeInt('#', '#', '#', '#');
-	sbpData->ID = 0;
-	sbpData->DataSizeCurrent = 0;
-	sbpData->Data = 0;
+	const PXSize startOffset = dataStream->DataCursor;
+
+	MemoryClear(sbpChannelHeader, sizeof(PXSBPChannelHeader));
+
+	// Check header
+	{
+		const PXBool validHeader = PXDataStreamReadAndCompare(dataStream, "°°", 2u);
+
+		if (!validHeader)
+		{
+			return 0;
+		}
+	}
+
+	PXDataStreamReadI8U(dataStream, &sbpChannelHeader->ID);
+	PXDataStreamReadI16U(dataStream, &sbpChannelHeader->Size, EndianLittle);
+
+	sbpChannelHeader->Data = PXDataStreamCursorPosition(dataStream);
+
+	return  dataStream->DataCursor - startOffset; // read Bytes
 }
 
-void SBPDataDestruct(SBPDataPackage* const sbpData)
+PXSize PXSBPChannelHeaderSerialize(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream)
+{
+	const PXSize startOffset = dataStream->DataCursor;
+
+	PXDataStreamWriteB(dataStream, "°°", 2u);
+	PXDataStreamWriteI8U(dataStream, sbpChannelHeader->ID);
+	PXDataStreamWriteI16U(dataStream, sbpChannelHeader->Size, EndianLittle);
+
+	return dataStream->DataCursor - startOffset; // written Bytes
+}
+
+void SBPPackageHeaderConstruct(SBPPackageHeader* const sbpPackageHeader)
+{
+	SBPPackageHeaderSet(sbpPackageHeader, MakeInt('#', '#', '#', '#'), SourceInvalid, TargetInvalid, 0, PXNull);
+}
+
+void SBPPackageHeaderDestruct(SBPPackageHeader* const sbpPackageHeader)
 {
 	
 }
 
-void SBPDataSet
+void SBPPackageHeaderSet
 (
-	SBPDataPackage* const sbpData,
+	SBPPackageHeader* const sbpPackageHeader,
 	const unsigned int command,
 	const unsigned int source,
 	const unsigned int target,
-	const unsigned int id,
 	const unsigned int dataSize,
 	const void* adress
 )
 {
-	sbpData->CommandID.Value = command;
-	sbpData->SourceID = source;
-	sbpData->TargetID = target;
-	sbpData->ID = id;
-	sbpData->DataSizeTotal = dataSize;
-	sbpData->Data = (void*)adress;
+	sbpPackageHeader->SourceID = command;
+	sbpPackageHeader->TargetID = source;
+	sbpPackageHeader->CommandID.Value = command;
+	sbpPackageHeader->CommandSize = dataSize;
+	sbpPackageHeader->Command = adress;
+
 }
 
-unsigned int SBPDataSize(SBPDataPackage* const sbpData)
+void SBPPackageHeaderPrint(SBPPackageHeader* const sbpData)
 {
-	return 0;
-}
-
-PXBool PXSBPPackageIsConsumable(const SBPDataPackage* const sbpDataPackage)
-{
-	return sbpDataPackage->DataSizeCurrent == sbpDataPackage->DataSizeTotal;
-}
-
-void SBPDataClear(SBPDataPackage* const sbpData)
-{
-	sbpData->CommandID.Value = MakeInt('#', '#', '#', '#');
-	sbpData->SourceID = -1;
-	sbpData->TargetID = -1;
-	sbpData->ID = -1;
-	sbpData->DataSizeTotal = 0;
-	sbpData->Data = 0;
-}
-
-
-void SBPDataPrint(SBPDataPackage* const sbpData)
-{
-	const char commandText[5]
-	={
+	const char commandText[5] =
+	{
 		sbpData->CommandID.A,
 		sbpData->CommandID.B,
 		sbpData->CommandID.C,
@@ -146,22 +154,21 @@ void SBPDataPrint(SBPDataPackage* const sbpData)
 	printf
 	(
 		"+---------+----------+----------+----------+----------+\n"
-		"| Command |  Source  |  Target  |    ID    |   Data   |\n"
-		"| %7s | %8s | %8s | %8X | %6i B |\n"
+		"| Command |  Source  |  Target  |    --    |   Data   |\n"
+		"| %7s | %8s | %8s | -------- | %6i B |\n"
 		"+---------+----------+----------+----------+----------+\n",
 		commandText,
 		sourceText,
 		targetText,
-		sbpData->ID,
-		sbpData->DataSizeCurrent
+		sbpData->CommandSize
 	);
 
-	if(sbpData->DataSizeCurrent)
+	if(sbpData->CommandSize)
 	{
 		printf("+-------------------[Payload Data]--------------------+\n");
-		for(PXSize i = 0; i < sbpData->DataSizeCurrent; ++i)
+		for(PXSize i = 0; i < sbpData->CommandSize; ++i)
 		{
-			const char* text = (char*)sbpData->Data;
+			const char* text = (char*)sbpData->Command;
 			const char byte = text[i];
 			const unsigned char printableChar = (byte > 0x20) && (byte < 0x7F);
 			const char printChar = printableChar ? byte : '.';
@@ -178,20 +185,19 @@ void SBPDataPrint(SBPDataPackage* const sbpData)
 	}
 }
 
-PXSize PXSBPPackageParse(SBPDataPackage* data, const void* inputBuffer, const PXSize inputBufferSize)
+PXSize PXSBPPackageParse(SBPPackageHeader* const sbpPackageHeader, PXDataStream* const dataStream)
 {
-	PXDataStream dataStream;
-	PXSize bufferSize = 0;
+	const PXSize startOffset = dataStream->DataCursor;
 
-	PXDataStreamFromExternal(&dataStream, inputBuffer, inputBufferSize);
-	SBPDataClear(data);
+	SBPPackageHeaderConstruct(sbpPackageHeader);
 
 	// long enough
 
-	if (inputBufferSize < 22u)
-	{
-		return 0;
-	}
+	//if (inputBufferSize < 22u)
+	//{
+	//	return 0;
+	//}
+
 
 	// Check header
 	{
@@ -203,27 +209,99 @@ PXSize PXSBPPackageParse(SBPDataPackage* data, const void* inputBuffer, const PX
 		}
 	}
 
-	PXDataStreamReadB(&dataStream, data->CommandID.Data, 4u);
-	PXDataStreamReadI32U(&dataStream, &data->SourceID, EndianLittle);
-	PXDataStreamReadI32U(&dataStream, &data->TargetID, EndianLittle);
-	PXDataStreamReadI32U(&dataStream, &data->ID, EndianLittle);
-	PXDataStreamReadI32U(&dataStream, &data->DataSizeTotal, EndianLittle);
+	PXDataStreamReadI32U(&dataStream, &sbpPackageHeader->SourceID, EndianLittle);
+	PXDataStreamReadI32U(&dataStream, &sbpPackageHeader->TargetID, EndianLittle);
+	PXDataStreamReadB(&dataStream, sbpPackageHeader->CommandID.Data, 4u);
 
-	data->DataSizeCurrent = inputBufferSize;
-	data->Data = PXDataStreamCursorPosition(&dataStream);
+	// Fetch Size
+	{
+		char packageSize = 0;
 
-	return dataStream.DataCursor;
+		PXDataStreamReadI8U(&dataStream, &packageSize);
+
+		switch (packageSize)
+		{
+			case 0: // Ping package. No Data
+			{
+				break;
+			}
+			case 1: // 8-Bit package
+			{
+				PXInt8U size = 0;
+
+				PXDataStreamReadI8U(&dataStream, &size);
+
+				sbpPackageHeader->CommandSize = size;
+
+				break;
+			}
+			case 2: // 16-Bit Package
+			{
+				PXInt16U size = 0;
+
+				PXDataStreamReadI16U(&dataStream, &size);
+
+				sbpPackageHeader->CommandSize = size;
+
+				break;
+			}
+			case 3: // 32-Bit Package
+			{
+				PXInt32U size = 0;
+
+				PXDataStreamReadI32U(&dataStream, &size);
+
+				sbpPackageHeader->CommandSize = size;
+
+				break;
+			}
+			case 4: // 64-Bit Package
+			{
+				PXInt64U size = 0;
+
+				PXDataStreamReadI64U(&dataStream, &size);
+
+				sbpPackageHeader->CommandSize = size;
+
+				break;
+			}
+
+			default:
+				break;
+		}
+
+		sbpPackageHeader->Command = PXDataStreamCursorPosition(&dataStream);
+	}
+
+	return dataStream->DataCursor - startOffset; // read Bytes
 }
 
-PXSize PXSBPPackageSerialize(const SBPDataPackage* data, void* outputBuffer, const PXSize outputBufferSize)
+PXSize PXSBPPackageSerialize(const SBPPackageHeader* data, PXDataStream* const dataStream)
 {
-	return 0;
+	const PXSize startOffset = dataStream->DataCursor;
+
+	// is buffer big enough?
+
+	//if (inputBufferSize < 22u)
+	//{
+	//	return 0;
+	//}
+
+	PXDataStreamWriteB(dataStream, "°°", 2u);
+	PXDataStreamWriteI32U(dataStream, &data->SourceID, EndianLittle);
+	PXDataStreamWriteI32U(dataStream, &data->TargetID, EndianLittle);
+
+	PXDataStreamWriteI8U(dataStream, 3u);
+	PXDataStreamWriteI32U(dataStream, &data->CommandSize, EndianLittle);
+	PXDataStreamWriteB(dataStream, data->Command, data->CommandSize);
+
+	return dataStream->DataCursor - startOffset; // written Bytes
 }
 
 
 /*
 
-PXSize SBPDataPackageSerialize(const SBPData& data, void* outputBuffer, const PXSize outputBufferSize)
+PXSize SBPPackageHeaderPackageSerialize(const SBPPackageHeader& data, void* outputBuffer, const PXSize outputBufferSize)
 {
 	PXDataStreamX stream(outputBuffer, outputBufferSize);
 
@@ -238,17 +316,17 @@ PXSize SBPDataPackageSerialize(const SBPData& data, void* outputBuffer, const PX
 	return stream.DataCursor;
 }
 
-PXSize BF::SBPData::PackageSerialize
+PXSize BF::SBPPackageHeader::PackageSerialize
 (
 	void* outputBuffer,
 	const PXSize outputBufferSize,
 	const unsigned int source,
 	const unsigned int target,
-	const SBPDataPackage* dataPackage,
+	const SBPPackageHeaderPackage* dataPackage,
 	const ResponseID responseID
 )
 {
-	SBPData data;
+	SBPPackageHeader data;
 
 	data.SourceID = source;
 	data.TargetID = target;
@@ -277,11 +355,11 @@ PXSize BF::SBPData::PackageSerialize
 
 
 
-void SBPDataPackageFileConstruct(SBPDataPackageFile* const sbpDataPackageFile)
+void SBPPackageHeaderPackageFileConstruct(SBPPackageHeaderPackageFile* const sbpDataPackageFile)
 {
-	SymbolID.Value = SBPDataPackageFileID;
+	SymbolID.Value = SBPPackageHeaderPackageFileID;
 
-	Mode = SBPDataPackageFileMode::Invalid;
+	Mode = SBPPackageHeaderPackageFileMode::Invalid;
 
 	FilePathSourceFormat = TextFormatInvalid;
 	FilePathSourceSize = 0;
@@ -294,7 +372,7 @@ void SBPDataPackageFileConstruct(SBPDataPackageFile* const sbpDataPackageFile)
 	FileSize = 0;
 }
 
-void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const SBPDataPackageFileMode mode, const char* source, const char* target)
+void SBPPackageHeaderPackageFileFill(SBPPackageHeaderPackageFile* const sbpDataPackageFile, const SBPPackageHeaderPackageFileMode mode, const char* source, const char* target)
 {
 	Mode = mode;
 
@@ -307,7 +385,7 @@ void SBPDataPackageFileFill(SBPDataPackageFile* const sbpDataPackageFile, const 
 	FileSize = 0;
 }
 
-PXSize SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, const void* inputData, const PXSize inputDataSize)
+PXSize SBPPackageHeaderPackageFileParse(SBPPackageHeaderPackageFile* const sbpDataPackageFile, const void* inputData, const PXSize inputDataSize)
 {
 	PXDataStreamX byteStream(inputData, inputDataSize);
 
@@ -321,28 +399,28 @@ PXSize SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, con
 		default:
 			return 0;
 
-		case SBPDataPackageFileModeIDCreate:
-			Mode = SBPDataPackageFileMode::Create;
+		case SBPPackageHeaderPackageFileModeIDCreate:
+			Mode = SBPPackageHeaderPackageFileMode::Create;
 			break;
 
-		case SBPDataPackageFileModeIDDelete:
-			Mode = SBPDataPackageFileMode::Delete;
+		case SBPPackageHeaderPackageFileModeIDDelete:
+			Mode = SBPPackageHeaderPackageFileMode::Delete;
 			break;
 
-		case SBPDataPackageFileModeIDUpdate:
-			Mode = SBPDataPackageFileMode::Update;
+		case SBPPackageHeaderPackageFileModeIDUpdate:
+			Mode = SBPPackageHeaderPackageFileMode::Update;
 			break;
 
-		case SBPDataPackageFileModeIDMove:
-			Mode = SBPDataPackageFileMode::Move;
+		case SBPPackageHeaderPackageFileModeIDMove:
+			Mode = SBPPackageHeaderPackageFileMode::Move;
 			break;
 
-		case SBPDataPackageFileModeIDCopy:
-			Mode = SBPDataPackageFileMode::Copy;
+		case SBPPackageHeaderPackageFileModeIDCopy:
+			Mode = SBPPackageHeaderPackageFileMode::Copy;
 			break;
 
-		case SBPDataPackageFileModeIDRename:
-			Mode = SBPDataPackageFileMode::Rename;
+		case SBPPackageHeaderPackageFileModeIDRename:
+			Mode = SBPPackageHeaderPackageFileMode::Rename;
 			break;
 		}
 	}
@@ -382,7 +460,7 @@ PXSize SBPDataPackageFileParse(SBPDataPackageFile* const sbpDataPackageFile, con
 	return byteStream.DataCursor;
 }
 
-PXSize SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile, void* outputData, const PXSize outputDataSize) const
+PXSize SBPPackageHeaderPackageFileSerialize(SBPPackageHeaderPackageFile* const sbpDataPackageFile, void* outputData, const PXSize outputDataSize) const
 {
 	PXDataStreamX byteStream(outputData, outputDataSize);
 
@@ -392,31 +470,31 @@ PXSize SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile,
 		switch (Mode)
 		{
 		default:
-		case BF::SBPDataPackageFileMode::Invalid:
+		case BF::SBPPackageHeaderPackageFileMode::Invalid:
 			return 0;
 
-		case BF::SBPDataPackageFileMode::Create:
-			modeID = SBPDataPackageFileModeIDCreate;
+		case BF::SBPPackageHeaderPackageFileMode::Create:
+			modeID = SBPPackageHeaderPackageFileModeIDCreate;
 			break;
 
-		case BF::SBPDataPackageFileMode::Delete:
-			modeID = SBPDataPackageFileModeIDDelete;
+		case BF::SBPPackageHeaderPackageFileMode::Delete:
+			modeID = SBPPackageHeaderPackageFileModeIDDelete;
 			break;
 
-		case BF::SBPDataPackageFileMode::Update:
-			modeID = SBPDataPackageFileModeIDUpdate;
+		case BF::SBPPackageHeaderPackageFileMode::Update:
+			modeID = SBPPackageHeaderPackageFileModeIDUpdate;
 			break;
 
-		case BF::SBPDataPackageFileMode::Move:
-			modeID = SBPDataPackageFileModeIDMove;
+		case BF::SBPPackageHeaderPackageFileMode::Move:
+			modeID = SBPPackageHeaderPackageFileModeIDMove;
 			break;
 
-		case BF::SBPDataPackageFileMode::Copy:
-			modeID = SBPDataPackageFileModeIDCopy;
+		case BF::SBPPackageHeaderPackageFileMode::Copy:
+			modeID = SBPPackageHeaderPackageFileModeIDCopy;
 			break;
 
-		case BF::SBPDataPackageFileMode::Rename:
-			modeID = SBPDataPackageFileModeIDRename;
+		case BF::SBPPackageHeaderPackageFileMode::Rename:
+			modeID = SBPPackageHeaderPackageFileModeIDRename;
 			break;
 		}
 
@@ -452,16 +530,16 @@ PXSize SBPDataPackageFileSerialize(SBPDataPackageFile* const sbpDataPackageFile,
 	return byteStream.DataCursor;
 }
 
-void SBPDataPackageIamConstruct(SBPDataPackageIam* const sbpDataPackageIam)
+void SBPPackageHeaderPackageIamConstruct(SBPPackageHeaderPackageIam* const sbpDataPackageIam)
 {
 	Format = TextFormatInvalid;
 	NameSize = 0;
 	NameW[0] = L'\0';
 
-	SymbolID.Value = SBPDataPackageIamID;
+	SymbolID.Value = SBPPackageHeaderPackageIamID;
 }
 
-void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam)
+void SBPPackageHeaderPackageIamFill(SBPPackageHeaderPackageIam* const sbpDataPackageIam)
 {
 	Format = TextFormatUNICODE;
 
@@ -472,13 +550,13 @@ void SBPDataPackageIamFill(SBPDataPackageIam* const sbpDataPackageIam)
 
 
 
-void SBPDataPackageResponseConstruct(SBPDataPackageResponse* const sbpDataPackageResponse)
+void SBPPackageHeaderPackageResponseConstruct(SBPPackageHeaderPackageResponse* const sbpDataPackageResponse)
 {
-	Type = SBPDataPackageResponseType::Invalid;
-	SymbolID.Value = SBPDataPackageResponseID;
+	Type = SBPPackageHeaderPackageResponseType::Invalid;
+	SymbolID.Value = SBPPackageHeaderPackageResponseID;
 }
 
-PXSize SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageResponse, const void* inputData, const PXSize inputDataSize)
+PXSize SBPPackageHeaderPackageResponseParse(SBPPackageHeaderPackageResponse* const sbpDataPackageResponse, const void* inputData, const PXSize inputDataSize)
 {
 	PXDataStreamX PXDataStream(inputData, inputDataSize);
 
@@ -489,20 +567,20 @@ PXSize SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageR
 
 		switch (typeID)
 		{
-		case SBPDataPackageResponseTypeOKID:
-			Type = BF::SBPDataPackageResponseType::OK;
+		case SBPPackageHeaderPackageResponseTypeOKID:
+			Type = BF::SBPPackageHeaderPackageResponseType::OK;
 			break;
 
-		case SBPDataPackageResponseTypeNoPermissionID:
-			Type = BF::SBPDataPackageResponseType::NoPermission;
+		case SBPPackageHeaderPackageResponseTypeNoPermissionID:
+			Type = BF::SBPPackageHeaderPackageResponseType::NoPermission;
 			break;
 
-		case SBPDataPackageResponseTypeDeniedID:
-			Type = BF::SBPDataPackageResponseType::Denied;
+		case SBPPackageHeaderPackageResponseTypeDeniedID:
+			Type = BF::SBPPackageHeaderPackageResponseType::Denied;
 			break;
 
 		default:
-			Type = BF::SBPDataPackageResponseType::Invalid;
+			Type = BF::SBPPackageHeaderPackageResponseType::Invalid;
 			break;
 		}
 	}
@@ -510,7 +588,7 @@ PXSize SBPDataPackageResponseParse(SBPDataPackageResponse* const sbpDataPackageR
 	return PXDataStream.DataCursor;
 }
 
-PXSize SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPackageResponse, void* outputData, const PXSize outputDataSize)
+PXSize SBPPackageHeaderPackageResponseSerialize(SBPPackageHeaderPackageResponse* const sbpDataPackageResponse, void* outputData, const PXSize outputDataSize)
 {
 	PXDataStreamX PXDataStream(outputData, outputDataSize);
 
@@ -519,19 +597,19 @@ PXSize SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPack
 	switch (Type)
 	{
 	default:
-	case BF::SBPDataPackageResponseType::Invalid:
+	case BF::SBPPackageHeaderPackageResponseType::Invalid:
 		return 0;
 
-	case BF::SBPDataPackageResponseType::OK:
-		typeID = SBPDataPackageResponseTypeOKID;
+	case BF::SBPPackageHeaderPackageResponseType::OK:
+		typeID = SBPPackageHeaderPackageResponseTypeOKID;
 		break;
 
-	case BF::SBPDataPackageResponseType::NoPermission:
-		typeID = SBPDataPackageResponseTypeNoPermissionID;
+	case BF::SBPPackageHeaderPackageResponseType::NoPermission:
+		typeID = SBPPackageHeaderPackageResponseTypeNoPermissionID;
 		break;
 
-	case BF::SBPDataPackageResponseType::Denied:
-		typeID = SBPDataPackageResponseTypeDeniedID;
+	case BF::SBPPackageHeaderPackageResponseType::Denied:
+		typeID = SBPPackageHeaderPackageResponseTypeDeniedID;
 		break;
 	}
 
@@ -540,16 +618,16 @@ PXSize SBPDataPackageResponseSerialize(SBPDataPackageResponse* const sbpDataPack
 	return PXDataStream.DataCursor;
 }
 
-void SBPDataPackageTextConstruct(SBPDataPackageText* const sbpDataPackageText)
+void SBPPackageHeaderPackageTextConstruct(SBPPackageHeaderPackageText* const sbpDataPackageText)
 {
-	sbpDataPackageText->SymbolID.Value = SBPDataPackageTextID;
+	sbpDataPackageText->SymbolID.Value = SBPPackageHeaderPackageTextID;
 }
 
-void SBPDataPackageTextDestruct(SBPDataPackageText* const sbpDataPackageText)
+void SBPPackageHeaderPackageTextDestruct(SBPPackageHeaderPackageText* const sbpDataPackageText)
 {
 }
 
-PXSize SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, const void* inputData, const PXSize inputDataSize)
+PXSize SBPPackageHeaderPackageTextParse(SBPPackageHeaderPackageText* const sbpDataPackageText, const void* inputData, const PXSize inputDataSize)
 {
 	PXDataStreamX PXDataStream(inputData, inputDataSize);
 
@@ -567,7 +645,7 @@ PXSize SBPDataPackageTextParse(SBPDataPackageText* const sbpDataPackageText, con
 	return PXDataStream.DataCursor;
 }
 
-PXSize SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText, void* outputData, const PXSize outputDataSize)
+PXSize SBPPackageHeaderPackageTextSerialize(SBPPackageHeaderPackageText* const sbpDataPackageText, void* outputData, const PXSize outputDataSize)
 {
 	PXDataStreamX PXDataStream(outputData, outputDataSize);
 
@@ -580,27 +658,32 @@ PXSize SBPDataPackageTextSerialize(SBPDataPackageText* const sbpDataPackageText,
 	return PXDataStream.DataCursor;
 }
 
-void SBPDataPackageConnectionCreateFill(const SBPConnectionCreateReason reason)
+void SBPPackageHeaderPackageConnectionCreateFill(const SBPConnectionCreateReason reason)
 {
 
 }
 
-PXSize SBPDataPackageConnectionCreateParse(const void* inputData, const PXSize inputDataSize)
+PXSize SBPPackageHeaderPackageConnectionCreateParse(const void* inputData, const PXSize inputDataSize)
 {
 	return PXSize();
 }
 
-PXSize SBPDataPackageConnectionCreateSerialize(void* outputData, const PXSize outputDataSize)
+PXSize SBPPackageHeaderPackageConnectionCreateSerialize(void* outputData, const PXSize outputDataSize)
 {
 	return PXSize();
 }
 */
 
-PXSize SBPDataPackageIamParse(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam)
+PXSize SBPPackageHeaderPackageFileSerialize(SBPPackageHeaderPackageFile* const sbpDataPackageFile, void* outputData, const PXSize outputDataSize)
+{
+	return 0;
+}
+
+PXSize SBPPackageHeaderPackageIamParse(SBPPackageHeader* const sbpDataPackage, SBPPackageHeaderPackageIam* const sbpDataPackageIam)
 {
 	PXDataStream dataStream;
 
-	PXDataStreamFromExternal(&dataStream, sbpDataPackage->Data, sbpDataPackage->DataSizeCurrent);
+	PXDataStreamFromExternal(&dataStream, sbpDataPackage->Command, sbpDataPackage->CommandSize);
 
 	// Add name
 	{
@@ -620,35 +703,32 @@ PXSize SBPDataPackageIamParse(SBPDataPackage* const sbpDataPackage, SBPDataPacka
 	return dataStream.DataCursor;
 }
 
-PXSize SBPDataPackageIamSerialize(SBPDataPackage* const sbpDataPackage, SBPDataPackageIam* const sbpDataPackageIam)
+PXSize SBPPackageHeaderPackageIamSerialize(SBPPackageHeader* const sbpDataPackage, SBPPackageHeaderPackageIam* const sbpDataPackageIam)
 {
 	PXDataStream dataStream;
 
-	if (!sbpDataPackage->Data)
+	if (!sbpDataPackage->CommandSize)
 	{
 		return 0;
 	}
 
-	PXDataStreamFromExternal(&dataStream, sbpDataPackage->Data, sbpDataPackage->DataSizeCurrent);
+	PXDataStreamFromExternal(&dataStream, sbpDataPackage->Command, sbpDataPackage->CommandSize);
+
+	MemoryClear(sbpDataPackageIam, sizeof(SBPPackageHeaderPackageIam));
 
 	// Add name	
-	wchar_t nameBuffer[128];
-	const PXSize nameBufferSize = UserNameGetW(nameBuffer, 128);
+	PXByte nameBuffer[128];
+	const PXSize nameBufferSize = UserNameGetU(nameBuffer, 128);
 
 	{
-		const unsigned char formatType = TextFormatUNICODE;
+		const unsigned char formatType = TextFormatUTF8;
 
 		PXDataStreamWriteI8U(&dataStream, formatType);
 		PXDataStreamWriteI16U(&dataStream, nameBufferSize, EndianLittle);
 		PXDataStreamWriteB(&dataStream, nameBuffer, nameBufferSize);
 	}
 
-	sbpDataPackage->CommandID.Value = SBPDataPackageIamID;
-	sbpDataPackage->Source = SourceMe;
-	sbpDataPackage->Target = TargetServer;
-	sbpDataPackage->ID = -1;
-	sbpDataPackage->DataSizeCurrent = dataStream.DataCursor;
-	sbpDataPackage->DataSizeTotal = dataStream.DataCursor;
+	SBPPackageHeaderSet(sbpDataPackage, SBPPackageHeaderPackageIamID, SourceMe, TargetServer, dataStream.DataCursor, PXNull);
 
 	return dataStream.DataCursor;
 }

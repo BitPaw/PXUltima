@@ -10,6 +10,11 @@
 
 #include <Memory/PXMemory.h>
 
+void PXProcessConstruct(PXProcess* const pxProcess)
+{
+	MemoryClear(pxProcess, sizeof(PXProcess));
+}
+
 void PXProcessCurrent(PXProcess* const pxProcess)
 {
 #if OSUnix
@@ -65,31 +70,57 @@ PXActionResult PXProcessClose(PXProcess* const pxProcess)
 #endif
 }
 
-PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+PXSize PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
-	return PXActionInvalid;
+	return 0;
 
 #elif OSWindows
-	const BOOL successful = WriteProcessMemory(pxProcess->Context, targetAdress, buffer, bufferSize, PXNull); // Windows XP 
+	SIZE_T numberOfBytesRead;
 
-	PXActionOnErrorFetchAndExit(!successful);
+	const BOOL result = WriteProcessMemory
+	(
+		pxProcess->Context,
+		targetAdress,
+		buffer,
+		bufferSize,
+		&numberOfBytesRead
+	);
+	const PXBool sucess = result != 0u;
 
-	return PXActionSuccessful;
+	if (!sucess)
+	{
+		return 0u;
+	}
+
+	return numberOfBytesRead;
 #endif
 }
 
-PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
-	return PXActionInvalid;
+	return 0;
 
 #elif OSWindows
-	const BOOL successful = ReadProcessMemory(pxProcess->Context, targetAdress, buffer, bufferSize, PXNull); // Windows XP
+	SIZE_T numberOfBytesRead;
 
-	PXActionOnErrorFetchAndExit(!successful);
+	const BOOL result = ReadProcessMemory
+	(
+		pxProcess->Context,
+		targetAdress,
+		buffer,
+		bufferSize,
+		&numberOfBytesRead
+	);
+	const PXBool sucess = result != 0u;
 
-	return PXActionSuccessful;
+	if (!sucess)
+	{
+		return 0u;
+	}
+
+	return numberOfBytesRead;
 #endif
 }
 

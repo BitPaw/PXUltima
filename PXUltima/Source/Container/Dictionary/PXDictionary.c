@@ -24,6 +24,22 @@ void PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void
 {
 	// Is enough space?
 
+
+	for (PXSize i = 0; i < dictionary->EntryAmountCurrent; ++i)
+	{
+		PXDictionaryEntry pxDictionaryEntry;
+
+		PXDictionaryIndex(dictionary, i, &pxDictionaryEntry);
+
+		const PXBool isTarget = MemoryCompare(pxDictionaryEntry.Key, dictionary->KeyTypeSize, pxDictionaryEntry.Value, dictionary->ValueTypeSize);
+
+		if (isTarget)
+		{
+			MemoryCopy(pxDictionaryEntry.Value, dictionary->ValueTypeSize, value, dictionary->ValueTypeSize);
+			break;
+		}
+	}
+
 	// Add space if needed
 
 	// Add to space

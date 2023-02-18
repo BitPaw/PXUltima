@@ -1,5 +1,5 @@
-#ifndef ImageSBPDEFINE
-#define ImageSBPDEFINE
+#ifndef PXTestSocketDEFINE
+#define PXTestSocketDEFINE
 
 #include <Format/Type.h>
 #include <Error/PXActionResult.h>

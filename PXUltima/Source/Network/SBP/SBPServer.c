@@ -8,6 +8,8 @@
 void SBPServerConstruct(PXSBPServer* const sbpServer)
 {
 	PXSBPPackageProcessorConstruct(&sbpServer->PackageProcessor);
+	//&sbpServer->PackageProcessor.Owner = sbpServer->Server.
+
 
 	//---<Server construction>-------------------------------------------------
 	{
@@ -33,6 +35,8 @@ PXActionResult SBPServerStart(PXSBPServer* const sbpServer, const unsigned short
 	PXServer* server = &sbpServer->Server;
 
 	const PXActionResult result = PXServerStart(server, port, ProtocolModeTCP);
+
+	SBPPackageHeaderCacheStateChange(&sbpServer->PackageProcessor.DataCache, SBPPackageHeaderCacheStateAwaitHeaderStart);
 
 	return result;
 }
@@ -63,7 +67,7 @@ PXActionResult SBPServerSendFileA(PXSBPServer* const sbpServer, const PXSocketID
 	{
 		const char id = ConnectionCreateReasonFile;
 
-		SBPData data
+		SBPPackageHeader data
 		(
 			SBPIDConnectionCreate,
 			SourceMe,
@@ -77,7 +81,7 @@ PXActionResult SBPServerSendFileA(PXSBPServer* const sbpServer, const PXSocketID
 		PXSize bufferSize = 0;
 		Byte__ buffer[bufferSizeMax];*/
 
-		//SBPDataGenerateMessage(data, buffer, bufferSize, bufferSizeMax);
+		//SBPPackageHeaderGenerateMessage(data, buffer, bufferSize, bufferSizeMax);
 
 
 

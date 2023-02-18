@@ -1,5 +1,5 @@
-#ifndef ImageSBPDEFINE
-#define ImageSBPDEFINE
+#ifndef PXTestSBPDEFINE
+#define PXTestSBPDEFINE
 
 #include <stddef.h>
 

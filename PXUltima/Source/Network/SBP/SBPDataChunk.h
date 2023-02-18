@@ -1,5 +1,5 @@
-#ifndef SBPDataChunkINCLUDE
-#define SBPDataChunkINCLUDE
+#ifndef SBPPackageHeaderChunkINCLUDE
+#define SBPPackageHeaderChunkINCLUDE
 
 #include <Format/Type.h>
 #include <File/PXDataStream.h>
@@ -10,70 +10,70 @@ extern "C"
 {
 #endif
 
-	typedef enum SBPDataChunkResult_
+	typedef enum SBPPackageHeaderChunkResult_
 	{
-		SBPDataChunkResultInvalid,
+		SBPPackageHeaderChunkResultInvalid,
 
 		// If a chunk header is expected and does not follow the format.
-		SBPDataChunkIllegal,
+		SBPPackageHeaderChunkIllegal,
 
 		// Data is not fully complete and is stored until the additional data has been serverd
-		SBPDataChunkCached,
+		SBPPackageHeaderChunkCached,
 
 		// Data is now complete and ready to be consumed
-		SBPDataChunkComplete,
+		SBPPackageHeaderChunkComplete,
 
 		// Data has not been cached. It can be handled fully at once.
-		SBPDataChunkComsumeImmediately,
+		SBPPackageHeaderChunkComsumeImmediately,
 	}
-	SBPDataChunkResult;
+	SBPPackageHeaderChunkResult;
 
-	typedef enum SBPDataCacheState_
+	typedef enum SBPPackageHeaderCacheState_
 	{
-		SBPDataCacheStateInvalid,
-		SBPDataCacheStateAwaitHeaderStart,
-		SBPDataCacheStateAwaitHeaderRemainingData,
-		SBPDataCacheStateAwaitData
+		SBPPackageHeaderCacheStateInvalid,
+		SBPPackageHeaderCacheStateAwaitHeaderStart,
+		SBPPackageHeaderCacheStateAwaitHeaderRemainingData,
+		SBPPackageHeaderCacheStateAwaitData
 	}
-	SBPDataCacheState;
+	SBPPackageHeaderCacheState;
 
-	typedef enum SBPDataCacheChunkOrder_
+	typedef enum SBPPackageHeaderCacheChunkOrder_
 	{
-		SBPDataCacheChunkOrderInvalid,
-		SBPDataCacheChunkOrderClose, // 0b00
-		SBPDataCacheChunkOrderFirst, // 0b01
-		SBPDataCacheChunkOrderMiddle, // 0b10
-		SBPDataCacheChunkOrderFinal, // 0b11
+		SBPPackageHeaderCacheChunkOrderInvalid,
+		SBPPackageHeaderCacheChunkOrderClose, // 0b00
+		SBPPackageHeaderCacheChunkOrderFirst, // 0b01
+		SBPPackageHeaderCacheChunkOrderMiddle, // 0b10
+		SBPPackageHeaderCacheChunkOrderFinal, // 0b11
 	}
-	SBPDataCacheChunkOrder;
+	SBPPackageHeaderCacheChunkOrder;
 
-	typedef struct SBPDataChunk_
+	typedef struct SBPPackageHeaderChunk_
 	{
 		//---<Info>-----------------
-		SBPDataCacheChunkOrder Order;
+		SBPPackageHeaderCacheChunkOrder Order;
 		PXInt8U Channal;
 		//--------------------------
 
 		//---<Spesific temp data>---
 		PXInt16U DataSizeCurrent;
-		PXInt16U DataSizeTotal;	
+		PXInt16U DataSizeTotal;
 		//--------------------------
 
 		//---<Volitile data>--------
 		PXByte* Data;
 		//--------------------------
 	}
-	SBPDataChunk;
+	SBPPackageHeaderChunk;
 
 
-	typedef struct SBPDataCache_ SBPDataCache;
+	typedef struct SBPPackageHeaderCache_ SBPPackageHeaderCache;
 
-	typedef void (*SBPDataChunkIOEvent)(void* const owner, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk);
-	typedef void (*SBPDataChunkChannalCreated)(void* const owner, SBPDataCache* const sbpDataCache, const PXInt8U channalID);
+	typedef void (*SBPPackageHeaderChunkIOEvent)(void* const owner, SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderChunk* const sbpDataChunk);
+	typedef void (*SBPPackageHeaderChunkChannalCreated)(void* const owner, SBPPackageHeaderCache* const sbpDataCache, const PXInt8U channalID);
 
-	typedef struct SBPDataCache_
+	typedef struct SBPPackageHeaderCache_
 	{
-		SBPDataCacheState State;
+		SBPPackageHeaderCacheState State;
 
 		// Data holding recieving data
 		PXSize DataHeaderStartOffset;
@@ -87,26 +87,26 @@ extern "C"
 
 		void* Owmer;
 
-		SBPDataChunkChannalCreated ChannalCreatedCallBack;
-		SBPDataChunkIOEvent DataChunkRecievedCallBack;
+		SBPPackageHeaderChunkChannalCreated ChannalCreatedCallBack;
+		SBPPackageHeaderChunkIOEvent DataChunkRecievedCallBack;
 	}
-	SBPDataCache;
+	SBPPackageHeaderCache;
 
 
 
 
-	PXPublic void SBPDataCacheConstruct(SBPDataCache* const sbpDataCache);
-	PXPublic void SBPDataCacheDestruct(SBPDataCache* const sbpDataCache);
+	PXPublic void SBPPackageHeaderCacheConstruct(SBPPackageHeaderCache* const sbpDataCache);
+	PXPublic void SBPPackageHeaderCacheDestruct(SBPPackageHeaderCache* const sbpDataCache);
 
-	PXPublic void SBPDataCacheStateChange(SBPDataCache* const sbpDataCache, const SBPDataCacheState sbpDataCacheState);
+	PXPublic void SBPPackageHeaderCacheStateChange(SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderCacheState sbpDataCacheState);
 
-	PXPublic void SBPDataCacheHandle(SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk);
+	PXPublic void SBPPackageHeaderCacheHandle(SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderChunk* const sbpDataChunk);
 
-	PXPublic void SBPDataCacheChannalCallBackRegister(SBPDataCache* const sbpDataCache, const PXInt8U channelID, const SBPDataChunkIOEvent sbpDataChunkIOEvent);
-	PXPublic void SBPDataCacheChannalCallBackUnregister(SBPDataCache* const sbpDataCache, const PXInt8U channelID);
+	PXPublic void SBPPackageHeaderCacheChannalCallBackRegister(SBPPackageHeaderCache* const sbpDataCache, const PXInt8U channelID, const SBPPackageHeaderChunkIOEvent sbpDataChunkIOEvent);
+	PXPublic void SBPPackageHeaderCacheChannalCallBackUnregister(SBPPackageHeaderCache* const sbpDataCache, const PXInt8U channelID);
 
 	// Cache data if needed and trigger handling event of possible.
-	PXPublic SBPDataChunkResult SBPDataCacheAppend(SBPDataCache* const sbpDataCache, const void* const data, const PXSize dataSize);
+	PXPublic SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* const sbpDataCache, const void* const data, const PXSize dataSize);
 	
 #ifdef __cplusplus
 }

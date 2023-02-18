@@ -13,33 +13,28 @@ extern "C"
 {
 #endif
 
-
 	typedef struct PXSBPPackageProcessor_
 	{
 		// Private
-		SBPDataCache DataCache;
+		SBPPackageHeaderCache DataCache;
 		PXDictionary ChannalEntryLookup; // Look for active channels
 
 		// Public
-		
-
-
+		void* Owner;
 	}
 	PXSBPPackageProcessor;
 
-	//---<Events>
-
+	//---<Events>--------------------------------------------------------------
 	PXPublic void PXSBPPackageProcessorOnDataRawSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
 	PXPublic void PXSBPPackageProcessorOnDataRawReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize);
 
-	PXPublic void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, SBPDataCache* const sbpDataCache, const SBPDataChunk* const sbpDataChunk);
+	PXPublic void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderChunk* const sbpDataChunk);
 
-	PXPublic void PXSBPPackageProcessorOnPackageRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPDataPackage* const sbpDataPackage);
+	PXPublic void PXSBPPackageProcessorOnPackageRecived(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPPackageHeader* const sbpDataPackage);
 
-	PXPublic void PXSBPPackageProcessorPackageHandle(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPDataPackage* const sbpDataPackage);
+	PXPublic void PXSBPPackageProcessorPackageHandle(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPPackageHeader* const sbpDataPackage);
 
-	PXPublic void PXSBPPackageProcessorPackageExport(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPDataPackage* const sbpDataPackage);
-
+	PXPublic void PXSBPPackageProcessorPackageExport(PXSBPPackageProcessor* const pxSBPPackageProcessor, const SBPPackageHeader* const sbpDataPackage);
 	//-------------------------------------------------------------------------
 
 
