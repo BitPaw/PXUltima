@@ -1,4 +1,4 @@
-# Open PXGraphics Library (OpenGL)
+# Open Graphics Library (OpenGL)
 
 ## Info
 Installed on most systems. PXGraphics cards support it for a long time.<br>
