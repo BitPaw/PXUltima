@@ -1,10 +1,15 @@
 #include "PXLibrary.h"
 
+#include <Error/PXActionResult.h>
+
 #if OSUnix
 
 #elif OSWindows
 //#include <dbghelp.h> // MISSING
 #include <stdio.h>
+
+#include <Psapi.h> // Psapi.lib
+
 
 #pragma comment( lib, "Dbghelp.lib" )
 
@@ -20,6 +25,8 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 }*/
 
 #endif
+
+#include <Memory/PXMemory.h>
 
 /*
 dlopen() - gain access to an executable object file
@@ -125,6 +132,28 @@ PXBool LibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunc
 #endif
 
 	return 1u;
+}
+
+PXSize PXLibraryNameA(PXLibrary* const pxLibrary, const PXTextASCII libraryName, const PXSize libraryNameMaxSize)
+{
+	MemoryClear(libraryName, libraryNameMaxSize);
+
+#if OSUnix
+	return 0;
+
+#elif OSWindows
+	const DWORD result = GetModuleFileNameExA(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName, libraryNameMaxSize);
+	
+	if (!result)
+	{
+		PXActionResult px = GetCurrentError();
+
+		printf("");
+	}
+
+	return result;
+
+#endif
 }
 
 unsigned char LibraryParseSymbols()

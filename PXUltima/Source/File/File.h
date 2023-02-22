@@ -112,6 +112,19 @@ extern "C"
 	PXPublic FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const PXSize extensionSize);
 
 
+	typedef struct PXFile_
+	{
+#if OSUnix
+		int Context;
+#elif OSWindows
+		HANDLE Context;
+#endif
+	}
+	PXFile;
+
+	PXPublic void PXFileConstruct(PXFile* const pxFile);
+	PXPublic void PXFileDestruct(PXFile* const pxFile);
+
 
 	/*
 	typedef struct FilePath_
@@ -157,6 +170,9 @@ extern "C"
 	PXPublic PXActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
 	PXPublic PXActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize);
 	//---------------------------------------------------------------------
+
+	PXPublic PXActionResult PXFileNameA(PXFile* const pxFile, const PXTextASCII fileName, const PXSize fileNameSize, PXSize* const sizeWritten);
+	PXPublic PXActionResult PXFileNameW(PXFile* const pxFile, const PXTextUNICODE fileName, const PXSize fileNameSize, PXSize* const sizeWritten);
 
 	PXPublic void FilePathSplittA
 	(

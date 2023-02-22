@@ -181,6 +181,7 @@
     <ClCompile Include="Source\Graphic\TestFont.c" />
     <ClCompile Include="Source\Network\TestSocket.c" />
     <ClCompile Include="Source\Network\TestFTP.c" />
+    <ClCompile Include="Source\Debug\TestDebug.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Graphic\TestImage.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Source\Graphic\TestFont.h" />
     <ClInclude Include="Source\Network\TestSocket.h" />
     <ClInclude Include="Source\Network\TestFTP.h" />
+    <ClInclude Include="Source\Debug\TestDebug.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PXUltima\PXUltima.vcxproj">

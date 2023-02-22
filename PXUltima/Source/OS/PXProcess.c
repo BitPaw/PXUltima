@@ -17,38 +17,111 @@ void PXProcessConstruct(PXProcess* const pxProcess)
 
 void PXProcessCurrent(PXProcess* const pxProcess)
 {
+	PXProcessConstruct(pxProcess);
+
 #if OSUnix
 	pxProcess->Context = 0;
 	pxProcess->ThreadID = getpid();
 #elif OSWindows
-	pxProcess->Context = GetCurrentProcess(); // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
-	pxProcess->ThreadID = GetProcessId(pxProcess->Context);
+	pxProcess->ProcessHandle = GetCurrentProcess(); // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
+	pxProcess->ProcessID = GetProcessId(pxProcess->ProcessHandle);
 #endif
 }
 
 void PXProcessParent(PXProcess* const pxProcess)
 {
+	PXProcessConstruct(pxProcess);
+
 #if OSUnix
 	pxProcess->Context = 0;
 	pxProcess->ThreadID = getppid();
 #elif OSWindows
-	pxProcess->Context = 0;
-	pxProcess->ThreadID = 0;
+	pxProcess->ProcessHandle = 0;
+	pxProcess->ProcessID = 0;
 #endif
+}
+
+PXActionResult PXProcessCreateA(PXProcess* const pxProcess, const PXTextASCII programmPath, const PXProcessCreationMode mode)
+{
+	PXProcessConstruct(pxProcess);
+
+#if OSUnix
+
+#elif OSWindows
+	STARTUPINFO startupInfo;
+	PROCESS_INFORMATION processInfo;
+
+	MemoryClear(&startupInfo, sizeof(STARTUPINFO));
+	MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+
+	startupInfo.cb = sizeof(STARTUPINFO);
+
+	const DWORD creationflags =
+		DEBUG_ONLY_THIS_PROCESS |
+		CREATE_NEW_CONSOLE |
+		PROCESS_QUERY_INFORMATION | 
+		PROCESS_VM_READ;
+
+	const PXBool success = CreateProcessA(programmPath, NULL, NULL, NULL, 0, creationflags, NULL, NULL, &startupInfo, &processInfo);
+
+	PXActionOnErrorFetchAndExit(!success);
+
+	pxProcess->ProcessHandle = processInfo.hProcess;
+	pxProcess->ProcessID = processInfo.dwProcessId;
+	pxProcess->ThreadHandle = processInfo.hThread;
+	pxProcess->ThreadID = processInfo.dwThreadId;
+
+#endif
+
+	return PXActionSuccessful;
+}
+
+PXActionResult PXProcessCreateW(PXProcess* const pxProcess, const PXTextUNICODE programmPath, const PXProcessCreationMode mode)
+{
+	PXProcessConstruct(pxProcess);
+
+#if OSUnix
+
+#elif OSWindows
+	STARTUPINFO startupInfo;
+	PROCESS_INFORMATION processInfo;
+
+	MemoryClear(&startupInfo, sizeof(STARTUPINFO));
+	MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+
+	startupInfo.cb = sizeof(STARTUPINFO);
+
+	const PXBool success = CreateProcessW(programmPath, NULL, NULL, NULL, 0, DEBUG_PROCESS, NULL, NULL, &startupInfo, &processInfo);
+
+	PXActionOnErrorFetchAndExit(!success);
+
+	pxProcess->ProcessHandle = processInfo.hProcess;
+	pxProcess->ProcessID = processInfo.dwProcessId;
+	pxProcess->ThreadHandle = processInfo.hThread;
+	pxProcess->ThreadID = processInfo.dwThreadId;
+
+#endif
+
+	return PXActionSuccessful;
 }
 
 PXActionResult PXProcessOpen(PXProcess* const pxProcess)
 {
+	const PXProcessID processID = pxProcess->ProcessID;
+
+	PXProcessConstruct(pxProcess);
+
 #if OSUnix
 	return PXActionInvalid;
 
 #elif OSWindows
-	const HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pxProcess->ThreadID);
+	const HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processID);
 	const PXBool successful = processHandle != 0;
 
 	PXActionOnErrorFetchAndExit(!successful);
 
-	pxProcess->Context = processHandle;
+	pxProcess->ProcessID = processID;
+	pxProcess->ProcessHandle = processHandle;
 
 	return PXActionSuccessful;
 #endif
@@ -60,11 +133,11 @@ PXActionResult PXProcessClose(PXProcess* const pxProcess)
 	return PXActionInvalid;
 
 #elif OSWindows
-	const BOOL successful = CloseHandle(pxProcess->Context);
+	const BOOL successful = CloseHandle(pxProcess->ProcessHandle);
 
 	PXActionOnErrorFetchAndExit(!successful);
 
-	pxProcess->Context = PXNull;
+	pxProcess->ProcessHandle = PXNull;
 
 	return PXActionSuccessful;
 #endif
@@ -80,7 +153,7 @@ PXSize PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const 
 
 	const BOOL result = WriteProcessMemory
 	(
-		pxProcess->Context,
+		pxProcess->ProcessHandle,
 		targetAdress,
 		buffer,
 		bufferSize,
@@ -107,7 +180,7 @@ PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const t
 
 	const BOOL result = ReadProcessMemory
 	(
-		pxProcess->Context,
+		pxProcess->ProcessHandle,
 		targetAdress,
 		buffer,
 		bufferSize,
@@ -128,7 +201,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 {
 	MemoryClear(pxProcessMemoryInfo, sizeof(PXProcessMemoryInfo));
 
-#if OSUnixx
+#if OSUnix
 	const int who = RUSAGE_SELF;
 	rusage rusageData;
 	const int returnCode = getrusage(who, &rusageData);

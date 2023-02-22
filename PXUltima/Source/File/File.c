@@ -65,8 +65,6 @@
 
 #endif
 
-
-
 void FilePathSplittA(const char* fullPath, PXSize fullPathMaxSize, char* drive, PXSize driveMaxSize, char* directory, PXSize directoryMaxSize, char* fileName, PXSize fileNameMaxSize, char* extension, PXSize extensionMaxSize)
 {
 #if OSUnix
@@ -314,6 +312,16 @@ FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, cons
 	}
 
 	return FileFormatUnkown;
+}
+
+void PXFileConstruct(PXFile* const pxFile)
+{
+	MemoryClear(pxFile, sizeof(PXFile));
+}
+
+void PXFileDestruct(PXFile* const pxFile)
+{
+	
 }
 
 unsigned char FileDoesExistA(const char* filePath)
@@ -635,6 +643,70 @@ PXActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, 
 PXActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize)
 {
 	return PXActionInvalid;
+}
+
+PXActionResult PXFileNameA(PXFile* const pxFile, const PXTextASCII fileName, const PXSize fileNameSize, PXSize* const sizeWritten)
+{
+#if OSUnix
+
+#elif OSWindows
+
+	const DWORD flags = FILE_NAME_NORMALIZED | VOLUME_NAME_DOS; // FILE_NAME_NORMALIZED
+
+	const DWORD result = GetFinalPathNameByHandleA(pxFile->Context, fileName, fileNameSize, flags);
+
+	const char dosDriveTag[] = "\\\\?\\";
+
+	const PXByte isSS = TextCompareA(fileName, 4u, dosDriveTag, 4u);
+
+	if (isSS)
+	{
+		// Move my atleast 4.
+
+		const char wind[] = "C:\\Windows\\System32\\";
+
+		const PXByte isSSEE = TextCompareA(fileName+4u, 20u, wind, 20u);
+
+
+		char* texxxx = fileName + 4u;
+		PXSize xxxxxy = result - 4u;
+
+		if (isSSEE)
+		{
+			texxxx = fileName + 24u;
+			xxxxxy = result - 24u;
+		}
+		else
+		{
+			texxxx = fileName + 4u;
+			xxxxxy = result - 4u;
+		}
+
+		const PXSize rerere = MemoryMove(texxxx, xxxxxy, fileName, result);
+
+
+		*sizeWritten = rerere;
+
+		fileName[rerere] = 0;
+
+	}
+	else
+	{
+		*sizeWritten = result;
+	}
+
+#endif
+
+	return PXActionSuccessful;
+}
+
+PXActionResult PXFileNameW(PXFile* const pxFile, const PXTextUNICODE fileName, const PXSize fileNameSize, PXSize* const sizeWritten)
+{
+#if OSUnix
+
+#elif OSWindows
+
+#endif
 }
 
 

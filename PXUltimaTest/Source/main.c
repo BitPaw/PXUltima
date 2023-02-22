@@ -20,6 +20,8 @@
 #include <Format/Image.h>
 #include <Text/Text.h>
 
+#include <Debug/PXDebug.h>
+
 int main()
 {
 	printf("[i] Starting testing...\n");
@@ -35,6 +37,9 @@ int main()
 	}
 #endif
 	
+#if 1
+	PXTestDebugAll();
+#endif // 1
 
 
 #if 0
@@ -55,7 +60,7 @@ int main()
 #endif // 1
 
 
-#if 1
+#if 0
 	TestSBPAll();
 #endif // 1
 

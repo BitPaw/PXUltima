@@ -20,6 +20,8 @@ typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 #endif
 
 #include <Format/Type.h>
+#include <Text/Text.h>
+#include <OS/PXProcess.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -28,6 +30,7 @@ extern "C"
 
     typedef struct PXLibrary_
     {
+        PXProcessHandle ProcessHandle;
         LibraryHandle ID;
     }
     PXLibrary;
@@ -37,6 +40,8 @@ extern "C"
     PXPublic PXBool LibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
     PXPublic PXBool LibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
     PXPublic PXBool LibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
+
+    PXPublic PXSize PXLibraryNameA(PXLibrary* const pxLibrary, const PXTextASCII libraryName, const PXSize libraryNameMaxSize);
 
     PXPublic PXBool LibraryParseSymbols();
 

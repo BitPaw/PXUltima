@@ -11,7 +11,7 @@ namespace PX
 		PXDataStream* _dataStream;
 
 		public:
-		DataStream()// : _dataSteam
+		DataStream()
 		{
 			_dataStream = new PXDataStream();
 			PXDataStreamConstruct(_dataStream);
@@ -23,21 +23,8 @@ namespace PX
 			delete _dataStream;
 		}
 
-		property PXSize CursorPositionCurrent
-		{
-			PXSize get()
-			{
-				return _dataStream->DataCursor;
-			}
-		}
-
-		property PXSize CursorPositionMaximum
-		{
-			PXSize get()
-			{
-				return _dataStream->DataSize;
-			}
-		}
+		property PXSize CursorPositionCurrent { PXSize get() { return _dataStream->DataCursor; }}
+		property PXSize CursorPositionMaximum { PXSize get() { return _dataStream->DataSize; }}
 
 		PX::ActionResult OpenFromPathReadOnly(System::String^ filePath);
 		PX::ActionResult OpenFromPath(System::String^ filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);

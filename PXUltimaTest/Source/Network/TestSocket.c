@@ -4,6 +4,8 @@
 #include <Memory/PXMemory.h>
 #include <Format/HTTP/HTTP.h>
 
+#include <Debug/PXDebug.h>
+
 #include <stdio.h>
 
 void OnSocketDataSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize)
@@ -86,7 +88,11 @@ void TestSocketServerGeneral()
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientDisconnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientAcceptFailure;
 
-	const PXActionResult startResult = PXServerStart(&server, 80, ProtocolModeTCP);
+	const PXActionResult startResult = PXServerStart(&server, 25565, ProtocolModeTCP);
+
+
+    PXDebug pxDebug;
+    PXDebugStackTrace(&pxDebug);
 
 	while (1)
 	{

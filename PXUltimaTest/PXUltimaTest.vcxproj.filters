@@ -51,6 +51,9 @@
     <ClCompile Include="Source\Network\TestFTP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Debug\TestDebug.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Graphic\TestImage.h">
@@ -84,6 +87,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Network\TestFTP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Debug\TestDebug.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

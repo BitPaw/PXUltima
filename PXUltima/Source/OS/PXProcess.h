@@ -15,7 +15,9 @@
 typedef __pid_t PXProcessID;
 typedef unsigned int PXProcessThreadID;
 #elif OSWindows
-typedef HANDLE PXProcessID;
+typedef HANDLE PXProcessHandle;
+typedef DWORD PXProcessID;
+typedef HANDLE PXProcessThreadHandle;
 typedef DWORD PXProcessThreadID;
 #endif
 
@@ -26,8 +28,10 @@ extern "C"
 
 	typedef struct PXProcess_
 	{
+		PXProcessHandle ProcessHandle;
+		PXProcessID ProcessID; // Context
+		PXProcessThreadHandle ThreadHandle;
 		PXProcessThreadID ThreadID;
-		PXProcessID Context;
 	}
 	PXProcess;
 
@@ -63,6 +67,32 @@ extern "C"
 
 	PXPublic void PXProcessCurrent(PXProcess* const pxProcess);
 	PXPublic void PXProcessParent(PXProcess* const pxProcess);
+
+	typedef enum PXProcessCreationMode_
+	{
+		PXProcessCreationModeInvalid,
+		PXProcessCreationModeBREAKAWAY_FROM_JOB,
+		PXProcessCreationModeDEFAULT_ERROR_MODE,
+		PXProcessCreationModeNEW_CONSOLE,
+		PXProcessCreationModeNEW_PROCESS_GROUP,
+		PXProcessCreationModeWindowless,
+		PXProcessCreationModePROTECTED_PROCESS,
+		PXProcessCreationModePRESERVE_CODE_AUTHZ_LEVEL,
+		PXProcessCreationModeSECURE_PROCESS,
+		PXProcessCreationModeSEPARATE_WOW_VDM,
+		PXProcessCreationModeSHARED_WOW_VDM,
+		PXProcessCreationModeSuspended, // Process created but does not start.
+		PXProcessCreationModeUNICODE_ENVIRONMENT,
+		PXProcessCreationModeDebugProcessOnly, // Debug only this process, ignored
+		PXProcessCreationModeDebugAll, // Debug this process and every child and more.
+		PXProcessCreationModeDETACHED_PROCESS,
+		PXProcessCreationModeEXTENDED_STARTUPINFO_PRESENT,
+		PXProcessCreationModeINHERIT_PARENT_AFFINITY
+	}
+	PXProcessCreationMode;
+
+	PXPublic PXActionResult PXProcessCreateA(PXProcess* const pxProcess, const PXTextASCII programmPath, const PXProcessCreationMode mode);
+	PXPublic PXActionResult PXProcessCreateW(PXProcess* const pxProcess, const PXTextUNICODE programmPath, const PXProcessCreationMode mode);
 
 	PXPublic PXActionResult PXProcessOpen(PXProcess* const pxProcess);
 	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);
