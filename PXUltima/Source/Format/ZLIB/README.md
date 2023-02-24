@@ -12,7 +12,7 @@ Currently the only format specified is DEFLATE, thus this is just a code husk fo
 
 ### Compression Method and flags block (minimum 6 Bytes)
 |Name|Length|Type| Description |
-|:-:|:-:|:-:|:-:|
+|:-:|:-:|:-:|:-|
 |Compression method |4  Bits| enum | 8 = deflate compression<br> 15 = Reserved|
 |Compression info |4 Bits | unsigned char | Values above 7 are not allowed |
 |Checksum | 5 Bit| unsigned short| - |
