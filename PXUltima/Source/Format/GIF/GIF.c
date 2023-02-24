@@ -1,7 +1,7 @@
 #include "GIF.h"
 
 #include <File/PXDataStream.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
 #define GIFHeader {'G','I','F'}

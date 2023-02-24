@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <OS/HardDrive.h>
+#include <OS/HardDrive/HardDrive.h>
 
 void TestSystemInfoAll()
 {

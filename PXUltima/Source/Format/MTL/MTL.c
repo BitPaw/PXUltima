@@ -3,7 +3,7 @@
 #include <File/PXDataStream.h>
 #include <Text/Text.h>
 #include <Container/ClusterValue.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
 
 void MTLConstruct(MTL* const mtl)

@@ -4,10 +4,10 @@
 #include <Format/Image.h>
 #include <Format/Model.h>
 #include <Format/Type.h>
-#include <Graphic/OpenGL/OpenGL.h>
+#include <OS/Graphic/OpenGL/OpenGL.h>
 #include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
-#include <Async/PXLock.h>
+#include <OS/Thread/PXLock.h>
 
 #define PXShaderNotRegisterd (unsigned int)-1
 

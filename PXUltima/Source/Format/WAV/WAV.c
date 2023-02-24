@@ -1,8 +1,6 @@
 #include "WAV.h"
 
-#include <File/PXDataStream.h>
-#include <Memory/PXMemory.h>
-#include <File/Endian.h>
+#include <OS/Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
 #include <Format/RIFF/RIFF.h>
 #include <Math/PXMath.h>

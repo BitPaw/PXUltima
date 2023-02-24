@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include <Container/ClusterValue.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 #include <File/PXDataStream.h>
 #include <Format/Color.h>

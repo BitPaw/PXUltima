@@ -2,7 +2,7 @@
 
 #include <File/PXDataStream.h>
 #include <Container/ClusterValue.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 #define M4ADebugLog 1
 

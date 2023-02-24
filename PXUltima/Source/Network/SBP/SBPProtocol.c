@@ -1,8 +1,8 @@
 #include "SBPProtocol.h"
 
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <File/PXDataStream.h>
-#include <OS/User.h>
+#include <OS/User/User.h>
 
 PXSize PXSBPChannelHeaderParse(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream)
 {

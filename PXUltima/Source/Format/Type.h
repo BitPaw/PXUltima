@@ -1,9 +1,9 @@
-#ifndef TypeINCLUDE
-#define TypeINCLUDE
+#ifndef PXTypeINCLUDE
+#define PXTypeINCLUDE
 
 #include <stddef.h>
 
-#include <OS/OSVersion.h>
+#include <OS/System/OSVersion.h>
 
 //-- Reivented public / private. The keywords are reserved, so we need other names.
 #if OSUnix

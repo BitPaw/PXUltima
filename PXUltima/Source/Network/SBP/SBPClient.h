@@ -2,8 +2,9 @@
 #define SBPPXClientINCLUDE
 
 #include <Format/Type.h>
-#include <Network/PXClient.h>
-#include <Async/PXThread.h>
+
+#include <OS/Network/PXClient.h>
+#include <OS/Thread/PXThread.h>
 
 #include "SBPProtocol.h"
 #include "PXSBPPackageProcessor.h"

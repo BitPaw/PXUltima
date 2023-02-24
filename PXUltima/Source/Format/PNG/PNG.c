@@ -4,11 +4,13 @@
 #include <malloc.h>
 #include <string.h>
 
-#include <Memory/PXMemory.h>
-#include <Container/ClusterValue.h>
-#include <File/Endian.h>
 #include <File/PXDataStream.h>
-#include <Time/PXTime.h>
+#include <Container/ClusterValue.h>
+
+#include <OS/Memory/PXMemory.h>
+#include <OS/File/Endian.h>
+#include <OS/Time/PXTime.h>
+
 #include <Format/Image.h>
 #include <Format/ZLIB/ZLIB.h>
 #include <Format/ADAM7/ADAM7.h>

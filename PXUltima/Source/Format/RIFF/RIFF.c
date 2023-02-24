@@ -2,7 +2,7 @@
 
 #include <File/PXDataStream.h>
 #include <Container/ClusterValue.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 #define RIFFSignature MakeInt('R', 'I', 'F', 'F')
 #define RIFXSignature MakeInt('R', 'I', 'F', 'X')

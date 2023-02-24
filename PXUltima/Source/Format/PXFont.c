@@ -1,6 +1,6 @@
 #include "PXFont.h"
 
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Text/Text.h>
 #include <File/PXDataStream.h>
 

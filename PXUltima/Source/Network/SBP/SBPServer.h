@@ -2,7 +2,7 @@
 #define SBPServerINCLUDE
 
 #include <Format/Type.h>
-#include <Network/PXServer.h>
+#include <OS/Network/PXServer.h>
 #include <Network/SBP/PXSBPPackageProcessor.h>
 
 #ifdef __cplusplus

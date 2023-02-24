@@ -2,8 +2,9 @@
 #define PXSBPSocketINCLUDE
 
 #include <Format/Type.h>
-#include <Network/PXSocket.h>
 #include <Container/Dictionary/PXDictionary.h>
+
+#include <OS/Network/PXSocket.h>
 
 #include "SBPDataChunk.h"
 #include "SBPProtocol.h"

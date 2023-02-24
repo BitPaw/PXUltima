@@ -2,10 +2,9 @@
 #define PXDataStreamINCLUDE
 
 #include <Format/Type.h>
-#include <Error/PXActionResult.h>
-
-#include "Endian.h"
-#include "File.h"
+#include <OS/Error/PXActionResult.h>
+#include <OS/File/File.h>
+#include <OS/File/Endian.h>
 
 #ifdef __cplusplus
 extern "C"

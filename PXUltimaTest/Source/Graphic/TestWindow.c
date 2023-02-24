@@ -2,10 +2,10 @@
 
 #include <stdio.h>
 
-#include <OS/PXWindow.h>
-#include <Processor/Processor.h>
-#include <Memory/PXMemory.h>
-#include <Graphic/DirectX/DirectX.h>
+#include <OS/Window/PXWindow.h>
+#include <OS/Processor/Processor.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/Graphic/DirectX/DirectX.h>
 
 void TestWindowAll()
 {

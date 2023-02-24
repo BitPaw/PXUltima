@@ -13,14 +13,13 @@
 #include "Network/TestFTP.h"
 #include "Network/TestSBP.h"
 
-#include <Graphic/DirectX/DirectX.h>
-
-#include <OS/PXProcess.h>
 #include <Format/TIFF/TIFF.h>
 #include <Format/Image.h>
 #include <Text/Text.h>
 
-#include <Debug/PXDebug.h>
+#include <OS/Graphic/DirectX/DirectX.h>
+#include <OS/Process/PXProcess.h>
+#include <OS/Debug/PXDebug.h>
 
 int main()
 {

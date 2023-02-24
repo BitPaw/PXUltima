@@ -15,13 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Async\Await.h">
+    <ClInclude Include="Source\OS\Thread\Await.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Async\PXLock.h">
+    <ClInclude Include="Source\OS\Thread\PXLock.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Async\PXThread.h">
+    <ClInclude Include="Source\OS\Thread\PXThread.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Container\BinaryTree\BinaryTree.h">
@@ -51,16 +51,16 @@
     <ClInclude Include="Source\Device\VirtualKey.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Error\PXActionResult.h">
+    <ClInclude Include="Source\OS\Error\PXActionResult.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Event\Event.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\Endian.h">
+    <ClInclude Include="Source\OS\File\Endian.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\File.h">
+    <ClInclude Include="Source\OS\File\File.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Format\3DS\A3DS.h">
@@ -210,49 +210,46 @@
     <ClInclude Include="Source\Format\PXSound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Library\PXLibrary.h">
+    <ClInclude Include="Source\OS\Library\PXLibrary.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Math\PXMath.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Memory\PXMemory.h">
+    <ClInclude Include="Source\OS\Network\IP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\IP.h">
+    <ClInclude Include="Source\OS\Bash\Bash.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\Bash.h">
+    <ClInclude Include="Source\OS\Window\PXWindow.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\PXWindow.h">
+    <ClInclude Include="Source\OS\Monitor\Monitor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\Monitor.h">
+    <ClInclude Include="Source\OS\File\FileOpenDialog.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\OpenFileDialog.h">
+    <ClInclude Include="Source\OS\UI\OSUI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\OSUI.h">
+    <ClInclude Include="Source\OS\System\OSVersion.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\OSVersion.h">
+    <ClInclude Include="Source\OS\Program\Program.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\Program.h">
+    <ClInclude Include="Source\OS\User\User.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\User.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Processor\Processor.h">
+    <ClInclude Include="Source\OS\Processor\Processor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Text\Text.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Time\PXTime.h">
+    <ClInclude Include="Source\OS\Time\PXTime.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\UI\UI.h">
@@ -282,19 +279,19 @@
     <ClInclude Include="Source\Math\PXMatrix.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\ClipBoard.h">
+    <ClInclude Include="Source\OS\ClipBoard\ClipBoard.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphic\PXGraphic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphic\OpenGL\OpenGL.h">
+    <ClInclude Include="Source\OS\Graphic\OpenGL\OpenGL.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphic\DirectX\DirectX.h">
+    <ClInclude Include="Source\OS\Graphic\DirectX\DirectX.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphic\Vulcan\Vulcan.h">
+    <ClInclude Include="Source\OS\Graphic\Vulcan\Vulcan.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphic\SoftwareRender\SoftwareRender.h">
@@ -330,19 +327,19 @@
     <ClInclude Include="Source\DataBase\DataBase.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\Registry.h">
+    <ClInclude Include="Source\OS\System\Registry.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\HardDrive.h">
+    <ClInclude Include="Source\OS\HardDrive\HardDrive.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\PXSocket.h">
+    <ClInclude Include="Source\OS\Network\PXSocket.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\PXServer.h">
+    <ClInclude Include="Source\OS\Network\PXServer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\PXClient.h">
+    <ClInclude Include="Source\OS\Network\PXClient.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serialization\Serialization.h">
@@ -381,19 +378,19 @@
     <ClInclude Include="Source\Math\PXPhysic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Time\PXStopWatch.h">
+    <ClInclude Include="Source\OS\Time\PXStopWatch.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Format\ELF\ELF.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\PXProcess.h">
+    <ClInclude Include="Source\OS\Process\PXProcess.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Compiler\PXCompilerSettings.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Audio\PXAudio.h">
+    <ClInclude Include="Source\OS\Audio\PXAudio.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Language\PXTranslator.h">
@@ -432,15 +429,18 @@
     <ClInclude Include="Source\Network\SBP\PXSBPPackageProcessor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Debug\PXDebug.h">
+    <ClInclude Include="Source\OS\Debug\PXDebug.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\OS\Memory\PXMemory.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Async\PXLock.c">
+    <ClCompile Include="Source\OS\Thread\PXLock.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Async\PXThread.c">
+    <ClCompile Include="Source\OS\Thread\PXThread.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Container\BinaryTree\BinaryTree.c">
@@ -467,16 +467,16 @@
     <ClCompile Include="Source\Device\VirtualKey.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Error\PXActionResult.c">
+    <ClCompile Include="Source\OS\Error\PXActionResult.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Event\Event.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\File\Endian.c">
+    <ClCompile Include="Source\OS\File\Endian.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\File\File.c">
+    <ClCompile Include="Source\OS\File\File.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\3DS\A3DS.c">
@@ -626,46 +626,46 @@
     <ClCompile Include="Source\Format\PXSound.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Library\PXLibrary.c">
+    <ClCompile Include="Source\OS\Library\PXLibrary.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Math\PXMath.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Memory\PXMemory.c">
+    <ClCompile Include="Source\OS\Memory\PXMemory.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\IP.c">
+    <ClCompile Include="Source\OS\Network\IP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\Bash.c">
+    <ClCompile Include="Source\OS\Bash\Bash.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\PXWindow.c">
+    <ClCompile Include="Source\OS\Window\PXWindow.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\Monitor.c">
+    <ClCompile Include="Source\OS\Monitor\Monitor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\OpenFileDialog.c">
+    <ClCompile Include="Source\OS\File\FileOpenDialog.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\OSUI.c">
+    <ClCompile Include="Source\OS\UI\OSUI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\Program.c">
+    <ClCompile Include="Source\OS\Program\Program.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\User.c">
+    <ClCompile Include="Source\OS\User\User.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Processor\Processor.c">
+    <ClCompile Include="Source\OS\Processor\Processor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Text\Text.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Time\PXTime.c">
+    <ClCompile Include="Source\OS\Time\PXTime.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\UI\UI.c">
@@ -695,22 +695,22 @@
     <ClCompile Include="Source\Math\PXMatrix.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\ClipBoard.c">
+    <ClCompile Include="Source\OS\ClipBoard\ClipBoard.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphic\PXGraphic.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\DirectX\DirectX.c">
+    <ClCompile Include="Source\OS\Graphic\DirectX\DirectX.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\Vulcan\Vulcan.c">
+    <ClCompile Include="Source\OS\Graphic\Vulcan\Vulcan.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphic\SoftwareRender\SoftwareRender.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\OpenGL\OpenGL.c">
+    <ClCompile Include="Source\OS\Graphic\OpenGL\OpenGL.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\CSS\CSS.c">
@@ -743,19 +743,19 @@
     <ClCompile Include="Source\DataBase\DataBase.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\Registry.c">
+    <ClCompile Include="Source\OS\System\Registry.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\HardDrive.c">
+    <ClCompile Include="Source\OS\HardDrive\HardDrive.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\PXSocket.c">
+    <ClCompile Include="Source\OS\Network\PXSocket.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\PXServer.c">
+    <ClCompile Include="Source\OS\Network\PXServer.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\PXClient.c">
+    <ClCompile Include="Source\OS\Network\PXClient.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\Serialization.c">
@@ -794,22 +794,22 @@
     <ClCompile Include="Source\Math\PXPhysic.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Time\PXStopWatch.c">
+    <ClCompile Include="Source\OS\Time\PXStopWatch.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\ELF\ELF.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Async\Await.c">
+    <ClCompile Include="Source\OS\Thread\Await.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\PXProcess.c">
+    <ClCompile Include="Source\OS\Process\PXProcess.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Compiler\PXCompilerSettings.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Audio\PXAudio.c">
+    <ClCompile Include="Source\OS\Audio\PXAudio.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Language\PXTranslator.c">
@@ -848,20 +848,20 @@
     <ClCompile Include="Source\Network\SBP\PXSBPPackageProcessor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Debug\PXDebug.c">
+    <ClCompile Include="Source\OS\Debug\PXDebug.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Format\PDF\README.md" />
     <None Include="Source\Container\Dictionary\README.md" />
-    <None Include="Source\Audio\README.md" />
+    <None Include="Source\OS\Audio\README.md" />
     <None Include="Source\Algorithm\KalmanFilter\README.md" />
     <None Include="Source\Algorithm\Dijkstra\README.md" />
     <None Include="Source\Format\LZ77\README.md" />
     <None Include="Source\Format\LAME\README.md" />
     <None Include="Source\Format\HTTP\README.md" />
     <None Include="Source\Format\FTP\README.md" />
-    <None Include="Source\Debug\README.md" />
+    <None Include="Source\OS\Debug\README.md" />
   </ItemGroup>
 </Project>

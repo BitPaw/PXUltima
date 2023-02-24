@@ -2,7 +2,7 @@
 #define PXLZ77INCLUDE
 
 #include <Format/Type.h>
-#include <Error/PXActionResult.h>
+#include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus

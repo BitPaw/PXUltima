@@ -1,7 +1,6 @@
 #include "TTF.h"
 
-#include <File/File.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
 
 EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID)

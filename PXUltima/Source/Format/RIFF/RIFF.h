@@ -1,10 +1,11 @@
 #ifndef RIFFInclude
 #define RIFFInclude
 
-#include <Format/Type.h>
-#include <Error/PXActionResult.h>
-#include <File/Endian.h>
 #include <File/PXDataStream.h>
+#include <Format/Type.h>
+
+#include <OS/Error/PXActionResult.h>
+#include <OS/File/Endian.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -1,10 +1,10 @@
 #include "TestSocket.h"
 
-#include <Network/PXServer.h>
-#include <Memory/PXMemory.h>
 #include <Format/HTTP/HTTP.h>
 
-#include <Debug/PXDebug.h>
+#include <OS/Network/PXServer.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/Debug/PXDebug.h>
 
 #include <stdio.h>
 

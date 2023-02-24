@@ -10,8 +10,8 @@
 
 typedef unsigned int ControllerID;
 
-#include <OS/OSVersion.h>
-#include <OS/PXWindow.h>
+#include <OS/System/OSVersion.h>
+#include <OS/Window/PXWindow.h>
 
 #ifdef __cplusplus
 extern "C"

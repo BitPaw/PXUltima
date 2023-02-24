@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Format/HUFFMAN/HuffmanTree.h>
 #include <File/PXDataStream.h>
 #include <Math/PXMath.h>

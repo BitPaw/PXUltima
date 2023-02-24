@@ -1,6 +1,6 @@
 #include "PXQueue.h"
 
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 void PXQueueConstruct(PXQueue* const queue)
 {

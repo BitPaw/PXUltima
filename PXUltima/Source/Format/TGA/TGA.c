@@ -1,7 +1,7 @@
 #include "TGA.h"
 
 #include <File/PXDataStream.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 #define TGAFileIdentifier "TRUEVISION-XFILE."
 #define TGAFileIdentifierSize 18u

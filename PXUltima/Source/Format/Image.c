@@ -1,9 +1,7 @@
 #include "Image.h"
 
-#include <Memory/PXMemory.h>
-#include <File/File.h>
+#include <OS/Memory/PXMemory.h>
 #include <Text/Text.h>
-#include <File/PXDataStream.h>
 #include <Math/PXMath.h>
 
 #include <Format/BMP/BMP.h>

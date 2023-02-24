@@ -3,10 +3,10 @@
 #include <stdio.h>
 
 #include <Text/Text.h>
-#include <Memory/PXMemory.h>
 #include <File/PXDataStream.h>
-#include <File/File.h>
 #include <Format/Image.h>
+
+#include <OS/Memory/PXMemory.h>
 
 void PXFNTConstruct(PXFNT* const pxFNT)
 {

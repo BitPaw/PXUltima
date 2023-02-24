@@ -2,11 +2,11 @@
 
 
 #include <Format/Image.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>
 #include <float.h>
-#include <OS/PXWindow.h>
+#include <OS/Window/PXWindow.h>
 #include <Format/PXFont.h>
 #include <Math/PXMatrix.h>
 

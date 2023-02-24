@@ -1,6 +1,6 @@
 #include "PXDictionary.h"
 
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 void PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize)
 {

@@ -2,10 +2,9 @@
 
 #include <Compiler/PXCompiler.h>
 #include <File/PXDataStream.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
 #include <Text/Text.h>
-#include <File/File.h>
 #include <Math/PXMath.h>
 
 #define OBJDetectMaterial 1

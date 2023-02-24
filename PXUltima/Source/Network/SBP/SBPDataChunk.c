@@ -1,7 +1,8 @@
 #include "SBPDataChunk.h"
 
 #include <Container/ClusterValue.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
+
 #include <Network/SBP/SBPProtocol.h>
 
 void SBPPackageHeaderCacheConstruct(SBPPackageHeaderCache* const sbpDataCache)

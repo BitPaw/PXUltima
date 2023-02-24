@@ -1,7 +1,7 @@
 #include "Text.h"
 
-#include <OS/OSVersion.h>
-#include <Memory/PXMemory.h>
+#include <OS/System/OSVersion.h>
+#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
 #include <stdarg.h>

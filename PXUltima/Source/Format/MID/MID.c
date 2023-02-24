@@ -1,7 +1,7 @@
 #include "MID.h"
 
 #include <File/PXDataStream.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 
 #define MIDITrackHeaderID {'M','T','h','d'}

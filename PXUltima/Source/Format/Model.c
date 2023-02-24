@@ -1,9 +1,8 @@
 #include "Model.h"
 
-#include <Memory/PXMemory.h>
-#include <File/File.h>
-#include <Text/Text.h>
 #include <File/PXDataStream.h>
+#include <OS/Memory/PXMemory.h>
+#include <Text/Text.h>
 #include <Format/OBJ/OBJ.h>
 
 void ModelConstruct(PXModel* const model)

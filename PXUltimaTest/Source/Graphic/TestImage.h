@@ -3,9 +3,9 @@
 
 #include <stddef.h>
 
-#include <Error/PXActionResult.h>
 #include <Format/Image.h>
-#include <File/File.h>
+#include <OS/Error/PXActionResult.h>
+#include <OS/File/File.h>
 
 #ifdef __cplusplus
 extern "C"

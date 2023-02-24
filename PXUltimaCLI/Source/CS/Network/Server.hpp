@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Network/PXServer.h>
+#include <OS/Network/PXServer.h>
 #include <CS/Error/ActionResult.hpp>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;

@@ -1,7 +1,7 @@
 #include "MP3.h"
 
 #include <File/PXDataStream.h>
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 #include <Format/XingInfo/XingInfo.h>
 #include <Format/LAME/LAME.h>
 #include <Container/ClusterValue.h>

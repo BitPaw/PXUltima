@@ -1,12 +1,13 @@
 #include "PXGraphic.h"
 
-#include <Graphic/OpenGL/OpenGL.h>
 #include <File/PXDataStream.h>
-#include <OS/PXWindow.h>
-#include <Format/PXFont.h>
 #include <Container/ClusterValue.h>
 #include <Text/Text.h>
+#include <Format/PXFont.h>
 #include <Format/FNT/FNT.h>
+
+#include <OS/Graphic/OpenGL/OpenGL.h>
+#include <OS/Window/PXWindow.h>
 
 PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, Image* const image)
 {

@@ -1,6 +1,6 @@
 #include "FMT.h"
 
-#include <Memory/PXMemory.h>
+#include <OS/Memory/PXMemory.h>
 
 #define FMTSignature {'f', 'm', 't', ' '}
 
