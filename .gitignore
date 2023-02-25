@@ -352,6 +352,9 @@ MigrationBackup/
 #---<BitPaws stuff>---
 *Export*/
 *Temp*/
+/obj/Debug/
+Code/PXUltimaSharpTest/obj/
+
 PXUltimaSharp/bin/
 PXUltimaSharp/obj/
 PXUltimaSharpTest/bin/
