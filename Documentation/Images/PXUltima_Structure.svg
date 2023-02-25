@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="30cm" height="27cm" viewBox="202 118 599 528" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffd1d1" x="320" y="600" width="440" height="44.1667"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="320" y="600" width="440" height="44.1667"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="540" y="626.85">
+      <tspan x="540" y="626.85">OS (Linux/Windows)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #f7ebff" x="320" y="440" width="440" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="320" y="440" width="440" height="60"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="540" y="474.767">
+      <tspan x="540" y="474.767">(C) OS Wrapper</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ebfff8" x="400" y="380" width="200" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="400" y="380" width="200" height="60"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="500" y="414.767">
+      <tspan x="500" y="414.767">(C++) Wrapper</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #f1ffeb" x="600" y="380" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="600" y="380" width="160" height="60"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="680" y="414.767">
+      <tspan x="680" y="414.767">(CLI) Wrapper</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #fffcc8" x="300" y="120" width="460" height="80"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="300" y="120" width="460" height="80"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="530" y="164.767">
+      <tspan x="530" y="164.767">User</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x1="540" y1="500" x2="540" y2="587.646"/>
+    <polygon style="fill: #000000" points="540,595.146 535,585.146 540,587.646 545,585.146 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" points="540,595.146 535,585.146 540,587.646 545,585.146 "/>
+  </g>
+  <text font-size="14.1111" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="606" y="540">
+    <tspan x="606" y="540"></tspan>
+    <tspan x="606" y="557.639">Direct System Call</tspan>
+  </text>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="576.15" y="584.167">
+    <tspan x="576.15" y="584.167"></tspan>
+  </text>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="540" y="470">
+    <tspan x="540" y="470"></tspan>
+  </text>
+  <g>
+    <rect style="fill: #ebfff8" x="400" y="200" width="200" height="100"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="400" y="200" width="200" height="100"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:end;font-family:Arial;font-style:normal;font-weight:normal" x="591.5" y="233.6">
+      <tspan x="591.5" y="233.6"></tspan>
+      <tspan x="591.5" y="254.767"></tspan>
+      <tspan x="591.5" y="275.933">(C++) Application</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ebfff8" x="599.7" y="200" width="160.6" height="100"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="599.7" y="200" width="160.6" height="100"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="680" y="244.183">
+      <tspan x="680" y="244.183">(:NET) Application</tspan>
+      <tspan x="680" y="265.35">C# or VB.NET</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ebfff8" x="300" y="200" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="300" y="200" width="160" height="60"/>
+    <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:normal" x="380" y="234.767">
+      <tspan x="380" y="234.767">(C) Application</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x1="360" y1="280" x2="360" y2="409.146"/>
+    <polygon style="fill: #000000" points="360,416.646 355,406.646 360,409.146 365,406.646 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" points="360,416.646 355,406.646 360,409.146 365,406.646 "/>
+  </g>
+  <text font-size="14.1111" style="fill: #000000;text-anchor:start;font-family:Arial;font-style:normal;font-weight:normal" x="275" y="316">
+    <tspan x="275" y="316">Direct C-API</tspan>
+  </text>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x1="500" y1="300" x2="500" y2="369.146"/>
+    <polygon style="fill: #000000" points="500,376.646 495,366.646 500,369.146 505,366.646 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" points="500,376.646 495,366.646 500,369.146 505,366.646 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x1="680" y1="300" x2="680" y2="369.146"/>
+    <polygon style="fill: #000000" points="680,376.646 675,366.646 680,369.146 685,366.646 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" points="680,376.646 675,366.646 680,369.146 685,366.646 "/>
+  </g>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="700" y="340">
+    <tspan x="700" y="340"></tspan>
+  </text>
+  <g>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke-dasharray: 4; stroke: #000000" x="280" y="340" width="520" height="200"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="540" y="444.8">
+      <tspan x="540" y="444.8"></tspan>
+    </text>
+  </g>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="180" y="460">
+    <tspan x="180" y="460"></tspan>
+  </text>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:middle;font-family:Arial;font-style:normal;font-weight:700" x="240" y="440">
+    <tspan x="240" y="440">PXUltima</tspan>
+  </text>
+</svg>
