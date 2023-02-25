@@ -1,5 +1,16 @@
 # PXUltima<br>(POSIX Ultimatum)<br>(Portable Operating System Interface ultimative version)
 
+## Structure
+
+<img src="Documentation/Images/PXUltima_Structure.svg" width="50%" height="50%">
+
+<p>
+Same as the POSIX standard, this project shall be a wrapper API for any system to combines all special OS functions under the same name.<br>
+Additionally, as this project tries not to rely on dependencies outside the OS (3rd party) and not even fully depend on the OS itself (2nd Party), we gain the possibility of semi backwards compatible
+</p>
+<p>
+We want to be able to fully use modern advancements in operating systems, but also make it possible to use even in restricted systems like embedded or legacy systems. This either works by using the recommended workaround or simply answering "Not supported", yet still being able to use the rest.
+</p>
 
 ## Systems
 | OS | Windows | Linux (Mint) | OSX |
@@ -72,4 +83,5 @@
 |Windows 7 (x64)|Intel Pentium IV 3GHz|3GB DDR2|???|:heavy_check_mark:|
 |Windows XP (x86)|AMD Sempron |1GB DDR1|Nvidia FX5200 (64-Bit)| :warning:|
 |Windows XP (x86)|Intel Pentium II 233MHz|128MB SDRAM|Matrox G100|:warning:|
+|Windows 2000 (x68)|???|???|???|:x:|
 |Windows 98 SE (x86)|Intel Pentium 90 MHz|128MB EDORAM|S3 Trio32|:x:|
