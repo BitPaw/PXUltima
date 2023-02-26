@@ -1,8 +1,8 @@
 #pragma once
 
 #include <File/PXDataStream.h>
-#include <CS/Error/ActionResult.hpp>
-#include <Graphic/OpenGL/OpenGL.h>
+#include <CS/OS/Error/ActionResult.hpp>
+#include <OS/Graphic/OpenGL/OpenGL.h>
 
 namespace PX
 {

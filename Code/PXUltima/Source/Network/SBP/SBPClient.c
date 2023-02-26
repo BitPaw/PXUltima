@@ -1,8 +1,8 @@
 #include "SBPClient.h"
 
-#include <Text/Text.h>
 #include <OS/Memory/PXMemory.h>
-#include <OS/User/User.h>
+#include <Text/PXText.h>
+#include <OS/User/PXUser.h>
 
 #define TimeOutLimit 5000u // 5s
 

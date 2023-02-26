@@ -12,11 +12,9 @@
 #endif
 
 #include <stdio.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
-
-
-void PXProcessorModelNameGet(const ProcessorModelName processorModelName, char* const name)
+void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
     const char* processorName = 0;
 
@@ -239,47 +237,47 @@ void PXProcessorModelNameGet(const ProcessorModelName processorModelName, char* 
             break;
     }
 
-    TextCopyA(processorName, -1, name, -1);
+    PXTextCopyA(processorName, -1, name, -1);
 }
 
-ProcessorBrand PXProcessorBrandDetect(const char* name)
+PXProcessorBrand PXProcessorBrandDetect(const char* name)
 {
     const PXSize bufferSize = 13;
 
-    if (TextCompareA("AMDisbetter!", bufferSize, name, bufferSize)) return ProcessorBrandAMD;
-    if (TextCompareA("AuthenticAMD", bufferSize, name, bufferSize)) return ProcessorBrandAMD;
-    if (TextCompareA("CentaurHauls", bufferSize, name, bufferSize)) return ProcessorBrandWinChip;
-    if (TextCompareA("CyrixInstead", bufferSize, name, bufferSize)) return ProcessorBrandCyrix;
-    if (TextCompareA("GenuineIntel", bufferSize, name, bufferSize)) return ProcessorBrandIntel;
-    if (TextCompareA("TransmetaCPU", bufferSize, name, bufferSize)) return ProcessorBrandTransmeta;
-    if (TextCompareA("GenuineTMx86", bufferSize, name, bufferSize)) return ProcessorBrandTransmeta;
-    if (TextCompareA("Geode by NSC", bufferSize, name, bufferSize)) return ProcessorBrandNationalSemiconductor;
-    if (TextCompareA("NexGenDriven", bufferSize, name, bufferSize)) return ProcessorBrandNexGen;
-    if (TextCompareA("RiseRiseRise", bufferSize, name, bufferSize)) return ProcessorBrandRise;
-    if (TextCompareA("SiS SiS SiS ", bufferSize, name, bufferSize)) return ProcessorBrandSiS;
-    if (TextCompareA("UMC UMC UMC ", bufferSize, name, bufferSize)) return ProcessorBrandUMC;
-    if (TextCompareA("VIA VIA VIA ", bufferSize, name, bufferSize)) return ProcessorBrandVIA;
-    if (TextCompareA("Vortex86 SoC", bufferSize, name, bufferSize)) return ProcessorBrandDMAndPVortex;
-    if (TextCompareA("  Shanghai  ", bufferSize, name, bufferSize)) return ProcessorBrandZhaoxin;
-    if (TextCompareA("HygonGenuine", bufferSize, name, bufferSize)) return ProcessorBrandHygon;
-    if (TextCompareA("E2K MACHINE", bufferSize, name, bufferSize)) return ProcessorBrandMCSTElbrus;
-    if (TextCompareA("MiSTer AO486", bufferSize, name, bufferSize)) return ProcessorBrandao486;
-    if (TextCompareA("bhyve bhyve ", bufferSize, name, bufferSize)) return ProcessorBrandbhyve;
-    if (TextCompareA(" KVMKVMKVM  ", bufferSize, name, bufferSize)) return ProcessorBrandKVM;
-    if (TextCompareA("TCGTCGTCGTCG", bufferSize, name, bufferSize)) return ProcessorBrandQEMU;
-    if (TextCompareA("Microsoft Hv", bufferSize, name, bufferSize)) return ProcessorBrandMicrosoftHyperVOrVirtualPC;
-    if (TextCompareA("MicrosoftXTA", bufferSize, name, bufferSize)) return ProcessorBrandMicrosoftx86ToARM;
-    if (TextCompareA(" lrpepyh  vr", bufferSize, name, bufferSize)) return ProcessorBrandParallels;
-    if (TextCompareA("VMwareVMware", bufferSize, name, bufferSize)) return ProcessorBrandVMware;
-    if (TextCompareA("XenVMMXenVMM", bufferSize, name, bufferSize)) return ProcessorBrandXenHVM;
-    if (TextCompareA("ACRNACRNACRN", bufferSize, name, bufferSize)) return ProcessorBrandProjectACRN;
-    if (TextCompareA(" QNXQVMBSQG ", bufferSize, name, bufferSize)) return ProcessorBrandQNXHypervisor;
-    if (TextCompareA("VirtualApple", bufferSize, name, bufferSize)) return ProcessorBrandAppleRosetta;
+    if (PXTextCompareA("AMDisbetter!", bufferSize, name, bufferSize)) return ProcessorBrandAMD;
+    if (PXTextCompareA("AuthenticAMD", bufferSize, name, bufferSize)) return ProcessorBrandAMD;
+    if (PXTextCompareA("CentaurHauls", bufferSize, name, bufferSize)) return ProcessorBrandWinChip;
+    if (PXTextCompareA("CyrixInstead", bufferSize, name, bufferSize)) return ProcessorBrandCyrix;
+    if (PXTextCompareA("GenuineIntel", bufferSize, name, bufferSize)) return ProcessorBrandIntel;
+    if (PXTextCompareA("TransmetaCPU", bufferSize, name, bufferSize)) return ProcessorBrandTransmeta;
+    if (PXTextCompareA("GenuineTMx86", bufferSize, name, bufferSize)) return ProcessorBrandTransmeta;
+    if (PXTextCompareA("Geode by NSC", bufferSize, name, bufferSize)) return ProcessorBrandNationalSemiconductor;
+    if (PXTextCompareA("NexGenDriven", bufferSize, name, bufferSize)) return ProcessorBrandNexGen;
+    if (PXTextCompareA("RiseRiseRise", bufferSize, name, bufferSize)) return ProcessorBrandRise;
+    if (PXTextCompareA("SiS SiS SiS ", bufferSize, name, bufferSize)) return ProcessorBrandSiS;
+    if (PXTextCompareA("UMC UMC UMC ", bufferSize, name, bufferSize)) return ProcessorBrandUMC;
+    if (PXTextCompareA("VIA VIA VIA ", bufferSize, name, bufferSize)) return ProcessorBrandVIA;
+    if (PXTextCompareA("Vortex86 SoC", bufferSize, name, bufferSize)) return ProcessorBrandDMAndPVortex;
+    if (PXTextCompareA("  Shanghai  ", bufferSize, name, bufferSize)) return ProcessorBrandZhaoxin;
+    if (PXTextCompareA("HygonGenuine", bufferSize, name, bufferSize)) return ProcessorBrandHygon;
+    if (PXTextCompareA("E2K MACHINE", bufferSize, name, bufferSize)) return ProcessorBrandMCSTElbrus;
+    if (PXTextCompareA("MiSTer AO486", bufferSize, name, bufferSize)) return ProcessorBrandao486;
+    if (PXTextCompareA("bhyve bhyve ", bufferSize, name, bufferSize)) return ProcessorBrandbhyve;
+    if (PXTextCompareA(" KVMKVMKVM  ", bufferSize, name, bufferSize)) return ProcessorBrandKVM;
+    if (PXTextCompareA("TCGTCGTCGTCG", bufferSize, name, bufferSize)) return ProcessorBrandQEMU;
+    if (PXTextCompareA("Microsoft Hv", bufferSize, name, bufferSize)) return ProcessorBrandMicrosoftHyperVOrVirtualPC;
+    if (PXTextCompareA("MicrosoftXTA", bufferSize, name, bufferSize)) return ProcessorBrandMicrosoftx86ToARM;
+    if (PXTextCompareA(" lrpepyh  vr", bufferSize, name, bufferSize)) return ProcessorBrandParallels;
+    if (PXTextCompareA("VMwareVMware", bufferSize, name, bufferSize)) return ProcessorBrandVMware;
+    if (PXTextCompareA("XenVMMXenVMM", bufferSize, name, bufferSize)) return ProcessorBrandXenHVM;
+    if (PXTextCompareA("ACRNACRNACRN", bufferSize, name, bufferSize)) return ProcessorBrandProjectACRN;
+    if (PXTextCompareA(" QNXQVMBSQG ", bufferSize, name, bufferSize)) return ProcessorBrandQNXHypervisor;
+    if (PXTextCompareA("VirtualApple", bufferSize, name, bufferSize)) return ProcessorBrandAppleRosetta;
 
     return ProcessorBrandInvalid;
 }
 
-ProcessorModelName PXProcessorModelNameDetect(const ProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model)
+PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model)
 {       
     const unsigned short id = MakeShort(famliy, model);
 
@@ -401,7 +399,7 @@ void PXProcessorFetchInfo(Processor* const processor)
         processor->IdentityString[11] = cpuinfo[2] >> 24 & 0xff;
         processor->IdentityString[12] = 0;
 
-        processor->BrandID = ProcessorBrandDetect(processor->IdentityString);
+        processor->BrandID = PXProcessorBrandDetect(processor->IdentityString);
     }
 
 
@@ -419,7 +417,7 @@ void PXProcessorFetchInfo(Processor* const processor)
         processor->ExtendedFamily = cpuinfo[0] >> 20 & 0xff;
         processor->ReservedBitsB = cpuinfo[0] >> 28 & 0xf;
 
-        processor->ModelNameID = ProcessorModelNameDetect(processor->BrandID, processor->Family, processor->Model);
+        processor->ModelNameID = PXProcessorModelNameDetect(processor->BrandID, processor->Family, processor->Model);
 
         processor->BrandIndex = cpuinfo[1] & 0xff;
         processor->CLflushCacheLineSize = cpuinfo[1] >> 8 & 0xff;
@@ -519,7 +517,7 @@ void PXProcessorFetchInfo(Processor* const processor)
                 case 0x80000003:
                 case 0x80000004:
                 {
-                    offset += TextCopyA(CPUInfo, sizeof(CPUInfo), processor->BrandName + offset, 64);
+                    offset += PXTextCopyA(CPUInfo, sizeof(CPUInfo), processor->BrandName + offset, 64);
                     break;
                 }
                 default:
@@ -529,7 +527,7 @@ void PXProcessorFetchInfo(Processor* const processor)
 
         if (offset < 5)
         {
-            ProcessorModelNameGet(processor->ModelNameID, processor->BrandName);
+            PXProcessorModelNameGet(processor->ModelNameID, processor->BrandName);
         }
     }
 

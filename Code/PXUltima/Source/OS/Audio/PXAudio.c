@@ -1,7 +1,7 @@
 #include "PXAudio.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 #if OSUnix
 #elif OSWindows
@@ -331,7 +331,7 @@ AudioResult AudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabili
 		audioDeviceCapabilities->DriverVersionMajor = HIBYTE(wAVEOUTCAPSW.vDriverVersion);
 		audioDeviceCapabilities->DriverVersionMinor = LOBYTE(wAVEOUTCAPSW.vDriverVersion);
 
-		TextCopyW(wAVEOUTCAPSW.szPname, MAXPNAMELEN, audioDeviceCapabilities->ProductName, SoundDeviceProductName);
+		PXTextCopyW(wAVEOUTCAPSW.szPname, MAXPNAMELEN, audioDeviceCapabilities->ProductName, SoundDeviceProductName);
 
 		audioDeviceCapabilities->Channels = wAVEOUTCAPSW.wChannels;
 	}
@@ -380,7 +380,7 @@ AudioResult AudioDevicesFetchInput(AudioDeviceCapabilities* audioDeviceCapabilit
 		audioDeviceCapabilities->DriverVersionMajor = HIBYTE(waveInputCapabilitiesW.vDriverVersion);
 		audioDeviceCapabilities->DriverVersionMinor = LOBYTE(waveInputCapabilitiesW.vDriverVersion);
 
-		TextCopyW(waveInputCapabilitiesW.szPname, MAXPNAMELEN, audioDeviceCapabilities->ProductName, SoundDeviceProductName);
+		PXTextCopyW(waveInputCapabilitiesW.szPname, MAXPNAMELEN, audioDeviceCapabilities->ProductName, SoundDeviceProductName);
 
 		audioDeviceCapabilities->Channels = waveInputCapabilitiesW.wChannels;
 	}

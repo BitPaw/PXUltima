@@ -1,7 +1,7 @@
 #include "XML.h"
 
 #include <Compiler/PXCompiler.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize)
 {
@@ -13,7 +13,7 @@ XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize)
 
     PXBool isAttributeCalc = 0;
 
-    PXSize indexEqual = TextFindFirstA(text, textSize, '=');
+    PXSize indexEqual = PXTextFindFirstA(text, textSize, '=');
 
     if (indexEqual != (PXSize)-1)
     {
@@ -96,8 +96,8 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 {
                     case XMLSymbolAttribute:
                     {
-                        const PXSize offsetEqualSign = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '=');
-                        const PXSize endOfValue = TextFindFirstA(compilerSymbolEntry.Source+ offsetEqualSign+2, compilerSymbolEntry.Size- offsetEqualSign-2, '\"');
+                        const PXSize offsetEqualSign = PXTextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '=');
+                        const PXSize endOfValue = PXTextFindFirstA(compilerSymbolEntry.Source+ offsetEqualSign+2, compilerSymbolEntry.Size- offsetEqualSign-2, '\"');
 
                         const PXSize nameSize = offsetEqualSign;
                         const char* const nameAdress = compilerSymbolEntry.Source;
@@ -116,13 +116,13 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         const char* startAfterValue = valueAdrees + valueSize;
                         const PXSize startAfterValueSize = compilerSymbolEntry.Size - (nameSize + valueSize + 3u);
 
-                        const PXSize indexOfCloseTagSymbol = TextFindFirstA(startAfterValue, startAfterValueSize, '/');
+                        const PXSize indexOfCloseTagSymbol = PXTextFindFirstA(startAfterValue, startAfterValueSize, '/');
                         const PXBool hasCloseTag = indexOfCloseTagSymbol != (PXSize)-1;
 
                         if (hasCloseTag)
                         {
                             const PXSize curSize = startAfterValueSize - indexOfCloseTagSymbol;
-                            const PXSize indexOfCloseTagSymbolEE = TextFindFirstA(startAfterValue, curSize, '>');
+                            const PXSize indexOfCloseTagSymbolEE = PXTextFindFirstA(startAfterValue, curSize, '>');
                             const PXBool hasCloseTagEEE = indexOfCloseTagSymbolEE != (PXSize)-1;
 
                             if (hasCloseTagEEE)
@@ -143,7 +143,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                     }
                     case XMLSymbolTagOpenBegin:
                     {
-                        const PXSize indexOfCloseTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '>');
+                        const PXSize indexOfCloseTagSymbol = PXTextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '>');
                         const PXBool doesContainMoreData = indexOfCloseTagSymbol != (PXSize)-1;
                         const PXSize cutIndex = doesContainMoreData ? indexOfCloseTagSymbol - 1u : compilerSymbolEntry.Size - 1;
 
@@ -219,7 +219,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                         do
                         {
-                            PXSize indexOfOpenTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '<');
+                            PXSize indexOfOpenTagSymbol = PXTextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '<');
                             const PXBool found = indexOfOpenTagSymbol != (PXSize)-1;
 
                             if (found)
@@ -235,7 +235,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                             }
                             else
                             {
-                                PXSize indexOfCloseInlineTagSymbol = TextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '/');
+                                PXSize indexOfCloseInlineTagSymbol = PXTextFindFirstA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '/');
                                 const PXBool found = indexOfCloseInlineTagSymbol > 0 && indexOfCloseInlineTagSymbol != (PXSize)-1;
 
                                 if (found)
@@ -281,7 +281,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
         unsigned char depth = 0;
         XMLSymbol mode = 0;
 
-        TextClearA(textBuffer, 512);
+        PXTextClearA(textBuffer, 512);
         PXDataStreamReadI8U(outputStream, &depth);
         PXDataStreamReadI8U(outputStream, &mode);
 
@@ -334,7 +334,7 @@ PXActionResult XMLFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 unsigned short size = 0;
 
                 char text[256];
-                TextClearA(text, 256);
+                PXTextClearA(text, 256);
 
                 PXDataStreamReadI16U(outputStream, &size);
                 PXDataStreamReadB(outputStream, textBuffer, size);

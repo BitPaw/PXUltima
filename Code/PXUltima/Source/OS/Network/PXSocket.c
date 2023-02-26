@@ -1,7 +1,7 @@
 #include "PXSocket.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Event/Event.h>
 #include <Math/PXMath.h>
 #include <stdio.h>
@@ -669,7 +669,7 @@ PXActionResult PXSocketConnect(PXSocket* const pxSocket)
 PXActionResult PXSocketSetupAdress
 (
     PXSocket* const pxSocketList,
-    const PXSize PXSocketListSizeMax,
+    const PXSize socketListSizeMax,
     PXSize* PXSocketListSize,
     PXSocketAdressSetupInfo* const pxSocketAdressSetupInfoList,
     const PXSize pxSocketAdressSetupInfoListSize
@@ -683,7 +683,7 @@ PXActionResult PXSocketSetupAdress
     }
 #endif
 
-    MemoryClear(pxSocketList, sizeof(PXSocket) * PXSocketListSizeMax);
+    MemoryClear(pxSocketList, sizeof(PXSocket) * socketListSizeMax);
 
     *PXSocketListSize = 0;
 
@@ -700,7 +700,7 @@ PXActionResult PXSocketSetupAdress
 
         if (pxSocketAdressSetupInfo->Port != -1)
         {
-            TextFromIntA(pxSocketAdressSetupInfo->Port, portNumberString, 30u);
+            PXTextFromIntA(pxSocketAdressSetupInfo->Port, portNumberString, 30u);
 
             portNumberStringAdress = portNumberString;
         }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <OS/PXWindow.h>
+#include <OS/Window/PXWindow.h>
 
 namespace PX
 {

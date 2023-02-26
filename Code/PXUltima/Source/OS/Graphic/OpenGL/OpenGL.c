@@ -3,7 +3,7 @@
 // wingdi.h
 #include <stdio.h>
 
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Container/ClusterValue.h>
 
 #include <OS/Error/PXActionResult.h>
@@ -1504,20 +1504,20 @@ PXBool OpenGLContextCreateForWindow(OpenGLContext* const openGLContext)
 
     const char* vendor = OpenGLStringGet(OpenGLStringNameVendor); // Returns the company responsible for this GL implementation.This name does not change from release to release.
 
-    TextCopyA(vendor, -1, openGLContext->Vendor, 64);
+    PXTextCopyA(vendor, -1, openGLContext->Vendor, 64);
 
     const char* renderer = OpenGLStringGet(OpenGLStringNameRenderer); //   Returns the name of the renderer.This name is typically specific to a particular configuration of a hardware platform.It does not change from release to release.
 
-    TextCopyA(renderer, -1, openGLContext->Renderer, 64);
+    PXTextCopyA(renderer, -1, openGLContext->Renderer, 64);
 
     const char* version = OpenGLStringGet(OpenGLStringNameVersion); //    Returns a version or release number.
 
-    TextCopyA(version, -1, openGLContext->VersionText, 64);
+    PXTextCopyA(version, -1, openGLContext->VersionText, 64);
 
 
     const char* glslVersion = OpenGLStringGet(OpenGLStringNameShadingLanguage); //    Returns a version or release number.
 
-    TextCopyA(glslVersion, -1, openGLContext->GLSLVersionText, 64);
+    PXTextCopyA(glslVersion, -1, openGLContext->GLSLVersionText, 64);
 
 
 
@@ -1530,11 +1530,11 @@ PXBool OpenGLContextCreateForWindow(OpenGLContext* const openGLContext)
         int versionPatch = 0;
         PXSize offset = 0;
 
-        offset += TextToIntA(version + offset, 64, &versionMajor);
+        offset += PXTextToIntA(version + offset, 64, &versionMajor);
         offset += 1u; // dot
-        offset += TextToIntA(version + offset, 64, &versionMinor);
+        offset += PXTextToIntA(version + offset, 64, &versionMinor);
         offset += 1u; // dot
-        offset += TextToIntA(version + offset, 64, &versionPatch);
+        offset += PXTextToIntA(version + offset, 64, &versionPatch);
 
         const unsigned int id = MakeInt(0, versionMajor, versionMinor, versionPatch);
 
@@ -1840,7 +1840,7 @@ PXBool OpenGLContextCreateForWindow(OpenGLContext* const openGLContext)
             {
                 PXDataStream dataStream;
 
-                const PXSize teextSize = TextFindFirstA(teeext, 0xFFFF, '\0');
+                const PXSize teextSize = PXTextFindFirstA(teeext, 0xFFFF, '\0');
                 PXDataStreamFromExternal(&dataStream, teeext, teextSize);
 
                 PXSize x = 99999;

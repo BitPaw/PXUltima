@@ -3,6 +3,7 @@
 generic<typename Key, typename Value>
 PX::Dictionary<Key, Value>::Dictionary()
 {
+	_pxDictionary = new	PXDictionary();
 	PXDictionaryConstruct(_pxDictionary, sizeof(Key), sizeof(Value));
 }
 
@@ -10,6 +11,7 @@ generic<typename Key, typename Value>
 PX::Dictionary<Key, Value>::~Dictionary()
 {
 	PXDictionaryDestruct(_pxDictionary);
+	delete _pxDictionary;
 }
 
 generic<typename Key, typename Value>

@@ -11,7 +11,7 @@
 #endif
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 #include <stdio.h>
 
@@ -52,9 +52,9 @@ void DirectXContextCreate(DirectXContext* const directXContext)
 
 		context->lpVtbl->GetAdapterIdentifier(context, i, 0, &aDAPTER_IDENTIFIER9);
 
-		TextCopyA(aDAPTER_IDENTIFIER9.Driver, MAX_DEVICE_IDENTIFIER_STRING, directXContext->Driver, MAX_DEVICE_IDENTIFIER_STRING);
-		TextCopyA(aDAPTER_IDENTIFIER9.Description, MAX_DEVICE_IDENTIFIER_STRING, directXContext->Description, MAX_DEVICE_IDENTIFIER_STRING);
-		TextCopyA(aDAPTER_IDENTIFIER9.DeviceName, 32, directXContext->DeviceName, 32);
+		PXTextCopyA(aDAPTER_IDENTIFIER9.Driver, MAX_DEVICE_IDENTIFIER_STRING, directXContext->Driver, MAX_DEVICE_IDENTIFIER_STRING);
+		PXTextCopyA(aDAPTER_IDENTIFIER9.Description, MAX_DEVICE_IDENTIFIER_STRING, directXContext->Description, MAX_DEVICE_IDENTIFIER_STRING);
+		PXTextCopyA(aDAPTER_IDENTIFIER9.DeviceName, 32, directXContext->DeviceName, 32);
 	}
 
 	/*

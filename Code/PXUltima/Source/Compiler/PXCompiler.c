@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include <File/PXDataStream.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Math/PXMath.h>
 
 void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
@@ -30,44 +30,44 @@ void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSy
 	{
 		case PXCompilerSymbolLexerWhiteSpace:
 		{
-			//TextCopyA("***Whitespace***", 17, textbuffer, textBufferSize);
+			//PXTextCopyA("***Whitespace***", 17, textbuffer, textBufferSize);
 			break;
 		}
 		case PXCompilerSymbolLexerNewLine:
 		{
-			TextCopyA("\\n", 3, idbuffer, idBufferSize);
-			//TextCopyA("***New Line***", 15, textbuffer, textBufferSize);
+			PXTextCopyA("\\n", 3, idbuffer, idBufferSize);
+			//PXTextCopyA("***New Line***", 15, textbuffer, textBufferSize);
 			break;
 		}
 		case PXCompilerSymbolLexerComment:
-			TextCopyA("comment", 8, idbuffer, idBufferSize);
-			TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
+			PXTextCopyA("comment", 8, idbuffer, idBufferSize);
+			PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
 			break;
 
 		case PXCompilerSymbolLexerBool:
-			TextCopyA("bool", 5, idbuffer, idBufferSize);
+			PXTextCopyA("bool", 5, idbuffer, idBufferSize);
 			sprintf(textbuffer, "%s", compilerSymbolEntry->DataC ? "true" : "false");
 			break;
 
 		case PXCompilerSymbolLexerFloat:
-			TextCopyA("float", 6, idbuffer, idBufferSize);
+			PXTextCopyA("float", 6, idbuffer, idBufferSize);
 			sprintf(textbuffer, "%f", compilerSymbolEntry->DataF);
 			break;
 
 		case PXCompilerSymbolLexerInteger:
-			TextCopyA("int", 4, idbuffer, idBufferSize);
+			PXTextCopyA("int", 4, idbuffer, idBufferSize);
 			sprintf(textbuffer, "%i", compilerSymbolEntry->DataI);
 			break;
 
 		case PXCompilerSymbolLexerString:
-			TextCopyA("string", 7, idbuffer, idBufferSize);
-			TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
+			PXTextCopyA("string", 7, idbuffer, idBufferSize);
+			PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
 			break;
 
 		case PXCompilerSymbolLexerGenericElement:
 		{
-			TextCopyA("*Generic*", 10, idbuffer, idBufferSize);
-			TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
+			PXTextCopyA("*Generic*", 10, idbuffer, idBufferSize);
+			PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
 			break;
 		}
 	}
@@ -124,7 +124,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 		case 'T':
 		case 't':
 		{
-			const PXBool  result = TextCompareIgnoreCaseA(text, textSize, "true", 4) && textSize > 4;
+			const PXBool  result = PXTextCompareIgnoreCaseA(text, textSize, "true", 4) && textSize > 4;
 
 			if (result)
 			{
@@ -138,7 +138,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 		case 'F':
 		case 'f':
 		{
-			const PXBool  result = TextCompareIgnoreCaseA(text, textSize, "false", 5) && textSize > 5;
+			const PXBool  result = PXTextCompareIgnoreCaseA(text, textSize, "false", 5) && textSize > 5;
 
 			if (result)
 			{
@@ -163,7 +163,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 		case '9':
 		{
 			// Probe for number
-			const PXSize dotIndex = TextFindFirstA(text, textSize, '.');
+			const PXSize dotIndex = PXTextFindFirstA(text, textSize, '.');
 			const PXBool probablyFloat = dotIndex != (PXSize)-1;
 			PXSize writtenNumbers = 0;
 
@@ -171,7 +171,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			{
 				float value = 0;
 
-				const PXSize writtenNumbers = TextToFloatA(text, textSize, &value);
+				const PXSize writtenNumbers = PXTextToFloatA(text, textSize, &value);
 				const PXBool isFloat = textSize == writtenNumbers;
 
 				if (isFloat)
@@ -186,7 +186,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			{
 				unsigned int value = 0;
 
-				const PXSize writtenNumbers = TextToIntA(text, textSize, &value);
+				const PXSize writtenNumbers = PXTextToIntA(text, textSize, &value);
 				const PXBool isInteger = textSize == writtenNumbers;
 
 				if (isInteger)
@@ -255,7 +255,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 
 			if (endofLineSize)
 			{
-				const PXSize linesSkipped = TextCountA(compilerSymbolEntry.Source, endofLineSize, '\n');
+				const PXSize linesSkipped = PXTextCountA(compilerSymbolEntry.Source, endofLineSize, '\n');
 
 				compilerSymbolEntry.ID = newLineSymbol;
 				compilerSymbolEntry.Line = currentLine;
@@ -294,7 +294,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 						{
 							if (compilerSettings->CommentSingleLineSize)
 							{
-								const PXBool isComment = TextCompareA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, compilerSettings->CommentSingleLine, compilerSettings->CommentSingleLineSize);
+								const PXBool isComment = PXTextCompareA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, compilerSettings->CommentSingleLine, compilerSettings->CommentSingleLineSize);
 
 								if (isComment)
 								{
@@ -311,8 +311,8 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 							++compilerSymbolEntry.Source;
 
 							const PXSize blockSizeCUr = PXDataStreamRemainingSize(inputStream) + compilerSymbolEntry.Size;
-							const PXSize symbolPositionApostrophe = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\'');
-							const PXSize symbolPositionQuotationMark = TextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\"');
+							const PXSize symbolPositionApostrophe = PXTextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\'');
+							const PXSize symbolPositionQuotationMark = PXTextFindFirstA(compilerSymbolEntry.Source, blockSizeCUr, '\"');
 							const PXSize symbolPosition = MathMinimumIU(symbolPositionApostrophe, symbolPositionQuotationMark);
 							const PXBool hasIndex = symbolPosition != (PXSize)-1;
 
@@ -361,7 +361,7 @@ PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, PXComp
 		return PXNo;
 	}
 
-	*textSize = TextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, text, textMaxSize);
+	*textSize = PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, text, textMaxSize);
 
 	char* nameAdressStart = compilerSymbolEntry->Source;
 
@@ -375,7 +375,7 @@ PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, PXComp
 		{
 			const PXSize namelength = ((PXSize)compilerSymbolEntry->Source + (PXSize)compilerSymbolEntry->Size) - (PXSize)nameAdressStart;
 
-			*textSize = TextCopyA(nameAdressStart, namelength, text, textMaxSize);
+			*textSize = PXTextCopyA(nameAdressStart, namelength, text, textMaxSize);
 		}
 		else // Should be expected new line Error
 		{

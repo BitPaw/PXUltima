@@ -20,7 +20,7 @@ typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 #endif
 
 #include <Format/Type.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 #include <OS/Process/PXProcess.h>
 

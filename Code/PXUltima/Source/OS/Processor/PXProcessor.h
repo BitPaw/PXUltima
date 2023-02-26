@@ -1,5 +1,5 @@
-#ifndef ProcessorINCLUDE
-#define ProcessorINCLUDE
+#ifndef PXProcessorINCLUDE
+#define PXProcessorINCLUDE
 
 #include <Format/Type.h>
 
@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-    typedef enum ProcessorBrand_
+    typedef enum PXProcessorBrand_
     {
         ProcessorBrandInvalid,
         ProcessorBrandAMD,
@@ -39,9 +39,9 @@ extern "C"
         ProcessorBrandQNXHypervisor,
         ProcessorBrandAppleRosetta
     }
-    ProcessorBrand;
+    PXProcessorBrand;
 
-    typedef enum ProcessorModelName_
+    typedef enum PXProcessorModelName_
     {
         ProcessorModelNameInvalid,
 
@@ -101,16 +101,16 @@ extern "C"
         AMDAthlon64FXOperon
 
     }
-    ProcessorModelName;
+    PXProcessorModelName;
 
-    PXPrivate void ProcessorModelNameGet(const ProcessorModelName processorModelName, char* const name);
-    PXPrivate ProcessorBrand ProcessorBrandDetect(const char* name);
-    PXPrivate ProcessorModelName ProcessorModelNameDetect(const ProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model);
+    PXPrivate void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name);
+    PXPrivate PXProcessorBrand PXProcessorBrandDetect(const char* name);
+    PXPrivate PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model);
 
 	typedef struct Processor_
 	{
-        ProcessorBrand BrandID;
-        ProcessorModelName ModelNameID;
+        PXProcessorBrand BrandID;
+        PXProcessorModelName ModelNameID;
 
 		char IdentityString[13];
 

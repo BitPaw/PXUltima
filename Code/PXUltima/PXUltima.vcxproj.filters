@@ -225,13 +225,15 @@
     <ClInclude Include="Source\OS\Window\PXWindow.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\Monitor\PXMonitor.h">
+    <ClInclude Include="Source\OS\
+			   
+
+
+
+\PXMonitor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\File\FileOpenDialog.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\OS\UI\PXUI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\System\OSVersion.h">
@@ -250,9 +252,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Time\PXTime.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UI\UI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Format\WEBM\WEBM.h">
@@ -653,9 +652,6 @@
     <ClCompile Include="Source\OS\File\FileOpenDialog.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\UI\PXUI.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\OS\Program\Program.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -669,9 +665,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Time\PXTime.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UI\UI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Format\WEBM\WEBM.c">

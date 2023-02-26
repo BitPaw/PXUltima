@@ -2,7 +2,7 @@
 
 #include <File/PXDataStream.h>
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Format/OBJ/OBJ.h>
 
 void ModelConstruct(PXModel* const model)
@@ -157,7 +157,7 @@ PXActionResult ModelLoadA(PXModel* const model, const char* const filePath)
 {
 	wchar_t filePathW[PathMaxSize];
 
-	TextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
+	PXTextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
 
 	PXActionResult actionResult = ModelLoadW(model, filePathW);
 

@@ -1,11 +1,8 @@
 #ifndef PXUIInclude
 #define PXUIInclude
 
-#include <Format/Type.h>
-
 #include <OS/Error/PXActionResult.h>
 #include <OS/Window/PXWindow.h>
-#include <OS/System/OSVersion.h>
 
 #if OSUnix
 typedef unsigned int UIElementID;
@@ -174,17 +171,17 @@ extern "C"
  // Static objects?
 
 
-	typedef struct PXUIText_
+	typedef struct PXOSUIText_
 	{
 		UIElementID ID;
 		UILayout Layout;
-
-	}PXUIText;
+	}
+	PXOSUIText;
 
 	PXPublic void PXUITextConstruct
 	(
 		const PXWindowID window,
-		PXUIText* uiText,
+		PXOSUIText* uiText,
 		const unsigned int x,
 		const unsigned int y,
 		const unsigned int width,

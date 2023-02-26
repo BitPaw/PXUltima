@@ -286,7 +286,7 @@ PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const ClipBoardForma
 	// Maybe copy data?
 
 	const HGLOBAL memory = 0;
-	const unsigned int formatID = ClipBoardFormatToID(format);
+	const unsigned int formatID = PXClipBoardFormatToID(format);
 	const HANDLE handle = SetClipboardData(formatID, memory);
 	const unsigned char successful = handle != 0;
 

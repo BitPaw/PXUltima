@@ -1,7 +1,7 @@
 #include "MTL.h"
 
 #include <File/PXDataStream.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Container/ClusterValue.h>
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
@@ -484,7 +484,7 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 				const char CPrivateText[] = "<CPrivate>";
 				const PXSize CPrivateTextSize = sizeof(CPrivateText);
 
-				TextCopyA(CPrivateText, CPrivateTextSize, material->TextureFilePath, MTLFilePath);
+				PXTextCopyA(CPrivateText, CPrivateTextSize, material->TextureFilePath, MTLFilePath);
 
 				TextParseA(dataPoint, lineSize, "s", material->Name);
 

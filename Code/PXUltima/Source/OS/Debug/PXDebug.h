@@ -2,7 +2,7 @@
 #define PXDebugINLCUDE
 
 #include <Format/Type.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 #include <OS/Process/PXProcess.h>
 #include <OS/Thread/PXThread.h>

@@ -1,6 +1,6 @@
 #include "ID3.h"
 
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Container/ClusterValue.h>
 
 #define ID3HeaderSignature {'I','D','3'}
@@ -351,7 +351,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const pxDataStream)
                             {
                                 const unsigned char* emailToUser = PXDataStreamCursorPosition(pxDataStream);
                                 const PXSize maximalToRead = PXDataStreamRemainingSize(pxDataStream) - 6u;
-                                const PXSize emailToUserSize = TextLengthA((char*)emailToUser, maximalToRead);
+                                const PXSize emailToUserSize = PXTextLengthA((char*)emailToUser, maximalToRead);
                                 unsigned char rating = 0;
                                 // counter?
 

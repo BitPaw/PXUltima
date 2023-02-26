@@ -24,6 +24,7 @@
 					<Add option="-DWIN32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_CONSOLE" />
+					<Add option="-D_MSC_VER 1920" />
 					<Add directory="../PXUltima/Source" />
 					<Add directory="C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/um" />
 					<Add directory="C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/shared" />
@@ -57,6 +58,9 @@
 					<Add option="-static-libgcc" />
 					<Add option="-m32" />
 				</Linker>
+				<Environment>
+					<Variable name="_MSC_VER" value="1537" />
+				</Environment>
 			</Target>
 			<Target title="Linux 64 Bit - Debug">
 				<Option output="../[Export]/x64 Debug - Linux/libPXUltima_DEBUG.a" prefix_auto="0" extension_auto="0" />
@@ -109,22 +113,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Algorithm/KalmanFilter/PXKalmanFilter.h" />
-		<Unit filename="Source/Async/Await.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Async/Await.h" />
-		<Unit filename="Source/Async/PXLock.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Async/PXLock.h" />
-		<Unit filename="Source/Async/PXThread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Async/PXThread.h" />
-		<Unit filename="Source/Audio/PXAudio.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Audio/PXAudio.h" />
 		<Unit filename="Source/Compiler/PXCompiler.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -186,22 +174,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Device/VirtualKey.h" />
-		<Unit filename="Source/Error/PXActionResult.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Error/PXActionResult.h" />
 		<Unit filename="Source/Event/Event.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Event/Event.h" />
-		<Unit filename="Source/File/Endian.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/File/Endian.h" />
-		<Unit filename="Source/File/File.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/File/File.h" />
 		<Unit filename="Source/File/PXDataStream.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -278,6 +254,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/FNT/FNT.h" />
+		<Unit filename="Source/Format/FTP/FTP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/FTP/FTP.h" />
 		<Unit filename="Source/Format/GIF/GIF.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -286,6 +266,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/HTML/HTML.h" />
+		<Unit filename="Source/Format/HTTP/HTTP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Format/HTTP/HTTP.h" />
 		<Unit filename="Source/Format/HUFFMAN/HuffmanTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -470,14 +454,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Format/ZLIB/ZLIB.h" />
-		<Unit filename="Source/Graphic/DirectX/DirectX.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Graphic/DirectX/DirectX.h" />
-		<Unit filename="Source/Graphic/OpenGL/OpenGL.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Graphic/OpenGL/OpenGL.h" />
 		<Unit filename="Source/Graphic/PXCamera.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -490,18 +466,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.h" />
-		<Unit filename="Source/Graphic/Vulcan/Vulcan.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Graphic/Vulcan/Vulcan.h" />
 		<Unit filename="Source/Language/PXTranslator.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Language/PXTranslator.h" />
-		<Unit filename="Source/Library/PXLibrary.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Library/PXLibrary.h" />
 		<Unit filename="Source/Log/PXLog.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -526,30 +494,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Math/PXVector.h" />
-		<Unit filename="Source/Memory/PXMemory.c">
+		<Unit filename="Source/Network/SBP/PXSBPPackageProcessor.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Memory/PXMemory.h" />
-		<Unit filename="Source/Network/IP.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Network/IP.h" />
-		<Unit filename="Source/Network/PXClient.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Network/PXClient.h" />
-		<Unit filename="Source/Network/PXServer.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Network/PXServer.h" />
-		<Unit filename="Source/Network/PXSocket.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Network/PXSocket.h" />
+		<Unit filename="Source/Network/SBP/PXSBPPackageProcessor.h" />
 		<Unit filename="Source/Network/SBP/SBPClient.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Network/SBP/SBPClient.h" />
+		<Unit filename="Source/Network/SBP/SBPDataChunk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/SBP/SBPDataChunk.h" />
 		<Unit filename="Source/Network/SBP/SBPProtocol.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -558,79 +514,151 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Network/SBP/SBPServer.h" />
+		<Unit filename="Source/Network/Web/PXFTPClient.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/Web/PXFTPClient.h" />
 		<Unit filename="Source/Network/Web/PXWebServer.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Network/Web/PXWebServer.h" />
-		<Unit filename="Source/OS/Bash.c">
+		<Unit filename="Source/OS/Audio/PXAudio.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/Bash.h" />
-		<Unit filename="Source/OS/ClipBoard.c">
+		<Unit filename="Source/OS/Audio/PXAudio.h" />
+		<Unit filename="Source/OS/Bash/PXBash.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/ClipBoard.h" />
-		<Unit filename="Source/OS/HardDrive.c">
+		<Unit filename="Source/OS/Bash/PXBash.h" />
+		<Unit filename="Source/OS/ClipBoard/PXClipBoard.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/HardDrive.h" />
-		<Unit filename="Source/OS/Monitor.c">
+		<Unit filename="Source/OS/ClipBoard/PXClipBoard.h" />
+		<Unit filename="Source/OS/Debug/PXDebug.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/Monitor.h" />
-		<Unit filename="Source/OS/OSSignal.c">
+		<Unit filename="Source/OS/Debug/PXDebug.h" />
+		<Unit filename="Source/OS/Error/PXActionResult.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/OSSignal.h" />
-		<Unit filename="Source/OS/OSUI.c">
+		<Unit filename="Source/OS/Error/PXActionResult.h" />
+		<Unit filename="Source/OS/File/Endian.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/OSUI.h" />
-		<Unit filename="Source/OS/OSVersion.h" />
-		<Unit filename="Source/OS/OpenFileDialog.c">
+		<Unit filename="Source/OS/File/Endian.h" />
+		<Unit filename="Source/OS/File/File.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/OpenFileDialog.h" />
-		<Unit filename="Source/OS/PXProcess.c">
+		<Unit filename="Source/OS/File/File.h" />
+		<Unit filename="Source/OS/File/FileOpenDialog.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/PXProcess.h" />
-		<Unit filename="Source/OS/PXWindow.c">
+		<Unit filename="Source/OS/File/FileOpenDialog.h" />
+		<Unit filename="Source/OS/Graphic/DirectX/DirectX.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/PXWindow.h" />
-		<Unit filename="Source/OS/Program.c">
+		<Unit filename="Source/OS/Graphic/DirectX/DirectX.h" />
+		<Unit filename="Source/OS/Graphic/OpenGL/OpenGL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/Program.h" />
-		<Unit filename="Source/OS/Registry.c">
+		<Unit filename="Source/OS/Graphic/OpenGL/OpenGL.h" />
+		<Unit filename="Source/OS/Graphic/Vulcan/Vulcan.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/Registry.h" />
-		<Unit filename="Source/OS/User.c">
+		<Unit filename="Source/OS/Graphic/Vulcan/Vulcan.h" />
+		<Unit filename="Source/OS/HardDrive/PXHardDrive.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/User.h" />
-		<Unit filename="Source/Processor/Processor.c">
+		<Unit filename="Source/OS/HardDrive/PXHardDrive.h" />
+		<Unit filename="Source/OS/Library/PXLibrary.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Processor/Processor.h" />
+		<Unit filename="Source/OS/Library/PXLibrary.h" />
+		<Unit filename="Source/OS/Memory/PXMemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Memory/PXMemory.h" />
+		<Unit filename="Source/OS/Monitor/PXMonitor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Monitor/PXMonitor.h" />
+		<Unit filename="Source/OS/Network/IP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Network/IP.h" />
+		<Unit filename="Source/OS/Network/PXClient.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Network/PXClient.h" />
+		<Unit filename="Source/OS/Network/PXServer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Network/PXServer.h" />
+		<Unit filename="Source/OS/Network/PXSocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Network/PXSocket.h" />
+		<Unit filename="Source/OS/Process/PXProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Process/PXProcess.h" />
+		<Unit filename="Source/OS/Processor/PXProcessor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Processor/PXProcessor.h" />
+		<Unit filename="Source/OS/Program/Program.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Program/Program.h" />
+		<Unit filename="Source/OS/Signal/PXSignal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Signal/PXSignal.h" />
+		<Unit filename="Source/OS/System/OSVersion.h" />
+		<Unit filename="Source/OS/System/Registry.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/System/Registry.h" />
+		<Unit filename="Source/OS/Thread/Await.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Thread/Await.h" />
+		<Unit filename="Source/OS/Thread/PXLock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Thread/PXLock.h" />
+		<Unit filename="Source/OS/Thread/PXThread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Thread/PXThread.h" />
+		<Unit filename="Source/OS/Time/PXStopWatch.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Time/PXStopWatch.h" />
+		<Unit filename="Source/OS/Time/PXTime.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Time/PXTime.h" />
+		<Unit filename="Source/OS/UI/PXUI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/UI/PXUI.h" />
+		<Unit filename="Source/OS/User/PXUser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/User/PXUser.h" />
+		<Unit filename="Source/OS/Window/PXWindow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/OS/Window/PXWindow.h" />
 		<Unit filename="Source/Serialization/Serialization.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Serialization/Serialization.h" />
-		<Unit filename="Source/Text/Text.c">
+		<Unit filename="Source/Text/PXText.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Text/Text.h" />
-		<Unit filename="Source/Time/PXStopWatch.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Time/PXStopWatch.h" />
-		<Unit filename="Source/Time/PXTime.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Time/PXTime.h" />
+		<Unit filename="Source/Text/PXText.h" />
 		<Unit filename="Source/UI/UI.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -5,6 +5,10 @@
 #if OSUnix
 #elif OSWindows
 
+#include <commctrl.h>
+#include <commdlg.h>
+//#include <ShObjIdl.h>
+
 #if WindowsEnableModernColorSceme
 
 #if defined _M_IX86
@@ -20,17 +24,11 @@
 #pragma comment(lib, "Comctl32.lib")
 
 #endif
-
-
-#include <commctrl.h>
-#include <commdlg.h>
-//#include <ShObjIdl.h>
 #endif
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Math/PXMath.h>
-
 #include <stdio.h>
 
 
@@ -240,9 +238,9 @@ void ScrollBarConstruct(const PXWindowID window, OSScrollBar* scrollBar, const u
 #endif
 }
 
-void PXUITextConstruct(const PXWindowID window, PXUIText* uiText, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
+void PXUITextConstruct(const PXWindowID window, PXOSUIText* uiText, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
-    MemoryClear(uiText, sizeof(PXUIText));
+    MemoryClear(uiText, sizeof(PXOSUIText));
 
 #if OSUnix
 #elif OSWindows

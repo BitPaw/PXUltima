@@ -1,7 +1,7 @@
 #include "PXFont.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <File/PXDataStream.h>
 
 #include <Format/FNT/FNT.h>
@@ -22,7 +22,7 @@ PXActionResult PXFontLoadA(PXFont* const font, const PXTextASCII filePath)
 {
     PXByte filePathU[PathMaxSize];
 
-    TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
+    PXTextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
     PXActionResult actionResult = PXFontLoadU(font, filePathU);
 
@@ -33,7 +33,7 @@ PXActionResult PXFontLoadW(PXFont* const font, const PXTextUNICODE filePath)
 {
     PXByte filePathU[PathMaxSize];
 
-    TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+    PXTextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
     PXActionResult actionResult = PXFontLoadU(font, filePathU);
 

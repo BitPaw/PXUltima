@@ -4,7 +4,7 @@
 #include <File/PXDataStream.h>
 #include <OS/Memory/PXMemory.h>
 #include <Container/ClusterValue.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Math/PXMath.h>
 
 #define OBJDetectMaterial 1
@@ -107,7 +107,7 @@ void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned 
 {
     char textBuffer[32];
 
-    TextCopyA(compilerSymbolEntry->Source, 20, textBuffer, 32);
+    PXTextCopyA(compilerSymbolEntry->Source, 20, textBuffer, 32);
 
     printf
     (
@@ -301,7 +301,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         break;
                     }
 
-                    PXSize offsetA = TextToIntA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &vertexData[0]);
+                    PXSize offsetA = PXTextToIntA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &vertexData[0]);
 
                     const char* expectedSlash = compilerSymbolEntry.Source + offsetA;
                     const PXBool isSlashA = expectedSlash[0] == '/';
@@ -317,7 +317,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         }
                         else
                         {
-                            PXSize offsetB = TextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[1]);
+                            PXSize offsetB = PXTextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[1]);
                             nextValueAdress = nextValueAdress + offsetB;
                             const PXBool isSlashC = nextValueAdress[0] == '/';
 
@@ -332,7 +332,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                             //else ok
                         }
 
-                        PXSize offsetB = TextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[2]); // read
+                        PXSize offsetB = PXTextToIntA(nextValueAdress, compilerSymbolEntry.Size, &vertexData[2]); // read
 
                         if (!offsetB)
                         {
@@ -411,7 +411,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
             PXDataStreamReadI16U(&materialNameFetchStream, &length);
             PXDataStreamReadB(&materialNameFetchStream, currentMTLFileA, PathMaxSize);
 
-            TextCopyAW(currentMTLFileA, length, currentMTLFileW, PathMaxSize);
+            PXTextCopyAW(currentMTLFileA, length, currentMTLFileW, PathMaxSize);
 
             FilePathSwapFileNameW(currentWorkPath, currentMTLFileW, currentMTLFileW);
 
@@ -708,7 +708,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
                                 PXModelMaterialGet(model, i, &pxMaterial);
 
-                                const PXBool isValid = TextCompareA(materialName, size, pxMaterial.Name, pxMaterial.NameSize); // is found?
+                                const PXBool isValid = PXTextCompareA(materialName, size, pxMaterial.Name, pxMaterial.NameSize); // is found?
 
                                 if (isValid)
                                 {

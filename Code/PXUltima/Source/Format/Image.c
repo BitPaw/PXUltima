@@ -1,7 +1,7 @@
 #include "Image.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Math/PXMath.h>
 
 #include <Format/BMP/BMP.h>
@@ -80,7 +80,7 @@ PXActionResult ImageLoadA(Image* const image, const PXTextASCII filePath)
 {
     PXByte filePathU[PathMaxSize];
 
-    TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
+    PXTextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
     PXActionResult actionResult = ImageLoadU(image, filePathU);
 
@@ -91,7 +91,7 @@ PXActionResult ImageLoadW(Image* const image, const PXTextUNICODE filePath)
 {
     PXByte filePathU[PathMaxSize];
 
-    TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+    PXTextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
     PXActionResult actionResult = ImageLoadU(image, filePathU);
 
@@ -194,7 +194,7 @@ PXActionResult ImageSaveA(Image* const image, const PXTextASCII filePath, const 
 {
     PXByte filePathU[PathMaxSize];
 
-    TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
+    PXTextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
     PXActionResult actionResult = ImageSaveU(image, filePathU, fileFormat, dataFormat);
 
@@ -205,7 +205,7 @@ PXActionResult ImageSaveW(Image* const image, const PXTextUNICODE filePath, cons
 {
     PXByte filePathU[PathMaxSize];
 
-    TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+    PXTextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
     PXActionResult actionResult = ImageSaveU(image, filePathU, fileFormat, dataFormat);
 
@@ -483,7 +483,7 @@ void ImageDrawTextA(Image* const image, const PXSize x, const PXSize y, const PX
 {
     wchar_t textW[1024];
 
-    TextCopyAW(text, 1024, textW, 1024);
+    PXTextCopyAW(text, 1024, textW, 1024);
 
     ImageDrawTextW(image, x, y, width, height, font, textW);
 }

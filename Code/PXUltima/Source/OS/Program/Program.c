@@ -11,7 +11,7 @@
 #define ExecuteProgram _spawnv
 #endif
 
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <OS/Memory/PXMemory.h>
 
 PXThreadResult ProgramExecuteThreadFunction(void* data)
@@ -70,7 +70,7 @@ PXActionResult ProgramExecute(Program* const program)
 
 PXActionResult ProgramExecuteAS(Program* program, const char* programPath, const char* parameterString, ProgramExecutedEvent* callback)
 {
-    TextCopyAW(programPath, 260, program->FilePath, 260);
+    PXTextCopyAW(programPath, 260, program->FilePath, 260);
 
     program->ProgramExecutedCallBack = callback;
 
@@ -84,11 +84,11 @@ PXActionResult ProgramExecuteAS(Program* program, const char* programPath, const
     // Add ""
     {
         program->ParameterList[0] = '\"';
-        PXSize copyedBytes = TextCopyA(&program->ParameterList[1], 1024, programPath, 1024);
+        PXSize copyedBytes = PXTextCopyA(&program->ParameterList[1], 1024, programPath, 1024);
         program->ParameterList[copyedBytes] = '\"';
     }
 
-    TextCopyA(parameterString, 1024, program->ParameterList[1], 1024);
+    PXTextCopyA(parameterString, 1024, program->ParameterList[1], 1024);
 
     const PXActionResult actionResult = ProgramExecute(program);
 
@@ -97,7 +97,7 @@ PXActionResult ProgramExecuteAS(Program* program, const char* programPath, const
 
 PXActionResult ProgramExecuteAL(Program* program, const char* programPath, const char** parameterList, PXSize parameterListSize, ProgramExecutedEvent* callback)
 {
-    TextCopyA(program->FilePath, 260, programPath, 260);
+    PXTextCopyA(program->FilePath, 260, programPath, 260);
 
     program->ProgramExecutedCallBack = callback;
 
@@ -116,14 +116,14 @@ PXActionResult ProgramExecuteAL(Program* program, const char* programPath, const
     {
         PXSize i = 0;
 
-        TextCopyA(programPath, 1024, program->ParameterList[i++], 1024);
+        PXTextCopyA(programPath, 1024, program->ParameterList[i++], 1024);
 
         for( ; i < parameterListSize; ++i)
         {
             const char* source = parameterList[i];
             char* destination = program->ParameterList[i++];
 
-            TextCopyA(source, 1024, destination, 1024);
+            PXTextCopyA(source, 1024, destination, 1024);
         }
 
         program->ParameterList[i++] = 0;

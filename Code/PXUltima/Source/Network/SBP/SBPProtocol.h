@@ -1,10 +1,9 @@
 #ifndef SBPProtocolINCLUDE
 #define SBPProtocolINCLUDE
 
-#include <Format/Type.h>
-#include <Container/ClusterValue.h>
-#include <Text/Text.h>
 #include <File/PXDataStream.h>
+#include <Text/PXText.h>
+#include <Container/ClusterValue.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -231,7 +230,7 @@ extern "C"
 		{
 			SBPPackageHeaderPackageFileMode Mode;
 
-			TextFormat FilePathSourceFormat;
+			PXTextFormat FilePathSourceFormat;
 			PXSize FilePathSourceSize;
 			union
 			{
@@ -239,7 +238,7 @@ extern "C"
 				wchar_t FilePathSourceW[PathMaxSize];
 			};
 
-			TextFormat FilePathTargetFormat;
+			PXTextFormat FilePathTargetFormat;
 			PXSize FilePathTargetSize;
 			union
 			{
@@ -274,7 +273,7 @@ extern "C"
 
 	typedef struct SBPPackageHeaderPackageIam_
 	{
-		Text Name;
+		PXText Name;
 	}
 	SBPPackageHeaderPackageIam;
 
@@ -315,7 +314,7 @@ extern "C"
 
 	typedef struct SBPPackageHeaderPackageText_
 	{
-		Text TextData;
+		PXText TextData;
 	}
 	SBPPackageHeaderPackageText;
 

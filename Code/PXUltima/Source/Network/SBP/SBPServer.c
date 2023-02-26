@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include <File/PXDataStream.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 void SBPServerConstruct(PXSBPServer* const sbpServer)
 {

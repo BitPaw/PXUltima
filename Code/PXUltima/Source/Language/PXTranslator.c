@@ -1,6 +1,6 @@
 #include "PXTranslator.h"
 
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 // English <=> German translate
 
@@ -25,7 +25,7 @@ PXActionResult PXTranslatorEnglishToGerman(PXDataStream* const inputStreamEnglis
 
 		char buffer[1024];
 
-		TextCopyA(text, textSize, buffer, 1024u);		
+		PXTextCopyA(text, textSize, buffer, 1024u);		
 	}
 
 	return PXActionSuccessful;

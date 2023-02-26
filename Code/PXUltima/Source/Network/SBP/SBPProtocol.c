@@ -1,8 +1,8 @@
 #include "SBPProtocol.h"
 
-#include <OS/Memory/PXMemory.h>
 #include <File/PXDataStream.h>
-#include <OS/User/User.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/User/PXUser.h>
 
 PXSize PXSBPChannelHeaderParse(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream)
 {
@@ -377,10 +377,10 @@ void SBPPackageHeaderPackageFileFill(SBPPackageHeaderPackageFile* const sbpDataP
 	Mode = mode;
 
 	FilePathSourceFormat = TextFormatASCII;
-	FilePathSourceSize = TextCopyA(source, PathMaxSize, FilePathSourceA, PathMaxSize);
+	FilePathSourceSize = PXTextCopyA(source, PathMaxSize, FilePathSourceA, PathMaxSize);
 
 	FilePathTargetFormat = TextFormatASCII;
-	FilePathTargetSize = TextCopyA(target, PathMaxSize, FilePathTargetA, PathMaxSize);
+	FilePathTargetSize = PXTextCopyA(target, PathMaxSize, FilePathTargetA, PathMaxSize);
 
 	FileSize = 0;
 }
@@ -718,7 +718,7 @@ PXSize SBPPackageHeaderPackageIamSerialize(SBPPackageHeader* const sbpDataPackag
 
 	// Add name	
 	PXByte nameBuffer[128];
-	const PXSize nameBufferSize = UserNameGetU(nameBuffer, 128);
+	const PXSize nameBufferSize = PXUserNameGetU(nameBuffer, 128);
 
 	{
 		const unsigned char formatType = TextFormatUTF8;

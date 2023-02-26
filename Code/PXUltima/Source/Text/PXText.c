@@ -474,7 +474,7 @@ PXSize PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextU
 		PXByte buffer[4];
 		PXSize size = 0;
 
-		TextToUTFConvert(wideCharacter, buffer, &size);
+		PXTextToUTFConvert(wideCharacter, buffer, &size);
 
 		destinationIndex += MemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
 	}
@@ -503,7 +503,7 @@ PXSize PXTextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTex
 		PXByte buffer[4];
 		PXSize size = 0;
 
-		TextToUTFConvert(wideCharacter, buffer, &size);
+		PXTextToUTFConvert(wideCharacter, buffer, &size);
 
 		destinationIndex += MemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
 	}

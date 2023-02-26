@@ -1,7 +1,7 @@
 #pragma once
 
 #include <OS/Network/PXServer.h>
-#include <CS/Error/ActionResult.hpp>
+#include <CS/OS/Error/ActionResult.hpp>
 #include <OS/Memory/PXMemory.h>
 
 using namespace System;
@@ -48,25 +48,8 @@ namespace PX
 		delegate void SocketDataReceiveEvent(const PXSocketID pxSocket, array<System::Byte>^ buffer);
 		event SocketDataReceiveEvent^ OnDataReceive;
 
-		Server()// : _dataSteam
-		{
-			_pxServer = new PXServer();
-			PXServerConstruct(_pxServer);
-
-			OnSocketDataRawReceiveManaged = gcnew SocketDataRawReceiveEvent(this, &Server::OnSocketDataRawReceive);
-			GCHandle gch = GCHandle::Alloc(OnSocketDataRawReceiveManaged);
-			IntPtr ip = Marshal::GetFunctionPointerForDelegate(OnSocketDataRawReceiveManaged);
-			PXSocketDataReceiveEvent cb = static_cast<PXSocketDataReceiveEvent>(ip.ToPointer());
-
-
-			//_pxServer->SocketEventListener.MessageSendCallback = OnSocketDataRawSendManaged;
-			_pxServer->EventListener.MessageReceiveCallback = cb;
-		}
-
-		~Server()
-		{
-			PXServerDestruct(_pxServer);
-		}
+		Server();
+		~Server();
 
 		PX::ActionResult Start(const unsigned short port);
 		PX::ActionResult Stop();

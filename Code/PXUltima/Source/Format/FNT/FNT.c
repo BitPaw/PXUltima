@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <File/PXDataStream.h>
 #include <Format/Image.h>
 
@@ -82,7 +82,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				PXDataStreamCursorAdvance(pxDataStream, 5u);
 
-				TextParseFindAllA
+				PXTextParseFindAllA
 				(
 					PXDataStreamCursorPosition(pxDataStream),
 					PXDataStreamRemainingSize(pxDataStream),
@@ -90,18 +90,18 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 					values
 				);
 
-				TextCopyA(indexPosition[0] + 1, FontNameSize, fnt->Info.Name, FontNameSize);
-				TextToIntA(indexPosition[1], 5, &fnt->Info.Size);
-				TextToBoolA(indexPosition[2], 5, &fnt->Info.Bold);
-				TextToBoolA(indexPosition[3], 5, &fnt->Info.Italic);
-				TextCopyA(indexPosition[4] + 1, CharSetNameSize, fnt->Info.CharSet, CharSetNameSize);
-				TextToBoolA(indexPosition[5], 5, &fnt->Info.Unicode);
-				TextToIntA(indexPosition[6], 5, &fnt->Info.StretchH);
-				TextToBoolA(indexPosition[7], 5, &fnt->Info.Smooth);
-				TextToBoolA(indexPosition[8], 5, &fnt->Info.Supersampling);
+				PXTextCopyA(indexPosition[0] + 1, FontNameSize, fnt->Info.Name, FontNameSize);
+				PXTextToIntA(indexPosition[1], 5, &fnt->Info.Size);
+				PXTextToBoolA(indexPosition[2], 5, &fnt->Info.Bold);
+				PXTextToBoolA(indexPosition[3], 5, &fnt->Info.Italic);
+				PXTextCopyA(indexPosition[4] + 1, CharSetNameSize, fnt->Info.CharSet, CharSetNameSize);
+				PXTextToBoolA(indexPosition[5], 5, &fnt->Info.Unicode);
+				PXTextToIntA(indexPosition[6], 5, &fnt->Info.StretchH);
+				PXTextToBoolA(indexPosition[7], 5, &fnt->Info.Smooth);
+				PXTextToBoolA(indexPosition[8], 5, &fnt->Info.Supersampling);
 
-				TextTerminateBeginFromFirstA(fnt->Info.Name, FontNameSize, '\"');
-				TextTerminateBeginFromFirstA(fnt->Info.CharSet, CharSetNameSize, '\"');
+				PXTextTerminateBeginFromFirstA(fnt->Info.Name, FontNameSize, '\"');
+				PXTextTerminateBeginFromFirstA(fnt->Info.CharSet, CharSetNameSize, '\"');
 
 				break;
 			}
@@ -122,7 +122,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				PXDataStreamCursorAdvance(pxDataStream, 6u);
 
-				TextParseFindAllA
+				PXTextParseFindAllA
 				(
 					PXDataStreamCursorPosition(pxDataStream),
 					PXDataStreamRemainingSize(pxDataStream),
@@ -132,12 +132,12 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				const PXSize readableSize = PXDataStreamRemainingSize(pxDataStream);
 
-				TextToIntA(indexPosition[0], readableSize, &fnt->CommonData.LineHeight);
-				TextToIntA(indexPosition[1], readableSize, &fnt->CommonData.Base);
-				TextToIntA(indexPosition[2], readableSize, &fnt->CommonData.ScaleWidth);
-				TextToIntA(indexPosition[3], readableSize, &fnt->CommonData.ScaleHeight);
-				TextToIntA(indexPosition[4], readableSize, &fnt->CommonData.AmountOfPages);
-				TextToBoolA(indexPosition[5], readableSize, &fnt->CommonData.Packed);
+				PXTextToIntA(indexPosition[0], readableSize, &fnt->CommonData.LineHeight);
+				PXTextToIntA(indexPosition[1], readableSize, &fnt->CommonData.Base);
+				PXTextToIntA(indexPosition[2], readableSize, &fnt->CommonData.ScaleWidth);
+				PXTextToIntA(indexPosition[3], readableSize, &fnt->CommonData.ScaleHeight);
+				PXTextToIntA(indexPosition[4], readableSize, &fnt->CommonData.AmountOfPages);
+				PXTextToBoolA(indexPosition[5], readableSize, &fnt->CommonData.Packed);
 
 				// Allocate
 				{
@@ -166,7 +166,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				PXDataStreamCursorAdvance(pxDataStream, 5u);
 
-				TextParseFindAllA
+				PXTextParseFindAllA
 				(
 					PXDataStreamCursorPosition(pxDataStream),
 					PXDataStreamRemainingSize(pxDataStream),
@@ -174,7 +174,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 					values
 				);
 
-				TextToIntA(indexPosition[0], 5, &currentPage->PageID);
+				PXTextToIntA(indexPosition[0], 5, &currentPage->PageID);
 
 
 				// Loading Image
@@ -182,7 +182,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 					char fullPath[PathMaxSize];
 					char pageFileName[FNTPageFileNameSize];
 
-					TextCopyA
+					PXTextCopyA
 					(
 						indexPosition[1] + 1,
 						PXDataStreamRemainingSize(pxDataStream),
@@ -190,7 +190,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 						FNTPageFileNameSize - 1
 					);
 
-					TextTerminateBeginFromFirstA(pageFileName, FNTPageFileNameSize, '\"');
+					PXTextTerminateBeginFromFirstA(pageFileName, FNTPageFileNameSize, '\"');
 
 					FilePathSwapFileNameA(pxDataStream->FilePath, fullPath, pageFileName);
 
@@ -205,7 +205,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				PXDataStreamCursorAdvance(pxDataStream, 6u);
 
-				char* count = TextFindPositionA
+				char* count = PXTextFindPositionA
 				(
 					PXDataStreamCursorPosition(pxDataStream),
 					PXDataStreamRemainingSize(pxDataStream),
@@ -217,7 +217,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 				{
 					int size = 0;
 
-					TextToIntA
+					PXTextToIntA
 					(
 						count + sizeof(countText) - 1,
 						PXDataStreamRemainingSize(pxDataStream) - sizeof(countText),
@@ -276,7 +276,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				PXDataStreamCursorAdvance(pxDataStream, 5u);
 
-				TextParseFindAllA
+				PXTextParseFindAllA
 				(
 					PXDataStreamCursorPosition(pxDataStream),
 					PXDataStreamRemainingSize(pxDataStream),
@@ -284,16 +284,16 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 					values
 				);
 
-				TextToIntA(indexPosition[0], 5, &character->ID);
-				TextToFloatA(indexPosition[1], 5, &character->Position[0]);
-				TextToFloatA(indexPosition[2], 5, &character->Position[1]);
-				TextToFloatA(indexPosition[3], 5, &character->Size[0]);
-				TextToFloatA(indexPosition[4], 5, &character->Size[1]);
-				TextToFloatA(indexPosition[5], 5, &character->Offset[0]);
-				TextToFloatA(indexPosition[6], 5, &character->Offset[1]);
-				TextToIntA(indexPosition[7], 5, &character->XAdvance);
-				TextToIntA(indexPosition[8], 5, &character->Page);
-				TextToIntA(indexPosition[9], 5, &character->Chanal);
+				PXTextToIntA(indexPosition[0], 5, &character->ID);
+				PXTextToFloatA(indexPosition[1], 5, &character->Position[0]);
+				PXTextToFloatA(indexPosition[2], 5, &character->Position[1]);
+				PXTextToFloatA(indexPosition[3], 5, &character->Size[0]);
+				PXTextToFloatA(indexPosition[4], 5, &character->Size[1]);
+				PXTextToFloatA(indexPosition[5], 5, &character->Offset[0]);
+				PXTextToFloatA(indexPosition[6], 5, &character->Offset[1]);
+				PXTextToIntA(indexPosition[7], 5, &character->XAdvance);
+				PXTextToIntA(indexPosition[8], 5, &character->Page);
+				PXTextToIntA(indexPosition[9], 5, &character->Chanal);
 
 				break;
 			}

@@ -53,9 +53,9 @@ extern "C"
 
 		union
 		{
-			char* PXTextA;
-			wchar_t* PXTextW;
-			void* PXTextData;
+			char* TextA;
+			wchar_t* TextW;
+			void* TextData;
 		};
 	}
 	PXText;

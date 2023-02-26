@@ -1,6 +1,6 @@
 #include "Mouse.h"
 
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <stdio.h>
 
 void MouseInputReset(Mouse* mouse)
@@ -12,7 +12,7 @@ void MouseInputPrint(Mouse* mouse)
 	const PXSize buttonTextSize = 2 + 4 * 8+1;
 	char buttons[34+1];
 	
-	TextFromBinaryDataA(&mouse->Buttons, sizeof(unsigned int), buttons, buttonTextSize);
+	PXTextFromBinaryDataA(&mouse->Buttons, sizeof(unsigned int), buttons, buttonTextSize);
 
 	printf
 	(

@@ -101,7 +101,7 @@ PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXTextASCII ap
 {
 	PXDebugConstruct(pxDebug);	
 
-	TextCopyA(applicationName, 260, pxDebug->ApplicatioName, 260);
+	PXTextCopyA(applicationName, 260, pxDebug->ApplicatioName, 260);
 
 	// Start Thread that will listen to given process.
 	{

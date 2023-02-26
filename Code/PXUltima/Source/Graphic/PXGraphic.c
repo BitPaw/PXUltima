@@ -2,7 +2,7 @@
 
 #include <File/PXDataStream.h>
 #include <Container/ClusterValue.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Format/PXFont.h>
 #include <Format/FNT/FNT.h>
 
@@ -878,9 +878,9 @@ PXActionResult PXGraphicUIPanelUnregister(PXGraphicContext* const graphicContext
     return PXActionInvalid;
 }
 
-PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height, const PXTextUTF8 text)
+PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXOSUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height, const PXTextUTF8 text)
 {
-    const PXSize textSize = TextLengthA(text, 256);
+    const PXSize textSize = PXTextLengthA(text, 256);
     const PXSize vertexDataSize = textSize * 4u * (3u +2u);
 
     float* vertexData = MemoryAllocate(vertexDataSize * sizeof(float));
@@ -1291,13 +1291,13 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     OpenGLContextDeselect(&graphicContext->OpenGLInstance);
 }
 
-unsigned char PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)
+PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)
 {
     PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
 
    // OpenGLContextFlush(&graphicContext->OpenGLInstance);
 
-    const unsigned char successful =
+    const PXBool successful =
 #if OSUnix
         1u; // No feedback?
     glXSwapBuffers(window->DisplayCurrent, window->ID);

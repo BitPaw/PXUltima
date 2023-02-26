@@ -1,7 +1,7 @@
 #include "TestFTP.h"
 
 #include <Network/Web/PXFTPClient.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Format/FTP/FTP.h>
 
 #include <stdio.h>
@@ -10,7 +10,7 @@ void OnSocketDataReceiveFTP(const PXSocket* const pxSocket, const void* const me
 {
 	int returnCode = 0;
 
-	PXSize parsedNumberSize = TextToIntA(message, messageSize, &returnCode);
+	PXSize parsedNumberSize = PXTextToIntA(message, messageSize, &returnCode);
 
 	if (parsedNumberSize)
 	{

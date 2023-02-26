@@ -1,6 +1,6 @@
 #include "File.h"
 
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
@@ -71,14 +71,14 @@ void FilePathSplittA(const char* fullPath, PXSize fullPathMaxSize, char* drive, 
 	char directoryNameCache[PathMaxSize];
 	char baseNameCache[FileNameMaxSize];
 
-	TextCopyA(fullPath, FileNameMaxSize, directoryNameCache, FileNameMaxSize);
-	TextCopyA(fullPath, FileNameMaxSize, baseNameCache, FileNameMaxSize);
+	PXTextCopyA(fullPath, FileNameMaxSize, directoryNameCache, FileNameMaxSize);
+	PXTextCopyA(fullPath, FileNameMaxSize, baseNameCache, FileNameMaxSize);
 
 	char* dirNameResult = dirname(directoryNameCache);
 	char* baseNameResult = basename(baseNameCache);
 
-	PXSize directoryLength = TextCopyA(dirNameResult, DirectoryMaxSize, directory, DirectoryMaxSize);
-	PXSize fileNameLength = TextCopyA(baseNameResult, FileNameMaxSize, fileName, FileNameMaxSize);
+	PXSize directoryLength = PXTextCopyA(dirNameResult, DirectoryMaxSize, directory, DirectoryMaxSize);
+	PXSize fileNameLength = PXTextCopyA(baseNameResult, FileNameMaxSize, fileName, FileNameMaxSize);
 
 	for(PXSize i = fileNameLength - 1; i > 0; --i)
 	{
@@ -86,7 +86,7 @@ void FilePathSplittA(const char* fullPath, PXSize fullPathMaxSize, char* drive, 
 
 		if(isDot)
 		{
-			TextCopyA(fileName + i + 1, ExtensionMaxSize - i, extension, extensionMaxSize);
+			PXTextCopyA(fileName + i + 1, ExtensionMaxSize - i, extension, extensionMaxSize);
 			break;
 		}
 	}
@@ -108,8 +108,8 @@ void FilePathSplittA(const char* fullPath, PXSize fullPathMaxSize, char* drive, 
 
 		if(isDot)
 		{
-			TextCopyA(extension + i, extensionMaxSize, fileNameCache, FileNameMaxSize);
-			TextCopyA(fileNameCache, FileNameMaxSize, extension, extensionMaxSize);
+			PXTextCopyA(extension + i, extensionMaxSize, fileNameCache, FileNameMaxSize);
+			PXTextCopyA(fileNameCache, FileNameMaxSize, extension, extensionMaxSize);
 			break;
 		}
 	}
@@ -136,10 +136,10 @@ void FilePathSplittW(const wchar_t* fullPath, PXSize fullPathMaxSize, wchar_t* d
 		extensionA, ExtensionMaxSize
 	);
 
-	TextCopyAW(driveA, DriveMaxSize, drive, DriveMaxSize);
-	TextCopyAW(directoryA, DirectoryMaxSize, directory, DirectoryMaxSize);
-	TextCopyAW(fileNameA, FileNameMaxSize, fileName, FileNameMaxSize);
-	TextCopyAW(extensionA, ExtensionMaxSize, extension, ExtensionMaxSize);
+	PXTextCopyAW(driveA, DriveMaxSize, drive, DriveMaxSize);
+	PXTextCopyAW(directoryA, DirectoryMaxSize, directory, DirectoryMaxSize);
+	PXTextCopyAW(fileNameA, FileNameMaxSize, fileName, FileNameMaxSize);
+	PXTextCopyAW(extensionA, ExtensionMaxSize, extension, ExtensionMaxSize);
 #elif OSWindows
 	wchar_t extensionCache[FileNameMaxSize];
 
@@ -158,8 +158,8 @@ void FilePathSplittW(const wchar_t* fullPath, PXSize fullPathMaxSize, wchar_t* d
 
 		if(isDot)
 		{
-			TextCopyW(extension + i + 1, extensionMaxSize, extensionCache, FileNameMaxSize);
-			TextCopyW(extensionCache, FileNameMaxSize, extension, extensionMaxSize);
+			PXTextCopyW(extension + i + 1, extensionMaxSize, extensionCache, FileNameMaxSize);
+			PXTextCopyW(extensionCache, FileNameMaxSize, extension, extensionMaxSize);
 			break;
 		}
 	}
@@ -172,32 +172,32 @@ void FilePathSplittPositionW(const wchar_t* fullPath, PXSize fullPathMaxSize, PX
 
 PXSize FilePathExtensionGetA(const char* filePath, const PXSize filePathSize, char* extension, const PXSize extensionSizeMax)
 {
-	const PXSize index = TextFindLastA(filePath, filePathSize, '.');
-	const unsigned char hasExtension = index != TextIndexNotFound;
+	const PXSize index = PXTextFindLastA(filePath, filePathSize, '.');
+	const unsigned char hasExtension = index != PXTextIndexNotFound;
 
 	if(!hasExtension)
 	{
-		TextClearA(extension, extensionSizeMax);
+		PXTextClearA(extension, extensionSizeMax);
 		return;
 	}
 
-	const PXSize writtenBytes = TextCopyA(filePath + index, filePathSize - index, extension, extensionSizeMax);
+	const PXSize writtenBytes = PXTextCopyA(filePath + index, filePathSize - index, extension, extensionSizeMax);
 
 	return writtenBytes;
 }
 
 PXSize FilePathExtensionGetW(const wchar_t* filePath, const PXSize filePathSize, wchar_t* extension, const PXSize extensionSizeMax)
 {
-	const PXSize index = TextFindLastW(filePath, filePathSize, '.');
-	const unsigned char hasExtension = index != TextIndexNotFound;
+	const PXSize index = PXTextFindLastW(filePath, filePathSize, '.');
+	const unsigned char hasExtension = index != PXTextIndexNotFound;
 
 	if(!hasExtension)
 	{
-		TextClearW(extension, extensionSizeMax);
+		PXTextClearW(extension, extensionSizeMax);
 		return;
 	}
 
-	const PXSize writtenBytes = TextCopyW(filePath + index + 1, filePathSize - index, extension, extensionSizeMax);
+	const PXSize writtenBytes = PXTextCopyW(filePath + index + 1, filePathSize - index, extension, extensionSizeMax);
 
 	return writtenBytes;
 }
@@ -228,7 +228,7 @@ FileFormatExtension FileExtensionDetectTryA(const char* const extension, const P
 {
 	wchar_t extensionW[ExtensionMaxSize];
 
-	const PXSize extensionWSize = TextCopyAW(extension, extensionSize, extensionW, ExtensionMaxSize);
+	const PXSize extensionWSize = PXTextCopyAW(extension, extensionSize, extensionW, ExtensionMaxSize);
 	const FileFormatExtension format = FileExtensionDetectTryW(extensionW, extensionWSize);
 
 	return format;
@@ -245,67 +245,67 @@ FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, cons
 
 		case 1u:
 		{
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "O", 1u))  return FileFormatLinuxExecutableAndLinkable;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "O", 1u))  return FileFormatLinuxExecutableAndLinkable;
 			break;
 		}
 		case 2u:
 		{
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "SO", 2u))  return FileFormatLinuxExecutableAndLinkable;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "SO", 2u))  return FileFormatLinuxExecutableAndLinkable;
 			break;
 		}
 		case 3u:
 		{
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "ELF", 3u))  return FileFormatLinuxExecutableAndLinkable;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "OUT", 3u))  return FileFormatLinuxExecutableAndLinkable;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "ELF", 3u))  return FileFormatLinuxExecutableAndLinkable;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "OUT", 3u))  return FileFormatLinuxExecutableAndLinkable;
 
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "FNT", 3u))  return FileFormatSpriteFont;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "GIF", 3u))  return FileFormatGIF;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "HTM", 3u))  return FileFormatHTML;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "INI", 3u))  return FileFormatINI;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "M4A", 3u))  return FileFormatM4A;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "3DS", 3u))  return FileFormatA3DS;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "ACC", 3u))  return FileFormatAAC;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "AVI", 3u))  return FileFormatAVI;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "BMP", 3u))  return FileFormatBitMap;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "CSS", 3u))  return FileFormatCSS;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "DLL", 3u))  return FileFormatWindowsDynamicLinkedLibrary;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "EML", 3u))  return FileFormatEML;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "EXE", 3u))  return FileFormatWindowsExecutable;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "FBX", 3u))  return FileFormatFimBox;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MP3", 3u))  return FileFormatMP3;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MP4", 3u))  return FileFormatMP4;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MSI", 3u))  return FileFormatMSI;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MTL", 3u))  return FileFormatMTL;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "OBJ", 3u))  return FileFormatOBJ;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "OGG", 3u))  return FileFormatOGG;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PDF", 3u))  return FileFormatPDF;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PHP", 3u))  return FileFormatPHP;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PLY", 3u))  return FileFormatPLY;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "PNG", 3u))  return FileFormatPNG;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "QUI", 3u))  return FileFormatQOI;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "STL", 4u))  return FileFormatSTL;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "SVG", 4u))  return FileFormatSVG;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TIF", 4u))  return FileFormatTagImage;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TGA", 4u))  return FileFormatTGA;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TTF", 4u))  return FileFormatTrueTypeFont;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WAV", 4u))  return FileFormatWave;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WMA", 4u))  return FileFormatWMA;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "XML", 3u))  return FileFormatXML;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "YML", 3u))  return FileFormatYAML;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "FNT", 3u))  return FileFormatSpriteFont;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "GIF", 3u))  return FileFormatGIF;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "HTM", 3u))  return FileFormatHTML;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "INI", 3u))  return FileFormatINI;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "M4A", 3u))  return FileFormatM4A;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "3DS", 3u))  return FileFormatA3DS;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "ACC", 3u))  return FileFormatAAC;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "AVI", 3u))  return FileFormatAVI;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "BMP", 3u))  return FileFormatBitMap;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "CSS", 3u))  return FileFormatCSS;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "DLL", 3u))  return FileFormatWindowsDynamicLinkedLibrary;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "EML", 3u))  return FileFormatEML;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "EXE", 3u))  return FileFormatWindowsExecutable;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "FBX", 3u))  return FileFormatFimBox;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "MP3", 3u))  return FileFormatMP3;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "MP4", 3u))  return FileFormatMP4;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "MSI", 3u))  return FileFormatMSI;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "MTL", 3u))  return FileFormatMTL;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "OBJ", 3u))  return FileFormatOBJ;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "OGG", 3u))  return FileFormatOGG;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "PDF", 3u))  return FileFormatPDF;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "PHP", 3u))  return FileFormatPHP;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "PLY", 3u))  return FileFormatPLY;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "PNG", 3u))  return FileFormatPNG;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "QUI", 3u))  return FileFormatQOI;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "STL", 4u))  return FileFormatSTL;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "SVG", 4u))  return FileFormatSVG;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "TIF", 4u))  return FileFormatTagImage;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "TGA", 4u))  return FileFormatTGA;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "TTF", 4u))  return FileFormatTrueTypeFont;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "WAV", 4u))  return FileFormatWave;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "WMA", 4u))  return FileFormatWMA;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "XML", 3u))  return FileFormatXML;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "YML", 3u))  return FileFormatYAML;
 
 			break;
 		}
 		case 4u:
 		{
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "FLAC", 4u))  return FileFormatFLAC;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "MIDI", 4u))  return FileFormatMIDI;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "STEP", 4u))  return FileFormatSTEP;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "TIFF", 4u))  return FileFormatTagImage;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "JPEG", 4u))  return FileFormatJPEG;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "JSON", 4u))  return FileFormatJSON;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "VRML", 4u))  return FileFormatVRML;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WEBM", 4u))  return FileFormatWEBM;
-			if (TextCompareIgnoreCaseWA(extension, extensionSize, "WEBP", 4u))  return FileFormatWEBP;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "FLAC", 4u))  return FileFormatFLAC;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "MIDI", 4u))  return FileFormatMIDI;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "STEP", 4u))  return FileFormatSTEP;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "TIFF", 4u))  return FileFormatTagImage;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "JPEG", 4u))  return FileFormatJPEG;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "JSON", 4u))  return FileFormatJSON;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "VRML", 4u))  return FileFormatVRML;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "WEBM", 4u))  return FileFormatWEBM;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "WEBP", 4u))  return FileFormatWEBP;
 
 			break;
 		}
@@ -440,15 +440,15 @@ PXActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinati
 
 void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName)
 {
-	const PXSize index = TextFindLastW(currnetPath, PathMaxSize, '/');
+	const PXSize index = PXTextFindLastW(currnetPath, PathMaxSize, '/');
 	const PXBool found = index != -1;
 
 	if(found)
 	{
-		const PXSize copyedBytes = TextCopyW(currnetPath, index + 1, targetPath, index + 1);
+		const PXSize copyedBytes = PXTextCopyW(currnetPath, index + 1, targetPath, index + 1);
 		const PXSize toCopy = PathMaxSize - copyedBytes;
 
-		TextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
+		PXTextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
 	}
 }
 
@@ -476,11 +476,11 @@ void FilePathSwapFileNameA(const PXTextASCII inputPath, PXTextASCII exportPath, 
 	{
 		PXSize offset = 0;
 
-		offset += TextCopyA(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
-		offset += TextCopyA(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
-		offset += TextCopyA(fileName, PathMaxSize, finalPath + offset, PathMaxSize - offset);
+		offset += PXTextCopyA(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
+		offset += PXTextCopyA(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
+		offset += PXTextCopyA(fileName, PathMaxSize, finalPath + offset, PathMaxSize - offset);
 
-		TextCopyA(finalPath, offset, exportPath, PathMaxSize);
+		PXTextCopyA(finalPath, offset, exportPath, PathMaxSize);
 	}
 }
 
@@ -508,11 +508,11 @@ void FilePathSwapFileNameW(const PXTextUNICODE inputPath, PXTextUNICODE exportPa
 	{
 		PXSize offset = 0;
 
-		offset += TextCopyW(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
-		offset += TextCopyW(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
-		offset += TextCopyW(fileName, PathMaxSize, finalPath + offset, PathMaxSize - offset);
+		offset += PXTextCopyW(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
+		offset += PXTextCopyW(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
+		offset += PXTextCopyW(fileName, PathMaxSize, finalPath + offset, PathMaxSize - offset);
 
-		TextCopyW(finalPath, offset, exportPath, PathMaxSize);
+		PXTextCopyW(finalPath, offset, exportPath, PathMaxSize);
 	}
 }
 
@@ -524,7 +524,7 @@ void FilePathSwapFileNameU(const PXTextUTF8 inputPath, PXTextUTF8 exportPath, co
 
 void FilePathSwapExtensionA(const PXTextASCII inputPath, PXTextASCII exportPath, const PXTextASCII fileExtension)
 {
-	const PXSize index = TextFindLastA(inputPath, PathMaxSize, '.'); // Find last dot
+	const PXSize index = PXTextFindLastA(inputPath, PathMaxSize, '.'); // Find last dot
 	const PXBool found = index != -1;
 
 	if (!found)
@@ -532,13 +532,13 @@ void FilePathSwapExtensionA(const PXTextASCII inputPath, PXTextASCII exportPath,
 		return;
 	}
 
-	const PXSize written = TextCopyA(inputPath, index, exportPath, PathMaxSize); // Copy filePath without extension
-	const PXSize writtenFull = TextCopyA(fileExtension, PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
+	const PXSize written = PXTextCopyA(inputPath, index, exportPath, PathMaxSize); // Copy filePath without extension
+	const PXSize writtenFull = PXTextCopyA(fileExtension, PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
 }
 
 void FilePathSwapExtensionW(const PXTextUNICODE inputPath, PXTextUNICODE exportPath, const PXTextUNICODE fileExtension)
 {
-	const PXSize index = TextFindLastW(inputPath, PathMaxSize, '.'); // Find last dot
+	const PXSize index = PXTextFindLastW(inputPath, PathMaxSize, '.'); // Find last dot
 	const PXBool found = index != -1;
 
 	if (!found)
@@ -546,8 +546,8 @@ void FilePathSwapExtensionW(const PXTextUNICODE inputPath, PXTextUNICODE exportP
 		return;
 	}
 
-	const PXSize written = TextCopyW(inputPath, index + 1, exportPath, PathMaxSize); // Copy filePath without extension
-	const PXSize writtenFull = TextCopyW(fileExtension, PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
+	const PXSize written = PXTextCopyW(inputPath, index + 1, exportPath, PathMaxSize); // Copy filePath without extension
+	const PXSize writtenFull = PXTextCopyW(fileExtension, PathMaxSize, &exportPath[written], PathMaxSize); // Copy extension on top
 }
 
 void FilePathSwapExtensionU(const PXTextUTF8 inputPath, PXTextUTF8 exportPath, const PXTextUTF8 fileExtension)
@@ -573,14 +573,14 @@ PXActionResult DirectoryCreateW(const wchar_t* directoryName)
 
 	do
 	{
-		PXSize offset = TextFindFirstW(directoryName + starPos, PathMaxSize - starPos, '/');
+		PXSize offset = PXTextFindFirstW(directoryName + starPos, PathMaxSize - starPos, '/');
 
 		if (offset == -1)
 		{
 			break;
 		}
 
-		TextCopyW(directoryName + starPos, offset-1, directoryNameSegment, PathMaxSize);
+		PXTextCopyW(directoryName + starPos, offset-1, directoryNameSegment, PathMaxSize);
 
 		const int creationResult = OSFileDirectoryCreateW(directoryNameSegment);
 		const PXBool wasSuccesful = creationResult == 0;
@@ -657,7 +657,7 @@ PXActionResult PXFileNameA(PXFile* const pxFile, const PXTextASCII fileName, con
 
 	const char dosDriveTag[] = "\\\\?\\";
 
-	const PXByte isSS = TextCompareA(fileName, 4u, dosDriveTag, 4u);
+	const PXByte isSS = PXTextCompareA(fileName, 4u, dosDriveTag, 4u);
 
 	if (isSS)
 	{
@@ -665,7 +665,7 @@ PXActionResult PXFileNameA(PXFile* const pxFile, const PXTextASCII fileName, con
 
 		const char wind[] = "C:\\Windows\\System32\\";
 
-		const PXByte isSSEE = TextCompareA(fileName+4u, 20u, wind, 20u);
+		const PXByte isSSEE = PXTextCompareA(fileName+4u, 20u, wind, 20u);
 
 
 		char* texxxx = fileName + 4u;
@@ -1156,15 +1156,15 @@ PXActionResult FileReadFromDisk(unsigned char** outPutBuffer, PXSize& outPutBuff
 
 void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName)
 {
-	const PXSize index = TextFindLastW(currnetPath, PathMaxSize, '/');
+	const PXSize index = PXTextFindLastW(currnetPath, PathMaxSize, '/');
 	const bool found = index != -1;
 
 	if (found)
 	{
-		const PXSize copyedBytes = TextCopyW(currnetPath, index + 1, targetPath, index + 1);
+		const PXSize copyedBytes = PXTextCopyW(currnetPath, index + 1, targetPath, index + 1);
 		const PXSize toCopy = PathMaxSize - copyedBytes;
 
-		TextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
+		PXTextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
 	}
 }
 
@@ -1211,7 +1211,7 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, PXSize& listSize
 	}
 #elif OSWindows
 	wchar_t folderPathW[PathMaxSize];
-	PXSize writtenBytes = TextCopyAW(folderPath, PathMaxSize, folderPathW, PathMaxSize);
+	PXSize writtenBytes = PXTextCopyAW(folderPath, PathMaxSize, folderPathW, PathMaxSize);
 
 	WIN32_FIND_DATA dataCursour{0};
 	HANDLE hFind = 0;
@@ -1249,7 +1249,7 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, PXSize& listSize
 			return; // Error: OutOfMemory
 		}
 
-		TextCopyW(filePathSource, length, newString, length);
+		PXTextCopyW(filePathSource, length, newString, length);
 
 		(*list)[fileIndex] = newString;
 

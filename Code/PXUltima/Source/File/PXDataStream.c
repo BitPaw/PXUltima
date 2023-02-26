@@ -3,7 +3,7 @@
 #include <OS/System/OSVersion.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 #include <iso646.h>
 #include <stdarg.h>
@@ -134,7 +134,7 @@ PXActionResult PXDataStreamOpenFromPathA(PXDataStream* const dataStream, const P
 {
 	PXByte filePathU[PathMaxSize];
 
-	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
+	PXTextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
 	PXActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
 
@@ -145,7 +145,7 @@ PXActionResult PXDataStreamOpenFromPathW(PXDataStream* const dataStream, const P
 {
 	PXCharUTF8 filePathU[PathMaxSize];
 
-	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+	PXTextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
 	PXActionResult actionResult = PXDataStreamOpenFromPathU(dataStream, filePathU, fileOpenMode, dataStreamCachingMode);
 
@@ -342,7 +342,7 @@ PXActionResult PXDataStreamMapToMemoryA(PXDataStream* const dataStream, const PX
 {
 	PXByte filePathU[PathMaxSize];
 
-	TextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
+	PXTextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
 	const PXActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
 
@@ -353,7 +353,7 @@ PXActionResult PXDataStreamMapToMemoryW(PXDataStream* const dataStream, const PX
 {
 	PXCharUTF8 filePathU[PathMaxSize];
 
-	TextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
+	PXTextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
 
 	const PXActionResult actionResult = PXDataStreamMapToMemoryU(dataStream, filePathU, fileSize, protectionMode);
 
@@ -781,7 +781,7 @@ PXSize PXDataStreamReadNextLineInto(PXDataStream* const dataStream, void* export
 		return 0;
 	}
 
-	TextCopyA(dataPoint, length, exportBuffer, length);
+	PXTextCopyA(dataPoint, length, exportBuffer, length);
 
 	PXDataStreamSkipEndOfLineCharacters(dataStream);
 
@@ -907,7 +907,7 @@ PXSize PXDataStreamReadTextI(PXDataStream* const dataStream, int* const number)
 {
 	const void* const adress = PXDataStreamCursorPosition(dataStream);
 	const PXSize size = PXDataStreamRemainingSize(dataStream);
-	const PXSize sizeRead = TextToIntA(adress, size, number);
+	const PXSize sizeRead = PXTextToIntA(adress, size, number);
 
 	PXDataStreamCursorAdvance(dataStream, sizeRead);
 
@@ -1356,7 +1356,7 @@ PXSize PXDataStreamWriteA(PXDataStream* const dataStream, const char* const text
 	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
 	char* const currentPosition = (char* const)PXDataStreamCursorPosition(dataStream);
 
-	const PXSize writtenBytes = TextCopyA(text, textSize, currentPosition, writableSize);
+	const PXSize writtenBytes = PXTextCopyA(text, textSize, currentPosition, writableSize);
 
 	PXDataStreamCursorAdvance(dataStream, writtenBytes);
 
@@ -1369,7 +1369,7 @@ PXSize PXDataStreamWriteW(PXDataStream* const dataStream, const wchar_t* const t
 	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
 	wchar_t* const currentPosition = (wchar_t* const)PXDataStreamCursorPosition(dataStream);
 
-	const PXSize writtenBytes = TextCopyW(text, textSize, currentPosition, writableSize);
+	const PXSize writtenBytes = PXTextCopyW(text, textSize, currentPosition, writableSize);
 
 	PXDataStreamCursorAdvance(dataStream, writtenBytes);
 
@@ -1562,8 +1562,8 @@ PXSize PXDataStreamFilePathGetW(PXDataStream* const dataStream, wchar_t* const f
 
 	if (filePath[0] == '\\')
 	{
-		TextCopyW(filePath+4, length-4, buffer, PathMaxSize);
-		TextCopyW(buffer, PathMaxSize, filePath, length-4);
+		PXTextCopyW(filePath+4, length-4, buffer, PathMaxSize);
+		PXTextCopyW(buffer, PathMaxSize, filePath, length-4);
 	}
 
 	return PXActionSuccessful;

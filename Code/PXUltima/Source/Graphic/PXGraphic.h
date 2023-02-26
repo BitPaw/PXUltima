@@ -276,12 +276,12 @@ extern "C"
 	}
 	PXUIImage;
 
-	typedef struct PXUIText_
+	typedef struct PXOSUIText_
 	{
 		PXUIElement UIElement;
 		PXFont* TextFont;
 	}
-	PXUIText;
+	PXOSUIText;
 
 
 	typedef struct PXGraphicContext_
@@ -325,7 +325,7 @@ extern "C"
 	// Update
 	// Destroy
 
-	PXPublic PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text);
+	PXPublic PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXOSUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text);
 
 	PXPublic PXActionResult PXGraphicUIButtonRegister(PXGraphicContext* const graphicContext, PXUIButton* const pxButton, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text, const PXFont* const pxFont, const ShaderProgram* const shader);
 	 
@@ -370,7 +370,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<Rendering>-----------------------------------------------------------
-	PXPublic unsigned char PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext);
+	PXPublic PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicRenderElement(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	PXPublic PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	//-------------------------------------------------------------------------

@@ -177,17 +177,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CS\Container\Dictionary\Dictionary.cpp" />
-    <ClCompile Include="Source\CS\Graphics\OpenGL\OpenGL.cpp" />
-    <ClCompile Include="Source\CS\Error\ActionResult.cpp" />
-    <ClCompile Include="Source\CS\File\DataStream.cpp" />
-    <ClCompile Include="Source\CS\Network\Server.cpp" />
+    <ClCompile Include="Source\CS\OS\Audio\Audio.cpp" />
+    <ClCompile Include="Source\CS\OS\Debug\Debug.cpp" />
+    <ClCompile Include="Source\CS\OS\Error\ActionResult.cpp" />
+    <ClCompile Include="Source\CS\OS\File\DataStream.cpp" />
+    <ClCompile Include="Source\CS\OS\Graphic\OpenGL\OpenGL.cpp" />
+    <ClCompile Include="Source\CS\OS\Memory\Memory.cpp" />
+    <ClCompile Include="Source\CS\OS\Network\Server.cpp" />
+    <ClCompile Include="Source\CS\OS\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CS\Container\Dictionary\Dictionary.hpp" />
-    <ClInclude Include="Source\CS\Graphics\OpenGL\OpenGL.hpp" />
-    <ClInclude Include="Source\CS\Error\ActionResult.hpp" />
-    <ClInclude Include="Source\CS\File\DataStream.hpp" />
-    <ClInclude Include="Source\CS\Network\Server.hpp" />
+    <ClInclude Include="Source\CS\OS\Audio\Audio.hpp" />
+    <ClInclude Include="Source\CS\OS\Debug\Debug.hpp" />
+    <ClInclude Include="Source\CS\OS\Error\ActionResult.hpp" />
+    <ClInclude Include="Source\CS\OS\File\DataStream.hpp" />
+    <ClInclude Include="Source\CS\OS\Graphic\OpenGL\OpenGL.hpp" />
+    <ClInclude Include="Source\CS\OS\Memory\Memory.hpp" />
+    <ClInclude Include="Source\CS\OS\Network\Server.hpp" />
+    <ClInclude Include="Source\CS\OS\Window\Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

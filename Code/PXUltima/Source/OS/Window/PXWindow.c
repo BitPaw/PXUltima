@@ -3,11 +3,11 @@
 #include <stdio.h>
 
 #include <Event/Event.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <Graphic/PXGraphic.h>
 
 #include <OS/Memory/PXMemory.h>
-#include <OS/Monitor/Monitor.h>
+#include <OS/Monitor/PXMonitor.h>
 #include <OS/Thread/Await.h>
 
 #if OSUnix
@@ -2215,21 +2215,21 @@ void PXWindowConstruct(PXWindow* const window)
 
 void PXWindowCreateA(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
 {
-    TextCopyAW(title, 256u, window->Title, 256u);
+    PXTextCopyAW(title, 256u, window->Title, 256u);
 
     PXWindowCreate(window, width, height, async);
 }
 
 void PXWindowCreateW(PXWindow* const window, const unsigned int width, const unsigned int height, const wchar_t* title, const PXBool async)
 {
-    TextCopyW(title, 256u, window->Title, 256u);
+    PXTextCopyW(title, 256u, window->Title, 256u);
 
     PXWindowCreate(window, width, height, async);
 }
 
 void PXWindowCreateU(PXWindow* const window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
 {
-    TextCopyAW(title, 256u, window->Title, 256u);
+    PXTextCopyAW(title, 256u, window->Title, 256u);
 
     PXWindowCreate(window, width, height, async);
 }
@@ -2247,7 +2247,7 @@ void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsi
             unsigned int screenWidth = 0;
             unsigned int screenHeight = 0;
 
-            MonitorGetSize(&screenWidth, &screenHeight);
+            PXMonitorGetSize(&screenWidth, &screenHeight);
 
             window->X = screenWidth * 0.125f;
             window->Y = screenHeight * 0.125f;
@@ -2414,7 +2414,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 #if OSUnix
 #elif OSWindows
 
-    MonitorGetSize(&horizontal, &vertical);
+    PXMonitorGetSize(&horizontal, &vertical);
 
     switch(cursorMode)
     {

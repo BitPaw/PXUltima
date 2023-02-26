@@ -17,13 +17,13 @@ BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT
 		return 1;
 	}
 
-	Monitor monitor;
+	PXMonitor monitor;
 	monitor.X = monitorInfo.rcMonitor.left;
 	monitor.Y = monitorInfo.rcMonitor.top;
 	monitor.Width = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
 	monitor.Height = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
 
-	TextCopyW(monitorInfo.szDevice, 32, monitor.Name, MonitorNameLength);
+	PXTextCopyW(monitorInfo.szDevice, 32, monitor.Name, MonitorNameLength);
 
 	printf
 	(

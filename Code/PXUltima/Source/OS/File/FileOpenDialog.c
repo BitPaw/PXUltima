@@ -1,7 +1,7 @@
 #include "FileOpenDialog.h"
 
 #include <OS/System/OSVersion.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 #include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>
@@ -17,7 +17,7 @@ PXBool FileOpenDialogA(char* filePathOutput)
 {
     wchar_t pathW[_MAX_PATH];
 
-    TextCopyAW(filePathOutput, _MAX_PATH, pathW, _MAX_PATH);
+    PXTextCopyAW(filePathOutput, _MAX_PATH, pathW, _MAX_PATH);
 
     return FileOpenDialogW(pathW);
 }

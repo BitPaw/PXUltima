@@ -1,7 +1,7 @@
 #include "KeyBoard.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/Text.h>
+#include <Text/PXText.h>
 
 #include <stdio.h>
 
@@ -27,10 +27,10 @@ void KeyBoardInputPrint(KeyBoard* keyBoard)
 	char commands[11];
 	char actions[11];
 
-	TextFromBinaryDataA(&keyBoard->Letters, sizeof(unsigned int), letters, 11u);
-	TextFromBinaryDataA(&keyBoard->Numbers, sizeof(unsigned int), numbers, 11u);
-	TextFromBinaryDataA(&keyBoard->Commands, sizeof(unsigned int), commands, 11u);
-	TextFromBinaryDataA(&keyBoard->PXActions, sizeof(unsigned int), actions, 11u);
+	PXTextFromBinaryDataA(&keyBoard->Letters, sizeof(unsigned int), letters, 11u);
+	PXTextFromBinaryDataA(&keyBoard->Numbers, sizeof(unsigned int), numbers, 11u);
+	PXTextFromBinaryDataA(&keyBoard->Commands, sizeof(unsigned int), commands, 11u);
+	PXTextFromBinaryDataA(&keyBoard->PXActions, sizeof(unsigned int), actions, 11u);
 
 	printf
 	(

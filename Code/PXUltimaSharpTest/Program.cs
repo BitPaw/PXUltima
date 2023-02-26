@@ -33,8 +33,17 @@ namespace PXTest
             ActionResult x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
 #endif
 
+            Console.WriteLine("C# TEST");
+
+            PX.Window window = new PX.Window();
+            window.Create(1024, 1024, "Hellom it me", true);
+
+            while (window.IsRunning)
+            {
+                window.BufferSwap();
+            }
+
             PX.Dictionary<int, string> dictionary = new PX.Dictionary<int, string>();
-    
 
             PX.OpenGL openGL = new PX.OpenGL();
             openGL.ContextCreateWindowless(1024,1024);
