@@ -11,17 +11,8 @@ namespace PX
 		PXDataStream* _dataStream;
 
 		public:
-		DataStream()
-		{
-			_dataStream = new PXDataStream();
-			PXDataStreamConstruct(_dataStream);
-		}
-
-		~DataStream()
-		{
-			PXDataStreamDestruct(_dataStream);
-			delete _dataStream;
-		}
+		DataStream();
+		~DataStream();
 
 		property PXSize CursorPositionCurrent { PXSize get() { return _dataStream->DataCursor; }}
 		property PXSize CursorPositionMaximum { PXSize get() { return _dataStream->DataSize; }}

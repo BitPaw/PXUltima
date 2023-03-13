@@ -36,12 +36,15 @@ namespace PXTest
             Console.WriteLine("C# TEST");
 
             PX.Window window = new PX.Window();
-            window.Create(1024, 1024, "Hellom it me", true);
+            window.Create(1024, 1024, "Hellom it me");
 
-            while (window.IsRunning)
+            while (true)
             {
-                window.BufferSwap();
+                window.FrameBufferSwap();
             }
+
+
+            /*
 
             PX.Dictionary<int, string> dictionary = new PX.Dictionary<int, string>();
 
@@ -53,7 +56,7 @@ namespace PXTest
             server.OnDataSend += SocketDataSendEvent;
             server.Start(25565);
             
-
+            */
 
             while (true)
             {

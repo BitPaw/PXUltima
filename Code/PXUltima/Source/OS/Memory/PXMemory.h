@@ -73,6 +73,8 @@ extern "C"
 	PXPublic void MemoryClear(void* const __restrict bufferA, const PXSize bufferASize);
 	PXPublic void MemorySet(void* const __restrict bufferA, const unsigned char value, const PXSize bufferSize);
 
+	PXPublic int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize);
+
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!
 	PXPublic PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize);
@@ -116,7 +118,7 @@ extern "C"
 
 #if 1 // Use default allocator
 
-#if 0//_PX_DEBUG
+#if MemoryDebugOutput
 #define MemoryReallocate(address, dataSize) MemoryHeapReallocateDetailed(address, dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #define MemoryAllocate(dataSize) MemoryHeapAllocateDetailed(dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #else

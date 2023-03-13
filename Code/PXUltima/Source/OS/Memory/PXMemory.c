@@ -166,11 +166,10 @@ void MemorySet(void* __restrict buffer, const unsigned char value, const PXSize 
 #endif
 }
 
-PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
+int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
 {
 	const PXSize bufferSize = MathMinimumIU(bufferASize, bufferBSize);
-	PXSize counter = bufferSize;
-	PXSize equalSum = 0;
+
 
 #if MemoryAssertEnable
 	assert(bufferA);
@@ -182,10 +181,47 @@ PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, c
 #endif
 
 #if MemoryUseSystemFunction
-	return memcmp(a, b, length) == 0;
+	return memcmp(bufferA, bufferB, bufferSize);
 #else
 
-	while(counter--)
+	PXSize acumulatorA = 0;
+	PXSize acumulatorB = 0;
+
+	for (PXSize counter = bufferSize ; counter ; --counter)
+	{
+		const PXBool isEqual = ((PXAdress)bufferA)[counter] == ((PXAdress)bufferB)[counter];
+
+		acumulatorA += !isEqual * ((PXAdress)bufferA)[counter];
+		acumulatorB += !isEqual * ((PXAdress)bufferB)[counter];
+	}
+
+	const PXSize minimum = MathMaximum(acumulatorA, acumulatorB);
+	const PXSize maximum = MathMaximum(acumulatorA, acumulatorB);
+	const int result = maximum - minimum;
+
+	return result;
+#endif
+}
+
+PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
+{
+	const PXSize bufferSize = MathMinimumIU(bufferASize, bufferBSize);
+
+#if MemoryAssertEnable
+	assert(bufferA);
+	assert(bufferB);
+#endif
+
+#if MemoryDebugOutput
+	printf("[#][Memory] 0x%p (%10zi B) Compare to 0x%p\n", bufferA, bufferSize, bufferB);
+#endif
+
+#if MemoryUseSystemFunction
+	return memcmp(bufferA, bufferB, bufferSize) == 0;
+#else
+	PXSize equalSum = 0;
+
+	for (PXSize counter = bufferSize; counter; --counter)
 	{
 		equalSum += ((PXAdress)bufferA)[counter] == ((PXAdress)bufferB)[counter];
 	}
@@ -197,7 +233,6 @@ PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, c
 PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
 	const PXSize bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
-	PXSize index = bufferSize;
 
 #if MemoryAssertEnable
 	assert(inputBuffer);
@@ -205,16 +240,17 @@ PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSi
 #endif
 
 #if MemoryDebugOutput
-	//printf("[#][Memory] 0x%p (%10zi B) Copy to 0x%p\n", inputBuffer, bufferSize, outputBufferSize);
+	printf("[#][Memory] 0x%p (%10zi B) Copy to 0x%p\n", inputBuffer, bufferSize, outputBufferSize);
 #endif
 
-	while(index--)
+#if MemoryUseSystemFunction
+	memcpy(outputBuffer, inputBuffer, bufferSize);
+#else
+	for (PXSize index = bufferSize ; index ; --index)
 	{
-		const PXAdress inputByte = ((PXAdress)inputBuffer) + index;
-		PXAdress outputByte = ((PXAdress)outputBuffer) + index;
-
-		*outputByte = *inputByte;
+		((PXAdress)outputBuffer)[index] = ((PXAdress)inputBuffer)[index];
 	}
+#endif
 
 	return bufferSize;
 }
@@ -223,7 +259,12 @@ PXSize MemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* o
 {
 	const PXSize bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
 
+#if MemoryUseSystemFunction
 	memmove(outputBuffer, inputBuffer, bufferSize);
+#else
+	// Need a solution for a copy without a variable
+	memmove(outputBuffer, inputBuffer, bufferSize);
+#endif
 
 	return bufferSize;
 }

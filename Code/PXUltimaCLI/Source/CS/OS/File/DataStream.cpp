@@ -2,6 +2,18 @@
 
 #include <vcclr.h>
 
+PX::DataStream::DataStream()
+{
+	_dataStream = new PXDataStream();
+	PXDataStreamConstruct(_dataStream);
+}
+
+PX::DataStream::~DataStream()
+{
+	PXDataStreamDestruct(_dataStream);
+	delete _dataStream;
+}
+
 PX::ActionResult  PX::DataStream::OpenFromPathReadOnly(System::String^ filePath)
 {
 	return OpenFromPath(filePath, MemoryProtectionMode::MemoryReadAndWrite, PXDataStreamCachingMode::FileCachingSequential);

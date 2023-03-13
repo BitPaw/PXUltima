@@ -41,53 +41,11 @@ namespace PX
 		OpenGL();
 		~OpenGL();
 
-		property OpenGLVersion Version
-		{
-			OpenGLVersion get()
-			{
-				return 	(OpenGLVersion)Context->Version;
-			}
-		}
-
-		property System::String^ Vendor
-		{
-			System::String^ get()
-			{
-				System::String^ s = gcnew System::String(Context->Vendor);
-
-				return s;
-			}
-		}
-
-		property System::String^ Renderer
-		{
-			System::String^ get()
-			{
-				System::String^ s = gcnew System::String(Context->Renderer);
-
-				return s;
-			}
-		}
-
-		property System::String^ VersionText
-		{
-			System::String^ get()
-			{
-				System::String^ s = gcnew System::String(Context->VersionText);
-
-				return s;
-			}
-		}
-
-		property System::String^ GLSLVersionText
-		{
-			System::String^ get()
-			{
-				System::String^ s = gcnew System::String(Context->GLSLVersionText);
-
-				return s;
-			}
-		}
+		property OpenGLVersion Version { OpenGLVersion get() { return (OpenGLVersion)Context->Version; }}
+		property System::String^ Vendor { System::String^ get() { return gcnew System::String(Context->Vendor); }}
+		property System::String^ Renderer { System::String^ get() { return  gcnew System::String(Context->Renderer); }}
+		property System::String^ VersionText { System::String^ get() { return gcnew System::String(Context->VersionText); }}
+		property System::String^ GLSLVersionText { System::String^ get() { return gcnew System::String(Context->GLSLVersionText); }}
 
 		bool ContextCreateForWindow();
 		void ContextCreateWindowless(const PXSize width, const PXSize height);

@@ -15,8 +15,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PXUltimaCLI">
-      <HintPath>..\[Export]\PXUltimaCLI\64B-Windows-Debug\PXUltimaCLI.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\PXUltimaCS\PXUltimaCS.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PXUltima\PXUltima.vcxproj">
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
 </Project>

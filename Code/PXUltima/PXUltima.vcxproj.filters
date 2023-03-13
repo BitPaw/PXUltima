@@ -225,14 +225,6 @@
     <ClInclude Include="Source\OS\Window\PXWindow.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\
-			   
-
-
-
-\PXMonitor.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\OS\File\FileOpenDialog.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -435,6 +427,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Signal\PXSignal.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\OS\Monitor\PXMonitor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

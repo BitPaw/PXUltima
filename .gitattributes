@@ -1,6 +1,7 @@
 *.hpp linguist-language=C++
 *.cpp linguist-language=C++
 *.c linguist-language=C
+*.cs linguist-language=C#
 
 *.md linguist-detectable=true
 *.md linguist-language=Markdown
