@@ -353,13 +353,15 @@ MigrationBackup/
 *Export*/
 *Temp*/
 /obj/Debug/
-Code/PXUltimaSharpTest/obj/
 
-PXUltimaSharp/bin/
-PXUltimaSharp/obj/
-PXUltimaSharpTest/bin/
-PXUltimaSharpTest/obj/
+Code/PXUltimaCS/obj directory
+
+Code/PXUltimaSharpTest/obj/
+Code/PXUltimaSharp/obj/
+Code/PXUltimaSharp/bin/
+Code/PXUltimaSharp/obj/
+Code/PXUltimaSharpTest/bin/
+Code/PXUltimaSharpTest/obj/
+Code/PXUltimaSharpTest/obj/
 _TEST_DATA_OUTPUT_/
-PXUltimaSharp/obj/
-PXUltimaSharpTest/obj/
 #----------------------
