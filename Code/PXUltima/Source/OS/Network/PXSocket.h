@@ -39,7 +39,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 
 //-----------------------------------------------
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #include <OS/Thread/PXThread.h>
 #include <OS/Error/PXActionResult.h>

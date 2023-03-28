@@ -3,6 +3,7 @@
 
 
 // Detect current endianess on this system and then use #if
+#define MakeShortFromAdress(list) MakeShortLE(list[0], list[1])
 #define MakeShort(a, b) MakeShortLE(a, b)
 
 #define MakeShortBE(a, b) (((unsigned short)a << 8) | ((unsigned short)b))
@@ -22,6 +23,27 @@ d = SplittIntLED(i);
 
 #define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, d)
 
+#define PXInt8FromAdress(list) PXInt8Make(list[0])
+#define PXInt16FromAdress(list) PXInt16Make(list[0], list[1])
+#define PXInt24FromAdress(list) PXInt24Make(list[0], list[1], list[2])
+#define PXInt32FromAdress(list) PXInt32Make(list[0], list[1], list[2], list[3])
+
+#define PXInt40FromAdress(list) PXInt40Make(list[0], list[1], list[2], list[3], list[4])
+#define PXInt48FromAdress(list) PXInt48Make(list[0], list[1], list[2], list[3], list[4], list[5])
+#define PXInt56FromAdress(list) PXInt56Make(list[0], list[1], list[2], list[3], list[4], list[5], list[6])
+#define PXInt64FromAdress(list) PXInt64Make(list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7])
+
+#define PXInt8Make(a) MakeInt(a, 0, 0, 0)
+#define PXInt16Make(a, b) MakeInt(a, b, 0, 0)
+#define PXInt24Make(a, b, c) MakeInt(a, b, c, 0)
+#define PXInt32Make(a, b, c, d) MakeInt(a, b, c, d)
+
+#define PXInt40Make(a, b, c, d, e) MakeLongLong(a, b, c, d, e, 0,0,0)
+#define PXInt48Make(a, b, c, d, e, f) MakeLongLong(a, b, c, d, e, f, 0, 0)
+#define PXInt56Make(a, b, c, d, e, f, g) MakeLongLong(a, b, c, d, e, f, g, 0)
+#define PXInt64Make(a, b, c, d, e, f, g, h) MakeLongLong(a, b, c, d, e, f, g, h)
+
+
 #define MakeInt(a, b, c, d) MakeIntLE(a, b, c, d)
 #define MakeIntBE(a, b, c, d) (((unsigned int)a << 24) | ((unsigned int)b << 16) | ((unsigned int)c << 8) | ((unsigned int)d))
 #define MakeIntLE(a, b, c, d) (((unsigned int)a) | ((unsigned int)b << 8) | ((unsigned int)c << 16) | ((unsigned int)d << 24))
@@ -36,7 +58,7 @@ d = SplittIntLED(i);
 ((unsigned long long)e << 24LL) | \
 ((unsigned long long)f << 16LL) | \
 ((unsigned long long)g << 8LL) | \
-((unsigned long long)h));
+((unsigned long long)h))
 
 #define MakeLongLongLE(a, b, c, d, e, f, g, h) \
 (((unsigned long long)a) | \
@@ -46,7 +68,7 @@ d = SplittIntLED(i);
 ((unsigned long long)e << 32LL) | \
 ((unsigned long long)f << 40LL) | \
 ((unsigned long long)g << 48LL) | \
-((unsigned long long)h << 56LL));
+((unsigned long long)h << 56LL))
 
 
 

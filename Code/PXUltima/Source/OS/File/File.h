@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <wchar.h>
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Error/PXActionResult.h>
 
@@ -156,21 +156,76 @@ extern "C"
 	PXPublic void FilePathSwapExtensionU(const PXTextUTF8 inputPath, PXTextUTF8 exportPath, const PXTextUTF8 fileExtension);
 	//---------------------------------------------------------------------
 
+
+
+	typedef enum PXFileElementInfoType_
+	{
+		PXFileElementInfoTypeInvalid,
+		PXFileElementInfoTypeFile,
+		PXFileElementInfoTypeDictionary,
+
+		PXFileElementInfoTypeDictionaryRoot,
+		PXFileElementInfoTypeDictionaryParent
+	}
+	PXFileElementInfoType;
+
+	typedef struct PXFileElementInfo_
+	{
+		PXFileElementInfoType Type;
+
+		unsigned char Depth;
+
+		wchar_t* FullPath;
+		wchar_t* Name;
+
+		PXSize Size;
+	}
+	PXFileElementInfo;
+
+	typedef void (*PXFileElementDetected)(PXFileElementInfo* pxFileElementInfo);
+
+
+
+
 	//---<Directory>-------------------------------------------------------
-	PXPublic PXActionResult DirectoryCreateA(const char* directoryName);
-	PXPublic PXActionResult DirectoryCreateW(const wchar_t* directoryName);
-	PXPublic PXActionResult WorkingDirectoryChange(const char* directoryName);
-	PXPublic PXActionResult WorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize);
-	PXPublic PXActionResult WorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize);
-	PXPublic PXActionResult WorkingDirectoryChangeW(const wchar_t* directoryName);
-	PXPublic PXActionResult DirectoryDeleteA(const char* directoryName);
-	PXPublic PXActionResult DirectoryDeleteW(const wchar_t* directoryName);
-	PXPublic PXActionResult DirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
-	PXPublic PXActionResult DirectoryFilesInFolderW(const wchar_t* folderPath, wchar_t*** list, PXSize* listSize);
+	PXPublic PXActionResult PXDirectoryCreateA(const char* directoryName);
+	PXPublic PXActionResult PXDirectoryCreateW(const wchar_t* directoryName);
+	PXPublic PXActionResult PXWorkingDirectoryChange(const char* directoryName);
+	PXPublic PXActionResult PXWorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize);
+	PXPublic PXActionResult PXWorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize);
+	PXPublic PXActionResult PXWorkingDirectoryChangeW(const wchar_t* directoryName);
+	PXPublic PXActionResult PXDirectoryDeleteA(const char* directoryName);
+	PXPublic PXActionResult PXDirectoryDeleteW(const wchar_t* directoryName);
+
+
+#define PXDirectorySearchForDirectorys (1 << 0)
+#define PXDirectorySearchForFiles (1 << 1)
+#define PXDirectorySearchForDirectoryAndFile PXDirectorySearchForDirectorys | PXDirectorySearchForFiles
+
+	typedef struct PXDirectorySearchInfo_
+	{
+		PXFileElementDetected Callback;
+
+		wchar_t* FolderPath;
+		PXSize FolderPathSize;
+
+		wchar_t* FileFilter;
+		PXSize FileFilterSize;
+		
+		unsigned int Flags;
+		unsigned char DepthCounter;
+		PXBool Recursion;
+	}
+	PXDirectorySearchInfo;
+
+	PXPublic PXActionResult PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
+	PXPublic PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo);
 	//---------------------------------------------------------------------
 
 	PXPublic PXActionResult PXFileNameA(PXFile* const pxFile, const PXTextASCII fileName, const PXSize fileNameSize, PXSize* const sizeWritten);
 	PXPublic PXActionResult PXFileNameW(PXFile* const pxFile, const PXTextUNICODE fileName, const PXSize fileNameSize, PXSize* const sizeWritten);
+
+	PXPublic PXSize FileDirectoryPathExtract(const wchar_t* path, const PXSize pathSize, wchar_t* const directoryPath, const PXSize directoryPathSize);
 
 	PXPublic void FilePathSplittA
 	(

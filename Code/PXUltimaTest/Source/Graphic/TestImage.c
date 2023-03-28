@@ -2,15 +2,15 @@
 
 #include <stdio.h>
 
-#include <Format/Image.h>
-#include <Format/PXFont.h>
+#include <Media/Image.h>
+#include <Media/PXFont.h>
 #include <OS/File/File.h>
 
 void TestSaveImageSmal()
 {
     Image image;
 
-    DirectoryCreateA("_TEST_DATA_OUTPUT_");
+    PXDirectoryCreateA("_TEST_DATA_OUTPUT_");
 
     ImageConstruct(&image);
 
@@ -61,7 +61,7 @@ void TestSaveImage()
 {
     Image image;
 
-    DirectoryCreateA("_TEST_DATA_OUTPUT_");
+    PXDirectoryCreateA("_TEST_DATA_OUTPUT_");
 
 
     ImageConstruct(&image);

@@ -1,7 +1,7 @@
 #ifndef PXMatrixINCLUDE
 #define PXMatrixINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <Math/PXVector.h>
 
 #define XAxisX 0

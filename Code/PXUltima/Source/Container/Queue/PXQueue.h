@@ -1,7 +1,7 @@
 #ifndef PXQueueDEFINED
 #define PXQueueDEFINED
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

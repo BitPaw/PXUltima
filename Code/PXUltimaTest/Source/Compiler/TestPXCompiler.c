@@ -3,9 +3,9 @@
 #include <File/PXDataStream.h>
 
 #include <Compiler/PXCompiler.h>
-#include <Format/YAML/YAML.h>
-#include <Format/OBJ/OBJ.h>
-#include <Format/XML/XML.h>
+#include <Media/YAML/YAML.h>
+#include <Media/OBJ/OBJ.h>
+#include <Media/XML/XML.h>
 
 void TestPXCompilerAll()
 {

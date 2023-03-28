@@ -1,7 +1,7 @@
 #ifndef DirectXINCLUDE
 #define DirectXINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #if OSUnix
 // UNIX has no DirectX support

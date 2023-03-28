@@ -1,9 +1,9 @@
 #include "TestSound.h"
 
-#include <Format/PXSound.h>
+#include <Media/PXSound.h>
 
-#include <Format/WAV/WAV.h>
-#include <Format/MP3/MP3.h>
+#include <Media/WAV/WAV.h>
+#include <Media/MP3/MP3.h>
 
 void TestSoundAll()
 {

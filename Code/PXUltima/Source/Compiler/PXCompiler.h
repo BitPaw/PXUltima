@@ -21,8 +21,46 @@ extern "C"
 
 		PXCompilerSymbolLexerSingleCharacter,
 
-		PXCompilerSymbolLexerComment,
+		PXCompilerSymbolLexerBrackedRoundOpen, // '('
+		PXCompilerSymbolLexerBrackedRoundClose, // ')'
+		PXCompilerSymbolLexerBracketSquareOpen, // '['
+		PXCompilerSymbolLexerBracketSquareClose, // ']'
+		PXCompilerSymbolLexerBracketCurlyOpen, // '{'
+		PXCompilerSymbolLexerBracketCurlyClose, // '}'
+		PXCompilerSymbolLexerBracketAngleOpen, // '<'
+		PXCompilerSymbolLexerBracketAngleClose, // '>'
 
+		//PXCompilerSymbolLexerBigger,
+		//PXCompilerSymbolLexerSmaler,
+		PXCompilerSymbolLexerBiggerAndEqual,
+		PXCompilerSymbolLexerSmalerAndEqual,
+		PXCompilerSymbolLexerEqual,
+		PXCompilerSymbolLexerEqualDouble,
+		PXCompilerSymbolLexerEqualTrippel,
+		PXCompilerSymbolLexerCompareThreeWay,
+
+		PXCompilerSymbolLexerQuestionmark,
+		PXCompilerSymbolLexerExclamation,
+		PXCompilerSymbolLexerDot,
+		PXCompilerSymbolLexerComma,
+		PXCompilerSymbolLexerColon,
+		PXCompilerSymbolLexerSemiColon,
+		PXCompilerSymbolLexerHash,
+		PXCompilerSymbolLexerPlus,
+		PXCompilerSymbolLexerMinus,
+		PXCompilerSymbolLexerSlash,
+		PXCompilerSymbolLexerAsterisk,
+		PXCompilerSymbolLexerSlashBack,
+		PXCompilerSymbolLexerAmpercant,
+		PXCompilerSymbolLexerPercent,
+		PXCompilerSymbolLexerBar,
+		PXCompilerSymbolLexerDegree,
+		PXCompilerSymbolLexerExponent,
+		PXCompilerSymbolLexerTilde,
+		PXCompilerSymbolLexerApostrophe,
+
+		PXCompilerSymbolLexerComment,
+	
 		PXCompilerSymbolLexerBool,
 		PXCompilerSymbolLexerFloat,
 		PXCompilerSymbolLexerInteger,
@@ -62,16 +100,26 @@ extern "C"
 		PXBool TryAnalyseTypes;
 		PXBool IntrepredNewLineAsWhiteSpace;
 		PXBool KeepTabs;
+		PXBool KeepNewLines;
 		PXBool IntrepredTabsAsWhiteSpace;
 		
+		PXSize EndOfCommand;
+		char* EndOfCommandSize;
+
+
 		PXBool CommentsKeep;
 		PXSize CommentSingleLineSize;
 		char* CommentSingleLine;
 
-		PXSize CommentMultibleLineSize;
-		char* CommentMultibleLine;
+		PXSize CommentMultibleLineBeginSize;
+		char* CommentMultibleLineBegin;
+
+		PXSize CommentMultibleLineEndSize;
+		char* CommentMultibleLineEnd;
 	}
 	PXCompilerSettings;
+
+	PXPublic void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings);
 
 	PXPrivate void PXCompilerSymbolEntryAdd
 	(
@@ -80,6 +128,11 @@ extern "C"
 	);
 
 	PXPublic void PXCompilerSymbolEntryExtract
+	(
+		PXDataStream* const dataStream,
+		PXCompilerSymbolEntry* compilerSymbolEntry
+	);
+	PXPublic void PXCompilerSymbolEntryPeek
 	(
 		PXDataStream* const dataStream,
 		PXCompilerSymbolEntry* compilerSymbolEntry

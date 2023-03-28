@@ -1,7 +1,7 @@
 #ifndef PXDataStreamINCLUDE
 #define PXDataStreamINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/File.h>
 #include <OS/File/Endian.h>
@@ -14,7 +14,8 @@ extern "C"
 	typedef enum PXDataStreamLocation_
 	{
 		FileLocationInvalid,
-		FileLocationExternal,
+		FileLocationInternal, // Memory is handled internally.
+		FileLocationExternal, // Memory is stored outside this object
 		FileLocationMappedVirtual, // Used 'VirtalAlloc()' / 'mmap()'
 		FileLocationMappedFromDisk, // Used 'FileView()' / 'fmap()'
 		FileLocationCachedFromDisk, // When the file is cached into an CPrivate buffer
@@ -99,6 +100,7 @@ extern "C"
 	//---------------------------------------------------------------------
 
 	//---<Set>-------------------------------------------------------------
+	PXPublic void PXDataStreamAllocate(PXDataStream* const dataStream, const PXSize dataSize);
 	PXPublic void PXDataStreamFromExternal(PXDataStream* const dataStream, void* const data, const PXSize dataSize);
 	//---------------------------------------------------------------------
 

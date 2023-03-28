@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <Container/Dictionary/PXDictionary.h>
 
 namespace PX

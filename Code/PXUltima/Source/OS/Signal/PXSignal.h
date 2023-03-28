@@ -2,7 +2,7 @@
 #define OSSignalINCLUDE
 
 #include <OS/System/OSVersion.h>
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

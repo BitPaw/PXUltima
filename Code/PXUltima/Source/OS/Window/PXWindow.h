@@ -1,7 +1,7 @@
 #ifndef PXWindowINCLUDE
 #define PXWindowINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #include <OS/System/OSVersion.h>
 

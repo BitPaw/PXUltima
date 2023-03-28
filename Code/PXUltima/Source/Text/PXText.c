@@ -716,7 +716,7 @@ char* PXTextFindPositionA(const char* data, PXSize dataSize, const char* target,
 	return (char*)(found * (PXSize)source);
 }
 
-PXSize PXTextFindFirstA(const char* string, const PXSize dataSize, const char character)
+PXSize PXTextFindFirstCharacterA(const char* restrict  const string, const PXSize dataSize, const char character)
 {
 	PXBool found = 0;
 
@@ -727,7 +727,41 @@ PXSize PXTextFindFirstA(const char* string, const PXSize dataSize, const char ch
 		found = character == string[index];
 	}
 
-	return found ? index -1 : PXTextIndexNotFound;
+	return found ? index - 1 : PXTextIndexNotFound;
+}
+
+PXSize PXTextFindFirstCharacterOfListA(const char* restrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize)
+{
+	for(PXSize i = 0 ; i < characterListSize; ++i)
+	{
+		const PXSize index = PXTextFindFirstCharacterA(string, dataSize, characterList[i]);
+		const PXBool suc = -1 != index;
+
+		if (suc)
+		{
+			return index;
+		}
+	}
+
+	return -1;
+}
+
+PXSize PXTextFindFirstStringA(const char* restrict const string, const PXSize dataSize, const char* restrict const targetString, const PXSize targetStringSize)
+{
+	PXSize index = 0;
+	PXBool found = 0;
+
+	for (; index < dataSize && !found; ++index)
+	{
+		found = string[index] == targetString[0];
+
+		if (found)
+		{
+			found = PXTextCompareA(&string[index], dataSize - index, targetString[0], targetStringSize);
+		}
+	}
+
+	return found ? index - 1 : PXTextIndexNotFound;
 }
 
 PXSize PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character)
@@ -775,7 +809,7 @@ PXSize PXTextFindLastW(const wchar_t* string, const PXSize dataSize, const wchar
 
 void PXTextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const char character)
 {
-	PXSize index = PXTextFindFirstA(string, dataSize, character);
+	PXSize index = PXTextFindFirstCharacterA(string, dataSize, character);
 
 	if(index != -1)
 	{
@@ -935,6 +969,50 @@ void PXTextParseFindAllA(const char* string, const PXSize stringSize, const Pars
 
 		finished = foundTargets == parsingTokenListSize;
 	}
+}
+
+PXBool PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t* pattern, const PXSize patternSize)
+{
+	PXSize patternIndex = 0;
+
+	if (!input || !inputSize || !pattern || !patternSize)
+	{
+		return PXFalse;
+	}
+
+	// If we only have '*' as a pattern, we can just stop.
+	const PXBool quitFast = (patternSize == 1) && ((pattern[0] == '*') || (input[0] == pattern[0]));
+
+	if (quitFast)
+	{
+		return PXTrue;
+	}
+
+	for (PXSize index = 0; index < inputSize && input[index] != '\0'; ++index)
+	{
+		const PXBool isMatch = input[index] == pattern[patternIndex];
+		const PXBool isStar = pattern[index] == '*';
+
+		if (isStar)
+		{
+			++patternIndex;
+
+			while (input[index] != pattern[patternIndex] && index < inputSize && input[index] != '\0')
+			{
+				++index;
+			}
+
+			++patternIndex;
+			continue;
+		}
+		
+		if (!isMatch)
+		{
+			return PXFalse;
+		}	
+	}
+
+	return PXTrue;
 }
 
 PXSize PXTextFromIntA(int number, char* string, const PXSize dataSize)

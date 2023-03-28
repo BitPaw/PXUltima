@@ -182,278 +182,278 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/File/PXDataStream.h" />
-		<Unit filename="Source/Format/3DS/A3DS.c">
+		<Unit filename="Source/Media/3DS/A3DS.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/3DS/A3DS.h" />
-		<Unit filename="Source/Format/AAC/AAC.c">
+		<Unit filename="Source/Media/3DS/A3DS.h" />
+		<Unit filename="Source/Media/AAC/AAC.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/AAC/AAC.h" />
-		<Unit filename="Source/Format/ADAM7/ADAM7.c">
+		<Unit filename="Source/Media/AAC/AAC.h" />
+		<Unit filename="Source/Media/ADAM7/ADAM7.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/ADAM7/ADAM7.h" />
-		<Unit filename="Source/Format/ADLER/Adler32.c">
+		<Unit filename="Source/Media/ADAM7/ADAM7.h" />
+		<Unit filename="Source/Media/ADLER/Adler32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/ADLER/Adler32.h" />
-		<Unit filename="Source/Format/AVI/AVI.c">
+		<Unit filename="Source/Media/ADLER/Adler32.h" />
+		<Unit filename="Source/Media/AVI/AVI.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/AVI/AVI.h" />
-		<Unit filename="Source/Format/BMP/BMP.c">
+		<Unit filename="Source/Media/AVI/AVI.h" />
+		<Unit filename="Source/Media/BMP/BMP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/BMP/BMP.h" />
-		<Unit filename="Source/Format/CRC32/CRC32.c">
+		<Unit filename="Source/Media/BMP/BMP.h" />
+		<Unit filename="Source/Media/CRC32/CRC32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/CRC32/CRC32.h" />
-		<Unit filename="Source/Format/CSS/CSS.c">
+		<Unit filename="Source/Media/CRC32/CRC32.h" />
+		<Unit filename="Source/Media/CSS/CSS.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/CSS/CSS.h" />
-		<Unit filename="Source/Format/Color.c">
+		<Unit filename="Source/Media/CSS/CSS.h" />
+		<Unit filename="Source/Media/Color.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/Color.h" />
-		<Unit filename="Source/Format/DEFLATE/DEFLATE.c">
+		<Unit filename="Source/Media/Color.h" />
+		<Unit filename="Source/Media/DEFLATE/DEFLATE.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/DEFLATE/DEFLATE.h" />
-		<Unit filename="Source/Format/DLL/DLL.c">
+		<Unit filename="Source/Media/DEFLATE/DEFLATE.h" />
+		<Unit filename="Source/Media/DLL/DLL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/DLL/DLL.h" />
-		<Unit filename="Source/Format/ELF/ELF.c">
+		<Unit filename="Source/Media/DLL/DLL.h" />
+		<Unit filename="Source/Media/ELF/ELF.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/ELF/ELF.h" />
-		<Unit filename="Source/Format/EML/EML.c">
+		<Unit filename="Source/Media/ELF/ELF.h" />
+		<Unit filename="Source/Media/EML/EML.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/EML/EML.h" />
-		<Unit filename="Source/Format/EXE/EXE.c">
+		<Unit filename="Source/Media/EML/EML.h" />
+		<Unit filename="Source/Media/EXE/EXE.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/EXE/EXE.h" />
-		<Unit filename="Source/Format/FBX/FBX.c">
+		<Unit filename="Source/Media/EXE/EXE.h" />
+		<Unit filename="Source/Media/FBX/FBX.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/FBX/FBX.h" />
-		<Unit filename="Source/Format/FLAC/FLAC.c">
+		<Unit filename="Source/Media/FBX/FBX.h" />
+		<Unit filename="Source/Media/FLAC/FLAC.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/FLAC/FLAC.h" />
-		<Unit filename="Source/Format/FMT/FMT.c">
+		<Unit filename="Source/Media/FLAC/FLAC.h" />
+		<Unit filename="Source/Media/FMT/FMT.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/FMT/FMT.h" />
-		<Unit filename="Source/Format/FNT/FNT.c">
+		<Unit filename="Source/Media/FMT/FMT.h" />
+		<Unit filename="Source/Media/FNT/FNT.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/FNT/FNT.h" />
-		<Unit filename="Source/Format/FTP/FTP.c">
+		<Unit filename="Source/Media/FNT/FNT.h" />
+		<Unit filename="Source/Media/FTP/FTP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/FTP/FTP.h" />
-		<Unit filename="Source/Format/GIF/GIF.c">
+		<Unit filename="Source/Media/FTP/FTP.h" />
+		<Unit filename="Source/Media/GIF/GIF.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/GIF/GIF.h" />
-		<Unit filename="Source/Format/HTML/HTML.c">
+		<Unit filename="Source/Media/GIF/GIF.h" />
+		<Unit filename="Source/Media/HTML/HTML.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/HTML/HTML.h" />
-		<Unit filename="Source/Format/HTTP/HTTP.c">
+		<Unit filename="Source/Media/HTML/HTML.h" />
+		<Unit filename="Source/Media/HTTP/HTTP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/HTTP/HTTP.h" />
-		<Unit filename="Source/Format/HUFFMAN/HuffmanTree.c">
+		<Unit filename="Source/Media/HTTP/HTTP.h" />
+		<Unit filename="Source/Media/HUFFMAN/HuffmanTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/HUFFMAN/HuffmanTree.h" />
-		<Unit filename="Source/Format/ID3/ID3.c">
+		<Unit filename="Source/Media/HUFFMAN/HuffmanTree.h" />
+		<Unit filename="Source/Media/ID3/ID3.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/ID3/ID3.h" />
-		<Unit filename="Source/Format/INI/INI.c">
+		<Unit filename="Source/Media/ID3/ID3.h" />
+		<Unit filename="Source/Media/INI/INI.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/INI/INI.h" />
-		<Unit filename="Source/Format/ISBN/ISBN.c">
+		<Unit filename="Source/Media/INI/INI.h" />
+		<Unit filename="Source/Media/ISBN/ISBN.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/ISBN/ISBN.h" />
-		<Unit filename="Source/Format/Image.c">
+		<Unit filename="Source/Media/ISBN/ISBN.h" />
+		<Unit filename="Source/Media/Image.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/Image.h" />
-		<Unit filename="Source/Format/JPEG/JPEG.c">
+		<Unit filename="Source/Media/Image.h" />
+		<Unit filename="Source/Media/JPEG/JPEG.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/JPEG/JPEG.h" />
-		<Unit filename="Source/Format/JSON/JSON.c">
+		<Unit filename="Source/Media/JPEG/JPEG.h" />
+		<Unit filename="Source/Media/JSON/JSON.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/JSON/JSON.h" />
-		<Unit filename="Source/Format/LAME/LAME.c">
+		<Unit filename="Source/Media/JSON/JSON.h" />
+		<Unit filename="Source/Media/LAME/LAME.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/LAME/LAME.h" />
-		<Unit filename="Source/Format/LZ77/PXLZ77.c">
+		<Unit filename="Source/Media/LAME/LAME.h" />
+		<Unit filename="Source/Media/LZ77/PXLZ77.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/LZ77/PXLZ77.h" />
-		<Unit filename="Source/Format/M4A/M4A.c">
+		<Unit filename="Source/Media/LZ77/PXLZ77.h" />
+		<Unit filename="Source/Media/M4A/M4A.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/M4A/M4A.h" />
-		<Unit filename="Source/Format/MD5/MD5.c">
+		<Unit filename="Source/Media/M4A/M4A.h" />
+		<Unit filename="Source/Media/MD5/MD5.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/MD5/MD5.h" />
-		<Unit filename="Source/Format/MID/MID.c">
+		<Unit filename="Source/Media/MD5/MD5.h" />
+		<Unit filename="Source/Media/MID/MID.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/MID/MID.h" />
-		<Unit filename="Source/Format/MP3/MP3.c">
+		<Unit filename="Source/Media/MID/MID.h" />
+		<Unit filename="Source/Media/MP3/MP3.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/MP3/MP3.h" />
-		<Unit filename="Source/Format/MP4/MP4.c">
+		<Unit filename="Source/Media/MP3/MP3.h" />
+		<Unit filename="Source/Media/MP4/MP4.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/MP4/MP4.h" />
-		<Unit filename="Source/Format/MSI/PXMSI.c">
+		<Unit filename="Source/Media/MP4/MP4.h" />
+		<Unit filename="Source/Media/MSI/PXMSI.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/MSI/PXMSI.h" />
-		<Unit filename="Source/Format/MTL/MTL.c">
+		<Unit filename="Source/Media/MSI/PXMSI.h" />
+		<Unit filename="Source/Media/MTL/MTL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/MTL/MTL.h" />
-		<Unit filename="Source/Format/Model.c">
+		<Unit filename="Source/Media/MTL/MTL.h" />
+		<Unit filename="Source/Media/Model.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/Model.h" />
-		<Unit filename="Source/Format/OBJ/OBJ.c">
+		<Unit filename="Source/Media/Model.h" />
+		<Unit filename="Source/Media/OBJ/OBJ.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/OBJ/OBJ.h" />
-		<Unit filename="Source/Format/OGG/OGG.c">
+		<Unit filename="Source/Media/OBJ/OBJ.h" />
+		<Unit filename="Source/Media/OGG/OGG.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/OGG/OGG.h" />
-		<Unit filename="Source/Format/PDF/PXPDF.c">
+		<Unit filename="Source/Media/OGG/OGG.h" />
+		<Unit filename="Source/Media/PDF/PXPDF.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/PDF/PXPDF.h" />
-		<Unit filename="Source/Format/PHP/PHP.c">
+		<Unit filename="Source/Media/PDF/PXPDF.h" />
+		<Unit filename="Source/Media/PHP/PHP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/PHP/PHP.h" />
-		<Unit filename="Source/Format/PLY/PLY.c">
+		<Unit filename="Source/Media/PHP/PHP.h" />
+		<Unit filename="Source/Media/PLY/PLY.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/PLY/PLY.h" />
-		<Unit filename="Source/Format/PNG/PNG.c">
+		<Unit filename="Source/Media/PLY/PLY.h" />
+		<Unit filename="Source/Media/PNG/PNG.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/PNG/PNG.h" />
-		<Unit filename="Source/Format/PXFont.c">
+		<Unit filename="Source/Media/PNG/PNG.h" />
+		<Unit filename="Source/Media/PXFont.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/PXFont.h" />
-		<Unit filename="Source/Format/PXSound.c">
+		<Unit filename="Source/Media/PXFont.h" />
+		<Unit filename="Source/Media/PXSound.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/PXSound.h" />
-		<Unit filename="Source/Format/QOI/QOI.c">
+		<Unit filename="Source/Media/PXSound.h" />
+		<Unit filename="Source/Media/QOI/QOI.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/QOI/QOI.h" />
-		<Unit filename="Source/Format/RIFF/RIFF.c">
+		<Unit filename="Source/Media/QOI/QOI.h" />
+		<Unit filename="Source/Media/RIFF/RIFF.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/RIFF/RIFF.h" />
-		<Unit filename="Source/Format/RSA/RSA.c">
+		<Unit filename="Source/Media/RIFF/RIFF.h" />
+		<Unit filename="Source/Media/RSA/RSA.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/RSA/RSA.h" />
-		<Unit filename="Source/Format/SHA/PXSHA.c">
+		<Unit filename="Source/Media/RSA/RSA.h" />
+		<Unit filename="Source/Media/SHA/PXSHA.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/SHA/PXSHA.h" />
-		<Unit filename="Source/Format/STEP/STEP.c">
+		<Unit filename="Source/Media/SHA/PXSHA.h" />
+		<Unit filename="Source/Media/STEP/STEP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/STEP/STEP.h" />
-		<Unit filename="Source/Format/STL/STL.c">
+		<Unit filename="Source/Media/STEP/STEP.h" />
+		<Unit filename="Source/Media/STL/STL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/STL/STL.h" />
-		<Unit filename="Source/Format/SVG/SVG.c">
+		<Unit filename="Source/Media/STL/STL.h" />
+		<Unit filename="Source/Media/SVG/SVG.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/SVG/SVG.h" />
-		<Unit filename="Source/Format/TGA/TGA.c">
+		<Unit filename="Source/Media/SVG/SVG.h" />
+		<Unit filename="Source/Media/TGA/TGA.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/TGA/TGA.h" />
-		<Unit filename="Source/Format/TIFF/TIFF.c">
+		<Unit filename="Source/Media/TGA/TGA.h" />
+		<Unit filename="Source/Media/TIFF/TIFF.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/TIFF/TIFF.h" />
-		<Unit filename="Source/Format/TTF/TTF.c">
+		<Unit filename="Source/Media/TIFF/TIFF.h" />
+		<Unit filename="Source/Media/TTF/TTF.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/TTF/TTF.h" />
-		<Unit filename="Source/Format/Type.c">
+		<Unit filename="Source/Media/TTF/TTF.h" />
+		<Unit filename="Source/Media/Type.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/Type.h" />
-		<Unit filename="Source/Format/UUID/UUID.c">
+		<Unit filename="Source/Media/Type.h" />
+		<Unit filename="Source/Media/UUID/UUID.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/UUID/UUID.h" />
-		<Unit filename="Source/Format/VRML/VRML.c">
+		<Unit filename="Source/Media/UUID/UUID.h" />
+		<Unit filename="Source/Media/VRML/VRML.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/VRML/VRML.h" />
-		<Unit filename="Source/Format/WAV/WAV.c">
+		<Unit filename="Source/Media/VRML/VRML.h" />
+		<Unit filename="Source/Media/WAV/WAV.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/WAV/WAV.h" />
-		<Unit filename="Source/Format/WEBM/WEBM.c">
+		<Unit filename="Source/Media/WAV/WAV.h" />
+		<Unit filename="Source/Media/WEBM/WEBM.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/WEBM/WEBM.h" />
-		<Unit filename="Source/Format/WEBP/WEBP.c">
+		<Unit filename="Source/Media/WEBM/WEBM.h" />
+		<Unit filename="Source/Media/WEBP/WEBP.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/WEBP/WEBP.h" />
-		<Unit filename="Source/Format/WMA/WMA.c">
+		<Unit filename="Source/Media/WEBP/WEBP.h" />
+		<Unit filename="Source/Media/WMA/WMA.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/WMA/WMA.h" />
-		<Unit filename="Source/Format/XML/XML.c">
+		<Unit filename="Source/Media/WMA/WMA.h" />
+		<Unit filename="Source/Media/XML/XML.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/XML/XML.h" />
-		<Unit filename="Source/Format/XingInfo/XingInfo.c">
+		<Unit filename="Source/Media/XML/XML.h" />
+		<Unit filename="Source/Media/XingInfo/XingInfo.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/XingInfo/XingInfo.h" />
-		<Unit filename="Source/Format/YAML/YAML.c">
+		<Unit filename="Source/Media/XingInfo/XingInfo.h" />
+		<Unit filename="Source/Media/YAML/YAML.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/YAML/YAML.h" />
-		<Unit filename="Source/Format/ZLIB/ZLIB.c">
+		<Unit filename="Source/Media/YAML/YAML.h" />
+		<Unit filename="Source/Media/ZLIB/ZLIB.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Format/ZLIB/ZLIB.h" />
+		<Unit filename="Source/Media/ZLIB/ZLIB.h" />
 		<Unit filename="Source/Graphic/PXCamera.c">
 			<Option compilerVar="CC" />
 		</Unit>

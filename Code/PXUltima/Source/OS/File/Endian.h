@@ -1,7 +1,7 @@
 #ifndef EndianInclude
 #define EndianInclude
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #if 1
 #define EndianCurrentSystemIsLittle

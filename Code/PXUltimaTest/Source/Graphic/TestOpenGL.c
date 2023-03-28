@@ -1,13 +1,13 @@
 #include "TestOpenGL.h"
 
 
-#include <Format/Image.h>
+#include <Media/Image.h>
 #include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>
 #include <float.h>
 #include <OS/Window/PXWindow.h>
-#include <Format/PXFont.h>
+#include <Media/PXFont.h>
 #include <Math/PXMatrix.h>
 
 #include <Graphic/PXGraphic.h>

@@ -19,7 +19,7 @@ typedef FARPROC LibraryFunction;
 typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 #endif
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <Text/PXText.h>
 
 #include <OS/Process/PXProcess.h>

@@ -2,7 +2,7 @@
 #define TestOpenGLDEFINE
 
 #include <OS/Error/PXActionResult.h>
-#include <Format/Image.h>
+#include <Media/Image.h>
 
 #ifdef __cplusplus
 extern "C"

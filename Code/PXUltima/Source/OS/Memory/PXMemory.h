@@ -1,7 +1,7 @@
 #ifndef PXMemoryINCLUDE
 #define PXMemoryINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #if OSUnix
 typedef int MemoryProtectionModeType;
@@ -13,7 +13,7 @@ typedef unsigned long MemoryProtectionModeType;// DWORD
 #define MemoryAssertEnable 0
 #define MemoryDebugOutput 0
 #define MemoryDebugLeakDetection 0
-#define MemoryUseSystemFunction 0
+#define MemoryUseSystemFunction 1
 #define MemorySanitise 0
 //----------------
 

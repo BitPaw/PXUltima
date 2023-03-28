@@ -2,7 +2,7 @@
 #define PXFTPClientINCLUDE
 
 #include <OS/Error/PXActionResult.h>
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <OS/Network/PXClient.h>
 
 #define FTPDefaultPort 21

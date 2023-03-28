@@ -1,7 +1,7 @@
 #ifndef PXDijkstraINCLUDE
 #define PXDijkstraINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

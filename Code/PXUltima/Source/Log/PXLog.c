@@ -1,5 +1,6 @@
 #include "PXLog.h"
 
+#include <Text/PXText.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -60,4 +61,21 @@ void PXLogPrintf(const LoggingType loggingType, const char* const source, const 
 
 		va_end(args);
 	}
+}
+
+void PXLogPrintString(const char* const source, PXSize length)
+{
+	for (size_t i = 0; i < length; ++i)
+	{
+		const char character = MakePrintable(source[i]);
+
+		printf("%c", character);
+	}
+}
+
+void PXLogPrintStringLine(const char* const source, PXSize length)
+{
+	PXLogPrintString(source, length);
+
+	printf("\n");
 }

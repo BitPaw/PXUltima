@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include <OS/Window/PXWindow.h>
-#include <OS/Processor/Processor.h>
+#include <OS/Processor/PXProcessor.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Graphic/DirectX/DirectX.h>
 
@@ -29,7 +29,7 @@ void TestWindowOpen()
 
 	Processor processor;
 
-	ProcessorFetchInfo(&processor);
+	PXProcessorFetchInfo(&processor);
 
 	printf
 	(

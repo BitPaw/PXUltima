@@ -13,17 +13,66 @@
 #include "Network/TestFTP.h"
 #include "Network/TestSBP.h"
 
-#include <Format/TIFF/TIFF.h>
-#include <Format/Image.h>
+#include <Media/TIFF/TIFF.h>
+#include <Media/Image.h>
 #include <Text/PXText.h>
 
 #include <OS/Graphic/DirectX/DirectX.h>
 #include <OS/Process/PXProcess.h>
 #include <OS/Debug/PXDebug.h>
 
+void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
+{
+	switch (pxFileElementInfo->Type)
+	{
+		case PXFileElementInfoTypeInvalid:
+		case PXFileElementInfoTypeFile:
+		{
+			printf("| %-4s | %-20ls | %i |\n", "File", pxFileElementInfo->Name, pxFileElementInfo->Size);		
+
+			break;
+		}
+		case PXFileElementInfoTypeDictionary:
+		{
+			printf("| %-4s | %-20ls |\n", "DIR", pxFileElementInfo->Name);
+			break;
+		}
+
+		default:
+			break;
+	}
+
+
+}
+
+
+
+void PXTextMatchTest()
+{
+	const PXBool a = PXTextMatchW(L"MyFile.h", 8, L"*.h", 3);
+	printf("");
+
+	const PXBool b = PXTextMatchW(L"MyFile.c", 8, L"*.h", 3);
+	printf("");
+
+	const PXBool c = PXTextMatchW(L"MyFile.*", 8, L"*.h", 3);
+	printf("");
+}
+
+
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+
+	PXTextMatchTest();
+
+	//PXActionResult res = PXDirectoryFilesInFolderW(L"B:/Daten/Bilder/*", OnFileElementDetected, 0x02, 0);
+	//res = PXDirectoryFilesInFolderW(L"B:/Daten/Bilder/*png", OnFileElementDetected, 0x01, 0);
+
+
+	printf("");
+
 
 #if 0
 	char buffer[64];
@@ -36,7 +85,13 @@ int main()
 	}
 #endif
 	
-#if 1
+
+#if 0
+	
+#endif // 0
+
+
+#if 0
 	PXTestDebugAll();
 #endif // 1
 
@@ -54,7 +109,7 @@ int main()
 #endif
 
 
-#if 0
+#if 1
 	TestSocket();
 #endif // 1
 

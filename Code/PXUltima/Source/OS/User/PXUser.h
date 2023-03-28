@@ -1,7 +1,7 @@
 #ifndef UserInclude
 #define UserInclude
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

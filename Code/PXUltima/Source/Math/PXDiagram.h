@@ -1,7 +1,7 @@
 #ifndef PXDiagramINCLUDE
 #define PXDiagramINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

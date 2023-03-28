@@ -1,7 +1,7 @@
 #ifndef PXDictionaryDEFINED
 #define PXDictionaryDEFINED
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

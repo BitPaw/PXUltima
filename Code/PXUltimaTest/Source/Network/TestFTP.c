@@ -2,7 +2,7 @@
 
 #include <Network/Web/PXFTPClient.h>
 #include <Text/PXText.h>
-#include <Format/FTP/FTP.h>
+#include <Media/FTP/FTP.h>
 
 #include <stdio.h>
 

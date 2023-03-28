@@ -1,7 +1,7 @@
 #ifndef RegistryINCLUDE
 #define RegistryINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #if OSUnix
 typedef unsigned int RegistryID;

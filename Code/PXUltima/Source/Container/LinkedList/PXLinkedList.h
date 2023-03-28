@@ -1,7 +1,7 @@
 #ifndef PXLinkedListDEFINED
 #define PXLinkedListDEFINED
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #define PXLinkedListNodeNotUsed (PXSize)-1
 #define PXLinkedListNodeNoNext (PXSize)0

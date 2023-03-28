@@ -2,7 +2,7 @@
 #define PXTranslatorINCLUDE
 
 #include <OS/Error/PXActionResult.h>
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus

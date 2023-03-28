@@ -1,7 +1,7 @@
 #ifndef PXTextInclude
 #define PXTextInclude
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #define MakeLetterCaseLower(character) (character | 0b00100000)
 #define MakeLetterCaseUpper(character) (character & 0b11011111)
@@ -11,6 +11,9 @@
 #define IsTab(c) (c == '\t')
 #define IsEmptySpace(c) (c == ' ')
 #define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
+
+#define IsPrintable(c) (0x20 =< c && c =< 0x7E)
+#define MakePrintable(c) ((0x20 <= c && c <= 0x7E) ? + c : '?')
 
 #define PXTextUnkownLength -1
 #define PXTextIndexNotFound -1
@@ -122,7 +125,10 @@ extern "C"
 
 	PXPublic char* PXTextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize);
 
-	PXPublic PXSize PXTextFindFirstA(const char* string, const PXSize dataSize, const char character);
+	PXPublic PXSize PXTextFindFirstCharacterA(const char* restrict const string, const PXSize dataSize, const char character);
+	PXPublic PXSize PXTextFindFirstCharacterOfListA(const char* restrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize);
+
+	PXPublic PXSize PXTextFindFirstStringA(const char* restrict const string, const PXSize dataSize, const char* restrict const targetString, const PXSize targetStringSize);
 	PXPublic PXSize PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
 	PXPublic PXSize PXTextFindLastA(const char* string, const PXSize dataSize, const char character);
 	PXPublic PXSize PXTextFindLastW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
@@ -132,6 +138,8 @@ extern "C"
 	PXPublic void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* syntax, ...);
 
 	PXPublic void PXTextParseFindAllA(const char* string, const PXSize stringSize, const ParsingTokenA* parsingTokenList, const PXSize parsingTokenListSize);
+
+	PXPublic PXBool PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t* pattern, const PXSize patternSize);
 
 #ifdef __cplusplus
 }

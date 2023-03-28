@@ -64,24 +64,27 @@ void PXDataStreamDestruct(PXDataStream* const dataStream)
 {
 	switch (dataStream->DataLocation)
 	{
-	case FileLocationMappedFromDisk:
-		PXDataStreamUnmapFromMemory(dataStream);
-		break;
+		case FileLocationMappedFromDisk:
+			PXDataStreamUnmapFromMemory(dataStream);
+			break;
 
-	case FileLocationMappedVirtual:
-		MemoryVirtualRelease(dataStream->Data, dataStream->DataSize);
-		break;
+		case FileLocationInternal:
+			MemoryRelease(dataStream->Data, dataStream->DataSize);
+			break;
 
-	case  FileLocationCachedFromDisk:
-		MemoryRelease(dataStream->Data, dataStream->DataSize);
-		break;
+		case FileLocationMappedVirtual:
+			MemoryVirtualRelease(dataStream->Data, dataStream->DataSize);
+			break;
 
-	case FileLocationLinked:
-		PXDataStreamClose(dataStream);
-		break;
+		case  FileLocationCachedFromDisk:
+			MemoryRelease(dataStream->Data, dataStream->DataSize);
+			break;
+
+		case FileLocationLinked:
+			PXDataStreamClose(dataStream);
+			break;
 	}
 }
-
 
 PXDataStreamCachingMode ConvertToFileCachingMode(const unsigned int value)
 {
@@ -120,11 +123,23 @@ unsigned int ConvertFromFileCachingMode(const PXDataStreamCachingMode fileCachin
 }
 
 
+void PXDataStreamAllocate(PXDataStream* const dataStream, const PXSize dataSize)
+{
+	PXDataStreamConstruct(dataStream);
+
+	dataStream->Data = MemoryAllocate(dataSize);
+	dataStream->DataAllocated = dataSize;
+	dataStream->DataSize = dataSize;
+	dataStream->MemoryMode = MemoryReadAndWrite;
+	dataStream->DataLocation = FileLocationInternal;
+}
+
 void PXDataStreamFromExternal(PXDataStream* const dataStream, void* const data, const PXSize dataSize)
 {
 	PXDataStreamConstruct(dataStream);
 
 	dataStream->Data = data;
+	dataStream->DataAllocated = dataSize;
 	dataStream->DataSize = dataSize;
 	dataStream->MemoryMode = MemoryReadAndWrite;
 	dataStream->DataLocation = FileLocationExternal;

@@ -29,7 +29,7 @@ typedef HGLRC OpenGLConextID;
 #endif
 //---------------------------
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 typedef unsigned int OpenGLID;
 typedef unsigned int OpenGLShaderProgramID;

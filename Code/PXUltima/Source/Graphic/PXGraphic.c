@@ -3,8 +3,8 @@
 #include <File/PXDataStream.h>
 #include <Container/ClusterValue.h>
 #include <Text/PXText.h>
-#include <Format/PXFont.h>
-#include <Format/FNT/FNT.h>
+#include <Media/PXFont.h>
+#include <Media/FNT/FNT.h>
 
 #include <OS/Graphic/OpenGL/OpenGL.h>
 #include <OS/Window/PXWindow.h>

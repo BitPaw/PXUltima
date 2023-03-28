@@ -1,9 +1,9 @@
 #ifndef PXGraphicINCLUDE
 #define PXGraphicINCLUDE
 
-#include <Format/Image.h>
-#include <Format/Model.h>
-#include <Format/Type.h>
+#include <Media/Image.h>
+#include <Media/Model.h>
+#include <Media/Type.h>
 #include <OS/Graphic/OpenGL/OpenGL.h>
 #include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>

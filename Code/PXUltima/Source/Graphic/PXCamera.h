@@ -1,7 +1,7 @@
 #ifndef PXCameraINCLUDE
 #define PXCameraINCLUDE
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 #include <Math/PXMatrix.h>
 #include <Math/PXVector.h>
 

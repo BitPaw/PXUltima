@@ -1,7 +1,7 @@
 #ifndef UIDEFINED
 #define UIDEFINED
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

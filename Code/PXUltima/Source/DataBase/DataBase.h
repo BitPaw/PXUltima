@@ -10,7 +10,7 @@
 #include <sqltypes.h>
 #endif
 
-#include <Format/Type.h>
+#include <Media/Type.h>
 
 #ifdef __cplusplus
 extern "C"

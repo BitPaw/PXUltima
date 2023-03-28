@@ -157,7 +157,7 @@ void MemorySet(void* __restrict buffer, const unsigned char value, const PXSize 
 	}
 
 #if MemoryUseSystemFunction
-	memset(bufferA, value, bufferASize);
+	memset(buffer, value, bufferSize);
 #else
 	for(PXSize i = 0; i < bufferSize; ++i)
 	{
