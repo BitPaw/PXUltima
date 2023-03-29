@@ -133,121 +133,6 @@ CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize)
 
     return CKeyWordUnkown;
 }
-/*
-PXBool PXCFileParseEnum(PXDataStream* const inputStream, PXDataStream* const outputStream)
-{
-    PXCompilerSymbolEntry compilerSymbolEntry;
-
-    PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
-
-    const PXBool isExpectedName = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry.ID;
-
-    if (isExpectedName)
-    {
-#if 1
-        char buffer[64];
-        PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-        printf
-        (
-            "|+------+-------------------------------------------------+|\n"
-            "|| Enum | %-47s ||\n"
-            "|+------+-------------------------------------------------+|\n",
-            buffer
-        );
-#endif
-
-        PXDataStreamWriteI8U(outputStream, 'N');
-        PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-        PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-    }
-
-    PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
-    const PXBool isExpectedBrace = PXCompilerSymbolLexerBracketCurlyOpen == compilerSymbolEntry.ID;
-
-    if (!isExpectedBrace)
-    {
-        // Expected '{' but did not found.
-    }
-
-    PXBool finishedWithGrace = 0;
-
-    while (1)
-    {
-        PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
-
-        while (PXCompilerSymbolLexerComment == compilerSymbolEntry.ID)
-        {
-            PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
-        }
-
-        const PXBool isFinished = PXCompilerSymbolLexerBracketCurlyClose == compilerSymbolEntry.ID;
-
-        if (isFinished)
-        {
-#if 1
-            printf("|+------+-------------------------------------------------+|\n");
-#endif
-            finishedWithGrace = 1;
-            break;
-        }
-
-
-
-    }
-
-    if (!finishedWithGrace)
-    {
-        // Error, we seem to not have a valid ending
-        return PXFalse;
-    }
-
-
-    PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
-
-    switch (compilerSymbolEntry.ID)
-    {
-        case PXCompilerSymbolLexerGenericElement:
-        {
-            PXDataStreamWriteI8U(outputStream, 'T');
-            PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-            PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-
-#if 1
-            char buffer[64];
-            PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-            printf
-            (
-                "+----------------------------------------------------------+\n"
-                "| Enum alias : %-30s |\n"
-                "+----------------------------------------------------------+\n",
-                buffer
-            );
-#endif
-
-            PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
-
-            const PXBool su = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry.ID;
-
-            if (!su)
-            {
-                // Error, expected ; But got something else.
-                return PXFalse;
-            }
-
-            return PXTrue; // OK
-        }
-        case PXCompilerSymbolLexerSemiColon:
-        {
-            // No Name
-            return PXTrue;
-        }
-        default:
-            return PXFalse;
-    }
-}*/
 
 PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
@@ -261,6 +146,9 @@ PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const 
         "|+--------------------------------------------------------+|\n"
     );
 #endif 
+
+
+    PXDataStreamWriteI8U(outputStream, CKeyWordTypeDefinition);
 
     PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Peek for next element
 
@@ -290,6 +178,8 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
     PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch element after 'union' keyword
 
+    PXDataStreamWriteI8U(outputStream, structureType); // Write object type
+
     switch (compilerSymbolEntry.ID)
     {
         case PXCompilerSymbolLexerGenericElement: // We have a 'union' name
@@ -299,6 +189,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
             PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
             char name[64];
+
 
             switch (structureType)
             {
@@ -332,31 +223,56 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
             );
 #endif 
 
-            PXDataStreamWriteI8U(outputStream, 'N');
+            //---<Write name of structure>---
             PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
             PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+            //-------------------------------
 
-            PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
+            PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch next element after "name"
 
-            const PXBool isPrototype = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry.ID;
-
-            if (isPrototype)
+            switch (compilerSymbolEntry.ID)
             {
-                return PXTrue; // finished
-            }
+                case PXCompilerSymbolLexerSemiColon:
+                {
+                    return PXTrue; // finished, format is now "struct NAME;"
+                }
+                case PXCompilerSymbolLexerBracketCurlyOpen:
+                {
+                    // OK, proceed. format is now "struct NAME { ..."
+                    break;
+                }
+                case PXCompilerSymbolLexerGenericElement:
+                {
+                    // Format  "struct NAME ALIASNAME;"
+                    // We have a direct alias
 
-            const PXBool isOpenBrace = PXCompilerSymbolLexerBracketCurlyOpen == compilerSymbolEntry.ID; // Do we have '{'
+                    PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
+                    PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
-            if (!isOpenBrace)
-            {
-                return PXFalse; // We need a '{', but got something else
+
+                    PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Element after alias
+
+                    const PXBool isSemiColon = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry.ID; //
+
+                    if (!isSemiColon)
+                    {
+                        // Error expected ;
+                        return PXFalse;
+                    }
+
+                    return PXTrue;
+                }
+                default:
+                {
+                    return PXFalse;
+                }
             }
 
             break;
         }
-
         case PXCompilerSymbolLexerBracketCurlyOpen: // We dont have a name
         {
+            PXDataStreamWriteI8U(outputStream, 0); // Name size, we dont have one so its always 0
 
 #if 1
             char buffer[64];
@@ -378,6 +294,83 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         default:
             return PXFalse; // Illegal formating
     }
+
+
+    // We are now here
+    // "struct name { | ... };"
+
+
+    // Problem: We need the alias name NOW. And the content of {...} is in the way. 
+    // Solution: We do a very far peek and try to check if one is readable.
+    {
+    PXSize range = PXDataStreamRemainingSizeRelativeFromAddress(inputStream, compilerSymbolEntry.Source);
+    char* start = compilerSymbolEntry.Source + 1u;
+
+    while (1)
+    {
+        const PXSize index = PXTextFindFirstCharacterA(start, range, '}');
+        const PXBool found = index != (PXSize)-1;
+
+        if (!found)
+        {
+            // Error
+        }
+
+        const PXSize amountOfOpen = PXTextCountA(start, index, '{');
+
+        start += index + 1u;
+        range -= index + 1u;
+
+        if (amountOfOpen == 0)
+        {
+            // We have found what we need
+            break;
+        }
+
+        // We have one open more than a close, so we look for more     
+    }
+
+    // We should be where the } is
+
+    const PXSize semicolonINdex = PXTextFindFirstCharacterA(start, range, ';');
+
+    if (semicolonINdex > 1)
+    {
+        // We have found an alias
+        char* name = start;
+        PXSize range = semicolonINdex;
+   
+        // Remove empty space
+        while(IsEmptySpace(name[0]) || IsEndOfLineCharacter(name[0]) || IsTab(name[0]))
+        {
+            ++name;
+            --range;
+        }
+
+
+        PXDataStreamWriteI8U(outputStream, range);
+        PXDataStreamWriteB(outputStream, name, range);
+
+    }
+    else
+    {
+        // No name 
+        PXDataStreamWriteI8U(outputStream, 0);
+
+    }
+
+
+    }
+
+
+
+
+
+    
+    PXInt16U memberCounter = 0;
+    PXSize poition = outputStream->DataCursor;
+
+    PXDataStreamWriteI16U(outputStream, 0xFFFF);
 
 
     while (1)
@@ -412,6 +405,13 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                 );
 #endif 
 
+                PXDataStreamWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
+
+                // Don't write alias, we hacked that before. 
+                // PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
+                // PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+
                 PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Go to next
             }
 
@@ -440,6 +440,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                 printf("| - %-54s |\n", buffer);
 #endif 
 
+                ++memberCounter;
 
                 PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
                 PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
@@ -653,6 +654,107 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
 }
 
+PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+{
+  //  PXDataStreamWriteI8U(inputStream, );
+
+
+#if 1
+    char buffer[64];
+
+    PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
+
+    printf("| [Function]\n");
+    printf("| Element    : %s |\n", buffer);
+
+#endif // 0
+
+
+    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
+
+#if 1
+
+    PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
+
+    printf("| Return Type : %s |\n", buffer);
+
+#endif // 0
+
+
+    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
+
+
+#if 1
+
+    PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
+
+    printf("| FuntionName : %s |\n", buffer);
+
+#endif // 0
+
+    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Expect '('
+
+    const PXBool isFunction = PXCompilerSymbolLexerBrackedRoundOpen == compilerSymbolEntry->ID;
+
+    if (!isFunction)
+    {
+        printf("Expected funtion but didnt\n");
+    }
+
+    PXBool parameterDone = PXFalse;
+
+    while (1u)
+    {
+
+
+        PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // get next thing
+
+        const PXBool isEndOfParameterList = PXCompilerSymbolLexerBrackedRoundClose == compilerSymbolEntry->ID;
+
+        if (isEndOfParameterList)
+        {
+            break;
+        }
+
+#if 1
+
+
+
+        PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
+
+        printf("|     Parameter : %s |\n", buffer);
+
+#endif // 0
+
+
+
+
+
+        PXCompilerSymbolEntryPeek(inputStream, compilerSymbolEntry); // Soft Expect ','
+
+        const PXBool isColon = PXCompilerSymbolLexerComma == compilerSymbolEntry->ID;
+
+        if (isColon)
+        {
+            PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Remove the ','
+            // new variab
+
+            //printf("Missing semicolon");
+        }
+    }
+
+
+    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Soft Expect ';'
+
+    const PXBool isComma = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry->ID;
+
+    if (!isComma)
+    {
+        printf("Colon missing\n");
+
+    }
+}
+
 PXActionResult PXCFileLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXCompilerSettings compilerSettings;
@@ -705,16 +807,21 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 {
                     case CKeyWordDefine:
                     {
+                        PXSize defineNameLength = 0;
+                        char defineName[64];
+
                         // Fetch name [Required]
                         {
                             PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
-                            const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+                            const PXBool isExpectedText = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry.ID;
 
                             if (!isExpectedText)
                             {
                                 printf("Makro define has invalid name\n");
                             }
+
+                            defineNameLength = compilerSymbolEntry.Size;
 
 #if 1
 
@@ -722,6 +829,26 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                             PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 #endif
                         }
+
+
+                        PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
+
+                        const PXBool isDefineFunction = PXCompilerSymbolLexerBrackedRoundOpen == compilerSymbolEntry.ID;
+
+                        if (isDefineFunction)
+                        {
+                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+
+                            //PXDataStreamWriteI8U(outputStream, PXCTokenMakroFunction);
+                        }
+                        else
+                        {
+                            //PXDataStreamWriteI8U(outputStream, PXCTokenMakroDefintion);
+                        }
+
+                      //  PXDataStreamWriteI8U(outputStream, defineNameLength);
+                       // PXDataStreamWriteB(outputStream, defineName, defineNameLength);
+
 
                         // Fetch [Optional]
                         {
@@ -901,8 +1028,33 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         {
                             case PXCompilerSymbolLexerString: // Need to me the extern "C" thing
                             {
-                                // extern "C"
-                                printf("[C] Disable name mangeling for C++\n");
+                                const PXBool isNameMangeling = (compilerSymbolEntry.Source == 'C') && (compilerSymbolEntry.Size == 1);
+
+                                if (isNameMangeling)
+                                {
+                                    // Invalid extern spesifieer
+                                }
+                      
+                                PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
+
+                                const PXBool isWrapping = PXCompilerSymbolLexerBracketCurlyOpen == compilerSymbolEntry.ID;
+
+                                if (isWrapping)
+                                {
+                                    // everything is C-Style now
+
+                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Consome '{'          
+
+                                    printf("[C] Disable name mangeling in C++ for following block\n");
+                                }
+                                else
+                                {
+                                    // extern "C" xxxxxxxx
+
+                                    // Expect funtion
+                                }
+
+                                break;
                             }
 
                             default:
@@ -923,102 +1075,15 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                         // There is no result, so we take this as an extra unrsolved paramater
 
-#if 1
-                        char buffer[64];
+                        const PXSize index = PXTextFindFirstCharacterBeforeA(compilerSymbolEntry.Source, 260, '(', ';');
+                        const PXBool found = index != (PXSize)-1;
 
-                        PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-                        printf("| [Function]\n");
-                        printf("| Element    : %s |\n", buffer);
-
-#endif // 0
-
-
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-#if 1
-
-                        PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-                        printf("| Return Type : %s |\n", buffer);
-
-#endif // 0
-
-
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-
-#if 1
-
-                        PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-                        printf("| FuntionName : %s |\n", buffer);
-
-#endif // 0
-
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect '('
-
-                        const PXBool isFunction = PXCompilerSymbolLexerBrackedRoundOpen == compilerSymbolEntry.ID;
-
-                        if (!isFunction)
+                        if (found)
                         {
-                            printf("Expected funtion but didnt\n");
+                            // Probably a function
+
+                            PXCFileParseFunctionPrototype(&tokenSteam, outputStream, &compilerSymbolEntry);
                         }
-
-                        PXBool parameterDone = PXFalse;
-
-                        while (1u)
-                        {
-
-
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // get next thing
-
-                            const PXBool isEndOfParameterList = PXCompilerSymbolLexerBrackedRoundClose == compilerSymbolEntry.ID;
-
-                            if (isEndOfParameterList)
-                            {
-                                break;
-                            }
-
-#if 1
-
-
-
-                            PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-                            printf("|     Parameter : %s |\n", buffer);
-
-#endif // 0
-
-
-
-
-
-                            PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Soft Expect ','
-
-                            const PXBool isColon = PXCompilerSymbolLexerComma == compilerSymbolEntry.ID;
-
-                            if (isColon)
-                            {
-                                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Remove the ','
-                                // new variab
-
-                                //printf("Missing semicolon");
-                            }
-                        }
-
-
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Soft Expect ';'
-
-                        const PXBool isComma = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry.ID;
-
-                        if (!isComma)
-                        {
-                            printf("Colon missing\n");
-
-                        }
-
-                        printf("---------------------\n");
 
                         break;
                     }

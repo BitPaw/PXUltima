@@ -124,6 +124,7 @@ extern "C"
 
 	//---<Parsing Utility>-----------------------------------------------------
 	PXPublic PXSize PXDataStreamRemainingSize(const PXDataStream* __restrict const dataStream);
+	PXPublic PXSize PXDataStreamRemainingSizeRelativeFromAddress(const PXDataStream* __restrict const dataStream, const void* const adress);
 	PXPublic PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream);
 
 	PXPublic void* PXDataStreamCursorPosition(PXDataStream* const dataStream);

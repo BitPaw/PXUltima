@@ -91,12 +91,35 @@ extern "C"
 	}
 	CKeyWord;
 
+
+	typedef enum PXCToken_ PXCToken;
+
+	typedef enum PXCToken_
+	{
+		PXCTokenInvalid,
+
+		PXCTokenMakroDefintion,
+		PXCTokenMakroFunction,
+
+		PXCTokenEnumTypeDefinition,
+		PXCTokenEnumVariableDefinition,
+
+		PXCTokenStructTypeDefinition,
+		PXCTokenStructVariableDefinition,
+
+		PXCTokenUnionTypeDefinition,
+		PXCTokenUnionVariableDefinition,
+	}
+	PXCToken;
+
+
 	PXPublic CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize);
 
 
 	PXPublic PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const outputStream);
 	PXPublic PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* const outputStream, const CKeyWord structureType);
 	PXPublic PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
+	PXPublic PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 
 	PXPublic PXActionResult PXCFileLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream);
 	PXPublic PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);

@@ -354,7 +354,7 @@ MigrationBackup/
 *Temp*/
 /obj/Debug/
 
-Code/PXUltimaCS/obj directory
+Code/PXUltimaCS/obj/
 
 Code/PXUltimaSharpTest/obj/
 Code/PXUltimaSharp/obj/

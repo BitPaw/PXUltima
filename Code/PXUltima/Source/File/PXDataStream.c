@@ -727,6 +727,11 @@ PXSize PXDataStreamRemainingSize(const PXDataStream* __restrict const dataStream
 	return dataStream->DataSize - dataStream->DataCursor;
 }
 
+PXSize PXDataStreamRemainingSizeRelativeFromAddress(const PXDataStream* __restrict const dataStream, const void* const adress)
+{
+	return ((PXSize)dataStream->Data - (PXSize)adress) - dataStream->DataSize;
+}
+
 PXBool PXDataStreamIsAtEnd(const PXDataStream* __restrict const dataStream)
 {
 	return dataStream->DataCursor >= dataStream->DataSize;

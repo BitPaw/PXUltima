@@ -10,6 +10,21 @@ extern "C"
 {
 #endif
 
+	typedef enum PXCSKeyWord_
+	{
+		PXCSKeyWordInvalid,
+
+		PXCSKeyWordNameSpace,
+
+		PXCSKeyWordStruct,
+		PXCSKeyWordClass
+	}
+	PXCSKeyWord;
+
+	PXPublic void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStream);
+
+	PXPublic void PXCSCreateWrapperFromCSource(PXDataStream* const inputSteam, PXDataStream* const outputStream);
+
 #ifdef __cplusplus
 }
 #endif

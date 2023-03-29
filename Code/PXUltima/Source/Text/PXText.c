@@ -730,6 +730,21 @@ PXSize PXTextFindFirstCharacterA(const char* restrict  const string, const PXSiz
 	return found ? index - 1 : PXTextIndexNotFound;
 }
 
+PXSize PXTextFindFirstCharacterBeforeA(const char* restrict const string, const PXSize dataSize, const char target, const char barrier)
+{
+	PXSize index = 0;
+	PXBool hitBarrier = 0;
+	PXBool found = 0;
+
+	for (; index < dataSize && !found; ++index)
+	{
+		hitBarrier = barrier == string[index];
+		found = target == string[index] || hitBarrier;
+	}
+
+	return (found && !hitBarrier) ? index - 1 : PXTextIndexNotFound;
+}
+
 PXSize PXTextFindFirstCharacterOfListA(const char* restrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize)
 {
 	for(PXSize i = 0 ; i < characterListSize; ++i)
