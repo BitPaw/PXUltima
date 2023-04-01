@@ -4,6 +4,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 
+#define PXFlagIsSet(value, flag)  ((value & flag) && 1u)
+
 #ifdef __cplusplus
 extern "C"
 {

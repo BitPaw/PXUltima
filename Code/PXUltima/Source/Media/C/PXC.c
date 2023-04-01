@@ -306,6 +306,8 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
     PXSize range = PXDataStreamRemainingSizeRelativeFromAddress(inputStream, compilerSymbolEntry.Source);
     char* start = compilerSymbolEntry.Source + 1u;
 
+    PXBool foundInsert = PXFalse;
+
     while (1)
     {
         const PXSize index = PXTextFindFirstCharacterA(start, range, '}');
@@ -324,42 +326,48 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         if (amountOfOpen == 0)
         {
             // We have found what we need
+            foundInsert = PXTrue;
             break;
         }
 
         // We have one open more than a close, so we look for more     
     }
 
-    // We should be where the } is
-
-    const PXSize semicolonINdex = PXTextFindFirstCharacterA(start, range, ';');
-
-    if (semicolonINdex > 1)
+    if (foundInsert)
     {
-        // We have found an alias
-        char* name = start;
-        PXSize range = semicolonINdex;
-   
-        // Remove empty space
-        while(IsEmptySpace(name[0]) || IsEndOfLineCharacter(name[0]) || IsTab(name[0]))
+        // We should be where the } is
+
+        const PXSize semicolonINdex = PXTextFindFirstCharacterA(start, range, ';');
+
+        if (semicolonINdex > 1)
         {
-            ++name;
-            --range;
+            // We have found an alias
+            char* name = start;
+            PXSize range = semicolonINdex;
+
+            // Remove empty space
+            while (IsEmptySpace(name[0]) || IsEndOfLineCharacter(name[0]) || IsTab(name[0]))
+            {
+                ++name;
+                --range;
+            }
+
+
+            PXDataStreamWriteI8U(outputStream, range);
+            PXDataStreamWriteB(outputStream, name, range);
+
         }
+        else
+        {
+            // No name 
+            PXDataStreamWriteI8U(outputStream, 0);
 
-
-        PXDataStreamWriteI8U(outputStream, range);
-        PXDataStreamWriteB(outputStream, name, range);
-
+        }
     }
     else
     {
-        // No name 
         PXDataStreamWriteI8U(outputStream, 0);
-
     }
-
-
     }
 
 
@@ -386,6 +394,11 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
         if (isAtEnd) // If so, we quit
         {
+            PXDataStreamWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
+
+
+
+
             PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
 
             const PXBool isExpectedComma = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry.ID;
@@ -405,8 +418,6 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                 );
 #endif 
 
-                PXDataStreamWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
-
                 // Don't write alias, we hacked that before. 
                 // PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
                 // PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
@@ -414,6 +425,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
                 PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Go to next
             }
+
 
 
             // Expect ';'
@@ -467,7 +479,13 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
             case CKeyWordStruct:
             {
                 // If we dont end, we must have fields to parse.
-                PXBool result = PXCFileParseDeclaration(inputStream, outputStream, &compilerSymbolEntry);
+                const PXBool result = PXCFileParseDeclaration(inputStream, outputStream, &compilerSymbolEntry);
+
+                if (result)
+                {
+                    ++memberCounter;
+                }
+
                 break;
             }
 
@@ -478,8 +496,6 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
     return PXFalse;
 }
-
-#define PXFlagIsSet(value, flag)  ((value & flag) && 1u)
 
 PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
@@ -507,15 +523,16 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
         return PXTrue;
     }
 
-#if 1
-    char type[64];
-    char name[64];
+    PXBool doesKnowCustomType = PXFalse;
+    CKeyWord variableType = CKeyWordInvalid;
 
-    PXTextCopyA("N/A", 3, type, 64);
-    PXTextCopyA("N/A", 3, name, 64);
-#endif
 
-    PXBool typeKnown = PXFalse;
+    PXSize variableNameSize = 0;
+    char variableName[64];
+
+    PXSize variableTypeNameSize = 0;
+    char variableTypeName[64];
+
 
     do
     {
@@ -523,8 +540,30 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
         if (isFinished)
         {
+            const PXBool isKnownPrimitive = flagList & MemberFieldFlagIsKnownPrimitive;
 
-#if 1
+            // if we have a primitive type, we only have one 'unkown' name.
+            // If we dont have a primitive, we have two.
+
+            PXDataStreamWriteI8U(outputStream, flagList); // Write flags
+
+            if (isKnownPrimitive)
+            {
+                PXDataStreamWriteI8U(outputStream, variableType); // Write primitive type
+            }
+            else
+            {
+                // We have a 2nd name, so its a custom type. Write name of custom variable..
+                PXDataStreamWriteI8U(outputStream, variableTypeNameSize);
+                PXDataStreamWriteB(outputStream, variableTypeName, variableTypeNameSize);
+            }
+
+            // Write name
+            PXDataStreamWriteI8U(outputStream, variableNameSize);
+            PXDataStreamWriteB(outputStream, variableName, variableNameSize);
+
+
+#if 0
             printf("| MemberField: %s Type, Name %-20s |\n", type, name);
             printf("| - %-17s : %-20s |\n", "Const", PXFlagIsSet(flagList, MemberFieldFlagIsConstType) ? "Yes" : "No");
             printf("| - %-17s : %-20s |\n", "Singed", PXFlagIsSet(flagList, MemberFieldFlagIsSigned) ? "Yes" : "No");
@@ -540,7 +579,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
 
             return PXTrue;
-        }
+        }        
 
         switch (compilerSymbolEntry->ID)
         {
@@ -562,13 +601,44 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
                         break;
 
                     case CKeyWordChar:
+                    {
+                        variableType = CKeyWordChar;
+                        flagList |= MemberFieldFlagIsKnownPrimitive;
+                        break;
+                    }
                     case CKeyWordShort:
+                    {
+                        variableType = CKeyWordShort;
+                        flagList |= MemberFieldFlagIsKnownPrimitive;
+                        break;
+                    }
                     case CKeyWordInt:
+                    {
+                        variableType = CKeyWordInt;
+                        flagList |= MemberFieldFlagIsKnownPrimitive;
+                        break;
+                    }
                     case CKeyWordLong:
+                    {
+                        variableType = CKeyWordLong;
+                        flagList |= MemberFieldFlagIsKnownPrimitive;
+                        break;
+                    }
                     case CKeyWordFloat:
+                    {
+                        variableType = CKeyWordFloat;
+                        flagList |= MemberFieldFlagIsKnownPrimitive;
+                        break;
+                    }
                     case CKeyWordDouble:
+                    {
+                        variableType = CKeyWordDouble;
+                        flagList |= MemberFieldFlagIsKnownPrimitive;
+                        break;
+                    }
                     case CKeyWordBool:
                     {
+                        variableType = CKeyWordBool;
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
@@ -604,21 +674,20 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
                     }
                     case CKeyWordUnkown: // could be the name
                     {
-                        const PXBool isKnownPrimitive = flagList & MemberFieldFlagIsKnownPrimitive || !typeKnown;
+                        const PXBool isTypeKnown = PXFlagIsSet(flagList, MemberFieldFlagIsKnownPrimitive) || doesKnowCustomType;
 
-                        if (isKnownPrimitive)
+                        if (isTypeKnown)
                         {
-                            typeKnown = PXTrue;
-
-                            // This is our Name
-                            PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, name, 64);
+                            // Name
+                            variableNameSize = PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, variableName, 64);
                         }
                         else
                         {
-                            // Must be the a yet unkown custom type
-                            PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, type, 64);
-                        }
+                            variableTypeNameSize = PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, variableTypeName, 64);
 
+                            doesKnowCustomType = PXTrue;
+                        }                     
+                       
                         break;
                     }
                     default:
@@ -639,6 +708,11 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
             default:
                 return PXFalse;
         }
+
+
+    
+
+      
 
         PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
 
@@ -925,8 +999,6 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
                                 }
-
-
 
                                 const PXBool isEnd = compilerSymbolEntry.ID == PXCompilerSymbolLexerBracketAngleClose;
 

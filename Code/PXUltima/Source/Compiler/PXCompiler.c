@@ -571,16 +571,26 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			{
 				unsigned int value = 0;
 
-				const PXSize writtenNumbers = PXTextToIntA(text, textSize, &value);
-				const PXBool isInteger = textSize == writtenNumbers;
+				const PXSize writtenNumbers = PXTextToIntA(text, textSize, &value);	
 
-				if (isInteger)
+				if (writtenNumbers > 0)
 				{
-					compilerSymbolEntry->Source = 0;
-					compilerSymbolEntry->DataI = value;
+					const PXBool isInteger = textSize == writtenNumbers;
 
-					return PXCompilerSymbolLexerInteger;
-				}
+					if (isInteger)
+					{
+						compilerSymbolEntry->Source = 0;
+						compilerSymbolEntry->DataI = value;
+
+						return PXCompilerSymbolLexerInteger;
+					}
+					else
+					{
+						compilerSymbolEntry->Size = writtenNumbers;
+
+						return PXCompilerSymbolLexerInteger;
+					}
+				}			
 			}
 		}
 	}

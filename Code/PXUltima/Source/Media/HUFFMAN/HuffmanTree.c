@@ -476,18 +476,12 @@ void HuffmanTreeDestruct(HuffmanTree* const huffmanTree)
 
 HuffmanCodeType HuffmanCodeTypeFromCode(const unsigned short code)
 {
-	const char symbolType = 
-		'I' * (code <= 255u) +  // isLiteralSymbol
-		'L' * (code >= 257u && code <= 285u) +  // isLengthCode
-		'E' * (code == 256u); // isEndBlock
+	const HuffmanCodeType symbolType =
+		HuffmanCodeLiteral * (code <= 255u) + 
+		HuffmanCodeLength * (code >= 257u && code <= 285u) +
+		HuffmanCodeEndOfBlock * (code == 256u); 
 
-	switch (symbolType)
-	{
-		case 'I': return HuffmanCodeLiteral;
-		case 'L': return HuffmanCodeLength;
-		case 'E': return HuffmanCodeEndOfBlock;
+	// if no case hits, we have 'HuffmanCodeInvalid' as its default 0
 
-		default:
-			return HuffmanCodeInvalid;
-	}
+	return symbolType;
 }
