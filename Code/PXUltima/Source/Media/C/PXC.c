@@ -6,6 +6,34 @@
 
 #include <Log/PXLog.h>
 
+PXBool PXCElementHasName(PXCElement* const pxCElement)
+{
+    const PXBool hasName = pxCElement->Name && pxCElement->NameSizeCurrent;
+   // const PXBool hasAlias = pxCElement->NameAlias && pxCStructure->NameAliasSizeCurrent;
+
+    return hasName;
+}
+
+PXBool PXCElementClear(PXCElement* const pxCElement)
+{
+    char* name = pxCElement->Name;
+    PXInt8U nameSize = pxCElement->NameSizeMaximal;
+
+    char* nameSecound = pxCElement->ElementStructure.NameAlias;
+    PXInt8U nameSizeSecound = pxCElement->ElementStructure.NameAliasSizeMaximal;
+
+    MemoryClear(name, nameSize);
+    MemoryClear(nameSecound, nameSizeSecound);
+
+    MemoryClear(pxCElement, sizeof(PXCElement));
+
+    pxCElement->Name = name;
+    pxCElement->NameSizeMaximal = nameSize;
+
+    pxCElement->ElementStructure.NameAlias = nameSecound;
+    pxCElement->ElementStructure.NameAliasSizeMaximal = nameSizeSecound;
+}
+
 CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize)
 {
     switch (nameSize)
@@ -147,9 +175,6 @@ PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const 
     );
 #endif 
 
-
-    PXDataStreamWriteI8U(outputStream, CKeyWordTypeDefinition);
-
     PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Peek for next element
 
     switch (compilerSymbolEntry.ID)
@@ -163,7 +188,7 @@ PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const 
                 case CKeyWordEnum:
                 case CKeyWordStruct:
                 case CKeyWordUnion:
-                    return PXCFileParseStructure(inputStream, outputStream, typeKey);
+                    return PXCFileParseStructure(inputStream, outputStream, typeKey, PXTrue);
             }
             break;
         }
@@ -172,13 +197,24 @@ PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const 
     return PXFalse;
 }
 
-PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* const outputStream, const CKeyWord structureType)
+PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition)
 {
     PXCompilerSymbolEntry compilerSymbolEntry;
 
     PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch element after 'union' keyword
 
-    PXDataStreamWriteI8U(outputStream, structureType); // Write object type
+    switch (structureType)
+    {
+        case CKeyWordEnum:
+            PXDataStreamWriteI8U(outputStream, PXCStructureTypeEnum);
+            break;
+        case CKeyWordUnion:
+            PXDataStreamWriteI8U(outputStream, PXCStructureTypeUnion);
+            break;
+        case CKeyWordStruct:
+            PXDataStreamWriteI8U(outputStream, PXCStructureTypeStruct);
+            break;
+    }  
 
     switch (compilerSymbolEntry.ID)
     {
@@ -379,6 +415,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
     PXSize poition = outputStream->DataCursor;
 
     PXDataStreamWriteI16U(outputStream, 0xFFFF);
+    PXDataStreamWriteI8U(outputStream, isTypeDefitinition);
 
 
     while (1)
@@ -395,9 +432,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         if (isAtEnd) // If so, we quit
         {
             PXDataStreamWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
-
-
-
+                    
 
             PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
 
@@ -501,6 +536,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 {
     PXBool finished = 0;
     PXInt8U flagList = MemberFieldFlagIsSigned;
+    PXInt16U sizeOfType = 0;
 
     const PXBool isTypeName = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry->ID;
 
@@ -519,9 +555,13 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
     if (isStructure)
     {
-        PXCFileParseStructure(inputStream, outputStream, fieldType);
+        PXCFileParseStructure(inputStream, outputStream, fieldType, PXFalse);
         return PXTrue;
     }
+
+
+    PXDataStreamWriteI8U(outputStream, PXCStructureTypeStructElement);
+
 
     PXBool doesKnowCustomType = PXFalse;
     CKeyWord variableType = CKeyWordInvalid;
@@ -543,9 +583,21 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
             const PXBool isKnownPrimitive = flagList & MemberFieldFlagIsKnownPrimitive;
 
             // if we have a primitive type, we only have one 'unkown' name.
-            // If we dont have a primitive, we have two.
+            // If we dont have a primitive, we have two.         
+
+
+            if (PXFlagIsSet(flagList, MemberFieldFlagIsAdress))
+            {
+                sizeOfType = sizeof(void*);
+            }
+
+                     // Write name
+            PXDataStreamWriteI8U(outputStream, variableNameSize);
+            PXDataStreamWriteB(outputStream, variableName, variableNameSize);
+
 
             PXDataStreamWriteI8U(outputStream, flagList); // Write flags
+            PXDataStreamWriteI16U(outputStream, sizeOfType); // Write size of Type
 
             if (isKnownPrimitive)
             {
@@ -556,11 +608,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
                 // We have a 2nd name, so its a custom type. Write name of custom variable..
                 PXDataStreamWriteI8U(outputStream, variableTypeNameSize);
                 PXDataStreamWriteB(outputStream, variableTypeName, variableTypeNameSize);
-            }
-
-            // Write name
-            PXDataStreamWriteI8U(outputStream, variableNameSize);
-            PXDataStreamWriteB(outputStream, variableName, variableNameSize);
+            }   
 
 
 #if 0
@@ -597,48 +645,55 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
                     case CKeyWordUnion:
                     case CKeyWordEnum:
                     case CKeyWordStruct:
-                        PXCFileParseStructure(inputStream, outputStream, typeKey);
+                        PXCFileParseStructure(inputStream, outputStream, typeKey, PXFalse);
                         break;
 
                     case CKeyWordChar:
                     {
                         variableType = CKeyWordChar;
+                        sizeOfType = sizeof(char);
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
                     case CKeyWordShort:
                     {
                         variableType = CKeyWordShort;
+                        sizeOfType = sizeof(short);
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
                     case CKeyWordInt:
                     {
                         variableType = CKeyWordInt;
+                        sizeOfType = sizeof(int);
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
                     case CKeyWordLong:
                     {
                         variableType = CKeyWordLong;
+                        sizeOfType = sizeof(long);
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
                     case CKeyWordFloat:
                     {
                         variableType = CKeyWordFloat;
+                        sizeOfType = sizeof(float);
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
                     case CKeyWordDouble:
                     {
                         variableType = CKeyWordDouble;
+                        sizeOfType = sizeof(double);
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
                     case CKeyWordBool:
                     {
                         variableType = CKeyWordBool;
+                        sizeOfType = 1u;
                         flagList |= MemberFieldFlagIsKnownPrimitive;
                         break;
                     }
@@ -986,7 +1041,6 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         {
                             printf("Makro include libary : (global) ");
 
-
                             while (1)
                             {
                                 PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
@@ -1089,7 +1143,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                     case CKeyWordEnum:
                     case CKeyWordStruct:
                     {
-                        PXCFileParseStructure(&tokenSteam, outputStream, keyWord);
+                        PXCFileParseStructure(&tokenSteam, outputStream, keyWord, PXFalse);
                         break;
                     }
                     case CKeyWordExtern:
@@ -1171,5 +1225,76 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 break;
             }
         }
+    }
+}
+
+void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCElement)
+{
+    PXCElementClear(pxCElement);
+
+    {
+        PXInt8U keyID = 0;
+
+        PXDataStreamReadI8U(inputStream, &keyID);
+
+        pxCElement->Type = (PXCStructureType)keyID;
+    }  
+
+
+    // Fake name
+    PXDataStreamReadI8U(inputStream, &pxCElement->NameSizeCurrent);
+    PXDataStreamReadB(inputStream, pxCElement->Name, pxCElement->NameSizeCurrent);
+
+    switch (pxCElement->Type)
+    {
+        case PXCStructureTypeEnum:
+        case PXCStructureTypeStruct:
+        case PXCStructureTypeUnion:
+        {
+            // Alias
+            PXDataStreamReadI8U(inputStream, &pxCElement->ElementStructure.NameAliasSizeCurrent);
+            PXDataStreamReadB(inputStream, pxCElement->ElementStructure.NameAlias, pxCElement->ElementStructure.NameAliasSizeCurrent);
+
+            PXDataStreamReadI16U(inputStream, &pxCElement->ElementStructure.MemberAmount);
+
+            PXDataStreamReadI8U(inputStream, &pxCElement->IsTypeDefinition);
+
+            break;
+        }     
+        case PXCStructureTypeStructElement:
+        {
+            PXInt8U variableInfoFlags = 0;
+
+            PXDataStreamReadI8U(inputStream, &variableInfoFlags); // Write flags
+            PXDataStreamReadI16U(inputStream, &pxCElement->ElementVariable.SizeOfType); // Write size of Type
+
+            pxCElement->ElementVariable.IsKnownPrimitve = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsKnownPrimitive);
+            pxCElement->ElementVariable.IsConstantType = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsConstType);
+            pxCElement->ElementVariable.IsInRegister = PXFlagIsSet(variableInfoFlags, MemberFieldFlagRegister);
+            pxCElement->ElementVariable.IsSigned = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsSigned);
+            pxCElement->ElementVariable.IsAdress = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsAdress);
+            pxCElement->ElementVariable.IsAdressConstant = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsAdressConst);
+            pxCElement->ElementVariable.IsAdressVolitile = PXFlagIsSet(variableInfoFlags, MemberFieldFlagVolatile);
+            pxCElement->ElementVariable.IsAdressRestricted = PXFlagIsSet(variableInfoFlags, MemberFieldFlagResticted);
+
+            if (pxCElement->ElementVariable.IsKnownPrimitve)
+            {
+                // Get Type
+                PXInt8U keyID = 0;
+
+                PXDataStreamReadI8U(inputStream, &keyID);
+
+                pxCElement->ElementVariable.PrimitiveType = (CKeyWord)keyID;
+            }
+            else
+            {
+                PXDataStreamReadI8U(inputStream, &pxCElement->ElementVariable.NameOfTypeSizeCurrent);
+                PXDataStreamReadB(inputStream, pxCElement->ElementVariable.NameOfType, pxCElement->ElementVariable.NameOfTypeSizeCurrent);
+            }
+
+            break;
+        }
+        default:
+            break;
     }
 }

@@ -4,7 +4,7 @@
 #include <Media/Type.h>
 #include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
-
+#include <Media/C/PXC.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -28,13 +28,24 @@ extern "C"
 	}
 	PXCSKeyWord;
 
+
+	typedef struct PXCTranslateStruct_
+	{
+		PXCElement Element;
+
+		PXBool AreInUnion;
+
+		PXInt16U StructureOffsetTotal;
+
+		PXInt16U UnionStartOffset;
+		PXInt16U UnionWidthOffset;
+	}
+	PXCTranslateStruct;
+
 	PXPublic PXCSKeyWord PXCSFetchNext(PXDataStream* const inputSteam);
 
-	PXPublic void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStream);
+	PXPublic void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStream, PXCTranslateStruct* const pxCTranslateStruct);
 
-
-
-	PXPublic void PXCSSerializeStruct(PXDataStream* const inputSteam, PXDataStream* const outputStream, char* name, int size, int amount);
 	PXPublic void PXCSCreateWrapperFromCSource(PXDataStream* const inputSteam, PXDataStream* const outputStream);
 
 #ifdef __cplusplus

@@ -92,6 +92,85 @@ extern "C"
 	CKeyWord;
 
 
+	typedef enum PXCStructureType_
+	{
+		PXCStructureTypeInvalid,
+		PXCStructureTypeEnum,
+		PXCStructureTypeStruct,
+		PXCStructureTypeUnion,
+		PXCStructureTypeStructElement
+	}
+	PXCStructureType;
+
+
+
+
+
+
+
+
+	// Member/Field/Variable in a struct or union
+	typedef struct PXCStructureVariable_
+	{
+		char* NameOfType;
+		PXInt8U NameOfTypeSizeCurrent;
+		PXInt8U NameOfTypeSizeMaximal;
+
+		PXBool IsKnownPrimitve;
+		PXBool IsConstantType;
+		PXBool IsInRegister;
+
+		// Variable only
+		PXBool IsSigned;
+
+		// Pointers only
+		PXBool IsAdress;
+		PXBool IsAdressConstant;
+		PXBool IsAdressVolitile;
+		PXBool IsAdressRestricted;
+
+		CKeyWord PrimitiveType; // Only set, if we know it
+		PXInt16U SizeOfType;
+
+	
+	}
+	PXCStructureVariable;
+
+
+	typedef struct PXCStructure_
+	{
+		char* NameAlias;
+		PXInt8U NameAliasSizeCurrent;
+		PXInt8U NameAliasSizeMaximal;
+
+		PXInt16U MemberOffsetCurrent;
+		PXInt16U MemberAmount;
+
+		PXInt64U FullSize;
+	}
+	PXCStructure;
+
+	typedef struct PXCElement_
+	{
+		PXCStructureType Type;
+
+		PXBool IsTypeDefinition;
+
+		char* Name;
+		PXInt8U NameSizeCurrent;
+		PXInt8U NameSizeMaximal;
+
+		union
+		{
+			PXCStructure ElementStructure;
+			PXCStructureVariable ElementVariable;
+		};
+	}
+	PXCElement;
+
+	PXPublic PXBool PXCElementHasName(PXCElement* const pxCElement);
+	PXPublic PXBool PXCElementClear(PXCElement* const pxCElement);
+
 	typedef enum PXCToken_ PXCToken;
 
 	typedef enum PXCToken_
@@ -117,12 +196,16 @@ extern "C"
 
 
 	PXPublic PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const outputStream);
-	PXPublic PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* const outputStream, const CKeyWord structureType);
+	PXPublic PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition);
 	PXPublic PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 	PXPublic PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 
 	PXPublic PXActionResult PXCFileLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream);
 	PXPublic PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+
+
+	PXPublic void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCElement);
+
 
 
 #ifdef __cplusplus
