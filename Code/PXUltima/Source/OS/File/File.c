@@ -635,8 +635,6 @@ PXActionResult PXDirectoryDeleteW(const wchar_t* directoryName)
 	return PXActionInvalid;
 }
 
-
-
 PXActionResult PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
 {
 	return PXActionInvalid;
@@ -653,25 +651,43 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 
 #if OSUnix
 
+	struct dirent* directoryEntry;
+	DIR* directory = opendir(directory);
+
+	PXBool sucess = d != PXNull;
+
+	if (!sucess)
+	{
+		return 0;
+	}
+
+	while ((directoryEntry = readdir(directory)) != PXNull)
+	{
+		const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->d_name);
+		const unsigned int directoryLength = strlen(directory);
+		const unsigned int FileNameLength = strlen(directoryEntry->d_name);
+	}
+
+	closedir(directory);
+
+
 #elif OSWindows
 
 	WIN32_FIND_DATA findFileData;
 
-	
-		wchar_t seachDirectoryKey[300];
-		wchar_t* address = seachDirectoryKey;
+	wchar_t seachDirectoryKey[300];
+	wchar_t* address = seachDirectoryKey;
 
-		address += PXTextCopyW(buffer, wriien, address, 300);
-		address += PXTextCopyW(L"*", 1u, address, 300); // Get all directory and files
+	address += PXTextCopyW(buffer, wriien, address, 300);
+	address += PXTextCopyW(L"*", 1u, address, 300); // Get all directory and files
 
-		const HANDLE iteratorHandle = FindFirstFileW(seachDirectoryKey, &findFileData); // FindFirstFileExW() has literally no additional functionality (for now)
-	
-		{
-			const PXBool failed = INVALID_HANDLE_VALUE == iteratorHandle;
+	const HANDLE iteratorHandle = FindFirstFileW(seachDirectoryKey, &findFileData); // FindFirstFileExW() has literally no additional functionality (for now)
 
-			PXActionOnErrorFetchAndExit(failed);
-		}
-	
+	{
+		const PXBool failed = INVALID_HANDLE_VALUE == iteratorHandle;
+
+		PXActionOnErrorFetchAndExit(failed);
+	}	
 
 	do
 	{
@@ -687,9 +703,7 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 
 
 		// Skip?
-		const PXBool isSystemDottedFolder = 
-			((findFileData.cFileName[0] == '.') && (findFileData.cFileName[1] == '\0')) ||
-			((findFileData.cFileName[0] == '.') && (findFileData.cFileName[1] == '.') && (findFileData.cFileName[2] == '\0'));
+		const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(findFileData.cFileName);
 
 		if (isSystemDottedFolder)
 		{

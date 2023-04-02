@@ -95,10 +95,17 @@ extern "C"
 	typedef enum PXCStructureType_
 	{
 		PXCStructureTypeInvalid,
+
+		PXCStructureTypeMakroFlag,
+		PXCStructureTypeMakroValue,
+		PXCStructureTypeMakroFunction,
+		PXCStructureTypeMakroInlcude,
+
 		PXCStructureTypeEnum,
 		PXCStructureTypeStruct,
 		PXCStructureTypeUnion,
-		PXCStructureTypeStructElement
+		PXCStructureTypeStructElement,
+		PXCStructureTypeFuntion
 	}
 	PXCStructureType;
 
@@ -150,6 +157,82 @@ extern "C"
 	}
 	PXCStructure;
 
+	typedef enum PXCAccessModifier_
+	{
+		PXCAccessModifierInvalid,
+		PXCAccessModifierPublic, // extern
+		PXCAccessModifierLocale, // static
+	}
+	PXCAccessModifier;
+
+	typedef enum PXCLibraryPathType_
+	{
+		PXCLibraryPathTypeInvalid,
+		PXCLibraryPathTypeGlobal, // <xxxx.h>
+		PXCLibraryPathTypeLocale, // "xxxx.h"
+	}
+	PXCLibraryPathType;
+
+
+	typedef enum PXCCallingConvention_
+	{
+		PXCCallingConventionInvalid,
+
+		// [cdecl] Default for most C-Compilers
+		// Pushed on the stack right-to-left order
+		// The caller cleans the stack after the function call returns.
+		PXCCallingConventionCDeclaration,
+
+		// [syscall] Same as [cdecl] but mostly just used by OS/2 32-Bit
+		PXCCallingConventionSystemCall,
+
+		// [optlink] used by the IBM VisualAge compilers]
+		PXCCallingConventionOptlink,
+
+		// []
+		PXCCallingConventionPascal,
+
+		// [fastcall]
+		PXCCallingConventionFastCall,
+
+		// [register]
+		PXCCallingConventionRegister,
+
+		// [stdcall]
+		PXCCallingConventionStandardCall,
+
+		// [vectorcall]
+		PXCCallingConventionVectorCall,
+
+		// [safecall]
+		PXCCallingConventionSafeCall,
+
+		// [thiscall]
+		PXCCallingConventionThisCall
+	}
+	PXCCallingConvention;
+
+	typedef struct PXCFunction_
+	{
+		PXCCallingConvention CallingConvention;
+		PXCAccessModifier AccessModifier;
+
+		PXInt8U ParameterListSize;
+	}
+	PXCFunction;
+
+	typedef struct PXCMakroInclucde_
+	{
+		PXCLibraryPathType PathType;
+	}
+	PXCMakroInclucde;
+
+	typedef struct PXCMakroFunction_
+	{
+		int dummy;
+	}
+	PXCMakroFunction;
+
 	typedef struct PXCElement_
 	{
 		PXCStructureType Type;
@@ -164,32 +247,14 @@ extern "C"
 		{
 			PXCStructure ElementStructure;
 			PXCStructureVariable ElementVariable;
+			PXCFunction ElementFunction;
+			PXCMakroInclucde ElementInclucde;
 		};
 	}
 	PXCElement;
 
 	PXPublic PXBool PXCElementHasName(PXCElement* const pxCElement);
 	PXPublic PXBool PXCElementClear(PXCElement* const pxCElement);
-
-	typedef enum PXCToken_ PXCToken;
-
-	typedef enum PXCToken_
-	{
-		PXCTokenInvalid,
-
-		PXCTokenMakroDefintion,
-		PXCTokenMakroFunction,
-
-		PXCTokenEnumTypeDefinition,
-		PXCTokenEnumVariableDefinition,
-
-		PXCTokenStructTypeDefinition,
-		PXCTokenStructVariableDefinition,
-
-		PXCTokenUnionTypeDefinition,
-		PXCTokenUnionVariableDefinition,
-	}
-	PXCToken;
 
 
 	PXPublic CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize);

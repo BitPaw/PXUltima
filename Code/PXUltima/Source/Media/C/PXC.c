@@ -6,6 +6,8 @@
 
 #include <Log/PXLog.h>
 
+#define PXCDebugOutput 0
+
 PXBool PXCElementHasName(PXCElement* const pxCElement)
 {
     const PXBool hasName = pxCElement->Name && pxCElement->NameSizeCurrent;
@@ -166,7 +168,7 @@ PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const 
 {
     PXCompilerSymbolEntry compilerSymbolEntry;
 
-#if 1
+#if PXCDebugOutput
     printf
     (
         "|+--------------------------------------------------------+|\n"
@@ -440,7 +442,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
             if (isExpectedComma) // Get alias name
             {
-#if 1
+#if PXCDebugOutput
                 char buffer[64];
                 PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
@@ -480,7 +482,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         {
             case CKeyWordEnum:
             {
-#if 1
+#if PXCDebugOutput
                 char buffer[64];
                 PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
@@ -785,11 +787,18 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
 PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
-  //  PXDataStreamWriteI8U(inputStream, );
+    
+
+    PXDataStreamWriteI8U(outputStream, PXCStructureTypeFuntion);
+
+    // Name
+
+    // Amount
 
 
-#if 1
-    char buffer[64];
+
+#if PXCDebugOutput
+    char buffer[64]; // calling convention?
 
     PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
@@ -801,7 +810,7 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
 
     PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
 
-#if 1
+#if PXCDebugOutput
 
     PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
@@ -811,9 +820,11 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
 
 
     PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
+    
+    PXDataStreamWriteI8U(outputStream, compilerSymbolEntry->Size);
+    PXDataStreamWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
 
-
-#if 1
+#if PXCDebugOutput
 
     PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
@@ -830,24 +841,40 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
         printf("Expected funtion but didnt\n");
     }
 
+
+    PXSize parameterListLengthDataPosition = outputStream->DataCursor;
+    PXInt8U parameterListLength = 0;
+
+    PXDataStreamWriteI8U(outputStream, 0xFF); // How many parameters?
+
+
+
     PXBool parameterDone = PXFalse;
 
     while (1u)
     {
-
-
         PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // get next thing
 
         const PXBool isEndOfParameterList = PXCompilerSymbolLexerBrackedRoundClose == compilerSymbolEntry->ID;
 
         if (isEndOfParameterList)
         {
+            PXDataStreamWriteAtI8U(outputStream, parameterListLength, parameterListLength);
+
             break;
         }
 
-#if 1
+        ++parameterListLength;
 
 
+        // Get type
+
+
+        // Get name
+        PXDataStreamWriteI8U(outputStream, compilerSymbolEntry->Size);
+        PXDataStreamWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
+
+#if PXCDebugOutput
 
         PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
@@ -936,8 +963,9 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 {
                     case CKeyWordDefine:
                     {
-                        PXSize defineNameLength = 0;
-                        char defineName[64];
+                        const PXSize defineTypePosition = outputStream->DataCursor;
+
+                        PXDataStreamWriteI8U(outputStream, 0xFF); // Write dummy define type
 
                         // Fetch name [Required]
                         {
@@ -950,45 +978,97 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                 printf("Makro define has invalid name\n");
                             }
 
-                            defineNameLength = compilerSymbolEntry.Size;
+                            // Write define name
+                            PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
+                            PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
 #if 1
-
-                            printf("Makro define : ");
+                            printf("[C] Makro define name : ");
                             PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 #endif
                         }
 
 
+                        PXInt16U currentLineA = compilerSymbolEntry.Line;
+
                         PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
 
-                        const PXBool isDefineFunction = PXCompilerSymbolLexerBrackedRoundOpen == compilerSymbolEntry.ID;
+                        PXInt16U currentLineB = compilerSymbolEntry.Line;
 
-                        if (isDefineFunction)
+                        PXBool isNewLine = currentLineA != currentLineB;
+
+                        if (isNewLine)
                         {
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                            // Is Makro-Flag
 
-                            //PXDataStreamWriteI8U(outputStream, PXCTokenMakroFunction);
+                            PXDataStreamWriteAtI8U(outputStream, PXCStructureTypeMakroFlag, defineTypePosition);
                         }
                         else
                         {
-                            //PXDataStreamWriteI8U(outputStream, PXCTokenMakroDefintion);
-                        }
+                            switch (compilerSymbolEntry.ID)
+                            {
+                                case PXCompilerSymbolLexerBrackedRoundOpen:
+                                {
+                                    // Is Makro-Function
 
-                      //  PXDataStreamWriteI8U(outputStream, defineNameLength);
-                       // PXDataStreamWriteB(outputStream, defineName, defineNameLength);
+                                    const PXSize position = outputStream->DataCursor;
+                                    PXInt8U parameterListLength = 0;
 
+                                    PXDataStreamWriteAtI8U(outputStream, PXCStructureTypeMakroFunction, defineTypePosition);
+                                    PXDataStreamWriteI8U(outputStream, 0xFF);
 
-                        // Fetch [Optional]
-                        {
-                            //PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
+                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Remove the '('
 
-                            //const PXBool isFlagDefine = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+                                    while (1)
+                                    {
+                                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
+                                        const PXBool isClosingBreaked = PXCompilerSymbolLexerBrackedRoundClose == compilerSymbolEntry.ID;
 
+                                        if (isClosingBreaked)
+                                        {
+                                            break;
+                                        }
 
-                            const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-                        }
+                                        ++parameterListLength;
+
+                                        PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
+                                        PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+                                        PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
+
+                                        switch (compilerSymbolEntry.ID)
+                                        {
+                                            case PXCompilerSymbolLexerComma:
+                                                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Extract comma
+                                                break;
+                                            case PXCompilerSymbolLexerBrackedRoundClose:
+                                                // done, dont do anything
+                                                break;
+
+                                            default: // Error
+                                                break;
+                                        }
+                                    }
+
+                                    PXDataStreamWriteAtI8U(outputStream, parameterListLength, position);
+
+                                    break;
+                                }
+                                default:
+                                {
+                                    // Is makro-Value
+
+                                    PXDataStreamWriteAtI8U(outputStream, PXCStructureTypeMakroValue, defineTypePosition);
+                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+
+                                    PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
+                                    PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+                                    break;
+                                }
+                            }
+                        }           
 
                         break;
                     }
@@ -1034,63 +1114,111 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                     {
                         PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
-                        // case A) #include <xxxxxxx>
-                        const PXBool isTypeA = compilerSymbolEntry.ID == PXCompilerSymbolLexerBracketAngleOpen;
+                        const PXSize defineTypePosition = outputStream->DataCursor;
 
-                        if (isTypeA)
+                        PXDataStreamWriteI8U(outputStream, 0xFF); // Write dummy define type
+
+                        switch (compilerSymbolEntry.ID)
                         {
-                            printf("Makro include libary : (global) ");
-
-                            while (1)
+                            case PXCompilerSymbolLexerBracketAngleOpen:
                             {
-                                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                                // case A) #include <xxxxxxx>
 
-                                const PXBool isString = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+#if PXCDebugOutput
+                                printf("[C] Makro include libary : (global) ");
+#endif            
 
-                                if (isString)
+                                PXSize stringLength = 0;
+                                PXSize stringLengthPosition = 0;
+
+                                stringLengthPosition = outputStream->DataCursor;
+
+                                PXDataStreamWriteI8U(outputStream, 0xFF);
+
+                                while (1)
                                 {
-                                    PXLogPrintString(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                                }
 
-                                const PXBool isEnd = compilerSymbolEntry.ID == PXCompilerSymbolLexerBracketAngleClose;
+                                    const PXBool isString = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
 
-                                if (isEnd)
-                                {
-                                    printf("\n");
-                                    break;
-                                }
+                                    if (isString)
+                                    {
+#if 1
+                                        PXLogPrintString(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+#endif
 
-                                const PXBool isSlash = compilerSymbolEntry.ID == PXCompilerSymbolLexerSlash || compilerSymbolEntry.ID == PXCompilerSymbolLexerSlashBack;
+                                        stringLength += compilerSymbolEntry.Size;
+                                 
+                                        PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
-                                if (isSlash)
-                                {
-                                    printf("/");
-                                }
-                                else
-                                {
-                                    printf("Failure, include wrong");
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // Case B) #include "xxxxxxxx"
+                                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                                    }
 
-                            const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+                                    const PXBool isEnd = compilerSymbolEntry.ID == PXCompilerSymbolLexerBracketAngleClose;
 
-                            if (!isExpectedText)
-                            {
-                                printf("Makro include has invalid name\n");
-                            }
+                                    if (isEnd)
+                                    {
+#if 1
+                                        printf("\n");
+#endif // 0   
+                                        break;
+                                    }
+
+                                    const PXBool isSlash = compilerSymbolEntry.ID == PXCompilerSymbolLexerSlash || compilerSymbolEntry.ID == PXCompilerSymbolLexerSlashBack;
+
+                                    if (isSlash)
+                                    {
+                                        stringLength += 1;
+
+                                        PXDataStreamWriteB(outputStream, "/", 1u);
 
 #if 1
+                                        printf("/");
+#endif // 0                                  
+                                    }
+                                    else
+                                    {
+                                        printf("Failure, include wrong");
+                                        break;
+                                    }
+                                }
 
-                            printf("Makro include : ");
-                            PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                                PXDataStreamWriteAtI8U(outputStream, stringLength, stringLengthPosition);
+                                PXDataStreamWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
+
+                                break;
+                            }
+                            case PXCompilerSymbolLexerString:
+                            {
+                                // Case B) #include "xxxxxxxx"                              
+
+                                const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+
+                                if (!isExpectedText)
+                                {
+                                    printf("Makro include has invalid name\n");
+                                }
+
+
+                                PXDataStreamWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
+                                PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+
+#if PXCDebugOutput
+
+                                printf("Makro include : ");
+                                PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 #endif
+
+                                PXDataStreamWriteI8U(outputStream, PXCLibraryPathTypeLocale);
+
+                                break;
+                            }
+
+                            default:
+                            {
+                                break;
+                            }                              
                         }
 
                         break;
@@ -1238,22 +1366,49 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
         PXDataStreamReadI8U(inputStream, &keyID);
 
         pxCElement->Type = (PXCStructureType)keyID;
-    }  
-
+    }
 
     // Fake name
     PXDataStreamReadI8U(inputStream, &pxCElement->NameSizeCurrent);
-    PXDataStreamReadB(inputStream, pxCElement->Name, pxCElement->NameSizeCurrent);
+    pxCElement->Name = PXDataStreamCursorPosition(inputStream);
+    PXDataStreamCursorAdvance(inputStream, pxCElement->NameSizeCurrent);
 
     switch (pxCElement->Type)
     {
+        case PXCStructureTypeMakroFlag:
+        {
+
+
+            break;
+        }
+        case PXCStructureTypeMakroValue:
+        {
+
+
+            break;
+        }
+        case PXCStructureTypeMakroInlcude:
+        {
+            PXCLibraryPathType pxCLibraryPathType = PXCLibraryPathTypeInvalid;
+
+            {
+                PXInt8U inlcudeType = 0;
+
+                PXDataStreamReadI8U(inputStream, &inlcudeType);
+
+                inlcudeType = (PXCLibraryPathType)inlcudeType;
+            }
+
+            break;
+        }         
         case PXCStructureTypeEnum:
         case PXCStructureTypeStruct:
         case PXCStructureTypeUnion:
         {
             // Alias
             PXDataStreamReadI8U(inputStream, &pxCElement->ElementStructure.NameAliasSizeCurrent);
-            PXDataStreamReadB(inputStream, pxCElement->ElementStructure.NameAlias, pxCElement->ElementStructure.NameAliasSizeCurrent);
+            pxCElement->ElementStructure.NameAlias = PXDataStreamCursorPosition(inputStream);
+            PXDataStreamCursorAdvance(inputStream, pxCElement->ElementStructure.NameAliasSizeCurrent);
 
             PXDataStreamReadI16U(inputStream, &pxCElement->ElementStructure.MemberAmount);
 
@@ -1289,8 +1444,20 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
             else
             {
                 PXDataStreamReadI8U(inputStream, &pxCElement->ElementVariable.NameOfTypeSizeCurrent);
-                PXDataStreamReadB(inputStream, pxCElement->ElementVariable.NameOfType, pxCElement->ElementVariable.NameOfTypeSizeCurrent);
+                pxCElement->ElementVariable.NameOfType = PXDataStreamCursorPosition(inputStream);
+                PXDataStreamCursorAdvance(inputStream, pxCElement->ElementVariable.NameOfTypeSizeCurrent);
             }
+
+            break;
+        }
+        case PXCStructureTypeFuntion:
+        {
+            PXCFunction* const pxCFunction = &pxCElement->ElementFunction;
+
+            pxCFunction->AccessModifier = PXCAccessModifierPublic;
+            pxCFunction->CallingConvention = PXCCallingConventionCDeclaration;
+
+            PXDataStreamReadI8U(inputStream, &pxCFunction->ParameterListSize);
 
             break;
         }

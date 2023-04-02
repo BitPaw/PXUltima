@@ -235,13 +235,16 @@ extern "C"
 	PXPublic void PXWindowCursorCaptureMode(PXWindow* PXWindow, const PXWindowCursorMode cursorMode);
 	//voidPXWindowScreenShotTake(Image image);
 
-	PXPublic unsigned char PXWindowFrameBufferSwap(PXWindow* PXWindow);
+	PXPublic PXBool PXWindowFrameBufferSwap(PXWindow* PXWindow);
 
-	PXPublic unsigned char PXWindowInteractable(PXWindow* PXWindow);
+	PXPublic PXBool PXWindowInteractable(PXWindow* PXWindow);
 
-	PXPublic unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y);
-	PXPublic unsigned char PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y);
+	PXPublic PXBool PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y);
+	PXPublic PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y);
 
+
+	// Checks if the current window is the one in focus.
+	PXPublic PXBool PXWindowIsInFocus(const PXWindow* const window);
 
 
 	// Event functions

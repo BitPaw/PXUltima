@@ -2488,41 +2488,42 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 #endif
 }
 
-unsigned char PXWindowFrameBufferSwap(PXWindow* window)
+PXBool PXWindowFrameBufferSwap(PXWindow* window)
 {
     return PXGraphicImageBufferSwap(&window->GraphicInstance);
 }
 
-unsigned char PXWindowInteractable(PXWindow* window)
+PXBool PXWindowInteractable(PXWindow* window)
 {
-    switch(window->CursorModeCurrent)
+    switch (window->CursorModeCurrent)
     {
-    default:
+        default:
         case PXWindowCursorIgnore:
         case PXWindowCursorShow:
-            return 0;
+            return PXFalse;
 
         case PXWindowCursorInvisible:
         case PXWindowCursorLock:
         case PXWindowCursorLockAndHide:
-            return 1;
+            return PXTrue;
     }
 }
 
-unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y)
+PXBool PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y)
 {
     int xPos = 0;
     int yPos = 0;
-    const unsigned char sucessfulA = PXWindowCursorPositionInDestopGet(window, &xPos, &yPos);
+    const PXBool sucessfulA = PXWindowCursorPositionInDestopGet(window, &xPos, &yPos);
 
 #if OSUnix
+    return PXFalse;
 
 #elif OSWindows
     POINT point;
     point.x = xPos;
     point.y = yPos;
 
-    const unsigned char sucessful = ScreenToClient(window->ID, &point);  // are now relative to hwnd's client area
+    const PXBool sucessful = ScreenToClient(window->ID, &point);  // are now relative to hwnd's client area
 
     if(sucessful)
     {
@@ -2539,9 +2540,10 @@ unsigned char PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y
 #endif
 }
 
-unsigned char PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
+PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
 {
 #if OSUnix
+    return PXFalse;
 
 #elif OSWindows
     POINT point;
@@ -2565,8 +2567,21 @@ unsigned char PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y
 #endif
 }
 
+PXBool PXWindowIsInFocus(const PXWindow* const window)
+{
+#if OSUnix
+    return PXFalse;
+#elif OSWindows
+    const HWND windowIDInFocus = GetForegroundWindow(); // User32.dll, Windows 2000
+    const PXBool isInFocus = window->ID == windowIDInFocus;
+
+    return isInFocus;
+#endif
+}
+
 void TriggerOnMouseScrollEvent(const PXWindow* window, const Mouse* mouse)
 {
+
 }
 
 void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState)

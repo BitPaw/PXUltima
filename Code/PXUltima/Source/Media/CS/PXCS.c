@@ -275,7 +275,24 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 
 			break;
 		}
+		case PXCStructureTypeFuntion:
+		{
+			PXCFunction* const pxCFunction = &pxCTranslateStruct->Element.ElementFunction;
 
+			// Function
+
+			PXDataStreamWriteB(outputStream, "\t[DllImport(\"PXUltima.dll\")]\n\tprivate static unsafe extern \n", 60);
+			PXDataStreamWriteB(outputStream, pxCTranslateStruct->Element.Name, pxCTranslateStruct->Element.NameSizeCurrent);
+			PXDataStreamWriteB(outputStream, "(", 1);
+
+			for (PXSize i = 0; i < pxCFunction->ParameterListSize; ++i)
+			{
+				
+			}
+		
+			PXDataStreamWriteB(outputStream, ");\n", 3);
+			break;
+		}
 		default:
 			break;
 	}
