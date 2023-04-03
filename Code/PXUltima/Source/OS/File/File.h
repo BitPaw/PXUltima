@@ -46,9 +46,7 @@ typedef HANDLE FileMappingID;
 #define ExtensionMaxSize 256 //_MAX_EXT
 #endif
 
-#define PXDirectoryIsDotFolder(directoryName) \
- ((directoryName[0] == '.') && (directoryName[1] == '\0')) || \
- ((directoryName[0] == '.') && (directoryName[1] == '.') && (directoryName == '\0')))
+#define PXDirectoryIsDotFolder(s) (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s == '\0')))
 
 #ifdef __cplusplus
 extern "C"
