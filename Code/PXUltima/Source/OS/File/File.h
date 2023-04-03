@@ -47,8 +47,8 @@ typedef HANDLE FileMappingID;
 #endif
 
 #define PXDirectoryIsDotFolder(directoryName) \
-((directoryName[0] == '.') && (directoryName[1] == '\0')) || \
-((directoryName[0] == '.') && (directoryName[1] == '.') && (directoryName == '\0'))
+ ((directoryName[0] == '.') && (directoryName[1] == '\0')) || \
+ ((directoryName[0] == '.') && (directoryName[1] == '.') && (directoryName == '\0')))
 
 #ifdef __cplusplus
 extern "C"
@@ -217,7 +217,7 @@ extern "C"
 
 		wchar_t* FileFilter;
 		PXSize FileFilterSize;
-		
+
 		unsigned int Flags;
 		unsigned char DepthCounter;
 		PXBool Recursion;

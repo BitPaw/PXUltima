@@ -2,5 +2,5 @@
 <CodeBlocks_workspace_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveProject path="PXUltima/PXUltima.cbp" />
-	<PreferredTarget name="Windows 32 Bit - Debug" />
+	<PreferredTarget name="Linux 64 Bit - Debug" />
 </CodeBlocks_workspace_layout_file>

@@ -29,7 +29,7 @@ void PXSBPPackageProcessorOnChunkRecived(PXSBPPackageProcessor* const pxSBPPacka
 	{
 		// It is probably a new Package. So we try to parse the SBP header
 
-		const PXSize size = PXSBPPackageParse(&sbpDataPackage, sbpDataChunk->Data, sbpDataChunk->DataSizeCurrent);
+		const PXSize size = 0;//PXSBPPackageParse(&sbpDataPackage, sbpDataChunk->Data, sbpDataChunk->DataSizeCurrent);
 		const PXSize successful = size > 0;
 
 		if (!successful)
@@ -130,7 +130,7 @@ void PXSBPPackageProcessorPackageExport(PXSBPPackageProcessor* const pxSBPPackag
 
 	char buffer[1024];
 
-	PXSize packageSize = PXSBPPackageSerialize(sbpDataPackage, buffer, 1024);
+	PXSize packageSize = 0;//PXSBPPackageSerialize(sbpDataPackage, buffer, 1024);
 
 	PXSocketSend(socket, buffer, packageSize, 0);
 }

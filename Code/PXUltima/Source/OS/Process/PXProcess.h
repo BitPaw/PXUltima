@@ -12,7 +12,9 @@
 #endif
 
 #if OSUnix
+typedef unsigned int PXProcessHandle;
 typedef __pid_t PXProcessID;
+typedef unsigned int PXProcessThreadHandle;
 typedef unsigned int PXProcessThreadID;
 #elif OSWindows
 typedef HANDLE PXProcessHandle;

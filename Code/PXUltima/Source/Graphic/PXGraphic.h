@@ -32,7 +32,7 @@ extern "C"
 		PXShaderTypeFragment,   // .frag - a fragment shader
 		PXShaderTypeTessellationControl,    // .tesc - a tessellation control shader
 		PXShaderTypeTessellationEvaluation,     // .tese - a tessellation evaluation shader
-		PXShaderTypeGeometry,      // .geom - a geometry shader		
+		PXShaderTypeGeometry,      // .geom - a geometry shader
 		PXShaderTypeCompute,   // .comp - a compute shader
 	}
 	PXShaderType;
@@ -276,12 +276,12 @@ extern "C"
 	}
 	PXUIImage;
 
-	typedef struct PXOSUIText_
+	typedef struct PXGraphicUIText_
 	{
 		PXUIElement UIElement;
 		PXFont* TextFont;
 	}
-	PXOSUIText;
+	PXGraphicUIText;
 
 
 	typedef struct PXGraphicContext_
@@ -321,16 +321,16 @@ extern "C"
 	PXPublic PXActionResult PXGraphicUIPanelUpdate(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
 	PXPublic PXActionResult PXGraphicUIPanelUnregister(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
 
-	// 
+	//
 	// Update
 	// Destroy
 
-	PXPublic PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXOSUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text);
+	PXPublic PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXGraphicUIText* const pxGraphicUIText, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text);
 
 	PXPublic PXActionResult PXGraphicUIButtonRegister(PXGraphicContext* const graphicContext, PXUIButton* const pxButton, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text, const PXFont* const pxFont, const ShaderProgram* const shader);
-	 
-	 
-	 
+
+
+
 	//-------------------------------------------------------------------------
 
 
@@ -374,7 +374,7 @@ extern "C"
 	PXPublic PXActionResult PXGraphicRenderElement(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	PXPublic PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	//-------------------------------------------------------------------------
-	
+
 
 	//---<Texture>----------------------------------------------------------------
 	PXPublic PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, Image* const image);

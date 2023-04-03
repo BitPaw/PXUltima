@@ -1,4 +1,4 @@
-#include "pxText.h"
+#include "PXText.h"
 
 #include <OS/System/OSVersion.h>
 #include <OS/Memory/PXMemory.h>
@@ -158,7 +158,7 @@ PXSize PXTextToDoubleA(const char* string, const PXSize dataSize, double* number
 	unsigned char isNegative = 0;
 	unsigned char isWholeNumberChunk = 1;
 
-	
+
 
 	if(!string)
 	{
@@ -430,7 +430,7 @@ void PXTextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* dataBuf
 	{
 		case 0u:
 		{
-			dataBuffer[0] = (PXByte)symbol;  // 0xxxxxxx - 
+			dataBuffer[0] = (PXByte)symbol;  // 0xxxxxxx -
 			break;
 		}
 		case 1u:
@@ -892,7 +892,7 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 
 #if PXTextAssertEnable
 				assert(readBytes);
-#endif				
+#endif
 
 				offsetData += readBytes;
 
@@ -907,7 +907,7 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 
 #if PXTextAssertEnable
 				assert(readBytes);
-#endif			
+#endif
 
 				offsetData += readBytes;
 
@@ -964,7 +964,7 @@ void PXTextParseFindAllA(const char* string, const PXSize stringSize, const Pars
 			const char* targetString = parsingToken->String;
 			const PXSize targetStringSize = PXTextLengthA(targetString, -1);
 			const char* sourceString = string + i;
-			
+
 			foundItem = MemoryCompare(sourceString, stringSize, targetString, targetStringSize); // Compare whole word
 
 			if(foundItem)
@@ -1020,11 +1020,11 @@ PXBool PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t*
 			++patternIndex;
 			continue;
 		}
-		
+
 		if (!isMatch)
 		{
 			return PXFalse;
-		}	
+		}
 	}
 
 	return PXTrue;
@@ -1044,7 +1044,7 @@ PXSize PXTextFromIntA(int number, char* string, const PXSize dataSize)
 	do
 	{
 		string[offset++] = number % 10 + '0'; // Get the value of the most right digit and convert to ASCII-Number
-	} 
+	}
 	while ((number /= 10) > 0); // Remove the most right digit by interget division and check if we still have a number to process
 
 	if (isSigned) // if we had a minus, add it now
@@ -1054,7 +1054,7 @@ PXSize PXTextFromIntA(int number, char* string, const PXSize dataSize)
 
 	string[offset] = '\0'; // Add the termination byte
 
-	// Reverse the order of the string 
+	// Reverse the order of the string
 	{
 		const PXSize halfSize = offset / 2u;
 
@@ -1066,7 +1066,7 @@ PXSize PXTextFromIntA(int number, char* string, const PXSize dataSize)
 			string[index] = string[i];
 			string[i] = temp;
 		}
-	}	
+	}
 
 	//itoa(number, string, dataSize);
 

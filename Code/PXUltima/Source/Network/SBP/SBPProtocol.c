@@ -21,7 +21,7 @@ PXSize PXSBPChannelHeaderParse(PXSBPChannelHeader* const sbpChannelHeader, PXDat
 	}
 
 	PXDataStreamReadI8U(dataStream, &sbpChannelHeader->ID);
-	PXDataStreamReadI16U(dataStream, &sbpChannelHeader->Size, EndianLittle);
+	//PXDataStreamReadI16U(dataStream, &sbpChannelHeader->Size, EndianLittle);
 
 	sbpChannelHeader->Data = PXDataStreamCursorPosition(dataStream);
 
@@ -34,7 +34,7 @@ PXSize PXSBPChannelHeaderSerialize(PXSBPChannelHeader* const sbpChannelHeader, P
 
 	PXDataStreamWriteB(dataStream, "°°", 2u);
 	PXDataStreamWriteI8U(dataStream, sbpChannelHeader->ID);
-	PXDataStreamWriteI16U(dataStream, sbpChannelHeader->Size, EndianLittle);
+	//PXDataStreamWriteI16U(dataStream, sbpChannelHeader->Size, EndianLittle);
 
 	return dataStream->DataCursor - startOffset; // written Bytes
 }
@@ -46,7 +46,7 @@ void SBPPackageHeaderConstruct(SBPPackageHeader* const sbpPackageHeader)
 
 void SBPPackageHeaderDestruct(SBPPackageHeader* const sbpPackageHeader)
 {
-	
+
 }
 
 void SBPPackageHeaderSet
@@ -209,8 +209,8 @@ PXSize PXSBPPackageParse(SBPPackageHeader* const sbpPackageHeader, PXDataStream*
 		}
 	}
 
-	PXDataStreamReadI32U(&dataStream, &sbpPackageHeader->SourceID, EndianLittle);
-	PXDataStreamReadI32U(&dataStream, &sbpPackageHeader->TargetID, EndianLittle);
+	//PXDataStreamReadI32U(&dataStream, &sbpPackageHeader->SourceID, EndianLittle);
+	PXDataStreamReadI32UE(&dataStream, &sbpPackageHeader->TargetID, EndianLittle);
 	PXDataStreamReadB(&dataStream, sbpPackageHeader->CommandID.Data, 4u);
 
 	// Fetch Size
@@ -288,11 +288,11 @@ PXSize PXSBPPackageSerialize(const SBPPackageHeader* data, PXDataStream* const d
 	//}
 
 	PXDataStreamWriteB(dataStream, "°°", 2u);
-	PXDataStreamWriteI32U(dataStream, &data->SourceID, EndianLittle);
-	PXDataStreamWriteI32U(dataStream, &data->TargetID, EndianLittle);
+	PXDataStreamWriteI32UE(dataStream, &data->SourceID, EndianLittle);
+	PXDataStreamWriteI32UE(dataStream, &data->TargetID, EndianLittle);
 
 	PXDataStreamWriteI8U(dataStream, 3u);
-	PXDataStreamWriteI32U(dataStream, &data->CommandSize, EndianLittle);
+	PXDataStreamWriteI32UE(dataStream, &data->CommandSize, EndianLittle);
 	PXDataStreamWriteB(dataStream, data->Command, data->CommandSize);
 
 	return dataStream->DataCursor - startOffset; // written Bytes
@@ -691,7 +691,7 @@ PXSize SBPPackageHeaderPackageIamParse(SBPPackageHeader* const sbpDataPackage, S
 		unsigned short size = 0;
 
 		PXDataStreamReadI8U(&dataStream, formatType);
-		PXDataStreamReadI16U(&dataStream, size, EndianLittle);
+		PXDataStreamReadI16UE(&dataStream, size, EndianLittle);
 
 		sbpDataPackageIam->Name.Format = formatType;
 		sbpDataPackageIam->Name.SizeInBytes = size;
@@ -716,7 +716,7 @@ PXSize SBPPackageHeaderPackageIamSerialize(SBPPackageHeader* const sbpDataPackag
 
 	MemoryClear(sbpDataPackageIam, sizeof(SBPPackageHeaderPackageIam));
 
-	// Add name	
+	// Add name
 	PXByte nameBuffer[128];
 	const PXSize nameBufferSize = PXUserNameGetU(nameBuffer, 128);
 
@@ -724,7 +724,7 @@ PXSize SBPPackageHeaderPackageIamSerialize(SBPPackageHeader* const sbpDataPackag
 		const unsigned char formatType = TextFormatUTF8;
 
 		PXDataStreamWriteI8U(&dataStream, formatType);
-		PXDataStreamWriteI16U(&dataStream, nameBufferSize, EndianLittle);
+		PXDataStreamWriteI16UE(&dataStream, nameBufferSize, EndianLittle);
 		PXDataStreamWriteB(&dataStream, nameBuffer, nameBufferSize);
 	}
 

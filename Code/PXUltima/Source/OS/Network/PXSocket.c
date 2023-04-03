@@ -803,7 +803,7 @@ PXActionResult PXSocketSetupAdress
         }
 
         AdressInfoDelete(adressResult);
-    }  
+    }
 
     return PXActionSuccessful;
 }
@@ -850,7 +850,7 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
 {
     PXSocketStateChange(pxSocket, SocketEventPolling);
 
-#if 0 // Use optimised OS function
+#if 1 // Use optimised OS function
 
     struct pollfd* socketDataList = buffer;
     PXSize socketDataListSize = pxSocket->SocketPollingReadListSize;
@@ -891,7 +891,7 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
                 printf("[Polling] WSAEINVAL\n");
                 break;
 
-            case  WSAENOBUFS: // The function was unable to allocate sufficient memory. 
+            case  WSAENOBUFS: // The function was unable to allocate sufficient memory.
 
                 printf("[Polling] WSAENOBUFS\n");
                 break;
@@ -906,7 +906,7 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
 
         return;
     }
-#endif 
+#endif OSUnix
 
     for (PXSize i = 0; i < amount; i++)
     {
@@ -939,7 +939,7 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
 
     const PXSize neededFetches = (pxSocket->SocketPollingReadListSize / FD_SETSIZE) + 1;
 
-    const TIMEVAL time = { 3,0 };
+    //const TIMEVAL time = { 3,0 };
 
     PXSize restValues = pxSocket->SocketPollingReadListSize;
     fd_set selectListenRead;
@@ -954,7 +954,7 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
 
         selectListenRead.fd_count = fdBlockSize;
 
-        MemoryCopy(socketIDList, fdBlockSizeBytes, &selectListenRead.fd_array, fdBlockSizeBytes);
+        MemoryCopy(socketIDList, fdBlockSizeBytes, selectListenRead.fd_array, fdBlockSizeBytes);
 
         const int numberOfSocketEvents = select(0, &selectListenRead, 0, 0, 0);
 

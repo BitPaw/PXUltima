@@ -878,7 +878,7 @@ PXActionResult PXGraphicUIPanelUnregister(PXGraphicContext* const graphicContext
     return PXActionInvalid;
 }
 
-PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXOSUIText* const pxUIText, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height, const PXTextUTF8 text)
+PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXGraphicUIText* const pxGraphicUIText, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height, const PXTextUTF8 text)
 {
     const PXSize textSize = PXTextLengthA(text, 256);
     const PXSize vertexDataSize = textSize * 4u * (3u +2u);
@@ -888,14 +888,14 @@ PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, P
     PXSize index = 0;
     float xoffset = 0;
 
-    float imgwidth = pxUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Width;
-    float imgheight = pxUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Height;
+    float imgwidth = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Width;
+    float imgheight = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Height;
 
     for (size_t i = 0; i < textSize; i++)
     {
         char character = text[i];
 
-        FNTCharacter* fntChar = FNTGetCharacter(pxUIText->TextFont->FontElement, character);
+        FNTCharacter* fntChar = FNTGetCharacter(pxGraphicUIText->TextFont->FontElement, character);
 
         float texturePositionX = fntChar->Position[0] / imgwidth;
         float texturePositionY = fntChar->Position[1] / imgheight;
@@ -964,12 +964,12 @@ PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, P
     model.DataTextureSize = vertexDataSize;
 
     {
-        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIText->UIElement.Renderable, &model);
+        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxGraphicUIText->UIElement.Renderable, &model);
 
         PXActionExitOnError(actionResult);
     }
 
-    PXGraphicRenderableRegister(graphicContext, &pxUIText->UIElement.Renderable);
+    PXGraphicRenderableRegister(graphicContext, &pxGraphicUIText->UIElement.Renderable);
 
 
 
@@ -977,7 +977,7 @@ PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, P
 
     PXTextureConstruct(&pxTexture);
 
-    MemoryCopy(&pxUIText->TextFont->FontElement[0].FontPageList[0].FontTextureMap, sizeof(Image), &pxTexture.Image,sizeof(Image));
+    MemoryCopy(&pxGraphicUIText->TextFont->FontElement[0].FontPageList[0].FontTextureMap, sizeof(Image), &pxTexture.Image,sizeof(Image));
 
     pxTexture.Type = PXGraphicImageTypeTexture2D;
     pxTexture.Filter = PXGraphicRenderFilterNoFilter;
@@ -988,7 +988,7 @@ PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, P
 
     PXGraphicTextureRegister(graphicContext, &pxTexture);
 
-    pxUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
+    pxGraphicUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
 
 
     return PXActionSuccessful;

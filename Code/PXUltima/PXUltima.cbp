@@ -70,17 +70,13 @@
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-std=c11" />
 					<Add option="-pg" />
-					<Add option="-m64" />
 					<Add option="-Og" />
 					<Add option="-g" />
-					<Add option="-fPIC" />
 					<Add directory="../PXUltima/Source" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg" />
-					<Add option="-m64" />
 				</Linker>
 				<Environment>
 					<Variable name="_XOPEN_SOURCE" value="600" />
@@ -182,6 +178,46 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/File/PXDataStream.h" />
+		<Unit filename="Source/Graphic/PXCamera.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/PXCamera.h" />
+		<Unit filename="Source/Graphic/PXGraphic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/PXGraphic.h" />
+		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.h" />
+		<Unit filename="Source/Language/PXTranslator.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Language/PXTranslator.h" />
+		<Unit filename="Source/Log/PXLog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Log/PXLog.h" />
+		<Unit filename="Source/Math/PXDiagram.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Math/PXDiagram.h" />
+		<Unit filename="Source/Math/PXMath.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Math/PXMath.h" />
+		<Unit filename="Source/Math/PXMatrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Math/PXMatrix.h" />
+		<Unit filename="Source/Math/PXPhysic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Math/PXPhysic.h" />
+		<Unit filename="Source/Math/PXVector.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Math/PXVector.h" />
 		<Unit filename="Source/Media/3DS/A3DS.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -206,10 +242,22 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Media/BMP/BMP.h" />
+		<Unit filename="Source/Media/C/PXC.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Media/C/PXC.h" />
+		<Unit filename="Source/Media/CPP/PXCPP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Media/CPP/PXCPP.h" />
 		<Unit filename="Source/Media/CRC32/CRC32.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Media/CRC32/CRC32.h" />
+		<Unit filename="Source/Media/CS/PXCS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Media/CS/PXCS.h" />
 		<Unit filename="Source/Media/CSS/CSS.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -454,46 +502,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Media/ZLIB/ZLIB.h" />
-		<Unit filename="Source/Graphic/PXCamera.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Graphic/PXCamera.h" />
-		<Unit filename="Source/Graphic/PXGraphic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Graphic/PXGraphic.h" />
-		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Graphic/SoftwareRender/SoftwareRender.h" />
-		<Unit filename="Source/Language/PXTranslator.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Language/PXTranslator.h" />
-		<Unit filename="Source/Log/PXLog.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Log/PXLog.h" />
-		<Unit filename="Source/Math/PXDiagram.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Math/PXDiagram.h" />
-		<Unit filename="Source/Math/PXMath.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Math/PXMath.h" />
-		<Unit filename="Source/Math/PXMatrix.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Math/PXMatrix.h" />
-		<Unit filename="Source/Math/PXPhysic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Math/PXPhysic.h" />
-		<Unit filename="Source/Math/PXVector.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source/Math/PXVector.h" />
 		<Unit filename="Source/Network/SBP/PXSBPPackageProcessor.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -20,8 +20,8 @@ void PXProcessCurrent(PXProcess* const pxProcess)
 	PXProcessConstruct(pxProcess);
 
 #if OSUnix
-	pxProcess->Context = 0;
-	pxProcess->ThreadID = getpid();
+	pxProcess->ThreadHandle = 0;
+	pxProcess->ProcessID = getpid();
 #elif OSWindows
 	pxProcess->ProcessHandle = GetCurrentProcess(); // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
 	pxProcess->ProcessID = GetProcessId(pxProcess->ProcessHandle);
@@ -33,8 +33,8 @@ void PXProcessParent(PXProcess* const pxProcess)
 	PXProcessConstruct(pxProcess);
 
 #if OSUnix
-	pxProcess->Context = 0;
-	pxProcess->ThreadID = getppid();
+	pxProcess->ProcessHandle = 0;
+	pxProcess->ProcessID = getppid();
 #elif OSWindows
 	pxProcess->ProcessHandle = 0;
 	pxProcess->ProcessID = 0;
@@ -59,7 +59,7 @@ PXActionResult PXProcessCreateA(PXProcess* const pxProcess, const PXTextASCII pr
 	const DWORD creationflags =
 		DEBUG_ONLY_THIS_PROCESS |
 		CREATE_NEW_CONSOLE |
-		PROCESS_QUERY_INFORMATION | 
+		PROCESS_QUERY_INFORMATION |
 		PROCESS_VM_READ;
 
 	const PXBool success = CreateProcessA(programmPath, NULL, NULL, NULL, 0, creationflags, NULL, NULL, &startupInfo, &processInfo);
@@ -203,7 +203,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 
 #if OSUnix
 	const int who = RUSAGE_SELF;
-	rusage rusageData;
+	struct rusage rusageData;
 	const int returnCode = getrusage(who, &rusageData);
 	const PXBool success = returnCode == 0;
 

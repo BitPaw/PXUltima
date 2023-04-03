@@ -1,6 +1,6 @@
 #include "PXC.h"
 
-#include <Compiler\PXCompiler.h>
+#include <Compiler/PXCompiler.h>
 #include <Container/ClusterValue.h>
 #include <Text/PXText.h>
 
@@ -175,7 +175,7 @@ PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const 
         "|| Typedefinition                                         ||\n"
         "|+--------------------------------------------------------+|\n"
     );
-#endif 
+#endif
 
     PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Peek for next element
 
@@ -216,7 +216,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         case CKeyWordStruct:
             PXDataStreamWriteI8U(outputStream, PXCStructureTypeStruct);
             break;
-    }  
+    }
 
     switch (compilerSymbolEntry.ID)
     {
@@ -259,7 +259,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                 name,
                 buffer
             );
-#endif 
+#endif
 
             //---<Write name of structure>---
             PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
@@ -323,7 +323,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                 "|+--------+-----------------------------------------------+|\n",
                 "**Unnamed**"
             );
-#endif 
+#endif
 
             // OK
             break;
@@ -338,7 +338,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
     // "struct name { | ... };"
 
 
-    // Problem: We need the alias name NOW. And the content of {...} is in the way. 
+    // Problem: We need the alias name NOW. And the content of {...} is in the way.
     // Solution: We do a very far peek and try to check if one is readable.
     {
     PXSize range = PXDataStreamRemainingSizeRelativeFromAddress(inputStream, compilerSymbolEntry.Source);
@@ -368,7 +368,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
             break;
         }
 
-        // We have one open more than a close, so we look for more     
+        // We have one open more than a close, so we look for more
     }
 
     if (foundInsert)
@@ -397,7 +397,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         }
         else
         {
-            // No name 
+            // No name
             PXDataStreamWriteI8U(outputStream, 0);
 
         }
@@ -412,7 +412,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
 
 
-    
+
     PXInt16U memberCounter = 0;
     PXSize poition = outputStream->DataCursor;
 
@@ -434,7 +434,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         if (isAtEnd) // If so, we quit
         {
             PXDataStreamWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
-                    
+
 
             PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
 
@@ -453,9 +453,9 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                     "|+--------+-----------------------------------------------+|\n",
                     buffer
                 );
-#endif 
+#endif
 
-                // Don't write alias, we hacked that before. 
+                // Don't write alias, we hacked that before.
                 // PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
                 // PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
@@ -487,7 +487,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                 PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
                 printf("| - %-54s |\n", buffer);
-#endif 
+#endif
 
                 ++memberCounter;
 
@@ -585,7 +585,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
             const PXBool isKnownPrimitive = flagList & MemberFieldFlagIsKnownPrimitive;
 
             // if we have a primitive type, we only have one 'unkown' name.
-            // If we dont have a primitive, we have two.         
+            // If we dont have a primitive, we have two.
 
 
             if (PXFlagIsSet(flagList, MemberFieldFlagIsAdress))
@@ -610,7 +610,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
                 // We have a 2nd name, so its a custom type. Write name of custom variable..
                 PXDataStreamWriteI8U(outputStream, variableTypeNameSize);
                 PXDataStreamWriteB(outputStream, variableTypeName, variableTypeNameSize);
-            }   
+            }
 
 
 #if 0
@@ -629,7 +629,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
 
             return PXTrue;
-        }        
+        }
 
         switch (compilerSymbolEntry->ID)
         {
@@ -743,8 +743,8 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
                             variableTypeNameSize = PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, variableTypeName, 64);
 
                             doesKnowCustomType = PXTrue;
-                        }                     
-                       
+                        }
+
                         break;
                     }
                     default:
@@ -767,9 +767,9 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
         }
 
 
-    
 
-      
+
+
 
         PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
 
@@ -787,7 +787,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
 PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
-    
+
 
     PXDataStreamWriteI8U(outputStream, PXCStructureTypeFuntion);
 
@@ -820,7 +820,7 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
 
 
     PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
-    
+
     PXDataStreamWriteI8U(outputStream, compilerSymbolEntry->Size);
     PXDataStreamWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
 
@@ -1068,7 +1068,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                     break;
                                 }
                             }
-                        }           
+                        }
 
                         break;
                     }
@@ -1126,7 +1126,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 #if PXCDebugOutput
                                 printf("[C] Makro include libary : (global) ");
-#endif            
+#endif
 
                                 PXSize stringLength = 0;
                                 PXSize stringLengthPosition = 0;
@@ -1148,7 +1148,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 #endif
 
                                         stringLength += compilerSymbolEntry.Size;
-                                 
+
                                         PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
                                         PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
@@ -1160,7 +1160,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                     {
 #if 1
                                         printf("\n");
-#endif // 0   
+#endif // 0
                                         break;
                                     }
 
@@ -1174,7 +1174,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 #if 1
                                         printf("/");
-#endif // 0                                  
+#endif // 0
                                     }
                                     else
                                     {
@@ -1190,7 +1190,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                             }
                             case PXCompilerSymbolLexerString:
                             {
-                                // Case B) #include "xxxxxxxx"                              
+                                // Case B) #include "xxxxxxxx"
 
                                 const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
 
@@ -1218,7 +1218,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                             default:
                             {
                                 break;
-                            }                              
+                            }
                         }
 
                         break;
@@ -1288,7 +1288,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                 {
                                     // Invalid extern spesifieer
                                 }
-                      
+
                                 PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
 
                                 const PXBool isWrapping = PXCompilerSymbolLexerBracketCurlyOpen == compilerSymbolEntry.ID;
@@ -1297,7 +1297,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                 {
                                     // everything is C-Style now
 
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Consome '{'          
+                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Consome '{'
 
                                     printf("[C] Disable name mangeling in C++ for following block\n");
                                 }
@@ -1400,7 +1400,7 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
             }
 
             break;
-        }         
+        }
         case PXCStructureTypeEnum:
         case PXCStructureTypeStruct:
         case PXCStructureTypeUnion:
@@ -1415,7 +1415,7 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
             PXDataStreamReadI8U(inputStream, &pxCElement->IsTypeDefinition);
 
             break;
-        }     
+        }
         case PXCStructureTypeStructElement:
         {
             PXInt8U variableInfoFlags = 0;

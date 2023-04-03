@@ -21,6 +21,10 @@
 #if OSUnix
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+//#include <sys/io.h>
+#include <dirent.h>
 
 #define OSFileOpenA fopen
 #define OSFileOpenW(string, mode) FileOpenA((const char*)string, (const char*)mode)
@@ -321,7 +325,7 @@ void PXFileConstruct(PXFile* const pxFile)
 
 void PXFileDestruct(PXFile* const pxFile)
 {
-	
+
 }
 
 unsigned char FileDoesExistA(const char* filePath)
@@ -652,9 +656,8 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 #if OSUnix
 
 	struct dirent* directoryEntry;
-	DIR* directory = opendir(directory);
-
-	PXBool sucess = d != PXNull;
+	auto directory = opendir(directory);
+	PXBool sucess = directory != PXNull;
 
 	if (!sucess)
 	{
@@ -663,7 +666,7 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 
 	while ((directoryEntry = readdir(directory)) != PXNull)
 	{
-		const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->d_name);
+		const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->);
 		const unsigned int directoryLength = strlen(directory);
 		const unsigned int FileNameLength = strlen(directoryEntry->d_name);
 	}
@@ -687,7 +690,7 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 		const PXBool failed = INVALID_HANDLE_VALUE == iteratorHandle;
 
 		PXActionOnErrorFetchAndExit(failed);
-	}	
+	}
 
 	do
 	{
@@ -764,7 +767,7 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 				break;
 			}
 		}
-	} 
+	}
 	while (FindNextFile(iteratorHandle, &findFileData) != 0);
 
 	FindClose(iteratorHandle);

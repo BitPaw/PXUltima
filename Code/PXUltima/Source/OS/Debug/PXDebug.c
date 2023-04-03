@@ -99,7 +99,7 @@ PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 
 PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXTextASCII applicationName)
 {
-	PXDebugConstruct(pxDebug);	
+	PXDebugConstruct(pxDebug);
 
 	PXTextCopyA(applicationName, 260, pxDebug->ApplicatioName, 260);
 
@@ -139,12 +139,12 @@ void PXDebugPause(PXDebug* const pxDebug)
 PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessID pxProcessID)
 {
 	return DebugBreakProcess(pxProcessID); // winbase.h, Windows XP
-} 
+}
 
 void PXDebugAttach(PXDebug* const pxDebug)
 {
 #if OSUnix
-	const long result = ptrace(PTRACE_ATTACH, pxDebug->ProcessID, void* addr, void* data);
+	const long result = ptrace(PTRACE_ATTACH, pxDebug->Process.ProcessID, 0, 0);
 
 #elif OSWindows
 	const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
@@ -157,7 +157,7 @@ void PXDebugAttach(PXDebug* const pxDebug)
 void PXDebugDetach(PXDebug* const pxDebug)
 {
 #if OSUnix
-	const long result = ptrace(PTRACE_DETACH, pxDebug->ProcessID, void* addr, void* data);
+	const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
 
 #elif OSWindows
 	const BOOL sucessfulCode = DebugActiveProcessStop(pxDebug->Process.ProcessID);
@@ -259,7 +259,7 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 
 		const BOOL getResult = SymGetSymFromAddr(pxDebug->Process.ProcessID, (ULONG64)stackFrame.AddrPC.Offset, &displacement, &pxMSDebugSymbol.Symbol);
 		const PXBool getFailed = getResult != 0;
-		
+
 		PXSize nameBufferSize = 512;
 		PXByte nameBuffer[512];
 
@@ -328,12 +328,6 @@ PXSize PXDebugMemoryWrite(PXDebug* const pxDebug, const void* const adress, cons
 	return writtenBytes;
 }
 
-typedef enum PXDebug
-{
-
-};
-
-
 void OnDebugProcessCreate(PXDebug* const pxDebug)
 {
 
@@ -382,64 +376,64 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			switch (exceptionRecord->ExceptionCode)
 			{
 				case EXCEPTION_ACCESS_VIOLATION:
-					// First chance: Pass this on to the system. 
-					// Last chance: Display an appropriate error. 
+					// First chance: Pass this on to the system.
+					// Last chance: Display an appropriate error.
 
 					printf("[PXDebuger] 0x%p | Memory access violation\n", (void*)exceptionRecord->ExceptionAddress);
 					break;
 
 				case EXCEPTION_BREAKPOINT:
-					// First chance: Display the current instruction and register values. 
+					// First chance: Display the current instruction and register values.
 
 					printf("[PXDebuger] 0x%p | BREAKPOINT\n", (void*)exceptionRecord->ExceptionAddress);
 					break;
 
 				case EXCEPTION_DATATYPE_MISALIGNMENT:
-					// First chance: Pass this on to the system. 
+					// First chance: Pass this on to the system.
 					// Last chance: Display an appropriate error.
 
 					printf("[PXDebuger] EXCEPTION_DATATYPE_MISALIGNMENT\n");
 					break;
 
 				case EXCEPTION_SINGLE_STEP:
-					// First chance: Update the display of the 
-					// current instruction and register values. 
+					// First chance: Update the display of the
+					// current instruction and register values.
 
 					printf("[PXDebuger] EXCEPTION_SINGLE_STEP\n");
 					break;
 
 				case DBG_CONTROL_C:
-					// First chance: Pass this on to the system. 
-					// Last chance: Display an appropriate error. 
+					// First chance: Pass this on to the system.
+					// Last chance: Display an appropriate error.
 
 					printf("[PXDebuger] DBG_CONTROL_C\n");
 					break;
 
 				default:
 				{
-					// Handle other exceptions. 
+					// Handle other exceptions.
 
 					printf("[PXDebuger] Other exception\n");
 
 					dwContinueStatus = DBG_EXCEPTION_NOT_HANDLED;
 					break;
 				}
-			
+
 			}
 			break;
 		}
 		case CREATE_THREAD_DEBUG_EVENT:
 		{
-			// As needed, examine or change the thread's registers 
-			// with the GetThreadContext and SetThreadContext functions; 
-			// and suspend and resume thread execution with the 
-			// SuspendThread and ResumeThread functions. 
+			// As needed, examine or change the thread's registers
+			// with the GetThreadContext and SetThreadContext functions;
+			// and suspend and resume thread execution with the
+			// SuspendThread and ResumeThread functions.
 
 			const CREATE_THREAD_DEBUG_INFO* const createThreadDebugInfo = &debugEvent.u.CreateThread;
 
 			printf("[PXDebuger] 0x%p | created Thread (%i) by Process (%i).\n", createThreadDebugInfo->lpStartAddress, debugEvent.dwThreadId, debugEvent.dwProcessId);
 
-			
+
 
 			ResumeThread(pxDebug->Process.ThreadHandle);
 
@@ -469,17 +463,17 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 		}
 		case EXIT_THREAD_DEBUG_EVENT:
 		{
-			// Display the thread's exit code. 
+			// Display the thread's exit code.
 			const EXIT_THREAD_DEBUG_INFO* const exitThreadDebugInfo = &debugEvent.u.ExitThread;
 
 			OnDebugProcessExit(pxDebug, exitThreadDebugInfo->dwExitCode);
 
-	
+
 
 			break;
 		}
 		case EXIT_PROCESS_DEBUG_EVENT:
-			// Display the process's exit code. 
+			// Display the process's exit code.
 
 			const EXIT_PROCESS_DEBUG_INFO* const exitProcessDebugInfo = &debugEvent.u.ExitProcess;
 
@@ -490,8 +484,8 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			break;
 
 		case LOAD_DLL_DEBUG_EVENT:
-			// Read the debugging information included in the newly 
-			// loaded DLL. Be sure to close the handle to the loaded DLL 
+			// Read the debugging information included in the newly
+			// loaded DLL. Be sure to close the handle to the loaded DLL
 			// with CloseHandle.
 
 			const LOAD_DLL_DEBUG_INFO* const loadDLLDebugInfo = &debugEvent.u.LoadDll;
@@ -510,7 +504,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 		case UNLOAD_DLL_DEBUG_EVENT:
 		{
-			// Display a message that the DLL has been unloaded. 
+			// Display a message that the DLL has been unloaded.
 
 			const UNLOAD_DLL_DEBUG_INFO* const outputDebugStringInfo = &debugEvent.u.UnloadDll;
 
@@ -533,11 +527,11 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			{
 				printf("%ls", (wchar_t*)outputDebugStringInfo->lpDebugStringData);
 			}
-		
+
 			printf("\n");
 
 			break;
-		}	
+		}
 		case RIP_EVENT:
 		{
 			const RIP_INFO* const ripInfo = &debugEvent.u.RipInfo;
@@ -555,7 +549,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 	dwContinueStatus = DBG_EXCEPTION_NOT_HANDLED;
 
-	// Resume executing the thread that reported the debugging event. 
+	// Resume executing the thread that reported the debugging event.
 	const BOOL succ = ContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, dwContinueStatus);
 
 #endif

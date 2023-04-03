@@ -16,7 +16,7 @@ void SBPPackageHeaderCacheConstruct(SBPPackageHeaderCache* const sbpDataCache)
 
 void SBPPackageHeaderCacheDestruct(SBPPackageHeaderCache* const sbpDataCache)
 {
-	
+
 }
 
 void SBPPackageHeaderCacheStateChange(SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderCacheState sbpDataCacheState)
@@ -27,7 +27,7 @@ void SBPPackageHeaderCacheStateChange(SBPPackageHeaderCache* const sbpDataCache,
 void SBPPackageHeaderCacheHandle(SBPPackageHeaderCache* const sbpDataCache, const SBPPackageHeaderChunk* const sbpDataChunk)
 {
 	PXDictionary* const pxDictionary = &sbpDataCache->DataCallBackLookup;
-		
+
 	sbpDataCache->DataChunkRecievedCallBack(sbpDataCache->Owmer, sbpDataCache, sbpDataChunk);
 
 #if 0
@@ -35,7 +35,7 @@ void SBPPackageHeaderCacheHandle(SBPPackageHeaderCache* const sbpDataCache, cons
 	SBPPackageHeaderChunkIOEvent sbpDataChunkIOEvent;
 
 	const PXBool found = PXDictionaryFind(pxDictionary, &sbpDataChunk->Channal, &sbpDataChunkIOEvent);
-	
+
 	if (!found)
 	{
 		// Drop package
@@ -86,7 +86,7 @@ SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* c
 
 			SBPPackageHeader sbpDataPackage;
 
-			const PXSize writtenBytes = PXSBPPackageParse(&sbpDataPackage, data, dataSize);
+			const PXSize writtenBytes = 0;//PXSBPPackageParse(&sbpDataPackage, data, dataSize);
 			const PXBool sucessful = writtenBytes > 0;
 
 			if (!sucessful)
@@ -106,7 +106,7 @@ SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* c
 			const SBPPackageHeaderChunk sbpDataChunk =
 			{
 				order, // Info
-				header[0], // Channal 
+				header[0], // Channal
 				dataContentSize,
 				sizeCurrent, // Size
 				sizeTotal // Data
@@ -140,7 +140,7 @@ SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* c
 				PXDataStreamWriteB(dataStream, sbpDataChunk.Data, sbpDataChunk.DataSizeCurrent); // Write Data
 			}
 
-			SBPPackageHeaderCacheStateChange(sbpDataCache, SBPPackageHeaderCacheStateAwaitData);		
+			SBPPackageHeaderCacheStateChange(sbpDataCache, SBPPackageHeaderCacheStateAwaitData);
 
 			return SBPPackageHeaderChunkCached;
 		}
