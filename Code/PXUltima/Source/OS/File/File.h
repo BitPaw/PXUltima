@@ -46,12 +46,23 @@ typedef HANDLE FileMappingID;
 #define ExtensionMaxSize 256 //_MAX_EXT
 #endif
 
-#define PXDirectoryIsDotFolder(s) (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s == '\0')))
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+#if 1
+
+#define PXDirectoryIsDotFolder(s) (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')))
+#else
+
+void PXDirectoryIsDotFolder(const char* s)
+{
+    return (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')));
+}
+
+#endif
+
 
 	typedef enum FileFormatExtension_
 	{

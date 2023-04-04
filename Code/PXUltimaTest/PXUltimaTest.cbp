@@ -49,7 +49,7 @@
 					<Add directory="../PXUltima/Source" />
 				</Compiler>
 				<Linker>
-					<Add library="../[Export]/x64 Debug - Linux/libPXUltima_DEBUG.a" />
+					<Add library="../[Export]/x64 Debug - Linux/libPXUltima_DEBUG.lib" />
 					<Add library="GL" />
 					<Add library="X11" />
 					<Add library="pthread" />
@@ -79,6 +79,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Compiler/TestYAML.h" />
+		<Unit filename="Source/Debug/TestDebug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Debug/TestDebug.h" />
 		<Unit filename="Source/Graphic/TestFont.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -95,6 +99,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Graphic/TestWindow.h" />
+		<Unit filename="Source/Network/TestFTP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source/Network/TestFTP.h" />
 		<Unit filename="Source/Network/TestSBP.c">
 			<Option compilerVar="CC" />
 		</Unit>

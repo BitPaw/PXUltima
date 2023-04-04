@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #if OSUnix
+#include <sys/select.h>
 #include <poll.h>
 #define OSSocketPoll poll
 #elif OSWindows
@@ -714,9 +715,14 @@ PXActionResult PXSocketSetupAdress
         adressHints.ai_addr = 0;
         adressHints.ai_next = 0;
 
-        int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP, portNumberString, &adressHints, &adressResult);
+        const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP, portNumberString, &adressHints, &adressResult);
+        const PXBool validAdressInfo = adressInfoResult == 0;
 
-        switch (adressInfoResult)
+        if(i == 0)
+        {
+
+
+                switch (adressInfoResult)
         {
             case 0:
                 break; // OK - Sucess
@@ -764,6 +770,8 @@ PXActionResult PXSocketSetupAdress
                 break;
             }
         }
+        }
+
 
         for (AdressInfoType* adressInfo = adressResult; adressInfo; adressInfo = adressInfo->ai_next)
         {
@@ -850,7 +858,7 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
 {
     PXSocketStateChange(pxSocket, SocketEventPolling);
 
-#if 1 // Use optimised OS function
+#if 0 // Use optimised OS function
 
     struct pollfd* socketDataList = buffer;
     PXSize socketDataListSize = pxSocket->SocketPollingReadListSize;
@@ -942,7 +950,9 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
     //const TIMEVAL time = { 3,0 };
 
     PXSize restValues = pxSocket->SocketPollingReadListSize;
-    fd_set selectListenRead;
+    fd_set selectListenRead[64];
+
+    MemorySet(selectListenRead, 0, sizeof(fd_set) * 64);
 
     for (PXSize i = 0; i < neededFetches; ++i)
     {
@@ -952,15 +962,17 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
 
         restValues -= fdBlockSize;
 
-        selectListenRead.fd_count = fdBlockSize;
+        //selectListenRead.fd_count = fdBlockSize;
 
-        MemoryCopy(socketIDList, fdBlockSizeBytes, selectListenRead.fd_array, fdBlockSizeBytes);
+        //MemoryCopy(socketIDList, fdBlockSizeBytes, selectListenRead.fd_array, fdBlockSizeBytes);
+        MemoryCopy(socketIDList, fdBlockSizeBytes, selectListenRead, fdBlockSizeBytes);
 
         const int numberOfSocketEvents = select(0, &selectListenRead, 0, 0, 0);
 
         for (PXSize l = 0; l < numberOfSocketEvents; ++l)
         {
-            const PXSocketID socketID = selectListenRead.fd_array[i];
+            //const PXSocketID socketID = selectListenRead.fd_array[i];
+            const PXSocketID socketID = *(int*)&selectListenRead[i];
 
             PXSocketReadPendingHandle(pxSocket, socketID);
         }

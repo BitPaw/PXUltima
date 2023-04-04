@@ -1898,7 +1898,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     {
         char windowTitleA[256];
 
-        TextCopyWA(window->Title, 256, windowTitleA, 256);
+        PXTextCopyWA(window->Title, 256, windowTitleA, 256);
 
         XMapWindow(window->DisplayCurrent, window->ID);
         XStoreName(window->DisplayCurrent, window->ID, windowTitleA);

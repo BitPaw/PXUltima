@@ -133,12 +133,20 @@ void PXDebugContinue(PXDebug* const pxDebug)
 
 void PXDebugPause(PXDebug* const pxDebug)
 {
-	DebugBreak();
+#if OSUnix
+
+#elif OSWindows
+    DebugBreak();
+#endif
 }
 
 PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessID pxProcessID)
 {
-	return DebugBreakProcess(pxProcessID); // winbase.h, Windows XP
+#if OSUnix
+    return PXFalse;
+#elif OSWindows
+    return DebugBreakProcess(pxProcessID); // winbase.h, Windows XP
+#endif
 }
 
 void PXDebugAttach(PXDebug* const pxDebug)

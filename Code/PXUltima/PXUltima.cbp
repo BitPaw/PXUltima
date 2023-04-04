@@ -3,11 +3,12 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="PXUltima" />
+		<Option platforms="Unix;" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Windows 32 Bit - Debug">
-				<Option output="../[Export]/x86 Debug - Windows/libPXUltima_DEBUG.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../[Export]/x86 Debug - Windows/libPXUltima_DEBUG.lib" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
 				<Option object_output="../[Temp]/x86 Debug - Windows/PXUltima/" />
 				<Option type="2" />
@@ -63,34 +64,36 @@
 				</Environment>
 			</Target>
 			<Target title="Linux 64 Bit - Debug">
-				<Option output="../[Export]/x64 Debug - Linux/libPXUltima_DEBUG.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../[Export]/x64 Debug - Linux/libPXUltima_DEBUG.lib" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
 				<Option object_output="../[Temp]/x64 Debug - Linux/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-pg" />
+					<Add option="-std=c17" />
+					<Add option="-m64" />
 					<Add option="-Og" />
 					<Add option="-g" />
 					<Add directory="../PXUltima/Source" />
 				</Compiler>
 				<Linker>
-					<Add option="-pg" />
+					<Add option="-static-libgcc" />
+					<Add option="-m64" />
 				</Linker>
 				<Environment>
 					<Variable name="_XOPEN_SOURCE" value="600" />
 				</Environment>
 			</Target>
 			<Target title="Linux 64 Bit - Release">
-				<Option output="../[Export]/x64 Release - Linux/libPXUltima_RELEASE.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../[Export]/x64 Release - Linux/libPXUltima_RELEASE.lib" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
 				<Option object_output="../[Temp]/x64 Release - Linux/PXUltima/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-std=c11" />
+					<Add option="-std=c17" />
 					<Add option="-m64" />
 					<Add directory="../PXUltima/Source" />
 				</Compiler>

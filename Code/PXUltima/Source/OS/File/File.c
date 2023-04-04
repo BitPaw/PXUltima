@@ -129,7 +129,7 @@ void FilePathSplittW(const wchar_t* fullPath, PXSize fullPathMaxSize, wchar_t* d
 	char fileNameA[FileNameMaxSize];
 	char extensionA[ExtensionMaxSize];
 
-	TextCopyWA(fullPath, PathMaxSize, fullPathA, PathMaxSize);
+	PXTextCopyWA(fullPath, PathMaxSize, fullPathA, PathMaxSize);
 
 	FilePathSplittA
 	(
@@ -424,8 +424,8 @@ PXActionResult FileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinati
 	char sourceFilePathA[PathMaxSize];
 	char destinationFilePathA[PathMaxSize];
 
-	TextCopyWA(sourceFilePath, PathMaxSize, sourceFilePathA, PathMaxSize);
-	TextCopyWA(destinationFilePath, PathMaxSize, destinationFilePathA, PathMaxSize);
+	PXTextCopyWA(sourceFilePath, PathMaxSize, sourceFilePathA, PathMaxSize);
+	PXTextCopyWA(destinationFilePath, PathMaxSize, destinationFilePathA, PathMaxSize);
 
 	return FileCopyA(sourceFilePathA, destinationFilePathA);
 #elif OSWindows
@@ -653,7 +653,7 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 
 	PXSize dictionaryCounter = 0;
 
-#if OSUnix
+#if 0//OSUnix
 
 	struct dirent* directoryEntry;
 	auto directory = opendir(directory);
