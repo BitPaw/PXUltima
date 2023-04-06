@@ -1249,7 +1249,7 @@ OpenGLRenderMode PXGraphicRenderModeToOpenGL(const PXGraphicRenderMode graphicRe
 
 void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 {
-    PXLockCreate(&graphicContext->_resourceLock);
+    PXLockCreate(&graphicContext->_resourceLock, PXLockTypeGlobal);
 
     char* memww = (char*)MemoryAllocate(12048); // TODO: Fix this
 

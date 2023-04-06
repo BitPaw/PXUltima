@@ -8,11 +8,11 @@
 
 #include <stdio.h>
 
-void OnSocketDataSend(const PXSocket* const pxSocket, const void* message, const PXSize messageSize)
+void OnSocketDataSend(const PXSocket* const sendingSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize)
 {
 
 }
-void OnSocketDataReceive(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize)
+void OnSocketDataReceive(const PXSocket* const receiveSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize)
 {
     //PXHTTPRequest pxHTTPRequest;
     //PXDataStream pxDataStream;
@@ -41,19 +41,17 @@ void OnSocketDataReceive(const PXSocket* const pxSocket, const void* const messa
         "<p>%s</p>"
         "</body>"
         "</html>";
-    PXSize size = 0;
 
     int exportSize = sprintf
     (
         exportBuffer,
         buffer,
-        pxSocket->ID,
+        clientSocketID,
         message
     );
 
-    PXSocketSend(pxSocket, exportBuffer, exportSize, &size);
-
-    PXSocketClose(pxSocket);
+    PXSocketSendAsServerToClient(receiveSocket, clientSocketID, exportBuffer, exportSize);
+    PXSocketClientRemove(receiveSocket, clientSocketID);
 }
 
 

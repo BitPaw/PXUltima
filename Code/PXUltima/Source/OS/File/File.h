@@ -11,11 +11,12 @@
 
 #if OSUnix
 
+#include <sys/typed.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <libgen.h>
-//#include <dirent.h>
 
 typedef FILE* FileHandleType;
 typedef int FileMappingID;
@@ -176,11 +177,20 @@ void PXDirectoryIsDotFolder(const char* s)
 	typedef enum PXFileElementInfoType_
 	{
 		PXFileElementInfoTypeInvalid,
-		PXFileElementInfoTypeFile,
-		PXFileElementInfoTypeDictionary,
+		PXFileElementInfoTypeUnkown, // DT_UNKNOWN
 
-		PXFileElementInfoTypeDictionaryRoot,
-		PXFileElementInfoTypeDictionaryParent
+		PXFileElementInfoTypeFile, // DT_REG
+		PXFileElementInfoTypeDictionary, // DT_DIR
+
+		PXFileElementInfoTypeNamedPipeFIFO, // DT_FIFO
+		PXFileElementInfoTypeLink, // DT_LNK
+		PXFileElementInfoTypeSocket, // DT_SOCK
+	
+		PXFileElementInfoTypeDeviceCharacter, // DT_CHR
+		PXFileElementInfoTypeDeviceBlock, // DT_BLK
+
+		PXFileElementInfoTypeDictionaryRoot, // '.'
+		PXFileElementInfoTypeDictionaryParent // '..'
 	}
 	PXFileElementInfoType;
 
@@ -188,12 +198,17 @@ void PXDirectoryIsDotFolder(const char* s)
 	{
 		PXFileElementInfoType Type;
 
-		unsigned char Depth;
+		PXInt8U Depth;
 
-		wchar_t* FullPath;
-		wchar_t* Name;
+		char* FullPath;
+		PXSize FullPathSize;
+
+		char* Name;
+		PXSize NameSize;
 
 		PXSize Size;
+
+		PXBool IsSystemDottedFolder;
 	}
 	PXFileElementInfo;
 
@@ -203,6 +218,30 @@ void PXDirectoryIsDotFolder(const char* s)
 
 
 	//---<Directory>-------------------------------------------------------
+
+	typedef struct PXDirectoryIterator_
+	{
+#if OSUnix
+		DIR* ID;
+		struct dirent* DirectoryEntryCurrent;
+#elif OSWindows
+		HANDLE ID;
+		WIN32_FIND_DATA DirectoryEntryCurrent;
+#endif
+
+		PXInt8U EntryDepthCurrent;
+
+		PXFileElementInfo EntryCurrent;
+	}
+	PXDirectoryIterator;
+
+	PXPublic void PXDirectoryUpdateEntry(PXDirectoryIterator* const pxDirectoryIterator);
+
+	PXPublic PXActionResult PXDirectoryOpenA(PXDirectoryIterator* const pxDirectoryIterator, const PXTextASCII directoryName);
+	PXPublic PXActionResult PXDirectoryOpenW(PXDirectoryIterator* const pxDirectoryIterator, const PXTextUNICODE directoryName);
+	PXPublic PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator);
+	PXPublic PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator);
+
 	PXPublic PXActionResult PXDirectoryCreateA(const char* directoryName);
 	PXPublic PXActionResult PXDirectoryCreateW(const wchar_t* directoryName);
 	PXPublic PXActionResult PXWorkingDirectoryChange(const char* directoryName);

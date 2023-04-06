@@ -22,6 +22,8 @@ extern "C"
 
 		void* Owner;
 
+		PXLock PollingLock;
+
 		PXSocketEventListener EventListener;
 	}
 	PXServer;

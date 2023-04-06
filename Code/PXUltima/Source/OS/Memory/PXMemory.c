@@ -203,6 +203,18 @@ int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASi
 #endif
 }
 
+PXBool MemoryCompareToByte(const void* __restrict bufferA, const PXSize bufferASize, const PXByte dataByte)
+{
+	PXSize equalSum = 0;
+
+	for (PXSize counter = bufferASize; counter; --counter)
+	{
+		equalSum += dataByte == ((PXAdress)bufferA)[counter];
+	}
+
+	return equalSum == bufferASize;
+}
+
 PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
 {
 	const PXSize bufferSize = MathMinimumIU(bufferASize, bufferBSize);

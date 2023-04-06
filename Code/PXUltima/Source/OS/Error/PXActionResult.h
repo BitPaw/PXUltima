@@ -25,6 +25,13 @@ extern "C"
 		PXActionRefuedOutputBufferTooSmal, // 
 
 
+		PXActionInvalidStateImpossible, // Is an object is used and has data that should not be possible
+
+
+		PXActionFailedElementNotFound,
+
+
+
 		//---<File-General>------------------
 		PXActionRefusedEmptyFilePath,
 		PXActionFailedFileNotFound,

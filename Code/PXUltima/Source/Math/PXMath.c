@@ -17,6 +17,11 @@ double MathMinimumD(const double a, const double b)
 	return MathMinimum(a, b);
 }
 
+PXSize MathMaximumIU(const PXSize a, const PXSize b)
+{
+	return MathMaximum(a, b);
+}
+
 int MathFloorI(const int a)
 {
 	return MathFloor(a);

@@ -593,10 +593,13 @@ unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode)
 void PXSocketConstruct(PXSocket* const pxSocket)
 {
     MemoryClear(pxSocket, sizeof(PXSocket));
+
+    PXDictionaryConstruct(&pxSocket->SocketLookup, sizeof(PXSocketID), sizeof(PXSocket));
 }
 
 void PXSocketDestruct(PXSocket* const pxSocket)
 {
+
 }
 
 PXActionResult PXSocketCreate
@@ -684,8 +687,6 @@ PXActionResult PXSocketSetupAdress
     }
 #endif
 
-    MemoryClear(pxSocketList, sizeof(PXSocket) * socketListSizeMax);
-
     *PXSocketListSize = 0;
 
     for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
@@ -717,6 +718,13 @@ PXActionResult PXSocketSetupAdress
 
         const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP, portNumberString, &adressHints, &adressResult);
         const PXBool validAdressInfo = adressInfoResult == 0;
+
+        if (!validAdressInfo)
+        {
+           // ...
+        }
+
+  
 
         if(i == 0)
         {
@@ -808,6 +816,8 @@ PXActionResult PXSocketSetupAdress
             pxSocket->IPSize = adressInfo->ai_addrlen;
 
             MemoryCopy(adressInfo->ai_addr, adressInfo->ai_addrlen, pxSocket->IP, IPv6LengthMax);
+
+            pxSocket->State = SocketInitialised;
         }
 
         AdressInfoDelete(adressResult);
@@ -843,7 +853,7 @@ void PXSocketClose(PXSocket* const pxSocket)
     InvokeEvent(pxSocket->EventList.ConnectionTerminatedCallback, pxSocket);
 
 #if SocketDebug
-    printf("[PXSocket] Closed <%i>\n", pxSocket->ID);
+    printf("[PXSocket] <%i> Terminated\n", (int)pxSocket->ID);
 #endif
 
     pxSocket->ID = SocketIDOffline;
@@ -854,67 +864,49 @@ void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketSta
     pxSocket->State = socketState;
 }
 
-void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize)
+PXActionResult PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize)
 {
     PXSocketStateChange(pxSocket, SocketEventPolling);
 
+    if (pxSocket->PollingLock)
+    {
+        PXLockEngage(pxSocket->PollingLock);
+    }
+
+
 #if 0 // Use optimised OS function
 
+    const PXSize socketDataListSize = pxSocket->SocketPollingReadListSize;
     struct pollfd* socketDataList = buffer;
-    PXSize socketDataListSize = pxSocket->SocketPollingReadListSize;
     int timeout = 50;
-
+      
     for (PXSize i = 0; i < socketDataListSize; ++i)
     {
-        struct pollfd* socketDataListCurrent = &socketDataList[i];
+        struct pollfd* pollingEntry = &socketDataList[i];
 
-        socketDataListCurrent->fd = pxSocket->SocketPollingReadList[i];
-        socketDataListCurrent->events = POLLRDNORM;
-        socketDataListCurrent->revents = 0;
+        pollingEntry->fd = pxSocket->SocketPollingReadList[i]; // SocketID
+        pollingEntry->events = POLLRDNORM; // Poll-Read-Normal
+        pollingEntry->revents = 0; // Will be the result of the call
     }
 
-    const int amount = OSSocketPoll(socketDataList, socketDataListSize, timeout); // Not thread safe??
+
+    int amount = OSSocketPoll(socketDataList, socketDataListSize, timeout); // Not thread safe??
     const PXBool success = amount != -1;
 
-#if OSWindows
+
     if (!success)
     {
-        const int wasError = WSAGetLastError();
+        amount = 0;
+#if 0
 
-        switch (wasError)
-        {
-
-            case  WSAENETDOWN: //              The network subsystem has failed.
-                printf("[Polling] WSAENETDOWN\n");
-                break;
-
-
-            case      WSAEFAULT: //                An exception occurred while reading user input parameters.
-
-                printf("[Polling] WSAEFAULT\n");
-                break;
-
-            case  WSAEINVAL: //                 An invalid parameter was passed.This error is returned if the WSAPOLLFD structures pointed to by the fdarray parameter when requesting socket status.This error is also returned if none of the sockets specified in the fd member of any of the WSAPOLLFD structures pointed to by the fdarray parameter were valid.
-
-                printf("[Polling] WSAEINVAL\n");
-                break;
-
-            case  WSAENOBUFS: // The function was unable to allocate sufficient memory.
-
-                printf("[Polling] WSAENOBUFS\n");
-                break;
-
-            default:
-                printf("[Polling] Error\n");
-                break;
-        }
-
-        // PXActionResult action = GetCurrentError();
-
-
-        return;
+        PXActionOnErrorFetchAndExit(!success);
+        #endif
     }
-#endif OSUnix
+
+
+
+
+
 
     for (PXSize i = 0; i < amount; i++)
     {
@@ -922,6 +914,39 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
 
         switch (currentPollData->revents)
         {
+            case 0: // Illegal state, undefined
+            {
+                const PXSocketID clientID = currentPollData->fd;
+                const PXBool isRegistered = PXSocketIsRegistered(pxSocket, clientID);
+
+                if (isRegistered)
+                {
+                    PXSocket clientSocket;
+                    PXSocketConstruct(&clientSocket);
+
+                    clientSocket.Owner = pxSocket->Owner;
+                    clientSocket.ID = clientID;
+                    clientSocket.EventList = pxSocket->EventList;
+
+                    char inputBuffer[1024];
+                    PXSize wrrit = 0;
+
+                    const PXActionResult succ = PXSocketReceive(&clientSocket, inputBuffer, 1024, &wrrit);
+
+                    if (succ != PXThreadSucessful)
+                    {
+                        PXSocketEventReadUnregister(pxSocket, currentPollData->fd);
+                        PXSocketClose(&clientSocket);
+                    }
+
+                }
+                else
+                {
+                    PXSocketEventReadRegister(pxSocket, clientID);
+                }
+
+                break;
+            }
             case POLLERR: // An error has occurred.
             case POLLHUP: // A stream - oriented connection was either disconnected or aborted.
             {
@@ -943,130 +968,99 @@ void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSiz
         }
     }
 
-#else
+    if (pxSocket->PollingLock)
+    {
+        PXLockRelease(&pxSocket->PollingLock);
+    }
 
-    const PXSize neededFetches = (pxSocket->SocketPollingReadListSize / FD_SETSIZE) + 1;
+#elif 1
+
+    // FD_SETSIZE is stanard value 64
+
+const PXSize registeredSocketIDs = pxSocket->SocketLookup.EntryAmountCurrent;
+const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
 
     //const TIMEVAL time = { 3,0 };
 
-    PXSize restValues = pxSocket->SocketPollingReadListSize;
-    fd_set selectListenRead[64];
+    PXSize restValues = registeredSocketIDs;
+    PXSize socketIDIndex = 0;
 
-    MemorySet(selectListenRead, 0, sizeof(fd_set) * 64);
-
-    for (PXSize i = 0; i < neededFetches; ++i)
+    for (PXSize i = 0; i < neededFetches; ++i) // All sockets
     {
-        const PXSocketID* const socketIDList = &pxSocket->SocketPollingReadList[i * FD_SETSIZE];
-        const PXSize fdBlockSize = MathMinimumIU(restValues, FD_SETSIZE);
-        const PXSize fdBlockSizeBytes = fdBlockSize * sizeof(PXSocketID);
+        fd_set selectListenRead; // is a struct containing an int and a fixed list of int[64]
+        PXSize j = 0;
+        PXSize highestSocketID = 0;
 
-        restValues -= fdBlockSize;
+        MemoryClear(&selectListenRead, sizeof(selectListenRead));
 
-        //selectListenRead.fd_count = fdBlockSize;
-
-        //MemoryCopy(socketIDList, fdBlockSizeBytes, selectListenRead.fd_array, fdBlockSizeBytes);
-        MemoryCopy(socketIDList, fdBlockSizeBytes, selectListenRead, fdBlockSizeBytes);
-
-        const int numberOfSocketEvents = select(0, &selectListenRead, 0, 0, 0);
-
-        for (PXSize l = 0; l < numberOfSocketEvents; ++l)
+        for ( ; restValues > 0 && j < FD_SETSIZE; ++j) // all in 64x blocks
         {
-            //const PXSocketID socketID = selectListenRead.fd_array[i];
-            const PXSocketID socketID = *(int*)&selectListenRead[i];
+            const PXSize index = i * FD_SETSIZE + j;
 
-            PXSocketReadPendingHandle(pxSocket, socketID);
+            PXDictionaryEntry pxDictionaryEntry;
+            PXDictionaryIndex(&pxSocket->SocketLookup, socketIDIndex++, &pxDictionaryEntry);
+
+            const PXSocketID socketID = *(PXSocketID*)pxDictionaryEntry.Key;
+
+            if (socketID == (PXSocketID)-1)
+            {
+                --j;
+                continue;
+            }
+
+            highestSocketID = MathMaximumIU(highestSocketID, socketID);
+            selectListenRead.fd_array[j] = socketID;
+
+            --restValues;
+        }
+
+        selectListenRead.fd_count = j;       
+
+        int numberOfSocketEvents = select(highestSocketID + 1, &selectListenRead, 0, 0, 0); // first parameter is ignored under windows
+        const PXBool success = -1 != numberOfSocketEvents;
+
+        if (!success)
+        {
+            int errotID = WSAGetLastError();
+
+            numberOfSocketEvents = 0;
+        }
+
+        //PXActionOnErrorFetchAndExit(!success);
+
+        for (PXSize readableSocketIndex = 0; readableSocketIndex < numberOfSocketEvents; ++readableSocketIndex)
+        {
+            const PXSocketID socketID = selectListenRead.fd_array[readableSocketIndex];
+            const PXBool isServer = pxSocket->ID == socketID;
+
+            if (isServer)
+            {
+                PXSocketAccept(pxSocket);
+            }
+            else
+            {
+                PXSocketReceiveAsServer(pxSocket, socketID);
+            }
         }
     }
+        
+#else
+
+for (PXSize i = 0; i < pxSocket->SocketPollingReadListSize; ++i)
+{
+    PXSocketReadPendingHandle(pxSocket, pxSocket->SocketPollingReadList[i]); // Will block
+}
+
 #endif
 
+    if (pxSocket->PollingLock)
+    {
+        PXLockRelease(pxSocket->PollingLock);
+    }
+
     PXSocketStateChange(pxSocket, SocketIDLE);
-}
 
-void PXSocketEventReadRegister(PXSocket* const pxSocket, const PXSocketID socketID)
-{
-    PXSocketID* const socketIDRef = &pxSocket->SocketPollingReadList[pxSocket->SocketPollingReadListSize++];
-
-    *socketIDRef = socketID;
-}
-
-void PXSocketEventReadUnregister(PXSocket* const pxSocket, const PXSocketID socketID)
-{
-    PXSize offset = 0;
-    PXSocketID* socketIDRef = 0;
-
-    for (offset = 0; offset < pxSocket->SocketPollingReadListSize; ++offset)
-    {
-        const PXSocketID compareID = pxSocket->SocketPollingReadList[offset];
-
-        if (compareID == socketID)
-        {
-            // found
-            socketIDRef = &pxSocket->SocketPollingReadList[offset];
-            break;
-        }
-    }
-
-    if (!socketIDRef)
-    {
-        return;
-    }
-
-    PXBool endOfList = offset + 1 == pxSocket->SocketPollingReadListSize;
-
-    if (endOfList)
-    {
-        *socketIDRef = 0;
-    }
-    else
-    {
-        PXSize copySize = pxSocket->SocketPollingReadListSize - offset - 1;
-
-        MemoryMove(socketIDRef + 1, copySize, socketIDRef, copySize);
-    }
-
-    --(pxSocket->SocketPollingReadListSize);
-}
-
-void PXSocketReadPendingHandle(PXSocket* const pxSocket, const PXSocketID socketID)
-{
-    if (pxSocket->ID == socketID)
-    {
-        PXSocket clientSocket;
-
-        PXSocketConstruct(&clientSocket);
-
-        // Set Events
-
-        const PXActionResult actionResult = PXSocketAccept(pxSocket, &clientSocket);
-        const PXBool successful = PXActionSuccessful == actionResult;
-
-        if (!successful)
-        {
-            //InvokeEvent(server->PXClientAcceptFailureCallback, serverSocket);
-            return;
-        }
-
-        // InvokeEvent(server->PXClientConnectedCallback, serverSocket, &clientSocket);
-
-        PXSocketEventReadRegister(pxSocket, clientSocket.ID);
-    }
-    else
-    {
-        PXSocket clientSocket;
-
-        PXSocketConstruct(&clientSocket);
-
-        clientSocket.Owner = pxSocket->Owner;
-        clientSocket.ID = socketID;
-        clientSocket.EventList = pxSocket->EventList;
-
-        char inputBuffer[1024];
-        PXSize wrrit = 0;
-
-        PXSocketEventReadUnregister(pxSocket, clientSocket.ID);
-
-        PXSocketReceive(&clientSocket, inputBuffer, 1024, &wrrit);
-    }
+    return PXActionSuccessful;
 }
 
 PXActionResult PXSocketBind(PXSocket* const pxSocket)
@@ -1077,13 +1071,13 @@ PXActionResult PXSocketBind(PXSocket* const pxSocket)
     if(!sucessful)
     {
 #if SocketDebug
-        printf("[PXSocket] Binding <%i> failed!\n", pxSocket->ID);
+        printf("[PXSocket] Binding <%i> failed!\n", (int)pxSocket->ID);
 #endif
         return PXActionFailedSocketBinding;
     }
 
 #if SocketDebug
-    printf("[PXSocket] Bound <%i>.\n", pxSocket->ID);
+    printf("[PXSocket] Bound <%i>.\n", (int)pxSocket->ID);
 #endif
 
     return PXActionSuccessful;
@@ -1102,7 +1096,7 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
 #if OSUnix
         SO_REUSEADDR;      // Do not use SO_REUSEADDR, else the port can be hacked. SO_REUSEPORT
 #elif OSWindows
-        SO_EXCLUSIVEADDRUSE;
+        SO_EXCLUSIVEADDRUSE; 
 #endif
     const int opval = 1;
     const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(int));
@@ -1135,21 +1129,27 @@ PXActionResult PXSocketListen(PXSocket* const pxSocket)
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
+PXActionResult PXSocketAccept(PXSocket* const server)
 {
-    client->IPSize = IPv6LengthMax; // Needed for accept(), means 'length i can use'. 0 means "I canot perform"
-    client->ID = accept
+    PXSocket clientSocket;
+    PXSocketConstruct(&clientSocket);
+
+    clientSocket.Owner = server->Owner;
+    clientSocket.EventList = server->EventList;
+
+    clientSocket.IPSize = IPv6LengthMax; // Needed for accept(), means 'length i can use'. 0 means "I canot perform"
+    clientSocket.ID = accept
     (
         server->ID,
-        (struct sockaddr*)client->IP,
+        (struct sockaddr*)clientSocket.IP,
 #if OSUnix
-        (socklen_t*)&client->IPSize
+        (socklen_t*)&client.IPSize
 #elif OSWindows
-        (int*)&client->IPSize
+        (int*)&clientSocket.IPSize
 #endif
     );
 
-    const PXBool sucessful = client->ID != -1;
+    const PXBool sucessful = clientSocket.ID != -1;
 
     if(!sucessful)
     {
@@ -1161,8 +1161,56 @@ PXActionResult PXSocketAccept(PXSocket* server, PXSocket* client)
     }
 
 #if SocketDebug
-    printf("[PXSocket] Connection accepted <%i>\n", client->ID);
+    printf("[PXSocket] <%i> accepted <%i>\n", (int)server->ID, (int)clientSocket.ID);
 #endif
+
+    // Register Client
+    {
+        PXDictionaryAdd(&server->SocketLookup, &clientSocket.ID, &clientSocket);
+
+        // Erros on add?
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const PXSocketID clientID, const void* inputBuffer, const PXSize inputBufferSize)
+{
+    // Do we even send anything? If not, quit
+    {
+        const PXBool hasDataToSend = inputBuffer && inputBufferSize > 0; // if NULL or 0 Bytes, return
+
+        if (!hasDataToSend)
+        {
+            return PXActionSuccessful; // Do not send anything if the message is empty
+        }
+    }
+
+    InvokeEvent(serverSocket->EventList.MessageSendCallback, serverSocket, clientID, inputBuffer, inputBufferSize);
+
+#if SocketDebug
+    printf("[PXSocket] <%i> --> <%i> %i Bytes\n", (int)serverSocket->ID, (int)clientID, (int)inputBufferSize);
+#endif
+
+    // Send data
+    {
+        const char* data = (const char*)inputBuffer;
+
+        const int writtenBytes =
+#if OSUnix
+            write(clientID, data, inputBufferSize);
+#elif OSWindows
+            send(clientID, data, inputBufferSize, 0);
+#endif
+        const PXBool sucessfulSend = writtenBytes != -1;
+
+        if (!sucessfulSend)
+        {
+            return PXActionFailedSocketSend;
+        }
+
+        //if (inputBytesWritten) *inputBytesWritten = writtenBytes;
+    }
 
     return PXActionSuccessful;
 }
@@ -1189,10 +1237,10 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
         }
     }
 
-    InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket, inputBuffer, inputBufferSize);
+    InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket, pxSocket->ID, inputBuffer, inputBufferSize);
 
 #if SocketDebug
-    printf("[PXSocket] You --> <%zi> %li Bytes\n", pxSocket->ID, inputBufferSize);
+    printf("[PXSocket] You --> <%i> %i Bytes\n", (int)pxSocket->ID, (int)inputBufferSize);
 #endif
 
     // Send data
@@ -1257,7 +1305,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
             case 0:// endOfFile
             {
 #if SocketDebug
-                printf("[PXSocket] Connection <%i> close signal detected!\n", pxSocket->ID);
+                printf("[PXSocket] Connection <%i> close signal detected!\n", (int)pxSocket->ID);
 #endif
 
                 PXSocketClose(pxSocket);
@@ -1269,13 +1317,87 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
                 *outputBytesWritten = byteRead;
 
 #if SocketDebug
-                printf("[PXSocket] You <-- <%li> %i Bytes\n", pxSocket->ID, byteRead);
+                printf("[PXSocket] You <-- <%li> %i Bytes\n", (int)pxSocket->ID, (int)byteRead);
 #endif
 
-                InvokeEvent(pxSocket->EventList.MessageReceiveCallback, pxSocket, outputBuffer, byteRead);
+                InvokeEvent(pxSocket->EventList.MessageReceiveCallback, pxSocket, pxSocket->ID, outputBuffer, byteRead);
             }
         }
     }
+    return PXActionSuccessful;
+}
+
+PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSocketID clientID)
+{
+    char buffer[1024];
+    PXSize buffserSize = 1024;
+    PXSize buffserWritten = 0;
+
+
+    // Read data
+    {
+        //StateChange(SocketStateDataReceiving);
+
+        const unsigned int byteRead =
+#if OSUnix
+            read(clientID, buffer, buffserSize);
+#elif OSWindows
+            recv(clientID, buffer, buffserSize, 0);
+#endif
+
+        // StateChange(SocketStateIDLE);
+
+        switch (byteRead)
+        {
+            case (unsigned int)-1:
+                return PXActionFailedSocketRecieve;
+
+            case 0:// endOfFile
+            {
+#if SocketDebug
+                printf("[PXSocket] Connection <%i> close signal detected!\n", (int)clientID);
+#endif
+
+                PXSocketClientRemove(serverSocket, clientID);
+
+                return PXActionRefusedSocketNotConnected; // How to handle, 0 means connected but this is not the terminating phase.
+            }
+            default:
+            {
+                buffserWritten = byteRead;
+
+#if SocketDebug
+                printf("[PXSocket] <%i> <-- <%i> %i Bytes\n", (int)serverSocket->ID, (int)clientID, (int)byteRead);
+#endif
+
+                InvokeEvent(serverSocket->EventList.MessageReceiveCallback, serverSocket, clientID, buffer, buffserWritten);
+            }
+        }
+    }
+    return PXActionSuccessful;
+}
+
+PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID)
+{
+    PXSocket clientSockket;
+
+    // Extract client socket
+    {
+        const PXSocketID clientIDCopy = clientID;
+        const PXBool success = PXDictionaryExtract(&serverSocket->SocketLookup, &clientID, &clientSockket);
+
+        if (!success)
+        {
+            return PXActionFailedElementNotFound;
+        }
+    }
+
+#if SocketDebug
+    printf("[PXSocket] <%i> remove <%i>\n", (int)serverSocket->ID, (int)clientSockket.ID);
+#endif
+
+    PXSocketClose(&clientSockket);
+
     return PXActionSuccessful;
 }
 

@@ -18,16 +18,30 @@ extern "C"
 {
 #endif
 
+	typedef enum PXLockType_
+	{
+		PXLockTypeInvalid,
+		PXLockTypeGlobal,
+		PXLockTypeProcessOnly
+	}
+	PXLockType;
+
 	typedef struct PXLock_
 	{
-		PXLockIDType PXLockID;
+		PXLockIDType ID;
+		PXLockType Type;
+		PXInt8U LockCounter;
+
+#if OSWindows
+		CRITICAL_SECTION LockCriticalSection;
+#endif
 	}
 	PXLock;
 
     // Clear value of lock, sets CPrivate data to 0.
     PXPublic void PXLockClear(PXLock* const lock);
 
-	PXPublic PXActionResult PXLockCreate(PXLock* const lock);
+	PXPublic PXActionResult PXLockCreate(PXLock* const lock, const PXLockType type);
 	PXPublic PXActionResult PXLockDelete(PXLock* const lock);
 	PXPublic PXActionResult PXLockEngage(PXLock* const lock);
 	PXPublic PXActionResult PXLockRelease(PXLock* const lock);

@@ -40,9 +40,10 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 //-----------------------------------------------
 
 #include <Media/Type.h>
-
+#include <OS/Thread/PXLock.h>
 #include <OS/Thread/PXThread.h>
 #include <OS/Error/PXActionResult.h>
+#include <Container/Dictionary/PXDictionary.h>
 
 typedef PXSize PXSocketID;
 #define SocketDebug 1
@@ -156,9 +157,13 @@ extern "C"
 	{
 		SocketNotInitialised,
 
+		SocketInitialised,
+
 		SocketIDLE, // Waiting for action, currently doing nothing
 		SocketEventPolling, // Polling for events on multible sockets
 		SocketOffline,
+
+		SocketFailed,
 
 		// PXClient only
 		SocketConnecting,
@@ -177,8 +182,8 @@ extern "C"
 	typedef void (*PXSocketCreatingEvent)(const PXSocket* const pxSocket, unsigned char* use);
 	typedef void (*PXSocketCreatedEvent)(const PXSocket* const pxSocket);
 
-	typedef void (*PXSocketDataSendEvent)(const PXSocket* const pxSocket, const void* message, const PXSize messageSize);
-	typedef void (*PXSocketDataReceiveEvent)(const PXSocket* const pxSocket, const void* const message, const PXSize messageSize);
+	typedef void (*PXSocketDataSendEvent)(const PXSocket* const sendingSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize);
+	typedef void (*PXSocketDataReceiveEvent)(const PXSocket* const receiveSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize);
 
 	// PXServer Only
 	typedef void (*PXSocketListeningEvent)(const PXSocket* const pxSocket);
@@ -230,12 +235,13 @@ extern "C"
 		void* Owner;
 
 		//----------------------------
-		PXSize SocketPollingReadListSize;
-		PXSocketID* SocketPollingReadList;
+		PXDictionary SocketLookup;
+		PXLock* PollingLock;
+		//----------------------------
 
 		//---<CPrivate IO>------------
 		PXThread CommunicationThread;
-		//----------------------------
+		//----------------------------	
 
 		PXSocketEventListener EventList;
 	}
@@ -289,19 +295,20 @@ extern "C"
 
 	PXPublic void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState);
 
-	PXPublic void PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize);
-	PXPublic void PXSocketEventReadRegister(PXSocket* const pxSocket, const PXSocketID socketID);
-	PXPublic void PXSocketEventReadUnregister(PXSocket* const pxSocket, const PXSocketID socketID);
-
-	PXPublic void PXSocketReadPendingHandle(PXSocket* const pxSocket, const PXSocketID socketID);
+	PXPublic PXActionResult PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize);
 
 	PXPublic PXActionResult PXSocketBind(PXSocket* const pxSocket);
 	PXPublic PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket);
 	PXPublic PXActionResult PXSocketListen(PXSocket* const pxSocket);
-	PXPublic PXActionResult PXSocketAccept(PXSocket* server, PXSocket* client);
+	PXPublic PXActionResult PXSocketAccept(PXSocket* const server);
+
+	PXPublic PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const PXSocketID clientID, const void* inputBuffer, const PXSize inputBufferSize);
 
 	PXPublic PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
 	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
+	PXPublic PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSocketID clientID);
+
+	PXPublic PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);
 
 #if OSWindows
 	PXPrivate PXActionResult WindowsSocketAgentStartup(void);

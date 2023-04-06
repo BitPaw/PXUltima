@@ -32,6 +32,8 @@ extern "C"
 	PXPublic PXSize MathMinimumIU(const PXSize a, const PXSize b);
 	PXPublic double MathMinimumD(const double a, const double b);
 
+	PXPublic PXSize MathMaximumIU(const PXSize a, const PXSize b);
+
 	PXPublic int MathFloorI(const int a);
 	PXPublic int MathFloorD(const double a);
 

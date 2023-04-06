@@ -34,10 +34,15 @@ extern "C"
 	PXPublic void PXDictionaryDestruct(PXDictionary* const dictionary);
 
 	PXPublic void PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys);
-	PXPublic void PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);
+	PXPublic PXBool PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);
 	PXPublic void PXDictionaryRemove(PXDictionary* const dictionary, const void* key);
+	PXPublic PXBool PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value);
+
+	// Removed the object and returns it 
+	PXPublic PXBool PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value);
 	PXPublic void PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry);
-	PXPublic PXBool PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void* const value);
+	PXPublic PXBool PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void** const value);
+	PXPublic PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const keyResult);
 
 #ifdef __cplusplus
 }
