@@ -23,8 +23,8 @@ typedef HGLRC OpenGLConextID;
 
 #include <Graphic/PXGraphic.h>
 #include <Device/VirtualKey.h>
-#include <Device/Mouse.h>
-#include <Device/KeyBoard.h>
+#include <Device/PXMouse.h>
+#include <Device/PXKeyBoard.h>
 #include <OS/Process/PXProcess.h>
 #include <OS/Thread/PXThread.h>
 
@@ -120,7 +120,7 @@ extern "C"
 	typedef void (*MouseScrollEvent)(const void* const receiver, const PXWindow* sender, const MouseScrollDirection mouseScrollDirection);
 	typedef void (*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const MouseButton mouseButton, const ButtonState buttonState);
 	typedef void (*MouseClickDoubleEvent)(const void* const receiver, const PXWindow* sender, const MouseButton mouseButton);
-	typedef void (*MouseMoveEvent)(const void* const receiver, const PXWindow* sender, const Mouse* mouse);
+	typedef void (*MouseMoveEvent)(const void* const receiver, const PXWindow* sender, const PXMouse* mouse);
 	typedef void (*MouseEnterEvent)(const void* const receiver, const PXWindow* sender);
 	typedef void (*MouseLeaveEvent)(const void* const receiver, const PXWindow* sender);
 
@@ -154,8 +154,8 @@ extern "C"
 		PXBool HasSizeChanged;
 		PXWindowCursorMode CursorModeCurrent;
 
-		KeyBoard KeyBoardCurrentInput;
-		Mouse MouseCurrentInput;
+		PXKeyBoard KeyBoardCurrentInput;
+		PXMouse MouseCurrentInput;
 
 
 
@@ -248,12 +248,12 @@ extern "C"
 
 
 	// Event functions
-	PXPublic void TriggerOnMouseScrollEvent(const PXWindow* window, const Mouse* mouse);
+	PXPublic void TriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
 	PXPublic void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
 	PXPublic void TriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
 	PXPublic void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
-	PXPublic void TriggerOnMouseEnterEvent(const PXWindow* window, const Mouse* mouse);
-	PXPublic void TriggerOnMouseLeaveEvent(const PXWindow* window, const Mouse* mouse);
+	PXPublic void TriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
+	PXPublic void TriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
 
 
 	PXPublic void TriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);

@@ -1,26 +1,26 @@
-#include "KeyBoard.h"
+#include "PXKeyBoard.h"
 
 #include <OS/Memory/PXMemory.h>
 #include <Text/PXText.h>
 
 #include <stdio.h>
 
-void KeyBoardInputReset(KeyBoard* keyBoard)
+void KeyBoardInputReset(PXKeyBoard* const keyBoard)
 {
-	MemoryClear(keyBoard, sizeof(KeyBoard));
+	MemoryClear(keyBoard, sizeof(PXKeyBoard));
 }
 
-unsigned char KeyBoardKeyPressedGet(KeyBoard* keyBoard, const VirtualKey virtualKey)
-{
-	return 0;
-}
-
-unsigned char KeyBoardKeyPressedSet(KeyBoard* keyBoard, const VirtualKey virtualKey, const unsigned char isPressed)
+unsigned char KeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey)
 {
 	return 0;
 }
 
-void KeyBoardInputPrint(KeyBoard* keyBoard)
+unsigned char KeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey, const unsigned char isPressed)
+{
+	return 0;
+}
+
+void KeyBoardInputPrint(const PXKeyBoard* const keyBoard)
 {
 	char letters[11];
 	char numbers[11];
@@ -30,7 +30,7 @@ void KeyBoardInputPrint(KeyBoard* keyBoard)
 	PXTextFromBinaryDataA(&keyBoard->Letters, sizeof(unsigned int), letters, 11u);
 	PXTextFromBinaryDataA(&keyBoard->Numbers, sizeof(unsigned int), numbers, 11u);
 	PXTextFromBinaryDataA(&keyBoard->Commands, sizeof(unsigned int), commands, 11u);
-	PXTextFromBinaryDataA(&keyBoard->PXActions, sizeof(unsigned int), actions, 11u);
+	PXTextFromBinaryDataA(&keyBoard->Actions, sizeof(unsigned int), actions, 11u);
 
 	printf
 	(

@@ -24,7 +24,8 @@ void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSy
 	PXDataStreamWriteB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
 
-#if 1
+#if 0
+
 	PXSize idBufferSize = 10;
 	char idbuffer[15];
 	PXSize textBufferSize = 20;
@@ -552,7 +553,17 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			const PXBool probablyFloat = dotIndex != (PXSize)-1;
 			PXSize writtenNumbers = 0;
 
+			PXBool isValidFloatSyntax = PXTrue;
+
 			if (probablyFloat)
+			{
+				for (PXSize i = 0; (i <= dotIndex +1) && isValidFloatSyntax; i++)
+				{
+					isValidFloatSyntax = PXTextFloatIsAllowedCháracter(text[i]);
+				}
+			}
+
+			if (probablyFloat && isValidFloatSyntax)
 			{
 				float value = 0;
 
@@ -562,6 +573,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 				if (isFloat)
 				{
 					compilerSymbolEntry->Source = 0;
+					compilerSymbolEntry->Size = writtenNumbers;
 					compilerSymbolEntry->DataF = value;
 
 					return PXCompilerSymbolLexerFloat;
@@ -575,21 +587,11 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 
 				if (writtenNumbers > 0)
 				{
-					const PXBool isInteger = textSize == writtenNumbers;
+					compilerSymbolEntry->Source = 0;
+					compilerSymbolEntry->Size = writtenNumbers;
+					compilerSymbolEntry->DataI = value;
 
-					if (isInteger)
-					{
-						compilerSymbolEntry->Source = 0;
-						compilerSymbolEntry->DataI = value;
-
-						return PXCompilerSymbolLexerInteger;
-					}
-					else
-					{
-						compilerSymbolEntry->Size = writtenNumbers;
-
-						return PXCompilerSymbolLexerInteger;
-					}
+					return PXCompilerSymbolLexerInteger;
 				}			
 			}
 		}
@@ -745,9 +747,11 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 		//-----------------------------------------------------------------------------
 		{
 			PXSize fullBlockSize = PXDataStreamSkipBlock(inputStream);	// consume block
+			char* blockStart = compilerSymbolEntry.Source;
 
 			while (fullBlockSize > 0)
 			{
+				compilerSymbolEntry.Source = blockStart;
 				compilerSymbolEntry.Line = currentLine;
 				compilerSymbolEntry.Coloum = currentColoum;
 				compilerSymbolEntry.Size = fullBlockSize;
@@ -773,7 +777,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 				}
 
 				// Change data for next itteration
-				compilerSymbolEntry.Source += compilerSymbolEntry.Size; // Move data point forward
+				blockStart += compilerSymbolEntry.Size; // Move data point forward
 				fullBlockSize -= compilerSymbolEntry.Size; // Reduce blocksize by scanned data
 				currentColoum += compilerSymbolEntry.Size; // Forward the coloum of the data position			
 			}
@@ -781,38 +785,41 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 	}
 }
 
-PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, char* const text, const PXSize textMaxSize, PXSize* const textSize)
+PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
 {
-	PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Expect a name.
+	PXCompilerSymbolEntry compilerSymbolEntry;
 
-	const PXBool isText = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry->ID;
+	PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Expect a name.
+
+	const PXBool isText = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry.ID;
 
 	if (!isText)
 	{
 		return PXNo;
 	}
 
-	*textSize = PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, text, textMaxSize);
-
-	char* nameAdressStart = compilerSymbolEntry->Source;
+	PXInt16U line = compilerSymbolEntry.Line;
+	PXInt16U coloumStart = compilerSymbolEntry.Coloum;
+	PXSize dataBlockSize = compilerSymbolEntry.Size;
+	char* dataBlockPoint = compilerSymbolEntry.Source;
 
 	while (1u)
 	{
-		PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Expect a name.
+		PXCompilerSymbolEntryPeek(inputStream, &compilerSymbolEntry);
 
-		const PXBool isElement = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry->ID;
+		const PXBool isDone = (compilerSymbolEntry.Line != line) || (compilerSymbolEntry.ID == PXCompilerSymbolLexerNewLine);
 
-		if (isElement)
+		if (isDone)
 		{
-			const PXSize namelength = ((PXSize)compilerSymbolEntry->Source + (PXSize)compilerSymbolEntry->Size) - (PXSize)nameAdressStart;
+			break;
+		}
 
-			*textSize = PXTextCopyA(nameAdressStart, namelength, text, textMaxSize);
-		}
-		else // Should be expected new line Error
-		{
-			break; // OK and exit
-		}
+		PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
+
+		dataBlockSize = (compilerSymbolEntry.Coloum - coloumStart) + compilerSymbolEntry.Size;
 	}
+
+	*textSize = PXTextCopyA(dataBlockPoint, dataBlockSize, text, textMaxSize);
 
 	return PXYes;
 }
@@ -828,22 +835,29 @@ PXBool PXCompilerParseIntUnsignedSingle(PXDataStream* const inputStream, PXCompi
 	return isInt;
 }
 
-PXBool PXCompilerParseFloatSingle(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values)
+PXBool PXCompilerParseFloatSingle(PXDataStream* const inputStream, float* const values)
 {
-	PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
+	PXCompilerSymbolEntry compilerSymbolEntry;
 
-	const PXBool isFloat = compilerSymbolEntry->ID == PXCompilerSymbolLexerFloat;
+	PXCompilerSymbolEntryPeek(inputStream, &compilerSymbolEntry);
 
-	*values = compilerSymbolEntry->DataF;
+	const PXBool isFloat = compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
+
+	if (isFloat)
+	{
+		*values = compilerSymbolEntry.DataF;
+
+		PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
+	}
 
 	return isFloat;
 }
 
-PXBool PXCompilerParseFloatList(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
+PXBool PXCompilerParseFloatList(PXDataStream* const inputStream, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
 {
 	for (PXSize i = 0; i < valuesMaxSize; ++i)
 	{
-		const PXBool isFloat = PXCompilerParseFloatSingle(inputStream, compilerSymbolEntry, &values[*valuesSize]);
+		const PXBool isFloat = PXCompilerParseFloatSingle(inputStream, &values[*valuesSize]);
 
 		if (!isFloat)
 		{

@@ -104,6 +104,7 @@ extern "C"
 		PXBool KeepTabs;
 		PXBool KeepNewLines;
 		PXBool IntrepredTabsAsWhiteSpace;
+		PXBool DoPrintOutput;
 		
 		PXSize EndOfCommand;
 		char* EndOfCommandSize;
@@ -145,12 +146,12 @@ extern "C"
 	PXPublic void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream, const PXCompilerSettings* const compilerSettings);
 
 
-	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, char* const text, const PXSize textMaxSize, PXSize* const textSize);
+	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize);
 	
 	PXPublic PXBool PXCompilerParseIntUnsignedSingle(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value);
 
-	PXPublic PXBool PXCompilerParseFloatSingle(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values);
-	PXPublic PXBool PXCompilerParseFloatList(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
+	PXPublic PXBool PXCompilerParseFloatSingle(PXDataStream* const inputStream, float* const values);
+	PXPublic PXBool PXCompilerParseFloatList(PXDataStream* const inputStream,  float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 
 #ifdef __cplusplus
 }

@@ -49,15 +49,15 @@ void PXLogPrintf(const LoggingType loggingType, const char* const source, const 
 	}
 
 
-	char buffer[256];
+	//char buffer[256];
 
-	sprintf(buffer, "[%c][%s] %s", loggingTypeSymbol, source, input);
+	//sprintf(buffer, "[%c][%s] %s", loggingTypeSymbol, source, input);
 
 	{
 		va_list args;
 		va_start(args, input);
 
-		vfprintf(stdout, buffer, args);
+		vfprintf(stdout, source, args);
 
 		va_end(args);
 	}

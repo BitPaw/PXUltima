@@ -1005,7 +1005,10 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             return DefWindowProc(windowsID, eventID, wParam, lParam);
         }
         case WindowEventDestroy:
+        {
+            window->IsRunning = PXFalse;
             break;
+        }     
         case WindowEventMove:
             break;
         case WindowEventSize:
@@ -1016,7 +1019,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             window->Width = width;
             window->Height = height;
 
-            window->HasSizeChanged = 1u;
+            window->HasSizeChanged = PXYes;
 
             InvokeEvent(window->WindowSizeChangedCallBack, window->EventReceiver, window, width, height);
 
@@ -1051,6 +1054,8 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
                 InvokeEvent(window->WindowClosedCallBack, window->EventReceiver, window);
 
                 const LRESULT result = DefWindowProc(windowsID, WM_CLOSE, wParam, lParam);
+
+                window->IsRunning = PXFalse;
 
                 return result;
             }
@@ -2579,14 +2584,14 @@ PXBool PXWindowIsInFocus(const PXWindow* const window)
 #endif
 }
 
-void TriggerOnMouseScrollEvent(const PXWindow* window, const Mouse* mouse)
+void TriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse)
 {
 
 }
 
 void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState)
 {
-    const Mouse* const mouse = &window->MouseCurrentInput;
+    const PXMouse* const mouse = &window->MouseCurrentInput;
 
     const char* buttonStateText = 0;
     const char* mouseButtonText = 0;
@@ -2661,7 +2666,7 @@ void TriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mo
 
 void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY)
 {
-    Mouse* mouse = &window->MouseCurrentInput;
+    PXMouse* mouse = &window->MouseCurrentInput;
 
     mouse->Position[0] = positionX;
     mouse->Position[1] = positionY;
@@ -2673,11 +2678,11 @@ void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const 
     InvokeEvent(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
 }
 
-void TriggerOnMouseEnterEvent(const PXWindow* window, const Mouse* mouse)
+void TriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse)
 {
 }
 
-void TriggerOnMouseLeaveEvent(const PXWindow* window, const Mouse* mouse)
+void TriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse)
 {
 }
 

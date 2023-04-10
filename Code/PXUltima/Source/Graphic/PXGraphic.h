@@ -395,7 +395,7 @@ extern "C"
 	PXPublic PXActionResult PXGraphicSkyboxRegisterA
 	(
 		PXGraphicContext* const graphicContext,
-		PXSkyBox** skyBox,
+		PXSkyBox* const skyBox,
 		const char* shaderVertex,
 		const char* shaderFragment,
 		const char* textureRight,

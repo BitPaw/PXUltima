@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Math\PXCollision.h" />
     <ClInclude Include="Source\Media\CPP\PXCPP.h" />
     <ClInclude Include="Source\Media\CS\PXCS.h" />
     <ClInclude Include="Source\Media\C\PXC.h" />
@@ -81,8 +82,8 @@
     <ClInclude Include="Source\Container\QuadTree\QuadTree.h" />
     <ClInclude Include="Source\Device\Controller.h" />
     <ClInclude Include="Source\Device\InputButton.h" />
-    <ClInclude Include="Source\Device\KeyBoard.h" />
-    <ClInclude Include="Source\Device\Mouse.h" />
+    <ClInclude Include="Source\Device\PXKeyBoard.h" />
+    <ClInclude Include="Source\Device\PXMouse.h" />
     <ClInclude Include="Source\Device\VirtualKey.h" />
     <ClInclude Include="Source\OS\Error\PXActionResult.h" />
     <ClInclude Include="Source\Event\Event.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Math\PXCollision.c" />
     <ClCompile Include="Source\Media\CPP\PXCPP.c" />
     <ClCompile Include="Source\Media\CS\PXCS.c" />
     <ClCompile Include="Source\Media\C\PXC.c" />
@@ -223,8 +225,8 @@
     <ClCompile Include="Source\Container\QuadTree\QuadTree.c" />
     <ClCompile Include="Source\Device\Controller.c" />
     <ClCompile Include="Source\Device\InputButton.c" />
-    <ClCompile Include="Source\Device\KeyBoard.c" />
-    <ClCompile Include="Source\Device\Mouse.c" />
+    <ClCompile Include="Source\Device\PXKeyBoard.c" />
+    <ClCompile Include="Source\Device\PXMouse.c" />
     <ClCompile Include="Source\Device\VirtualKey.c" />
     <ClCompile Include="Source\OS\Error\PXActionResult.c" />
     <ClCompile Include="Source\Event\Event.c" />
@@ -338,7 +340,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -350,7 +352,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>

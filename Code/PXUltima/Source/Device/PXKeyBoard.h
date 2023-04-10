@@ -136,21 +136,21 @@ extern "C"
 {
 #endif
 
-	typedef struct KeyBoard_
+	typedef struct PXKeyBoard_
 	{
 		unsigned int Letters; // A, B, C, D, ...
 		unsigned int Numbers; // 0,1,2... and +, -, /, ...
 		unsigned int Commands; // Enter, Escape, ect..
-		unsigned int PXActions; // F-01 to F-xx
+		unsigned int Actions; // F-01 to F-xx
 	}
-	KeyBoard;
+	PXKeyBoard;
 
-	PXPublic void KeyBoardInputReset(KeyBoard* keyBoard);
+	PXPublic void KeyBoardInputReset(PXKeyBoard* const keyBoard);
 
-	PXPublic unsigned char KeyBoardKeyPressedGet(KeyBoard* keyBoard, const VirtualKey virtualKey);
-	PXPublic unsigned char KeyBoardKeyPressedSet(KeyBoard* keyBoard, const VirtualKey virtualKey, const unsigned char isPressed);
+	PXPublic unsigned char KeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey);
+	PXPublic unsigned char KeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey, const unsigned char isPressed);
 
-	PXPublic void KeyBoardInputPrint(KeyBoard* keyBoard);
+	PXPublic void KeyBoardInputPrint(const PXKeyBoard* const keyBoard);
 
 #ifdef __cplusplus
 }

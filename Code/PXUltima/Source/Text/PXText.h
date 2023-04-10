@@ -12,6 +12,9 @@
 #define IsEmptySpace(c) (c == ' ')
 #define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
 
+
+#define PXTextFloatIsAllowedCháracter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.')
+
 #define IsPrintable(c) (0x20 =< c && c =< 0x7E)
 #define MakePrintable(c) ((0x20 <= c && c <= 0x7E) ? + c : '?')
 

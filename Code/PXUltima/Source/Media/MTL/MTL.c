@@ -77,7 +77,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 	const PXSize headerOffset = 1024;
 
 
-	PXDataStreamFromExternal(&headerStream, (unsigned char*)outputStream->Data + startoffset, headerOffset);
+	PXDataStreamFromExternal(&headerStream, (PXAdress)outputStream->Data + startoffset, headerOffset);
 
 	// Lexer - Level I
 	{
@@ -86,7 +86,6 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 		PXCompilerSettingsConstruct(&compilerSettings);
 
 		compilerSettings.TryAnalyseTypes = PXYes;
-		compilerSettings.IntrepredTabsAsWhiteSpace = PXYes;
 		compilerSettings.CommentSingleLineSize = 1u;
 		compilerSettings.CommentSingleLine = "#";
 
@@ -94,7 +93,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 		PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-		PXDataStreamFromExternal(&tokenSteam, (unsigned char*)outputStream->Data + startoffset + headerOffset, outputStream->DataCursor - (startoffset + headerOffset));
+		PXDataStreamFromExternal(&tokenSteam, (PXAdress)outputStream->Data + startoffset + headerOffset, outputStream->DataCursor - (startoffset + headerOffset));
 
 		outputStream->DataCursor = startoffset;
 	}
@@ -108,13 +107,6 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 		PXCompilerSymbolEntry compilerSymbolEntry;
 
 		PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-		switch (compilerSymbolEntry.ID)
-		{
-			case PXCompilerSymbolLexerComment:
-			case PXCompilerSymbolLexerNewLine:
-				continue;
-		}
 
 		const MTLLineType mtlLineType = MTLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
@@ -139,7 +131,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 				//char* dataPosition = PXDataStreamCursorPosition(outputStream);
 				//const PXSize dataSize = PXDataStreamRemainingSize(outputStream);
 				PXSize dataSizeWritten = 0;
-				const PXBool isText = PXCompilerParseStringUntilNewLine(&tokenSteam, &compilerSymbolEntry, text, 256, &dataSizeWritten);
+				const PXBool isText = PXCompilerParseStringUntilNewLine(&tokenSteam, text, 256, &dataSizeWritten);
 
 				if (!isText)
 				{
@@ -155,16 +147,17 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 			case MTLLineDissolved:
 			case MTLLineDensity:
 			{
-				float value = 0;
-				const PXBool isFloatParsed = PXCompilerParseFloatSingle(&tokenSteam, &compilerSymbolEntry, &value);
+				PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
-				if (!isFloatParsed)
+				const PXBool isFloat = compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
+
+				if (!isFloat)
 				{
 					// Error
 					break;
 				}
 
-				materialSizeDelta += PXDataStreamWriteF(outputStream, value);
+				materialSizeDelta += PXDataStreamWriteF(outputStream, compilerSymbolEntry.DataF);
 
 				break;
 			}
@@ -177,7 +170,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 				const PXSize colorVectorSize = 3u;
 				float colorVector[3] = { -1, -1, -1 };
 
-				const PXBool listParsed = PXCompilerParseFloatList(&tokenSteam, &compilerSymbolEntry, colorVector, colorVectorSize, &valuesDetected);
+				const PXBool listParsed = PXCompilerParseFloatList(&tokenSteam, colorVector, colorVectorSize, &valuesDetected);
 
 				if (!listParsed)
 				{
@@ -191,9 +184,9 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 			}
 			case MTLLineIllumination:
 			{
-				unsigned int value = 0;
+				PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
-				const PXBool isInt = PXCompilerParseIntUnsignedSingle(&tokenSteam, &compilerSymbolEntry, &value);
+				const PXBool isInt = compilerSymbolEntry.ID == PXCompilerSymbolLexerInteger;
 
 				if (!isInt)
 				{
@@ -201,7 +194,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 					break;
 				}
 
-				const IlluminationMode illuminationMode = MTLIlluminationModeFromID(value);
+				const IlluminationMode illuminationMode = MTLIlluminationModeFromID(compilerSymbolEntry.DataI);
 
 				materialSizeDelta += PXDataStreamWriteI8U(outputStream, illuminationMode);
 

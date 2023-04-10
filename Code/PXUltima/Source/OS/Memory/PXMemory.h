@@ -75,11 +75,15 @@ extern "C"
 
 	PXPublic int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize);
 
+
+
 	PXPublic PXBool MemoryCompareToByte(const void* __restrict bufferA, const PXSize bufferASize, const PXByte dataByte);
 
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!
 	PXPublic PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize);
+
+	PXPublic void* MemoryLocate(const void* __restrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
 
 	PXPublic PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 	PXPublic PXSize MemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);

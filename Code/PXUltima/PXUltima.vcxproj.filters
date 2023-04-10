@@ -42,10 +42,10 @@
     <ClInclude Include="Source\Device\InputButton.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Device\KeyBoard.h">
+    <ClInclude Include="Source\Device\PXKeyBoard.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Device\Mouse.h">
+    <ClInclude Include="Source\Device\PXMouse.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Device\VirtualKey.h">
@@ -441,6 +441,9 @@
     <ClInclude Include="Source\Media\CPP\PXCPP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Math\PXCollision.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\OS\Thread\PXLock.c">
@@ -464,10 +467,10 @@
     <ClCompile Include="Source\Device\InputButton.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Device\KeyBoard.c">
+    <ClCompile Include="Source\Device\PXKeyBoard.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Device\Mouse.c">
+    <ClCompile Include="Source\Device\PXMouse.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Device\VirtualKey.c">
@@ -861,6 +864,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\CPP\PXCPP.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\PXCollision.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

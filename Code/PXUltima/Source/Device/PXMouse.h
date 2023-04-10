@@ -1,5 +1,5 @@
-#ifndef MouseInclude
-#define MouseInclude
+#ifndef PXMouseINCLUDE
+#define PXMouseINCLUDE
 
 #define ButtonLeft    0b00000001
 #define ButtonMiddle  0b00000010
@@ -26,18 +26,17 @@ extern "C"
 {
 #endif
 
-	typedef struct Mouse_
+	typedef struct PXMouse_
 	{
 		int Position[2]; // Window-Position (0/0 to x/y)
 		int InputAxis[2]; // Relative Input (-x/-y to 0/0 to x/y)
 		float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
 		unsigned char Buttons;
 	}
-	Mouse;
+	PXMouse;
 
-	PXPublic void MouseInputReset(Mouse* mouse);
-
-	PXPublic void MouseInputPrint(Mouse* mouse);
+	PXPublic void MouseInputReset(PXMouse* const mouse);
+	PXPublic void MouseInputPrint(const PXMouse* const mouse);
 
 #ifdef __cplusplus
 }

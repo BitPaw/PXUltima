@@ -242,6 +242,25 @@ PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, c
 #endif
 }
 
+void* MemoryLocate(const void* __restrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+{
+#if MemoryUseSystemFunction
+	void* memoryPosition = memchr(inputBuffer, byteBlock, inputBufferSize);
+
+	return memoryPosition;
+#else
+	PXBool found = PXFalse;
+	PXSize index = 0;
+
+	for (; index && !found; ++index)
+	{
+		found = byteBlock == ((PXAdress)inputBuffer)[index];
+	}
+
+	return found * (PXSize)((PXAdress)inputBuffer + index);
+#endif
+}
+
 PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
 	const PXSize bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);

@@ -318,7 +318,7 @@ PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, P
 PXActionResult PXGraphicSkyboxRegisterA
 (
     PXGraphicContext* const graphicContext,
-    PXSkyBox** skyBox,
+    PXSkyBox* const skyBox,
     const char* shaderVertex,
     const char* shaderFragment,
     const char* textureRight,
@@ -329,27 +329,14 @@ PXActionResult PXGraphicSkyboxRegisterA
     const char* textureFront
 )
 {
-    PXSkyBox* skyBoxCurrent = *skyBox;
-
     // Load Textures
     {
         const char* const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
         PXActionResult resultList[6];
 
-        {
-            const PXBool hasSkybox = skyBoxCurrent;
-
-            if (!hasSkybox)// Generate Skybox object
-            {
-
-
-                *skyBox = 0;
-            }
-        }
-
         for (PXSize i = 0; i < 6u; ++i)
         {
-            Image* const image = &skyBoxCurrent->TextureCube.ImageList[i];
+            Image* const image = &skyBox->TextureCube.ImageList[i];
             const char* const filePath = filePathList[i];
             const PXActionResult textureRightResult = ImageLoadA(image, filePath);
 
@@ -359,7 +346,7 @@ PXActionResult PXGraphicSkyboxRegisterA
 
     // Register skybox
     {
-        const PXActionResult registerResult = PXGraphicSkyboxRegister(graphicContext, skyBoxCurrent);
+        const PXActionResult registerResult = PXGraphicSkyboxRegister(graphicContext, skyBox);
 
     }
 
@@ -370,7 +357,7 @@ PXActionResult PXGraphicSkyboxRegisterA
 
         const PXActionResult shaderResult = PXGraphicShaderProgramLoadGLSLA(graphicContext, &shaderProgram, shaderVertex, shaderFragment);
 
-        skyBoxCurrent->Renderable.MeshSegmentList[0].ShaderID = shaderProgram.ID;
+        skyBox->Renderable.MeshSegmentList[0].ShaderID = shaderProgram.ID;
     }
 
     return PXActionSuccessful;
