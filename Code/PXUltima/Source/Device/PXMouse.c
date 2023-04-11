@@ -20,13 +20,13 @@ void MouseInputPrint(const PXMouse* const mouse)
 	(
 		"+-----------+---------------|\n"
 		"| Position  | %-5i / %-5i |\n"
-		"| InputAxis | %-5i / %-5i |\n"
+		"| InputAxis | %-3.2f / %-3.2f |\n"
 		"| Buttons   | %s |\n"
 		"+-----------+---------------|\n",
 		mouse->Position[0],
 		mouse->Position[1],
-		mouse->InputAxis[0],
-		mouse->InputAxis[1],
+		mouse->PositionNormalisized[0],
+		mouse->PositionNormalisized[1],
 		buttons
 	);
 }

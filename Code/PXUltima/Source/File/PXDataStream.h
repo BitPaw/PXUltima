@@ -212,6 +212,8 @@ extern "C"
 	// Slower version of Read(), this function can't fail.
 	//PXSize ReadSafe(Byte__* value, const PXSize length);
 
+	PXPublic PXBool PXDataStreamReadAndCompareI64U(PXDataStream* const dataStream, const PXInt64U value);
+
 
 	PXPublic PXBool PXDataStreamReadAndCompare(PXDataStream* const dataStream, const void* value, const PXSize length);
 	PXPublic PXBool PXDataStreamReadAndCompareV(PXDataStream* const dataStream, const void** value, const PXSize* valueElementSizeList, const PXSize valueLength);

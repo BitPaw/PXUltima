@@ -131,7 +131,7 @@ extern "C"
 	typedef void (*FocusLeaveEvent)(const void* const receiver, const PXWindow* sender);
 
 	typedef void (*WindowCreatedEvent)(const void* const receiver, const PXWindow* sender);
-	typedef void (*WindowSizeChangedEvent)(const void* const receiver, const PXWindow* sender, const PXSize width, const PXSize height);
+	typedef void (*WindowSizeChangedEvent)(const void* const receiver, const PXWindow* sender);
 	typedef void (*WindowClosingEvent)(const void* const receiver, const PXWindow* sender, PXBool* const allowClosing);
 	typedef void (*WindowClosedEvent)(const void* const receiver, const PXWindow* sender);
 

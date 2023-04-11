@@ -23,15 +23,15 @@ d = SplittIntLED(i);
 
 #define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, d)
 
-#define PXInt8FromAdress(list) PXInt8Make(list[0])
-#define PXInt16FromAdress(list) PXInt16Make(list[0], list[1])
-#define PXInt24FromAdress(list) PXInt24Make(list[0], list[1], list[2])
-#define PXInt32FromAdress(list) PXInt32Make(list[0], list[1], list[2], list[3])
+#define PXInt8FromAdress(list) PXInt8Make(((PXAdress)list)[0])
+#define PXInt16FromAdress(list) PXInt16Make(((PXAdress)list)[0], ((PXAdress)list)[1])
+#define PXInt24FromAdress(list) PXInt24Make(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
+#define PXInt32FromAdress(list) PXInt32Make(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3])
 
-#define PXInt40FromAdress(list) PXInt40Make(list[0], list[1], list[2], list[3], list[4])
-#define PXInt48FromAdress(list) PXInt48Make(list[0], list[1], list[2], list[3], list[4], list[5])
-#define PXInt56FromAdress(list) PXInt56Make(list[0], list[1], list[2], list[3], list[4], list[5], list[6])
-#define PXInt64FromAdress(list) PXInt64Make(list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7])
+#define PXInt40FromAdress(list) PXInt40Make(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4])
+#define PXInt48FromAdress(list) PXInt48Make(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5])
+#define PXInt56FromAdress(list) PXInt56Make(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6])
+#define PXInt64FromAdress(list) PXInt64Make(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6], ((PXAdress)list)[7])
 
 #define PXInt8Make(a) MakeInt(a, 0, 0, 0)
 #define PXInt16Make(a, b) MakeInt(a, b, 0, 0)
@@ -51,24 +51,24 @@ d = SplittIntLED(i);
 #define MakeLongLong(a, b, c, d, e, f, g, h) MakeLongLongLE(a, b, c, d, e, f, g, h)
 
 #define MakeLongLongBE(a, b, c, d, e, f, g, h) \
-(((unsigned long long)a << 56LL) | \
-((unsigned long long)b << 48LL) | \
-((unsigned long long)c << 40LL) | \
-((unsigned long long)d << 32LL) | \
-((unsigned long long)e << 24LL) | \
-((unsigned long long)f << 16LL) | \
-((unsigned long long)g << 8LL) | \
-((unsigned long long)h))
+(((PXInt64U)a << 56LL) | \
+((PXInt64U)b << 48LL) | \
+((PXInt64U)c << 40LL) | \
+((PXInt64U)d << 32LL) | \
+((PXInt64U)e << 24LL) | \
+((PXInt64U)f << 16LL) | \
+((PXInt64U)g << 8LL) | \
+((PXInt64U)h))
 
 #define MakeLongLongLE(a, b, c, d, e, f, g, h) \
-(((unsigned long long)a) | \
-((unsigned long long)b << 8LL) | \
-((unsigned long long)c << 16LL) | \
-((unsigned long long)d << 24LL) | \
-((unsigned long long)e << 32LL) | \
-((unsigned long long)f << 40LL) | \
-((unsigned long long)g << 48LL) | \
-((unsigned long long)h << 56LL))
+(((PXInt64U)a | \
+((PXInt64U)b << 8LL) | \
+((PXInt64U)c << 16LL) | \
+((PXInt64U)d << 24LL) | \
+((PXInt64U)e << 32LL) | \
+((PXInt64U)f << 40LL) | \
+((PXInt64U)g << 48LL) | \
+((PXInt64U)h << 56LL)))
 
 
 

@@ -4,6 +4,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 #include <Text/PXText.h>
+#include <Container/ClusterValue.h>
 
 #include <iso646.h>
 #include <stdarg.h>
@@ -1330,6 +1331,22 @@ void PXDataStreamReadUntil(PXDataStream* const dataStream, void* value, const PX
 	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
 
 	MemoryCopy(currentPosition, readableSize, value, lengthCopy);
+}
+
+PXBool PXDataStreamReadAndCompareI64U(PXDataStream* const dataStream, const PXInt64U value)
+{
+	const void* currentPosition = PXDataStreamCursorPosition(dataStream);
+	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
+
+	const PXInt64U valueA = PXInt64FromAdress(currentPosition);
+	const PXBool result = value == valueA;
+
+	if (result)
+	{
+		PXDataStreamCursorAdvance(dataStream, sizeof(PXInt64U));
+	}
+
+	return result;
 }
 
 PXBool PXDataStreamReadAndCompare(PXDataStream* const dataStream, const void* value, const PXSize length)

@@ -815,272 +815,245 @@ void PXRenderableConstruct(PXRenderable* const pxRenderable)
     pxRenderable->IBO = -1;
 }
 
-PXActionResult PXGraphicUIPanelRegister(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
+void PXUIElementConstruct(PXUIElement* const pxUIElement)
 {
-    const float vertexData[] =
-    {
-         -1,  -1,  0, 0,1,
-        1,  -1,  0,  1,1,
-         1, 1,  0,   1,0,
-        -1, 1,  0,   0,0
-    };
-    const PXSize vertexDataSize = sizeof(vertexData) / sizeof(float);
+    MemoryClear(pxUIElement, sizeof(PXUIElement));
 
-    PXByte bufferData[32];
-    PXModel model;
+    pxUIElement->ID = -1;
+    pxUIElement->TextureID = -1;
+    pxUIElement->ShaderID = -1;
 
-    ModelConstruct(&model);
+    PXUIElementColorSet4F(pxUIElement, 1, 0, 1, 1);
 
-    model.Data = bufferData;
-
-    MemoryClear(bufferData, sizeof(bufferData));
-    ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
-
-    model.DataVertexList = vertexData;
-    model.DataVertexListSize = vertexDataSize;
-
-    model.DataVertexWidth = 3u;
-    model.DataVertexSize = vertexDataSize;
-    model.DataTextureWidth = 2u;
-    model.DataTextureSize = vertexDataSize;
-
-    {
-        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIPanel->UIElement.Renderable, &model);
-
-        PXActionExitOnError(actionResult);
-    }
-
-    PXGraphicRenderableRegister(graphicContext, &pxUIPanel->UIElement.Renderable);
-
-    return PXActionSuccessful;
+    PXTextCopyA("[N/A]", 5, pxUIElement->Name, 32);
 }
 
-PXActionResult PXGraphicUIPanelUpdate(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
+void PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha)
 {
-    return PXActionInvalid;
+    pxUIElement->Red = red;
+    pxUIElement->Green = green;
+    pxUIElement->Blue = blue;
+    pxUIElement->Alpha = alpha;
 }
 
-PXActionResult PXGraphicUIPanelUnregister(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel)
+void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height)
 {
-    return PXActionInvalid;
+    pxUIElement->X = x;
+    pxUIElement->Y = y;
+    pxUIElement->Width = width;
+    pxUIElement->Height = height;
 }
 
-PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXGraphicUIText* const pxGraphicUIText, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height, const PXTextUTF8 text)
+PXInt32U PXGraphicUIElementGenerateID(PXGraphicContext* const graphicContext)
 {
-    const PXSize textSize = PXTextLengthA(text, 256);
-    const PXSize vertexDataSize = textSize * 4u * (3u +2u);
+    return ++graphicContext->UIElementIDCounter;
+}
 
-    float* vertexData = MemoryAllocate(vertexDataSize * sizeof(float));
-
-    PXSize index = 0;
-    float xoffset = 0;
-
-    float imgwidth = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Width;
-    float imgheight = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Height;
-
-    for (size_t i = 0; i < textSize; i++)
+PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement)
+{
+    // Is Registerd
     {
-        char character = text[i];
+        const PXBool isRegisterd = pxUIElement->ID != -1;
 
-        FNTCharacter* fntChar = FNTGetCharacter(pxGraphicUIText->TextFont->FontElement, character);
+        if (!isRegisterd)
+        {
+            return PXActionInvalidRedundandInteraction;
+        }
 
-        float texturePositionX = fntChar->Position[0] / imgwidth;
-        float texturePositionY = fntChar->Position[1] / imgheight;
-        float texturePositionWidth = fntChar->Size[0] / imgwidth;
-        float texturePositionHeight = fntChar->Size[1] / imgheight;
+        // Create
+        pxUIElement->ID = PXGraphicUIElementGenerateID(graphicContext);
 
-        vertexData[index++] = xoffset;
-        vertexData[index++] = 0;
-        vertexData[index++] = 0;
-
-        vertexData[index++] = texturePositionX;
-        vertexData[index++] = texturePositionY + texturePositionHeight;
-
-        vertexData[index++] = fntChar->Size[0] + xoffset;
-        vertexData[index++] = 0;
-        vertexData[index++] = 0;
-
-        vertexData[index++] = texturePositionX + texturePositionWidth;
-        vertexData[index++] = texturePositionY + texturePositionHeight;
-
-        vertexData[index++] = fntChar->Size[0] + xoffset;
-        vertexData[index++] = fntChar->Size[1];
-        vertexData[index++] = 0;
-
-        vertexData[index++] = texturePositionX + texturePositionWidth;
-        vertexData[index++] = texturePositionY;
-
-        vertexData[index++] = xoffset;
-        vertexData[index++] = fntChar->Size[1];
-        vertexData[index++] = 0;
-
-        vertexData[index++] = texturePositionX;
-        vertexData[index++] = texturePositionY;
-
-
-
-        xoffset += fntChar->XAdvance + 10;
-
-
-        //vertexData[index++] = fntChar->Position[0];
-        //vertexData[index++] = fntChar->Position[1];
-
-        //vertexData[index++] = fntChar->Position[0];
-        //vertexData[index++] = fntChar->Position[1];
-        //vertexData[index++] = fntChar->Position[0];
-        //vertexData[index++] = fntChar->Position[1];
-
+        PXDictionaryAdd(&graphicContext->UIElementLookUp, &pxUIElement->ID, pxUIElement);
     }
-
-    PXByte bufferData[32];
-    PXModel model;
-
-    ModelConstruct(&model);
-
-    model.Data = bufferData;
-
-    MemoryClear(bufferData, sizeof(bufferData));
-    ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
-
-    model.DataVertexList = vertexData;
-    model.DataVertexListSize = vertexDataSize;
-
-    model.DataVertexWidth = 3u;
-    model.DataVertexSize = vertexDataSize;
-    model.DataTextureWidth = 2u;
-    model.DataTextureSize = vertexDataSize;
-
-    {
-        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxGraphicUIText->UIElement.Renderable, &model);
-
-        PXActionExitOnError(actionResult);
-    }
-
-    PXGraphicRenderableRegister(graphicContext, &pxGraphicUIText->UIElement.Renderable);
-
-
-
-    PXTexture pxTexture;
-
-    PXTextureConstruct(&pxTexture);
-
-    MemoryCopy(&pxGraphicUIText->TextFont->FontElement[0].FontPageList[0].FontTextureMap, sizeof(Image), &pxTexture.Image,sizeof(Image));
-
-    pxTexture.Type = PXGraphicImageTypeTexture2D;
-    pxTexture.Filter = PXGraphicRenderFilterNoFilter;
-    pxTexture.LayoutNear = PXGraphicImageLayoutNearest;
-    pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
-    pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
-    pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
-
-    PXGraphicTextureRegister(graphicContext, &pxTexture);
-
-    pxGraphicUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
-
-
-    return PXActionSuccessful;
-
-
-
 
     /*
-    //---------------------------------------
-    unsigned int index = 0;
-
-    // Vertex Position
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 3, OpenGLTypeFloat, 0, stride, sizeof(float) * (0));
-    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
-
-    // Color of vertex
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 4, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u));
-    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
-    OpenGLVertexAttributeDivisor(&graphicContext->OpenGLInstance, 2, 1);
-
-    // Size of character
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u + 4u));
-    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
-
-    // Offset
-    OpenGLVertexArrayAttributeDefine(&graphicContext->OpenGLInstance, index, 2, OpenGLTypeFloat, 0, stride, sizeof(float) * (3u + 4u + 2u));
-    OpenGLVertexArrayEnable(&graphicContext->OpenGLInstance, index++);
-
-    //---------------------------------------
-
-    OpenGLBufferUnbind(&graphicContext->OpenGLInstance, OpenGLBufferArray);
-    OpenGLVertexArrayUnbind(&graphicContext->OpenGLInstance);
-    //-------------------------------------------------------------------------
-
-    //---<Register all textures>-----------------------------------------------
-    const PXSize segmentsListSize = ModelSegmentsAmount(model);
-    const PXSize modelListSize = PXModelMaterialAmount(model);
-
-    renderable->MeshSegmentListSize = segmentsListSize;
-    renderable->MeshSegmentList = (PXRenderableMeshSegment*)MemoryAllocate(sizeof(PXRenderableMeshSegment) * segmentsListSize);
-
-    for (PXSize i = 0; i < segmentsListSize; ++i)
+    switch (pxUIElement->Type)
     {
-        PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
-        MeshSegment meshSegment;
-
-        PXRenderableMeshSegmentConstruct(pxRenderableMeshSegment);
-        ModelSegmentsGet(model, i, &meshSegment);
-
-        pxRenderableMeshSegment->RenderMode = PXGraphicRenderModeTriangle;
-        pxRenderableMeshSegment->NumberOfVertices = meshSegment.DrawClusterSize;
-
-        PXMaterial material;
-        const PXBool fetchMaterialSuccess = PXModelMaterialGet(model, meshSegment.TextureID, &material);
-
-        if (fetchMaterialSuccess)
+        case PXUIElementTypePanel:
         {
+            const float vertexData[] =
+            {
+                 -1,  -1,  0, 0,1,
+                1,  -1,  0,  1,1,
+                 1, 1,  0,   1,0,
+                -1, 1,  0,   0,0
+            };
+            const PXSize vertexDataSize = sizeof(vertexData) / sizeof(float);
+
+            PXByte bufferData[32];
+            PXModel model;
+
+            ModelConstruct(&model);
+
+            model.Data = bufferData;
+
+            MemoryClear(bufferData, sizeof(bufferData));
+            ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
+
+            model.DataVertexList = vertexData;
+            model.DataVertexListSize = vertexDataSize;
+
+            model.DataVertexWidth = 3u;
+            model.DataVertexSize = vertexDataSize;
+            model.DataTextureWidth = 2u;
+            model.DataTextureSize = vertexDataSize;                       
+
+            {
+                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIPanel->UIElement.Renderable, &model);
+
+                PXActionExitOnError(actionResult);
+            }
+
+            PXGraphicRenderableRegister(graphicContext, &pxUIPanel->UIElement.Renderable);
+
+            break;
+        }
+        case PXUIElementTypeLabel:
+        {
+            const PXSize textSize = PXTextLengthA(text, 256);
+            const PXSize vertexDataSize = textSize * 4u * (3u + 2u);
+
+            float* vertexData = MemoryAllocate(vertexDataSize * sizeof(float));
+
+            PXSize index = 0;
+            float xoffset = 0;
+
+            float imgwidth = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Width;
+            float imgheight = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Height;
+
+            for (size_t i = 0; i < textSize; i++)
+            {
+                char character = text[i];
+
+                FNTCharacter* fntChar = FNTGetCharacter(pxGraphicUIText->TextFont->FontElement, character);
+
+                float texturePositionX = fntChar->Position[0] / imgwidth;
+                float texturePositionY = fntChar->Position[1] / imgheight;
+                float texturePositionWidth = fntChar->Size[0] / imgwidth;
+                float texturePositionHeight = fntChar->Size[1] / imgheight;
+
+                vertexData[index++] = xoffset;
+                vertexData[index++] = 0;
+                vertexData[index++] = 0;
+
+                vertexData[index++] = texturePositionX;
+                vertexData[index++] = texturePositionY + texturePositionHeight;
+
+                vertexData[index++] = fntChar->Size[0] + xoffset;
+                vertexData[index++] = 0;
+                vertexData[index++] = 0;
+
+                vertexData[index++] = texturePositionX + texturePositionWidth;
+                vertexData[index++] = texturePositionY + texturePositionHeight;
+
+                vertexData[index++] = fntChar->Size[0] + xoffset;
+                vertexData[index++] = fntChar->Size[1];
+                vertexData[index++] = 0;
+
+                vertexData[index++] = texturePositionX + texturePositionWidth;
+                vertexData[index++] = texturePositionY;
+
+                vertexData[index++] = xoffset;
+                vertexData[index++] = fntChar->Size[1];
+                vertexData[index++] = 0;
+
+                vertexData[index++] = texturePositionX;
+                vertexData[index++] = texturePositionY;
+
+
+
+                xoffset += fntChar->XAdvance + 10;
+
+
+                //vertexData[index++] = fntChar->Position[0];
+                //vertexData[index++] = fntChar->Position[1];
+
+                //vertexData[index++] = fntChar->Position[0];
+                //vertexData[index++] = fntChar->Position[1];
+                //vertexData[index++] = fntChar->Position[0];
+                //vertexData[index++] = fntChar->Position[1];
+
+            }
+
+            PXByte bufferData[32];
+            PXModel model;
+
+            ModelConstruct(&model);
+
+            model.Data = bufferData;
+
+            MemoryClear(bufferData, sizeof(bufferData));
+            ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
+
+            model.DataVertexList = vertexData;
+            model.DataVertexListSize = vertexDataSize;
+
+            model.DataVertexWidth = 3u;
+            model.DataVertexSize = vertexDataSize;
+            model.DataTextureWidth = 2u;
+            model.DataTextureSize = vertexDataSize;
+
+            {
+                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxGraphicUIText->UIElement.Renderable, &model);
+
+                PXActionExitOnError(actionResult);
+            }
+
+            PXGraphicRenderableRegister(graphicContext, &pxGraphicUIText->UIElement.Renderable);
+
+
+
             PXTexture pxTexture;
 
             PXTextureConstruct(&pxTexture);
+
+            MemoryCopy(&pxGraphicUIText->TextFont->FontElement[0].FontPageList[0].FontTextureMap, sizeof(Image), &pxTexture.Image, sizeof(Image));
 
             pxTexture.Type = PXGraphicImageTypeTexture2D;
             pxTexture.Filter = PXGraphicRenderFilterNoFilter;
             pxTexture.LayoutNear = PXGraphicImageLayoutNearest;
             pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
-            pxTexture.WrapHeight = PXGraphicImageWrapRepeat;
-            pxTexture.WrapWidth = PXGraphicImageWrapRepeat;
+            pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
+            pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
 
-            PXGraphicTextureRegisterA(graphicContext, &pxTexture, material.DiffuseTextureFilePath);
+            PXGraphicTextureRegister(graphicContext, &pxTexture);
 
-            pxRenderableMeshSegment->TextureID = pxTexture.ID;
+            pxGraphicUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
+
+            break;
         }
+        case PXUIElementTypeButton:
+        {
+            PXRenderable* renderable = &pxButton->UIElement.Renderable;
 
-        pxRenderableMeshSegment->DoRendering = PXYes;
-    }
-    //-------------------------------------------------------------------------
+            pxButton->TextFont = pxFont;
+            PXGraphicUITextRegister(graphicContext, renderable, 0, 0, 1, 1, text);
+            PXGraphicModelShaderSet(graphicContext, renderable, shader);
+            PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
+            PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
+            renderable->MeshSegmentList[0].RenderMode = PXGraphicRenderModeSquare;
 
-    // Model is not fully registered and ready to be rendered
-    renderable->DoRendering = 1u;
+            PXLockEngage(&graphicContext->_pxUIElements);
+            PXLinkedListFixedNodeAdd(&graphicContext->_pxUIElements, &pxButton->UIElement);
+            PXLockRelease(&graphicContext->_pxUIElements);
 
-    //----------------------
+            break;
+        }
+        case PXUIElementTypeImage:
 
-    PXGraphicRenderableRegister(graphicContext, &pxUIText->Renderable);
+        case PXUIElementTypeCustom:
 
-
-
-
-    return PXActionInvalid;
-        */
+        default:
+            break;
+    }*/
 }
-
-PXActionResult PXGraphicUIButtonRegister(PXGraphicContext* const graphicContext, PXUIButton* const pxButton, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text, const PXFont* const pxFont, const ShaderProgram* const shader)
+PXActionResult PXGraphicUIElementUpdate(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement)
 {
-    PXRenderable* renderable = &pxButton->UIElement.Renderable;
 
-    pxButton->TextFont = pxFont;
-    PXGraphicUITextRegister(graphicContext, renderable, 0, 0, 1, 1, text);
-    PXGraphicModelShaderSet(graphicContext, renderable, shader);
-    PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
-    PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
-    renderable->MeshSegmentList[0].RenderMode = PXGraphicRenderModeSquare;
+}
+PXActionResult PXGraphicUIElementUnregister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement)
+{
 
-    PXLockEngage(&graphicContext->_pxUIElements);
-    PXLinkedListFixedNodeAdd(&graphicContext->_pxUIElements, &pxButton->UIElement);
-    PXLockRelease(&graphicContext->_pxUIElements);
 }
 
 void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)
@@ -1245,9 +1218,8 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXLinkedListFixedNodeSet(&graphicContext->_textureList, memww + 1128, 100, PXLinkedListUseAdress);
     PXLinkedListFixedNodeSet(&graphicContext->_fontList, memww + 1256, 100, PXLinkedListUseAdress);
     PXLinkedListFixedNodeSet(&graphicContext->_shaderProgramList, memww + 11024, 100, PXLinkedListUseAdress);
-    PXLinkedListFixedNodeSet(&graphicContext->_pxUIElements, memww + 11050, 20, PXLinkedListUseAdress);
 
-
+    PXDictionaryConstruct(&graphicContext->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement));
 
 
     graphicContext->OpenGLInstance.AttachedWindow = graphicContext->AttachedWindow;

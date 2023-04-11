@@ -14,6 +14,8 @@
 #define GravityOnMoon 1.62
 #define GravityOnMars 3.711
 
+#define MathIsInRange(v, minimum, maximum) (minimum <= v && v <= maximum)
+
 #define MathMinimum(a, b) ((a < b) * a + (a >= b) * b)
 #define MathMaximum(a, b) ((a > b) * a + (a <= b) * b)
 //#define MathLimit(x, low, high) (MathMinimum(MathMaximum(x, low), high)) 

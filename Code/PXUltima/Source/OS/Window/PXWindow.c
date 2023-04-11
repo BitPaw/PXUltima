@@ -9,6 +9,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <OS/Monitor/PXMonitor.h>
 #include <OS/Thread/Await.h>
+#include <Math/PXMath.h>
 
 #if OSUnix
 
@@ -1013,15 +1014,12 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             break;
         case WindowEventSize:
         {
-            const DWORD width = LOWORD(lParam);
-            const DWORD height = HIWORD(lParam);
-
-            window->Width = width;
-            window->Height = height;
+            window->Width = LOWORD(lParam);
+            window->Height = HIWORD(lParam);
 
             window->HasSizeChanged = PXYes;
 
-            InvokeEvent(window->WindowSizeChangedCallBack, window->EventReceiver, window, width, height);
+            InvokeEvent(window->WindowSizeChangedCallBack, window->EventReceiver, window);
 
             break;
         }
@@ -2668,12 +2666,12 @@ void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const 
 {
     PXMouse* mouse = &window->MouseCurrentInput;
 
-    mouse->Position[0] = positionX;
-    mouse->Position[1] = positionY;
-    mouse->InputAxis[0] = deltaX;
-    mouse->InputAxis[1] = deltaY;
-    mouse->PositionNormalisized[0] = positionX / ((float)window->Width / 2) - 1;
-    mouse->PositionNormalisized[1] = positionY / ((float)window->Height / 2) - 1;
+    mouse->Position[0] = MathLimit(positionX, 0, window->Width);
+    mouse->Position[1] = window->Height - MathLimit(positionY, 0, window->Height);
+    mouse->Delta[0] = deltaX;
+    mouse->Delta[1] = deltaY;
+    mouse->PositionNormalisized[0] = mouse->Position[0] / (window->Width / 2.0f) - 1;
+    mouse->PositionNormalisized[1] = mouse->Position[1] / (window->Height / 2.0f) - 1;
 
     InvokeEvent(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
 }

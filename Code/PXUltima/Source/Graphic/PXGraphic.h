@@ -7,6 +7,7 @@
 #include <OS/Graphic/OpenGL/OpenGL.h>
 #include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
+#include <Container/Dictionary/PXDictionary.h>
 #include <OS/Thread/PXLock.h>
 
 #define PXShaderNotRegisterd (unsigned int)-1
@@ -239,50 +240,72 @@ extern "C"
 
 	//---<UI Elements>---------------------------------------------------------
 
+	typedef enum PXUIHoverState_
+	{
+		PXUIHoverStateInvalid,
+		PXUIHoverStateNotBeeingHovered, // Not beeing hovered
+		PXUIHoverStateHovered, // IS beeing hovered
+		PXUIHoverStateHoveredButOverlapped // User hovers over this object but its been blocked by other object
+	}
+	PXUIHoverState;
+
+	typedef enum PXUIElementType_
+	{
+		PXUIElementTypeInvalid,
+		PXUIElementTypePanel,
+		PXUIElementTypeLabel,
+		PXUIElementTypeButton,
+		PXUIElementTypeImage,
+
+		PXUIElementTypeCustom
+	}
+	PXUIElementType;
+
+
 	typedef struct PXUIElement_ PXUIElement;
 
 	typedef void (*PXUIOnClick)(PXUIElement* const pxUIElement);
 	typedef void (*PXUIOnMouseEnter)(PXUIElement* const pxUIElement);
 	typedef void (*PXUIOnMouseLeave)(PXUIElement* const pxUIElement);
 
+
+	typedef struct PXUITextInfo_
+	{
+		PXTextUTF8 Text;
+		PXInt32U FontID;
+		PXInt32U TextShaderID;
+	}
+	PXUITextInfo;
+
 	typedef struct PXUIElement_
 	{
 		PXRenderable Renderable;
 
-		PXBool HasMouseHover;
+		PXBool IsEnabled;
+		PXUIHoverState Hover;
 
 		PXUIOnClick OnClickCallback;
 		PXUIOnMouseEnter OnMouseEnterCallback;
 		PXUIOnMouseLeave OnMouseLeaveCallback;
+
+		float X;
+		float Y;
+		float Width;
+		float Height;
+
+		PXInt32U TextureID;
+		PXInt32U ShaderID;
+
+		PXUIElementType Type;
+		PXInt16U ID;
+		float Red;
+		float Green;
+		float Blue;
+		float Alpha;
+
+		char Name[32];
 	}
 	PXUIElement;
-
-	typedef struct PXUIPanel_
-	{
-		PXUIElement UIElement;
-	}
-	PXUIPanel;
-
-	typedef struct PXUIButton_
-	{
-		PXUIElement UIElement;
-		PXFont* TextFont;
-	}
-	PXUIButton;
-
-	typedef struct PXUIImage_
-	{
-		PXUIElement UIElement;
-	}
-	PXUIImage;
-
-	typedef struct PXGraphicUIText_
-	{
-		PXUIElement UIElement;
-		PXFont* TextFont;
-	}
-	PXGraphicUIText;
-
 
 	typedef struct PXGraphicContext_
 	{
@@ -301,8 +324,8 @@ extern "C"
 
 		PXLinkedListFixed _pxModelList;
 
-
-		PXLinkedListFixed _pxUIElements;
+		PXInt32U UIElementIDCounter;
+		PXDictionary UIElementLookUp;
 
 
 		//LinkedList<Sound*> _soundList;
@@ -316,21 +339,16 @@ extern "C"
 	PXGraphicContext;
 
 
-	// Create
-	PXPublic PXActionResult PXGraphicUIPanelRegister(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
-	PXPublic PXActionResult PXGraphicUIPanelUpdate(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
-	PXPublic PXActionResult PXGraphicUIPanelUnregister(PXGraphicContext* const graphicContext, PXUIPanel* const pxUIPanel);
+	//-------------------------------------------------------------------------
+	PXPublic void PXUIElementConstruct(PXUIElement* const pxUIElement);
+	PXPublic void PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
+	PXPublic void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height);
 
-	//
-	// Update
-	// Destroy
+	PXPrivate PXInt32U PXGraphicUIElementGenerateID(PXGraphicContext* const graphicContext);
 
-	PXPublic PXActionResult PXGraphicUITextRegister(PXGraphicContext* const graphicContext, PXGraphicUIText* const pxGraphicUIText, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text);
-
-	PXPublic PXActionResult PXGraphicUIButtonRegister(PXGraphicContext* const graphicContext, PXUIButton* const pxButton, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXTextUTF8 text, const PXFont* const pxFont, const ShaderProgram* const shader);
-
-
-
+	PXPublic PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
+	PXPublic PXActionResult PXGraphicUIElementUpdate(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
+	PXPublic PXActionResult PXGraphicUIElementUnregister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
 	//-------------------------------------------------------------------------
 
 

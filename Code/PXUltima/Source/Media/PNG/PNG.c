@@ -16,7 +16,7 @@
 #include <Media/ADAM7/ADAM7.h>
 #include <Media/CRC32/CRC32.h>
 
-#define PNGHeaderSequenz { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' }
+#define PNGHeaderSequenz PXInt64Make(0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n')
 #define PNGDebugInfo false
 
 unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
@@ -929,7 +929,6 @@ PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize 
 PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream)
 {
     PNG png;
-
     PNGConstruct(&png);
 
     PXDataStream imageDataCache;
@@ -945,9 +944,8 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
 
         //---<Check PNG Header>------------------------------------------------
         {
-            const char pngFileHeader[] = PNGHeaderSequenz;
-            const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
-            const PXBool isValidHeader = PXDataStreamReadAndCompare(dataStream, pngFileHeader, pngFileHeaderSize);
+            const PXInt64U pngFileHeader = PNGHeaderSequenz;
+            const PXBool isValidHeader = PXDataStreamReadAndCompareI64U(dataStream, pngFileHeader);
 
             if (!isValidHeader)
             {
@@ -1049,7 +1047,6 @@ PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStrea
                 }
                 case PNGChunkPalette:
                 {
-                    unsigned pos = 0;
                     const PXSize palettSize = chunk.Lengh / 3u;
                     const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
@@ -2077,10 +2074,9 @@ PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* con
 {
     //---<Signature>--- 8 Bytes
     {
-        const PXByte pngFileHeader[8] = PNGHeaderSequenz;
-        const PXSize pngFileHeaderSize = sizeof(pngFileHeader);
+        const PXInt64U pngFileHeader = PNGHeaderSequenz;
 
-        PXDataStreamWriteB(pxExportStream, pngFileHeader, pngFileHeaderSize);
+        PXDataStreamWriteI64U(pxExportStream, pngFileHeader);
     }
 
     //---<IHDR> (Image Header)--- 21 Bytes

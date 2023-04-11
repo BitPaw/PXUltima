@@ -8,6 +8,9 @@ extern "C"
 {
 #endif
 
+	// Refused => User error
+	// Invalid => State error
+	// Failed => Fundamental error
 	typedef enum PXActionResult_
 	{
 		//---<General>-----------------------
@@ -29,6 +32,8 @@ extern "C"
 
 
 		PXActionFailedElementNotFound,
+
+		PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
 
 
 
