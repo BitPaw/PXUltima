@@ -142,10 +142,10 @@ extern "C"
 		volatile PXBool IsRunning;
 		PXWindowID ID;
 
-		unsigned int X;
-		unsigned int Y;
-		unsigned int Width;
-		unsigned int Height;
+		PXInt32S X;
+		PXInt32S Y;
+		PXInt32S Width;
+		PXInt32S Height;
 
 		wchar_t Title[PXWindowTitleSizeMax];
 
@@ -201,6 +201,8 @@ extern "C"
 	PXPrivate PXThreadResult PXWindowCreateThread(void* const PXWindowAdress);
 
 	PXPublic void PXWindowConstruct(PXWindow* const window);
+
+	PXPublic float PXWindowScreenRatio(const PXWindow* const window);
 
 	// Create a window based on the OS implementation.
 	// if a NULL pointer is used as a title, the window will be hidden.
