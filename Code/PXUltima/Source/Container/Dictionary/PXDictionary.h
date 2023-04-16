@@ -1,12 +1,20 @@
 #ifndef PXDictionaryDEFINED
 #define PXDictionaryDEFINED
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+	typedef enum PXDictionaryValueLocality_
+	{
+		PXDictionaryValueLocalityInvalid,
+		PXDictionaryValueLocalityInternalEmbedded,
+		PXDictionaryValueLocalityExternalReference
+	}
+	PXDictionaryValueLocality;
 
 	typedef struct PXDictionary_
 	{
@@ -20,6 +28,8 @@ extern "C"
 
 		PXSize DataSize;
 		void* Data;
+
+		PXDictionaryValueLocality ValueLocality;
 	}
 	PXDictionary;
 
@@ -30,8 +40,10 @@ extern "C"
 	}
 	PXDictionaryEntry;
 
-	PXPublic void PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize);
+	PXPublic void PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality);
 	PXPublic void PXDictionaryDestruct(PXDictionary* const dictionary);
+
+	PXPublic PXSize PXDictionaryValueSize(const PXDictionary* const dictionary);
 
 	PXPublic void PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys);
 	PXPublic PXBool PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);

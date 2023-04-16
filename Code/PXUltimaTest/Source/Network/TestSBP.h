@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 #include <OS/Error/PXActionResult.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -1,8 +1,8 @@
 #include "PXSocket.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/PXText.h>
-#include <Event/Event.h>
+#include <Media/PXText.h>
+#include <Event/PXEvent.h>
 #include <Math/PXMath.h>
 #include <stdio.h>
 
@@ -594,7 +594,7 @@ void PXSocketConstruct(PXSocket* const pxSocket)
 {
     MemoryClear(pxSocket, sizeof(PXSocket));
 
-    PXDictionaryConstruct(&pxSocket->SocketLookup, sizeof(PXSocketID), sizeof(PXSocket));
+    PXDictionaryConstruct(&pxSocket->SocketLookup, sizeof(PXSocketID), sizeof(PXSocket), PXDictionaryValueLocalityInternalEmbedded);
 }
 
 void PXSocketDestruct(PXSocket* const pxSocket)

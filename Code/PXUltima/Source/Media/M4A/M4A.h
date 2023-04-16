@@ -1,7 +1,7 @@
 #ifndef M4AInclude
 #define M4AInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
 
@@ -54,7 +54,7 @@ extern "C"
 	}
 	M4A;
 
-	static M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID);
+	static M4AChunkID ConvertToM4AChunkID(const PXInt32U chunkID);
 
 	PXPublic PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead);
 

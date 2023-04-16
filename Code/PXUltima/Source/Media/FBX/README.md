@@ -11,7 +11,7 @@ Developed by Kaydara for MotionBuilder, bought up by Autodesk Inc in 2006.<br>
 The format is hidden behind a SDK. 
 
 ### Dependency
-- ZLIB
+- PXZLIB
 
 ## Structure - Binary file
 ### Header [27 bytes]

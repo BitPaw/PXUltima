@@ -1,7 +1,6 @@
 #include "TTF.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Container/ClusterValue.h>
 
 EncodingID ConvertToEncodingID(const PlatformID platformID, unsigned char encodingID)
 {
@@ -101,61 +100,62 @@ TTFVersionType ConvertFromVersionType(unsigned short major, unsigned short minor
 
 void ConvertToVersionType(unsigned short* major, unsigned short* minor, const TTFVersionType versionType)
 {
+
 }
 
 TTFTableEntryType ConvertTableEntryType(const unsigned int tableEntryType)
 {
 	switch(tableEntryType)
 	{
-		case MakeInt('a', 'c', 'n', 't'): return TTFTableEntryAccentAttachment;
-		case MakeInt('a', 'n', 'k', 'r'): return TTFTableEntryAnchorPoint;
-		case MakeInt('a', 'v', 'a', 'r'): return TTFTableEntryAxisVariation;
-		case MakeInt('b', 'd', 'a', 't'): return TTFTableEntryBitmapData;
-		case MakeInt('b', 'h', 'e', 'd'): return TTFTableEntryBitmapFontHeader;
-		case MakeInt('b', 'l', 'o', 'c'): return TTFTableEntryBitmapLocation;
-		case MakeInt('b', 's', 'l', 'n'): return TTFTableEntryBaseline;
-		case MakeInt('c', 'm', 'a', 'p'): return TTFTableEntryCharacterCodeMapping;
-		case MakeInt('c', 'v', 'a', 'r'): return TTFTableEntryCVTVariation;
-		case MakeInt('c', 'v', 't', ' '): return TTFTableEntryControlValue;
-		case MakeInt('D', 'S', 'I', 'G'): return TTFTableEntryDigitalSignature;
-		case MakeInt('E', 'B', 'S', 'C'): return TTFTableEntryEmbeddedBitmapScalingControl;
-		case MakeInt('f', 'd', 's', 'c'): return TTFTableEntryFontDescriptor;
-		case MakeInt('f', 'e', 'a', 't'): return TTFTableEntryLayoutFeature;
-		case MakeInt('f', 'm', 't', 'x'): return TTFTableEntryFontMetrics;
-		case MakeInt('f', 'o', 'n', 'd'): return TTFTableEntryFontFamilyCompatibility;
-		case MakeInt('f', 'p', 'g', 'm'): return TTFTableEntryFontProgram;
-		case MakeInt('f', 'v', 'a', 'r'): return TTFTableEntryFontVariation;
-		case MakeInt('g', 'a', 's', 'p'): return TTFTableEntryGridFittingAndScanConversionProcedure;
-		case MakeInt('g', 'l', 'y', 'f'): return TTFTableEntryGlyphOutline;
-		case MakeInt('g', 'v', 'a', 'r'): return TTFTableEntryGlyphVariation;
-		case MakeInt('h', 'd', 'm', 'x'): return TTFTableEntryHorizontalDeviceMetrics;
-		case MakeInt('h', 'e', 'a', 'd'): return TTFTableEntryFontHeader;
-		case MakeInt('h', 'h', 'e', 'a'): return TTFTableEntryHorizontalHeader;
-		case MakeInt('h', 'm', 't', 'x'): return TTFTableEntryHorizontalMetrics;
-		case MakeInt('j', 'u', 's', 't'): return TTFTableEntryJustification;
-		case MakeInt('k', 'e', 'r', 'n'): return TTFTableEntryKerning;
-		case MakeInt('k', 'e', 'r', 'x'): return TTFTableEntryExtendedKerning;
-		case MakeInt('l', 'c', 'a', 'r'): return TTFTableEntryLigatureCaret;
-		case MakeInt('l', 'o', 'c', 'a'): return TTFTableEntryGlyphLocation;
-		case MakeInt('l', 't', 'a', 'g'): return TTFTableEntryLanguageTag;
-		case MakeInt('L', 'T', 'S', 'H'): return TTFTableEntryLinearThreshold;
-		case MakeInt('m', 'a', 'x', 'p'): return TTFTableEntryMaximumProfile;
-		case MakeInt('m', 'e', 't', 'a'): return TTFTableEntryMetadata;
-		case MakeInt('m', 'o', 'r', 't'): return TTFTableEntryMetamorphosisTabledeprecated;
-		case MakeInt('m', 'o', 'r', 'x'): return TTFTableEntryExtendedMetamorphosis;
-		case MakeInt('n', 'a', 'm', 'e'): return TTFTableEntryName;
-		case MakeInt('o', 'p', 'b', 'd'): return TTFTableEntryOpticalBounds;
-		case MakeInt('O', 'S', '/', '2'): return TTFTableEntryCompatibility;
-		case MakeInt('p', 'o', 's', 't'): return TTFTableEntryGlyphNameAndPostScriptCompatibility;
-		case MakeInt('p', 'r', 'e', 'p'): return TTFTableEntryControlValueProgram;
-		case MakeInt('p', 'r', 'o', 'p'): return TTFTableEntryProperties;
-		case MakeInt('s', 'b', 'i', 'x'): return TTFTableEntryExtendedBitmaps;
-		case MakeInt('t', 'r', 'a', 'k'): return TTFTableEntryTracking;
-		case MakeInt('v', 'h', 'e', 'a'): return TTFTableEntryVerticalHeader;
-		case MakeInt('v', 'm', 't', 'x'): return TTFTableEntryVerticalMetrics;
-		case MakeInt('V', 'D', 'M', 'X'): return TTFTableEntryVerticalDeviceMetrics;
-		case MakeInt('x', 'r', 'e', 'f'): return TTFTableEntryCrossReference;
-		case MakeInt('Z', 'a', 'p', 'f'): return TTFTableEntryGlyphReference;
+		case PXInt32Make('a', 'c', 'n', 't'): return TTFTableEntryAccentAttachment;
+		case PXInt32Make('a', 'n', 'k', 'r'): return TTFTableEntryAnchorPoint;
+		case PXInt32Make('a', 'v', 'a', 'r'): return TTFTableEntryAxisVariation;
+		case PXInt32Make('b', 'd', 'a', 't'): return TTFTableEntryBitmapData;
+		case PXInt32Make('b', 'h', 'e', 'd'): return TTFTableEntryBitmapFontHeader;
+		case PXInt32Make('b', 'l', 'o', 'c'): return TTFTableEntryBitmapLocation;
+		case PXInt32Make('b', 's', 'l', 'n'): return TTFTableEntryBaseline;
+		case PXInt32Make('c', 'm', 'a', 'p'): return TTFTableEntryCharacterCodeMapping;
+		case PXInt32Make('c', 'v', 'a', 'r'): return TTFTableEntryCVTVariation;
+		case PXInt32Make('c', 'v', 't', ' '): return TTFTableEntryControlValue;
+		case PXInt32Make('D', 'S', 'I', 'G'): return TTFTableEntryDigitalSignature;
+		case PXInt32Make('E', 'B', 'S', 'C'): return TTFTableEntryEmbeddedBitmapScalingControl;
+		case PXInt32Make('f', 'd', 's', 'c'): return TTFTableEntryFontDescriptor;
+		case PXInt32Make('f', 'e', 'a', 't'): return TTFTableEntryLayoutFeature;
+		case PXInt32Make('f', 'm', 't', 'x'): return TTFTableEntryFontMetrics;
+		case PXInt32Make('f', 'o', 'n', 'd'): return TTFTableEntryFontFamilyCompatibility;
+		case PXInt32Make('f', 'p', 'g', 'm'): return TTFTableEntryFontProgram;
+		case PXInt32Make('f', 'v', 'a', 'r'): return TTFTableEntryFontVariation;
+		case PXInt32Make('g', 'a', 's', 'p'): return TTFTableEntryGridFittingAndScanConversionProcedure;
+		case PXInt32Make('g', 'l', 'y', 'f'): return TTFTableEntryGlyphOutline;
+		case PXInt32Make('g', 'v', 'a', 'r'): return TTFTableEntryGlyphVariation;
+		case PXInt32Make('h', 'd', 'm', 'x'): return TTFTableEntryHorizontalDeviceMetrics;
+		case PXInt32Make('h', 'e', 'a', 'd'): return TTFTableEntryFontHeader;
+		case PXInt32Make('h', 'h', 'e', 'a'): return TTFTableEntryHorizontalHeader;
+		case PXInt32Make('h', 'm', 't', 'x'): return TTFTableEntryHorizontalMetrics;
+		case PXInt32Make('j', 'u', 's', 't'): return TTFTableEntryJustification;
+		case PXInt32Make('k', 'e', 'r', 'n'): return TTFTableEntryKerning;
+		case PXInt32Make('k', 'e', 'r', 'x'): return TTFTableEntryExtendedKerning;
+		case PXInt32Make('l', 'c', 'a', 'r'): return TTFTableEntryLigatureCaret;
+		case PXInt32Make('l', 'o', 'c', 'a'): return TTFTableEntryGlyphLocation;
+		case PXInt32Make('l', 't', 'a', 'g'): return TTFTableEntryLanguageTag;
+		case PXInt32Make('L', 'T', 'S', 'H'): return TTFTableEntryLinearThreshold;
+		case PXInt32Make('m', 'a', 'x', 'p'): return TTFTableEntryMaximumProfile;
+		case PXInt32Make('m', 'e', 't', 'a'): return TTFTableEntryMetadata;
+		case PXInt32Make('m', 'o', 'r', 't'): return TTFTableEntryMetamorphosisTabledeprecated;
+		case PXInt32Make('m', 'o', 'r', 'x'): return TTFTableEntryExtendedMetamorphosis;
+		case PXInt32Make('n', 'a', 'm', 'e'): return TTFTableEntryName;
+		case PXInt32Make('o', 'p', 'b', 'd'): return TTFTableEntryOpticalBounds;
+		case PXInt32Make('O', 'S', '/', '2'): return TTFTableEntryCompatibility;
+		case PXInt32Make('p', 'o', 's', 't'): return TTFTableEntryGlyphNameAndPostScriptCompatibility;
+		case PXInt32Make('p', 'r', 'e', 'p'): return TTFTableEntryControlValueProgram;
+		case PXInt32Make('p', 'r', 'o', 'p'): return TTFTableEntryProperties;
+		case PXInt32Make('s', 'b', 'i', 'x'): return TTFTableEntryExtendedBitmaps;
+		case PXInt32Make('t', 'r', 'a', 'k'): return TTFTableEntryTracking;
+		case PXInt32Make('v', 'h', 'e', 'a'): return TTFTableEntryVerticalHeader;
+		case PXInt32Make('v', 'm', 't', 'x'): return TTFTableEntryVerticalMetrics;
+		case PXInt32Make('V', 'D', 'M', 'X'): return TTFTableEntryVerticalDeviceMetrics;
+		case PXInt32Make('x', 'r', 'e', 'f'): return TTFTableEntryCrossReference;
+		case PXInt32Make('Z', 'a', 'p', 'f'): return TTFTableEntryGlyphReference;
 		default: return TTFTableEntryUnkown;
 	}
 }

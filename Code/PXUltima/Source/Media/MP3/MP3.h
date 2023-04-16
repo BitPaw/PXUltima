@@ -1,7 +1,7 @@
 #ifndef MP3Include
 #define MP3Include
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
 #include <Media/ID3/ID3.h>

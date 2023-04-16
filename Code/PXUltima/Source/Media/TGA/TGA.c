@@ -318,7 +318,7 @@ PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSiz
 	return PXActionSuccessful;
 }
 
-PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult TGAParseToImage(PXImage* const image, PXDataStream* const dataStream)
 {
 	TGA tga;
 
@@ -364,7 +364,7 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 		tga.ImageDataSize = size;
 		tga.ImageData = 0;
 
-		ImageResize(image, ImageDataFormatRGB8, tga.Width, tga.Height);
+		PXImageResize(image, PXColorFormatRGBI8, tga.Width, tga.Height);
 	}
 	//----------------------------------------------------
 
@@ -500,7 +500,7 @@ PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStrea
 	return PXActionSuccessful;
 }
 
-PXActionResult TGASerializeFromImage(const Image* const image, PXDataStream* const dataStream)
+PXActionResult TGASerializeFromImage(const PXImage* const image, PXDataStream* const dataStream)
 {
 	return PXActionInvalid;
 }

@@ -1,10 +1,10 @@
 #ifndef ADAM7Include
 #define ADAM7Include
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
-#include <Media/PNG/PNG.h>
+#include <Media/PNG/PXPNG.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -31,7 +31,7 @@ extern "C"
 		PXSize width,
 		PXSize height,
 		PXSize bbp,
-		PNGInterlaceMethod interlaceMethod
+		PXPNGInterlaceMethod interlaceMethod
 	);
 
 	PXPublic unsigned int ADAM7ScanlinesEncode
@@ -41,7 +41,7 @@ extern "C"
 		PXSize width,
 		PXSize height,
 		PXSize bbp,
-		PNGInterlaceMethod interlaceMethod
+		PXPNGInterlaceMethod interlaceMethod
 	);
 
 

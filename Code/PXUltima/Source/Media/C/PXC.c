@@ -1,8 +1,7 @@
 #include "PXC.h"
 
 #include <Compiler/PXCompiler.h>
-#include <Container/ClusterValue.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 #include <Log/PXLog.h>
 
@@ -46,10 +45,10 @@ CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize)
 
             switch (key)
             {
-                case MakeShort('i', 'f'):
+                case PXInt16Make('i', 'f'):
                     return CKeyWordIf;
 
-                case MakeShort('d', 'o'):
+                case PXInt16Make('d', 'o'):
                     return CKeyWordDo;
             }
 

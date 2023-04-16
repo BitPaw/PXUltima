@@ -41,7 +41,7 @@ PXSize PXSBPChannelHeaderSerialize(PXSBPChannelHeader* const sbpChannelHeader, P
 
 void SBPPackageHeaderConstruct(SBPPackageHeader* const sbpPackageHeader)
 {
-	SBPPackageHeaderSet(sbpPackageHeader, MakeInt('#', '#', '#', '#'), SourceInvalid, TargetInvalid, 0, PXNull);
+	SBPPackageHeaderSet(sbpPackageHeader, PXInt32Make('#', '#', '#', '#'), SourceInvalid, TargetInvalid, 0, PXNull);
 }
 
 void SBPPackageHeaderDestruct(SBPPackageHeader* const sbpPackageHeader)

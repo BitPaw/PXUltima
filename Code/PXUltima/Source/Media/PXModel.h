@@ -1,5 +1,5 @@
-#ifndef ModelINCLUDE
-#define ModelINCLUDE
+#ifndef PXModelINCLUDE
+#define PXModelINCLUDE
 
 #include <File/PXDataStream.h>
 
@@ -94,7 +94,7 @@ extern "C"
 		// 
 
 		//---<Material>---
-		void* MaterialList;	
+		void* MaterialList;
 		//----------------
 
 		//----------------
@@ -127,23 +127,23 @@ extern "C"
 	typedef PXActionResult(*ModelParserFunction)(PXDataStream* const inputStream, PXModel* const model);
 
 
-	PXPublic void ModelConstruct(PXModel* const model);
-	PXPublic void ModelDestruct(PXModel* const model);
+	PXPublic void PXModelConstruct(PXModel* const model);
+	PXPublic void PXModelDestruct(PXModel* const model);
 
 	PXPublic PXSize PXModelMaterialAmount(PXModel* const model);
 	PXPublic PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial);
 
 
-	PXPublic unsigned char ModelSegmentsAmount(const PXModel* const model);
-	PXPrivate void* ModelSegmentsAdressGet(const PXModel* const model, const PXSize index);
-	PXPublic void ModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegment* const meshSegment);
-	PXPublic void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const unsigned int renderSize, const unsigned int renderMaterial);
+	PXPublic unsigned char PXModelSegmentsAmount(const PXModel* const model);
+	PXPrivate void* PXModelSegmentsAdressGet(const PXModel* const model, const PXSize index);
+	PXPublic void PXModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegment* const meshSegment);
+	PXPublic void PXModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const unsigned int renderSize, const unsigned int renderMaterial);
 
-	PXPublic PXSize ModelVertexDataStride(const PXModel* const model);
+	PXPublic PXSize PXModelVertexDataStride(const PXModel* const model);
 
-	PXPublic PXActionResult ModelLoadA(PXModel* const model, const char* const filePath);
-	PXPublic PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath);
-	PXPublic PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType);
+	PXPublic PXActionResult PXModelLoadA(PXModel* const model, const char* const filePath);
+	PXPublic PXActionResult PXModelLoadW(PXModel* const model, const wchar_t* const filePath);
+	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType);
 
 #ifdef __cplusplus
 }

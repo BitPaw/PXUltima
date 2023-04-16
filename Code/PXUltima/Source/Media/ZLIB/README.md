@@ -1,7 +1,7 @@
-# ZLIB<br>[RFC 1950]
+# PXZLIB<br>[RFC 1950]
 
 ## Info
-ZLIB is a structure to aid compression formats.<br>
+PXZLIB is a structure to aid compression formats.<br>
 Currently the only format specified is DEFLATE, thus this is just a code husk for that format. 
 
 ## Structure

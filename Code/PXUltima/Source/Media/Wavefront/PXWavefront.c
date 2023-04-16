@@ -1,47 +1,45 @@
-#include "OBJ.h"
+#include "PXWavefront.h"
 
 #include <Compiler/PXCompiler.h>
-#include <File/PXDataStream.h>
 #include <OS/Memory/PXMemory.h>
-#include <Container/ClusterValue.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <Math/PXMath.h>
 
-#define OBJDetectMaterial 1
+#define PXWavefrontDetectMaterial 1
 
-#define PXCompilerSymbolLexerOBJMaterialLibraryIncludeID 'I'
-#define PXCompilerSymbolLexerOBJMaterialLibraryUselID 'U'
-#define PXCompilerSymbolLexerOBJObjectNameID 'O'
-#define PXCompilerSymbolLexerOBJSmoothShadingID 'S'
-#define PXCompilerSymbolLexerOBJObjectGroupID 'G'
-#define PXCompilerSymbolLexerOBJVertexGerometricID 'v'
-#define PXCompilerSymbolLexerOBJVertexNormalID 'n'
-#define PXCompilerSymbolLexerOBJVertexParameterID 'p'
-#define PXCompilerSymbolLexerOBJVertexTextureID 't'
+#define PXCompilerSymbolLexerPXWavefrontMaterialLibraryIncludeID 'I'
+#define PXCompilerSymbolLexerPXWavefrontMaterialLibraryUselID 'U'
+#define PXCompilerSymbolLexerPXWavefrontObjectNameID 'O'
+#define PXCompilerSymbolLexerPXWavefrontSmoothShadingID 'S'
+#define PXCompilerSymbolLexerPXWavefrontObjectGroupID 'G'
+#define PXCompilerSymbolLexerPXWavefrontVertexGerometricID 'v'
+#define PXCompilerSymbolLexerPXWavefrontVertexNormalID 'n'
+#define PXCompilerSymbolLexerPXWavefrontVertexParameterID 'p'
+#define PXCompilerSymbolLexerPXWavefrontVertexTextureID 't'
 
-void OBJElementConstruct(OBJElement* objElement)
+void PXWavefrontElementConstruct(PXWavefrontElement* objElement)
 {
-    MemoryClear(objElement, sizeof(OBJElement));
+    MemoryClear(objElement, sizeof(PXWavefrontElement));
 }
 
-void OBJElementDestruct(OBJElement* objElement)
+void PXWavefrontElementDestruct(PXWavefrontElement* objElement)
 {
     //TODO: clear memeory
 }
 
-void OBJConstruct(OBJ* const obj)
+void PXWavefrontConstruct(PXWavefront* const obj)
 {
-    MemoryClear(obj, sizeof(OBJ));
+    MemoryClear(obj, sizeof(PXWavefront));
 }
 
-void OBJDestruct(OBJ* const obj)
+void PXWavefrontDestruct(PXWavefront* const obj)
 {
     MemoryRelease(obj->ElementList, obj->ElementListSize);
 
     MemoryRelease(obj->MaterialFileList, obj->MaterialFileListSize);
 }
 
-OBJLineType OBJPeekLine(const void* line, const PXSize size)
+PXWavefrontLineType PXWavefrontPeekLine(const void* line, const PXSize size)
 {
     const char* const text = (const char* const)line;
 
@@ -51,25 +49,25 @@ OBJLineType OBJPeekLine(const void* line, const PXSize size)
         {
             switch (text[0])
             {
-                case 'v': return OBJLineVertexGeometric;
-                case 'f': return OBJLineFaceElement;
-                case '#': return OBJLineComment;
-                case 'o': return OBJLineObjectName;
-                case 's': return OBJLineSmoothShading;
-                case 'g': return OBJLineObjectGroup;
+                case 'v': return PXWavefrontLineVertexGeometric;
+                case 'f': return PXWavefrontLineFaceElement;
+                case '#': return PXWavefrontLineComment;
+                case 'o': return PXWavefrontLineObjectName;
+                case 's': return PXWavefrontLineSmoothShading;
+                case 'g': return PXWavefrontLineObjectGroup;
             }
 
             break;
         }
         case 2:
         {
-            const unsigned short lineTagID = MakeShort(text[0], text[1]);
+            const PXInt16U lineTagID = PXInt16Make(text[0], text[1]);
 
             switch (lineTagID)
             {
-                case MakeShort('v', 't'): return OBJLineVertexTexture;
-                case MakeShort('v', 'n'): return OBJLineVertexNormal;
-                case MakeShort('v', 'p'): return OBJLineVertexParameter;
+                case PXInt16Make('v', 't'): return PXWavefrontLineVertexTexture;
+                case PXInt16Make('v', 'n'): return PXWavefrontLineVertexNormal;
+                case PXInt16Make('v', 'p'): return PXWavefrontLineVertexParameter;
             }
 
             break;
@@ -77,19 +75,19 @@ OBJLineType OBJPeekLine(const void* line, const PXSize size)
 
         case 6:
         {
-            const unsigned long long lineTagID = MakeInt(text[0], text[1], text[2], text[3]);
+            const unsigned long long lineTagID = PXInt32Make(text[0], text[1], text[2], text[3]);
 
             switch (lineTagID)
             {
-                case MakeInt('m', 't', 'l', 'l'):
-                case MakeInt('u', 's', 'e', 'm'):
+                case PXInt32Make('m', 't', 'l', 'l'):
+                case PXInt32Make('u', 's', 'e', 'm'):
                 {
-                    const unsigned short lineTagID = MakeShort(text[4], text[5]);
+                    const unsigned short lineTagID = PXInt16Make(text[4], text[5]);
 
                     switch (lineTagID)
                     {
-                        case MakeShort('i', 'b'): return OBJLineMaterialLibraryInclude;
-                        case MakeShort('t', 'l'): return OBJLineMaterialLibraryUse;
+                        case PXInt16Make('i', 'b'): return PXWavefrontLineMaterialLibraryInclude;
+                        case PXInt16Make('t', 'l'): return PXWavefrontLineMaterialLibraryUse;
                     }
 
                     break;
@@ -100,10 +98,10 @@ OBJLineType OBJPeekLine(const void* line, const PXSize size)
         }
     }
 
-    return OBJLineInvalid;
+    return PXWavefrontLineInvalid;
 }
 
-void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int expectedID)
+void PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int expectedID)
 {
     char textBuffer[32];
 
@@ -111,7 +109,7 @@ void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned 
 
     printf
     (
-        "[OBJ][Error] At line <%i> at <%i>, unexpected symbol.\n"
+        "[PXWavefront][Error] At line <%i> at <%i>, unexpected symbol.\n"
         "          -> %s\n",
         compilerSymbolEntry->Line,
         compilerSymbolEntry->Coloum,
@@ -119,7 +117,7 @@ void OBJCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned 
     );
 }
 
-PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
 {
     PXSize errorCounter = 0;
     PXDataStream tokenSteam;
@@ -183,13 +181,13 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 continue;
         }
 
-        const OBJLineType objPeekLine = OBJPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
         PXDataStreamWriteI8U(outputStream, objPeekLine);
 
         switch (objPeekLine)
         {
-            case OBJLineSmoothShading:
+            case PXWavefrontLineSmoothShading:
             {
                 PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
 
@@ -198,10 +196,10 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                 break;
             }
-            case OBJLineMaterialLibraryInclude:
-            case OBJLineMaterialLibraryUse:
-            case OBJLineObjectName:
-            case OBJLineObjectGroup:
+            case PXWavefrontLineMaterialLibraryInclude:
+            case PXWavefrontLineMaterialLibraryUse:
+            case PXWavefrontLineObjectName:
+            case PXWavefrontLineObjectGroup:
             {
                 char namedElement[256];
                 PXSize namedElementSize = 0;
@@ -211,7 +209,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 if (!isString)
                 {
                     ++errorCounter;
-                    OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
+                    PXWavefrontCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
                     break;
                 }
 
@@ -221,11 +219,11 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                 switch (objPeekLine)
                 {
-                    case OBJLineMaterialLibraryInclude:
+                    case PXWavefrontLineMaterialLibraryInclude:
                     {
                         ++mtlInlclueesListSize;
 
-#if OBJDetectMaterial
+#if PXWavefrontDetectMaterial
 
                         headerCacheOffset += PXDataStreamWriteAtI16U(outputStream, namedElementSize, headerCacheOffset);
                         headerCacheOffset += PXDataStreamWriteAtB(outputStream, namedElement, namedElementSize, headerCacheOffset);
@@ -233,7 +231,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                         break;
                     }
-                    case OBJLineMaterialLibraryUse:
+                    case PXWavefrontLineMaterialLibraryUse:
                     {
                         drawOrder[drawCurrentIndex++] = drawCurrentCounter;
                         drawCurrentCounter = 0;
@@ -243,10 +241,10 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                 break; // [OK]
             }
-            case OBJLineVertexTexture:
-            case OBJLineVertexGeometric:
-            case OBJLineVertexNormal:
-            case OBJLineVertexParameter:
+            case PXWavefrontLineVertexTexture:
+            case PXWavefrontLineVertexGeometric:
+            case PXWavefrontLineVertexNormal:
+            case PXWavefrontLineVertexParameter:
             {
                 PXSize valuesDetected = 0;
                 PXSize valuesExpected = 0;
@@ -254,19 +252,19 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                 switch (objPeekLine)
                 {
-                    case OBJLineVertexGeometric:
+                    case PXWavefrontLineVertexGeometric:
                         valuesExpected = 3;
                         break;
 
-                    case OBJLineVertexNormal:
+                    case PXWavefrontLineVertexNormal:
                         valuesExpected = 3;
                         break;
 
-                    case OBJLineVertexParameter:
+                    case PXWavefrontLineVertexParameter:
                         valuesExpected = 3;
                         break;
 
-                    case OBJLineVertexTexture:
+                    case PXWavefrontLineVertexTexture:
                         valuesExpected = 2;
                         break;
                 }
@@ -277,19 +275,19 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
                 {
                     switch (objPeekLine)
                     {
-                        case OBJLineVertexGeometric:
+                        case PXWavefrontLineVertexGeometric:
                             vertexListSize += valuesDetected;
                             break;
 
-                        case OBJLineVertexNormal:
+                        case PXWavefrontLineVertexNormal:
                             normalListSize += valuesDetected;
                             break;
 
-                        case OBJLineVertexParameter:
+                        case PXWavefrontLineVertexParameter:
                             parameterListSize += valuesDetected;
                             break;
 
-                        case OBJLineVertexTexture:
+                        case PXWavefrontLineVertexTexture:
                             textureListSize += valuesDetected;
                             break;
                     }
@@ -300,7 +298,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                 break; // [OK]
             }
-            case OBJLineFaceElement:
+            case PXWavefrontLineFaceElement:
             {
                 PXSize cornerPoints = 0;
                 PXSize cursorPos = outputStream->DataCursor;
@@ -457,7 +455,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
             default: // Error
             {
                 ++errorCounter;
-                OBJCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
+                PXWavefrontCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
 
                 do
                 {
@@ -470,7 +468,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
         }
     }
 
-    // End of OBJ parsing
+    // End of PXWavefront parsing
     drawOrder[drawCurrentIndex] = drawCurrentCounter;
     mtlEmbeddedDataOffset = outputStream->DataCursor;
 
@@ -479,7 +477,7 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
     //outputStream->DataCursor = 0; // Jump to beginning, parsing temp headerInfo
 
     // Begin loading MTL files
-#if OBJDetectMaterial
+#if PXWavefrontDetectMaterial
     {
         PXDataStream materialNameFetchStream;
         PXDataStream materialFileStream;
@@ -490,13 +488,13 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
         wchar_t currentMTLFileW[PathMaxSize];
         char currentMTLFileA[PathMaxSize];
 
-        const PXBool succ = PXDataStreamFilePathGetW(inputStream, currentWorkPath, PathMaxSize); // Work OBJ file path
+        const PXBool succ = PXDataStreamFilePathGetW(inputStream, currentWorkPath, PathMaxSize); // Work PXWavefront file path
 
         for (PXSize i = 0; i < mtlInlclueesListSize; ++i)
         {
             unsigned short length = 0;
 
-            PXDataStreamWriteI8U(outputStream, OBJEmbeddedMTL);
+            PXDataStreamWriteI8U(outputStream, PXWavefrontEmbeddedMTL);
 
             PXDataStreamReadI16U(&materialNameFetchStream, &length);
             PXDataStreamReadB(&materialNameFetchStream, currentMTLFileA, PathMaxSize);
@@ -557,9 +555,9 @@ PXActionResult OBJFileCompile(PXDataStream* const inputStream, PXDataStream* con
     return PXActionSuccessful;
 }
 
-PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const model)
+PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel* const model)
 {
-    ModelConstruct(model);
+    PXModelConstruct(model);
 
     inputStream->DataCursor = 0;
 
@@ -621,7 +619,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
             PXDataStreamWriteI32U(&modelHeaderStream, renderSize[meshIndex]); // Draw amount
             PXDataStreamWriteI32U(&modelHeaderStream,(unsigned int)-1); // Material ID, set later
         }
-#if OBJDetectMaterial
+#if PXWavefrontDetectMaterial
         //---<MTL to PXMaterial>-----------------------------------------------
         mtlEmbeddedDataOffset += 1; // ???
 
@@ -734,7 +732,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
     while (!PXDataStreamIsAtEnd(inputStream))
     {
-        OBJLineType objLineType = OBJLineInvalid;
+        PXWavefrontLineType objLineType = PXWavefrontLineInvalid;
 
         {
             PXInt8U lineTypeID = 0;
@@ -746,12 +744,12 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
         switch (objLineType)
         {
-            //case OBJEmbeddedMTL:
-            case OBJLineMaterialLibraryInclude:
-            case OBJLineMaterialLibraryUse:
-            case OBJLineObjectName:
-            case OBJLineSmoothShading:
-            case OBJLineObjectGroup:
+            //case PXWavefrontEmbeddedMTL:
+            case PXWavefrontLineMaterialLibraryInclude:
+            case PXWavefrontLineMaterialLibraryUse:
+            case PXWavefrontLineObjectName:
+            case PXWavefrontLineSmoothShading:
+            case PXWavefrontLineObjectGroup:
             {
                 PXCompilerSymbolLexer compilerSymbolLexer;
 
@@ -777,9 +775,9 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                         unsigned short size = 0;
                         char* name = model->Data;
 
-                        if (OBJLineMaterialLibraryUse == objLineType)
+                        if (PXWavefrontLineMaterialLibraryUse == objLineType)
                         {
-#if OBJDetectMaterial
+#if PXWavefrontDetectMaterial
                             char materialName[256];
 
                             void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
@@ -830,10 +828,10 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
                 break; // [OK]
             }
-            case OBJLineVertexTexture:
-            case OBJLineVertexGeometric:
-            case OBJLineVertexNormal:
-            case OBJLineVertexParameter:
+            case PXWavefrontLineVertexTexture:
+            case PXWavefrontLineVertexGeometric:
+            case PXWavefrontLineVertexNormal:
+            case PXWavefrontLineVertexParameter:
             {
                 PXInt8U amountofValues;
                 float* adress;
@@ -841,25 +839,25 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
 
                 switch (objLineType)
                 {
-                    case OBJLineVertexTexture:
+                    case PXWavefrontLineVertexTexture:
                         adress = textureList;
                         offset = &textureListOffset;
                         //printf("text ");
                         break;
 
-                    case OBJLineVertexGeometric:
+                    case PXWavefrontLineVertexGeometric:
                         adress = vertexValueList;
                         offset = &vertexValueListOffset;
                         //printf("psotion ");
                         break;
 
-                    case OBJLineVertexNormal:
+                    case PXWavefrontLineVertexNormal:
                         adress = normalList;
                         offset = &normalListOffset;
                       // printf("norm ");
                         break;
 
-                    case OBJLineVertexParameter:
+                    case PXWavefrontLineVertexParameter:
                         adress = parameterList;
                         offset = &parameterListOffset;
                         break;
@@ -880,7 +878,7 @@ PXActionResult OBJParseToModel(PXDataStream* const inputStream, PXModel* const m
                 break;
             }
 
-            case OBJLineFaceElement:
+            case PXWavefrontLineFaceElement:
             {
                 PXInt8U amountofValues = 0;
 

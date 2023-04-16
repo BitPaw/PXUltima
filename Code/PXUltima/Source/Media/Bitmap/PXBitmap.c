@@ -1,143 +1,139 @@
-#include "BMP.h"
+#include "PXBitmap.h"
 
-#include <Container/ClusterValue.h>
-#include <Container/ClusterValue.h>
-#include <File/PXDataStream.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 
-#define BMPHeaderIDWindows                  MakeShort('B', 'M')
-#define BMPHeaderIDOS2StructBitmapArray     MakeShort('B', 'A')
-#define BMPHeaderIDOS2StructColorIcon       MakeShort('C', 'I')
-#define BMPHeaderIDOS2ConstColorPointer     MakeShort('C', 'P')
-#define BMPHeaderIDOS2StructIcon            MakeShort('I', 'C')
-#define BMPHeaderIDOS2Pointer               MakeShort('P', 'T')
+#define PXBitmapHeaderIDWindows                  PXInt16Make('B', 'M')
+#define PXBitmapHeaderIDOS2StructBitmapArray     PXInt16Make('B', 'A')
+#define PXBitmapHeaderIDOS2StructColorIcon       PXInt16Make('C', 'I')
+#define PXBitmapHeaderIDOS2ConstColorPointer     PXInt16Make('C', 'P')
+#define PXBitmapHeaderIDOS2StructIcon            PXInt16Make('I', 'C')
+#define PXBitmapHeaderIDOS2Pointer               PXInt16Make('P', 'T')
 
-
-BMPType ConvertToBMPType(const unsigned short bmpTypeID)
+PXBitmapType ConvertToPXBitmapType(const unsigned short bmpTypeID)
 {
     switch(bmpTypeID)
     {
-        case BMPHeaderIDOS2StructBitmapArray:
-            return BMPOS2StructBitmapArray;
+        case PXBitmapHeaderIDOS2StructBitmapArray:
+            return PXBitmapOS2StructBitmapArray;
 
-        case BMPHeaderIDWindows:
-            return BMPWindows;
+        case PXBitmapHeaderIDWindows:
+            return PXBitmapWindows;
 
-        case BMPHeaderIDOS2StructColorIcon:
-            return BMPOS2StructColorIcon;
+        case PXBitmapHeaderIDOS2StructColorIcon:
+            return PXBitmapOS2StructColorIcon;
 
-        case BMPHeaderIDOS2ConstColorPointer:
-            return BMPOS2ConstColorPointer;
+        case PXBitmapHeaderIDOS2ConstColorPointer:
+            return PXBitmapOS2ConstColorPointer;
 
-        case BMPHeaderIDOS2StructIcon:
-            return BMPOS2StructIcon;
+        case PXBitmapHeaderIDOS2StructIcon:
+            return PXBitmapOS2StructIcon;
 
-        case BMPHeaderIDOS2Pointer:
-            return BMPOS2Pointer;
+        case PXBitmapHeaderIDOS2Pointer:
+            return PXBitmapOS2Pointer;
 
         default:
-            return BMPInvalid;
+            return PXBitmapInvalid;
     }
 }
 
-unsigned short ConvertFromBMPType(const BMPType headerType)
+unsigned short ConvertFromPXBitmapType(const PXBitmapType headerType)
 {
     switch(headerType)
     {
         default:
-        case BMPInvalid:
+        case PXBitmapInvalid:
             return 0;
 
-        case BMPWindows:
-            return BMPHeaderIDWindows;
+        case PXBitmapWindows:
+            return PXBitmapHeaderIDWindows;
 
-        case BMPOS2StructBitmapArray:
-            return BMPHeaderIDOS2StructBitmapArray;
+        case PXBitmapOS2StructBitmapArray:
+            return PXBitmapHeaderIDOS2StructBitmapArray;
 
-        case BMPOS2StructColorIcon:
-            return BMPHeaderIDOS2StructColorIcon;
+        case PXBitmapOS2StructColorIcon:
+            return PXBitmapHeaderIDOS2StructColorIcon;
 
-        case BMPOS2ConstColorPointer:
-            return BMPHeaderIDOS2ConstColorPointer;
+        case PXBitmapOS2ConstColorPointer:
+            return PXBitmapHeaderIDOS2ConstColorPointer;
 
-        case BMPOS2StructIcon:
-            return BMPHeaderIDOS2StructIcon;
+        case PXBitmapOS2StructIcon:
+            return PXBitmapHeaderIDOS2StructIcon;
 
-        case BMPOS2Pointer:
-            return BMPHeaderIDOS2Pointer;
+        case PXBitmapOS2Pointer:
+            return PXBitmapHeaderIDOS2Pointer;
     }
 }
 
-BMPInfoHeaderType ConvertToBMPInfoHeaderType(const unsigned int infoHeaderType)
+PXBitmapInfoHeaderType ConvertToPXBitmapInfoHeaderType(const unsigned int infoHeaderType)
 {
     switch(infoHeaderType)
     {
         case 12u:
             //const unsigned char bitMapCoreHeaderSize = 12;
-            return BMPHeaderOS21XBitMapHeader;
+            return PXBitmapHeaderOS21XBitMapHeader;
 
         case 16u:
-            return BMPHeaderOS22XBitMapHeader;
+            return PXBitmapHeaderOS22XBitMapHeader;
 
         case 40u:
-            return BMPHeaderBitMapInfoHeader;
+            return PXBitmapHeaderBitMapInfoHeader;
 
         case 52u:
-            return BMPHeaderBitMapV2InfoHeader;
+            return PXBitmapHeaderBitMapV2InfoHeader;
 
         case 56u:
-            return BMPHeaderBitMapV3InfoHeader;
+            return PXBitmapHeaderBitMapV3InfoHeader;
 
         case 108u:
-            return BMPHeaderBitMapV4Header;
+            return PXBitmapHeaderBitMapV4Header;
 
         case 124u:
-            return BMPHeaderBitMapV5Header;
+            return PXBitmapHeaderBitMapV5Header;
 
         default:
-            return BMPHeaderUnkownOrInvalid;
+            return PXBitmapHeaderUnkownOrInvalid;
     }
 }
 
-unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType)
+unsigned int ConvertFromPXBitmapInfoHeaderType(const PXBitmapInfoHeaderType infoHeaderType)
 {
     switch(infoHeaderType)
     {
         default:
-        case BMPHeaderUnkownOrInvalid:
+        case PXBitmapHeaderUnkownOrInvalid:
             return -1;
 
-        case BMPHeaderBitMapCoreHeader:
-        case BMPHeaderOS21XBitMapHeader:
+        case PXBitmapHeaderBitMapCoreHeader:
+        case PXBitmapHeaderOS21XBitMapHeader:
             return 12u;
 
-        case BMPHeaderOS22XBitMapHeader:
+        case PXBitmapHeaderOS22XBitMapHeader:
             return 16u;
 
-        case BMPHeaderBitMapInfoHeader:
+        case PXBitmapHeaderBitMapInfoHeader:
             return 40u;
 
-        case BMPHeaderBitMapV2InfoHeader:
+        case PXBitmapHeaderBitMapV2InfoHeader:
             return 52u;
 
-        case BMPHeaderBitMapV3InfoHeader:
+        case PXBitmapHeaderBitMapV3InfoHeader:
             return 56u;
 
-        case BMPHeaderBitMapV4Header:
+        case PXBitmapHeaderBitMapV4Header:
             return 108u;
 
-        case BMPHeaderBitMapV5Header:
+        case PXBitmapHeaderBitMapV5Header:
             return 124u;
     }
 }
 
-PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult PXBitmapParseToImage(PXImage* const image, PXDataStream* const dataStream)
 {
-    BMP bmp;
+    PXBitmap bmp;
 
-    BMPConstruct(&bmp);
+    PXBitmapConstruct(&bmp);
 
     PXInt32U sizeOfFile = 0;
     PXInt32U reservedBlock = 0;
@@ -145,7 +141,7 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
 
     //---[ Parsing Header ]----------------------------------------------------
     {
-        ClusterShort byteCluster;
+        PXInt16UCluster byteCluster;
         PXInt32U valueList[3];
 
         PXDataStreamReadB(dataStream, byteCluster.Data, 2u);
@@ -155,10 +151,10 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
         reservedBlock = valueList[1];
         dataOffset = valueList[2];
 
-        const BMPType type = ConvertToBMPType(byteCluster.Value);
+        const PXBitmapType type = ConvertToPXBitmapType(byteCluster.Value);
 
         {
-            const PXBool isValidType = type != BMPInvalid;
+            const PXBool isValidType = type != PXBitmapInvalid;
 
             if(!isValidType)
             {
@@ -174,11 +170,11 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
     {
         PXDataStreamReadI32UE(dataStream, &bmp.InfoHeader.HeaderSize, EndianLittle);
 
-        bmp.InfoHeaderType = ConvertToBMPInfoHeaderType(bmp.InfoHeader.HeaderSize);
+        bmp.InfoHeaderType = ConvertToPXBitmapInfoHeaderType(bmp.InfoHeader.HeaderSize);
 
         switch(bmp.InfoHeaderType)
         {
-            case BMPHeaderBitMapInfoHeader:
+            case PXBitmapHeaderBitMapInfoHeader:
             {
                 const PXDataStreamElementType pxDataStreamElementList[] =
                 {
@@ -199,8 +195,8 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
 
                 break;
             }
-            case BMPHeaderOS21XBitMapHeader:
-            case BMPHeaderOS22XBitMapHeader:
+            case PXBitmapHeaderOS21XBitMapHeader:
+            case PXBitmapHeaderOS22XBitMapHeader:
             {
                 {
                     PXInt16U valueList[4u];
@@ -213,7 +209,7 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
                     bmp.InfoHeader.NumberOfBitsPerPixel = valueList[3];
                 }
 
-                if(bmp.InfoHeaderType == BMPHeaderOS22XBitMapHeader)
+                if(bmp.InfoHeaderType == PXBitmapHeaderOS22XBitMapHeader)
                 {
                     unsigned short paddingBytes = 0; // Padding.Ignored and should be zero
 
@@ -247,7 +243,7 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
 
     // Generate imagedata
     {
-        const PXBool allocationSuccess = ImageResize(image, ImageDataFormatRGB8, bmp.InfoHeader.Width, bmp.InfoHeader.Height);
+        const PXBool allocationSuccess = PXImageResize(image, PXColorFormatRGBI8, bmp.InfoHeader.Width, bmp.InfoHeader.Height);
 
         if(!allocationSuccess)
         {
@@ -256,9 +252,9 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
     }
 
     //---[ Pixel Data ]--------------------------------------------------------
-    BMPImageDataLayout imageDataLayout;
+    PXBitmapImageDataLayout imageDataLayout;
 
-    BMPImageDataLayoutCalculate(&imageDataLayout, bmp.InfoHeader.Width, bmp.InfoHeader.Height, bmp.InfoHeader.NumberOfBitsPerPixel);
+    PXBitmapImageDataLayoutCalculate(&imageDataLayout, bmp.InfoHeader.Width, bmp.InfoHeader.Height, bmp.InfoHeader.NumberOfBitsPerPixel);
 
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
@@ -279,25 +275,25 @@ PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStrea
     return PXActionSuccessful;
 }
 
-PXActionResult BMPSerialize(const BMP* const bmp, PXDataStream* const dataStream)
+PXActionResult PXBitmapSerialize(const PXBitmap* const bmp, PXDataStream* const dataStream)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
+PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream)
 {
-    BMP bitMap;
+    PXBitmap bitMap;
 
-    BMPConstruct(&bitMap);
+    PXBitmapConstruct(&bitMap);
 
     //---<Header>-----
     {
-        ClusterShort byteCluster;
+        PXInt16UCluster byteCluster;
         unsigned int sizeOfFile = dataStream->DataSize;
         unsigned int reservedBlock = 0;
         unsigned int dataOffset = 54u;
 
-        byteCluster.Value = ConvertFromBMPType(BMPWindows);
+        byteCluster.Value = ConvertFromPXBitmapType(PXBitmapWindows);
 
         PXDataStreamWriteB(dataStream, byteCluster.Data, 2u);
         PXDataStreamWriteI32UE(dataStream, sizeOfFile, EndianLittle);
@@ -308,11 +304,11 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
 
     //---<DIP>
     {
-        const BMPInfoHeaderType bmpInfoHeaderType = BMPHeaderBitMapInfoHeader;
+        const PXBitmapInfoHeaderType bmpInfoHeaderType = PXBitmapHeaderBitMapInfoHeader;
 
         //---<Shared>----------------------------------------------------------
-        bitMap.InfoHeader.HeaderSize = ConvertFromBMPInfoHeaderType(bmpInfoHeaderType);
-        bitMap.InfoHeader.NumberOfBitsPerPixel = ImageBytePerPixel(image->Format) * 8u;
+        bitMap.InfoHeader.HeaderSize = ConvertFromPXBitmapInfoHeaderType(bmpInfoHeaderType);
+        bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(image->Format);
         bitMap.InfoHeader.NumberOfColorPlanes = 1;
         bitMap.InfoHeader.Width = image->Width;
         bitMap.InfoHeader.Height = image->Height;
@@ -322,7 +318,7 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
 
         switch (bmpInfoHeaderType)
         {
-            case BMPHeaderBitMapInfoHeader:
+            case PXBitmapHeaderBitMapInfoHeader:
             {
                 bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution = 1u;
                 bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution = 1u;
@@ -344,11 +340,11 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
     //------------
 
     {
-        BMPImageDataLayout imageDataLayout;
+        PXBitmapImageDataLayout imageDataLayout;
 
-        BMPImageDataLayoutCalculate(&imageDataLayout, bitMap.InfoHeader.Width, bitMap.InfoHeader.Height, bitMap.InfoHeader.NumberOfBitsPerPixel);
+        PXBitmapImageDataLayoutCalculate(&imageDataLayout, bitMap.InfoHeader.Width, bitMap.InfoHeader.Height, bitMap.InfoHeader.NumberOfBitsPerPixel);
 
-        for (PXSize row = imageDataLayout.RowAmount-1; row != (PXSize)-1  ; --row)
+        for (PXSize row = imageDataLayout.RowAmount-1; row != (PXSize)-1 ; --row)
         {
             const PXByte* const dataInsertPoint = (const PXByte* const)image->PixelData + (imageDataLayout.RowImageDataSize * row);
 
@@ -371,12 +367,12 @@ PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* con
     return PXActionSuccessful;
 }
 
-void BMPConstruct(BMP* const bmp)
+void PXBitmapConstruct(PXBitmap* const bmp)
 {
-    MemoryClear(bmp, sizeof(BMP));
+    MemoryClear(bmp, sizeof(PXBitmap));
 }
 
-void BMPDestruct(BMP* const bmp)
+void PXBitmapDestruct(PXBitmap* const bmp)
 {
     MemoryRelease(bmp->PixelData, bmp->PixelDataSize);
 
@@ -384,7 +380,7 @@ void BMPDestruct(BMP* const bmp)
     bmp->PixelDataSize = 0;
 }
 
-void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp)
+void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp)
 {
     bmpImageDataLayout->RowImageDataSize = width * (bbp / 8u);
     bmpImageDataLayout->ImageSize = bmpImageDataLayout->RowImageDataSize * height;
@@ -394,12 +390,12 @@ void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, c
     bmpImageDataLayout->RowAmount = MathCeilingF(bmpImageDataLayout->ImageSize / (float)bmpImageDataLayout->RowFullSize);
 }
 
-PXSize BMPFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)
+PXSize PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)
 {
-    const PXSize sizeBMPHeader = 14u;
-    const PXSize sizeBMPDIP = 40u;
+    const PXSize sizePXBitmapHeader = 14u;
+    const PXSize sizePXBitmapDIP = 40u;
     const PXSize imageDataSize = (MathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height;
-    const PXSize fullSize = sizeBMPHeader + sizeBMPDIP + imageDataSize+512u;
+    const PXSize fullSize = sizePXBitmapHeader + sizePXBitmapDIP + imageDataSize+512u;
 
     return fullSize;
 }

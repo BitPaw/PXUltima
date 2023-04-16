@@ -1,10 +1,10 @@
 #ifndef TGAInclude
 #define TGAInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -117,9 +117,9 @@ extern "C"
 
 
 	PXPublic PXActionResult TGAParse(TGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead);
-	PXPublic PXActionResult TGAParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TGAParseToImage(PXImage* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult TGASerializeFromImage(const Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TGASerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

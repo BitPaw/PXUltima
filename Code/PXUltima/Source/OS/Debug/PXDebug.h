@@ -1,8 +1,8 @@
 #ifndef PXDebugINLCUDE
 #define PXDebugINLCUDE
 
-#include <Media/Type.h>
-#include <Text/PXText.h>
+#include <Media/PXType.h>
+#include <Media/PXText.h>
 
 #include <OS/Process/PXProcess.h>
 #include <OS/Thread/PXThread.h>

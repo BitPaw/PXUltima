@@ -1,6 +1,6 @@
 #include "LAME.h"
 
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 {

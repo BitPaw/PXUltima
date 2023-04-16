@@ -1,8 +1,7 @@
 #include "MTL.h"
 
 #include <File/PXDataStream.h>
-#include <Text/PXText.h>
-#include <Container/ClusterValue.h>
+#include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
 
@@ -44,20 +43,20 @@ IlluminationMode MTLIlluminationModeFromID(const unsigned int illuminationModeID
 
 MTLLineType MTLPeekLine(const char* const line, const PXSize lineSize)
 {
-	const unsigned short tagID = MakeShort(line[0], line[1]);
+	const unsigned short tagID = PXInt16Make(line[0], line[1]);
 
 	switch(tagID)
 	{
-		case MakeShort('m', 'a'): return MTLLineTexture; // map_Kd
-		case MakeShort('n', 'e'): return MTLLineName; // newmtl
-		case MakeShort('N', 's'): return MTLLineWeight;
-		case MakeShort('N', 'i'): return MTLLineDensity;
-		case MakeShort('K', 'a'): return MTLLineColorAmbient;
-		case MakeShort('K', 'd'): return MTLLineColorDiffuse;
-		case MakeShort('K', 's'): return MTLLineColorSpecular;
-		case MakeShort('K', 'e'): return MTLLineColorEmission;
-		case MakeShort('d', ' '): return MTLLineDissolved;
-		case MakeShort('i', 'l'): return MTLLineIllumination; // illum
+		case PXInt16Make('m', 'a'): return MTLLineTexture; // map_Kd
+		case PXInt16Make('n', 'e'): return MTLLineName; // newmtl
+		case PXInt16Make('N', 's'): return MTLLineWeight;
+		case PXInt16Make('N', 'i'): return MTLLineDensity;
+		case PXInt16Make('K', 'a'): return MTLLineColorAmbient;
+		case PXInt16Make('K', 'd'): return MTLLineColorDiffuse;
+		case PXInt16Make('K', 's'): return MTLLineColorSpecular;
+		case PXInt16Make('K', 'e'): return MTLLineColorEmission;
+		case PXInt16Make('d', ' '): return MTLLineDissolved;
+		case PXInt16Make('i', 'l'): return MTLLineIllumination; // illum
 		default:
 			return MTLLineInvalid;
 	}

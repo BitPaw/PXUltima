@@ -1,7 +1,7 @@
 #ifndef SBPServerINCLUDE
 #define SBPServerINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Network/PXServer.h>
 #include <Network/SBP/PXSBPPackageProcessor.h>
 

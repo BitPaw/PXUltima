@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/File.h>
 

@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include <File/PXDataStream.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <Math/PXMath.h>
 
 #define PXCompilerSanitise 1

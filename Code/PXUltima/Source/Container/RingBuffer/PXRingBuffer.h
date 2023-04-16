@@ -1,7 +1,7 @@
 #ifndef PXListDEFINED
 #define PXListDEFINED
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"

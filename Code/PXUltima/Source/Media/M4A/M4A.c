@@ -1,37 +1,36 @@
 #include "M4A.h"
 
 #include <File/PXDataStream.h>
-#include <Container/ClusterValue.h>
 #include <OS/Memory/PXMemory.h>
 
 #define M4ADebugLog 1
 
-#define M4AChunkIDFTYP MakeInt('f','t','y','p')
-#define M4AChunkIDMDAT MakeInt('m','d','a','t')
-#define M4AChunkIDMOOV MakeInt('m','o','o','v')
-#define M4AChunkIDPNOT MakeInt('p','n','o','t')
-#define M4AChunkIDUDTA MakeInt('u','d','t','a')
-#define M4AChunkIDUUID MakeInt('u','u','i','d')
-#define M4AChunkIDMOOF MakeInt('m','o','o','f')
-#define M4AChunkIDFREE MakeInt('f','r','e','e')
-#define M4AChunkIDSKIP MakeInt('s','k','i','p')
-#define M4AChunkIDJP2 MakeInt('j','P','2',' ')
-#define M4AChunkIDWIDE MakeInt('w','i','d','e')
-#define M4AChunkIDLOAD MakeInt('l','o','a','d')
-#define M4AChunkIDCTAB MakeInt('c','t','a','b')
-#define M4AChunkIDIMAP MakeInt('i','m','a','p')
-#define M4AChunkIDMATT MakeInt('m','a','t','t')
-#define M4AChunkIDKMAT MakeInt('k','m','a','t')
-#define M4AChunkIDCLIP MakeInt('c','l','i','p')
-#define M4AChunkIDCRGN MakeInt('c','r','g','n')
-#define M4AChunkIDSYNC MakeInt('s','y','n','c')
-#define M4AChunkIDCHAP MakeInt('c','h','a','p')
-#define M4AChunkIDTMCD MakeInt('t','m','c','d')
-#define M4AChunkIDSCPT MakeInt('s','c','p','t')
-#define M4AChunkIDSSRC MakeInt('s','s','r','c')
-#define M4AChunkIDPICT MakeInt('P','I','C','T')
+#define M4AChunkIDFTYP PXInt32Make('f','t','y','p')
+#define M4AChunkIDMDAT PXInt32Make('m','d','a','t')
+#define M4AChunkIDMOOV PXInt32Make('m','o','o','v')
+#define M4AChunkIDPNOT PXInt32Make('p','n','o','t')
+#define M4AChunkIDUDTA PXInt32Make('u','d','t','a')
+#define M4AChunkIDUUID PXInt32Make('u','u','i','d')
+#define M4AChunkIDMOOF PXInt32Make('m','o','o','f')
+#define M4AChunkIDFREE PXInt32Make('f','r','e','e')
+#define M4AChunkIDSKIP PXInt32Make('s','k','i','p')
+#define M4AChunkIDJP2 PXInt32Make('j','P','2',' ')
+#define M4AChunkIDWIDE PXInt32Make('w','i','d','e')
+#define M4AChunkIDLOAD PXInt32Make('l','o','a','d')
+#define M4AChunkIDCTAB PXInt32Make('c','t','a','b')
+#define M4AChunkIDIMAP PXInt32Make('i','m','a','p')
+#define M4AChunkIDMATT PXInt32Make('m','a','t','t')
+#define M4AChunkIDKMAT PXInt32Make('k','m','a','t')
+#define M4AChunkIDCLIP PXInt32Make('c','l','i','p')
+#define M4AChunkIDCRGN PXInt32Make('c','r','g','n')
+#define M4AChunkIDSYNC PXInt32Make('s','y','n','c')
+#define M4AChunkIDCHAP PXInt32Make('c','h','a','p')
+#define M4AChunkIDTMCD PXInt32Make('t','m','c','d')
+#define M4AChunkIDSCPT PXInt32Make('s','c','p','t')
+#define M4AChunkIDSSRC PXInt32Make('s','s','r','c')
+#define M4AChunkIDPICT PXInt32Make('P','I','C','T')
 
-M4AChunkID ConvertToM4AChunkID(const unsigned int chunkID)
+M4AChunkID ConvertToM4AChunkID(const PXInt32U chunkID)
 {
 	switch(chunkID)
 	{
@@ -78,7 +77,7 @@ PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSiz
 		M4AChunk chunk;
 
 		unsigned int chunkSize = 0;
-		ClusterInt typePrimaryID;
+		PXInt32UCluster typePrimaryID;
 
 		PXDataStreamReadI32UE(&dataStream, &chunkSize, EndianBig);
 		PXDataStreamReadB(&dataStream, typePrimaryID.Data, 4u);

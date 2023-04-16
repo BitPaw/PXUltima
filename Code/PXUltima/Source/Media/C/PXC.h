@@ -1,7 +1,7 @@
 #ifndef PXCINCLUDE
 #define PXCINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 #include <Compiler/PXCompiler.h>

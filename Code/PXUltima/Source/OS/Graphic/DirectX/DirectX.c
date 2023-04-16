@@ -11,7 +11,7 @@
 #endif
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 #include <stdio.h>
 
@@ -22,9 +22,9 @@ void DirectXContextConstruct(DirectXContext* const directXContext)
 
 void DirectXContextDestruct(DirectXContext* const directXContext)
 {
-	#if OSUnix
-	#elif OSWindows
-	#endif
+#if OSUnix
+#elif OSWindows
+#endif
 }
 
 void DirectXContextCreate(DirectXContext* const directXContext)

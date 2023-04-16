@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 
-#include <Event/Event.h>
-#include <Text/PXText.h>
+#include <Event/PXEvent.h>
+#include <Media/PXText.h>
 #include <Graphic/PXGraphic.h>
 
 #include <OS/Memory/PXMemory.h>
@@ -2214,6 +2214,11 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 void PXWindowConstruct(PXWindow* const window)
 {
     MemoryClear(window, sizeof(PXWindow));
+}
+
+float PXWindowScreenRatio(const PXWindow* const window)
+{
+    return (float)window->Width / (float)window->Height;
 }
 
 void PXWindowCreateA(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)

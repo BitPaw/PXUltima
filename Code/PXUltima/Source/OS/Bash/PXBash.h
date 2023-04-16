@@ -1,7 +1,7 @@
 #ifndef BashInclude
 #define BashInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
 

@@ -1,7 +1,7 @@
 #ifndef CRC32Include
 #define CRC32Include
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"

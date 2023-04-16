@@ -67,7 +67,7 @@
     <ClInclude Include="Source\OS\Graphic\DirectX\DirectX.h" />
     <ClInclude Include="Source\Graphic\PXGraphic.h" />
     <ClInclude Include="Source\OS\Graphic\OpenGL\OpenGL.h" />
-    <ClInclude Include="Source\Graphic\SoftwareRender\SoftwareRender.h" />
+    <ClInclude Include="Source\Graphic\SoftwareRender\PXSoftwareRender.h" />
     <ClInclude Include="Source\OS\Graphic\Vulcan\Vulcan.h" />
     <ClInclude Include="Source\OS\ClipBoard\PXClipBoard.h" />
     <ClInclude Include="Source\Math\PXMatrix.h" />
@@ -77,7 +77,6 @@
     <ClInclude Include="Source\OS\Thread\PXLock.h" />
     <ClInclude Include="Source\OS\Thread\PXThread.h" />
     <ClInclude Include="Source\Container\BinaryTree\BinaryTree.h" />
-    <ClInclude Include="Source\Container\ClusterValue.h" />
     <ClInclude Include="Source\Container\Dictionary\PXDictionary.h" />
     <ClInclude Include="Source\Container\QuadTree\QuadTree.h" />
     <ClInclude Include="Source\Device\Controller.h" />
@@ -86,7 +85,7 @@
     <ClInclude Include="Source\Device\PXMouse.h" />
     <ClInclude Include="Source\Device\VirtualKey.h" />
     <ClInclude Include="Source\OS\Error\PXActionResult.h" />
-    <ClInclude Include="Source\Event\Event.h" />
+    <ClInclude Include="Source\Event\PXEvent.h" />
     <ClInclude Include="Source\OS\File\Endian.h" />
     <ClInclude Include="Source\OS\File\File.h" />
     <ClInclude Include="Source\File\PXDataStream.h" />
@@ -95,34 +94,34 @@
     <ClInclude Include="Source\Media\ADAM7\ADAM7.h" />
     <ClInclude Include="Source\Media\ADLER\Adler32.h" />
     <ClInclude Include="Source\Media\AVI\AVI.h" />
-    <ClInclude Include="Source\Media\BMP\BMP.h" />
-    <ClInclude Include="Source\Media\Color.h" />
+    <ClInclude Include="Source\Media\Bitmap\PXBitmap.h" />
+    <ClInclude Include="Source\Media\PXColor.h" />
     <ClInclude Include="Source\Media\CRC32\CRC32.h" />
     <ClInclude Include="Source\Media\DEFLATE\DEFLATE.h" />
     <ClInclude Include="Source\Media\EML\EML.h" />
     <ClInclude Include="Source\Media\FBX\FBX.h" />
     <ClInclude Include="Source\Media\FLAC\FLAC.h" />
     <ClInclude Include="Source\Media\FMT\FMT.h" />
-    <ClInclude Include="Source\Media\FNT\FNT.h" />
+    <ClInclude Include="Source\Media\SpriteFont\PXSpriteFont.h" />
     <ClInclude Include="Source\Media\PXFont.h" />
     <ClInclude Include="Source\Media\GIF\GIF.h" />
     <ClInclude Include="Source\Media\HUFFMAN\HuffmanTree.h" />
     <ClInclude Include="Source\Media\ID3\ID3.h" />
-    <ClInclude Include="Source\Media\Image.h" />
+    <ClInclude Include="Source\Media\PXImage.h" />
     <ClInclude Include="Source\Media\ISBN\ISBN.h" />
     <ClInclude Include="Source\Media\JPEG\JPEG.h" />
     <ClInclude Include="Source\Media\LAME\LAME.h" />
     <ClInclude Include="Source\Media\M4A\M4A.h" />
     <ClInclude Include="Source\Media\MID\MID.h" />
-    <ClInclude Include="Source\Media\Model.h" />
+    <ClInclude Include="Source\Media\PXModel.h" />
     <ClInclude Include="Source\Media\MP3\MP3.h" />
     <ClInclude Include="Source\Media\MP4\MP4.h" />
     <ClInclude Include="Source\Media\MTL\MTL.h" />
-    <ClInclude Include="Source\Media\OBJ\OBJ.h" />
+    <ClInclude Include="Source\Media\Wavefront\PXWavefront.h" />
     <ClInclude Include="Source\Media\OGG\OGG.h" />
     <ClInclude Include="Source\Media\PDF\PXPDF.h" />
     <ClInclude Include="Source\Media\PLY\PLY.h" />
-    <ClInclude Include="Source\Media\PNG\PNG.h" />
+    <ClInclude Include="Source\Media\PNG\PXPNG.h" />
     <ClInclude Include="Source\Media\QOI\QOI.h" />
     <ClInclude Include="Source\Media\RIFF\RIFF.h" />
     <ClInclude Include="Source\Media\PXSound.h" />
@@ -139,7 +138,7 @@
     <ClInclude Include="Source\Media\WEBP\WEBP.h" />
     <ClInclude Include="Source\Media\WMA\WMA.h" />
     <ClInclude Include="Source\Media\XingInfo\XingInfo.h" />
-    <ClInclude Include="Source\Media\ZLIB\ZLIB.h" />
+    <ClInclude Include="Source\Media\ZLIB\PXZLIB.h" />
     <ClInclude Include="Source\OS\Library\PXLibrary.h" />
     <ClInclude Include="Source\Math\PXMath.h" />
     <ClInclude Include="Source\OS\Network\PXClient.h" />
@@ -157,9 +156,9 @@
     <ClInclude Include="Source\OS\Program\Program.h" />
     <ClInclude Include="Source\OS\User\PXUser.h" />
     <ClInclude Include="Source\OS\Processor\PXProcessor.h" />
-    <ClInclude Include="Source\Text\PXText.h" />
+    <ClInclude Include="Source\Media\PXText.h" />
     <ClInclude Include="Source\OS\Time\PXTime.h" />
-    <ClInclude Include="Source\Media\Type.h" />
+    <ClInclude Include="Source\Media\PXType.h" />
     <ClInclude Include="Source\Math\PXVector.h" />
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
@@ -212,7 +211,7 @@
     <ClCompile Include="Source\OS\Graphic\DirectX\DirectX.c" />
     <ClCompile Include="Source\Graphic\PXGraphic.c" />
     <ClCompile Include="Source\OS\Graphic\OpenGL\OpenGL.c" />
-    <ClCompile Include="Source\Graphic\SoftwareRender\SoftwareRender.c" />
+    <ClCompile Include="Source\Graphic\SoftwareRender\PXSoftwareRender.c" />
     <ClCompile Include="Source\OS\Graphic\Vulcan\Vulcan.c" />
     <ClCompile Include="Source\OS\ClipBoard\PXClipBoard.c" />
     <ClCompile Include="Source\Math\PXMatrix.c" />
@@ -229,7 +228,7 @@
     <ClCompile Include="Source\Device\PXMouse.c" />
     <ClCompile Include="Source\Device\VirtualKey.c" />
     <ClCompile Include="Source\OS\Error\PXActionResult.c" />
-    <ClCompile Include="Source\Event\Event.c" />
+    <ClCompile Include="Source\Event\PXEvent.c" />
     <ClCompile Include="Source\OS\File\Endian.c" />
     <ClCompile Include="Source\OS\File\File.c" />
     <ClCompile Include="Source\File\PXDataStream.c" />
@@ -238,34 +237,34 @@
     <ClCompile Include="Source\Media\ADAM7\ADAM7.c" />
     <ClCompile Include="Source\Media\ADLER\Adler32.c" />
     <ClCompile Include="Source\Media\AVI\AVI.c" />
-    <ClCompile Include="Source\Media\BMP\BMP.c" />
-    <ClCompile Include="Source\Media\Color.c" />
+    <ClCompile Include="Source\Media\Bitmap\PXBitmap.c" />
+    <ClCompile Include="Source\Media\PXColor.c" />
     <ClCompile Include="Source\Media\CRC32\CRC32.c" />
     <ClCompile Include="Source\Media\DEFLATE\DEFLATE.c" />
     <ClCompile Include="Source\Media\EML\EML.c" />
     <ClCompile Include="Source\Media\FBX\FBX.c" />
     <ClCompile Include="Source\Media\FLAC\FLAC.c" />
     <ClCompile Include="Source\Media\FMT\FMT.c" />
-    <ClCompile Include="Source\Media\FNT\FNT.c" />
+    <ClCompile Include="Source\Media\SpriteFont\PXSpriteFont.c" />
     <ClCompile Include="Source\Media\PXFont.c" />
     <ClCompile Include="Source\Media\GIF\GIF.c" />
     <ClCompile Include="Source\Media\HUFFMAN\HuffmanTree.c" />
     <ClCompile Include="Source\Media\ID3\ID3.c" />
-    <ClCompile Include="Source\Media\Image.c" />
+    <ClCompile Include="Source\Media\PXImage.c" />
     <ClCompile Include="Source\Media\ISBN\ISBN.c" />
     <ClCompile Include="Source\Media\JPEG\JPEG.c" />
     <ClCompile Include="Source\Media\LAME\LAME.c" />
     <ClCompile Include="Source\Media\M4A\M4A.c" />
     <ClCompile Include="Source\Media\MID\MID.c" />
-    <ClCompile Include="Source\Media\Model.c" />
+    <ClCompile Include="Source\Media\PXModel.c" />
     <ClCompile Include="Source\Media\MP3\MP3.c" />
     <ClCompile Include="Source\Media\MP4\MP4.c" />
     <ClCompile Include="Source\Media\MTL\MTL.c" />
-    <ClCompile Include="Source\Media\OBJ\OBJ.c" />
+    <ClCompile Include="Source\Media\Wavefront\PXWavefront.c" />
     <ClCompile Include="Source\Media\OGG\OGG.c" />
     <ClCompile Include="Source\Media\PDF\PXPDF.c" />
     <ClCompile Include="Source\Media\PLY\PLY.c" />
-    <ClCompile Include="Source\Media\PNG\PNG.c" />
+    <ClCompile Include="Source\Media\PNG\PXPNG.c" />
     <ClCompile Include="Source\Media\QOI\QOI.c" />
     <ClCompile Include="Source\Media\RIFF\RIFF.c" />
     <ClCompile Include="Source\Media\PXSound.c" />
@@ -282,7 +281,7 @@
     <ClCompile Include="Source\Media\WEBP\WEBP.c" />
     <ClCompile Include="Source\Media\WMA\WMA.c" />
     <ClCompile Include="Source\Media\XingInfo\XingInfo.c" />
-    <ClCompile Include="Source\Media\ZLIB\ZLIB.c" />
+    <ClCompile Include="Source\Media\ZLIB\PXZLIB.c" />
     <ClCompile Include="Source\OS\Library\PXLibrary.c" />
     <ClCompile Include="Source\Math\PXMath.c" />
     <ClCompile Include="Source\OS\Memory\PXMemory.c" />
@@ -300,9 +299,9 @@
     <ClCompile Include="Source\OS\Program\Program.c" />
     <ClCompile Include="Source\OS\User\PXUser.c" />
     <ClCompile Include="Source\OS\Processor\PXProcessor.c" />
-    <ClCompile Include="Source\Text\PXText.c" />
+    <ClCompile Include="Source\Media\PXText.c" />
     <ClCompile Include="Source\OS\Time\PXTime.c" />
-    <ClCompile Include="Source\Media\Type.c" />
+    <ClCompile Include="Source\Media\PXType.c" />
     <ClCompile Include="Source\Math\PXVector.c" />
     <ClCompile Include="Source\Language\PXTranslator.c" />
   </ItemGroup>
@@ -344,6 +343,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -356,6 +356,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -472,12 +473,14 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ShowIncludes>false</ShowIncludes>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4201;4206;4114;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatSpecificWarningsAsErrors>4431;4702;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -498,11 +501,13 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ShowIncludes>false</ShowIncludes>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4201;4206;4114;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatSpecificWarningsAsErrors>4431;4702;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

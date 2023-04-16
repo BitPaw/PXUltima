@@ -1,7 +1,7 @@
 #include "XML.h"
 
 #include <Compiler/PXCompiler.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 XMLSymbol XMLPeekLine(const char* const text, const PXSize textSize)
 {

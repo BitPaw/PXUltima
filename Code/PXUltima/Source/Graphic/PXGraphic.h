@@ -1,14 +1,18 @@
 #ifndef PXGraphicINCLUDE
 #define PXGraphicINCLUDE
 
-#include <Media/Image.h>
-#include <Media/Model.h>
-#include <Media/Type.h>
+#include <Media/PXType.h>
+#include <Media/PXImage.h>
+#include <Media/PXFont.h>
+#include <Media/PXModel.h>
+#include <Media/PXSound.h>
+#include <Media/PXColor.h>
 #include <OS/Graphic/OpenGL/OpenGL.h>
 #include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
 #include <Container/Dictionary/PXDictionary.h>
 #include <OS/Thread/PXLock.h>
+#include <Media/PXColor.h>
 
 #define PXShaderNotRegisterd (unsigned int)-1
 
@@ -126,26 +130,26 @@ extern "C"
 	}
 	PXGraphicRenderMode;
 
-	typedef struct Shader_
+	typedef struct PXShader_
 	{
 		unsigned int ID;
 		PXShaderType Type;
 		PXSize ContentSize;
 		char* Content;
 	}
-	Shader;
+	PXShader;
 
 
-	PXPublic void PXShaderConstruct(Shader* const shader);
+	PXPublic void PXShaderConstruct(PXShader* const shader);
 
-	PXPublic void PXShaderDataSet(Shader* const shader, const PXShaderType type, const char* data, const PXSize size);
+	PXPublic void PXShaderDataSet(PXShader* const shader, const PXShaderType type, const char* data, const PXSize size);
 
 
-	typedef struct ShaderProgram_
+	typedef struct PXShaderProgram_
 	{
 		unsigned int ID;
 	}
-	ShaderProgram;
+	PXShaderProgram;
 
 
 	typedef struct PXTexture_
@@ -159,7 +163,7 @@ extern "C"
 		PXGraphicImageWrap WrapHeight;
 		PXGraphicImageWrap WrapWidth;
 
-		Image Image;
+		PXImage Image;
 	}
 	PXTexture;
 
@@ -169,7 +173,7 @@ extern "C"
 	typedef struct PXTextureCube_
 	{
 		unsigned int ID;
-		Image ImageList[6];
+		PXImage ImageList[6];
 	}
 	PXTextureCube;
 
@@ -253,9 +257,17 @@ extern "C"
 	{
 		PXUIElementTypeInvalid,
 		PXUIElementTypePanel,
-		PXUIElementTypeLabel,
+		PXUIElementTypeText,
 		PXUIElementTypeButton,
 		PXUIElementTypeImage,
+
+		PXUIElementTypeDropDown,
+		PXUIElementTypeToggle,
+		PXUIElementTypeCheckBox,
+		PXUIElementTypeColorPicker,
+		PXUIElementTypeSlider,
+		PXUIElementTypeRadioButton,
+		PXUIElementTypeToolTip,
 
 		PXUIElementTypeCustom
 	}
@@ -279,31 +291,34 @@ extern "C"
 
 	typedef struct PXUIElement_
 	{
+		//---<Render Settings>-------------------
 		PXRenderable Renderable;
+		PXColorRGBAF BackGroundColor;
+		PXInt32U TextureID;
+		PXInt32U ShaderID;
+		//---------------------------------------
 
+		//---<State-Info>------------------------
 		PXBool IsEnabled;
+		//PXBool Active;
 		PXUIHoverState Hover;
+		//---------------------------------------
 
-		PXUIOnClick OnClickCallback;
-		PXUIOnMouseEnter OnMouseEnterCallback;
-		PXUIOnMouseLeave OnMouseLeaveCallback;
-
+		//---<Property>--------------------------
+		PXInt16U ID;
+		PXUIElementType Type;
+		char Name[32];
 		float X;
 		float Y;
 		float Width;
 		float Height;
+		//---------------------------------------
 
-		PXInt32U TextureID;
-		PXInt32U ShaderID;
-
-		PXUIElementType Type;
-		PXInt16U ID;
-		float Red;
-		float Green;
-		float Blue;
-		float Alpha;
-
-		char Name[32];
+		//---<Events>----------------------------
+		PXUIOnClick OnClickCallback;
+		PXUIOnMouseEnter OnMouseEnterCallback;
+		PXUIOnMouseLeave OnMouseLeaveCallback;
+		//---------------------------------------
 	}
 	PXUIElement;
 
@@ -318,22 +333,16 @@ extern "C"
 		PXSkyBox* _currentSkyBox;
 
 		//---<Registered Objects>---
+		PXInt32U UniqeIDGeneratorCounter;
+
 		PXLinkedListFixed _renderList; // PXRenderable
-		PXLinkedListFixed _textureList; // PXTexture
-		//LinkedList<AudioClip*> _audioClipList;
-
-		PXLinkedListFixed _pxModelList;
-
-		PXInt32U UIElementIDCounter;
+	
 		PXDictionary UIElementLookUp;
-
-
-		//LinkedList<Sound*> _soundList;
-		PXLinkedListFixed _fontList; // PXFont
-		PXLinkedListFixed _shaderProgramList; // ShaderProgram;
-		//LinkedList<Dialog*> _dialogList;
-		//LinkedList<Level*> _levelList;
-		//LinkedList<Collider*> _physicList;
+		PXDictionary TextureLookUp;
+		PXDictionary ModelLookUp;
+		PXDictionary FontLookUp;
+		PXDictionary SoundLookup;
+		PXDictionary ShaderProgramLookup;
 		//--------------------------
 	}
 	PXGraphicContext;
@@ -344,7 +353,7 @@ extern "C"
 	PXPublic void PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
 	PXPublic void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height);
 
-	PXPrivate PXInt32U PXGraphicUIElementGenerateID(PXGraphicContext* const graphicContext);
+	PXPrivate PXInt32U PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext);
 
 	PXPublic PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
 	PXPublic PXActionResult PXGraphicUIElementUpdate(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
@@ -362,8 +371,8 @@ extern "C"
 
 
 	//---<OpenGL Translate>----------------
-	PXPrivate OpenGLDataType PXGraphicDataTypeToOpenGL(const ImageDataFormat imageDataFormat);
-	PXPrivate OpenGLImageFormat PXGraphicImageFormatToOpenGL(const ImageDataFormat imageDataFormat);
+	PXPrivate OpenGLDataType PXGraphicDataTypeToOpenGL(const PXColorFormat imageDataFormat);
+	PXPrivate OpenGLImageFormat PXGraphicImageFormatToOpenGL(const PXColorFormat imageDataFormat);
 	PXPrivate OpenGLShaderType PXGraphicShaderFromOpenGL(const PXShaderType shaderType);
 	PXPrivate OpenGLTextureType ImageTypeGraphicToOpenGL(const PXGraphicImageType graphicImageType);
 	PXPublic OpenGLRenderMode PXGraphicRenderModeToOpenGL(const PXGraphicRenderMode graphicRenderMode);
@@ -378,9 +387,9 @@ extern "C"
 	PXPublic PXActionResult PXGraphicShaderCompile(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const unsigned int shaderID);
 
-	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const PXTextASCII vertexShaderFilePath, const PXTextASCII fragmentShaderFilePath);
-	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSLW(PXGraphicContext* const graphicContext, ShaderProgram* const shaderProgram, const PXTextUNICODE vertexShaderFilePath, const PXTextUNICODE fragmentShaderFilePath);
-	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, ShaderProgram* const shaderProgram, Shader* const vertexShader, Shader* const fragmentShader);
+	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, const PXTextASCII vertexShaderFilePath, const PXTextASCII fragmentShaderFilePath);
+	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSLW(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, const PXTextUNICODE vertexShaderFilePath, const PXTextUNICODE fragmentShaderFilePath);
+	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, PXShader* const vertexShader, PXShader* const fragmentShader);
 
 	PXPublic void PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
 	PXPublic unsigned int PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const unsigned int shaderID, const char* const name);
@@ -395,7 +404,7 @@ extern "C"
 
 
 	//---<Texture>----------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, Image* const image);
+	PXPublic PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, PXImage* const image);
 
 	PXPublic PXActionResult PXGraphicTextureLoadA(PXGraphicContext* const graphicContext, PXTexture* const texture, const PXTextASCII filePath);
 	PXPublic PXActionResult PXGraphicTextureLoadW(PXGraphicContext* const graphicContext, PXTexture* const texture, const PXTextUNICODE filePath);
@@ -407,6 +416,16 @@ extern "C"
 	PXPublic PXActionResult PXGraphicTextureCubeRegisterUse(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
 	PXPublic PXActionResult PXGraphicTextureCubeRelease(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
 	//-------------------------------------------------------------------------
+
+
+
+	//---<Font>----------------------------------------------------------------------
+	PXPublic PXActionResult PXGraphicFontLoadA(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXTextASCII filePath);
+	PXPublic PXActionResult PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXFont* const pxFont);
+	PXPublic PXActionResult PXGraphicFontRelease(PXGraphicContext* const graphicContext, PXFont* const pxFont);
+	PXPublic PXActionResult PXGraphicFontUse(PXGraphicContext* const graphicContext, PXFont* const pxFont);
+	//-------------------------------------------------------------------------
+
 
 	//---<Model>---------------------------------------------------------------
 	PXPublic PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
@@ -438,7 +457,7 @@ extern "C"
 	PXPublic PXBool PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRenderable* const pxRenderable);
 
 
-	PXPublic void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const ShaderProgram* const shaderProgram);
+	PXPublic void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderProgram);
 	//PXPublic PXActionResult PXGraphicModelGenerate(PXGraphicContext* const graphicContext, PXRenderable** const renderable, const PXTextASCII filePath);
 	PXPublic PXActionResult PXGraphicModelLoadA(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXTextASCII filePath);
 	PXPublic PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);

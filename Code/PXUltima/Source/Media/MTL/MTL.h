@@ -1,10 +1,10 @@
 #ifndef MTLInclude
 #define MTLInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
-#include <Media/Model.h>
+#include <Media/PXModel.h>
 
 #define MTLNameSize 32u
 #define MTLFilePath 60u

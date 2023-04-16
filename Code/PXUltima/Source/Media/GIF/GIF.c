@@ -14,7 +14,7 @@ PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize 
     return 0;
 }
 
-PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStream)
 {
     GIF gif;
 
@@ -107,7 +107,7 @@ PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStrea
     return PXActionSuccessful;
 }
 
-PXActionResult GIFSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
+PXActionResult GIFSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream)
 {
     return PXActionInvalid;
 }

@@ -1,7 +1,7 @@
 #ifndef SBPPackageHeaderChunkINCLUDE
 #define SBPPackageHeaderChunkINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <File/PXDataStream.h>
 #include <Container/Dictionary/PXDictionary.h>
 

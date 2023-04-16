@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 #include <Media/PXFont.h>
 #include <OS/File/File.h>
 

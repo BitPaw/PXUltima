@@ -1,7 +1,7 @@
 #ifndef EndianInclude
 #define EndianInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #if 1
 #define EndianCurrentSystemIsLittle

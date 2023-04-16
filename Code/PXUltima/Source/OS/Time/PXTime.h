@@ -1,7 +1,7 @@
 #ifndef TimeInclude
 #define TimeInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -42,14 +42,14 @@ extern "C"
 
 	typedef struct PXTime_
 	{
-		unsigned short Year;
-		unsigned short Month;
-		unsigned char DayOfWeek;
-		unsigned char Day;
-		unsigned short Hour;
-		unsigned short Minute;
-		unsigned short Second;
-		unsigned short Milliseconds;
+		PXInt8U Month; // 0-12
+		PXInt8U DayOfWeek; // enum
+		PXInt8U Day; // 0-31
+		PXInt8U Hour; // 0-24
+		PXInt8U Minute; // 0-60
+		PXInt8U Second;  // 0-60
+		PXInt16U Milliseconds; // 0-1000
+		PXInt16U Year;
 	}
 	PXTime;
 
@@ -57,8 +57,7 @@ extern "C"
 	PXPublic TimeMonth ConvertToDay(unsigned short dayID);
 
 	PXPublic void PXTimeNow(PXTime* time);
-	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
-	
+	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);	
 
 #ifdef __cplusplus
 }

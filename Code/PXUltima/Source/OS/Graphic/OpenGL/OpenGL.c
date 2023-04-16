@@ -3,9 +3,7 @@
 // wingdi.h
 #include <stdio.h>
 
-#include <Text/PXText.h>
-#include <Container/ClusterValue.h>
-
+#include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Window/PXWindow.h>
@@ -1372,30 +1370,31 @@ unsigned int OpenGLTextureTypeToID(const OpenGLTextureType openGLTextureType)
     }
 }
 
-PXPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID)
+OpenGLVersion OpenGLVersionParse(const PXInt32U versionID)
 {
     switch (versionID)
     {
-        case MakeInt(0, 1, 0, 0): return OpenGLVersion1x0x0;
-        case MakeInt(0, 1, 1, 0): return OpenGLVersion1x1x0;
-        case MakeInt(0, 1, 2, 0): return OpenGLVersion1x2x0;
-        case MakeInt(0, 1, 2, 1): return OpenGLVersion1x2x1;
-        case MakeInt(0, 1, 3, 0): return OpenGLVersion1x3x0;
-        case MakeInt(0, 1, 4, 0): return OpenGLVersion1x4x0;
-        case MakeInt(0, 1, 5, 0): return OpenGLVersion1x5x0;
-        case MakeInt(0, 2, 0, 0): return OpenGLVersion2x0x0;
-        case MakeInt(0, 2, 1, 0): return OpenGLVersion2x1x0;
-        case MakeInt(0, 3, 0, 0): return OpenGLVersion3x0x0;
-        case MakeInt(0, 3, 1, 0): return OpenGLVersion3x1x0;
-        case MakeInt(0, 3, 2, 0): return OpenGLVersion3x2x0;
-        case MakeInt(0, 3, 3, 0): return OpenGLVersion3x3x0;
-        case MakeInt(0, 4, 0, 0): return OpenGLVersion4x0x0;
-        case MakeInt(0, 4, 1, 0): return OpenGLVersion4x1x0;
-        case MakeInt(0, 4, 2, 0): return OpenGLVersion4x2x0;
-        case MakeInt(0, 4, 3, 0): return OpenGLVersion4x3x0;
-        case MakeInt(0, 4, 4, 0): return OpenGLVersion4x4x0;
-        case MakeInt(0, 4, 5, 0): return OpenGLVersion4x5x0;
-        case MakeInt(0, 4, 6, 0): return OpenGLVersion4x6x0;
+        case PXInt32Make(0, 1, 0, 0): return OpenGLVersion1x0x0;
+        case PXInt32Make(0, 1, 1, 0): return OpenGLVersion1x1x0;
+        case PXInt32Make(0, 1, 2, 0): return OpenGLVersion1x2x0;
+        case PXInt32Make(0, 1, 2, 1): return OpenGLVersion1x2x1;
+        case PXInt32Make(0, 1, 3, 0): return OpenGLVersion1x3x0;
+        case PXInt32Make(0, 1, 4, 0): return OpenGLVersion1x4x0;
+        case PXInt32Make(0, 1, 5, 0): return OpenGLVersion1x5x0;
+        case PXInt32Make(0, 2, 0, 0): return OpenGLVersion2x0x0;
+        case PXInt32Make(0, 2, 1, 0): return OpenGLVersion2x1x0;
+        case PXInt32Make(0, 3, 0, 0): return OpenGLVersion3x0x0;
+        case PXInt32Make(0, 3, 1, 0): return OpenGLVersion3x1x0;
+        case PXInt32Make(0, 3, 2, 0): return OpenGLVersion3x2x0;
+        case PXInt32Make(0, 3, 3, 0): return OpenGLVersion3x3x0;
+        case PXInt32Make(0, 4, 0, 0): return OpenGLVersion4x0x0;
+        case PXInt32Make(0, 4, 1, 0): return OpenGLVersion4x1x0;
+        case PXInt32Make(0, 4, 2, 0): return OpenGLVersion4x2x0;
+        case PXInt32Make(0, 4, 3, 0): return OpenGLVersion4x3x0;
+        case PXInt32Make(0, 4, 4, 0): return OpenGLVersion4x4x0;
+        case PXInt32Make(0, 4, 5, 0): return OpenGLVersion4x5x0;
+        case PXInt32Make(0, 4, 6, 0): return OpenGLVersion4x6x0;
+
         default: return  OpenGLVersionInvalid;
     }
 }
@@ -1536,7 +1535,7 @@ PXBool OpenGLContextCreateForWindow(OpenGLContext* const openGLContext)
         offset += 1u; // dot
         offset += PXTextToIntA(version + offset, 64, &versionPatch);
 
-        const unsigned int id = MakeInt(0, versionMajor, versionMinor, versionPatch);
+        const PXInt32U id = PXInt32Make(0, versionMajor, versionMinor, versionPatch);
 
         openGLContext->Version = OpenGLVersionParse(id);
     }

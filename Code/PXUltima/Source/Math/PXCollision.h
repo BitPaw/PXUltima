@@ -1,7 +1,7 @@
 #ifndef PXCollisionINCLUDE
 #define PXCollisionINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <Math/PXVector.h>
 
 #ifdef __cplusplus

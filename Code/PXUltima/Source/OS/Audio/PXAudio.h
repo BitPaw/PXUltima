@@ -1,7 +1,7 @@
 #ifndef PXAudioINCLUDE
 #define PXAudioINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 
 #define PitchMaximum 2.9f

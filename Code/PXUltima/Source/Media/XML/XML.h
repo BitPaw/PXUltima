@@ -2,7 +2,7 @@
 #define XMLINCLUDE
 
 #include <OS/Error/PXActionResult.h>
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus

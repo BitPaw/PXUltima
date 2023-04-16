@@ -2,11 +2,10 @@
 
 #include <stdlib.h>
 
-#include <Container/ClusterValue.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 #include <File/PXDataStream.h>
-#include <Media/Color.h>
+#include <Media/PXColor.h>
 
 #define JPGDebug 1
 
@@ -14,74 +13,74 @@
 #include <stdio.h>
 #endif
 
-#define JPEGMarkerInvalidID                                             MakeShort(0xFF, 0xFF)
-#define JPEGMarkerStartOfFrameHuffmanBaselineDCTID                      MakeShort(0xFF, 0xC0)
-#define JPEGMarkerStartOfFrameHuffmanSequentialExtendedDCTID            MakeShort(0xFF, 0xC1)
-#define JPEGMarkerStartOfFrameHuffmanProgressiveDCTID                   MakeShort(0xFF, 0xC2)
-#define JPEGMarkerStartOfFrameHuffmanSequentialLosslessID               MakeShort(0xFF, 0xC3)
-#define JPEGMarkerDefineHuffmanTableListID                              MakeShort(0xFF, 0xC4)
-#define JPEGMarkerStartOfFrameHuffmanDifferentialSequentialID           MakeShort(0xFF, 0xC5)
-#define JPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCTID       MakeShort(0xFF, 0xC6)
-#define JPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequentialID   MakeShort(0xFF, 0xC7)
-#define JPEGMarkerStartOfFrameArithmeticJPEGExtensionID                 MakeShort(0xFF, 0xC8)
-#define JPEGMarkerStartOfFrameArithmeticExtendedSequentialDCTID         MakeShort(0xFF, 0xC9)
-#define JPEGMarkerStartOfFrameArithmeticProgressiveDCTID                  MakeShort(0xFF, 0xCA)
-#define JPEGMarkerStartOfFrameArithmeticLosslessSequentialID              MakeShort(0xFF, 0xCB)
-#define JPEGMarkerDefineArithmeticCodingID                                MakeShort(0xFF, 0xCC)
-#define JPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCTID       MakeShort(0xFF, 0xCD)
-#define JPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCTID      MakeShort(0xFF, 0xCE)
-#define JPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequentialID  MakeShort(0xFF, 0xCF)
-#define JPEGMarkerIntervalTerminationRestart0ID MakeShort(0xFF, 0xD0)
-#define JPEGMarkerIntervalTerminationRestart1ID MakeShort(0xFF, 0xD1)
-#define JPEGMarkerIntervalTerminationRestart2ID MakeShort(0xFF, 0xD2)
-#define JPEGMarkerIntervalTerminationRestart3ID MakeShort(0xFF, 0xD3)
-#define JPEGMarkerIntervalTerminationRestart4ID MakeShort(0xFF, 0xD4)
-#define JPEGMarkerIntervalTerminationRestart5ID MakeShort(0xFF, 0xD5)
-#define JPEGMarkerIntervalTerminationRestart6ID MakeShort(0xFF, 0xD6)
-#define JPEGMarkerIntervalTerminationRestart7ID MakeShort(0xFF, 0xD7)
-#define JPEGMarkerStartOfImageID              MakeShort(0xFF, 0xD8)
-#define JPEGMarkerEndOfImageID            MakeShort(0xFF, 0xD9)
-#define JPEGMarkerStartOfScanID           MakeShort(0xFF, 0xDA)
-#define JPEGMarkerDefineQuantizationTableListID MakeShort(0xFF, 0xDB)
-#define JPEGMarkerDefineNumberOfLinesID MakeShort(0xFF, 0xDC)
-#define JPEGMarkerDefineRestartIntervalID             MakeShort(0xFF, 0xDD)
-#define JPEGMarkerDefineHierarchicalProgressionID     MakeShort(0xFF, 0xDE)
-#define JPEGMarkerExpandReferenceComponentListID      MakeShort(0xFF, 0xDF)
-#define JPEGMarkerApplicationSegment00ID MakeShort(0xFF, 0xE0)
-#define JPEGMarkerApplicationSegment01ID MakeShort(0xFF, 0xE1)
-#define JPEGMarkerApplicationSegment02ID MakeShort(0xFF, 0xE2)
-#define JPEGMarkerApplicationSegment03ID MakeShort(0xFF, 0xE3)
-#define JPEGMarkerApplicationSegment04ID MakeShort(0xFF, 0xE4)
-#define JPEGMarkerApplicationSegment05ID MakeShort(0xFF, 0xE5)
-#define JPEGMarkerApplicationSegment06ID MakeShort(0xFF, 0xE6)
-#define JPEGMarkerApplicationSegment07ID MakeShort(0xFF, 0xE7)
-#define JPEGMarkerApplicationSegment08ID MakeShort(0xFF, 0xE8)
-#define JPEGMarkerApplicationSegment09ID MakeShort(0xFF, 0xE9)
-#define JPEGMarkerApplicationSegment10ID MakeShort(0xFF, 0xEA)
-#define JPEGMarkerApplicationSegment11ID MakeShort(0xFF, 0xEB)
-#define JPEGMarkerApplicationSegment12ID MakeShort(0xFF, 0xEC)
-#define JPEGMarkerApplicationSegment13ID MakeShort(0xFF, 0xED)
-#define JPEGMarkerApplicationSegment14ID MakeShort(0xFF, 0xEE)
-#define JPEGMarkerApplicationSegment15ID MakeShort(0xFF, 0xEF)
-#define JPEGMarkerJPEGExtension00ID MakeShort(0xFF, 0xF0)
-#define JPEGMarkerJPEGExtension01ID MakeShort(0xFF, 0xF1)
-#define JPEGMarkerJPEGExtension02ID MakeShort(0xFF, 0xF2)
-#define JPEGMarkerJPEGExtension03ID MakeShort(0xFF, 0xF3)
-#define JPEGMarkerJPEGExtension04ID MakeShort(0xFF, 0xF4)
-#define JPEGMarkerJPEGExtension05ID MakeShort(0xFF, 0xF5)
-#define JPEGMarkerJPEGExtension06ID MakeShort(0xFF, 0xF6)
-#define JPEGMarkerJPEGExtension07ID MakeShort(0xFF, 0xF7)
-#define JPEGMarkerJPEGExtension08ID MakeShort(0xFF, 0xF8)
-#define JPEGMarkerJPEGExtension09ID MakeShort(0xFF, 0xF9)
-#define JPEGMarkerJPEGExtension10ID MakeShort(0xFF, 0xFA)
-#define JPEGMarkerJPEGExtension11ID MakeShort(0xFF, 0xFB)
-#define JPEGMarkerJPEGExtension12ID MakeShort(0xFF, 0xFC)
-#define JPEGMarkerJPEGExtension13ID MakeShort(0xFF, 0xFD)
-#define JPEGMarkerCommentID MakeShort(0xFF, 0xFE)
-#define JPEGMarkerTemporaryID MakeShort(0xFF, 0x01)
-#define JPEGMarkerReservedID MakeShort(0xFF, 0x02)
+#define JPEGMarkerInvalidID                                             PXInt16Make(0xFF, 0xFF)
+#define JPEGMarkerStartOfFrameHuffmanBaselineDCTID                      PXInt16Make(0xFF, 0xC0)
+#define JPEGMarkerStartOfFrameHuffmanSequentialExtendedDCTID            PXInt16Make(0xFF, 0xC1)
+#define JPEGMarkerStartOfFrameHuffmanProgressiveDCTID                   PXInt16Make(0xFF, 0xC2)
+#define JPEGMarkerStartOfFrameHuffmanSequentialLosslessID               PXInt16Make(0xFF, 0xC3)
+#define JPEGMarkerDefineHuffmanTableListID                              PXInt16Make(0xFF, 0xC4)
+#define JPEGMarkerStartOfFrameHuffmanDifferentialSequentialID           PXInt16Make(0xFF, 0xC5)
+#define JPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCTID       PXInt16Make(0xFF, 0xC6)
+#define JPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequentialID   PXInt16Make(0xFF, 0xC7)
+#define JPEGMarkerStartOfFrameArithmeticJPEGExtensionID                 PXInt16Make(0xFF, 0xC8)
+#define JPEGMarkerStartOfFrameArithmeticExtendedSequentialDCTID         PXInt16Make(0xFF, 0xC9)
+#define JPEGMarkerStartOfFrameArithmeticProgressiveDCTID                  PXInt16Make(0xFF, 0xCA)
+#define JPEGMarkerStartOfFrameArithmeticLosslessSequentialID              PXInt16Make(0xFF, 0xCB)
+#define JPEGMarkerDefineArithmeticCodingID                                PXInt16Make(0xFF, 0xCC)
+#define JPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCTID       PXInt16Make(0xFF, 0xCD)
+#define JPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCTID      PXInt16Make(0xFF, 0xCE)
+#define JPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequentialID  PXInt16Make(0xFF, 0xCF)
+#define JPEGMarkerIntervalTerminationRestart0ID PXInt16Make(0xFF, 0xD0)
+#define JPEGMarkerIntervalTerminationRestart1ID PXInt16Make(0xFF, 0xD1)
+#define JPEGMarkerIntervalTerminationRestart2ID PXInt16Make(0xFF, 0xD2)
+#define JPEGMarkerIntervalTerminationRestart3ID PXInt16Make(0xFF, 0xD3)
+#define JPEGMarkerIntervalTerminationRestart4ID PXInt16Make(0xFF, 0xD4)
+#define JPEGMarkerIntervalTerminationRestart5ID PXInt16Make(0xFF, 0xD5)
+#define JPEGMarkerIntervalTerminationRestart6ID PXInt16Make(0xFF, 0xD6)
+#define JPEGMarkerIntervalTerminationRestart7ID PXInt16Make(0xFF, 0xD7)
+#define JPEGMarkerStartOfImageID              PXInt16Make(0xFF, 0xD8)
+#define JPEGMarkerEndOfImageID            PXInt16Make(0xFF, 0xD9)
+#define JPEGMarkerStartOfScanID           PXInt16Make(0xFF, 0xDA)
+#define JPEGMarkerDefineQuantizationTableListID PXInt16Make(0xFF, 0xDB)
+#define JPEGMarkerDefineNumberOfLinesID PXInt16Make(0xFF, 0xDC)
+#define JPEGMarkerDefineRestartIntervalID             PXInt16Make(0xFF, 0xDD)
+#define JPEGMarkerDefineHierarchicalProgressionID     PXInt16Make(0xFF, 0xDE)
+#define JPEGMarkerExpandReferenceComponentListID      PXInt16Make(0xFF, 0xDF)
+#define JPEGMarkerApplicationSegment00ID PXInt16Make(0xFF, 0xE0)
+#define JPEGMarkerApplicationSegment01ID PXInt16Make(0xFF, 0xE1)
+#define JPEGMarkerApplicationSegment02ID PXInt16Make(0xFF, 0xE2)
+#define JPEGMarkerApplicationSegment03ID PXInt16Make(0xFF, 0xE3)
+#define JPEGMarkerApplicationSegment04ID PXInt16Make(0xFF, 0xE4)
+#define JPEGMarkerApplicationSegment05ID PXInt16Make(0xFF, 0xE5)
+#define JPEGMarkerApplicationSegment06ID PXInt16Make(0xFF, 0xE6)
+#define JPEGMarkerApplicationSegment07ID PXInt16Make(0xFF, 0xE7)
+#define JPEGMarkerApplicationSegment08ID PXInt16Make(0xFF, 0xE8)
+#define JPEGMarkerApplicationSegment09ID PXInt16Make(0xFF, 0xE9)
+#define JPEGMarkerApplicationSegment10ID PXInt16Make(0xFF, 0xEA)
+#define JPEGMarkerApplicationSegment11ID PXInt16Make(0xFF, 0xEB)
+#define JPEGMarkerApplicationSegment12ID PXInt16Make(0xFF, 0xEC)
+#define JPEGMarkerApplicationSegment13ID PXInt16Make(0xFF, 0xED)
+#define JPEGMarkerApplicationSegment14ID PXInt16Make(0xFF, 0xEE)
+#define JPEGMarkerApplicationSegment15ID PXInt16Make(0xFF, 0xEF)
+#define JPEGMarkerJPEGExtension00ID PXInt16Make(0xFF, 0xF0)
+#define JPEGMarkerJPEGExtension01ID PXInt16Make(0xFF, 0xF1)
+#define JPEGMarkerJPEGExtension02ID PXInt16Make(0xFF, 0xF2)
+#define JPEGMarkerJPEGExtension03ID PXInt16Make(0xFF, 0xF3)
+#define JPEGMarkerJPEGExtension04ID PXInt16Make(0xFF, 0xF4)
+#define JPEGMarkerJPEGExtension05ID PXInt16Make(0xFF, 0xF5)
+#define JPEGMarkerJPEGExtension06ID PXInt16Make(0xFF, 0xF6)
+#define JPEGMarkerJPEGExtension07ID PXInt16Make(0xFF, 0xF7)
+#define JPEGMarkerJPEGExtension08ID PXInt16Make(0xFF, 0xF8)
+#define JPEGMarkerJPEGExtension09ID PXInt16Make(0xFF, 0xF9)
+#define JPEGMarkerJPEGExtension10ID PXInt16Make(0xFF, 0xFA)
+#define JPEGMarkerJPEGExtension11ID PXInt16Make(0xFF, 0xFB)
+#define JPEGMarkerJPEGExtension12ID PXInt16Make(0xFF, 0xFC)
+#define JPEGMarkerJPEGExtension13ID PXInt16Make(0xFF, 0xFD)
+#define JPEGMarkerCommentID PXInt16Make(0xFF, 0xFE)
+#define JPEGMarkerTemporaryID PXInt16Make(0xFF, 0x01)
+#define JPEGMarkerReservedID PXInt16Make(0xFF, 0x02)
 
-JPEGMarker ConvertToJPEGMarker(const unsigned short jpegMarker)
+JPEGMarker ConvertToJPEGMarker(const PXInt16U jpegMarker)
 {
     switch(jpegMarker)
     {
@@ -156,7 +155,7 @@ JPEGMarker ConvertToJPEGMarker(const unsigned short jpegMarker)
     }
 }
 
-unsigned short ConvertFromJPEGMarker(const JPEGMarker jpegMarker)
+PXInt16U ConvertFromJPEGMarker(const JPEGMarker jpegMarker)
 {
     switch(jpegMarker)
     {
@@ -253,7 +252,7 @@ void JPEGDestruct(JPEG* const jpeg)
 
 }
 
-PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult JPEGParseToImage(PXImage* const image, PXDataStream* const dataStream)
 {
     JPEG jpeXg;
     JPEG* jpeg = &jpeXg;
@@ -262,7 +261,7 @@ PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStre
 
     // Check Start of Image
     {
-        ClusterShort startBlock;
+        PXInt16UCluster startBlock;
 
         PXDataStreamReadB(dataStream, startBlock.Data, 2u);
 
@@ -287,7 +286,7 @@ PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStre
 
         // Parse info
         {
-            ClusterShort markerData;
+            PXInt16UCluster markerData;
 
             PXDataStreamReadB(dataStream, markerData.Data, 2u);
 
@@ -455,7 +454,6 @@ PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStre
                     PXSize symbolSum = 0;
 
                     // 16 Bytes symbopls
-                    //
                     for(PXSize i = 0; i < 16u; ++i)
                     {
                         unsigned char symbol = 0;
@@ -958,7 +956,7 @@ void generateHuffmanTable(const uint8_t numCodes[16], const uint8_t* values, Bit
 
 
 
-PXActionResult JPEGSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
+PXActionResult JPEGSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream)
 {
     unsigned char isRGB = 1u;
     unsigned char quality = 100u;
@@ -968,8 +966,6 @@ PXActionResult JPEGSerializeFromImage(const Image* const image, PXDataStream* co
     quality = MathLimitCU(quality, 1u, 100u);
     // formula taken from libjpeg
     quality = quality < 50 ? 5000 / quality : 200 - quality * 2;
-
-
 
     // Header Signature
     {

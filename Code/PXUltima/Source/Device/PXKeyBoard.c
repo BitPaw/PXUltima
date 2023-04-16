@@ -1,7 +1,7 @@
 #include "PXKeyBoard.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 #include <stdio.h>
 

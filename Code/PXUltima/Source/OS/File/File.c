@@ -1,6 +1,6 @@
 #include "File.h"
 
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
@@ -262,7 +262,7 @@ FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, cons
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "ELF", 3u))  return FileFormatLinuxExecutableAndLinkable;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "OUT", 3u))  return FileFormatLinuxExecutableAndLinkable;
 
-			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "FNT", 3u))  return FileFormatSpriteFont;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "PXSpriteFont", 3u))  return FileFormatSpriteFont;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "GIF", 3u))  return FileFormatGIF;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "HTM", 3u))  return FileFormatHTML;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "INI", 3u))  return FileFormatINI;

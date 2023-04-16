@@ -1,8 +1,6 @@
 #include "SBPDataChunk.h"
 
-#include <Container/ClusterValue.h>
 #include <OS/Memory/PXMemory.h>
-
 #include <Network/SBP/SBPProtocol.h>
 
 void SBPPackageHeaderCacheConstruct(SBPPackageHeaderCache* const sbpDataCache)
@@ -11,7 +9,7 @@ void SBPPackageHeaderCacheConstruct(SBPPackageHeaderCache* const sbpDataCache)
 
 	MemoryClear(sbpDataCache, sizeof(SBPPackageHeaderCache));
 
-	PXDictionaryConstruct(pxDictionary, sizeof(PXInt8U), sizeof(SBPPackageHeaderChunkIOEvent));
+	PXDictionaryConstruct(pxDictionary, sizeof(PXInt8U), sizeof(SBPPackageHeaderChunkIOEvent), PXDictionaryValueLocalityInternalEmbedded);
 }
 
 void SBPPackageHeaderCacheDestruct(SBPPackageHeaderCache* const sbpDataCache)
@@ -98,7 +96,7 @@ SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* c
 
 			const PXByte* const header = (const PXByte* const)data;
 			const PXSize dataContentSize = dataSize - SBPPackageHeaderCacheHeaderSize;
-			const PXInt16U sizeCurrent = MakeShortLE(header[1], header[2]);
+			const PXInt16U sizeCurrent = PXInt16MakeEndianLittle(header[1], header[2]);
 			const PXInt16U sizeTotal = header + SBPPackageHeaderCacheHeaderSize;
 			const PXBool isComplete = sizeCurrent >= sizeTotal; // Is the package fully
 			//const PXInt8U percentageWhole = (dataContentSize / (float)size) * 100;

@@ -1,7 +1,7 @@
 #ifndef PXMathInclude
 #define PXMathInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #define MathConstantPI 3.1415926535897932384626433832 	// Pi, Archimedes' constant or Ludolph's number
 #define MathConstantE 2.71828182845904523536028747135266249

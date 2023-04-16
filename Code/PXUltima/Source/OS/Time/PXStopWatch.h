@@ -1,7 +1,7 @@
 #ifndef PXStopWatchINCLUDE
 #define PXStopWatchINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Time/PXTime.h>
 
 #ifdef __cplusplus

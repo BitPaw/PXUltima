@@ -1,7 +1,7 @@
 #ifndef ExecutableInclude
 #define ExecutableInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/Thread/PXThread.h>
 

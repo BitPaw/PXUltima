@@ -1,7 +1,6 @@
 #include "YAML.h"
 
 #include <Compiler/PXCompiler.h>
-#include <Container/ClusterValue.h>
 
 YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
 {
@@ -29,8 +28,8 @@ YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
         case '-':
         {
             const unsigned char* data = (unsigned char*)line + 1;
-            const unsigned short checkA = MakeShort('-', '-');
-            const unsigned short checkB = MakeShort(data[0], data[1]);
+            const PXInt16U checkA = PXInt16Make('-', '-');
+            const PXInt16U checkB = PXInt16Make(data[0], data[1]);
             const PXBool isSeperator = checkA == checkB;
 
             if (isSeperator)

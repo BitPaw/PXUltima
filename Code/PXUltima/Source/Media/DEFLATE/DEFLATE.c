@@ -386,20 +386,20 @@ typedef struct LodePNGCompressSettings LodePNGCompressSettings;
 struct LodePNGCompressSettings /*deflate = compress*/
 {
     /*LZ77 related settings*/
-    unsigned btype; /*the block type for LZ (0, 1, 2 or 3, see zlib standard). Should be 2 for proper compression.*/
+    unsigned btype; /*the block type for LZ (0, 1, 2 or 3, see PXZLIB standard). Should be 2 for proper compression.*/
     unsigned use_lz77; /*whether or not to use LZ77. Should be 1 for proper compression.*/
     unsigned windowsize; /*must be a power of two <= 32768. higher compresses more but is slower. Default value: 2048.*/
     unsigned minmatch; /*minimum lz77 length. 3 is normally best, 6 can be better for some PNGs. Default: 0*/
     unsigned nicematch; /*stop searching if >= this length found. Set to 258 for best compression. Default: 128*/
     unsigned lazymatching; /*use lazy matching: better compression but a bit slower. Default: true*/
 
-    /*use custom zlib encoder instead of built in one (default: null)*/
-    unsigned (*custom_zlib)(unsigned char**, PXSize*,
+    /*use custom PXZLIB encoder instead of built in one (default: null)*/
+    unsigned (*custom_PXZLIB)(unsigned char**, PXSize*,
                             const unsigned char*, PXSize,
                             const LodePNGCompressSettings*);
     /*use custom deflate encoder instead of built in one (default: null)
-    if custom_zlib is used, custom_deflate is ignored since only the built in
-    zlib function will call custom_deflate*/
+    if custom_PXZLIB is used, custom_deflate is ignored since only the built in
+    PXZLIB function will call custom_deflate*/
     unsigned (*custom_deflate)(unsigned char**, PXSize*,
                                const unsigned char*, PXSize,
                                const LodePNGCompressSettings*);
@@ -1088,7 +1088,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
     according to RFC 1951 section 3.2.7. Some decoders incorrectly require two. To
     make these work as well ensure there are at least two symbols. The
     Package-Merge code below also doesn't work correctly if there's only one
-    symbol, it'd give it the theoretical 0 bits but in practice zlib wants 1 bit*/
+    symbol, it'd give it the theoretical 0 bits but in practice PXZLIB wants 1 bit*/
     if(numpresent == 0)
     {
         lengths[0] = lengths[1] = 1; /*note that for RFC 1951 section 3.2.7, only lengths[0] = 1 is needed*/
@@ -1486,7 +1486,7 @@ PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream*
     lodePNGCompressSettings.minmatch = 3;
     lodePNGCompressSettings.nicematch = 128;
     lodePNGCompressSettings.lazymatching = 1;
-    lodePNGCompressSettings.custom_zlib = 0;
+    lodePNGCompressSettings.custom_PXZLIB = 0;
     lodePNGCompressSettings.custom_deflate = 0;
     lodePNGCompressSettings.custom_context = 0;
 

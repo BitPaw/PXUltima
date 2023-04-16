@@ -1,7 +1,7 @@
-#ifndef SoundINCLUDE
-#define SoundINCLUDE
+#ifndef PXSoundINCLUDE
+#define PXSoundINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"

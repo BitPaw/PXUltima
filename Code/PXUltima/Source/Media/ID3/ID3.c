@@ -1,7 +1,6 @@
 #include "ID3.h"
 
-#include <Text/PXText.h>
-#include <Container/ClusterValue.h>
+#include <Media/PXText.h>
 
 #define ID3HeaderSignature {'I','D','3'}
 #define ID3Debug 0
@@ -14,81 +13,81 @@ ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID)
 {
     switch(id3v2xFrameTagID)
     {
-        case MakeInt('A', 'E', 'N', 'C'): return AudioEncryption;
-        case MakeInt('A', 'P', 'I', 'C'): return AttachedPicture;
-        case MakeInt('C', 'O', 'M', 'M'): return Comments;
-        case MakeInt('C', 'O', 'M', 'R'): return CommercialFrame;
-        case MakeInt('E', 'N', 'C', 'R'): return EncryptionMethodRegistration;
-        case MakeInt('E', 'Q', 'U', 'A'): return Equalization;
-        case MakeInt('E', 'T', 'C', 'O'): return EventTimingCodes;
-        case MakeInt('G', 'E', 'O', 'B'): return GeneralEncapsulatedObject;
-        case MakeInt('G', 'R', 'I', 'D'): return GroupIdentificationRegistration;
-        case MakeInt('I', 'P', 'L', 'S'): return InvolvedPeopleList;
-        case MakeInt('L', 'I', 'N', 'K'): return LinkedInformation;
-        case MakeInt('M', 'C', 'D', 'I'): return MusicCDIdentifier;
-        case MakeInt('M', 'L', 'L', 'T'): return MPEGLocationLookupTable;
-        case MakeInt('O', 'W', 'N', 'E'): return OwnershipFrame;
-        case MakeInt('P', 'R', 'I', 'V'): return PrivateFrame;
-        case MakeInt('P', 'C', 'N', 'T'): return PlayCounter;
-        case MakeInt('P', 'O', 'P', 'M'): return Popularimeter;
-        case MakeInt('P', 'O', 'S', 'S'): return PositionSynchronisationFrame;
-        case MakeInt('R', 'B', 'U', 'F'): return RecommendedBufferSize;
-        case MakeInt('R', 'V', 'A', 'D'): return RelativeVolumeAdjustment;
-        case MakeInt('R', 'V', 'R', 'B'): return Reverb;
-        case MakeInt('S', 'Y', 'L', 'T'): return SynchronizedLyric;
-        case MakeInt('S', 'Y', 'T', 'C'): return SynchronizedTempocodes;
-        case MakeInt('T', 'A', 'L', 'B'): return Album;
-        case MakeInt('T', 'B', 'P', 'M'): return BeatsPerMinute;
-        case MakeInt('T', 'C', 'O', 'M'): return Composer;
-        case MakeInt('T', 'C', 'O', 'N'): return ContentType;
-        case MakeInt('T', 'C', 'O', 'P'): return CopyrightMessage;
-        case MakeInt('T', 'D', 'A', 'T'): return Date;
-        case MakeInt('T', 'D', 'L', 'Y'): return PlaylistDelay;
-        //case MakeInt('T', 'D', 'T', 'G'): return TaggingTime;
-        case MakeInt('T', 'E', 'N', 'C'): return EncodedBy;
-        case MakeInt('T', 'E', 'X', 'T'): return Lyricist;
-        case MakeInt('T', 'F', 'L', 'T'): return FileType;
-        case MakeInt('T', 'I', 'M', 'E'): return Time;
-        case MakeInt('T', 'I', 'T', '1'): return ContentGroupDescription;
-        case MakeInt('T', 'I', 'T', '2'): return Title;
-        case MakeInt('T', 'I', 'T', '3'): return Subtitle;
-        case MakeInt('T', 'K', 'E', 'Y'): return InitialKey;
-        case MakeInt('T', 'L', 'A', 'N'): return Language;
-        case MakeInt('T', 'L', 'E', 'N'): return Length;
-        case MakeInt('T', 'M', 'E', 'D'): return MediaType;
-        case MakeInt('T', 'O', 'A', 'L'): return OriginalAlbum;
-        case MakeInt('T', 'O', 'F', 'N'): return OriginalFilename;
-        case MakeInt('T', 'O', 'L', 'Y'): return OriginalLyricist;
-        case MakeInt('T', 'O', 'P', 'E'): return OriginalArtist;
-        case MakeInt('T', 'O', 'R', 'Y'): return OriginalReleaseYear;
-        case MakeInt('T', 'O', 'W', 'N'): return FileOwner;
-        case MakeInt('T', 'P', 'E', '1'): return LeadPerformer;
-        case MakeInt('T', 'P', 'E', '2'): return Band;
-        case MakeInt('T', 'P', 'E', '3'): return Conductor;
-        case MakeInt('T', 'P', 'E', '4'): return InterpretedBy;
-        case MakeInt('T', 'P', 'O', 'S'): return PartOfASet;
-        case MakeInt('T', 'P', 'U', 'B'): return Publisher;
-        case MakeInt('T', 'R', 'C', 'K'): return TrackNumber;
-        case MakeInt('T', 'R', 'D', 'A'): return RecordingDates;
-        case MakeInt('T', 'R', 'S', 'N'): return InternetRadioStationName;
-        case MakeInt('T', 'R', 'S', 'O'): return InternetRadioStationOwner;
-        case MakeInt('T', 'S', 'I', 'Z'): return Size;
-        case MakeInt('T', 'S', 'R', 'C'): return InternationalStandardRecordingCode;
-        case MakeInt('T', 'S', 'S', 'E'): return SoftwareHardwaresettingsUsedForEncoding;
-        case MakeInt('T', 'Y', 'E', 'R'): return Year;
-        case MakeInt('T', 'X', 'X', 'X'): return UserDefinedText;
-        case MakeInt('U', 'F', 'I', 'D'): return UniqueFileIdentifier;
-        case MakeInt('U', 'S', 'E', 'R'): return TermsOfUse;
-        case MakeInt('U', 'S', 'L', 'T'): return UnsychronizedLyric;
-        case MakeInt('W', 'C', 'O', 'M'): return CommercialInformation;
-        case MakeInt('W', 'C', 'O', 'P'): return CopyrightLegalInformation;
-        case MakeInt('W', 'O', 'A', 'F'): return OfficialAudioFileWebpage;
-        case MakeInt('W', 'O', 'A', 'R'): return OfficialArtistPerformerWebpage;
-        case MakeInt('W', 'O', 'A', 'S'): return OfficialAudioSourceWebpage;
-        case MakeInt('W', 'O', 'R', 'S'): return InternetRadioStationHomepage;
-        case MakeInt('W', 'P', 'A', 'Y'): return Payment;
-        case MakeInt('W', 'P', 'U', 'B'): return PublishersOfficialWebpage;
-        case MakeInt('W', 'X', 'X', 'X'): return UserDefinedURLLinkFrame;
+        case PXInt32Make('A', 'E', 'N', 'C'): return AudioEncryption;
+        case PXInt32Make('A', 'P', 'I', 'C'): return AttachedPicture;
+        case PXInt32Make('C', 'O', 'M', 'M'): return Comments;
+        case PXInt32Make('C', 'O', 'M', 'R'): return CommercialFrame;
+        case PXInt32Make('E', 'N', 'C', 'R'): return EncryptionMethodRegistration;
+        case PXInt32Make('E', 'Q', 'U', 'A'): return Equalization;
+        case PXInt32Make('E', 'T', 'C', 'O'): return EventTimingCodes;
+        case PXInt32Make('G', 'E', 'O', 'B'): return GeneralEncapsulatedObject;
+        case PXInt32Make('G', 'R', 'I', 'D'): return GroupIdentificationRegistration;
+        case PXInt32Make('I', 'P', 'L', 'S'): return InvolvedPeopleList;
+        case PXInt32Make('L', 'I', 'N', 'K'): return LinkedInformation;
+        case PXInt32Make('M', 'C', 'D', 'I'): return MusicCDIdentifier;
+        case PXInt32Make('M', 'L', 'L', 'T'): return MPEGLocationLookupTable;
+        case PXInt32Make('O', 'W', 'N', 'E'): return OwnershipFrame;
+        case PXInt32Make('P', 'R', 'I', 'V'): return PrivateFrame;
+        case PXInt32Make('P', 'C', 'N', 'T'): return PlayCounter;
+        case PXInt32Make('P', 'O', 'P', 'M'): return Popularimeter;
+        case PXInt32Make('P', 'O', 'S', 'S'): return PositionSynchronisationFrame;
+        case PXInt32Make('R', 'B', 'U', 'F'): return RecommendedBufferSize;
+        case PXInt32Make('R', 'V', 'A', 'D'): return RelativeVolumeAdjustment;
+        case PXInt32Make('R', 'V', 'R', 'B'): return Reverb;
+        case PXInt32Make('S', 'Y', 'L', 'T'): return SynchronizedLyric;
+        case PXInt32Make('S', 'Y', 'T', 'C'): return SynchronizedTempocodes;
+        case PXInt32Make('T', 'A', 'L', 'B'): return Album;
+        case PXInt32Make('T', 'B', 'P', 'M'): return BeatsPerMinute;
+        case PXInt32Make('T', 'C', 'O', 'M'): return Composer;
+        case PXInt32Make('T', 'C', 'O', 'N'): return ContentType;
+        case PXInt32Make('T', 'C', 'O', 'P'): return CopyrightMessage;
+        case PXInt32Make('T', 'D', 'A', 'T'): return Date;
+        case PXInt32Make('T', 'D', 'L', 'Y'): return PlaylistDelay;
+        //case PXInt32Make('T', 'D', 'T', 'G'): return TaggingTime;
+        case PXInt32Make('T', 'E', 'N', 'C'): return EncodedBy;
+        case PXInt32Make('T', 'E', 'X', 'T'): return Lyricist;
+        case PXInt32Make('T', 'F', 'L', 'T'): return FileType;
+        case PXInt32Make('T', 'I', 'M', 'E'): return Time;
+        case PXInt32Make('T', 'I', 'T', '1'): return ContentGroupDescription;
+        case PXInt32Make('T', 'I', 'T', '2'): return Title;
+        case PXInt32Make('T', 'I', 'T', '3'): return Subtitle;
+        case PXInt32Make('T', 'K', 'E', 'Y'): return InitialKey;
+        case PXInt32Make('T', 'L', 'A', 'N'): return Language;
+        case PXInt32Make('T', 'L', 'E', 'N'): return Length;
+        case PXInt32Make('T', 'M', 'E', 'D'): return MediaType;
+        case PXInt32Make('T', 'O', 'A', 'L'): return OriginalAlbum;
+        case PXInt32Make('T', 'O', 'F', 'N'): return OriginalFilename;
+        case PXInt32Make('T', 'O', 'L', 'Y'): return OriginalLyricist;
+        case PXInt32Make('T', 'O', 'P', 'E'): return OriginalArtist;
+        case PXInt32Make('T', 'O', 'R', 'Y'): return OriginalReleaseYear;
+        case PXInt32Make('T', 'O', 'W', 'N'): return FileOwner;
+        case PXInt32Make('T', 'P', 'E', '1'): return LeadPerformer;
+        case PXInt32Make('T', 'P', 'E', '2'): return Band;
+        case PXInt32Make('T', 'P', 'E', '3'): return Conductor;
+        case PXInt32Make('T', 'P', 'E', '4'): return InterpretedBy;
+        case PXInt32Make('T', 'P', 'O', 'S'): return PartOfASet;
+        case PXInt32Make('T', 'P', 'U', 'B'): return Publisher;
+        case PXInt32Make('T', 'R', 'C', 'K'): return TrackNumber;
+        case PXInt32Make('T', 'R', 'D', 'A'): return RecordingDates;
+        case PXInt32Make('T', 'R', 'S', 'N'): return InternetRadioStationName;
+        case PXInt32Make('T', 'R', 'S', 'O'): return InternetRadioStationOwner;
+        case PXInt32Make('T', 'S', 'I', 'Z'): return Size;
+        case PXInt32Make('T', 'S', 'R', 'C'): return InternationalStandardRecordingCode;
+        case PXInt32Make('T', 'S', 'S', 'E'): return SoftwareHardwaresettingsUsedForEncoding;
+        case PXInt32Make('T', 'Y', 'E', 'R'): return Year;
+        case PXInt32Make('T', 'X', 'X', 'X'): return UserDefinedText;
+        case PXInt32Make('U', 'F', 'I', 'D'): return UniqueFileIdentifier;
+        case PXInt32Make('U', 'S', 'E', 'R'): return TermsOfUse;
+        case PXInt32Make('U', 'S', 'L', 'T'): return UnsychronizedLyric;
+        case PXInt32Make('W', 'C', 'O', 'M'): return CommercialInformation;
+        case PXInt32Make('W', 'C', 'O', 'P'): return CopyrightLegalInformation;
+        case PXInt32Make('W', 'O', 'A', 'F'): return OfficialAudioFileWebpage;
+        case PXInt32Make('W', 'O', 'A', 'R'): return OfficialArtistPerformerWebpage;
+        case PXInt32Make('W', 'O', 'A', 'S'): return OfficialAudioSourceWebpage;
+        case PXInt32Make('W', 'O', 'R', 'S'): return InternetRadioStationHomepage;
+        case PXInt32Make('W', 'P', 'A', 'Y'): return Payment;
+        case PXInt32Make('W', 'P', 'U', 'B'): return PublishersOfficialWebpage;
+        case PXInt32Make('W', 'X', 'X', 'X'): return UserDefinedURLLinkFrame;
 
         default:
             return ID3v2xFrameTagInvalid;
@@ -213,7 +212,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const pxDataStream)
 
             // read Size
             {
-                ClusterInt sizeCluster;
+                PXInt32UCluster sizeCluster;
 
                 PXDataStreamReadB(pxDataStream, sizeCluster.Data, 4u);
 
@@ -251,7 +250,7 @@ PXActionResult ID3Parse(ID3* const id3, PXDataStream* const pxDataStream)
                     while(pxDataStream->DataCursor < sizeOfDataSegment) // until the offset is reached
                     {
                         // Read 4 byte indexes
-                        ClusterInt indentifier;
+                        PXInt32UCluster indentifier;
                         PXInt32U frameSize = 0;
                         PXInt16U frameFlags = 0;
 

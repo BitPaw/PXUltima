@@ -1,16 +1,16 @@
-#include "Model.h"
+#include "PXModel.h"
 
 #include <File/PXDataStream.h>
 #include <OS/Memory/PXMemory.h>
-#include <Text/PXText.h>
-#include <Media/OBJ/OBJ.h>
+#include <Media/PXText.h>
+#include <Media/Wavefront/PXWavefront.h>
 
-void ModelConstruct(PXModel* const model)
+void PXModelConstruct(PXModel* const model)
 {
 	MemoryClear(model, sizeof(PXModel));
 }
 
-void ModelDestruct(PXModel* const model)
+void PXModelDestruct(PXModel* const model)
 {
 
 }
@@ -95,7 +95,7 @@ PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMater
     return PXYes;
 }
 
-unsigned char ModelSegmentsAmount(const PXModel* const model)
+unsigned char PXModelSegmentsAmount(const PXModel* const model)
 {
     if (!model->Data) // Has data
     {
@@ -105,19 +105,19 @@ unsigned char ModelSegmentsAmount(const PXModel* const model)
 	return *(PXAdress)model->Data;
 }
 
-void* ModelSegmentsAdressGet(const PXModel* const model, const PXSize index)
+void* PXModelSegmentsAdressGet(const PXModel* const model, const PXSize index)
 {
     unsigned char* ancer = (unsigned char*)model->Data + 1 + (index * (sizeof(char) + sizeof(int) * 2u));
 
     return ancer;
 }
 
-void ModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegment* const meshSegment)
+void PXModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegment* const meshSegment)
 {
     PXDataStream dataStream;
 
     {
-        void* const segmentAdress = ModelSegmentsAdressGet(model, index);
+        void* const segmentAdress = PXModelSegmentsAdressGet(model, index);
         PXDataStreamFromExternal(&dataStream, segmentAdress, -1);
     }
 
@@ -128,9 +128,9 @@ void ModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegmen
 	meshSegment->VertexData = model->DataVertexList;
 }
 
-void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const unsigned int renderSize, const unsigned int renderMaterial)
+void PXModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const unsigned int renderSize, const unsigned int renderMaterial)
 {
-    const unsigned char amount = ModelSegmentsAmount(model);
+    const unsigned char amount = PXModelSegmentsAmount(model);
     const unsigned char segmentID = amount + 1u;
 
     *(PXAdress)model->Data = segmentID;
@@ -138,7 +138,7 @@ void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const
     PXDataStream dataStream;
 
     {
-        void* const segmentAdress = ModelSegmentsAdressGet(model, segmentID-1u);
+        void* const segmentAdress = PXModelSegmentsAdressGet(model, segmentID-1u);
         PXDataStreamFromExternal(&dataStream, segmentAdress, -1);
     }
 
@@ -148,28 +148,28 @@ void ModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const
 
 }
 
-PXSize ModelVertexDataStride(const PXModel* const model)
+PXSize PXModelVertexDataStride(const PXModel* const model)
 {
     return sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
 }
 
-PXActionResult ModelLoadA(PXModel* const model, const char* const filePath)
+PXActionResult PXModelLoadA(PXModel* const model, const char* const filePath)
 {
 	wchar_t filePathW[PathMaxSize];
 
 	PXTextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
 
-	PXActionResult actionResult = ModelLoadW(model, filePathW);
+	PXActionResult actionResult = PXModelLoadW(model, filePathW);
 
 	return actionResult;
 }
 
-PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
+PXActionResult PXModelLoadW(PXModel* const model, const wchar_t* const filePath)
 {
     PXDataStream dataStream;
 
     PXDataStreamConstruct(&dataStream);
-    ModelConstruct(model);
+    PXModelConstruct(model);
 
     {
         const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
@@ -179,7 +179,7 @@ PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
 
     {
         const FileFormatExtension modelFileFormat = FilePathExtensionDetectTryW(filePath, PathMaxSize);
-        const PXActionResult fileParsingResult = ModelLoadD(model, &dataStream, modelFileFormat);
+        const PXActionResult fileParsingResult = PXModelLoadD(model, &dataStream, modelFileFormat);
 
         PXActionExitOnSuccess(fileParsingResult);
 
@@ -190,10 +190,11 @@ PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
         {
             const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
 
-            fileGuessResult = ModelLoadD(model, &dataStream, imageFileFormat);
+            fileGuessResult = PXModelLoadD(model, &dataStream, imageFileFormat);
 
             fileFormatID++;
-        } while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
+        } 
+        while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
         PXDataStreamDestruct(&dataStream);
 
@@ -201,7 +202,7 @@ PXActionResult ModelLoadW(PXModel* const model, const wchar_t* const filePath)
     }
 }
 
-PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType)
+PXActionResult PXModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType)
 {
     PXDataStream modelCompileCache;
 
@@ -225,8 +226,8 @@ PXActionResult ModelLoadD(PXModel* const model, PXDataStream* const fileStream, 
         }*/
         case FileFormatOBJ:
         {
-            modelCompilerFunction = OBJFileCompile;
-            modelParserFunction = OBJParseToModel;
+            modelCompilerFunction = PXWavefrontFileCompile;
+            modelParserFunction = PXWavefrontParseToModel;
             break;
         }
    /*     case FileFormatPLY:

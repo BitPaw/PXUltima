@@ -149,7 +149,7 @@ void PXSBPPackageProcessorConstruct(PXSBPPackageProcessor* const pxSBPPackagePro
 	}
 	//-------------------------------------------------------------------------
 
-	PXDictionaryConstruct(&pxSBPPackageProcessor->ChannalEntryLookup, sizeof(PXInt8U), sizeof(SBPPackageHeader));
+	PXDictionaryConstruct(&pxSBPPackageProcessor->ChannalEntryLookup, sizeof(PXInt8U), sizeof(SBPPackageHeader), PXDictionaryValueLocalityInternalEmbedded);
 
 	pxSBPPackageProcessor->Owner = PXNull;
 }

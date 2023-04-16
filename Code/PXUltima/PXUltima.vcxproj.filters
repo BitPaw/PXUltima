@@ -27,9 +27,6 @@
     <ClInclude Include="Source\Container\BinaryTree\BinaryTree.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Container\ClusterValue.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Container\Dictionary\PXDictionary.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -54,7 +51,7 @@
     <ClInclude Include="Source\OS\Error\PXActionResult.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Event\Event.h">
+    <ClInclude Include="Source\Event\PXEvent.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\File\Endian.h">
@@ -78,7 +75,7 @@
     <ClInclude Include="Source\Media\AVI\AVI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\BMP\BMP.h">
+    <ClInclude Include="Source\Media\Bitmap\PXBitmap.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\CRC32\CRC32.h">
@@ -99,7 +96,7 @@
     <ClInclude Include="Source\Media\FMT\FMT.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\FNT\FNT.h">
+    <ClInclude Include="Source\Media\SpriteFont\PXSpriteFont.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\GIF\GIF.h">
@@ -135,7 +132,7 @@
     <ClInclude Include="Source\Media\MTL\MTL.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\OBJ\OBJ.h">
+    <ClInclude Include="Source\Media\Wavefront\PXWavefront.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\OGG\OGG.h">
@@ -147,7 +144,7 @@
     <ClInclude Include="Source\Media\PLY\PLY.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\PNG\PNG.h">
+    <ClInclude Include="Source\Media\PNG\PXPNG.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\QOI\QOI.h">
@@ -192,19 +189,16 @@
     <ClInclude Include="Source\Media\XingInfo\XingInfo.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\ZLIB\ZLIB.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Media\Color.h">
+    <ClInclude Include="Source\Media\PXColor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\PXFont.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\Image.h">
+    <ClInclude Include="Source\Media\PXImage.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\Model.h">
+    <ClInclude Include="Source\Media\PXModel.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\PXSound.h">
@@ -240,7 +234,7 @@
     <ClInclude Include="Source\OS\Processor\PXProcessor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Text\PXText.h">
+    <ClInclude Include="Source\Media\PXText.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Time\PXTime.h">
@@ -258,7 +252,7 @@
     <ClInclude Include="Source\Network\SBP\SBPProtocol.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\Type.h">
+    <ClInclude Include="Source\Media\PXType.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Compiler\PXCompiler.h">
@@ -285,7 +279,7 @@
     <ClInclude Include="Source\OS\Graphic\Vulcan\Vulcan.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphic\SoftwareRender\SoftwareRender.h">
+    <ClInclude Include="Source\Graphic\SoftwareRender\PXSoftwareRender.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\CSS\CSS.h">
@@ -444,6 +438,9 @@
     <ClInclude Include="Source\Math\PXCollision.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Media\ZLIB\PXZLIB.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\OS\Thread\PXLock.c">
@@ -479,7 +476,7 @@
     <ClCompile Include="Source\OS\Error\PXActionResult.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Event\Event.c">
+    <ClCompile Include="Source\Event\PXEvent.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\File\Endian.c">
@@ -503,7 +500,7 @@
     <ClCompile Include="Source\Media\AVI\AVI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\BMP\BMP.c">
+    <ClCompile Include="Source\Media\Bitmap\PXBitmap.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\CRC32\CRC32.c">
@@ -524,7 +521,7 @@
     <ClCompile Include="Source\Media\FMT\FMT.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\FNT\FNT.c">
+    <ClCompile Include="Source\Media\SpriteFont\PXSpriteFont.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\GIF\GIF.c">
@@ -560,7 +557,7 @@
     <ClCompile Include="Source\Media\MTL\MTL.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\OBJ\OBJ.c">
+    <ClCompile Include="Source\Media\Wavefront\PXWavefront.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\OGG\OGG.c">
@@ -572,7 +569,7 @@
     <ClCompile Include="Source\Media\PLY\PLY.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\PNG\PNG.c">
+    <ClCompile Include="Source\Media\PNG\PXPNG.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\QOI\QOI.c">
@@ -617,19 +614,16 @@
     <ClCompile Include="Source\Media\XingInfo\XingInfo.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\ZLIB\ZLIB.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Media\Color.c">
+    <ClCompile Include="Source\Media\PXColor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\PXFont.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\Image.c">
+    <ClCompile Include="Source\Media\PXImage.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\Model.c">
+    <ClCompile Include="Source\Media\PXModel.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\PXSound.c">
@@ -668,7 +662,7 @@
     <ClCompile Include="Source\OS\Processor\PXProcessor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Text\PXText.c">
+    <ClCompile Include="Source\Media\PXText.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Time\PXTime.c">
@@ -686,7 +680,7 @@
     <ClCompile Include="Source\Network\SBP\SBPProtocol.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\Type.c">
+    <ClCompile Include="Source\Media\PXType.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Compiler\PXCompiler.c">
@@ -710,7 +704,7 @@
     <ClCompile Include="Source\OS\Graphic\Vulcan\Vulcan.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\SoftwareRender\SoftwareRender.c">
+    <ClCompile Include="Source\Graphic\SoftwareRender\PXSoftwareRender.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Graphic\OpenGL\OpenGL.c">
@@ -867,6 +861,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Math\PXCollision.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Media\ZLIB\PXZLIB.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

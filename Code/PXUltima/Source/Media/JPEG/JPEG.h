@@ -1,10 +1,10 @@
 #ifndef JPEGInclude
 #define JPEGInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 
 #define JPEGQuantizationTableLuminanceIndex 0
 #define JPEGQuantizationTableChrominanceIndex 1
@@ -175,16 +175,16 @@ extern "C"
 	JPEG;
 
 
-	static JPEGMarker ConvertToJPEGMarker(const unsigned short jpegMarker);
-	static unsigned short ConvertFromJPEGMarker(const JPEGMarker jpegMarker);
+	PXPrivate JPEGMarker ConvertToJPEGMarker(const PXInt16U jpegMarker);
+	PXPrivate PXInt16U ConvertFromJPEGMarker(const JPEGMarker jpegMarker);
 
 	PXPublic void JPEGConstruct(JPEG* const jpeg);
 	PXPublic void JPEGDestruct(JPEG* const jpeg);
 
 	PXPublic PXSize JPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 	
-	PXPublic PXActionResult JPEGParseToImage(Image* const image, PXDataStream* const dataStream);
-	PXPublic PXActionResult JPEGSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult JPEGParseToImage(PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult JPEGSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

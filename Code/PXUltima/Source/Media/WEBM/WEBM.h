@@ -1,7 +1,7 @@
 #ifndef WEBMInclude
 #define WEBMInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
 

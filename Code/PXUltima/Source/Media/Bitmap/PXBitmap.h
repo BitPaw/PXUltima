@@ -1,7 +1,7 @@
-#ifndef BMPInclude
-#define BMPInclude
+#ifndef PXBitmapINCLUDE
+#define PXBitmapINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 
@@ -11,35 +11,35 @@ extern "C"
 #endif
 
 #ifndef Image_
-	typedef struct Image_ Image;
+	typedef struct PXImage_ PXImage;
 #endif
 
-    typedef enum BMPType_
+    typedef enum PXBitmapType_
     {
-        BMPInvalid,    
-        BMPWindows,					// [BM] Windows 3.1x, 95, NT, ... etc.
-        BMPOS2StructBitmapArray,	// [BA] OS/2 struct bitmap array        
-        BMPOS2StructColorIcon,		// [CI] OS/2 struct color icon       
-        BMPOS2ConstColorPointer,	// [CP] OS/2 const color pointer       
-        BMPOS2StructIcon,			// [IC] OS/2 struct icon       
-        BMPOS2Pointer				// [PT] OS/2 pointer
+        PXBitmapInvalid,
+        PXBitmapWindows,					// [BM] Windows 3.1x, 95, NT, ... etc.
+        PXBitmapOS2StructBitmapArray,	// [BA] OS/2 struct bitmap array        
+        PXBitmapOS2StructColorIcon,		// [CI] OS/2 struct color icon       
+        PXBitmapOS2ConstColorPointer,	// [CP] OS/2 const color pointer       
+        PXBitmapOS2StructIcon,			// [IC] OS/2 struct icon       
+        PXBitmapOS2Pointer				// [PT] OS/2 pointer
     }
-	BMPType;
+	PXBitmapType;
 
 	// DIB header (bitmap information header) - Type / Version
-	typedef enum BMPInfoHeaderType_
+	typedef enum PXBitmapInfoHeaderType_
 	{
-		BMPHeaderUnkownOrInvalid,
-		BMPHeaderBitMapCoreHeader, 	// [12-Bytes] Windows 2.0 or later		
-		BMPHeaderOS21XBitMapHeader,  // [12-Bytes] OS/2 1.x		
-		BMPHeaderOS22XBitMapHeader,  // [16-Bytes] This variant of the previous header contains only the first 16 bytes and the remaining bytes are assumed to be zero values.	
-		BMPHeaderBitMapInfoHeader, 	// [40-Bytes] Windows NT, 3.1x or later		
-		BMPHeaderBitMapV2InfoHeader, // [52-Bytes] Undocumented 
-		BMPHeaderBitMapV3InfoHeader, // [56-Bytes] Not officially documented, but this documentation was posted on Adobe's forums,	
-		BMPHeaderBitMapV4Header, 	// [108-Bytes] Windows NT 4.0, 95 or later 
-		BMPHeaderBitMapV5Header 		// [124-Bytes] Windows NT 5.0, 98 or later 
+		PXBitmapHeaderUnkownOrInvalid,
+		PXBitmapHeaderBitMapCoreHeader, 	// [12-Bytes] Windows 2.0 or later		
+		PXBitmapHeaderOS21XBitMapHeader,  // [12-Bytes] OS/2 1.x		
+		PXBitmapHeaderOS22XBitMapHeader,  // [16-Bytes] This variant of the previous header contains only the first 16 bytes and the remaining bytes are assumed to be zero values.	
+		PXBitmapHeaderBitMapInfoHeader, 	// [40-Bytes] Windows NT, 3.1x or later		
+		PXBitmapHeaderBitMapV2InfoHeader, // [52-Bytes] Undocumented 
+		PXBitmapHeaderBitMapV3InfoHeader, // [56-Bytes] Not officially documented, but this documentation was posted on Adobe's forums,	
+		PXBitmapHeaderBitMapV4Header, 	// [108-Bytes] Windows NT 4.0, 95 or later 
+		PXBitmapHeaderBitMapV5Header 		// [124-Bytes] Windows NT 5.0, 98 or later 
 	}
-	BMPInfoHeaderType;
+	PXBitmapInfoHeaderType;
 
 	typedef struct BitMapInfoHeader_
 	{
@@ -66,7 +66,7 @@ extern "C"
 	}
 	OS22XBitMapHeader;
 
-	typedef struct BMPInfoHeader_
+	typedef struct PXBitmapInfoHeader_
 	{
 		//---<Shared>---
 		PXInt32U HeaderSize; // Size of this header, in bytes(40)
@@ -85,21 +85,21 @@ extern "C"
 		}
 		ExtendedInfo;
 	}
-	BMPInfoHeader;
+	PXBitmapInfoHeader;
 	   
-	typedef struct BMP_
+	typedef struct PXBitmap_
 	{
-		BMPType Type;
+		PXBitmapType Type;
 
-		BMPInfoHeaderType InfoHeaderType;
-		BMPInfoHeader InfoHeader;
+		PXBitmapInfoHeaderType InfoHeaderType;
+		PXBitmapInfoHeader InfoHeader;
 
 		PXSize PixelDataSize;
 		void* PixelData;
 	}
-	BMP;
+	PXBitmap;
 
-	typedef struct BMPImageDataLayout_
+	typedef struct PXBitmapImageDataLayout_
 	{
 		PXSize ImageSize;
 		PXSize RowImageDataSize;
@@ -107,30 +107,30 @@ extern "C"
 		PXSize RowFullSize;
 		PXSize RowAmount;
 	}
-	BMPImageDataLayout;
+	PXBitmapImageDataLayout;
 
 	//---<Private Functions>------------------------------------------------------
-	PXPrivate BMPType ConvertToBMPType(const unsigned short bmpTypeID);
-	PXPrivate unsigned short ConvertFromBMPType(const BMPType headerType);
+	PXPrivate PXBitmapType ConvertToPXBitmapType(const unsigned short bmpTypeID);
+	PXPrivate unsigned short ConvertFromPXBitmapType(const PXBitmapType headerType);
 
-	PXPrivate BMPInfoHeaderType ConvertToBMPInfoHeaderType(const unsigned int infoHeaderType);
-	PXPrivate unsigned int ConvertFromBMPInfoHeaderType(const BMPInfoHeaderType infoHeaderType);
+	PXPrivate PXBitmapInfoHeaderType ConvertToPXBitmapInfoHeaderType(const unsigned int infoHeaderType);
+	PXPrivate unsigned int ConvertFromPXBitmapInfoHeaderType(const PXBitmapInfoHeaderType infoHeaderType);
 	//----------------------------------------------------------------------------
 
 	//---<Public Functions--------------------------------------------------------
-	PXPublic void BMPConstruct(BMP* const bmp);
-	PXPublic void BMPDestruct(BMP* const bmp);
+	PXPublic void PXBitmapConstruct(PXBitmap* const bmp);
+	PXPublic void PXBitmapDestruct(PXBitmap* const bmp);
 
 	// Calculate information about the layout how the raw image data is stored.
 	// There will be "amount of vertical rows", and "pixeldata" + "padding" .
-	PXPublic void BMPImageDataLayoutCalculate(BMPImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
+	PXPublic void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
 
 	//----------------------------------------------------------------------------
-	PXPublic PXSize BMPFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
+	PXPublic PXSize PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-	PXPublic PXActionResult BMPParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult PXBitmapParseToImage(PXImage* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult BMPSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

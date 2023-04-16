@@ -1,7 +1,7 @@
 #ifndef PXProcessINCLUDE
 #define PXProcessINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/Time/PXTime.h>
 

@@ -1,7 +1,7 @@
 #ifndef MonitorInclude
 #define MonitorInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/System/OSVersion.h>
 
 #if OSUnix

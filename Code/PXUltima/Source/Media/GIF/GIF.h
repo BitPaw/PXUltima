@@ -1,10 +1,10 @@
 #ifndef GIFInclude
 #define GIFInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus
@@ -44,9 +44,9 @@ extern "C"
 
 	PXPublic PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult GIFParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult GIFSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult GIFSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

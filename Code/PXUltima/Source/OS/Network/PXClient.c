@@ -1,7 +1,7 @@
 #include "PXClient.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Event/Event.h>
+#include <Event/PXEvent.h>
 
 PXActionResult PXClientConstruct(PXClient* const pxClient)
 {

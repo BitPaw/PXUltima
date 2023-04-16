@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <wchar.h>
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Error/PXActionResult.h>
 

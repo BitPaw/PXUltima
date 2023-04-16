@@ -1,7 +1,7 @@
 #ifndef PXWindowINCLUDE
 #define PXWindowINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/System/OSVersion.h>
 
@@ -10,7 +10,6 @@
 #include <GL/glx.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
-
 
 typedef XID PXWindowID;// XID is PXWindow
 typedef GLXContext OpenGLConextID;

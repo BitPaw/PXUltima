@@ -309,7 +309,7 @@ PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream)
     return PXActionSuccessful;
 }
 
-PXActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream)
+PXActionResult TIFFParseToImage(PXImage* const image, PXDataStream* const dataStream)
 {
     TIFF tiff;
 
@@ -318,7 +318,7 @@ PXActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStre
     return PXActionInvalid;
 }
 
-PXActionResult TIFFSerializeFromImage(const Image* const image, PXDataStream* const dataStream)
+PXActionResult TIFFSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream)
 {
     return PXActionInvalid;
 }

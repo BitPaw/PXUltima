@@ -1,37 +1,36 @@
-#include "FNT.h"
+#include "PXSpriteFont.h"
 
 #include <stdio.h>
 
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <File/PXDataStream.h>
-#include <Media/Image.h>
-
+#include <Media/PXImage.h>
 #include <OS/Memory/PXMemory.h>
 
-void PXFNTConstruct(PXFNT* const pxFNT)
+void PXSpriteFontConstruct(PXSpriteFont* const pxPXSpriteFont)
 {
-	MemoryClear(pxFNT, sizeof(PXFNT));
+	MemoryClear(pxPXSpriteFont, sizeof(PXSpriteFont));
 }
 
-void PXFNTDestruct(PXFNT* const pxFNT)
+void PXSpriteFontDestruct(PXSpriteFont* const pxPXSpriteFont)
 {
 
 }
 
-FNTCharacter* FNTGetCharacter(PXFNT* fnt, const wchar_t character)
+PXSpriteFontCharacter* PXSpriteFontGetCharacter(PXSpriteFont* PXSpriteFont, const wchar_t character)
 {
-	if(!fnt)
+	if(!PXSpriteFont)
 	{
 		return 0;
 	}
 
-	for (PXSize pageIndex = 0; pageIndex < fnt->FontPageListSize; ++pageIndex)
+	for (PXSize pageIndex = 0; pageIndex < PXSpriteFont->FontPageListSize; ++pageIndex)
 	{
-		const FNTPage* page = &fnt->FontPageList[pageIndex];
+		const PXSpriteFontPage* page = &PXSpriteFont->FontPageList[pageIndex];
 
 		for (PXSize i = 0; i < page->CharacteListSize; ++i)
 		{
-			const FNTCharacter* bitMapFontCharacter = &page->CharacteList[i];
+			const PXSpriteFontCharacter* bitMapFontCharacter = &page->CharacteList[i];
 			const PXInt32U target = bitMapFontCharacter->ID;
 			const PXBool isSameCharacter = target == character;
 
@@ -45,22 +44,22 @@ FNTCharacter* FNTGetCharacter(PXFNT* fnt, const wchar_t character)
 	return 0;
 }
 
-PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
+PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXDataStream* const pxDataStream)
 {
-	FNTPage* currentPage = 0;
+	PXSpriteFontPage* currentPage = 0;
 	PXSize characterIndex = 0;
 
-	PXFNTConstruct(fnt);
+	PXSpriteFontConstruct(PXSpriteFont);
 
 	while (!PXDataStreamIsAtEnd(pxDataStream))
 	{
 		const char* currentPosition = (char*)PXDataStreamCursorPosition(pxDataStream);
 		const PXSize currentReadableBytes = PXDataStreamRemainingSize(pxDataStream);
-		const FNTLineType lineType = PeekLineType(currentPosition, currentReadableBytes);
+		const PXSpriteFontLineType lineType = PeekLineType(currentPosition, currentReadableBytes);
 
 		switch (lineType)
 		{
-			case FNTLineInfo:
+			case PXSpriteFontLineInfo:
 			{
 				const char parsingData[] = "face=\0size=\0bold=\0italic\0charset=\0unicode=\0stretchH=\0smooth=\0aa=\0padding=\0spacing=\0";
 				const char* indexPosition[11];
@@ -90,22 +89,22 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 					values
 				);
 
-				PXTextCopyA(indexPosition[0] + 1, FontNameSize, fnt->Info.Name, FontNameSize);
-				PXTextToIntA(indexPosition[1], 5, &fnt->Info.Size);
-				PXTextToBoolA(indexPosition[2], 5, &fnt->Info.Bold);
-				PXTextToBoolA(indexPosition[3], 5, &fnt->Info.Italic);
-				PXTextCopyA(indexPosition[4] + 1, CharSetNameSize, fnt->Info.CharSet, CharSetNameSize);
-				PXTextToBoolA(indexPosition[5], 5, &fnt->Info.Unicode);
-				PXTextToIntA(indexPosition[6], 5, &fnt->Info.StretchH);
-				PXTextToBoolA(indexPosition[7], 5, &fnt->Info.Smooth);
-				PXTextToBoolA(indexPosition[8], 5, &fnt->Info.Supersampling);
+				PXTextCopyA(indexPosition[0] + 1, PXSpriteFontFontNameSize, PXSpriteFont->Info.Name, PXSpriteFontFontNameSize);
+				PXTextToIntA(indexPosition[1], 5, &PXSpriteFont->Info.Size);
+				PXTextToBoolA(indexPosition[2], 5, &PXSpriteFont->Info.Bold);
+				PXTextToBoolA(indexPosition[3], 5, &PXSpriteFont->Info.Italic);
+				PXTextCopyA(indexPosition[4] + 1, PXSpriteFontCharSetNameSize, PXSpriteFont->Info.CharSet, PXSpriteFontCharSetNameSize);
+				PXTextToBoolA(indexPosition[5], 5, &PXSpriteFont->Info.Unicode);
+				PXTextToIntA(indexPosition[6], 5, &PXSpriteFont->Info.StretchH);
+				PXTextToBoolA(indexPosition[7], 5, &PXSpriteFont->Info.Smooth);
+				PXTextToBoolA(indexPosition[8], 5, &PXSpriteFont->Info.Supersampling);
 
-				PXTextTerminateBeginFromFirstA(fnt->Info.Name, FontNameSize, '\"');
-				PXTextTerminateBeginFromFirstA(fnt->Info.CharSet, CharSetNameSize, '\"');
+				PXTextTerminateBeginFromFirstA(PXSpriteFont->Info.Name, PXSpriteFontFontNameSize, '\"');
+				PXTextTerminateBeginFromFirstA(PXSpriteFont->Info.CharSet, PXSpriteFontCharSetNameSize, '\"');
 
 				break;
 			}
-			case FNTLineCommon:
+			case PXSpriteFontLineCommon:
 			{
 				const char parsingData[] = "lineHeight=\0base=\0scaleW=\0scaleH=\0pages=\0packed=\0";
 				const char* indexPosition[6];
@@ -132,28 +131,28 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				const PXSize readableSize = PXDataStreamRemainingSize(pxDataStream);
 
-				PXTextToIntA(indexPosition[0], readableSize, &fnt->CommonData.LineHeight);
-				PXTextToIntA(indexPosition[1], readableSize, &fnt->CommonData.Base);
-				PXTextToIntA(indexPosition[2], readableSize, &fnt->CommonData.ScaleWidth);
-				PXTextToIntA(indexPosition[3], readableSize, &fnt->CommonData.ScaleHeight);
-				PXTextToIntA(indexPosition[4], readableSize, &fnt->CommonData.AmountOfPages);
-				PXTextToBoolA(indexPosition[5], readableSize, &fnt->CommonData.Packed);
+				PXTextToIntA(indexPosition[0], readableSize, &PXSpriteFont->CommonData.LineHeight);
+				PXTextToIntA(indexPosition[1], readableSize, &PXSpriteFont->CommonData.Base);
+				PXTextToIntA(indexPosition[2], readableSize, &PXSpriteFont->CommonData.ScaleWidth);
+				PXTextToIntA(indexPosition[3], readableSize, &PXSpriteFont->CommonData.ScaleHeight);
+				PXTextToIntA(indexPosition[4], readableSize, &PXSpriteFont->CommonData.AmountOfPages);
+				PXTextToBoolA(indexPosition[5], readableSize, &PXSpriteFont->CommonData.Packed);
 
 				// Allocate
 				{
-					const PXSize size = fnt->CommonData.AmountOfPages;
-					const PXSize sizeInBytes = sizeof(FNTPage) * size;
-					FNTPage* pageList = MemoryAllocateClear(sizeInBytes);
+					const PXSize size = PXSpriteFont->CommonData.AmountOfPages;
+					const PXSize sizeInBytes = sizeof(PXSpriteFontPage) * size;
+					PXSpriteFontPage* pageList = MemoryAllocateClear(sizeInBytes);
 
-					fnt->FontPageListSize = size;
-					fnt->FontPageList = pageList;
+					PXSpriteFont->FontPageListSize = size;
+					PXSpriteFont->FontPageList = pageList;
 
 					currentPage = pageList;
 				}
 
 				break;
 			}
-			case FNTLinePage:
+			case PXSpriteFontLinePage:
 			{
 				const char parsingData[] = "id=\0file=";
 				const char* indexPosition[2];
@@ -180,26 +179,26 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 				// Loading Image
 				{
 					char fullPath[PathMaxSize];
-					char pageFileName[FNTPageFileNameSize];
+					char pageFileName[PXSpriteFontPageFileNameSize];
 
 					PXTextCopyA
 					(
 						indexPosition[1] + 1,
 						PXDataStreamRemainingSize(pxDataStream),
 						pageFileName,
-						FNTPageFileNameSize - 1
+						PXSpriteFontPageFileNameSize - 1
 					);
 
-					PXTextTerminateBeginFromFirstA(pageFileName, FNTPageFileNameSize, '\"');
+					PXTextTerminateBeginFromFirstA(pageFileName, PXSpriteFontPageFileNameSize, '\"');
 
 					FilePathSwapFileNameA(pxDataStream->FilePath, fullPath, pageFileName);
 
-					const PXActionResult actionResult = ImageLoadA(&currentPage->FontTextureMap, fullPath);
+					const PXActionResult actionResult = PXImageLoadA(&currentPage->FontTextureMap, fullPath);
 				}
 
 				break;
 			}
-			case FNTLineCharacterCount:
+			case PXSpriteFontLineCharacterCount:
 			{
 				const char countText[] = "count=";
 
@@ -224,7 +223,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 						&size
 					);
 
-					const PXSize sizeInBytes = sizeof(FNTCharacter) * size;
+					const PXSize sizeInBytes = sizeof(PXSpriteFontCharacter) * size;
 
 					currentPage->CharacteListSize = size;
 					currentPage->CharacteList = MemoryAllocateClear(sizeInBytes);
@@ -234,16 +233,16 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 
 				break;
 			}
-			case FNTLineCharacterDefinition:
+			case PXSpriteFontLineCharacterDefinition:
 			{
 				const unsigned char acessCharacterOutofBounce = characterIndex >= currentPage->CharacteListSize;
 
 				if (acessCharacterOutofBounce)
 				{
-					const PXSize sizeCurrent = currentPage->CharacteListSize * sizeof(FNTPage);
-					const PXSize sizeNew = currentPage->CharacteListSize * sizeof(FNTPage) + 1;
+					const PXSize sizeCurrent = currentPage->CharacteListSize * sizeof(PXSpriteFontPage);
+					const PXSize sizeNew = currentPage->CharacteListSize * sizeof(PXSpriteFontPage) + 1;
 
-					FNTCharacter* characteListR = MemoryHeapReallocateClear(currentPage->CharacteList, sizeCurrent, sizeNew);
+					PXSpriteFontCharacter* characteListR = MemoryHeapReallocateClear(currentPage->CharacteList, sizeCurrent, sizeNew);
 					const PXBool adresschanged = characteListR != currentPage->CharacteList;
 
 					if (!characteListR)
@@ -255,7 +254,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 					currentPage->CharacteList = characteListR;
 				}
 
-				FNTCharacter* character = &currentPage->CharacteList[characterIndex++];
+				PXSpriteFontCharacter* character = &currentPage->CharacteList[characterIndex++];
 
 				const char parsingData[] = "id=\0x=\0y=\0width=\0height=\0xoffset=\0yoffset=\0xadvance=\0page=\0chnl=";
 				const char* indexPosition[10];
@@ -305,7 +304,7 @@ PXActionResult FNTParse(PXFNT* const fnt, PXDataStream* const pxDataStream)
 	return PXActionSuccessful;
 }
 
-FNTLineType PeekLineType(const void* line, const PXSize fileDataSize)
+PXSpriteFontLineType PeekLineType(const void* line, const PXSize fileDataSize)
 {
 	const unsigned char* data = line;
 	const unsigned char isCommonLine = data[0] == 'c' && data[1] == 'o' && data[2] == 'm' && data[3] == 'm' && data[4] == 'o' && data[5] == 'n' && data[6] == ' ';
@@ -324,61 +323,61 @@ FNTLineType PeekLineType(const void* line, const PXSize fileDataSize)
 	switch(code)
 	{
 		case 1:
-			return FNTLineCommon;
+			return PXSpriteFontLineCommon;
 
 		case 2:
-			return FNTLineCharacterCount;
+			return PXSpriteFontLineCharacterCount;
 
 		case 3:
-			return FNTLineCharacterDefinition;
+			return PXSpriteFontLineCharacterDefinition;
 
 		case 4:
-			return FNTLineInfo;
+			return PXSpriteFontLineInfo;
 
 		case 5:
-			return FNTLinePage;
+			return PXSpriteFontLinePage;
 
 		default:
-			return FNTLineUnkown;
+			return PXSpriteFontLineUnkown;
 	}
 }
 
-void FNTPrtinf(const PXFNT* fnt)
+void PXSpriteFontPrtinf(const PXSpriteFont* pxSpriteFont)
 {
 	printf(" +-------------------------------------------------------------------------+\n");
-	printf(" | Font (%s) : %s\n", &fnt->Info.CharSet[0], &fnt->Info.Name[0]);
+	printf(" | Font (%s) : %s\n", &pxSpriteFont->Info.CharSet[0], &pxSpriteFont->Info.Name[0]);
 	printf(" +-------------------------------------------------------------------------+\n");
-	printf(" | Size     : %4u | Smooth  : %3u |\n", fnt->Info.Size, fnt->Info.Smooth);
-	printf(" | Bold     : %4s | AA      : %3u |\n", fnt->Info.Bold ? "Yes" : "No", fnt->Info.Supersampling);
+	printf(" | Size     : %4u | Smooth  : %3u |\n", pxSpriteFont->Info.Size, pxSpriteFont->Info.Smooth);
+	printf(" | Bold     : %4s | AA      : %3u |\n", pxSpriteFont->Info.Bold ? "Yes" : "No", pxSpriteFont->Info.Supersampling);
 	printf
 	(
 		" | Italic   : %4s | Padding : %u,%u,%u,%u |\n",
-		fnt->Info.Italic ? "Yes" : "No",
-		fnt->Info.CharacterPadding[0],
-		fnt->Info.CharacterPadding[1],
-		fnt->Info.CharacterPadding[2],
-		fnt->Info.CharacterPadding[3]
+		pxSpriteFont->Info.Italic ? "Yes" : "No",
+		pxSpriteFont->Info.CharacterPadding[0],
+		pxSpriteFont->Info.CharacterPadding[1],
+		pxSpriteFont->Info.CharacterPadding[2],
+		pxSpriteFont->Info.CharacterPadding[3]
 
 	);
-	printf(" | unicode  : %4s | Spacing : %u,%u |\n", fnt->Info.Unicode ? "Yes" : "No", fnt->Info.SpacerOffset[0], fnt->Info.SpacerOffset[1]);
-	printf(" | stretchH : %4u | Outline : %3u |\n", fnt->Info.StretchH, fnt->Info.OutlineThickness);
+	printf(" | unicode  : %4s | Spacing : %u,%u |\n", pxSpriteFont->Info.Unicode ? "Yes" : "No", pxSpriteFont->Info.SpacerOffset[0], pxSpriteFont->Info.SpacerOffset[1]);
+	printf(" | stretchH : %4u | Outline : %3u |\n", pxSpriteFont->Info.StretchH, pxSpriteFont->Info.OutlineThickness);
 
 
-	for(unsigned int pageIndex = 0; pageIndex < fnt->FontPageListSize; pageIndex++)
+	for(unsigned int pageIndex = 0; pageIndex < pxSpriteFont->FontPageListSize; pageIndex++)
 	{
-		FNTPage* page = &fnt->FontPageList[pageIndex];
+		PXSpriteFontPage* page = &pxSpriteFont->FontPageList[pageIndex];
 
 		//printf(" |          |       |       |       |       |       |       |       |\n");
 		printf("\n");
 		printf(" +----------+-------+-------+-------+-------+-------+-------+-------|\n");
-		printf(" | Page <%zu/%zu> \n", pageIndex + 1, fnt->FontPageListSize);
+		printf(" | Page <%zu/%zu> \n", pageIndex + 1, pxSpriteFont->FontPageListSize);
 		printf(" +----------+-------+-------+-------+-------+-------+-------+-------|\n");
 		printf(" | Letter   | X-Pos | Y-Pos | Width | Height| X-Off | Y-Off | X-Step|\n");
 		printf(" +----------+-------+-------+-------+-------+-------+-------+-------|\n");
 
 		for(unsigned int characterIndex = 0; characterIndex < page->CharacteListSize; characterIndex++)
 		{
-			FNTCharacter* character = &page->CharacteList[characterIndex];
+			PXSpriteFontCharacter* character = &page->CharacteList[characterIndex];
 
 			printf
 			(

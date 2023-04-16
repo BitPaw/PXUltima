@@ -169,7 +169,7 @@
 	<Memory/Memory.h>
 	<Text/Text.h>
 	<File/File.h>
-	<File/Media/FNT/FNT.h>
+	<File/Media/PXSpriteFont/PXSpriteFont.h>
 	<File/Media/TTF/TTF.h>
 
 1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Font.h
@@ -193,7 +193,7 @@
 	<libgen.h>
 	<windows.h>
 
-1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/FNT/FNT.h
+1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/PXSpriteFont/PXSpriteFont.h
 	<stddef.h>
 	<OS/Error/PXActionResult.h>
 
@@ -246,8 +246,8 @@
 	<OS/Error/PXActionResult.h>
 	<File/Endian.h>
 
-1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/FNT/FNT.c
-	"FNT.h"
+1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/PXSpriteFont/PXSpriteFont.c
+	"PXSpriteFont.h"
 	<stdio.h>
 	<Text/Text.h>
 	<Memory/Memory.h>
@@ -379,13 +379,13 @@
 	<Memory/Memory.h>
 	<File/Endian.h>
 	<Container/ClusterInt.h>
-	<File/Media/ZLIB/ZLIB.h>
+	<File/Media/PXZLIB/PXZLIB.h>
 	<File/Media/ADAM7/ADAM7.h>
 	<Algorithm/CRC32/CRC32.h>
 	<File/Image.h>
 	<Time/Time.h>
 
-1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/ZLIB/ZLIB.h
+1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/PXZLIB/PXZLIB.h
 	<stddef.h>
 	<OS/Error/PXActionResult.h>
 	<File/Media/PNG/PNG.h>
@@ -527,8 +527,8 @@
 	<OS/Error/PXActionResult.h>
 	<File/Image.h>
 
-1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/ZLIB/ZLIB.c
-	"ZLIB.h"
+1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/PXZLIB/PXZLIB.c
+	"PXZLIB.h"
 	<Algorithm/ADLER/Adler32.h>
 	<Math/Math.h>
 	<File/BitStream.h>
@@ -963,7 +963,7 @@
 	<Memory/Memory.h>
 	<Text/Text.h>
 	<File/File.h>
-	<File/Media/FNT/FNT.h>
+	<File/Media/PXSpriteFont/PXSpriteFont.h>
 	<File/Media/TTF/TTF.h>
 
 1660485883 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Font.h
@@ -974,7 +974,7 @@
 	<stddef.h>
 	<OS/Error/PXActionResult.h>
 
-1660430822 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/FNT/FNT.h
+1660430822 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/PXSpriteFont/PXSpriteFont.h
 	<stddef.h>
 	<OS/Error/PXActionResult.h>
 
@@ -1091,8 +1091,8 @@
 	<OS/Error/PXActionResult.h>
 	<File/Endian.h>
 
-1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/FNT/FNT.c
-	"FNT.h"
+1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/PXSpriteFont/PXSpriteFont.c
+	"PXSpriteFont.h"
 	<stdio.h>
 	<Text/Text.h>
 	<Memory/Memory.h>
@@ -1238,13 +1238,13 @@
 	<Memory/Memory.h>
 	<File/Endian.h>
 	<Container/ClusterInt.h>
-	<File/Media/ZLIB/ZLIB.h>
+	<File/Media/PXZLIB/PXZLIB.h>
 	<File/Media/ADAM7/ADAM7.h>
 	<Algorithm/CRC32/CRC32.h>
 	<File/Image.h>
 	<Time/Time.h>
 
-1660430822 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/ZLIB/ZLIB.h
+1660430822 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/PXZLIB/PXZLIB.h
 	<stddef.h>
 	<OS/Error/PXActionResult.h>
 	<File/Media/PNG/PNG.h>
@@ -1364,8 +1364,8 @@
 	"XingInfo.h"
 	<File/ParsingStream.h>
 
-1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/ZLIB/ZLIB.c
-	"ZLIB.h"
+1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/PXZLIB/PXZLIB.c
+	"PXZLIB.h"
 	<Algorithm/ADLER/Adler32.h>
 	<Math/Math.h>
 	<File/BitStream.h>
@@ -1889,8 +1889,8 @@
 	<File/Endian.h>
 	<File/PXDataStream.h>
 
-1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/FNT/FNT.c
-	"FNT.h"
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.c
+	"PXSpriteFont.h"
 	<stdio.h>
 	<Text/Text.h>
 	<OS/Memory/PXMemory.h>
@@ -1898,7 +1898,7 @@
 	<File/File.h>
 	<Media/Image.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/FNT/FNT.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<File/PXDataStream.h>
@@ -1909,7 +1909,7 @@
 	<OS/Memory/PXMemory.h>
 	<Text/Text.h>
 	<File/PXDataStream.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/TTF/TTF.h>
 	<Media/Image.h>
 
@@ -1969,7 +1969,7 @@
 	<Media/PNG/PNG.h>
 	<Media/TGA/TGA.h>
 	<Media/TIFF/TIFF.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/PXFont.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/JPEG/JPEG.h
@@ -2230,14 +2230,14 @@
 	<File/PXDataStream.h>
 	<Time/PXTime.h>
 	<Media/Image.h>
-	<Media/ZLIB/ZLIB.h>
+	<Media/PXZLIB/PXZLIB.h>
 	<Media/ADAM7/ADAM7.h>
 	<Media/CRC32/CRC32.h>
 
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Time/Time.h
 	<Media/Type.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/ZLIB/ZLIB.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/PXZLIB/PXZLIB.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/PNG/PNG.h>
@@ -2254,8 +2254,8 @@
 	"XingInfo.h"
 	<File/PXDataStream.h>
 
-1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/ZLIB/ZLIB.c
-	"ZLIB.h"
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/PXZLIB/PXZLIB.c
+	"PXZLIB.h"
 	<Container/ClusterValue.h>
 	<Math/PXMath.h>
 	<File/PXDataStream.h>
@@ -2843,8 +2843,8 @@
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 
-1663842600 source:d:\_data\git\pxultima\pxultima\source\format\fnt\fnt.c
-	"FNT.h"
+1663842600 source:d:\_data\git\pxultima\pxultima\source\format\PXSpriteFont\PXSpriteFont.c
+	"PXSpriteFont.h"
 	<stdio.h>
 	<Text/Text.h>
 	<Memory/Memory.h>
@@ -2852,7 +2852,7 @@
 	<File/File.h>
 	<Media/Image.h>
 
-1663842600 d:\_data\git\pxultima\pxultima\source\format\fnt\fnt.h
+1663842600 d:\_data\git\pxultima\pxultima\source\format\PXSpriteFont\PXSpriteFont.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/Image.h>
@@ -2862,7 +2862,7 @@
 	<Memory/Memory.h>
 	<Text/Text.h>
 	<File/PXDataStream.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/TTF/TTF.h>
 	<Media/Image.h>
 
@@ -2920,7 +2920,7 @@
 	<Media/PNG/PNG.h>
 	<Media/TGA/TGA.h>
 	<Media/TIFF/TIFF.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/Font.h>
 
 1663842600 d:\_data\git\pxultima\pxultima\source\format\jpeg\jpeg.h
@@ -3129,14 +3129,14 @@
 	<File/PXDataStream.h>
 	<Time/Time.h>
 	<Media/Image.h>
-	<Media/ZLIB/ZLIB.h>
+	<Media/PXZLIB/PXZLIB.h>
 	<Media/ADAM7/ADAM7.h>
 	<Media/CRC32/CRC32.h>
 
 1663842600 d:\_data\git\pxultima\pxultima\source\time\time.h
 	<Media/Type.h>
 
-1663842600 d:\_data\git\pxultima\pxultima\source\format\zlib\zlib.h
+1663842600 d:\_data\git\pxultima\pxultima\source\format\PXZLIB\PXZLIB.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/PNG/PNG.h>
@@ -3226,8 +3226,8 @@
 1663842600 d:\_data\git\pxultima\pxultima\source\format\yaml\yaml.h
 	<Media/Type.h>
 
-1663842600 source:d:\_data\git\pxultima\pxultima\source\format\zlib\zlib.c
-	"ZLIB.h"
+1663842600 source:d:\_data\git\pxultima\pxultima\source\format\PXZLIB\PXZLIB.c
+	"PXZLIB.h"
 	<Container/ClusterValue.h>
 	<Math/Math.h>
 	<File/PXDataStream.h>
@@ -5860,8 +5860,8 @@
 	<File/Endian.h>
 	<File/PXDataStream.h>
 
-1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/FNT/FNT.c
-	"FNT.h"
+1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.c
+	"PXSpriteFont.h"
 	<stdio.h>
 	<Text/Text.h>
 	<OS/Memory/PXMemory.h>
@@ -5869,7 +5869,7 @@
 	<File/File.h>
 	<Media/Image.h>
 
-1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/FNT/FNT.h
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/Image.h>
@@ -5879,7 +5879,7 @@
 	<OS/Memory/PXMemory.h>
 	<Text/Text.h>
 	<File/PXDataStream.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/TTF/TTF.h>
 	<Media/Image.h>
 
@@ -5988,7 +5988,7 @@
 	<Media/PNG/PNG.h>
 	<Media/TGA/TGA.h>
 	<Media/TIFF/TIFF.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/Font.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/TGA/TGA.h
@@ -6210,14 +6210,14 @@
 	<File/PXDataStream.h>
 	<Time/PXTime.h>
 	<Media/Image.h>
-	<Media/ZLIB/ZLIB.h>
+	<Media/PXZLIB/PXZLIB.h>
 	<Media/ADAM7/ADAM7.h>
 	<Media/CRC32/CRC32.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Time/PXTime.h
 	<Media/Type.h>
 
-1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/ZLIB/ZLIB.h
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/PXZLIB/PXZLIB.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/PNG/PNG.h>
@@ -6275,8 +6275,8 @@
 	<Media/Type.h>
 	<File/PXDataStream.h>
 
-1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/ZLIB/ZLIB.c
-	"ZLIB.h"
+1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/PXZLIB/PXZLIB.c
+	"PXZLIB.h"
 	<Container/ClusterValue.h>
 	<Math/PXMath.h>
 	<File/PXDataStream.h>
@@ -6664,7 +6664,7 @@
 	<OS/Memory/PXMemory.h>
 	<Text/Text.h>
 	<File/PXDataStream.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/TTF/TTF.h>
 	<Media/Image.h>
 
@@ -6734,7 +6734,7 @@
 	<Media/PXFont.h>
 	<Container/ClusterValue.h>
 	<Text/Text.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 
 1671150972 source:d:\_data\git\pxultima\code\pxultima\source\container\binarytree\binarytree.c
 	"BinaryTree.h"
@@ -7072,7 +7072,7 @@
 	<Container/ClusterValue.h>
 	<Text/PXText.h>
 	<Media/PXFont.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<OS/Graphic/OpenGL/OpenGL.h>
 	<OS/Window/PXWindow.h>
 
@@ -7083,7 +7083,7 @@
 	<OS/Error/PXActionResult.h>
 	<File/PXDataStream.h>
 
-1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/FNT/FNT.h
+1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<File/PXDataStream.h>
@@ -7270,8 +7270,8 @@
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/FMT/FMT.h
 	<File/PXDataStream.h>
 
-1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/FNT/FNT.c
-	"FNT.h"
+1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.c
+	"PXSpriteFont.h"
 	<stdio.h>
 	<Text/PXText.h>
 	<File/PXDataStream.h>
@@ -7338,7 +7338,7 @@
 	<Media/PNG/PNG.h>
 	<Media/TGA/TGA.h>
 	<Media/TIFF/TIFF.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/PXFont.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/JPEG/JPEG.h
@@ -7534,11 +7534,11 @@
 	<OS/File/Endian.h>
 	<OS/Time/PXTime.h>
 	<Media/Image.h>
-	<Media/ZLIB/ZLIB.h>
+	<Media/PXZLIB/PXZLIB.h>
 	<Media/ADAM7/ADAM7.h>
 	<Media/CRC32/CRC32.h>
 
-1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/ZLIB/ZLIB.h
+1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/PXZLIB/PXZLIB.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/PNG/PNG.h>
@@ -7549,7 +7549,7 @@
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
 	<File/PXDataStream.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/TTF/TTF.h>
 	<Media/Image.h>
 
@@ -7699,8 +7699,8 @@
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Serialization/Serialization.h
 	<Media/Type.h>
 
-1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/ZLIB/ZLIB.c
-	"ZLIB.h"
+1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/PXZLIB/PXZLIB.c
+	"PXZLIB.h"
 	<Container/ClusterValue.h>
 	<Math/PXMath.h>
 	<File/PXDataStream.h>
@@ -8609,7 +8609,7 @@
 	<Container/ClusterValue.h>
 	<Text/PXText.h>
 	<Media/PXFont.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<OS/Graphic/OpenGL/OpenGL.h>
 	<OS/Window/PXWindow.h>
 
@@ -8620,7 +8620,7 @@
 	<OS/Error/PXActionResult.h>
 	<File/PXDataStream.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/FNT/FNT.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<File/PXDataStream.h>
@@ -8860,8 +8860,8 @@
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/FMT/FMT.h
 	<File/PXDataStream.h>
 
-1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/FNT/FNT.c
-	"FNT.h"
+1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/PXSpriteFont/PXSpriteFont.c
+	"PXSpriteFont.h"
 	<stdio.h>
 	<Text/PXText.h>
 	<File/PXDataStream.h>
@@ -8928,7 +8928,7 @@
 	<Media/PNG/PNG.h>
 	<Media/TGA/TGA.h>
 	<Media/TIFF/TIFF.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/PXFont.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/JPEG/JPEG.h
@@ -9124,11 +9124,11 @@
 	<OS/File/Endian.h>
 	<OS/Time/PXTime.h>
 	<Media/Image.h>
-	<Media/ZLIB/ZLIB.h>
+	<Media/PXZLIB/PXZLIB.h>
 	<Media/ADAM7/ADAM7.h>
 	<Media/CRC32/CRC32.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/ZLIB/ZLIB.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/PXZLIB/PXZLIB.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/PNG/PNG.h>
@@ -9139,7 +9139,7 @@
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
 	<File/PXDataStream.h>
-	<Media/FNT/FNT.h>
+	<Media/PXSpriteFont/PXSpriteFont.h>
 	<Media/TTF/TTF.h>
 	<Media/Image.h>
 
@@ -9289,8 +9289,8 @@
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Serialization/Serialization.h
 	<Media/Type.h>
 
-1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/ZLIB/ZLIB.c
-	"ZLIB.h"
+1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/PXZLIB/PXZLIB.c
+	"PXZLIB.h"
 	<Container/ClusterValue.h>
 	<Math/PXMath.h>
 	<File/PXDataStream.h>

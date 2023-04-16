@@ -1,9 +1,9 @@
 #ifndef QOIInclude
 #define QOIInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus
@@ -199,9 +199,9 @@ extern "C"
 	PXPublic PXSize TIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
 	PXPublic PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream);
-	PXPublic PXActionResult TIFFParseToImage(Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TIFFParseToImage(PXImage* const image, PXDataStream* const dataStream);
 
-	PXPublic PXActionResult TIFFSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TIFFSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #ifndef PXDataStreamINCLUDE
 #define PXDataStreamINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/File.h>
 #include <OS/File/Endian.h>

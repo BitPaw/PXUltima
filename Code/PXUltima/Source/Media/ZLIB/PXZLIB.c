@@ -1,103 +1,102 @@
-#include "ZLIB.h"
+#include "PXZLIB.h"
 
-#include <Container/ClusterValue.h>
 #include <Math/PXMath.h>
 #include <File/PXDataStream.h>
 #include <Media/DEFLATE/DEFLATE.h>
 #include <Media/ADLER/Adler32.h>
 
-ZLIBCompressionLevel ConvertToCompressionLevel(const unsigned char compressionLevel)
+PXZLIBCompressionLevel ConvertToCompressionLevel(const PXInt8U compressionLevel)
 {
     switch(compressionLevel)
     {
         case 0u:
-            return ZLIBCompressionLevelFastest;
+            return PXZLIBCompressionLevelFastest;
 
         case 1u:
-            return ZLIBCompressionLevelFast;
+            return PXZLIBCompressionLevelFast;
 
         case 2u:
-            return ZLIBCompressionLevelDefault;
+            return PXZLIBCompressionLevelDefault;
 
         case 3u:
-            return ZLIBCompressionLevelSlowest;
+            return PXZLIBCompressionLevelSlowest;
 
         default:
-            return ZLIBCompressionLevelInvalid;
+            return PXZLIBCompressionLevelInvalid;
     }
 }
 
-unsigned char ConvertFromCompressionLevel(const ZLIBCompressionLevel compressionLevel)
+unsigned char ConvertFromCompressionLevel(const PXZLIBCompressionLevel compressionLevel)
 {
     switch(compressionLevel)
     {
         default:
-        case ZLIBCompressionLevelInvalid:
+        case PXZLIBCompressionLevelInvalid:
             return -1;
 
-        case ZLIBCompressionLevelDefault:
+        case PXZLIBCompressionLevelDefault:
             return 2u;
 
-        case ZLIBCompressionLevelSlowest:
+        case PXZLIBCompressionLevelSlowest:
             return 3u;
 
-        case ZLIBCompressionLevelFast:
+        case PXZLIBCompressionLevelFast:
             return 1u;
 
-        case ZLIBCompressionLevelFastest:
+        case PXZLIBCompressionLevelFastest:
             return 0u;
     }
 }
 
-ZLIBCompressionMethod ConvertToCompressionMethod(const unsigned char compressionMethod)
+PXZLIBCompressionMethod ConvertToCompressionMethod(const PXInt8U compressionMethod)
 {
     switch(compressionMethod)
     {
         case 8u:
-            return ZLIBCompressionMethodDeflate;
+            return PXZLIBCompressionMethodDeflate;
 
         case 15u:
-            return ZLIBCompressionMethodReserved;
+            return PXZLIBCompressionMethodReserved;
 
         default:
-            return ZLIBCompressionMethodInvalid;
+            return PXZLIBCompressionMethodInvalid;
     }
 }
 
-unsigned char ConvertFromCompressionMethod(const ZLIBCompressionMethod compressionMethod)
+unsigned char ConvertFromCompressionMethod(const PXZLIBCompressionMethod compressionMethod)
 {
     switch(compressionMethod)
     {
         default:
-        case ZLIBCompressionMethodInvalid:
+        case PXZLIBCompressionMethodInvalid:
             return -1;
 
-        case ZLIBCompressionMethodDeflate:
+        case PXZLIBCompressionMethodDeflate:
             return 8u;
 
-        case ZLIBCompressionMethodReserved:
+        case PXZLIBCompressionMethodReserved:
             return 15u;
     }
 }
 
-PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
+PXActionResult PXZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
 {
-    ZLIB zlib;
+    PXZLIB PXZLIB;
 
     const PXSize headerSize = 2u;
     const PXSize adlerSize = 4u;
 
     // Parse header ->     Header.Parse(compressionFormatByte, flagByte);
     {
-        unsigned char compressionFormatByte = 0;
-        unsigned char flagByte = 0;
+        PXInt8U compressionFormatByte = 0;
+        PXInt8U flagByte = 0;
 
         PXDataStreamReadI8U(pxInputSteam, &compressionFormatByte);
         PXDataStreamReadI8U(pxInputSteam, &flagByte);
 
         // Valid Check
         {
-            const PXBool validFlags = MakeShortBE(compressionFormatByte, flagByte) % 31u == 0;
+            const PXBool validFlags = PXInt16MakeEndianBig(compressionFormatByte, flagByte) % 31u == 0;
 
             if(!validFlags)
             {
@@ -107,16 +106,16 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* co
 
         //---<Parse First Byte__ - Compression Info>---------------------------------
         {
-            unsigned char compressionMethodValue = (compressionFormatByte & 0b00001111);
+            const PXInt8U compressionMethodValue = (compressionFormatByte & 0b00001111);
 
-            zlib.Header.CompressionMethod = ConvertToCompressionMethod(compressionMethodValue);
-            zlib.Header.CompressionInfo = (compressionFormatByte & 0b11110000) >> 4;
+            PXZLIB.Header.CompressionMethod = ConvertToCompressionMethod(compressionMethodValue);
+            PXZLIB.Header.CompressionInfo = (compressionFormatByte & 0b11110000) >> 4;
 
             // log_2(WindowSize) - 8 = CompressionInfo
             // log_2(32768) - 8 = 7
             // 2^(CompressionInfo + 8)
 
-            const PXBool isCompressionInfoValid = zlib.Header.CompressionInfo <= 7u;
+            const PXBool isCompressionInfoValid = PXZLIB.Header.CompressionInfo <= 7u;
 
             if(!isCompressionInfoValid)
             {
@@ -125,24 +124,24 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* co
 
             //assert(isCompressionInfoValid);
 
-            zlib.Header.WindowSize = MathPower(2, zlib.Header.CompressionInfo + 8u);
+            PXZLIB.Header.WindowSize = MathPower(2, PXZLIB.Header.CompressionInfo + 8u);
         }
         //-------------------------------------------------------------------------
 
-        //---<Parse Second Byte__ - Flags>-------------------------------------------
+        //---<Parse Second Byte - Flags>-------------------------------------------
         {
-            unsigned char compressionLevelValue = (flagByte & 0b11000000) >> 6;
+            const PXInt8U compressionLevelValue = (flagByte & 0b11000000) >> 6;
 
-            zlib.Header.CheckFlag = (flagByte & 0b00011111);
-            zlib.Header.PXDictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
-            zlib.Header.CompressionLevel = ConvertToCompressionLevel(compressionLevelValue);
+            PXZLIB.Header.CheckFlag = (flagByte & 0b00011111);
+            PXZLIB.Header.PXDictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
+            PXZLIB.Header.CompressionLevel = ConvertToCompressionLevel(compressionLevelValue);
         }
         //-------------------------------------------------------------------------        
     }
 
 
     //---<PXDictionary Parse>----------------------------------------------------
-    if(zlib.Header.PXDictionaryPresent)
+    if(PXZLIB.Header.PXDictionaryPresent)
     {
         // Parse DICT dictionary identifier 
 
@@ -152,16 +151,16 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* co
     /* Allocate
     if (!(*outputData))
     {
-        (*outputData) = (unsigned char*)malloc(zLIBHeader.WindowSize * 4 * sizeof(unsigned char));
+        (*outputData) = (unsigned char*)malloc(PXZLIBHeader.WindowSize * 4 * sizeof(unsigned char));
     }*/
 
 
-    zlib.CompressedDataSize = PXDataStreamRemainingSize(pxInputSteam) - adlerSize;
-    zlib.CompressedData = PXDataStreamCursorPosition(pxInputSteam);
+    PXZLIB.CompressedDataSize = PXDataStreamRemainingSize(pxInputSteam) - adlerSize;
+    PXZLIB.CompressedData = PXDataStreamCursorPosition(pxInputSteam);
 
-    switch(zlib.Header.CompressionMethod)
+    switch(PXZLIB.Header.CompressionMethod)
     {
-        case ZLIBCompressionMethodDeflate:
+        case PXZLIBCompressionMethodDeflate:
         {
             const PXActionResult deflateResult = DEFLATEParse(pxInputSteam, pxOutputSteam);
 
@@ -170,27 +169,27 @@ PXActionResult ZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* co
             break;
         }
         default:
-        case ZLIBCompressionMethodReserved:
-        case ZLIBCompressionMethodInvalid:
+        case PXZLIBCompressionMethodReserved:
+        case PXZLIBCompressionMethodInvalid:
         {
             return PXActionFailedFormatInvalid;
         }
     }
 
-    PXDataStreamReadI32UE(pxInputSteam, &zlib.AdlerChecksum, EndianBig);
+    PXDataStreamReadI32UE(pxInputSteam, &PXZLIB.AdlerChecksum, EndianBig);
 
     return PXActionSuccessful;
 }
 
-PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
+PXActionResult PXZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
 {
-    // Write ZLIB Header
+    // Write PXZLIB Header
     {
-        const PXByte compressionMethod = ConvertFromCompressionMethod(ZLIBCompressionMethodDeflate);
+        const PXByte compressionMethod = ConvertFromCompressionMethod(PXZLIBCompressionMethodDeflate);
         const PXByte compressionInfo = 7u; // 1-7
 
         const PXByte dictionary = 0;
-        const PXByte level = ConvertFromCompressionLevel(ZLIBCompressionLevelFastest);
+        const PXByte level = ConvertFromCompressionLevel(PXZLIBCompressionLevelFastest);
 
         // Byte 1
         // 0b00001111
@@ -208,8 +207,8 @@ PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* cons
         
         // Check
         {
-            const unsigned short checksum = MakeShortBE(buffer[0], buffer[1]);
-            const unsigned char multble = 31-checksum % 31;
+            const PXInt16U checksum = PXInt16Make(buffer[0], buffer[1]);
+            const PXInt8U multble = 31-checksum % 31;
 
             buffer[1] += multble;
         }    
@@ -226,7 +225,7 @@ PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* cons
 
     // Write ADLER
     {
-        const unsigned int adler = (unsigned int)Adler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
+        const PXInt32U adler = (PXInt32U)Adler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
 
         PXDataStreamWriteI32UE(pxOutputSteam, adler, EndianBig);
     }
@@ -234,24 +233,24 @@ PXActionResult ZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* cons
     return PXActionSuccessful;
 }
 
-PXSize ZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PNGInterlaceMethod interlaceMethod)
+PXSize PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PXPNGInterlaceMethod interlaceMethod)
 {
     PXSize expected_size = 0;
 
     switch(interlaceMethod)
     {
         default:
-        case PNGInterlaceInvalid:
+        case PXPNGInterlaceInvalid:
             break;
 
-        case PNGInterlaceNone:
+        case PXPNGInterlaceNone:
         {
             // predict output size, to allocate exact size for output buffer to avoid more dynamic allocation.
             // If the decompressed size does not match the prediction, the image must be corrupt.
             expected_size = CalculateRawSizeIDAT(width, height, bpp);
             break;
         }
-        case PNGInterlaceADAM7:
+        case PXPNGInterlaceADAM7:
         {
             // Adam-7 interlaced: expected size is the sum of the 7 sub-images sizes
             expected_size = 0;

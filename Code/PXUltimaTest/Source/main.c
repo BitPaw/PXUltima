@@ -14,7 +14,7 @@
 #include "Network/TestSBP.h"
 
 #include <Media/TIFF/TIFF.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 #include <Text/PXText.h>
 
 #include <OS/Graphic/DirectX/DirectX.h>

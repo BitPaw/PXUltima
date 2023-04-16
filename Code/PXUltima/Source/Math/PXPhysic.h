@@ -1,7 +1,7 @@
 #ifndef PXPhysicINCLUDE
 #define PXPhysicINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <Math/PXVector.h>
 #include <Math/PXMatrix.h>
 

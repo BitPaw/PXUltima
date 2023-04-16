@@ -1,44 +1,45 @@
-#ifndef PXFontInclude
-#define PXFontInclude
+#ifndef PXFontINCLUDE
+#define PXFontINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
+#include <Media/SpriteFont/PXSpriteFont.h>
+#include <Graphic/PXGraphic.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#ifndef Image_
-	typedef struct Image_ Image;
-#endif
-
-#ifndef FNT_
-	typedef struct PXFNT_ PXFNT;
-#endif
+	typedef	struct PXFontPage_
+	{
+		PXTexture Texture;
+	}
+	PXFontPage;
 
 	typedef struct PXFont_
 	{
-		unsigned short CharacterSize;
-		unsigned short SizeBetweenCharacters;
-		unsigned short SizeBetweenLines;
+		PXInt32U ID;
 
-		PXFNT* FontElement;
+		PXInt16U CharacterSize;
+		PXInt16U SizeBetweenCharacters;
+		PXInt16U SizeBetweenLines;
+
+		PXSpriteFont* FontElement;
 		PXSize FontElementSize;
 	}
 	PXFont;
 
 	//---[ Public-Functions ]----------------------------------------------
 
-	PXPublic void PXFontConstruct(PXFont* const font);
-	PXPublic void PXFontDestruct(PXFont* const font);
+	PXPublic void PXFontConstruct(PXFont* const pxFont);
+	PXPublic void PXFontDestruct(PXFont* const pxFont);
 
-	PXPublic PXActionResult PXFontLoadA(PXFont* const font, const PXTextASCII filePath);
-	PXPublic PXActionResult PXFontLoadW(PXFont* const font, const PXTextUNICODE filePath);
-	PXPublic PXActionResult PXFontLoadU(PXFont* const font, const PXTextUTF8 filePath);
-	PXPublic PXActionResult PXFontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat);
-
+	PXPublic PXActionResult PXFontLoadA(PXFont* const pxFont, const PXTextASCII filePath);
+	PXPublic PXActionResult PXFontLoadW(PXFont* const pxFont, const PXTextUNICODE filePath);
+	PXPublic PXActionResult PXFontLoadU(PXFont* const pxFont, const PXTextUTF8 filePath);
+	PXPublic PXActionResult PXFontLoadD(PXFont* const pxFont, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat);
 
 #ifdef __cplusplus
 }

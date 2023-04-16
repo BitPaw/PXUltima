@@ -1,7 +1,7 @@
 #include "TestOpenGL.h"
 
 
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 #include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>
@@ -422,11 +422,11 @@ void TestOpenGLVBO()
 	//glViewport(0, 0, 800, 800); //Determining the size of the Window.
 
 
-	ShaderProgram shaderProgram;
+	PXShaderProgram shaderProgram;
 	shaderProgram.ID = -1;
 
-	Shader vertexShader;
-	Shader fragmentShader;
+	PXShader vertexShader;
+	PXShader fragmentShader;
 
 	PXShaderDataSet(&vertexShader, PXShaderTypeVertex, VertexShaderSource, sizeof(VertexShaderSource));
 	PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, fragmentShaderSource, sizeof(fragmentShaderSource));

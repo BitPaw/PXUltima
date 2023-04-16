@@ -1,7 +1,7 @@
 #ifndef PLYInclude
 #define PLYInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
 

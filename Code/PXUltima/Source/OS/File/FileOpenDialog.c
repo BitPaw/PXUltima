@@ -1,7 +1,7 @@
 #include "FileOpenDialog.h"
 
 #include <OS/System/OSVersion.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>

@@ -2,22 +2,19 @@
 #define SBPProtocolINCLUDE
 
 #include <File/PXDataStream.h>
-#include <Text/PXText.h>
-#include <Container/ClusterValue.h>
+#include <Media/PXText.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-
-#define SBPIDConnectionCreate MakeInt('C', 'o', 'n', '+')
-#define SBPIDConnectionResult MakeInt('C', 'o', 'n', '#')
-#define SBPIDConnectionKill MakeInt('C', 'o', 'n', '-')
-#define SBPIDText MakeInt('T', 'e', 'x', 't')
-#define SBPPackageHeaderPackageIamID MakeInt('I', '\'', 'a', 'm')
-#define SBPPackageHeaderPackageFileID MakeInt('F', 'i', 'l', 'e')
-
+#define SBPIDConnectionCreate PXInt32Make('C', 'o', 'n', '+')
+#define SBPIDConnectionResult PXInt32Make('C', 'o', 'n', '#')
+#define SBPIDConnectionKill PXInt32Make('C', 'o', 'n', '-')
+#define SBPIDText PXInt32Make('T', 'e', 'x', 't')
+#define SBPPackageHeaderPackageIamID PXInt32Make('I', '\'', 'a', 'm')
+#define SBPPackageHeaderPackageFileID PXInt32Make('F', 'i', 'l', 'e')
 
 #define ConnectionCreateReasonFile 'F'
 #define ConnectionCreateReasonData 'D'
@@ -133,7 +130,7 @@ extern "C"
 		//---------------------------------------
 
 		//--------------------------------------- Payload
-		ClusterInt CommandID;
+		PXInt32UCluster CommandID;
 		PXSize CommandSize;
 		void* Command;
 		//---------------------------------------

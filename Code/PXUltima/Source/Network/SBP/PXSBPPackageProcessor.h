@@ -1,7 +1,7 @@
 #ifndef PXSBPSocketINCLUDE
 #define PXSBPSocketINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <Container/Dictionary/PXDictionary.h>
 
 #include <OS/Network/PXSocket.h>

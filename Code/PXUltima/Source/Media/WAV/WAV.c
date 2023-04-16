@@ -1,7 +1,6 @@
 #include "WAV.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Container/ClusterValue.h>
 #include <Media/RIFF/RIFF.h>
 #include <Math/PXMath.h>
 
@@ -127,7 +126,6 @@ PXActionResult WAVSerialize(WAV* const wav, PXDataStream* const pxDataStream)
 		const PXActionResult riffResult = FMTSerialize(&fmt, pxDataStream, targetEndian);
 	}
 
-
 	//Data chunk
 	{
 		const char data[] = WAVSignatureData;
@@ -136,9 +134,9 @@ PXActionResult WAVSerialize(WAV* const wav, PXDataStream* const pxDataStream)
 		PXDataStreamWriteI32U(pxDataStream, dataSize);
 	}
 
-	for (unsigned int section = 0; section < (duration / 60) * bpm; section++)
+	for (PXSize section = 0; section < (duration / 60) * bpm; section++)
 	{
-		for (unsigned int i = 0; i < (44100 * 60) / bpm; i++)
+		for (PXSize i = 0; i < (44100 * 60) / bpm; i++)
 		{
 			float sample = (frequences[section] > 0) * 0.5f *  ((1 + MathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) +  MathSinus(wave);
 			unsigned int correctedsample = sample * maxAmp;

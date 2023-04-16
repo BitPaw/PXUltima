@@ -19,7 +19,7 @@
 #define IsPressedButtonCustomD(mouse) ((mouse->Buttons & ButtonCustomD) >> 6)
 #define IsPressedButtonCustomE(mouse) ((mouse->Buttons & ButtonCustomE) >> 7)
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"

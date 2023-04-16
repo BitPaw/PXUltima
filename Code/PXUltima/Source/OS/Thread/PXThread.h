@@ -2,7 +2,7 @@
 #define PXThreadInclude
 
 #include <OS/System/OSVersion.h>
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 
 // Return IDs

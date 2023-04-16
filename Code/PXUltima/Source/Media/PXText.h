@@ -1,7 +1,7 @@
-#ifndef PXTextInclude
-#define PXTextInclude
+#ifndef PXTextINLCUDE
+#define PXTextINLCUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #define MakeLetterCaseLower(character) (character | 0b00100000)
 #define MakeLetterCaseUpper(character) (character & 0b11011111)

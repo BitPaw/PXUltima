@@ -1,10 +1,10 @@
-#ifndef PNGInclude
-#define PNGInclude
+#ifndef PXPNGINCLUDE
+#define PXPNGINCLUDE
 
-#include <Media/Type.h>
-
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
+#include <File/PXDataStream.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,94 +14,94 @@ extern "C"
 	// 0x0001 = palette used
 	// 0x0010 = color used
 	// 0x0100 = alpha channel used
-	typedef enum PNGColorType_
+	typedef enum PXPNGColorType_
 	{
-		PNGColorInvalid,
-		PNGColorGrayscale, // ColorType = 0
-		PNGColorRGB,  // ColorType = 2
-		PNGColorPalette,  // ColorType = 3
-		PNGColorGrayscaleAlpha,  // ColorType = 4
-		PNGColorRGBA  // ColorType = 6
+		PXPNGColorInvalid,
+		PXPNGColorGrayscale, // ColorType = 0
+		PXPNGColorRGB,  // ColorType = 2
+		PXPNGColorPalette,  // ColorType = 3
+		PXPNGColorGrayscaleAlpha,  // ColorType = 4
+		PXPNGColorRGBA  // ColorType = 6
 	}
-	PNGColorType;
+	PXPNGColorType;
 
-	typedef enum PNGInterlaceMethod_
+	typedef enum PXPNGInterlaceMethod_
 	{
-		PNGInterlaceInvalid,
-		PNGInterlaceNone,
-		PNGInterlaceADAM7
+		PXPNGInterlaceInvalid,
+		PXPNGInterlaceNone,
+		PXPNGInterlaceADAM7
 	}
-	PNGInterlaceMethod;
+	PXPNGInterlaceMethod;
 
-	typedef enum PNGUnitSpecifier_
+	typedef enum PXPNGUnitSpecifier_
 	{
-		PNGUnitSpecifierInvalid,
-		PNGUnitSpecifierUnkown,
-		PNGUnitSpecifierMeter
+		PXPNGUnitSpecifierInvalid,
+		PXPNGUnitSpecifierUnkown,
+		PXPNGUnitSpecifierMeter
 	}
-	PNGUnitSpecifier;
+	PXPNGUnitSpecifier;
 
-	typedef struct PNGPhysicalPixelDimension_
+	typedef struct PXPNGPhysicalPixelDimension_
 	{
-		unsigned int PixelsPerUnit[2];
-		PNGUnitSpecifier UnitSpecifier;
+		PXInt32U PixelsPerUnit[2];
+		PXPNGUnitSpecifier UnitSpecifier;
 	}
-	PNGPhysicalPixelDimension;
+	PXPNGPhysicalPixelDimension;
 
-	typedef struct PNGPrimaryChromatics_
+	typedef struct PXPNGPrimaryChromatics_
 	{
-		unsigned int WhiteX;
-		unsigned int WhiteY;
-		unsigned int RedX;
-		unsigned int RedY;
-		unsigned int GreenX;
-		unsigned int GreenY;
-		unsigned int BlueX;
-		unsigned int BlueY;
+		PXInt32U WhiteX;
+		PXInt32U WhiteY;
+		PXInt32U RedX;
+		PXInt32U RedY;
+		PXInt32U GreenX;
+		PXInt32U GreenY;
+		PXInt32U BlueX;
+		PXInt32U BlueY;
 	}
-	PNGPrimaryChromatics;
+	PXPNGPrimaryChromatics;
 
-	typedef struct PNGBackgroundColor_
+	typedef struct PXPNGBackgroundColor_
 	{
-		unsigned short GreyScale;
-		unsigned short Red;
-		unsigned short Green;
-		unsigned short Blue;
-		unsigned char PaletteIndex;
+		PXInt16U GreyScale;
+		PXInt16U Red;
+		PXInt16U Green;
+		PXInt16U Blue;
+		PXInt8U PaletteIndex;
 	}
-	PNGBackgroundColor;
+	PXPNGBackgroundColor;
 
-	typedef struct PNGLastModificationTime_
+	typedef struct PXPNGLastModificationTime_
 	{
-		unsigned short Year;
-		unsigned char Month;
-		unsigned char Day;
-		unsigned char Hour;
-		unsigned char Minute;
-		unsigned char Second;
+		PXInt16U Year;
+		PXInt8U Month;
+		PXInt8U Day;
+		PXInt8U Hour;
+		PXInt8U Minute;
+		PXInt8U Second;
 	}
-	PNGLastModificationTime;
+	PXPNGLastModificationTime;
 
-	typedef struct PNGPaletteHistogram_
+	typedef struct PXPNGPaletteHistogram_
 	{
 		PXSize ColorFrequencyListSize;
-		unsigned short* ColorFrequencyList;
+		PXInt16U* ColorFrequencyList;
 	}
-	PNGPaletteHistogram;
+	PXPNGPaletteHistogram;
 
 	// Chunk Specifications
-	typedef enum PNGChunkType_
+	typedef enum PXPNGChunkType_
 	{
-		PNGChunkInvalid,
+		PXPNGChunkInvalid,
 
 		//--------------------------------------------------------------------------
 		// [Critical chunks]
 		//--------------------------------------------------------------------------
 
-		PNGChunkImageHeader,	// [IHDR] The chunk will appear first.
-		PNGChunkPalette,	// [PLTE] Palette
-		PNGChunkImageData,	// [IDAT] Image data
-		PNGChunkImageEnd,	// [IEND] The chunk appears LAST. It marks the end of the PNG datastream.
+		PXPNGChunkImageHeader,	// [IHDR] The chunk will appear first.
+		PXPNGChunkPalette,	// [PLTE] Palette
+		PXPNGChunkImageData,	// [IDAT] Image data
+		PXPNGChunkImageEnd,	// [IEND] The chunk appears LAST. It marks the end of the PNG datastream.
 
 		//--------------------------------------------------------------------------
 		// [Ancillary chunks]
@@ -109,70 +109,70 @@ extern "C"
 		// Transparency information
 		//--------------------------------------------------------------------------
 
-		PNGChunkTransparency, 	// [tRNS] Transparency
+		PXPNGChunkTransparency, 	// [tRNS] Transparency
 
 		//--------------------------------------------------------------------------
 		// Color space information
 		//--------------------------------------------------------------------------
 
-		PNGChunkImageGamma, 	// [gAMA] Image gamma
-		PNGChunkPrimaryChromaticities,		// [cHRM] -
-		PNGChunkStandardRGBColorSpace,		// [sRGB] -
-		PNGChunkEmbeddedICCProfile,		// [iCCP] -
+		PXPNGChunkImageGamma, 	// [gAMA] Image gamma
+		PXPNGChunkPrimaryChromaticities,		// [cHRM] -
+		PXPNGChunkStandardRGBColorSpace,		// [sRGB] -
+		PXPNGChunkEmbeddedICCProfile,		// [iCCP] -
 
 		//--------------------------------------------------------------------------
 		// Textual, information
 		//--------------------------------------------------------------------------
 
-		PNGChunkTextualData,	// [tEXt] -
-		PNGChunkCompressedTextualData,// [zTXt] -
-		PNGChunkInternationalTextualData,	// [iTXt] -
+		PXPNGChunkTextualData,	// [tEXt] -
+		PXPNGChunkCompressedTextualData,// [zTXt] -
+		PXPNGChunkInternationalTextualData,	// [iTXt] -
 
 		//--------------------------------------------------------------------------
 		// Miscellaneous information
 		//--------------------------------------------------------------------------
 
-		PNGChunkBackgroundColor, 	// [bKGD] -
-		PNGChunkPhysicalPixelDimensions, 	// [pHYs] -
-		PNGChunkSignificantBits, 		// [sBIT] -
-		PNGChunkSuggestedPalette,		// [sPLT] -
-		PNGChunkPaletteHistogram,	// [hIST] -
-		PNGChunkLastModificationTime,	// [tIME] -
+		PXPNGChunkBackgroundColor, 	// [bKGD] -
+		PXPNGChunkPhysicalPixelDimensions, 	// [pHYs] -
+		PXPNGChunkSignificantBits, 		// [sBIT] -
+		PXPNGChunkSuggestedPalette,		// [sPLT] -
+		PXPNGChunkPaletteHistogram,	// [hIST] -
+		PXPNGChunkLastModificationTime,	// [tIME] -
 
 		//--------------------------------------------------------------------------
 		// Additional chunk types
 		//--------------------------------------------------------------------------
 
 		// Unkown type, placegolder for future types or a midified PNG standard
-		PNGChunkCustom
+		PXPNGChunkCustom
 	}
-	PNGChunkType;
+	PXPNGChunkType;
 
-	typedef	struct PNGChunk_
+	typedef	struct PXPNGChunk_
 	{
+		// The data bytes appropriate to the chunk type, if any. This field can be of zero length.
+		//void* ChunkData;
+
+		// [4-byte] Giving the number of bytes in the chunk's data field. The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned, its value must not exceed 231 bytes.
+		PXInt32U Lengh;
+
+		PXInt32UCluster ChunkID;
+
 		PXBool IsEssential; // Ancillary Bit - Is this chunk not replaceable?.
 		PXBool IsRegisteredStandard; // Private Bit - Is this chunk in the offically registered in any way?
 		PXBool IsSafeToCopy;  // Can this cunk be modifyed anyhow or does it have a depecdency on the imagedata?
 
-		// [4-byte] Giving the number of bytes in the chunk's data field. The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned, its value must not exceed 231 bytes.
-		unsigned int Lengh;
-
-		char ChunkTypeRaw[4];
-
 		// [4-byte] uppercase and lowercase ASCII letters (A-Z and a-z, or 65-90 and 97-122 decimal).
-		PNGChunkType ChunkType;
-
-		// The data bytes appropriate to the chunk type, if any. This field can be of zero length.
-		void* ChunkData;
+		PXPNGChunkType ChunkType;
 
 		// A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type code and chunk data fields, but not including the length field. The CRC is always present, even for chunks containing no data. See CRC algorithm.
 
 		PXBool CRCOK;
-		unsigned int CRC;
+		PXInt32U CRC;
 	}
-	PNGChunk;
+	PXPNGChunk;
 
-	typedef struct PNGImageHeader_
+	typedef struct PXPNGImageHeader_
 	{
 		PXInt32U Width;
 		PXInt32U Height;
@@ -188,35 +188,35 @@ extern "C"
 			Color type codes represent sums of the following values: 1 (palette used), 2 (color used),
 			and 4 (alpha channel used). Valid values are 0, 2, 3, 4, and 6.
 		*/
-		PNGColorType ColorType;
+		PXPNGColorType ColorType;
 		PXInt8U CompressionMethod;
 		PXInt8U FilterMethod;
-		PNGInterlaceMethod InterlaceMethod;
+		PXPNGInterlaceMethod InterlaceMethod;
 	}
-	PNGImageHeader;
+	PXPNGImageHeader;
 
-	typedef struct PNG_
+	typedef struct PXPNG_
 	{
 		//---[Important Data]--------------------------------------------------------
-		PNGImageHeader ImageHeader;
-		unsigned short PaletteSize;
-		unsigned char Palette[1024];
-		PNGPrimaryChromatics PrimaryChromatics;
+		PXPNGImageHeader ImageHeader;
+		PXInt16U PaletteSize;
+		PXInt8U Palette[1024];
+		PXPNGPrimaryChromatics PrimaryChromatics;
 		//---------------------------------------------------------------------------
 
 		//---[Optional Data]---------------------------------------------------------
-		unsigned int SignificantBits; // sBIT
-		unsigned int Gamma; // gAMA
-		PNGBackgroundColor BackgroundColor; // bKGD
-		PNGPaletteHistogram PaletteHistogram; // hIST
+		PXInt32U SignificantBits; // sBIT
+		PXInt32U Gamma; // gAMA
+		PXPNGBackgroundColor BackgroundColor; // bKGD
+		PXPNGPaletteHistogram PaletteHistogram; // hIST
 		// XXXXXXXXXXXXXX XXXXXXXXXXXXXX // cHRM
 		// XXXXXXXXXXXXXX XXXXXXXXXXXXXX // iCCP
 		// XXXXXXXXXXXXXX XXXXXXXXXXXXXX // cHRM
 		unsigned char RenderingIntent; // sRGB
 		//PNGTransparency Transparency; // tRNS
-		PNGPhysicalPixelDimension PhysicalPixelDimension; // pHYs
+		PXPNGPhysicalPixelDimension PhysicalPixelDimension; // pHYs
 		//PNGSuggestedPalette SuggestedPalette; // sPLT
-		PNGLastModificationTime LastModificationTime; // tIME
+		PXPNGLastModificationTime LastModificationTime; // tIME
 		// XXXXXXXXXXXXXX XXXXXXXXXXXXXX // iTXt
 		//
 		//---[ oFFs - xxxxxxxxxxxxxxxxxxxxxxx ]--------------------------------------
@@ -230,16 +230,15 @@ extern "C"
 		//---------------------------------------------------------------------------
 
 		//---[ IDAT - Image Data (Compressed)]---------------------------------------
-		//PXSize ZLIBHeaderListSize;
-		//ZLIBHeader* ZLIBHeaderList;
+		//PXSize PXZLIBHeaderListSize;
+		//PXZLIBHeader* PXZLIBHeaderList;
 		//---------------------------------------------------------------------------
 
 		PXSize PixelDataSize;
-		unsigned char* PixelData;
-
+		void* PixelData;
 		//---------------------------------------------------------------------------
 	}
-	PNG;
+	PXPNG;
 
 	typedef enum LodePNGColorType
 	{
@@ -320,7 +319,7 @@ node has 16 instead of 8 children.
 
 
 
-	static unsigned int ImageDataDecompress(const PNG* const png, const unsigned char* pixelDataIn, unsigned char* pixelDataOut, unsigned char bitDepth, PNGColorType colorType);
+	static unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pixelDataIn, unsigned char* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
 
 
 
@@ -380,31 +379,31 @@ enough memory.*/
 
 
 
+	//----------------------------------------------------
+
+
+	PXPublic PXPNGChunkType ConvertToChunkType(const PXInt32U pngchunkType);
+	PXPublic PXInt32U ConvertFromChunkType(const PXPNGChunkType pngchunkType);
+
+	PXPublic PXPNGColorType ConvertToPNGColorType(const PXInt8U colorType);
+	PXPublic PXInt8U ConvertFromPNGColorType(const PXPNGColorType colorType);
+
+	PXPublic PXPNGInterlaceMethod ConvertToPNGInterlaceMethod(const PXInt8U interlaceMethod);
+	PXPublic PXInt8U ConvertFromPNGInterlaceMethod(const PXPNGInterlaceMethod interlaceMethod);
 
 
 
-	PXPublic PNGChunkType ConvertToChunkType(const unsigned int pngchunkType);
-	PXPublic unsigned int ConvertFromChunkType(const PNGChunkType pngchunkType);
-
-	PXPublic PNGColorType ConvertToPNGColorType(const PXInt8U colorType);
-	PXPublic unsigned int ConvertFromPNGColorType(const PNGColorType colorType);
-
-	PXPublic PNGInterlaceMethod ConvertToPNGInterlaceMethod(const unsigned char interlaceMethod);
-	PXPublic unsigned char ConvertFromPNGInterlaceMethod(const PNGInterlaceMethod interlaceMethod);
+	PXPublic void PXPNGConstruct(PXPNG* const png);
+	PXPublic void PXPNGDestruct(PXPNG* const png);
 
 
+	PXPublic PXInt8U PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
+	PXPublic PXInt8U PXPNGBitsPerPixel(const PXPNG* const png);
 
-	PXPublic void PNGConstruct(PNG* const png);
-	PXPublic void PNGDestruct(PNG* const png);
+	PXPublic PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-
-	PXPublic PXSize NumberOfColorChannels(const PNGColorType pngColorType);
-	PXPublic PXSize BitsPerPixel(const PNG* const png);
-
-	PXPublic PXSize PNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
-
-	PXPublic PXActionResult PNGParseToImage(Image* const image, PXDataStream* const dataStream);
-	PXPublic PXActionResult PNGSerializeFromImage(const Image* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult PXPNGParseToImage(PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
 
 #ifdef __cplusplus
 }

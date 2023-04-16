@@ -27,7 +27,7 @@
 #endif
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <Math/PXMath.h>
 #include <stdio.h>
 
@@ -77,7 +77,7 @@ void PXUIElementEnable()
         ICC_STANDARD_CLASSES |
         ICC_LINK_CLASS |
 #endif
-        ICC_NATIVEFNTCTL_CLASS;   // native font control
+        ICC_NATIVEPXSpriteFontCTL_CLASS;   // native font control
 
 
 

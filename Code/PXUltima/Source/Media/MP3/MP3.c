@@ -4,7 +4,6 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/XingInfo/XingInfo.h>
 #include <Media/LAME/LAME.h>
-#include <Container/ClusterValue.h>
 
 #define MPEGGenreIDBlues 0u
 #define MPEGGenreIDClassicRock 1u

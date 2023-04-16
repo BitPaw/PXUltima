@@ -1,7 +1,7 @@
 #ifndef PXHTTPINCLUDE
 #define PXHTTPINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <File/PXDataStream.h>
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 #ifndef SBPPXClientINCLUDE
 #define SBPPXClientINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #include <OS/Network/PXClient.h>
 #include <OS/Thread/PXThread.h>

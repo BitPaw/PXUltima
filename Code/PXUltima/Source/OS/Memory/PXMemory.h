@@ -1,7 +1,7 @@
 #ifndef PXMemoryINCLUDE
 #define PXMemoryINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #if OSUnix
 typedef int MemoryProtectionModeType;

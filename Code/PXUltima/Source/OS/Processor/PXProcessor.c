@@ -1,7 +1,6 @@
 #include "PXProcessor.h"
 
 #include <OS/System/OSVersion.h>
-#include <Container/ClusterValue.h>
 
 #if OSUnix
 #include <time.h>
@@ -12,7 +11,7 @@
 #endif
 
 #include <stdio.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
@@ -279,7 +278,7 @@ PXProcessorBrand PXProcessorBrandDetect(const char* name)
 
 PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model)
 {       
-    const unsigned short id = MakeShort(famliy, model);
+    const PXInt16U id = PXInt16Make(famliy, model);
 
     switch (processorBrand)
     {
@@ -287,34 +286,34 @@ PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processor
         {
             switch (id)
             {
-                case MakeShort(4, 0): return Intel486DX25x33;
-                case MakeShort(4, 1): return Intel486DX50;
-                case MakeShort(4, 2): return Intel486SX;
-                case MakeShort(4, 3): return Intel486DX2;
-                case MakeShort(4, 4): return Intel486SL;
-                case MakeShort(4, 5): return Intel486SX2;
-                case MakeShort(4, 7): return Intel486DX2WB;
-                case MakeShort(4, 8): return Intel486DX4;
-                case MakeShort(4, 9): return Intel486DX4WB;
+                case PXInt16Make(4, 0): return Intel486DX25x33;
+                case PXInt16Make(4, 1): return Intel486DX50;
+                case PXInt16Make(4, 2): return Intel486SX;
+                case PXInt16Make(4, 3): return Intel486DX2;
+                case PXInt16Make(4, 4): return Intel486SL;
+                case PXInt16Make(4, 5): return Intel486SX2;
+                case PXInt16Make(4, 7): return Intel486DX2WB;
+                case PXInt16Make(4, 8): return Intel486DX4;
+                case PXInt16Make(4, 9): return Intel486DX4WB;
 
-                case MakeShort(5, 0): return IntelPentium60x66AStep;
-                case MakeShort(5, 1): return IntelPentium60x66;
-                case MakeShort(5, 2): return IntelPentium75x200;
-                case MakeShort(5, 3): return IntelOverDrivePODP5V83;
-                case MakeShort(5, 4): return IntelPentiumMMX;
-                case MakeShort(5, 7): return IntelMobilePentium75x200;
-                case MakeShort(5, 8): return IntelMobilePentiumMMX;
+                case PXInt16Make(5, 0): return IntelPentium60x66AStep;
+                case PXInt16Make(5, 1): return IntelPentium60x66;
+                case PXInt16Make(5, 2): return IntelPentium75x200;
+                case PXInt16Make(5, 3): return IntelOverDrivePODP5V83;
+                case PXInt16Make(5, 4): return IntelPentiumMMX;
+                case PXInt16Make(5, 7): return IntelMobilePentium75x200;
+                case PXInt16Make(5, 8): return IntelMobilePentiumMMX;
 
-                case MakeShort(6, 1): return IntelPentiumProAStep;
-                case MakeShort(6, 2): return IntelPentiumPro;
-                case MakeShort(6, 3): return IntelPentiumIIKlamath;
-                case MakeShort(6, 5): return IntelPentiumIIDeschutes;
-                case MakeShort(6, 6): return IntelCeleronMendocino;
-                case MakeShort(6, 7): return IntelPentiumIIIKatmai;
-                case MakeShort(6, 8): return IntelPentiumIIICoppermine;
-                case MakeShort(6, 9): return IntelMobilePentiumIII;
-                case MakeShort(6, 10): return IntelPentiumIII0x18um;
-                case MakeShort(6, 11): return IntelPentiumIII0x13um;
+                case PXInt16Make(6, 1): return IntelPentiumProAStep;
+                case PXInt16Make(6, 2): return IntelPentiumPro;
+                case PXInt16Make(6, 3): return IntelPentiumIIKlamath;
+                case PXInt16Make(6, 5): return IntelPentiumIIDeschutes;
+                case PXInt16Make(6, 6): return IntelCeleronMendocino;
+                case PXInt16Make(6, 7): return IntelPentiumIIIKatmai;
+                case PXInt16Make(6, 8): return IntelPentiumIIICoppermine;
+                case PXInt16Make(6, 9): return IntelMobilePentiumIII;
+                case PXInt16Make(6, 10): return IntelPentiumIII0x18um;
+                case PXInt16Make(6, 11): return IntelPentiumIII0x13um;
             }
 
             if (famliy == 7)
@@ -329,34 +328,34 @@ PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processor
         {
             switch (id)
             {
-                case MakeShort(4, 3): return AMD486DX2;
-                case MakeShort(4, 7): return AMD486DX2WB;
-                case MakeShort(4, 8): return AMD486DX4;
-                case MakeShort(4, 9): return AMD486DX4WB;
-                case MakeShort(4, 14): return AMDAm5x86WT;
-                case MakeShort(4, 15): return AMDAm5x86WB;
+                case PXInt16Make(4, 3): return AMD486DX2;
+                case PXInt16Make(4, 7): return AMD486DX2WB;
+                case PXInt16Make(4, 8): return AMD486DX4;
+                case PXInt16Make(4, 9): return AMD486DX4WB;
+                case PXInt16Make(4, 14): return AMDAm5x86WT;
+                case PXInt16Make(4, 15): return AMDAm5x86WB;
 
-                case MakeShort(5, 0): return AMDK5SSA5;
-                case MakeShort(5, 1): // fallthough
-                case MakeShort(5, 2): // fallthough
-                case MakeShort(5, 3): return AMDK5;
+                case PXInt16Make(5, 0): return AMDK5SSA5;
+                case PXInt16Make(5, 1): // fallthough
+                case PXInt16Make(5, 2): // fallthough
+                case PXInt16Make(5, 3): return AMDK5;
 
-                case MakeShort(5, 6):  // fallthough
-                case MakeShort(5, 7): return AMDK6;
+                case PXInt16Make(5, 6):  // fallthough
+                case PXInt16Make(5, 7): return AMDK6;
 
-                case MakeShort(5, 8): return AMDK62;
-                case MakeShort(5, 9): return AMDK63;
-                case MakeShort(5, 13): return AMDK63P;
+                case PXInt16Make(5, 8): return AMDK62;
+                case PXInt16Make(5, 9): return AMDK63;
+                case PXInt16Make(5, 13): return AMDK63P;
 
-                case MakeShort(6, 0): // fallthough
-                case MakeShort(6, 1): return AMDAthlon0x25um;
-                case MakeShort(6, 2): return AMDAthlon0x18um;
-                case MakeShort(6, 3): return AMDDuron;
-                case MakeShort(6, 4): return AMDAthlonThunderbird;
-                case MakeShort(6, 6): return AMDAthlonPalamino;
-                case MakeShort(6, 7): return AMDDuronMorgan;
-                case MakeShort(6, 8): return AMDAthlonThoroughbred;
-                case MakeShort(6, 10): return AMDAthlonBarton;
+                case PXInt16Make(6, 0): // fallthough
+                case PXInt16Make(6, 1): return AMDAthlon0x25um;
+                case PXInt16Make(6, 2): return AMDAthlon0x18um;
+                case PXInt16Make(6, 3): return AMDDuron;
+                case PXInt16Make(6, 4): return AMDAthlonThunderbird;
+                case PXInt16Make(6, 6): return AMDAthlonPalamino;
+                case PXInt16Make(6, 7): return AMDDuronMorgan;
+                case PXInt16Make(6, 8): return AMDAthlonThoroughbred;
+                case PXInt16Make(6, 10): return AMDAthlonBarton;
             }
 
             if (famliy == 15)

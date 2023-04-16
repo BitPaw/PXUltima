@@ -29,7 +29,7 @@ typedef HGLRC OpenGLConextID;
 #endif
 //---------------------------
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 typedef unsigned int OpenGLID;
 typedef unsigned int OpenGLShaderProgramID;
@@ -739,7 +739,7 @@ extern "C"
 	PXPublic void OpenGLTextureParameterI(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const int param);
 	PXPublic void OpenGLTextureParameterF(OpenGLContext* const openGLContext, const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const float param);
 
-	PXPrivate OpenGLVersion OpenGLVersionParse(const unsigned int versionID);
+	PXPrivate OpenGLVersion OpenGLVersionParse(const PXInt32U versionID);
 	PXPrivate void OpenGLCacheFunction(void** loadList, PXSize* currentSize, char* name, void* functionADress);
 	PXPrivate const void* const OpenGLFunctionAdressFetch(const char* const functionName);
 

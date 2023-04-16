@@ -1,30 +1,30 @@
 #include "RIFF.h"
 
 #include <File/PXDataStream.h>
-#include <Container/ClusterValue.h>
 #include <OS/Memory/PXMemory.h>
 
-#define RIFFSignature MakeInt('R', 'I', 'F', 'F')
-#define RIFXSignature MakeInt('R', 'I', 'F', 'X')
 
-//#define RIFFSubTypeANI MakeInt('x', 'x', 'x', 'x')
-#define RIFFSubTypeAVI MakeInt('A', 'V', 'I', ' ')
-#define RIFFSubTypeAVIX MakeInt('A', 'V', 'I', 'X')
-#define RIFFSubTypeRDIB MakeInt('R', 'D', 'I', 'B')
-//#define RIFFSubTypeBND MakeInt('x', 'x', 'x', 'x')
-//#define RIFFSubTypeDXR MakeInt('x', 'x', 'x', 'x')
-#define RIFFSubTypePAL MakeInt('P', 'A', 'L', ' ')
-//#define RIFFSubTypeRDI MakeInt('x', 'x', 'x', 'x')
-#define RIFFSubTypeRMMP MakeInt('R', 'M', 'M', 'P')
-#define RIFFSubTypeRMID MakeInt('R', 'M', 'I', 'D')
-#define RIFFSubTypeWAVE MakeInt('W', 'A', 'V', 'E')
+
+#define RIFFSignature PXInt32Make('R', 'I', 'F', 'F')
+#define RIFXSignature PXInt32Make('R', 'I', 'F', 'X')
+//#define RIFFSubTypeANI PXInt32MakeEndianBig('x', 'x', 'x', 'x')
+#define RIFFSubTypeAVI PXInt32Make('A', 'V', 'I', ' ')
+#define RIFFSubTypeAVIX PXInt32Make('A', 'V', 'I', 'X')
+#define RIFFSubTypeRDIB PXInt32Make('R', 'D', 'I', 'B')
+//#define RIFFSubTypeBND PXInt32MakeEndianBig('x', 'x', 'x', 'x')
+//#define RIFFSubTypeDXR PXInt32MakeEndianBig('x', 'x', 'x', 'x')
+#define RIFFSubTypePAL PXInt32Make('P', 'A', 'L', ' ')
+//#define RIFFSubTypeRDI PXInt32MakeEndianBig('x', 'x', 'x', 'x')
+#define RIFFSubTypeRMMP PXInt32Make('R', 'M', 'M', 'P')
+#define RIFFSubTypeRMID PXInt32Make('R', 'M', 'I', 'D')
+#define RIFFSubTypeWAVE PXInt32Make('W', 'A', 'V', 'E')
 
 PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream)
 {
 	MemoryClear(riff, sizeof(RIFF));
 
-	ClusterInt chunkID;
-	ClusterInt formatID;
+	PXInt32UCluster chunkID;
+	PXInt32UCluster formatID;
 
 	PXDataStreamReadB(pxDataStream, chunkID.Data, 4u);
 	PXDataStreamReadI32UE(pxDataStream, &riff->ChunkSize, EndianLittle);

@@ -1,7 +1,7 @@
 #ifndef PXMD5INCLUDE
 #define PXMD5INCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"

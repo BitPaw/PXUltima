@@ -1,12 +1,11 @@
 #include "PXFont.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <File/PXDataStream.h>
-
-#include <Media/FNT/FNT.h>
+#include <Media/SpriteFont/PXSpriteFont.h>
 #include <Media/TTF/TTF.h>
-#include <Media/Image.h>
+#include <Media/PXImage.h>
 
 void PXFontConstruct(PXFont* const font)
 {
@@ -58,12 +57,8 @@ PXActionResult PXFontLoadU(PXFont* const font, const PXTextUTF8 filePath)
     {
         const FileFormatExtension hint = FilePathExtensionDetectTryA(filePath, PathMaxSize);
         const PXActionResult fileParsingResult = PXFontLoadD(font, &dataStream, hint);
-        const unsigned char success = fileParsingResult == PXActionSuccessful;
 
-        if (success)
-        {
-            return PXActionSuccessful;
-        }
+        PXActionExitOnSuccess(fileParsingResult);
 
         PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;
@@ -75,7 +70,8 @@ PXActionResult PXFontLoadU(PXFont* const font, const PXTextUTF8 filePath)
             fileGuessResult = PXFontLoadD(font, &imageFileFormat, hint);
 
             fileFormatID++;
-        } while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
+        } 
+        while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
         PXDataStreamDestruct(&dataStream);
 
@@ -92,12 +88,12 @@ PXActionResult PXFontLoadD(PXFont* const font, PXDataStream* const pxDataStream,
         case FileFormatSpriteFont:
         {
             font->FontElementSize = 1u;
-            font->FontElement = MemoryAllocateClear(sizeof(PXFNT) * 1u);
+            font->FontElement = MemoryAllocateClear(sizeof(PXSpriteFont) * 1u);
 
             {
 
                 PXSize readBytes = 0;
-                const PXActionResult filePXActionResult = FNTParse(font->FontElement, pxDataStream);
+                const PXActionResult filePXActionResult = PXSpriteFontParse(font->FontElement, pxDataStream);
                 const PXBool sucessful = PXActionSuccessful == filePXActionResult;
 
                 if(!sucessful)

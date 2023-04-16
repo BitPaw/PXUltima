@@ -13,7 +13,7 @@ static const unsigned ADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; /*y start values*/
 static const unsigned ADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; /*x delta values*/
 static const unsigned ADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
 
-unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bpp, PNGInterlaceMethod interlaceMethod)
+unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bpp, PXPNGInterlaceMethod interlaceMethod)
 {
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
@@ -29,10 +29,10 @@ unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSize 
     switch (interlaceMethod)
     {
         default:
-        case PNGInterlaceInvalid:
+        case PXPNGInterlaceInvalid:
             break;
 
-        case PNGInterlaceNone:
+        case PXPNGInterlaceNone:
         {
             const unsigned char additionalStep = bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u;
 
@@ -47,7 +47,7 @@ unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSize 
 
             break;
         }    
-        case PNGInterlaceADAM7:
+        case PXPNGInterlaceADAM7:
         {
             unsigned passw[7], passh[7];
             PXSize filter_passstart[8], padded_passstart[8], passstart[8];
@@ -76,7 +76,7 @@ unsigned int ADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSize 
     return 0;
 }
 
-unsigned int ADAM7ScanlinesEncode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bbp, PNGInterlaceMethod interlaceMethod)
+unsigned int ADAM7ScanlinesEncode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bbp, PXPNGInterlaceMethod interlaceMethod)
 {
     return 0;
 }

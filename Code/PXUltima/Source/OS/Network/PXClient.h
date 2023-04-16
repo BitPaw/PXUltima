@@ -1,7 +1,7 @@
 #ifndef PXClientInclude
 #define PXClientInclude
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/Network/PXSocket.h>
 

@@ -3,8 +3,7 @@
 #include <OS/System/OSVersion.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
-#include <Text/PXText.h>
-#include <Container/ClusterValue.h>
+#include <Media/PXText.h>
 
 #include <iso646.h>
 #include <stdarg.h>

@@ -1,7 +1,7 @@
 #ifndef SerializationINCLUDE
 #define SerializationINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 
 #ifdef __cplusplus
 extern "C"

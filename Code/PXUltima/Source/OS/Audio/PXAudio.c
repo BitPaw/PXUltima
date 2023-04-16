@@ -1,7 +1,7 @@
 #include "PXAudio.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 #if OSUnix
 #elif OSWindows

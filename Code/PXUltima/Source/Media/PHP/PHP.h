@@ -1,7 +1,7 @@
 #ifndef PHPINCLUDE
 #define PHPINCLUDE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 
 #ifdef __cplusplus

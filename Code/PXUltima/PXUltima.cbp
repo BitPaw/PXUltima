@@ -301,10 +301,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Media/FMT/FMT.h" />
-		<Unit filename="Source/Media/FNT/FNT.c">
+		<Unit filename="Source/Media/PXSpriteFont/PXSpriteFont.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Media/FNT/FNT.h" />
+		<Unit filename="Source/Media/PXSpriteFont/PXSpriteFont.h" />
 		<Unit filename="Source/Media/FTP/FTP.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -501,10 +501,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Media/YAML/YAML.h" />
-		<Unit filename="Source/Media/ZLIB/ZLIB.c">
+		<Unit filename="Source/Media/PXZLIB/PXZLIB.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Media/ZLIB/ZLIB.h" />
+		<Unit filename="Source/Media/PXZLIB/PXZLIB.h" />
 		<Unit filename="Source/Network/SBP/PXSBPPackageProcessor.c">
 			<Option compilerVar="CC" />
 		</Unit>
