@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #include <Media/Bitmap/PXBitmap.h>
 #include <Media/GIF/GIF.h>
@@ -64,8 +64,8 @@ PXActionResult PXImageLoadU(PXImage* const image, const PXTextUTF8 filePath)
 
     {
         {
-            const FileFormatExtension imageFormatHint = FilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
-            const PXActionResult fileParsingResult = PXImageLoadD(image, &dataStream, imageFormatHint);
+            const FileFormatExtension imageForPXMathint = FilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
+            const PXActionResult fileParsingResult = PXImageLoadD(image, &dataStream, imageForPXMathint);
 
             PXActionExitOnSuccess(fileParsingResult);
         }

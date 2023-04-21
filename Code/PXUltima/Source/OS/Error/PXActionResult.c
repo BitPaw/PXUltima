@@ -67,7 +67,7 @@ PXActionResult ConvertErrorCode(const int errorCode)
 	//		return DestinationAddressRequired;
 
 		case EDOM:
-			return MathematicsArgumentOutOfDomainOfFunction;
+			return PXMathematicsArgumentOutOfDomainOfFunction;
 
 		case EEXIST:
 			return FileExists;

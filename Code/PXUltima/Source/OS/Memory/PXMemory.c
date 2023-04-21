@@ -1,6 +1,6 @@
 #include "PXMemory.h"
 
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <OS/Error/PXActionResult.h>
 
 #include <stdlib.h>
@@ -168,7 +168,7 @@ void MemorySet(void* __restrict buffer, const unsigned char value, const PXSize 
 
 int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
 {
-	const PXSize bufferSize = MathMinimumIU(bufferASize, bufferBSize);
+	const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
 
 
 #if MemoryAssertEnable
@@ -195,8 +195,8 @@ int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASi
 		acumulatorB += !isEqual * ((PXAdress)bufferB)[counter];
 	}
 
-	const PXSize minimum = MathMaximum(acumulatorA, acumulatorB);
-	const PXSize maximum = MathMaximum(acumulatorA, acumulatorB);
+	const PXSize minimum = PXMathMaximum(acumulatorA, acumulatorB);
+	const PXSize maximum = PXMathMaximum(acumulatorA, acumulatorB);
 	const int result = maximum - minimum;
 
 	return result;
@@ -217,7 +217,7 @@ PXBool MemoryCompareToByte(const void* __restrict bufferA, const PXSize bufferAS
 
 PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
 {
-	const PXSize bufferSize = MathMinimumIU(bufferASize, bufferBSize);
+	const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
 
 #if MemoryAssertEnable
 	assert(bufferA);
@@ -263,7 +263,7 @@ void* MemoryLocate(const void* __restrict inputBuffer, const PXByte byteBlock, c
 
 PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
-	const PXSize bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
+	const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
 #if MemoryAssertEnable
 	assert(inputBuffer);
@@ -288,7 +288,7 @@ PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSi
 
 PXSize MemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
-	const PXSize bufferSize = MathMinimumIU(inputBufferSize, outputBufferSize);
+	const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
 #if MemoryUseSystemFunction
 	memmove(outputBuffer, inputBuffer, bufferSize);

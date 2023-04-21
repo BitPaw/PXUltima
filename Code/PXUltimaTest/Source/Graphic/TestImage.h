@@ -14,13 +14,13 @@ extern "C"
 
     extern void TestImageAll();
 
-    extern PXActionResult ImageLoadTest(Image* const image, const char* const filePath);
+    extern PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath);
     extern void TestSaveImageSmal();
     extern void TestSaveImage();
     extern void ImageWriteText();
 
-    PXActionResult ImageLoadTest(Image* const image, const char* const filePath);
-    PXActionResult ImageSaveTest(Image* const image, const char* const filePath, const FileFormatExtension fileFormat, const ImageDataFormat dataFormat);
+    PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath);
+    PXActionResult ImageSaveTest(PXImage* const image, const char* const filePath, const FileFormatExtension fileFormat, const PXColorFormat dataFormat);
 
 #ifdef __cplusplus
 }

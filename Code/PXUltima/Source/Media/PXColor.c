@@ -14,31 +14,39 @@ PXInt8U PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
 
 		case PXColorFormatRGBI8:
 		case PXColorFormatBGRI8:
+			return sizeof(PXInt8U) * 3u;
+
 		case PXColorFormatRGBAI8:
 		case PXColorFormatBGRAI8:
-			return sizeof(PXInt8U);
+			return sizeof(PXInt8U) * 4u;
 
 		case PXColorFormatRGBI16:
 		case PXColorFormatBGRI16:
+			return sizeof(PXInt16U) * 3u;
+
 		case PXColorFormatRGBAI16:
 		case PXColorFormatBGRAI16:
-			return sizeof(PXInt16U);
+			return sizeof(PXInt16U) * 4u;
 
 		case PXColorFormatRGBI32:
 		case PXColorFormatBGRI32:
-		case PXColorFormatRGBAI32:
-		case PXColorFormatBGRAI32:
 		case PXColorFormatRGBF:
 		case PXColorFormatBGRF:
+			return sizeof(PXInt32U) * 3u;
+
 		case PXColorFormatRGBAF:
 		case PXColorFormatBGRAF:
-			return sizeof(PXInt32U);
+		case PXColorFormatRGBAI32:
+		case PXColorFormatBGRAI32:
+			return sizeof(PXInt32U) * 4u;
 
 		case PXColorFormatRGBD:
 		case PXColorFormatBGRD:
+			return sizeof(double) * 3u;
+
 		case PXColorFormatRGBAD:
 		case PXColorFormatBGRAD:
-			return sizeof(double);
+			return sizeof(double) * 4u;
 	}
 }
 

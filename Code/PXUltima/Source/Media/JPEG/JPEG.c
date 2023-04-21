@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <File/PXDataStream.h>
 #include <Media/PXColor.h>
 
@@ -963,7 +963,7 @@ PXActionResult JPEGSerializeFromImage(const PXImage* const image, PXDataStream* 
     unsigned char downsample = 0;
     const char* comment = 0;
 
-    quality = MathLimitCU(quality, 1u, 100u);
+    quality = PXMathLimitCU(quality, 1u, 100u);
     // formula taken from libjpeg
     quality = quality < 50 ? 5000 / quality : 200 - quality * 2;
 
@@ -1007,8 +1007,8 @@ PXActionResult JPEGSerializeFromImage(const PXImage* const image, PXDataStream* 
         const unsigned char chrominance = (DefaultQuantChrominance[ZigZagInv[i]] * quality + 50u) / 100u;
 
         // clamp to 1..255
-        quantLuminance[i] = (MathLimitCU(luminance, 1u, 255u));
-        quantChrominance[i] = (MathLimitCU(chrominance, 1u, 255u));
+        quantLuminance[i] = (PXMathLimitCU(luminance, 1u, 255u));
+        quantChrominance[i] = (PXMathLimitCU(chrominance, 1u, 255u));
     }
 
     // write quantization tables
@@ -1191,8 +1191,8 @@ PXActionResult JPEGSerializeFromImage(const PXImage* const image, PXDataStream* 
                     for(PXSize deltaX = 0; deltaX < 8; ++deltaX)
                     {
                         // find actual pixel position within the current image
-                        const PXSize column = MathMinimumIU(mcuX + blockX + deltaX, image->Width - 1); // must not exceed image borders, replicate last row/column if needed
-                        const PXSize row = MathMinimumIU(mcuY + blockY + deltaY, image->Height - 1);
+                        const PXSize column = PXMathMinimumIU(mcuX + blockX + deltaX, image->Width - 1); // must not exceed image borders, replicate last row/column if needed
+                        const PXSize row = PXMathMinimumIU(mcuY + blockY + deltaY, image->Height - 1);
                         PXSize pixelPos = row * image->Width + column; // the cast ensures that we don't run into multiplication overflows
 
                         // grayscale images have solely a Y channel which can be easily derived from the input pixel by shifting it by 128

@@ -76,3 +76,27 @@ PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 
 	return millisecondsDelta;
 }
+
+PXInt64U PXTimeCounterStampGet()
+{
+#if OSUnix
+	return 0;
+#elif OSWindows
+	LARGE_INTEGER largeInteger;
+	const BOOL success = QueryPerformanceCounter(&largeInteger); // Windows 2000, Kernel32.dll
+
+	return largeInteger.QuadPart;
+#endif
+}
+
+PXInt64U PXTimeCounterFrequencyGet()
+{
+#if OSUnix
+	return 0;
+#elif OSWindows
+	LARGE_INTEGER largeInteger;
+	const BOOL success = QueryPerformanceFrequency(&largeInteger); // Windows 2000, Kernel32.dll
+
+	return largeInteger.QuadPart;
+#endif
+}

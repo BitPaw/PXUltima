@@ -4,7 +4,7 @@
 
 #include <Compiler/PXCompiler.h>
 #include <Media/YAML/YAML.h>
-#include <Media/OBJ/OBJ.h>
+#include <Media/Wavefront/PXWavefront.h>
 #include <Media/XML/XML.h>
 
 void TestPXCompilerAll()
@@ -32,13 +32,11 @@ void TestPXCompilerOBJ()
 
 	PXDataStreamMapToMemory(&outputStream, inputStream.DataSize*4, MemoryReadAndWrite);
 
-	OBJFileCompile(&inputStream, &outputStream);
+	PXWavefrontFileCompile(&inputStream, &outputStream);
 
-	PXModel model;
+	PXModel model;	
 
-
-
-	OBJParseToModel(&outputStream, &model);
+	PXWavefrontParseToModel(&outputStream, &model);
 
 	printf("____\n");
 }

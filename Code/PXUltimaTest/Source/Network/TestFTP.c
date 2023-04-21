@@ -1,7 +1,7 @@
 #include "TestFTP.h"
 
 #include <Network/Web/PXFTPClient.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 #include <Media/FTP/FTP.h>
 
 #include <stdio.h>

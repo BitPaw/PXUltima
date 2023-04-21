@@ -6,7 +6,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/HUFFMAN/HuffmanTree.h>
 #include <File/PXDataStream.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <Media/LZ77/PXLZ77.h>
 
 #define DeflateEncodingInvalidID -1
@@ -901,7 +901,7 @@ unsigned HuffmanTree_makeTable(HuffmanTree* tree)
         if(l <= FIRSTBITS) continue; /*symbols that fit in first table don't increase secondary table size*/
         /*get the FIRSTBITS MSBs, the MSBs of the symbol are encoded first. See later comment about the reversing*/
         index = reverseBits(symbol >> (l - FIRSTBITS), FIRSTBITS);
-        maxlens[index] = MathMaximum(maxlens[index], l);
+        maxlens[index] = PXMathMaximum(maxlens[index], l);
     }
     /* compute total table size: size of first table plus all secondary tables for symbols longer than FIRSTBITS */
     size = headsize;
@@ -1317,8 +1317,8 @@ unsigned deflateDynamic
         error = HuffmanTree_makeFromFrequencies(&tree_d, frequencies_d, 2, 30, 15);
         if(error) break;
 
-        numcodes_ll = MathMinimumIU(tree_ll.numcodes, 286);
-        numcodes_d = MathMinimumIU(tree_d.numcodes, 30);
+        numcodes_ll = PXMathMinimumIU(tree_ll.numcodes, 286);
+        numcodes_d = PXMathMinimumIU(tree_d.numcodes, 30);
         /*store the code lengths of both generated trees in bitlen_lld*/
         numcodes_lld = numcodes_ll + numcodes_d;
         bitlen_lld = (unsigned*)MemoryAllocate(numcodes_lld * sizeof(*bitlen_lld));
@@ -1502,7 +1502,7 @@ PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream*
             for (PXSize i = 0; i != numdeflateblocks; ++i)
             {
                 const PXBool BFINAL = (i == numdeflateblocks - 1);
-                const PXInt16U chunkLength = MathMinimumIU(65535, pxInputStream->DataSize - datapos);
+                const PXInt16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataSize - datapos);
                 const PXInt16U chunkLengthNegated = 65535 - chunkLength;
 
                 const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
@@ -1545,7 +1545,7 @@ PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream*
             for (PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
             {
                 const PXSize indexStart = i * blocksize;
-                const PXSize indexEnd = MathMinimumIU(indexStart + blocksize, pxInputStream->DataSize);
+                const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataSize);
                 const PXBool finalBlock = (i == numdeflateblocks - 1);
 
                 // PXDataStreamWriteBits(pxOutputStream, finalBlock, 1u);

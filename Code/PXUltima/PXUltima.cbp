@@ -201,26 +201,26 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Log/PXLog.h" />
-		<Unit filename="Source/Math/PXDiagram.c">
+		<Unit filename="Source/PXMath/PXDiagram.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Math/PXDiagram.h" />
-		<Unit filename="Source/Math/PXMath.c">
+		<Unit filename="Source/PXMath/PXDiagram.h" />
+		<Unit filename="Source/PXMath/PXPXMath.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Math/PXMath.h" />
-		<Unit filename="Source/Math/PXMatrix.c">
+		<Unit filename="Source/PXMath/PXPXMath.h" />
+		<Unit filename="Source/PXMath/PXMatrix.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Math/PXMatrix.h" />
-		<Unit filename="Source/Math/PXPhysic.c">
+		<Unit filename="Source/PXMath/PXMatrix.h" />
+		<Unit filename="Source/PXMath/PXPhysic.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Math/PXPhysic.h" />
-		<Unit filename="Source/Math/PXVector.c">
+		<Unit filename="Source/PXMath/PXPhysic.h" />
+		<Unit filename="Source/PXMath/PXVector.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/Math/PXVector.h" />
+		<Unit filename="Source/PXMath/PXVector.h" />
 		<Unit filename="Source/Media/3DS/A3DS.c">
 			<Option compilerVar="CC" />
 		</Unit>

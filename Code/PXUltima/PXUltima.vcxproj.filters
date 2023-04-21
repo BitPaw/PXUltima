@@ -207,7 +207,7 @@
     <ClInclude Include="Source\OS\Library\PXLibrary.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\PXMath.h">
+    <ClInclude Include="Source\PXMath\PXPXMath.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Network\IP.h">
@@ -261,7 +261,7 @@
     <ClInclude Include="Source\Media\PHP\PHP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\PXMatrix.h">
+    <ClInclude Include="Source\PXMath\PXMatrix.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\ClipBoard\PXClipBoard.h">
@@ -345,10 +345,10 @@
     <ClInclude Include="Source\Graphic\PXCamera.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\PXVector.h">
+    <ClInclude Include="Source\PXMath\PXVector.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\PXDiagram.h">
+    <ClInclude Include="Source\PXMath\PXDiagram.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\MD5\MD5.h">
@@ -360,7 +360,7 @@
     <ClInclude Include="Source\Media\RSA\RSA.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\PXPhysic.h">
+    <ClInclude Include="Source\PXMath\PXPhysic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Time\PXStopWatch.h">
@@ -435,7 +435,7 @@
     <ClInclude Include="Source\Media\CPP\PXCPP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\PXCollision.h">
+    <ClInclude Include="Source\PXMath\PXCollision.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\ZLIB\PXZLIB.h">
@@ -632,7 +632,7 @@
     <ClCompile Include="Source\OS\Library\PXLibrary.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\PXMath.c">
+    <ClCompile Include="Source\PXMath\PXPXMath.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Memory\PXMemory.c">
@@ -689,7 +689,7 @@
     <ClCompile Include="Source\Media\PHP\PHP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\PXMatrix.c">
+    <ClCompile Include="Source\PXMath\PXMatrix.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\ClipBoard\PXClipBoard.c">
@@ -773,10 +773,10 @@
     <ClCompile Include="Source\Graphic\PXCamera.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\PXVector.c">
+    <ClCompile Include="Source\PXMath\PXVector.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\PXDiagram.c">
+    <ClCompile Include="Source\PXMath\PXDiagram.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\MD5\MD5.c">
@@ -788,7 +788,7 @@
     <ClCompile Include="Source\Media\RSA\RSA.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\PXPhysic.c">
+    <ClCompile Include="Source\PXMath\PXPhysic.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Time\PXStopWatch.c">
@@ -860,7 +860,7 @@
     <ClCompile Include="Source\Media\CPP\PXCPP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\PXCollision.c">
+    <ClCompile Include="Source\PXMath\PXCollision.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\ZLIB\PXZLIB.c">

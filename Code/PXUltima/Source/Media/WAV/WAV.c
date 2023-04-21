@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/RIFF/RIFF.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #define WAVSignatureLIST { 'L', 'I', 'S', 'T' }
 #define WAVSignatureData { 'd', 'a', 't', 'a' }
@@ -138,7 +138,7 @@ PXActionResult WAVSerialize(WAV* const wav, PXDataStream* const pxDataStream)
 	{
 		for (PXSize i = 0; i < (44100 * 60) / bpm; i++)
 		{
-			float sample = (frequences[section] > 0) * 0.5f *  ((1 + MathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) +  MathSinus(wave);
+			float sample = (frequences[section] > 0) * 0.5f *  ((1 + PXMathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) +  PXMathSinus(wave);
 			unsigned int correctedsample = sample * maxAmp;
 			PXDataStreamWriteB(pxDataStream, &correctedsample, bitdepth / 8);
 			wave += 2 * 3.14159265358979323846 * frequences[section] * (100 / (((i >= ((44100 * 60) / bpm) * i) + 1))) / 44100;

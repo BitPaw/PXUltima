@@ -1,13 +1,13 @@
 #include "PXSoftwareRender.h"
 
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 void PXSoftwareRenderDrawRectangle(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 
-    const PXSize mimimumInBoundsX = MathMinimum(x + width, image->Width);
-    const PXSize mimimumInBoundsY = MathMinimum(y + height, image->Height);
+    const PXSize mimimumInBoundsX = PXMathMinimum(x + width, image->Width);
+    const PXSize mimimumInBoundsY = PXMathMinimum(y + height, image->Height);
     const PXSize bytePerPixel = PXColorFormatBytePerPixel(image->Format);
 
     for (PXSize cy = y; cy < mimimumInBoundsY; ++cy)
@@ -91,14 +91,14 @@ void PXImageMerge(PXImage* const image, const PXSize x, const PXSize y, const PX
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 
-    const PXSize sourceMimimumInBoundsX = MathMinimum(x + insertWidth, image->Width);
-    const PXSize sourceMimimumInBoundsY = MathMinimum(y + insertHeight, image->Height);
-    const PXSize targetMimimumInBoundsX = MathMinimum(insertX + insertWidth, imageInsert->Width);
-    const PXSize targetMimimumInBoundsY = MathMinimum(insertY + insertHeight, imageInsert->Height);
+    const PXSize sourceMimimumInBoundsX = PXMathMinimum(x + insertWidth, image->Width);
+    const PXSize sourceMimimumInBoundsY = PXMathMinimum(y + insertHeight, image->Height);
+    const PXSize targetMimimumInBoundsX = PXMathMinimum(insertX + insertWidth, imageInsert->Width);
+    const PXSize targetMimimumInBoundsY = PXMathMinimum(insertY + insertHeight, imageInsert->Height);
 
     const PXSize sourceBytesPerPixel = PXColorFormatBytePerPixel(image->Format);
     const PXSize targetBytesPerPixel = PXColorFormatBytePerPixel(imageInsert->Format);
-    const PXSize bytesPerPixel = MathMinimum(sourceBytesPerPixel, targetBytesPerPixel);
+    const PXSize bytesPerPixel = PXMathMinimum(sourceBytesPerPixel, targetBytesPerPixel);
 
     for (PXSize cy = 0u; cy < insertHeight; ++cy)
     {

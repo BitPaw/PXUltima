@@ -2,7 +2,7 @@
 
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #include <stdarg.h>
 #include <fcntl.h>
@@ -240,7 +240,7 @@ FileFormatExtension FileExtensionDetectTryA(const char* const extension, const P
 
 FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, const PXSize extensionSizeC)
 {
-	const PXSize extensionSize = MathMinimumIU(extensionSizeC, ExtensionMaxSize);
+	const PXSize extensionSize = PXMathMinimumIU(extensionSizeC, ExtensionMaxSize);
 
 	switch (extensionSize)
 	{
@@ -262,9 +262,9 @@ FileFormatExtension FileExtensionDetectTryW(const wchar_t* const extension, cons
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "ELF", 3u))  return FileFormatLinuxExecutableAndLinkable;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "OUT", 3u))  return FileFormatLinuxExecutableAndLinkable;
 
-			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "PXSpriteFont", 3u))  return FileFormatSpriteFont;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "FNT", 3u))  return FileFormatSpriteFont;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "GIF", 3u))  return FileFormatGIF;
-			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "HTM", 3u))  return FileFormatHTML;
+			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "HTM", 3u))  return FileForPXMathTML;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "INI", 3u))  return FileFormatINI;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "M4A", 3u))  return FileFormatM4A;
 			if (PXTextCompareIgnoreCaseWA(extension, extensionSize, "3DS", 3u))  return FileFormatA3DS;

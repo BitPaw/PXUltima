@@ -2,7 +2,7 @@
 #define PXCollisionINCLUDE
 
 #include <Media/PXType.h>
-#include <Math/PXVector.h>
+#include <PXMath/PXVector.h>
 
 #ifdef __cplusplus
 extern "C"

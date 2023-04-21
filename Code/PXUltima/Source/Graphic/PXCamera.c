@@ -1,7 +1,7 @@
 #include "PXCamera.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 void PXCameraConstruct(PXCamera* const camera)
 {
@@ -97,13 +97,13 @@ void PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F)
 	camera->CurrentRotation.X -= vector3F->X * camera->ViewSpeed;
 	camera->CurrentRotation.Y -= vector3F->Y * camera->ViewSpeed;
 
-	camera->CurrentRotation.Y = MathLimit(camera->CurrentRotation.Y, minValue, maxValue);
+	camera->CurrentRotation.Y = PXMathLimit(camera->CurrentRotation.Y, minValue, maxValue);
 
-	const float pitchRAD = MathDegreeToRadians(camera->CurrentRotation.Y);
-	const float yawRAD = MathDegreeToRadians(camera->CurrentRotation.X);
-	const float rx = MathCosinus(pitchRAD) * MathCosinus(yawRAD);
-	const float ry = MathSinus(pitchRAD);
-	const float rz = MathCosinus(pitchRAD) * MathSinus(yawRAD);
+	const float pitchRAD = PXMathDegreeToRadians(camera->CurrentRotation.Y);
+	const float yawRAD = PXMathDegreeToRadians(camera->CurrentRotation.X);
+	const float rx = PXMathCosinus(pitchRAD) * PXMathCosinus(yawRAD);
+	const float ry = PXMathSinus(pitchRAD);
+	const float rz = PXMathCosinus(pitchRAD) * PXMathSinus(yawRAD);
 
 	PXVector3FSetXYZ(&camera->LookAtPosition, rx, ry, rz, &camera->LookAtPosition);
 	PXVector3FNormalize(&camera->LookAtPosition, &camera->LookAtPosition);

@@ -67,7 +67,7 @@ PXBool PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const vo
 
 		if (isEmptyKeyField)
 		{
-			MemoryCopy(key, dictionary->KeyTypeSize, pxDictionaryEntry.Key, dictionary->ValueTypeSize);
+			MemoryCopy(key, dictionary->KeyTypeSize, pxDictionaryEntry.Key, dictionary->KeyTypeSize);
 
 			switch (dictionary->ValueLocality)
 			{

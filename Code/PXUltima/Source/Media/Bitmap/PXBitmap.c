@@ -1,7 +1,7 @@
 #include "PXBitmap.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <Media/PXImage.h>
 
 #define PXBitmapHeaderIDWindows                  PXInt16Make('B', 'M')
@@ -384,17 +384,17 @@ void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDat
 {
     bmpImageDataLayout->RowImageDataSize = width * (bbp / 8u);
     bmpImageDataLayout->ImageSize = bmpImageDataLayout->RowImageDataSize * height;
-    bmpImageDataLayout->RowFullSize = MathFloorD((width * bbp + 31u) / 32.0f) * 4u;
+    bmpImageDataLayout->RowFullSize = PXMathFloorD((width * bbp + 31u) / 32.0f) * 4u;
     const int paddingSUM = (int)bmpImageDataLayout->RowFullSize - (int)bmpImageDataLayout->RowImageDataSize;
-    bmpImageDataLayout->RowPaddingSize = MathAbsoluteI(paddingSUM);
-    bmpImageDataLayout->RowAmount = MathCeilingF(bmpImageDataLayout->ImageSize / (float)bmpImageDataLayout->RowFullSize);
+    bmpImageDataLayout->RowPaddingSize = PXMathAbsoluteI(paddingSUM);
+    bmpImageDataLayout->RowAmount = PXMathCeilingF(bmpImageDataLayout->ImageSize / (float)bmpImageDataLayout->RowFullSize);
 }
 
 PXSize PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)
 {
     const PXSize sizePXBitmapHeader = 14u;
     const PXSize sizePXBitmapDIP = 40u;
-    const PXSize imageDataSize = (MathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height;
+    const PXSize imageDataSize = (PXMathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height;
     const PXSize fullSize = sizePXBitmapHeader + sizePXBitmapDIP + imageDataSize+512u;
 
     return fullSize;

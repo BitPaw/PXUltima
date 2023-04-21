@@ -63,7 +63,7 @@ extern "C"
         IntelMobilePentiumMMX,
         IntelPentiumProAStep,
         IntelPentiumPro,
-        IntelPentiumIIKlamath,
+        IntelPentiumIIKlaPXMath,
         IntelPentiumIIDeschutes,
         IntelCeleronMendocino,
         IntelPentiumIIIKatmai,

@@ -3,6 +3,7 @@
 
 #include <Media/PXType.h>
 
+//---<Makros>------------------------------------------------------------------
 #define MakeLetterCaseLower(character) (character | 0b00100000)
 #define MakeLetterCaseUpper(character) (character & 0b11011111)
 #define CompareLetterCaseIgnore(a, b) (MakeLetterCaseLower(a) == b) || (MakeLetterCaseUpper(a) == b)
@@ -12,11 +13,11 @@
 #define IsEmptySpace(c) (c == ' ')
 #define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
 
-
-#define PXTextFloatIsAllowedCháracter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.')
+#define PXTextFloatIsAllowedCharacter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.')
 
 #define IsPrintable(c) (0x20 =< c && c =< 0x7E)
 #define MakePrintable(c) ((0x20 <= c && c <= 0x7E) ? + c : '?')
+//-----------------------------------------------------------------------------
 
 #define PXTextUnkownLength -1
 #define PXTextIndexNotFound -1
@@ -25,8 +26,6 @@
 extern "C"
 {
 #endif
-
-	
 
 	typedef struct ParsingTokenA_
 	{

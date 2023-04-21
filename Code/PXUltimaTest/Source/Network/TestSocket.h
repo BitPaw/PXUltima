@@ -1,7 +1,7 @@
 #ifndef PXTestSocketDEFINE
 #define PXTestSocketDEFINE
 
-#include <Media/Type.h>
+#include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 
 #ifdef __cplusplus

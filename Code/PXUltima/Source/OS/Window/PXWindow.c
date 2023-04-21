@@ -9,7 +9,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <OS/Monitor/PXMonitor.h>
 #include <OS/Thread/Await.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #if OSUnix
 
@@ -1772,16 +1772,8 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 }
 #endif
 
-PXThreadResult PXWindowCreateThread(void* const windowAdress)
+PXThreadResult PXWindowCreateThread(PXWindow* const window)
 {
-    PXWindow* const window = (PXWindow*)windowAdress;
-    const PXBool isHidden = window->Title[0] == '\0';
-
-    if(!windowAdress)
-    {
-        return PXThreadSucessful;
-    }
-
     window->IsRunning = 0;
     window->CursorModeCurrent = PXWindowCursorShow;
 
@@ -1793,7 +1785,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
         const Display* const display = XOpenDisplay(0);   // Create Window
         const PXBool successful = display != 0;
 
-        if(!successful)
+        if (!successful)
         {
             return PXThreadSucessful; // printf("\n\tcannot connect to X server\n\n");
         }
@@ -1817,7 +1809,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     {
         const PXBool successful = visualInfo != 0;
 
-        if(!successful)
+        if (!successful)
         {
             return PXThreadSucessful; // no appropriate visual found
         }
@@ -1889,7 +1881,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
         );
         const unsigned char sucessful = PXWindowID;
 
-        printf("[i][Window] Create <%i x %i> \n",window->Width,  window->Height );
+        printf("[i][Window] Create <%i x %i> \n", window->Width, window->Height);
 
         window->ID = sucessful ? PXWindowID : 0;
     }
@@ -1957,7 +1949,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
     window->CursorID = cursorID;
 
-    if (!isHidden)
+    if (!window->Mode == PXWindowModeNormal)
     {
         dwStyle |= WS_VISIBLE | WS_OVERLAPPEDWINDOW;
     }
@@ -2003,7 +1995,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     );
 
     {
-        if(!windowID)
+        if (!windowID)
         {
             const PXActionResult windowsCreateResult = GetCurrentError();
 
@@ -2073,9 +2065,6 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
 
         window->HandleDeviceContext = windowHandleToDeviceContext;
     }
-
-
-
 #endif
 
     PXGraphicInstantiate(&window->GraphicInstance);
@@ -2088,7 +2077,7 @@ PXThreadResult PXWindowCreateThread(void* const windowAdress)
     {
         UpdateWindow(windowID);
 
-        if (!isHidden)
+        if (window->Mode == PXWindowModeNormal)
         {
             ShowWindow(windowID, SW_SHOW);
         }
@@ -2239,6 +2228,8 @@ void PXWindowCreateU(PXWindow* const window, const unsigned int width, const uns
 {
     PXTextCopyAW(title, 256u, window->Title, 256u);
 
+    window->Mode = PXWindowModeNormal;
+
     PXWindowCreate(window, width, height, async);
 }
 
@@ -2277,7 +2268,9 @@ void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsi
 
 void PXWindowCreateHidden(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async)
 {
-    PXWindowCreateA(window, width, height, 0, async);
+    window->Mode = PXWindowModeHidden;
+
+    PXWindowCreate(window, width, height, async);
 }
 
 void PXWindowDestruct(PXWindow* const window)
@@ -2300,6 +2293,33 @@ PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
     return 0;
 #elif OSWindows
     return GetWindowThreadProcessId(windowID, PXNull);
+#endif
+}
+
+PXBool PXWindowTitleSetA(PXWindow* const window, const char* const title, const PXSize titleSize)
+{
+#if OSUnix
+    return 0;
+#elif OSWindows
+    const PXBool success = SetWindowTextA(window->ID, title, titleSize);
+
+    // could get extended error
+
+    return success;
+#endif
+}
+
+PXSize PXWindowTitleGetA(const PXWindow* const window, char* const title, const PXSize titleSize)
+{
+#if OSUnix
+    return 0;
+#elif OSWindows
+    const int result = GetWindowTextA(window->ID, title, titleSize);
+    const PXBool success = result > 0;
+
+    // could get extended error
+
+    return result;
 #endif
 }
 
@@ -2353,13 +2373,13 @@ void PXWindowLookupRemove(const PXWindow* window)
     currentWindow = 0;
 }
 
-void PXWindowSize(PXWindow* window, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height)
+void PXWindowSize(PXWindow* const pxWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height)
 {
 #if OSUnix
 #elif OSWindows
     RECT rect;
 
-    const unsigned char result = GetWindowRect(window->ID, &rect);
+    const unsigned char result = GetWindowRect(pxWindow->ID, &rect);
     const unsigned char success = result != 0;
 
     // Get Last Error
@@ -2671,8 +2691,8 @@ void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const 
 {
     PXMouse* mouse = &window->MouseCurrentInput;
 
-    mouse->Position[0] = MathLimit(positionX, 0, window->Width);
-    mouse->Position[1] = window->Height - MathLimit(positionY, 0, window->Height);
+    mouse->Position[0] = PXMathLimit(positionX, 0, window->Width);
+    mouse->Position[1] = window->Height - PXMathLimit(positionY, 0, window->Height);
     mouse->Delta[0] = deltaX;
     mouse->Delta[1] = deltaY;
     mouse->PositionNormalisized[0] = mouse->Position[0] / (window->Width / 2.0f) - 1;

@@ -5,7 +5,6 @@
 #include <OS/Error/PXActionResult.h>
 #include <File/PXDataStream.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
-#include <Graphic/PXGraphic.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,7 +13,7 @@ extern "C"
 
 	typedef	struct PXFontPage_
 	{
-		PXTexture Texture;
+		PXInt32U Texture;
 	}
 	PXFontPage;
 

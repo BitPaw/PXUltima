@@ -4,7 +4,7 @@
 
 #include <File/PXDataStream.h>
 #include <Media/PXText.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #define PXCompilerSanitise 1
 
@@ -559,7 +559,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			{
 				for (PXSize i = 0; (i <= dotIndex +1) && isValidFloatSyntax; i++)
 				{
-					isValidFloatSyntax = PXTextFloatIsAllowedCháracter(text[i]);
+					isValidFloatSyntax = PXTextFloatIsAllowedCharacter(text[i]);
 				}
 			}
 

@@ -3,7 +3,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <Event/PXEvent.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <stdio.h>
 
 #if OSUnix
@@ -1008,7 +1008,7 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
                 continue;
             }
 
-            highestSocketID = MathMaximumIU(highestSocketID, socketID);
+            highestSocketID = PXMathMaximumIU(highestSocketID, socketID);
             selectListenRead.fd_array[j] = socketID;
 
             --restValues;

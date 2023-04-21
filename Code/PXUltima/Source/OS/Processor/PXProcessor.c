@@ -91,8 +91,8 @@ void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char
             processorName = "Intel ";
             break;
 
-        case IntelPentiumIIKlamath:
-            processorName = "Intel Pentium II (Klamath)";
+        case IntelPentiumIIKlaPXMath:
+            processorName = "Intel Pentium II (KlaPXMath)";
             break;
 
         case IntelPentiumIIDeschutes:
@@ -306,7 +306,7 @@ PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processor
 
                 case PXInt16Make(6, 1): return IntelPentiumProAStep;
                 case PXInt16Make(6, 2): return IntelPentiumPro;
-                case PXInt16Make(6, 3): return IntelPentiumIIKlamath;
+                case PXInt16Make(6, 3): return IntelPentiumIIKlaPXMath;
                 case PXInt16Make(6, 5): return IntelPentiumIIDeschutes;
                 case PXInt16Make(6, 6): return IntelCeleronMendocino;
                 case PXInt16Make(6, 7): return IntelPentiumIIIKatmai;

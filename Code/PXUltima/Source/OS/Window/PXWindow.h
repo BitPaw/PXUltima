@@ -136,18 +136,27 @@ extern "C"
 
 	// 	static PXDictionary<PXWindowID, PXWindow*> _windowLookup;
 
+	typedef enum PXWindowMode_
+	{
+		PXWindowModeInvalid,
+		PXWindowModeNormal,
+		PXWindowModeHidden
+	}
+	PXWindowMode;
+
 	typedef struct PXWindow_
 	{
 		volatile PXBool IsRunning;
 		PXWindowID ID;
+
+		PXWindowMode Mode;
 
 		PXInt32S X;
 		PXInt32S Y;
 		PXInt32S Width;
 		PXInt32S Height;
 
-		wchar_t Title[PXWindowTitleSizeMax];
-
+		wchar_t Title[256];
 
 		// Live data
 		PXBool HasSizeChanged;
@@ -155,8 +164,6 @@ extern "C"
 
 		PXKeyBoard KeyBoardCurrentInput;
 		PXMouse MouseCurrentInput;
-
-
 
 		PXGraphicContext GraphicInstance;
 
@@ -197,7 +204,7 @@ extern "C"
 	PXPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
 #endif
 
-	PXPrivate PXThreadResult PXWindowCreateThread(void* const PXWindowAdress);
+	PXPrivate PXThreadResult PXWindowCreateThread(PXWindow* const PXWindowAdress);
 
 	PXPublic void PXWindowConstruct(PXWindow* const window);
 
@@ -214,6 +221,9 @@ extern "C"
 
 	PXPublic PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID);
 
+	PXPublic PXBool PXWindowTitleSetA(PXWindow* const window, const char* const title, const PXSize titleSize);
+	PXPublic PXSize PXWindowTitleGetA(const PXWindow* const window, char* const title, const PXSize titleSize);
+
 	PXPublic PXWindowID PXWindowFindViaTitleA(const PXTextASCII windowTitle);
 	PXPublic PXWindowID PXWindowFindViaTitleW(const PXTextUNICODE windowTitle);
 	PXPublic PXWindowID PXWindowFindViaTitleU(const PXTextUTF8 windowTitle);
@@ -225,20 +235,20 @@ extern "C"
 	PXPublic PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID);
 	PXPublic void PXWindowLookupRemove(const PXWindow* PXWindow);
 
-	PXPublic void PXWindowSize(PXWindow* PXWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height);
-	PXPublic void PXWindowSizeChange(PXWindow* PXWindow, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
-	PXPublic void PXWindowPosition(PXWindow* PXWindow, unsigned int* x, unsigned int* y);
-	PXPublic void PXWindowPositionChange(PXWindow* PXWindow, const unsigned int x, const unsigned int y);
-	PXPublic void PXWindowPositonCenterScreen(PXWindow* PXWindow);
-	PXPublic void PXWindowCursor(PXWindow* PXWindow);
+	PXPublic void PXWindowSize(PXWindow* const pxWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height);
+	PXPublic void PXWindowSizeChange(PXWindow* const pxWindow, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
+	PXPublic void PXWindowPosition(PXWindow* const pxWindow, unsigned int* x, unsigned int* y);
+	PXPublic void PXWindowPositionChange(PXWindow* const pxWindow, const unsigned int x, const unsigned int y);
+	PXPublic void PXWindowPositonCenterScreen(PXWindow* const pxWindow);
+	PXPublic void PXWindowCursor(PXWindow* const pxWindow);
 	//voidPXWindowCursor(const CursorIcon cursorIcon);
 	PXPublic void PXWindowCursorTexture();
-	PXPublic void PXWindowCursorCaptureMode(PXWindow* PXWindow, const PXWindowCursorMode cursorMode);
+	PXPublic void PXWindowCursorCaptureMode(PXWindow* const pxWindow, const PXWindowCursorMode cursorMode);
 	//voidPXWindowScreenShotTake(Image image);
 
-	PXPublic PXBool PXWindowFrameBufferSwap(PXWindow* PXWindow);
+	PXPublic PXBool PXWindowFrameBufferSwap(PXWindow* const pxWindow);
 
-	PXPublic PXBool PXWindowInteractable(PXWindow* PXWindow);
+	PXPublic PXBool PXWindowInteractable(PXWindow* const pxWindow);
 
 	PXPublic PXBool PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y);
 	PXPublic PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y);

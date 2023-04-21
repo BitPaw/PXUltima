@@ -642,7 +642,7 @@
 	<Media/Model.h>
 	<Media/Type.h>
 	<Graphic/OpenGL/OpenGL.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Container/LinkedList/PXLinkedList.h>
 	<Async/PXLock.h>
 
@@ -662,11 +662,11 @@
 	<GL/glx.h>
 	<Media/Type.h>
 
-1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXMatrix.h
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXMatrix.h
 	<Media/Type.h>
-	<Math/PXVector.h>
+	<PXMath/PXVector.h>
 
-1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXVector.h
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXVector.h
 	<Media/Type.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.h
@@ -689,7 +689,7 @@
 	<float.h>
 	<OS/PXWindow.h>
 	<Media/Font.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Graphic/Graphic.h>
 	<Graphic/OpenGL/OpenGL.h>
 
@@ -849,7 +849,7 @@
 	<float.h>
 	<OS/PXWindow.h>
 	<Media/PXFont.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Graphic/PXGraphic.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/Graphic/TestOpenGL.h
@@ -869,15 +869,15 @@
 	<Media/Model.h>
 	<Media/Type.h>
 	<Graphic/OpenGL/OpenGL.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Container/LinkedList/PXLinkedList.h>
 	<Async/PXLock.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMatrix.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXMatrix.h
 	<Media/Type.h>
-	<Math/PXVector.h>
+	<PXMath/PXVector.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXVector.h
+1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXVector.h
 	<Media/Type.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.h
@@ -1185,7 +1185,7 @@
 	<float.h>
 	<OS/Window/PXWindow.h>
 	<Media/PXFont.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Graphic/PXGraphic.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaTest/Source/Graphic/TestOpenGL.h
@@ -1211,7 +1211,7 @@
 	<Media/Model.h>
 	<Media/Type.h>
 	<OS/Graphic/OpenGL/OpenGL.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Container/LinkedList/PXLinkedList.h>
 	<OS/Thread/PXLock.h>
 
@@ -1225,11 +1225,11 @@
 	<GL/glx.h>
 	<Media/Type.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXMatrix.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXMatrix.h
 	<Media/Type.h>
-	<Math/PXVector.h>
+	<PXMath/PXVector.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXVector.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXVector.h
 	<Media/Type.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Container/LinkedList/PXLinkedList.h

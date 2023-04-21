@@ -9,10 +9,12 @@
 #if OSUnix
 #define PXPrivate static
 #define PXPublic extern
+#define PXMSHandle void*
 #elif OSWindows
 #define PXDLLExport __declspec(dllexport)
 #define PXPrivate static
 #define PXPublic extern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
+#define PXMSHandle HANDLE
 #endif
 //-----------------------------------------------------------------------------
 

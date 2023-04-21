@@ -26,7 +26,7 @@ extern "C"
 		ClipBoardFormatWAVE,
 		ClipBoardFormatUNICODETEXT,
 		ClipBoardFormatENHMETAFILE,
-		ClipBoardFormatHDROP,
+		ClipBoardForPXMathDROP,
 		ClipBoardFormatLOCALE,
 		ClipBoardFormatDIBV5,
 		ClipBoardFormatMAX,

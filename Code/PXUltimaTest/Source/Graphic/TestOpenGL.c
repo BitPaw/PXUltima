@@ -8,7 +8,8 @@
 #include <float.h>
 #include <OS/Window/PXWindow.h>
 #include <Media/PXFont.h>
-#include <Math/PXMatrix.h>
+#include <PXMath/PXMatrix.h>
+#include <Graphic/SoftwareRender/PXSoftwareRender.h>
 
 #include <Graphic/PXGraphic.h>
 
@@ -76,17 +77,17 @@ void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
 {
 	PXWindow* pxWindow = (PXWindow*)openGLContext->AttachedWindow;
 
-	Image image;
+	PXImage image;
 
-	ImageConstruct(&image);
+	PXImageConstruct(&image);
 
-	ImageResize(&image, ImageDataFormatRGB8, pxWindow->Width, pxWindow->Height);
+	PXImageResize(&image, PXColorFormatRGBI8, pxWindow->Width, pxWindow->Height);
 
 	OpenGLPixelDataRead(openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
 
-	ImageSaveA(&image, "_TEST_DATA_OUTPUT_/Buffertest.png", FileFormatPNG, ImageDataFormatRGB8);
+	PXImageSaveA(&image, "_TEST_DATA_OUTPUT_/Buffertest.png", FileFormatPNG, PXColorFormatRGBI8);
 
-	ImageDestruct(&image);
+	PXImageDestruct(&image);
 }
 
 void TestOpenGLRenderToTexture()
@@ -203,11 +204,11 @@ void TestOpenGLTextDraw()
 		OpenGLTextureCreate(&openGLContext, 1u, &textureText.ID);
 		OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureText.ID);
 
-		ImageResize(&textureText.Image, ImageDataFormatRGBA8, textWidth, textHeight); // Create memory
-		ImageFillColorRGBA8(&textureText.Image, 50, 50, 50, 150);
-
-		ImageDrawRectangle(&textureText.Image, 10, 10, 100, 100, 0xFF, 0, 0, 0xFF); // test
-		ImageDrawTextA(&textureText.Image, 0, 0, textWidth, textHeight, &font, "Sample Text"); // Draw text
+		PXImageResize(&textureText.Image, PXColorFormatRGBI8, textWidth, textHeight); // Create memory
+		PXImageFillColorRGBA8(&textureText.Image, 50, 50, 50, 150);
+		
+		PXSoftwareRenderDrawRectangle(&textureText.Image, 10, 10, 100, 100, 0xFF, 0, 0, 0xFF); // test
+		PXImageDrawTextA(&textureText.Image, 0, 0, textWidth, textHeight, &font, "Sample Text"); // Draw text
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -342,7 +343,7 @@ void TestOpenGLVAO()
 	PXRenderable renderable;
 	PXModel model;
 
-	ModelLoadA(&model, "B:/Daten/Objects/Moze/Moze.obj");
+	PXModelLoadA(&model, "B:/Daten/Objects/Moze/Moze.obj");
 
 	while (!window.IsRunning)
 	{

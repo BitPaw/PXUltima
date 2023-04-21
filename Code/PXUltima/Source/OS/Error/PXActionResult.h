@@ -138,7 +138,7 @@ extern "C"
 		ConnectionReset, // CONNRESET
 		ResourceDeadlockWouldOccur, // DEADLK
 		DestinationAddressRequired, // DESTADDRREQ
-		MathematicsArgumentOutOfDomainOfFunction, // DOM
+		PXMathematicsArgumentOutOfDomainOfFunction, // DOM
 		FileExists, // EXIST
 		BadAddress, // FAULT
 		FileTooLarge, // FBIG

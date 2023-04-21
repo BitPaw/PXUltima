@@ -28,7 +28,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <stdio.h>
 
 
@@ -36,7 +36,7 @@
 void PXUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead)
 {
     const int textLength = GetWindowTextLengthW(uiElementID) + 1;
-    const int maximum = MathMinimum(textLength, bufferSize);
+    const int maximum = PXMathMinimum(textLength, bufferSize);
     const int lengthRead = GetWindowTextW(uiElementID, buffer, maximum);
 
     *bufferRead = lengthRead;

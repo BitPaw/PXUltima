@@ -1,5 +1,5 @@
-#ifndef TimeInclude
-#define TimeInclude
+#ifndef PXTimeINCLUDE
+#define PXTimeINCLUDE
 
 #include <Media/PXType.h>
 
@@ -57,7 +57,10 @@ extern "C"
 	PXPublic TimeMonth ConvertToDay(unsigned short dayID);
 
 	PXPublic void PXTimeNow(PXTime* time);
-	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);	
+	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
+
+	PXPublic PXInt64U PXTimeCounterStampGet();
+	PXPublic PXInt64U PXTimeCounterFrequencyGet();
 
 #ifdef __cplusplus
 }

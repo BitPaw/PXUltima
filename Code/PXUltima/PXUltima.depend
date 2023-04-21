@@ -146,7 +146,7 @@
 	<Container/ClusterInt.h>
 	<File/ParsingStream.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/Image.h>
 
 1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/BMP/BMP.h
@@ -161,7 +161,7 @@
 	<stddef.h>
 	"Endian.h"
 
-1660432202 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/Math/Math.h
+1660432202 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/PXMath/PXMath.h
 	<stddef.h>
 
 1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Font.c
@@ -366,7 +366,7 @@
 	"GIF.h"
 	<File/ParsingStream.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 
 1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/GIF/GIF.h
 	<stddef.h>
@@ -516,7 +516,7 @@
 	<stdlib.h>
 	<Container/ClusterShort.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/ParsingStream.h>
 	<File/BitStream.h>
 	<File/Color.h>
@@ -530,7 +530,7 @@
 1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/Media/PXZLIB/PXZLIB.c
 	"PXZLIB.h"
 	<Algorithm/ADLER/Adler32.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/BitStream.h>
 	<File/Media/DEFLATE/DeflateBlock.h>
 
@@ -549,7 +549,7 @@
 1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/File/ParsingStream.c
 	"ParsingStream.h"
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<Text/Text.h>
 	<iso646.h>
 	<stdarg.h>
@@ -572,9 +572,9 @@
 	<dlfcn.h>
 	<windows.h>
 
-1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/Math/Math.c
-	"Math.h"
-	<math.h>
+1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/PXMath/PXMath.c
+	"PXMath.h"
+	<PXMath.h>
 
 1660430822 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/OS/Bash.c
 	"Bash.h"
@@ -632,7 +632,7 @@
 
 1660432283 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/Memory/Memory.c
 	"Memory.h"
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdlib.h>
 	<malloc.h>
 	<sys/mman.h>
@@ -704,7 +704,7 @@
 1660432802 source:/home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/Text/Text.c
 	"Text.h"
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdarg.h>
 	<stdio.h>
 	<assert.h>
@@ -767,7 +767,7 @@
 	<commdlg.h>
 	<Memory/Memory.h>
 	<Text/Text.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdio.h>
 
 1660430822 /home/bitpaw/Desktop/BFE/Engine/PXUltima/Source/OS/OSUI.h
@@ -1028,7 +1028,7 @@
 	<Container/ClusterInt.h>
 	<File/ParsingStream.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/Image.h>
 
 1660430822 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/BMP/BMP.h
@@ -1043,7 +1043,7 @@
 	<stddef.h>
 	"Endian.h"
 
-1660432202 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/Math/Math.h
+1660432202 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/PXMath/PXMath.h
 	<stddef.h>
 
 1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/DEFLATE/DeflateBlock.c
@@ -1102,7 +1102,7 @@
 	"GIF.h"
 	<File/ParsingStream.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 
 1660430822 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/GIF/GIF.h
 	<stddef.h>
@@ -1130,7 +1130,7 @@
 	<stdlib.h>
 	<Container/ClusterShort.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/ParsingStream.h>
 	<File/BitStream.h>
 	<File/Color.h>
@@ -1367,7 +1367,7 @@
 1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/File/Media/PXZLIB/PXZLIB.c
 	"PXZLIB.h"
 	<Algorithm/ADLER/Adler32.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/BitStream.h>
 	<File/Media/DEFLATE/DeflateBlock.h>
 
@@ -1387,7 +1387,7 @@
 	"ParsingStream.h"
 	<OS/System/OSVersion.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<Text/Text.h>
 	<iso646.h>
 	<stdarg.h>
@@ -1403,13 +1403,13 @@
 	<dlfcn.h>
 	<windows.h>
 
-1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/Math/Math.c
-	"Math.h"
-	<math.h>
+1660430822 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/PXMath/PXMath.c
+	"PXMath.h"
+	<PXMath.h>
 
 1660432283 source:/home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/Memory/Memory.c
 	"Memory.h"
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdlib.h>
 	<malloc.h>
 	<sys/mman.h>
@@ -1533,7 +1533,7 @@
 	<commdlg.h>
 	<Memory/Memory.h>
 	<Text/Text.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdio.h>
 
 1660430822 /home/bitpaw/Desktop/BFE/BitFireEngine/PXUltima/Source/OS/OSUI.h
@@ -1572,7 +1572,7 @@
 	"Text.h"
 	<OS/System/OSVersion.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdarg.h>
 	<stdio.h>
 	<assert.h>
@@ -1738,7 +1738,7 @@
 	"File.h"
 	<Text/Text.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdarg.h>
 	<fcntl.h>
 	<sys/mman.h>
@@ -1765,7 +1765,7 @@
 	"ParsingStream.h"
 	<OS/System/OSVersion.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<Text/Text.h>
 	<iso646.h>
 	<stdarg.h>
@@ -1775,7 +1775,7 @@
 	<stddef.h>
 	"Endian.h"
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/Math.h
+1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXMath.h
 	<Media/Type.h>
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/3DS/A3DS.c
@@ -1838,7 +1838,7 @@
 	<Container/ClusterValue.h>
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/Image.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/BMP/BMP.h
@@ -1927,7 +1927,7 @@
 	"GIF.h"
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/GIF/GIF.h
 	<Media/Type.h>
@@ -1962,7 +1962,7 @@
 	<File/File.h>
 	<Text/Text.h>
 	<File/PXDataStream.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/BMP/BMP.h>
 	<Media/GIF/GIF.h>
 	<Media/JPEG/JPEG.h>
@@ -1999,7 +1999,7 @@
 	<stdlib.h>
 	<Container/ClusterValue.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/Color.h>
 	<stdio.h>
@@ -2160,7 +2160,7 @@
 	<OS/Memory/PXMemory.h>
 	<Media/HUFFMAN/HuffmanTree.h>
 	<File/PXDataStream.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/LZ77/PXLZ77.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/DEFLATE/DEFLATE.h
@@ -2204,7 +2204,7 @@
 	<File/Endian.h>
 	<Container/ClusterValue.h>
 	<Media/RIFF/RIFF.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/WAV/WAV.h
 	<Media/Type.h>
@@ -2257,7 +2257,7 @@
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/PXZLIB/PXZLIB.c
 	"PXZLIB.h"
 	<Container/ClusterValue.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/DEFLATE/DEFLATE.h>
 	<Media/ADLER/Adler32.h>
@@ -2296,13 +2296,13 @@
 	<dlfcn.h>
 	<windows.h>
 
-1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/Math.c
-	"Math.h"
-	<math.h>
+1662327724 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXMath.c
+	"PXMath.h"
+	<PXMath.h>
 
 1664028577 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Memory/Memory.c
 	"Memory.h"
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdlib.h>
 	<malloc.h>
 	<sys/mman.h>
@@ -2420,7 +2420,7 @@
 	<commdlg.h>
 	<OS/Memory/PXMemory.h>
 	<Text/Text.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/OS/OSUI.h
@@ -2472,7 +2472,7 @@
 	"Text.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdarg.h>
 	<stdio.h>
 	<stdlib.h>
@@ -2716,7 +2716,7 @@
 	<Container/ClusterValue.h>
 	<File/PXDataStream.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<Media/Image.h>
 
 1663842600 d:\_data\git\pxultima\pxultima\source\format\bmp\bmp.h
@@ -2731,7 +2731,7 @@
 	"Endian.h"
 	"File.h"
 
-1663842600 d:\_data\git\pxultima\pxultima\source\math\math.h
+1663842600 d:\_data\git\pxultima\pxultima\source\PXMath\PXMath.h
 	<Media/Type.h>
 
 1663842600 source:d:\_data\git\pxultima\pxultima\source\format\color.c
@@ -2761,7 +2761,7 @@
 	<Media/HUFFMAN/HuffmanTree.h>
 	<File/BitStream.h>
 	<File/PXDataStream.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 
 1663842600 d:\_data\git\pxultima\pxultima\source\format\deflate\deflate.h
 	<Media/Type.h>
@@ -2878,7 +2878,7 @@
 	"GIF.h"
 	<File/PXDataStream.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 
 1663842600 d:\_data\git\pxultima\pxultima\source\format\gif\gif.h
 	<Media/Type.h>
@@ -2913,7 +2913,7 @@
 	<File/File.h>
 	<Text/Text.h>
 	<File/PXDataStream.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<Media/BMP/BMP.h>
 	<Media/GIF/GIF.h>
 	<Media/JPEG/JPEG.h>
@@ -2956,7 +2956,7 @@
 	<stdlib.h>
 	<Container/ClusterValue.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/PXDataStream.h>
 	<File/BitStream.h>
 	<Media/Color.h>
@@ -3229,7 +3229,7 @@
 1663842600 source:d:\_data\git\pxultima\pxultima\source\format\PXZLIB\PXZLIB.c
 	"PXZLIB.h"
 	<Container/ClusterValue.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<File/PXDataStream.h>
 	<Media/DEFLATE/DEFLATE.h>
 	<Media/ADLER/Adler32.h>
@@ -3272,18 +3272,18 @@
 
 1663842600 d:\_data\git\pxultima\pxultima\source\graphic\vulcan\vulcan.h
 
-1663842600 source:d:\_data\git\pxultima\pxultima\source\math\math.c
-	"Math.h"
-	<math.h>
+1663842600 source:d:\_data\git\pxultima\pxultima\source\PXMath\PXMath.c
+	"PXMath.h"
+	<PXMath.h>
 
-1663842600 source:d:\_data\git\pxultima\pxultima\source\math\matrix.c
+1663842600 source:d:\_data\git\pxultima\pxultima\source\PXMath\matrix.c
 	"Matrix.h"
 
-1663842600 d:\_data\git\pxultima\pxultima\source\math\matrix.h
+1663842600 d:\_data\git\pxultima\pxultima\source\PXMath\matrix.h
 
 1663842600 source:d:\_data\git\pxultima\pxultima\source\memory\memory.c
 	"Memory.h"
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdlib.h>
 	<malloc.h>
 	<sys/mman.h>
@@ -3454,7 +3454,7 @@
 	"Text.h"
 	<OS/System/OSVersion.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdarg.h>
 	<stdio.h>
 	<assert.h>
@@ -3474,7 +3474,7 @@
 	"PXDataStream.h"
 	<OS/System/OSVersion.h>
 	<Memory/Memory.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<Text/Text.h>
 	<iso646.h>
 	<stdarg.h>
@@ -3527,7 +3527,7 @@
 	<commdlg.h>
 	<Memory/Memory.h>
 	<Text/Text.h>
-	<Math/Math.h>
+	<PXMath/PXMath.h>
 	<stdio.h>
 
 1663842600 d:\_data\git\pxultima\pxultima\source\os\osui.h
@@ -4905,7 +4905,7 @@
 	<Container/ClusterValue.h>
 	<Text/Text.h>
 	<File/File.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/OBJ/OBJ.h
 	<OS/Error/PXActionResult.h>
@@ -4965,10 +4965,10 @@
 
 1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/Vulcan/Vulcan.h
 
-1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/Matrix.c
+1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/Matrix.c
 	"Matrix.h"
 
-1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/Matrix.h
+1664022065 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/Matrix.h
 
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/Graphic.c
 	"Graphic.h"
@@ -5066,7 +5066,7 @@
 	"PXDataStream.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Text/Text.h>
 	<iso646.h>
 	<stdarg.h>
@@ -5100,13 +5100,13 @@
 	<stdio.h>
 	<File/PXDataStream.h>
 	<Text/Text.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompiler.h
 	<OS/Error/PXActionResult.h>
 	<File/PXDataStream.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMath.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXPXMath.h
 	<Media/Type.h>
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/Dictionary/PXDictionary.c
@@ -5142,7 +5142,7 @@
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.c
 	"PXLinkedList.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.h
 	<Media/Type.h>
@@ -5185,49 +5185,49 @@
 1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/SHA/PXSHA.h
 	<stddef.h>
 
-1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXDiagram.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXDiagram.c
 	"PXDiagram.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXDiagram.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXDiagram.h
 	<Media/Type.h>
 
-1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMath.c
-	"PXMath.h"
-	<math.h>
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXPXMath.c
+	"PXPXMath.h"
+	<PXMath.h>
 
-1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMatrix.c
+1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXMatrix.c
 	"PXMatrix.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<OS/Memory/PXMemory.h>
 	<stdio.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXMatrix.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXMatrix.h
 	<Media/Type.h>
-	<Math/PXVector.h>
+	<PXMath/PXVector.h>
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXVector.h
+1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXVector.h
 	<Media/Type.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Serialization/Serialization.h
 	<Media/Type.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXPhysic.c
+1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXPhysic.c
 	"PXPhysic.h"
 
-1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXPhysic.h
+1669335587 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXPhysic.h
 	<Media/Type.h>
-	<Math/PXVector.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXVector.h>
+	<PXMath/PXMatrix.h>
 
-1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Math/PXVector.c
+1669335587 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/PXMath/PXVector.c
 	"PXVector.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Memory/PXMemory.c
 	"PXMemory.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<OS/Error/PXActionResult.h>
 	<stdlib.h>
 	<malloc.h>
@@ -5269,18 +5269,18 @@
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXCamera.c
 	"PXCamera.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Graphic/PXCamera.h
 	<Media/Type.h>
-	<Math/PXMatrix.h>
-	<Math/PXVector.h>
+	<PXMath/PXMatrix.h>
+	<PXMath/PXVector.h>
 
 1674761651 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Network/PXServer.c
 	"PXServer.h"
 	<Event/Event.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<poll.h>
 	<stdio.h>
 
@@ -5538,19 +5538,19 @@
 	<stdio.h>
 	<File/PXDataStream.h>
 	<Text/Text.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Compiler/PXCompiler.h
 	<OS/Error/PXActionResult.h>
 	<File/PXDataStream.h>
 
-1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXMath.h
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXPXMath.h
 	<Media/Type.h>
 
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.c
 	"PXLinkedList.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Container/LinkedList/PXLinkedList.h
 	<Media/Type.h>
@@ -5628,7 +5628,7 @@
 	<Media/Model.h>
 	<Media/Type.h>
 	<Graphic/OpenGL/OpenGL.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Container/LinkedList/PXLinkedList.h>
 	<Async/PXLock.h>
 
@@ -5654,11 +5654,11 @@
 	<GL/glx.h>
 	<Media/Type.h>
 
-1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXMatrix.h
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXMatrix.h
 	<Media/Type.h>
-	<Math/PXVector.h>
+	<PXMath/PXVector.h>
 
-1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXVector.h
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXVector.h
 	<Media/Type.h>
 
 1669938255 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Device/InputButton.c
@@ -5713,7 +5713,7 @@
 	"File.h"
 	<Text/Text.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdarg.h>
 	<fcntl.h>
 	<sys/mman.h>
@@ -5770,7 +5770,7 @@
 	<Container/ClusterValue.h>
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/Image.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/BMP/BMP.h
@@ -5791,7 +5791,7 @@
 	<OS/Memory/PXMemory.h>
 	<Media/HUFFMAN/HuffmanTree.h>
 	<File/PXDataStream.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/DEFLATE/DEFLATE.h
 	<Media/Type.h>
@@ -5812,7 +5812,7 @@
 	"PXDataStream.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Text/Text.h>
 	<iso646.h>
 	<stdarg.h>
@@ -5931,7 +5931,7 @@
 	"GIF.h"
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/GIF/GIF.h
 	<Media/Type.h>
@@ -5944,7 +5944,7 @@
 	<stdlib.h>
 	<Container/ClusterValue.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/Color.h>
 	<stdio.h>
@@ -5981,7 +5981,7 @@
 	<File/File.h>
 	<Text/Text.h>
 	<File/PXDataStream.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/BMP/BMP.h>
 	<Media/GIF/GIF.h>
 	<Media/JPEG/JPEG.h>
@@ -6170,7 +6170,7 @@
 	<Container/ClusterValue.h>
 	<Text/Text.h>
 	<File/File.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/TTF/TTF.c
 	"TTF.h"
@@ -6278,7 +6278,7 @@
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/PXZLIB/PXZLIB.c
 	"PXZLIB.h"
 	<Container/ClusterValue.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/DEFLATE/DEFLATE.h>
 	<Media/ADLER/Adler32.h>
@@ -6312,12 +6312,12 @@
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Graphic/PXCamera.c
 	"PXCamera.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Graphic/PXCamera.h
 	<Media/Type.h>
-	<Math/PXMatrix.h>
-	<Math/PXVector.h>
+	<PXMath/PXMatrix.h>
+	<PXMath/PXVector.h>
 
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Graphic/SoftwareRender/SoftwareRender.c
 	"SoftwareRender.h"
@@ -6367,39 +6367,39 @@
 	<windows.h>
 	<Media/Type.h>
 
-1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXDiagram.c
+1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXDiagram.c
 	"PXDiagram.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
-1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXDiagram.h
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXDiagram.h
 	<Media/Type.h>
 
-1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXMath.c
-	"PXMath.h"
-	<math.h>
+1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXPXMath.c
+	"PXPXMath.h"
+	<PXMath.h>
 
-1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXMatrix.c
+1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXMatrix.c
 	"PXMatrix.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<OS/Memory/PXMemory.h>
 	<stdio.h>
 
-1669938255 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXPhysic.c
+1669938255 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXPhysic.c
 	"PXPhysic.h"
 
-1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXPhysic.h
+1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXPhysic.h
 	<Media/Type.h>
-	<Math/PXVector.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXVector.h>
+	<PXMath/PXMatrix.h>
 
-1669938255 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Math/PXVector.c
+1669938255 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/PXMath/PXVector.c
 	"PXVector.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Memory/PXMemory.c
 	"PXMemory.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdlib.h>
 	<malloc.h>
 	<sys/mman.h>
@@ -6472,7 +6472,7 @@
 	<commdlg.h>
 	<OS/Memory/PXMemory.h>
 	<Text/Text.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/OS/OSUI.h
@@ -6552,7 +6552,7 @@
 	"Text.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdarg.h>
 	<stdio.h>
 	<stdlib.h>
@@ -6626,7 +6626,7 @@
 	<Media/Model.h>
 	<Media/Type.h>
 	<Graphic/OpenGL/OpenGL.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Container/LinkedList/PXLinkedList.h>
 	<Async/PXLock.h>
 
@@ -6771,7 +6771,7 @@
 	<stdio.h>
 	<File/PXDataStream.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Compiler/PXCompiler.h
 	<OS/Error/PXActionResult.h>
@@ -6809,7 +6809,7 @@
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Text/PXText.h
 	<Media/Type.h>
 
-1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXMath.h
+1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXPXMath.h
 	<Media/Type.h>
 
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Compiler/PXCompilerSettings.c
@@ -6833,7 +6833,7 @@
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Container/LinkedList/PXLinkedList.c
 	"PXLinkedList.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Container/LinkedList/PXLinkedList.h
 	<Media/Type.h>
@@ -6915,7 +6915,7 @@
 	"PXDataStream.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Text/PXText.h>
 	<iso646.h>
 	<stdarg.h>
@@ -6926,18 +6926,18 @@
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Graphic/PXCamera.c
 	"PXCamera.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Graphic/PXCamera.h
 	<Media/Type.h>
-	<Math/PXMatrix.h>
-	<Math/PXVector.h>
+	<PXMath/PXMatrix.h>
+	<PXMath/PXVector.h>
 
-1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXMatrix.h
+1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXMatrix.h
 	<Media/Type.h>
-	<Math/PXVector.h>
+	<PXMath/PXVector.h>
 
-1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXVector.h
+1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXVector.h
 	<Media/Type.h>
 
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Graphic/SoftwareRender/SoftwareRender.c
@@ -6963,35 +6963,35 @@
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Log/PXLog.h
 	<Media/Type.h>
 
-1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXDiagram.c
+1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXDiagram.c
 	"PXDiagram.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
-1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXDiagram.h
+1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXDiagram.h
 	<Media/Type.h>
 
-1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXMath.c
-	"PXMath.h"
-	<math.h>
+1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXPXMath.c
+	"PXPXMath.h"
+	<PXMath.h>
 
-1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXMatrix.c
+1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXMatrix.c
 	"PXMatrix.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<OS/Memory/PXMemory.h>
 	<stdio.h>
 
-1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXPhysic.c
+1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXPhysic.c
 	"PXPhysic.h"
 
-1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXPhysic.h
+1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXPhysic.h
 	<Media/Type.h>
-	<Math/PXVector.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXVector.h>
+	<PXMath/PXMatrix.h>
 
-1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Math/PXVector.c
+1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/PXMath/PXVector.c
 	"PXVector.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Device/Controller.c
 	"Controller.h"
@@ -7022,7 +7022,7 @@
 	<Media/Model.h>
 	<Media/Type.h>
 	<OS/Graphic/OpenGL/OpenGL.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Container/LinkedList/PXLinkedList.h>
 	<OS/Thread/PXLock.h>
 
@@ -7143,7 +7143,7 @@
 	<Container/ClusterValue.h>
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/Image.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/BMP/BMP.h
@@ -7188,7 +7188,7 @@
 	"PXCS.h"
 	<Media/C/PXC.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/CS/PXCS.h
 	<Media/Type.h>
@@ -7209,7 +7209,7 @@
 	<OS/Memory/PXMemory.h>
 	<Media/HUFFMAN/HuffmanTree.h>
 	<File/PXDataStream.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/LZ77/PXLZ77.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/DEFLATE/DEFLATE.h
@@ -7289,7 +7289,7 @@
 	"GIF.h"
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/GIF/GIF.h
 	<Media/Type.h>
@@ -7331,7 +7331,7 @@
 	"Image.h"
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/BMP/BMP.h>
 	<Media/GIF/GIF.h>
 	<Media/JPEG/JPEG.h>
@@ -7374,7 +7374,7 @@
 	<stdlib.h>
 	<Container/ClusterValue.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/Color.h>
 	<stdio.h>
@@ -7490,7 +7490,7 @@
 	<OS/Memory/PXMemory.h>
 	<Container/ClusterValue.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/OGG/OGG.c
 	"OGG.h"
@@ -7644,7 +7644,7 @@
 	<OS/Memory/PXMemory.h>
 	<Container/ClusterValue.h>
 	<Media/RIFF/RIFF.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/WAV/WAV.h
 	<File/PXDataStream.h>
@@ -7702,7 +7702,7 @@
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/Media/PXZLIB/PXZLIB.c
 	"PXZLIB.h"
 	<Container/ClusterValue.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/DEFLATE/DEFLATE.h>
 	<Media/ADLER/Adler32.h>
@@ -7906,7 +7906,7 @@
 
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/OS/Memory/PXMemory.c
 	"PXMemory.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<OS/Error/PXActionResult.h>
 	<stdlib.h>
 	<malloc.h>
@@ -7944,7 +7944,7 @@
 	"PXServer.h"
 	<Event/Event.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 
 1680478696 source:/home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/OS/Processor/PXProcessor.c
@@ -8063,7 +8063,7 @@
 	"PXText.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdarg.h>
 	<stdio.h>
 	<stdlib.h>
@@ -8101,7 +8101,7 @@
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
 	<Event/Event.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 	<poll.h>
 
@@ -8111,7 +8111,7 @@
 	<commdlg.h>
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 
 1680478696 /home/bitpaw/Desktop/BFE/PXUltima/Code/PXUltima/Source/OS/UI/PXUI.h
@@ -8380,12 +8380,12 @@
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Container/LinkedList/PXLinkedList.c
 	"PXLinkedList.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Container/LinkedList/PXLinkedList.h
 	<Media/Type.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXMath.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXPXMath.h
 	<Media/Type.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Container/List/PXList.c
@@ -8411,7 +8411,7 @@
 	<stdio.h>
 	<File/PXDataStream.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Compiler/PXCompiler.h
 	<OS/Error/PXActionResult.h>
@@ -8511,7 +8511,7 @@
 	<Media/Model.h>
 	<Media/Type.h>
 	<OS/Graphic/OpenGL/OpenGL.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXMatrix.h>
 	<Container/LinkedList/PXLinkedList.h>
 	<OS/Thread/PXLock.h>
 
@@ -8531,11 +8531,11 @@
 	<GL/glx.h>
 	<Media/Type.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXMatrix.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXMatrix.h
 	<Media/Type.h>
-	<Math/PXVector.h>
+	<PXMath/PXVector.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXVector.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXVector.h
 	<Media/Type.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/Thread/PXLock.h
@@ -8585,7 +8585,7 @@
 	"PXDataStream.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Text/PXText.h>
 	<iso646.h>
 	<stdarg.h>
@@ -8596,12 +8596,12 @@
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Graphic/PXCamera.c
 	"PXCamera.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Graphic/PXCamera.h
 	<Media/Type.h>
-	<Math/PXMatrix.h>
-	<Math/PXVector.h>
+	<PXMath/PXMatrix.h>
+	<PXMath/PXVector.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Graphic/PXGraphic.c
 	"PXGraphic.h"
@@ -8649,35 +8649,35 @@
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Log/PXLog.h
 	<Media/Type.h>
 
-1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXDiagram.c
+1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXDiagram.c
 	"PXDiagram.h"
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXDiagram.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXDiagram.h
 	<Media/Type.h>
 
-1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXMath.c
-	"PXMath.h"
-	<math.h>
+1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXPXMath.c
+	"PXPXMath.h"
+	<PXMath.h>
 
-1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXMatrix.c
+1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXMatrix.c
 	"PXMatrix.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<OS/Memory/PXMemory.h>
 	<stdio.h>
 
-1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXPhysic.c
+1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXPhysic.c
 	"PXPhysic.h"
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXPhysic.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXPhysic.h
 	<Media/Type.h>
-	<Math/PXVector.h>
-	<Math/PXMatrix.h>
+	<PXMath/PXVector.h>
+	<PXMath/PXMatrix.h>
 
-1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Math/PXVector.c
+1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/PXMath/PXVector.c
 	"PXVector.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/3DS/A3DS.c
 	"A3DS.h"
@@ -8733,7 +8733,7 @@
 	<Container/ClusterValue.h>
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/Image.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/BMP/BMP.h
@@ -8778,7 +8778,7 @@
 	"PXCS.h"
 	<Media/C/PXC.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/CS/PXCS.h
 	<Media/Type.h>
@@ -8799,7 +8799,7 @@
 	<OS/Memory/PXMemory.h>
 	<Media/HUFFMAN/HuffmanTree.h>
 	<File/PXDataStream.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/LZ77/PXLZ77.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/DEFLATE/DEFLATE.h
@@ -8879,7 +8879,7 @@
 	"GIF.h"
 	<File/PXDataStream.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/GIF/GIF.h
 	<Media/Type.h>
@@ -8921,7 +8921,7 @@
 	"Image.h"
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<Media/BMP/BMP.h>
 	<Media/GIF/GIF.h>
 	<Media/JPEG/JPEG.h>
@@ -8964,7 +8964,7 @@
 	<stdlib.h>
 	<Container/ClusterValue.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/Color.h>
 	<stdio.h>
@@ -9080,7 +9080,7 @@
 	<OS/Memory/PXMemory.h>
 	<Container/ClusterValue.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/OGG/OGG.c
 	"OGG.h"
@@ -9234,7 +9234,7 @@
 	<OS/Memory/PXMemory.h>
 	<Container/ClusterValue.h>
 	<Media/RIFF/RIFF.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/WAV/WAV.h
 	<File/PXDataStream.h>
@@ -9292,7 +9292,7 @@
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/PXZLIB/PXZLIB.c
 	"PXZLIB.h"
 	<Container/ClusterValue.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<File/PXDataStream.h>
 	<Media/DEFLATE/DEFLATE.h>
 	<Media/ADLER/Adler32.h>
@@ -9503,7 +9503,7 @@
 	"File.h"
 	<Text/PXText.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdarg.h>
 	<fcntl.h>
 	<sys/mman.h>
@@ -9537,7 +9537,7 @@
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/Memory/PXMemory.c
 	"PXMemory.h"
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<OS/Error/PXActionResult.h>
 	<stdlib.h>
 	<malloc.h>
@@ -9575,7 +9575,7 @@
 	"PXServer.h"
 	<Event/Event.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/Network/PXSocket.c
@@ -9583,7 +9583,7 @@
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
 	<Event/Event.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 	<poll.h>
 
@@ -9672,7 +9672,7 @@
 	<commdlg.h>
 	<OS/Memory/PXMemory.h>
 	<Text/PXText.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdio.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/UI/PXUI.h
@@ -9692,7 +9692,7 @@
 	"PXText.h"
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
-	<Math/PXMath.h>
+	<PXMath/PXPXMath.h>
 	<stdarg.h>
 	<stdio.h>
 	<stdlib.h>

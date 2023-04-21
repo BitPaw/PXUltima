@@ -86,7 +86,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		FileFormatFLAC,
 		FileFormatSpriteFont,
 		FileFormatGIF,
-		FileFormatHTML,
+		FileForPXMathTML,
 		FileFormatINI,
 		FileFormatJPEG,
 		FileFormatJSON,

@@ -1,79 +1,81 @@
-#ifndef PXMathInclude
-#define PXMathInclude
+#ifndef PXMathINCLUDE
+#define PXMathINCLUDE
 
 #include <Media/PXType.h>
 
-#define MathConstantPI 3.1415926535897932384626433832 	// Pi, Archimedes' constant or Ludolph's number
-#define MathConstantE 2.71828182845904523536028747135266249
-#define MathConstantP 1.32471795724474602596090885447809734
-#define MathConstantA 2.50290787509589282228390287321821578
-#define MathConstantGravity 0.00000000006673
+//---<Constants>---------------------------------------------------------------
+#define PXMathConstantPI 3.1415926535897932384626433832 	// Pi, Archimedes' constant or Ludolph's number
+#define PXMathConstantE 2.71828182845904523536028747135266249
+#define PXMathConstantP 1.32471795724474602596090885447809734
+#define PXMathConstantA 2.50290787509589282228390287321821578
+#define PXMathConstantGravity 0.00000000006673
 
-#define GravityOnVenus 8.87
-#define GravityOnEarth 9.807
-#define GravityOnMoon 1.62
-#define GravityOnMars 3.711
+#define PXMathConstantGravityOnVenus 8.87
+#define PXMathConstantGravityOnEarth 9.807
+#define PXMathConstantGravityOnMoon 1.62
+#define PXMathConstantGravityOnMars 3.711
+//-----------------------------------------------------------------------------
 
-#define MathIsInRange(v, minimum, maximum) (minimum <= v && v <= maximum)
-
-#define MathMinimum(a, b) ((a < b) * a + (a >= b) * b)
-#define MathMaximum(a, b) ((a > b) * a + (a <= b) * b)
-//#define MathLimit(x, low, high) (MathMinimum(MathMaximum(x, low), high)) 
-#define MathLimit(x, low, high)  (low*(x <= low) + high*(x >= high) + x *((x > low) && (x < high)))
-
-#define MathFloor(a) ((int)(a))
-//#define MathCeiling(a)
-#define MathAbsolute(a) (a * ((a >= 0) - (a < 0)))
-
+//---<Makro Functions>---------------------------------------------------------
+#define PXMathIsInRange(v, minimum, maximum) (minimum <= v && v <= maximum)
+#define PXMathMinimum(a, b) ((a < b) * a + (a >= b) * b)
+#define PXMathMaximum(a, b) ((a > b) * a + (a <= b) * b)
+#define PXMathLimit(x, low, high)  (low*(x <= low) + high*(x >= high) + x *((x > low) && (x < high)))
+#define PXMathFloor(a) ((int)(a))
+//#define PXMathCeiling(a)
+#define PXMathAbsolute(a) (a * ((a >= 0) - (a < 0)))
+//-----------------------------------------------------------------------------
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	PXPublic int MathMinimumI(const int a, const int b);
-	PXPublic PXSize MathMinimumIU(const PXSize a, const PXSize b);
-	PXPublic double MathMinimumD(const double a, const double b);
 
-	PXPublic PXSize MathMaximumIU(const PXSize a, const PXSize b);
+	PXPublic int PXMathMinimumI(const int a, const int b);
+	PXPublic PXSize PXMathMinimumIU(const PXSize a, const PXSize b);
+	PXPublic double PXMathMinimumD(const double a, const double b);
 
-	PXPublic int MathFloorI(const int a);
-	PXPublic int MathFloorD(const double a);
+	PXPublic PXSize PXMathMaximumIU(const PXSize a, const PXSize b);
 
-	PXPublic PXSize MathAbsoluteI(const int value);
-	PXPublic double MathAbsoluteD(const double value);
+	PXPublic int PXMathFloorI(const int a);
+	PXPublic int PXMathFloorD(const double a);
+
+	PXPublic PXSize PXMathAbsoluteI(const int value);
+	PXPublic double PXMathAbsoluteD(const double value);
 
 
-	PXPublic char MathLimitC(const char value, const char minimum, const char maximum);
-	PXPublic unsigned char MathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
-	PXPublic int MathLimitI(const int value, const int minimum, const int maximum);
-	PXPublic PXSize MathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum);
+	PXPublic char PXMathLimitC(const char value, const char minimum, const char maximum);
+	PXPublic unsigned char PXMathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
+	PXPublic int PXMathLimitI(const int value, const int minimum, const int maximum);
+	PXPublic PXSize PXMathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum);
 
-	PXPublic float MathFastInverseSqaureRoot(float number);
-	PXPublic double MathPower(double base, double exponent);
-	PXPublic double MathPowerOfTwo(double base);
-	PXPublic unsigned int MathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo);
-	PXPublic double MathRoot(unsigned int rootNr, double value);
-	PXPublic double MathSquareRoot(double value);
-	PXPublic double MathCubicRoot(double value);
-	PXPublic double MathPythagoras(double a, double b);
-	PXPublic double MathPythagorasReverse(double c, double a);
-	PXPublic double MathLogarithmus(int base, double exponent);
-	PXPublic double MathLogarithmusBase2(double exponent);
-	PXPublic double MathLogarithmusBase10(double exponent);
-	PXPublic double MathNewtonGravitation(double massA, double massB, double distance);
-	PXPublic int MathCeilingF(const float value);
-	PXPublic int MathCeilingD(const double value);
-	PXPublic unsigned int MathRandomeNumber();
-	PXPublic double MathSinus(double value);
-	PXPublic double MathTangens(double value);
-	PXPublic double MathCosinus(double value);
-	PXPublic unsigned long MathFibonacci(unsigned long step);
-	PXPublic double MathRadiansToDegree(double radians);
-	PXPublic double MathDegreeToRadians(double degree);
+	PXPublic float PXMathFastInverseSqaureRoot(float number);
+	PXPublic double PXMathPower(double base, double exponent);
+	PXPublic double PXMathPowerOfTwo(double base);
+	PXPublic unsigned int PXMathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo);
+	PXPublic double PXMathRoot(unsigned int rootNr, double value);
+	PXPublic double PXMathSquareRoot(double value);
+	PXPublic double PXMathCubicRoot(double value);
+	PXPublic double PXMathPythagoras(double a, double b);
+	PXPublic double PXMathPythagorasReverse(double c, double a);
+	PXPublic double PXMathLogarithmus(int base, double exponent);
+	PXPublic double PXMathLogarithmusBase2(double exponent);
+	PXPublic double PXMathLogarithmusBase10(double exponent);
+	PXPublic double PXMathNewtonGravitation(double massA, double massB, double distance);
+	PXPublic int PXMathCeilingF(const float value);
+	PXPublic int PXMathCeilingD(const double value);
+	PXPublic unsigned int PXMathRandomeNumber();
+	PXPublic double PXMathSinus(double value);
+	PXPublic double PXMathTangens(double value);
+	PXPublic double PXMathCosinus(double value);
+	PXPublic unsigned long PXMathFibonacci(unsigned long step);
+	PXPublic double PXMathRadiansToDegree(double radians);
+	PXPublic double PXMathDegreeToRadians(double degree);
 
-	PXPublic float MathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue);
-	PXPublic float MathNormalizeF(const float minimum, const float maximum, const float value);
-	PXPublic unsigned int MathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value);
+	// Liniar interpolate a value from the range of 'x' min and max to another range 'y'.
+	PXPublic float PXMathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue);
+	PXPublic float PXMathNormalizeF(const float minimum, const float maximum, const float value);
+	PXPublic unsigned int PXMathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value);
 
 #ifdef __cplusplus
 }

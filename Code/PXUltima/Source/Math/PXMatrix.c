@@ -1,6 +1,6 @@
 #include "PXMatrix.h"
 
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <OS/Memory/PXMemory.h>
 
 void PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
@@ -115,8 +115,8 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 
 	//-----<X ROT>-----
 	{
-		const float cosResult = MathCosinus(x);
-		const float sinResult = MathSinus(x);
+		const float cosResult = PXMathCosinus(x);
+		const float sinResult = PXMathSinus(x);
 
 		xRotation.Data[5] = cosResult;
 		xRotation.Data[6] = sinResult;
@@ -127,8 +127,8 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 
 	//-----<X ROT>-----
 	{
-		const float cosResult = MathCosinus(-y);
-		const float sinResult = MathSinus(-y);
+		const float cosResult = PXMathCosinus(-y);
+		const float sinResult = PXMathSinus(-y);
 
 		yRotation.Data[0] = cosResult;
 		yRotation.Data[2] = -sinResult;
@@ -138,8 +138,8 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 
 	//-----<X ROT>-----
 	{
-		const float cosResult = MathCosinus(z);
-		const float sinResult = MathSinus(z);
+		const float cosResult = PXMathCosinus(z);
+		const float sinResult = PXMathSinus(z);
 
 		zRotation.Data[0] = cosResult;
 		zRotation.Data[1] = -sinResult;
@@ -226,8 +226,8 @@ void PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const float left, 
 void PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, const float fielfOfView, const float aspectRatio, const float nearPlane, const float farPlane)
 {
 	const float difference = farPlane - nearPlane;
-	const float fielfOfViewRadians = MathDegreeToRadians(fielfOfView);
-	const float tanHalfFovy = MathTangens(fielfOfViewRadians / 2.0f);
+	const float fielfOfViewRadians = PXMathDegreeToRadians(fielfOfView);
+	const float tanHalfFovy = PXMathTangens(fielfOfViewRadians / 2.0f);
 
 	PXMatrix4x4FIdentity(matrix4x4F);
 

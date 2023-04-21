@@ -139,7 +139,19 @@ PXActionResult PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXF
     {
         PXSpriteFont* const pxSpriteFont = &pxFont->FontElement[i];
 
-       // pxSpriteFont->
+        PXTexture pxTexture;
+        pxTexture.ID = -1;
+        pxTexture.Type = PXGraphicImageTypeTexture2D;
+        pxTexture.Filter = PXGraphicRenderFilterNoFilter;
+        pxTexture.LayoutNear = PXGraphicImageLayoutNearest;
+        pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
+        pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
+        pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
+        pxTexture.Image = pxSpriteFont->FontPageList->FontTextureMap;
+
+        PXGraphicTextureRegister(graphicContext, &pxTexture);
+
+        printf("Texture ID : %i\n", pxTexture.ID);
     }
 
     return PXActionSuccessful;
@@ -159,7 +171,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
 {
     PXLockEngage(&graphicContext->_resourceLock);
     texture->ID = PXGraphicGenerateUniqeID(graphicContext);
-    PXDictionaryAdd(&graphicContext->TextureLookUp, texture->ID, texture);
+    PXDictionaryAdd(&graphicContext->TextureLookUp, &texture->ID, texture);
     PXLockRelease(&graphicContext->_resourceLock);
 
     const OpenGLTextureType openGLTextureType = ImageTypeGraphicToOpenGL(texture->Type);
@@ -1285,6 +1297,11 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     }
 
     OpenGLContextDeselect(&graphicContext->OpenGLInstance);
+}
+
+void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo)
+{
+ 
 }
 
 PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)

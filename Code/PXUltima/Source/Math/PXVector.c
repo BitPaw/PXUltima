@@ -1,17 +1,17 @@
 #include "PXVector.h"
 
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 void PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB)
 {
 	// d = Root((x2?x1)^2 + (y2?y1)^2)
-	return MathSquareRoot(MathPowerOfTwo(vectorB->X - vectorA->X) + MathPowerOfTwo(vectorB->Y - vectorA->X));
+	return PXMathSquareRoot(PXMathPowerOfTwo(vectorB->X - vectorA->X) + PXMathPowerOfTwo(vectorB->Y - vectorA->X));
 }
 
 float PXVector3FLength(const PXVector3F* const vector)
 {
 	const float sum = vector->X * vector->X + vector->Y * vector->Y + vector->Z * vector->Z; // sum = x * x + y * y + z * z
-	const float sqroot = MathSquareRoot(sum);
+	const float sqroot = PXMathSquareRoot(sum);
 
 	return sqroot;
 }

@@ -2,7 +2,7 @@
 
 #include <Media/C/PXC.h>
 #include <Media/PXText.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 PXCSKeyWord PXCSFetchNext(PXDataStream* const inputSteam)
 {
@@ -43,7 +43,7 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 
 				// if the name contains the same name as the enum, remove it
 
-				PXBool minLength = MathMinimumIU(pxCStructure->NameAliasSizeCurrent, enumElementBufferLength);
+				PXBool minLength = PXMathMinimumIU(pxCStructure->NameAliasSizeCurrent, enumElementBufferLength);
 				PXBool isSame = PXTextCompareA(pxCStructure->NameAlias, minLength, enumElementBuffer, minLength);
 				PXSize offset = 0;
 
@@ -134,7 +134,7 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 			}
 			else
 			{
-				pxCTranslateStruct->UnionWidthOffset = MathMaximum(pxCTranslateStruct->Element.ElementVariable.SizeOfType, pxCTranslateStruct->UnionWidthOffset);
+				pxCTranslateStruct->UnionWidthOffset = PXMathMaximum(pxCTranslateStruct->Element.ElementVariable.SizeOfType, pxCTranslateStruct->UnionWidthOffset);
 			}
 
 			PXDataStreamWriteB(outputStream, "\t\t[FieldOffset(", 15);

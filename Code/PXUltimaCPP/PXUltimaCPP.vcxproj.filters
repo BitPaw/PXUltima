@@ -27,10 +27,10 @@
     <ClInclude Include="Source\Async\Lock.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\Vector.hpp">
+    <ClInclude Include="Source\PXMath\Vector.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\Matrix.hpp">
+    <ClInclude Include="Source\PXMath\Matrix.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\File\DataStream.hpp">
@@ -53,10 +53,10 @@
     <ClCompile Include="Source\Async\Lock.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\Vector.cpp">
+    <ClCompile Include="Source\PXMath\Vector.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\Matrix.cpp">
+    <ClCompile Include="Source\PXMath\Matrix.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\File\DataStream.cpp">

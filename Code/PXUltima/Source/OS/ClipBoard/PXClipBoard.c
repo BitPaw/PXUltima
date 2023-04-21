@@ -32,10 +32,10 @@
 #define ClipBoardFormatGDIOBJLASTID CF_GDIOBJLAST
 
 #if defined(WindowsAtleastNT)
-#define ClipBoardFormatHDROPID CF_HDROP
+#define ClipBoardForPXMathDROPID CF_HDROP
 #define ClipBoardFormatLOCALEID CF_LOCALE
 #else
-#define ClipBoardFormatHDROP 15
+#define ClipBoardForPXMathDROP 15
 #define ClipBoardFormatLOCALE 16
 #endif
 
@@ -110,8 +110,8 @@ unsigned int PXClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 	case ClipBoardFormatENHMETAFILE:
 		return ClipBoardFormatENHMETAFILEID;
 
-//	case ClipBoardFormatHDROP:
-//		return ClipBoardFormatHDROPID;
+//	case ClipBoardForPXMathDROP:
+//		return ClipBoardForPXMathDROPID;
 
 //	case ClipBoardFormatLOCALE:
 //		return ClipBoardFormatLOCALEID;
@@ -202,8 +202,8 @@ ClipBoardFormat PXClipBoardFormatFromID(const unsigned int clipBoardFormat)
 	case ClipBoardFormatENHMETAFILEID:
 		return ClipBoardFormatENHMETAFILE;
 
-//	case ClipBoardFormatHDROPID:
-//		return ClipBoardFormatHDROP;
+//	case ClipBoardForPXMathDROPID:
+//		return ClipBoardForPXMathDROP;
 
 //	case ClipBoardFormatLOCALEID:
 //		return ClipBoardFormatLOCALE;

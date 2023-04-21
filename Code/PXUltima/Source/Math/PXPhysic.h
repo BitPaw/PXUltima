@@ -2,8 +2,8 @@
 #define PXPhysicINCLUDE
 
 #include <Media/PXType.h>
-#include <Math/PXVector.h>
-#include <Math/PXMatrix.h>
+#include <PXMath/PXVector.h>
+#include <PXMath/PXMatrix.h>
 
 #define GravityForceSun 274
 #define GravityForceMercury 3.7

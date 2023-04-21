@@ -8,7 +8,7 @@
 #include <Media/PXSound.h>
 #include <Media/PXColor.h>
 #include <OS/Graphic/OpenGL/OpenGL.h>
-#include <Math/PXMatrix.h>
+#include <PXMath/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
 #include <Container/Dictionary/PXDictionary.h>
 #include <OS/Thread/PXLock.h>
@@ -20,6 +20,56 @@
 extern "C"
 {
 #endif
+
+	typedef enum PXGraphicResourceLocation_
+	{
+		PXGraphicResourceLocationInvalid,
+		PXGraphicResourceLocationFullyUnloaded, // Resource is known but not loaded
+		PXGraphicResourceLocationLoadedNotRegisterd, // Rsource is loaded but not known by external rendering systems
+		PXGraphicResourceLocationLoadAndRegistered, // Resource si loaded and registerd
+		PXGraphicResourceLocationRegisteredOnly, // Resouce is uploaded and not loaded anymore.
+	}
+	PXGraphicResourceLocation;
+
+	typedef enum PXGraphicSystem_
+	{
+		PXGraphicSystemInvalid,
+		PXGraphicSystemOpenGL,
+		PXGraphicSystemDirectX,
+		PXGraphicSystemVulcan
+	}
+	PXGraphicSystem;
+
+	typedef enum PXGraphicResourceType_
+	{
+		PXGraphicResourceTypeInvalid,
+		PXGraphicResourceTypeModel,
+		PXGraphicResourceTypeTexure,
+		PXGraphicResourceTypeSkyBox,
+		PXGraphicResourceTypeFont
+	}
+	PXGraphicResourceType;
+
+	typedef struct PXGraphicResourceInfo_
+	{
+		PXInt32U ID;
+		PXGraphicResourceLocation Location;
+		PXGraphicSystem System;
+
+		union
+		{
+			PXMSHandle DirectXID;
+			PXInt32U OpengGLID;
+		};
+	}
+	PXGraphicResourceInfo;
+
+
+
+
+
+
+
 
 	typedef enum PXGraphicRenderFilter_
 	{
@@ -294,6 +344,7 @@ extern "C"
 		//---<Render Settings>-------------------
 		PXRenderable Renderable;
 		PXColorRGBAF BackGroundColor;
+		void* FontID;
 		PXInt32U TextureID;
 		PXInt32U ShaderID;
 		//---------------------------------------
@@ -301,6 +352,7 @@ extern "C"
 		//---<State-Info>------------------------
 		PXBool IsEnabled;
 		//PXBool Active;
+		PXBool IsHoverable;
 		PXUIHoverState Hover;
 		//---------------------------------------
 
@@ -380,6 +432,8 @@ extern "C"
 
 	//-------------------------------------
 	PXPublic void PXGraphicInstantiate(PXGraphicContext* const graphicContext);
+
+	PXPublic void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo);
 	//-------------------------------------
 
 	//---<Shader>-----------------------------------------------------------------

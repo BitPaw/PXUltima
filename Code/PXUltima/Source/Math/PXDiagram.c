@@ -1,7 +1,7 @@
 #include "PXDiagram.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 void PXBoxPlotConstruct(PXBoxPlot* const boxPlot)
 {
@@ -42,8 +42,8 @@ void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, 
     {
         const float value = inputData[i];     
 
-        boxPlot->Maximum = MathMaximum(boxPlot->Maximum, value);
-        boxPlot->Minimum = MathMinimum(boxPlot->Minimum, value);
+        boxPlot->Maximum = PXMathMaximum(boxPlot->Maximum, value);
+        boxPlot->Minimum = PXMathMinimum(boxPlot->Minimum, value);
 
         boxPlot->Sum += value;
     }

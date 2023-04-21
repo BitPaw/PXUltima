@@ -2,7 +2,7 @@
 
 #include <OS/System/OSVersion.h>
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <Media/PXText.h>
 
 #include <iso646.h>
@@ -744,7 +744,7 @@ void* PXDataStreamCursorPosition(PXDataStream* const dataStream)
 
 void PXDataStreamCursorMoveTo(PXDataStream* const dataStream, const PXSize position)
 {
-	dataStream->DataCursor = MathMinimumIU(position, dataStream->DataSize);
+	dataStream->DataCursor = PXMathMinimumIU(position, dataStream->DataSize);
 }
 
 void PXDataStreamCursorToBeginning(PXDataStream* const dataStream)
@@ -756,7 +756,7 @@ PXSize PXDataStreamCursorAdvance(PXDataStream* const dataStream, const PXSize st
 {
 	const PXSize readableSize = PXDataStreamRemainingSize(dataStream);
 	const PXSize before = dataStream->DataCursor;
-	const PXSize maximalMove = MathMinimumIU(readableSize, steps); // Prevent cursor from going out of bounce
+	const PXSize maximalMove = PXMathMinimumIU(readableSize, steps); // Prevent cursor from going out of bounce
 
 	dataStream->DataCursor += maximalMove;
 
@@ -1416,7 +1416,7 @@ PXSize PXDataStreamWriteFill(PXDataStream* const dataStream, const unsigned char
 {
 	void* const beforePosition = PXDataStreamCursorPosition(dataStream);
 	const PXSize writableSize = PXDataStreamRemainingSize(dataStream);
-	const PXSize write = MathMinimumIU(writableSize, length);
+	const PXSize write = PXMathMinimumIU(writableSize, length);
 
 	MemorySet(beforePosition, value, write);
 

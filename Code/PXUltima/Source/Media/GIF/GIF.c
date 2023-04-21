@@ -2,7 +2,7 @@
 
 #include <File/PXDataStream.h>
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #define GIFHeader {'G','I','F'}
 #define GIFVersionA {'8','7','a'}
@@ -69,7 +69,7 @@ PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStr
             //---<Image Descriptor>--------------------------------------------
 
             // 3 x 2^(Size of Global Color Table+1).
-            PXSize size = 3 * MathPowerOfTwo(gif.GlobalColorTableSize + 1); // ???
+            PXSize size = 3 * PXMathPowerOfTwo(gif.GlobalColorTableSize + 1); // ???
 
             GIFImageDescriptor imageDescriptor;
 

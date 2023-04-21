@@ -2,67 +2,67 @@
 
 #include <math.h>
 
-int MathMinimumI(const int a, const int b)
+int PXMathMinimumI(const int a, const int b)
 {
-	return MathMinimum(a, b);
+	return PXMathMinimum(a, b);
 }
 
-PXSize MathMinimumIU(const PXSize a, const PXSize b)
+PXSize PXMathMinimumIU(const PXSize a, const PXSize b)
 {
-	return MathMinimum(a, b);
+	return PXMathMinimum(a, b);
 }
 
-double MathMinimumD(const double a, const double b)
+double PXMathMinimumD(const double a, const double b)
 {
-	return MathMinimum(a, b);
+	return PXMathMinimum(a, b);
 }
 
-PXSize MathMaximumIU(const PXSize a, const PXSize b)
+PXSize PXMathMaximumIU(const PXSize a, const PXSize b)
 {
-	return MathMaximum(a, b);
+	return PXMathMaximum(a, b);
 }
 
-int MathFloorI(const int a)
+int PXMathFloorI(const int a)
 {
-	return MathFloor(a);
+	return PXMathFloor(a);
 }
 
-int MathFloorD(const double a)
+int PXMathFloorD(const double a)
 {
-	return MathFloor(a);
+	return PXMathFloor(a);
 }
 
-PXSize MathAbsoluteI(const int a)
+PXSize PXMathAbsoluteI(const int a)
 {
-	return MathAbsolute(a);
+	return PXMathAbsolute(a);
 }
 
-double MathAbsoluteD(const double a)
+double PXMathAbsoluteD(const double a)
 {
-	return MathAbsolute(a);
+	return PXMathAbsolute(a);
 }
 
-char MathLimitC(const char value, const char minimum, const char maximum)
+char PXMathLimitC(const char value, const char minimum, const char maximum)
 {
-	return MathLimit(value, minimum, maximum);
+	return PXMathLimit(value, minimum, maximum);
 }
 
-unsigned char MathLimitCU(const unsigned char value, const unsigned char minimum, const unsigned char maximum)
+unsigned char PXMathLimitCU(const unsigned char value, const unsigned char minimum, const unsigned char maximum)
 {
-	return MathLimit(value, minimum, maximum);
+	return PXMathLimit(value, minimum, maximum);
 }
 
-int MathLimitI(const int value, const int minimum, const int maximum)
+int PXMathLimitI(const int value, const int minimum, const int maximum)
 {
-	return MathLimit(value, minimum, maximum);
+	return PXMathLimit(value, minimum, maximum);
 }
 
-PXSize MathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum)
+PXSize PXMathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum)
 {
-	return MathLimit(value, minimum, maximum);
+	return PXMathLimit(value, minimum, maximum);
 }
 
-float MathFastInverseSqaureRoot(float number)
+float PXMathFastInverseSqaureRoot(float number)
 {
 	const float threehalfs = 1.5f;
 	float x2 = number * 0.5f;
@@ -78,17 +78,17 @@ float MathFastInverseSqaureRoot(float number)
 	return y;
 }
 
-double MathPower(double base, double exponent)
+double PXMathPower(double base, double exponent)
 {
 	return pow(base, exponent);
 }
 
-double MathPowerOfTwo(double base)
+double PXMathPowerOfTwo(double base)
 {
-	return MathPower(base, 2);
+	return PXMathPower(base, 2);
 }
 
-unsigned int MathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo)
+unsigned int PXMathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo)
 {
 	unsigned int result = 1;
 	for(int i = 0; i < exponent; i++)
@@ -99,7 +99,7 @@ unsigned int MathPowerModulo(unsigned int base, unsigned int exponent, unsigned 
 	return result;
 }
 
-double MathRoot(unsigned int rootNr, double value)
+double PXMathRoot(unsigned int rootNr, double value)
 {
 	switch(rootNr)
 	{
@@ -120,27 +120,27 @@ double MathRoot(unsigned int rootNr, double value)
 	}
 }
 
-double MathSquareRoot(double value)
+double PXMathSquareRoot(double value)
 {
-	return MathRoot(2, value);
+	return PXMathRoot(2, value);
 }
 
-double MathCubicRoot(double value)
+double PXMathCubicRoot(double value)
 {
-	return MathRoot(3, value);
+	return PXMathRoot(3, value);
 }
 
-double MathPythagoras(double a, double b)
+double PXMathPythagoras(double a, double b)
 {
-	return MathSquareRoot(MathPowerOfTwo(a) + MathPowerOfTwo(b));
+	return PXMathSquareRoot(PXMathPowerOfTwo(a) + PXMathPowerOfTwo(b));
 }
 
-double MathPythagorasReverse(double c, double a)
+double PXMathPythagorasReverse(double c, double a)
 {
 	return 0.0;
 }
 
-double MathLogarithmus(int base, double exponent)
+double PXMathLogarithmus(int base, double exponent)
 {
 #if OSUnix
 	return 0; // TODO: not implemented?
@@ -149,22 +149,22 @@ double MathLogarithmus(int base, double exponent)
 #endif	
 }
 
-double MathLogarithmusBase2(double exponent)
+double PXMathLogarithmusBase2(double exponent)
 {
 	return log2(exponent);
 }
 
-double MathLogarithmusBase10(double exponent)
+double PXMathLogarithmusBase10(double exponent)
 {
 	return log10(exponent);
 }
 
-double MathNewtonGravitation(double massA, double massB, double distance)
+double PXMathNewtonGravitation(double massA, double massB, double distance)
 {
-	return MathConstantGravity * ((massA * massB) / (MathPower(distance, 2)));
+	return PXMathConstantGravity * ((massA * massB) / (PXMathPower(distance, 2)));
 }
 
-int MathCeilingF(const float value)
+int PXMathCeilingF(const float value)
 {
 	const int fullNumberBlockInt = (int)value;
 	const float fullNumberBlock = fullNumberBlockInt;
@@ -178,7 +178,7 @@ int MathCeilingF(const float value)
 	return fullNumberBlockInt;
 }
 
-int MathCeilingD(const double value)
+int PXMathCeilingD(const double value)
 {
 	const int fullNumberBlockInt = (int)value;
 	const double fullNumberBlock = fullNumberBlockInt;
@@ -194,7 +194,7 @@ int MathCeilingD(const double value)
 
 unsigned long x = 123456789, y = 362436069, z = 521288629;
 
-unsigned int MathRandomeNumber()
+unsigned int PXMathRandomeNumber()
 {
 	unsigned long t;
 
@@ -210,24 +210,24 @@ unsigned int MathRandomeNumber()
 	return z;
 }
 
-double MathSinus(double value)
+double PXMathSinus(double value)
 {
 	return sin(value);
 }
 
-double MathTangens(double value)
+double PXMathTangens(double value)
 {
 	return tan(value);
 }
 
-double MathCosinus(double value)
+double PXMathCosinus(double value)
 {
 	return cos(value);
 }
 
-unsigned long MathFibonacci(unsigned long step)
+unsigned long PXMathFibonacci(unsigned long step)
 {
-	double rootOfFive = MathSquareRoot(5);
+	double rootOfFive = PXMathSquareRoot(5);
 
 	if(step < 2)
 	{
@@ -239,9 +239,9 @@ unsigned long MathFibonacci(unsigned long step)
 		// -------------------------
 		//         2^n * W/5
 
-		double a = MathPower(1 + rootOfFive, step);
-		double b = MathPower(1 - rootOfFive, step);
-		double c = MathPower(2, step) * rootOfFive;
+		double a = PXMathPower(1 + rootOfFive, step);
+		double b = PXMathPower(1 - rootOfFive, step);
+		double c = PXMathPower(2, step) * rootOfFive;
 
 		return ((a - b) / c);
 
@@ -249,17 +249,17 @@ unsigned long MathFibonacci(unsigned long step)
 	}
 }
 
-double MathRadiansToDegree(double radians)
+double PXMathRadiansToDegree(double radians)
 {
-	return radians * (180.0 / MathConstantPI);
+	return radians * (180.0 / PXMathConstantPI);
 }
 
-double MathDegreeToRadians(double degree)
+double PXMathDegreeToRadians(double degree)
 {
-	return degree * (MathConstantPI / 180.0);
+	return degree * (PXMathConstantPI / 180.0);
 }
 
-float MathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue)
+float PXMathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue)
 {
 	// Cap Value
 	float xCap = xValue > xMaximum ? xMaximum : xValue;
@@ -270,14 +270,14 @@ float MathLiniarF(const float yMinimum, const float yMaximum, const float xMinim
 	return (((yMaximum - yMinimum) * (xValue - xMinimum)) / (xMaximum - xMinimum)) + yMinimum;
 }
 
-float MathNormalizeF(const float minimum, const float maximum, const float value)
+float PXMathNormalizeF(const float minimum, const float maximum, const float value)
 {
-	return MathLiniarF(0, 1, minimum, maximum, value);
+	return PXMathLiniarF(0, 1, minimum, maximum, value);
 }
 
-unsigned int MathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value)
+unsigned int PXMathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value)
 {
-	const float result = MathLiniarF(0, 255, minimum, maximum, value);
+	const float result = PXMathLiniarF(0, 255, minimum, maximum, value);
 	const unsigned int convertedResult = (unsigned int)(result);
 
 	return convertedResult;

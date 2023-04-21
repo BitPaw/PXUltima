@@ -15,7 +15,7 @@
 
 #include <Media/TIFF/TIFF.h>
 #include <Media/PXImage.h>
-#include <Text/PXText.h>
+#include <Media/PXText.h>
 
 #include <OS/Graphic/DirectX/DirectX.h>
 #include <OS/Process/PXProcess.h>

@@ -2,7 +2,7 @@
 
 #include <OS/System/OSVersion.h>
 #include <OS/Memory/PXMemory.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -329,7 +329,7 @@ PXSize PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const 
 
 PXSize PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength)
 {
-	const PXSize minLength = MathMinimumIU(sourceLength, destinationLength);
+	const PXSize minLength = PXMathMinimumIU(sourceLength, destinationLength);
 	PXSize i = 0;
 
 #if PXTextAssertEnable
@@ -354,7 +354,7 @@ PXSize PXTextCopyA(const char* source, const PXSize sourceLength, char* destinat
 
 PXSize PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength)
 {
-	const PXSize minLength = MathMinimum(sourceLength, destinationLength);
+	const PXSize minLength = PXMathMinimum(sourceLength, destinationLength);
 	const PXBool validCall = source && destination && minLength;
 	PXSize i = 0;
 
@@ -380,7 +380,7 @@ PXSize PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* dest
 
 PXSize PXTextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength)
 {
-	const PXSize minLength = MathMinimum(sourceLength, destinationLength);
+	const PXSize minLength = PXMathMinimum(sourceLength, destinationLength);
 	PXSize i = 0;
 
 #if PXTextAssertEnable
@@ -400,7 +400,7 @@ PXSize PXTextCopyWA(const wchar_t* source, const PXSize sourceLength, char* dest
 
 PXSize PXTextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength)
 {
-	const PXSize minLength = MathMinimumIU(sourceLength, destinationLength);
+	const PXSize minLength = PXMathMinimumIU(sourceLength, destinationLength);
 	PXSize i = 0;
 
 #if PXTextAssertEnable
@@ -460,7 +460,7 @@ void PXTextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* dataBuf
 
 PXSize PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
 {
-	const PXSize minimalSize = MathMinimumIU(sourceLength, destinationLength);
+	const PXSize minimalSize = PXMathMinimumIU(sourceLength, destinationLength);
 	PXSize destinationIndex = 0;
 
 	if (!(source && destinationLength))
@@ -489,7 +489,7 @@ PXSize PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextU
 PXSize PXTextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
 {
 #if 1
-	const PXSize minimalSize = MathMinimumIU(sourceLength, destinationLength);
+	const PXSize minimalSize = PXMathMinimumIU(sourceLength, destinationLength);
 	PXSize destinationIndex = 0;
 
 	if (!(source && destinationLength))
@@ -561,7 +561,7 @@ PXSize PXTextCountUntilW(const wchar_t* pxText, const PXSize textSize, const wch
 
 PXBool PXTextCompareA(const char* a, const PXSize aSize, const char* b, const PXSize bSize)
 {
-	const PXSize textSize = MathMinimumIU(aSize, bSize);
+	const PXSize textSize = PXMathMinimumIU(aSize, bSize);
 
 	PXSize index = 0;
 	PXSize samecounter = 0;
@@ -599,7 +599,7 @@ PXBool PXTextCompareA(const char* a, const PXSize aSize, const char* b, const PX
 
 PXBool PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const PXSize textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = PXMathMinimum(aSize, bSize);
 
 	PXSize index = 0;
 	PXSize samecounter = 0;
@@ -612,7 +612,7 @@ PXBool PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, cons
 
 PXBool PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const PXSize textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = PXMathMinimum(aSize, bSize);
 
 	PXSize index = 0;
 	PXSize samecounter = 0;
@@ -625,7 +625,7 @@ PXBool PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, co
 
 PXBool PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize)
 {
-	const PXSize textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = PXMathMinimum(aSize, bSize);
 
 	PXSize index = 0;
 	PXSize samecounter = 0;
@@ -638,7 +638,7 @@ PXBool PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, cons
 
 char PXTextCompareIgnoreCaseA(const char* a, const PXSize aSize, const char* b, const PXSize bSize)
 {
-	const PXSize textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = PXMathMinimum(aSize, bSize);
 
 	PXSize index = 0;
 	PXSize samecounter = 0;
@@ -655,7 +655,7 @@ char PXTextCompareIgnoreCaseA(const char* a, const PXSize aSize, const char* b, 
 
 char PXTextCompareIgnoreCaseW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const PXSize textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = PXMathMinimum(aSize, bSize);
 
 	PXSize index = 0;
 	PXSize samecounter = 0;
@@ -672,7 +672,7 @@ char PXTextCompareIgnoreCaseW(const wchar_t* a, const PXSize aSize, const wchar_
 
 char PXTextCompareIgnoreCaseAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize)
 {
-	const PXSize textSize = MathMinimum(aSize, bSize);
+	const PXSize textSize = PXMathMinimum(aSize, bSize);
 
 	PXSize index = 0;
 	PXSize samecounter = 0;
@@ -1139,7 +1139,7 @@ PXSize PXTextFromDoubleW(const double number, wchar_t* string, const PXSize data
 
 PXSize PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize)
 {
-	const PXSize length = MathMinimumIU(dataSize, stringSize);
+	const PXSize length = PXMathMinimumIU(dataSize, stringSize);
 	PXSize outputIndex = 0;
 
 	MemoryClear(string, stringSize);

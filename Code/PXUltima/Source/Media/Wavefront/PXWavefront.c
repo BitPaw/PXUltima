@@ -3,7 +3,7 @@
 #include <Compiler/PXCompiler.h>
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 
 #define PXWavefrontDetectMaterial 1
 
@@ -443,7 +443,7 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
                     ++cornerPoints;
                 }
 
-                drawSize[drawCurrentIndex] = MathMaximum(drawSize[drawCurrentIndex], cornerPoints);
+                drawSize[drawCurrentIndex] = PXMathMaximum(drawSize[drawCurrentIndex], cornerPoints);
 
                 indexListSize += cornerPoints;
                 drawCurrentCounter += cornerPoints;

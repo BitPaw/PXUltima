@@ -1,6 +1,6 @@
 #include "PXZLIB.h"
 
-#include <Math/PXMath.h>
+#include <PXMath/PXPXMath.h>
 #include <File/PXDataStream.h>
 #include <Media/DEFLATE/DEFLATE.h>
 #include <Media/ADLER/Adler32.h>
@@ -124,7 +124,7 @@ PXActionResult PXZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* 
 
             //assert(isCompressionInfoValid);
 
-            PXZLIB.Header.WindowSize = MathPower(2, PXZLIB.Header.CompressionInfo + 8u);
+            PXZLIB.Header.WindowSize = PXMathPower(2, PXZLIB.Header.CompressionInfo + 8u);
         }
         //-------------------------------------------------------------------------
 
