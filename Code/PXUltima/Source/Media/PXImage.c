@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #include <Media/Bitmap/PXBitmap.h>
 #include <Media/GIF/GIF.h>
@@ -349,6 +349,27 @@ void PXImageFlipVertical(PXImage* image)
 
 void PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, unsigned char blue)
 {
+    // DO we have alpha? If not, make one
+
+    const PXSize currentOffset = image->PixelDataSize;
+    PXSize dataOffset = 0;
+
+    PXImageResize(image, PXColorFormatRGBAI8, image->Width, image->Height);
+
+    dataOffset = image->PixelDataSize;
+
+    const PXSize length = image->Width * image->Height;
+
+    for (PXSize pixelIndex = 0; pixelIndex < length; ++pixelIndex)
+    {
+        PXByte* const oldData = (PXByte*)image->PixelData + currentOffset - ((pixelIndex + 1) * 3u);
+        PXByte* const newData = (PXByte*)image->PixelData + dataOffset - ((pixelIndex + 1) * 4u);
+
+        newData[0] = oldData[0];
+        newData[1] = oldData[1];
+        newData[2] = oldData[2];
+        newData[3] = !(oldData[0] == red) && (oldData[1] == green) && (oldData[2] == blue);
+    }
 }
 
 void PXImageFillColorRGBA8(PXImage* const image, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)

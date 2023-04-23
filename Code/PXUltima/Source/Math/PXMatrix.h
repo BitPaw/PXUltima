@@ -2,7 +2,7 @@
 #define PXMatrixINCLUDE
 
 #include <Media/PXType.h>
-#include <PXMath/PXVector.h>
+#include <Math/PXVector.h>
 
 #define XAxisX 0
 #define XAxisY 4

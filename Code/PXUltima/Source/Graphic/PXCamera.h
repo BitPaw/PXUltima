@@ -2,8 +2,8 @@
 #define PXCameraINCLUDE
 
 #include <Media/PXType.h>
-#include <PXMath/PXMatrix.h>
-#include <PXMath/PXVector.h>
+#include <Math/PXMatrix.h>
+#include <Math/PXVector.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -1,7 +1,7 @@
 #include "PXDiagram.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 void PXBoxPlotConstruct(PXBoxPlot* const boxPlot)
 {

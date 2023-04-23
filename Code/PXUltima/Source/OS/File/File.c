@@ -2,7 +2,7 @@
 
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #include <stdarg.h>
 #include <fcntl.h>

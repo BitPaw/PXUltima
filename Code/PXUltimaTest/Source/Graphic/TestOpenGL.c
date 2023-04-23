@@ -8,7 +8,7 @@
 #include <float.h>
 #include <OS/Window/PXWindow.h>
 #include <Media/PXFont.h>
-#include <PXMath/PXMatrix.h>
+#include <Math/PXMatrix.h>
 #include <Graphic/SoftwareRender/PXSoftwareRender.h>
 
 #include <Graphic/PXGraphic.h>

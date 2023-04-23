@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 #include <File/PXDataStream.h>
 #include <Media/PXColor.h>
 

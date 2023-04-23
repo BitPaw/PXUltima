@@ -2,7 +2,7 @@
 
 #include <File/PXDataStream.h>
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #define GIFHeader {'G','I','F'}
 #define GIFVersionA {'8','7','a'}

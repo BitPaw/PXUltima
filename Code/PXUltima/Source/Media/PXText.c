@@ -2,7 +2,7 @@
 
 #include <OS/System/OSVersion.h>
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #include <stdarg.h>
 #include <stdio.h>

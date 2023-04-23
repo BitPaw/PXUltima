@@ -1,7 +1,7 @@
 #include "PXLinkedList.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 void PXLinkedListFixedNodeConstruct(PXLinkedListFixed* const linkedListFixed)
 {

@@ -9,7 +9,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <OS/Monitor/PXMonitor.h>
 #include <OS/Thread/Await.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #if OSUnix
 
@@ -2006,6 +2006,8 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
         window->ID = windowID;
         window->GraphicInstance.AttachedWindow = window;
+
+        PXWindowPosition(window, 0, 0);
     }
 
     // MISSING
@@ -2078,7 +2080,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
         UpdateWindow(windowID);
 
         if (window->Mode == PXWindowModeNormal)
-        {
+        {        
             ShowWindow(windowID, SW_SHOW);
         }
     }
@@ -2416,6 +2418,22 @@ void PXWindowSizeChange(PXWindow* window, const unsigned int x, const unsigned i
 
 void PXWindowPosition(PXWindow* window, unsigned int* x, unsigned int* y)
 {
+#if OSUnix
+
+#elif OSWindows
+    RECT rectangle;
+    const PXBool success = GetWindowRect(window->ID, &rectangle);
+
+    if (success)
+    {
+        window->X = rectangle.left;
+        window->Y = rectangle.top;
+        window->Width = rectangle.right - rectangle.left;
+        window->Height = rectangle.bottom - rectangle.top;
+    }
+
+    printf("Sreen res %i x %i\n", window->Width, window->Height);
+#endif
 }
 
 void PXWindowPositionChange(PXWindow* window, const unsigned int x, const unsigned int y)

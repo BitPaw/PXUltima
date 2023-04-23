@@ -6,6 +6,7 @@
 
 #elif OSWindows
 #include <Windows.h>
+// #include <userenv.h> could use GetUserProfileDirectoryW() but not needed yet
 #endif
 
 PXSize PXUserNameGetA(PXTextASCII* name, const PXSize nameSizeMax)

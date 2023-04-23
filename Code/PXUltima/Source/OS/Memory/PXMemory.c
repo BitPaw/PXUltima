@@ -1,6 +1,6 @@
 #include "PXMemory.h"
 
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 #include <OS/Error/PXActionResult.h>
 
 #include <stdlib.h>

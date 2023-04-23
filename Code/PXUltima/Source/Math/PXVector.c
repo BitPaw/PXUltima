@@ -1,6 +1,6 @@
 #include "PXVector.h"
 
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 void PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB)
 {

@@ -2,7 +2,7 @@
 
 #include <Event/PXEvent.h>
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #if SocketDebug
 #include <stdio.h>

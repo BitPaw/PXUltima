@@ -1,7 +1,7 @@
 #include "PXBitmap.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 #include <Media/PXImage.h>
 
 #define PXBitmapHeaderIDWindows                  PXInt16Make('B', 'M')

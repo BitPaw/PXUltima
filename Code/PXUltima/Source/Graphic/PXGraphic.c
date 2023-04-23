@@ -149,6 +149,9 @@ PXActionResult PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXF
         pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
         pxTexture.Image = pxSpriteFont->FontPageList->FontTextureMap;
 
+
+        PXImageRemoveColor(&pxTexture.Image, 0, 0, 0);
+
         PXGraphicTextureRegister(graphicContext, &pxTexture);
 
         printf("Texture ID : %i\n", pxTexture.ID);
@@ -221,7 +224,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
     // ToDO: erro?
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    OpenGLTextureData2D(graphicContext, openGLTextureType, 0, OpenGLImageFormatRGBA, image->Width, image->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image->PixelData);
+    OpenGLTextureData2D(graphicContext, openGLTextureType, 0, OpenGLImageFormatRGBA, image->Width, image->Height, OpenGLImageFormatRGBA, OpenGLTypeByteUnsigned, image->PixelData);
 
     // glTexImage2D(textureType, 0, GL_RGBA, image->Width, image->Height, 0, format, OpenGLTypeByteUnsigned, image->PixelData);
 
@@ -1262,6 +1265,8 @@ OpenGLRenderMode PXGraphicRenderModeToOpenGL(const PXGraphicRenderMode graphicRe
 
 void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 {
+    PXWindow* const pxWindow = graphicContext->AttachedWindow;
+
     PXLockCreate(&graphicContext->_resourceLock, PXLockTypeGlobal);
 
     PXDictionaryConstruct(&graphicContext->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
@@ -1271,7 +1276,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXDictionaryConstruct(&graphicContext->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->ShaderProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
-    graphicContext->OpenGLInstance.AttachedWindow = graphicContext->AttachedWindow;
+    graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
 
     OpenGLContextCreateForWindow(&graphicContext->OpenGLInstance);
 
@@ -1295,6 +1300,8 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
          //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
     }
+
+    glViewport(0, 0, pxWindow->Width, pxWindow->Height);
 
     OpenGLContextDeselect(&graphicContext->OpenGLInstance);
 }

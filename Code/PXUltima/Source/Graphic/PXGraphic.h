@@ -8,7 +8,7 @@
 #include <Media/PXSound.h>
 #include <Media/PXColor.h>
 #include <OS/Graphic/OpenGL/OpenGL.h>
-#include <PXMath/PXMatrix.h>
+#include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
 #include <Container/Dictionary/PXDictionary.h>
 #include <OS/Thread/PXLock.h>

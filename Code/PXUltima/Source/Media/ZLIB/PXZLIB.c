@@ -1,6 +1,6 @@
 #include "PXZLIB.h"
 
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 #include <File/PXDataStream.h>
 #include <Media/DEFLATE/DEFLATE.h>
 #include <Media/ADLER/Adler32.h>

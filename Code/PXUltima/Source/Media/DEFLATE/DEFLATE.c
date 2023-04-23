@@ -6,7 +6,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/HUFFMAN/HuffmanTree.h>
 #include <File/PXDataStream.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 #include <Media/LZ77/PXLZ77.h>
 
 #define DeflateEncodingInvalidID -1

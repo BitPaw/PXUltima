@@ -1,6 +1,6 @@
 #include "PXCollision.h"
 
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 PXBool PXCollisionAABB(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy)
 {

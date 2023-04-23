@@ -3,7 +3,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <Event/PXEvent.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 #include <stdio.h>
 
 #if OSUnix

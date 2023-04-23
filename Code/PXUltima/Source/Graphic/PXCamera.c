@@ -1,7 +1,7 @@
 #include "PXCamera.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 void PXCameraConstruct(PXCamera* const camera)
 {

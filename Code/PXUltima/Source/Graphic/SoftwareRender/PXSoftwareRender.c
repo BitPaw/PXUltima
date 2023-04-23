@@ -1,6 +1,6 @@
 #include "PXSoftwareRender.h"
 
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 void PXSoftwareRenderDrawRectangle(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {

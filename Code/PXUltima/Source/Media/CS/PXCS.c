@@ -2,7 +2,7 @@
 
 #include <Media/C/PXC.h>
 #include <Media/PXText.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 PXCSKeyWord PXCSFetchNext(PXDataStream* const inputSteam)
 {

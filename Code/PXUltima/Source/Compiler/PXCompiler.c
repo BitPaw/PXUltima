@@ -4,7 +4,7 @@
 
 #include <File/PXDataStream.h>
 #include <Media/PXText.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #define PXCompilerSanitise 1
 

@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/RIFF/RIFF.h>
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 
 #define WAVSignatureLIST { 'L', 'I', 'S', 'T' }
 #define WAVSignatureData { 'd', 'a', 't', 'a' }

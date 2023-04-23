@@ -1,6 +1,6 @@
 #include "PXMatrix.h"
 
-#include <PXMath/PXPXMath.h>
+#include <Math/PXMath.h>
 #include <OS/Memory/PXMemory.h>
 
 void PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
