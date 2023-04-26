@@ -1,11 +1,10 @@
 # BitMap (.BMP)<br>[RFC 797]
 
 ## Info
-Bitmaps is an image format.<br>
-The format is easy to parse and serialize but as a drawback, it comsumes a considerable amount of space even for relative smal images.<br>
-Even in the early days, other formats gained alot more popularity.<br>
-Though, this format got some updates over time, most rely on mecanics that are copyed from other formates.<br>
-Because of this history, bitmaps are used here and there but in the context of the internet, this format is absent.
+Bitmaps are an image file format that is simple to parse and serialize.<br>
+However, one of the drawbacks is that even for relatively small images, it can consume a significant amount of space.<br>
+Despite receiving some updates over time, the format did not gain as much popularity as other formats did in the early days, and most of its mechanics were copied from other formats.<br>
+As a result of its history, bitmaps are not widely used on the internet.
 
 
 ## Structure
