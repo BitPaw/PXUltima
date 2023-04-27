@@ -18,7 +18,7 @@ As a result of its history, bitmaps are not widely used on the internet.
 |DataOffset| 4 Bytes | unsigned int | On this offset the pixeldata is stored |
 
 ### Bitmap DIP Header (minimum 12 Bytes to maximal 124 Bytes)
-You read this header instandly after the main header.<br>
+You read this header instantly after the main header.<br>
 The first value directly decides what data follows.
 
 |Name|Length|Type| Description |
