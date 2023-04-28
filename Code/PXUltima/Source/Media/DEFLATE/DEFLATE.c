@@ -5,7 +5,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/HUFFMAN/HuffmanTree.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Math/PXMath.h>
 #include <Media/LZ77/PXLZ77.h>
 
@@ -113,7 +113,7 @@ PXInt8U ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEnco
     }
 }
 
-PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream)
+PXActionResult DEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     DeflateBlock deflateBlock;
 
@@ -121,10 +121,10 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
 
     do
     {
-        deflateBlock.IsLastBlock = PXDataStreamReadBits(pxInputStream, 1u);
+        deflateBlock.IsLastBlock = PXFileReadBits(pxInputStream, 1u);
 
         {
-            const PXInt8U encodingMethodValue = PXDataStreamReadBits(pxInputStream, 2u);
+            const PXInt8U encodingMethodValue = PXFileReadBits(pxInputStream, 2u);
 
             deflateBlock.EncodingMethod = ConvertToDeflateEncodingMethod(encodingMethodValue);
         }
@@ -139,16 +139,16 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
             }
             case DeflateEncodingLiteralRaw:
             {
-                PXDataStreamSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
+                PXFileSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
 
-                const PXInt16U length = PXDataStreamReadBits(pxInputStream, 16u);
-                const PXInt16U lengthInverse = PXDataStreamReadBits(pxInputStream, 16u);
+                const PXInt16U length = PXFileReadBits(pxInputStream, 16u);
+                const PXInt16U lengthInverse = PXFileReadBits(pxInputStream, 16u);
                 const PXBool validLength = (length + lengthInverse) == 65535;
                 //const PXSize bitsToJump = (PXSize)length * 8;
 
                 //assert(validLength);
 
-                PXDataStreamDataCopy(pxInputStream, pxOutputStream, length);
+                PXFileDataCopy(pxInputStream, pxOutputStream, length);
 
                 break;
             }
@@ -198,7 +198,7 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
                         case HuffmanCodeLiteral:
                         {
                             // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);                           
-                            PXDataStreamWriteI8U(pxOutputStream, resultLengthCode);
+                            PXFileWriteI8U(pxOutputStream, resultLengthCode);
                             break;
                         }
                         case HuffmanCodeLength:
@@ -238,7 +238,7 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
                             if(numextrabits_l != 0)
                             {
                                 /* bits already ensured above */
-                                length += PXDataStreamReadBits(pxInputStream, numextrabits_l);
+                                length += PXFileReadBits(pxInputStream, numextrabits_l);
                             }
 
                             /*part 3: get distance code*/
@@ -266,7 +266,7 @@ PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* con
                             if(numextrabits_d != 0)
                             {
                                 /* bits already ensured above */
-                                distance += PXDataStreamReadBits(pxInputStream, numextrabits_d);
+                                distance += PXFileReadBits(pxInputStream, numextrabits_d);
                             }
 
                             /*part 5: fill in all the out[n] values based on the length and dist*/
@@ -609,7 +609,7 @@ unsigned encodeLZ77(uivector* out, Hash* hash, const unsigned char* in, PXSize i
 
 unsigned deflateFixed
 (
-    PXDataStream* const pxDataStream,
+    PXFile* const PXFile,
     Hash* hash,
     const unsigned char* data,
     PXSize datapos, 
@@ -622,12 +622,12 @@ unsigned deflateFixed
     LodePNGBitWriter* writer = &writerThing;
     ucvector aaucvector;
 
-    aaucvector.data = (PXAdress)pxDataStream->Data + pxDataStream->DataCursor;
+    aaucvector.data = (PXAdress)PXFile->Data + PXFile->DataCursor;
     aaucvector.size = 0;
-    aaucvector.allocsize = pxDataStream->DataSize;
+    aaucvector.allocsize = PXFile->DataSize;
 
     LodePNGBitWriter_init(writer, &aaucvector);
-    writer->bp = pxDataStream->DataCursorBitOffset + 16u;
+    writer->bp = PXFile->DataCursorBitOffset + 16u;
 
     //--------------------------
 
@@ -678,8 +678,8 @@ unsigned deflateFixed
     HuffmanTreeDestruct(&tree_ll);
     HuffmanTreeDestruct(&tree_d);
 
-    pxDataStream->DataCursorBitOffset = writer->bp;
-    pxDataStream->DataCursor += aaucvector.size;
+    PXFile->DataCursorBitOffset = writer->bp;
+    PXFile->DataCursor += aaucvector.size;
 
     return error;
 }
@@ -1166,7 +1166,7 @@ unsigned HuffmanTree_makeFromFrequencies(HuffmanTree* tree, const unsigned* freq
 
 unsigned deflateDynamic
 (
-    PXDataStream* const pxDataStream,
+    PXFile* const PXFile,
     Hash* hash,
     const unsigned char* data,
     PXSize datapos,
@@ -1185,12 +1185,12 @@ unsigned deflateDynamic
     LodePNGBitWriter* writer = &writerThing;
     ucvector aaucvector;
 
-    aaucvector.data = (PXAdress)pxDataStream->Data + pxDataStream->DataCursor;
+    aaucvector.data = (PXAdress)PXFile->Data + PXFile->DataCursor;
     aaucvector.size = 0;
-    aaucvector.allocsize = pxDataStream->DataSize;
+    aaucvector.allocsize = PXFile->DataSize;
 
     LodePNGBitWriter_init(writer, &aaucvector);
-    writer->bp = pxDataStream->DataCursorBitOffset;// +(2 * 8u);
+    writer->bp = PXFile->DataCursorBitOffset;// +(2 * 8u);
 
     //-------------------------
 
@@ -1212,7 +1212,7 @@ unsigned deflateDynamic
 
     /*The lz77 encoded data, represented with integers since there will also be length and distance codes in it*/
     uivector lz77_encoded;    uivector_init(&lz77_encoded);
-    //PXDataStream lz77CacheStream;     PXDataStreamConstruct(&lz77CacheStream);
+    //PXFile lz77CacheStream;     PXFileConstruct(&lz77CacheStream);
 
 
     HuffmanTree tree_ll; /*tree for lit,len values*/
@@ -1464,15 +1464,15 @@ unsigned deflateDynamic
     free(bitlen_lld);
     free(bitlen_lld_e);
 
-    pxDataStream->DataCursorBitOffset = writer->bp;
-    pxDataStream->DataCursor += aaucvector.size;
+    PXFile->DataCursorBitOffset = writer->bp;
+    PXFile->DataCursor += aaucvector.size;
 
     return error;
 }
 
 #define DEFAULT_WINDOWSIZE 2048
 
-PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream)
+PXActionResult DEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     unsigned error = 0;
     PXSize blocksize;
@@ -1507,11 +1507,11 @@ PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream*
 
                 const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
 
-                PXDataStreamWriteI8U(pxOutputStream, firstbyte);
-                PXDataStreamWriteI16U(pxOutputStream, chunkLength);
-                PXDataStreamWriteI16U(pxOutputStream, chunkLengthNegated);
+                PXFileWriteI8U(pxOutputStream, firstbyte);
+                PXFileWriteI16U(pxOutputStream, chunkLength);
+                PXFileWriteI16U(pxOutputStream, chunkLengthNegated);
 
-                PXDataStreamWriteB(pxOutputStream, (PXAdress)pxInputStream->Data + datapos, chunkLength);
+                PXFileWriteB(pxOutputStream, (PXAdress)pxInputStream->Data + datapos, chunkLength);
 
                 datapos += chunkLength;
             }
@@ -1548,19 +1548,19 @@ PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream*
                 const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataSize);
                 const PXBool finalBlock = (i == numdeflateblocks - 1);
 
-                // PXDataStreamWriteBits(pxOutputStream, finalBlock, 1u);
+                // PXFileWriteBits(pxOutputStream, finalBlock, 1u);
 
                 switch (deflateEncodingMethod)
                 {
                     case DeflateEncodingHuffmanStatic:
                     {
-                        PXDataStreamWriteBits(pxOutputStream, 1u, 2u);
+                        PXFileWriteBits(pxOutputStream, 1u, 2u);
                         error = deflateFixed(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings);
                         break;
                     }
                     case DeflateEncodingHuffmanDynamic:
                     {
-                        //PXDataStreamWriteBits(pxOutputStream, 2u, 2u);
+                        //PXFileWriteBits(pxOutputStream, 2u, 2u);
                         error = deflateDynamic(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings, finalBlock);
                         break;
                     }
@@ -1605,8 +1605,8 @@ PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream*
 
 PXPublic PXActionResult PXLZ77Encode
 (
-    //PXDataStream* const pxOutputStream,
-    PXDataStream* const pxCacheStream,
+    //PXFile* const pxOutputStream,
+    PXFile* const pxCacheStream,
     Hash* hash,
     const unsigned char* in,
     PXSize inpos,

@@ -1,7 +1,7 @@
 #include "PXZLIB.h"
 
 #include <Math/PXMath.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/DEFLATE/DEFLATE.h>
 #include <Media/ADLER/Adler32.h>
 
@@ -79,7 +79,7 @@ unsigned char ConvertFromCompressionMethod(const PXZLIBCompressionMethod compres
     }
 }
 
-PXActionResult PXZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
+PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
 {
     PXZLIB PXZLIB;
 
@@ -91,8 +91,8 @@ PXActionResult PXZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* 
         PXInt8U compressionFormatByte = 0;
         PXInt8U flagByte = 0;
 
-        PXDataStreamReadI8U(pxInputSteam, &compressionFormatByte);
-        PXDataStreamReadI8U(pxInputSteam, &flagByte);
+        PXFileReadI8U(pxInputSteam, &compressionFormatByte);
+        PXFileReadI8U(pxInputSteam, &flagByte);
 
         // Valid Check
         {
@@ -155,8 +155,8 @@ PXActionResult PXZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* 
     }*/
 
 
-    PXZLIB.CompressedDataSize = PXDataStreamRemainingSize(pxInputSteam) - adlerSize;
-    PXZLIB.CompressedData = PXDataStreamCursorPosition(pxInputSteam);
+    PXZLIB.CompressedDataSize = PXFileRemainingSize(pxInputSteam) - adlerSize;
+    PXZLIB.CompressedData = PXFileCursorPosition(pxInputSteam);
 
     switch(PXZLIB.Header.CompressionMethod)
     {
@@ -176,12 +176,12 @@ PXActionResult PXZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* 
         }
     }
 
-    PXDataStreamReadI32UE(pxInputSteam, &PXZLIB.AdlerChecksum, EndianBig);
+    PXFileReadI32UE(pxInputSteam, &PXZLIB.AdlerChecksum, PXEndianBig);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam)
+PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
 {
     // Write PXZLIB Header
     {
@@ -213,7 +213,7 @@ PXActionResult PXZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* co
             buffer[1] += multble;
         }    
 
-        PXDataStreamWriteB(pxOutputSteam, buffer, 2u);
+        PXFileWriteB(pxOutputSteam, buffer, 2u);
     }
 
     // Write DEFLATE
@@ -227,7 +227,7 @@ PXActionResult PXZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* co
     {
         const PXInt32U adler = (PXInt32U)Adler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
 
-        PXDataStreamWriteI32UE(pxOutputSteam, adler, EndianBig);
+        PXFileWriteI32UE(pxOutputSteam, adler, PXEndianBig);
     }
 
     return PXActionSuccessful;

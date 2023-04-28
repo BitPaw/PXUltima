@@ -1,6 +1,6 @@
 #include "TestYAML.h"
 
-#include <Media/YAML/YAML.h>
+#include <Media/YAML/PXYAML.h>
 
 void TestYAMLAll()
 {
@@ -9,8 +9,8 @@ void TestYAMLAll()
 
 void TestYAMLParse()
 {
-	PXDataStream inputStream;
-	PXDataStream compiledStream;
+	PXFile inputStream;
+	PXFile compiledStream;
 
 	struct MyStroage
 	{
@@ -28,12 +28,12 @@ void TestYAMLParse()
 	//------------------------------
 
 	//----<Load>--------------------------
-	PXDataStreamMapToMemoryA(&inputStream, "A:/config.yml", 0, MemoryReadOnly);
-	PXDataStreamMapToMemory(&compiledStream, inputStream.DataSize*7, MemoryReadAndWrite);
+	PXFileMapToMemoryA(&inputStream, "A:/config.yml", 0, PXMemoryAccessModeReadOnly);
+	PXFileMapToMemory(&compiledStream, inputStream.DataSize*7, PXMemoryAccessModeReadAndWrite);
 
-	YAMLFileCompile(&inputStream, &compiledStream);
+	PXYAMLFileCompile(&inputStream, &compiledStream);
 
-	YAMLFileParse(&compiledStream, &serializationTypeInfo, 2u);
+	PXYAMLFileParse(&compiledStream, &serializationTypeInfo, 2u);
 	//------------------------------
 
 

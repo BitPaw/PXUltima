@@ -1,6 +1,6 @@
 #include "M4A.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 
 #define M4ADebugLog 1
@@ -65,22 +65,22 @@ M4AChunkID ConvertToM4AChunkID(const PXInt32U chunkID)
 
 PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	PXDataStream dataStream;
+	PXFile dataStream;
 
 	MemoryClear(m4a, sizeof(M4A));
 	*dataRead = 0;
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
+	PXFileConstruct(&dataStream);
+	PXFileBufferExternal(&dataStream, data, dataSize);
 
-	while(!PXDataStreamIsAtEnd(&dataStream))
+	while(!PXFileIsAtEnd(&dataStream))
 	{
 		M4AChunk chunk;
 
 		unsigned int chunkSize = 0;
 		PXInt32UCluster typePrimaryID;
 
-		PXDataStreamReadI32UE(&dataStream, &chunkSize, EndianBig);
-		PXDataStreamReadB(&dataStream, typePrimaryID.Data, 4u);
+		PXFileReadI32UE(&dataStream, &chunkSize, PXEndianBig);
+		PXFileReadB(&dataStream, typePrimaryID.Data, 4u);
 
 		const PXSize positionPrediction = dataStream.DataCursor + chunkSize - 8;
 		const M4AChunkID typePrimary = ConvertToM4AChunkID(typePrimaryID.Value);
@@ -104,9 +104,9 @@ PXActionResult M4AParse(M4A* m4a, const void* data, const PXSize dataSize, PXSiz
 				unsigned int sizeB = 0;
 				char isoSignature[8]; // isom3gp4
 
-				PXDataStreamReadB(&dataStream, chunk.TypeSub, 4u);
-				PXDataStreamReadI32UE(&dataStream, &sizeB, EndianBig);
-				PXDataStreamReadB(&dataStream, isoSignature, 8u);
+				PXFileReadB(&dataStream, chunk.TypeSub, 4u);
+				PXFileReadI32UE(&dataStream, &sizeB, PXEndianBig);
+				PXFileReadB(&dataStream, isoSignature, 8u);
 
 				break;
 			}

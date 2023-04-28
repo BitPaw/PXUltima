@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -30,8 +30,8 @@ tree_d: the tree for distance codes.
 	
 	PXPublic PXActionResult PXLZ77Encode
 	(
-		//PXDataStream* const pxOutputStream,
-		PXDataStream* const pxCacheStream,
+		//PXFile* const pxOutputStream,
+		PXFile* const pxCacheStream,
 		Hash* hash,
 		const unsigned char* in,
 		PXSize inpos,

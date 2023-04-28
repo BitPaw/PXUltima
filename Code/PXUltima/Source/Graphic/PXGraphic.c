@@ -1,6 +1,6 @@
 #include "PXGraphic.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 #include <OS/Graphic/OpenGL/OpenGL.h>
 #include <OS/Window/PXWindow.h>
@@ -1349,8 +1349,8 @@ PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicCo
 {
     PXShader vertexShader; PXShaderConstruct(&vertexShader);
     PXShader fragmentShader; PXShaderConstruct(&fragmentShader);
-    PXDataStream vertexShaderFile; PXDataStreamConstruct(&vertexShaderFile);
-    PXDataStream fragmentFile; PXDataStreamConstruct(&fragmentFile);
+    PXFile vertexShaderFile; PXFileConstruct(&vertexShaderFile);
+    PXFile fragmentFile; PXFileConstruct(&fragmentFile);
 
     {
         const PXBool isAlreadyLoaded = shaderProgram->ID != -1;
@@ -1368,7 +1368,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicCo
     }
 
     {
-        const PXActionResult actionResult = PXDataStreamMapToMemoryA(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
+        const PXActionResult actionResult = PXFileMapToMemoryA(&vertexShaderFile, vertexShaderFilePath, 0, PXMemoryAccessModeReadOnly);
         const PXBool sucessful = PXActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -1381,7 +1381,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicCo
 
 
     {
-        const PXActionResult actionResult = PXDataStreamMapToMemoryA(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
+        const PXActionResult actionResult = PXFileMapToMemoryA(&fragmentFile, fragmentShaderFilePath, 0, PXMemoryAccessModeReadOnly);
         const PXBool successful = PXActionSuccessful == actionResult;
 
         if (!successful)
@@ -1396,19 +1396,19 @@ PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicCo
     PXGraphicShaderProgramLoadGLSL(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
 
 
-    PXDataStreamDestruct(&vertexShaderFile);
-    PXDataStreamDestruct(&fragmentFile);
+    PXFileDestruct(&vertexShaderFile);
+    PXFileDestruct(&fragmentFile);
 }
 
 PXActionResult PXGraphicShaderProgramLoadGLSLW(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, const PXTextUNICODE vertexShaderFilePath, const PXTextUNICODE fragmentShaderFilePath)
 {
     PXShader vertexShader;
     PXShader fragmentShader;
-    PXDataStream vertexShaderFile;
-    PXDataStream fragmentFile;
+    PXFile vertexShaderFile;
+    PXFile fragmentFile;
 
-    PXDataStreamConstruct(&vertexShaderFile);
-    PXDataStreamConstruct(&fragmentFile);
+    PXFileConstruct(&vertexShaderFile);
+    PXFileConstruct(&fragmentFile);
 
     {
         const unsigned char isAlreadyLoaded = shaderProgram->ID != -1;
@@ -1426,7 +1426,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSLW(PXGraphicContext* const graphicCo
     }
 
     {
-        const PXActionResult actionResult = PXDataStreamMapToMemoryW(&vertexShaderFile, vertexShaderFilePath, 0, MemoryReadOnly);
+        const PXActionResult actionResult = PXFileMapToMemoryW(&vertexShaderFile, vertexShaderFilePath, 0, PXMemoryAccessModeReadOnly);
         const unsigned char sucessful = PXActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -1441,7 +1441,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSLW(PXGraphicContext* const graphicCo
 
 
     {
-        const PXActionResult actionResult = PXDataStreamMapToMemoryW(&fragmentFile, fragmentShaderFilePath, 0, MemoryReadOnly);
+        const PXActionResult actionResult = PXFileMapToMemoryW(&fragmentFile, fragmentShaderFilePath, 0, PXMemoryAccessModeReadOnly);
         const unsigned char sucessful = PXActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -1458,8 +1458,8 @@ PXActionResult PXGraphicShaderProgramLoadGLSLW(PXGraphicContext* const graphicCo
     PXGraphicShaderProgramLoadGLSL(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
 
 
-    PXDataStreamDestruct(&vertexShaderFile);
-    PXDataStreamDestruct(&fragmentFile);
+    PXFileDestruct(&vertexShaderFile);
+    PXFileDestruct(&fragmentFile);
 }
 
 PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, PXShader* const vertexShader, PXShader* const fragmentShader)

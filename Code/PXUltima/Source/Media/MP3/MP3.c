@@ -1,6 +1,6 @@
 #include "MP3.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 #include <Media/XingInfo/XingInfo.h>
 #include <Media/LAME/LAME.h>
@@ -785,18 +785,18 @@ unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre)
 	return -1; // MPEGGenreUnknown
 }
 
-PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
+PXActionResult MP3Parse(MP3* const mp3, PXFile* const PXFile)
 {
 	MemoryClear(mp3, sizeof(MP3));
 
 	{
 
-		const PXActionResult actionResult = ID3Parse(&mp3->ID3Info, pxDataStream);
+		const PXActionResult actionResult = ID3Parse(&mp3->ID3Info, PXFile);
 
 		PXActionExitOnError(actionResult);
 	}
 
-	while(!PXDataStreamIsAtEnd(pxDataStream))
+	while(!PXFileIsAtEnd(PXFile))
 	{
 		XingInfo xingInfo;
 
@@ -806,7 +806,7 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 
 		// Parse mp3
 		{
-			const PXByte* const mp3HeaderDataBlock = (const PXByte* const)PXDataStreamCursorPosition(pxDataStream);
+			const PXByte* const mp3HeaderDataBlock = (const PXByte* const)PXFileCursorPosition(PXFile);
 
 			// Parse Byte 1/4
 			{
@@ -1020,7 +1020,7 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 				}
 			}
 
-			PXDataStreamCursorAdvance(pxDataStream, 4u);
+			PXFileCursorAdvance(PXFile, 4u);
 
 			// Header parsing finished..
 
@@ -1033,7 +1033,7 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 
 			//cursorPositionPredict = dataStream.DataCursor + mp3Header.FrameLength;
 
-			PXDataStreamCursorAdvance(pxDataStream, 32u);
+			PXFileCursorAdvance(PXFile, 32u);
 
 #if MP3Debug
 			printf
@@ -1048,7 +1048,7 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 
 		// info header
 		{
-			const PXActionResult actionResult = XingInfoParse(&xingInfo, pxDataStream);
+			const PXActionResult actionResult = XingInfoParse(&xingInfo, PXFile);
 
 			PXActionExitOnError(actionResult);
 	
@@ -1066,7 +1066,7 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 		{
 			const char tag[] = { 'L','a', 'v', 'c' };
 			const PXSize tagSize = sizeof(tag);
-			const unsigned char isTag = PXDataStreamReadAndCompare(pxDataStream, tag, tagSize);
+			const unsigned char isTag = PXFileReadAndCompare(PXFile, tag, tagSize);
 
 			if(isTag)
 			{
@@ -1077,7 +1077,7 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 				);
 #endif
 
-				PXDataStreamCursorAdvance(pxDataStream, 257u);
+				PXFileCursorAdvance(PXFile, 257u);
 
 				continue; // After this header there is a MP3 header next, so parse it.
 			}
@@ -1087,7 +1087,7 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 		{
 			LAME lame;
 
-			const PXActionResult actionResult = LAMEParse(&lame, pxDataStream);
+			const PXActionResult actionResult = LAMEParse(&lame, PXFile);
 
 			PXActionExitOnError(actionResult);
 
@@ -1102,32 +1102,32 @@ PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream)
 
 
 		{
-			const PXBool tagDetected = PXDataStreamReadAndCompare(pxDataStream,"TAG", 3u);
+			const PXBool tagDetected = PXFileReadAndCompare(PXFile,"TAG", 3u);
 
 			if(tagDetected)
 			{
-				const PXSize offset = PXDataStreamRemainingSize(pxDataStream);
+				const PXSize offset = PXFileRemainingSize(PXFile);
 
 				// I currently dont know what this is.
 				// But it comes at the end of the file.. so i am finished?
 
-				PXDataStreamCursorAdvance(pxDataStream, offset);
+				PXFileCursorAdvance(PXFile, offset);
 			}
 		}
 
 		// Check if reader is still alligned
 		{
-			const PXBool isAlligned = cursorPositionPredict == pxDataStream->DataCursor;
+			const PXBool isAlligned = cursorPositionPredict == PXFile->DataCursor;
 
 			if(!isAlligned)
 			{
-				int offset = cursorPositionPredict - pxDataStream->DataCursor;
+				int offset = cursorPositionPredict - PXFile->DataCursor;
 
 #if MP3Debug
 				printf("[MP3] detected failed allignment! Off by : %i Bytes\n", offset);
 #endif
 
-				pxDataStream->DataCursor = cursorPositionPredict;
+				PXFile->DataCursor = cursorPositionPredict;
 				//dataStream.CursorAdvance(mp3Header.FrameLength);
 			}
 		}

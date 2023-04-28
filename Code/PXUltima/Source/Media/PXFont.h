@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
 
 #ifdef __cplusplus
@@ -38,7 +38,7 @@ extern "C"
 	PXPublic PXActionResult PXFontLoadA(PXFont* const pxFont, const PXTextASCII filePath);
 	PXPublic PXActionResult PXFontLoadW(PXFont* const pxFont, const PXTextUNICODE filePath);
 	PXPublic PXActionResult PXFontLoadU(PXFont* const pxFont, const PXTextUTF8 filePath);
-	PXPublic PXActionResult PXFontLoadD(PXFont* const pxFont, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat);
+	PXPublic PXActionResult PXFontLoadD(PXFont* const pxFont, PXFile* const PXFile, const FileFormatExtension guessedFormat);
 
 #ifdef __cplusplus
 }

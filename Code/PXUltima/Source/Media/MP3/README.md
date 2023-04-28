@@ -11,7 +11,7 @@ Encoders and decoders can ignore this chunk.<br>
 As this is not a standard to the MP3 format itself, it can be ignored.
 
 ### MP3-Header-Chunk (4 Bytes)
-Values stored in Big-Endian order.
+Values stored in Big-PXEndian order.
 
 |Offset|Size|Type|Name|Expected content|
 |:-:|:-:|:-:|:-:|:-|

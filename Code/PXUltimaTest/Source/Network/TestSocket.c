@@ -15,11 +15,11 @@ void OnSocketDataSend(const PXSocket* const sendingSocket, const PXSocketID clie
 void OnSocketDataReceive(const PXSocket* const receiveSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize)
 {
     //PXHTTPRequest pxHTTPRequest;
-    //PXDataStream pxDataStream;
+    //PXFile PXFile;
 
-    //PXDataStreamFromExternal(&pxDataStream, message, messageSize);
+    //PXFileBufferExternal(&PXFile, message, messageSize);
 
-    //const PXActionResult actionResult = PXHTTPRequestParse(&pxHTTPRequest, &pxDataStream);
+    //const PXActionResult actionResult = PXHTTPRequestParse(&pxHTTPRequest, &PXFile);
 
     const char exportBuffer[1024];
 

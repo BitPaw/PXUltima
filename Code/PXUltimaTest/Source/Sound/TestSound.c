@@ -2,7 +2,7 @@
 
 #include <Media/PXSound.h>
 
-#include <Media/WAV/WAV.h>
+#include <Media/WAV/PXWAV.h>
 #include <Media/MP3/MP3.h>
 
 void TestSoundAll()
@@ -22,40 +22,40 @@ void TestSoundAll()
 
 void TestSoundWAVWrite()
 {
-	WAV wav;
+	PXWAV wav;
 
-	PXDataStream waveStream;
+	PXFile waveStream;
 
-	const PXActionResult mappingResult = PXDataStreamMapToMemoryA(&waveStream, "A:/TestWav.wav", 1024*8000, MemoryReadAndWrite);
-	const PXActionResult pxActionResult = WAVSerialize(&wav, &waveStream);
+	const PXActionResult mappingResult = PXFileMapToMemoryA(&waveStream, "A:/TestWav.wav", 1024*8000, PXMemoryAccessModeReadAndWrite);
+	const PXActionResult pxActionResult = PXWAVSerialize(&wav, &waveStream);
 
-	PXDataStreamDestruct(&waveStream);
+	PXFileDestruct(&waveStream);
 
 	printf("\n");
 }
 
 void TestSoundWAV()
 {
-	WAV wav;
+	PXWAV wav;
 
-	PXDataStream dataStream;
+	PXFile dataStream;
 
-	PXDataStreamMapToMemoryA(&dataStream, "A:/W.wav", 0, MemoryReadOnly);
+	PXFileMapToMemoryA(&dataStream, "A:/W.wav", 0, PXMemoryAccessModeReadOnly);
 	
-	WAVParse(&wav, &dataStream);
+	PXWAVParse(&wav, &dataStream);
 
-	PXDataStreamDestruct(&dataStream);
+	PXFileDestruct(&dataStream);
 }
 
 void TestSoundMP3()
 {
 	MP3 mp3;
 
-	PXDataStream dataStream;
+	PXFile dataStream;
 
-	PXDataStreamMapToMemoryA(&dataStream, "A:/S.mp3", 0, MemoryReadOnly);
+	PXFileMapToMemoryA(&dataStream, "A:/S.mp3", 0, PXMemoryAccessModeReadOnly);
 
 	MP3Parse(&mp3, &dataStream);
 
-	PXDataStreamDestruct(&dataStream);
+	PXFileDestruct(&dataStream);
 }

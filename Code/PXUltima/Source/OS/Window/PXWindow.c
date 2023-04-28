@@ -2212,21 +2212,21 @@ float PXWindowScreenRatio(const PXWindow* const window)
     return (float)window->Width / (float)window->Height;
 }
 
-void PXWindowCreateA(PXWindow* window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
+void PXWindowCreateA(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* title, const PXBool async)
 {
     PXTextCopyAW(title, 256u, window->Title, 256u);
 
     PXWindowCreate(window, width, height, async);
 }
 
-void PXWindowCreateW(PXWindow* const window, const unsigned int width, const unsigned int height, const wchar_t* title, const PXBool async)
+void PXWindowCreateW(PXWindow* const window, const PXInt32S width, const PXInt32S height, const wchar_t* title, const PXBool async)
 {
     PXTextCopyW(title, 256u, window->Title, 256u);
 
     PXWindowCreate(window, width, height, async);
 }
 
-void PXWindowCreateU(PXWindow* const window, const unsigned int width, const unsigned int height, const char* title, const PXBool async)
+void PXWindowCreateU(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* title, const PXBool async)
 {
     PXTextCopyAW(title, 256u, window->Title, 256u);
 
@@ -2235,7 +2235,7 @@ void PXWindowCreateU(PXWindow* const window, const unsigned int width, const uns
     PXWindowCreate(window, width, height, async);
 }
 
-void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async)
+void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async)
 {
     window->Width = width;
     window->Height = height;
@@ -2268,7 +2268,7 @@ void PXWindowCreate(PXWindow* const window, const unsigned int width, const unsi
     }
 }
 
-void PXWindowCreateHidden(PXWindow* const window, const unsigned int width, const unsigned int height, const PXBool async)
+void PXWindowCreateHidden(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async)
 {
     window->Mode = PXWindowModeHidden;
 
@@ -2303,7 +2303,7 @@ PXBool PXWindowTitleSetA(PXWindow* const window, const char* const title, const 
 #if OSUnix
     return 0;
 #elif OSWindows
-    const PXBool success = SetWindowTextA(window->ID, title, titleSize);
+	const PXBool success = SetWindowTextA(window->ID, title, titleSize); // Windows 2000, User32.dll, winuser.h
 
     // could get extended error
 
@@ -2316,7 +2316,7 @@ PXSize PXWindowTitleGetA(const PXWindow* const window, char* const title, const 
 #if OSUnix
     return 0;
 #elif OSWindows
-    const int result = GetWindowTextA(window->ID, title, titleSize);
+    const int result = GetWindowTextA(window->ID, title, titleSize); // Windows 2000, User32.dll, winuser.h
     const PXBool success = result > 0;
 
     // could get extended error
@@ -2592,24 +2592,82 @@ PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
     return PXFalse;
 
 #elif OSWindows
-    POINT point;
-    point.x = 0;
-    point.y = 0;
+	
+#if WindowsAtleastVista
+	POINT point;
+	point.x = 0;
+	point.y = 0;
 
-    const unsigned char sucessful = GetPhysicalCursorPos(&point);
+	const PXBool successful = GetPhysicalCursorPos(&point); // Windows Vista, User32.dll, winuser.h
 
-    if(sucessful)
-    {
-        *x = point.x;
-        *y = point.y;
-    }
-    else
-    {
-        *x = 0;
-        *y = 0;
-    }
+	if (successful)
+	{
+		*x = point.x;
+		*y = point.y;
+	}
+	else
+	{
+		*x = 0;
+		*y = 0;
+	}
 
-    return sucessful;
+	return successful;
+#else
+
+	const PXSize mouseMovePointSize = sizeof(MOUSEMOVEPOINT);	
+	const int nVirtualWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	const int nVirtualHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	const int nVirtualLeft = GetSystemMetrics(SM_XVIRTUALSCREEN);
+	const int nVirtualTop = GetSystemMetrics(SM_YVIRTUALSCREEN);
+	const int mode = GMMP_USE_DISPLAY_POINTS;
+	MOUSEMOVEPOINT mp_in;
+	MOUSEMOVEPOINT mp_out[64];
+
+	MemoryClear(&mp_in, mouseMovePointSize);
+
+	mp_in.x = 0x0000FFFF;//Ensure that this number will pass through.
+	mp_in.y = 0x0000FFFF;
+	const int numberOfPoints = GetMouseMovePointsEx(mouseMovePointSize, &mp_in, &mp_out, 64, mode); // Windows 2000, User32.dll, winuser.h
+	const PXBool success = numberOfPoints > 0;
+
+	if (!success)
+	{
+		return PXFalse;			 
+	}
+
+	/*
+	for (PXSize i = 0; i < (PXSize)numberOfPoints; ++i)
+	{
+		switch (mode)
+		{
+		case GMMP_USE_DISPLAY_POINTS:
+		{
+
+			if (mp_out[i].x > 32767)
+				mp_out[i].x -= 65536;
+			if (mp_out[i].y > 32767)
+				mp_out[i].y -= 65536;
+			break;
+		}
+		case GMMP_USE_HIGH_RESOLUTION_POINTS:
+		{
+			mp_out[i].x = ((mp_out[i].x * (nVirtualWidth - 1)) - (nVirtualLeft * 65536)) / nVirtualWidth;
+			mp_out[i].y = ((mp_out[i].y * (nVirtualHeight - 1)) - (nVirtualTop * 65536)) / nVirtualHeight;
+			break;
+		}
+		}
+
+		*x = mp_out[i].x;
+		*y = mp_out[i].y;
+
+		break;
+	}*/
+
+	return PXTrue;
+
+#endif
+
+
 #endif
 }
 

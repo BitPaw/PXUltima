@@ -6,7 +6,13 @@
 //#include <dxdiag.h>
 //#include <dsetup.h> // unsupported legacy lib, not updated
 //#include <d3d12.h>
+
+#if WindowsAtleastVista
 #include <d3d12.h>
+#else
+#include <d3d9.h>
+#endif
+
 #pragma comment(lib, "D3d9.lib")
 #endif
 

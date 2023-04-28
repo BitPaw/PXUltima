@@ -1,5 +1,5 @@
-#ifndef DataBaseINLCUDE
-#define DataBaseINLCUDE
+#ifndef PXDataBaseINLCUDE
+#define PXDataBaseINLCUDE
 
 #include <OS/System/OSVersion.h>
 
@@ -47,7 +47,7 @@ extern "C"
 	}
 	SQLType;
 
-	const SQLType SQLTypeFromID(const unsigned int sqlType);
+	const SQLType PXSQLTypeFromID(const unsigned int sqlType);
 
 
 	typedef enum SQLResult_
@@ -106,10 +106,10 @@ extern "C"
 	DataBaseConnection;
 
 
-	PXPublic void DataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection);
-	PXPublic void DataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection);
+	PXPublic void PXDataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection);
+	PXPublic void PXDataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection);
 
-	PXPublic void DataBaseConnectionConnect
+	PXPublic void PXDataBaseConnectionConnect
 	(
 		DataBaseConnection* const dataBaseConnection,
 		const wchar_t* source,
@@ -117,12 +117,12 @@ extern "C"
 		const wchar_t* user,
 		const wchar_t* password
 	);
-	PXPublic void DataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection);
-	PXPublic void DataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection);
+	PXPublic void PXDataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection);
+	PXPublic void PXDataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection);
 
-	PXPublic void DataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnection);
+	PXPublic void PXDataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnection);
 
-	PXPublic void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, const wchar_t* sqlStatement);
+	PXPublic void PXDataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, const wchar_t* sqlStatement);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 #include "PXModel.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <Media/Wavefront/PXWavefront.h>
@@ -29,11 +29,11 @@ PXSize PXModelMaterialAmount(PXModel* const model)
 
     // Fetch materials
     {
-        PXDataStream materialData;
+        PXFile materialData;
         unsigned int amount = 0;
 
-        PXDataStreamFromExternal(&materialData, model->MaterialList, -1);
-        PXDataStreamReadI32U(&materialData, &amount);
+        PXFileBufferExternal(&materialData, model->MaterialList, -1);
+        PXFileReadI32U(&materialData, &amount);
 
         return amount;
     }
@@ -54,42 +54,42 @@ PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMater
         }
     }
 
-    PXDataStream materialData;
+    PXFile materialData;
 
-    PXDataStreamFromExternal(&materialData, model->MaterialList, -1);
-    PXDataStreamCursorAdvance(&materialData, sizeof(unsigned int));
+    PXFileBufferExternal(&materialData, model->MaterialList, -1);
+    PXFileCursorAdvance(&materialData, sizeof(unsigned int));
 
     for (PXSize i = 0; i < amount; ++i)
     {
         const PXBool isGoal = i == materialID;
         unsigned short materialSize = 0;
 
-        PXDataStreamReadI16U(&materialData, &materialSize); // Total size
+        PXFileReadI16U(&materialData, &materialSize); // Total size
 
         if (isGoal)
         {
             unsigned short range = 0;
-            PXDataStreamReadI16U(&materialData, &range);
-            pxMaterial->Name = PXDataStreamCursorPosition(&materialData);
+            PXFileReadI16U(&materialData, &range);
+            pxMaterial->Name = PXFileCursorPosition(&materialData);
             pxMaterial->NameSize = range;
 
-            PXDataStreamCursorAdvance(&materialData, range);
+            PXFileCursorAdvance(&materialData, range);
 
-            PXDataStreamReadI16U(&materialData, &range);
-            pxMaterial->DiffuseTextureFilePath = PXDataStreamCursorPosition(&materialData);
+            PXFileReadI16U(&materialData, &range);
+            pxMaterial->DiffuseTextureFilePath = PXFileCursorPosition(&materialData);
             pxMaterial->DiffuseTextureFilePathSize = range;
 
-            PXDataStreamCursorAdvance(&materialData, range);
+            PXFileCursorAdvance(&materialData, range);
 
-            PXDataStreamReadB(&materialData, &pxMaterial->Ambient, sizeof(float) * 3u);
-            PXDataStreamReadB(&materialData, &pxMaterial->Diffuse, sizeof(float) * 3u);
-            PXDataStreamReadB(&materialData, &pxMaterial->Specular, sizeof(float) * 3u);
-            PXDataStreamReadB(&materialData, &pxMaterial->Emission, sizeof(float) * 3u);
+            PXFileReadB(&materialData, &pxMaterial->Ambient, sizeof(float) * 3u);
+            PXFileReadB(&materialData, &pxMaterial->Diffuse, sizeof(float) * 3u);
+            PXFileReadB(&materialData, &pxMaterial->Specular, sizeof(float) * 3u);
+            PXFileReadB(&materialData, &pxMaterial->Emission, sizeof(float) * 3u);
 
             break;
         }
 
-        PXDataStreamCursorAdvance(&materialData, materialSize-2u);
+        PXFileCursorAdvance(&materialData, materialSize-2u);
     }
 
     return PXYes;
@@ -114,16 +114,16 @@ void* PXModelSegmentsAdressGet(const PXModel* const model, const PXSize index)
 
 void PXModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegment* const meshSegment)
 {
-    PXDataStream dataStream;
+    PXFile dataStream;
 
     {
         void* const segmentAdress = PXModelSegmentsAdressGet(model, index);
-        PXDataStreamFromExternal(&dataStream, segmentAdress, -1);
+        PXFileBufferExternal(&dataStream, segmentAdress, -1);
     }
 
-    PXDataStreamReadI8U(&dataStream, &meshSegment->DrawStrideSize);
-    PXDataStreamReadI32U(&dataStream, &meshSegment->DrawClusterSize);
-    PXDataStreamReadI32U(&dataStream, &meshSegment->TextureID);
+    PXFileReadI8U(&dataStream, &meshSegment->DrawStrideSize);
+    PXFileReadI32U(&dataStream, &meshSegment->DrawClusterSize);
+    PXFileReadI32U(&dataStream, &meshSegment->TextureID);
 
 	meshSegment->VertexData = model->DataVertexList;
 }
@@ -135,16 +135,16 @@ void PXModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, con
 
     *(PXAdress)model->Data = segmentID;
 
-    PXDataStream dataStream;
+    PXFile dataStream;
 
     {
         void* const segmentAdress = PXModelSegmentsAdressGet(model, segmentID-1u);
-        PXDataStreamFromExternal(&dataStream, segmentAdress, -1);
+        PXFileBufferExternal(&dataStream, segmentAdress, -1);
     }
 
-    PXDataStreamWriteI8U(&dataStream, renderMode);
-    PXDataStreamWriteI32U(&dataStream, renderSize);
-    PXDataStreamWriteI32U(&dataStream, renderMaterial);
+    PXFileWriteI8U(&dataStream, renderMode);
+    PXFileWriteI32U(&dataStream, renderSize);
+    PXFileWriteI32U(&dataStream, renderMaterial);
 
 }
 
@@ -166,19 +166,19 @@ PXActionResult PXModelLoadA(PXModel* const model, const char* const filePath)
 
 PXActionResult PXModelLoadW(PXModel* const model, const wchar_t* const filePath)
 {
-    PXDataStream dataStream;
+    PXFile dataStream;
 
-    PXDataStreamConstruct(&dataStream);
+    PXFileConstruct(&dataStream);
     PXModelConstruct(model);
 
     {
-        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryW(&dataStream, filePath, 0, MemoryReadOnly);
+        const PXActionResult fileLoadingResult = PXFileMapToMemoryW(&dataStream, filePath, 0, PXMemoryAccessModeReadOnly);
 
         PXActionExitOnError(fileLoadingResult);
     }
 
     {
-        const FileFormatExtension modelFileFormat = FilePathExtensionDetectTryW(filePath, PathMaxSize);
+        const FileFormatExtension modelFileFormat = PXFilePathExtensionDetectTryW(filePath, PathMaxSize);
         const PXActionResult fileParsingResult = PXModelLoadD(model, &dataStream, modelFileFormat);
 
         PXActionExitOnSuccess(fileParsingResult);
@@ -196,21 +196,21 @@ PXActionResult PXModelLoadW(PXModel* const model, const wchar_t* const filePath)
         } 
         while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
-        PXDataStreamDestruct(&dataStream);
+        PXFileDestruct(&dataStream);
 
         return fileGuessResult;
     }
 }
 
-PXActionResult PXModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType)
+PXActionResult PXModelLoadD(PXModel* const model, PXFile* const fileStream, const FileFormatExtension modelType)
 {
-    PXDataStream modelCompileCache;
+    PXFile modelCompileCache;
 
     PXSize bytesRead = 0;
     ModelCompilerFunction modelCompilerFunction = 0;
     ModelParserFunction modelParserFunction = 0;
 
-    PXDataStreamMapToMemory(&modelCompileCache, fileStream->DataSize * 200, MemoryReadAndWrite);
+    PXFileMapToMemory(&modelCompileCache, fileStream->DataSize * 200, PXMemoryAccessModeReadAndWrite);
 
     switch (modelType)
     {
@@ -259,7 +259,7 @@ PXActionResult PXModelLoadD(PXModel* const model, PXDataStream* const fileStream
         modelParserFunction(&modelCompileCache, model);
     }
 
-    PXDataStreamDestruct(&modelCompileCache);
+    PXFileDestruct(&modelCompileCache);
 
     return actionResult;
 }

@@ -4,7 +4,7 @@
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXImage.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -402,8 +402,8 @@ enough memory.*/
 
 	PXPublic PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXPNGParseToImage(PXImage* const image, PXDataStream* const dataStream);
-	PXPublic PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const dataStream);
 
 #ifdef __cplusplus
 }

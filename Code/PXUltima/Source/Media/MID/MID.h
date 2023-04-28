@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -61,8 +61,8 @@ extern "C"
 	}
 	MID;
 
-	PXPublic PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream);
-	PXPublic PXActionResult MIDSerialize(MID* mid, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult MIDParse(MID* mid, PXFile* const PXFile);
+	PXPublic PXActionResult MIDSerialize(MID* mid, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

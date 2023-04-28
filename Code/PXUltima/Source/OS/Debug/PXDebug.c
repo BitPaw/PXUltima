@@ -4,8 +4,6 @@
 #include <sys/ptrace.h>
 #elif OSWindows
 
-long ptrace(enum __ptrace_request request, int pid, void* addr, void* data);
-
 #include <Windows.h> // debugapi.h
 #include <DbgHelp.h>
 
@@ -16,7 +14,7 @@ long ptrace(enum __ptrace_request request, int pid, void* addr, void* data);
 #include <OS/Memory/PXMemory.h>
 #include <OS/Thread/PXThread.h>
 #include <OS/Library/PXLibrary.h>
-#include <OS/File/File.h>
+#include <OS/File/PXFile.h>
 
 #include <stdio.h>
 
@@ -370,8 +368,9 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 	DWORD dwMilliseconds = 0;
 	DWORD dwContinueStatus = DBG_CONTINUE; // This flag need to be set for the debugger in this functiom
 
-	const BOOL result = WaitForDebugEventEx(&debugEvent, 0);
-
+	// WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h 
+	// WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h 
+	const BOOL result = WaitForDebugEvent(&debugEvent, 0); 
 	PXActionOnErrorFetchAndExit(!result);
 
 	switch (debugEvent.dwDebugEventCode) // Process the debugging event code.
@@ -461,7 +460,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			char buffer[260];
 
 			PXFile file;
-			file.Context = createProcessDebugInfo->hFile;
+			file.ID = createProcessDebugInfo->hFile;
 
 			const PXActionResult res = PXFileNameA(&file, buffer, 260, &size);
 
@@ -503,7 +502,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			char buffer[260];
 
 			PXFile file;
-			file.Context = loadDLLDebugInfo->hFile;
+			file.ID = loadDLLDebugInfo->hFile;
 
 			const PXActionResult res = PXFileNameA(&file, buffer, 260, &size);
 

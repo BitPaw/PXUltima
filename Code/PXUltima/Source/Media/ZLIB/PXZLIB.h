@@ -4,7 +4,7 @@
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <Media/PNG/PXPNG.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -68,8 +68,8 @@ extern "C"
 	PXPrivate PXZLIBCompressionMethod ConvertToCompressionMethod(const PXInt8U compressionMethod);
 	PXPrivate PXInt8U ConvertFromCompressionMethod(const PXZLIBCompressionMethod compressionMethod);
 
-	PXPublic PXActionResult PXZLIBDecompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam);
-	PXPublic PXActionResult PXZLIBCompress(PXDataStream* const pxInputSteam, PXDataStream* const pxOutputSteam);
+	PXPublic PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
+	PXPublic PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
 
 
 	PXPublic PXSize PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PXPNGInterlaceMethod interlaceMethod);

@@ -156,5 +156,5 @@ void PXSBPPackageProcessorConstruct(PXSBPPackageProcessor* const pxSBPPackagePro
 
 void PXSBPPackageProcessorDestruct(PXSBPPackageProcessor* const pxSBPPackageProcessor)
 {
-	PXDataStreamDestruct(&pxSBPPackageProcessor->DataCache);
+	PXFileDestruct(&pxSBPPackageProcessor->DataCache);
 }

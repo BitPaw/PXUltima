@@ -1,5 +1,5 @@
-#ifndef UserInclude
-#define UserInclude
+#ifndef PXUserINCLUDE
+#define PXUserINCLUDE
 
 #include <Media/PXType.h>
 

@@ -1,6 +1,6 @@
 #include "MTL.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
@@ -62,10 +62,10 @@ MTLLineType MTLPeekLine(const char* const line, const PXSize lineSize)
 	}
 }
 
-PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult MTLFileCompile(PXFile* const inputStream, PXFile* const outputStream)
 {
-	PXDataStream tokenSteam;
-	PXDataStream headerStream;
+	PXFile tokenSteam;
+	PXFile headerStream;
 
 	const PXSize startoffset = outputStream->DataCursor;
 
@@ -76,7 +76,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 	const PXSize headerOffset = 1024;
 
 
-	PXDataStreamFromExternal(&headerStream, (PXAdress)outputStream->Data + startoffset, headerOffset);
+	PXFileBufferExternal(&headerStream, (PXAdress)outputStream->Data + startoffset, headerOffset);
 
 	// Lexer - Level I
 	{
@@ -92,16 +92,16 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 		PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-		PXDataStreamFromExternal(&tokenSteam, (PXAdress)outputStream->Data + startoffset + headerOffset, outputStream->DataCursor - (startoffset + headerOffset));
+		PXFileBufferExternal(&tokenSteam, (PXAdress)outputStream->Data + startoffset + headerOffset, outputStream->DataCursor - (startoffset + headerOffset));
 
 		outputStream->DataCursor = startoffset;
 	}
 
 	MemoryClear(headerStream.Data, headerOffset);
-	PXDataStreamCursorAdvance(&headerStream, sizeof(unsigned int)); // Keep the number of materials free
-	PXDataStreamCursorAdvance(outputStream, headerOffset); // Write 0'ed data to later jump back to to change.
+	PXFileCursorAdvance(&headerStream, sizeof(unsigned int)); // Keep the number of materials free
+	PXFileCursorAdvance(outputStream, headerOffset); // Write 0'ed data to later jump back to to change.
 
-	while (!PXDataStreamIsAtEnd(&tokenSteam))
+	while (!PXFileIsAtEnd(&tokenSteam))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -109,7 +109,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 		const MTLLineType mtlLineType = MTLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
-		PXDataStreamWriteI8U(outputStream, mtlLineType); // Write typeID
+		PXFileWriteI8U(outputStream, mtlLineType); // Write typeID
 
 		switch (mtlLineType)
 		{
@@ -119,7 +119,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 				// write how big the last material was, it will be 0 the first time.
 				// At the end, convert the delte size to actual size.
-				PXDataStreamWriteI32U(&headerStream, materialSizeDelta);
+				PXFileWriteI32U(&headerStream, materialSizeDelta);
 
 				// [No break] Fall through.
 			}
@@ -127,8 +127,8 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 			{
 				char text[256];
 
-				//char* dataPosition = PXDataStreamCursorPosition(outputStream);
-				//const PXSize dataSize = PXDataStreamRemainingSize(outputStream);
+				//char* dataPosition = PXFileCursorPosition(outputStream);
+				//const PXSize dataSize = PXFileRemainingSize(outputStream);
 				PXSize dataSizeWritten = 0;
 				const PXBool isText = PXCompilerParseStringUntilNewLine(&tokenSteam, text, 256, &dataSizeWritten);
 
@@ -137,8 +137,8 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 					break; // Error
 				}
 
-				materialSizeDelta += PXDataStreamWriteI8U(outputStream, dataSizeWritten);
-				materialSizeDelta += PXDataStreamWriteA(outputStream, text, dataSizeWritten);
+				materialSizeDelta += PXFileWriteI8U(outputStream, dataSizeWritten);
+				materialSizeDelta += PXFileWriteA(outputStream, text, dataSizeWritten);
 
 				break;
 			}
@@ -156,7 +156,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 					break;
 				}
 
-				materialSizeDelta += PXDataStreamWriteF(outputStream, compilerSymbolEntry.DataF);
+				materialSizeDelta += PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
 
 				break;
 			}
@@ -177,7 +177,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 					break;
 				}
 
-				materialSizeDelta += PXDataStreamWriteFV(outputStream, colorVector, colorVectorSize);
+				materialSizeDelta += PXFileWriteFV(outputStream, colorVector, colorVectorSize);
 
 				break;
 			}
@@ -195,7 +195,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 				const IlluminationMode illuminationMode = MTLIlluminationModeFromID(compilerSymbolEntry.DataI);
 
-				materialSizeDelta += PXDataStreamWriteI8U(outputStream, illuminationMode);
+				materialSizeDelta += PXFileWriteI8U(outputStream, illuminationMode);
 
 				break;
 			}
@@ -208,7 +208,7 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 	{
 		headerStream.DataCursor = 0;
 
-		PXDataStreamWriteI32U(&headerStream, materialAmount);
+		PXFileWriteI32U(&headerStream, materialAmount);
 
 
 		unsigned int sizeA = 0;
@@ -216,19 +216,19 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 		for (PXSize i = 0; i < materialAmount-1; ++i)
 		{
-			PXDataStreamReadI32U(&headerStream, &sizeA);
-			PXDataStreamReadI32U(&headerStream, &sizeB);
+			PXFileReadI32U(&headerStream, &sizeA);
+			PXFileReadI32U(&headerStream, &sizeB);
 
 			headerStream.DataCursor -= sizeof(unsigned int) * 2u;
 
-			PXDataStreamWriteI32U(&headerStream, sizeB - sizeA);
+			PXFileWriteI32U(&headerStream, sizeB - sizeA);
 		}
 
 		const PXSize positionA = headerStream.DataCursor;
 
-		PXDataStreamReadI32U(&headerStream, &sizeA);
+		PXFileReadI32U(&headerStream, &sizeA);
 
-        PXDataStreamWriteAtI32U(&headerStream, materialSizeDelta- sizeA, positionA);
+        PXFileWriteAtI32U(&headerStream, materialSizeDelta- sizeA, positionA);
 	}
 
 	//outputStream->DataCursor = startoffset + tokenSteam.DataCursor; // Only save the actuan size
@@ -238,18 +238,18 @@ PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
 PXSize MTLFetchAmount(const void* const data, const PXSize dataSize)
 {
-	PXDataStream mtlStream;
+	PXFile mtlStream;
 
 	if (!data || !dataSize)
 	{
 		return 0;
 	}
 
-	PXDataStreamFromExternal(&mtlStream, data, dataSize);
+	PXFileBufferExternal(&mtlStream, data, dataSize);
 
 	unsigned int materialListSize = 0;
 
-	PXDataStreamReadI32U(&mtlStream, &materialListSize);
+	PXFileReadI32U(&mtlStream, &materialListSize);
 
 	return materialListSize;
 }
@@ -265,31 +265,31 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 		return PXNo;
 	}
 
-	PXDataStream mtlPXDataStream;
-	PXDataStream mtlHeaderStream;
+	PXFile mtlPXFile;
+	PXFile mtlHeaderStream;
 
-	PXDataStreamFromExternal(&mtlPXDataStream, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
-	PXDataStreamFromExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
+	PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
+	PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
 
 	for (PXSize i = 0; i <= materialID; ++i)
 	{
 		const PXBool isTarget = materialID == i;
 		unsigned int materialDataSize = 0;
 
-		PXDataStreamReadI32U(&mtlHeaderStream, &materialDataSize);
+		PXFileReadI32U(&mtlHeaderStream, &materialDataSize);
 
 		if (isTarget)
 		{
-			mtlPXDataStream.DataSize = materialDataSize;	// Set max size for now
+			mtlPXFile.DataSize = materialDataSize;	// Set max size for now
 
-			while (!PXDataStreamIsAtEnd(&mtlPXDataStream))
+			while (!PXFileIsAtEnd(&mtlPXFile))
 			{
 				MTLLineType mtlLineType;
 
 				{
 					unsigned char lineTypeID = 0;
 
-					PXDataStreamReadI8U(&mtlPXDataStream, &lineTypeID);
+					PXFileReadI8U(&mtlPXFile, &lineTypeID);
 
 					mtlLineType = lineTypeID;
 				}
@@ -298,57 +298,57 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 				{
 					case MTLLineName:
 					{
-						PXDataStreamReadI8U(&mtlPXDataStream, &mtlMaterial->NameSize);
-						mtlMaterial->Name = (char*)PXDataStreamCursorPosition(&mtlPXDataStream);
+						PXFileReadI8U(&mtlPXFile, &mtlMaterial->NameSize);
+						mtlMaterial->Name = (char*)PXFileCursorPosition(&mtlPXFile);
 
-						PXDataStreamCursorAdvance(&mtlPXDataStream, mtlMaterial->NameSize);
+						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->NameSize);
 						break;
 					}
 					case MTLLineTexture:
 					{
-						PXDataStreamReadI8U(&mtlPXDataStream, &mtlMaterial->DiffuseTexturePathSize);
-						mtlMaterial->DiffuseTexturePath = (char*)PXDataStreamCursorPosition(&mtlPXDataStream);
+						PXFileReadI8U(&mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
+						mtlMaterial->DiffuseTexturePath = (char*)PXFileCursorPosition(&mtlPXFile);
 
-						PXDataStreamCursorAdvance(&mtlPXDataStream, mtlMaterial->DiffuseTexturePathSize);
+						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
 						break;
 					}
 					case MTLLineColorAmbient:
 					{
-						PXDataStreamReadFV(&mtlPXDataStream, mtlMaterial->Ambient, 3u);
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Ambient, 3u);
 						break;
 					}
 					case MTLLineColorDiffuse:
 					{
-						PXDataStreamReadFV(&mtlPXDataStream, mtlMaterial->Diffuse, 3u);
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Diffuse, 3u);
 						break;
 					}
 					case MTLLineColorSpecular:
 					{
-						PXDataStreamReadFV(&mtlPXDataStream, mtlMaterial->Specular, 3u);
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Specular, 3u);
 						break;
 					}
 					case MTLLineColorEmission:
 					{
-						PXDataStreamReadFV(&mtlPXDataStream, mtlMaterial->Emission, 3u);
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Emission, 3u);
 						break;
 					}
 					case MTLLineWeight:
-						PXDataStreamReadF(&mtlPXDataStream, &mtlMaterial->Weight);
+						PXFileReadF(&mtlPXFile, &mtlMaterial->Weight);
 						break;
 
 					case MTLLineDissolved:
-						PXDataStreamReadF(&mtlPXDataStream, &mtlMaterial->Dissolved);
+						PXFileReadF(&mtlPXFile, &mtlMaterial->Dissolved);
 						break;
 
 					case MTLLineDensity:
-						PXDataStreamReadF(&mtlPXDataStream, &mtlMaterial->Density);
+						PXFileReadF(&mtlPXFile, &mtlMaterial->Density);
 						break;
 
 					case MTLLineIllumination:
 					{
 						unsigned char illuminationID = 0;
 
-						PXDataStreamReadI8U(&mtlPXDataStream, &illuminationID);
+						PXFileReadI8U(&mtlPXFile, &illuminationID);
 
 						mtlMaterial->Illumination = illuminationID;
 						break;
@@ -357,7 +357,7 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 					default:
 					{
 #if 0 // Skip or fail if anything is wrong
-						PXDataStreamCursorAdvance(&mtlPXDataStream, sizeof(unsigned char)); // Handle
+						PXFileCursorAdvance(&mtlPXFile, sizeof(unsigned char)); // Handle
 						break;
 #else
 						MemoryClear(mtlMaterial, sizeof(MTLMaterial));
@@ -370,35 +370,35 @@ PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXS
 		}
 		else 		// else, do nothing -> skip
 		{
-			mtlPXDataStream.Data = ((PXAdress)mtlPXDataStream.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
+			mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
 		}
 	}
 
 	return PXYes;
 }
 
-PXActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialList* const pxMaterialList)
+PXActionResult MTLParseToMaterial(PXFile* const inputStream, PXMaterialList* const pxMaterialList)
 {
 	/*
-	PXDataStream
+	PXFile
 
 	MemorySet(pxMaterialList, sizeof(PXMaterialList), 0);
 
 	unsigned int amountOfMaterials = 0;
 
-	PXDataStreamRead(inputStream, &amountOfMaterials, EndianLittle);
+	PXFileRead(inputStream, &amountOfMaterials, PXEndianLittle);
 
-	PXDataStreamWriteIU();
+	PXFileWriteIU();
 
 
-	while (PXDataStreamIsAtEnd(&inputStream))
+	while (PXFileIsAtEnd(&inputStream))
 	{
 		MTLLineType mtlLineType;
 
 		{
 			unsigned char lineTypeID = 0;
 
-			PXDataStreamReadI8U(inputStream, &lineTypeID); // Line Type
+			PXFileReadI8U(inputStream, &lineTypeID); // Line Type
 
 			mtlLineType = lineTypeID;
 		}
@@ -412,11 +412,11 @@ PXActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialLis
 /*
 PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	PXDataStream dataStream;
+	PXFile dataStream;
 
 	MTLConstruct(mtl);
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
+	PXFileConstruct(&dataStream);
+	PXFileBufferExternal(&dataStream, data, dataSize);
 	*dataRead = 0;
 
 	// Count How many materials are needed
@@ -425,7 +425,7 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 
 		do
 		{
-			const unsigned char* currentLine = PXDataStreamCursorPosition(&dataStream);
+			const unsigned char* currentLine = PXFileCursorPosition(&dataStream);
 			const unsigned char isNewMaterialUsed = *currentLine == 'n';
 
 			if(isNewMaterialUsed)
@@ -433,14 +433,14 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 				++materialCounter;
 			}
 		}
-		while(PXDataStreamSkipLine(&dataStream));
+		while(PXFileSkipLine(&dataStream));
 
 		mtl->MaterialListSize = materialCounter;
 		mtl->MaterialList = MemoryAllocate(sizeof(MTLMaterial) * materialCounter);
 
 		MemorySet(mtl->MaterialList, sizeof(MTLMaterial) * materialCounter, 0);
 
-		PXDataStreamCursorToBeginning(&dataStream);
+		PXFileCursorToBeginning(&dataStream);
 	}
 
 	// Raw Parse
@@ -449,13 +449,13 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 
 	do
 	{
-		const char* currentLine = PXDataStreamCursorPosition(&dataStream);
+		const char* currentLine = PXFileCursorPosition(&dataStream);
 		const MTLLineType lineType = MTLPeekLine(currentLine);
 
-		PXDataStreamSkipBlock(&dataStream); // Skip first element
+		PXFileSkipBlock(&dataStream); // Skip first element
 
-		const char* dataPoint = PXDataStreamCursorPosition(&dataStream);
-		const PXSize maxSize = PXDataStreamRemainingSize(&dataStream);
+		const char* dataPoint = PXFileCursorPosition(&dataStream);
+		const PXSize maxSize = PXFileRemainingSize(&dataStream);
 		const PXSize lineSize = TextLengthUntilA(dataPoint, maxSize, '\n');
 
 		switch(lineType)
@@ -585,7 +585,7 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 			}
 		}
 	}
-	while(PXDataStreamSkipLine(&dataStream));
+	while(PXFileSkipLine(&dataStream));
 
 	return PXActionSuccessful;
 }

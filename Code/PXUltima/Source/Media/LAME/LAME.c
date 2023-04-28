@@ -2,13 +2,13 @@
 
 #include <Media/PXText.h>
 
-PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
+PXActionResult LAMEParse(LAME* const lame, PXFile* const dataStream)
 {
 	// Check signature (4 Bytes)
 	{
 		const char signature[] = { 'L', 'A', 'M', 'E' };
 		const PXSize signatueSize = sizeof(signature);
-		const PXBool isValid = PXDataStreamReadAndCompare(&dataStream, signature, signatueSize);
+		const PXBool isValid = PXFileReadAndCompare(&dataStream, signature, signatueSize);
 
 		if(!isValid)
 		{
@@ -18,14 +18,14 @@ PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 
 	// Fetch version (5 Bytes)
 	{
-		PXDataStreamReadTextIU8(&dataStream, &lame->MajorVersion); // 1 character
-		const char isDot = PXDataStreamReadAndCompare(&dataStream, '.', sizeof(unsigned char));
-		PXDataStreamReadTextIU8(&dataStream, lame->MinorVersion); // 2 character
-		PXDataStreamReadI8U(&dataStream, &lame->ReleaseVersion); // letter
+		PXFileReadTextIU8(&dataStream, &lame->MajorVersion); // 1 character
+		const char isDot = PXFileReadAndCompare(&dataStream, '.', sizeof(unsigned char));
+		PXFileReadTextIU8(&dataStream, lame->MinorVersion); // 2 character
+		PXFileReadI8U(&dataStream, &lame->ReleaseVersion); // letter
 	}
 
 	{
-		const PXDataStreamElementType pxDataStreamElementList[] =
+		const PXFileDataElementType pxDataStreamElementList[] =
 		{
 			{PXDataTypeInt8U, &lame->Revision},
 			{PXDataTypeInt8U, &lame->VBRType },
@@ -50,16 +50,16 @@ PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 			{PXDataTypeInt8U, &lame->stereo_mode},
 			{PXDataTypeInt8U, &lame->non_optimal}
 		};
-		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
+		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-		PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+		PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
 	}
 
 	// Parse: source frequency
 	{
 		unsigned char sourcefrequencyID = 0;
 
-		PXDataStreamReadI8U(&dataStream, &sourcefrequencyID);
+		PXFileReadI8U(&dataStream, &sourcefrequencyID);
 
 		switch(sourcefrequencyID)
 		{
@@ -86,15 +86,15 @@ PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream)
 	}
 
 	{
-		const PXDataStreamElementType pxDataStreamElementList[] =
+		const PXFileDataElementType pxDataStreamElementList[] =
 		{
 			{PXDataTypeInt8U, &lame->Unused},
 			{PXDataTypeBEInt16U, &lame->Preset },
 			{PXDataTypeBEInt32U, &lame->MusicLength}
 		};
-		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXDataStreamElementType);
+		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-		PXDataStreamReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+		PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
 	}
 
     return PXActionSuccessful;

@@ -1,14 +1,14 @@
-#include "AVI.h"
+#include "PXAVI.h"
 
 #include <Media/RIFF/RIFF.h>
 
-PXActionResult AVIParse(AVI* const avi, PXDataStream* const pxDataStream)
+PXActionResult PXAVIParse(PXAVI* const avi, PXFile* const PXFile)
 {
     RIFF riff;
 
     // RIFF
     {
-        const PXActionResult riffResult = RIFFParse(&riff, pxDataStream);
+        const PXActionResult riffResult = RIFFParse(&riff, PXFile);
 
         PXActionExitOnError(riffResult);
 
@@ -21,7 +21,7 @@ PXActionResult AVIParse(AVI* const avi, PXDataStream* const pxDataStream)
                 return PXActionRefusedInvalidHeaderSignature;
             }
         }
-    }  
+    }
 
     return PXActionSuccessful;
 }

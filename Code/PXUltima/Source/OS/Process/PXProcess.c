@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #elif OSWindows
-#include <processthreadsapi.h>
+//#include <processthreadsapi.h> Not found in XP build
 #include <psapi.h>
 #endif
 

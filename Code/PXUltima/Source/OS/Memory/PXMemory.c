@@ -465,10 +465,10 @@ void MemoryRelease(const void* adress, const PXSize size)
 	free(adress);
 }
 
-void* MemoryVirtualAllocate(PXSize size, const MemoryProtectionMode memoryProtectionMode)
+void* MemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode)
 {
 	const void* addressPrefered = 0;
-	const MemoryProtectionModeType protectionModeID = ConvertFromMemoryProtectionMode(memoryProtectionMode);
+	const PXMemoryAccessModeType protectionModeID = ConvertFromPXMemoryAccessMode(PXMemoryAccessMode);
 
 #if OSUnix
 	const int flags = MAP_PRIVATE;// | MAP_ANONYMOUS; | MAP_POPULATE; // missing on linux?
@@ -533,17 +533,17 @@ void* MemoryVirtualAllocate(PXSize size, const MemoryProtectionMode memoryProtec
 #if MemoryDebugOutput
 	const char* readMode;
 
-	switch(memoryProtectionMode)
+	switch(PXMemoryAccessMode)
 	{
-		case MemoryWriteOnly:
+		case PXMemoryAccessModeWriteOnly:
 			readMode = "Write only";
 			break;
 
-		case MemoryReadOnly:
+		case PXMemoryAccessModeReadOnly:
 			readMode = "Read only";
 			break;
 
-		case MemoryReadAndWrite:
+		case PXMemoryAccessModeReadAndWrite:
 			readMode = "Read & Write";
 			break;
 
@@ -609,26 +609,26 @@ void* MemoryVirtualReallocate(const void* adress, const PXSize size)
 
 	if (newAllocation)
 	{
-		return MemoryVirtualAllocate(size, MemoryReadAndWrite);
+		return MemoryVirtualAllocate(size, PXMemoryAccessModeReadAndWrite);
 	}
 
 	return 0;
 }
 
-MemoryProtectionModeType ConvertFromMemoryProtectionMode(const MemoryProtectionMode memoryProtectionMode)
+PXMemoryAccessModeType ConvertFromPXMemoryAccessMode(const PXMemoryAccessMode PXMemoryAccessMode)
 {
-	switch(memoryProtectionMode)
+	switch(PXMemoryAccessMode)
 	{
-		case MemoryReadOnly:
+		case PXMemoryAccessModeReadOnly:
 			return ProtectionIDRead;
 
-		case MemoryWriteOnly:
+		case PXMemoryAccessModeWriteOnly:
 			return ProtectionIDWrite;
 
-		case MemoryReadAndWrite:
+		case PXMemoryAccessModeReadAndWrite:
 			return ProtectionIDReadWrite;
 
 		default:
-			return MemoryInvalid;
+			return PXMemoryAccessModeInvalid;
 	}
 }

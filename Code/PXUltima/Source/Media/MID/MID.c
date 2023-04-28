@@ -1,6 +1,6 @@
 #include "MID.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 
 
@@ -33,7 +33,7 @@ switch (midiCommand)
 		break;
 }*/
 
-PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream)
+PXActionResult MIDParse(MID* mid, PXFile* const PXFile)
 {
 	// Parse Chunk header
 	{
@@ -42,7 +42,7 @@ PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream)
 		{
 			const char headerSignature[] = MIDITrackHeaderID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const PXBool isValid = PXDataStreamReadAndCompare(pxDataStream, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXFileReadAndCompare(PXFile, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
@@ -50,10 +50,10 @@ PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream)
 			}
 		}
 
-		PXDataStreamReadI16UE(pxDataStream, chunkLength, EndianBig);
-		PXDataStreamReadI16UE(pxDataStream, &mid->Format, EndianBig);
-		PXDataStreamReadI16UE(pxDataStream, &mid->TrackListSize, EndianBig);
-		PXDataStreamReadI16UE(pxDataStream, &mid->MusicSpeed, EndianBig);
+		PXFileReadI16UE(PXFile, chunkLength, PXEndianBig);
+		PXFileReadI16UE(PXFile, &mid->Format, PXEndianBig);
+		PXFileReadI16UE(PXFile, &mid->TrackListSize, PXEndianBig);
+		PXFileReadI16UE(PXFile, &mid->MusicSpeed, PXEndianBig);
 	}
 
 	if(!mid->TrackListSize)
@@ -72,7 +72,7 @@ PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream)
 		{
 			const char headerSignature[] = MIDITrackChunkID;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const PXBool isValid = PXDataStreamReadAndCompare(pxDataStream, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXFileReadAndCompare(PXFile, headerSignature, headerSignatureSize);
 
 			if(!isValid)
 			{
@@ -80,19 +80,19 @@ PXActionResult MIDParse(MID* mid, PXDataStream* const pxDataStream)
 			}
 		}
 
-		PXDataStreamReadI32UE(pxDataStream, chunkLength, EndianBig);
+		PXFileReadI32UE(PXFile, chunkLength, PXEndianBig);
 
 		track->ID = i;
 		track->EventData = (PXByte*)MemoryAllocate(sizeof(PXByte) * chunkLength);
 		track->EventDataSize = chunkLength;
 
-		PXDataStreamReadB(pxDataStream, track->EventData, chunkLength);
+		PXFileReadB(PXFile, track->EventData, chunkLength);
 	}
 
 	return PXActionSuccessful;
 }
 
-PXActionResult MIDSerialize(MID* mid, PXDataStream* const pxDataStream)
+PXActionResult MIDSerialize(MID* mid, PXFile* const PXFile)
 {
 	/*
 	File file;
@@ -110,10 +110,10 @@ PXActionResult MIDSerialize(MID* mid, PXDataStream* const pxDataStream)
 	const char midiTagData[] = MIDITrackHeaderID;
 
 	file.WriteToDisk(midiTagData, 4u); // "MThd"
-	file.WriteToDisk(6u, EndianBig);
-	file.WriteToDisk(Format, EndianBig);
-	file.WriteToDisk(TrackListSize, EndianBig);
-	file.WriteToDisk(MusicSpeed, EndianBig);
+	file.WriteToDisk(6u, PXEndianBig);
+	file.WriteToDisk(Format, PXEndianBig);
+	file.WriteToDisk(TrackListSize, PXEndianBig);
+	file.WriteToDisk(MusicSpeed, PXEndianBig);
 
 	for(PXSize i = 0; i < TrackListSize; i++)
 	{
@@ -122,7 +122,7 @@ PXActionResult MIDSerialize(MID* mid, PXDataStream* const pxDataStream)
 		MIDITrack& track = TrackList[i];
 
 		file.WriteToDisk(midiTrackTag, 4u);
-		file.WriteToDisk(track.EventDataSize, EndianBig);
+		file.WriteToDisk(track.EventDataSize, PXEndianBig);
 		file.WriteToDisk(track.EventData, track.EventDataSize);
 	}
 

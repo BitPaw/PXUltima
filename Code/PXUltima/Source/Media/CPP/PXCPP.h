@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"

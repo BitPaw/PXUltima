@@ -1,6 +1,6 @@
 #include "RIFF.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 
 
@@ -19,29 +19,29 @@
 #define RIFFSubTypeRMID PXInt32Make('R', 'M', 'I', 'D')
 #define RIFFSubTypeWAVE PXInt32Make('W', 'A', 'V', 'E')
 
-PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream)
+PXActionResult RIFFParse(RIFF* const riff, PXFile* const PXFile)
 {
 	MemoryClear(riff, sizeof(RIFF));
 
 	PXInt32UCluster chunkID;
 	PXInt32UCluster formatID;
 
-	PXDataStreamReadB(pxDataStream, chunkID.Data, 4u);
-	PXDataStreamReadI32UE(pxDataStream, &riff->ChunkSize, EndianLittle);
-	PXDataStreamReadB(pxDataStream, formatID.Data, 4u);
+	PXFileReadB(PXFile, chunkID.Data, 4u);
+	PXFileReadI32UE(PXFile, &riff->ChunkSize, PXEndianLittle);
+	PXFileReadB(PXFile, formatID.Data, 4u);
 
 	switch(chunkID.Value) // Detect Endiantype
 	{
 		case RIFXSignature:
-			riff->EndianFormat = EndianBig;
+			riff->EndianFormat = PXEndianBig;
 			break;
 
 		case RIFFSignature:
-			riff->EndianFormat = EndianLittle;
+			riff->EndianFormat = PXEndianLittle;
 			break;
 
 		default:
-			riff->EndianFormat = EndianInvalid;
+			riff->EndianFormat = PXEndianInvalid;
 			break;
 	}
 
@@ -80,23 +80,23 @@ PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream)
 			break;
 	}
 
-	riff->Valid = (riff->EndianFormat != EndianInvalid) && (riff->Format != RIFFInvalid);
+	riff->Valid = (riff->EndianFormat != PXEndianInvalid) && (riff->Format != RIFFInvalid);
 
 	return PXActionSuccessful;
 }
 
-PXActionResult RIFFSerialize(const RIFF* const riff, PXDataStream* const pxDataStream)
+PXActionResult RIFFSerialize(const RIFF* const riff, PXFile* const PXFile)
 {
 	unsigned int riffSignature = 0;
 	unsigned int riffType = 0;
 
 	switch (riff->EndianFormat) // Detect Endiantype
 	{
-		case EndianBig:
+		case PXEndianBig:
 			riffSignature = RIFXSignature;
 			break;
 
-		case EndianLittle:
+		case PXEndianLittle:
 			riffSignature = RIFFSignature;
 			break;
 
@@ -130,9 +130,9 @@ PXActionResult RIFFSerialize(const RIFF* const riff, PXDataStream* const pxDataS
 	}
 
 
-	PXDataStreamWriteI32UE(pxDataStream, riffSignature, EndianLittle);
-	PXDataStreamWriteI32UE(pxDataStream, &riff->ChunkSize, EndianLittle);
-	PXDataStreamWriteI32UE(pxDataStream, riffType, EndianLittle);
+	PXFileWriteI32UE(PXFile, riffSignature, PXEndianLittle);
+	PXFileWriteI32UE(PXFile, &riff->ChunkSize, PXEndianLittle);
+	PXFileWriteI32UE(PXFile, riffType, PXEndianLittle);
 
 	return PXActionSuccessful;
 }

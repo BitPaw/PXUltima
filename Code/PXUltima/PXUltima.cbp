@@ -177,10 +177,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/Event/Event.h" />
-		<Unit filename="Source/File/PXDataStream.c">
+		<Unit filename="Source/File/PXFile.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/File/PXDataStream.h" />
+		<Unit filename="Source/File/PXFile.h" />
 		<Unit filename="Source/Graphic/PXCamera.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -553,10 +553,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source/OS/Error/PXActionResult.h" />
-		<Unit filename="Source/OS/File/Endian.c">
+		<Unit filename="Source/OS/File/PXEndian.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source/OS/File/Endian.h" />
+		<Unit filename="Source/OS/File/PXEndian.h" />
 		<Unit filename="Source/OS/File/File.c">
 			<Option compilerVar="CC" />
 		</Unit>

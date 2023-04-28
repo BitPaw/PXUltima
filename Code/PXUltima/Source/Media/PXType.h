@@ -5,6 +5,14 @@
 
 #include <OS/System/OSVersion.h>
 
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+
+
 //-- Reivented public / private. The keywords are reserved, so we need other names.
 #if OSUnix
 #define PXPrivate static
@@ -17,6 +25,15 @@
 #define PXMSHandle HANDLE
 #endif
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// Restrict keyword
+//-----------------------------------------------------------------------------
+#if 1
+#define PXRestrict __restrict
+#endif
+
 
 #ifndef PXYes
 #define PXYes 1u
@@ -40,12 +57,6 @@
 
 
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
 	typedef enum PXDataType_
 	{
 		PXDataTypeTypeInvalid,
@@ -67,8 +78,8 @@ extern "C"
 		PXDataTypeBEInt64S,
 		PXDataTypeBEInt64U,
 
-		PXDataStreamFloat,
-		PXDataStreamDouble
+		PXDataTypeFloat,
+		PXDataTypeDouble
 	}
 	PXDataType;
 
@@ -459,6 +470,36 @@ d = SplittIntLED(i);
 			};
 		}
 		PXInt64UCluster;
+
+
+
+		//-----------------------------------------------------------------------------
+		// Endianess detection and conversion
+		//-----------------------------------------------------------------------------
+
+			// Ordering or sequencing of bytes
+		typedef enum PXEndian_
+		{
+			PXEndianInvalid,
+
+			// Left to Right. Left smallest value.
+			PXEndianBig,
+
+			PXEndianMiddle,
+
+			// Right to Left. Right smallest value.
+			PXEndianLittle
+		}
+		PXEndian;
+
+#if OSEngianLittle
+#define EndianCurrentSystem PXEndianLittle
+#elif OSEngianBig
+#define EndianCurrentSystem PXEndianBig
+#endif
+
+		PXPublic void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
+		//-----------------------------------------------------------------------------
 
 #ifdef __cplusplus
 }

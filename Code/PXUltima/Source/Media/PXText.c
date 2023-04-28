@@ -716,7 +716,7 @@ char* PXTextFindPositionA(const char* data, PXSize dataSize, const char* target,
 	return (char*)(found * (PXSize)source);
 }
 
-PXSize PXTextFindFirstCharacterA(const char* restrict  const string, const PXSize dataSize, const char character)
+PXSize PXTextFindFirstCharacterA(const char* PXRestrict  const string, const PXSize dataSize, const char character)
 {
 	PXBool found = 0;
 
@@ -730,7 +730,7 @@ PXSize PXTextFindFirstCharacterA(const char* restrict  const string, const PXSiz
 	return found ? index - 1 : PXTextIndexNotFound;
 }
 
-PXSize PXTextFindFirstCharacterBeforeA(const char* restrict const string, const PXSize dataSize, const char target, const char barrier)
+PXSize PXTextFindFirstCharacterBeforeA(const char* PXRestrict const string, const PXSize dataSize, const char target, const char barrier)
 {
 	PXSize index = 0;
 	PXBool hitBarrier = 0;
@@ -745,7 +745,7 @@ PXSize PXTextFindFirstCharacterBeforeA(const char* restrict const string, const 
 	return (found && !hitBarrier) ? index - 1 : PXTextIndexNotFound;
 }
 
-PXSize PXTextFindFirstCharacterOfListA(const char* restrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize)
+PXSize PXTextFindFirstCharacterOfListA(const char* PXRestrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize)
 {
 	for(PXSize i = 0 ; i < characterListSize; ++i)
 	{
@@ -761,7 +761,7 @@ PXSize PXTextFindFirstCharacterOfListA(const char* restrict const string, const 
 	return -1;
 }
 
-PXSize PXTextFindFirstStringA(const char* restrict const string, const PXSize dataSize, const char* restrict const targetString, const PXSize targetStringSize)
+PXSize PXTextFindFirstStringA(const char* PXRestrict const string, const PXSize dataSize, const char* PXRestrict const targetString, const PXSize targetStringSize)
 {
 	PXSize index = 0;
 	PXBool found = 0;

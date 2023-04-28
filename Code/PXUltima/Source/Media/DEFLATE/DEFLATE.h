@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -30,8 +30,8 @@ extern "C"
 	PXPublic DeflateEncodingMethod ConvertToDeflateEncodingMethod(const PXInt8U deflateEncodingMethod);
 	PXPublic PXInt8U ConvertFromDeflateEncodingMethod(const DeflateEncodingMethod deflateEncodingMethod);
 
-	PXPublic PXActionResult DEFLATEParse(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream);
-	PXPublic PXActionResult DEFLATESerialize(PXDataStream* const pxInputStream, PXDataStream* const pxOutputStream);
+	PXPublic PXActionResult DEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream);
+	PXPublic PXActionResult DEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream);
 
 #ifdef __cplusplus
 }

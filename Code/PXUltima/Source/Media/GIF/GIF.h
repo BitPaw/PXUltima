@@ -5,7 +5,7 @@
 
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXImage.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -44,9 +44,9 @@ extern "C"
 
 	PXPublic PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult GIFParseToImage(PXImage* const image, PXFile* const dataStream);
 
-	PXPublic PXActionResult GIFSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult GIFSerializeFromImage(const PXImage* const image, PXFile* const dataStream);
 
 #ifdef __cplusplus
 }

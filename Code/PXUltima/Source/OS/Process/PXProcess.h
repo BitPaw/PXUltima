@@ -15,7 +15,7 @@
 typedef unsigned int PXProcessHandle;
 typedef __pid_t PXProcessID;
 typedef unsigned int PXProcessThreadHandle;
-typedef unsigned int PXProcessThreadID;
+typedef pthread_t PXProcessThreadID;
 #elif OSWindows
 typedef HANDLE PXProcessHandle;
 typedef DWORD PXProcessID;

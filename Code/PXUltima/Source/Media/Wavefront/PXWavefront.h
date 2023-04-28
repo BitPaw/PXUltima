@@ -3,7 +3,7 @@
 
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXType.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #include <Media/MTL/MTL.h>
 #include <Media/PXModel.h>
@@ -91,9 +91,9 @@ extern "C"
 
 	PXPrivate PXWavefrontLineType PXWavefrontPeekLine(const void* line, const PXSize size);
 
-	PXPublic PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	PXPublic PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const outputStream);
 
-	PXPublic PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel* const model);
+	PXPublic PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const model);
 
 #ifdef __cplusplus
 }

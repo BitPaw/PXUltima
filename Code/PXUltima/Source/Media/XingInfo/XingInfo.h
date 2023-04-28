@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #define XingInfoTOCBufferSize 100u
 
@@ -30,7 +30,7 @@ extern "C"
 	}
 	XingInfo;
 
-	PXPublic PXActionResult XingInfoParse(XingInfo* const xingInfo, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult XingInfoParse(XingInfo* const xingInfo, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

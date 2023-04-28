@@ -2,134 +2,134 @@
 
 PX::DataStream::DataStream()
 {
-	PXDataStreamConstruct(this);
+	PXFileConstruct(this);
 }
 
 PX::DataStream::~DataStream()
 {
-	PXDataStreamDestruct(this);
+	PXFileDestruct(this);
 }
 
 void PX::DataStream::FromExternal(void* const data, const PXSize dataSize)
 {
-	return PXDataStreamFromExternal(this, data, dataSize);
+	return PXFileBufferExternal(this, data, dataSize);
 }
 
-ActionResult PX::DataStream::OpenFromPath(const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
+ActionResult PX::DataStream::OpenFromPath(const PXTextASCII filePath, const PXMemoryAccessMode fileOpenMode, const PXFileCachingMode dataStreamCachingMode)
 {
-	return PXDataStreamOpenFromPathA(this, filePath, fileOpenMode, dataStreamCachingMode);
+	return PXFileOpenFromPathA(this, filePath, fileOpenMode, dataStreamCachingMode);
 }
 
-ActionResult PX::DataStream::OpenFromPath(const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
+ActionResult PX::DataStream::OpenFromPath(const PXTextUNICODE filePath, const PXMemoryAccessMode fileOpenMode, const PXFileCachingMode dataStreamCachingMode)
 {
-	return PXDataStreamOpenFromPathW(this, filePath, fileOpenMode, dataStreamCachingMode);
+	return PXFileOpenFromPathW(this, filePath, fileOpenMode, dataStreamCachingMode);
 }
 
 /*
-ActionResult PX::DataStream::OpenFromPath(const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode)
+ActionResult PX::DataStream::OpenFromPath(const PXTextUTF8 filePath, const PXMemoryAccessMode fileOpenMode, const PXFileCachingMode dataStreamCachingMode)
 {
-	PXDataStreamOpenFromPathU(this, filePath, fileOpenMode, dataStreamCachingMode);
+	PXFileOpenFromPathU(this, filePath, fileOpenMode, dataStreamCachingMode);
 }*/
 
 ActionResult PX::DataStream::Close()
 {
-	return PXDataStreamClose(this);
+	return PXFileClose(this);
 }
 
-ActionResult PX::DataStream::MapToMemory(const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+ActionResult PX::DataStream::MapToMemory(const PXTextASCII filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode)
 {
-	return PXDataStreamMapToMemoryA(this, filePath, fileSize, protectionMode);
+	return PXFileMapToMemoryA(this, filePath, fileSize, protectionMode);
 }
 
-ActionResult PX::DataStream::MapToMemory(const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+ActionResult PX::DataStream::MapToMemory(const PXTextUNICODE filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode)
 {
-	return PXDataStreamMapToMemoryW(this, filePath, fileSize, protectionMode);
+	return PXFileMapToMemoryW(this, filePath, fileSize, protectionMode);
 }
 
 /*
-ActionResult PX::DataStream::MapToMemory(const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode)
+ActionResult PX::DataStream::MapToMemory(const PXTextUTF8 filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode)
 {
-	PXDataStreamMapToMemoryU(this, filePath, fileSize, protectionMode);
+	PXFileMapToMemoryU(this, filePath, fileSize, protectionMode);
 }*/
 
-ActionResult PX::DataStream::MapToMemory(const PXSize size, const MemoryProtectionMode protectionMode)
+ActionResult PX::DataStream::MapToMemory(const PXSize size, const PXMemoryAccessMode protectionMode)
 {
-	return PXDataStreamMapToMemory(this, size, protectionMode);
+	return PXFileMapToMemory(this, size, protectionMode);
 }
 
 ActionResult PX::DataStream::UnmapFromMemory()
 {
-	return PXDataStreamUnmapFromMemory(this);
+	return PXFileUnmapFromMemory(this);
 }
 
 PXSize PX::DataStream::RemainingSize()
 {
-	return PXDataStreamRemainingSize(this);
+	return PXFileRemainingSize(this);
 }
 
 bool PX::DataStream::IsAtEnd()
 {
-	return PXDataStreamIsAtEnd(this);
+	return PXFileIsAtEnd(this);
 }
 
 void* PX::DataStream::CursorPosition()
 {
-	return PXDataStreamCursorPosition(this);
+	return PXFileCursorPosition(this);
 }
 
 void PX::DataStream::CursorToBeginning()
 {
-	PXDataStreamCursorToBeginning(this);
+	PXFileCursorToBeginning(this);
 }
 
 void PX::DataStream::CursorAdvance(const PXSize steps)
 {
-	PXDataStreamCursorAdvance(this, steps);
+	PXFileCursorAdvance(this, steps);
 }
 
 void PX::DataStream::CursorRewind(const PXSize steps)
 {
-	PXDataStreamCursorRewind(this, steps);
+	PXFileCursorRewind(this, steps);
 }
 
 void PX::DataStream::CursorToEnd()
 {
-	PXDataStreamCursorToEnd(this);
+	PXFileCursorToEnd(this);
 }
 
 PXSize PX::DataStream::SkipEndOfLineCharacters()
 {
-	return PXDataStreamSkipEndOfLineCharacters(this);
+	return PXFileSkipEndOfLineCharacters(this);
 }
 
 PXSize PX::DataStream::SkipEmptySpace()
 {
-	return PXDataStreamSkipEmptySpace(this);
+	return PXFileSkipEmptySpace(this);
 }
 
 PXSize PX::DataStream::ReadNextLineInto(void* exportBuffer, const PXSize exportBufferSize)
 {
-	return PXDataStreamReadNextLineInto(this, exportBuffer, exportBufferSize);
+	return PXFileReadNextLineInto(this, exportBuffer, exportBufferSize);
 }
 
 PXSize PX::DataStream::SkipBlock()
 {
-	return PXDataStreamSkipBlock(this);
+	return PXFileSkipBlock(this);
 }
 
 PXSize PX::DataStream::SkipToNextBlock()
 {
-	return PXDataStreamSkipToNextBlock(this);
+	return PXFileSkipToNextBlock(this);
 }
 
 PXSize PX::DataStream::SkipLine()
 {
-	return PXDataStreamSkipLine(this);
+	return PXFileSkipLine(this);
 }
 
 PXSize PX::DataStream::ReadTextIU8(PXInt8U* const number)
 {
-	return PXDataStreamReadTextIU8(this, number);
+	return PXFileReadTextIU8(this, number);
 }
 
 PXSize PX::DataStream::ReadTextI(int* const number)
@@ -147,32 +147,32 @@ PXSize PX::DataStream::Read(unsigned char* const value)
 	return PXSize();
 }
 
-PXSize PX::DataStream::Read(short* const value, const Endian endian)
+PXSize PX::DataStream::Read(short* const value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Read(unsigned short* const value, const Endian endian)
+PXSize PX::DataStream::Read(unsigned short* const value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Read(int* const value, const Endian endian)
+PXSize PX::DataStream::Read(int* const value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Read(unsigned int* const value, const Endian endian)
+PXSize PX::DataStream::Read(unsigned int* const value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Read(long long* const value, const Endian endian)
+PXSize PX::DataStream::Read(long long* const value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Read(unsigned long long* const value, const Endian endian)
+PXSize PX::DataStream::Read(unsigned long long* const value, const PXEndian endian)
 {
 	return PXSize();
 }
@@ -226,32 +226,32 @@ PXSize PX::DataStream::Write(const unsigned char value)
 	return PXSize();
 }
 
-PXSize PX::DataStream::Write(const short value, const Endian endian)
+PXSize PX::DataStream::Write(const short value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Write(const unsigned short value, const Endian endian)
+PXSize PX::DataStream::Write(const unsigned short value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Write(const int value, const Endian endian)
+PXSize PX::DataStream::Write(const int value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Write(const unsigned int value, const Endian endian)
+PXSize PX::DataStream::Write(const unsigned int value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Write(const long long value, const Endian endian)
+PXSize PX::DataStream::Write(const long long value, const PXEndian endian)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::Write(const unsigned long long value, const Endian endian)
+PXSize PX::DataStream::Write(const unsigned long long value, const PXEndian endian)
 {
 	return PXSize();
 }
@@ -301,12 +301,12 @@ PXSize PX::DataStream::WriteAt(const unsigned char value, const PXSize index)
 	return PXSize();
 }
 
-PXSize PX::DataStream::WriteAt(const unsigned short value, const Endian endian, const PXSize index)
+PXSize PX::DataStream::WriteAt(const unsigned short value, const PXEndian endian, const PXSize index)
 {
 	return PXSize();
 }
 
-PXSize PX::DataStream::WriteAt(const unsigned int value, const Endian endian, const PXSize index)
+PXSize PX::DataStream::WriteAt(const unsigned int value, const PXEndian endian, const PXSize index)
 {
 	return PXSize();
 }

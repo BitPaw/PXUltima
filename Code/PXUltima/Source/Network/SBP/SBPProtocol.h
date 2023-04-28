@@ -1,7 +1,7 @@
 #ifndef SBPProtocolINCLUDE
 #define SBPProtocolINCLUDE
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 
 #ifdef __cplusplus
@@ -108,8 +108,8 @@ extern "C"
 	}
 	PXSBPChannelHeader;
 
-	PXPublic PXSize PXSBPChannelHeaderParse(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream);
-	PXPublic PXSize PXSBPChannelHeaderSerialize(PXSBPChannelHeader* const sbpChannelHeader, PXDataStream* const dataStream);
+	PXPublic PXSize PXSBPChannelHeaderParse(PXSBPChannelHeader* const sbpChannelHeader, PXFile* const dataStream);
+	PXPublic PXSize PXSBPChannelHeaderSerialize(PXSBPChannelHeader* const sbpChannelHeader, PXFile* const dataStream);
 
 	// 32-Bit: Size: 20 Byte
 	// 64-Bit: Size: 28 Byte
@@ -152,8 +152,8 @@ extern "C"
 
 	PXPublic void SBPPackageHeaderPrint(SBPPackageHeader* const sbpData);
 
-	PXPublic PXSize PXSBPPackageParse(SBPPackageHeader* const sbpPackageHeader, PXDataStream* const dataStream);
-	PXPublic PXSize PXSBPPackageSerialize(const SBPPackageHeader* const data, PXDataStream* const dataStream);
+	PXPublic PXSize PXSBPPackageParse(SBPPackageHeader* const sbpPackageHeader, PXFile* const dataStream);
+	PXPublic PXSize PXSBPPackageSerialize(const SBPPackageHeader* const data, PXFile* const dataStream);
 	/*
 	CPublic PXSize PackageSerialize
 	(

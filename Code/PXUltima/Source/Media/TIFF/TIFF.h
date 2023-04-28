@@ -4,7 +4,7 @@
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXImage.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -147,7 +147,7 @@ extern "C"
 
 	typedef struct TIFFHeader_
 	{
-		Endian Endianness;
+		PXEndian Endianness;
 		unsigned short Version;
 		unsigned int OffsetToIFD;
 	}
@@ -198,10 +198,10 @@ extern "C"
 
 	PXPublic PXSize TIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult TIFFParse(TIFF* const tiff, PXDataStream* const dataStream);
-	PXPublic PXActionResult TIFFParseToImage(PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TIFFParse(TIFF* const tiff, PXFile* const dataStream);
+	PXPublic PXActionResult TIFFParseToImage(PXImage* const image, PXFile* const dataStream);
 
-	PXPublic PXActionResult TIFFSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult TIFFSerializeFromImage(const PXImage* const image, PXFile* const dataStream);
 
 #ifdef __cplusplus
 }

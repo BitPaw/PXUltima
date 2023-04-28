@@ -3,21 +3,26 @@
 #include <OS/System/OSVersion.h>
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/File/PXFile.h>
 
 #include <stdio.h>
 
 #if OSUnix
-#define _MAX_PATH 260
+	#define _MAX_PATH 260
 #elif OSWindows
-#include <windows.h>
-#include <shobjidl.h> 
+	#include <windows.h>
+	#if WindowsAtleastVista
+		#include <shobjidl.h> 
+	#else
+		#include <CommDlg.h>
+	#endif
 #endif
 
 PXBool FileOpenDialogA(char* filePathOutput)
 {
-    wchar_t pathW[_MAX_PATH];
+    wchar_t pathW[PathMaxSize];
 
-    PXTextCopyAW(filePathOutput, _MAX_PATH, pathW, _MAX_PATH);
+    PXTextCopyAW(filePathOutput, PathMaxSize, pathW, PathMaxSize);
 
     return FileOpenDialogW(pathW);
 }
@@ -44,7 +49,7 @@ PXBool FileOpenDialogW(wchar_t* filePathOutput)
 
     if(GetOpenFileName(&ofn))
     {
-        wasSuccesful = true;
+        wasSuccesful = PXTrue;
     }
 #else
 

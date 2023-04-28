@@ -16,7 +16,7 @@ typedef void* LibraryDirectoryID;
 
 typedef HMODULE LibraryHandle;// HINSTANCE (semms is also okey)
 typedef FARPROC LibraryFunction;
-typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
+//typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 #endif
 
 #include <Media/PXType.h>

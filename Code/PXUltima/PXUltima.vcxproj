@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\OS\File\PXDirectory.h" />
+    <ClInclude Include="Source\Media\PXUltimaInfo.h" />
     <ClInclude Include="Source\Math\PXCollision.h" />
     <ClInclude Include="Source\Media\CPP\PXCPP.h" />
     <ClInclude Include="Source\Media\CS\PXCS.h" />
@@ -36,6 +38,7 @@
     <ClInclude Include="Source\Log\PXLog.h" />
     <ClInclude Include="Source\OS\Audio\PXAudio.h" />
     <ClInclude Include="Source\Compiler\PXCompilerSettings.h" />
+    <ClInclude Include="Source\OS\File\PXFile.h" />
     <ClInclude Include="Source\OS\Memory\PXMemory.h" />
     <ClInclude Include="Source\OS\Process\PXProcess.h" />
     <ClInclude Include="Source\Media\ELF\ELF.h" />
@@ -54,7 +57,7 @@
     <ClInclude Include="Source\Serialization\Serialization.h" />
     <ClInclude Include="Source\OS\HardDrive\PXHardDrive.h" />
     <ClInclude Include="Source\OS\System\Registry.h" />
-    <ClInclude Include="Source\DataBase\DataBase.h" />
+    <ClInclude Include="Source\DataBase\PXDataBase.h" />
     <ClInclude Include="Source\Media\CSS\CSS.h" />
     <ClInclude Include="Source\Media\DLL\DLL.h" />
     <ClInclude Include="Source\Media\EXE\EXE.h" />
@@ -63,7 +66,7 @@
     <ClInclude Include="Source\Media\JSON\JSON.h" />
     <ClInclude Include="Source\Media\MSI\PXMSI.h" />
     <ClInclude Include="Source\Media\XML\XML.h" />
-    <ClInclude Include="Source\Media\YAML\YAML.h" />
+    <ClInclude Include="Source\Media\YAML\PXYAML.h" />
     <ClInclude Include="Source\OS\Graphic\DirectX\DirectX.h" />
     <ClInclude Include="Source\Graphic\PXGraphic.h" />
     <ClInclude Include="Source\OS\Graphic\OpenGL\OpenGL.h" />
@@ -79,21 +82,18 @@
     <ClInclude Include="Source\Container\BinaryTree\BinaryTree.h" />
     <ClInclude Include="Source\Container\Dictionary\PXDictionary.h" />
     <ClInclude Include="Source\Container\QuadTree\QuadTree.h" />
-    <ClInclude Include="Source\Device\Controller.h" />
+    <ClInclude Include="Source\Device\PXController.h" />
     <ClInclude Include="Source\Device\InputButton.h" />
     <ClInclude Include="Source\Device\PXKeyBoard.h" />
     <ClInclude Include="Source\Device\PXMouse.h" />
     <ClInclude Include="Source\Device\VirtualKey.h" />
     <ClInclude Include="Source\OS\Error\PXActionResult.h" />
     <ClInclude Include="Source\Event\PXEvent.h" />
-    <ClInclude Include="Source\OS\File\Endian.h" />
-    <ClInclude Include="Source\OS\File\File.h" />
-    <ClInclude Include="Source\File\PXDataStream.h" />
     <ClInclude Include="Source\Media\3DS\A3DS.h" />
     <ClInclude Include="Source\Media\AAC\AAC.h" />
     <ClInclude Include="Source\Media\ADAM7\ADAM7.h" />
     <ClInclude Include="Source\Media\ADLER\Adler32.h" />
-    <ClInclude Include="Source\Media\AVI\AVI.h" />
+    <ClInclude Include="Source\Media\AVI\PXAVI.h" />
     <ClInclude Include="Source\Media\Bitmap\PXBitmap.h" />
     <ClInclude Include="Source\Media\PXColor.h" />
     <ClInclude Include="Source\Media\CRC32\CRC32.h" />
@@ -101,7 +101,7 @@
     <ClInclude Include="Source\Media\EML\EML.h" />
     <ClInclude Include="Source\Media\FBX\FBX.h" />
     <ClInclude Include="Source\Media\FLAC\FLAC.h" />
-    <ClInclude Include="Source\Media\FMT\FMT.h" />
+    <ClInclude Include="Source\Media\FMT\PXFMT.h" />
     <ClInclude Include="Source\Media\SpriteFont\PXSpriteFont.h" />
     <ClInclude Include="Source\Media\PXFont.h" />
     <ClInclude Include="Source\Media\GIF\GIF.h" />
@@ -133,7 +133,7 @@
     <ClInclude Include="Source\Media\TTF\TTF.h" />
     <ClInclude Include="Source\Media\UUID\UUID.h" />
     <ClInclude Include="Source\Media\VRML\VRML.h" />
-    <ClInclude Include="Source\Media\WAV\WAV.h" />
+    <ClInclude Include="Source\Media\WAV\PXWAV.h" />
     <ClInclude Include="Source\Media\WEBM\WEBM.h" />
     <ClInclude Include="Source\Media\WEBP\WEBP.h" />
     <ClInclude Include="Source\Media\WMA\WMA.h" />
@@ -163,6 +163,8 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\OS\File\PXDirectory.c" />
+    <ClCompile Include="Source\Media\PXUltimaInfo.c" />
     <ClCompile Include="Source\Math\PXCollision.c" />
     <ClCompile Include="Source\Media\CPP\PXCPP.c" />
     <ClCompile Include="Source\Media\CS\PXCS.c" />
@@ -180,6 +182,7 @@
     <ClCompile Include="Source\Log\PXLog.c" />
     <ClCompile Include="Source\OS\Audio\PXAudio.c" />
     <ClCompile Include="Source\Compiler\PXCompilerSettings.c" />
+    <ClCompile Include="Source\OS\File\PXFile.c" />
     <ClCompile Include="Source\OS\Process\PXProcess.c" />
     <ClCompile Include="Source\OS\Signal\PXSignal.c" />
     <ClCompile Include="Source\OS\Thread\Await.c" />
@@ -198,7 +201,7 @@
     <ClCompile Include="Source\Serialization\Serialization.c" />
     <ClCompile Include="Source\OS\HardDrive\PXHardDrive.c" />
     <ClCompile Include="Source\OS\System\Registry.c" />
-    <ClCompile Include="Source\DataBase\DataBase.c" />
+    <ClCompile Include="Source\DataBase\PXDataBase.c" />
     <ClCompile Include="Source\Media\CSS\CSS.c" />
     <ClCompile Include="Source\Media\DLL\DLL.c" />
     <ClCompile Include="Source\Media\EXE\EXE.c" />
@@ -207,7 +210,7 @@
     <ClCompile Include="Source\Media\JSON\JSON.c" />
     <ClCompile Include="Source\Media\MSI\PXMSI.c" />
     <ClCompile Include="Source\Media\XML\XML.c" />
-    <ClCompile Include="Source\Media\YAML\YAML.c" />
+    <ClCompile Include="Source\Media\YAML\PXYAML.c" />
     <ClCompile Include="Source\OS\Graphic\DirectX\DirectX.c" />
     <ClCompile Include="Source\Graphic\PXGraphic.c" />
     <ClCompile Include="Source\OS\Graphic\OpenGL\OpenGL.c" />
@@ -222,21 +225,18 @@
     <ClCompile Include="Source\Container\BinaryTree\BinaryTree.c" />
     <ClCompile Include="Source\Container\Dictionary\PXDictionary.c" />
     <ClCompile Include="Source\Container\QuadTree\QuadTree.c" />
-    <ClCompile Include="Source\Device\Controller.c" />
+    <ClCompile Include="Source\Device\PXController.c" />
     <ClCompile Include="Source\Device\InputButton.c" />
     <ClCompile Include="Source\Device\PXKeyBoard.c" />
     <ClCompile Include="Source\Device\PXMouse.c" />
     <ClCompile Include="Source\Device\VirtualKey.c" />
     <ClCompile Include="Source\OS\Error\PXActionResult.c" />
     <ClCompile Include="Source\Event\PXEvent.c" />
-    <ClCompile Include="Source\OS\File\Endian.c" />
-    <ClCompile Include="Source\OS\File\File.c" />
-    <ClCompile Include="Source\File\PXDataStream.c" />
     <ClCompile Include="Source\Media\3DS\A3DS.c" />
     <ClCompile Include="Source\Media\AAC\AAC.c" />
     <ClCompile Include="Source\Media\ADAM7\ADAM7.c" />
     <ClCompile Include="Source\Media\ADLER\Adler32.c" />
-    <ClCompile Include="Source\Media\AVI\AVI.c" />
+    <ClCompile Include="Source\Media\AVI\PXAVI.c" />
     <ClCompile Include="Source\Media\Bitmap\PXBitmap.c" />
     <ClCompile Include="Source\Media\PXColor.c" />
     <ClCompile Include="Source\Media\CRC32\CRC32.c" />
@@ -244,7 +244,7 @@
     <ClCompile Include="Source\Media\EML\EML.c" />
     <ClCompile Include="Source\Media\FBX\FBX.c" />
     <ClCompile Include="Source\Media\FLAC\FLAC.c" />
-    <ClCompile Include="Source\Media\FMT\FMT.c" />
+    <ClCompile Include="Source\Media\FMT\PXFMT.c" />
     <ClCompile Include="Source\Media\SpriteFont\PXSpriteFont.c" />
     <ClCompile Include="Source\Media\PXFont.c" />
     <ClCompile Include="Source\Media\GIF\GIF.c" />
@@ -276,7 +276,7 @@
     <ClCompile Include="Source\Media\TTF\TTF.c" />
     <ClCompile Include="Source\Media\UUID\UUID.c" />
     <ClCompile Include="Source\Media\VRML\VRML.c" />
-    <ClCompile Include="Source\Media\WAV\WAV.c" />
+    <ClCompile Include="Source\Media\WAV\PXWAV.c" />
     <ClCompile Include="Source\Media\WEBM\WEBM.c" />
     <ClCompile Include="Source\Media\WEBP\WEBP.c" />
     <ClCompile Include="Source\Media\WMA\WMA.c" />
@@ -335,18 +335,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -408,7 +408,7 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;WINVER=0x501;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>
@@ -418,7 +418,6 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <Optimization>Disabled</Optimization>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
@@ -439,7 +438,7 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;WINVER=0x501;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>
@@ -453,6 +452,8 @@
       <PreprocessToFile>false</PreprocessToFile>
       <DisableSpecificWarnings>4201;4206;4114;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatSpecificWarningsAsErrors>4431;4702;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -463,9 +464,9 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;WINVER=0x501;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>
@@ -473,14 +474,14 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ShowIncludes>false</ShowIncludes>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <Optimization>MaxSpeed</Optimization>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4201;4206;4114;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatSpecificWarningsAsErrors>4431;4702;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <OmitFramePointers>true</OmitFramePointers>
+      <OmitFramePointers>false</OmitFramePointers>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -493,7 +494,7 @@
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;WINVER=0x501;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsC</CompileAs>
@@ -503,7 +504,6 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4201;4206;4114;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatSpecificWarningsAsErrors>4431;4702;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>

@@ -63,9 +63,9 @@ void SBPPackageHeaderCacheChannalCallBackUnregister(SBPPackageHeaderCache* const
 
 SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* const sbpDataCache, const void* const data, const PXSize dataSize)
 {
-	PXDataStream dataStream;
+	PXFile dataStream;
 
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
+	PXFileBufferExternal(&dataStream, data, dataSize);
 
 	switch (sbpDataCache->State) // Check State
 	{
@@ -120,22 +120,22 @@ SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* c
 
 			// Data is not yet compleate, cache for later
 			{
-				PXDataStream* const dataStream = &sbpDataCache->Data;
+				PXFile* const dataStream = &sbpDataCache->Data;
 
-				const PXDataStreamElementType pxDataStreamElementTypeList[4] =
+				const PXFileDataElementType pxDataStreamElementTypeList[4] =
 				{
 					PXDataTypeInt8U, &sbpDataChunk.Order,
 					PXDataTypeInt8U, &sbpDataChunk.Channal,
 					PXDataTypeLEInt16U, &sbpDataChunk.DataSizeCurrent,
 					PXDataTypeLEInt16U, &sbpDataChunk.DataSizeTotal
 				};
-				const PXSize pxDataStreamElementTypeListSize = sizeof(pxDataStreamElementTypeList) / sizeof(PXDataStreamElementType);
+				const PXSize pxDataStreamElementTypeListSize = sizeof(pxDataStreamElementTypeList) / sizeof(PXFileDataElementType);
 
 				sbpDataCache->DataHeaderStartOffset = dataStream->DataCursor; // BackupPosition for later use
 
-				PXDataStreamWriteMultible(dataStream, pxDataStreamElementTypeList, pxDataStreamElementTypeListSize); // Write header
+				PXFileWriteMultible(dataStream, pxDataStreamElementTypeList, pxDataStreamElementTypeListSize); // Write header
 
-				PXDataStreamWriteB(dataStream, sbpDataChunk.Data, sbpDataChunk.DataSizeCurrent); // Write Data
+				PXFileWriteB(dataStream, sbpDataChunk.Data, sbpDataChunk.DataSizeCurrent); // Write Data
 			}
 
 			SBPPackageHeaderCacheStateChange(sbpDataCache, SBPPackageHeaderCacheStateAwaitData);
@@ -150,22 +150,22 @@ SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* c
 		}
 		case SBPPackageHeaderCacheStateAwaitData:
 		{
-			PXDataStream* const dataStream = &sbpDataCache->Data;
+			PXFile* const dataStream = &sbpDataCache->Data;
 			SBPPackageHeaderChunk sbpDataChunk = {0,0,0,0,0};
-			const PXDataStreamElementType pxDataStreamElementTypeList[4] =
+			const PXFileDataElementType pxDataStreamElementTypeList[4] =
 			{
 				PXDataTypeInt8U, &sbpDataChunk.Order,
 				PXDataTypeInt8U, &sbpDataChunk.Channal,
 				PXDataTypeLEInt16U, &sbpDataChunk.DataSizeCurrent,
 				PXDataTypeLEInt16U, &sbpDataChunk.DataSizeTotal
 			};
-			const PXSize pxDataStreamElementTypeListSize = sizeof(pxDataStreamElementTypeList) / sizeof(PXDataStreamElementType);
+			const PXSize pxDataStreamElementTypeListSize = sizeof(pxDataStreamElementTypeList) / sizeof(PXFileDataElementType);
 
 			const PXSize headerStart = sbpDataCache->DataHeaderStartOffset;
 			const PXSize oldPosition = dataStream->DataCursor;
 
-			PXDataStreamCursorMoveTo(dataStream, headerStart); // Go to header
-			PXDataStreamReadMultible(dataStream, pxDataStreamElementTypeList, pxDataStreamElementTypeListSize); // Write header
+			PXFileCursorMoveTo(dataStream, headerStart); // Go to header
+			PXFileReadMultible(dataStream, pxDataStreamElementTypeList, pxDataStreamElementTypeListSize); // Write header
 
 			// Update chunk data
 			sbpDataChunk.DataSizeCurrent += dataSize;
@@ -174,11 +174,11 @@ SBPPackageHeaderChunkResult SBPPackageHeaderCacheAppend(SBPPackageHeaderCache* c
 
 
 			//---<Copy the rest and handle it>-----
-			PXDataStreamWriteMultible(dataStream, pxDataStreamElementTypeList, pxDataStreamElementTypeListSize); // Write header
+			PXFileWriteMultible(dataStream, pxDataStreamElementTypeList, pxDataStreamElementTypeListSize); // Write header
 
-			PXDataStreamCursorMoveTo(dataStream, oldPosition); // Revert position
+			PXFileCursorMoveTo(dataStream, oldPosition); // Revert position
 
-			PXDataStreamWriteB(dataStream, data, dataSize); // Write Data
+			PXFileWriteB(dataStream, data, dataSize); // Write Data
 			//---------------------------------------
 
 

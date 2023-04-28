@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXModel.h>
 
 #define MTLNameSize 32u
@@ -91,9 +91,9 @@ extern "C"
 	PXPublic PXSize MTLFetchAmount(const void* const data, const PXSize dataSize);
 	PXPublic PXBool MTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, MTLMaterial* const mtlMaterial);
 
-	PXPublic PXActionResult MTLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	PXPublic PXActionResult MTLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
 
-	PXPublic PXActionResult MTLParseToMaterial(PXDataStream* const inputStream, PXMaterialList* const pxMaterialList);
+	PXPublic PXActionResult MTLParseToMaterial(PXFile* const inputStream, PXMaterialList* const pxMaterialList);
 
 #ifdef __cplusplus
 }

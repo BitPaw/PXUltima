@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -128,9 +128,9 @@ extern "C"
 	//----------------------------------------------------------------------------
 	PXPublic PXSize PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-	PXPublic PXActionResult PXBitmapParseToImage(PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStream);
 
-	PXPublic PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream);
+	PXPublic PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXFile* const dataStream);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

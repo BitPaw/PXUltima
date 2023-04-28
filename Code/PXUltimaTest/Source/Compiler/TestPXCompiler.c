@@ -1,11 +1,12 @@
 #include "TestPXCompiler.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #include <Compiler/PXCompiler.h>
-#include <Media/YAML/YAML.h>
-#include <Media/Wavefront/PXWavefront.h>
+#include <Media/YAML/PXYAML.h>
 #include <Media/XML/XML.h>
+#include <Media/Wavefront/PXWavefront.h>
+
 
 void TestPXCompilerAll()
 {
@@ -16,21 +17,21 @@ void TestPXCompilerAll()
 
 void TestPXCompilerOBJ()
 {
-	PXDataStream inputStream;
-	PXDataStream outputStream;
+	PXFile inputStream;
+	PXFile outputStream;
 
-	PXDataStreamConstruct(&inputStream);
-	PXDataStreamConstruct(&outputStream);
+	PXFileConstruct(&inputStream);
+	PXFileConstruct(&outputStream);
 
-	PXDataStreamMapToMemoryA
+	PXFileMapToMemoryA
 	(
 		&inputStream,
 		"B:/Daten/Objects/Moze/Moze.obj",
 		0,
-		MemoryReadOnly
+		PXMemoryAccessModeReadOnly
 	);
 
-	PXDataStreamMapToMemory(&outputStream, inputStream.DataSize*4, MemoryReadAndWrite);
+	PXFileMapToMemory(&outputStream, inputStream.DataSize*4, PXMemoryAccessModeReadAndWrite);
 
 	PXWavefrontFileCompile(&inputStream, &outputStream);
 
@@ -48,21 +49,21 @@ void TestPXCompilerYAML()
 
 	MemoryClear(buffer, size);
 
-	PXDataStream inputStream;
-	PXDataStream outputStream;
+	PXFile inputStream;
+	PXFile outputStream;
 
-	PXDataStreamConstruct(&inputStream);
-	PXDataStreamConstruct(&outputStream);
+	PXFileConstruct(&inputStream);
+	PXFileConstruct(&outputStream);
 
-	PXDataStreamMapToMemoryA
+	PXFileMapToMemoryA
 	(
 		&inputStream,
 		"A:/config.yml",
 		0,
-		MemoryReadOnly		
+		PXMemoryAccessModeReadOnly		
 	);
 
-	PXDataStreamFromExternal(&outputStream, buffer, size);
+	PXFileBufferExternal(&outputStream, buffer, size);
 
 	PXCompilerSettings compilerSettings;
 
@@ -88,18 +89,18 @@ void TestPXCompilerXML()
 		"</description>\n"
 		"</part>\n";
 
-	PXDataStream inputStream;
-	PXDataStream outputStream;
+	PXFile inputStream;
+	PXFile outputStream;
 
-	PXDataStreamConstruct(&inputStream);
-	PXDataStreamConstruct(&outputStream);
+	PXFileConstruct(&inputStream);
+	PXFileConstruct(&outputStream);
 
 #if 1
-	PXDataStreamFromExternal(&inputStream, xmlData, 299-1);	
+	PXFileBufferExternal(&inputStream, xmlData, 299-1);	
 #else
-	PXDataStreamMapToMemoryA(&inputStream, "A:/index.php", MemoryReadOnly, FileCachingSequential);
+	PXFileMapToMemoryA(&inputStream, "A:/index.php", PXMemoryAccessModeReadOnly, FileCachingSequential);
 #endif
-	PXDataStreamMapToMemory(&outputStream, inputStream.DataSize * 8, MemoryReadAndWrite);
+	PXFileMapToMemory(&outputStream, inputStream.DataSize * 8, PXMemoryAccessModeReadAndWrite);
 
 	XMLFileCompile(&inputStream, &outputStream);
 

@@ -2,7 +2,7 @@
 #define PXHTTPINCLUDE
 
 #include <Media/PXType.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -60,11 +60,11 @@ extern "C"
 	}
 	PXHTTPResponse;
 
-	PXPublic PXActionResult PXHTTPRequestParse(PXHTTPRequest* const pxHTTPRequest, PXDataStream* const pxDataStream);
-	PXPublic PXActionResult PXHTTPRequestSerialize(PXHTTPRequest* const pxHTTPRequest, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult PXHTTPRequestParse(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
+	PXPublic PXActionResult PXHTTPRequestSerialize(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
 
-	PXPublic PXActionResult PXHTTPResponseParse(PXHTTPResponse* const pxHTTPResponse, PXDataStream* const pxDataStream);
-	PXPublic PXActionResult PXHTTPResponseSerialize(PXHTTPResponse* const pxHTTPResponse, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult PXHTTPResponseParse(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
+	PXPublic PXActionResult PXHTTPResponseSerialize(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

@@ -4,7 +4,7 @@
 
 #include <Media/PXImage.h>
 #include <Media/PXFont.h>
-#include <OS/File/File.h>
+#include <OS/File/PXFile.h>
 #include <Graphic/SoftwareRender/PXSoftwareRender.h>
 
 void TestSaveImageSmal()

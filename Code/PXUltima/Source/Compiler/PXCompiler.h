@@ -2,7 +2,7 @@
 #define PXCompilerINCLUDE
 
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #define PXFlagIsSet(value, flag)  ((value & flag) && 1u)
 
@@ -126,32 +126,32 @@ extern "C"
 
 	PXPrivate void PXCompilerSymbolEntryAdd
 	(
-		PXDataStream* const dataStream, 
+		PXFile* const dataStream, 
 		const PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
 
 	PXPublic void PXCompilerSymbolEntryExtract
 	(
-		PXDataStream* const dataStream,
+		PXFile* const dataStream,
 		PXCompilerSymbolEntry* compilerSymbolEntry
 	);
 	PXPublic void PXCompilerSymbolEntryPeek
 	(
-		PXDataStream* const dataStream,
+		PXFile* const dataStream,
 		PXCompilerSymbolEntry* compilerSymbolEntry
 	);
 
 	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
-	PXPublic void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream, const PXCompilerSettings* const compilerSettings);
+	PXPublic void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings);
 
 
-	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize);
+	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize);
 	
-	PXPublic PXBool PXCompilerParseIntUnsignedSingle(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value);
+	PXPublic PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value);
 
-	PXPublic PXBool PXCompilerParseFloatSingle(PXDataStream* const inputStream, float* const values);
-	PXPublic PXBool PXCompilerParseFloatList(PXDataStream* const inputStream,  float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
+	PXPublic PXBool PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values);
+	PXPublic PXBool PXCompilerParseFloatList(PXFile* const inputStream,  float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 
 #ifdef __cplusplus
 }

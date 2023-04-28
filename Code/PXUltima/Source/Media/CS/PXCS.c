@@ -4,14 +4,14 @@
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 
-PXCSKeyWord PXCSFetchNext(PXDataStream* const inputSteam)
+PXCSKeyWord PXCSFetchNext(PXFile* const inputSteam)
 {
 	PXCSKeyWord keyWord = PXCSKeyWordInvalid;
 
 	{
 		PXInt8U keyID = 0;
 
-		PXDataStreamReadI8U(inputSteam, &keyID);
+		PXFileReadI8U(inputSteam, &keyID);
 
 		keyWord = (PXInt8U)keyID;
 	}
@@ -19,7 +19,7 @@ PXCSKeyWord PXCSFetchNext(PXDataStream* const inputSteam)
 	return keyWord;
 }
 
-void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStream, PXCTranslateStruct* const pxCTranslateStruct)
+void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTranslateStruct* const pxCTranslateStruct)
 {
 	PXCElementExtract(inputSteam, &pxCTranslateStruct->Element);
 
@@ -29,17 +29,17 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 		{
 			PXCStructure* const pxCStructure = &pxCTranslateStruct->Element.ElementStructure;
 
-			PXDataStreamWriteB(outputStream, "\tpublic enum ", 13);
-			PXDataStreamWriteB(outputStream, pxCStructure->NameAlias, pxCStructure->NameAliasSizeCurrent);
-			PXDataStreamWriteB(outputStream, "\n\t{\n", 4);
+			PXFileWriteB(outputStream, "\tpublic enum ", 13);
+			PXFileWriteB(outputStream, pxCStructure->NameAlias, pxCStructure->NameAliasSizeCurrent);
+			PXFileWriteB(outputStream, "\n\t{\n", 4);
 
 			for (PXSize i = 0; i < pxCStructure->MemberAmount; ++i)
 			{
 				PXInt8U enumElementBufferLength = 0;
 				char enumElementBuffer[64];
 
-				PXDataStreamReadI8U(inputSteam, &enumElementBufferLength);
-				PXDataStreamReadB(inputSteam, enumElementBuffer, enumElementBufferLength);
+				PXFileReadI8U(inputSteam, &enumElementBufferLength);
+				PXFileReadB(inputSteam, enumElementBuffer, enumElementBufferLength);
 
 				// if the name contains the same name as the enum, remove it
 
@@ -52,20 +52,20 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 					offset += pxCStructure->NameAliasSizeCurrent;
 				}
 
-				PXDataStreamWriteB(outputStream, "\t\t", 2);
-				PXDataStreamWriteB(outputStream, enumElementBuffer + offset, enumElementBufferLength - offset);
+				PXFileWriteB(outputStream, "\t\t", 2);
+				PXFileWriteB(outputStream, enumElementBuffer + offset, enumElementBufferLength - offset);
 
 				if (i < (pxCStructure->MemberAmount - 1))
 				{
-					PXDataStreamWriteB(outputStream, ",\n", 2);
+					PXFileWriteB(outputStream, ",\n", 2);
 				}
 				else
 				{
-					PXDataStreamWriteB(outputStream, "\n", 1);
+					PXFileWriteB(outputStream, "\n", 1);
 				}
 			}
 
-			PXDataStreamWriteB(outputStream, "\t}\n\n", 4);
+			PXFileWriteB(outputStream, "\t}\n\n", 4);
 
 			break;
 		}
@@ -92,10 +92,10 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 			{
 				pxCTranslateStruct->StructureOffsetTotal = 0;
 
-				PXDataStreamWriteB(outputStream, "\t[StructLayout(LayoutKind.Explicit)]\n", 37);
-				PXDataStreamWriteB(outputStream, "\tpublic unsafe struct ", 22);
-				PXDataStreamWriteB(outputStream, pxCStructure->NameAlias, pxCStructure->NameAliasSizeCurrent);
-				PXDataStreamWriteB(outputStream, "\n\t{\n", 4);
+				PXFileWriteB(outputStream, "\t[StructLayout(LayoutKind.Explicit)]\n", 37);
+				PXFileWriteB(outputStream, "\tpublic unsafe struct ", 22);
+				PXFileWriteB(outputStream, pxCStructure->NameAlias, pxCStructure->NameAliasSizeCurrent);
+				PXFileWriteB(outputStream, "\n\t{\n", 4);
 			}
 
 			const PXSize amountOfMembers = pxCStructure->MemberAmount;
@@ -113,7 +113,7 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 		
 			if (!isUnnamed)
 			{
-				PXDataStreamWriteB(outputStream, "\t}\n", 3);
+				PXFileWriteB(outputStream, "\t}\n", 3);
 			}
 
 
@@ -137,9 +137,9 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 				pxCTranslateStruct->UnionWidthOffset = PXMathMaximum(pxCTranslateStruct->Element.ElementVariable.SizeOfType, pxCTranslateStruct->UnionWidthOffset);
 			}
 
-			PXDataStreamWriteB(outputStream, "\t\t[FieldOffset(", 15);
-			PXDataStreamWriteB(outputStream, numberText, offsetTextSize);
-			PXDataStreamWriteB(outputStream, ")] public ", 10);
+			PXFileWriteB(outputStream, "\t\t[FieldOffset(", 15);
+			PXFileWriteB(outputStream, numberText, offsetTextSize);
+			PXFileWriteB(outputStream, ")] public ", 10);
 
 			//pxCStructure->MemberOffsetCurrent += (typeSize * !(pxCStructure->Type == PXCStructureTypeUnion && PXCStructureHasName(pxCStructure)));
 
@@ -161,7 +161,7 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 
 			if (pxCStructureVariable->IsAdressVolitile)
 			{
-				PXDataStreamWriteB(outputStream, volatileText, sizeof(volatileText) - 1);
+				PXFileWriteB(outputStream, volatileText, sizeof(volatileText) - 1);
 			}
 
 			PXInt8U sizeofKey = 0;
@@ -252,26 +252,26 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 					}
 				}
 
-				PXDataStreamWriteB(outputStream, keyText, sizeofKey);
+				PXFileWriteB(outputStream, keyText, sizeofKey);
 
 				if (pxCStructureVariable->IsAdress)
 				{
-					PXDataStreamWriteB(outputStream, "*", 1);
+					PXFileWriteB(outputStream, "*", 1);
 				}
 
-				PXDataStreamWriteB(outputStream, " ", 1);
+				PXFileWriteB(outputStream, " ", 1);
 			}
 			else
 			{
 				// Primitiv
-				PXDataStreamWriteB(outputStream, pxCStructureVariable->NameOfType, pxCStructureVariable->NameOfTypeSizeCurrent);
-				PXDataStreamWriteB(outputStream, " ", 1);
+				PXFileWriteB(outputStream, pxCStructureVariable->NameOfType, pxCStructureVariable->NameOfTypeSizeCurrent);
+				PXFileWriteB(outputStream, " ", 1);
 			}
 			//------------
 
 			// Variable Name
-			PXDataStreamWriteB(outputStream, pxCTranslateStruct->Element.Name, pxCTranslateStruct->Element.NameSizeCurrent);
-			PXDataStreamWriteB(outputStream, ";\n", 2u);
+			PXFileWriteB(outputStream, pxCTranslateStruct->Element.Name, pxCTranslateStruct->Element.NameSizeCurrent);
+			PXFileWriteB(outputStream, ";\n", 2u);
 
 			break;
 		}
@@ -281,16 +281,16 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 
 			// Function
 
-			PXDataStreamWriteB(outputStream, "\t[DllImport(\"PXUltima.dll\")]\n\tprivate static unsafe extern \n", 60);
-			PXDataStreamWriteB(outputStream, pxCTranslateStruct->Element.Name, pxCTranslateStruct->Element.NameSizeCurrent);
-			PXDataStreamWriteB(outputStream, "(", 1);
+			PXFileWriteB(outputStream, "\t[DllImport(\"PXUltima.dll\")]\n\tprivate static unsafe extern \n", 60);
+			PXFileWriteB(outputStream, pxCTranslateStruct->Element.Name, pxCTranslateStruct->Element.NameSizeCurrent);
+			PXFileWriteB(outputStream, "(", 1);
 
 			for (PXSize i = 0; i < pxCFunction->ParameterListSize; ++i)
 			{
 				
 			}
 		
-			PXDataStreamWriteB(outputStream, ");\n", 3);
+			PXFileWriteB(outputStream, ");\n", 3);
 			break;
 		}
 		default:
@@ -298,12 +298,12 @@ void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStr
 	}
 }
 
-void PXCSCreateWrapperFromCSource(PXDataStream* const inputSteam, PXDataStream* const outputStream)
+void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const outputStream)
 {
-	PXDataStreamWriteB(outputStream, "using System;\n", 14);
-	PXDataStreamWriteB(outputStream, "using System.Runtime.InteropServices;\n\n", 39);
+	PXFileWriteB(outputStream, "using System;\n", 14);
+	PXFileWriteB(outputStream, "using System.Runtime.InteropServices;\n\n", 39);
 
-	PXDataStreamWriteB(outputStream, "namespace PX.Wrapper\n{\n", 23);
+	PXFileWriteB(outputStream, "namespace PX.Wrapper\n{\n", 23);
 
 	char name[64];
 	char bufferName[64];
@@ -319,12 +319,12 @@ void PXCSCreateWrapperFromCSource(PXDataStream* const inputSteam, PXDataStream* 
 	pxCTranslateStruct.UnionWidthOffset = 0;
 	pxCTranslateStruct.UnionStartOffset = 0;
 
-	while (!PXDataStreamIsAtEnd(inputSteam))
+	while (!PXFileIsAtEnd(inputSteam))
 	{
 		PXCSSerialize(inputSteam, outputStream, &pxCTranslateStruct);
 	}
 
-	PXDataStreamWriteB(outputStream, "}", 1);
+	PXFileWriteB(outputStream, "}", 1);
 
 	outputStream->DataSize = outputStream->DataCursor;
 	outputStream->DataCursor = 0;

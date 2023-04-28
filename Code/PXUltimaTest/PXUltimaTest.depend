@@ -119,7 +119,7 @@
 	<OS/System/OSVersion.h>
 	<Memory/Memory.h>
 	<Error/ActionResult.h>
-	<File/Endian.h>
+	<File/PXEndian.h>
 	<sys/stat.h>
 	<sys/mman.h>
 	<unistd.h>
@@ -231,7 +231,7 @@
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<File/File.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/TestImage.c
 	"TestImage.h"
@@ -257,7 +257,7 @@
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
 	<OS/Error/PXActionResult.h>
-	<File/Endian.h>
+	<File/PXEndian.h>
 	<sys/stat.h>
 	<sys/mman.h>
 	<unistd.h>
@@ -269,7 +269,7 @@
 	<Media/Type.h>
 	<OS/System/OSVersion.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/Endian.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/PXEndian.h
 	<Media/Type.h>
 
 1664022065 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/TestSBP.c
@@ -399,7 +399,7 @@
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/Model.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<File/File.h>
 
 1664036753 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/TestWindow.c
@@ -444,7 +444,7 @@
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<File/File.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/File.h
 	<stdlib.h>
@@ -454,7 +454,7 @@
 	<OS/System/OSVersion.h>
 	<OS/Memory/PXMemory.h>
 	<OS/Error/PXActionResult.h>
-	<File/Endian.h>
+	<File/PXEndian.h>
 	<sys/stat.h>
 	<sys/mman.h>
 	<unistd.h>
@@ -471,13 +471,13 @@
 1669938255 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Compiler/PXCompilerSettings.h
 	<OS/System/OSVersion.h>
 
-1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/Endian.h
+1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/PXEndian.h
 	<Media/Type.h>
 
-1671208513 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/PXDataStream.h
+1671208513 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/File/PXFile.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	"Endian.h"
+	"PXEndian.h"
 	"File.h"
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestWindow.h
@@ -521,7 +521,7 @@
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/Image.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1671211163 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestImage.c
 	"TestImage.h"
@@ -649,7 +649,7 @@
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/Model.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<File/File.h>
 
 1671214736 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Graphic/OpenGL/OpenGL.h
@@ -695,7 +695,7 @@
 
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestPXCompiler.c
 	"TestPXCompiler.h"
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Compiler/PXCompiler.h>
 	<Media/YAML/YAML.h>
 	<Media/OBJ/OBJ.h>
@@ -703,12 +703,12 @@
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Compiler/PXCompiler.h
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/YAML/YAML.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Serialization/Serialization.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Serialization/Serialization.h
@@ -717,20 +717,20 @@
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/OBJ/OBJ.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/MTL/MTL.h>
 	<Media/Model.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/MTL/MTL.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/Model.h>
 
 1671187344 /home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltima/Source/Media/XML/XML.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1671187344 source:/home/bitpaw/Desktop/BitFireEngine/PXUltima/PXUltimaTest/Source/TestYAML.c
 	"TestYAML.h"
@@ -747,7 +747,7 @@
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/Compiler/TestPXCompiler.c
 	"TestPXCompiler.h"
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Compiler/PXCompiler.h>
 	<Media/YAML/YAML.h>
 	<Media/OBJ/OBJ.h>
@@ -769,20 +769,20 @@
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompilerSettings.h
 	<OS/System/OSVersion.h>
 
-1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/PXDataStream.h
+1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/File/PXFile.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	"Endian.h"
+	"PXEndian.h"
 	"File.h"
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Compiler/PXCompiler.h
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/YAML/YAML.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Serialization/Serialization.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Serialization/Serialization.h
@@ -791,20 +791,20 @@
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/OBJ/OBJ.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/MTL/MTL.h>
 	<Media/Model.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/MTL/MTL.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/Model.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/XML/XML.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/Compiler/TestYAML.c
 	"TestYAML.h"
@@ -826,7 +826,7 @@
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/PXFont.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/Graphic/TestImage.c
 	"TestImage.h"
@@ -931,7 +931,7 @@
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/Image.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/Network/TestSBP.c
 	"TestSBP.h"
@@ -991,14 +991,14 @@
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/WAV/WAV.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/FMT/FMT.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/FMT/FMT.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/Endian.h>
-	<File/PXDataStream.h>
+	<File/PXEndian.h>
+	<File/PXFile.h>
 
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/MP3/MP3.h
 	<Media/Type.h>
@@ -1008,7 +1008,7 @@
 1674758274 /home/bitpaw/Desktop/BFE/PXUltima/PXUltima/Source/Media/ID3/ID3.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1674758274 source:/home/bitpaw/Desktop/BFE/PXUltima/PXUltimaTest/Source/TestSystemInfo.c
 	"TestSystemInfo.h"
@@ -1021,7 +1021,7 @@
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaTest/Source/Compiler/TestPXCompiler.c
 	"TestPXCompiler.h"
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Compiler/PXCompiler.h>
 	<Media/YAML/YAML.h>
 	<Media/OBJ/OBJ.h>
@@ -1044,13 +1044,13 @@
 	<SdkDdkVer.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/Image.h
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/File/PXDataStream.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/File/PXFile.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<OS/File/File.h>
-	<OS/File/Endian.h>
+	<OS/File/PXEndian.h>
 
 1680647820 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/File/File.h
 	<stdlib.h>
@@ -1069,17 +1069,17 @@
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/Memory/PXMemory.h
 	<Media/Type.h>
 
-1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/File/Endian.h
+1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/OS/File/PXEndian.h
 	<Media/Type.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Compiler/PXCompiler.h
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/YAML/YAML.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Serialization/Serialization.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Serialization/Serialization.h
@@ -1088,23 +1088,23 @@
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/OBJ/OBJ.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/MTL/MTL.h>
 	<Media/Model.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/MTL/MTL.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/Model.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/Model.h
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/XML/XML.h
 	<OS/Error/PXActionResult.h>
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaTest/Source/Compiler/TestYAML.c
 	"TestYAML.h"
@@ -1162,7 +1162,7 @@
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/PXFont.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaTest/Source/Graphic/TestImage.c
 	"TestImage.h"
@@ -1314,7 +1314,7 @@
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
 	<Media/Image.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaTest/Source/Network/TestFTP.c
 	"TestFTP.h"
@@ -1366,7 +1366,7 @@
 	"PXSBPPackageProcessor.h"
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Network/SBP/SBPProtocol.h
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Text/PXText.h>
 	<Container/ClusterValue.h>
 
@@ -1384,7 +1384,7 @@
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Network/SBP/SBPDataChunk.h
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Container/Dictionary/PXDictionary.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Network/SBP/SBPServer.h
@@ -1407,7 +1407,7 @@
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/HTTP/HTTP.h
 	<Media/Type.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaTest/Source/Sound/TestSound.c
 	"TestSound.h"
@@ -1419,11 +1419,11 @@
 	<Media/Type.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/WAV/WAV.h
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 	<Media/FMT/FMT.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/FMT/FMT.h
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/MP3/MP3.h
 	<Media/Type.h>
@@ -1433,7 +1433,7 @@
 1680645616 /home/bitpaw/Desktop/PXUltima/Code/PXUltima/Source/Media/ID3/ID3.h
 	<Media/Type.h>
 	<OS/Error/PXActionResult.h>
-	<File/PXDataStream.h>
+	<File/PXFile.h>
 
 1680645616 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaTest/Source/TestSystemInfo.c
 	"TestSystemInfo.h"

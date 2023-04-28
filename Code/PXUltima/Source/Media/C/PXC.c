@@ -163,7 +163,7 @@ CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize)
     return CKeyWordUnkown;
 }
 
-PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXBool PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -198,7 +198,7 @@ PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const 
     return PXFalse;
 }
 
-PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition)
+PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition)
 {
     PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -207,13 +207,13 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
     switch (structureType)
     {
         case CKeyWordEnum:
-            PXDataStreamWriteI8U(outputStream, PXCStructureTypeEnum);
+            PXFileWriteI8U(outputStream, PXCStructureTypeEnum);
             break;
         case CKeyWordUnion:
-            PXDataStreamWriteI8U(outputStream, PXCStructureTypeUnion);
+            PXFileWriteI8U(outputStream, PXCStructureTypeUnion);
             break;
         case CKeyWordStruct:
-            PXDataStreamWriteI8U(outputStream, PXCStructureTypeStruct);
+            PXFileWriteI8U(outputStream, PXCStructureTypeStruct);
             break;
     }
 
@@ -261,8 +261,8 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 #endif
 
             //---<Write name of structure>---
-            PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-            PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+            PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+            PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
             //-------------------------------
 
             PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch next element after "name"
@@ -283,8 +283,8 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
                     // Format  "struct NAME ALIASNAME;"
                     // We have a direct alias
 
-                    PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-                    PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                    PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+                    PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
 
                     PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Element after alias
@@ -309,7 +309,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
         }
         case PXCompilerSymbolLexerBracketCurlyOpen: // We dont have a name
         {
-            PXDataStreamWriteI8U(outputStream, 0); // Name size, we dont have one so its always 0
+            PXFileWriteI8U(outputStream, 0); // Name size, we dont have one so its always 0
 
 #if 1
             char buffer[64];
@@ -340,7 +340,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
     // Problem: We need the alias name NOW. And the content of {...} is in the way.
     // Solution: We do a very far peek and try to check if one is readable.
     {
-    PXSize range = PXDataStreamRemainingSizeRelativeFromAddress(inputStream, compilerSymbolEntry.Source);
+    PXSize range = PXFileRemainingSizeRelativeFromAddress(inputStream, compilerSymbolEntry.Source);
     char* start = compilerSymbolEntry.Source + 1u;
 
     PXBool foundInsert = PXFalse;
@@ -390,20 +390,20 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
             }
 
 
-            PXDataStreamWriteI8U(outputStream, range);
-            PXDataStreamWriteB(outputStream, name, range);
+            PXFileWriteI8U(outputStream, range);
+            PXFileWriteB(outputStream, name, range);
 
         }
         else
         {
             // No name
-            PXDataStreamWriteI8U(outputStream, 0);
+            PXFileWriteI8U(outputStream, 0);
 
         }
     }
     else
     {
-        PXDataStreamWriteI8U(outputStream, 0);
+        PXFileWriteI8U(outputStream, 0);
     }
     }
 
@@ -415,8 +415,8 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
     PXInt16U memberCounter = 0;
     PXSize poition = outputStream->DataCursor;
 
-    PXDataStreamWriteI16U(outputStream, 0xFFFF);
-    PXDataStreamWriteI8U(outputStream, isTypeDefitinition);
+    PXFileWriteI16U(outputStream, 0xFFFF);
+    PXFileWriteI8U(outputStream, isTypeDefitinition);
 
 
     while (1)
@@ -432,7 +432,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
         if (isAtEnd) // If so, we quit
         {
-            PXDataStreamWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
+            PXFileWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
 
 
             PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
@@ -455,8 +455,8 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 #endif
 
                 // Don't write alias, we hacked that before.
-                // PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-                // PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                // PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+                // PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
 
                 PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Go to next
@@ -490,8 +490,8 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
 
                 ++memberCounter;
 
-                PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-                PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+                PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
 
                 // Look forward, we expect a ','
@@ -533,7 +533,7 @@ PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* cons
     return PXFalse;
 }
 
-PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
     PXBool finished = 0;
     PXInt8U flagList = MemberFieldFlagIsSigned;
@@ -561,7 +561,7 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
     }
 
 
-    PXDataStreamWriteI8U(outputStream, PXCStructureTypeStructElement);
+    PXFileWriteI8U(outputStream, PXCStructureTypeStructElement);
 
 
     PXBool doesKnowCustomType = PXFalse;
@@ -593,22 +593,22 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
             }
 
                      // Write name
-            PXDataStreamWriteI8U(outputStream, variableNameSize);
-            PXDataStreamWriteB(outputStream, variableName, variableNameSize);
+            PXFileWriteI8U(outputStream, variableNameSize);
+            PXFileWriteB(outputStream, variableName, variableNameSize);
 
 
-            PXDataStreamWriteI8U(outputStream, flagList); // Write flags
-            PXDataStreamWriteI16U(outputStream, sizeOfType); // Write size of Type
+            PXFileWriteI8U(outputStream, flagList); // Write flags
+            PXFileWriteI16U(outputStream, sizeOfType); // Write size of Type
 
             if (isKnownPrimitive)
             {
-                PXDataStreamWriteI8U(outputStream, variableType); // Write primitive type
+                PXFileWriteI8U(outputStream, variableType); // Write primitive type
             }
             else
             {
                 // We have a 2nd name, so its a custom type. Write name of custom variable..
-                PXDataStreamWriteI8U(outputStream, variableTypeNameSize);
-                PXDataStreamWriteB(outputStream, variableTypeName, variableTypeNameSize);
+                PXFileWriteI8U(outputStream, variableTypeNameSize);
+                PXFileWriteB(outputStream, variableTypeName, variableTypeNameSize);
             }
 
 
@@ -784,11 +784,11 @@ PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* co
 
 }
 
-PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
 
 
-    PXDataStreamWriteI8U(outputStream, PXCStructureTypeFuntion);
+    PXFileWriteI8U(outputStream, PXCStructureTypeFuntion);
 
     // Name
 
@@ -820,8 +820,8 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
 
     PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
 
-    PXDataStreamWriteI8U(outputStream, compilerSymbolEntry->Size);
-    PXDataStreamWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
+    PXFileWriteI8U(outputStream, compilerSymbolEntry->Size);
+    PXFileWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
 
 #if PXCDebugOutput
 
@@ -844,7 +844,7 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
     PXSize parameterListLengthDataPosition = outputStream->DataCursor;
     PXInt8U parameterListLength = 0;
 
-    PXDataStreamWriteI8U(outputStream, 0xFF); // How many parameters?
+    PXFileWriteI8U(outputStream, 0xFF); // How many parameters?
 
 
 
@@ -858,7 +858,7 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
 
         if (isEndOfParameterList)
         {
-            PXDataStreamWriteAtI8U(outputStream, parameterListLength, parameterListLength);
+            PXFileWriteAtI8U(outputStream, parameterListLength, parameterListLength);
 
             break;
         }
@@ -870,8 +870,8 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
 
 
         // Get name
-        PXDataStreamWriteI8U(outputStream, compilerSymbolEntry->Size);
-        PXDataStreamWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
+        PXFileWriteI8U(outputStream, compilerSymbolEntry->Size);
+        PXFileWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
 
 #if PXCDebugOutput
 
@@ -910,7 +910,7 @@ PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStre
     }
 }
 
-PXActionResult PXCFileLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult PXCFileLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXCompilerSettings compilerSettings;
 
@@ -930,21 +930,21 @@ PXActionResult PXCFileLexicalAnalysis(PXDataStream* const inputStream, PXDataStr
     return PXActionSuccessful;
 }
 
-PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
-    PXDataStream tokenSteam;
+    PXFile tokenSteam;
 
     // Lexer - Level I
     {
         PXCFileLexicalAnalysis(inputStream, outputStream);
 
-        PXDataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+        PXFileBufferExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
 
         outputStream->DataCursor = 0;
     }
 
-    while (!PXDataStreamIsAtEnd(&tokenSteam))
+    while (!PXFileIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -964,7 +964,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                     {
                         const PXSize defineTypePosition = outputStream->DataCursor;
 
-                        PXDataStreamWriteI8U(outputStream, 0xFF); // Write dummy define type
+                        PXFileWriteI8U(outputStream, 0xFF); // Write dummy define type
 
                         // Fetch name [Required]
                         {
@@ -978,8 +978,8 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                             }
 
                             // Write define name
-                            PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-                            PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                            PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+                            PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
 #if 1
                             printf("[C] Makro define name : ");
@@ -1000,7 +1000,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                         {
                             // Is Makro-Flag
 
-                            PXDataStreamWriteAtI8U(outputStream, PXCStructureTypeMakroFlag, defineTypePosition);
+                            PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroFlag, defineTypePosition);
                         }
                         else
                         {
@@ -1013,8 +1013,8 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                     const PXSize position = outputStream->DataCursor;
                                     PXInt8U parameterListLength = 0;
 
-                                    PXDataStreamWriteAtI8U(outputStream, PXCStructureTypeMakroFunction, defineTypePosition);
-                                    PXDataStreamWriteI8U(outputStream, 0xFF);
+                                    PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroFunction, defineTypePosition);
+                                    PXFileWriteI8U(outputStream, 0xFF);
 
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Remove the '('
 
@@ -1031,8 +1031,8 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                                         ++parameterListLength;
 
-                                        PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-                                        PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                                        PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+                                        PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
                                         PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
 
@@ -1050,7 +1050,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                         }
                                     }
 
-                                    PXDataStreamWriteAtI8U(outputStream, parameterListLength, position);
+                                    PXFileWriteAtI8U(outputStream, parameterListLength, position);
 
                                     break;
                                 }
@@ -1058,11 +1058,11 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                 {
                                     // Is makro-Value
 
-                                    PXDataStreamWriteAtI8U(outputStream, PXCStructureTypeMakroValue, defineTypePosition);
+                                    PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroValue, defineTypePosition);
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
-                                    PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.Size);
-                                    PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                                    PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+                                    PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
                                     break;
                                 }
@@ -1115,7 +1115,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                         const PXSize defineTypePosition = outputStream->DataCursor;
 
-                        PXDataStreamWriteI8U(outputStream, 0xFF); // Write dummy define type
+                        PXFileWriteI8U(outputStream, 0xFF); // Write dummy define type
 
                         switch (compilerSymbolEntry.ID)
                         {
@@ -1132,7 +1132,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                                 stringLengthPosition = outputStream->DataCursor;
 
-                                PXDataStreamWriteI8U(outputStream, 0xFF);
+                                PXFileWriteI8U(outputStream, 0xFF);
 
                                 while (1)
                                 {
@@ -1148,7 +1148,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
 
                                         stringLength += compilerSymbolEntry.Size;
 
-                                        PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                                        PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
                                         PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
                                     }
@@ -1169,7 +1169,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                     {
                                         stringLength += 1;
 
-                                        PXDataStreamWriteB(outputStream, "/", 1u);
+                                        PXFileWriteB(outputStream, "/", 1u);
 
 #if 1
                                         printf("/");
@@ -1182,8 +1182,8 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                     }
                                 }
 
-                                PXDataStreamWriteAtI8U(outputStream, stringLength, stringLengthPosition);
-                                PXDataStreamWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
+                                PXFileWriteAtI8U(outputStream, stringLength, stringLengthPosition);
+                                PXFileWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
 
                                 break;
                             }
@@ -1199,8 +1199,8 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                 }
 
 
-                                PXDataStreamWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
-                                PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                                PXFileWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
+                                PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
 
 #if PXCDebugOutput
@@ -1209,7 +1209,7 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
                                 PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 #endif
 
-                                PXDataStreamWriteI8U(outputStream, PXCLibraryPathTypeLocale);
+                                PXFileWriteI8U(outputStream, PXCLibraryPathTypeLocale);
 
                                 break;
                             }
@@ -1355,22 +1355,22 @@ PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* con
     }
 }
 
-void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCElement)
+void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
 {
     PXCElementClear(pxCElement);
 
     {
         PXInt8U keyID = 0;
 
-        PXDataStreamReadI8U(inputStream, &keyID);
+        PXFileReadI8U(inputStream, &keyID);
 
         pxCElement->Type = (PXCStructureType)keyID;
     }
 
     // Fake name
-    PXDataStreamReadI8U(inputStream, &pxCElement->NameSizeCurrent);
-    pxCElement->Name = PXDataStreamCursorPosition(inputStream);
-    PXDataStreamCursorAdvance(inputStream, pxCElement->NameSizeCurrent);
+    PXFileReadI8U(inputStream, &pxCElement->NameSizeCurrent);
+    pxCElement->Name = PXFileCursorPosition(inputStream);
+    PXFileCursorAdvance(inputStream, pxCElement->NameSizeCurrent);
 
     switch (pxCElement->Type)
     {
@@ -1393,7 +1393,7 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
             {
                 PXInt8U inlcudeType = 0;
 
-                PXDataStreamReadI8U(inputStream, &inlcudeType);
+                PXFileReadI8U(inputStream, &inlcudeType);
 
                 inlcudeType = (PXCLibraryPathType)inlcudeType;
             }
@@ -1405,13 +1405,13 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
         case PXCStructureTypeUnion:
         {
             // Alias
-            PXDataStreamReadI8U(inputStream, &pxCElement->ElementStructure.NameAliasSizeCurrent);
-            pxCElement->ElementStructure.NameAlias = PXDataStreamCursorPosition(inputStream);
-            PXDataStreamCursorAdvance(inputStream, pxCElement->ElementStructure.NameAliasSizeCurrent);
+            PXFileReadI8U(inputStream, &pxCElement->ElementStructure.NameAliasSizeCurrent);
+            pxCElement->ElementStructure.NameAlias = PXFileCursorPosition(inputStream);
+            PXFileCursorAdvance(inputStream, pxCElement->ElementStructure.NameAliasSizeCurrent);
 
-            PXDataStreamReadI16U(inputStream, &pxCElement->ElementStructure.MemberAmount);
+            PXFileReadI16U(inputStream, &pxCElement->ElementStructure.MemberAmount);
 
-            PXDataStreamReadI8U(inputStream, &pxCElement->IsTypeDefinition);
+            PXFileReadI8U(inputStream, &pxCElement->IsTypeDefinition);
 
             break;
         }
@@ -1419,8 +1419,8 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
         {
             PXInt8U variableInfoFlags = 0;
 
-            PXDataStreamReadI8U(inputStream, &variableInfoFlags); // Write flags
-            PXDataStreamReadI16U(inputStream, &pxCElement->ElementVariable.SizeOfType); // Write size of Type
+            PXFileReadI8U(inputStream, &variableInfoFlags); // Write flags
+            PXFileReadI16U(inputStream, &pxCElement->ElementVariable.SizeOfType); // Write size of Type
 
             pxCElement->ElementVariable.IsKnownPrimitve = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsKnownPrimitive);
             pxCElement->ElementVariable.IsConstantType = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsConstType);
@@ -1436,15 +1436,15 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
                 // Get Type
                 PXInt8U keyID = 0;
 
-                PXDataStreamReadI8U(inputStream, &keyID);
+                PXFileReadI8U(inputStream, &keyID);
 
                 pxCElement->ElementVariable.PrimitiveType = (CKeyWord)keyID;
             }
             else
             {
-                PXDataStreamReadI8U(inputStream, &pxCElement->ElementVariable.NameOfTypeSizeCurrent);
-                pxCElement->ElementVariable.NameOfType = PXDataStreamCursorPosition(inputStream);
-                PXDataStreamCursorAdvance(inputStream, pxCElement->ElementVariable.NameOfTypeSizeCurrent);
+                PXFileReadI8U(inputStream, &pxCElement->ElementVariable.NameOfTypeSizeCurrent);
+                pxCElement->ElementVariable.NameOfType = PXFileCursorPosition(inputStream);
+                PXFileCursorAdvance(inputStream, pxCElement->ElementVariable.NameOfTypeSizeCurrent);
             }
 
             break;
@@ -1456,7 +1456,7 @@ void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCEle
             pxCFunction->AccessModifier = PXCAccessModifierPublic;
             pxCFunction->CallingConvention = PXCCallingConventionCDeclaration;
 
-            PXDataStreamReadI8U(inputStream, &pxCFunction->ParameterListSize);
+            PXFileReadI8U(inputStream, &pxCFunction->ParameterListSize);
 
             break;
         }

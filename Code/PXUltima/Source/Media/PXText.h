@@ -127,11 +127,11 @@ extern "C"
 
 	PXPublic char* PXTextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize);
 
-	PXPublic PXSize PXTextFindFirstCharacterA(const char* restrict const string, const PXSize dataSize, const char character);
-	PXPublic PXSize PXTextFindFirstCharacterBeforeA(const char* restrict const string, const PXSize dataSize, const char target, const char barrier);
-	PXPublic PXSize PXTextFindFirstCharacterOfListA(const char* restrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize);
+	PXPublic PXSize PXTextFindFirstCharacterA(const char* PXRestrict const string, const PXSize dataSize, const char character);
+	PXPublic PXSize PXTextFindFirstCharacterBeforeA(const char* PXRestrict const string, const PXSize dataSize, const char target, const char barrier);
+	PXPublic PXSize PXTextFindFirstCharacterOfListA(const char* PXRestrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize);
 
-	PXPublic PXSize PXTextFindFirstStringA(const char* restrict const string, const PXSize dataSize, const char* restrict const targetString, const PXSize targetStringSize);
+	PXPublic PXSize PXTextFindFirstStringA(const char* __restrict string, const PXSize dataSize, const char* PXRestrict const targetString, const PXSize targetStringSize);
 	PXPublic PXSize PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
 	PXPublic PXSize PXTextFindLastA(const char* string, const PXSize dataSize, const char character);
 	PXPublic PXSize PXTextFindLastW(const wchar_t* string, const PXSize dataSize, const wchar_t character);

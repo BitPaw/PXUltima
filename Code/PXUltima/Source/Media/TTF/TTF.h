@@ -1,7 +1,7 @@
 #ifndef PXTTFINCLUDE
 #define PXTTFINCLUDE
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -654,7 +654,7 @@ extern "C"
     PXPublic void TTFConstruct(TTF* const ttf);
     PXPublic void TTFDestruct(TTF* const ttf);
 
-	PXPublic PXActionResult TTFParse(TTF* const ttf, PXDataStream* const dataStream);
+	PXPublic PXActionResult TTFParse(TTF* const ttf, PXFile* const dataStream);
 
 #ifdef __cplusplus
 }

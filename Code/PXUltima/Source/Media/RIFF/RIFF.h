@@ -1,11 +1,9 @@
 #ifndef RIFFInclude
 #define RIFFInclude
 
-#include <File/PXDataStream.h>
 #include <Media/PXType.h>
-
+#include <OS/File/PXFile.h>
 #include <OS/Error/PXActionResult.h>
-#include <OS/File/Endian.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -29,7 +27,7 @@ extern "C"
 	typedef struct RIFF_
 	{
 		PXBool Valid;
-		Endian EndianFormat;
+		PXEndian EndianFormat;
 		unsigned int ChunkSize;
 		RIFFFormat Format;
 	}
@@ -37,9 +35,9 @@ extern "C"
 
 	PXPrivate void RIFFText();
 
-	PXPublic PXActionResult RIFFParse(RIFF* const riff, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult RIFFParse(RIFF* const riff, PXFile* const PXFile);
 
-	PXPublic PXActionResult RIFFSerialize(const RIFF* const riff, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult RIFFSerialize(const RIFF* const riff, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

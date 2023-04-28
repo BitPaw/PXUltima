@@ -33,7 +33,7 @@
     <ClInclude Include="Source\Container\QuadTree\QuadTree.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Device\Controller.h">
+    <ClInclude Include="Source\Device\PXController.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Device\InputButton.h">
@@ -54,12 +54,6 @@
     <ClInclude Include="Source\Event\PXEvent.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\File\Endian.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\OS\File\File.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Media\3DS\A3DS.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -72,7 +66,7 @@
     <ClInclude Include="Source\Media\ADLER\Adler32.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\AVI\AVI.h">
+    <ClInclude Include="Source\Media\AVI\PXAVI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\Bitmap\PXBitmap.h">
@@ -93,7 +87,7 @@
     <ClInclude Include="Source\Media\FLAC\FLAC.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\FMT\FMT.h">
+    <ClInclude Include="Source\Media\FMT\PXFMT.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\SpriteFont\PXSpriteFont.h">
@@ -177,7 +171,7 @@
     <ClInclude Include="Source\Media\VRML\VRML.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\WAV\WAV.h">
+    <ClInclude Include="Source\Media\WAV\PXWAV.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\WEBP\WEBP.h">
@@ -205,9 +199,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Library\PXLibrary.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PXMath\PXPXMath.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Network\IP.h">
@@ -261,9 +252,6 @@
     <ClInclude Include="Source\Media\PHP\PHP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\PXMath\PXMatrix.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\OS\ClipBoard\PXClipBoard.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -306,10 +294,10 @@
     <ClInclude Include="Source\Media\XML\XML.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\YAML\YAML.h">
+    <ClInclude Include="Source\Media\YAML\PXYAML.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DataBase\DataBase.h">
+    <ClInclude Include="Source\DataBase\PXDataBase.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\System\Registry.h">
@@ -345,12 +333,6 @@
     <ClInclude Include="Source\Graphic\PXCamera.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\PXMath\PXVector.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PXMath\PXDiagram.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Media\MD5\MD5.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -358,9 +340,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Media\RSA\RSA.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PXMath\PXPhysic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Time\PXStopWatch.h">
@@ -385,9 +364,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Network\Web\PXWebServer.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\File\PXDataStream.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -435,10 +411,34 @@
     <ClInclude Include="Source\Media\CPP\PXCPP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\PXMath\PXCollision.h">
+    <ClInclude Include="Source\Media\ZLIB\PXZLIB.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Media\ZLIB\PXZLIB.h">
+    <ClInclude Include="Source\Math\PXCollision.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\PXPhysic.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\PXDiagram.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\PXMatrix.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\PXMath.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\PXVector.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\OS\File\PXFile.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Media\PXUltimaInfo.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\OS\File\PXDirectory.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -458,7 +458,7 @@
     <ClCompile Include="Source\Container\QuadTree\QuadTree.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Device\Controller.c">
+    <ClCompile Include="Source\Device\PXController.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Device\InputButton.c">
@@ -479,12 +479,6 @@
     <ClCompile Include="Source\Event\PXEvent.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\File\Endian.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\OS\File\File.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Media\3DS\A3DS.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -497,7 +491,7 @@
     <ClCompile Include="Source\Media\ADLER\Adler32.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\AVI\AVI.c">
+    <ClCompile Include="Source\Media\AVI\PXAVI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\Bitmap\PXBitmap.c">
@@ -518,7 +512,7 @@
     <ClCompile Include="Source\Media\FLAC\FLAC.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\FMT\FMT.c">
+    <ClCompile Include="Source\Media\FMT\PXFMT.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\SpriteFont\PXSpriteFont.c">
@@ -602,7 +596,7 @@
     <ClCompile Include="Source\Media\VRML\VRML.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\WAV\WAV.c">
+    <ClCompile Include="Source\Media\WAV\PXWAV.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\WEBP\WEBP.c">
@@ -630,9 +624,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Library\PXLibrary.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PXMath\PXPXMath.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Memory\PXMemory.c">
@@ -689,9 +680,6 @@
     <ClCompile Include="Source\Media\PHP\PHP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PXMath\PXMatrix.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\OS\ClipBoard\PXClipBoard.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -734,10 +722,10 @@
     <ClCompile Include="Source\Media\XML\XML.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\YAML\YAML.c">
+    <ClCompile Include="Source\Media\YAML\PXYAML.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DataBase\DataBase.c">
+    <ClCompile Include="Source\DataBase\PXDataBase.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\System\Registry.c">
@@ -773,12 +761,6 @@
     <ClCompile Include="Source\Graphic\PXCamera.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PXMath\PXVector.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PXMath\PXDiagram.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Media\MD5\MD5.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -786,9 +768,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\RSA\RSA.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PXMath\PXPhysic.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Time\PXStopWatch.c">
@@ -816,9 +795,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Network\Web\PXWebServer.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\File\PXDataStream.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.c">
@@ -860,10 +836,34 @@
     <ClCompile Include="Source\Media\CPP\PXCPP.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PXMath\PXCollision.c">
+    <ClCompile Include="Source\Media\ZLIB\PXZLIB.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Media\ZLIB\PXZLIB.c">
+    <ClCompile Include="Source\Math\PXCollision.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\PXPhysic.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\PXDiagram.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\PXMatrix.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\PXMath.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\PXVector.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\File\PXFile.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Media\PXUltimaInfo.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\OS\File\PXDirectory.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

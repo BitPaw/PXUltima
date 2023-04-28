@@ -3,7 +3,7 @@
 
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXType.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -54,7 +54,7 @@ extern "C"
 	}
 	LAME;
 
-	PXPublic PXActionResult LAMEParse(LAME* const lame, PXDataStream* const dataStream);
+	PXPublic PXActionResult LAMEParse(LAME* const lame, PXFile* const dataStream);
 
 #ifdef __cplusplus
 }

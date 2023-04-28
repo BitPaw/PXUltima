@@ -117,10 +117,10 @@ void PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, u
     );
 }
 
-PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
-    PXDataStream tokenSteam;
+    PXFile tokenSteam;
 
     unsigned int vertexListSize = 0;
     unsigned int normalListSize = 0;
@@ -159,16 +159,16 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
 
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-        PXDataStreamFromExternal(&tokenSteam, (PXAdress)outputStream->Data + headerOffset, outputStream->DataCursor - headerOffset);
+        PXFileBufferExternal(&tokenSteam, (PXAdress)outputStream->Data + headerOffset, outputStream->DataCursor - headerOffset);
 
         outputStream->DataCursor = 0;
     }
 
 
     // Write 0'ed data to later jump back to to change.
-    PXDataStreamCursorAdvance(outputStream, headerOffset);
+    PXFileCursorAdvance(outputStream, headerOffset);
 
-    while (!PXDataStreamIsAtEnd(&tokenSteam))
+    while (!PXFileIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -183,7 +183,7 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
 
         const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
-        PXDataStreamWriteI8U(outputStream, objPeekLine);
+        PXFileWriteI8U(outputStream, objPeekLine);
 
         switch (objPeekLine)
         {
@@ -191,8 +191,8 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
             {
                 PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
 
-                PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                PXDataStreamWriteI32U(outputStream, compilerSymbolEntry.DataI);
+                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI);
 
                 break;
             }
@@ -213,9 +213,9 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
                     break;
                 }
 
-                PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerString);
-                PXDataStreamWriteI16U(outputStream, namedElementSize);
-                PXDataStreamWriteA(outputStream, namedElement, namedElementSize);
+                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
+                PXFileWriteI16U(outputStream, namedElementSize);
+                PXFileWriteA(outputStream, namedElement, namedElementSize);
 
                 switch (objPeekLine)
                 {
@@ -225,8 +225,8 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
 
 #if PXWavefrontDetectMaterial
 
-                        headerCacheOffset += PXDataStreamWriteAtI16U(outputStream, namedElementSize, headerCacheOffset);
-                        headerCacheOffset += PXDataStreamWriteAtB(outputStream, namedElement, namedElementSize, headerCacheOffset);
+                        headerCacheOffset += PXFileWriteAtI16U(outputStream, namedElementSize, headerCacheOffset);
+                        headerCacheOffset += PXFileWriteAtB(outputStream, namedElement, namedElementSize, headerCacheOffset);
 #endif
 
                         break;
@@ -292,8 +292,8 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
                             break;
                     }
 
-                    PXDataStreamWriteI8U(outputStream, valuesDetected);
-                    PXDataStreamWriteFV(outputStream, vector, valuesDetected);
+                    PXFileWriteI8U(outputStream, valuesDetected);
+                    PXFileWriteFV(outputStream, vector, valuesDetected);
                 }
 
                 break; // [OK]
@@ -303,9 +303,9 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
                 PXSize cornerPoints = 0;
                 PXSize cursorPos = outputStream->DataCursor;
 
-                PXDataStreamWriteI8U(outputStream, 0xFF);
+                PXFileWriteI8U(outputStream, 0xFF);
 
-                while (!PXDataStreamIsAtEnd(&tokenSteam))
+                while (!PXFileIsAtEnd(&tokenSteam))
                 {
                     PXInt32U vertexData[3] = { 0, 0, 0 };
 
@@ -434,7 +434,7 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
                         vertexData[i] -= 1u;
                     }
 
-                    PXDataStreamWriteI32UV(outputStream, vertexData, 3u);
+                    PXFileWriteI32UV(outputStream, vertexData, 3u);
 
                   //  printf("Face _> %i, %i, %i\n", vertexData[0], vertexData[1], vertexData[2]);
 
@@ -448,7 +448,7 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
                 indexListSize += cornerPoints;
                 drawCurrentCounter += cornerPoints;
 
-                PXDataStreamWriteAtI8U(outputStream, cornerPoints, cursorPos);
+                PXFileWriteAtI8U(outputStream, cornerPoints, cursorPos);
 
                 break; // [OK]
             }
@@ -479,32 +479,32 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
     // Begin loading MTL files
 #if PXWavefrontDetectMaterial
     {
-        PXDataStream materialNameFetchStream;
-        PXDataStream materialFileStream;
+        PXFile materialNameFetchStream;
+        PXFile materialFileStream;
 
-        PXDataStreamFromExternal(&materialNameFetchStream, outputStream->Data, outputStream->DataCursor);
+        PXFileBufferExternal(&materialNameFetchStream, outputStream->Data, outputStream->DataCursor);
 
         wchar_t currentWorkPath[PathMaxSize];
         wchar_t currentMTLFileW[PathMaxSize];
         char currentMTLFileA[PathMaxSize];
 
-        const PXBool succ = PXDataStreamFilePathGetW(inputStream, currentWorkPath, PathMaxSize); // Work PXWavefront file path
+        const PXBool succ = PXFileFilePathGetW(inputStream, currentWorkPath, PathMaxSize); // Work PXWavefront file path
 
         for (PXSize i = 0; i < mtlInlclueesListSize; ++i)
         {
             unsigned short length = 0;
 
-            PXDataStreamWriteI8U(outputStream, PXWavefrontEmbeddedMTL);
+            PXFileWriteI8U(outputStream, PXWavefrontEmbeddedMTL);
 
-            PXDataStreamReadI16U(&materialNameFetchStream, &length);
-            PXDataStreamReadB(&materialNameFetchStream, currentMTLFileA, PathMaxSize);
+            PXFileReadI16U(&materialNameFetchStream, &length);
+            PXFileReadB(&materialNameFetchStream, currentMTLFileA, PathMaxSize);
 
             PXTextCopyAW(currentMTLFileA, length, currentMTLFileW, PathMaxSize);
 
-            FilePathSwapFileNameW(currentWorkPath, currentMTLFileW, currentMTLFileW);
+            PXFilePathSwapFileNameW(currentWorkPath, currentMTLFileW, currentMTLFileW);
 
             {
-                const PXActionResult materialFileLoadResult = PXDataStreamMapToMemoryW(&materialFileStream, currentMTLFileW, 0, MemoryReadOnly);
+                const PXActionResult materialFileLoadResult = PXFileMapToMemoryW(&materialFileStream, currentMTLFileW, 0, PXMemoryAccessModeReadOnly);
                 const PXBool sucessful = PXActionSuccessful == materialFileLoadResult;
 
                 if (!sucessful)
@@ -514,7 +514,7 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
 
                 const PXActionResult materialFileCompileResult = MTLFileCompile(&materialFileStream, outputStream);
 
-                PXDataStreamDestruct(&materialFileStream);
+                PXFileDestruct(&materialFileStream);
             }
         }
     }
@@ -524,25 +524,25 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
 
 
     {
-        PXDataStream headerInfoStream;
+        PXFile headerInfoStream;
 
-        PXDataStreamFromExternal(&headerInfoStream, outputStream->Data, outputStream->DataCursor);
+        PXFileBufferExternal(&headerInfoStream, outputStream->Data, outputStream->DataCursor);
 
-        PXDataStreamWriteI8U(&headerInfoStream, drawCurrentIndex);
+        PXFileWriteI8U(&headerInfoStream, drawCurrentIndex);
 
         for (PXSize i = 0; i < drawCurrentIndex; ++i)
         {
-            PXDataStreamWriteI8U(&headerInfoStream, drawSize[i+1]);
-            PXDataStreamWriteI32U(&headerInfoStream, drawOrder[i+1]);
+            PXFileWriteI8U(&headerInfoStream, drawSize[i+1]);
+            PXFileWriteI32U(&headerInfoStream, drawOrder[i+1]);
         }
 
-        PXDataStreamWriteI32U(&headerInfoStream, vertexListSize);
-        PXDataStreamWriteI32U(&headerInfoStream, normalListSize);
-        PXDataStreamWriteI32U(&headerInfoStream, textureListSize);
-        PXDataStreamWriteI32U(&headerInfoStream, parameterListSize);
-        PXDataStreamWriteI32U(&headerInfoStream, indexListSize);
-        PXDataStreamWriteI32U(&headerInfoStream, mtlInlclueesListSize);
-        PXDataStreamWriteI64U(&headerInfoStream, mtlEmbeddedDataOffset);
+        PXFileWriteI32U(&headerInfoStream, vertexListSize);
+        PXFileWriteI32U(&headerInfoStream, normalListSize);
+        PXFileWriteI32U(&headerInfoStream, textureListSize);
+        PXFileWriteI32U(&headerInfoStream, parameterListSize);
+        PXFileWriteI32U(&headerInfoStream, indexListSize);
+        PXFileWriteI32U(&headerInfoStream, mtlInlclueesListSize);
+        PXFileWriteI64U(&headerInfoStream, mtlEmbeddedDataOffset);
     }
 
     outputStream->DataSize = outputStream->DataCursor;
@@ -555,7 +555,7 @@ PXActionResult PXWavefrontFileCompile(PXDataStream* const inputStream, PXDataStr
     return PXActionSuccessful;
 }
 
-PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel* const model)
+PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const model)
 {
     PXModelConstruct(model);
 
@@ -573,24 +573,24 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
     unsigned int mtlInlclueesListSize = 0;
     PXSize mtlEmbeddedDataOffset = 0;
 
-    PXDataStreamReadI8U(inputStream, &numberOfMeshes);
+    PXFileReadI8U(inputStream, &numberOfMeshes);
 
     MemoryClear(renderMode, sizeof(renderMode));
     MemoryClear(renderSize, sizeof(renderSize));
 
     for (PXSize i = 0; i < numberOfMeshes; ++i)
     {
-        PXDataStreamReadI8U(inputStream, &renderMode[i]);
-        PXDataStreamReadI32U(inputStream, &renderSize[i]);
+        PXFileReadI8U(inputStream, &renderMode[i]);
+        PXFileReadI32U(inputStream, &renderSize[i]);
     }
 
-    PXDataStreamReadI32U(inputStream, &vertexListSize);
-    PXDataStreamReadI32U(inputStream, &normalListSize);
-    PXDataStreamReadI32U(inputStream, &textureListSize);
-    PXDataStreamReadI32U(inputStream, &parameterListSize);
-    PXDataStreamReadI32U(inputStream, &indexListSize);
-    PXDataStreamReadI32U(inputStream, &mtlInlclueesListSize);
-    PXDataStreamReadI64U(inputStream, &mtlEmbeddedDataOffset);
+    PXFileReadI32U(inputStream, &vertexListSize);
+    PXFileReadI32U(inputStream, &normalListSize);
+    PXFileReadI32U(inputStream, &textureListSize);
+    PXFileReadI32U(inputStream, &parameterListSize);
+    PXFileReadI32U(inputStream, &indexListSize);
+    PXFileReadI32U(inputStream, &mtlInlclueesListSize);
+    PXFileReadI64U(inputStream, &mtlEmbeddedDataOffset);
 
     model->DataVertexListSize = sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize);
 
@@ -607,17 +607,17 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
     //---<Lookup materials>----------------------------------------------------
 
     {
-        PXDataStream modelHeaderStream;
+        PXFile modelHeaderStream;
 
-        PXDataStreamFromExternal(&modelHeaderStream, model->Data, infoHeaderSize);
+        PXFileBufferExternal(&modelHeaderStream, model->Data, infoHeaderSize);
 
-        PXDataStreamWriteI8U(&modelHeaderStream, numberOfMeshes);
+        PXFileWriteI8U(&modelHeaderStream, numberOfMeshes);
 
         for (PXSize meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex)
         {
-            PXDataStreamWriteI8U(&modelHeaderStream, renderMode[meshIndex]); // Draw mode
-            PXDataStreamWriteI32U(&modelHeaderStream, renderSize[meshIndex]); // Draw amount
-            PXDataStreamWriteI32U(&modelHeaderStream,(unsigned int)-1); // Material ID, set later
+            PXFileWriteI8U(&modelHeaderStream, renderMode[meshIndex]); // Draw mode
+            PXFileWriteI32U(&modelHeaderStream, renderSize[meshIndex]); // Draw amount
+            PXFileWriteI32U(&modelHeaderStream,(unsigned int)-1); // Material ID, set later
         }
 #if PXWavefrontDetectMaterial
         //---<MTL to PXMaterial>-----------------------------------------------
@@ -626,15 +626,15 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
         void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
         const PXSize size = inputStream->DataSize - mtlEmbeddedDataOffset;
 
-        PXDataStreamWriteI32U(&modelHeaderStream, 0);
+        PXFileWriteI32U(&modelHeaderStream, 0);
 
         if (mtlInlclueesListSize > 0)
         {
             const PXSize amount = MTLFetchAmount(data, size);
 
-            model->MaterialList = PXDataStreamCursorPosition(&modelHeaderStream);
+            model->MaterialList = PXFileCursorPosition(&modelHeaderStream);
 
-            PXDataStreamWriteI32U(&modelHeaderStream, amount);
+            PXFileWriteI32U(&modelHeaderStream, amount);
 
             for (PXSize i = 0; i < amount; ++i)
             {
@@ -646,22 +646,22 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
                 {
                     const PXSize positionSizeData = modelHeaderStream.DataCursor;
 
-                    PXDataStreamWriteI16U(&modelHeaderStream, (unsigned short)-1); // Total size
-                    PXDataStreamWriteI16U(&modelHeaderStream, mtlMaterial.NameSize); // Size of name
-                    PXDataStreamWriteA(&modelHeaderStream, mtlMaterial.Name, mtlMaterial.NameSize); // Name
+                    PXFileWriteI16U(&modelHeaderStream, (unsigned short)-1); // Total size
+                    PXFileWriteI16U(&modelHeaderStream, mtlMaterial.NameSize); // Size of name
+                    PXFileWriteA(&modelHeaderStream, mtlMaterial.Name, mtlMaterial.NameSize); // Name
 
-                    PXDataStreamWriteI16U(&modelHeaderStream, mtlMaterial.DiffuseTexturePathSize); // Size of filepath
-                    PXDataStreamWriteA(&modelHeaderStream, mtlMaterial.DiffuseTexturePath, mtlMaterial.DiffuseTexturePathSize); // filepath
+                    PXFileWriteI16U(&modelHeaderStream, mtlMaterial.DiffuseTexturePathSize); // Size of filepath
+                    PXFileWriteA(&modelHeaderStream, mtlMaterial.DiffuseTexturePath, mtlMaterial.DiffuseTexturePathSize); // filepath
 
-                    PXDataStreamWriteFV(&modelHeaderStream, mtlMaterial.Ambient, 3u);
-                    PXDataStreamWriteFV(&modelHeaderStream, mtlMaterial.Diffuse, 3u);
-                    PXDataStreamWriteFV(&modelHeaderStream, mtlMaterial.Specular, 3u);
-                    PXDataStreamWriteFV(&modelHeaderStream, mtlMaterial.Emission, 3u);
+                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Ambient, 3u);
+                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Diffuse, 3u);
+                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Specular, 3u);
+                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Emission, 3u);
 
                     {
                         const PXSize pxMaterialSize = modelHeaderStream.DataCursor - positionSizeData;
 
-                        PXDataStreamWriteAtI16U(&modelHeaderStream, pxMaterialSize, positionSizeData);
+                        PXFileWriteAtI16U(&modelHeaderStream, pxMaterialSize, positionSizeData);
                     }
                 }
             }
@@ -676,14 +676,14 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
 
 
     //---<Start parsing Data>-------------------------------------------------
-    PXDataStream materialIDLookupStream;
-    PXDataStream vertexArrayData;
+    PXFile materialIDLookupStream;
+    PXFile vertexArrayData;
 
     inputStream->DataCursor = 1024;
     model->DataVertexList = (PXAdress)model->Data + infoHeaderSize;
 
-    PXDataStreamFromExternal(&materialIDLookupStream, (PXAdress)model->Data+1, infoHeaderSize);
-    PXDataStreamFromExternal(&vertexArrayData, model->DataVertexList, expectedSize);
+    PXFileBufferExternal(&materialIDLookupStream, (PXAdress)model->Data+1, infoHeaderSize);
+    PXFileBufferExternal(&vertexArrayData, model->DataVertexList, expectedSize);
 
 
     // Format: Ver Nor Tx Colo
@@ -730,14 +730,14 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
 
 
 
-    while (!PXDataStreamIsAtEnd(inputStream))
+    while (!PXFileIsAtEnd(inputStream))
     {
         PXWavefrontLineType objLineType = PXWavefrontLineInvalid;
 
         {
             PXInt8U lineTypeID = 0;
 
-            PXDataStreamReadI8U(inputStream, &lineTypeID); // Line Type
+            PXFileReadI8U(inputStream, &lineTypeID); // Line Type
 
             objLineType = lineTypeID;
         }
@@ -756,7 +756,7 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
                 {
                     PXInt8U compilerSymbolLexerID = 0;
 
-                    PXDataStreamReadI8U(inputStream, &compilerSymbolLexerID); // following datatype
+                    PXFileReadI8U(inputStream, &compilerSymbolLexerID); // following datatype
 
                     compilerSymbolLexer = compilerSymbolLexerID;
                 }
@@ -766,7 +766,7 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
                     case PXCompilerSymbolLexerInteger:
                     {
                         unsigned int value = 0;
-                        PXDataStreamReadI32U(inputStream, &value);
+                        PXFileReadI32U(inputStream, &value);
                         break;
                     }
 
@@ -784,10 +784,10 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
                             const PXSize sizeEE = inputStream->DataSize - mtlEmbeddedDataOffset;
                             const PXSize amount = MTLFetchAmount(data, sizeEE);
 
-                            PXDataStreamReadI16U(inputStream, &size);
-                            PXDataStreamReadTextA(inputStream, materialName, size);
+                            PXFileReadI16U(inputStream, &size);
+                            PXFileReadTextA(inputStream, materialName, size);
 
-                            PXDataStreamCursorAdvance(&materialIDLookupStream, sizeof(unsigned char) + sizeof(unsigned int));
+                            PXFileCursorAdvance(&materialIDLookupStream, sizeof(unsigned char) + sizeof(unsigned int));
 
                             // Lookup material
                             for (PXSize i = 0; i < amount; ++i)
@@ -800,23 +800,23 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
 
                                 if (isValid)
                                 {
-                                    PXDataStreamWriteI32U(&materialIDLookupStream, i); // Material ID, set later
+                                    PXFileWriteI32U(&materialIDLookupStream, i); // Material ID, set later
                                     break;
                                 }
 
                             }
 #else
-                            PXDataStreamReadI16U(inputStream, &size);
-                            PXDataStreamReadTextA(inputStream, name, size);
+                            PXFileReadI16U(inputStream, &size);
+                            PXFileReadTextA(inputStream, name, size);
 #endif
                         }
                         else
                         {
                            // unsigned char tttt[260];
 
-                            PXDataStreamReadI16U(inputStream, &size);
-                            PXDataStreamCursorAdvance(inputStream, size);
-                            //PXDataStreamReadTextA(inputStream, tttt, size);
+                            PXFileReadI16U(inputStream, &size);
+                            PXFileCursorAdvance(inputStream, size);
+                            //PXFileReadTextA(inputStream, tttt, size);
                         }
 
                         break;
@@ -870,8 +870,8 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
 
                 adress = &adress[*offset];
 
-                PXDataStreamReadI8U(inputStream, &amountofValues);
-                PXDataStreamReadFV(inputStream, adress, amountofValues);
+                PXFileReadI8U(inputStream, &amountofValues);
+                PXFileReadFV(inputStream, adress, amountofValues);
 
                 *offset += amountofValues;
 
@@ -882,13 +882,13 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
             {
                 PXInt8U amountofValues = 0;
 
-                PXDataStreamReadI8U(inputStream, &amountofValues);
+                PXFileReadI8U(inputStream, &amountofValues);
 
                 for (PXSize nodeIndex = 0; nodeIndex < amountofValues; ++nodeIndex)
                 {
                     PXInt32U indexList[3] = { -1, -1, -1 };
 
-                    PXDataStreamReadI32UV(inputStream, indexList, 3u);
+                    PXFileReadI32UV(inputStream, indexList, 3u);
 
                     const float* const vertexValueIndex = &vertexValueList[indexList[0] * (3u)];
                     const float* const textureValueIndex = &textureList[indexList[1] * (2u)];
@@ -915,9 +915,9 @@ PXActionResult PXWavefrontParseToModel(PXDataStream* const inputStream, PXModel*
                     );
 #endif
 
-                    PXDataStreamWriteFV(&vertexArrayData, vertexValueIndex, 3u);
-                    PXDataStreamWriteFV(&vertexArrayData, normalValueIndex, 3u);
-                    PXDataStreamWriteFV(&vertexArrayData, textureValueIndex, 2u);
+                    PXFileWriteFV(&vertexArrayData, vertexValueIndex, 3u);
+                    PXFileWriteFV(&vertexArrayData, normalValueIndex, 3u);
+                    PXFileWriteFV(&vertexArrayData, textureValueIndex, 2u);
                 }
 
                 break;

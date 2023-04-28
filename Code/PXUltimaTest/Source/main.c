@@ -64,7 +64,7 @@ int main()
 {
 	printf("[i] Starting testing...\n");
 
-
+#if 0
 	PXTextMatchTest();
 
 	//PXActionResult res = PXDirectoryFilesInFolderW(L"B:/Daten/Bilder/*", OnFileElementDetected, 0x02, 0);
@@ -74,7 +74,7 @@ int main()
 	printf("");
 
 
-#if 0
+
 	char buffer[64];
 
 	for (size_t i = 0; i <= 0xFF; i++)
@@ -86,8 +86,13 @@ int main()
 #endif
 	
 
-#if 0
-	
+#if 1
+	PXImage image;
+
+	ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.png");
+
+	printf("EE\n");
+	//TestImageAll();
 #endif // 0
 
 
@@ -109,7 +114,7 @@ int main()
 #endif
 
 
-#if 1
+#if 0
 	TestSocket();
 #endif // 1
 

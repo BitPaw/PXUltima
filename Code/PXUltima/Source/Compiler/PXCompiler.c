@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 
@@ -13,15 +13,15 @@ void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings)
 	MemoryClear(compilerSettings, sizeof(PXCompilerSettings));
 }
 
-void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
+void PXCompilerSymbolEntryAdd(PXFile* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	const unsigned char symbolID = compilerSymbolEntry->ID;
 
-	PXDataStreamWriteI8U(dataStream, symbolID);
-	PXDataStreamWriteI32U(dataStream, compilerSymbolEntry->Coloum);
-	PXDataStreamWriteI32U(dataStream, compilerSymbolEntry->Line);
-	PXDataStreamWriteI32U(dataStream, compilerSymbolEntry->Size);
-	PXDataStreamWriteB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
+	PXFileWriteI8U(dataStream, symbolID);
+	PXFileWriteI32U(dataStream, compilerSymbolEntry->Coloum);
+	PXFileWriteI32U(dataStream, compilerSymbolEntry->Line);
+	PXFileWriteI32U(dataStream, compilerSymbolEntry->Size);
+	PXFileWriteB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
 
 #if 0
@@ -257,18 +257,18 @@ void PXCompilerSymbolEntryAdd(PXDataStream* const dataStream, const PXCompilerSy
 #endif
 }
 
-void PXCompilerSymbolEntryExtract(PXDataStream* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+void PXCompilerSymbolEntryExtract(PXFile* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
-	void* const oldPos = PXDataStreamCursorPosition(dataStream);
+	void* const oldPos = PXFileCursorPosition(dataStream);
 	PXSize size = 0;
 
 	unsigned char symbolID = 0;
 
-	size += PXDataStreamReadI8U(dataStream, &symbolID);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Coloum);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Line);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Size);
-	size += PXDataStreamReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
+	size += PXFileReadI8U(dataStream, &symbolID);
+	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Coloum);
+	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Line);
+	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Size);
+	size += PXFileReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
 	compilerSymbolEntry->ID = symbolID;
 
@@ -277,22 +277,22 @@ void PXCompilerSymbolEntryExtract(PXDataStream* const dataStream, PXCompilerSymb
 #endif
 }
 
-void PXCompilerSymbolEntryPeek(PXDataStream* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+void PXCompilerSymbolEntryPeek(PXFile* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
-	void* const oldPos = PXDataStreamCursorPosition(dataStream);
+	void* const oldPos = PXFileCursorPosition(dataStream);
 	PXSize size = 0;
 
 	unsigned char symbolID = 0;
 
-	size += PXDataStreamReadI8U(dataStream, &symbolID);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Coloum);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Line);
-	size += PXDataStreamReadI32U(dataStream, &compilerSymbolEntry->Size);
-	size += PXDataStreamReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
+	size += PXFileReadI8U(dataStream, &symbolID);
+	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Coloum);
+	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Line);
+	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Size);
+	size += PXFileReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
 	compilerSymbolEntry->ID = symbolID;
 
-	PXDataStreamCursorRewind(dataStream, size);
+	PXFileCursorRewind(dataStream, size);
 }
 
 PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
@@ -620,7 +620,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 	return PXCompilerSymbolLexerGenericElement;
 }
 
-void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream, const PXCompilerSettings* const compilerSettings)
+void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings)
 {
 	PXSize currentLine = 0;
 	PXSize currentColoum = 0;
@@ -632,16 +632,16 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 
 	const PXCompilerSymbolLexer newLineSymbol = compilerSettings->IntrepredNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;
 
-	while (!PXDataStreamIsAtEnd(inputStream))
+	while (!PXFileIsAtEnd(inputStream))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
-		compilerSymbolEntry.Source = (const char*)PXDataStreamCursorPosition(inputStream);
+		compilerSymbolEntry.Source = (const char*)PXFileCursorPosition(inputStream);
 
 		//-----------------------------------------------------------------------------
 		// Consume whitespace
 		//-----------------------------------------------------------------------------
 		{
-			const PXSize whiteSpaceSize = PXDataStreamSkipEmptySpace(inputStream); // Skip 'space' and TABs
+			const PXSize whiteSpaceSize = PXFileSkipEmptySpace(inputStream); // Skip 'space' and TABs
 
 			currentColoum += whiteSpaceSize;
 
@@ -667,7 +667,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 		// Consume new line
 		//-----------------------------------------------------------------------------
 		{
-			const PXSize endofLineSize = PXDataStreamSkipEndOfLineCharacters(inputStream);
+			const PXSize endofLineSize = PXFileSkipEndOfLineCharacters(inputStream);
 
 			if (endofLineSize)
 			{
@@ -704,7 +704,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 				compilerSymbolEntry.ID = PXCompilerSymbolLexerComment; // This is a comment 
 				compilerSymbolEntry.Source += compilerSettings->CommentSingleLineSize;
 				compilerSymbolEntry.Size -= compilerSettings->CommentSingleLineSize;
-				compilerSymbolEntry.Size += PXDataStreamSkipLine(inputStream);
+				compilerSymbolEntry.Size += PXFileSkipLine(inputStream);
 
 				if (compilerSettings->CommentsKeep)
 				{
@@ -746,7 +746,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 		// Consume block
 		//-----------------------------------------------------------------------------
 		{
-			PXSize fullBlockSize = PXDataStreamSkipBlock(inputStream);	// consume block
+			PXSize fullBlockSize = PXFileSkipBlock(inputStream);	// consume block
 			char* blockStart = compilerSymbolEntry.Source;
 
 			while (fullBlockSize > 0)
@@ -785,7 +785,7 @@ void PXCompilerLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* co
 	}
 }
 
-PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
+PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
 {
 	PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -824,7 +824,7 @@ PXBool PXCompilerParseStringUntilNewLine(PXDataStream* const inputStream, char* 
 	return PXYes;
 }
 
-PXBool PXCompilerParseIntUnsignedSingle(PXDataStream* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value)
+PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value)
 {
 	PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
 
@@ -835,7 +835,7 @@ PXBool PXCompilerParseIntUnsignedSingle(PXDataStream* const inputStream, PXCompi
 	return isInt;
 }
 
-PXBool PXCompilerParseFloatSingle(PXDataStream* const inputStream, float* const values)
+PXBool PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values)
 {
 	PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -853,7 +853,7 @@ PXBool PXCompilerParseFloatSingle(PXDataStream* const inputStream, float* const 
 	return isFloat;
 }
 
-PXBool PXCompilerParseFloatList(PXDataStream* const inputStream, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
+PXBool PXCompilerParseFloatList(PXFile* const inputStream, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
 {
 	for (PXSize i = 0; i < valuesMaxSize; ++i)
 	{

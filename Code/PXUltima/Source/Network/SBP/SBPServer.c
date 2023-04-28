@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 
 void SBPServerConstruct(PXSBPServer* const sbpServer)
@@ -54,7 +54,7 @@ PXActionResult SBPServerSendFileA(PXSBPServer* const sbpServer, const PXSocketID
 
 	// Check if file exists
 	{
-		const PXActionResult filePXActionResult = file.MapToVirtualMemory(text, MemoryReadOnly);
+		const PXActionResult filePXActionResult = file.MapToVirtualMemory(text, PXMemoryAccessModeReadOnly);
 		const bool sucessful = filePXActionResult == ResultSuccessful;
 
 		if(!sucessful)

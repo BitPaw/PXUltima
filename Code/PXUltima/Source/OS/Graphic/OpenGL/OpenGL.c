@@ -1837,31 +1837,31 @@ PXBool OpenGLContextCreateForWindow(OpenGLContext* const openGLContext)
             char* teeext = func(window->HandleDeviceContext);
 
             {
-                PXDataStream dataStream;
+                PXFile dataStream;
 
                 const PXSize teextSize = PXTextFindFirstA(teeext, 0xFFFF, '\0');
-                PXDataStreamFromExternal(&dataStream, teeext, teextSize);
+                PXFileBufferExternal(&dataStream, teeext, teextSize);
 
                 PXSize x = 99999;
 
                 char wurst[256];
 
-                while (!PXDataStreamIsAtEnd(&dataStream))
+                while (!PXFileIsAtEnd(&dataStream))
                 {
                     MemoryClear(wurst, sizeof(256));
 
-                    char* adres = PXDataStreamCursorPosition(&dataStream);
+                    char* adres = PXFileCursorPosition(&dataStream);
 
                     PXSize textSize = 0;
 
-                    x = PXDataStreamSkipBlock(&dataStream);
+                    x = PXFileSkipBlock(&dataStream);
 
                     textSize = x + 1;
 
-                    PXDataStreamCursorRewind(&dataStream, x);
+                    PXFileCursorRewind(&dataStream, x);
 
-                    PXDataStreamReadA(&dataStream, wurst, textSize - 1);
-                    PXDataStreamCursorAdvance(&dataStream, 1);
+                    PXFileReadA(&dataStream, wurst, textSize - 1);
+                    PXFileCursorAdvance(&dataStream, 1);
 
                     printf("%s\n", wurst);
                 }

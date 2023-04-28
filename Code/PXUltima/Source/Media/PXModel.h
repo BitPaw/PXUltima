@@ -1,7 +1,7 @@
 #ifndef PXModelINCLUDE
 #define PXModelINCLUDE
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -123,8 +123,8 @@ extern "C"
 	}
 	PXModel;
 
-	typedef PXActionResult(*ModelCompilerFunction)(PXDataStream* const inputStream, PXDataStream* const outputStream);
-	typedef PXActionResult(*ModelParserFunction)(PXDataStream* const inputStream, PXModel* const model);
+	typedef PXActionResult(*ModelCompilerFunction)(PXFile* const inputStream, PXFile* const outputStream);
+	typedef PXActionResult(*ModelParserFunction)(PXFile* const inputStream, PXModel* const model);
 
 
 	PXPublic void PXModelConstruct(PXModel* const model);
@@ -143,7 +143,7 @@ extern "C"
 
 	PXPublic PXActionResult PXModelLoadA(PXModel* const model, const char* const filePath);
 	PXPublic PXActionResult PXModelLoadW(PXModel* const model, const wchar_t* const filePath);
-	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXDataStream* const fileStream, const FileFormatExtension modelType);
+	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXFile* const fileStream, const FileFormatExtension modelType);
 
 #ifdef __cplusplus
 }

@@ -1,10 +1,10 @@
-#include "DataBase.h"
+#include "PXDataBase.h"
 
 #include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>
 
-const SQLType SQLTypeFromID(const unsigned int sqlType)
+const SQLType PXSQLTypeFromID(const unsigned int sqlType)
 {
 #if OSUnix
     return SQLTypeInvalid;
@@ -13,49 +13,49 @@ const SQLType SQLTypeFromID(const unsigned int sqlType)
     switch (sqlType)
     {
         // Mysql?
-    case -9: return SQLTypeStringUNICODE;
+        case -9: return SQLTypeStringUNICODE;
 
-        // is this thenCorrect?
-    case SQL_VARCHAR:return SQLTypeStringANSI;
+            // is this thenCorrect?
+        case SQL_VARCHAR:return SQLTypeStringANSI;
 
-    case SQL_UNKNOWN_TYPE: return SQLTypeUnkown;
-    case SQL_CHAR:return SQLTypeCharacter;
-    case SQL_NUMERIC:return SQLTypeNumeric;
-    case SQL_DECIMAL:return SQLTypeDecimal;
-    case SQL_INTEGER:return SQLTypeInteger;
-    case SQL_SMALLINT:return SQLTypeShort;
-    case SQL_FLOAT:return SQLTypeFloat;
-    case SQL_REAL:return SQLTypeReal;
-    case SQL_DOUBLE:return SQLTypeDouble;
+        case SQL_UNKNOWN_TYPE: return SQLTypeUnkown;
+        case SQL_CHAR:return SQLTypeCharacter;
+        case SQL_NUMERIC:return SQLTypeNumeric;
+        case SQL_DECIMAL:return SQLTypeDecimal;
+        case SQL_INTEGER:return SQLTypeInteger;
+        case SQL_SMALLINT:return SQLTypeShort;
+        case SQL_FLOAT:return SQLTypeFloat;
+        case SQL_REAL:return SQLTypeReal;
+        case SQL_DOUBLE:return SQLTypeDouble;
 #if (ODBCVER >= 0x0300)
-    case  SQL_DATETIME:return SQLTypeDATETIME;
+        case  SQL_DATETIME:return SQLTypeDATETIME;
 #endif
 
 
-        /* One-parameter shortcuts for date/time data types */
+            /* One-parameter shortcuts for date/time data types */
 #if (ODBCVER >= 0x0300)
-    case SQL_TYPE_DATE:return SQLTypeTYPE_DATE;
-    case SQL_TYPE_TIME:return SQLTypeTYPE_TIME;
-    case SQL_TYPE_TIMESTAMP:return SQLTypeTYPE_TIMESTAMP;
+        case SQL_TYPE_DATE:return SQLTypeTYPE_DATE;
+        case SQL_TYPE_TIME:return SQLTypeTYPE_TIME;
+        case SQL_TYPE_TIMESTAMP:return SQLTypeTYPE_TIMESTAMP;
 #endif
 
-    default:
-        return SQLTypeInvalid;
+        default:
+            return SQLTypeInvalid;
     }
 #endif
 }
 
-void DataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection)
+void PXDataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection)
 {
     MemoryClear(dataBaseConnection, sizeof(DataBaseConnection));
 }
 
-void DataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection)
+void PXDataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection)
 {
-    DataBaseConnectionCleanup(dataBaseConnection);
+    PXDataBaseConnectionCleanup(dataBaseConnection);
 }
 
-void DataBaseConnectionConnect
+void PXDataBaseConnectionConnect
 (
     DataBaseConnection* const dataBaseConnection,
     const wchar_t* source,
@@ -115,7 +115,7 @@ void DataBaseConnectionConnect
 
     printf("+---[ODBC Drivers]-------------------------------------------+--------------+\n");
 
-    DataBaseConnectionScanForDrivers(dataBaseConnection);
+    PXDataBaseConnectionScanForDrivers(dataBaseConnection);
 
     printf("+------------------------------------------------------------+--------------+\n");
 
@@ -203,9 +203,8 @@ void DataBaseConnectionConnect
 #endif
 }
 
-void DataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection)
+void PXDataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection)
 {
-
 #if OSUnix
 #elif OSWindows
     if (dataBaseConnection->_handleConnection != 0)
@@ -218,9 +217,9 @@ void DataBaseConnectionDisconnect(DataBaseConnection* const dataBaseConnection)
 #endif
 }
 
-void DataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection)
+void PXDataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection)
 {
-    DataBaseConnectionDisconnect(dataBaseConnection);
+    PXDataBaseConnectionDisconnect(dataBaseConnection);
 
 #if OSUnix
 #elif OSWindows
@@ -231,7 +230,7 @@ void DataBaseConnectionCleanup(DataBaseConnection* const dataBaseConnection)
 #endif
 }
 
-void DataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnection)
+void PXDataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnection)
 {
 
 #if OSUnix
@@ -263,30 +262,30 @@ void DataBaseConnectionScanForDrivers(DataBaseConnection* const dataBaseConnecti
 
         switch (resultDriver)
         {
-        case SQL_SUCCESS_WITH_INFO:
-        case SQL_SUCCESS: // Do nothing and go next
-            direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
+            case SQL_SUCCESS_WITH_INFO:
+            case SQL_SUCCESS: // Do nothing and go next
+                direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
 
-            if (dataBaseConnection->OnDriverDetectedEvent)
-            {
-                dataBaseConnection->OnDriverDetectedEvent(driverDescription, driverAttributes);
-            }
+                if (dataBaseConnection->OnDriverDetectedEvent)
+                {
+                    dataBaseConnection->OnDriverDetectedEvent(driverDescription, driverAttributes);
+                }
 
-            printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
-            break;
+                printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
+                break;
 
-        default:
-        case SQL_ERROR: // Unkown error
-        case SQL_INVALID_HANDLE: // Environment handle was invalid
-        case SQL_NO_DATA: // read error : No entry
-            finished = 1;
-            break;
+            default:
+            case SQL_ERROR: // Unkown error
+            case SQL_INVALID_HANDLE: // Environment handle was invalid
+            case SQL_NO_DATA: // read error : No entry
+                finished = 1;
+                break;
         }
     }
 #endif
 }
 
-void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, const wchar_t* sqlStatement)
+void PXDataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, const wchar_t* sqlStatement)
 {
 
 #if OSUnix
@@ -376,7 +375,7 @@ void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, con
             &isNullableID
         );
 
-        const SQLType type = SQLTypeFromID(DataType);
+        const SQLType type = PXSQLTypeFromID(DataType);
 
         //SQLColAttribute();
 
@@ -387,23 +386,23 @@ void DataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, con
 
         switch (type)
         {
-        default:
-        case SQLTypeInvalid: typeName = "Invalid"; break;
-        case SQLTypeUnkown: typeName = "Unkown"; break;
-        case SQLTypeCharacter: typeName = "Character"; break;
-        case SQLTypeNumeric:typeName = "Numeric"; break;
-        case SQLTypeDecimal:typeName = "Decimal"; break;
-        case SQLTypeInteger:typeName = "Integer"; break;
-        case SQLTypeShort:typeName = "Short"; break;
-        case SQLTypeFloat:typeName = "Invalid"; break;
-        case SQLTypeReal:typeName = "Real"; break;
-        case SQLTypeDouble:typeName = "Double"; break;
-        case SQLTypeDATETIME:typeName = "DATETIME"; break;
-        case SQLTypeStringANSI:typeName = "StringANSI"; break;
-        case SQLTypeStringUNICODE:typeName = "StringUNICODE"; break;
-        case SQLTypeTYPE_DATE:typeName = "TYPE_DATE"; break;
-        case SQLTypeTYPE_TIME:typeName = "TYPE_TIME"; break;
-        case SQLTypeTYPE_TIMESTAMP:typeName = "TYPE_TIMESTAMP"; break;
+            default:
+            case SQLTypeInvalid: typeName = "Invalid"; break;
+            case SQLTypeUnkown: typeName = "Unkown"; break;
+            case SQLTypeCharacter: typeName = "Character"; break;
+            case SQLTypeNumeric:typeName = "Numeric"; break;
+            case SQLTypeDecimal:typeName = "Decimal"; break;
+            case SQLTypeInteger:typeName = "Integer"; break;
+            case SQLTypeShort:typeName = "Short"; break;
+            case SQLTypeFloat:typeName = "Invalid"; break;
+            case SQLTypeReal:typeName = "Real"; break;
+            case SQLTypeDouble:typeName = "Double"; break;
+            case SQLTypeDATETIME:typeName = "DATETIME"; break;
+            case SQLTypeStringANSI:typeName = "StringANSI"; break;
+            case SQLTypeStringUNICODE:typeName = "StringUNICODE"; break;
+            case SQLTypeTYPE_DATE:typeName = "TYPE_DATE"; break;
+            case SQLTypeTYPE_TIME:typeName = "TYPE_TIME"; break;
+            case SQLTypeTYPE_TIMESTAMP:typeName = "TYPE_TIMESTAMP"; break;
         }
 
         if (dataBaseConnection->OnColumInfoEvent)

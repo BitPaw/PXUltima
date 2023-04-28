@@ -265,7 +265,7 @@ void SBPPXClientSendFile(const char* filePath)
 		File file;	
 
 		{
-			const PXActionResult filePXActionResult = file.MapToVirtualMemory(filePath, MemoryProtectionMode::ReadOnly);
+			const PXActionResult filePXActionResult = file.MapToVirtualMemory(filePath, PXMemoryAccessMode::ReadOnly);
 			const bool isLoaded = filePXActionResult == ResultSuccessful;
 
 			if(!isLoaded)

@@ -7,7 +7,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXImage.h>
 
 #ifdef __cplusplus
@@ -105,7 +105,7 @@ extern "C"
 
 	PXPublic PXSpriteFontCharacter* PXSpriteFontGetCharacter(PXSpriteFont* pxSpriteFont, const wchar_t character);
 
-	PXPublic PXActionResult PXSpriteFontParse(PXSpriteFont* const pxSpriteFont, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult PXSpriteFontParse(PXSpriteFont* const pxSpriteFont, PXFile* const PXFile);
 
 	PXPrivate PXSpriteFontLineType PeekLineType(const void* line, const PXSize fileDataSize);
 

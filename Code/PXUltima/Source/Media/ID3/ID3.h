@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #define ID3TitleSize 30
 #define ID3ArtistSize 30
@@ -132,7 +132,7 @@ extern "C"
 
 	PXPublic ID3v2xFrameTag ConvertID3v2xFrameTag(const unsigned int id3v2xFrameTagID);
 
-	PXPublic PXActionResult ID3Parse(ID3* const id3, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult ID3Parse(ID3* const id3, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

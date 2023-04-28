@@ -1,12 +1,12 @@
-#include "YAML.h"
+#include "PXYAML.h"
 
 #include <Compiler/PXCompiler.h>
 
-YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
+PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size)
 {
     if (!(line && size))
     {
-        return YAMLLineTypeInvalid;
+        return PXYAMLLineTypeInvalid;
     }
 
     const unsigned char id = *(const unsigned char* const)line;
@@ -14,16 +14,16 @@ YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
     switch (id)
     {
         case '#':
-            return YAMLLineTypeComment;
+            return PXYAMLLineTypeComment;
 
         case ':':
-            return YAMLLineTypeKeyValueSeperator;
+            return PXYAMLLineTypeKeyValueSeperator;
 
         case '>':
-            return YAMLLineTypeNotationStyleExtendedLine;
+            return PXYAMLLineTypeNotationStyleExtendedLine;
 
         case '|':
-            return YAMLLineTypeNotationStyleBlock;
+            return PXYAMLLineTypeNotationStyleBlock;
 
         case '-':
         {
@@ -34,11 +34,11 @@ YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
 
             if (isSeperator)
             {
-                return YAMLLineTypeSeperator;
+                return PXYAMLLineTypeSeperator;
             }
             else
             {
-                return YAMLLineTypeListElement;
+                return PXYAMLLineTypeListElement;
             }
         }
     }
@@ -50,17 +50,17 @@ YAMLLineType YAMLPeekLine(const void* line, const PXSize size)
 
         if (isColon)
         {
-            return YAMLLineTypeKeyDeclare;
+            return PXYAMLLineTypeKeyDeclare;
         }
     }
 
-    return YAMLLineTypeUnkown;
+    return PXYAMLLineTypeUnkown;
 }
 
-PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream)
+PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
-    PXDataStream tokenSteam;
+    PXFile tokenSteam;
 
     // Lexer - Level I
     {
@@ -77,14 +77,14 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
         PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-        PXDataStreamFromExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+        PXFileBufferExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
 
         outputStream->DataCursor = 0;
     }
 
     unsigned int indentCounter = 0;
 
-    while (!PXDataStreamIsAtEnd(&tokenSteam))
+    while (!PXFileIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -107,22 +107,22 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
             case PXCompilerSymbolLexerSingleCharacter:
             case PXCompilerSymbolLexerGenericElement:
             {
-                const YAMLLineType lineType = YAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                const PXYAMLLineType lineType = PXYAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
                 switch (lineType)
                 {
-                    case YAMLLineTypeNotationStyleExtendedLine:
+                    case PXYAMLLineTypeNotationStyleExtendedLine:
                     {
                         // interpret a new line as a whitespace.
                         // Line ends after new symbol declaration
                     }
 
-                    case YAMLLineTypeUnkown:
+                    case PXYAMLLineTypeUnkown:
                     {
                         PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
 
-                        const YAMLLineType lineType = YAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-                        const PXBool isColonSymbol = YAMLLineTypeKeyValueSeperator == lineType;
+                        const PXYAMLLineType lineType = PXYAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                        const PXBool isColonSymbol = PXYAMLLineTypeKeyValueSeperator == lineType;
 
                         if (!isColonSymbol) // Format: xxxx :
                         {
@@ -132,15 +132,15 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
                         // Fall though
                     }
-                    case YAMLLineTypeKeyDeclare: // xxxx:
+                    case PXYAMLLineTypeKeyDeclare: // xxxx:
                     {
                         char* declname = compilerSymbolEntry.Source;
                         unsigned short declSize = compilerSymbolEntry.Size - 1;
 
-                        PXDataStreamWriteI8U(outputStream, YAMLLineTypeKeyValueDeclare);
-                        PXDataStreamWriteI8U(outputStream, indentCounter);
-                        PXDataStreamWriteI16U(outputStream, declSize);
-                        PXDataStreamWriteB(outputStream, declname, declSize);
+                        PXFileWriteI8U(outputStream, PXYAMLLineTypeKeyValueDeclare);
+                        PXFileWriteI8U(outputStream, indentCounter);
+                        PXFileWriteI16U(outputStream, declSize);
+                        PXFileWriteB(outputStream, declname, declSize);
 
 
                         // Fetch next value
@@ -153,39 +153,39 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
                         case PXCompilerSymbolLexerNewLine:
                         case PXCompilerSymbolLexerWhiteSpace:
-                            PXDataStreamWriteI16U(outputStream, 0);
+                            PXFileWriteI16U(outputStream, 0);
                             indentCounter = compilerSymbolEntry.Size;
                             break;
 
                         case PXCompilerSymbolLexerBool:
                         {
-                            PXDataStreamWriteI16U(outputStream, sizeof(unsigned char));
-                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerBool);
-                            PXDataStreamWriteI8U(outputStream, compilerSymbolEntry.DataC);
+                            PXFileWriteI16U(outputStream, sizeof(unsigned char));
+                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerBool);
+                            PXFileWriteI8U(outputStream, compilerSymbolEntry.DataC);
                             break;
                         }
 
                         case PXCompilerSymbolLexerInteger:
                         {
-                            PXDataStreamWriteI16U(outputStream, sizeof(unsigned int));
-                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                            PXDataStreamWriteI32U(outputStream, compilerSymbolEntry.DataI);
+                            PXFileWriteI16U(outputStream, sizeof(unsigned int));
+                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                            PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI);
                             break;
                         }
 
                         case PXCompilerSymbolLexerFloat:
                         {
-                            PXDataStreamWriteI16U(outputStream, sizeof(float));
-                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
-                            PXDataStreamWriteF(outputStream, compilerSymbolEntry.DataF);
+                            PXFileWriteI16U(outputStream, sizeof(float));
+                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
+                            PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
                             break;
                         }
                         case PXCompilerSymbolLexerGenericElement:
                         case PXCompilerSymbolLexerString:
                         {
-                            PXDataStreamWriteI16U(outputStream, compilerSymbolEntry.Size);
-                            PXDataStreamWriteI8U(outputStream, PXCompilerSymbolLexerString);
-                            PXDataStreamWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                            PXFileWriteI16U(outputStream, compilerSymbolEntry.Size);
+                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
+                            PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
                             break;
                         }
                         }
@@ -214,17 +214,17 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
     outputStream->DataCursor = 0;
 
-    while (!PXDataStreamIsAtEnd(outputStream))
+    while (!PXFileIsAtEnd(outputStream))
     {
         unsigned char depth = 0;
-        YAMLLineType lineType = 0;
+        PXYAMLLineType lineType = 0;
 
-        PXDataStreamReadI8U(outputStream, &lineType);
-        PXDataStreamReadI8U(outputStream, &depth);
+        PXFileReadI8U(outputStream, &lineType);
+        PXFileReadI8U(outputStream, &depth);
 
         switch (lineType)
         {
-        case YAMLLineTypeKeyValueDeclare:
+        case PXYAMLLineTypeKeyValueDeclare:
         {
             unsigned short textASize = 0;
             char textA[256];
@@ -237,9 +237,9 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
             MemoryClear(textB, 256u);
             MemoryClear(emotySpace, 25u);
 
-            PXDataStreamReadI16U(outputStream, &textASize);
-            PXDataStreamReadB(outputStream, textA, textASize);
-            PXDataStreamReadI16U(outputStream, &textBSize);
+            PXFileReadI16U(outputStream, &textASize);
+            PXFileReadB(outputStream, textA, textASize);
+            PXFileReadI16U(outputStream, &textBSize);
 
             for (PXSize i = 0; i < depth; i++)
             {
@@ -251,7 +251,7 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
                 PXCompilerSymbolLexer lexer;
                 unsigned char lx = 0;
 
-                PXDataStreamReadI8U(outputStream, &lx);
+                PXFileReadI8U(outputStream, &lx);
 
                 lexer = lx;
 
@@ -261,7 +261,7 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
                     {
                         unsigned char x = 0;
 
-                        PXDataStreamReadI8U(outputStream, &x);
+                        PXFileReadI8U(outputStream, &x);
                         sprintf(textB, "%x", x);
                         break;
                     }
@@ -270,7 +270,7 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
                     {
                         unsigned int x = 0;
 
-                        PXDataStreamReadI32U(outputStream, &x);
+                        PXFileReadI32U(outputStream, &x);
                         sprintf(textB, "%i", x);
 
                         break;
@@ -280,7 +280,7 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
                     {
                         float x = 0;
 
-                        PXDataStreamReadF(outputStream, &x);
+                        PXFileReadF(outputStream, &x);
 
                         sprintf(textB, "%f", x);
 
@@ -289,7 +289,7 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
 
                     case PXCompilerSymbolLexerString:
                     {
-                        PXDataStreamReadB(outputStream, textB, textBSize);
+                        PXFileReadB(outputStream, textB, textBSize);
                         break;
                     }
                 }
@@ -303,11 +303,10 @@ PXActionResult YAMLFileCompile(PXDataStream* const inputStream, PXDataStream* co
         }
     }
 
-
     outputStream->DataCursor = oldpos;
 }
 
-PXActionResult YAMLFileParse(PXDataStream* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
+PXActionResult PXYAMLFileParse(PXFile* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
 {
 
 

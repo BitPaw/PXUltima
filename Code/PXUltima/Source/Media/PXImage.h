@@ -1,7 +1,7 @@
 #ifndef PXImageINCLUDE
 #define PXImageINCLUDE
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/PXColor.h>
 
 #ifdef __cplusplus
@@ -21,7 +21,7 @@ extern "C"
 	}
 	PXImage;
 
-	typedef PXActionResult(*PXImageTranslateFunction)(PXImage* const pxImage, PXDataStream* const imageDataStream);
+	typedef PXActionResult(*PXImageTranslateFunction)(PXImage* const pxImage, PXFile* const imageDataStream);
 
 	PXPublic void PXImageConstruct(PXImage* const image);
 	PXPublic void PXImageDestruct(PXImage* const image);
@@ -29,7 +29,7 @@ extern "C"
 	PXPublic PXActionResult PXImageLoadA(PXImage* const image, const PXTextASCII filePath);
 	PXPublic PXActionResult PXImageLoadW(PXImage* const image, const PXTextUNICODE filePath);
 	PXPublic PXActionResult PXImageLoadU(PXImage* const image, const PXTextUTF8 filePath);
-	PXPublic PXActionResult PXImageLoadD(PXImage* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat);
+	PXPublic PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, const FileFormatExtension guessedFormat);
 
 	PXPublic PXActionResult PXImageSaveA(PXImage* const image, const PXTextASCII filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
 	PXPublic PXActionResult PXImageSaveW(PXImage* const image, const PXTextUNICODE filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
@@ -37,7 +37,7 @@ extern "C"
 	PXPublic PXActionResult PXImageSaveD
 	(
 		PXImage* image,
-		PXDataStream* const pxDataStream,
+		PXFile* const PXFile,
 		const FileFormatExtension fileFormat,
 		const PXColorFormat dataFormat
 	);

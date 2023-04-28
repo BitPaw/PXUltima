@@ -1,6 +1,6 @@
 #include "GIF.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
@@ -14,7 +14,7 @@ PXSize GIFFilePredictSize(const PXSize width, const PXSize height, const PXSize 
     return 0;
 }
 
-PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStream)
+PXActionResult GIFParseToImage(PXImage* const image, PXFile* const dataStream)
 {
     GIF gif;
 
@@ -25,7 +25,7 @@ PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStr
         {
             const char headerTag[3] = GIFHeader;
             const PXSize headerTagSize = sizeof(headerTag);
-            const PXBool validHeader = PXDataStreamReadAndCompare(dataStream, headerTag, headerTagSize);
+            const PXBool validHeader = PXFileReadAndCompare(dataStream, headerTag, headerTagSize);
 
             if (!validHeader)
             {
@@ -39,7 +39,7 @@ PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStr
             const char* const versionDataList[2] = { versionA, versionB };
             const PXSize versionSizeList[2] = { sizeof(versionA),  sizeof(versionB) };
             const PXSize versionSizeListSize = sizeof(versionDataList) / sizeof(void*);
-            const PXBool validVersion = PXDataStreamReadAndCompareV(dataStream, versionDataList, versionSizeList, versionSizeListSize);
+            const PXBool validVersion = PXFileReadAndCompareV(dataStream, versionDataList, versionSizeList, versionSizeListSize);
 
             if (!validVersion)
             {
@@ -50,14 +50,14 @@ PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStr
 
     // Logical Screen Descriptor.
     {
-        PXDataStreamReadI16UE(dataStream, &gif.Width, EndianLittle);
-        PXDataStreamReadI16UE(dataStream, &gif.Height, EndianLittle);
+        PXFileReadI16UE(dataStream, &gif.Width, PXEndianLittle);
+        PXFileReadI16UE(dataStream, &gif.Height, PXEndianLittle);
 
         unsigned char packedFields = 0;
 
-        PXDataStreamReadI8U(dataStream, &packedFields);
-        PXDataStreamReadI8U(dataStream, &gif.BackgroundColorIndex);
-        PXDataStreamReadI8U(dataStream, &gif.PixelAspectRatio);
+        PXFileReadI8U(dataStream, &packedFields);
+        PXFileReadI8U(dataStream, &gif.BackgroundColorIndex);
+        PXFileReadI8U(dataStream, &gif.PixelAspectRatio);
 
         gif.GlobalColorTableSize = packedFields & 0b00000111;
         gif.IsSorted = (packedFields & 0b00001000) >> 3;
@@ -75,12 +75,12 @@ PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStr
 
             unsigned char packedFields = 0;
 
-            PXDataStreamReadI8U(dataStream, &imageDescriptor.Separator);
-            PXDataStreamReadI16UE(dataStream, &imageDescriptor.LeftPosition, EndianLittle);
-            PXDataStreamReadI16UE(dataStream, &imageDescriptor.TopPosition, EndianLittle);
-            PXDataStreamReadI16UE(dataStream, &imageDescriptor.Width, EndianLittle);
-            PXDataStreamReadI16UE(dataStream, &imageDescriptor.Height, EndianLittle);
-            PXDataStreamReadI8U(dataStream, &packedFields);
+            PXFileReadI8U(dataStream, &imageDescriptor.Separator);
+            PXFileReadI16UE(dataStream, &imageDescriptor.LeftPosition, PXEndianLittle);
+            PXFileReadI16UE(dataStream, &imageDescriptor.TopPosition, PXEndianLittle);
+            PXFileReadI16UE(dataStream, &imageDescriptor.Width, PXEndianLittle);
+            PXFileReadI16UE(dataStream, &imageDescriptor.Height, PXEndianLittle);
+            PXFileReadI8U(dataStream, &packedFields);
 
             imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
             imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;
@@ -107,7 +107,7 @@ PXActionResult GIFParseToImage(PXImage* const image, PXDataStream* const dataStr
     return PXActionSuccessful;
 }
 
-PXActionResult GIFSerializeFromImage(const PXImage* const image, PXDataStream* const dataStream)
+PXActionResult GIFSerializeFromImage(const PXImage* const image, PXFile* const dataStream)
 {
     return PXActionInvalid;
 }

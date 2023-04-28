@@ -1,27 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace PXTest
 {
     class Hello
     {
-        public static void SocketDataSendEvent(ulong pxSocket, byte[] buffer)
-        {
-            string result = System.Text.Encoding.UTF8.GetString(buffer);
-
-            Console.WriteLine("[C#] Message " + result);
-        }
-
-        public static void SocketDataReceiveEvent(ulong pxSocket, byte[] buffer)
-        {
-            string result = System.Text.Encoding.UTF8.GetString(buffer);
-
-            Console.WriteLine("[C#] Message " + result);
-        }
-
         static void Main(string[] args)
         {
-
             ///Window window = new Window();
 
             //window.Create("Test");
@@ -33,14 +19,17 @@ namespace PXTest
             ActionResult x = dataStream.MapToMemoryReadOnly("B:/Daten/Hello.txt");
 #endif
 
+            // System.IO.File.
+
+            // PX.File.DoesExist();
             Console.WriteLine("C# TEST");
 
             PX.Window window = new PX.Window();
-            window.Create(1024, 1024, "Hellom it me");
+            window.Create("Hellom it me");
 
             while (true)
             {
-                window.FrameBufferSwap();
+                //window.FrameBufferSwap();
             }
 
 

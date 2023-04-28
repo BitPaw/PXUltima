@@ -1,10 +1,10 @@
 #pragma once
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 namespace PX
 {
-	class DataStream : public PXDataStream
+	class DataStream : public PXFile
 	{
 		public:
 		//---------------------------------------------------------------------
@@ -17,9 +17,9 @@ namespace PX
 		//---------------------------------------------------------------------
 
 		//---<Open>------------------------------------------------------------
-		PXActionResult OpenFromPath(const PXTextASCII filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
-		ActionResult OpenFromPath(const PXTextUNICODE filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
-		//ActionResult OpenFromPath(const PXTextUTF8 filePath, const MemoryProtectionMode fileOpenMode, const PXDataStreamCachingMode dataStreamCachingMode);
+		PXActionResult OpenFromPath(const PXTextASCII filePath, const PXMemoryAccessMode fileOpenMode, const PXFileCachingMode dataStreamCachingMode);
+		ActionResult OpenFromPath(const PXTextUNICODE filePath, const PXMemoryAccessMode fileOpenMode, const PXFileCachingMode dataStreamCachingMode);
+		//ActionResult OpenFromPath(const PXTextUTF8 filePath, const PXMemoryAccessMode fileOpenMode, const PXFileCachingMode dataStreamCachingMode);
 		//---------------------------------------------------------------------
 
 		//---<Close>-----------------------------------------------------------
@@ -27,10 +27,10 @@ namespace PX
 		//---------------------------------------------------------------------
 
 		//---<Mapping>---------------------------------------------------------
-		PXDLLExport ActionResult MapToMemory(const PXTextASCII filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-		PXDLLExport ActionResult MapToMemory(const PXTextUNICODE filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-		//ActionResult MapToMemory(const PXTextUTF8 filePath, const PXSize fileSize, const MemoryProtectionMode protectionMode);
-		PXDLLExport ActionResult MapToMemory(const PXSize size, const MemoryProtectionMode protectionMode);
+		PXDLLExport ActionResult MapToMemory(const PXTextASCII filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode);
+		PXDLLExport ActionResult MapToMemory(const PXTextUNICODE filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode);
+		//ActionResult MapToMemory(const PXTextUTF8 filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode);
+		PXDLLExport ActionResult MapToMemory(const PXSize size, const PXMemoryAccessMode protectionMode);
 		PXDLLExport ActionResult UnmapFromMemory();
 		//---------------------------------------------------------------------
 
@@ -65,12 +65,12 @@ namespace PX
 
 		PXSize Read(char* const value);
 		PXSize Read(unsigned char* const value);
-		PXSize Read(short* const value, const Endian endian);
-		PXSize Read(unsigned short* const value, const Endian endian);
-		PXSize Read(int* const value, const  Endian endian);
-		PXSize Read(unsigned int* const value, const Endian endian);
-		PXSize Read(long long* const value, const Endian endian);
-		PXSize Read(unsigned long long* const value, const  Endian endian);
+		PXSize Read(short* const value, const PXEndian endian);
+		PXSize Read(unsigned short* const value, const PXEndian endian);
+		PXSize Read(int* const value, const  PXEndian endian);
+		PXSize Read(unsigned int* const value, const PXEndian endian);
+		PXSize Read(long long* const value, const PXEndian endian);
+		PXSize Read(unsigned long long* const value, const  PXEndian endian);
 		PXSize Read(float* const value);
 		PXSize Read(double* const value);
 		PXSize Read(void* const value, const PXSize length);
@@ -97,12 +97,12 @@ namespace PX
 		//-------------------------------------------------------------------------
 		PXSize Write(const char value);
 		PXSize Write(const unsigned char value);
-		PXSize Write(const short value, const Endian endian);
-		PXSize Write(const unsigned short value, const Endian endian);
-		PXSize Write(const int value, const Endian endian);
-		PXSize Write(const unsigned int value, const Endian endian);
-		PXSize Write(const long long value, const Endian endian);
-		PXSize Write(const unsigned long long value, const Endian endian);
+		PXSize Write(const short value, const PXEndian endian);
+		PXSize Write(const unsigned short value, const PXEndian endian);
+		PXSize Write(const int value, const PXEndian endian);
+		PXSize Write(const unsigned int value, const PXEndian endian);
+		PXSize Write(const long long value, const PXEndian endian);
+		PXSize Write(const unsigned long long value, const PXEndian endian);
 
 		PXSize Write(const float value);
 		PXSize Write(const double value);
@@ -119,8 +119,8 @@ namespace PX
 
 		PXSize WriteAt(const void* const data, const PXSize dataSize, const PXSize index);
 		PXSize WriteAt(const unsigned char value, const PXSize index);
-		PXSize WriteAt(const unsigned short value, const Endian endian, const PXSize index);
-		PXSize WriteAt(const unsigned int value, const Endian endian, const PXSize index);
+		PXSize WriteAt(const unsigned short value, const PXEndian endian, const PXSize index);
+		PXSize WriteAt(const unsigned int value, const PXEndian endian, const PXSize index);
 		//-------------------------------------------------------------------------
 
 

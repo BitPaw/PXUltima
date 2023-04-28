@@ -5,7 +5,7 @@
 
 #include <Media/PXImage.h>
 #include <OS/Error/PXActionResult.h>
-#include <OS/File/File.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,7 +14,6 @@ extern "C"
 
     extern void TestImageAll();
 
-    extern PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath);
     extern void TestSaveImageSmal();
     extern void TestSaveImage();
     extern void ImageWriteText();

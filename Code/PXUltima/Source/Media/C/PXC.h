@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Compiler/PXCompiler.h>
 
 #ifdef __cplusplus
@@ -260,16 +260,16 @@ extern "C"
 	PXPublic CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize);
 
 
-	PXPublic PXBool PXCFileParseTypedef(PXDataStream* const inputStream, PXDataStream* const outputStream);
-	PXPublic PXBool PXCFileParseStructure(PXDataStream* const inputStream, PXDataStream* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition);
-	PXPublic PXBool PXCFileParseDeclaration(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
-	PXPublic PXBool PXCFileParseFunctionPrototype(PXDataStream* const inputStream, PXDataStream* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
+	PXPublic PXBool PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition);
+	PXPublic PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
+	PXPublic PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 
-	PXPublic PXActionResult PXCFileLexicalAnalysis(PXDataStream* const inputStream, PXDataStream* const outputStream);
-	PXPublic PXActionResult PXCFileCompile(PXDataStream* const inputStream, PXDataStream* const outputStream);
+	PXPublic PXActionResult PXCFileLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStream);
 
 
-	PXPublic void PXCElementExtract(PXDataStream* const inputStream, PXCElement* const pxCElement);
+	PXPublic void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement);
 
 
 

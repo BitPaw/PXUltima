@@ -1,10 +1,10 @@
-#include "Controller.h"
+#include "PXController.h"
 
 #include <OS/System/OSVersion.h>
 
 #if OSUnix
 
-#elif OSWindowsEE
+#elif OSWindows
 
 #include <windows.h>
 #include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
@@ -12,19 +12,19 @@
 #pragma comment( lib, "winmm.lib" )
 #endif
 
-PXBool ControllerScanDevices(NewControllerDetectedCallback callback)
+PXBool PXControllerScanDevices(NewControllerDetectedCallback callback)
 {
 #if OSUnix
-#elif OSWindowsEE
+#elif OSWindows
 const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 
 	for (PXSize i = 0; i < amountOfJoySticksSupported; i++)
 	{
-		const ControllerID joyID = i;
+		const PXControllerID joyID = i;
 		JOYCAPSW pjc;
-		const unsigned int size = sizeof(JOYCAPSW);
+		const PXSize size = sizeof(JOYCAPSW);
 		const MMRESULT devResult = joyGetDevCapsW(joyID, &pjc, size);
-		const unsigned char succesful = devResult == JOYERR_NOERROR;
+		const PXBool succesful = devResult == JOYERR_NOERROR;
 
 		if (succesful)
 		{
@@ -81,12 +81,12 @@ const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 #endif
 }
 
-PXBool ControllerDataGet(Controller* controller)
+PXBool PXControllerDataGet(PXController* controller)
 {
 #if OSUnix
     return 0u;
 
-#elif OSWindowsEE
+#elif OSWindows
 #if (WINVER >= 0x0400) // newer than Windows NT 4.0
 	JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
@@ -100,12 +100,12 @@ PXBool ControllerDataGet(Controller* controller)
 
 	if (successful)
 	{
-		controller->Axis[ControllerAxisX] = joystickInfo.dwXpos;
-		controller->Axis[ControllerAxisY] = joystickInfo.dwYpos;
-		controller->Axis[ControllerAxisZ] = joystickInfo.dwZpos;
-		controller->Axis[ControllerAxisR] = joystickInfo.dwRpos;
-		controller->Axis[ControllerAxisU] = joystickInfo.dwUpos;
-		controller->Axis[ControllerAxisV] = joystickInfo.dwVpos;
+		controller->Axis[PXControllerAxisX] = joystickInfo.dwXpos;
+		controller->Axis[PXControllerAxisY] = joystickInfo.dwYpos;
+		controller->Axis[PXControllerAxisZ] = joystickInfo.dwZpos;
+		controller->Axis[PXControllerAxisR] = joystickInfo.dwRpos;
+		controller->Axis[PXControllerAxisU] = joystickInfo.dwUpos;
+		controller->Axis[PXControllerAxisV] = joystickInfo.dwVpos;
 		controller->ButtonPressedBitList = joystickInfo.dwButtons;
 		controller->ButtonAmountPressed = joystickInfo.dwButtonNumber;
 		controller->ControlPad = joystickInfo.dwPOV;
@@ -131,12 +131,12 @@ PXBool ControllerDataGet(Controller* controller)
 #endif
 }
 
-PXBool ControllerAttachToWindow(const ControllerID controllerID, const PXWindowID PXWindowID)
+PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID)
 {
 #if OSUnix
     return 0u;
 
-#elif OSWindowsEE
+#elif OSWindows
 	UINT uPeriod = 1;
 	BOOL fChanged = 1u;
 
@@ -147,12 +147,12 @@ PXBool ControllerAttachToWindow(const ControllerID controllerID, const PXWindowI
 #endif
 }
 
-PXBool ControllerDetachToWindow(const ControllerID controllerID)
+PXBool PXControllerDetachToWindow(const PXControllerID controllerID)
 {
 #if OSUnix
     return 0u;
 
-#elif OSWindowsEE
+#elif OSWindows
 	const MMRESULT releaseResult = joyReleaseCapture(controllerID);
 	const unsigned char successful = releaseResult == JOYERR_NOERROR;
 

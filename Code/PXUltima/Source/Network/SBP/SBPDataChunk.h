@@ -2,7 +2,7 @@
 #define SBPPackageHeaderChunkINCLUDE
 
 #include <Media/PXType.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Container/Dictionary/PXDictionary.h>
 
 #ifdef __cplusplus
@@ -78,7 +78,7 @@ extern "C"
 		// Data holding recieving data
 		PXSize DataHeaderStartOffset;
 
-		PXDataStream Data;
+		PXFile Data;
 
 		// Callbacks for each channel
 		PXDictionary DataCallBackLookup;

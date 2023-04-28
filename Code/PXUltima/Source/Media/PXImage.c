@@ -49,22 +49,22 @@ PXActionResult PXImageLoadW(PXImage* const image, const PXTextUNICODE filePath)
 
 PXActionResult PXImageLoadU(PXImage* const image, const PXTextUTF8 filePath)
 {
-    PXDataStream dataStream;
+    PXFile dataStream;
 
-    PXDataStreamConstruct(&dataStream);
+    PXFileConstruct(&dataStream);
     PXImageConstruct(image);
 
     {
-        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
+        const PXActionResult fileLoadingResult = PXFileMapToMemoryU(&dataStream, filePath, 0, PXMemoryAccessModeReadOnly);
 
         PXActionExitOnError(fileLoadingResult);
     }
 
-    dataStream.FilePath = filePath;
+    //dataStream.FilePath = filePath;
 
     {
         {
-            const FileFormatExtension imageForPXMathint = FilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
+            const FileFormatExtension imageForPXMathint = PXFilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
             const PXActionResult fileParsingResult = PXImageLoadD(image, &dataStream, imageForPXMathint);
 
             PXActionExitOnSuccess(fileParsingResult);
@@ -85,13 +85,13 @@ PXActionResult PXImageLoadU(PXImage* const image, const PXTextUTF8 filePath)
         }
         while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
-        PXDataStreamDestruct(&dataStream);
+        PXFileDestruct(&dataStream);
 
         return fileGuessResult;
     }
 }
 
-PXActionResult PXImageLoadD(PXImage* const image, PXDataStream* const dataStream, const FileFormatExtension guessedFormat)
+PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, const FileFormatExtension guessedFormat)
 {
     PXSize bytesRead = 0;
     PXImageTranslateFunction parseToImage = 0;
@@ -168,11 +168,11 @@ PXActionResult PXImageSaveU(PXImage* const image, const PXTextUTF8 filePath, con
 
     PXSize fileSize = 0;
     PXSize writtenBytes = 0;
-    PXDataStream dataStream;
+    PXFile dataStream;
 
     PXImageTranslateFunction serializeFromImageFunction = 0;
 
-    PXDataStreamConstruct(&dataStream);
+    PXFileConstruct(&dataStream);
 
     const PXInt8U bitPerPixel = PXColorFormatBitsPerPixel(pxColorFormat);
 
@@ -227,16 +227,16 @@ PXActionResult PXImageSaveU(PXImage* const image, const PXTextUTF8 filePath, con
 
     // Chnage file extension
     {
-        FilePathSwapExtensionU(filePath, filePathW, fileExtension);
+        PXFilePathSwapExtensionU(filePath, filePathW, fileExtension);
     }
 
     {
-        const PXActionResult mappingResult = PXDataStreamMapToMemoryU(&dataStream, filePathW, fileSize, MemoryWriteOnly);
+        const PXActionResult mappingResult = PXFileMapToMemoryU(&dataStream, filePathW, fileSize, PXMemoryAccessModeWriteOnly);
         const PXBool sucessful = PXActionSuccessful == mappingResult;
 
         if (!sucessful)
         {
-            PXDataStreamDestruct(&dataStream);
+            PXFileDestruct(&dataStream);
             return mappingResult;
         }
     }
@@ -247,17 +247,17 @@ PXActionResult PXImageSaveU(PXImage* const image, const PXTextUTF8 filePath, con
 
         if (!sucessful)
         {
-            PXDataStreamDestruct(&dataStream);
+            PXFileDestruct(&dataStream);
             return serializeResult;
         }
     }
 
-    PXDataStreamDestruct(&dataStream);
+    PXFileDestruct(&dataStream);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXImageSaveD(PXImage* const image, PXDataStream* const pxDataStream, const FileFormatExtension fileFormat, const PXColorFormat dataFormat)
+PXActionResult PXImageSaveD(PXImage* const image, PXFile* const PXFile, const FileFormatExtension fileFormat, const PXColorFormat dataFormat)
 {
     return PXActionInvalid;
 }

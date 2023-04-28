@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
 #include <Media/TTF/TTF.h>
 #include <Media/PXImage.h>
@@ -41,21 +41,20 @@ PXActionResult PXFontLoadW(PXFont* const font, const PXTextUNICODE filePath)
 
 PXActionResult PXFontLoadU(PXFont* const font, const PXTextUTF8 filePath)
 {
-    PXDataStream dataStream;
+    PXFile dataStream;
 
-    PXDataStreamConstruct(&dataStream);
     PXFontConstruct(font);
 
     {
-        const PXActionResult fileLoadingResult = PXDataStreamMapToMemoryU(&dataStream, filePath, 0, MemoryReadOnly);
+        const PXActionResult fileLoadingResult = PXFileMapToMemoryU(&dataStream, filePath, 0, PXMemoryAccessModeReadOnly);
 
         PXActionExitOnError(fileLoadingResult);
     }
 
-    dataStream.FilePath = filePath;
+    //dataStream.FilePath = filePath;
 
     {
-        const FileFormatExtension hint = FilePathExtensionDetectTryA(filePath, PathMaxSize);
+        const FileFormatExtension hint = PXFilePathExtensionDetectTryA(filePath, PathMaxSize);
         const PXActionResult fileParsingResult = PXFontLoadD(font, &dataStream, hint);
 
         PXActionExitOnSuccess(fileParsingResult);
@@ -73,13 +72,13 @@ PXActionResult PXFontLoadU(PXFont* const font, const PXTextUTF8 filePath)
         } 
         while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
 
-        PXDataStreamDestruct(&dataStream);
+        PXFileDestruct(&dataStream);
 
         return fileGuessResult;
     }
 }
 
-PXActionResult PXFontLoadD(PXFont* const font, PXDataStream* const pxDataStream, const FileFormatExtension guessedFormat)
+PXActionResult PXFontLoadD(PXFont* const font, PXFile* const PXFile, const FileFormatExtension guessedFormat)
 {
     PXFontConstruct(font);
 
@@ -93,7 +92,7 @@ PXActionResult PXFontLoadD(PXFont* const font, PXDataStream* const pxDataStream,
             {
 
                 PXSize readBytes = 0;
-                const PXActionResult filePXActionResult = PXSpriteFontParse(font->FontElement, pxDataStream);
+                const PXActionResult filePXActionResult = PXSpriteFontParse(font->FontElement, PXFile);
                 const PXBool sucessful = PXActionSuccessful == filePXActionResult;
 
                 if(!sucessful)

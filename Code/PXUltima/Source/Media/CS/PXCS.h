@@ -3,7 +3,7 @@
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <Media/C/PXC.h>
 
 #ifdef __cplusplus
@@ -42,11 +42,11 @@ extern "C"
 	}
 	PXCTranslateStruct;
 
-	PXPublic PXCSKeyWord PXCSFetchNext(PXDataStream* const inputSteam);
+	PXPublic PXCSKeyWord PXCSFetchNext(PXFile* const inputSteam);
 
-	PXPublic void PXCSSerialize(PXDataStream* const inputSteam, PXDataStream* const outputStream, PXCTranslateStruct* const pxCTranslateStruct);
+	PXPublic void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTranslateStruct* const pxCTranslateStruct);
 
-	PXPublic void PXCSCreateWrapperFromCSource(PXDataStream* const inputSteam, PXDataStream* const outputStream);
+	PXPublic void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const outputStream);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 #include "OGG.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 
 #define OGGHeaderSignature { 'O','g','g','S' }
@@ -11,14 +11,14 @@
 
 PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	PXDataStream dataStream;
+	PXFile dataStream;
 
 	MemoryClear(ogg, sizeof(OGG));
 	*dataRead = 0;
-	PXDataStreamConstruct(&dataStream);
-	PXDataStreamFromExternal(&dataStream, data, dataSize);
+	PXFileConstruct(&dataStream);
+	PXFileBufferExternal(&dataStream, data, dataSize);
 
-	while(!PXDataStreamIsAtEnd(&dataStream))
+	while(!PXFileIsAtEnd(&dataStream))
 	{
 		OGGPage page;
 
@@ -28,7 +28,7 @@ PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSiz
 			// You can refocus it when the file is corrupted.
 			const unsigned char* headerSignature[] = OGGHeaderSignature;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const unsigned char validHeaderSignature = PXDataStreamReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const unsigned char validHeaderSignature = PXFileReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
 
 			if(!validHeaderSignature)
 			{
@@ -37,13 +37,13 @@ PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSiz
 			}
 		}
 
-		PXDataStreamReadI8U(&dataStream, &page.Version);
-		PXDataStreamReadI8U(&dataStream, &page.HeaderType);
-		PXDataStreamReadI32UE(&dataStream, &page.GranulePosition, EndianLittle);
-		PXDataStreamReadI32UE(&dataStream, &page.SerialNumber, EndianLittle);
-		PXDataStreamReadI32UE(&dataStream, &page.SequenceNumber, EndianLittle);
-		PXDataStreamReadI32UE(&dataStream, &page.CRC32CheckSum, EndianLittle);
-		PXDataStreamReadI8U(&dataStream, &page.PageSegments);
+		PXFileReadI8U(&dataStream, &page.Version);
+		PXFileReadI8U(&dataStream, &page.HeaderType);
+		PXFileReadI32UE(&dataStream, &page.GranulePosition, PXEndianLittle);
+		PXFileReadI32UE(&dataStream, &page.SerialNumber, PXEndianLittle);
+		PXFileReadI32UE(&dataStream, &page.SequenceNumber, PXEndianLittle);
+		PXFileReadI32UE(&dataStream, &page.CRC32CheckSum, PXEndianLittle);
+		PXFileReadI8U(&dataStream, &page.PageSegments);
 
 		unsigned char segmentSizeList[0xFF];
 
@@ -71,7 +71,7 @@ PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSiz
 
 		for(PXSize i = 0; i < page.PageSegments; ++i)
 		{
-			PXDataStreamReadI8U(&dataStream, &segmentSizeList[i]);
+			PXFileReadI8U(&dataStream, &segmentSizeList[i]);
 
 			printf
 			(
@@ -89,7 +89,7 @@ PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSiz
 
 			for(PXSize i = 0; i < x; i++)
 			{
-				unsigned char* currentPos = (unsigned char*)PXDataStreamCursorPosition(&dataStream) + i;
+				unsigned char* currentPos = (unsigned char*)PXFileCursorPosition(&dataStream) + i;
 
 				char print = (*currentPos >= ' ' && *currentPos <= '~') ? *currentPos : '.';
 
@@ -103,7 +103,7 @@ PXActionResult OGGParse(OGG* ogg, const void* data, const PXSize dataSize, PXSiz
 
 			printf("\n");
 
-			PXDataStreamCursorAdvance(&dataStream, x);
+			PXFileCursorAdvance(&dataStream, x);
 		}
 	}
 

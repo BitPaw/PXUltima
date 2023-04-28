@@ -226,7 +226,7 @@ extern "C"
 	static MPEGGenre ConvertMPEGToGenre(const unsigned char mpegGenre);
 	static unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre);
 
-	PXPublic PXActionResult MP3Parse(MP3* const mp3, PXDataStream* const pxDataStream);
+	PXPublic PXActionResult MP3Parse(MP3* const mp3, PXFile* const PXFile);
 
 
 #ifdef __cplusplus

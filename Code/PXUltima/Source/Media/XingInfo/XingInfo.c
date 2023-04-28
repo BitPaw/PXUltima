@@ -1,11 +1,11 @@
 #include "XingInfo.h"
 
-#include <File/PXDataStream.h>
+#include <OS/File/PXFile.h>
 
 #define XingInfoSignatureInfo { 'I', 'n', 'f', 'o' }
 #define XingInfoSignatureXing { 'X', 'i', 'n', 'g' }
 
-PXActionResult XingInfoParse(XingInfo* const xingInfo, PXDataStream* const pxDataStream)
+PXActionResult XingInfoParse(XingInfo* const xingInfo, PXFile* const PXFile)
 {
 	// parse signature
 	{
@@ -13,7 +13,7 @@ PXActionResult XingInfoParse(XingInfo* const xingInfo, PXDataStream* const pxDat
 		const char xingTag[] = XingInfoSignatureXing;
 		char indetifier[4];
 
-		PXDataStreamReadB(pxDataStream, indetifier, 4u);
+		PXFileReadB(PXFile, indetifier, 4u);
 
 		const PXBool isInfo =
 			indetifier[0] == infoTag[0] &&
@@ -47,36 +47,36 @@ PXActionResult XingInfoParse(XingInfo* const xingInfo, PXDataStream* const pxDat
 
 	unsigned int flags = 0;
 
-	PXDataStreamReadI32UE(pxDataStream, &flags, EndianBig);
+	PXFileReadI32UE(PXFile, &flags, PXEndianBig);
 
 	const PXBool hasNumberOfFrames = flags & 0b00000001;
 	const PXBool hasSizeInBytes = (flags & 0b00000010) >> 1;
 	const PXBool hasTOCData = (flags & 0b00000100) >> 2;
 	const PXBool hasVBRScale = (flags & 0b00001000) >> 3;
 
-	// (0x0001) if set, then read one 32 bit integer in Big Endian.
+	// (0x0001) if set, then read one 32 bit integer in Big PXEndian.
 	// It represents the total number of frames in the Audio file.
 	if(hasNumberOfFrames)
 	{
-		PXDataStreamReadI32UE(pxDataStream, &xingInfo->NumberOfFrames, EndianBig);
+		PXFileReadI32UE(PXFile, &xingInfo->NumberOfFrames, PXEndianBig);
 	}
 
-	// (0x0002) is set, then read one 32 bit integer in Big Endian.
+	// (0x0002) is set, then read one 32 bit integer in Big PXEndian.
 	// It represents the total number of bytes of MPEG Audio in the file.
 	// This does not include the ID3 tag, however, it includes this very tag.
 	if(hasSizeInBytes)
 	{
-		PXDataStreamReadI32UE(pxDataStream, &xingInfo->SizeInBytes, EndianBig);
+		PXFileReadI32UE(PXFile, &xingInfo->SizeInBytes, PXEndianBig);
 	}
 
 	if(hasTOCData)
 	{
-		PXDataStreamReadB(pxDataStream, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
+		PXFileReadB(PXFile, &xingInfo->TOCBuffer, XingInfoTOCBufferSize);
 	}
 
 	if(hasVBRScale)
 	{
-		PXDataStreamReadI32UE(pxDataStream, &xingInfo->VBRScale, EndianBig);
+		PXFileReadI32UE(PXFile, &xingInfo->VBRScale, PXEndianBig);
 	}
 
 	return PXActionSuccessful;

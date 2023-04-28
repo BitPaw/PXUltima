@@ -4,9 +4,9 @@
 #include <Media/PXType.h>
 
 #if OSUnix
-typedef int MemoryProtectionModeType;
+typedef int PXMemoryAccessModeType;
 #elif OSWindows
-typedef unsigned long MemoryProtectionModeType;// DWORD
+typedef unsigned long PXMemoryAccessModeType;// DWORD
 #endif
 
 //---<Settings>---
@@ -22,34 +22,36 @@ extern "C"
 {
 #endif
 
-	typedef enum MemoryProtectionMode_
+	typedef enum PXMemoryAccessMode_
 	{
-		MemoryInvalid,
-		MemoryNoReadWrite,
-		MemoryReadOnly,
-		MemoryWriteOnly,
-		MemoryReadAndWrite
+		PXMemoryAccessModeInvalid,
+		PXMemoryAccessModeNoReadWrite,
+		PXMemoryAccessModeReadOnly,
+		PXMemoryAccessModeWriteOnly,
+		PXMemoryAccessModeReadAndWrite
 	}
-	MemoryProtectionMode;
+	PXMemoryAccessMode;
 
-	typedef enum MemoryCachingMode_
+	typedef enum PXMemoryCachingMode_
 	{
-		MemoryCachingDefault,
+		PXMemoryCachingModeInvalid,
 
-		MemoryCachingRandom,  // Access data in a random order.
-		MemoryCachingSequential, // Data sequentially from lower offsets to higher offsets.
-		MemoryCachingTemporary, // File will not be saves to drive.
-		MemoryCachingUseOnce, // Access the specified data once and then not reuse it again.
+		PXMemoryCachingModeDefault,
+
+		PXMemoryCachingModeRandom,  // Access data in a random order.
+		PXMemoryCachingModeSequential, // Data sequentially from lower offsets to higher offsets.
+		PXMemoryCachingModeTemporary, // File will not be saves to drive.
+		PXMemoryCachingModeUseOnce, // Access the specified data once and then not reuse it again.
 
 		// Windows only
-		MemoryCachingWriteThrough,
-		MemoryCachingNoBuffering, // No OS Caching, direct to Harddrive if supprted
+		PXMemoryCachingModeWriteThrough,
+		PXMemoryCachingModeNoBuffering, // No OS Caching, direct to Harddrive if supprted
 
 		// UNIX only
-		MemoryCachingNeedLater, // Data is not needed right now. "For later"[near future].
-		MemoryCachingDontNeedNow // Data will not be cached. "I dont need it yet"
+		PXMemoryCachingModeNeedLater, // Data is not needed right now. "For later"[near future].
+		PXMemoryCachingModeDontNeedNow // Data will not be cached. "I dont need it yet"
 	}
-	MemoryCachingMode;
+	PXMemoryCachingMode;
 
 	typedef struct MemoryUsage_
 	{
@@ -110,13 +112,13 @@ extern "C"
 	// Allocate memory in virtual memory space.
 	// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 	// Only use for bigger datablocks as thic has very hi overhead.
-	PXPublic void* MemoryVirtualAllocate(PXSize size, const MemoryProtectionMode memoryProtectionMode);
+	PXPublic void* MemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode);
 	PXPublic void MemoryVirtualPrefetch(const void* adress, const PXSize size);
 	PXPublic void MemoryVirtualRelease(const void* adress, const PXSize size);
 	PXPublic void* MemoryVirtualReallocate(const void* adress, const PXSize size);
 
 
-	PXPublic MemoryProtectionModeType ConvertFromMemoryProtectionMode(const MemoryProtectionMode memoryProtectionMode);
+	PXPublic PXMemoryAccessModeType ConvertFromPXMemoryAccessMode(const PXMemoryAccessMode PXMemoryAccessMode);
 
 #ifdef __cplusplus
 }
@@ -135,7 +137,7 @@ extern "C"
 #else // Use virtual alloc
 
 #define MemoryReallocate(address, dataSize) MemoryVirtualReallocate(address, dataSize)
-#define MemoryAllocate(dataSize) MemoryVirtualAllocate(dataSize, MemoryReadAndWrite)
+#define MemoryAllocate(dataSize) MemoryVirtualAllocate(dataSize, PXMemoryAccessModeReadAndWrite)
 #endif
 
 
