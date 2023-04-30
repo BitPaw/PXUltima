@@ -21,6 +21,11 @@ namespace PXTest
 
             // System.IO.File.
 
+
+            PX.File file = new PX.File();
+            file.OpenFromPath("C:Sjnfsdinf", 1, 2);
+
+
             // PX.File.DoesExist();
             Console.WriteLine("C# TEST");
 

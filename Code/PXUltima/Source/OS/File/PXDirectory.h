@@ -77,6 +77,8 @@ extern "C"
 	PXPublic PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator);
 	PXPublic PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator);
 
+
+
 	PXPublic PXActionResult PXDirectoryCreateA(const char* directoryName);
 	PXPublic PXActionResult PXDirectoryCreateW(const wchar_t* directoryName);
 	PXPublic PXActionResult PXWorkingDirectoryChange(const char* directoryName);
