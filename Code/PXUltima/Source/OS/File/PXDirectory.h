@@ -2,6 +2,7 @@
 #define PXDirectoryINCLUDE
 
 #include <Media/PXType.h>
+#include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
 
 #define PXDirectorySearchForDirectorys (1 << 0)
@@ -79,8 +80,7 @@ extern "C"
 
 
 
-	PXPublic PXActionResult PXDirectoryCreateA(const char* directoryName);
-	PXPublic PXActionResult PXDirectoryCreateW(const wchar_t* directoryName);
+	PXPublic PXActionResult PXDirectoryCreate(const PXText* const directoryName);
 	PXPublic PXActionResult PXWorkingDirectoryChange(const char* directoryName);
 	PXPublic PXActionResult PXWorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize);
 	PXPublic PXActionResult PXWorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize);

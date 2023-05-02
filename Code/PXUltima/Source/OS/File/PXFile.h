@@ -6,6 +6,7 @@
 #include <wchar.h>
 
 #include <Media/PXType.h>
+#include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Error/PXActionResult.h>
 
@@ -113,6 +114,8 @@ void PXDirectoryIsDotFolder(const char* s)
 	}
 	FileFormatExtension;
 
+	PXPublic FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath);
+
 	PXPublic FileFormatExtension PXFilePathExtensionDetectTryA(const char* const filePath, const PXSize filePathSize);
 	PXPublic FileFormatExtension PXFilePathExtensionDetectTryW(const wchar_t* const filePath, const PXSize filePathSize);
 
@@ -167,7 +170,19 @@ void PXDirectoryIsDotFolder(const char* s)
 	}
 	PXFile;
 
+	typedef struct PXFileOpenFromPathInfo_
+	{
+		PXText Text;
 
+		PXSize FileSize;
+
+		PXMemoryAccessMode AccessMode;
+		PXMemoryCachingMode MemoryCachingMode;
+		PXBool AllowMapping;
+		PXBool CreateIfNotExist;
+		PXBool AllowOverrideOnCreate;
+	}
+	PXFileOpenFromPathInfo;
 
 
 
@@ -242,6 +257,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXSize* extension, PXSize extensionSize
 	);
 
+	PXPublic PXSize PXFilePathExtensionGet(const PXText* const filePath, const PXText* const* extension);
 	PXPublic PXSize PXFilePathExtensionGetA(const char* filePath, const PXSize filePathSize, char* extension, const PXSize extensionSizeMax);
 	PXPublic PXSize PXFilePathExtensionGetW(const wchar_t* filePath, const PXSize filePathSize, wchar_t* extension, const PXSize extensionSizeMax);
 
@@ -265,9 +281,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	//---------------------------------------------------------------------
 
 	//---<Open>------------------------------------------------------------
-	PXPublic PXActionResult PXFileOpenFromPathA(PXFile* const pxFile, const PXTextASCII filePath, const PXMemoryAccessMode pxAccessMode, const PXMemoryCachingMode pxMemoryCachingMode);
-	PXPublic PXActionResult PXFileOpenFromPathW(PXFile* const pxFile, const PXTextUNICODE filePath, const PXMemoryAccessMode pxAccessMode, const PXMemoryCachingMode pxMemoryCachingMode);
-	PXPublic PXActionResult PXFileOpenFromPathU(PXFile* const pxFile, const PXTextUTF8 filePath, const PXMemoryAccessMode pxAccessMode, const PXMemoryCachingMode pxMemoryCachingMode);
+	PXPublic PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPathInfo* const pxFileOpenFromPathInfo);
 	//---------------------------------------------------------------------
 
 	//---<Close>-----------------------------------------------------------
@@ -275,17 +289,14 @@ void PXDirectoryIsDotFolder(const char* s)
 	//---------------------------------------------------------------------
 
 	//---<Mapping>---------------------------------------------------------
-	PXPublic PXActionResult PXFileMapToMemoryA(PXFile* const pxFile, const PXTextASCII filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode);
-	PXPublic PXActionResult PXFileMapToMemoryW(PXFile* const pxFile, const PXTextUNICODE filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode);
-	PXPublic PXActionResult PXFileMapToMemoryU(PXFile* const pxFile, const PXTextUTF8 filePath, const PXSize fileSize, const PXMemoryAccessMode protectionMode);
 	PXPublic PXActionResult PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXMemoryAccessMode protectionMode);
 	PXPublic PXActionResult PXFileUnmapFromMemory(PXFile* const pxFile);
 	//---------------------------------------------------------------------
 
 	//---<Parsing Utility>-----------------------------------------------------
-	PXPublic PXSize PXFileRemainingSize(const PXFile* PXRestrict const dataStream);
-	PXPublic PXSize PXFileRemainingSizeRelativeFromAddress(const PXFile* PXRestrict const dataStream, const void* const adress);
-	PXPublic PXBool PXFileIsAtEnd(const PXFile* PXRestrict const dataStream);
+	PXPublic PXSize PXFileRemainingSize(const PXFile* const dataStream);
+	PXPublic PXSize PXFileRemainingSizeRelativeFromAddress(const PXFile* const dataStream, const void* const adress);
+	PXPublic PXBool PXFileIsAtEnd(const PXFile* const dataStream);
 
 	PXPublic void* PXFileCursorPosition(PXFile* const pxFile);
 	PXPublic void PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position);

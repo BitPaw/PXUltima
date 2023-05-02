@@ -35,7 +35,7 @@ PXActionResult PXGraphicTextureUse(PXGraphicContext* const graphicContext, PXTex
     return PXActionInvalid;
 }
 
-PXActionResult PXGraphicTextureLoadA(PXGraphicContext* const graphicContext, PXTexture* const texture, const PXTextASCII filePath)
+PXActionResult PXGraphicTextureLoad(PXGraphicContext* const graphicContext, PXTexture* const texture, const PXText* filePath)
 {
     texture->Type = PXGraphicImageTypeTexture2D;
     texture->Filter = PXGraphicRenderFilterNoFilter;
@@ -47,7 +47,7 @@ PXActionResult PXGraphicTextureLoadA(PXGraphicContext* const graphicContext, PXT
 
     // Load texture..
     {
-        const PXActionResult loadResult = PXImageLoadA(&texture->Image, filePath);
+        const PXActionResult loadResult = PXImageLoad(&texture->Image, filePath);
 
         PXActionExitOnError(loadResult);
     }
@@ -90,30 +90,11 @@ PXActionResult PXGraphicTextureLoadA(PXGraphicContext* const graphicContext, PXT
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicTextureLoadW(PXGraphicContext* const graphicContext, PXTexture* const texture, const PXTextUNICODE filePath)
-{
-    // Load texture..
-    {
-        const PXActionResult loadResult = PXImageLoadW(&texture->Image, filePath);
-
-        PXActionExitOnError(loadResult);
-    }
-
-    // Register as normal
-    {
-        const PXActionResult registerResult = PXGraphicTextureRegister(graphicContext, texture);
-
-        PXActionExitOnError(registerResult);
-    }
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXGraphicFontLoadA(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXTextASCII filePath)
+PXActionResult PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXText* const filePath)
 {
     // Load texture
     { 
-        const PXActionResult loadResult = PXFontLoadA(pxFont, filePath);
+        const PXActionResult loadResult = PXFontLoad(pxFont, filePath);
 
         PXActionExitOnError(loadResult);
     }
@@ -373,30 +354,30 @@ PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, P
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicSkyboxRegisterA
+PXActionResult PXGraphicSkyboxRegisterD
 (
     PXGraphicContext* const graphicContext,
     PXSkyBox* const skyBox,
-    const char* shaderVertex,
-    const char* shaderFragment,
-    const char* textureRight,
-    const char* textureLeft,
-    const char* textureTop,
-    const char* textureBottom,
-    const char* textureBack,
-    const char* textureFront
+    const PXText* const shaderVertex,
+    const PXText* const shaderFragment,
+    const PXText* const textureRight,
+    const PXText* const textureLeft,
+    const PXText* const textureTop,
+    const PXText* const textureBottom,
+    const PXText* const textureBack,
+    const PXText* const textureFront
 )
 {
     // Load Textures
     {
-        const char* const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
+        const PXText* const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
         PXActionResult resultList[6];
 
         for (PXSize i = 0; i < 6u; ++i)
         {
             PXImage* const image = &skyBox->TextureCube.ImageList[i];
-            const char* const filePath = filePathList[i];
-            const PXActionResult textureRightResult = PXImageLoadA(image, filePath);
+            const PXText* const filePath = filePathList[i];
+            const PXActionResult textureRightResult = PXImageLoad(image, filePath);
 
             resultList[i] = textureRightResult;
         }
@@ -413,7 +394,7 @@ PXActionResult PXGraphicSkyboxRegisterA
         PXShaderProgram shaderProgram;
         shaderProgram.ID = -1;
 
-        const PXActionResult shaderResult = PXGraphicShaderProgramLoadGLSLA(graphicContext, &shaderProgram, shaderVertex, shaderFragment);
+        const PXActionResult shaderResult = PXGraphicShaderProgramLoadGLSL(graphicContext, &shaderProgram, shaderVertex, shaderFragment);
 
         skyBox->Renderable.MeshSegmentList[0].ShaderID = shaderProgram.ID;
     }
@@ -564,7 +545,7 @@ void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderabl
     }
 }
 
-PXActionResult PXGraphicModelLoadA(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXTextASCII filePath)
+PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXText* const filePath)
 {
     PXModel* model = 0;
 
@@ -602,7 +583,7 @@ PXActionResult PXGraphicModelLoadA(PXGraphicContext* const graphicContext, PXRen
 
     // Load model
     {
-        const PXActionResult loadResult = PXModelLoadA(model, filePath);
+        const PXActionResult loadResult = PXModelLoad(model, filePath);
 
         PXActionExitOnError(loadResult);
     }
@@ -756,7 +737,7 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicCo
             pxTexture.WrapHeight = PXGraphicImageWrapRepeat;
             pxTexture.WrapWidth = PXGraphicImageWrapRepeat;
 
-            PXGraphicTextureLoadA(graphicContext, &pxTexture, material.DiffuseTextureFilePath);
+            PXGraphicTextureLoad(graphicContext, &pxTexture, &material.DiffuseTextureFilePath);
 
             pxRenderableMeshSegment->TextureID = pxTexture.ID;
         }
@@ -1345,136 +1326,84 @@ PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const 
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, const PXTextASCII vertexShaderFilePath, const PXTextASCII fragmentShaderFilePath)
+PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath)
 {
     PXShader vertexShader; PXShaderConstruct(&vertexShader);
     PXShader fragmentShader; PXShaderConstruct(&fragmentShader);
     PXFile vertexShaderFile; PXFileConstruct(&vertexShaderFile);
     PXFile fragmentFile; PXFileConstruct(&fragmentFile);
 
+
+    //-----------------------------------------------------
+    // Load shader Files
+    //-----------------------------------------------------
     {
-        const PXBool isAlreadyLoaded = shaderProgram->ID != -1;
-        const PXBool hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
+        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+        pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
 
-        if (isAlreadyLoaded)
         {
-            return PXActionInvalid;
+            const PXBool isAlreadyLoaded = shaderProgram->ID != -1;
+            const PXBool hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
+
+            if (isAlreadyLoaded)
+            {
+                return PXActionInvalid;
+            }
+
+            if (hasEmptyPaths)
+            {
+                return PXActionInvalid;
+            }
         }
 
-        if (hasEmptyPaths)
         {
-            return PXActionInvalid;
-        }
-    }
+            pxFileOpenFromPathInfo.Text = *vertexShaderFilePath;
 
-    {
-        const PXActionResult actionResult = PXFileMapToMemoryA(&vertexShaderFile, vertexShaderFilePath, 0, PXMemoryAccessModeReadOnly);
-        const PXBool sucessful = PXActionSuccessful == actionResult;
+            const PXActionResult actionResult = PXFileOpenFromPath(&vertexShaderFile, &pxFileOpenFromPathInfo);
+            const PXBool sucessful = PXActionSuccessful == actionResult;
 
-        if (!sucessful)
-        {
-            return actionResult;
-        }
+            if (!sucessful)
+            {
+                return actionResult;
+            }
 
-        PXShaderDataSet(&vertexShader, PXShaderTypeVertex, vertexShaderFile.Data, vertexShaderFile.DataSize);
-    }
-
-
-    {
-        const PXActionResult actionResult = PXFileMapToMemoryA(&fragmentFile, fragmentShaderFilePath, 0, PXMemoryAccessModeReadOnly);
-        const PXBool successful = PXActionSuccessful == actionResult;
-
-        if (!successful)
-        {
-            return actionResult;
+            PXShaderDataSet(&vertexShader, PXShaderTypeVertex, vertexShaderFile.Data, vertexShaderFile.DataSize);
         }
 
-        PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, fragmentFile.Data, fragmentFile.DataSize);
-    }
-    //-----
 
-    PXGraphicShaderProgramLoadGLSL(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
-
-
-    PXFileDestruct(&vertexShaderFile);
-    PXFileDestruct(&fragmentFile);
-}
-
-PXActionResult PXGraphicShaderProgramLoadGLSLW(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, const PXTextUNICODE vertexShaderFilePath, const PXTextUNICODE fragmentShaderFilePath)
-{
-    PXShader vertexShader;
-    PXShader fragmentShader;
-    PXFile vertexShaderFile;
-    PXFile fragmentFile;
-
-    PXFileConstruct(&vertexShaderFile);
-    PXFileConstruct(&fragmentFile);
-
-    {
-        const unsigned char isAlreadyLoaded = shaderProgram->ID != -1;
-        const unsigned char hasEmptyPaths = !vertexShaderFilePath || !fragmentShaderFilePath;
-
-        if (isAlreadyLoaded)
         {
-            return PXActionSuccessful;
+            pxFileOpenFromPathInfo.Text = *fragmentShaderFilePath;
+
+            const PXActionResult actionResult = PXFileOpenFromPath(&fragmentFile, &pxFileOpenFromPathInfo);
+            const PXBool successful = PXActionSuccessful == actionResult;
+
+            if (!successful)
+            {
+                return actionResult;
+            }
+
+            PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, fragmentFile.Data, fragmentFile.DataSize);
         }
-
-        if (hasEmptyPaths)
-        {
-            return PXActionSuccessful;
-        }
-    }
-
-    {
-        const PXActionResult actionResult = PXFileMapToMemoryW(&vertexShaderFile, vertexShaderFilePath, 0, PXMemoryAccessModeReadOnly);
-        const unsigned char sucessful = PXActionSuccessful == actionResult;
-
-        if (!sucessful)
-        {
-            return actionResult;
-        }
-
-        vertexShader.Type = PXShaderTypeVertex;
-        vertexShader.Content = (char*)vertexShaderFile.Data;
-        vertexShader.ContentSize = vertexShaderFile.DataSize;
+        //-----
     }
 
 
-    {
-        const PXActionResult actionResult = PXFileMapToMemoryW(&fragmentFile, fragmentShaderFilePath, 0, PXMemoryAccessModeReadOnly);
-        const unsigned char sucessful = PXActionSuccessful == actionResult;
 
-        if (!sucessful)
-        {
-            return actionResult;
-        }
-
-        fragmentShader.Type = PXShaderTypeFragment;
-        fragmentShader.Content = (char*)fragmentFile.Data;
-        fragmentShader.ContentSize = fragmentFile.DataSize;
-    }
-    //-----
-
-    PXGraphicShaderProgramLoadGLSL(graphicContext, shaderProgram, &vertexShader, &fragmentShader);
-
-
-    PXFileDestruct(&vertexShaderFile);
-    PXFileDestruct(&fragmentFile);
-}
-
-PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, PXShader* const vertexShader, PXShader* const fragmentShader)
-{
     const PXSize shaderListSize = 2;
-    PXShader* const shaderList[2] = { vertexShader, fragmentShader };
+    PXShader* const shaderList[2] = { &vertexShader, &fragmentShader };
     const OpenGLID shaderProgrammID = OpenGLShaderProgramCreate(&graphicContext->OpenGLInstance);
     unsigned int  sucessfulCounter = 0;
-    unsigned char isValidShader = 1;
+    PXBool isValidShader = 1;
 
     for (PXSize i = 0; i < shaderListSize; ++i)
     {
         PXShader* const shader = shaderList[i];
         const OpenGLShaderType openGLShaderType = PXGraphicShaderFromOpenGL(shader->Type);
-        const unsigned int shaderID = OpenGLShaderCreate(&graphicContext->OpenGLInstance, openGLShaderType);
+        const OpenGLShaderID shaderID = OpenGLShaderCreate(&graphicContext->OpenGLInstance, openGLShaderType);
 
         OpenGLShaderSource(&graphicContext->OpenGLInstance, shaderID, 1u, &shader->Content, &shader->ContentSize);
 
@@ -1503,7 +1432,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicCon
     for (PXSize i = 0; i < shaderListSize; ++i)
     {
         PXShader* const shader = shaderList[i];
-        const unsigned char isLoaded = shader->ID != -1;
+        const PXBool isLoaded = shader->ID != -1;
 
         if (isLoaded)
         {
@@ -1526,7 +1455,9 @@ PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicCon
     PXDictionaryAdd(&graphicContext->ShaderProgramLookup, shaderProgram->ID, shaderProgram);
     PXLockRelease(&graphicContext->_resourceLock);
 
-    return PXActionSuccessful;
+
+    PXFileDestruct(&vertexShaderFile);
+    PXFileDestruct(&fragmentFile);
 }
 
 PXActionResult PXGraphicRender(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount)

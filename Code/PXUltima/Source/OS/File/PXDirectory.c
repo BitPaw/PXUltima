@@ -11,8 +11,6 @@
 //#include <sys/io.h>
 #include <dirent.h>
 
-#define OSFileDirectoryCreateA(string) mkdir(string, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
-#define OSFileDirectoryCreateW(string) OSFileDirectoryCreateA((const char*)string)
 #define OSWorkingDirectoryCurrentA getcwd
 #define OSWorkingDirectoryCurrentW(string, size) (wchar_t*)OSWorkingDirectoryCurrentA((char*)string, size)
 #define OSWorkingDirectoryChangeA chdir
@@ -55,18 +53,53 @@ PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
 	return PXActionInvalid;
 }
 
-PXActionResult PXDirectoryCreateA(const char* directoryName)
+PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 {
-	const int creationResult = OSFileDirectoryCreateA(directoryName);
-	const PXBool wasSuccesful = creationResult == 0;
+	switch (directoryName->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+#if OSUnix
+			const int creationResult = mkdir(string, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+			const PXBool successCreate = creationResult == 0;
+#elif OSWindows
 
-	PXActionOnErrorFetchAndExit(!wasSuccesful);
+			// _mkdir
 
-	return PXActionSuccessful;
-}
+			const PXBool successCreate = CreateDirectoryA(directoryName->TextA, PXNull); // Windows XP, Kernel32.dll, fileapi.h
+#endif
 
-PXActionResult PXDirectoryCreateW(const wchar_t* directoryName)
-{
+			PXActionOnErrorFetchAndExit(!successCreate);
+
+			break;
+		}
+
+			// 2 Bytes per character, range from 0 to 65535
+		case TextFormatUNICODE:
+		{
+#if OSUnix
+			// CONVERT
+
+			const PXBool successCreate = PXFalse;
+
+
+#elif OSWindows
+
+			// _mkdir
+
+			const PXBool successCreate = CreateDirectoryW(directoryName->TextW, PXNull); // Windows XP, Kernel32.dll, fileapi.h
+#endif
+
+			//_wmkdir
+
+			PXActionOnErrorFetchAndExit(!successCreate);
+
+			break;
+		}
+	}
+
+	/*	
 	wchar_t directoryNameSegment[PathMaxSize];
 	PXSize starPos = 0;
 	PXSize successful = 0;
@@ -90,6 +123,9 @@ PXActionResult PXDirectoryCreateW(const wchar_t* directoryName)
 		starPos += offset;
 		++successful;
 	} while (1);
+
+	return PXActionSuccessful;
+	*/
 
 	return PXActionSuccessful;
 }

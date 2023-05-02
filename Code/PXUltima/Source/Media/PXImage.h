@@ -26,14 +26,10 @@ extern "C"
 	PXPublic void PXImageConstruct(PXImage* const image);
 	PXPublic void PXImageDestruct(PXImage* const image);
 
-	PXPublic PXActionResult PXImageLoadA(PXImage* const image, const PXTextASCII filePath);
-	PXPublic PXActionResult PXImageLoadW(PXImage* const image, const PXTextUNICODE filePath);
-	PXPublic PXActionResult PXImageLoadU(PXImage* const image, const PXTextUTF8 filePath);
+	PXPublic PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath);
 	PXPublic PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, const FileFormatExtension guessedFormat);
 
-	PXPublic PXActionResult PXImageSaveA(PXImage* const image, const PXTextASCII filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
-	PXPublic PXActionResult PXImageSaveW(PXImage* const image, const PXTextUNICODE filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
-	PXPublic PXActionResult PXImageSaveU(PXImage* const image, const PXTextUTF8 filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
+	PXPublic PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
 	PXPublic PXActionResult PXImageSaveD
 	(
 		PXImage* image,

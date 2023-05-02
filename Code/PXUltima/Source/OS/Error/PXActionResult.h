@@ -39,7 +39,10 @@ extern "C"
 
 		//---<File-General>------------------
 		PXActionRefusedEmptyFilePath,
+		PXActionRefusedInvalidFilePath,
+
 		PXActionFailedFileNotFound,
+		PXActionFailedNotAFile,
 
 		PXActionFailedFileMapping,// mmap() / CreateViewofFile() failed
 

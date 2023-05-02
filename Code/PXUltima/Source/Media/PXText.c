@@ -281,6 +281,13 @@ PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, con
 	return fullSize;
 }
 
+PXSize PXTextClear(PXText* const pxText)
+{
+	MemoryClear(pxText->TextA, pxText->SizeAllocated);
+
+	return pxText->SizeAllocated;
+}
+
 PXSize PXTextClearA(char* string, const PXSize stringSize)
 {
 	MemoryClear(string, stringSize * sizeof(char));
@@ -323,6 +330,11 @@ PXSize PXTextLengthUntilA(const char* string, const PXSize stringSize, const cha
 }
 
 PXSize PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const wchar_t character)
+{
+	return 0;
+}
+
+PXSize PXTextCopy(const PXText* const source, PXText* const destination)
 {
 	return 0;
 }
@@ -557,6 +569,11 @@ PXSize PXTextCountUntilW(const wchar_t* pxText, const PXSize textSize, const wch
 		samecounter += target == pxText[index];
 
 	return samecounter;
+}
+
+PXBool PXTextCompare(const PXText* const textA, const PXText* const textB)
+{
+	return PXTrue;
 }
 
 PXBool PXTextCompareA(const char* a, const PXSize aSize, const char* b, const PXSize bSize)
@@ -794,32 +811,93 @@ PXSize PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wcha
 	return found ? i + 1 : PXTextIndexNotFound;
 }
 
-PXSize PXTextFindLastA(const char* string, const PXSize dataSize, const char character)
+PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult)
 {
 	PXBool found = 0;
-	PXSize i = PXTextLengthA(string, dataSize);
+	PXSize i = stringSource->SizeUsed - stringTarget->SizeUsed; // As we start from the back, the symbol can only be as long
 
-	for(; i > 0 && !found; --i)
+	stringResult->SizeUsed = 0;
+	stringResult->NumberOfCharacters = 0;
+
+	if (stringSource->Format == TextFormatASCII && stringTarget->Format == TextFormatASCII) // Is Ascii
 	{
-		found = character == string[i];
+		stringResult->Format = TextFormatASCII;
+
+		for (; i > 0 && !found; --i)
+		{
+			// We can make a mask with a 64-bit view, then ask if we have atleast one match in that block
+			// if we don't have a match, we can be sure this block does not contain the target
+
+
+			// Check if the firsat symbol is the same
+			found = stringTarget->TextA[0] == stringSource->TextA[i];
+
+			if (found)
+			{
+				found = MemoryCompare(stringTarget->TextA, stringTarget->SizeUsed, stringSource->TextA + i, i);
+			}
+		}
+
+		if (found)
+		{
+			stringResult->SizeUsed = stringTarget->SizeUsed;
+			stringResult->NumberOfCharacters = stringTarget->SizeUsed;
+			stringResult->TextA = stringSource->TextA + i;
+		}
 	}
 
-	++i;
+	if (stringSource->Format == TextFormatUNICODE && stringTarget->Format == TextFormatUNICODE) // Is Ascii
+	{
+		stringResult->Format = TextFormatUNICODE;
 
-	return found ? i+1 : PXTextIndexNotFound;
+		for (; i > 0 && !found; --i)
+		{
+			// We can make a mask with a 64-bit view, then ask if we have atleast one match in that block
+			// if we don't have a match, we can be sure this block does not contain the target
+
+
+			// Check if the firsat symbol is the same
+			found = stringTarget->TextW[0] == stringSource->TextW[i];
+
+			if (found)
+			{
+				found = MemoryCompare(stringTarget->TextW, stringTarget->SizeUsed, stringSource->TextW + i, i);
+			}
+		}
+
+		if (found)
+		{
+			stringResult->SizeUsed = stringTarget->SizeUsed;
+			stringResult->NumberOfCharacters = stringTarget->SizeUsed;
+			stringResult->TextW = stringSource->TextW + i;
+		}
+	}
+
+	return found ? i + 2 : PXTextIndexNotFound;
 }
 
-PXSize PXTextFindLastW(const wchar_t* string, const PXSize dataSize, const wchar_t character)
+void PXTextMoveByOffset(PXText* const pxText, const PXSize offset)
 {
-	unsigned char found = 0;
-	PXSize i = PXTextLengthW(string, dataSize);
-
-	for(; i > 0 && !found; --i)
+	switch (pxText->Format)
 	{
-		found = character == string[i];
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			pxText->SizeAllocated -= sizeof(char) * offset;
+			pxText->SizeUsed -= sizeof(char) * offset;
+			pxText->NumberOfCharacters -= 1 * offset;
+			pxText->TextA += 1 * offset;
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			pxText->SizeAllocated -= sizeof(wchar_t) * offset;
+			pxText->SizeUsed -= sizeof(wchar_t) * offset;
+			pxText->NumberOfCharacters -= 1 * offset;
+			pxText->TextW += 1 * offset;
+			break;
+		}
 	}
-
-	return found ? i+1 : PXTextIndexNotFound;
 }
 
 void PXTextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const char character)

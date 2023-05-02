@@ -65,9 +65,6 @@ namespace PX
 		//---------------------------------------------------------------------
 
 		//---<Mapping>---------------------------------------------------------
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileMapToMemoryA(ref PXFile pXFile,  char* filePath, UIntPtr fileSize, int protectionMode);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileMapToMemoryW(ref PXFile pXFile, char* filePath, UIntPtr fileSize, int protectionMode);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileMapToMemoryU(ref PXFile pXFile, char* filePath, UIntPtr fileSize, int protectionMode);
 		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileMapToMemory(ref PXFile pXFile, UIntPtr size,  int protectionMode);
 		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileUnmapFromMemory(ref PXFile pXFile);
 		//---------------------------------------------------------------------

@@ -38,7 +38,7 @@ extern "C"
 	{
 		TextFormatInvalid,
 
-		// 1 Byte__ per character, range from 0 to 255
+		// 1 Byte per character, range from 0 to 255
 		TextFormatASCII,
 
 		// 2 Bytes per character, range from 0 to 65535
@@ -52,18 +52,42 @@ extern "C"
 
 	typedef struct PXText_
 	{
+		PXSize SizeAllocated; // Size that the buffer ponited to has
+		PXSize SizeUsed;
+		PXSize NumberOfCharacters; 
+
 		PXTextFormat Format;
-		PXSize SizeInCharacters;
-		PXSize SizeInBytes;
 
 		union
 		{
 			char* TextA;
 			wchar_t* TextW;
-			void* TextData;
 		};
 	}
 	PXText;
+
+#define PXTextMakeFixedC(pxText, c)\
+		(pxText)->SizeAllocated = sizeof(c);\
+		(pxText)->SizeUsed = sizeof(c);\
+		(pxText)->NumberOfCharacters = sizeof(c);\
+		(pxText)->Format = TextFormatASCII;\
+		(pxText)->TextA = c;
+
+#define PXTextMakeFixedA(pxText, s)\
+		char text[] = s;\
+		(pxText)->SizeAllocated = sizeof(text);\
+		(pxText)->SizeUsed = sizeof(text);\
+		(pxText)->NumberOfCharacters = sizeof(text);\
+		(pxText)->Format = TextFormatASCII;\
+		(pxText)->TextA = text;
+
+#define PXTextMakeExternA(pxText, s)\
+		(pxText)->SizeAllocated = 0;\
+		(pxText)->SizeUsed = 0;\
+		(pxText)->NumberOfCharacters = 0;\
+		(pxText)->Format = TextFormatASCII;\
+		(pxText)->TextA = s;
+
 
 	PXPublic PXSize PXTextFromIntA(const int number,  char* string, const PXSize dataSize);
 	PXPublic PXSize PXTextFromIntW(const int number,  wchar_t* string, const PXSize dataSize);
@@ -92,6 +116,7 @@ extern "C"
 
 	PXPublic PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
+	PXPublic PXSize PXTextClear(PXText* const pxText);
 	PXPublic PXSize PXTextClearA(char* string, const PXSize stringSize);
 	PXPublic PXSize PXTextClearW(wchar_t* string, const PXSize stringSize);
 
@@ -100,6 +125,8 @@ extern "C"
 
 	PXPublic PXSize PXTextLengthUntilA(const char* string, const PXSize stringSize, const char character);
 	PXPublic PXSize PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const wchar_t character);
+
+	PXPublic PXSize PXTextCopy(const PXText* const source, PXText* const destination);
 
 	PXPublic PXSize PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
 	PXPublic PXSize PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
@@ -114,6 +141,8 @@ extern "C"
 
 	PXPublic PXSize PXTextCountUntilA(const char* PXText, const PXSize PXTextSize, const char target, const char stopAt);
 	PXPublic PXSize PXTextCountUntilW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target, const wchar_t stopAt);
+
+	PXPublic PXBool PXTextCompare(const PXText* const textA, const PXText* const textB);
 
 	PXPublic PXBool PXTextCompareA(const char* a, const PXSize aSize, const char* b, const PXSize bSize);
 	PXPublic PXBool PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
@@ -133,8 +162,10 @@ extern "C"
 
 	PXPublic PXSize PXTextFindFirstStringA(const char* __restrict string, const PXSize dataSize, const char* PXRestrict const targetString, const PXSize targetStringSize);
 	PXPublic PXSize PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
-	PXPublic PXSize PXTextFindLastA(const char* string, const PXSize dataSize, const char character);
-	PXPublic PXSize PXTextFindLastW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
+	
+	PXPublic PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult);
+	
+	PXPublic void PXTextMoveByOffset(PXText* const pxText, const PXSize offset);
 
 	PXPublic void PXTextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const char character);
 

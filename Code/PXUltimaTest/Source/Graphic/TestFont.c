@@ -12,7 +12,11 @@ void TestFontParse()
 {
 	PXFont font;
 
-	const PXActionResult fontLoadResult = PXFontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
+	PXText pxText;
+
+	PXTextMakeFixedA(&pxText, "_TEST_DATA_INPUT_/A.fnt");
+
+	const PXActionResult fontLoadResult = PXFontLoad(&font, &pxText);
 
 	printf("");
 }

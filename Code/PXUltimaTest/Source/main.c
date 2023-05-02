@@ -20,6 +20,7 @@
 #include <OS/Graphic/DirectX/DirectX.h>
 #include <OS/Process/PXProcess.h>
 #include <OS/Debug/PXDebug.h>
+#include <OS/File/PXDirectory.h>
 
 void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
 {

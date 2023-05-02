@@ -10,8 +10,11 @@
 void TestSaveImageSmal()
 {
     PXImage image;
+    PXText pxText;
 
-    PXDirectoryCreateA("_TEST_DATA_OUTPUT_");
+    PXTextMakeFixedA(&pxText, "_TEST_DATA_OUTPUT_");
+
+    PXDirectoryCreate(&pxText);
 
     PXImageConstruct(&image);
 
@@ -61,8 +64,11 @@ void TestSaveImageSmal()
 void TestSaveImage()
 {
     PXImage image;
+    PXText pxText;
 
-    PXDirectoryCreateA("_TEST_DATA_OUTPUT_");
+    PXTextMakeFixedA(&pxText, "_TEST_DATA_OUTPUT_");
+
+    PXDirectoryCreate(&pxText);
 
 
     PXImageConstruct(&image);
@@ -123,7 +129,11 @@ void ImageWriteText()
     PXFont font;
 
     {
-        const PXActionResult actionResult = PXFontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
+        PXText pxText;
+
+        PXTextMakeFixedA(&pxText, "_TEST_DATA_INPUT_/A.fnt");
+
+        const PXActionResult actionResult = PXFontLoad(&font, &pxText);
         const PXBool successful = PXActionSuccessful == actionResult;
 
         if (!successful)
@@ -204,7 +214,10 @@ void TestImageAll()
 
 PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath)
 {
-    const PXActionResult savePNG = PXImageLoadA(image, filePath);
+    PXText pxText;
+    PXTextMakeExternA(&pxText, filePath);
+
+    const PXActionResult savePNG = PXImageLoad(image, &pxText);
 
     if(savePNG != PXActionSuccessful)
     {
@@ -221,7 +234,11 @@ PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath)
 
 PXActionResult ImageSaveTest(PXImage* const image, const char* const filePath, const FileFormatExtension fileFormat, const PXColorFormat dataFormat)
 {
-    const PXActionResult savePNG = PXImageSaveA(image, filePath, fileFormat, dataFormat);
+    PXText pxText;
+
+    PXTextMakeFixedA(&pxText, "_TEST_DATA_INPUT_/A.fnt");
+
+    const PXActionResult savePNG = PXImageSave(image, &pxText, fileFormat, dataFormat);
 
     if (savePNG != PXActionSuccessful)
     {

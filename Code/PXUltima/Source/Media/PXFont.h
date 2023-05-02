@@ -1,8 +1,6 @@
 #ifndef PXFontINCLUDE
 #define PXFontINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
 
@@ -35,9 +33,7 @@ extern "C"
 	PXPublic void PXFontConstruct(PXFont* const pxFont);
 	PXPublic void PXFontDestruct(PXFont* const pxFont);
 
-	PXPublic PXActionResult PXFontLoadA(PXFont* const pxFont, const PXTextASCII filePath);
-	PXPublic PXActionResult PXFontLoadW(PXFont* const pxFont, const PXTextUNICODE filePath);
-	PXPublic PXActionResult PXFontLoadU(PXFont* const pxFont, const PXTextUTF8 filePath);
+	PXPublic PXActionResult PXFontLoad(PXFont* const pxFont, const PXText* const filePath);
 	PXPublic PXActionResult PXFontLoadD(PXFont* const pxFont, PXFile* const PXFile, const FileFormatExtension guessedFormat);
 
 #ifdef __cplusplus

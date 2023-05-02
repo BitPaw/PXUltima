@@ -85,7 +85,11 @@ void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
 
 	OpenGLPixelDataRead(openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
 
-	PXImageSaveA(&image, "_TEST_DATA_OUTPUT_/Buffertest.png", FileFormatPNG, PXColorFormatRGBI8);
+	PXText pxText;
+
+	PXTextMakeFixedA(&pxText, "_TEST_DATA_OUTPUT_/Buffertest.png");
+
+	PXImageSave(&image, &pxText, FileFormatPNG, PXColorFormatRGBI8);
 
 	PXImageDestruct(&image);
 }
@@ -182,8 +186,12 @@ void TestOpenGLTextDraw()
 	unsigned int width = 800 * scale;
 	unsigned int height = 600 * scale;
 
+	PXText pxText;
+
+	PXTextMakeFixedA(&pxText, "_TEST_DATA_INPUT_/A.fnt");
+
 	PXFont font;
-	PXFontLoadA(&font, "_TEST_DATA_INPUT_/A.fnt");
+	PXFontLoad(&font, &pxText);
 
 	PXTexture textureText;
 	PXTextureConstruct(&textureText);
@@ -343,7 +351,7 @@ void TestOpenGLVAO()
 	PXRenderable renderable;
 	PXModel model;
 
-	PXModelLoadA(&model, "B:/Daten/Objects/Moze/Moze.obj");
+	//PXModelLoad(&model, "B:/Daten/Objects/Moze/Moze.obj");
 
 	while (!window.IsRunning)
 	{

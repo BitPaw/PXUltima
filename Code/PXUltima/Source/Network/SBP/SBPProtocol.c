@@ -694,8 +694,8 @@ PXSize SBPPackageHeaderPackageIamParse(SBPPackageHeader* const sbpDataPackage, S
 		PXFileReadI16UE(&dataStream, size, PXEndianLittle);
 
 		sbpDataPackageIam->Name.Format = formatType;
-		sbpDataPackageIam->Name.SizeInBytes = size;
-		sbpDataPackageIam->Name.TextData = PXFileCursorPosition(&dataStream);
+		sbpDataPackageIam->Name.SizeUsed = size;
+		sbpDataPackageIam->Name.TextA = PXFileCursorPosition(&dataStream);
 
 		PXFileCursorAdvance(&dataStream, size);
 	}

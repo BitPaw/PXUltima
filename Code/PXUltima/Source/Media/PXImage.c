@@ -25,37 +25,22 @@ void PXImageDestruct(PXImage* const image)
     PXImageConstruct(image);
 }
 
-PXActionResult PXImageLoadA(PXImage* const image, const PXTextASCII filePath)
-{
-    PXByte filePathU[PathMaxSize];
-
-    PXTextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
-
-    PXActionResult actionResult = PXImageLoadU(image, filePathU);
-
-    return actionResult;
-}
-
-PXActionResult PXImageLoadW(PXImage* const image, const PXTextUNICODE filePath)
-{
-    PXByte filePathU[PathMaxSize];
-
-    PXTextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
-
-    PXActionResult actionResult = PXImageLoadU(image, filePathU);
-
-    return actionResult;
-}
-
-PXActionResult PXImageLoadU(PXImage* const image, const PXTextUTF8 filePath)
+PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath)
 {
     PXFile dataStream;
 
-    PXFileConstruct(&dataStream);
     PXImageConstruct(image);
 
     {
-        const PXActionResult fileLoadingResult = PXFileMapToMemoryU(&dataStream, filePath, 0, PXMemoryAccessModeReadOnly);
+        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+        pxFileOpenFromPathInfo.Text = *filePath;
+        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+        pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&dataStream, &pxFileOpenFromPathInfo);
 
         PXActionExitOnError(fileLoadingResult);
     }
@@ -139,29 +124,7 @@ PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, cons
     return actionResult;
 }
 
-PXActionResult PXImageSaveA(PXImage* const image, const PXTextASCII filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat)
-{
-    PXByte filePathU[PathMaxSize];
-
-    PXTextCopyAU(filePath, PathMaxSize, filePathU, PathMaxSize);
-
-    PXActionResult actionResult = PXImageSaveU(image, filePathU, fileFormat, pxColorFormat);
-
-    return actionResult;
-}
-
-PXActionResult PXImageSaveW(PXImage* const image, const PXTextUNICODE filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat)
-{
-    PXByte filePathU[PathMaxSize];
-
-    PXTextCopyWU(filePath, PathMaxSize, filePathU, PathMaxSize);
-
-    PXActionResult actionResult = PXImageSaveU(image, filePathU, fileFormat, pxColorFormat);
-
-    return actionResult;
-}
-
-PXActionResult PXImageSaveU(PXImage* const image, const PXTextUTF8 filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat)
+PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat)
 {
     PXByte filePathW[PathMaxSize];
     PXByte* fileExtension = 0;
@@ -231,7 +194,16 @@ PXActionResult PXImageSaveU(PXImage* const image, const PXTextUTF8 filePath, con
     }
 
     {
-        const PXActionResult mappingResult = PXFileMapToMemoryU(&dataStream, filePathW, fileSize, PXMemoryAccessModeWriteOnly);
+        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+        pxFileOpenFromPathInfo.Text = *filePath;
+        pxFileOpenFromPathInfo.FileSize = fileSize;
+        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeWriteOnly;
+        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+        pxFileOpenFromPathInfo.CreateIfNotExist = PXTrue;
+        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXTrue;
+
+        const PXActionResult mappingResult = PXFileOpenFromPath(&dataStream, &pxFileOpenFromPathInfo);
         const PXBool sucessful = PXActionSuccessful == mappingResult;
 
         if (!sucessful)

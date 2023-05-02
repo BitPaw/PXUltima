@@ -1,7 +1,7 @@
 #include "TestSound.h"
 
+#include <OS/File/PXFile.h>
 #include <Media/PXSound.h>
-
 #include <Media/WAV/PXWAV.h>
 #include <Media/MP3/MP3.h>
 
@@ -26,7 +26,18 @@ void TestSoundWAVWrite()
 
 	PXFile waveStream;
 
-	const PXActionResult mappingResult = PXFileMapToMemoryA(&waveStream, "A:/TestWav.wav", 1024*8000, PXMemoryAccessModeReadAndWrite);
+
+	PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+	pxFileOpenFromPathInfo.FileSize = 1024 * 8000;
+	pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadAndWrite;
+	pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+	pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+	pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+	pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+	PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, "A:/TestWav.wav");
+
+	const PXActionResult mappingResult = PXFileOpenFromPath(&waveStream, &pxFileOpenFromPathInfo);
 	const PXActionResult pxActionResult = PXWAVSerialize(&wav, &waveStream);
 
 	PXFileDestruct(&waveStream);
@@ -40,7 +51,7 @@ void TestSoundWAV()
 
 	PXFile dataStream;
 
-	PXFileMapToMemoryA(&dataStream, "A:/W.wav", 0, PXMemoryAccessModeReadOnly);
+	//PXFileMapToMemoryA(&dataStream, "A:/W.wav", 0, PXMemoryAccessModeReadOnly);
 	
 	PXWAVParse(&wav, &dataStream);
 
@@ -53,7 +64,7 @@ void TestSoundMP3()
 
 	PXFile dataStream;
 
-	PXFileMapToMemoryA(&dataStream, "A:/S.mp3", 0, PXMemoryAccessModeReadOnly);
+	//PXFileMapToMemoryA(&dataStream, "A:/S.mp3", 0, PXMemoryAccessModeReadOnly);
 
 	MP3Parse(&mp3, &dataStream);
 

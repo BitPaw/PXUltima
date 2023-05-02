@@ -20,16 +20,19 @@ void TestPXCompilerOBJ()
 	PXFile inputStream;
 	PXFile outputStream;
 
-	PXFileConstruct(&inputStream);
-	PXFileConstruct(&outputStream);
+	{
+		PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+		pxFileOpenFromPathInfo.FileSize = 0;
+		pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+		pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+		pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+		pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+		pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
 
-	PXFileMapToMemoryA
-	(
-		&inputStream,
-		"B:/Daten/Objects/Moze/Moze.obj",
-		0,
-		PXMemoryAccessModeReadOnly
-	);
+		PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, "B:/Daten/Objects/Moze/Moze.obj");
+
+		PXFileOpenFromPath(&inputStream, &pxFileOpenFromPathInfo);
+	}	
 
 	PXFileMapToMemory(&outputStream, inputStream.DataSize*4, PXMemoryAccessModeReadAndWrite);
 
@@ -52,17 +55,21 @@ void TestPXCompilerYAML()
 	PXFile inputStream;
 	PXFile outputStream;
 
-	PXFileConstruct(&inputStream);
+
+	PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+	pxFileOpenFromPathInfo.FileSize;
+	pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+	pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+	pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+	pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+	pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+	PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, "A:/config.yml");
+
+	PXFileOpenFromPath(&inputStream, &pxFileOpenFromPathInfo);
+
+
 	PXFileConstruct(&outputStream);
-
-	PXFileMapToMemoryA
-	(
-		&inputStream,
-		"A:/config.yml",
-		0,
-		PXMemoryAccessModeReadOnly		
-	);
-
 	PXFileBufferExternal(&outputStream, buffer, size);
 
 	PXCompilerSettings compilerSettings;

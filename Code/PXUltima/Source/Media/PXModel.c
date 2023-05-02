@@ -70,21 +70,21 @@ PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMater
         {
             unsigned short range = 0;
             PXFileReadI16U(&materialData, &range);
-            pxMaterial->Name = PXFileCursorPosition(&materialData);
-            pxMaterial->NameSize = range;
+            pxMaterial->Name.TextA = PXFileCursorPosition(&materialData);
+            pxMaterial->Name.SizeUsed  = range;
 
             PXFileCursorAdvance(&materialData, range);
 
             PXFileReadI16U(&materialData, &range);
-            pxMaterial->DiffuseTextureFilePath = PXFileCursorPosition(&materialData);
-            pxMaterial->DiffuseTextureFilePathSize = range;
+            pxMaterial->DiffuseTextureFilePath.TextA = PXFileCursorPosition(&materialData);
+            pxMaterial->DiffuseTextureFilePath.SizeUsed = range;
 
             PXFileCursorAdvance(&materialData, range);
 
-            PXFileReadB(&materialData, &pxMaterial->Ambient, sizeof(float) * 3u);
-            PXFileReadB(&materialData, &pxMaterial->Diffuse, sizeof(float) * 3u);
-            PXFileReadB(&materialData, &pxMaterial->Specular, sizeof(float) * 3u);
-            PXFileReadB(&materialData, &pxMaterial->Emission, sizeof(float) * 3u);
+            PXFileReadFV(&materialData, &pxMaterial->Ambient, 3u);
+            PXFileReadFV(&materialData, &pxMaterial->Diffuse, 3u);
+            PXFileReadFV(&materialData, &pxMaterial->Specular, 3u);
+            PXFileReadFV(&materialData, &pxMaterial->Emission, 3u);
 
             break;
         }
@@ -153,26 +153,22 @@ PXSize PXModelVertexDataStride(const PXModel* const model)
     return sizeof(float) * (model->DataVertexWidth + model->DataNormalWidth + model->DataTextureWidth + model->DataColorWidth);
 }
 
-PXActionResult PXModelLoadA(PXModel* const model, const char* const filePath)
-{
-	wchar_t filePathW[PathMaxSize];
-
-	PXTextCopyAW(filePath, PathMaxSize, filePathW, PathMaxSize);
-
-	PXActionResult actionResult = PXModelLoadW(model, filePathW);
-
-	return actionResult;
-}
-
-PXActionResult PXModelLoadW(PXModel* const model, const wchar_t* const filePath)
+PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
 {
     PXFile dataStream;
 
-    PXFileConstruct(&dataStream);
     PXModelConstruct(model);
 
     {
-        const PXActionResult fileLoadingResult = PXFileMapToMemoryW(&dataStream, filePath, 0, PXMemoryAccessModeReadOnly);
+        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+        pxFileOpenFromPathInfo.Text = *filePath;
+        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+        pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&dataStream, &pxFileOpenFromPathInfo);
 
         PXActionExitOnError(fileLoadingResult);
     }

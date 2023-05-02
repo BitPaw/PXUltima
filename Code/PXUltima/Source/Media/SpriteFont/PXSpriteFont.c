@@ -193,7 +193,13 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 
 					//FilePathSwapFileNameA(PXFile->FilePath, fullPath, pageFileName);
 
-					const PXActionResult actionResult = PXImageLoadA(&currentPage->FontTextureMap, fullPath);
+					PXText pxText;
+					pxText.Format = TextFormatASCII;
+					pxText.SizeUsed = 0;
+					pxText.SizeAllocated = 0;
+					pxText.TextA = fullPath;
+
+					const PXActionResult actionResult = PXImageLoad(&currentPage->FontTextureMap, &pxText);
 				}
 
 				break;

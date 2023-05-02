@@ -10,11 +10,8 @@ extern "C"
 
 	typedef struct PXMaterial_
 	{
-		PXSize NameSize;
-		char* Name;
-
-		PXSize DiffuseTextureFilePathSize;
-		char* DiffuseTextureFilePath;
+		PXText Name;
+		PXText DiffuseTextureFilePath;
 
 		float Ambient[3];
 		float Diffuse[3];
@@ -141,8 +138,7 @@ extern "C"
 
 	PXPublic PXSize PXModelVertexDataStride(const PXModel* const model);
 
-	PXPublic PXActionResult PXModelLoadA(PXModel* const model, const char* const filePath);
-	PXPublic PXActionResult PXModelLoadW(PXModel* const model, const wchar_t* const filePath);
+	PXPublic PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath);
 	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXFile* const fileStream, const FileFormatExtension modelType);
 
 #ifdef __cplusplus

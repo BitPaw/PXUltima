@@ -28,7 +28,17 @@ void TestYAMLParse()
 	//------------------------------
 
 	//----<Load>--------------------------
-	PXFileMapToMemoryA(&inputStream, "A:/config.yml", 0, PXMemoryAccessModeReadOnly);
+	PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+	pxFileOpenFromPathInfo.FileSize;
+	pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+	pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+	pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+	pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+	pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+	PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text,"A:/config.yml");
+
+	PXFileOpenFromPath(&inputStream, &pxFileOpenFromPathInfo);
 	PXFileMapToMemory(&compiledStream, inputStream.DataSize*7, PXMemoryAccessModeReadAndWrite);
 
 	PXYAMLFileCompile(&inputStream, &compiledStream);

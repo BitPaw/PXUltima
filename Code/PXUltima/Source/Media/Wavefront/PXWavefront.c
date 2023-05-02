@@ -503,8 +503,23 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
 
             PXFilePathSwapFileNameW(currentWorkPath, currentMTLFileW, currentMTLFileW);
 
+            
+            PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+            pxFileOpenFromPathInfo.Text.Format = TextFormatUNICODE;
+            pxFileOpenFromPathInfo.Text.SizeAllocated = length;
+            pxFileOpenFromPathInfo.Text.SizeUsed = length;
+            pxFileOpenFromPathInfo.Text.TextW = currentMTLFileW;
+            pxFileOpenFromPathInfo.FileSize = 0;
+            pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+            pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+            pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+            pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+            pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+
+
             {
-                const PXActionResult materialFileLoadResult = PXFileMapToMemoryW(&materialFileStream, currentMTLFileW, 0, PXMemoryAccessModeReadOnly);
+                const PXActionResult materialFileLoadResult = PXFileOpenFromPath(&materialFileStream, &pxFileOpenFromPathInfo);
                 const PXBool sucessful = PXActionSuccessful == materialFileLoadResult;
 
                 if (!sucessful)
@@ -778,14 +793,22 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
                         if (PXWavefrontLineMaterialLibraryUse == objLineType)
                         {
 #if PXWavefrontDetectMaterial
-                            char materialName[256];
+                            char materialNameBuffer[256];
+                            PXText materialName;
+                            materialName.Format = TextFormatASCII;
+                            materialName.SizeAllocated = 256;
+                            materialName.SizeUsed = 0;
+                            materialName.NumberOfCharacters = 0;
+                            materialName.TextA = materialNameBuffer;
+
 
                             void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
                             const PXSize sizeEE = inputStream->DataSize - mtlEmbeddedDataOffset;
                             const PXSize amount = MTLFetchAmount(data, sizeEE);
 
                             PXFileReadI16U(inputStream, &size);
-                            PXFileReadTextA(inputStream, materialName, size);
+                            materialName.SizeUsed = size;
+                            PXFileReadTextA(inputStream, materialName.TextA, materialName.SizeUsed);
 
                             PXFileCursorAdvance(&materialIDLookupStream, sizeof(unsigned char) + sizeof(unsigned int));
 
@@ -796,7 +819,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
                                 PXModelMaterialGet(model, i, &pxMaterial);
 
-                                const PXBool isValid = PXTextCompareA(materialName, size, pxMaterial.Name, pxMaterial.NameSize); // is found?
+                                const PXBool isValid = PXTextCompare(&materialName, &pxMaterial); // is found?
 
                                 if (isValid)
                                 {
