@@ -36,7 +36,7 @@ PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath)
         pxFileOpenFromPathInfo.Text = *filePath;
         pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
         pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+        pxFileOpenFromPathInfo.AllowMapping = PXFalse;
         pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
         pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
 
@@ -49,7 +49,7 @@ PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath)
 
     {
         {
-            const FileFormatExtension imageForPXMathint = PXFilePathExtensionDetectTryA(filePath, PathMaxSize); // Potential error
+            const FileFormatExtension imageForPXMathint = PXFilePathExtensionDetectTry(filePath);
             const PXActionResult fileParsingResult = PXImageLoadD(image, &dataStream, imageForPXMathint);
 
             PXActionExitOnSuccess(fileParsingResult);
@@ -135,8 +135,6 @@ PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, c
 
     PXImageTranslateFunction serializeFromImageFunction = 0;
 
-    PXFileConstruct(&dataStream);
-
     const PXInt8U bitPerPixel = PXColorFormatBitsPerPixel(pxColorFormat);
 
     switch (fileFormat)
@@ -190,7 +188,7 @@ PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, c
 
     // Chnage file extension
     {
-        PXFilePathSwapExtensionU(filePath, filePathW, fileExtension);
+        //PXFilePathSwapExtension(filePath, filePathW, fileExtension);
     }
 
     {

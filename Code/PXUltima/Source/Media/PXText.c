@@ -272,6 +272,70 @@ PXSize PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, cons
 	return offset;
 }
 
+PXSize PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget)
+{
+	switch (pxTextSource->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
+			{
+				pxTextTarget->TextA[i] = MakeLetterCaseLower(pxTextSource->TextA[i]);
+			}
+		}
+		case TextFormatUNICODE:
+		{
+			for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
+			{
+				pxTextTarget->TextW[i] = MakeLetterCaseLower(pxTextSource->TextW[i]);
+			}
+
+			break;
+		}
+	}
+
+	pxTextTarget->SizeAllocated = pxTextSource->SizeAllocated;
+	pxTextTarget->SizeUsed = pxTextSource->SizeUsed;
+	pxTextTarget->NumberOfCharacters = pxTextSource->NumberOfCharacters;
+	pxTextTarget->Format = pxTextSource->Format;
+
+	return pxTextTarget->SizeUsed;
+}
+
+PXSize PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget)
+{
+	switch (pxTextSource->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
+			{
+				pxTextTarget->TextA[i] = MakeLetterCaseUpper(pxTextSource->TextA[i]);
+			}
+
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
+			{
+				pxTextTarget->TextW[i] = MakeLetterCaseUpper(pxTextSource->TextW[i]);
+			}
+
+			break;
+		}
+	}
+
+	pxTextTarget->SizeAllocated = pxTextSource->SizeAllocated;
+	pxTextTarget->SizeUsed = pxTextSource->SizeUsed;
+	pxTextTarget->NumberOfCharacters = pxTextSource->NumberOfCharacters;
+	pxTextTarget->Format = pxTextSource->Format;
+
+	return pxTextTarget->SizeUsed;
+}
+
 PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize)
 {
 	const PXSize length = PXTextLengthW(dataString, dataStringSize);
@@ -336,6 +400,65 @@ PXSize PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const 
 
 PXSize PXTextCopy(const PXText* const source, PXText* const destination)
 {
+	const PXSize minLength = PXMathMinimumIU(source->SizeAllocated, destination->SizeAllocated);
+
+	switch (source->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			PXSize i = 0;
+
+#if PXTextAssertEnable
+			assert(destination);
+			assert(source);
+#else
+			if (!(destination && source))
+			{
+				return 0;
+			}
+#endif
+
+			for (; (i < minLength) && (source->TextA[i] != '\0'); ++i)
+			{
+				destination->TextA[i] = source->TextA[i];
+			}
+
+			destination->Format = TextFormatASCII;
+			destination->TextA[i] = '\0';
+			destination->SizeUsed = i;
+			destination->NumberOfCharacters = i;
+
+			return i;
+
+			break;
+		}
+
+		case TextFormatUNICODE:
+		{
+			PXSize i = 0;
+
+#if PXTextAssertEnable
+			assert(destination);
+			assert(source);
+#endif
+
+			for (; (i < minLength) && (source->TextW[i] != '\0'); ++i)
+			{
+				destination->TextW[i] = source->TextW[i];
+			}
+
+			destination->Format = TextFormatUNICODE;
+			destination->TextW[i] = '\0';
+			destination->SizeUsed = i;
+			destination->NumberOfCharacters = i;
+
+			return i;
+
+			break;
+		}
+	}
+
 	return 0;
 }
 
@@ -354,7 +477,7 @@ PXSize PXTextCopyA(const char* source, const PXSize sourceLength, char* destinat
 	}
 #endif
 
-	for(; (i < minLength) && (source[i] != '\0'); ++i)
+	for (; (i < minLength) && (source[i] != '\0'); ++i)
 	{
 		destination[i] = source[i];
 	}
@@ -816,6 +939,7 @@ PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stri
 	PXBool found = 0;
 	PXSize i = stringSource->SizeUsed - stringTarget->SizeUsed; // As we start from the back, the symbol can only be as long
 
+	stringResult->SizeAllocated = 0;
 	stringResult->SizeUsed = 0;
 	stringResult->NumberOfCharacters = 0;
 
@@ -840,9 +964,9 @@ PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stri
 
 		if (found)
 		{
-			stringResult->SizeUsed = stringTarget->SizeUsed;
-			stringResult->NumberOfCharacters = stringTarget->SizeUsed;
-			stringResult->TextA = stringSource->TextA + i;
+			stringResult->SizeUsed = stringSource->SizeUsed-i-1;
+			stringResult->NumberOfCharacters = stringSource->SizeUsed- i - 1;
+			stringResult->TextA = stringSource->TextA + i + 1;
 		}
 	}
 
@@ -867,13 +991,13 @@ PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stri
 
 		if (found)
 		{
-			stringResult->SizeUsed = stringTarget->SizeUsed;
-			stringResult->NumberOfCharacters = stringTarget->SizeUsed;
-			stringResult->TextW = stringSource->TextW + i;
+			stringResult->SizeUsed = stringSource->SizeUsed - i-1;
+			stringResult->NumberOfCharacters = stringSource->SizeUsed - i-1;
+			stringResult->TextW = stringSource->TextW + i + 1;
 		}
 	}
 
-	return found ? i + 2 : PXTextIndexNotFound;
+	return found;
 }
 
 void PXTextMoveByOffset(PXText* const pxText, const PXSize offset)

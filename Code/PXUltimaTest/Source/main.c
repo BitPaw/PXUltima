@@ -90,7 +90,8 @@ int main()
 #if 1
 	PXImage image;
 
-	ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.png");
+	ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.bmp");
+	//ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.png");
 
 	printf("EE\n");
 	//TestImageAll();

@@ -6,6 +6,7 @@
 #include <OS/File/PXFile.h>
 #include <Media/PXImage.h>
 #include <OS/Memory/PXMemory.h>
+#include <Compiler/PXCompiler.h>
 
 void PXSpriteFontConstruct(PXSpriteFont* const pxPXSpriteFont)
 {
@@ -44,17 +45,68 @@ PXSpriteFontCharacter* PXSpriteFontGetCharacter(PXSpriteFont* PXSpriteFont, cons
 	return 0;
 }
 
-PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const PXFile)
+PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const pxFile)
 {
+	PXSize errorCounter = 0;
+	PXFile tokenSteam;
+	/*
+
+	// Lexer - Level I
+	{
+		PXCompilerSettings compilerSettings;
+
+		PXCompilerSettingsConstruct(&compilerSettings);
+		compilerSettings.TryAnalyseTypes = PXYes;
+		compilerSettings.CommentSingleLineSize = 1u;
+		compilerSettings.CommentSingleLine = "#";
+
+		PXCompilerLexicalAnalysis(pxFile, &tokenSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens
+
+
+
+		outputStream->DataCursor = 0;
+	}
+
+	unsigned int indentCounter = 0;
+
+	while (!PXFileIsAtEnd(&tokenSteam))
+	{
+		PXCompilerSymbolEntry compilerSymbolEntry;
+
+		PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+
+		switch (compilerSymbolEntry.ID)
+		{
+			case PXCompilerSymbolLexerWhiteSpace:
+				indentCounter = compilerSymbolEntry.Size;
+				break;
+
+			case PXCompilerSymbolLexerNewLine:
+				indentCounter = 0;
+				break;
+
+			default:
+			{
+				break;
+			}
+			case PXCompilerSymbolLexerSingleCharacter:
+			case PXCompilerSymbolLexerGenericElement:
+			{
+			}
+		}
+	}
+
+	*/
+
 	PXSpriteFontPage* currentPage = 0;
 	PXSize characterIndex = 0;
 
 	PXSpriteFontConstruct(PXSpriteFont);
 
-	while (!PXFileIsAtEnd(PXFile))
+	while (!PXFileIsAtEnd(pxFile))
 	{
-		const char* currentPosition = (char*)PXFileCursorPosition(PXFile);
-		const PXSize currentReadableBytes = PXFileRemainingSize(PXFile);
+		const char* currentPosition = (char*)PXFileCursorPosition(pxFile);
+		const PXSize currentReadableBytes = PXFileRemainingSize(pxFile);
 		const PXSpriteFontLineType lineType = PeekLineType(currentPosition, currentReadableBytes);
 
 		switch (lineType)
@@ -79,12 +131,12 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXFileCursorAdvance(PXFile, 5u);
+				PXFileCursorAdvance(pxFile, 5u);
 
 				PXTextParseFindAllA
 				(
-					PXFileCursorPosition(PXFile),
-					PXFileRemainingSize(PXFile),
+					PXFileCursorPosition(pxFile),
+					PXFileRemainingSize(pxFile),
 					parsingTokenList,
 					values
 				);
@@ -119,17 +171,17 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXFileCursorAdvance(PXFile, 6u);
+				PXFileCursorAdvance(pxFile, 6u);
 
 				PXTextParseFindAllA
 				(
-					PXFileCursorPosition(PXFile),
-					PXFileRemainingSize(PXFile),
+					PXFileCursorPosition(pxFile),
+					PXFileRemainingSize(pxFile),
 					parsingTokenList,
 					values
 				);
 
-				const PXSize readableSize = PXFileRemainingSize(PXFile);
+				const PXSize readableSize = PXFileRemainingSize(pxFile);
 
 				PXTextToIntA(indexPosition[0], readableSize, &PXSpriteFont->CommonData.LineHeight);
 				PXTextToIntA(indexPosition[1], readableSize, &PXSpriteFont->CommonData.Base);
@@ -163,12 +215,12 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXFileCursorAdvance(PXFile, 5u);
+				PXFileCursorAdvance(pxFile, 5u);
 
 				PXTextParseFindAllA
 				(
-					PXFileCursorPosition(PXFile),
-					PXFileRemainingSize(PXFile),
+					PXFileCursorPosition(pxFile),
+					PXFileRemainingSize(pxFile),
 					parsingTokenList,
 					values
 				);
@@ -184,7 +236,7 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 					PXTextCopyA
 					(
 						indexPosition[1] + 1,
-						PXFileRemainingSize(PXFile),
+						PXFileRemainingSize(pxFile),
 						pageFileName,
 						PXSpriteFontPageFileNameSize - 1
 					);
@@ -208,12 +260,12 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 			{
 				const char countText[] = "count=";
 
-				PXFileCursorAdvance(PXFile, 6u);
+				PXFileCursorAdvance(pxFile, 6u);
 
 				char* count = PXTextFindPositionA
 				(
-					PXFileCursorPosition(PXFile),
-					PXFileRemainingSize(PXFile),
+					PXFileCursorPosition(pxFile),
+					PXFileRemainingSize(pxFile),
 					countText,
 					sizeof(countText) - 1
 				);
@@ -225,7 +277,7 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 					PXTextToIntA
 					(
 						count + sizeof(countText) - 1,
-						PXFileRemainingSize(PXFile) - sizeof(countText),
+						PXFileRemainingSize(pxFile) - sizeof(countText),
 						&size
 					);
 
@@ -279,12 +331,12 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 				};
 				const PXSize values = sizeof(parsingTokenList) / sizeof(ParsingTokenA);
 
-				PXFileCursorAdvance(PXFile, 5u);
+				PXFileCursorAdvance(pxFile, 5u);
 
 				PXTextParseFindAllA
 				(
-					PXFileCursorPosition(PXFile),
-					PXFileRemainingSize(PXFile),
+					PXFileCursorPosition(pxFile),
+					PXFileRemainingSize(pxFile),
 					parsingTokenList,
 					values
 				);
@@ -304,7 +356,7 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 			}
 		}
 
-		PXFileSkipLine(PXFile);
+		PXFileSkipLine(pxFile);
 	}
 
 	return PXActionSuccessful;

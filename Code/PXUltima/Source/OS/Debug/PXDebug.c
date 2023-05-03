@@ -456,15 +456,17 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			const CREATE_PROCESS_DEBUG_INFO* const createProcessDebugInfo = &debugEvent.u.CreateProcessInfo;
 
 
-			PXSize* size = 0;
-			char buffer[260];
+			PXText pxText;
+
+			PXTextConstructWithBuffer(&pxText, 256);
+
 
 			PXFile file;
 			file.ID = createProcessDebugInfo->hFile;
 
-			const PXActionResult res = PXFileNameA(&file, buffer, 260, &size);
+			const PXActionResult res = PXFileName(&file, &pxText);
 
-			printf("[PXDebuger] Process (%i) create : %s\n", debugEvent.dwProcessId, buffer);
+			printf("[PXDebuger] Process (%i) create : %s\n", debugEvent.dwProcessId, pxText.TextA);
 
 			break;
 		}
@@ -498,15 +500,16 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			const LOAD_DLL_DEBUG_INFO* const loadDLLDebugInfo = &debugEvent.u.LoadDll;
 
 
-			PXSize* size = 0;
-			char buffer[260];
+			PXText pxText;
+
+			PXTextConstructWithBuffer(&pxText, 256);
 
 			PXFile file;
 			file.ID = loadDLLDebugInfo->hFile;
 
-			const PXActionResult res = PXFileNameA(&file, buffer, 260, &size);
+			const PXActionResult res = PXFileName(&file, &pxText);
 
-			printf("[PXDebuger] 0x%p | DLL load <%s>\n", loadDLLDebugInfo->lpBaseOfDll, buffer);
+			printf("[PXDebuger] 0x%p | DLL load <%s>\n", loadDLLDebugInfo->lpBaseOfDll, pxText.TextA);
 			break;
 
 		case UNLOAD_DLL_DEBUG_EVENT:

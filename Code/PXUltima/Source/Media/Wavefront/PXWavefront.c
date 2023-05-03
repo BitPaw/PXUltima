@@ -484,11 +484,13 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
 
         PXFileBufferExternal(&materialNameFetchStream, outputStream->Data, outputStream->DataCursor);
 
-        wchar_t currentWorkPath[PathMaxSize];
-        wchar_t currentMTLFileW[PathMaxSize];
-        char currentMTLFileA[PathMaxSize];
+        PXText currentFilePath;
+        PXTextConstructWithBufferNamed(&currentFilePath, currentFilePathBuffer, PathMaxSize);
 
-        const PXBool succ = PXFileFilePathGetW(inputStream, currentWorkPath, PathMaxSize); // Work PXWavefront file path
+        PXText currentMTLFilePath;
+        PXTextConstructWithBufferNamed(&currentMTLFilePath, currentMTLFilePathBuffer, PathMaxSize);
+
+        const PXBool success = PXFilePathGet(inputStream, &currentFilePath); // Work PXWavefront file path
 
         for (PXSize i = 0; i < mtlInlclueesListSize; ++i)
         {
@@ -497,26 +499,20 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
             PXFileWriteI8U(outputStream, PXWavefrontEmbeddedMTL);
 
             PXFileReadI16U(&materialNameFetchStream, &length);
-            PXFileReadB(&materialNameFetchStream, currentMTLFileA, PathMaxSize);
+            currentMTLFilePath.SizeUsed = length;
+            PXFileReadB(&materialNameFetchStream, currentMTLFilePath.TextA, currentMTLFilePath.SizeUsed);
 
-            PXTextCopyAW(currentMTLFileA, length, currentMTLFileW, PathMaxSize);
-
-            PXFilePathSwapFileNameW(currentWorkPath, currentMTLFileW, currentMTLFileW);
+            PXFilePathSwapFileName(&currentMTLFilePath, &currentMTLFilePath, &currentFilePath);
 
             
             PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-            pxFileOpenFromPathInfo.Text.Format = TextFormatUNICODE;
-            pxFileOpenFromPathInfo.Text.SizeAllocated = length;
-            pxFileOpenFromPathInfo.Text.SizeUsed = length;
-            pxFileOpenFromPathInfo.Text.TextW = currentMTLFileW;
+            pxFileOpenFromPathInfo.Text = currentMTLFilePath;
             pxFileOpenFromPathInfo.FileSize = 0;
             pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
             pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
             pxFileOpenFromPathInfo.AllowMapping = PXTrue;
             pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
             pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
-
-
 
             {
                 const PXActionResult materialFileLoadResult = PXFileOpenFromPath(&materialFileStream, &pxFileOpenFromPathInfo);

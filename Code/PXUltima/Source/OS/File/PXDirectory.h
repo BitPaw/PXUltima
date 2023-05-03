@@ -73,8 +73,7 @@ extern "C"
 
 	PXPublic void PXDirectoryUpdateEntry(PXDirectoryIterator* const pxDirectoryIterator);
 
-	PXPublic PXActionResult PXDirectoryOpenA(PXDirectoryIterator* const pxDirectoryIterator, const PXTextASCII directoryName);
-	PXPublic PXActionResult PXDirectoryOpenW(PXDirectoryIterator* const pxDirectoryIterator, const PXTextUNICODE directoryName);
+	PXPublic PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName);
 	PXPublic PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator);
 	PXPublic PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator);
 

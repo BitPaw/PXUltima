@@ -14,6 +14,10 @@
 
 */
 
+
+#define OSForcePOSIXForWindows 0
+
+
 //---<Detect OS version>----------------------------------------------------
 #if defined(unix) || defined(__unix) || defined(__unix__)
     #ifndef OSUnix

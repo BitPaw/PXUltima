@@ -19,8 +19,6 @@
 #elif OSWindows
 #include <io.h>
 
-#define OSFileDirectoryCreateA _mkdir
-#define OSFileDirectoryCreateW _wmkdir
 #define OSWorkingDirectoryCurrentA _getcwd
 #define OSWorkingDirectoryCurrentW _wgetcwd
 #define OSWorkingDirectoryChangeA _chdir
@@ -33,12 +31,7 @@ void PXDirectoryUpdateEntry(PXDirectoryIterator* const pxDirectoryIterator)
 
 }
 
-PXActionResult PXDirectoryOpenA(PXDirectoryIterator* const pxDirectoryIterator, const PXTextASCII directoryName)
-{
-	return PXActionInvalid;
-}
-
-PXActionResult PXDirectoryOpenW(PXDirectoryIterator* const pxDirectoryIterator, const PXTextUNICODE directoryName)
+PXActionResult PXDirectoryOpenA(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName)
 {
 	return PXActionInvalid;
 }
@@ -65,9 +58,13 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 			const PXBool successCreate = creationResult == 0;
 #elif OSWindows
 
-			// _mkdir
-
+#if OSForcePOSIXForWindows
+			const int resultID = _mkdir(directoryName->TextW);
+			const PXBool successCreate = 0 == resultID;
+#else
 			const PXBool successCreate = CreateDirectoryA(directoryName->TextA, PXNull); // Windows XP, Kernel32.dll, fileapi.h
+#endif
+		
 #endif
 
 			PXActionOnErrorFetchAndExit(!successCreate);
@@ -83,16 +80,16 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 
 			const PXBool successCreate = PXFalse;
 
-
 #elif OSWindows
 
-			// _mkdir
-
+#if OSForcePOSIXForWindows
+			const int resultID = _wmkdir(directoryName->TextW);
+			const PXBool successCreate = 0 == resultID;
+#else
 			const PXBool successCreate = CreateDirectoryW(directoryName->TextW, PXNull); // Windows XP, Kernel32.dll, fileapi.h
 #endif
-
-			//_wmkdir
-
+		
+#endif
 			PXActionOnErrorFetchAndExit(!successCreate);
 
 			break;

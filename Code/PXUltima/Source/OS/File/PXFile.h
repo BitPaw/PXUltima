@@ -116,12 +116,6 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	PXPublic FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath);
 
-	PXPublic FileFormatExtension PXFilePathExtensionDetectTryA(const char* const filePath, const PXSize filePathSize);
-	PXPublic FileFormatExtension PXFilePathExtensionDetectTryW(const wchar_t* const filePath, const PXSize filePathSize);
-
-	PXPublic FileFormatExtension PXFileExtensionDetectTryA(const char* const extension, const PXSize extensionSize);
-	PXPublic FileFormatExtension PXFileExtensionDetectTryW(const wchar_t* const extension, const PXSize extensionSize);
-
 
 
 
@@ -134,8 +128,8 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileLocationModeExternal, // Memory is stored outside this object
 		PXFileLocationModeMappedVirtual, // Used 'VirtalAlloc()' / 'mmap()'
 		PXFileLocationModeMappedFromDisk, // Used 'FileView()' / 'fmap()'
-		PXFileLocationModeCachedFromDisk, // When the file is cached into an CPrivate buffer
-		PXFileLocationModeLinked // Used existing file with 'fopen()'
+		PXFileLocationModeDirectCached, // Read & Write operations are cached into a buffer first.
+		PXFileLocationModeDirectUncached // Read & Write operations are directly put into
 	}
 	PXFileLocationMode;
 
@@ -201,34 +195,24 @@ void PXDirectoryIsDotFolder(const char* s)
 	FilePath;*/
 
 	//---<Utility>---------------------------------------------------------
-	PXPublic PXBool PXFileDoesExistA(const char* filePath);
-	PXPublic PXBool PXFileDoesExistW(const wchar_t* filePath);
+	PXPublic PXBool PXFileDoesExist(const PXText* const filePath);
+	PXPublic PXActionResult PXFileRemove(const PXText* const filePath);
+	PXPublic PXActionResult PXFileRename(const PXText* const oldName, const PXText* const newName);
 
-	PXPublic PXActionResult PXFileRemoveA(const char* filePath);
-	PXPublic PXActionResult PXFileRemoveW(const wchar_t* filePath);
-	PXPublic PXActionResult PXFileRenameA(const char* oldName, const char* newName);
-	PXPublic PXActionResult PXFileRenameW(const wchar_t* oldName, const wchar_t* newName);
-	PXPublic PXActionResult PXFileCopyA(const char* sourceFilePath, const char* destinationFilePath);
-	PXPublic PXActionResult PXFileCopyW(const wchar_t* sourceFilePath, const wchar_t* destinationFilePath);
+	PXPublic PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* const destinationFilePath, const PXBool overrideIfExists);
 
-	PXPublic void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
-	PXPublic void PXFilePathSwapFileNameA(const PXTextASCII inputPath, PXTextASCII exportPath, const PXTextASCII fileName);
-	PXPublic void PXFilePathSwapFileNameW(const PXTextUNICODE inputPath, PXTextUNICODE exportPath, const PXTextUNICODE fileName);
-	PXPublic void PXFilePathSwapFileNameU(const PXTextUTF8 inputPath, PXTextUTF8 exportPath, const PXTextUTF8 fileName);
+	//PXPublic void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
 
-	PXPublic void PXFilePathSwapExtensionA(const PXTextASCII inputPath, PXTextASCII exportPath, const PXTextASCII fileExtension);
-	PXPublic void PXFilePathSwapExtensionW(const PXTextUNICODE inputPath, PXTextUNICODE exportPath, const PXTextUNICODE fileExtension);
-	PXPublic void PXFilePathSwapExtensionU(const PXTextUTF8 inputPath, PXTextUTF8 exportPath, const PXTextUTF8 fileExtension);
+
+
+	PXPublic void PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);
+	PXPublic void PXFilePathSwapExtension(const PXText* const inputPath, PXText* const exportPath);
+
 	//---------------------------------------------------------------------
 
 
-
-
-
-	PXPublic PXActionResult PXFileNameA(PXFile* const pxFile, const PXTextASCII fileName, const PXSize fileNameSize, PXSize* const sizeWritten);
-	PXPublic PXActionResult PXFileNameW(PXFile* const pxFile, const PXTextUNICODE fileName, const PXSize fileNameSize, PXSize* const sizeWritten);
-
-	PXPublic PXSize PXFileDirectoryPathExtract(const wchar_t* path, const PXSize pathSize, wchar_t* const directoryPath, const PXSize directoryPathSize);
+	PXPublic PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName);
+	PXPublic PXBool PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const directoryPath);
 
 	PXPublic void PXFilePathSplittA
 	(
@@ -257,9 +241,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXSize* extension, PXSize extensionSize
 	);
 
-	PXPublic PXSize PXFilePathExtensionGet(const PXText* const filePath, const PXText* const* extension);
-	PXPublic PXSize PXFilePathExtensionGetA(const char* filePath, const PXSize filePathSize, char* extension, const PXSize extensionSizeMax);
-	PXPublic PXSize PXFilePathExtensionGetW(const wchar_t* filePath, const PXSize filePathSize, wchar_t* extension, const PXSize extensionSizeMax);
+	PXPublic PXSize PXFilePathExtensionGet(const PXText* const filePath, const PXText* const extension);
 
 
 
@@ -327,6 +309,8 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileReadTextIU8(PXFile* const pxFile, PXInt8U* const number);
 	PXPublic PXSize PXFileReadTextI(PXFile* const pxFile, int* const number);
 
+	PXPublic PXSize PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian);
+	PXPublic PXSize PXFileReadIXXVE(PXFile* const pxFile, void* const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian);
 
 	PXPublic PXSize PXFileReadI8S(PXFile* const pxFile, PXInt8S* const value);
 	PXPublic PXSize PXFileReadI8SV(PXFile* const pxFile, PXInt8S* const valueList, const PXSize valueListSize);
@@ -467,8 +451,8 @@ void PXDirectoryIsDotFolder(const char* s)
 	//-------------------------------------------------------------------------
 
 
-	PXPublic PXSize PXFileFilePathGetA(PXFile* const pxFile, char* const filePath, const PXSize filePathMaxSize);
-	PXPublic PXSize PXFileFilePathGetW(PXFile* const pxFile, wchar_t* const filePath, const PXSize filePathMaxSize);
+	PXPublic PXBool PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
+
 
 #ifdef __cplusplus
 }

@@ -174,7 +174,7 @@ PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
     }
 
     {
-        const FileFormatExtension modelFileFormat = PXFilePathExtensionDetectTryW(filePath, PathMaxSize);
+        const FileFormatExtension modelFileFormat = PXFilePathExtensionDetectTry(filePath);
         const PXActionResult fileParsingResult = PXModelLoadD(model, &dataStream, modelFileFormat);
 
         PXActionExitOnSuccess(fileParsingResult);

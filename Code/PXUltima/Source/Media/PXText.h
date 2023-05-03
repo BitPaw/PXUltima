@@ -66,12 +66,29 @@ extern "C"
 	}
 	PXText;
 
+#define PXTextConstructWithBuffer(pxText, bufferSize)\
+		char pxTextInternalBuffer[bufferSize];\
+		(pxText)->SizeAllocated = sizeof(pxTextInternalBuffer);\
+		(pxText)->SizeUsed = 0;\
+		(pxText)->NumberOfCharacters = 0;\
+		(pxText)->Format = TextFormatInvalid;\
+		(pxText)->TextA = pxTextInternalBuffer;
+
+#define PXTextConstructWithBufferNamed(pxText, name, bufferSize)\
+		char name[bufferSize];\
+		(pxText)->SizeAllocated = sizeof(name);\
+		(pxText)->SizeUsed = 0;\
+		(pxText)->NumberOfCharacters = 0;\
+		(pxText)->Format = TextFormatInvalid;\
+		(pxText)->TextA = name;
+
 #define PXTextMakeFixedC(pxText, c)\
-		(pxText)->SizeAllocated = sizeof(c);\
-		(pxText)->SizeUsed = sizeof(c);\
-		(pxText)->NumberOfCharacters = sizeof(c);\
+		char character = c; \
+		(pxText)->SizeAllocated = sizeof(character);\
+		(pxText)->SizeUsed = sizeof(character);\
+		(pxText)->NumberOfCharacters = sizeof(character);\
 		(pxText)->Format = TextFormatASCII;\
-		(pxText)->TextA = c;
+		(pxText)->TextA = &character;
 
 #define PXTextMakeFixedA(pxText, s)\
 		char text[] = s;\
@@ -82,9 +99,9 @@ extern "C"
 		(pxText)->TextA = text;
 
 #define PXTextMakeExternA(pxText, s)\
-		(pxText)->SizeAllocated = 0;\
-		(pxText)->SizeUsed = 0;\
-		(pxText)->NumberOfCharacters = 0;\
+		(pxText)->SizeAllocated = PXTextLengthA(s, -1);\
+		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
+		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = s;
 
@@ -114,6 +131,9 @@ extern "C"
 	PXPublic PXSize PXTextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXInt64U number);
 	PXPublic PXSize PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXInt64U number, const unsigned char numberOfDigits);
 
+	PXPublic PXSize PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
+	PXPublic PXSize PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
+		 
 	PXPublic PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
 	PXPublic PXSize PXTextClear(PXText* const pxText);
