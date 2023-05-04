@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <Media/PXText.h>
+#include <OS/Memory/PXMemory.h>
 
 void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
@@ -372,6 +373,8 @@ PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processor
 
 void PXProcessorFetchInfo(Processor* const processor)
 {
+    MemoryClear(processor, sizeof(Processor));
+
 #if OSUnix
 
 
@@ -502,8 +505,6 @@ void PXProcessorFetchInfo(Processor* const processor)
 
         __cpuid(CPUInfo, 0x80000000);
 
-        PXSize offset = 0;
-
         nExIds = CPUInfo[0];
         // Interpret CPU brand string
         for (PXSize i = 0x80000000; i <= nExIds; ++i)
@@ -516,7 +517,7 @@ void PXProcessorFetchInfo(Processor* const processor)
                 case 0x80000003:
                 case 0x80000004:
                 {
-                    offset += PXTextCopyA(CPUInfo, sizeof(CPUInfo), processor->BrandName + offset, 64);
+                    processor->BrandNameSize += PXTextCopyA(CPUInfo, sizeof(CPUInfo), processor->BrandName + processor->BrandNameSize, 64);
                     break;
                 }
                 default:
@@ -524,7 +525,7 @@ void PXProcessorFetchInfo(Processor* const processor)
             }
         }
 
-        if (offset < 5)
+        if (processor->BrandNameSize < 5)
         {
             PXProcessorModelNameGet(processor->ModelNameID, processor->BrandName);
         }
@@ -563,17 +564,22 @@ void PXProcessorFetchInfo(Processor* const processor)
         {
             const DWORD activeProcessors = GetActiveProcessorCount(i); // winbase.h, kernel32.lib, Windows 7 
         }
-
-
-
- 
-
-
-
-
-
     }
 #endif
+
+
+    for (int i = processor->BrandNameSize-1; i > 0; --i)
+    {
+        const PXBool whiteSpace = processor->BrandName[i] == ' ';
+
+        if (!whiteSpace) 
+        {
+            break;
+        }
+
+        processor->BrandNameSize--;
+        processor->BrandName[i] = '\0';
+    }
 }
 
 unsigned int PXProcessorFrequencyCurrent()

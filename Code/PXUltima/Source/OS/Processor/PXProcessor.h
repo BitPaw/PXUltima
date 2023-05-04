@@ -115,6 +115,8 @@ extern "C"
 		char IdentityString[13];
 
 		char NumberOfProcessors;
+
+        PXInt8U BrandNameSize;
 		char BrandName[64];  // string includes manufacturer, model and clockspeed
 
 

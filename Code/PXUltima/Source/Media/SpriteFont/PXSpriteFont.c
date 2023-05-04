@@ -227,31 +227,30 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 
 				PXTextToIntA(indexPosition[0], 5, &currentPage->PageID);
 
-
 				// Loading Image
 				{
-					char fullPath[PathMaxSize];
-					char pageFileName[PXSpriteFontPageFileNameSize];
+					PXText fontFilePath;
+					PXTextConstructWithBufferNamedA(&fontFilePath, fontFilePathBuffer, PathMaxSize);
+					PXText resultFullPath;
+					PXTextConstructWithBufferNamedA(&resultFullPath, resultFullPathBuffer, PathMaxSize);
+					PXText pageFileName;
+					PXTextConstructWithBufferNamedA(&pageFileName, pageFileNameBuffer, PXSpriteFontPageFileNameSize);
+
+					PXFilePathGet(pxFile, &fontFilePath);
 
 					PXTextCopyA
 					(
 						indexPosition[1] + 1,
 						PXFileRemainingSize(pxFile),
-						pageFileName,
-						PXSpriteFontPageFileNameSize - 1
+						pageFileName.TextA,
+						pageFileName.SizeAllocated
 					);
 
-					PXTextTerminateBeginFromFirstA(pageFileName, PXSpriteFontPageFileNameSize, '\"');
+					PXTextTerminateBeginFromFirstA(pageFileName.TextA, pageFileName.SizeAllocated, '\"');
 
-					//FilePathSwapFileNameA(PXFile->FilePath, fullPath, pageFileName);
+					PXFilePathSwapFileName(&fontFilePath, &resultFullPath, &pageFileName);
 
-					PXText pxText;
-					pxText.Format = TextFormatASCII;
-					pxText.SizeUsed = 0;
-					pxText.SizeAllocated = 0;
-					pxText.TextA = fullPath;
-
-					const PXActionResult actionResult = PXImageLoad(&currentPage->FontTextureMap, &pxText);
+					const PXActionResult actionResult = PXImageLoad(&currentPage->FontTextureMap, &resultFullPath);
 				}
 
 				break;

@@ -40,7 +40,7 @@ unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pi
     colorModeIn.bitdepth = bitDepth;
     colorModeIn.colortype = LCT_RGBA;
 
-    colorModeOut.bitdepth = bitDepth;
+    colorModeOut.bitdepth = 8;
     colorModeOut.colortype = LCT_RGBA;
 
     switch (colorType)
@@ -74,7 +74,7 @@ unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pi
             break;
     }
 
-    colorModeOut.bitdepth = colorModeIn.bitdepth;
+    //colorModeOut.bitdepth = colorModeIn.bitdepth;
     // colorModeOut.colortype = colorModeIn.colortype;
 
     PNGColorTree tree;

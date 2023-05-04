@@ -36,7 +36,7 @@ PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath)
         pxFileOpenFromPathInfo.Text = *filePath;
         pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
         pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.AllowMapping = PXFalse;
+        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
         pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
         pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
 

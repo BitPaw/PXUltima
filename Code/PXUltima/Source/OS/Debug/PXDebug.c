@@ -458,7 +458,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			PXText pxText;
 
-			PXTextConstructWithBuffer(&pxText, 256);
+			PXTextConstructWithBufferA(&pxText, 256);
 
 
 			PXFile file;
@@ -502,7 +502,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			PXText pxText;
 
-			PXTextConstructWithBuffer(&pxText, 256);
+			PXTextConstructWithBufferA(&pxText, 256);
 
 			PXFile file;
 			file.ID = loadDLLDebugInfo->hFile;

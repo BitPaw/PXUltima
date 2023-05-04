@@ -1977,22 +1977,52 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
     DWORD windowStyle = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
     HMENU hMenu = 0;
     void* lpParam = 0;
+    PXWindowID windowID = 0;
 
-    PXWindowID windowID = CreateWindowExW
-    (
-        windowStyle,
-        lpClassName,
-        window->Title,
-        dwStyle,
-        window->X,
-        window->Y,
-        window->Width,
-        window->Height,
-        hWndParent,
-        hMenu,
-        hInstance,
-        lpParam
-    );
+    switch (window->Title.Format)
+    {
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
+            windowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
+            (
+                windowStyle,
+                lpClassName,
+                window->Title.TextA,
+                dwStyle,
+                window->X,
+                window->Y,
+                window->Width,
+                window->Height,
+                hWndParent,
+                hMenu,
+                hInstance,
+                lpParam
+            );
+
+            break;
+        }
+        case TextFormatUNICODE:
+        {
+            windowID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
+            (
+                windowStyle,
+                lpClassName,
+                window->Title.TextW,
+                dwStyle,
+                window->X,
+                window->Y,
+                window->Width,
+                window->Height,
+                hWndParent,
+                hMenu,
+                hInstance,
+                lpParam
+            );
+
+            break;
+        }
+    }
 
     {
         if (!windowID)
@@ -2205,6 +2235,8 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 void PXWindowConstruct(PXWindow* const window)
 {
     MemoryClear(window, sizeof(PXWindow));
+    window->Title.SizeAllocated = 256;
+    window->Title.TextA = window->TitleBuffer;
 }
 
 float PXWindowScreenRatio(const PXWindow* const window)
@@ -2212,31 +2244,10 @@ float PXWindowScreenRatio(const PXWindow* const window)
     return (float)window->Width / (float)window->Height;
 }
 
-void PXWindowCreateA(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* title, const PXBool async)
+void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async)
 {
-    PXTextCopyAW(title, 256u, window->Title, 256u);
+    PXTextCopy(title, &window->Title);
 
-    PXWindowCreate(window, width, height, async);
-}
-
-void PXWindowCreateW(PXWindow* const window, const PXInt32S width, const PXInt32S height, const wchar_t* title, const PXBool async)
-{
-    PXTextCopyW(title, 256u, window->Title, 256u);
-
-    PXWindowCreate(window, width, height, async);
-}
-
-void PXWindowCreateU(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* title, const PXBool async)
-{
-    PXTextCopyAW(title, 256u, window->Title, 256u);
-
-    window->Mode = PXWindowModeNormal;
-
-    PXWindowCreate(window, width, height, async);
-}
-
-void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async)
-{
     window->Width = width;
     window->Height = height;
 
@@ -2272,7 +2283,7 @@ void PXWindowCreateHidden(PXWindow* const window, const PXInt32S width, const PX
 {
     window->Mode = PXWindowModeHidden;
 
-    PXWindowCreate(window, width, height, async);
+    PXWindowCreate(window, width, height, 0, async);
 }
 
 void PXWindowDestruct(PXWindow* const window)

@@ -149,14 +149,13 @@ extern "C"
 		volatile PXBool IsRunning;
 		PXWindowID ID;
 
-
-
 		PXInt32S X;
 		PXInt32S Y;
 		PXInt32S Width;
 		PXInt32S Height;
 
-		wchar_t Title[256];
+		char TitleBuffer[256];
+		PXText Title;
 
 		// Live data
 		PXBool HasSizeChanged;
@@ -217,10 +216,7 @@ extern "C"
 
 	// Create a window based on the OS implementation.
 	// if a NULL pointer is used as a title, the window will be hidden.
-	PXPublic void PXWindowCreateA(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* title, const PXBool async);
-	PXPublic void PXWindowCreateW(PXWindow* const window, const PXInt32S width, const PXInt32S height, const wchar_t* title, const PXBool async);
-	PXPublic void PXWindowCreateU(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* title, const PXBool async);
-	PXPublic void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async);
+	PXPublic void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async);
 	PXPublic void PXWindowCreateHidden(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async);
 
 

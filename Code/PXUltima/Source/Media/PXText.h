@@ -66,20 +66,20 @@ extern "C"
 	}
 	PXText;
 
-#define PXTextConstructWithBuffer(pxText, bufferSize)\
+#define PXTextConstructWithBufferA(pxText, bufferSize)\
 		char pxTextInternalBuffer[bufferSize];\
 		(pxText)->SizeAllocated = sizeof(pxTextInternalBuffer);\
 		(pxText)->SizeUsed = 0;\
 		(pxText)->NumberOfCharacters = 0;\
-		(pxText)->Format = TextFormatInvalid;\
+		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = pxTextInternalBuffer;
 
-#define PXTextConstructWithBufferNamed(pxText, name, bufferSize)\
+#define PXTextConstructWithBufferNamedA(pxText, name, bufferSize)\
 		char name[bufferSize];\
 		(pxText)->SizeAllocated = sizeof(name);\
 		(pxText)->SizeUsed = 0;\
 		(pxText)->NumberOfCharacters = 0;\
-		(pxText)->Format = TextFormatInvalid;\
+		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = name;
 
 #define PXTextMakeFixedC(pxText, c)\
@@ -194,6 +194,10 @@ extern "C"
 	PXPublic void PXTextParseFindAllA(const char* string, const PXSize stringSize, const ParsingTokenA* parsingTokenList, const PXSize parsingTokenListSize);
 
 	PXPublic PXBool PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t* pattern, const PXSize patternSize);
+
+
+	PXPublic PXSize PXTextReplace(PXText* const pxText, char target, char value);
+
 
 #ifdef __cplusplus
 }

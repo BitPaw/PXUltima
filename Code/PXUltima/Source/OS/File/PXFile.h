@@ -214,22 +214,14 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName);
 	PXPublic PXBool PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const directoryPath);
 
-	PXPublic void PXFilePathSplittA
-	(
-		const char* fullPath, PXSize fullPathMaxSize,
-		char* drive, PXSize driveMaxSize,
-		char* directory, PXSize directoryMaxSize,
-		char* fileName, PXSize fileNameMaxSize,
-		char* extension, PXSize extensionMaxSize
-	);
 
-	PXPublic void PXFilePathSplittW
+	PXPublic void PXFilePathSplitt
 	(
-		const wchar_t* fullPath, PXSize fullPathMaxSize,
-		wchar_t* drive, PXSize driveMaxSize,
-		wchar_t* directory, PXSize directoryMaxSize,
-		wchar_t* fileName, PXSize fileNameMaxSize,
-		wchar_t* extension, PXSize extensionMaxSize
+		const PXText* const fullPath,
+		PXText* const drive,
+		PXText* const directory,
+		PXText* const fileName,
+		PXText* const extension
 	);
 
 	PXPublic void PXFilePathSplittPositionW

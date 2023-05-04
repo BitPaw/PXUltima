@@ -400,6 +400,11 @@ PXSize PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const 
 
 PXSize PXTextCopy(const PXText* const source, PXText* const destination)
 {
+	if (!(source && destination))
+	{
+		return 0;
+	}
+
 	const PXSize minLength = PXMathMinimumIU(source->SizeAllocated, destination->SizeAllocated);
 
 	switch (source->Format)
@@ -1230,6 +1235,32 @@ PXBool PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t*
 	}
 
 	return PXTrue;
+}
+
+PXSize PXTextReplace(PXText* const pxText, char target, char value)
+{
+	switch (pxText->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			for (size_t i = 0; i < pxText->SizeUsed; i++)
+			{
+				pxText->TextA[i] = pxText->TextA[i] == target ? value : pxText->TextA[i];
+			}
+
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			for (size_t i = 0; i < pxText->SizeUsed; i++)
+			{
+				pxText->TextW[i] = pxText->TextW[i] == target ? value : pxText->TextW[i];
+			}
+
+			break;
+		}
+	}
 }
 
 PXSize PXTextFromIntA(int number, char* string, const PXSize dataSize)

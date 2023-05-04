@@ -485,10 +485,10 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
         PXFileBufferExternal(&materialNameFetchStream, outputStream->Data, outputStream->DataCursor);
 
         PXText currentFilePath;
-        PXTextConstructWithBufferNamed(&currentFilePath, currentFilePathBuffer, PathMaxSize);
+        PXTextConstructWithBufferNamedA(&currentFilePath, currentFilePathBuffer, PathMaxSize);
 
         PXText currentMTLFilePath;
-        PXTextConstructWithBufferNamed(&currentMTLFilePath, currentMTLFilePathBuffer, PathMaxSize);
+        PXTextConstructWithBufferNamedA(&currentMTLFilePath, currentMTLFilePathBuffer, PathMaxSize);
 
         const PXBool success = PXFilePathGet(inputStream, &currentFilePath); // Work PXWavefront file path
 

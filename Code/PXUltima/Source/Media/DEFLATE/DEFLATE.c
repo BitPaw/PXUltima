@@ -208,7 +208,7 @@ PXActionResult DEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputS
                             PXSize distance = 0;
                             PXSize numextrabits_l = 0;
                             PXSize numextrabits_d = 0; /*extra bits for length and distance*/
-                            PXSize start, backward, length;
+                            PXSize length;
 
                             /*the base lengths represented by codes 257-285*/
                             const unsigned int LENGTHBASE[29] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258 };
@@ -270,9 +270,9 @@ PXActionResult DEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputS
                             }
 
                             /*part 5: fill in all the out[n] values based on the length and dist*/
-                            start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
+                            PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
                             if(distance > start) return (52); /*too long backward distance*/
-                            backward = start - distance;
+                            PXSize backward = start - distance;
 
                             /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
 
@@ -281,11 +281,9 @@ PXActionResult DEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputS
 
                             if(distance < length)
                             {
-                                MemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
+                                start += MemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
 
-                                start += distance;
-
-                                for(PXSize forward = distance; forward < length; ++forward)
+                                for (PXSize forward = distance; forward < length; ++forward)
                                 {
                                     ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
                                 }
