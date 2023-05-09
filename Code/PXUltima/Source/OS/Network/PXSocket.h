@@ -182,8 +182,17 @@ extern "C"
 	typedef void (*PXSocketCreatingEvent)(const PXSocket* const pxSocket, unsigned char* use);
 	typedef void (*PXSocketCreatedEvent)(const PXSocket* const pxSocket);
 
-	typedef void (*PXSocketDataSendEvent)(const PXSocket* const sendingSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize);
-	typedef void (*PXSocketDataReceiveEvent)(const PXSocket* const receiveSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize);
+	typedef struct PXSocketDataMoveEventInfo_
+	{
+		PXSocket* SocketSending;
+		PXSocketID SocketReceiving;
+		void* Data;
+		PXSize DataSize;
+	}
+	PXSocketDataMoveEventInfo;
+
+	typedef void (*PXSocketDataSendEvent)(void* owner, const PXSocketDataMoveEventInfo* const pxSocketDataMoveEventInfo);
+	typedef void (*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataMoveEventInfo* const pxSocketDataMoveEventInfo);
 
 	// PXServer Only
 	typedef void (*PXSocketListeningEvent)(const PXSocket* const pxSocket);

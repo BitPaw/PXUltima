@@ -2,6 +2,7 @@
 #define PXProcessINCLUDE
 
 #include <Media/PXType.h>
+#include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/Time/PXTime.h>
 
@@ -93,8 +94,7 @@ extern "C"
 	}
 	PXProcessCreationMode;
 
-	PXPublic PXActionResult PXProcessCreateA(PXProcess* const pxProcess, const PXTextASCII programmPath, const PXProcessCreationMode mode);
-	PXPublic PXActionResult PXProcessCreateW(PXProcess* const pxProcess, const PXTextUNICODE programmPath, const PXProcessCreationMode mode);
+	PXPublic PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
 
 	PXPublic PXActionResult PXProcessOpen(PXProcess* const pxProcess);
 	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);

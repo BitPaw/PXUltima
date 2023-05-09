@@ -234,15 +234,6 @@
     <ClInclude Include="Source\Media\WEBM\WEBM.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\SBP\SBPClient.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Network\SBP\SBPServer.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Network\SBP\SBPProtocol.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Media\PXType.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -384,12 +375,6 @@
     <ClInclude Include="Source\Network\Web\PXFTPClient.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\SBP\SBPDataChunk.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Network\SBP\PXSBPPackageProcessor.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Source\OS\Debug\PXDebug.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -439,6 +424,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\File\PXDirectory.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\SBP\PXSBPProtocol.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -662,15 +650,6 @@
     <ClCompile Include="Source\Media\WEBM\WEBM.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\SBP\SBPClient.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\SBP\SBPServer.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\SBP\SBPProtocol.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Media\PXType.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -815,12 +794,6 @@
     <ClCompile Include="Source\Network\Web\PXFTPClient.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\SBP\SBPDataChunk.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Network\SBP\PXSBPPackageProcessor.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Source\OS\Debug\PXDebug.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -864,6 +837,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\File\PXDirectory.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\SBP\PXSBPProtocol.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

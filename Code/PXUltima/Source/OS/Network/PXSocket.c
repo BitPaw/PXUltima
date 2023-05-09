@@ -1237,6 +1237,17 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
         }
     }
 
+    {
+        PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
+        pxSocketDataMoveEventInfo.SocketSending = pxSocket;
+        pxSocketDataMoveEventInfo.SocketReceiving = pxSocket->ID;
+        pxSocketDataMoveEventInfo.Data = inputBuffer;
+        pxSocketDataMoveEventInfo.DataSize = inputBufferSize;
+
+        InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket->Owner, &pxSocketDataMoveEventInfo);
+    }
+
+
     InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket, pxSocket->ID, inputBuffer, inputBufferSize);
 
 #if SocketDebug
@@ -1320,7 +1331,13 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
                 printf("[PXSocket] You <-- <%li> %i Bytes\n", (int)pxSocket->ID, (int)byteRead);
 #endif
 
-                InvokeEvent(pxSocket->EventList.MessageReceiveCallback, pxSocket, pxSocket->ID, outputBuffer, byteRead);
+                PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
+                pxSocketDataMoveEventInfo.SocketSending = pxSocket;
+                pxSocketDataMoveEventInfo.SocketReceiving = pxSocket->ID;
+                pxSocketDataMoveEventInfo.Data = outputBuffer;
+                pxSocketDataMoveEventInfo.DataSize = outputBufferSize;
+
+                InvokeEvent(pxSocket->EventList.MessageReceiveCallback, pxSocket->Owner, &pxSocketDataMoveEventInfo);
             }
         }
     }
@@ -1331,8 +1348,6 @@ PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSoc
 {
     char buffer[1024];
     PXSize buffserSize = 1024;
-    PXSize buffserWritten = 0;
-
 
     // Read data
     {
@@ -1343,7 +1358,7 @@ PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSoc
             read(clientID, buffer, buffserSize);
 #elif OSWindows
             recv(clientID, buffer, buffserSize, 0);
-#endif
+#endif        
 
         // StateChange(SocketStateIDLE);
 
@@ -1364,13 +1379,18 @@ PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSoc
             }
             default:
             {
-                buffserWritten = byteRead;
 
 #if SocketDebug
                 printf("[PXSocket] <%i> <-- <%i> %i Bytes\n", (int)serverSocket->ID, (int)clientID, (int)byteRead);
 #endif
 
-                InvokeEvent(serverSocket->EventList.MessageReceiveCallback, serverSocket, clientID, buffer, buffserWritten);
+                PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
+                pxSocketDataMoveEventInfo.SocketSending = serverSocket;
+                pxSocketDataMoveEventInfo.SocketReceiving = clientID;
+                pxSocketDataMoveEventInfo.Data = buffer;
+                pxSocketDataMoveEventInfo.DataSize = byteRead;
+
+                InvokeEvent(serverSocket->EventList.MessageReceiveCallback, serverSocket->Owner, &pxSocketDataMoveEventInfo);
             }
         }
     }

@@ -344,8 +344,9 @@ void TestOpenGLTextDraw()
 void TestOpenGLVAO()
 {
 	PXWindow window;
-	PXWindowConstruct(&window);
-	PXWindowCreateA(&window, 0, 0, "VAO Test", 1);
+	PXText pxText;
+	PXTextMakeFixedA(&pxText, "RAW Test");
+	PXWindowCreate(&window, 0, 0, &pxText, 1);
 
 
 	PXRenderable renderable;
@@ -392,8 +393,11 @@ void TestOpenGLVAO()
 void TestOpenGLVBO()
 {
 	PXWindow window;
-	PXWindowConstruct(&window);
-	PXWindowCreateA(&window, -1, -1, "RAW Test", 1);
+	
+	PXText pxText;
+	PXTextMakeFixedA(&pxText, "RAW Test");
+
+	PXWindowCreate(&window, -1, -1, &pxText, 1);
 
 	int x = 0;
 

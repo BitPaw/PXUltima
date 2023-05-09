@@ -20,6 +20,11 @@ extern "C"
 		PXActionDeniedNoPermission,
 		//-----------------------------------
 		
+		PXActionNotImplemented,
+		PXActionNotSupportedByLibrary,
+		PXActionNotSupportedByOperatingSystem,
+
+		
 		PXActionRefuedInputBufferNull, // is NULL
 		PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
 		PXActionRefuedInputBufferTooSmal, // cant 

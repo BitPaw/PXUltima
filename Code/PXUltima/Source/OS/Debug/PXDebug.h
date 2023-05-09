@@ -21,7 +21,8 @@ extern "C"
 
 		PXThread EventListenLoop;
 
-		PXByte ApplicatioName[260];
+		PXByte ApplicatioNameBuffer[260];
+		PXText ApplicatioName;
 	}
 	PXDebug;
 
@@ -31,15 +32,14 @@ extern "C"
 	// VS Debugger functions-- maybe
 	PXPublic PXActionResult PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* const isPresent);
 	PXPublic PXBool PXDebugProcessBeeingDebuggedCurrent();
-	PXPublic void PXDebugDebuggerSendMessageA(PXDebug* const pxDebug, PXTextASCII message);
-	PXPublic void PXDebugDebuggerSendMessageW(PXDebug* const pxDebug, PXTextUNICODE message);
-	PXPublic void PXDebugDebuggerSendMessageU(PXDebug* const pxDebug, PXTextUTF8 message);
+
+	PXPublic void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message);
 
 
 	PXPublic PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug);
 
 
-	PXPublic PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXTextASCII applicationName);
+	PXPublic PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const applicationName);
 
 	// Enables a debugger to continue a thread that previously reported a debugging event.
 	PXPublic void PXDebugContinue(PXDebug* const pxDebug);

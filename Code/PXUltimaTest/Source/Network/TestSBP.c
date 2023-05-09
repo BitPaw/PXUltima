@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-#include <Network/SBP/SBPClient.h>
-#include <Network/SBP/SBPServer.h>
+#include <Network/SBP/PXSBPProtocol.h>
 
 void TestSBPAll()
 {
@@ -19,12 +18,19 @@ void TestSBPClientServerResponse()
 	PXSBPServer server;
 	PXSBPClient client;
 
-	SBPServerConstruct(&server);
+	PXSBPServerConstruct(&server);
 	PXSBPClientConstruct(&client);
 
-	SBPServerStart(&server, 13370);
+	PXServerStart(&server.Server, 13370, ProtocolModeTCP);
 
-	SBPPXClientConnectToServer(&client, "127.0.0.1", 13370);
+
+	PXClientConnectToServer(&client.Client, "127.0.0.1", 13370, &client.Client, CommunicationFunctionAsync);
+
+
+	char hello[] = "Hello, this is a message";
+	
+	PXSBPClientSendMessage(&client, hello, sizeof(hello));
+
 
 	while (1)
 	{

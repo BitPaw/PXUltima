@@ -27,6 +27,9 @@
 void PXDebugConstruct(PXDebug* const pxDebug)
 {
 	MemoryClear(pxDebug, sizeof(PXDebug));
+
+	pxDebug->ApplicatioName.SizeAllocated = sizeof(pxDebug->ApplicatioNameBuffer);
+	pxDebug->ApplicatioName.TextA = pxDebug->ApplicatioNameBuffer;
 }
 
 void PXDebugDestruct(PXDebug* const pxDebug)
@@ -58,28 +61,28 @@ PXBool PXDebugProcessBeeingDebuggedCurrent()
 #endif
 }
 
-void PXDebugDebuggerSendMessageA(PXDebug* const pxDebug, PXTextASCII message)
+void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
 {
+	switch (message->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
 #if OSUnix
 #elif OSWindows
-	OutputDebugStringA(message);
+			OutputDebugStringA(message->TextA);
 #endif
-}
-
-void PXDebugDebuggerSendMessageW(PXDebug* const pxDebug, PXTextUNICODE message)
-{
+			break;
+		}
+		case TextFormatUNICODE:
+		{
 #if OSUnix
 #elif OSWindows
-	OutputDebugStringW(message);
+			OutputDebugStringW(message->TextW);
 #endif
-}
-
-void PXDebugDebuggerSendMessageU(PXDebug* const pxDebug, PXTextUTF8 message)
-{
-#if OSUnix
-#elif OSWindows
-	OutputDebugStringA(message);
-#endif
+			break;
+		}
+	}
 }
 
 PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
@@ -95,11 +98,11 @@ PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 #endif
 }
 
-PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXTextASCII applicationName)
+PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const applicationName)
 {
 	PXDebugConstruct(pxDebug);
 
-	PXTextCopyA(applicationName, 260, pxDebug->ApplicatioName, 260);
+	PXTextCopy(applicationName, &pxDebug->ApplicatioName);
 
 	// Start Thread that will listen to given process.
 	{
@@ -569,7 +572,7 @@ void PXDebugLoop(PXDebug* const pxDebug)
 {
 	// Create process to debug on
 	{
-		const PXActionResult result = PXProcessCreateA(&pxDebug->Process, pxDebug->ApplicatioName, PXProcessCreationModeDebugProcessOnly);
+		const PXActionResult result = PXProcessCreate(&pxDebug->Process, &pxDebug->ApplicatioName, PXProcessCreationModeDebugProcessOnly);
 
 		// If starting the process failed, stop.
 		PXActionExitOnError(result);

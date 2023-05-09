@@ -41,66 +41,74 @@ void PXProcessParent(PXProcess* const pxProcess)
 #endif
 }
 
-PXActionResult PXProcessCreateA(PXProcess* const pxProcess, const PXTextASCII programmPath, const PXProcessCreationMode mode)
+PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode)
 {
 	PXProcessConstruct(pxProcess);
 
+	switch (programmPath->Format)
+	{	
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
 #if OSUnix
+			return PXActionNotImplemented;
 
 #elif OSWindows
-	STARTUPINFO startupInfo;
-	PROCESS_INFORMATION processInfo;
+			STARTUPINFO startupInfo;
+			PROCESS_INFORMATION processInfo;
 
-	MemoryClear(&startupInfo, sizeof(STARTUPINFO));
-	MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+			MemoryClear(&startupInfo, sizeof(STARTUPINFO));
+			MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
 
-	startupInfo.cb = sizeof(STARTUPINFO);
+			startupInfo.cb = sizeof(STARTUPINFO);
 
-	const DWORD creationflags =
-		DEBUG_ONLY_THIS_PROCESS |
-		CREATE_NEW_CONSOLE |
-		PROCESS_QUERY_INFORMATION |
-		PROCESS_VM_READ;
+			const DWORD creationflags =
+				DEBUG_ONLY_THIS_PROCESS |
+				CREATE_NEW_CONSOLE |
+				PROCESS_QUERY_INFORMATION |
+				PROCESS_VM_READ;
 
-	const PXBool success = CreateProcessA(programmPath, NULL, NULL, NULL, 0, creationflags, NULL, NULL, &startupInfo, &processInfo);
+			const PXBool success = CreateProcessA(programmPath, NULL, NULL, NULL, 0, creationflags, NULL, NULL, &startupInfo, &processInfo);
 
-	PXActionOnErrorFetchAndExit(!success);
+			PXActionOnErrorFetchAndExit(!success);
 
-	pxProcess->ProcessHandle = processInfo.hProcess;
-	pxProcess->ProcessID = processInfo.dwProcessId;
-	pxProcess->ThreadHandle = processInfo.hThread;
-	pxProcess->ThreadID = processInfo.dwThreadId;
+			pxProcess->ProcessHandle = processInfo.hProcess;
+			pxProcess->ProcessID = processInfo.dwProcessId;
+			pxProcess->ThreadHandle = processInfo.hThread;
+			pxProcess->ThreadID = processInfo.dwThreadId;
 
 #endif
 
-	return PXActionSuccessful;
-}
-
-PXActionResult PXProcessCreateW(PXProcess* const pxProcess, const PXTextUNICODE programmPath, const PXProcessCreationMode mode)
-{
-	PXProcessConstruct(pxProcess);
-
+			break;
+		}
+		case TextFormatUNICODE:
+		{
 #if OSUnix
+			return PXActionNotImplemented;
 
 #elif OSWindows
-	STARTUPINFO startupInfo;
-	PROCESS_INFORMATION processInfo;
+			STARTUPINFO startupInfo;
+			PROCESS_INFORMATION processInfo;
 
-	MemoryClear(&startupInfo, sizeof(STARTUPINFO));
-	MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+			MemoryClear(&startupInfo, sizeof(STARTUPINFO));
+			MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
 
-	startupInfo.cb = sizeof(STARTUPINFO);
+			startupInfo.cb = sizeof(STARTUPINFO);
 
-	const PXBool success = CreateProcessW(programmPath, NULL, NULL, NULL, 0, DEBUG_PROCESS, NULL, NULL, &startupInfo, &processInfo);
+			const PXBool success = CreateProcessW(programmPath, NULL, NULL, NULL, 0, DEBUG_PROCESS, NULL, NULL, &startupInfo, &processInfo);
 
-	PXActionOnErrorFetchAndExit(!success);
+			PXActionOnErrorFetchAndExit(!success);
 
-	pxProcess->ProcessHandle = processInfo.hProcess;
-	pxProcess->ProcessID = processInfo.dwProcessId;
-	pxProcess->ThreadHandle = processInfo.hThread;
-	pxProcess->ThreadID = processInfo.dwThreadId;
+			pxProcess->ProcessHandle = processInfo.hProcess;
+			pxProcess->ProcessID = processInfo.dwProcessId;
+			pxProcess->ThreadHandle = processInfo.hThread;
+			pxProcess->ThreadID = processInfo.dwThreadId;
 
 #endif
+
+			break;
+		}
+	}
 
 	return PXActionSuccessful;
 }

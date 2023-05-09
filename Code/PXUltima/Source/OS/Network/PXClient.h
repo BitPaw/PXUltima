@@ -30,6 +30,8 @@ extern "C"
 	PXPublic PXActionResult PXClientConstruct(PXClient* const pxClient);
 	PXPublic PXActionResult PXClientDestruct(PXClient* const pxClient);
 
+	PXPublic PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize);
+
 	PXPublic PXActionResult PXClientConnectToServer(PXClient* const client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction);
 	PXPublic PXActionResult PXClientDisconnectFromServer(PXClient* const client);
 

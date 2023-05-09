@@ -87,7 +87,7 @@ int main()
 #endif
 	
 
-#if 1
+#if 0
 	PXImage image;
 
 	//ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.bmp");
@@ -121,7 +121,7 @@ int main()
 #endif // 1
 
 
-#if 0
+#if 1
 	TestSBPAll();
 #endif // 1
 

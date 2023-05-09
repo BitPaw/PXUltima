@@ -155,6 +155,15 @@ extern "C"
 //---------------------------------------------------------
 // 16-Bit int
 //---------------------------------------------------------
+#define PXInt16SplittEndianLittle(number, a, b) \
+	a = (number & 0xFF); \
+	b = (number & 0xFF00) >> 8u;
+
+#define PXInt16SplittEndianBig(number, a, b) \
+	a = (number & 0xFF00) >> 8u; \
+	b = (number & 0xFF);
+
+
 #define PXInt16MakeEndianLittle(a, b) (\
 	((PXInt16U)a) | \
 	((PXInt16U)b << 8u))

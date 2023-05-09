@@ -13,6 +13,11 @@ PXActionResult PXClientDestruct(PXClient* const pxClient)
     
 }
 
+PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
+{
+    return PXSocketSend(&pxClient->SocketPXClient, data, dataSize, 0);
+}
+
 PXActionResult PXClientConnectToServer(PXClient* const client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)
 {
     PXSocket pxSocketList[5];

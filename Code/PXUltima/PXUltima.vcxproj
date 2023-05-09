@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Network\SBP\PXSBPProtocol.h" />
     <ClInclude Include="Source\OS\File\PXDirectory.h" />
     <ClInclude Include="Source\Media\PXUltimaInfo.h" />
     <ClInclude Include="Source\Math\PXCollision.h" />
@@ -26,8 +27,6 @@
     <ClInclude Include="Source\Media\CS\PXCS.h" />
     <ClInclude Include="Source\Media\C\PXC.h" />
     <ClInclude Include="Source\OS\Debug\PXDebug.h" />
-    <ClInclude Include="Source\Network\SBP\PXSBPPackageProcessor.h" />
-    <ClInclude Include="Source\Network\SBP\SBPDataChunk.h" />
     <ClInclude Include="Source\Network\Web\PXFTPClient.h" />
     <ClInclude Include="Source\Media\FTP\FTP.h" />
     <ClInclude Include="Source\Media\HTTP\HTTP.h" />
@@ -144,9 +143,6 @@
     <ClInclude Include="Source\OS\Network\PXClient.h" />
     <ClInclude Include="Source\OS\Network\PXSocket.h" />
     <ClInclude Include="Source\OS\Network\IP.h" />
-    <ClInclude Include="Source\Network\SBP\SBPClient.h" />
-    <ClInclude Include="Source\Network\SBP\SBPProtocol.h" />
-    <ClInclude Include="Source\Network\SBP\SBPServer.h" />
     <ClInclude Include="Source\OS\Network\PXServer.h" />
     <ClInclude Include="Source\OS\Bash\PXBash.h" />
     <ClInclude Include="Source\OS\Window\PXWindow.h" />
@@ -163,6 +159,7 @@
     <ClInclude Include="Source\Language\PXTranslator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Network\SBP\PXSBPProtocol.c" />
     <ClCompile Include="Source\OS\File\PXDirectory.c" />
     <ClCompile Include="Source\Media\PXUltimaInfo.c" />
     <ClCompile Include="Source\Math\PXCollision.c" />
@@ -170,8 +167,6 @@
     <ClCompile Include="Source\Media\CS\PXCS.c" />
     <ClCompile Include="Source\Media\C\PXC.c" />
     <ClCompile Include="Source\OS\Debug\PXDebug.c" />
-    <ClCompile Include="Source\Network\SBP\PXSBPPackageProcessor.c" />
-    <ClCompile Include="Source\Network\SBP\SBPDataChunk.c" />
     <ClCompile Include="Source\Network\Web\PXFTPClient.c" />
     <ClCompile Include="Source\Media\FTP\FTP.c" />
     <ClCompile Include="Source\Media\HTTP\HTTP.c" />
@@ -288,9 +283,6 @@
     <ClCompile Include="Source\OS\Network\PXClient.c" />
     <ClCompile Include="Source\OS\Network\PXSocket.c" />
     <ClCompile Include="Source\OS\Network\IP.c" />
-    <ClCompile Include="Source\Network\SBP\SBPClient.c" />
-    <ClCompile Include="Source\Network\SBP\SBPProtocol.c" />
-    <ClCompile Include="Source\Network\SBP\SBPServer.c" />
     <ClCompile Include="Source\OS\Network\PXServer.c" />
     <ClCompile Include="Source\OS\Bash\PXBash.c" />
     <ClCompile Include="Source\OS\Window\PXWindow.c" />
