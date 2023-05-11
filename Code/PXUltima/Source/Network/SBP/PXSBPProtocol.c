@@ -16,12 +16,12 @@ void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
 
     pxSBPMessage->LastKnown = pxSBPMessage->FirstKnown;
 }
-PXBool PXSBPMessageChunkDataIsComplete(const PXSBPChunkSegment* const pxSBPMessageChunk)
+PXBool PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk)
 {
     return pxSBPMessageChunk->SizeExpected <= pxSBPMessageChunk->SizeCurrent;
 }
 
-PXBool PXSBPMessageChunkDataContainsMultible(const PXSBPChunkSegment* const pxSBPMessageChunk)
+PXBool PXSBPMessageChunkDataContainsMultible(const PXSBPChunkCache* const pxSBPMessageChunk)
 {
     return pxSBPMessageChunk->SizeExpected < pxSBPMessageChunk->SizeCurrent;
 }
@@ -125,11 +125,11 @@ void PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const fil
    
 }
 
-PXBool PXSBPMessageChunkParse(PXSBPChunkSegment* const pxSBPMessageChunk, const void* const data, const PXSize dataSize)
+PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize)
 {
     if (dataSize < PXSBPMessageChunkHeaderSize)
     {
-        MemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkSegment));
+        MemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkCache));
         return PXFalse;
     }
 
@@ -137,7 +137,7 @@ PXBool PXSBPMessageChunkParse(PXSBPChunkSegment* const pxSBPMessageChunk, const 
 
     if (!hasValidSignature)
     {
-        MemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkSegment));
+        MemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkCache));
         return PXFalse;
     }
 
@@ -154,17 +154,17 @@ void PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRe
     pxSBPReceiver->State = pxSBPRecieverState;    
 }
 
-PXInt16U PXSBPMessageSizeMissing(PXSBPChunkSegment* const pxSBPMessage)
+PXInt16U PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage)
 {
     return pxSBPMessage->SizeExpected - pxSBPMessage->SizeCurrent;
 }
 
-PXBool PXSBPMessageSizeComplete(PXSBPChunkSegment* const pxSBPMessage)
+PXBool PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage)
 {
     return pxSBPMessage->SizeCurrent == pxSBPMessage->SizeExpected;
 }
 
-PXSize PXSBPMessageChunkDataConsume(PXSBPChunkSegment* const pxSBPMessage, const void* const data, const PXSize dataSize)
+PXSize PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessage, const void* const data, const PXSize dataSize)
 {
     const PXSize before = PXSBPMessageSizeMissing(pxSBPMessage);
     const PXAdress* adress = (PXAdress)pxSBPMessage->Message + pxSBPMessage->SizeCurrent;
@@ -181,7 +181,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
     {
         case PXSBPRecieverStateAwaitingHeaderBegin:
         {         
-            MemoryClear(&pxSBPReceiver->MessageChunkCurrent, sizeof(PXSBPChunkSegment)); // Clear current message
+            MemoryClear(&pxSBPReceiver->MessageChunkCurrent, sizeof(PXSBPChunkCache)); // Clear current message
 
             // Check if message is too short
             {
@@ -232,7 +232,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
 
                     PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateAwaitingDataEnd);
 
-                    InvokeEvent(pxSBPReceiver->OnMessageProgressUpdatedCallBack, 0);
+                    InvokeEvent(pxSBPReceiver->OnChunkSegmentUpdatedCallBack, &pxSBPReceiver->MessageChunkCurrent);
                     break;
                 }
             }
@@ -300,7 +300,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
             if (!isComplete)
             {
                 // Wait for additional extrended data
-                InvokeEvent(pxSBPReceiver->OnMessageProgressUpdatedCallBack, 0);
+                InvokeEvent(pxSBPReceiver->OnChunkSegmentUpdatedCallBack, &pxSBPReceiver->MessageChunkCurrent);
                 break;
             }
 
@@ -371,77 +371,103 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
             if (pxSBPMessage->MessageSizeCached == pxSBPMessage->MessageSize)
             {
                 // We are done
-                InvokeEvent(pxSBPReceiver->OnMessageReceivedCallBack, pxSBPChunk);
+                InvokeEvent(pxSBPReceiver->OnChunkReceivedCallBack, pxSBPChunk);
 
                 PXDictionaryRemove(&pxSBPReceiver->MessageStreamLookup, &pxSBPChunk->ChannelID);
 
                 return;
             }
 
-            InvokeEvent(pxSBPReceiver->OnMessageProgressUpdatedCallBack, pxSBPChunk);
+            InvokeEvent(pxSBPReceiver->OnChunkSegmentUpdatedCallBack, pxSBPChunk);
         }
     }
 
     // Is first chunk, read header and register
     {
         PXSBPMessage pxSBPMessage;
+        PXSBPMessageConstruct(&pxSBPMessage);
 
         PXFile pxFile;
         PXFileBufferExternal(&pxFile, pxSBPChunk->Data, pxSBPChunk->DataSize);
 
-        const PXByte flagValue = 0;
+        pxSBPMessage.ID = pxSBPChunk->ChannelID;
 
-        PXFileReadI8U(&pxFile, &flagValue);
-
-        const PXSBPMessageBitSize pxSBPMessageBitSize = (PXSBPMessageBitSize)((flagValue & 0b11000000) >> 6u) + 1;
-        pxSBPMessage.HasExtendedDelegation = (flagValue & 0b00100000) >> 5u;
-
-        switch (pxSBPMessageBitSize)
+        // Parse byte
         {
-            case PXSBPMessageBitSize8Bit:
+            const PXByte flagValue = 0;
+
+            PXFileReadI8U(&pxFile, &flagValue);
+
+            pxSBPMessage.MessageBitSize = (PXSBPMessageBitSize)((flagValue & 0b11000000) >> 6u) + 1;
+            pxSBPMessage.HasExtendedDelegation = (flagValue & 0b00100000) >> 5u;
+
+            switch (pxSBPMessage.MessageBitSize)
             {
-                PXInt8U size;
+                case PXSBPMessageBitSize8Bit:
+                {
+                    PXInt8U size;
 
-                PXFileReadI8U(&pxFile, &size);
+                    PXFileReadI8U(&pxFile, &size);
 
-                pxSBPMessage.MessageSize = size;
+                    pxSBPMessage.MessageSize = size;
 
-                break;
+                    break;
+                }
+                case PXSBPMessageBitSize16Bit:
+                {
+                    PXInt16U size;
+
+                    PXFileReadI16UE(&pxFile, &size, PXEndianBig);
+
+                    pxSBPMessage.MessageSize = size;
+
+                    break;
+                }
+                case PXSBPMessageBitSize32Bit:
+                {
+                    PXInt32U size;
+
+                    PXFileReadI32UE(&pxFile, &size, PXEndianBig);
+
+                    pxSBPMessage.MessageSize = size;
+
+                    break;
+                }
+                case PXSBPMessageBitSize64Bit:
+                {
+                    PXInt64U size;
+
+                    PXFileReadI64UE(&pxFile, &size, PXEndianBig);
+
+                    pxSBPMessage.MessageSize = size;
+
+                    break;
+                }
             }
-            case PXSBPMessageBitSize16Bit:
-            {
-                PXInt16U size;
 
-                PXFileReadI16UE(&pxFile, &size, PXEndianBig);
-
-                pxSBPMessage.MessageSize = size;
-
-                break;
-            }
-            case PXSBPMessageBitSize32Bit:
-            {
-                PXInt32U size;
-
-                PXFileReadI32UE(&pxFile, &size, PXEndianBig);
-
-                pxSBPMessage.MessageSize = size;
-
-                break;
-            }
-            case PXSBPMessageBitSize64Bit:
-            {
-                PXInt64U size;
-
-                PXFileReadI64UE(&pxFile, &size, PXEndianBig);
-
-                pxSBPMessage.MessageSize = size;
-
-                break;
-            }
+            pxSBPMessage.MessageSize -= pxFile.DataCursor;
+            pxSBPMessage.MessageData = (PXAdress)pxSBPChunk->Data + pxFile.DataCursor;
         }
 
+        // Is chunk singular and can be consumed instandly?
+        if (pxSBPMessage.MessageSize == pxSBPChunk->DataSize)
+        {
+            pxSBPMessage.StorageType = PXSBPMessageStorageTypeDirect;
+            InvokeEvent(pxSBPReceiver->OnMessageReceivedCallBack, &pxSBPMessage);
+            return;
+        }
+
+        pxSBPMessage.StorageType = PXSBPMessageStorageTypeCacheCollected;
+
         PXDictionaryAdd(&pxSBPReceiver->MessageStreamLookup, &pxSBPChunk->ChannelID, &pxSBPMessage);
-    }    
+
+        InvokeEvent(pxSBPReceiver->OnMessageUpdatedCallBack, &pxSBPMessage);
+    }      
+}
+
+void PXSBPOnDataMessageReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPMessage* const pxSBPMessage)
+{
+    
 }
 
 void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)

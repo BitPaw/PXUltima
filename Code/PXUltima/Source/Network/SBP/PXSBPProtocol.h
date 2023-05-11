@@ -42,11 +42,22 @@ extern "C"
 	}
 	PXSBPMessageBitSize;
 
+	typedef enum PXSBPMessageStorageType_
+	{
+		PXSBPMessageStorageTypeInvalid,
+		PXSBPMessageStorageTypeDirect,
+		PXSBPMessageStorageTypeCacheCollected,
+	}
+	PXSBPMessageStorageType;
+
 	typedef struct PXSBPMessage_
 	{
 		// Raw data
 		void* MessageData; // Payload data. Context of this data is not interpreted.
 		PXSize MessageSize;// Current size of the data chunk, cant be bigger than expected size.
+
+		PXSBPMessageBitSize MessageBitSize;
+		PXSBPMessageStorageType StorageType;
 
 		// Delegation info
 		PXMessageID ID; // ID that belongs to message itself. So that chunks can conbine them.
@@ -74,10 +85,12 @@ extern "C"
 
 	typedef void (*PXSBPReceiverOnMessageInvalid)(PXSocket* const socket, const PXSocketID socketID);
 
-	typedef void (*PXSBPMessageOnMessageReceivedEvent)(PXSBPMessage* const pxSBPMessage);
-	typedef void (*PXSBPMessageOnMessageProgressUpdatedEvent)(PXSBPMessage* const pxSBPMessage);
 
-	typedef struct PXSBPChunkSegment_
+
+
+
+	
+	typedef struct PXSBPChunkCache_
 	{
 		void* Message; // Payload data. Context of this data is not interpreted.
 
@@ -85,7 +98,7 @@ extern "C"
 		PXInt16U SizeExpected;// Expected size of the data. Known from the header info of the first chunk.
 		PXMessageID ID; // ID that belongs to message itself. So that chunks can conbine them.
 	}
-	PXSBPChunkSegment;
+	PXSBPChunkCache;
 
 
 
@@ -98,17 +111,25 @@ extern "C"
 	PXSBPChunk;
 
 
+	// Chunk Cache
+	typedef void (*PXSBPOnChunkSegmentUpdatedFunction)(const PXSBPChunkCache* const pxSBPChunkSegment);
+
+	// Chunk
+	typedef void (*PXSBPOnChunkReceivedFunction)(const PXSBPChunk* const pxSBPChunk);
+	typedef void (*PXSBPOnChunkEmittedFunction)(const PXSBPChunk* const pxSBPChunk);
+
+	// Message
+	typedef void (*PXSBPOnMessageUpdatedFunction)(const PXSBPMessage* const pxSBPMessage);
+	typedef void (*PXSBPOnMessageReceivedFunction)(const PXSBPMessage* const pxSBPMessage);
+	//typedef void (*PXSBPOnChunkEmittedFunction)(const PXSBPChunk* const pxSBPChunk);
 
 
 
-
-
-
-	PXPublic PXBool PXSBPMessageChunkDataIsComplete(const PXSBPChunkSegment* const pxSBPMessageChunk);
-	PXPublic PXBool PXSBPMessageChunkDataContainsMultible(const PXSBPChunkSegment* const pxSBPMessageChunk);
+	PXPublic PXBool PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk);
+	PXPublic PXBool PXSBPMessageChunkDataContainsMultible(const PXSBPChunkCache* const pxSBPMessageChunk);
 
 	// Consumes data that will be merged into the SBP-Message. The result is the size consumed by this function.
-	PXPublic PXSize PXSBPMessageChunkDataConsume(PXSBPChunkSegment* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
+	PXPublic PXSize PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
 
 
 	typedef struct PXSBPReceiver_
@@ -117,7 +138,7 @@ extern "C"
 
 		PXDictionary MessageStreamLookup;
 
-		PXSBPChunkSegment MessageChunkCurrent;
+		PXSBPChunkCache MessageChunkCurrent;
 
 		char HeaderCacheSize;
 		char HeaderCache[PXSBPMessageChunkHeaderSize];
@@ -125,10 +146,11 @@ extern "C"
 		// External events
 		PXSBPReceiverOnMessageInvalid OnMessageInvalidCallBack;
 
+		PXSBPOnChunkSegmentUpdatedFunction OnChunkSegmentUpdatedCallBack;
+		PXSBPOnChunkReceivedFunction OnChunkReceivedCallBack;
 
-		PXSBPMessageOnMessageReceivedEvent OnMessageReceivedCallBack;
-		PXSBPMessageOnMessageProgressUpdatedEvent OnMessageProgressUpdatedCallBack;
-
+		PXSBPOnMessageUpdatedFunction OnMessageUpdatedCallBack;
+		PXSBPOnMessageReceivedFunction OnMessageReceivedCallBack;
 	}
 	PXSBPReceiver;
 
@@ -144,8 +166,13 @@ extern "C"
 		// Message queue?
 		PXInt16U PackageSizeMaximal;
 
+
+		PXSBPOnChunkEmittedFunction OnChunkEmittedCallBack;
+
 	}
 	PXSBPEmitter;
+
+
 
 	typedef struct PXSBPClient_
 	{
@@ -185,6 +212,7 @@ extern "C"
 
 	PXPrivate void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDataMoveEventInfo* const pxSocketDataMoveEventInfo);
 	PXPrivate void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChunk* const pxSBPChunk);
+	PXPrivate void PXSBPOnDataMessageReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPMessage* const pxSBPMessage);
 
 	// PXSBPEmitter
 
@@ -209,7 +237,7 @@ extern "C"
 
 
 
-	PXPrivate PXBool PXSBPMessageChunkParse(PXSBPChunkSegment* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
+	PXPrivate PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
 
 	PXPrivate void PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRecieverState pxSBPRecieverState);
 
@@ -217,12 +245,12 @@ extern "C"
 
 
 
-	PXPublic PXInt16U PXSBPMessageSizeMissing(PXSBPChunkSegment* const pxSBPMessage);
-		PXPublic PXBool PXSBPMessageSizeComplete(PXSBPChunkSegment* const pxSBPMessage);
+	PXPublic PXInt16U PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage);
+		PXPublic PXBool PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage);
       
-    PXPublic void PXSBPMessageConstruct(PXSBPChunkSegment* const pxSBPMessage);
-    PXPublic void PXSBPMessageConstructSet(PXSBPChunkSegment* const pxSBPMessage);
-    PXPublic void PXSBPMessageConstructAllocate(PXSBPChunkSegment* const pxSBPMessage);
+    PXPublic void PXSBPMessageConstruct(PXSBPChunkCache* const pxSBPMessage);
+    PXPublic void PXSBPMessageConstructSet(PXSBPChunkCache* const pxSBPMessage);
+    PXPublic void PXSBPMessageConstructAllocate(PXSBPChunkCache* const pxSBPMessage);
 
 
 
