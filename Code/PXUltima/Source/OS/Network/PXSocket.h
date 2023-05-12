@@ -40,6 +40,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 //-----------------------------------------------
 
 #include <Media/PXType.h>
+#include <Media/PXText.h>
 #include <OS/Thread/PXLock.h>
 #include <OS/Thread/PXThread.h>
 #include <OS/Error/PXActionResult.h>
@@ -258,8 +259,8 @@ extern "C"
 
 	typedef struct PXSocketAdressSetupInfo_
 	{
-		const char* const IP; // null for any ipAdress
-		unsigned short Port; // -1 for no port
+		PXText IP; // null for any ipAdress
+		PXInt16U Port; // -1 for no port
 		IPAdressFamily IPMode;
 		PXSocketType SocketType;
 		ProtocolMode ProtocolMode;

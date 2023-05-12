@@ -18,7 +18,7 @@ PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data
     return PXSocketSend(&pxClient->SocketPXClient, data, dataSize, 0);
 }
 
-PXActionResult PXClientConnectToServer(PXClient* const client, const char* ip, unsigned short port, const void* threadObject, const ThreadFunction threadFunction)
+PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port, const void* threadObject, const ThreadFunction threadFunction)
 {
     PXSocket pxSocketList[5];
     PXSize pxSocketListSizeMax = 5;
@@ -28,7 +28,7 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const char* ip, u
 
     const PXSocketAdressSetupInfo pxSocketAdressSetupInfoList[1] =
     {
-          ip, port, IPAdressFamilyUnspecified, PXSocketTypeStream, ProtocolModeTCP
+          *ip, port, IPAdressFamilyUnspecified, PXSocketTypeStream, ProtocolModeTCP
     };
     const PXSize pxSocketAdressSetupInfoListSize = sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
 

@@ -55,9 +55,7 @@ namespace PX
 		//---------------------------------------------------------------------
 
 		//---<Open>------------------------------------------------------------
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileOpenFromPathA(ref PXFile pXFile, char* filePath, int pxAccessMode, int pxMemoryCachingMode);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileOpenFromPathW(ref PXFile pXFile, char* filePath, int pxAccessMode, int pxMemoryCachingMode);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileOpenFromPathU(ref PXFile pXFile, char* filePath, int pxAccessMode, int pxMemoryCachingMode);
+		[DllImport("PXUltima.dll")] private static extern ActionResult PXFileOpenFromPath(ref PXFile pXFile, ref PXText filePath, int pxAccessMode, int pxMemoryCachingMode);
 		//---------------------------------------------------------------------
 
 		//---<Close>-----------------------------------------------------------
@@ -307,7 +305,14 @@ namespace PX
 
 			fixed (char* adress = filePath.ToCharArray())
 			{
-				actionResult = (ActionResult)PXFileOpenFromPathW(ref _pxFile, adress, pxAccessMode, pxMemoryCachingMode);
+                PXText pXText = new PXText();
+                pXText.SizeAllocated = (ulong)filePath.Length; 
+                pXText.SizeUsed = (ulong)filePath.Length;
+                pXText.NumberOfCharacters = (ulong)filePath.Length;
+                pXText.TextW = adress;
+                pXText.Format = 2;
+
+                actionResult = PXFileOpenFromPath(ref _pxFile, ref pXText, pxAccessMode, pxMemoryCachingMode);
 			}
 
 			return actionResult;

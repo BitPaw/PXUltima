@@ -1263,6 +1263,30 @@ PXSize PXTextReplace(PXText* const pxText, char target, char value)
 	}
 }
 
+PXSize PXTextFromInt(const int number, PXText* const pxText)
+{
+	switch (pxText->Format)
+	{
+	case TextFormatUTF8:
+	case TextFormatASCII:
+	{
+		pxText->SizeUsed = PXTextFromIntA(number, pxText->TextA, pxText->SizeAllocated);
+
+		break;
+	}
+
+
+	case TextFormatUNICODE:
+	{
+		pxText->SizeUsed = wsprintfW(pxText->TextW, L"%i", number);
+
+		//pxText->SizeUsed = PXTextFromIntW(number, pxText->TextW, pxText->SizeAllocated);
+
+		break;
+	}
+	}
+}
+
 PXSize PXTextFromIntA(int number, char* string, const PXSize dataSize)
 {
 	PXBool isSigned = PXFalse;

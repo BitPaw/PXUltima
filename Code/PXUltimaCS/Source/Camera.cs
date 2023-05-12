@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace dcdPX
+namespace PX
 {
     public class Camera
     {

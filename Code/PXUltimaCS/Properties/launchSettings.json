@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PXUltimaCS": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

@@ -26,10 +26,7 @@ namespace PX
 
         // Create a window based on the OS implementation.
         // if a NULL pointer is used as a title, the window will be hidden.
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreateA(ref PXWindow window, int width, int height, char* title, bool async);
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreateW(ref PXWindow window, int width, int height, char* title, bool async);
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreateU(ref PXWindow window, int width, int height, char* title, bool async);
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreate(ref PXWindow window, int width, int height, bool async);
+        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreate(ref PXWindow window, int width, int height, ref PXText title, bool async);
         [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreateHidden(ref PXWindow window, int width, int height, bool async);
 
         [DllImport("PXUltima.dll")] private static unsafe extern bool PXWindowTitleSetA(ref PXWindow window, char* title, UInt64 titleSize);
@@ -110,14 +107,28 @@ namespace PX
         {
             fixed (char* charBuffer = title)
             {
-                PXWindowCreateW(ref _pxWindow, -1, -1, charBuffer, true);
+                PXText pXText = new PXText();
+                pXText.SizeAllocated = (ulong)title.Length;
+                pXText.SizeUsed = (ulong)title.Length;
+                pXText.NumberOfCharacters = (ulong)title.Length;
+                pXText.TextW = charBuffer;
+                pXText.Format = 2;
+
+                PXWindowCreate(ref _pxWindow, -1, -1, ref pXText, true);
             }
         }
         public unsafe void Create(int width, int height, string title)
         {
             fixed (char* charBuffer = title)
             {
-                PXWindowCreateW(ref _pxWindow, width, height, charBuffer, true);
+                PXText pXText = new PXText();
+                pXText.SizeAllocated = (ulong)title.Length;
+                pXText.SizeUsed = (ulong)title.Length;
+                pXText.NumberOfCharacters = (ulong)title.Length;
+                pXText.TextW = charBuffer;
+                pXText.Format = 2;
+
+                PXWindowCreate(ref _pxWindow, width, height, ref pXText, true);
             }
         }
 

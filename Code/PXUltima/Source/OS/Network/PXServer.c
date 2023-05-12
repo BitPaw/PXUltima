@@ -36,14 +36,14 @@ PXBool PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID s
     return PXFalse;
 }
 
-PXActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode)
+PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const ProtocolMode protocolMode)
 {
     // Setup adress info
     {
         const PXSocketAdressSetupInfo pxSocketAdressSetupInfoList[2] =
         {
-            { 0, port, IPAdressFamilyINET,PXSocketTypeStream, protocolMode },
-            { 0, port, IPAdressFamilyINET6,PXSocketTypeStream, protocolMode }
+            { {0,0,0,0,1}, port, IPAdressFamilyINET,PXSocketTypeStream, protocolMode},
+            { {0,0,0,0,1}, port, IPAdressFamilyINET6,PXSocketTypeStream, protocolMode }
         };
         const PXSize pxSocketAdressSetupInfoListSize = 1;// sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
 

@@ -74,8 +74,6 @@ extern "C"
 	PXSBPMessage;
 
 
-
-
 	PXPublic void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage);
 	PXPublic void PXSBPMessageParse(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize);
 
@@ -195,13 +193,19 @@ extern "C"
 	PXPublic void PXSBPServerConstruct(PXSBPServer* const pxSBPServer);
 	PXPublic void PXSBPServerDestruct(PXSBPServer* const pxSBPServer);
 
+	PXPublic PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port);
+	PXPublic PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer);
+
 
 	// PXSBPClient
 
 	PXPublic void PXSBPClientConstruct(PXSBPClient* const pxSBPClient);
 	PXPublic void PXSBPClientDestruct(PXSBPClient* const pxSBPClient);
 
+	PXPublic PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port);
+	PXPublic PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient);
 
+	PXPublic void PXSBPClientMessageReceivedCallBackAdd(PXSBPClient* const pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
 
 	PXPublic void PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize);
 	PXPublic void PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath);

@@ -52,6 +52,16 @@ void PXSBPServerDestruct(PXSBPServer* const pxSBPServer)
     //PXSBPEmitterConstruct(&pxSBPServer->Emitter);
 }
 
+PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port)
+{
+    return PXServerStart(pxSBPServer, port, ProtocolModeTCP);
+}
+
+PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer)
+{
+    return PXServerStop(pxSBPServer);
+}
+
 void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
 {
     PXClientConstruct(&pxSBPClient->Client);
@@ -65,6 +75,23 @@ void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
 void PXSBPClientDestruct(PXSBPClient* const pxSBPClient)
 {
     PXClientDestruct(&pxSBPClient->Client);
+}
+
+PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port)
+{
+    //PXServerStart(&server.Server, 13370, ProtocolModeTCP);
+
+    return PXClientConnectToServer(&pxSBPClient->Client, ip, port, &pxSBPClient->Client, CommunicationFunctionAsync);
+}
+
+PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
+{
+    return PXClientDisconnectFromServer(&pxSBPClient->Client);
+}
+
+void PXSBPClientMessageReceivedCallBackAdd(PXSBPClient* const pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction)
+{
+    pxSBPClient->Receiver.OnChunkReceivedCallBack = pxSBPOnMessageReceivedFunction;
 }
 
 void PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize)

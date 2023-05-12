@@ -693,31 +693,164 @@ PXActionResult PXSocketSetupAdress
     {
         PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo = &pxSocketAdressSetupInfoList[i];
 
-        char portNumberString[30];
-        char* portNumberStringAdress = 0;
-        AdressInfoType adressHints;
-        AdressInfoType* adressResult = 0;
-        // ADRRINFOW?
+        PXText portText;
+        PXTextConstructWithBufferNamedA(&portText, portTextBuffer, 30);
+        char* portTextAdress = 0;
+        
+
+        portText.Format = pxSocketAdressSetupInfo->IP.Format;
 
 
         if (pxSocketAdressSetupInfo->Port != -1)
         {
-            PXTextFromIntA(pxSocketAdressSetupInfo->Port, portNumberString, 30u);
+            PXTextFromInt(pxSocketAdressSetupInfo->Port, &portText);
 
-            portNumberStringAdress = portNumberString;
+            portTextAdress = portText.TextA;
         }
 
-        adressHints.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
-        adressHints.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
-        adressHints.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
-        adressHints.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
-        adressHints.ai_addrlen = 0;
-        adressHints.ai_canonname = 0;
-        adressHints.ai_addr = 0;
-        adressHints.ai_next = 0;
 
-        const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP, portNumberString, &adressHints, &adressResult);
-        const PXBool validAdressInfo = adressInfoResult == 0;
+
+
+
+        switch (pxSocketAdressSetupInfo->IP.Format)
+        {
+            case TextFormatASCII:
+            case TextFormatUTF8:
+            {
+#if OSUnix
+                const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP->TextA, portNumberString, &adressHints, &adressResult);
+                const PXBool validAdressInfo = adressInfoResult == 0;
+
+#elif OSWindows
+                ADDRINFOA addressInfoHintA;
+                ADDRINFOA* addressInfoListA = 0;
+
+                MemoryClear(&addressInfoHintA, sizeof(ADDRINFOA));
+                addressInfoHintA.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
+                addressInfoHintA.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
+                addressInfoHintA.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
+                addressInfoHintA.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
+                               
+
+                const int adressInfoResult = GetAddrInfoA(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHintA, &addressInfoListA);
+                const PXBool validAdressInfo = adressInfoResult == 0;
+
+                // Yeet?
+
+                for (ADDRINFOA* adressInfoCurrent = addressInfoListA; adressInfoCurrent; adressInfoCurrent = adressInfoCurrent->ai_next)
+                {
+                    PXSocket* const pxSocket = &pxSocketList[(*PXSocketListSize)++];
+                    struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfoCurrent->ai_addr;
+                    const char* result = 0;
+
+                    MemoryClear(pxSocket->IP, IPv6LengthMax);
+
+                    result = inet_ntop(adressInfoCurrent->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
+
+                    switch (adressInfoCurrent->ai_family)
+                    {
+                    case AF_INET:
+                    {
+                        pxSocket->Port = ntohs((((struct sockaddr_in*)adressInfoCurrent->ai_addr)->sin_port));
+                        break;
+                    }
+                    case AF_INET6:
+                    {
+                        pxSocket->Port = ntohs((((struct sockaddr_in6*)adressInfoCurrent->ai_addr)->sin6_port));
+                        break;
+                    }
+                    default:
+                    {
+                        pxSocket->Port = 0;
+                        break;
+                    }
+                    }
+
+                    pxSocket->Protocol = pxSocketAdressSetupInfo->ProtocolMode;
+                    pxSocket->Family = pxSocketAdressSetupInfo->IPMode;
+                    pxSocket->Type = pxSocketAdressSetupInfo->SocketType;
+                    pxSocket->IPSize = adressInfoCurrent->ai_addrlen;
+
+                    MemoryCopy(adressInfoCurrent->ai_addr, adressInfoCurrent->ai_addrlen, pxSocket->IP, IPv6LengthMax);
+
+                    pxSocket->State = SocketInitialised;
+                }
+
+                FreeAddrInfoA(addressInfoListA);
+
+#endif
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+#if OSUnix
+#elif OSWindows               
+                ADDRINFOW addressInfoHintW;
+                ADDRINFOW* addressInfoListW = 0;
+
+                MemoryClear(&addressInfoHintW, sizeof(ADDRINFOA));
+                addressInfoHintW.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
+                addressInfoHintW.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
+                addressInfoHintW.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
+                addressInfoHintW.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
+
+                const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h 
+                const PXBool validAdressInfo = adressInfoResultID == 0;
+
+
+                for (ADDRINFOW* adressInfoCurrent = addressInfoListW; adressInfoCurrent; adressInfoCurrent = adressInfoCurrent->ai_next)
+                {
+                    PXSocket* const pxSocket = &pxSocketList[(*PXSocketListSize)++];
+                    struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfoCurrent->ai_addr;
+                    const char* result = 0;
+
+                    MemoryClear(pxSocket->IP, IPv6LengthMax);
+
+                    result = inet_ntop(adressInfoCurrent->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
+
+                    switch (adressInfoCurrent->ai_family)
+                    {
+                    case AF_INET:
+                    {
+                        pxSocket->Port = ntohs((((struct sockaddr_in*)adressInfoCurrent->ai_addr)->sin_port));
+                        break;
+                    }
+                    case AF_INET6:
+                    {
+                        pxSocket->Port = ntohs((((struct sockaddr_in6*)adressInfoCurrent->ai_addr)->sin6_port));
+                        break;
+                    }
+                    default:
+                    {
+                        pxSocket->Port = 0;
+                        break;
+                    }
+                    }
+
+                    pxSocket->Protocol = pxSocketAdressSetupInfo->ProtocolMode;
+                    pxSocket->Family = pxSocketAdressSetupInfo->IPMode;
+                    pxSocket->Type = pxSocketAdressSetupInfo->SocketType;
+                    pxSocket->IPSize = adressInfoCurrent->ai_addrlen;
+
+                    MemoryCopy(adressInfoCurrent->ai_addr, adressInfoCurrent->ai_addrlen, pxSocket->IP, IPv6LengthMax);
+
+                    pxSocket->State = SocketInitialised;
+                }
+
+                FreeAddrInfoW(addressInfoListW);
+
+#endif
+
+                break;
+            }  
+
+
+        }
+
+
+
+
+       /*
 
         if (!validAdressInfo)
         {
@@ -778,49 +911,10 @@ PXActionResult PXSocketSetupAdress
                 break;
             }
         }
-        }
+        }*/
 
 
-        for (AdressInfoType* adressInfo = adressResult; adressInfo; adressInfo = adressInfo->ai_next)
-        {
-            PXSocket* const pxSocket = &pxSocketList[(*PXSocketListSize)++];
-            struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfo->ai_addr;
-            const char* result = 0;
-
-            MemoryClear(pxSocket->IP, IPv6LengthMax);
-
-            result = inet_ntop(adressInfo->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
-
-            switch (adressInfo->ai_family)
-            {
-                case AF_INET:
-                {
-                    pxSocket->Port = ntohs((((struct sockaddr_in*)adressInfo->ai_addr)->sin_port));
-                    break;
-                }
-                case AF_INET6:
-                {
-                    pxSocket->Port = ntohs((((struct sockaddr_in6*)adressInfo->ai_addr)->sin6_port));
-                    break;
-                }
-                default:
-                {
-                    pxSocket->Port = 0;
-                    break;
-                }
-            }
-
-            pxSocket->Protocol = pxSocketAdressSetupInfo->ProtocolMode;
-            pxSocket->Family = pxSocketAdressSetupInfo->IPMode;
-            pxSocket->Type = pxSocketAdressSetupInfo->SocketType;
-            pxSocket->IPSize = adressInfo->ai_addrlen;
-
-            MemoryCopy(adressInfo->ai_addr, adressInfo->ai_addrlen, pxSocket->IP, IPv6LengthMax);
-
-            pxSocket->State = SocketInitialised;
-        }
-
-        AdressInfoDelete(adressResult);
+      
     }
 
     return PXActionSuccessful;

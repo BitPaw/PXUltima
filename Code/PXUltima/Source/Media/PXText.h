@@ -52,19 +52,22 @@ extern "C"
 
 	typedef struct PXText_
 	{
-		PXSize SizeAllocated; // Size that the buffer ponited to has
-		PXSize SizeUsed;
-		PXSize NumberOfCharacters; 
-
-		PXTextFormat Format;
+		PXSize SizeAllocated; // [8 Byte, Offset 0] Size that the buffer ponited to has
+		PXSize SizeUsed; // [8 Byte, Offset 8]
+		PXSize NumberOfCharacters;  // [8 Byte, Offset 16]
 
 		union
 		{
-			char* TextA;
-			wchar_t* TextW;
+			char* TextA; // [8 Byte, Offset 24]
+			wchar_t* TextW; // [8 Byte, Offset 24]
 		};
+
+		PXTextFormat Format; // [4 Byte, Offset 32]		
 	}
 	PXText;
+
+	//const int xx = sizeof(PXText);
+	//const int xxss = sizeof(PXTextFormat);
 
 #define PXTextConstructWithBufferA(pxText, bufferSize)\
 		char pxTextInternalBuffer[bufferSize];\
@@ -105,6 +108,8 @@ extern "C"
 		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = s;
 
+
+	PXPublic PXSize PXTextFromInt(const int number, PXText* const pxText);
 
 	PXPublic PXSize PXTextFromIntA(const int number,  char* string, const PXSize dataSize);
 	PXPublic PXSize PXTextFromIntW(const int number,  wchar_t* string, const PXSize dataSize);

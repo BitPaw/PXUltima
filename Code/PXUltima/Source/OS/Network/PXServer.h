@@ -33,7 +33,7 @@ extern "C"
 
 	PXPrivate PXBool PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID socketID, PXSocket** const pxSocket);
 
-	PXPublic PXActionResult PXServerStart(PXServer* const server, const unsigned short port, const ProtocolMode protocolMode);
+	PXPublic PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const ProtocolMode protocolMode);
 	PXPublic PXActionResult PXServerStop(PXServer* const server);
 	PXPublic PXActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID);
 

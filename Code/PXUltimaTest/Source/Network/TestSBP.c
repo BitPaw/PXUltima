@@ -41,8 +41,10 @@ void TestSBPClientServerResponse()
 
 	PXServerStart(&server.Server, 13370, ProtocolModeTCP);
 
+	PXText ip;
+	PXTextMakeFixedA(&ip, "127.0.0.1");
 
-	PXClientConnectToServer(&client.Client, "127.0.0.1", 13370, &client.Client, CommunicationFunctionAsync);
+	PXSBPClientConnectToServer(&client, &ip, 25565);
 
 
 	char hello[] = "Hello, this is a message";
