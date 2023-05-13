@@ -11,22 +11,42 @@ namespace PX
         ulong DataSize;
     }
 
+    [StructLayout(LayoutKind.Sequential, Size = 128)]
+    internal unsafe struct PXSBPChunk
+    {
+        int Dummy;
+    }
+
+
+    //internal delegate void PXSBPOnChunkSegmentUpdatedFunction (ref PXSBPChunkCache pxSBPChunkSegment);
+
+    // Chunk
+    internal delegate void PXSBPOnChunkReceivedFunction(ref PXSBPChunk pxSBPChunk);
+    internal delegate void PXSBPOnChunkEmittedFunction(ref PXSBPChunk pxSBPChunk);
+
+    // Message
+    internal delegate void PXSBPOnMessageUpdatedFunction(ref PXSBPMessage pxSBPMessage);
     internal delegate void PXSBPOnMessageReceivedFunction(ref PXSBPMessage pxSBPMessage);
 
-   // internal delegate string CallBack();
+
+    // internal delegate string CallBack();
 
     public class SBPClient : IDisposable
     {
-        [StructLayout(LayoutKind.Sequential, Size = 1784)]
+        [StructLayout(LayoutKind.Sequential, Size = 1800)]
         private struct PXSBPClient
         {
-            int dummy;
+            int Dummy;
         }
 
         [DllImport("PXUltima.dll")] private static extern void PXSBPClientConstruct(ref PXSBPClient pxSBPClient);
         [DllImport("PXUltima.dll")] private static extern void PXSBPClientDestruct(ref PXSBPClient pxSBPClient);
 
-        [DllImport("PXUltima.dll")] private static extern void PXSBPClientMessageReceivedCallBackAdd(ref PXSBPClient pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
+        [DllImport("PXUltima.dll")] private static extern void PXSBPClientMessageReceivedCallBackSet(ref PXSBPClient pxSBPClient, PXSBPOnMessageUpdatedFunction pxSBPOnMessageReceivedFunction);
+        [DllImport("PXUltima.dll")] private static extern void PXSBPClientOnMessageUpdatedCallBackSet(ref PXSBPClient pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
+       // [DllImport("PXUltima.dll")] private static extern void PXSBPClientChunkSegmentUpdatedCallBackSet(ref PXSBPClient pxSBPClient, PXSBPOnChunkSegmentUpdatedFunction pxSBPOnMessageReceivedFunction);
+        [DllImport("PXUltima.dll")] private static extern void PXSBPClientChunkReceivedCallBackSet(ref PXSBPClient pxSBPClient, PXSBPOnChunkReceivedFunction pxSBPOnMessageReceivedFunction);
+
 
 
         [DllImport("PXUltima.dll")] private static extern ActionResult PXSBPClientConnectToServer(ref PXSBPClient pxSBPClient, ref PXText ip, ushort port);
@@ -36,23 +56,39 @@ namespace PX
         [DllImport("PXUltima.dll")] private static extern void PXSBPClientSendFile(ref PXSBPClient pxSBPClient, ref PXText filePath);
 
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void SBPOnMessageReceivedFunction(string message);
 
         public event SBPOnMessageReceivedFunction OnMessageReceived;
+        public event SBPOnMessageReceivedFunction OnMessageUpdated;
+        public event SBPOnMessageReceivedFunction OnChunkReceived;
+
+
 
         private PXSBPClient _pxSBPClient = new PXSBPClient();
 
-        internal void PXSBPOnMessageReceivedFunction(ref PXSBPMessage pxSBPMessage)
+        private void OnMessageReceivedFunction(ref PXSBPMessage pxSBPMessage)
         {
             OnMessageReceived?.Invoke("EVENT TRIGGERED");
+        }
+        private void OnClientChunkReceivedFunction(ref PXSBPChunk pxSBPChunk)
+        {
+            OnChunkReceived?.Invoke("EVENT TRIGGERED");
+        }
+
+        private void OnClientOnMessageUpdatedFunction(ref PXSBPMessage pxSBPMessage)
+        {
+            OnMessageUpdated?.Invoke("EVENT TRIGGERED");
         }
 
         public SBPClient()
         {
             PXSBPClientConstruct(ref _pxSBPClient);
 
-            PXSBPClientMessageReceivedCallBackAdd(ref _pxSBPClient, PXSBPOnMessageReceivedFunction);
-        }
+            PXSBPClientMessageReceivedCallBackSet(ref _pxSBPClient, OnMessageReceivedFunction);
+            PXSBPClientOnMessageUpdatedCallBackSet(ref _pxSBPClient, OnClientOnMessageUpdatedFunction);
+            PXSBPClientChunkReceivedCallBackSet(ref _pxSBPClient, OnClientChunkReceivedFunction);
+        }  
 
         public void Dispose()
         {
@@ -82,15 +118,9 @@ namespace PX
             
 #else
 
-            fixed (char* adress = ip.ToCharArray())
+            fixed (char* adress = ip)
             {
-                PXText pXText = new PXText();
-
-                pXText.SizeAllocated = (ulong)ip.Length;
-                pXText.SizeUsed = pXText.SizeAllocated;
-                pXText.Format = 2;
-                pXText.NumberOfCharacters = 0;
-                pXText.TextW = adress;
+                PXText pXText = PXText.MakeFromStringW(adress, ip.Length);
 
                 return PXSBPClientConnectToServer(ref _pxSBPClient, ref pXText, port);
             }
@@ -116,12 +146,13 @@ namespace PX
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, Size = 1352)]
+ 
     public class SBPServer : IDisposable
     {
+        [StructLayout(LayoutKind.Sequential, Size = 1400)]
         private struct PXSBPServer
         {
-            int dummy;
+            public int Dummy;
         }
 
         [DllImport("PXUltima.dll")] private static extern void PXSBPServerConstruct(ref PXSBPServer pxSBPServer);
@@ -130,12 +161,42 @@ namespace PX
         [DllImport("PXUltima.dll")] private static extern ActionResult PXSBPServerStop(ref PXSBPServer server);
 
 
+        [DllImport("PXUltima.dll")] private static extern void PXSBPServerMessageReceivedCallBackSet(ref PXSBPServer pxSBPServer, PXSBPOnMessageUpdatedFunction pxSBPOnMessageReceivedFunction);
+        [DllImport("PXUltima.dll")] private static extern void PXSBPServerOnMessageUpdatedCallBackSet(ref PXSBPServer pxSBPServer, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
+        //[DllImport("PXUltima.dll")] private static extern void PXSBPServerChunkSegmentUpdatedCallBackSet(ref PXSBPServer pxSBPServer, PXSBPOnChunkSegmentUpdatedFunction pxSBPOnMessageReceivedFunction);
+        [DllImport("PXUltima.dll")] private static extern void PXSBPServerChunkReceivedCallBackSet(ref PXSBPServer pxSBPServer, PXSBPOnChunkReceivedFunction pxSBPOnMessageReceivedFunction);
+
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void SBPOnMessageReceivedFunction(string message);
+        public event SBPOnMessageReceivedFunction OnMessageReceived;
+        public event SBPOnMessageReceivedFunction OnMessageUpdated;
+        public event SBPOnMessageReceivedFunction OnChunkReceived;
+
         private PXSBPServer _pxSBPServer = new PXSBPServer();
+
+        private void OnChunkReceivedCallBackSet(ref PXSBPChunk pxSBPChunk)
+        {
+            OnMessageReceived?.Invoke("EVENT YEET");
+        }
+
+        private void OnServerOnMessageUpdatedCallBackSet(ref PXSBPMessage pxSBPMessage)
+        {
+            OnMessageUpdated?.Invoke("EVENT YEET");
+        }
+
+        private void OnServerMessageReceivedCallBackSet(ref PXSBPMessage pxSBPMessage)
+        {
+            OnChunkReceived?.Invoke("EVENT YEET");
+        }
 
         public SBPServer()
         {
             PXSBPServerConstruct(ref _pxSBPServer);
-        }
+            PXSBPServerMessageReceivedCallBackSet(ref _pxSBPServer, OnServerMessageReceivedCallBackSet);
+            PXSBPServerOnMessageUpdatedCallBackSet(ref _pxSBPServer, OnServerOnMessageUpdatedCallBackSet);
+            PXSBPServerChunkReceivedCallBackSet(ref _pxSBPServer, OnChunkReceivedCallBackSet);
+        }      
 
         public void Dispose()
         {

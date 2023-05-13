@@ -16,6 +16,8 @@ typedef int AudioDeviceInputHandle;
 
 #if WindowsAtleastVista
 #include <mmeapi.h> // MISSING
+typedef void* AudioDeviceOutputHandle;
+typedef void* AudioDeviceInputHandle;
 #else
 typedef void* AudioDeviceOutputHandle;
 typedef void* AudioDeviceInputHandle;

@@ -62,6 +62,26 @@ PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer)
     return PXServerStop(pxSBPServer);
 }
 
+ void PXSBPServerMessageReceivedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction)
+{
+     pxSBPServer->Receiver.OnMessageReceivedCallBack = pxSBPOnMessageReceivedFunction;
+}
+
+ void PXSBPServerOnMessageUpdatedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnMessageUpdatedFunction  pxSBPOnMessageReceivedFunction)
+{
+     pxSBPServer->Receiver.OnMessageUpdatedCallBack = pxSBPOnMessageReceivedFunction;
+}
+
+void PXSBPServerChunkSegmentUpdatedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnChunkSegmentUpdatedFunction pxSBPOnMessageReceivedFunction)
+{
+    pxSBPServer->Receiver.OnChunkSegmentUpdatedCallBack = pxSBPOnMessageReceivedFunction;
+}
+
+void PXSBPServerChunkReceivedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnChunkReceivedFunction pxSBPOnMessageReceivedFunction)
+{
+    pxSBPServer->Receiver.OnChunkReceivedCallBack = pxSBPOnMessageReceivedFunction;
+}
+
 void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
 {
     PXClientConstruct(&pxSBPClient->Client);
@@ -89,7 +109,22 @@ PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
     return PXClientDisconnectFromServer(&pxSBPClient->Client);
 }
 
-void PXSBPClientMessageReceivedCallBackAdd(PXSBPClient* const pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction)
+void PXSBPClientMessageReceivedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnMessageUpdatedFunction pxSBPOnMessageReceivedFunction)
+{
+    pxSBPClient->Receiver.OnMessageReceivedCallBack = pxSBPOnMessageReceivedFunction;
+}
+
+void PXSBPClientOnMessageUpdatedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction)
+{
+    pxSBPClient->Receiver.OnMessageUpdatedCallBack = pxSBPOnMessageReceivedFunction;
+}
+
+void PXSBPClientChunkSegmentUpdatedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnChunkSegmentUpdatedFunction pxSBPOnMessageReceivedFunction)
+{
+    pxSBPClient->Receiver.OnChunkSegmentUpdatedCallBack = pxSBPOnMessageReceivedFunction;
+}
+
+void PXSBPClientChunkReceivedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnChunkReceivedFunction pxSBPOnMessageReceivedFunction)
 {
     pxSBPClient->Receiver.OnChunkReceivedCallBack = pxSBPOnMessageReceivedFunction;
 }

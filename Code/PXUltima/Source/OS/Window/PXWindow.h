@@ -222,12 +222,10 @@ extern "C"
 
 	PXPublic PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID);
 
-	PXPublic PXBool PXWindowTitleSetA(PXWindow* const window, const char* const title, const PXSize titleSize);
-	PXPublic PXSize PXWindowTitleGetA(const PXWindow* const window, char* const title, const PXSize titleSize);
+	PXPublic PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title);
+	PXPublic PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title);
 
-	PXPublic PXWindowID PXWindowFindViaTitleA(const PXTextASCII windowTitle);
-	PXPublic PXWindowID PXWindowFindViaTitleW(const PXTextUNICODE windowTitle);
-	PXPublic PXWindowID PXWindowFindViaTitleU(const PXTextUTF8 windowTitle);
+	PXPublic PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle);
 
 	PXPublic void PXWindowIconCorner();
 	PXPublic void PXWindowIconTaskBar();

@@ -80,12 +80,10 @@ extern "C"
 
 
 	PXPublic PXActionResult PXDirectoryCreate(const PXText* const directoryName);
-	PXPublic PXActionResult PXWorkingDirectoryChange(const char* directoryName);
-	PXPublic PXActionResult PXWorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize);
-	PXPublic PXActionResult PXWorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize);
-	PXPublic PXActionResult PXWorkingDirectoryChangeW(const wchar_t* directoryName);
-	PXPublic PXActionResult PXDirectoryDeleteA(const char* directoryName);
-	PXPublic PXActionResult PXDirectoryDeleteW(const wchar_t* directoryName);
+	PXPublic PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory);
+	PXPublic PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName);
+
+	PXPublic PXActionResult PXDirectoryDelete(const PXText* const directoryName);
 
 
 

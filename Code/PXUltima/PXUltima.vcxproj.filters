@@ -210,7 +210,7 @@
     <ClInclude Include="Source\OS\Window\PXWindow.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\File\FileOpenDialog.h">
+    <ClInclude Include="Source\OS\Dialog\PXDialog.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\System\OSVersion.h">
@@ -629,7 +629,7 @@
     <ClCompile Include="Source\OS\Monitor\PXMonitor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\File\FileOpenDialog.c">
+    <ClCompile Include="Source\OS\Dialog\PXDialog.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\OS\Program\Program.c">

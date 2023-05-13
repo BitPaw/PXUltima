@@ -11,16 +11,12 @@
 //#include <sys/io.h>
 #include <dirent.h>
 
-#define OSWorkingDirectoryCurrentA getcwd
-#define OSWorkingDirectoryCurrentW(string, size) (wchar_t*)OSWorkingDirectoryCurrentA((char*)string, size)
 #define OSWorkingDirectoryChangeA chdir
 #define OSWorkingDirectoryChangeW(string) OSWorkingDirectoryChangeA((const char*)string)
 
 #elif OSWindows
 #include <io.h>
 
-#define OSWorkingDirectoryCurrentA _getcwd
-#define OSWorkingDirectoryCurrentW _wgetcwd
 #define OSWorkingDirectoryChangeA _chdir
 #define OSWorkingDirectoryChangeW _wchdir
 
@@ -127,44 +123,113 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXWorkingDirectoryChange(const char* directoryName)
+PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName)
 {
-	return PXActionInvalid;
+	switch (directoryName->Format)
+	{
+	case TextFormatASCII:
+	case TextFormatUTF8:
+	{
+#if OSUnix
+		const char* const text = chdir(directoryName->TextA);
+#elif OSWindows
+		const char* const text = _chdir(directoryName->TextA);		
+#endif
+		const PXBool successful = text != 0;
+
+		PXActionOnErrorFetchAndExit(!successful);
+
+
+		return PXActionSuccessful;
+	}
+	case TextFormatUNICODE:
+	{
+#if OSUnix
+		const char* const text = 0; // TODO: Add conversion?
+#elif OSWindows
+		const char* const text = _wchdir(directoryName->TextW);
+#endif
+		const PXBool successful = text != 0;
+
+		PXActionOnErrorFetchAndExit(!successful);
+
+		return PXActionSuccessful;
+	}
+	}
+
+	return PXActionInvalidStateImpossible;
 }
 
-PXActionResult PXWorkingDirectoryGetA(char* workingDirectory, PXSize workingDirectorySize)
+PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory)
 {
-	char* workingDirectoryResult = OSWorkingDirectoryCurrentA(workingDirectory, workingDirectorySize);
-	const PXBool wasSuccesful = workingDirectoryResult;
+	switch (workingDirectory->Format)
+	{
+	case TextFormatASCII:
+	case TextFormatUTF8:
+	{
+#if OSUnix
+		const char* const text = getcwd(workingDirectory->TextA, workingDirectory->SizeAllocated);
+#elif OSWindows
+		const char* const text = _getcwd(workingDirectory->TextA, workingDirectory->SizeAllocated);	
+#endif
+		const PXBool successful = text != 0;
 
-	PXActionOnErrorFetchAndExit(!wasSuccesful);
+		PXActionOnErrorFetchAndExit(!successful);
 
-	return PXActionSuccessful;
+
+		return PXActionSuccessful;
+	}
+	case TextFormatUNICODE:
+	{
+#if OSUnix
+		const char* const text = 0; // TODO: Add conversion?
+#elif OSWindows
+		const char* const text = _wgetcwd(workingDirectory->TextW, workingDirectory->SizeAllocated);
+#endif
+		const PXBool successful = text != 0;
+
+		PXActionOnErrorFetchAndExit(!successful);
+
+		return PXActionSuccessful;
+	}
+	}
+
+	return PXActionInvalidStateImpossible;
 }
 
-PXActionResult PXWorkingDirectoryGetW(wchar_t* workingDirectory, PXSize workingDirectorySize)
+PXActionResult PXDirectoryDelete(const PXText* const directoryName)
 {
-	wchar_t* workingDirectoryResult = OSWorkingDirectoryCurrentW(workingDirectory, workingDirectorySize);
-	const PXBool wasSuccesful = workingDirectoryResult;
+	switch (directoryName->Format)
+	{
+	case TextFormatASCII:
+	case TextFormatUTF8:
+	{
+#if OSUnix || OSForcePOSIXForWindows
+		const int resultID = rmdir(directoryName->TextA);
+		const PXBool successul = 0 == resultID;
+#elif OSWindows
+		const PXBool successul = RemoveDirectoryA(directoryName->TextA); // Windows XP, Kernel32.dll, fileapi.h		
+#endif
+		PXActionOnErrorFetchAndExit(!successul);
 
-	PXActionOnErrorFetchAndExit(!wasSuccesful);
 
-	return PXActionSuccessful;
-}
+		return PXActionSuccessful;
+	}	
+	case TextFormatUNICODE:
+	{
+#if OSUnix
+		const PXBool successul = 1; // TODO: Add conversion?
+#elif OSWindows
+		const PXBool successul = RemoveDirectoryW(directoryName->TextW); // Windows XP, Kernel32.dll, fileapi.h
+#endif
 
-PXActionResult PXWorkingDirectoryChangeW(const wchar_t* directoryName)
-{
-	return PXActionInvalid;
-}
+		PXActionOnErrorFetchAndExit(!successul);
 
-PXActionResult PXDirectoryDeleteA(const char* directoryName)
-{
-	return PXActionInvalid;
-}
+		return PXActionSuccessful;
+	}
+	}
 
-PXActionResult PXDirectoryDeleteW(const wchar_t* directoryName)
-{
-	return PXActionInvalid;
+	return PXActionInvalidStateImpossible;
 }
 
 PXActionResult PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)

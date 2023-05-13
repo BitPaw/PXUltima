@@ -1180,7 +1180,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 					}
 
 					// if large pages are supported, anable if
-#if WindowsAtleastVista
+#if WindowsAtleastVista && 0
 					if (useLargeMemoryPages)
 					{
 						desiredAccess |= FILE_MAP_LARGE_PAGES;

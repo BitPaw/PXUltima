@@ -101,6 +101,14 @@ extern "C"
 		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = text;
 
+#define PXTextMakeFixedW(pxText, s)\
+		wchar_t text[] = s;\
+		(pxText)->SizeAllocated = sizeof(text);\
+		(pxText)->SizeUsed = sizeof(text);\
+		(pxText)->NumberOfCharacters = sizeof(text) / 2;\
+		(pxText)->Format = TextFormatUNICODE;\
+		(pxText)->TextA = text;
+
 #define PXTextMakeExternA(pxText, s)\
 		(pxText)->SizeAllocated = PXTextLengthA(s, -1);\
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\

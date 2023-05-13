@@ -2309,58 +2309,103 @@ PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
 #endif
 }
 
-PXBool PXWindowTitleSetA(PXWindow* const window, const char* const title, const PXSize titleSize)
+PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 {
+    switch (title->Format)
+    {
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
 #if OSUnix
-    return 0;
+            return 0;
 #elif OSWindows
-	const PXBool success = SetWindowTextA(window->ID, title, titleSize); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = SetWindowTextA(window->ID, title->TextA, title->SizeUsed); // Windows 2000, User32.dll, winuser.h
 
-    // could get extended error
+            // could get extended error
 
-    return success;
+            return success;
 #endif
+        }
+        case TextFormatUNICODE:
+        {
+#if OSUnix
+            return 0;
+#elif OSWindows
+            const PXBool success = SetWindowTextW(window->ID, title->TextW, title->SizeUsed); // Windows 2000, User32.dll, winuser.h
+
+            // could get extended error
+
+            return success;
+#endif
+        }
+    }
+
+    return PXNull;
 }
 
-PXSize PXWindowTitleGetA(const PXWindow* const window, char* const title, const PXSize titleSize)
+PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
 {
+    switch (title->Format)
+    {
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
 #if OSUnix
-    return 0;
+            return 0;
 #elif OSWindows
-    const int result = GetWindowTextA(window->ID, title, titleSize); // Windows 2000, User32.dll, winuser.h
-    const PXBool success = result > 0;
+            const int result = GetWindowTextA(window->ID, title->TextA, title->SizeAllocated); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = result > 0;
 
-    // could get extended error
+            title->SizeUsed = 0;
 
-    return result;
+            // could get extended error
+            if (success)
+            {
+                title->SizeUsed = result;
+            }
+
+            return result;
 #endif
+        }
+        case TextFormatUNICODE:
+        {
+#if OSUnix
+            return 0;
+#elif OSWindows
+            const int result = GetWindowTextW(window->ID, title->TextW, title->SizeAllocated); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = result > 0;
+
+            title->SizeUsed = 0;
+
+            if (success)
+            {
+                title->SizeUsed = result;
+            }
+
+            return result;
+#endif
+        }
+        }
+
+    return PXNull;
 }
 
-PXWindowID PXWindowFindViaTitleA(const PXTextASCII windowTitle)
+PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle)
 {
-#if OSUnix
-    return 0;
-#elif OSWindows
-    return FindWindowA(0, windowTitle);
-#endif
-}
+    switch (windowTitle->Format)
+    {
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
+            return FindWindowA(0, windowTitle->TextA);
+        }
+        case TextFormatUNICODE:
+        {
+            return FindWindowW(0, windowTitle->TextW);
+        }  
+    }
 
-PXWindowID PXWindowFindViaTitleW(const PXTextUNICODE windowTitle)
-{
-#if OSUnix
-    return 0;
-#elif OSWindows
-    return FindWindowW(0, windowTitle);
-#endif
-}
-
-PXWindowID PXWindowFindViaTitleU(const PXTextUTF8 windowTitle)
-{
-#if OSUnix
-    return 0;
-#elif OSWindows
-    return FindWindowA(0, windowTitle);
-#endif
+    return PXNull;
 }
 
 void PXWindowIconCorner()

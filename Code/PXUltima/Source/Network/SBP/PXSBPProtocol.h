@@ -132,6 +132,15 @@ extern "C"
 
 	typedef struct PXSBPReceiver_
 	{
+		// External events
+		PXSBPOnMessageUpdatedFunction OnMessageUpdatedCallBack;
+		PXSBPOnMessageReceivedFunction OnMessageReceivedCallBack;	
+
+		PXSBPOnChunkSegmentUpdatedFunction OnChunkSegmentUpdatedCallBack;
+		PXSBPOnChunkReceivedFunction OnChunkReceivedCallBack;	
+
+		PXSBPReceiverOnMessageInvalid OnMessageInvalidCallBack;
+
 		PXSBPRecieverState State;
 
 		PXDictionary MessageStreamLookup;
@@ -140,15 +149,6 @@ extern "C"
 
 		char HeaderCacheSize;
 		char HeaderCache[PXSBPMessageChunkHeaderSize];
-
-		// External events
-		PXSBPReceiverOnMessageInvalid OnMessageInvalidCallBack;
-
-		PXSBPOnChunkSegmentUpdatedFunction OnChunkSegmentUpdatedCallBack;
-		PXSBPOnChunkReceivedFunction OnChunkReceivedCallBack;
-
-		PXSBPOnMessageUpdatedFunction OnMessageUpdatedCallBack;
-		PXSBPOnMessageReceivedFunction OnMessageReceivedCallBack;
 	}
 	PXSBPReceiver;
 
@@ -180,6 +180,8 @@ extern "C"
 	}
 	PXSBPClient;
 
+
+
 	typedef struct PXSBPServer_
 	{
 		PXServer Server;
@@ -196,6 +198,11 @@ extern "C"
 	PXPublic PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port);
 	PXPublic PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer);
 
+	PXPublic void PXSBPServerMessageReceivedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
+	PXPublic void PXSBPServerOnMessageUpdatedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnMessageUpdatedFunction pxSBPOnMessageUpdatedFunction);
+	PXPublic void PXSBPServerChunkSegmentUpdatedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnChunkSegmentUpdatedFunction pxSBPOnMessageReceivedFunction);
+	PXPublic void PXSBPServerChunkReceivedCallBackSet(PXSBPServer* const pxSBPServer, PXSBPOnChunkReceivedFunction pxSBPOnMessageReceivedFunction);
+
 
 	// PXSBPClient
 
@@ -205,8 +212,20 @@ extern "C"
 	PXPublic PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port);
 	PXPublic PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient);
 
-	PXPublic void PXSBPClientMessageReceivedCallBackAdd(PXSBPClient* const pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
+	PXPublic void PXSBPClientMessageReceivedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnMessageUpdatedFunction pxSBPOnMessageReceivedFunction);
+	PXPublic void PXSBPClientOnMessageUpdatedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
+	PXPublic void PXSBPClientChunkSegmentUpdatedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnChunkSegmentUpdatedFunction pxSBPOnMessageReceivedFunction);
+	PXPublic void PXSBPClientChunkReceivedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnChunkReceivedFunction pxSBPOnMessageReceivedFunction);
+	
+	
 
+
+	PXSBPOnMessageUpdatedFunction OnMessageUpdatedCallBack;
+	PXSBPOnMessageReceivedFunction OnMessageReceivedCallBack;
+
+	PXSBPOnChunkSegmentUpdatedFunction OnChunkSegmentUpdatedCallBack;
+	PXSBPOnChunkReceivedFunction OnChunkReceivedCallBack;
+	
 	PXPublic void PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize);
 	PXPublic void PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath);
 

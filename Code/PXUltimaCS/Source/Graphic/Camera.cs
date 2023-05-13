@@ -1,7 +1,5 @@
-﻿using System.IO;
-
-namespace PX
-{
+﻿namespace PX
+{ 
     public class Camera
     {
 

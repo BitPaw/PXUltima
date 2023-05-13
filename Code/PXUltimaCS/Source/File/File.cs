@@ -40,14 +40,10 @@ namespace PX
 		public uint LocationMode => _pxFile.LocationMode;
 
 
-		[DllImport("PXUltima.dll")] private static extern unsafe byte PXFileDoesExistA(char* filePath);
-		[DllImport("PXUltima.dll")] private static extern unsafe byte PXFileDoesExistW(char* filePath);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileRemoveA(char* filePath);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileRemoveW(char* filePath);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileRenameA(char* oldName, char* newName);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileRenameW(char* oldName, char* newName);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileCopyA(char* sourceFilePath, char* destinationFilePath);
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileCopyW(char* sourceFilePath, char* destinationFilePath);
+		[DllImport("PXUltima.dll")] private static extern byte PXFileDoesExist(ref PXText filePath);
+		[DllImport("PXUltima.dll")] private static extern ActionResult PXFileRemove(ref PXText filePath);
+		[DllImport("PXUltima.dll")] private static extern ActionResult PXFileRename(ref PXText oldName, ref PXText newName);
+		[DllImport("PXUltima.dll")] private static extern ActionResult PXFileCopy(ref PXText sourceFilePath, ref PXText destinationFilePath);
 
 		//---<Set>-------------------------------------------------------------
 		[DllImport("PXUltima.dll")] private static extern unsafe void PXFileBufferAllocate(ref PXFile pXFile, UIntPtr dataSize);
@@ -59,7 +55,7 @@ namespace PX
 		//---------------------------------------------------------------------
 
 		//---<Close>-----------------------------------------------------------
-		[DllImport("PXUltima.dll")] private static extern unsafe int PXFileClose(ref PXFile pXFile);
+		[DllImport("PXUltima.dll")] private static extern int PXFileClose(ref PXFile pXFile);
 		//---------------------------------------------------------------------
 
 		//---<Mapping>---------------------------------------------------------
@@ -271,25 +267,55 @@ namespace PX
 			}
 		}
 
-        public static bool DoesExist(string filePath)
+        public static unsafe bool DoesExist(string filePath)
         {
-			return false;
+            fixed(char* filePathAdress = filePath)
+            {
+                PXText pxText = PXText.MakeFromStringW(filePathAdress, filePath.Length);
+
+                return PXFileDoesExist(ref pxText) != 0;
+            }
         }
 
-		public ActionResult Remove(string filePath)
+		public static unsafe ActionResult Remove(string filePath)
         {
-			return ActionResult.Invalid;
+            fixed (char* filePathAdress = filePath)
+            {
+                PXText pxText = PXText.MakeFromStringW(filePathAdress, filePath.Length);
+
+                return PXFileRemove(ref pxText);
+            }
         }
 
-		public ActionResult Rename(string oldName, string newName)
+        public static unsafe ActionResult Rename(string oldName, string newName)
 		{
-			return ActionResult.Invalid;
-		}
+            fixed (char* oldNameAdress = oldName)
+            {
+                PXText pxTextOldName = PXText.MakeFromStringW(oldNameAdress, oldName.Length);
 
-		public ActionResult Copy(string sourceFilePath, string destinationFilePath)
+                fixed (char* newNameAdress = newName)
+                {
+                    PXText pxTextNewName = PXText.MakeFromStringW(newNameAdress, newName.Length);
+
+                    return PXFileRename(ref pxTextOldName, ref pxTextNewName);
+                }                    
+            }
+        }
+
+		public static unsafe ActionResult Copy(string sourceFilePath, string destinationFilePath)
 		{
-			return ActionResult.Invalid;
-		}
+            fixed (char* oldNameAdress = sourceFilePath)
+            {
+                PXText pxTextOldName = PXText.MakeFromStringW(oldNameAdress, sourceFilePath.Length);
+
+                fixed (char* newNameAdress = destinationFilePath)
+                {
+                    PXText pxTextNewName = PXText.MakeFromStringW(newNameAdress, destinationFilePath.Length);
+
+                    return PXFileCopy(ref pxTextOldName, ref pxTextNewName);
+                }
+            }
+        }
 
 		//---<Set>-------------------------------------------------------------
 		public void BufferAllocate(UIntPtr size)
@@ -301,21 +327,12 @@ namespace PX
 		//---<Open>------------------------------------------------------------
 		public unsafe ActionResult OpenFromPath(string filePath, int pxAccessMode, int pxMemoryCachingMode)
 		{
-			ActionResult actionResult = ActionResult.Invalid;
-
 			fixed (char* adress = filePath.ToCharArray())
 			{
-                PXText pXText = new PXText();
-                pXText.SizeAllocated = (ulong)filePath.Length; 
-                pXText.SizeUsed = (ulong)filePath.Length;
-                pXText.NumberOfCharacters = (ulong)filePath.Length;
-                pXText.TextW = adress;
-                pXText.Format = 2;
-
-                actionResult = PXFileOpenFromPath(ref _pxFile, ref pXText, pxAccessMode, pxMemoryCachingMode);
+                PXText pXText = PXText.MakeFromStringW(adress, filePath.Length);
+       
+                return PXFileOpenFromPath(ref _pxFile, ref pXText, pxAccessMode, pxMemoryCachingMode);
 			}
-
-			return actionResult;
 		}
 		//---------------------------------------------------------------------
 

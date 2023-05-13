@@ -34,6 +34,19 @@ namespace PX
 
 		//public static PXText CreateFromString(string text)
 
+		public static PXText MakeFromStringW(char* text, int length)
+		{
+			PXText pxText = new PXText();
+
+			pxText.NumberOfCharacters = (ulong)length;
+			pxText.SizeAllocated = pxText.NumberOfCharacters * 2;
+			pxText.SizeUsed = pxText.SizeAllocated;	
+			pxText.TextW = text;
+			pxText.Format = 2;
+
+			return pxText;
+		}
+
 	};
 
     public class Text

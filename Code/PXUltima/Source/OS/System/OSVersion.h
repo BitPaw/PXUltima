@@ -15,7 +15,7 @@
 */
 
 
-#define OSForcePOSIXForWindows 1
+#define OSForcePOSIXForWindows 0
 
 
 //---<Detect OS version>----------------------------------------------------

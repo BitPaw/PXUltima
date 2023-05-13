@@ -26,15 +26,14 @@ namespace PX
 
         // Create a window based on the OS implementation.
         // if a NULL pointer is used as a title, the window will be hidden.
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreate(ref PXWindow window, int width, int height, ref PXText title, bool async);
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowCreateHidden(ref PXWindow window, int width, int height, bool async);
+        [DllImport("PXUltima.dll")] private static extern void PXWindowCreate(ref PXWindow window, int width, int height, ref PXText title, bool async);
+        [DllImport("PXUltima.dll")] private static extern void PXWindowCreateHidden(ref PXWindow window, int width, int height, bool async);
 
-        [DllImport("PXUltima.dll")] private static unsafe extern bool PXWindowTitleSetA(ref PXWindow window, char* title, UInt64 titleSize);
-        [DllImport("PXUltima.dll")] private static unsafe extern UInt64 PXWindowTitleGetA(ref PXWindow window, char* title, UInt64 titleSize);
-        [DllImport("PXUltima.dll")] private static unsafe extern UInt64 PXWindowTitleGetW(ref PXWindow window, char* title, UInt64 titleSize);
+        [DllImport("PXUltima.dll")] private static extern bool PXWindowTitleSet(ref PXWindow window, ref PXText title);
+        [DllImport("PXUltima.dll")] private static extern UInt64 PXWindowTitleGet(ref PXWindow window, ref PXText title);
 
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowIconCorner();
-        [DllImport("PXUltima.dll")] private static unsafe extern void PXWindowIconTaskBar();
+        [DllImport("PXUltima.dll")] private static extern void PXWindowIconCorner();
+        [DllImport("PXUltima.dll")] private static extern void PXWindowIconTaskBar();
 
         //[DllImport("PXUltima.dll")] private static unsafe extern void PXWindowSize(PXWindow* pxWindow, uint* x, uint* y, uint* width, uint* height);
         //[DllImport("PXUltima.dll")] private static unsafe extern void PXWindowSizeChange(PXWindow* pxWindow, uint x, uint y, uint width, uint height);
@@ -82,7 +81,8 @@ namespace PX
 
                 fixed(char* bufferaAdress = buffer)
                 {
-                    UInt64 length = PXWindowTitleGetW(ref _pxWindow, bufferaAdress, 256);
+                    PXText pXText = PXText.MakeFromStringW(bufferaAdress, 256);
+                    UInt64 length = PXWindowTitleGet(ref _pxWindow, ref pXText);
 
                     if (length > 0)
                     {
@@ -98,7 +98,9 @@ namespace PX
             {
                 fixed (char* bufferaAdress = value.ToCharArray())
                 {
-                    PXWindowTitleSetA(ref _pxWindow, bufferaAdress, (UInt64)value.Length);
+                    PXText pXText = PXText.MakeFromStringW(bufferaAdress, value.Length);
+
+                    PXWindowTitleSet(ref _pxWindow, ref pXText);
                 }
             }
         }
@@ -107,12 +109,7 @@ namespace PX
         {
             fixed (char* charBuffer = title)
             {
-                PXText pXText = new PXText();
-                pXText.SizeAllocated = (ulong)title.Length;
-                pXText.SizeUsed = (ulong)title.Length;
-                pXText.NumberOfCharacters = (ulong)title.Length;
-                pXText.TextW = charBuffer;
-                pXText.Format = 2;
+                PXText pXText = PXText.MakeFromStringW(charBuffer, title.Length);
 
                 PXWindowCreate(ref _pxWindow, -1, -1, ref pXText, true);
             }
@@ -121,12 +118,7 @@ namespace PX
         {
             fixed (char* charBuffer = title)
             {
-                PXText pXText = new PXText();
-                pXText.SizeAllocated = (ulong)title.Length;
-                pXText.SizeUsed = (ulong)title.Length;
-                pXText.NumberOfCharacters = (ulong)title.Length;
-                pXText.TextW = charBuffer;
-                pXText.Format = 2;
+                PXText pXText = PXText.MakeFromStringW(charBuffer, title.Length);
 
                 PXWindowCreate(ref _pxWindow, width, height, ref pXText, true);
             }

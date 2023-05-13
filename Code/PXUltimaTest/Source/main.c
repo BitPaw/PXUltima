@@ -21,6 +21,7 @@
 #include <OS/Process/PXProcess.h>
 #include <OS/Debug/PXDebug.h>
 #include <OS/File/PXDirectory.h>
+#include <OS/Dialog/PXDialog.h>
 
 void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
 {
@@ -86,6 +87,23 @@ int main()
 	}
 #endif
 	
+
+#if 1 // TEST FILE DIALOG
+
+	PXText pxText;
+	PXTextMakeFixedA(&pxText, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code");
+
+//	PXDialogFileOpen(&pxText);
+
+	PXColorRGBI8 pxColorRGBI8;
+
+	PXDialogColorSelect(&pxColorRGBI8);
+	PXDialogFontSelect();
+	PXDialogPrint();
+
+#endif // 0 // TEST FILE DIALOG
+
+
 
 #if 0
 	PXImage image;

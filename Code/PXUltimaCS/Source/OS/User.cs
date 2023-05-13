@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace PX
+﻿namespace PX
 {
     public class User
     {
