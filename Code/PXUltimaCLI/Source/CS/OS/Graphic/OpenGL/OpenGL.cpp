@@ -1,23 +1,23 @@
-#include "OpenGL.hpp"
+#include "PXOpenGL.hpp"
 
-PX::OpenGL::OpenGL()
+PX::PXOpenGL::PXOpenGL()
 {
-    Context = new OpenGLContext();
-    OpenGLContextConstruct(Context);
+    Context = new PXOpenGLContext();
+    PXOpenGLContextConstruct(Context);
 }
 
-PX::OpenGL::~OpenGL()
+PX::PXOpenGL::~PXOpenGL()
 {
-    OpenGLContextDestruct(Context);
+    PXOpenGLContextDestruct(Context);
     delete Context;
 }
 
-bool PX::OpenGL::ContextCreateForWindow()
+bool PX::PXOpenGL::ContextCreateForWindow()
 {
-    return OpenGLContextCreateForWindow(Context);
+    return PXOpenGLContextCreateForWindow(Context);
 }
 
-void PX::OpenGL::ContextCreateWindowless(const PXSize width, const PXSize height)
+void PX::PXOpenGL::ContextCreateWindowless(const PXSize width, const PXSize height)
 {
-    OpenGLContextCreateWindowless(Context, width, height);
+    PXOpenGLContextCreateWindowless(Context, width, height);
 }

@@ -1,5 +1,5 @@
-#ifndef TestOpenGLDEFINE
-#define TestOpenGLDEFINE
+#ifndef TestPXOpenGLDEFINE
+#define TestPXOpenGLDEFINE
 
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXImage.h>
@@ -9,13 +9,13 @@ extern "C"
 {
 #endif
 
-    extern void TestOpenGLAll();
+    extern void TestPXOpenGLAll();
 
-    extern void TestOpenGLRenderToTexture();
-    extern void TestOpenGLTextDraw();
+    extern void TestPXOpenGLRenderToTexture();
+    extern void TestPXOpenGLTextDraw();
 
-    extern void TestOpenGLVAO();
-    extern void TestOpenGLVBO();
+    extern void TestPXOpenGLVAO();
+    extern void TestPXOpenGLVBO();
 #ifdef __cplusplus
 }
 #endif

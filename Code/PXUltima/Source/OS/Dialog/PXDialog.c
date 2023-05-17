@@ -38,7 +38,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
 
 
     //HRESULT BasicFileOpen()
-    {
+    
         // CoCreate the File Open Dialog object.
         char bufferVV[1024]; MemoryClear(bufferVV, 1024);
         char bufferAAA[1024]; MemoryClear(bufferAAA, 1024);
@@ -104,109 +104,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
 
         fileDialog->lpVtbl->Release(&fileDialog);
 
-
-        /*
-        if (SUCCEEDED(hr))
-        {
-            // Create an event handling object, and hook it up to the dialog.
-            IFileDialogEvents* pfde = NULL;
-
-            pfd.lpVtbl.
-
-            hr = CDialogEventHandler_CreateInstance(IID_PPV_ARGS(&pfde));
-            if (SUCCEEDED(hr))
-            {
-                // Hook up the event handler.
-                DWORD dwCookie;
-                hr = pfd->Advise(pfde, &dwCookie);
-                if (SUCCEEDED(hr))
-                {
-                    // Set the options on the dialog.
-                    DWORD dwFlags;
-
-                    // Before setting, always get the options first in order
-                    // not to override existing options.
-                    hr = pfd->GetOptions(&dwFlags);
-                    if (SUCCEEDED(hr))
-                    {
-                        // In this case, get shell items only for file system items.
-                        hr = pfd->SetOptions(dwFlags | FOS_FORCEFILESYSTEM);
-                        if (SUCCEEDED(hr))
-                        {
-                            // Set the file types to display only.
-                            // Notice that this is a 1-based array.
-                            hr = pfd->SetFileTypes(ARRAYSIZE(c_rgSaveTypes), c_rgSaveTypes);
-                            if (SUCCEEDED(hr))
-                            {
-                                // Set the selected file type index to Word Docs for this example.
-                                hr = pfd->SetFileTypeIndex(INDEX_WORDDOC);
-                                if (SUCCEEDED(hr))
-                                {
-                                    // Set the default extension to be ".doc" file.
-                                    hr = pfd->SetDefaultExtension(L"doc;docx");
-                                    if (SUCCEEDED(hr))
-                                    {
-                                        // Show the dialog
-                                        hr = pfd->Show(NULL);
-                                        if (SUCCEEDED(hr))
-                                        {
-                                            // Obtain the result once the user clicks
-                                            // the 'Open' button.
-                                            // The result is an IShellItem object.
-                                            IShellItem* psiResult;
-                                            hr = pfd->GetResult(&psiResult);
-                                            if (SUCCEEDED(hr))
-                                            {
-                                                // We are just going to print out the
-                                                // name of the file for sample sake.
-                                                PWSTR pszFilePath = NULL;
-                                                hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH,
-                                                    &pszFilePath);
-                                                if (SUCCEEDED(hr))
-                                                {
-                                                    TaskDialog(NULL,
-                                                        NULL,
-                                                        L"CommonFileDialogApp",
-                                                        pszFilePath,
-                                                        NULL,
-                                                        TDCBF_OK_BUTTON,
-                                                        TD_INFORMATION_ICON,
-                                                        NULL);
-                                                    CoTaskMemFree(pszFilePath);
-                                                }
-                                                psiResult->Release();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    // Unhook the event handler.
-                    pfd->Unadvise(dwCookie);
-                }
-                pfde->Release();
-            }
-            pfd->Release();
-}
-        return hr;
-}
-
-
-
-
-
-
-
-*/
-
-
-
-
-
-
-
-
+        return PXActionInvalid;
 
 
 #else // OSWindowsXP
@@ -219,7 +117,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
             const char filter[] = "All Files (*.*)\0*.*\0";
             HWND owner = NULL;
 
-            OPENFILENAMEA openFileName;
+            OPENFILENAMEA openFileName;        
             MemoryClear(&openFileName, sizeof(OPENFILENAMEA));
 
             openFileName.lStructSize = sizeof(OPENFILENAMEA);
@@ -259,12 +157,63 @@ PXBool PXDialogFileOpen(PXText* const filePath)
     return PXActionInvalid;
 
 #endif
+
 #endif
 }
 
 PXBool PXDialogFileSave(PXText* const filePath)
 {
+#if OSUnix
+    return 0;
 
+#elif OSWindows
+    switch (filePath->Format)
+    {
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
+            const char filter[] = "All Files (*.*)\0*.*\0";
+            HWND owner = NULL;
+
+            OPENFILENAMEA openFileName;
+            MemoryClear(&openFileName, sizeof(OPENFILENAMEA));
+
+            openFileName.lStructSize = sizeof(OPENFILENAMEA);
+            openFileName.hwndOwner = owner;
+            openFileName.lpstrFilter = filter;
+            openFileName.lpstrFile = filePath->TextA;
+            openFileName.nMaxFile = MAX_PATH;
+            openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+            openFileName.lpstrDefExt = "";
+
+            const PXBool wasSuccesful = GetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+
+            return wasSuccesful;
+        }
+        case TextFormatUNICODE:
+        {
+            const wchar_t filter[] = L"All Files (*.*)\0*.*\0";
+            HWND owner = NULL;
+
+            OPENFILENAMEW openFileName;
+            MemoryClear(&openFileName, sizeof(OPENFILENAMEW));
+
+            openFileName.lStructSize = sizeof(OPENFILENAMEW);
+            openFileName.hwndOwner = owner;
+            openFileName.lpstrFilter = filter;
+            openFileName.lpstrFile = filePath->TextW;
+            openFileName.nMaxFile = MAX_PATH;
+            openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+            openFileName.lpstrDefExt = L"";
+
+            const PXBool wasSuccesful = GetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+
+            return wasSuccesful;
+        }
+    }
+
+    return PXActionInvalid;
+#endif
 }
 
 PXBool PXDialogColorSelect(PXColorRGBI8* const color)

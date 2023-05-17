@@ -1,6 +1,6 @@
 ﻿namespace PX.Test
 {
-    internal class TestOpenGL
+    internal class TestPXOpenGL
     {
         public static void Test()
         {

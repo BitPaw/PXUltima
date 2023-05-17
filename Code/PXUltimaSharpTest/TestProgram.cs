@@ -14,7 +14,7 @@ namespace PX.Test
 
             TestFile.Test();
 
-            TestOpenGL.Test();
+            TestPXOpenGL.Test();
 
             TestWindow.Test();
 

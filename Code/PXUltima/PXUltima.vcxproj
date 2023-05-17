@@ -68,7 +68,7 @@
     <ClInclude Include="Source\Media\YAML\PXYAML.h" />
     <ClInclude Include="Source\OS\Graphic\DirectX\DirectX.h" />
     <ClInclude Include="Source\Graphic\PXGraphic.h" />
-    <ClInclude Include="Source\OS\Graphic\OpenGL\OpenGL.h" />
+    <ClInclude Include="Source\OS\Graphic\OpenGL\PXOpenGL.h" />
     <ClInclude Include="Source\Graphic\SoftwareRender\PXSoftwareRender.h" />
     <ClInclude Include="Source\OS\Graphic\Vulcan\Vulcan.h" />
     <ClInclude Include="Source\OS\ClipBoard\PXClipBoard.h" />
@@ -208,7 +208,7 @@
     <ClCompile Include="Source\Media\YAML\PXYAML.c" />
     <ClCompile Include="Source\OS\Graphic\DirectX\DirectX.c" />
     <ClCompile Include="Source\Graphic\PXGraphic.c" />
-    <ClCompile Include="Source\OS\Graphic\OpenGL\OpenGL.c" />
+    <ClCompile Include="Source\OS\Graphic\OpenGL\PXOpenGL.c" />
     <ClCompile Include="Source\Graphic\SoftwareRender\PXSoftwareRender.c" />
     <ClCompile Include="Source\OS\Graphic\Vulcan\Vulcan.c" />
     <ClCompile Include="Source\OS\ClipBoard\PXClipBoard.c" />
@@ -328,26 +328,22 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

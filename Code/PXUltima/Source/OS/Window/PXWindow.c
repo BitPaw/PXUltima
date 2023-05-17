@@ -2290,7 +2290,7 @@ void PXWindowDestruct(PXWindow* const window)
 {
 #if OSUnix
     glXMakeCurrent(window->DisplayCurrent, None, NULL);
-    //    glXDestroyContext(DisplayCurrent, OpenGLConextID);
+    //    glXDestroyContext(DisplayCurrent, PXOpenGLConextID);
     XDestroyWindow(window->DisplayCurrent, window->ID);
     XCloseDisplay(window->DisplayCurrent);
 #elif OSWindows

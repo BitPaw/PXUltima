@@ -1,4 +1,4 @@
-#include "TestOpenGL.h"
+#include "TestPXOpenGL.h"
 
 
 #include <Media/PXImage.h>
@@ -13,67 +13,67 @@
 
 #include <Graphic/PXGraphic.h>
 
-void TestOpenGLAll()
+void TestPXOpenGLAll()
 {
-	printf("[OpenGL] Testing...\n");
+	printf("[PXOpenGL] Testing...\n");
 
-	//TestOpenGLRenderToTexture();
-	//TestOpenGLTextDraw();
-	TestOpenGLVBO();
+	//TestPXOpenGLRenderToTexture();
+	//TestPXOpenGLTextDraw();
+	TestPXOpenGLVBO();
 
-	printf("[OpenGL] Testing finished!\n");
+	printf("[PXOpenGL] Testing finished!\n");
 }
 
-void CreateRenderableTexture(OpenGLContext* openGLContext, unsigned int width, unsigned int height)
+void CreateRenderableTexture(PXOpenGLContext* openGLContext, unsigned int width, unsigned int height)
 {
-	OpenGLContextConstruct(openGLContext);
-	OpenGLContextCreateWindowless(openGLContext, width, height);
-	OpenGLContextSelect(openGLContext);
+	PXOpenGLContextConstruct(openGLContext);
+	PXOpenGLContextCreateWindowless(openGLContext, width, height);
+	PXOpenGLContextSelect(openGLContext);
 	//-------------------------------------------------------------------------
 
 	// Init frame Buffer
 	unsigned int frameBufferID = 0;
-	OpenGLFrameBufferCreate(openGLContext, 1u, &frameBufferID);
-	OpenGLFrameBufferBind(openGLContext, OpenGLFrameBufferModeDrawAndRead, frameBufferID);
+	PXOpenGLFrameBufferCreate(openGLContext, 1u, &frameBufferID);
+	PXOpenGLFrameBufferBind(openGLContext, PXOpenGLFrameBufferModeDrawAndRead, frameBufferID);
 	//-------------------------------------------------------------------------
 
 	// Init image
 	unsigned int textureID = 0;
-	OpenGLTextureCreate(openGLContext, 1u, &textureID);
-	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, textureID);
+	PXOpenGLTextureCreate(openGLContext, 1u, &textureID);
+	PXOpenGLTextureBind(openGLContext, PXOpenGLTextureType2D, textureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, 0);
+	PXOpenGLTextureBind(openGLContext, PXOpenGLTextureType2D, 0);
 	//-------------------------------------------------------------------------
 
-	OpenGLFrameBufferLinkTexture2D(openGLContext, OpenGLRenderBufferAttachmentPointColor, OpenGLTextureType2D, textureID, 0);
+	PXOpenGLFrameBufferLinkTexture2D(openGLContext, PXOpenGLRenderBufferAttachmentPointColor, PXOpenGLTextureType2D, textureID, 0);
 
 
 
 	// init renderbuffer
 	unsigned int rbo = 0;
-	OpenGLRenderBufferCreate(openGLContext, 1u, &rbo);
-	OpenGLRenderBufferBind(openGLContext, rbo);
-	OpenGLRenderBufferStorage(openGLContext, OpenGLRenderBufferFormatDepth24Stencil8, width, height);
-	OpenGLRenderBufferBind(openGLContext, 0);
+	PXOpenGLRenderBufferCreate(openGLContext, 1u, &rbo);
+	PXOpenGLRenderBufferBind(openGLContext, rbo);
+	PXOpenGLRenderBufferStorage(openGLContext, PXOpenGLRenderBufferFormatDepth24Stencil8, width, height);
+	PXOpenGLRenderBufferBind(openGLContext, 0);
 
 
-	OpenGLFrameBufferLinkRenderBuffer(openGLContext, OpenGLRenderBufferAttachmentPointStencil, rbo);
+	PXOpenGLFrameBufferLinkRenderBuffer(openGLContext, PXOpenGLRenderBufferAttachmentPointStencil, rbo);
 	//-------------------------------------------------------------------------
 
-	OpenGLClearColor(openGLContext, 0.2f, 0.2f, 0.2f, 1.0f);
-	OpenGLClear(openGLContext, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	OpenGLDrawScaleF(openGLContext, 1, -1, 1);
+	PXOpenGLClearColor(openGLContext, 0.2f, 0.2f, 0.2f, 1.0f);
+	PXOpenGLClear(openGLContext, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	PXOpenGLDrawScaleF(openGLContext, 1, -1, 1);
 
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 }
 
 
-void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
+void DumpRenderedTexture(PXOpenGLContext* openGLContext, const char* filePath)
 {
 	PXWindow* pxWindow = (PXWindow*)openGLContext->AttachedWindow;
 
@@ -83,7 +83,7 @@ void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
 
 	PXImageResize(&image, PXColorFormatRGBI8, pxWindow->Width, pxWindow->Height);
 
-	OpenGLPixelDataRead(openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, OpenGLImageFormatRGB, OpenGLTypeByteUnsigned, image.PixelData);
+	PXOpenGLPixelDataRead(openGLContext, 0, 0, pxWindow->Width, pxWindow->Height, PXOpenGLImageFormatRGB, PXOpenGLTypeByteUnsigned, image.PixelData);
 
 	PXText pxText;
 
@@ -94,36 +94,36 @@ void DumpRenderedTexture(OpenGLContext* openGLContext, const char* filePath)
 	PXImageDestruct(&image);
 }
 
-void TestOpenGLRenderToTexture()
+void TestPXOpenGLRenderToTexture()
 {
 	float scake = 1;
 	unsigned int width = 800 * scake;
 	unsigned int height = 600 * scake;
 
-	OpenGLContext openGLContext;
+	PXOpenGLContext openGLContext;
 
 	CreateRenderableTexture(&openGLContext, width, height);
 
 	//------------------------------
 
-	OpenGLDrawBegin(&openGLContext, OpenGLRenderPolygon);
+	PXOpenGLDrawBegin(&openGLContext, PXOpenGLRenderPolygon);
 	//glPixelZoom(1, -1);
 	//glPerspective(-45.0, width / height, 1.0, 100.0);
 
 
 
-	OpenGLDrawColorRGBF(&openGLContext, 0, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0, 0.75, 0);
-	OpenGLDrawColorRGBF(&openGLContext, 1, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0.8, 0.8, 0);
-	OpenGLDrawColorRGBF(&openGLContext, 0, 1, 0); OpenGLDrawVertexXYZF(&openGLContext, 0.6, -0.75, 0);
-	OpenGLDrawColorRGBF(&openGLContext, 1, 0, 0); OpenGLDrawVertexXYZF(&openGLContext, -0.6, -0.75, 0.5);
+	PXOpenGLDrawColorRGBF(&openGLContext, 0, 0, 1); PXOpenGLDrawVertexXYZF(&openGLContext, 0, 0.75, 0);
+	PXOpenGLDrawColorRGBF(&openGLContext, 1, 0, 1); PXOpenGLDrawVertexXYZF(&openGLContext, 0.8, 0.8, 0);
+	PXOpenGLDrawColorRGBF(&openGLContext, 0, 1, 0); PXOpenGLDrawVertexXYZF(&openGLContext, 0.6, -0.75, 0);
+	PXOpenGLDrawColorRGBF(&openGLContext, 1, 0, 0); PXOpenGLDrawVertexXYZF(&openGLContext, -0.6, -0.75, 0.5);
 
-	OpenGLDrawEnd(&openGLContext);
+	PXOpenGLDrawEnd(&openGLContext);
 
 	//------------------------------
 
 	DumpRenderedTexture(&openGLContext, "_TEST_DATA_OUTPUT_/Buffertest.png");
 
-	OpenGLContextDeselect(&openGLContext);
+	PXOpenGLContextDeselect(&openGLContext);
 }
 
 void RenderRectangle(float postionX, float postionY, float textureScaleX, float textureScaleY)
@@ -147,9 +147,9 @@ void RenderRectangle(float postionX, float postionY, float textureScaleX, float 
 	glEnd();
 }
 
-void DrawStructure(OpenGLContext* const openGLContext,float* modelMatrix,  float* vertexList, float* texturePositionList, float* colorList, unsigned int textureID)
+void DrawStructure(PXOpenGLContext* const openGLContext,float* modelMatrix,  float* vertexList, float* texturePositionList, float* colorList, unsigned int textureID)
 {
-	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, textureID);
+	PXOpenGLTextureBind(openGLContext, PXOpenGLTextureType2D, textureID);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(modelMatrix);
@@ -177,10 +177,10 @@ void DrawStructure(OpenGLContext* const openGLContext,float* modelMatrix,  float
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	OpenGLTextureBind(openGLContext, OpenGLTextureType2D, 0);
+	PXOpenGLTextureBind(openGLContext, PXOpenGLTextureType2D, 0);
 }
 
-void TestOpenGLTextDraw()
+void TestPXOpenGLTextDraw()
 {
 	float scale = 1;
 	unsigned int width = 800 * scale;
@@ -196,7 +196,7 @@ void TestOpenGLTextDraw()
 	PXTexture textureText;
 	PXTextureConstruct(&textureText);
 
-	OpenGLContext openGLContext;
+	PXOpenGLContext openGLContext;
 	CreateRenderableTexture(&openGLContext, width, height);
 
 	//------------------------------
@@ -209,8 +209,8 @@ void TestOpenGLTextDraw()
 		PXSize textWidth = 1024u;
 		PXSize textHeight = 1024;
 
-		OpenGLTextureCreate(&openGLContext, 1u, &textureText.ID);
-		OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureText.ID);
+		PXOpenGLTextureCreate(&openGLContext, 1u, &textureText.ID);
+		PXOpenGLTextureBind(&openGLContext, PXOpenGLTextureType2D, textureText.ID);
 
 		PXImageResize(&textureText.Image, PXColorFormatRGBI8, textWidth, textHeight); // Create memory
 		PXImageFillColorRGBA8(&textureText.Image, 50, 50, 50, 150);
@@ -226,8 +226,8 @@ void TestOpenGLTextDraw()
 
 		glTexEnvi(GL_TEXTURE_ENV, 0x8571, GL_MODULATE);
 
-		OpenGLTextureData2D(&openGLContext, OpenGLTextureType2D, 0, OpenGLImageFormatRGBA, textWidth, textHeight, OpenGLImageFormatRGBA, OpenGLTypeByteUnsigned, textureText.Image.PixelData);
-		OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, 0);
+		PXOpenGLTextureData2D(&openGLContext, PXOpenGLTextureType2D, 0, PXOpenGLImageFormatRGBA, textWidth, textHeight, PXOpenGLImageFormatRGBA, PXOpenGLTypeByteUnsigned, textureText.Image.PixelData);
+		PXOpenGLTextureBind(&openGLContext, PXOpenGLTextureType2D, 0);
 	}
 
 
@@ -249,29 +249,29 @@ void TestOpenGLTextDraw()
 	float scaleTextureX = 0.5;
 	float scaleTextureY = 0.05;
 
-	OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, textureText.ID);
+	PXOpenGLTextureBind(&openGLContext, PXOpenGLTextureType2D, textureText.ID);
 	RenderRectangle(startPositionX, startPositionY, scaleTextureX, scaleTextureY);
-	OpenGLTextureBind(&openGLContext, OpenGLTextureType2D, 0);
+	PXOpenGLTextureBind(&openGLContext, PXOpenGLTextureType2D, 0);
 #endif
 
 #if 1 // colored background
-	OpenGLDrawBegin(&openGLContext, OpenGLRenderQuads);
-	OpenGLDrawVertexXYZF(&openGLContext, -1, -1, 0);  glColor4d(1, 0, 1, 0.2f);
-	OpenGLDrawVertexXYZF(&openGLContext, 1, -1, 0);  glColor4d(0, 1, 0, 0.2);
-	OpenGLDrawVertexXYZF(&openGLContext, 1, 1, 0); glColor4d(0, 1, 1, 0.2);
-	OpenGLDrawVertexXYZF(&openGLContext, -1, 1, 0);  glColor4d(0, 0.5, 0.2, 0.2f);
-	OpenGLDrawEnd(&openGLContext);
+	PXOpenGLDrawBegin(&openGLContext, PXOpenGLRenderQuads);
+	PXOpenGLDrawVertexXYZF(&openGLContext, -1, -1, 0);  glColor4d(1, 0, 1, 0.2f);
+	PXOpenGLDrawVertexXYZF(&openGLContext, 1, -1, 0);  glColor4d(0, 1, 0, 0.2);
+	PXOpenGLDrawVertexXYZF(&openGLContext, 1, 1, 0); glColor4d(0, 1, 1, 0.2);
+	PXOpenGLDrawVertexXYZF(&openGLContext, -1, 1, 0);  glColor4d(0, 0.5, 0.2, 0.2f);
+	PXOpenGLDrawEnd(&openGLContext);
 #endif
 
-	//OpenGLFlush(&openGLContext);
+	//PXOpenGLFlush(&openGLContext);
 
 
 #if 0 // draw bigText
 
-	glTexCoord2f(0, 0);	OpenGLDrawColorRGBF(&openGLContext, 0, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0, 0.75, 0);
-	glTexCoord2f(1, 0); OpenGLDrawColorRGBF(&openGLContext, 1, 0, 1); OpenGLDrawVertexXYZF(&openGLContext, 0.8, 0.8, 0);
-	glTexCoord2f(1, 1); OpenGLDrawColorRGBF(&openGLContext, 0, 1, 0); OpenGLDrawVertexXYZF(&openGLContext, 0.6, -0.75, 0);
-	glTexCoord2f(0, 1); OpenGLDrawColorRGBF(&openGLContext, 1, 0, 0); OpenGLDrawVertexXYZF(&openGLContext, -0.6, -0.75, 0.5);
+	glTexCoord2f(0, 0);	PXOpenGLDrawColorRGBF(&openGLContext, 0, 0, 1); PXOpenGLDrawVertexXYZF(&openGLContext, 0, 0.75, 0);
+	glTexCoord2f(1, 0); PXOpenGLDrawColorRGBF(&openGLContext, 1, 0, 1); PXOpenGLDrawVertexXYZF(&openGLContext, 0.8, 0.8, 0);
+	glTexCoord2f(1, 1); PXOpenGLDrawColorRGBF(&openGLContext, 0, 1, 0); PXOpenGLDrawVertexXYZF(&openGLContext, 0.6, -0.75, 0);
+	glTexCoord2f(0, 1); PXOpenGLDrawColorRGBF(&openGLContext, 1, 0, 0); PXOpenGLDrawVertexXYZF(&openGLContext, -0.6, -0.75, 0.5);
 #endif
 
 #if 1 // Draw mini text
@@ -311,22 +311,22 @@ void TestOpenGLTextDraw()
 
 
 	/*
-	OpenGLDrawBegin(&openGLContext, OpenGLRenderLineLoop);
-	OpenGLDrawVertexXYZF(&openGLContext, -.1, .1, 0);
-	OpenGLDrawVertexXYZF(&openGLContext, .1, .1, 0);
-	OpenGLDrawVertexXYZF(&openGLContext, .1, -.1, 0);
-	OpenGLDrawVertexXYZF(&openGLContext, -.1, -.1, 0);
-	OpenGLDrawEnd(&openGLContext);
+	PXOpenGLDrawBegin(&openGLContext, PXOpenGLRenderLineLoop);
+	PXOpenGLDrawVertexXYZF(&openGLContext, -.1, .1, 0);
+	PXOpenGLDrawVertexXYZF(&openGLContext, .1, .1, 0);
+	PXOpenGLDrawVertexXYZF(&openGLContext, .1, -.1, 0);
+	PXOpenGLDrawVertexXYZF(&openGLContext, -.1, -.1, 0);
+	PXOpenGLDrawEnd(&openGLContext);
 
 	//glFinish();
 	*/
-	//OpenGLFlush(&openGLContext);
-	OpenGLRenderBufferSwap(&openGLContext);
+	//PXOpenGLFlush(&openGLContext);
+	PXOpenGLRenderBufferSwap(&openGLContext);
 
 	// Simply sample the texture
 
 
-	//OpenGLDrawScaleF(&openGLContext, 0.5f, -1, 1);
+	//PXOpenGLDrawScaleF(&openGLContext, 0.5f, -1, 1);
 	//<--- Texture renderer
 
 	//---
@@ -338,10 +338,10 @@ void TestOpenGLTextDraw()
 
 	DumpRenderedTexture(&openGLContext, "_TEST_DATA_OUTPUT_/Buffertest.png");
 
-	OpenGLContextDeselect(&openGLContext);
+	PXOpenGLContextDeselect(&openGLContext);
 }
 
-void TestOpenGLVAO()
+void TestPXOpenGLVAO()
 {
 	PXWindow window;
 	PXText pxText;
@@ -362,14 +362,14 @@ void TestOpenGLVAO()
 	printf("Windows ok\n");
 
 
-	OpenGLContextSelect(&window.GraphicInstance.OpenGLInstance);
+	PXOpenGLContextSelect(&window.GraphicInstance.PXOpenGLInstance);
 
 	PXGraphicModelRegisterFromModel(&window.GraphicInstance, &renderable, &model);
 
 
 	while (1)
 	{
-		//OpenGLVertexArrayBind(&window.GraphicInstance.OpenGLInstance, renderable.ID); ; // VAO
+		//PXOpenGLVertexArrayBind(&window.GraphicInstance.PXOpenGLInstance, renderable.ID); ; // VAO
 		//GraphicShaderUse(&_mainWindow.GraphicInstance, 1);
 		//CameraDataGet(&_mainWindow, 1);
 		//CameraDataUpdate(&_mainWindow, MainCamera);
@@ -378,19 +378,19 @@ void TestOpenGLVAO()
 
 
 
-		OpenGLBufferBind(&window.GraphicInstance.OpenGLInstance, OpenGLBufferArray, renderable.VBO);
+		PXOpenGLBufferBind(&window.GraphicInstance.PXOpenGLInstance, PXOpenGLBufferArray, renderable.VBO);
 
 		glDrawBuffer(GL_POINTS);
 		//glDrawElements(GL_LINES, 36, GL_UNSIGNED_INT, 0);
 
-		OpenGLBufferUnbind(&window.GraphicInstance.OpenGLInstance, OpenGLBufferArray);
+		PXOpenGLBufferUnbind(&window.GraphicInstance.PXOpenGLInstance, PXOpenGLBufferArray);
 
-		//OpenGLVertexArrayUnbind(&window.GraphicInstance.OpenGLInstance);
+		//PXOpenGLVertexArrayUnbind(&window.GraphicInstance.PXOpenGLInstance);
 	}
 
 }
 
-void TestOpenGLVBO()
+void TestPXOpenGLVBO()
 {
 	PXWindow window;
 	
@@ -409,7 +409,7 @@ void TestOpenGLVBO()
 
 	printf("Windows ok\n");
 
-	OpenGLContext* glContext = &window.GraphicInstance.OpenGLInstance;
+	PXOpenGLContext* glContext = &window.GraphicInstance.PXOpenGLInstance;
 
 
 
@@ -430,7 +430,7 @@ void TestOpenGLVBO()
 		"}";
 
 
-	OpenGLContextSelect(glContext);
+	PXOpenGLContextSelect(glContext);
 
 	//glViewport(0, 0, 800, 800); //Determining the size of the Window.
 
@@ -486,53 +486,53 @@ void TestOpenGLVBO()
 #define useVAO 1
 
 #if useVAO
-	OpenGLVertexArrayGenerate(glContext, 1, &VAO);
+	PXOpenGLVertexArrayGenerate(glContext, 1, &VAO);
 #endif
 
 
 
-	OpenGLBufferGenerate(glContext, 1, &VBO);
-	OpenGLBufferGenerate(glContext, 1, &EBO);
+	PXOpenGLBufferGenerate(glContext, 1, &VBO);
+	PXOpenGLBufferGenerate(glContext, 1, &EBO);
 
 	//Make the VAO the current Vertex Array Object by binding it.
 	//
 #if useVAO
-	OpenGLVertexArrayBind(glContext, VAO);
+	PXOpenGLVertexArrayBind(glContext, VAO);
 #endif
 
 
 	//Bind the VBO specifying it's a Buffer Array.
 
-	OpenGLBufferBind(glContext, OpenGLBufferElementArray, EBO);
-	OpenGLBufferData(glContext, OpenGLBufferElementArray, sizeof(indices), indices, OpenGLStoreStaticDraw);
-	OpenGLBufferUnbind(glContext, OpenGLBufferElementArray);
+	PXOpenGLBufferBind(glContext, PXOpenGLBufferElementArray, EBO);
+	PXOpenGLBufferData(glContext, PXOpenGLBufferElementArray, sizeof(indices), indices, PXOpenGLStoreStaticDraw);
+	PXOpenGLBufferUnbind(glContext, PXOpenGLBufferElementArray);
 
-	OpenGLBufferBind(glContext, OpenGLBufferArray, VBO);
-	OpenGLBufferData(glContext, OpenGLBufferArray, sizeof(vertices), vertices, OpenGLStoreStaticDraw);
+	PXOpenGLBufferBind(glContext, PXOpenGLBufferArray, VBO);
+	PXOpenGLBufferData(glContext, PXOpenGLBufferArray, sizeof(vertices), vertices, PXOpenGLStoreStaticDraw);
 
-	OpenGLVertexArrayAttributeDefine(glContext, 0, 3, OpenGLTypeFloat, GL_FALSE, 3 * sizeof(float), (void*)0);
-	OpenGLVertexArrayEnable(glContext, 0);
+	PXOpenGLVertexArrayAttributeDefine(glContext, 0, 3, PXOpenGLTypeFloat, GL_FALSE, 3 * sizeof(float), (void*)0);
+	PXOpenGLVertexArrayEnable(glContext, 0);
 
-	OpenGLBufferUnbind(glContext, OpenGLBufferArray);
+	PXOpenGLBufferUnbind(glContext, PXOpenGLBufferArray);
 
 #if useVAO
-	OpenGLVertexArrayUnbind(glContext);
+	PXOpenGLVertexArrayUnbind(glContext);
 #endif
 
 
 
 
 
-	OpenGLShaderProgramUse(glContext, shaderProgram.ID);
+	PXOpenGLShaderProgramUse(glContext, shaderProgram.ID);
 
 
 #if useVAO
-	OpenGLVertexArrayBind(glContext, VAO);
+	PXOpenGLVertexArrayBind(glContext, VAO);
 #endif
 
 
-	OpenGLBufferBind(glContext, OpenGLBufferArray, VBO);
-	OpenGLBufferBind(glContext, OpenGLBufferElementArray, EBO);
+	PXOpenGLBufferBind(glContext, PXOpenGLBufferArray, VBO);
+	PXOpenGLBufferBind(glContext, PXOpenGLBufferElementArray, EBO);
 	//glFrontFace(GL_CW);
 	//glFrontFace(GL_CCW);
 
@@ -550,8 +550,8 @@ void TestOpenGLVBO()
 		//glDrawArrays(GL_POINTS, 0, 3);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
-		OpenGLFlush(glContext);
-		OpenGLRenderBufferSwap(glContext);
+		PXOpenGLFlush(glContext);
+		PXOpenGLRenderBufferSwap(glContext);
 
 		//Take care of the glfwEvents
 		//glfwPollEvents();

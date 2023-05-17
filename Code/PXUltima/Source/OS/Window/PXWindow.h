@@ -12,12 +12,12 @@
 #include <X11/Xlib.h>
 
 typedef XID PXWindowID;// XID is PXWindow
-typedef GLXContext OpenGLConextID;
+typedef GLXContext PXOpenGLConextID;
 
 #elif OSWindows
 #include <Windows.h>
 typedef HWND PXWindowID;
-typedef HGLRC OpenGLConextID;
+typedef HGLRC PXOpenGLConextID;
 #endif
 
 #include <Graphic/PXGraphic.h>

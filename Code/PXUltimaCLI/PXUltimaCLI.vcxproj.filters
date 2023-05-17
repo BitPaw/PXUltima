@@ -39,7 +39,7 @@
     <ClCompile Include="Source\CS\OS\Window\Window.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\Graphic\OpenGL\OpenGL.cpp">
+    <ClCompile Include="Source\CS\OS\Graphic\PXOpenGL\PXOpenGL.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,7 +68,7 @@
     <ClInclude Include="Source\CS\OS\Window\Window.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\Graphic\OpenGL\OpenGL.hpp">
+    <ClInclude Include="Source\CS\OS\Graphic\PXOpenGL\PXOpenGL.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

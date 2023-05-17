@@ -1,7 +1,6 @@
 #ifndef PXDialogINCLUDE
 #define PXDialogINCLUDE
 
-#include <Media/PXType.h>
 #include <Media/PXText.h>
 #include <Media/PXColor.h>
 

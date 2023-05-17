@@ -249,7 +249,7 @@
     <ClInclude Include="Source\Graphic\PXGraphic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OS\Graphic\OpenGL\OpenGL.h">
+    <ClInclude Include="Source\OS\Graphic\OpenGL\PXOpenGL.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\OS\Graphic\DirectX\DirectX.h">
@@ -674,7 +674,7 @@
     <ClCompile Include="Source\Graphic\SoftwareRender\PXSoftwareRender.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OS\Graphic\OpenGL\OpenGL.c">
+    <ClCompile Include="Source\OS\Graphic\OpenGL\PXOpenGL.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Source\Media\CSS\CSS.c">

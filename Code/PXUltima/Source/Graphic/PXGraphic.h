@@ -7,7 +7,7 @@
 #include <Media/PXModel.h>
 #include <Media/PXSound.h>
 #include <Media/PXColor.h>
-#include <OS/Graphic/OpenGL/OpenGL.h>
+#include <OS/Graphic/OpenGL/PXOpenGL.h>
 #include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
 #include <Container/Dictionary/PXDictionary.h>
@@ -34,7 +34,7 @@ extern "C"
 	typedef enum PXGraphicSystem_
 	{
 		PXGraphicSystemInvalid,
-		PXGraphicSystemOpenGL,
+		PXGraphicSystemPXOpenGL,
 		PXGraphicSystemDirectX,
 		PXGraphicSystemVulcan
 	}
@@ -376,7 +376,7 @@ extern "C"
 
 	typedef struct PXGraphicContext_
 	{
-		OpenGLContext OpenGLInstance;
+		PXOpenGLContext PXOpenGLInstance;
 
 		void* AttachedWindow;
 
@@ -422,12 +422,12 @@ extern "C"
 
 
 
-	//---<OpenGL Translate>----------------
-	PXPrivate OpenGLDataType PXGraphicDataTypeToOpenGL(const PXColorFormat imageDataFormat);
-	PXPrivate OpenGLImageFormat PXGraphicImageFormatToOpenGL(const PXColorFormat imageDataFormat);
-	PXPrivate OpenGLShaderType PXGraphicShaderFromOpenGL(const PXShaderType shaderType);
-	PXPrivate OpenGLTextureType ImageTypeGraphicToOpenGL(const PXGraphicImageType graphicImageType);
-	PXPublic OpenGLRenderMode PXGraphicRenderModeToOpenGL(const PXGraphicRenderMode graphicRenderMode);
+	//---<PXOpenGL Translate>----------------
+	PXPrivate PXOpenGLDataType PXGraphicDataTypeToPXOpenGL(const PXColorFormat imageDataFormat);
+	PXPrivate PXOpenGLImageFormat PXGraphicImageFormatToPXOpenGL(const PXColorFormat imageDataFormat);
+	PXPrivate PXOpenGLShaderType PXGraphicShaderFromPXOpenGL(const PXShaderType shaderType);
+	PXPrivate PXOpenGLTextureType ImageTypeGraphicToPXOpenGL(const PXGraphicImageType graphicImageType);
+	PXPublic PXOpenGLRenderMode PXGraphicRenderModeToPXOpenGL(const PXGraphicRenderMode graphicRenderMode);
 	//-------------------------------------
 
 	//-------------------------------------

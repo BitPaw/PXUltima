@@ -19,7 +19,7 @@ void TestWindowOpen()
 	PXWindowConstruct(&window);
 
 	PXText title;
-	PXTextMakeFixedA(&title, "[PX] OpenGL-Test");
+	PXTextMakeFixedA(&title, "[PX] PXOpenGL-Test");
 
 	PXWindowCreate(&window, -1, -1, &title, 1);
 
@@ -118,20 +118,20 @@ void TestWindowOpen()
 
 	printf
 	(
-		"+---<OpenGL>----------------------------------------------+\n"
+		"+---<PXOpenGL>----------------------------------------------+\n"
 		"| Vendor   : %-44s |\n"
 		"| Renderer : %-44s |\n"
 		"| Version  : %-44s |\n"
 		"| GLSL Ver.: %-44s |\n"
 		"+----------+----------------------------------------------+\n",
-		graphicContext->OpenGLInstance.Vendor,
-		graphicContext->OpenGLInstance.Renderer,
-		graphicContext->OpenGLInstance.VersionText,
-		graphicContext->OpenGLInstance.GLSLVersionText
+		graphicContext->PXOpenGLInstance.Vendor,
+		graphicContext->PXOpenGLInstance.Renderer,
+		graphicContext->PXOpenGLInstance.VersionText,
+		graphicContext->PXOpenGLInstance.GLSLVersionText
 	);
 
 
-	OpenGLContextSelect(&graphicContext->OpenGLInstance);
+	PXOpenGLContextSelect(&graphicContext->PXOpenGLInstance);
 
 	while (1)
 	{
@@ -146,7 +146,7 @@ void TestWindowOpen()
 
 		glFlush();
 
-		OpenGLRenderBufferSwap(&graphicContext->OpenGLInstance);
+		PXOpenGLRenderBufferSwap(&graphicContext->PXOpenGLInstance);
 	}
 
 	PXWindowDestruct(&window);

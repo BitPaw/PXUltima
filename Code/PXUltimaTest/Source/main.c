@@ -3,7 +3,7 @@
 
 #include "TestSystemInfo.h"
 #include "Graphic/TestWindow.h"
-#include "Graphic/TestOpenGL.h"
+#include "Graphic/TestPXOpenGL.h"
 #include "Graphic/TestFont.h"
 #include "Compiler/TestPXCompiler.h"
 #include "Graphic/TestImage.h"
@@ -93,7 +93,8 @@ int main()
 	PXText pxText;
 	PXTextMakeFixedA(&pxText, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code");
 
-//	PXDialogFileOpen(&pxText);
+	PXDialogFileOpen(&pxText);
+	PXDialogFileSave(&pxText);
 
 	PXColorRGBI8 pxColorRGBI8;
 
@@ -129,8 +130,8 @@ int main()
 	TestFontAll();
 #endif // 
 
-#if 0 // OpenGL Test
-	TestOpenGLAll();
+#if 0 // PXOpenGL Test
+	TestPXOpenGLAll();
 #endif
 
 
