@@ -1,6 +1,7 @@
 #include "PXLibrary.h"
 
 #include <OS/Error/PXActionResult.h>
+#include <OS/Memory/PXMemory.h>
 
 #if OSUnix
 
@@ -26,13 +27,13 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 
 #endif
 
-#include <OS/Memory/PXMemory.h>
+
 
 /*
 dlopen() - gain access to an executable object file
 dclose() - close a dlopen object
 dlsym() - obtain the address of a symbol from a dlopen object
-dlvsym() - Programming interface to dynamic linking loader.
+dlvsym() - PXProgramming interface to dynamic linking loader.
 dlerror() - get diagnostic information
 */
 
@@ -76,37 +77,47 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 	return ErrorCode::Successful;
 }*/
 
-PXBool LibraryOpenA(PXLibrary* const pxLibrary, const char* filePath)
+
+
+PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 {
+	switch (filePath->Format)
+	{
+		case TextFormatUTF8:
+		case TextFormatASCII:
+		{
 #if OSUnix
-	const int mode = RTLD_NOW;
-	pxLibrary->ID = dlopen(filePath, mode);
+			const int mode = RTLD_NOW;
+			pxLibrary->ID = dlopen(filePath, mode);
 
 #elif OSWindows
-	pxLibrary->ID = LoadLibraryA(filePath);
+			pxLibrary->ID = LoadLibraryA(filePath); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
 
-	return pxLibrary->ID != PXNull;
-}
+			return pxLibrary->ID != PXNull;
+		}
 
-PXBool LibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* filePath)
-{
+		case TextFormatUNICODE:
+		{
 #if OSUnix
-	return Open((char*)filePath);
-#elif OSWindows
-	pxLibrary->ID = LoadLibraryW(filePath);
+			return 0;
 
-	return pxLibrary->ID != PXNull;
+#elif OSWindows
+			pxLibrary->ID = LoadLibraryW(filePath); // Windows XP, Kernel32.dll, libloaderapi.h
+
+			return pxLibrary->ID != PXNull;
 #endif
+		}
+	}
 }
 
-PXBool LibraryClose(PXLibrary* const pxLibrary)
+PXBool PXLibraryClose(PXLibrary* const pxLibrary)
 {
 	const PXBool result =
 #if OSUnix
 		dlclose(pxLibrary->ID);
 #elif OSWindows
-		FreeLibrary(pxLibrary->ID);
+		FreeLibrary(pxLibrary->ID); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
 
 	pxLibrary->ID = PXNull;
@@ -114,14 +125,14 @@ PXBool LibraryClose(PXLibrary* const pxLibrary)
 	return result;
 }
 
-PXBool LibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const char* symbolName)
+PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const char* symbolName)
 {
 #if OSUnix
 	const LibraryFunction functionPointer = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName);
 	const char* errorString = dlerror();
 	const PXBool successful = errorString;
 #elif OSWindows
-	const LibraryFunction functionPointer = GetProcAddress(pxLibrary->ID, symbolName);
+	const LibraryFunction functionPointer = GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 	const PXBool successful = functionPointer;
 #endif
 
@@ -134,30 +145,47 @@ PXBool LibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunc
 	return 1u;
 }
 
-PXSize PXLibraryNameA(PXLibrary* const pxLibrary, const PXTextASCII libraryName, const PXSize libraryNameMaxSize)
+PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName)
 {
-	MemoryClear(libraryName, libraryNameMaxSize);
+	PXMemoryClear(libraryName->TextA, libraryName->SizeAllocated);
 
+	switch (libraryName->Format)
+	{
+		case TextFormatUTF8:
+		case TextFormatASCII:
+		{
 #if OSUnix
-	return 0;
+			return PXActionNotImplemented;
 
 #elif OSWindows
-	const DWORD result = GetModuleFileNameExA(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName, libraryNameMaxSize);
-	
-	if (!result)
-	{
-		PXActionResult px = GetCurrentError();
+			libraryName->SizeUsed = GetModuleFileNameExA(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextA, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
 
-		printf("");
+			PXActionExitOnError(libraryName->SizeUsed == 0);
+#endif
+
+			break;
+		}
+
+		case TextFormatUNICODE:
+		{
+#if OSUnix
+			return PXActionNotImplemented;
+
+#elif OSWindows
+			libraryName->SizeUsed = GetModuleFileNameExW(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextW, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
+
+			PXActionExitOnError(libraryName->SizeUsed == 0);
+#endif
+			break;
+		}
 	}
 
-	return result;
-
-#endif
+	return PXActionSuccessful;
 }
 
-unsigned char LibraryParseSymbols()
+PXBool PXLibraryParseSymbols()
 {
+
 #if OSUnix
 	return PXFalse;
 

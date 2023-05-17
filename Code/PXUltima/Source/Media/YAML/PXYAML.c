@@ -233,9 +233,9 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
 
             char emotySpace[25];
 
-            MemoryClear(textA, 256u);
-            MemoryClear(textB, 256u);
-            MemoryClear(emotySpace, 25u);
+            PXMemoryClear(textA, 256u);
+            PXMemoryClear(textB, 256u);
+            PXMemoryClear(emotySpace, 25u);
 
             PXFileReadI16U(outputStream, &textASize);
             PXFileReadB(outputStream, textA, textASize);
@@ -306,7 +306,7 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
     outputStream->DataCursor = oldpos;
 }
 
-PXActionResult PXYAMLFileParse(PXFile* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
+PXActionResult PXYAMLFileParse(PXFile* const ymlTokenInputStream, PXSerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
 {
 
 

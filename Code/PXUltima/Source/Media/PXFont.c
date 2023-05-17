@@ -4,17 +4,17 @@
 
 #include <OS/File/PXFile.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
-#include <Media/TTF/TTF.h>
+#include <Media/TTF/PXTTF.h>
 #include <Media/PXImage.h>
 
 void PXFontConstruct(PXFont* const font)
 {
-    MemoryClear(font, sizeof(PXFont));
+    PXMemoryClear(font, sizeof(PXFont));
 }
 
 void PXFontDestruct(PXFont* const font)
 {
-    MemoryRelease(font->FontElement, font->FontElementSize);
+    PXMemoryRelease(font->FontElement, font->FontElementSize);
 }
 
 PXActionResult PXFontLoad(PXFont* const font, const PXText* const filePath)
@@ -73,7 +73,7 @@ PXActionResult PXFontLoadD(PXFont* const font, PXFile* const PXFile, const FileF
         case FileFormatSpriteFont:
         {
             font->FontElementSize = 1u;
-            font->FontElement = MemoryAllocateClear(sizeof(PXSpriteFont) * 1u);
+            font->FontElement = PXMemoryAllocateClear(sizeof(PXSpriteFont) * 1u);
 
             {
 
@@ -91,18 +91,18 @@ PXActionResult PXFontLoadD(PXFont* const font, PXFile* const PXFile, const FileF
         }
         case FileFormatTrueTypeFont:
         {
-            TTF ttf;
+            PXTTF ttf;
 
-            TTFConstruct(&ttf);
+            PXPXTTFConstruct(&ttf);
 
             {
                // PXSize readBytes = 0;
-                //const PXActionResult filePXActionResult = TTFParse(&ttf, data, dataSize, &readBytes);
+                //const PXActionResult filePXActionResult = PXTTFParse(&ttf, data, dataSize, &readBytes);
 
                 //PXActionExitOnError(filePXActionResult);
             }
 
-            TTFDestruct(&ttf);
+            PXPXTTFDestruct(&ttf);
 
             break;
         }

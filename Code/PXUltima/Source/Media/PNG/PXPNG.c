@@ -4,10 +4,9 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <OS/Time/PXTime.h>
-
 #include <Media/ZLIB/PXZLIB.h>
-#include <Media/ADAM7/ADAM7.h>
-#include <Media/CRC32/CRC32.h>
+#include <Media/ADAM7/PXADAM7.h>
+#include <Media/CRC32/PXCRC32.h>
 
 #define PNGHeaderSequenz PXInt64Make(0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n')
 #define PNGDebugInfo false
@@ -19,7 +18,7 @@ unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g
         int i = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
         if (!tree->children[i])
         {
-            tree->children[i] = MemoryAllocate(sizeof(PNGColorTree) * 1);
+            tree->children[i] = PXMemoryAllocate(sizeof(PNGColorTree) * 1);
 
             if (!tree->children[i]) return 83; /*alloc fail*/
         }
@@ -34,8 +33,8 @@ unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pi
     LodePNGColorMode colorModeIn;
     LodePNGColorMode colorModeOut;
 
-    MemoryClear(&colorModeIn, sizeof(LodePNGColorMode));
-    MemoryClear(&colorModeOut, sizeof(LodePNGColorMode));
+    PXMemoryClear(&colorModeIn, sizeof(LodePNGColorMode));
+    PXMemoryClear(&colorModeOut, sizeof(LodePNGColorMode));
 
     colorModeIn.bitdepth = bitDepth;
     colorModeIn.colortype = LCT_RGBA;
@@ -94,7 +93,7 @@ unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pi
     if (lodepng_color_mode_equal(&colorModeOut, &colorModeIn))
     {
         PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
-        MemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
+        PXMemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
         return 0;
     }
 
@@ -116,7 +115,7 @@ unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pi
             if (colorModeIn.colortype == LCT_PALETTE && colorModeIn.bitdepth == colorModeOut.bitdepth)
             {
                 PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
-                MemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
+                PXMemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
                 return 0;
             }
         }
@@ -331,7 +330,7 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
         {
             for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
-                MemoryCopy(&in[i * 3], 3, buffer, 3);
+                PXMemoryCopy(&in[i * 3], 3, buffer, 3);
                 buffer[3] = 255;
             }
             if (mode->key_defined)
@@ -365,7 +364,7 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
             {
                 unsigned index = in[i];
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-                MemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
+                PXMemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
             }
         }
         else
@@ -375,7 +374,7 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
             {
                 unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-                MemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
+                PXMemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
             }
         }
     }
@@ -751,7 +750,7 @@ unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bit
     return result;
 }
 
-PXPNGChunkType ConvertToChunkType(const PXInt32U pngchunkType)
+PXPNGChunkType PXPNGChunkTypeFromID(const PXInt32U pngchunkType)
 {
     switch (pngchunkType)
     {
@@ -778,12 +777,12 @@ PXPNGChunkType ConvertToChunkType(const PXInt32U pngchunkType)
     }
 }
 
-PXInt32U ConvertFromChunkType(const PXPNGChunkType pngchunkType)
+PXInt32U PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType)
 {
     return 0;
 }
 
-PXPNGColorType ConvertToPNGColorType(const PXInt8U colorType)
+PXPNGColorType PXPNGColorTypeFromID(const PXInt8U colorType)
 {
     switch (colorType)
     {
@@ -807,7 +806,7 @@ PXPNGColorType ConvertToPNGColorType(const PXInt8U colorType)
     }
 }
 
-PXInt8U ConvertFromPNGColorType(const PXPNGColorType colorType)
+PXInt8U PXPNGColorTypeToID(const PXPNGColorType colorType)
 {
     switch (colorType)
     {
@@ -832,7 +831,7 @@ PXInt8U ConvertFromPNGColorType(const PXPNGColorType colorType)
     }
 }
 
-PXPNGInterlaceMethod ConvertToPNGInterlaceMethod(const PXInt8U interlaceMethod)
+PXPNGInterlaceMethod PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod)
 {
     switch (interlaceMethod)
     {
@@ -840,14 +839,14 @@ PXPNGInterlaceMethod ConvertToPNGInterlaceMethod(const PXInt8U interlaceMethod)
             return PXPNGInterlaceNone;
 
         case 1u:
-            return PXPNGInterlaceADAM7;
+            return PXPNGInterlacePXADAM7;
 
         default:
             return PXPNGInterlaceInvalid;
     }
 }
 
-PXInt8U ConvertFromPNGInterlaceMethod(const PXPNGInterlaceMethod interlaceMethod)
+PXInt8U PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod)
 {
     switch (interlaceMethod)
     {
@@ -858,19 +857,19 @@ PXInt8U ConvertFromPNGInterlaceMethod(const PXPNGInterlaceMethod interlaceMethod
         case PXPNGInterlaceNone:
             return 0u;
 
-        case PXPNGInterlaceADAM7:
+        case PXPNGInterlacePXADAM7:
             return 1u;
     }
 }
 
 void PXPNGConstruct(PXPNG* const png)
 {
-    MemoryClear(png, sizeof(PXPNG));
+    PXMemoryClear(png, sizeof(PXPNG));
 }
 
 void PXPNGDestruct(PXPNG* const png)
 {
-    MemoryRelease(png->PixelData, png->PixelDataSize);
+    PXMemoryRelease(png->PixelData, png->PixelDataSize);
 
     png->PixelDataSize = 0;
     png->PixelData = 0;
@@ -948,7 +947,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
 
         // Allocate Memory for later ImageData Chunks
         imageDataChunkCacheSizeMAX = dataStream->DataSize - 0u;
-        imageDataChunkCache = MemoryAllocate(sizeof(PXByte) * imageDataChunkCacheSizeMAX);
+        imageDataChunkCache = PXMemoryAllocate(sizeof(PXByte) * imageDataChunkCacheSizeMAX);
 
         //---------------------------------------------------------------------
 
@@ -967,7 +966,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
             PXPNGChunk chunk;
             PXSize predictedOffset = 0;
 
-            MemoryClear(&chunk, sizeof(PXPNGChunk));
+            PXMemoryClear(&chunk, sizeof(PXPNGChunk));
 
             //chunk.ChunkData = dataStream.Data + dataStream.DataCursor;
 
@@ -988,7 +987,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                 // 0 (uppercase) = unsafe to copy, 1 (lowercase) = safe to copy.
                 chunk.IsSafeToCopy = !((chunk.ChunkID.Data[3] & 0b00100000) >> 5);
 
-                chunk.ChunkType = ConvertToChunkType(chunk.ChunkID.Value);
+                chunk.ChunkType = PXPNGChunkTypeFromID(chunk.ChunkID.Value);
 
                 predictedOffset = dataStream->DataCursor + chunk.Lengh;
             }
@@ -1031,8 +1030,8 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
 
                     PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
 
-                    png.ImageHeader.ColorType = ConvertToPNGColorType(colorTypeRaw);
-                    png.ImageHeader.InterlaceMethod = ConvertToPNGInterlaceMethod(interlaceMethodRaw);
+                    png.ImageHeader.ColorType = PXPNGColorTypeFromID(colorTypeRaw);
+                    png.ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(interlaceMethodRaw);
 
                     break;
                 }
@@ -1342,7 +1341,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                 {
                     const PXSize listSize = chunk.Lengh / 2;
 
-                    unsigned short* list = MemoryAllocate(sizeof(unsigned short) * listSize);
+                    unsigned short* list = PXMemoryAllocate(sizeof(unsigned short) * listSize);
 
                     png.PaletteHistogram.ColorFrequencyListSize = listSize;
                     png.PaletteHistogram.ColorFrequencyList = list;
@@ -1457,17 +1456,17 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
             return actionResult;
         }
 
-        const PXSize expectedadam7CacheSize = ADAM7CaluclateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel);
+        const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel);
 
-        PXByte* adam7Cache = (PXByte*)MemoryAllocate(sizeof(PXByte) * expectedadam7CacheSize);
+        PXByte* adam7Cache = (PXByte*)PXMemoryAllocate(sizeof(PXByte) * expectedadam7CacheSize);
 
-        const unsigned int scanDecodeResult = ADAM7ScanlinesDecode(adam7Cache, PXZLIBResultStream.Data, png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
+        const unsigned int scanDecodeResult = PXADAM7ScanlinesDecode(adam7Cache, PXZLIBResultStream.Data, png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
 
 
         // Color COmprerss
         const unsigned int decompress = ImageDataDecompress(&png, adam7Cache, image->PixelData, png.ImageHeader.BitDepth, png.ImageHeader.ColorType);
 
-        MemoryRelease(adam7Cache, expectedadam7CacheSize);
+        PXMemoryRelease(adam7Cache, expectedadam7CacheSize);
 
         PXFileDestruct(&PXZLIBResultStream);
     }
@@ -1581,7 +1580,7 @@ void filterScanline(unsigned char* out, const unsigned char* scanline, const uns
                 for (i = 0; i != bytewidth; ++i) out[i] = (scanline[i] - prevline[i]);
                 for (i = bytewidth; i < length; ++i)
                 {
-                    out[i] = (scanline[i] - ADAM7paethPredictor(scanline[i - bytewidth], prevline[i], prevline[i - bytewidth]));
+                    out[i] = (scanline[i] - PXADAM7paethPredictor(scanline[i - bytewidth], prevline[i], prevline[i - bytewidth]));
                 }
             }
             else
@@ -1747,7 +1746,7 @@ the scanlines with 1 extra byte per scanline
 
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = (unsigned char*)MemoryAllocate(linebytes);
+            attempt[type] = (unsigned char*)PXMemoryAllocate(linebytes);
             if (!attempt[type]) error = 83; /*alloc fail*/
         }
 
@@ -1794,7 +1793,7 @@ the scanlines with 1 extra byte per scanline
             }
         }
 
-        for (type = 0; type != 5; ++type) MemoryReallocate(attempt[type], -1);
+        for (type = 0; type != 5; ++type) PXMemoryReallocate(attempt[type], -1);
     }
     else if (strategy == LFS_ENTROPY)
     {
@@ -1805,7 +1804,7 @@ the scanlines with 1 extra byte per scanline
 
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = (unsigned char*)MemoryAllocate(linebytes);
+            attempt[type] = (unsigned char*)PXMemoryAllocate(linebytes);
             if (!attempt[type]) error = 83; /*alloc fail*/
         }
 
@@ -1818,7 +1817,7 @@ the scanlines with 1 extra byte per scanline
                 {
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
-                    MemoryClear(count, 256 * sizeof(*count));
+                    PXMemoryClear(count, 256 * sizeof(*count));
                     for (x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
                     ++count[type]; /*the filter type itself is part of the scanline*/
                     for (x = 0; x != 256; ++x)
@@ -1841,7 +1840,7 @@ the scanlines with 1 extra byte per scanline
             }
         }
 
-        for (type = 0; type != 5; ++type) MemoryRelease(attempt[type], -1);
+        for (type = 0; type != 5; ++type) PXMemoryRelease(attempt[type], -1);
     }
     else if (strategy == LFS_PREDEFINED)
     {
@@ -1878,7 +1877,7 @@ the scanlines with 1 extra byte per scanline
         PXZLIBsettings.custom_deflate = 0;
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = (unsigned char*)MemoryAllocate(linebytes);
+            attempt[type] = (unsigned char*)PXMemoryAllocate(linebytes);
             if (!attempt[type]) error = 83; /*alloc fail*/
         }
         if (!error)
@@ -1895,14 +1894,14 @@ the scanlines with 1 extra byte per scanline
                     dummy = 0;
 
                     const PXSize sizeAA = 0xFFFF * 2;
-                    dummy = MemoryAllocate(sizeAA);
+                    dummy = PXMemoryAllocate(sizeAA);
 
                     PXSize written = 0;
 
                     // fix this: PXZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
                     // PXZLIB_compress( , &PXZLIBsettings);
 
-                    MemoryRelease(dummy, -1);
+                    PXMemoryRelease(dummy, -1);
                     /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
                     if (type == 0 || size[type] < smallest)
                     {
@@ -1915,7 +1914,7 @@ the scanlines with 1 extra byte per scanline
                 for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
-        for (type = 0; type != 5; ++type) MemoryRelease(attempt[type], -1);
+        for (type = 0; type != 5; ++type) PXMemoryRelease(attempt[type], -1);
     }
     else return 88; // unknown filter strategy
 
@@ -1991,7 +1990,7 @@ PXSize preProcessScanlines
             if (paddingBitsNeeded)
             {
                 const PXSize size = height * ((width * bpp + 7u) / 8u);
-                unsigned char* padded = (unsigned char*)MemoryAllocate(sizeof(unsigned char) * size);
+                unsigned char* padded = (unsigned char*)PXMemoryAllocate(sizeof(unsigned char) * size);
                 if (!padded) error = 83; /*alloc fail*/
                 if (!error)
                 {
@@ -1999,7 +1998,7 @@ PXSize preProcessScanlines
                     error = filter(pxScanlineStream->Data, padded, width, height, bpp, LFS_MINSUM);
                 }
 
-                MemoryRelease(padded, size);
+                PXMemoryRelease(padded, size);
             }
             else
             {
@@ -2009,19 +2008,19 @@ PXSize preProcessScanlines
 
             break;
         }
-        case PXPNGInterlaceADAM7:
+        case PXPNGInterlacePXADAM7:
         {
             unsigned passw[7], passh[7];
             PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
-            ADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
+            PXADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
 
             const PXSize outsize = filter_passstart[7]; // image size plus an extra byte per scanline + possible padding bits
             const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXMemoryAccessModeReadAndWrite);
 
             PXActionExitOnError(allocationResult);
 
-            unsigned char* adam7 = (unsigned char*)MemoryAllocate(passstart[7]);
+            unsigned char* adam7 = (unsigned char*)PXMemoryAllocate(passstart[7]);
 
             if (!adam7 && passstart[7]) error = 83; //alloc fail
 
@@ -2032,11 +2031,11 @@ PXSize preProcessScanlines
                 {
                     if (bpp < 8)
                     {
-                        unsigned char* padded = (unsigned char*)MemoryAllocate(padded_passstart[i + 1] - padded_passstart[i]);
+                        unsigned char* padded = (unsigned char*)PXMemoryAllocate(padded_passstart[i + 1] - padded_passstart[i]);
                         //  if(!padded) ERROR_BREAK(83); //alloc fail
                         addPaddingBits(padded, &adam7[passstart[i]], ((passw[i] * bpp + 7u) / 8u) * 8u, passw[i] * bpp, passh[i]);
                         //  error = filter(&(*out)[filter_passstart[i]], padded, passw[i], passh[i], &info_png->color, settings);
-                        MemoryReallocate(padded, -1);
+                        PXMemoryReallocate(padded, -1);
                     }
                     else
                     {
@@ -2047,7 +2046,7 @@ PXSize preProcessScanlines
                 }
             }
 
-            MemoryReallocate(adam7, passstart[7]);
+            PXMemoryReallocate(adam7, passstart[7]);
 
             break;
         }
@@ -2073,7 +2072,7 @@ PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const
     //---<IHDR> (Image Header)--- 21 Bytes
     {
         unsigned char colorType = 0;
-        const unsigned char interlaceMethod = ConvertFromPNGInterlaceMethod(PXPNGInterlaceNone);
+        const unsigned char interlaceMethod = PXPNGInterlaceMethodToID(PXPNGInterlaceNone);
         const unsigned char* chunkStart = PXFileCursorPosition(pxExportStream);
 
         const unsigned char compressionMethod = 0;
@@ -2118,7 +2117,7 @@ PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const
         PXFileWriteI8U(pxExportStream, interlaceMethod);
 
         {
-            const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
+            const PXInt32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
 
             PXFileWriteI32UE(pxExportStream, crc, PXEndianBig);
         }
@@ -2248,7 +2247,7 @@ PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const
         PXFileWriteI8U(pxExportStream, pngLastModificationTime.Second);
 
         {
-            const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
+            const PXInt32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
 
             PXFileWriteI32UE(pxExportStream, crc, PXEndianBig);
         }
@@ -2306,7 +2305,7 @@ PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const
         PXFileDestruct(&pxScanlineStream);
 
         {
-            const unsigned int crc = CRC32Generate(chunkStart + 4, chunkLength + 4);
+            const PXInt32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
 
             PXFileWriteI32UE(pxExportStream, crc, PXEndianBig);
         }

@@ -37,7 +37,7 @@ PXBool PXAwaitChange(const volatile void* const dataAdress, const PXSize dataSiz
 
     unsigned char compareValue[8];
 
-    MemoryCopy(dataAdress, dataSize, compareValue, 8u);
+    PXMemoryCopy(dataAdress, dataSize, compareValue, 8u);
 
 #if 0//WindowsAtleast8
 
@@ -49,7 +49,7 @@ PXBool PXAwaitChange(const volatile void* const dataAdress, const PXSize dataSiz
 
     unsigned int dummyCounter = 0;
 
-    while(MemoryCompare(compareValue, 8u, dataAdress, dataSize))
+    while(PXMemoryCompare(compareValue, 8u, dataAdress, dataSize))
     {
         //__asm volatile ("nop"); // This does not compile. Bad solution anyway
 

@@ -10,7 +10,7 @@
 
 void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings)
 {
-	MemoryClear(compilerSettings, sizeof(PXCompilerSettings));
+	PXMemoryClear(compilerSettings, sizeof(PXCompilerSettings));
 }
 
 void PXCompilerSymbolEntryAdd(PXFile* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
@@ -273,7 +273,7 @@ void PXCompilerSymbolEntryExtract(PXFile* const dataStream, PXCompilerSymbolEntr
 	compilerSymbolEntry->ID = symbolID;
 
 #if PXCompilerSanitise
-	MemorySet(oldPos, '#', size);
+	PXMemorySet(oldPos, '#', size);
 #endif
 }
 
@@ -563,11 +563,14 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 				}
 			}
 
+			PXText numberText;
+			PXTextMakeExternA(&numberText, text, textSize);
+
 			if (probablyFloat && isValidFloatSyntax)
 			{
 				float value = 0;
 
-				const PXSize writtenNumbers = PXTextToFloatA(text, textSize, &value);
+				const PXSize writtenNumbers = PXTextToFloat(&numberText, &value);
 				const PXBool isFloat = textSize == writtenNumbers;
 
 				if (isFloat)
@@ -583,7 +586,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			{
 				unsigned int value = 0;
 
-				const PXSize writtenNumbers = PXTextToIntA(text, textSize, &value);	
+				const PXSize writtenNumbers = PXTextToInt(&numberText, &value);
 
 				if (writtenNumbers > 0)
 				{
@@ -627,7 +630,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	PXBool isFirstWhiteSpaceInLine = 1u;
 
 #if PXCompilerSanitise
-	MemorySet(outputStream->Data, '#', outputStream->DataSize);
+	PXMemorySet(outputStream->Data, '#', outputStream->DataSize);
 #endif
 
 	const PXCompilerSymbolLexer newLineSymbol = compilerSettings->IntrepredNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;

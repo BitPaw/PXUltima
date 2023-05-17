@@ -10,7 +10,7 @@
 
 void PXSpriteFontConstruct(PXSpriteFont* const pxPXSpriteFont)
 {
-	MemoryClear(pxPXSpriteFont, sizeof(PXSpriteFont));
+	PXMemoryClear(pxPXSpriteFont, sizeof(PXSpriteFont));
 }
 
 void PXSpriteFontDestruct(PXSpriteFont* const pxPXSpriteFont)
@@ -47,6 +47,7 @@ PXSpriteFontCharacter* PXSpriteFontGetCharacter(PXSpriteFont* PXSpriteFont, cons
 
 PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const pxFile)
 {
+#if 0
 	PXSize errorCounter = 0;
 	PXFile tokenSteam;
 	/*
@@ -357,6 +358,7 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const PXSpriteFont, PXFile* const
 
 		PXFileSkipLine(pxFile);
 	}
+#endif
 
 	return PXActionSuccessful;
 }

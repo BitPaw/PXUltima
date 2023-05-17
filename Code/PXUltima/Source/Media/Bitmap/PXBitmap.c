@@ -369,12 +369,12 @@ PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXFile* co
 
 void PXBitmapConstruct(PXBitmap* const bmp)
 {
-    MemoryClear(bmp, sizeof(PXBitmap));
+    PXMemoryClear(bmp, sizeof(PXBitmap));
 }
 
 void PXBitmapDestruct(PXBitmap* const bmp)
 {
-    MemoryRelease(bmp->PixelData, bmp->PixelDataSize);
+    PXMemoryRelease(bmp->PixelData, bmp->PixelDataSize);
 
     bmp->PixelData = 0;
     bmp->PixelDataSize = 0;

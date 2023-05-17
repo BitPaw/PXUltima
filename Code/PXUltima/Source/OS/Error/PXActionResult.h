@@ -211,10 +211,10 @@ extern "C"
 
 #define PXActionExitOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
 #define PXActionExitOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
-#define PXActionOnErrorFetchAndExit(b) if(b) { return GetCurrentError(); }
+#define PXActionOnErrorFetchAndExit(b) if(b) { return PXErrorCurrent(); }
 
-	PXPublic PXActionResult ConvertErrorCode(const int errorCode);
-	PXPublic PXActionResult GetCurrentError();
+	PXPublic PXActionResult PXErrorCodeFromID(const int errorCode);
+	PXPublic PXActionResult PXErrorCurrent();
 
 #ifdef __cplusplus
 }

@@ -10,7 +10,7 @@
 #elif OSWindows
 #endif
 
-PXActionResult ConvertErrorCode(const int errorCode)
+PXActionResult PXErrorCodeFromID(const int errorCode)
 {
 	switch(errorCode)
 	{
@@ -265,10 +265,10 @@ PXActionResult ConvertErrorCode(const int errorCode)
 	}
 }
 
-PXActionResult GetCurrentError()
+PXActionResult PXErrorCurrent()
 {
 	const int errorID = errno;
-	const PXActionResult actionResult = ConvertErrorCode(errorID);
+	const PXActionResult actionResult = PXErrorCodeFromID(errorID);
 
 	/*
 			DWORD error = GetLastError();

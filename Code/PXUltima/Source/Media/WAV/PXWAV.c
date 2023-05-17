@@ -1,7 +1,7 @@
 #include "PXWAV.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <Media/RIFF/RIFF.h>
+#include <Media/RIFF/PXRIFF.h>
 #include <Math/PXMath.h>
 
 #define WAVSignatureLIST { 'L', 'I', 'S', 'T' }
@@ -9,19 +9,19 @@
 
 PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 {
-	RIFF riff;
+	PXRIFF riff;
 
-	MemoryClear(wav, sizeof(PXWAV));
+	PXMemoryClear(wav, sizeof(PXWAV));
 
-	// RIFF
+	// PXRIFF
 	{
-		const PXActionResult actionResult = RIFFParse(&riff, PXFile);
+		const PXActionResult actionResult = PXRIFFParse(&riff, PXFile);
 
 		PXActionExitOnError(actionResult);
 
-		// Valid RIFF
+		// Valid PXRIFF
 		{
-			const PXBool isAVI = riff.Format == RIFFWaveformAudio;
+			const PXBool isAVI = riff.Format == PXRIFFWaveformAudio;
 
 			if (!isAVI)
 			{
@@ -43,9 +43,9 @@ PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 	{
 		const char signature[] = WAVSignatureLIST;
 		const PXSize signatureSize = sizeof(signature);
-		const PXBool isRIFFListChunk = PXFileReadAndCompare(PXFile, signature, signatureSize);
+		const PXBool isPXRIFFListChunk = PXFileReadAndCompare(PXFile, signature, signatureSize);
 
-		if(isRIFFListChunk)
+		if(isPXRIFFListChunk)
 		{
 			PXFileCursorAdvance(PXFile, 30u);
 		}
@@ -64,7 +64,7 @@ PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 
 	PXFileReadI32UE(PXFile, &wav->SoundDataSize, riff.EndianFormat);
 
-	wav->SoundData = MemoryAllocate(sizeof(PXByte) * wav->SoundDataSize);
+	wav->SoundData = PXMemoryAllocate(sizeof(PXByte) * wav->SoundDataSize);
 
 	PXFileReadB(PXFile, wav->SoundData, wav->SoundDataSize);
 
@@ -100,14 +100,14 @@ PXActionResult PXWAVSerialize(PXWAV* const wav, PXFile* const PXFile)
 
 	PXEndian targetEndian = PXEndianLittle;
 
-	// Write RIFF
+	// Write PXRIFF
 	{
-		RIFF riff;
+		PXRIFF riff;
 		riff.EndianFormat = targetEndian;
 		riff.ChunkSize = dataSize+36;
-		riff.Format = RIFFWaveformAudio;
+		riff.Format = PXRIFFWaveformAudio;
 
-		const PXActionResult riffResult = RIFFSerialize(&riff, PXFile);
+		const PXActionResult riffResult = PXRIFFSerialize(&riff, PXFile);
 	}
 
 	// Write Format chunk
@@ -123,7 +123,7 @@ PXActionResult PXWAVSerialize(PXWAV* const wav, PXFile* const PXFile)
 			bitdepth// BitsPerSample;
 		};
 
-		const PXActionResult riffResult = FMTSerialize(&fmt, PXFile, targetEndian);
+		const PXActionResult fmtResult = PXFMTSerialize(&fmt, PXFile, targetEndian);
 	}
 
 	//Data chunk

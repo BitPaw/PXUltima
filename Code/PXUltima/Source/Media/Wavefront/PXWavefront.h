@@ -5,7 +5,7 @@
 #include <Media/PXType.h>
 #include <OS/File/PXFile.h>
 
-#include <Media/MTL/MTL.h>
+#include <Media/MTL/PXMTL.h>
 #include <Media/PXModel.h>
 
 #define PXWavefrontNameSize 64u
@@ -79,7 +79,7 @@ extern "C"
 		PXInt8U VertexStructureSize;
 
 		PXSize MaterialFileListSize;
-		MTL* MaterialFileList;
+		PXMTL* MaterialFileList;
 
 		PXSize ElementListSize;
 		PXWavefrontElement* ElementList;

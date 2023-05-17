@@ -18,10 +18,10 @@ void TestYAMLParse()
 		char Name[16];
 	}MyStroage;
 
-	SerializationTypeInfo serializationTypeInfo[2];
+	PXSerializationTypeInfo serializationTypeInfo[2];
 
-	SerializationTypeInfoSet(&serializationTypeInfo[0], "ID", &MyStroage.ID, sizeof(MyStroage.ID), SerializationTypeIntegerUnsigned32, 0, 0);
-	SerializationTypeInfoSet(&serializationTypeInfo[1], "Name", &MyStroage.Name, sizeof(MyStroage.Name), SerializationTypeStringASCII, 0, 0);
+	PXSerializationTypeInfoSet(&serializationTypeInfo[0], "ID", &MyStroage.ID, sizeof(MyStroage.ID), SerializationTypeIntegerUnsigned32, 0, 0);
+	PXSerializationTypeInfoSet(&serializationTypeInfo[1], "Name", &MyStroage.Name, sizeof(MyStroage.Name), SerializationTypeStringASCII, 0, 0);
 
 
 	// Store

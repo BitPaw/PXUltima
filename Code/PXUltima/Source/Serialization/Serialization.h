@@ -1,5 +1,5 @@
-#ifndef SerializationINCLUDE
-#define SerializationINCLUDE
+#ifndef PXSerializationINCLUDE
+#define PXSerializationINCLUDE
 
 #include <Media/PXType.h>
 
@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-	typedef enum SerializationType_
+	typedef enum PXSerializationType_
 	{
 		SerializationTypeInvalid,
 		
@@ -30,34 +30,34 @@ extern "C"
 		SerializationTypeFloatUNICODE,
 		SerializationTypeFloatUTF
 	}
-	SerializationType;
+	PXSerializationType;
 
 	// Example i want, xxxx("ID", &ID, sizeof(ID), TYpeUnyi64, )
 	
-	typedef struct SerializationTypeInfo_ SerializationTypeInfo;
+	typedef struct PXSerializationTypeInfo_ PXSerializationTypeInfo;
 
-	typedef struct SerializationTypeInfo_
+	typedef struct PXSerializationTypeInfo_
 	{
 		// Field Info
 		char* Name; // Name a field
 		void* Adress; // Adress of field		
 		PXSize Size; // Size of field
-		SerializationType Type; // Type of field
+		PXSerializationType Type; // Type of field
 
-		SerializationTypeInfo* Parent;
+		PXSerializationTypeInfo* Parent;
 		unsigned char Depth;
 
 	}
-	SerializationTypeInfo;
+	PXSerializationTypeInfo;
 
-	PXPublic void SerializationTypeInfoSet
+	PXPublic void PXSerializationTypeInfoSet
 	(
-		SerializationTypeInfo* serializationTypeInfo,
+		PXSerializationTypeInfo* serializationTypeInfo,
 		const char* name, 
 		void* adress, 
 		const PXSize size, 
-		SerializationType type,
-		SerializationTypeInfo* parent,
+		PXSerializationType type,
+		PXSerializationTypeInfo* parent,
 		unsigned char depth
 	);
 

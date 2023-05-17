@@ -51,7 +51,7 @@ void TestWindowOpen()
 
 	MemoryUsage memoryUsage;
 
-	MemoryScan(&memoryUsage);
+	PXMemoryScan(&memoryUsage);
 
 	char ramBuffer[256];
 
@@ -94,9 +94,9 @@ void TestWindowOpen()
 
 	// DirectX
 	{
-		DirectXContext directXContext;		
+		PXDirectXContext directXContext;		
 
-		DirectXContextCreate(&directXContext);
+		PXDirectXContextCreate(&directXContext);
 
 		printf
 		(
@@ -109,7 +109,7 @@ void TestWindowOpen()
 			directXContext.DeviceName
 		);
 
-		DirectXContextDestruct(&directXContext);
+		PXDirectXContextDestruct(&directXContext);
 	}
 
 

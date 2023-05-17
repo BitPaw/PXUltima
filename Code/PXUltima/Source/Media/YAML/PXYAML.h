@@ -31,7 +31,7 @@ extern "C"
 
 	PXPublic PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
 
-	PXPublic PXActionResult PXYAMLFileParse(PXFile* const ymlTokenInputStream, SerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
+	PXPublic PXActionResult PXYAMLFileParse(PXFile* const ymlTokenInputStream, PXSerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
 
 #ifdef __cplusplus
 }

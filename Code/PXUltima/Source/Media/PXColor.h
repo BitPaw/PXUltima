@@ -109,12 +109,12 @@ extern "C"
 
 	//---[ Public-Functions ]----------------------------------------------
 
-	PXPublic void ConvertColorRGBToYCbCr(const PXColorRGBI8* const colorRGB, PXColorYCbCrI8* const ColorYCbCr);
-	PXPublic void ConvertColorYCbCrToRGB(const PXColorYCbCrI8* const colorYCbCr, PXColorRGBI8* const colorRGB);
+	PXPublic void PXColorRGBToYCbCr(const PXColorRGBI8* const colorRGB, PXColorYCbCrI8* const ColorYCbCr);
+	PXPublic void PXColorYCbCrToRGB(const PXColorYCbCrI8* const colorYCbCr, PXColorRGBI8* const colorRGB);
 
-	PXPublic float ConvertColorRGBToY(const float red, const float green, const float blue);
-	PXPublic float ConvertColorRGBToCb(const float red, const float green, const float blue);
-	PXPublic float ConvertColorRGBToCr(const float red, const float green, const float blue);
+	PXPublic float PXColorRGBToY(const float red, const float green, const float blue);
+	PXPublic float PXColorRGBToCb(const float red, const float green, const float blue);
+	PXPublic float PXColorRGBToCr(const float red, const float green, const float blue);
 
 
 #ifdef __cplusplus

@@ -2,8 +2,8 @@
 
 #include <Math/PXMath.h>
 #include <OS/File/PXFile.h>
-#include <Media/DEFLATE/DEFLATE.h>
-#include <Media/ADLER/Adler32.h>
+#include <Media/DEFLATE/PXDEFLATE.h>
+#include <Media/ADLER/PXAdler32.h>
 
 PXZLIBCompressionLevel ConvertToCompressionLevel(const PXInt8U compressionLevel)
 {
@@ -162,7 +162,7 @@ PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutp
     {
         case PXZLIBCompressionMethodDeflate:
         {
-            const PXActionResult deflateResult = DEFLATEParse(pxInputSteam, pxOutputSteam);
+            const PXActionResult deflateResult = PXDEFLATEParse(pxInputSteam, pxOutputSteam);
 
             PXActionExitOnError(deflateResult);
 
@@ -218,14 +218,14 @@ PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutput
 
     // Write DEFLATE
     {
-        const PXActionResult delfateResult = DEFLATESerialize(pxInputSteam, pxOutputSteam);
+        const PXActionResult delfateResult = PXDEFLATESerialize(pxInputSteam, pxOutputSteam);
 
         PXActionExitOnError(delfateResult);
     }
 
     // Write ADLER
     {
-        const PXInt32U adler = (PXInt32U)Adler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
+        const PXInt32U adler = (PXInt32U)PXAdler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
 
         PXFileWriteI32UE(pxOutputSteam, adler, PXEndianBig);
     }
@@ -247,20 +247,20 @@ PXSize PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, cons
         {
             // predict output size, to allocate exact size for output buffer to avoid more dynamic allocation.
             // If the decompressed size does not match the prediction, the image must be corrupt.
-            expected_size = CalculateRawSizeIDAT(width, height, bpp);
+            expected_size = PXZLIBCalculateRawSizeIDAT(width, height, bpp);
             break;
         }
-        case PXPNGInterlaceADAM7:
+        case PXPNGInterlacePXADAM7:
         {
             // Adam-7 interlaced: expected size is the sum of the 7 sub-images sizes
             expected_size = 0;
-            expected_size += CalculateRawSizeIDAT((width + 7) >> 3, (height + 7) >> 3, bpp);
-            if(width > 4) expected_size += CalculateRawSizeIDAT((width + 3) >> 3, (height + 7) >> 3, bpp);
-            expected_size += CalculateRawSizeIDAT((width + 3) >> 2, (height + 3) >> 3, bpp);
-            if(width > 2) expected_size += CalculateRawSizeIDAT((width + 1) >> 2, (height + 3) >> 2, bpp);
-            expected_size += CalculateRawSizeIDAT((width + 1) >> 1, (height + 1) >> 2, bpp);
-            if(width > 1) expected_size += CalculateRawSizeIDAT((width + 0) >> 1, (height + 1) >> 1, bpp);
-            expected_size += CalculateRawSizeIDAT((width + 0), (height + 0) >> 1, bpp);
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 7) >> 3, (height + 7) >> 3, bpp);
+            if(width > 4) expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 3, (height + 7) >> 3, bpp);
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 2, (height + 3) >> 3, bpp);
+            if(width > 2) expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 2, (height + 3) >> 2, bpp);
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 1, (height + 1) >> 2, bpp);
+            if(width > 1) expected_size += PXZLIBCalculateRawSizeIDAT((width + 0) >> 1, (height + 1) >> 1, bpp);
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 0), (height + 0) >> 1, bpp);
 
             break;
         }
@@ -269,7 +269,7 @@ PXSize PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, cons
     return expected_size;
 }
 
-PXSize CalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp)
+PXSize PXZLIBCalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp)
 {
     // + 1 for the filter byte, and possibly plus padding bits per line.
     // Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp

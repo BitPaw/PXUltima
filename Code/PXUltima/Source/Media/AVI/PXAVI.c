@@ -1,20 +1,20 @@
 #include "PXAVI.h"
 
-#include <Media/RIFF/RIFF.h>
+#include <Media/RIFF/PXRIFF.h>
 
 PXActionResult PXAVIParse(PXAVI* const avi, PXFile* const PXFile)
 {
-    RIFF riff;
+    PXRIFF riff;
 
-    // RIFF
+    // PXRIFF
     {
-        const PXActionResult riffResult = RIFFParse(&riff, PXFile);
+        const PXActionResult riffResult = PXRIFFParse(&riff, PXFile);
 
         PXActionExitOnError(riffResult);
 
-        // Valid RIFF
+        // Valid PXRIFF
         {
-            const PXBool isAVI = riff.Format == RIFFAudioVideoInterleave;
+            const PXBool isAVI = riff.Format == PXRIFFAudioVideoInterleave;
 
             if (!isAVI)
             {

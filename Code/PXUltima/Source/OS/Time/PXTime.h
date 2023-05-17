@@ -53,8 +53,8 @@ extern "C"
 	}
 	PXTime;
 
-	PXPublic TimeDayOfWeek ConvertToMonth(unsigned short monthID);
-	PXPublic TimeMonth ConvertToDay(unsigned short dayID);
+	PXPublic TimeDayOfWeek PXTimeMonthFromID(unsigned short monthID);
+	PXPublic TimeMonth PXTimeDayFromID(unsigned short dayID);
 
 	PXPublic void PXTimeNow(PXTime* time);
 	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);

@@ -32,7 +32,7 @@ typedef HGLRC PXOpenGLConextID;
 #include <Media/PXType.h>
 
 typedef unsigned int PXOpenGLID;
-typedef unsigned int PXOpenGLShaderProgramID;
+typedef unsigned int PXOpenGLShaderPXProgramID;
 typedef unsigned int PXOpenGLShaderID;
 typedef ptrdiff_t GLintptr;
 typedef ptrdiff_t GLsizeiptr;
@@ -431,9 +431,9 @@ extern "C"
 	//---<PXOpenGL v.2.0.0>------------------------------------------------------
 	PXPublic unsigned int PXOpenGLTextureTypeToID(const PXOpenGLTextureType openGLTextureType);
 
-	typedef unsigned int (PXOpenGLAPICallType* PXOpenGLShaderProgramCreateFunction)();
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderProgramUseFunction)(unsigned int program);
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderProgramDeleteFunction)(GLuint program); // glDeleteProgram
+	typedef unsigned int (PXOpenGLAPICallType* PXOpenGLShaderPXProgramCreateFunction)();
+	typedef void (PXOpenGLAPICallType* PXOpenGLShaderPXProgramUseFunction)(unsigned int program);
+	typedef void (PXOpenGLAPICallType* PXOpenGLShaderPXProgramDeleteFunction)(GLuint program); // glDeletePXProgram
 	typedef void (PXOpenGLAPICallType* PXOpenGLShaderSourceFunction)(unsigned int shader, int count, const char** string, const int* length);
 	typedef GLuint(PXOpenGLAPICallType* PXOpenGLShaderCreateFunction)(GLenum shaderType); // glCreateShader
 	typedef void (PXOpenGLAPICallType* PXOpenGLShaderCompileFunction)(GLuint shader);
@@ -441,8 +441,8 @@ extern "C"
 	typedef void (PXOpenGLAPICallType* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 	typedef void (PXOpenGLAPICallType* PXOpenGLShaderDeleteFunction)(GLuint shader);
 	typedef void (PXOpenGLAPICallType* PXOpenGLAttachShaderFunction)(GLuint program, GLuint shader); // glAttachShader
-	typedef void (PXOpenGLAPICallType* PXOpenGLLinkProgramFunction)(GLuint program); // glLinkProgram
-	typedef void (PXOpenGLAPICallType* PXOpenGLValidateProgramFunction)(GLuint program); // glValidateProgram
+	typedef void (PXOpenGLAPICallType* PXOpenGLLinkPXProgramFunction)(GLuint program); // glLinkPXProgram
+	typedef void (PXOpenGLAPICallType* PXOpenGLValidatePXProgramFunction)(GLuint program); // glValidatePXProgram
 	typedef void (PXOpenGLAPICallType* PXOpenGLActiveTextureFunction)(GLenum texture); // glActiveTexture
 	typedef void (PXOpenGLAPICallType* PXOpenGLGenBuffersFunction)(GLsizei n, GLuint* buffers); // glGenBuffers
 	typedef void (PXOpenGLAPICallType* PXOpenGLBindBufferFunction)(GLenum target, GLuint buffer);
@@ -596,9 +596,9 @@ extern "C"
 //-------------------------------------------------------------------------
 
 //---<PXOpenGL v.2.0.0>------------------------------------------------------
-		PXOpenGLShaderProgramCreateFunction	PXOpenGLShaderProgramCreateCallBack;
-		PXOpenGLShaderProgramUseFunction	PXOpenGLShaderProgramUseCallBack;
-		PXOpenGLShaderProgramDeleteFunction PXOpenGLShaderProgramDeleteCallBack;
+		PXOpenGLShaderPXProgramCreateFunction	PXOpenGLShaderPXProgramCreateCallBack;
+		PXOpenGLShaderPXProgramUseFunction	PXOpenGLShaderPXProgramUseCallBack;
+		PXOpenGLShaderPXProgramDeleteFunction PXOpenGLShaderPXProgramDeleteCallBack;
 		PXOpenGLShaderCreateFunction PXOpenGLShaderCreateCallBack;
 		PXOpenGLShaderSourceFunction	PXOpenGLShaderSourceCallBack;
 		PXOpenGLShaderCompileFunction	PXOpenGLShaderCompileCallBack;
@@ -606,8 +606,8 @@ extern "C"
 		PXOpenGLShaderLogInfoGetFunction	PXOpenGLShaderLogInfoGetCallBack;
 		PXOpenGLShaderDeleteFunction	PXOpenGLShaderDeleteCallBack;
 		PXOpenGLAttachShaderFunction	PXOpenGLAttachShaderCallBack;
-		PXOpenGLLinkProgramFunction	PXOpenGLLinkProgramCallBack;
-		PXOpenGLValidateProgramFunction	PXOpenGLValidateProgramCallBack;
+		PXOpenGLLinkPXProgramFunction	PXOpenGLLinkPXProgramCallBack;
+		PXOpenGLValidatePXProgramFunction	PXOpenGLValidatePXProgramCallBack;
 		PXOpenGLActiveTextureFunction	PXOpenGLActiveTextureCallBack;
 		PXOpenGLGenBuffersFunction	PXOpenGLGenBuffersCallBack;
 		PXOpenGLBindBufferFunction	PXOpenGLBindBufferCallBack;
@@ -785,13 +785,13 @@ extern "C"
 	PXPublic void PXOpenGLShaderLogInfoGet(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
 	PXPublic void PXOpenGLShaderDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
 
-	PXPublic PXOpenGLShaderProgramID PXOpenGLShaderProgramCreate(PXOpenGLContext* const openGLContext);
-	PXPublic void PXOpenGLShaderProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderProgramID shaderProgramID);
-	PXPublic void PXOpenGLShaderProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderProgramID shaderProgramID);
+	PXPublic PXOpenGLShaderPXProgramID PXOpenGLShaderPXProgramCreate(PXOpenGLContext* const openGLContext);
+	PXPublic void PXOpenGLShaderPXProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID);
+	PXPublic void PXOpenGLShaderPXProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID);
 
-	PXPublic void PXOpenGLShaderProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderProgramID shaderProgramID, const PXOpenGLShaderID shaderID);
-	PXPublic void PXOpenGLShaderProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
-	PXPublic void PXOpenGLShaderProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
+	PXPublic void PXOpenGLShaderPXProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID);
+	PXPublic void PXOpenGLShaderPXProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
+	PXPublic void PXOpenGLShaderPXProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
 
 	PXPublic GLint PXOpenGLShaderVariableIDGet(PXOpenGLContext* const openGLContext, GLuint program, const char* name);
 	PXPublic void PXOpenGLShaderVariableFx1(PXOpenGLContext* const openGLContext, GLint location, GLfloat v0);

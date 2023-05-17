@@ -8,7 +8,7 @@
 
 void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
 {
-    MemoryClear(pxSBPMessage, sizeof(PXSBPMessage));
+    PXMemoryClear(pxSBPMessage, sizeof(PXSBPMessage));
 
     pxSBPMessage->ID = -1;
 
@@ -28,7 +28,7 @@ PXBool PXSBPMessageChunkDataContainsMultible(const PXSBPChunkCache* const pxSBPM
 
 void PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver)
 {
-    MemoryClear(pxSBPReceiver, sizeof(PXSBPReceiver));
+    PXMemoryClear(pxSBPReceiver, sizeof(PXSBPReceiver));
 
     pxSBPReceiver->State = PXSBPRecieverStateAwaitingHeaderBegin;
 
@@ -101,7 +101,7 @@ PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const 
 {
     //PXServerStart(&server.Server, 13370, ProtocolModeTCP);
 
-    return PXClientConnectToServer(&pxSBPClient->Client, ip, port, &pxSBPClient->Client, CommunicationFunctionAsync);
+    return PXClientConnectToServer(&pxSBPClient->Client, ip, port, &pxSBPClient->Client, PXClientCommunicationThread);
 }
 
 PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
@@ -191,7 +191,7 @@ PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const vo
 {
     if (dataSize < PXSBPMessageChunkHeaderSize)
     {
-        MemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkCache));
+        PXMemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkCache));
         return PXFalse;
     }
 
@@ -199,7 +199,7 @@ PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const vo
 
     if (!hasValidSignature)
     {
-        MemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkCache));
+        PXMemoryClear(pxSBPMessageChunk, sizeof(PXSBPChunkCache));
         return PXFalse;
     }
 
@@ -230,7 +230,7 @@ PXSize PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessage, const v
 {
     const PXSize before = PXSBPMessageSizeMissing(pxSBPMessage);
     const PXAdress* adress = (PXAdress)pxSBPMessage->Message + pxSBPMessage->SizeCurrent;
-    const PXSize copyedSize = MemoryCopy(data, dataSize, adress, before);
+    const PXSize copyedSize = PXMemoryCopy(data, dataSize, adress, before);
 
     pxSBPMessage->SizeCurrent += copyedSize;
 
@@ -243,7 +243,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
     {
         case PXSBPRecieverStateAwaitingHeaderBegin:
         {         
-            MemoryClear(&pxSBPReceiver->MessageChunkCurrent, sizeof(PXSBPChunkCache)); // Clear current message
+            PXMemoryClear(&pxSBPReceiver->MessageChunkCurrent, sizeof(PXSBPChunkCache)); // Clear current message
 
             // Check if message is too short
             {
@@ -251,7 +251,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
 
                 if (isMessageTooShort) // The incomming message is not long enough, we jump into the next state
                 {
-                    pxSBPReceiver->HeaderCacheSize += MemoryCopy(pxSBPReceiver->HeaderCache, PXSBPMessageChunkHeaderSize, pxSocketDataMoveEventInfo->Data, pxSocketDataMoveEventInfo->DataSize); // Write into buffer
+                    pxSBPReceiver->HeaderCacheSize += PXMemoryCopy(pxSBPReceiver->HeaderCache, PXSBPMessageChunkHeaderSize, pxSocketDataMoveEventInfo->Data, pxSocketDataMoveEventInfo->DataSize); // Write into buffer
 
                     PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateAwaitingHeaderEnd); // Wait for header end
                     break; // Finished, parsed part of the header
@@ -419,7 +419,7 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
         if (isFound)
         {
-            pxSBPMessage->MessageSizeCached += MemoryCopy
+            pxSBPMessage->MessageSizeCached += PXMemoryCopy
             (
                 (PXAdress)pxSBPMessage->MessageData + pxSBPMessage->MessageSizeCached,
                 pxSBPMessage->MessageSize - pxSBPMessage->MessageSizeCached,
@@ -534,7 +534,7 @@ void PXSBPOnDataMessageReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPMe
 
 void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)
 {
-    MemoryClear(pxSBPEmitter, sizeof(PXSBPEmitter));
+    PXMemoryClear(pxSBPEmitter, sizeof(PXSBPEmitter));
 
     pxSBPEmitter->PackageSizeMaximal = 1024u;
     pxSBPEmitter->CacheSizeMax = 1024;
@@ -543,7 +543,7 @@ void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)
 void PXSBPEmitterBeginAndReset(PXSBPEmitter* const pxSBPEmitter)
 {
 #if 1
-    MemorySet(pxSBPEmitter->Cache, '#', pxSBPEmitter->CacheSizeMax);
+    PXMemorySet(pxSBPEmitter->Cache, '#', pxSBPEmitter->CacheSizeMax);
 #endif // 1
 
     pxSBPEmitter->CacheSizeCurrent = 0;
@@ -551,7 +551,7 @@ void PXSBPEmitterBeginAndReset(PXSBPEmitter* const pxSBPEmitter)
 
 void PXSBPEmitterAppend(PXSBPEmitter* const pxSBPEmitter, const void* data, const PXSize dataSize)
 {
-    pxSBPEmitter->CacheSizeCurrent += MemoryCopy
+    pxSBPEmitter->CacheSizeCurrent += PXMemoryCopy
     (
         data,
         dataSize,

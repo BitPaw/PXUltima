@@ -20,209 +20,6 @@
 #define PrintSN sprintf_s
 #endif
 
-PXSize PXTextToIntA(const char* string, const PXSize dataSize, int* number)
-{
-	int accumulator = 0;
-	PXSize index = 0;
-	unsigned char isNegative = 0;
-
-	if(!string)
-	{
-		return 0;
-	}
-
-	if(string[0] == '-')
-	{
-		index++;
-		isNegative = 1u;
-	}
-
-	while(string[index] != '\0')
-	{
-		char character = string[index];
-		char isValidCharacter = (character >= '0' && character <= '9');
-		int numberElement = character - '0';
-
-		if(!isValidCharacter)
-		{
-			break;
-		}
-
-		accumulator *= 10; // "Shft number to left" Example 12 -> 120
-		accumulator += numberElement; // ASCII character to actual number.
-
-		++index;
-	}
-
-	if(isNegative)
-	{
-		accumulator *= -1;
-	}
-
-	*number = accumulator;
-
-	return index;
-}
-
-PXSize PXTextToIntW(const wchar_t* string, const PXSize dataSize, int* number)
-{
-	PXSize index = 0;
-	unsigned char isNegative = 0;
-	int accumulator = 0;
-
-	if(!string)
-	{
-		return 0;
-	}
-
-	if(string[0] == '-')
-	{
-		index++;
-		isNegative = 1u;
-	}
-
-	while(string[index] != '\0')
-	{
-		char character = string[index];
-		char isValidCharacter = (character >= '0' && character <= '9');
-		int numberElement = character - '0';
-
-		if(!isValidCharacter)
-		{
-			break;
-		}
-
-		accumulator *= 10; // "Shft number to left" Example 12 -> 120
-		accumulator += numberElement; // ASCII character to actual number.
-
-		++index;
-	}
-
-	if(isNegative)
-	{
-		accumulator *= -1;
-	}
-
-	*number = accumulator;
-
-	return index;
-}
-
-PXSize PXTextToBoolA(const char* string, const PXSize dataSize, unsigned char* number)
-{
-	switch(string[0])
-	{
-		default:
-		case '0':
-		case 'F':
-		case 'f':
-			*number = 0;
-			break;
-
-		case '1':
-		case 'T':
-		case 't':
-			*number = 1u;
-			break;
-	}
-
-	return 1u;
-}
-
-PXSize PXTextToBoolW(const wchar_t* string, const PXSize dataSize, unsigned char* number)
-{
-	return 0;
-}
-
-PXSize PXTextToFloatA(const char* string, const PXSize dataSize, float* number)
-{
-	double x = 0;
-
-	const PXSize readBytes = PXTextToDoubleA(string, dataSize, &x);
-
-	*number = (float)x;
-
-	return readBytes;
-}
-
-PXSize PXTextToFloatW(const wchar_t* string, const PXSize dataSize, float* number)
-{
-	return 0;
-}
-
-PXSize PXTextToDoubleA(const char* string, const PXSize dataSize, double* number)
-{
-	int accumulator = 0;
-	PXSize digitsAfterDot = 1;
-	PXSize index = 0;
-	unsigned char isNegative = 0;
-	unsigned char isWholeNumberChunk = 1;
-
-
-
-	if(!string)
-	{
-		return 0;
-	}
-
-	if(string[0] == '-')
-	{
-		index++;
-		isNegative = 1;
-	}
-
-	for(; string[index] != '\0'; ++index)
-	{
-		const char character = string[index];
-		const unsigned char isDot = character == '.';
-		const unsigned char isValidCharacter = (character >= '0' && character <= '9') || isDot;
-		const int numberElement = character - '0';
-
-		if(!isValidCharacter)
-		{
-			break;
-		}
-
-		// Trigger when we switch to after dot
-		if(isDot && isWholeNumberChunk)
-		{
-			isWholeNumberChunk = 0;
-			continue;
-		}
-
-		accumulator *= 10; // "Shft number to left" Example 12 -> 120
-		accumulator += numberElement; // ASCII character to actual number.
-
-		if(!isWholeNumberChunk)
-		{
-			digitsAfterDot *= 10;
-		}
-	}
-
-	if(isNegative)
-	{
-		accumulator *= -1;
-	}
-
-	//double stdResult = std::strtof(string, 0); // STD Method
-
-	// Calculate
-	{
-		const double a = accumulator;
-		const double b = digitsAfterDot;
-		const double c = a / b;
-
-		*number = c;
-	}
-
-	return index;
-}
-
-PXSize PXTextToDoubleW(const wchar_t* string, const PXSize dataSize, double* number)
-{
-	return 0;
-}
-
 PXSize PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number)
 {
 	const PXSize numberOfDigits = sizeof(PXInt8U) * 8u;
@@ -347,30 +144,24 @@ PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, con
 
 PXSize PXTextClear(PXText* const pxText)
 {
-	MemoryClear(pxText->TextA, pxText->SizeAllocated);
+	PXMemoryClear(pxText->TextA, pxText->SizeAllocated);
 
 	return pxText->SizeAllocated;
 }
 
-PXSize PXTextClearA(char* string, const PXSize stringSize)
+void PXTextAdvance(PXText* const pxText, const PXSize advanceBy)
 {
-	MemoryClear(string, stringSize * sizeof(char));
-
-	return stringSize;
-}
-
-PXSize PXTextClearW(wchar_t* string, const PXSize stringSize)
-{
-	MemoryClear(string, stringSize * sizeof(wchar_t));
-
-	return stringSize;
+	pxText->TextA += advanceBy;
+	pxText->SizeUsed -= advanceBy;
+	pxText->SizeAllocated -= advanceBy;
+	pxText->NumberOfCharacters -= advanceBy;
 }
 
 PXSize PXTextLengthA(const char* string, const PXSize stringSize)
 {
 	PXSize index = 0;
 
-	for(; (string[index] != '\0') && (index < stringSize); ++index);
+	for (; (string[index] != '\0') && (index < stringSize); ++index);
 
 	return index;
 }
@@ -379,7 +170,7 @@ PXSize PXTextLengthW(const wchar_t* string, const PXSize stringSize)
 {
 	PXSize index = 0;
 
-	for(; (string[index] != L'\0') && (index < stringSize); ++index);
+	for (; (string[index] != L'\0') && (index < stringSize); ++index);
 
 	return index;
 }
@@ -388,7 +179,7 @@ PXSize PXTextLengthUntilA(const char* string, const PXSize stringSize, const cha
 {
 	PXSize index = 0;
 
-	for(; (index < stringSize) && (string[index] != '\0') && (string[index] != character); ++index);
+	for (; (index < stringSize) && (string[index] != '\0') && (string[index] != character); ++index);
 
 	return index;
 }
@@ -508,7 +299,7 @@ PXSize PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* dest
 	assert(source);
 #endif
 
-	for(; (i < minLength) && (source[i] != '\0'); ++i)
+	for (; (i < minLength) && (source[i] != '\0'); ++i)
 	{
 		destination[i] = source[i];
 	}
@@ -528,7 +319,7 @@ PXSize PXTextCopyWA(const wchar_t* source, const PXSize sourceLength, char* dest
 	assert(source);
 #endif
 
-	for(; (i < minLength) && (source[i] != '\0'); ++i)
+	for (; (i < minLength) && (source[i] != '\0'); ++i)
 	{
 		destination[i] = UnicodeToASCII(source[i]);
 	}
@@ -548,7 +339,7 @@ PXSize PXTextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* de
 	assert(source);
 #endif
 
-	for(; (i < minLength) && (source[i] != '\0'); ++i)
+	for (; (i < minLength) && (source[i] != '\0'); ++i)
 	{
 		destination[i] = source[i];
 	}
@@ -595,7 +386,7 @@ void PXTextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* dataBuf
 		dataBuffer[i] = 0b10000000 | ((symbol & (0b111111 << 6u * i)) >> 6u * i);
 	}
 
-	*dataBufferSize = utfTrailBytesAmount+1u;
+	*dataBufferSize = utfTrailBytesAmount + 1u;
 }
 
 PXSize PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
@@ -616,7 +407,7 @@ PXSize PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextU
 
 		PXTextToUTFConvert(wideCharacter, buffer, &size);
 
-		destinationIndex += MemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
+		destinationIndex += PXMemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
 	}
 
 	destination[destinationIndex++] = 0u;
@@ -645,7 +436,7 @@ PXSize PXTextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTex
 
 		PXTextToUTFConvert(wideCharacter, buffer, &size);
 
-		destinationIndex += MemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
+		destinationIndex += PXMemoryCopy(buffer, size, destination + destinationIndex, destinationLength - destinationIndex);
 	}
 
 	destination[destinationIndex++] = 0u;
@@ -683,7 +474,7 @@ PXSize PXTextCountUntilA(const char* pxText, const PXSize textSize, const char t
 {
 	PXSize samecounter = 0;
 
-	for(PXSize index = 0; (index < textSize) && (pxText[index] != '\0' && pxText[index] != stopAt); ++index)
+	for (PXSize index = 0; (index < textSize) && (pxText[index] != '\0' && pxText[index] != stopAt); ++index)
 		samecounter += target == pxText[index];
 
 	return samecounter;
@@ -693,7 +484,7 @@ PXSize PXTextCountUntilW(const wchar_t* pxText, const PXSize textSize, const wch
 {
 	PXSize samecounter = 0;
 
-	for(PXSize index = 0; (index < textSize) && (pxText[index] != '\0' && pxText[index] != stopAt); ++index)
+	for (PXSize index = 0; (index < textSize) && (pxText[index] != '\0' && pxText[index] != stopAt); ++index)
 		samecounter += target == pxText[index];
 
 	return samecounter;
@@ -711,7 +502,7 @@ PXBool PXTextCompareA(const char* a, const PXSize aSize, const char* b, const PX
 	PXSize index = 0;
 	PXSize samecounter = 0;
 
-	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
+	for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
 
 	const PXBool stillHasDatainA = textSize < aSize;
@@ -749,7 +540,7 @@ PXBool PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, cons
 	PXSize index = 0;
 	PXSize samecounter = 0;
 
-	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
+	for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
 
 	return (index == samecounter);
@@ -762,7 +553,7 @@ PXBool PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, co
 	PXSize index = 0;
 	PXSize samecounter = 0;
 
-	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
+	for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
 
 	return (index == samecounter);
@@ -775,7 +566,7 @@ PXBool PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, cons
 	PXSize index = 0;
 	PXSize samecounter = 0;
 
-	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
+	for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
 		samecounter += a[index] == b[index];
 
 	return (index == samecounter);
@@ -789,7 +580,7 @@ char PXTextCompareIgnoreCaseA(const char* a, const PXSize aSize, const char* b, 
 	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
-	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
+	for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
 	{
 		wasLastLetterSame = CompareLetterCaseIgnore(a[index], b[index]);
 		samecounter += wasLastLetterSame;
@@ -806,7 +597,7 @@ char PXTextCompareIgnoreCaseW(const wchar_t* a, const PXSize aSize, const wchar_
 	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
-	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
+	for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
 	{
 		wasLastLetterSame = CompareLetterCaseIgnore(a[index], b[index]);
 		samecounter += wasLastLetterSame;
@@ -823,7 +614,7 @@ char PXTextCompareIgnoreCaseAW(const char* a, const PXSize aSize, const wchar_t*
 	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
-	for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
+	for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
 	{
 		wasLastLetterSame = CompareLetterCaseIgnore((wchar_t)a[index], b[index]);
 		samecounter += wasLastLetterSame;
@@ -838,7 +629,7 @@ char PXTextCompareIgnoreCaseWA(const wchar_t* a, const PXSize aSize, const char*
 	PXSize samecounter = 0;
 	unsigned char wasLastLetterSame = 1;
 
-	for(; (index < aSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
+	for (; (index < aSize) && (a[index] != '\0') && (b[index] != '\0') && wasLastLetterSame; ++index)
 	{
 		wasLastLetterSame = CompareLetterCaseIgnore(a[index], (wchar_t)b[index]);
 		samecounter += wasLastLetterSame;
@@ -852,10 +643,10 @@ char* PXTextFindPositionA(const char* data, PXSize dataSize, const char* target,
 	const char* source = 0;
 	unsigned char found = 0;
 
-	for(PXSize i = 0; (data[i] != '\0') && (i + targetSize) < dataSize && !found; i++)
+	for (PXSize i = 0; (data[i] != '\0') && (i + targetSize) < dataSize && !found; i++)
 	{
 		source = data + i;
-		found = PXTextCompareA(source, targetSize-i, target, targetSize);
+		found = PXTextCompareA(source, targetSize - i, target, targetSize);
 	}
 
 	return (char*)(found * (PXSize)source);
@@ -892,7 +683,7 @@ PXSize PXTextFindFirstCharacterBeforeA(const char* PXRestrict const string, cons
 
 PXSize PXTextFindFirstCharacterOfListA(const char* PXRestrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize)
 {
-	for(PXSize i = 0 ; i < characterListSize; ++i)
+	for (PXSize i = 0; i < characterListSize; ++i)
 	{
 		const PXSize index = PXTextFindFirstCharacterA(string, dataSize, characterList[i]);
 		const PXBool suc = -1 != index;
@@ -963,14 +754,14 @@ PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stri
 
 			if (found)
 			{
-				found = MemoryCompare(stringTarget->TextA, stringTarget->SizeUsed, stringSource->TextA + i, i);
+				found = PXMemoryCompare(stringTarget->TextA, stringTarget->SizeUsed, stringSource->TextA + i, i);
 			}
 		}
 
 		if (found)
 		{
-			stringResult->SizeUsed = stringSource->SizeUsed-i-1;
-			stringResult->NumberOfCharacters = stringSource->SizeUsed- i - 1;
+			stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
+			stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
 			stringResult->TextA = stringSource->TextA + i + 1;
 		}
 	}
@@ -990,14 +781,14 @@ PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stri
 
 			if (found)
 			{
-				found = MemoryCompare(stringTarget->TextW, stringTarget->SizeUsed, stringSource->TextW + i, i);
+				found = PXMemoryCompare(stringTarget->TextW, stringTarget->SizeUsed, stringSource->TextW + i, i);
 			}
 		}
 
 		if (found)
 		{
-			stringResult->SizeUsed = stringSource->SizeUsed - i-1;
-			stringResult->NumberOfCharacters = stringSource->SizeUsed - i-1;
+			stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
+			stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
 			stringResult->TextW = stringSource->TextW + i + 1;
 		}
 	}
@@ -1033,7 +824,7 @@ void PXTextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const c
 {
 	PXSize index = PXTextFindFirstCharacterA(string, dataSize, character);
 
-	if(index != -1)
+	if (index != -1)
 	{
 		string[index] = '\0';
 	}
@@ -1046,7 +837,7 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 
 	PXSize offsetData = 0;
 
-	for(PXSize commandIndex = 0; syntax[commandIndex] != '\0'; ++commandIndex)
+	for (PXSize commandIndex = 0; syntax[commandIndex] != '\0'; ++commandIndex)
 	{
 		const char commandKey = syntax[commandIndex];
 		//const bool commandIsNumber = commandKey == 'i' || commandKey == 'f' || commandKey == 'u';
@@ -1055,13 +846,13 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 
 		// Get length until new block
 		{
-			while(offsetLength < bufferSize)
+			while (offsetLength < bufferSize)
 			{
 				const char symbol = buffer[offsetLength];
-				const unsigned char stop = symbol == '\n' || symbol == '\0' || symbol == ' ';
+				const PXBool stop = symbol == '\n' || symbol == '\0' || symbol == ' ';
 				//const bool skip = symbol == '\n'; 	if(commandIsNumber && current == '/' || current == ' ' || finished)
 
-				if(stop)
+				if (stop)
 				{
 					break; // End of string
 				}
@@ -1070,7 +861,7 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 			}
 		}
 
-		switch(commandKey)
+		switch (commandKey)
 		{
 			case '§':
 			{
@@ -1092,10 +883,12 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 			case 'd':
 			case 'u':
 			{
-				int* i = va_arg(args, int*);
-				const char* source = buffer + offsetData;
+				int* const i = va_arg(args, int*);
 
-				const PXSize readBytes = PXTextToIntA(source, offsetLength, i);
+				PXText pyText;
+				PXTextMakeExternA(&pyText, buffer + offsetData, offsetLength);
+
+				const PXSize readBytes = PXTextToInt(&pyText, i);
 
 #if PXTextAssertEnable
 				assert(readBytes);
@@ -1108,9 +901,10 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 			case 'f':
 			{
 				float* number = va_arg(args, float*);
-				const char* source = buffer + offsetData;
+				PXText pyText;
+				PXTextMakeExternA(&pyText, buffer + offsetData, offsetLength);
 
-				const PXSize readBytes = PXTextToFloatA(source, offsetLength, number);
+				const PXSize readBytes = PXTextToFloat(&buffer, number);
 
 #if PXTextAssertEnable
 				assert(readBytes);
@@ -1133,12 +927,12 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 				break;
 		}
 
-		while(offsetData < bufferSize)
+		while (offsetData < bufferSize)
 		{
 			const char symbol = buffer[offsetData];
-			const unsigned char stop = !(symbol == ' ' || symbol == '\0');
+			const PXBool stop = !(symbol == ' ' || symbol == '\0');
 
-			if(stop)
+			if (stop)
 			{
 				break;
 			}
@@ -1158,23 +952,23 @@ void PXTextParseFindAllA(const char* string, const PXSize stringSize, const Pars
 
 	for (size_t i = 0; i < parsingTokenListSize; i++)
 	{
-		MemorySet(parsingTokenList[i].Value, 0, sizeof(void*));
+		PXMemorySet(parsingTokenList[i].Value, 0, sizeof(void*));
 	}
 
-	for(PXSize i = 0; (i < stringSize) && (string[i] != '\0') && !finished; ++i)
+	for (PXSize i = 0; (i < stringSize) && (string[i] != '\0') && !finished; ++i)
 	{
 		foundItem = 0;
 
-		for(PXSize t = 0; (t < parsingTokenListSize) && (string[i] != ' ') && !foundItem; t++)
+		for (PXSize t = 0; (t < parsingTokenListSize) && (string[i] != ' ') && !foundItem; t++)
 		{
 			const ParsingTokenA* parsingToken = &parsingTokenList[t];
 			const char* targetString = parsingToken->String;
 			const PXSize targetStringSize = PXTextLengthA(targetString, -1);
 			const char* sourceString = string + i;
 
-			foundItem = MemoryCompare(sourceString, stringSize, targetString, targetStringSize); // Compare whole word
+			foundItem = PXMemoryCompare(sourceString, stringSize, targetString, targetStringSize); // Compare whole word
 
-			if(foundItem)
+			if (foundItem)
 			{
 				PXSize lengthTag = PXTextLengthUntilA(sourceString, stringSize, '=');
 				const char* valueString = sourceString + lengthTag + 1;
@@ -1183,7 +977,7 @@ void PXTextParseFindAllA(const char* string, const PXSize stringSize, const Pars
 
 				(*parsingToken->Value) = valueString;
 
-				for(; (string[i] != '\0') && string[i] != ' '; i++); // Skip data
+				for (; (string[i] != '\0') && string[i] != ' '; i++); // Skip data
 
 				++foundTargets;
 			}
@@ -1263,135 +1057,120 @@ PXSize PXTextReplace(PXText* const pxText, char target, char value)
 	}
 }
 
-PXSize PXTextFromInt(const int number, PXText* const pxText)
+PXSize PXTextFromInt(PXText* const pxText, int number)
 {
 	switch (pxText->Format)
 	{
-	case TextFormatUTF8:
-	case TextFormatASCII:
-	{
-		pxText->SizeUsed = PXTextFromIntA(number, pxText->TextA, pxText->SizeAllocated);
+		case TextFormatUTF8:
+		case TextFormatASCII:
+		{
+			PXBool isSigned = PXFalse;
+			pxText->SizeUsed = 0; // Current offset of the data buffer
 
-		break;
-	}
+			if (number < 0) // number negative
+			{
+				isSigned = PXTrue; // Save state that we have a negative number
+				number *= -1; // Remove negative value
+			}
+
+			do
+			{
+				pxText->TextA[pxText->SizeUsed++] = number % 10 + '0'; // Get the value of the most right digit and convert to ASCII-Number
+			} while ((number /= 10) > 0); // Remove the most right digit by interget division and check if we still have a number to process
+
+			if (isSigned) // if we had a minus, add it now
+			{
+				pxText->TextA[pxText->SizeUsed++] = '-'; // Add the minus
+			}
+
+			pxText->TextA[pxText->SizeUsed] = '\0'; // Add the termination byte
+
+			// Reverse the order of the string
+			{
+				const PXSize halfSize = pxText->SizeUsed / 2u;
+
+				for (PXSize i = 0; i < halfSize; i++)
+				{
+					const PXSize index = pxText->SizeUsed - 1 - i; // index from end position, before the \0
+					const PXByte temp = pxText->TextA[index];
+
+					pxText->TextA[index] = pxText->TextA[i];
+					pxText->TextA[i] = temp;
+				}
+			}
+
+			//itoa(number, string, dataSize);
+
+			//int bytesWritten = PrintSN(string, dataSize, "%i", number);
+
+			return pxText->SizeUsed;
+		}
 
 
-	case TextFormatUNICODE:
-	{
-		pxText->SizeUsed = wsprintfW(pxText->TextW, L"%i", number);
+		case TextFormatUNICODE:
+		{
+			pxText->SizeUsed = wsprintfW(pxText->TextW, L"%i", number);
 
-		//pxText->SizeUsed = PXTextFromIntW(number, pxText->TextW, pxText->SizeAllocated);
+			//pxText->SizeUsed = PXTextFromIntW(number, pxText->TextW, pxText->SizeAllocated);
 
-		break;
-	}
+			return pxText->SizeUsed;
+		}
 	}
 }
 
-PXSize PXTextFromIntA(int number, char* string, const PXSize dataSize)
+PXSize PXTextFromBool(PXText* const pxText, const PXBool number)
 {
-	PXBool isSigned = PXFalse;
-	PXSize offset = 0; // Current offset of the data buffer
-
-	if (number < 0) // number negative
+	switch (pxText->Format)
 	{
-		isSigned = PXTrue; // Save state that we have a negative number
-		number *= -1; // Remove negative value
-	}
-
-	do
-	{
-		string[offset++] = number % 10 + '0'; // Get the value of the most right digit and convert to ASCII-Number
-	}
-	while ((number /= 10) > 0); // Remove the most right digit by interget division and check if we still have a number to process
-
-	if (isSigned) // if we had a minus, add it now
-	{
-		string[offset++] = '-'; // Add the minus
-	}
-
-	string[offset] = '\0'; // Add the termination byte
-
-	// Reverse the order of the string
-	{
-		const PXSize halfSize = offset / 2u;
-
-		for (PXSize i = 0; i < halfSize; i++)
+		case TextFormatUTF8:
+		case TextFormatASCII:
 		{
-			const PXSize index = offset - 1 - i; // index from end position, before the \0
-			const PXByte temp = string[index];
+			pxText->TextA[0] = number ? '1' : '0';
 
-			string[index] = string[i];
-			string[i] = temp;
+			return sizeof(char);
+		}
+
+
+		case TextFormatUNICODE:
+		{
+			pxText->TextW[0] = number ? '1' : '0';
+
+			return sizeof(wchar_t);
 		}
 	}
 
-	//itoa(number, string, dataSize);
-
-	//int bytesWritten = PrintSN(string, dataSize, "%i", number);
-
-	return offset;
+	return 0;
 }
 
-PXSize PXTextFromIntW(const int number, wchar_t* string, const PXSize dataSize)
+PXSize PXTextFromFloat(PXText* const pxText, const float number)
 {
-	int bytesWritten = PrintSN(string, dataSize, "%i", number);
-
-	return bytesWritten;
-}
-
-PXSize PXTextFromBoolA(const unsigned char number, char* string, const PXSize dataSize)
-{
-	string[0] = number ? '1' : '0';
-
-	return 1u;
-}
-
-PXSize PXTextFromBoolW(const unsigned char number, wchar_t* string, const PXSize dataSize)
-{
-	string[0] = number ? '1' : '0';
-
-	return 1u;
-}
-
-PXSize PXTextFromFloatA(const float number, char* string, const PXSize dataSize)
-{
+	switch (pxText->Format)
+	{
+		case TextFormatUTF8:
+		case TextFormatASCII:
+		{
 #if OSUnix
-	int bytesWritten = snprintf(string, dataSize, "%f", number);
+			pxText->SizeUsed = snprintf(pxText->TextA, pxText->SizeAllocated, "%f", number);
 #elif OSWindows
-	int bytesWritten = sprintf_s(string, dataSize, "%f", number);
+			pxText->SizeUsed = sprintf_s(pxText->TextA, pxText->SizeAllocated, "%f", number);
 #endif
-	return bytesWritten;
-}
+			return pxText->SizeUsed;
+		}
 
-PXSize PXTextFromFloatW(const float number, wchar_t* string, const PXSize dataSize)
-{
+
+		case TextFormatUNICODE:
+		{
 #if OSUnix
-	int bytesWritten = snprintf(string, dataSize, "%f", number);
+			pxText->SizeUsed = snprintf(pxText->TextW, pxText->SizeAllocated, "%f", number);
 #elif OSWindows
-	int bytesWritten = sprintf_s(string, dataSize, "%f", number);
+			pxText->SizeUsed = sprintf_s(pxText->TextW, pxText->SizeAllocated, "%f", number);
 #endif
 
-	return bytesWritten;
-}
+			return pxText->SizeUsed;
+		}
+	}
 
-PXSize PXTextFromDoubleA(const double number, char* string, const PXSize dataSize)
-{
-#if OSUnix
-	int bytesWritten = snprintf(string, dataSize, "%li", number);
-#elif OSWindows
-	int bytesWritten = sprintf_s(string, dataSize, "%lf", number);
-#endif
-	return bytesWritten;
-}
-
-PXSize PXTextFromDoubleW(const double number, wchar_t* string, const PXSize dataSize)
-{
-#if OSUnix
-    int bytesWritten = snprintf(string, dataSize, "%lf", number);
-#elif OSWindows
-	int bytesWritten = sprintf_s(string, dataSize, "%lf", number);
-#endif
-	return bytesWritten;
+	return 0;
 }
 
 PXSize PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize)
@@ -1399,16 +1178,16 @@ PXSize PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* stri
 	const PXSize length = PXMathMinimumIU(dataSize, stringSize);
 	PXSize outputIndex = 0;
 
-	MemoryClear(string, stringSize);
+	PXMemoryClear(string, stringSize);
 
 	string[outputIndex++] = '0';
 	string[outputIndex++] = 'b';
 
-	for(PXSize dataIndex = 0; dataIndex < length; ++dataIndex)
+	for (PXSize dataIndex = 0; dataIndex < length; ++dataIndex)
 	{
 		const PXByte dataElement = ((PXAdress)data)[dataIndex];
 
-		for(unsigned char bitIndex = 0; bitIndex < 8u; ++bitIndex)
+		for (unsigned char bitIndex = 0; bitIndex < 8u; ++bitIndex)
 		{
 			const PXBool bit = (dataElement & (1 << bitIndex)) >> bitIndex;
 			const char writeCharacter = bit ? '1' : '0';
@@ -1418,4 +1197,188 @@ PXSize PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* stri
 	}
 
 	return outputIndex;
+}
+
+PXSize PXTextToInt(const PXText* const pxText, int* const number)
+{
+	switch (pxText->Format)
+	{
+		case TextFormatUTF8:
+		case TextFormatASCII:
+		{
+			int accumulator = 0;
+			PXSize index = 0;
+			PXBool isNegative = 0;
+
+			if (!pxText->TextA)
+			{
+				return 0;
+			}
+
+			if (pxText->TextA[0] == '-')
+			{
+				index++;
+				isNegative = 1u;
+			}
+
+			while (pxText->TextA[index] != '\0')
+			{
+				char character = pxText->TextA[index];
+				const PXBool isValidCharacter = (character >= '0' && character <= '9');
+				int numberElement = character - '0';
+
+				if (!isValidCharacter)
+				{
+					break;
+				}
+
+				accumulator *= 10; // "Shft number to left" Example 12 -> 120
+				accumulator += numberElement; // ASCII character to actual number.
+
+				++index;
+			}
+
+			if (isNegative)
+			{
+				accumulator *= -1;
+			}
+
+			*number = accumulator;
+
+			return index;
+		}
+
+
+		case TextFormatUNICODE:
+		{
+
+
+			return sizeof(wchar_t);
+		}
+	}
+
+	return 0;
+}
+
+PXSize PXTextToBool(const PXText* const pxText, PXBool* const number)
+{
+	switch (pxText->Format)
+	{
+		case TextFormatUTF8:
+		case TextFormatASCII:
+		{
+			switch (pxText->TextA[0])
+			{
+				default:
+				case '0':
+				case 'F':
+				case 'f':
+					*number = 0;
+					break;
+
+				case '1':
+				case 'T':
+				case 't':
+					*number = 1u;
+					break;
+			}
+
+			return sizeof(char);
+		}
+
+
+		case TextFormatUNICODE:
+		{
+
+
+			return sizeof(wchar_t);
+		}
+	}
+
+	return 0;
+}
+
+PXSize PXTextToFloat(const PXText* const pxText, float* const number)
+{
+	switch (pxText->Format)
+	{
+		case TextFormatUTF8:
+		case TextFormatASCII:
+		{
+			int accumulator = 0;
+			PXSize digitsAfterDot = 1;
+			PXSize index = 0;
+			unsigned char isNegative = 0;
+			unsigned char isWholeNumberChunk = 1;
+
+
+
+			if (!pxText)
+			{
+				return 0;
+			}
+
+			if (pxText->TextA[0] == '-')
+			{
+				index++;
+				isNegative = 1;
+			}
+
+			for (; pxText->TextA[index] != '\0'; ++index)
+			{
+				const char character = pxText->TextA[index];
+				const PXBool isDot = character == '.';
+				const PXBool isValidCharacter = (character >= '0' && character <= '9') || isDot;
+				const int numberElement = character - '0';
+
+				if (!isValidCharacter)
+				{
+					break;
+				}
+
+				// Trigger when we switch to after dot
+				if (isDot && isWholeNumberChunk)
+				{
+					isWholeNumberChunk = 0;
+					continue;
+				}
+
+				accumulator *= 10; // "Shft number to left" Example 12 -> 120
+				accumulator += numberElement; // ASCII character to actual number.
+
+				if (!isWholeNumberChunk)
+				{
+					digitsAfterDot *= 10;
+				}
+			}
+
+			if (isNegative)
+			{
+				accumulator *= -1;
+			}
+
+			//double stdResult = std::strtof(string, 0); // STD Method
+
+			// Calculate
+			{
+				const double a = accumulator;
+				const double b = digitsAfterDot;
+				const double c = a / b;
+
+				*number = c;
+			}
+
+			return index;
+		}
+
+
+		case TextFormatUNICODE:
+		{
+
+
+			return sizeof(wchar_t);
+		}
+	}
+
+	return 0;
 }

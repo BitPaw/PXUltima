@@ -1,4 +1,4 @@
-# Material (.mtl)<br>
+# Wavefront Material Template Library (.mtl)<br>
 
 ## Info
 |||

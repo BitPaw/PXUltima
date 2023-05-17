@@ -5,22 +5,22 @@
 
 #include <stdio.h>
 
-void KeyBoardInputReset(PXKeyBoard* const keyBoard)
+void PXKeyBoardInputReset(PXKeyBoard* const keyBoard)
 {
-	MemoryClear(keyBoard, sizeof(PXKeyBoard));
+	PXMemoryClear(keyBoard, sizeof(PXKeyBoard));
 }
 
-unsigned char KeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey)
-{
-	return 0;
-}
-
-unsigned char KeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey, const unsigned char isPressed)
+unsigned char PXKeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey)
 {
 	return 0;
 }
 
-void KeyBoardInputPrint(const PXKeyBoard* const keyBoard)
+unsigned char PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const VirtualKey virtualKey, const unsigned char isPressed)
+{
+	return 0;
+}
+
+void PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
 {
 	char letters[11];
 	char numbers[11];

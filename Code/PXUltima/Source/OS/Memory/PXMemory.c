@@ -33,11 +33,11 @@ PXActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable
 
 	// open process token
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
-		return GetCurrentError(); // OpenProcessToken
+		return PXErrorCurrent(); // OpenProcessToken
 
 	// get the luid
 	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
-		return GetCurrentError();  // LookupPrivilegeValue
+		return PXErrorCurrent();  // LookupPrivilegeValue
 
 	tp.PrivilegeCount = 1;
 
@@ -54,11 +54,11 @@ PXActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable
 	// So always check for the last error value.
 	error = GetLastError();
 	if (!status || (error != ERROR_SUCCESS))
-		return GetCurrentError();  // AdjustTokenPrivileges
+		return PXErrorCurrent();  // AdjustTokenPrivileges
 
 	// close the handle
 	if (!CloseHandle(hToken))
-		return GetCurrentError(); // CloseHandle
+		return PXErrorCurrent(); // CloseHandle
 
 	return PXActionSuccessful;
 }
@@ -92,9 +92,9 @@ struct MemoryAllocationInfo
 #endif
 //-------------------------------------
 
-PXBool MemoryScan(MemoryUsage* memoryUsage)
+PXBool PXMemoryScan(MemoryUsage* memoryUsage)
 {
-	MemoryClear(memoryUsage, sizeof(MemoryUsage));
+	PXMemoryClear(memoryUsage, sizeof(MemoryUsage));
 
 #if OSUnix
 #elif WindowsAtleastXP
@@ -136,12 +136,12 @@ PXBool MemoryScan(MemoryUsage* memoryUsage)
 #endif
 }
 
-void MemoryClear(void* const __restrict bufferA, const PXSize bufferASize)
+void PXMemoryClear(void* const __restrict bufferA, const PXSize bufferASize)
 {
-	return MemorySet(bufferA, 0u, bufferASize);
+	return PXMemorySet(bufferA, 0u, bufferASize);
 }
 
-void MemorySet(void* __restrict buffer, const unsigned char value, const PXSize bufferSize)
+void PXMemorySet(void* __restrict buffer, const unsigned char value, const PXSize bufferSize)
 {
 //#if MemoryAssertEnable
 //	assert(bufferA);
@@ -166,7 +166,7 @@ void MemorySet(void* __restrict buffer, const unsigned char value, const PXSize 
 #endif
 }
 
-int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
+int PXMemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
 
@@ -203,7 +203,7 @@ int MemoryCompareThreeWay(const void* __restrict bufferA, const PXSize bufferASi
 #endif
 }
 
-PXBool MemoryCompareToByte(const void* __restrict bufferA, const PXSize bufferASize, const PXByte dataByte)
+PXBool PXMemoryCompareToByte(const void* __restrict bufferA, const PXSize bufferASize, const PXByte dataByte)
 {
 	PXSize equalSum = 0;
 
@@ -215,7 +215,7 @@ PXBool MemoryCompareToByte(const void* __restrict bufferA, const PXSize bufferAS
 	return equalSum == bufferASize;
 }
 
-PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
+PXBool PXMemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, const void* __restrict bufferB, const PXSize bufferBSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
 
@@ -242,7 +242,7 @@ PXBool MemoryCompare(const void* __restrict bufferA, const PXSize bufferASize, c
 #endif
 }
 
-void* MemoryLocate(const void* __restrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+void* PXMemoryLocate(const void* __restrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
 {
 #if MemoryUseSystemFunction
 	void* memoryPosition = memchr(inputBuffer, byteBlock, inputBufferSize);
@@ -261,7 +261,7 @@ void* MemoryLocate(const void* __restrict inputBuffer, const PXByte byteBlock, c
 #endif
 }
 
-PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
+PXSize PXMemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
@@ -286,7 +286,7 @@ PXSize MemoryCopy(const void* __restrict inputBuffer, const PXSize inputBufferSi
 	return bufferSize;
 }
 
-PXSize MemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
+PXSize PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
@@ -300,7 +300,7 @@ PXSize MemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* o
 	return bufferSize;
 }
 
-void* MemoryStackAllocate(const PXSize size)
+void* PXMemoryStackAllocate(const PXSize size)
 { 
 	void* const stackAllocated  =
 
@@ -316,9 +316,9 @@ void* MemoryStackAllocate(const PXSize size)
 #include <stdio.h>
 
 
-void* MemoryHeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line)
+void* PXMemoryHeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line)
 {
-	void* adress = MemoryHeapAllocate(size);
+	void* adress = PXMemoryHeapAllocate(size);
 	char buffer[60];
 
 	sprintf(buffer, "%s:%s:%i", file, function, (unsigned int)line);
@@ -327,7 +327,7 @@ void* MemoryHeapAllocateDetailed(const PXSize size, const char* file, const char
 	return adress;
 }
 
-void* MemoryHeapAllocate(const PXSize requestedSizeInBytes)
+void* PXMemoryHeapAllocate(const PXSize requestedSizeInBytes)
 {
 	if(!requestedSizeInBytes)
 	{
@@ -360,7 +360,7 @@ void* MemoryHeapAllocate(const PXSize requestedSizeInBytes)
 	return adress;
 }
 
-void* MemoryAllocateClear(const PXSize requestedSizeInBytes)
+void* PXMemoryAllocateClear(const PXSize requestedSizeInBytes)
 {
 	if (!requestedSizeInBytes)
 	{
@@ -376,7 +376,7 @@ void* MemoryAllocateClear(const PXSize requestedSizeInBytes)
 	return adress;
 }
 
-void* MemoryHeapReallocate(void* sourceAddress, const PXSize size)
+void* PXMemoryHeapReallocate(void* sourceAddress, const PXSize size)
 {
 	const void* adressReallocated = realloc(sourceAddress, size);
 
@@ -403,9 +403,9 @@ void* MemoryHeapReallocate(void* sourceAddress, const PXSize size)
 	return adressReallocated;
 }
 
-void* MemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line)
+void* PXMemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line)
 {
-	void* adress = MemoryHeapReallocate(sourceAddress, size);
+	void* adress = PXMemoryHeapReallocate(sourceAddress, size);
 	char buffer[60];
 
 	sprintf(buffer, "%s:%s:%i", file, function, (unsigned int)line);
@@ -414,7 +414,7 @@ void* MemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const
 	return adress;
 }
 
-void* MemoryHeapReallocateClear(const void* const sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
+void* PXMemoryHeapReallocateClear(const void* const sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
 {
 	const void* adressReallocated = realloc(sourceAddress, sizeAfter);
 	const unsigned char sizeIncredes = sizeAfter > sizeBefore;
@@ -424,7 +424,7 @@ void* MemoryHeapReallocateClear(const void* const sourceAddress, const PXSize si
 		const PXAdress startAdress = (PXAdress)adressReallocated + sizeBefore;
 		const PXSize sizeDelta = sizeAfter - sizeBefore;
 
-		MemoryClear(startAdress, sizeDelta);
+		PXMemoryClear(startAdress, sizeDelta);
 	}
 
 #if MemoryDebugOutput
@@ -443,7 +443,7 @@ void* MemoryHeapReallocateClear(const void* const sourceAddress, const PXSize si
 	return adressReallocated;
 }
 
-void MemoryRelease(const void* adress, const PXSize size)
+void PXMemoryRelease(const void* adress, const PXSize size)
 {
 	if(!adress || !size)
 	{
@@ -465,10 +465,10 @@ void MemoryRelease(const void* adress, const PXSize size)
 	free(adress);
 }
 
-void* MemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode)
+void* PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode)
 {
 	const void* addressPrefered = 0;
-	const PXMemoryAccessModeType protectionModeID = ConvertFromPXMemoryAccessMode(PXMemoryAccessMode);
+	const PXMemoryAccessModeType protectionModeID = PXMemoryAccessModeFromID(PXMemoryAccessMode);
 
 #if OSUnix
 	const int flags = MAP_PRIVATE;// | MAP_ANONYMOUS; | MAP_POPULATE; // missing on linux?
@@ -526,7 +526,7 @@ void* MemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccess
 
 	const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, protectionModeID);
 
-	PXActionResult x = GetCurrentError();
+	PXActionResult x = PXErrorCurrent();
 
 #endif
 
@@ -558,7 +558,7 @@ void* MemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccess
 	return (void*)addressAllocated;
 }
 
-void MemoryVirtualPrefetch(const void* adress, const PXSize size)
+void PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 {
 #if OSUnix
 #elif OSWindows
@@ -586,7 +586,7 @@ void MemoryVirtualPrefetch(const void* adress, const PXSize size)
 #endif
 }
 
-void MemoryVirtualRelease(const void* adress, const PXSize size)
+void PXMemoryVirtualRelease(const void* adress, const PXSize size)
 {
 #if OSUnix
 	const unsigned char result = 1u;
@@ -603,19 +603,19 @@ void MemoryVirtualRelease(const void* adress, const PXSize size)
 	return result;
 }
 
-void* MemoryVirtualReallocate(const void* adress, const PXSize size)
+void* PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 {
 	const PXBool newAllocation = adress == PXNull;
 
 	if (newAllocation)
 	{
-		return MemoryVirtualAllocate(size, PXMemoryAccessModeReadAndWrite);
+		return PXMemoryVirtualAllocate(size, PXMemoryAccessModeReadAndWrite);
 	}
 
 	return 0;
 }
 
-PXMemoryAccessModeType ConvertFromPXMemoryAccessMode(const PXMemoryAccessMode PXMemoryAccessMode)
+PXMemoryAccessModeType PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode)
 {
 	switch(PXMemoryAccessMode)
 	{

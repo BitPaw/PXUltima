@@ -373,7 +373,7 @@ PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processor
 
 void PXProcessorFetchInfo(Processor* const processor)
 {
-    MemoryClear(processor, sizeof(Processor));
+    PXMemoryClear(processor, sizeof(Processor));
 
 #if OSUnix
 

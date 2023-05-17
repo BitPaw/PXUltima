@@ -5,7 +5,7 @@
 
 PXActionResult PXClientConstruct(PXClient* const pxClient)
 {
-    MemoryClear(pxClient, sizeof(PXClient));
+    PXMemoryClear(pxClient, sizeof(PXClient));
 }
 
 PXActionResult PXClientDestruct(PXClient* const pxClient)
@@ -24,7 +24,7 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
     PXSize pxSocketListSizeMax = 5;
     PXSize PXSocketListSize = 0;
 
-    MemoryClear(pxSocketList,sizeof(PXSocket)* pxSocketListSizeMax);
+    PXMemoryClear(pxSocketList,sizeof(PXSocket)* pxSocketListSizeMax);
 
     const PXSocketAdressSetupInfo pxSocketAdressSetupInfoList[1] =
     {
@@ -56,7 +56,7 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
 
             if (connected)
             {  
-                MemoryCopy(pxSocket, sizeof(PXSocket), &client->SocketPXClient, sizeof(PXSocket));
+                PXMemoryCopy(pxSocket, sizeof(PXSocket), &client->SocketPXClient, sizeof(PXSocket));
 
                 client->SocketPXClient.EventList = client->EventListener;
 
@@ -85,7 +85,7 @@ PXActionResult PXClientDisconnectFromServer(PXClient* const client)
 
 #define PXClientBufferSize 2048u
 
-PXThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
+PXThreadResult PXClientCommunicationThread(void* PXSocketAdress)
 {
     PXSocket* const pxSocket = (PXSocket*)PXSocketAdress;
 
@@ -95,7 +95,7 @@ PXThreadResult CommunicationFunctionAsync(void* PXSocketAdress)
         PXSize bufferSize = 0;
         PXByte buffer[PXClientBufferSize];
 
-        MemoryClear(buffer, sizeof(unsigned char) * PXClientBufferSize);
+        PXMemoryClear(buffer, sizeof(unsigned char) * PXClientBufferSize);
 
         const PXActionResult receiveingResult = PXSocketReceive(pxSocket, buffer, bufferSizeMax, &bufferSize);
         const PXBool sucessful = PXActionSuccessful == receiveingResult;

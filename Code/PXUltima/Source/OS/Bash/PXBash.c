@@ -1,6 +1,6 @@
 #include "PXBash.h"
 
-PXActionResult BashExecuteA(const char* programPath, const unsigned char syncronous)
+PXActionResult PXBashExecute(const PXText* const programPath, const PXBool syncronous)
 {
 	/*
 	Pipe pipe;
@@ -21,10 +21,5 @@ PXActionResult BashExecuteA(const char* programPath, const unsigned char syncron
 
 	free(data);*/
 
-	return PXActionSuccessful;
-}
-
-PXActionResult BashExecuteW(const wchar_t* programPath, const unsigned char syncronous)
-{
-	return PXActionSuccessful;
+	return PXActionNotImplemented;
 }

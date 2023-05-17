@@ -77,7 +77,7 @@ extern "C"
 	/*in an idat chunk, each scanline is a multiple of 8 bits, unlike the lodepng output buffer,
 and in addition has one extra byte per line: the filter byte. So this gives a larger
 result than lodepng_get_raw_size. Set h to 1 to get the size of 1 row including filter byte. */
-	PXPublic PXSize CalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp);
+	PXPublic PXSize PXZLIBCalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp);
 
 #ifdef __cplusplus
 }

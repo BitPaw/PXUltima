@@ -17,7 +17,7 @@ PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction thread
 
 	if (!wasSucessful)
 	{
-		const PXActionResult actionResult = GetCurrentError();
+		const PXActionResult actionResult = PXErrorCurrent();
 
 		return actionResult;
 	}

@@ -5,22 +5,22 @@
 #include <Math/PXMath.h>
 
 #include <Media/Bitmap/PXBitmap.h>
-#include <Media/GIF/GIF.h>
-#include <Media/JPEG/JPEG.h>
+#include <Media/GIF/PXGIF.h>
+#include <Media/JPEG/PXJPEG.h>
 #include <Media/PNG/PXPNG.h>
-#include <Media/TGA/TGA.h>
-#include <Media/TIFF/TIFF.h>
+#include <Media/TGA/PXTGA.h>
+#include <Media/TIFF/PXTIFF.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
 #include <Media/PXFont.h>
 
 void PXImageConstruct(PXImage* const image)
 {
-    MemoryClear(image, sizeof(PXImage));
+    PXMemoryClear(image, sizeof(PXImage));
 }
 
 void PXImageDestruct(PXImage* const image)
 {
-    MemoryRelease(image->PixelData, image->PixelDataSize);
+    PXMemoryRelease(image->PixelData, image->PixelDataSize);
 
     PXImageConstruct(image);
 }
@@ -88,14 +88,14 @@ PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, cons
             parseToImage = PXBitmapParseToImage;
             break;
         }
-        case FileFormatGIF:
+        case FileFormatPXGIF:
         {
-            parseToImage = GIFParseToImage;
+            parseToImage = PXGIFParseToImage;
             break;
         }
-        case FileFormatJPEG:
+        case FileFormatPXJPEG:
         {
-            parseToImage = JPEGParseToImage;
+            parseToImage = PXJPEGParseToImage;
             break;
         }
         case FileFormatPNG:
@@ -103,14 +103,14 @@ PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, cons
             parseToImage = PXPNGParseToImage;
             break;
         }
-        case FileFormatTGA:
+        case FileFormatPXTGA:
         {
-            parseToImage = TGAParseToImage;
+            parseToImage = PXTGAParseToImage;
             break;
         }
         case FileFormatTagImage:
         {
-            parseToImage = TIFFParseToImage;
+            parseToImage = PXTIFFParseToImage;
             break;
         }
         default:
@@ -153,31 +153,31 @@ PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, c
             fileExtension = "png";
             break;
         }
-        case FileFormatTGA:
+        case FileFormatPXTGA:
         {
-            fileSize = TGAFilePredictSize(image->Width, image->Height, bitPerPixel);
-            serializeFromImageFunction = TGASerializeFromImage;
+            fileSize = PXTGAFilePredictSize(image->Width, image->Height, bitPerPixel);
+            serializeFromImageFunction = PXTGASerializeFromImage;
             fileExtension = "tga";
             break;
         }
-        case FileFormatJPEG:
+        case FileFormatPXJPEG:
         {
-            fileSize = JPEGFilePredictSize(image->Width, image->Height, bitPerPixel);
-            serializeFromImageFunction = JPEGSerializeFromImage;
+            fileSize = PXJPEGFilePredictSize(image->Width, image->Height, bitPerPixel);
+            serializeFromImageFunction = PXJPEGSerializeFromImage;
             fileExtension = "jpg";
             break;
         }
         case FileFormatTagImage:
         {
-            fileSize = TIFFFilePredictSize(image->Width, image->Height, bitPerPixel);
-            serializeFromImageFunction = TIFFSerializeFromImage;
+            fileSize = PXTIFFFilePredictSize(image->Width, image->Height, bitPerPixel);
+            serializeFromImageFunction = PXTIFFSerializeFromImage;
             fileExtension = "tiff";
             break;
         }
-        case FileFormatGIF:
+        case FileFormatPXGIF:
         {
-            fileSize = GIFFilePredictSize(image->Width, image->Height, bitPerPixel);
-            serializeFromImageFunction = GIFSerializeFromImage;
+            fileSize = PXGIFFilePredictSize(image->Width, image->Height, bitPerPixel);
+            serializeFromImageFunction = PXGIFSerializeFromImage;
             fileExtension = "gif";
             break;
         }
@@ -250,7 +250,7 @@ PXBool PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const
 
     // reallocate
     {
-        const void* newadress = MemoryReallocate(image->PixelData, sizeof(PXByte) * newSize);
+        const void* newadress = PXMemoryReallocate(image->PixelData, sizeof(PXByte) * newSize);
 
         if (!newadress)
         {
@@ -285,9 +285,9 @@ void PXImageFlipHorizontal(PXImage* image)
             unsigned char* pixelA = (unsigned char*)image->PixelData + indexA;
             unsigned char* pixelB = (unsigned char*)image->PixelData + indexB;
 
-            MemoryCopy(pixelA, 4, tempByte, bbp);
-            MemoryCopy(pixelB, 4, pixelA, bbp);
-            MemoryCopy(tempByte, 4, pixelB, bbp);
+            PXMemoryCopy(pixelA, 4, tempByte, bbp);
+            PXMemoryCopy(pixelB, 4, pixelA, bbp);
+            PXMemoryCopy(tempByte, 4, pixelB, bbp);
         }
     }
 }
@@ -297,7 +297,7 @@ void PXImageFlipVertical(PXImage* image)
     const PXSize bbp = PXColorFormatBytePerPixel(image->Format);;
     const PXSize scanLineWidthSize = image->Width * bbp;
     const PXSize scanLinesToSwap = image->Height / 2u;
-    unsigned char* copyBufferRow = MemoryAllocate(sizeof(unsigned char) * scanLineWidthSize);
+    unsigned char* copyBufferRow = PXMemoryAllocate(sizeof(unsigned char) * scanLineWidthSize);
 
     if(!copyBufferRow)
     {
@@ -309,12 +309,12 @@ void PXImageFlipVertical(PXImage* image)
         unsigned char* bufferA = (unsigned char*)image->PixelData + (scanlineIndex * scanLineWidthSize);
         unsigned char* bufferB = (unsigned char*)image->PixelData + ((image->Height - scanlineIndex) * scanLineWidthSize) - scanLineWidthSize;
 
-        MemoryCopy(bufferB, scanLineWidthSize, copyBufferRow, scanLineWidthSize); // A -> Buffer 'Save A'
-        MemoryCopy(bufferA, scanLineWidthSize, bufferB, scanLineWidthSize); // B -> A 'Move B to A(override)'
-        MemoryCopy(copyBufferRow, scanLineWidthSize, bufferA, scanLineWidthSize); // Buffer -> B 'Move SaveCopy (A) to B'
+        PXMemoryCopy(bufferB, scanLineWidthSize, copyBufferRow, scanLineWidthSize); // A -> Buffer 'Save A'
+        PXMemoryCopy(bufferA, scanLineWidthSize, bufferB, scanLineWidthSize); // B -> A 'Move B to A(override)'
+        PXMemoryCopy(copyBufferRow, scanLineWidthSize, bufferA, scanLineWidthSize); // Buffer -> B 'Move SaveCopy (A) to B'
     }
 
-    MemoryRelease(copyBufferRow, scanLineWidthSize);
+    PXMemoryRelease(copyBufferRow, scanLineWidthSize);
 }
 
 void PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, unsigned char blue)

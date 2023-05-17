@@ -592,7 +592,7 @@ unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode)
 
 void PXSocketConstruct(PXSocket* const pxSocket)
 {
-    MemoryClear(pxSocket, sizeof(PXSocket));
+    PXMemoryClear(pxSocket, sizeof(PXSocket));
 
     PXDictionaryConstruct(&pxSocket->SocketLookup, sizeof(PXSocketID), sizeof(PXSocket), PXDictionaryValueLocalityInternalEmbedded);
 }
@@ -725,7 +725,7 @@ PXActionResult PXSocketSetupAdress
                 ADDRINFOA addressInfoHintA;
                 ADDRINFOA* addressInfoListA = 0;
 
-                MemoryClear(&addressInfoHintA, sizeof(ADDRINFOA));
+                PXMemoryClear(&addressInfoHintA, sizeof(ADDRINFOA));
                 addressInfoHintA.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
                 addressInfoHintA.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
                 addressInfoHintA.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
@@ -743,7 +743,7 @@ PXActionResult PXSocketSetupAdress
                     struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfoCurrent->ai_addr;
                     const char* result = 0;
 
-                    MemoryClear(pxSocket->IP, IPv6LengthMax);
+                    PXMemoryClear(pxSocket->IP, IPv6LengthMax);
 
                     result = inet_ntop(adressInfoCurrent->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
 
@@ -771,7 +771,7 @@ PXActionResult PXSocketSetupAdress
                     pxSocket->Type = pxSocketAdressSetupInfo->SocketType;
                     pxSocket->IPSize = adressInfoCurrent->ai_addrlen;
 
-                    MemoryCopy(adressInfoCurrent->ai_addr, adressInfoCurrent->ai_addrlen, pxSocket->IP, IPv6LengthMax);
+                    PXMemoryCopy(adressInfoCurrent->ai_addr, adressInfoCurrent->ai_addrlen, pxSocket->IP, IPv6LengthMax);
 
                     pxSocket->State = SocketInitialised;
                 }
@@ -788,7 +788,7 @@ PXActionResult PXSocketSetupAdress
                 ADDRINFOW addressInfoHintW;
                 ADDRINFOW* addressInfoListW = 0;
 
-                MemoryClear(&addressInfoHintW, sizeof(ADDRINFOA));
+                PXMemoryClear(&addressInfoHintW, sizeof(ADDRINFOA));
                 addressInfoHintW.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
                 addressInfoHintW.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
                 addressInfoHintW.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
@@ -804,7 +804,7 @@ PXActionResult PXSocketSetupAdress
                     struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfoCurrent->ai_addr;
                     const char* result = 0;
 
-                    MemoryClear(pxSocket->IP, IPv6LengthMax);
+                    PXMemoryClear(pxSocket->IP, IPv6LengthMax);
 
                     result = inet_ntop(adressInfoCurrent->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
 
@@ -832,7 +832,7 @@ PXActionResult PXSocketSetupAdress
                     pxSocket->Type = pxSocketAdressSetupInfo->SocketType;
                     pxSocket->IPSize = adressInfoCurrent->ai_addrlen;
 
-                    MemoryCopy(adressInfoCurrent->ai_addr, adressInfoCurrent->ai_addrlen, pxSocket->IP, IPv6LengthMax);
+                    PXMemoryCopy(adressInfoCurrent->ai_addr, adressInfoCurrent->ai_addrlen, pxSocket->IP, IPv6LengthMax);
 
                     pxSocket->State = SocketInitialised;
                 }
@@ -1085,7 +1085,7 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
         PXSize j = 0;
         PXSize highestSocketID = 0;
 
-        MemoryClear(&selectListenRead, sizeof(selectListenRead));
+        PXMemoryClear(&selectListenRead, sizeof(selectListenRead));
 
         for ( ; restValues > 0 && j < FD_SETSIZE; ++j) // all in 64x blocks
         {
@@ -1520,7 +1520,7 @@ PXActionResult WindowsSocketAgentStartup(void)
 {
     WORD wVersionRequested = MAKEWORD(2, 2);
     WSADATA wsaData;
-    MemoryClear(&wsaData, sizeof(WSADATA));
+    PXMemoryClear(&wsaData, sizeof(WSADATA));
     const int result = WSAStartup(wVersionRequested, &wsaData);
 
     switch(result)

@@ -7,21 +7,17 @@
 #include <sys/types.h>
 #include <dlfcn.h>
 
-typedef void* LibraryHandle;
 typedef void* LibraryFunction;
 typedef void* LibraryDirectoryID;
 
 #elif OSWindows
 #include <windows.h>
 
-typedef HMODULE LibraryHandle;// HINSTANCE (semms is also okey)
 typedef FARPROC LibraryFunction;
 //typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 #endif
 
-#include <Media/PXType.h>
 #include <Media/PXText.h>
-
 #include <OS/Process/PXProcess.h>
 
 #ifdef __cplusplus
@@ -32,21 +28,24 @@ extern "C"
     typedef struct PXLibrary_
     {
         PXProcessHandle ProcessHandle;
-        LibraryHandle ID;
+
+#if OSUnix
+        void* ID;
+#elif OSWindows
+        HMODULE ID; // LibraryHandle, HINSTANCE (semms is also okey)
+#endif
     }
     PXLibrary;
 
+    PXPublic PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic PXBool PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
+    PXPublic PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
 
-    PXPublic PXBool LibraryOpenA(PXLibrary* const pxLibrary, const char* filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic PXBool LibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic PXBool LibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
-    PXPublic PXBool LibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const char* symbolName); // obtain the address of a symbol from a dlopen object
+    PXPublic PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName);
 
-    PXPublic PXSize PXLibraryNameA(PXLibrary* const pxLibrary, const PXTextASCII libraryName, const PXSize libraryNameMaxSize);
+    PXPublic PXBool PXLibraryParseSymbols();
 
-    PXPublic PXBool LibraryParseSymbols();
-
-    // void SymbolVector(); // Programming interface to dynamic linking loader.
+    // void SymbolVector(); // PXProgramming interface to dynamic linking loader.
 
      //static ErrorCode SearchDirectoryAdd(const wchar_t* directoryPath, LibraryDirectoryID& libraryDirectoryID);
      //static ErrorCode SearchDirectoryRemove(LibraryDirectoryID& libraryDirectoryID);

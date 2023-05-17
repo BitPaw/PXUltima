@@ -18,7 +18,7 @@
 #include <stdio.h>
 
 #if OSWindows
-AudioResult PXAudioConvertMMResult(const unsigned int mmResultID)
+PXAudioResult PXAudioConvertMMResult(const unsigned int mmResultID)
 {
 	switch (mmResultID)
 	{
@@ -36,12 +36,12 @@ AudioResult PXAudioConvertMMResult(const unsigned int mmResultID)
 		case MMSYSERR_INVALPARAM: return AudioResultParameterInvalid;
 		case MMSYSERR_HANDLEBUSY:return AudioResultDeviceHandleBusy;
 		case MMSYSERR_INVALIDALIAS:return AudioResultAliasNotFound;
-		case MMSYSERR_BADDB: return AudioResultRegistryDatabaseInvalid;
-		case MMSYSERR_KEYNOTFOUND: return AudioResultRegistryKeyNotFound;
-		case MMSYSERR_READERROR:  return AudioResultRegistryReadError;
-		case MMSYSERR_WRITEERROR: return AudioResultRegistryWriteError;
-		case MMSYSERR_DELETEERROR:   return AudioResultRegistryDeleteError;
-		case MMSYSERR_VALNOTFOUND: return AudioResultRegistryValueNotFound;
+		case MMSYSERR_BADDB: return AudioResultPXRegistryDatabaseInvalid;
+		case MMSYSERR_KEYNOTFOUND: return AudioResultPXRegistryKeyNotFound;
+		case MMSYSERR_READERROR:  return AudioResultPXRegistryReadError;
+		case MMSYSERR_WRITEERROR: return AudioResultPXRegistryWriteError;
+		case MMSYSERR_DELETEERROR:   return AudioResultPXRegistryDeleteError;
+		case MMSYSERR_VALNOTFOUND: return AudioResultPXRegistryValueNotFound;
 		case MMSYSERR_NODRIVERCB:  return AudioResultDriverNoCallback;
 			//	case MMSYSERR_MOREDATA:   return AudioResultMoreData;
 
@@ -56,7 +56,7 @@ AudioResult PXAudioConvertMMResult(const unsigned int mmResultID)
 }
 #endif
 
-void PXAudioDeviceCapabilitiesPrinf(AudioDeviceCapabilities* const audioDeviceCapabilities)
+void PXAudioDeviceCapabilitiesPrinf(PXAudioDeviceCapabilities* const audioDeviceCapabilities)
 {
 	printf
 	(
@@ -84,16 +84,16 @@ void PXAudioDeviceCapabilitiesPrinf(AudioDeviceCapabilities* const audioDeviceCa
 	);
 }
 
-void PXAudioSourceConstruct(AudioSource* const audioSource)
+void PXAudioSourceConstruct(PXAudioSource* const audioSource)
 {
-	MemoryClear(audioSource, sizeof(AudioSource));
+	PXMemoryClear(audioSource, sizeof(PXAudioSource));
 
 	audioSource->Pitch = 0.4f;
 	audioSource->Volume = 0.02f;
 	audioSource->Looping = PXTrue;
 }
 
-void PXAudioSourcePitchIncrease(AudioSource* const audioSource, float amount)
+void PXAudioSourcePitchIncrease(PXAudioSource* const audioSource, float amount)
 {
 	//assert(amount > 0.0f);
 
@@ -105,7 +105,7 @@ void PXAudioSourcePitchIncrease(AudioSource* const audioSource, float amount)
 	}
 }
 
-void PXAudioSourcePitchReduce(AudioSource* const audioSource, float amount)
+void PXAudioSourcePitchReduce(PXAudioSource* const audioSource, float amount)
 {
 	//assert(amount > 0.0f);
 
@@ -117,7 +117,7 @@ void PXAudioSourcePitchReduce(AudioSource* const audioSource, float amount)
 	}
 }
 
-AudioResult PXAudioOutputOpen(AudioDeviceOutput* audioDeviceOutput, unsigned int deviceID, unsigned short formatTag, unsigned short channels, unsigned int samplesPerSec, unsigned int avgBytesPerSec, unsigned short blockAlign, unsigned short bitsPerSample, unsigned short cbSize)
+PXAudioResult PXAudioOutputOpen(PXAudioDeviceOutput* audioDeviceOutput, unsigned int deviceID, unsigned short formatTag, unsigned short channels, unsigned int samplesPerSec, unsigned int avgBytesPerSec, unsigned short blockAlign, unsigned short bitsPerSample, unsigned short cbSize)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -145,13 +145,13 @@ AudioResult PXAudioOutputOpen(AudioDeviceOutput* audioDeviceOutput, unsigned int
 		dwInstance,
 		fdwOpen
 	);
-	const AudioResult audioResult = PXAudioConvertMMResult(result);
+	const PXAudioResult audioResult = PXAudioConvertMMResult(result);
 
 	return audioResult;
 #endif
 }
 
-AudioResult PXAudioOutputPrepare(AudioDeviceOutput* audioDeviceOutput)
+PXAudioResult PXAudioOutputPrepare(PXAudioDeviceOutput* audioDeviceOutput)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -162,7 +162,7 @@ AudioResult PXAudioOutputPrepare(AudioDeviceOutput* audioDeviceOutput)
 #endif
 }
 
-AudioResult PXAudioOutputWrite(AudioDeviceOutput* audioDeviceOutput, void* dataBuffer, PXSize bufferLength, unsigned int bytesRecorded, unsigned int user, unsigned int flags, unsigned int loopControlCounter)
+PXAudioResult PXAudioOutputWrite(PXAudioDeviceOutput* audioDeviceOutput, void* dataBuffer, PXSize bufferLength, unsigned int bytesRecorded, unsigned int user, unsigned int flags, unsigned int loopControlCounter)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -181,7 +181,7 @@ AudioResult PXAudioOutputWrite(AudioDeviceOutput* audioDeviceOutput, void* dataB
 	// Prepare
 	{
 		const MMRESULT prepareResultID = waveOutPrepareHeader(audioDeviceOutput->Handle, &waveHeader, cbwh);
-		const AudioResult prepareResult = PXAudioConvertMMResult(prepareResultID);
+		const PXAudioResult prepareResult = PXAudioConvertMMResult(prepareResultID);
 		const unsigned char wasSucessful = prepareResult == AudioResultSucessful;
 
 		if (!wasSucessful)
@@ -193,7 +193,7 @@ AudioResult PXAudioOutputWrite(AudioDeviceOutput* audioDeviceOutput, void* dataB
 	// Write Data
 	{
 		const MMRESULT writeResultID = waveOutWrite(audioDeviceOutput->Handle, &waveHeader, cbwh);
-		const AudioResult writeResult = PXAudioConvertMMResult(writeResultID);
+		const PXAudioResult writeResult = PXAudioConvertMMResult(writeResultID);
 		const unsigned char wasSucessful = writeResult == AudioResultSucessful;
 
 		if (!wasSucessful)
@@ -206,7 +206,7 @@ AudioResult PXAudioOutputWrite(AudioDeviceOutput* audioDeviceOutput, void* dataB
 	return AudioResultSucessful;
 }
 
-AudioResult PXAudioOutputClose(AudioDeviceOutput* audioDeviceOutput)
+PXAudioResult PXAudioOutputClose(PXAudioDeviceOutput* audioDeviceOutput)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -214,7 +214,7 @@ AudioResult PXAudioOutputClose(AudioDeviceOutput* audioDeviceOutput)
 #elif OSWindows
 
 	const MMRESULT result = waveOutClose(audioDeviceOutput->Handle);
-	const AudioResult audioResult = PXAudioConvertMMResult(result);
+	const PXAudioResult audioResult = PXAudioConvertMMResult(result);
 
 	audioDeviceOutput->Handle = 0;
 
@@ -223,7 +223,7 @@ AudioResult PXAudioOutputClose(AudioDeviceOutput* audioDeviceOutput)
 #endif
 }
 
-AudioResult PXAudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigned short* const volume)
+PXAudioResult PXAudioOutputVolumeGet(PXAudioDeviceOutput* audioDeviceOutput, unsigned short* const volume)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -232,7 +232,7 @@ AudioResult PXAudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigne
 	DWORD volumeDW = 0;
 
 	const MMRESULT volumeResultID = waveOutGetVolume(audioDeviceOutput->Handle, &volumeDW);
-	const AudioResult audioResult = PXAudioConvertMMResult(volumeResultID);
+	const PXAudioResult audioResult = PXAudioConvertMMResult(volumeResultID);
 	const unsigned char sucessful = audioResult == AudioResultSucessful;
 
 	if (!sucessful)
@@ -247,59 +247,59 @@ AudioResult PXAudioOutputVolumeGet(AudioDeviceOutput* audioDeviceOutput, unsigne
 	return AudioResultSucessful;
 }
 
-AudioResult PXAudioOutputVolumeSetEqual(AudioDeviceOutput* audioDeviceOutput, const unsigned int volume)
+PXAudioResult PXAudioOutputVolumeSetEqual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int volume)
 {
 #if OSUnix
 	return AudioResultInvalid;
 
 #elif OSWindows
 	const MMRESULT volumeResultID = waveOutSetVolume(audioDeviceOutput->Handle, volume);
-	const AudioResult audioResult = PXAudioConvertMMResult(volumeResultID);
+	const PXAudioResult audioResult = PXAudioConvertMMResult(volumeResultID);
 
 	return audioResult;
 #endif
 }
 
-AudioResult PXAudioOutputVolumeSetIndividual(AudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight)
+PXAudioResult PXAudioOutputVolumeSetIndividual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
 	unsigned int volumeCombined = (volumeLeft << 16) | volumeRight;
-	const AudioResult audioResult = PXAudioOutputVolumeSetEqual(audioDeviceOutput, volumeCombined);
+	const PXAudioResult audioResult = PXAudioOutputVolumeSetEqual(audioDeviceOutput, volumeCombined);
 
 	return audioResult;
 }
 
-AudioResult PXAudioOutputPause(AudioDeviceOutput* audioDeviceOutput)
+PXAudioResult PXAudioOutputPause(PXAudioDeviceOutput* audioDeviceOutput)
 {
 	return AudioResultInvalid;
 }
 
-AudioResult PXAudioOutputPitchSet(AudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
+PXAudioResult PXAudioOutputPitchSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
 {
 #if OSUnix
 	return AudioResultInvalid;
 
 #elif OSWindows
 	const MMRESULT pitchResultID = waveOutSetPitch(audioDeviceOutput->Handle, pitch);
-	const AudioResult pitchResult = PXAudioConvertMMResult(pitchResultID);
+	const PXAudioResult pitchResult = PXAudioConvertMMResult(pitchResultID);
 
 	return pitchResult;
 #endif
 }
 
-AudioResult PXAudioOutputPlaybackRateSet(AudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
+PXAudioResult PXAudioOutputPlaybackRateSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
 {
 #if OSUnix
 	return AudioResultInvalid;
 
 #elif OSWindows
 	const MMRESULT playbackRateResultID = waveOutSetPlaybackRate(audioDeviceOutput->Handle, pitch);
-	const AudioResult playbackRateResult = PXAudioConvertMMResult(playbackRateResultID);
+	const PXAudioResult playbackRateResult = PXAudioConvertMMResult(playbackRateResultID);
 
 	return playbackRateResult;
 #endif
 }
 
-AudioResult PXAudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
+PXAudioResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -321,7 +321,7 @@ AudioResult PXAudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabi
 		WAVEOUTCAPSW wAVEOUTCAPSW;
 
 		const MMRESULT result = waveOutGetDevCapsW(i, &wAVEOUTCAPSW, size);
-		const AudioResult audioResult = PXAudioConvertMMResult(result);
+		const PXAudioResult audioResult = PXAudioConvertMMResult(result);
 		const unsigned char sucessful = audioResult == AudioResultSucessful;
 
 		if (!sucessful)
@@ -329,7 +329,7 @@ AudioResult PXAudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabi
 			return audioResult;
 		}
 
-		AudioDeviceCapabilities* audioDeviceCapabilities = &audioDeviceCapabilitiesList[i];
+		PXAudioDeviceCapabilities* audioDeviceCapabilities = &audioDeviceCapabilitiesList[i];
 
 		audioDeviceCapabilities->DeviceID = i;
 		audioDeviceCapabilities->Type = AudioDeviceTypeOutput;
@@ -349,7 +349,7 @@ AudioResult PXAudioDevicesFetchOutput(AudioDeviceCapabilities* audioDeviceCapabi
 #endif
 }
 
-AudioResult PXAudioDevicesFetchInput(AudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
+PXAudioResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
 {
 #if OSUnix
 	return AudioResultInvalid;
@@ -370,7 +370,7 @@ AudioResult PXAudioDevicesFetchInput(AudioDeviceCapabilities* audioDeviceCapabil
 		WAVEINCAPSW waveInputCapabilitiesW;
 		const UINT waveInputCapabilitiesWSize = sizeof(waveInputCapabilitiesW);
 		const MMRESULT result = waveInGetDevCapsW(i, &waveInputCapabilitiesW, waveInputCapabilitiesWSize);
-		const AudioResult audioResult = PXAudioConvertMMResult(result);
+		const PXAudioResult audioResult = PXAudioConvertMMResult(result);
 		const unsigned char sucessful = audioResult == AudioResultSucessful;
 
 		if (!sucessful)
@@ -378,7 +378,7 @@ AudioResult PXAudioDevicesFetchInput(AudioDeviceCapabilities* audioDeviceCapabil
 			return audioResult;
 		}
 
-		AudioDeviceCapabilities* audioDeviceCapabilities = &audioDeviceCapabilitiesList[i];
+		PXAudioDeviceCapabilities* audioDeviceCapabilities = &audioDeviceCapabilitiesList[i];
 
 		audioDeviceCapabilities->Type = AudioDeviceTypeInput;
 		audioDeviceCapabilities->ManufacturerID = waveInputCapabilitiesW.wMid;

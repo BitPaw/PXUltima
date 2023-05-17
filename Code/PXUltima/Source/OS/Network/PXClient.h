@@ -36,7 +36,7 @@ extern "C"
 	PXPublic PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port, const void* threadObject, const ThreadFunction threadFunction);
 	PXPublic PXActionResult PXClientDisconnectFromServer(PXClient* const client);
 
-	PXPublic PXThreadResult CommunicationFunctionAsync(void* ioSocket);
+	PXPublic PXThreadResult PXClientCommunicationThread(void* ioSocket);
 
 #ifdef __cplusplus
 }

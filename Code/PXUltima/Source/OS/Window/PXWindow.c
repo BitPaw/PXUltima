@@ -1269,7 +1269,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 
                             PXWindowCursorPositionInWindowGet(window, &positionX, &positionY);
 
-                            TriggerOnMouseMoveEvent(window, positionX, positionY, deltaX, deltaY);
+                            PXWindowTriggerOnMouseMoveEvent(window, positionX, positionY, deltaX, deltaY);
 
                             // Wheel data needs to be pointer casted to interpret an unsigned short as a short, with no conversion
                             // otherwise it'll overflow when going negative.
@@ -1319,9 +1319,9 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 
             const PXSize character = wParam;
             const PXSize characterInfo = lParam;
-            const VirtualKey virtualKey = ConvertToVirtualKey(character);
+            const VirtualKey virtualKey = PXVirtualKeyFromID(character);
 
-            KeyBoardKeyPressedSet(&window->KeyBoardCurrentInput, virtualKey, mode == ButtonStateRelease);
+            PXKeyBoardKeyPressedSet(&window->KeyBoardCurrentInput, virtualKey, mode == ButtonStateRelease);
 
             KeyBoardKeyInfo buttonInfo;
             buttonInfo.KeyID = character;
@@ -1339,7 +1339,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             buttonInfo.GapState = (characterInfo & 0b10000000000000000000000000000000) >> 31; // Der Übergangszustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
 			*/
 
-            TriggerOnKeyBoardKeyEvent(window, buttonInfo);
+            PXWindowTriggerOnKeyBoardKeyEvent(window, buttonInfo);
 
             break;
         }
@@ -1431,39 +1431,39 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         //case WindowEventMOUSEMOVE:
         //    break;
         case WindowEventLBUTTONDOWN:
-            TriggerOnMouseClickEvent(window, MouseButtonLeft, ButtonStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, ButtonStateDown);
             break;
 
         case WindowEventLBUTTONUP:
-            TriggerOnMouseClickEvent(window, MouseButtonLeft, ButtonStateRelease);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, ButtonStateRelease);
             break;
 
         case WindowEventLBUTTONDBLCLK:
-            TriggerOnMouseClickDoubleEvent(window, MouseButtonLeft);
+            PXWindowTriggerOnMouseClickDoubleEvent(window, MouseButtonLeft);
             break;
 
         case WindowEventRBUTTONDOWN:
-            TriggerOnMouseClickEvent(window, MouseButtonRight, ButtonStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, ButtonStateDown);
             break;
 
         case WindowEventRBUTTONUP:
-            TriggerOnMouseClickEvent(window, MouseButtonRight, ButtonStateRelease);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, ButtonStateRelease);
             break;
 
         case WindowEventRBUTTONDBLCLK:
-            TriggerOnMouseClickDoubleEvent(window, MouseButtonRight);
+            PXWindowTriggerOnMouseClickDoubleEvent(window, MouseButtonRight);
             break;
 
         case WindowEventMBUTTONDOWN:
-            TriggerOnMouseClickEvent(window, MouseButtonMiddle, ButtonStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, ButtonStateDown);
             break;
 
         case WindowEventMBUTTONUP:
-            TriggerOnMouseClickEvent(window, MouseButtonMiddle, ButtonStateRelease);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, ButtonStateRelease);
             break;
 
         case WindowEventMBUTTONDBLCLK:
-            TriggerOnMouseClickDoubleEvent(window, MouseButtonMiddle);
+            PXWindowTriggerOnMouseClickDoubleEvent(window, MouseButtonMiddle);
             break;
 
         case WindowEventMOUSEWHEEL:
@@ -1529,7 +1529,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
                 */
 
 
-                TriggerOnMouseClickEvent(window, mouseButton, buttonState);
+                PXWindowTriggerOnMouseClickEvent(window, mouseButton, buttonState);
             }
 
             break;
@@ -1956,7 +1956,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
     WNDCLASSW wndclass;
 
-    MemoryClear(&wndclass, sizeof(WNDCLASSW));
+    PXMemoryClear(&wndclass, sizeof(WNDCLASSW));
 
     wndclass.style = CS_OWNDC; //  CS_HREDRAW | CS_VREDRAW;
     wndclass.lpfnWndProc = PXWindowEventHandler;
@@ -2027,7 +2027,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
     {
         if (!windowID)
         {
-            const PXActionResult windowsCreateResult = GetCurrentError();
+            const PXActionResult windowsCreateResult = PXErrorCurrent();
 
             // Handle error?
 
@@ -2234,7 +2234,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
 void PXWindowConstruct(PXWindow* const window)
 {
-    MemoryClear(window, sizeof(PXWindow));
+    PXMemoryClear(window, sizeof(PXWindow));
     window->Title.SizeAllocated = 256;
     window->Title.TextA = window->TitleBuffer;
 }
@@ -2739,12 +2739,12 @@ PXBool PXWindowIsInFocus(const PXWindow* const window)
 #endif
 }
 
-void TriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse)
+void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse)
 {
 
 }
 
-void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState)
+void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState)
 {
     const PXMouse* const mouse = &window->MouseCurrentInput;
 
@@ -2814,12 +2814,12 @@ void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseBut
     InvokeEvent(window->MouseClickCallBack, window->EventReceiver, window, mouseButton, buttonState);
 }
 
-void TriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton)
+void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton)
 {
     InvokeEvent(window->MouseClickDoubleCallBack, window->EventReceiver, window, mouseButton);
 }
 
-void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY)
+void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY)
 {
     PXMouse* mouse = &window->MouseCurrentInput;
 
@@ -2833,22 +2833,22 @@ void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const 
     InvokeEvent(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
 }
 
-void TriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse)
+void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse)
 {
 }
 
-void TriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse)
+void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse)
 {
 }
 
-void TriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo)
+void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo)
 {
     printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo.KeyID, keyBoardKeyInfo.Key, keyBoardKeyInfo.Mode);
 
     InvokeEvent(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
 }
 
-unsigned int CursorIconToID(const CursorIcon cursorIcon)
+unsigned int PXWindowCursorIconToID(const CursorIcon cursorIcon)
 {
     switch (cursorIcon)
     {

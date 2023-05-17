@@ -1,7 +1,6 @@
 #ifndef PXThreadInclude
 #define PXThreadInclude
 
-#include <OS/System/OSVersion.h>
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 

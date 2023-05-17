@@ -4,7 +4,7 @@
 
 void PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality)
 {
-	MemoryClear(dictionary, sizeof(PXDictionary));
+	PXMemoryClear(dictionary, sizeof(PXDictionary));
 
 	dictionary->KeyTypeSize = keySize;
 	dictionary->ValueTypeSize = valueSize;
@@ -13,7 +13,7 @@ void PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize,
 
 void PXDictionaryDestruct(PXDictionary* const dictionary)
 {
-	MemoryRelease(dictionary->Data, dictionary->DataSize);
+	PXMemoryRelease(dictionary->Data, dictionary->DataSize);
 }
 
 PXSize PXDictionaryValueSize(const PXDictionary* const dictionary)
@@ -39,13 +39,13 @@ void PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys)
 
 	dictionary->EntryAmountMaximal = entrys;
 	dictionary->DataSize = dictionary->EntryAmountMaximal * (dictionary->KeyTypeSize + dataBlockSize);
-	dictionary->Data = MemoryReallocate(dictionary->Data, dictionary->DataSize);
+	dictionary->Data = PXMemoryReallocate(dictionary->Data, dictionary->DataSize);
 
 	const PXSize newPositionOffset = dictionary->DataSize;
 	const PXSize difference = newPositionOffset - oldPositionOffset;
 	void* newDataPoint = (char*)dictionary->Data + oldPositionOffset;
 
-	MemorySet(newDataPoint, 0xFF, difference);
+	PXMemorySet(newDataPoint, 0xFF, difference);
 }
 
 PXBool PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value)
@@ -63,11 +63,11 @@ PXBool PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const vo
 
 		PXDictionaryIndex(dictionary, i, &pxDictionaryEntry);
 
-		const PXBool isEmptyKeyField = MemoryCompareToByte(pxDictionaryEntry.Key, dictionary->KeyTypeSize, 0xFF);
+		const PXBool isEmptyKeyField = PXMemoryCompareToByte(pxDictionaryEntry.Key, dictionary->KeyTypeSize, 0xFF);
 
 		if (isEmptyKeyField)
 		{
-			MemoryCopy(key, dictionary->KeyTypeSize, pxDictionaryEntry.Key, dictionary->KeyTypeSize);
+			PXMemoryCopy(key, dictionary->KeyTypeSize, pxDictionaryEntry.Key, dictionary->KeyTypeSize);
 
 			switch (dictionary->ValueLocality)
 			{
@@ -78,12 +78,12 @@ PXBool PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const vo
 				}
 				case PXDictionaryValueLocalityInternalEmbedded:
 				{
-					MemoryCopy(value, dictionary->ValueTypeSize, pxDictionaryEntry.Value, dictionary->ValueTypeSize);
+					PXMemoryCopy(value, dictionary->ValueTypeSize, pxDictionaryEntry.Value, dictionary->ValueTypeSize);
 					break;
 				}
 				case PXDictionaryValueLocalityExternalReference:
 				{
-					MemoryCopy(&value, sizeof(void*), pxDictionaryEntry.Value, sizeof(void*));
+					PXMemoryCopy(&value, sizeof(void*), pxDictionaryEntry.Value, sizeof(void*));
 					break;
 				}
 			}
@@ -106,8 +106,8 @@ void PXDictionaryRemove(PXDictionary* const dictionary, const void* key)
 
 PXBool PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value)
 {
-	MemorySet(key, 0xFF, dictionary->KeyTypeSize);
-	MemorySet(value, 0xFF, dictionary->ValueTypeSize);
+	PXMemorySet(key, 0xFF, dictionary->KeyTypeSize);
+	PXMemorySet(value, 0xFF, dictionary->ValueTypeSize);
 
 	--dictionary->EntryAmountCurrent;
 }
@@ -120,7 +120,7 @@ PXBool PXDictionaryExtract(PXDictionary* const dictionary, const void* const key
 
 	if (!found)
 	{
-		MemoryClear(value, dictionary->ValueTypeSize);
+		PXMemoryClear(value, dictionary->ValueTypeSize);
 		return PXFalse;
 	}
 
@@ -135,12 +135,12 @@ PXBool PXDictionaryExtract(PXDictionary* const dictionary, const void* const key
 		}
 		case PXDictionaryValueLocalityInternalEmbedded:
 		{
-			MemoryCopy(data, dictionary->ValueTypeSize, value, dictionary->ValueTypeSize);
+			PXMemoryCopy(data, dictionary->ValueTypeSize, value, dictionary->ValueTypeSize);
 			break;
 		}
 		case PXDictionaryValueLocalityExternalReference:
 		{
-			MemoryCopy(data, sizeof(void*), value, sizeof(void*));
+			PXMemoryCopy(data, sizeof(void*), value, sizeof(void*));
 			break;
 		}
 	}
@@ -180,7 +180,7 @@ PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const k
 
 		PXDictionaryIndex(dictionary, i, &pxDictionaryEntry);
 
-		const PXBool isTarget = MemoryCompare(pxDictionaryEntry.Key, dictionary->KeyTypeSize, key, dictionary->KeyTypeSize);		
+		const PXBool isTarget = PXMemoryCompare(pxDictionaryEntry.Key, dictionary->KeyTypeSize, key, dictionary->KeyTypeSize);		
 
 		if (isTarget)
 		{

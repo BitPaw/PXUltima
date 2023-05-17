@@ -7,7 +7,7 @@
 #include <Windows.h>
 #endif
 
-TimeDayOfWeek ConvertToMonth(unsigned short monthID)
+TimeDayOfWeek PXTimeMonthFromID(unsigned short monthID)
 {
 	switch(monthID)
 	{
@@ -27,7 +27,7 @@ TimeDayOfWeek ConvertToMonth(unsigned short monthID)
 	}
 }
 
-TimeMonth ConvertToDay(unsigned short dayID)
+TimeMonth PXTimeDayFromID(unsigned short dayID)
 {
 	switch(dayID)
 	{

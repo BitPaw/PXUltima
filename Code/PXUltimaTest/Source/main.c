@@ -3,7 +3,7 @@
 
 #include "TestSystemInfo.h"
 #include "Graphic/TestWindow.h"
-#include "Graphic/TestPXOpenGL.h"
+#include "Graphic/TestOpenGL.h"
 #include "Graphic/TestFont.h"
 #include "Compiler/TestPXCompiler.h"
 #include "Graphic/TestImage.h"

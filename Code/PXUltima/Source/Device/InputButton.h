@@ -1,5 +1,5 @@
-#ifndef InputButtonInclude
-#define InputButtonInclude
+#ifndef PXInputButtonINCLUDE
+#define PXInputButtonINCLUDE
 
 #include <Media/PXType.h>
 
@@ -8,12 +8,12 @@ extern "C"
 {
 #endif
 
-	PXPublic unsigned char InputButtonReset(unsigned char* value);
-	PXPublic unsigned char InputButtonIncrement(unsigned char* value);
-	PXPublic unsigned char InputButtonIncrementIfAlreadyPressed(unsigned char* value);
-	PXPublic unsigned char InputButtonIsShortPressed(const unsigned char value);
-	PXPublic unsigned char InputButtonIsLongPressed(const unsigned charvalue);
-	PXPublic unsigned char InputButtonIsPressed(const unsigned char value);
+	PXPublic unsigned char PXInputButtonReset(unsigned char* value);
+	PXPublic unsigned char PXInputButtonIncrement(unsigned char* value);
+	PXPublic unsigned char PXInputButtonIncrementIfAlreadyPressed(unsigned char* value);
+	PXPublic unsigned char PXInputButtonIsShortPressed(const unsigned char value);
+	PXPublic unsigned char PXInputButtonIsLongPressed(const unsigned charvalue);
+	PXPublic unsigned char PXInputButtonIsPressed(const unsigned char value);
 
 #ifdef __cplusplus
 }

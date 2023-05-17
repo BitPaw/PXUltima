@@ -1,14 +1,14 @@
 #ifndef PXUltimaInfoINLCUDE
 #define PXUltimaInfoINLCUDE
 
-#include <Media/PXType.h>
+#include <Media/PXText.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	PXPublic const char* const PXUltimaInfoBuildDate();
+	PXPublic void PXUltimaInfoBuildDate(PXText* const text);
 
 #ifdef __cplusplus
 }

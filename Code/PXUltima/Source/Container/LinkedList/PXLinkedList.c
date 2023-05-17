@@ -5,7 +5,7 @@
 
 void PXLinkedListFixedNodeConstruct(PXLinkedListFixed* const linkedListFixed)
 {
-    MemoryClear(linkedListFixed, sizeof(PXLinkedListFixed));
+    PXMemoryClear(linkedListFixed, sizeof(PXLinkedListFixed));
 }
 
 void PXLinkedListFixedNodeDestruct(PXLinkedListFixed* const linkedListFixed)
@@ -24,11 +24,11 @@ void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* co
 
     if(nodeSize != (void*)-1)
     {
-        MemoryClear(data, nodeSize * dataSize);
+        PXMemoryClear(data, nodeSize * dataSize);
     }
     else
     {
-        MemoryClear(data, sizeof(void*));
+        PXMemoryClear(data, sizeof(void*));
     }
 }
 
@@ -37,7 +37,7 @@ PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinke
     const PXSize nodeBlockSize = PXLinkedListFixedNodeStride(linkedListFixed);
     const void* const data = (PXAdress)linkedListFixed->Data + nodeBlockSize * index;
 
-    MemoryCopy(data, sizeof(void*), &pxLinkedListNodeFixed->BlockData, sizeof(void*));
+    PXMemoryCopy(data, sizeof(void*), &pxLinkedListNodeFixed->BlockData, sizeof(void*));
 
     {
         const PXSize dataSize = PXLinkedListFixedDataSize(linkedListFixed);
@@ -148,7 +148,7 @@ PXBool PXLinkedListFixedNodeAdd(PXLinkedListFixed* const linkedListFixed, void* 
         const PXBool isDataEmbedded = PXLinkedListFixedIsDataEmbedded(linkedListFixed);
         const void* const dataSource = isDataEmbedded ? element : &element;
 
-        MemoryCopy(dataSource, dataBlockSize, data, dataBlockSize); // Copy the whole data into this node or  Copy only the adress to the data into the node
+        PXMemoryCopy(dataSource, dataBlockSize, data, dataBlockSize); // Copy the whole data into this node or  Copy only the adress to the data into the node
     }   
 
     // Add next pointer
@@ -157,7 +157,7 @@ PXBool PXLinkedListFixedNodeAdd(PXLinkedListFixed* const linkedListFixed, void* 
         const void* value = PXLinkedListNodeNoNext;
         void* const target = (PXAdress)data + dataBlockSize;
 
-        MemoryCopy(&value, targetSize, target, targetSize);
+        PXMemoryCopy(&value, targetSize, target, targetSize);
     } 
 
     // Fetch Last and register this node into it
@@ -166,7 +166,7 @@ PXBool PXLinkedListFixedNodeAdd(PXLinkedListFixed* const linkedListFixed, void* 
         {
             void* const lastOBJ = (PXAdress)linkedListFixed->DataEntryLast + dataBlockSize;
 
-            MemoryCopy(&data, sizeof(void*), lastOBJ, sizeof(void*));
+            PXMemoryCopy(&data, sizeof(void*), lastOBJ, sizeof(void*));
 
             linkedListFixed->DataEntryLast = data;
         }      

@@ -183,7 +183,7 @@ extern "C"
 	}
 	VirtualKey;
 
-	PXPublic VirtualKey ConvertToVirtualKey(const char character);
+	PXPublic VirtualKey PXVirtualKeyFromID(const char character);
 
 #ifdef __cplusplus
 }

@@ -11,14 +11,14 @@ void TestSystemInfoAll()
 
 void TestSystemInfoHardDrive()
 {
-	HardDrive hardDrive[26];
+	PXHardDrive hardDrive[26];
 	PXSize hardDriveSize = 0;
 
-	HardDriveFetchAll(&hardDrive, 26u, &hardDriveSize);
+	PXHardDriveFetchAll(&hardDrive, 26u, &hardDriveSize);
 
 	for (PXSize i = 0; i < hardDriveSize; i++)
 	{
-		HardDrive* harddrive = &hardDrive[i];
+		PXHardDrive* harddrive = &hardDrive[i];
 
 		printf
 		(

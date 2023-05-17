@@ -1,16 +1,33 @@
 #ifndef PXUserINCLUDE
 #define PXUserINCLUDE
 
-#include <Media/PXType.h>
+#include <Media/PXText.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	PXPublic PXSize PXUserNameGetA(PXTextASCII* name, const PXSize nameSizeMax);
-	PXPublic PXSize PXUserNameGetW(PXTextUNICODE* name, const PXSize nameSizeMax);
-	PXPublic PXSize PXUserNameGetU(PXTextUTF8* name, const PXSize nameSizeMax);
+	PXPublic PXBool PXUserNameGet(PXText* const name);
+
+
+	typedef enum PXUserEnviromentFolderID_
+	{
+		PXUserEnviromentFolderIDInvalid,
+
+		PXUserEnviromentFolderIDAppData,
+		PXUserEnviromentFolderIDDownload,
+		PXUserEnviromentFolderIDDocuments,
+		PXUserEnviromentFolderIDPictures,
+		PXUserEnviromentFolderIDScreenshots,
+		PXUserEnviromentFolderIDVideo,
+		PXUserEnviromentFolderIDDestop,
+		PXUserEnviromentFolderIDFonts,
+		PXUserEnviromentFolderIDMusic
+	}
+	PXUserEnviromentFolderID;
+
+	PXPublic PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
 
 #ifdef __cplusplus
 }

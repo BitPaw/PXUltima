@@ -123,10 +123,10 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
 		{
 			PXCStructureVariable* const pxCStructureVariable = &pxCTranslateStruct->Element.ElementVariable;
 
-			PXSize offsetTextSize = 0;
-			char numberText[64];
+			PXText pxText;
+			PXTextConstructWithBufferNamedA(&pxText, numberText, 64);
 
-			offsetTextSize += PXTextFromIntA(pxCTranslateStruct->StructureOffsetTotal, numberText, 64);
+			pxText.SizeUsed += PXTextFromInt(&pxText, pxCTranslateStruct->StructureOffsetTotal);
 
 			if (!pxCTranslateStruct->AreInUnion)
 			{
@@ -138,7 +138,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
 			}
 
 			PXFileWriteB(outputStream, "\t\t[FieldOffset(", 15);
-			PXFileWriteB(outputStream, numberText, offsetTextSize);
+			PXFileWriteB(outputStream, numberText, pxText.SizeUsed);
 			PXFileWriteB(outputStream, ")] public ", 10);
 
 			//pxCStructure->MemberOffsetCurrent += (typeSize * !(pxCStructure->Type == PXCStructureTypeUnion && PXCStructureHasName(pxCStructure)));

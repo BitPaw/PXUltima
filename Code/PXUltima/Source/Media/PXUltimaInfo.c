@@ -1,8 +1,12 @@
 #include "PXUltimaInfo.h"
 
-const char* const PXUltimaInfoBuildDate()
+void PXUltimaInfoBuildDate(PXText* const text)
 {
 	const char buildDate[] = __DATE__ " " __TIME__;
 
-	return buildDate;
+	text->Format = TextFormatASCII;
+	text->SizeAllocated = sizeof(buildDate);
+	text->SizeUsed = text->SizeAllocated;
+	text->NumberOfCharacters = text->SizeAllocated;
+	text->TextA = buildDate;
 }

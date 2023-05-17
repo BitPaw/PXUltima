@@ -1,13 +1,13 @@
 #include "Serialization.h"
 
-void SerializationTypeInfoSet
+void PXSerializationTypeInfoSet
 (
-	SerializationTypeInfo* serializationTypeInfo, 
+	PXSerializationTypeInfo* serializationTypeInfo, 
 	const char* name, 
 	void* adress, 
 	const PXSize size, 
-	SerializationType type, 
-	SerializationTypeInfo* parent, 
+	PXSerializationType type, 
+	PXSerializationTypeInfo* parent, 
 	unsigned char depth
 )
 {

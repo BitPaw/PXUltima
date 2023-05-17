@@ -1,6 +1,6 @@
 #include "PXLZ77.h"
 
-#include <Media/DEFLATE/DEFLATE.h>
+#include <Media/DEFLATE/PXDEFLATE.h>
 
 #define MAX_SUPPORTED_DEFLATE_LENGTH 258
 

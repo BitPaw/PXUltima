@@ -8,7 +8,7 @@
 #include <direct.h>
 #endif
 
-PXSize HardDriveListSize()
+PXSize PXHardDriveListSize()
 {
 #if OSUnix
     const PXSize numberOfDrives = 0;
@@ -30,11 +30,11 @@ PXSize HardDriveListSize()
     return numberOfDrives;
 }
 
-PXActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
+PXActionResult PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
 {
-    const PXSize numberOfDrives = HardDriveListSize();
+    const PXSize numberOfDrives = PXHardDriveListSize();
 
-    MemoryClear(hardDriveList, sizeof(HardDrive) * hardDriveListMaxSize);
+    PXMemoryClear(hardDriveList, sizeof(PXHardDrive) * hardDriveListMaxSize);
 
     // Has enough space?
     {
@@ -59,7 +59,7 @@ PXActionResult HardDriveFetchAll(HardDrive* const hardDriveList, const PXSize ha
 
         if (isUsed)
         {
-            HardDrive* harddrive = &hardDriveList[numberOfDrives-1];
+            PXHardDrive* harddrive = &hardDriveList[numberOfDrives-1];
             struct _diskfree_t df = { 0 };
             const unsigned int uErr = _getdiskfree(numberOfDrives, &df);
             const unsigned char successul = 0 == uErr;

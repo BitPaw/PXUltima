@@ -47,7 +47,7 @@ const SQLType PXSQLTypeFromID(const unsigned int sqlType)
 
 void PXDataBaseConnectionConstruct(DataBaseConnection* const dataBaseConnection)
 {
-    MemoryClear(dataBaseConnection, sizeof(DataBaseConnection));
+    PXMemoryClear(dataBaseConnection, sizeof(DataBaseConnection));
 }
 
 void PXDataBaseConnectionDestruct(DataBaseConnection* const dataBaseConnection)

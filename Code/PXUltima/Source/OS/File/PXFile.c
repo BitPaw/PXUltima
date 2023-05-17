@@ -247,7 +247,7 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('E', 'L', 'F'): return FileFormatLinuxExecutableAndLinkable;
 				case PXInt24Make('O', 'U', 'T'): return FileFormatLinuxExecutableAndLinkable;
 				case PXInt24Make('F', 'N', 'T'): return FileFormatSpriteFont;
-				case PXInt24Make('G', 'I', 'F'): return FileFormatGIF;
+				case PXInt24Make('G', 'I', 'F'): return FileFormatPXGIF;
 				case PXInt24Make('H', 'T', 'M'): return FileForPXMathTML;
 				case PXInt24Make('I', 'N', 'I'): return FileFormatINI;
 				case PXInt24Make('M', '4', 'A'): return FileFormatM4A;
@@ -260,12 +260,12 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('E', 'M', 'L'): return FileFormatEML;
 				case PXInt24Make('E', 'X', 'E'): return FileFormatWindowsExecutable;
 				case PXInt24Make('F', 'B', 'X'): return FileFormatFimBox;
-				case PXInt24Make('M', 'P', '3'): return FileFormatMP3;
+				case PXInt24Make('M', 'P', '3'): return FileFormatPXMP3;
 				case PXInt24Make('M', 'P', '4'): return FileFormatMP4;
 				case PXInt24Make('M', 'S', 'I'): return FileFormatMSI;
 				case PXInt24Make('M', 'T', 'L'): return FileFormatMTL;
 				case PXInt24Make('O', 'B', 'J'): return FileFormatOBJ;
-				case PXInt24Make('O', 'G', 'G'): return FileFormatOGG;
+				case PXInt24Make('O', 'G', 'G'): return FileFormatPXOGG;
 				case PXInt24Make('P', 'D', 'F'): return FileFormatPDF;
 				case PXInt24Make('P', 'H', 'P'): return FileFormatPHP;
 				case PXInt24Make('P', 'L', 'Y'): return FileFormatPLY;
@@ -274,11 +274,11 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('S', 'T', 'L'): return FileFormatSTL;
 				case PXInt24Make('S', 'V', 'G'): return FileFormatSVG;
 				case PXInt24Make('T', 'I', 'F'): return FileFormatTagImage;
-				case PXInt24Make('T', 'G', 'A'): return FileFormatTGA;
+				case PXInt24Make('T', 'G', 'A'): return FileFormatPXTGA;
 				case PXInt24Make('T', 'T', 'F'): return FileFormatTrueTypeFont;
 				case PXInt24Make('W', 'A', 'V'): return FileFormatWave;
 				case PXInt24Make('W', 'M', 'A'): return FileFormatWMA;
-				case PXInt24Make('X', 'M', 'L'): return FileFormatXML;
+				case PXInt24Make('X', 'M', 'L'): return FileFormatPXXML;
 				case PXInt24Make('Y', 'M', 'L'): return FileFormatYAML;
 			}
 
@@ -291,10 +291,10 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 			switch (list)
 			{
 				case PXInt32Make('F', 'L', 'A', 'C') : return FileFormatFLAC;
-				case PXInt32Make('M', 'I', 'D', 'I') : return FileFormatMIDI;
+				case PXInt32Make('M', 'I', 'D', 'I') : return FileFormatPXMIDI;
 				case PXInt32Make('S', 'T', 'E', 'P') : return FileFormatSTEP;
 				case PXInt32Make('T', 'I', 'F', 'F') : return FileFormatTagImage;
-				case PXInt32Make('J', 'P', 'E', 'G') : return FileFormatJPEG;
+				case PXInt32Make('J', 'P', 'E', 'G') : return FileFormatPXJPEG;
 				case PXInt32Make('J', 'S', 'O', 'N') : return FileFormatJSON;
 				case PXInt32Make('V', 'R', 'M', 'L') : return FileFormatVRML;
 				case PXInt32Make('W', 'E', 'B', 'M') : return FileFormatWEBM;
@@ -681,7 +681,7 @@ PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName)
 			xxxxxy = result - 4u;
 		}
 
-		const PXSize rerere = MemoryMove(texxxx, xxxxxy, fileName, result);
+		const PXSize rerere = PXMemoryMove(texxxx, xxxxxy, fileName, result);
 
 
 		fileName->SizeUsed = rerere;
@@ -729,7 +729,7 @@ PXBool PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const direct
 
 void PXFileConstruct(PXFile* const pxFile)
 {
-	MemoryClear(pxFile, sizeof(PXFile));
+	PXMemoryClear(pxFile, sizeof(PXFile));
 
 	pxFile->ID = -1;
 }
@@ -743,15 +743,15 @@ void PXFileDestruct(PXFile* const pxFile)
 			break;
 
 		case PXFileLocationModeInternal:
-			MemoryRelease(pxFile->Data, pxFile->DataSize);
+			PXMemoryRelease(pxFile->Data, pxFile->DataSize);
 			break;
 
 		case PXFileLocationModeMappedVirtual:
-			MemoryVirtualRelease(pxFile->Data, pxFile->DataSize);
+			PXMemoryVirtualRelease(pxFile->Data, pxFile->DataSize);
 			break;
 
 		case PXFileLocationModeDirectCached:
-			MemoryRelease(pxFile->Data, pxFile->DataSize);
+			PXMemoryRelease(pxFile->Data, pxFile->DataSize);
 			PXFileClose(pxFile);
 			break;
 
@@ -812,7 +812,7 @@ PXInt32U PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCa
 {
 	 PXFileConstruct(pxFile);
 
-	 pxFile->Data = MemoryAllocate(dataSize);
+	 pxFile->Data = PXMemoryAllocate(dataSize);
 	 pxFile->DataAllocated = dataSize;
 	 pxFile->DataSize = dataSize;
 	 pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
@@ -1199,7 +1199,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 					pxFile->Data = fileMapped;
 					pxFile->DataAllocated = pxFile->DataSize;
 
-					MemoryVirtualPrefetch(fileMapped, pxFile->DataSize);
+					PXMemoryVirtualPrefetch(fileMapped, pxFile->DataSize);
 				}
 
 #endif
@@ -1333,7 +1333,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
  PXActionResult PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXMemoryAccessMode protectionMode)
 {
-	 const void* data = MemoryVirtualAllocate(size, protectionMode);
+	 const void* data = PXMemoryVirtualAllocate(size, protectionMode);
 	 const PXBool successful = data != 0;
 
 	 if (!successful)
@@ -1703,13 +1703,18 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
  PXSize PXFileReadTextI(PXFile* const pxFile, int* const number)
 {
-	 const void* const adress = PXFileCursorPosition(pxFile);
-	 const PXSize size = PXFileRemainingSize(pxFile);
-	 const PXSize sizeRead = PXTextToIntA(adress, size, number);
+	 PXText pxText;
+	 pxText.SizeAllocated = PXFileRemainingSize(pxFile);
+	 pxText.SizeUsed = PXFileRemainingSize(pxFile);
+	 pxText.NumberOfCharacters = PXFileRemainingSize(pxFile);
+	 pxText.TextA = PXFileCursorPosition(pxFile);
+	 pxText.Format = TextFormatASCII;
 
-	 PXFileCursorAdvance(pxFile, sizeRead);
+	 pxText.SizeUsed = PXTextToInt(&pxText, number);
 
-	 return sizeRead;
+	 PXFileCursorAdvance(pxFile, pxText.SizeUsed);
+
+	 return pxText.SizeUsed;
 }
 
  PXSize PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian)
@@ -1986,7 +1991,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 			 const void* currentPosition = PXFileCursorPosition(pxFile);
 			 const PXSize moveSize = PXFileCursorAdvance(pxFile, length);
 
-			 MemoryCopy(currentPosition, moveSize, value, moveSize);
+			 PXMemoryCopy(currentPosition, moveSize, value, moveSize);
 
 			 return moveSize;
 		 }
@@ -2072,7 +2077,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 	 const PXSize readableSize = PXFileRemainingSize(pxFile);
 
-	 MemoryCopy(currentPosition, readableSize, value, lengthCopy);
+	 PXMemoryCopy(currentPosition, readableSize, value, lengthCopy);
 }
 
  PXBool PXFileReadAndCompareI64U(PXFile* const pxFile, const PXInt64U value)
@@ -2090,7 +2095,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 const void* currentPosition = PXFileCursorPosition(pxFile);
 	 const PXSize readableSize = PXFileRemainingSize(pxFile);
 
-	 const PXBool result = MemoryCompare(currentPosition, readableSize, value, length);
+	 const PXBool result = PXMemoryCompare(currentPosition, readableSize, value, length);
 
 	 if (result)
 	 {
@@ -2109,7 +2114,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 {
 		 void* text = value[i];
 		 PXSize size = valueElementSizeList[i];
-		 const PXBool result = MemoryCompare(currentPosition, readableSize, text, size);
+		 const PXBool result = PXMemoryCompare(currentPosition, readableSize, text, size);
 
 		 if (result)
 		 {
@@ -2421,7 +2426,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 {
 	 const PXSize writableSize = PXFileRemainingSize(pxFile);
 	 void* const currentPosition = PXFileCursorPosition(pxFile);
-	 const PXSize copyedBytes = MemoryCopy(value, length, currentPosition, writableSize);
+	 const PXSize copyedBytes = PXMemoryCopy(value, length, currentPosition, writableSize);
 
 	 PXFileCursorAdvance(pxFile, copyedBytes);
 
@@ -2530,7 +2535,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 const PXSize writableSize = PXFileRemainingSize(pxFile);
 	 const PXSize write = PXMathMinimumIU(writableSize, length);
 
-	 MemorySet(beforePosition, value, write);
+	 PXMemorySet(beforePosition, value, write);
 
 	 PXFileCursorAdvance(pxFile, write);
 

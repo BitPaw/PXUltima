@@ -40,8 +40,8 @@ PXBool PXDialogFileOpen(PXText* const filePath)
     //HRESULT BasicFileOpen()
     
         // CoCreate the File Open Dialog object.
-        char bufferVV[1024]; MemoryClear(bufferVV, 1024);
-        char bufferAAA[1024]; MemoryClear(bufferAAA, 1024);
+        char bufferVV[1024]; PXMemoryClear(bufferVV, 1024);
+        char bufferAAA[1024]; PXMemoryClear(bufferAAA, 1024);
 
         IFileDialog* fileDialog = bufferVV;
         //MemoryClear(&pfd, sizeof(IFileDialog));
@@ -176,7 +176,7 @@ PXBool PXDialogFileSave(PXText* const filePath)
             HWND owner = NULL;
 
             OPENFILENAMEA openFileName;
-            MemoryClear(&openFileName, sizeof(OPENFILENAMEA));
+            PXMemoryClear(&openFileName, sizeof(OPENFILENAMEA));
 
             openFileName.lStructSize = sizeof(OPENFILENAMEA);
             openFileName.hwndOwner = owner;
@@ -196,7 +196,7 @@ PXBool PXDialogFileSave(PXText* const filePath)
             HWND owner = NULL;
 
             OPENFILENAMEW openFileName;
-            MemoryClear(&openFileName, sizeof(OPENFILENAMEW));
+            PXMemoryClear(&openFileName, sizeof(OPENFILENAMEW));
 
             openFileName.lStructSize = sizeof(OPENFILENAMEW);
             openFileName.hwndOwner = owner;
@@ -224,7 +224,7 @@ PXBool PXDialogColorSelect(PXColorRGBI8* const color)
 #elif OSWindows
     CHOOSECOLORW chooseColor;
    
-    MemoryClear(&chooseColor, sizeof(CHOOSECOLORW));
+    PXMemoryClear(&chooseColor, sizeof(CHOOSECOLORW));
     chooseColor.lStructSize = sizeof(CHOOSECOLORW);
 
     COLORREF colorReference = 0;
@@ -257,7 +257,7 @@ PXBool PXDialogFontSelect()
 
 #elif OSWindows
     CHOOSEFONTW choosefonta;
-    MemoryClear(&choosefonta, sizeof(CHOOSEFONTW));
+    PXMemoryClear(&choosefonta, sizeof(CHOOSEFONTW));
     choosefonta.lStructSize = sizeof(CHOOSEFONTW);
 
     const PXBool success = ChooseFontW(&choosefonta); // Windows 2000, Comdlg32.dll, commdlg.h
@@ -273,7 +273,7 @@ PXBool PXDialogPrint()
 
 #elif OSWindows
     PRINTDLGW printdlgw;
-    MemoryClear(&printdlgw, sizeof(PRINTDLGW));
+    PXMemoryClear(&printdlgw, sizeof(PRINTDLGW));
     printdlgw.lStructSize = sizeof(PRINTDLGW);
 
     const PXBool success = PrintDlgW(&printdlgw); // Windows 2000, Comdlg32.dll, commdlg.h

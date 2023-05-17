@@ -12,12 +12,12 @@
 #define ClipBoardFormatMETAFILEPICTID CF_METAFILEPICT
 #define ClipBoardFormatSYLKID CF_SYLK
 #define ClipBoardFormatDIFID CF_DIF
-#define ClipBoardFormatTIFFID   CF_TIFF
+#define ClipBoardFormatPXTIFFID   CF_TIFF
 #define ClipBoardFormatOEMTEXTID CF_OEMTEXT
 #define ClipBoardFormatDIBID CF_DIB
 #define ClipBoardFormatPALETTEID  CF_PALETTE
 #define ClipBoardFormatPENDATAID CF_PENDATA
-#define ClipBoardFormatRIFFID CF_RIFF
+#define ClipBoardFormatPXRIFFID CF_RIFF
 #define ClipBoardFormatWAVEID CF_WAVE
 #define ClipBoardFormatUNICODETEXTID CF_UNICODETEXT
 #define ClipBoardFormatENHMETAFILEID CF_ENHMETAFILE
@@ -83,8 +83,8 @@ unsigned int PXClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 	case ClipBoardFormatDIF:
 		return ClipBoardFormatDIFID;
 
-	case ClipBoardFormatTIFF:
-		return ClipBoardFormatTIFFID;
+	case ClipBoardFormatPXTIFF:
+		return ClipBoardFormatPXTIFFID;
 
 	case ClipBoardFormatOEMTEXT:
 		return ClipBoardFormatOEMTEXTID;
@@ -98,8 +98,8 @@ unsigned int PXClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 	case ClipBoardFormatPENDATA:
 		return ClipBoardFormatPENDATAID;
 
-	case ClipBoardFormatRIFF:
-		return ClipBoardFormatRIFFID;
+	case ClipBoardFormatPXRIFF:
+		return ClipBoardFormatPXRIFFID;
 
 	case ClipBoardFormatWAVE:
 		return ClipBoardFormatWAVEID;
@@ -175,8 +175,8 @@ ClipBoardFormat PXClipBoardFormatFromID(const unsigned int clipBoardFormat)
 	case ClipBoardFormatDIFID:
 		return ClipBoardFormatDIF;
 
-	case ClipBoardFormatTIFFID:
-		return ClipBoardFormatTIFF;
+	case ClipBoardFormatPXTIFFID:
+		return ClipBoardFormatPXTIFF;
 
 	case ClipBoardFormatOEMTEXTID:
 		return ClipBoardFormatOEMTEXT;
@@ -190,8 +190,8 @@ ClipBoardFormat PXClipBoardFormatFromID(const unsigned int clipBoardFormat)
 	case ClipBoardFormatPENDATAID:
 		return ClipBoardFormatPENDATA;
 
-	case ClipBoardFormatRIFFID:
-		return ClipBoardFormatRIFF;
+	case ClipBoardFormatPXRIFFID:
+		return ClipBoardFormatPXRIFF;
 
 	case ClipBoardFormatWAVEID:
 		return ClipBoardFormatWAVE;
@@ -258,7 +258,7 @@ PXActionResult PXClipBoardOpen(PXClipBoard* const clipBoard)
 
 	if (!success)
 	{
-		return GetCurrentError();
+		return PXErrorCurrent();
 	}
 
 	return PXActionSuccessful;
@@ -292,7 +292,7 @@ PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const ClipBoardForma
 
 	if (!successful)
 	{
-		return GetCurrentError();
+		return PXErrorCurrent();
 	}
 
 	return PXActionSuccessful;

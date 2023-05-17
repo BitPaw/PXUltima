@@ -624,7 +624,7 @@
 #define GL_STACK_OVERFLOW 0x0503
 #define GL_STACK_UNDERFLOW 0x0504
 #define GL_DEBUG_OUTPUT_SYNCHRONOUS 0x8242
-#define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH 0x8243
+#define GL_DEBUG_NEXT_LPXOGGED_MESSAGE_LENGTH 0x8243
 #define GL_DEBUG_CALLBACK_FUNCTION 0x8244
 #define GL_DEBUG_CALLBACK_USER_PARAM 0x8245
 #define GL_DEBUG_SOURCE_API 0x8246
@@ -654,8 +654,8 @@
 #define GL_DISPLAY_LIST 0x82E7
 #define GL_MAX_LABEL_LENGTH 0x82E8
 #define GL_MAX_DEBUG_MESSAGE_LENGTH 0x9143
-#define GL_MAX_DEBUG_LOGGED_MESSAGES 0x9144
-#define GL_DEBUG_LOGGED_MESSAGES 0x9145
+#define GL_MAX_DEBUG_LPXOGGED_MESSAGES 0x9144
+#define GL_DEBUG_LPXOGGED_MESSAGES 0x9145
 #define GL_DEBUG_SEVERITY_HIGH 0x9146
 #define GL_DEBUG_SEVERITY_MEDIUM 0x9147
 #define GL_DEBUG_SEVERITY_LOW 0x9148
@@ -1374,26 +1374,26 @@ PXOpenGLVersion PXOpenGLVersionParse(const PXInt32U versionID)
 {
     switch (versionID)
     {
-        case PXInt32Make(0, 1, 0, 0): return PXOpenGLVersion1x0x0;
-        case PXInt32Make(0, 1, 1, 0): return PXOpenGLVersion1x1x0;
-        case PXInt32Make(0, 1, 2, 0): return PXOpenGLVersion1x2x0;
-        case PXInt32Make(0, 1, 2, 1): return PXOpenGLVersion1x2x1;
-        case PXInt32Make(0, 1, 3, 0): return PXOpenGLVersion1x3x0;
-        case PXInt32Make(0, 1, 4, 0): return PXOpenGLVersion1x4x0;
-        case PXInt32Make(0, 1, 5, 0): return PXOpenGLVersion1x5x0;
-        case PXInt32Make(0, 2, 0, 0): return PXOpenGLVersion2x0x0;
-        case PXInt32Make(0, 2, 1, 0): return PXOpenGLVersion2x1x0;
-        case PXInt32Make(0, 3, 0, 0): return PXOpenGLVersion3x0x0;
-        case PXInt32Make(0, 3, 1, 0): return PXOpenGLVersion3x1x0;
-        case PXInt32Make(0, 3, 2, 0): return PXOpenGLVersion3x2x0;
-        case PXInt32Make(0, 3, 3, 0): return PXOpenGLVersion3x3x0;
-        case PXInt32Make(0, 4, 0, 0): return PXOpenGLVersion4x0x0;
-        case PXInt32Make(0, 4, 1, 0): return PXOpenGLVersion4x1x0;
-        case PXInt32Make(0, 4, 2, 0): return PXOpenGLVersion4x2x0;
-        case PXInt32Make(0, 4, 3, 0): return PXOpenGLVersion4x3x0;
-        case PXInt32Make(0, 4, 4, 0): return PXOpenGLVersion4x4x0;
-        case PXInt32Make(0, 4, 5, 0): return PXOpenGLVersion4x5x0;
-        case PXInt32Make(0, 4, 6, 0): return PXOpenGLVersion4x6x0;
+        case PXInt24Make(1, 0, 0): return PXOpenGLVersion1x0x0;
+        case PXInt24Make(1, 1, 0): return PXOpenGLVersion1x1x0;
+        case PXInt24Make(1, 2, 0): return PXOpenGLVersion1x2x0;
+        case PXInt24Make(1, 2, 1): return PXOpenGLVersion1x2x1;
+        case PXInt24Make(1, 3, 0): return PXOpenGLVersion1x3x0;
+        case PXInt24Make(1, 4, 0): return PXOpenGLVersion1x4x0;
+        case PXInt24Make(1, 5, 0): return PXOpenGLVersion1x5x0;
+        case PXInt24Make(2, 0, 0): return PXOpenGLVersion2x0x0;
+        case PXInt24Make(2, 1, 0): return PXOpenGLVersion2x1x0;
+        case PXInt24Make(3, 0, 0): return PXOpenGLVersion3x0x0;
+        case PXInt24Make(3, 1, 0): return PXOpenGLVersion3x1x0;
+        case PXInt24Make(3, 2, 0): return PXOpenGLVersion3x2x0;
+        case PXInt24Make(3, 3, 0): return PXOpenGLVersion3x3x0;
+        case PXInt24Make(4, 0, 0): return PXOpenGLVersion4x0x0;
+        case PXInt24Make(4, 1, 0): return PXOpenGLVersion4x1x0;
+        case PXInt24Make(4, 2, 0): return PXOpenGLVersion4x2x0;
+        case PXInt24Make(4, 3, 0): return PXOpenGLVersion4x3x0;
+        case PXInt24Make(4, 4, 0): return PXOpenGLVersion4x4x0;
+        case PXInt24Make(4, 5, 0): return PXOpenGLVersion4x5x0;
+        case PXInt24Make(4, 6, 0): return PXOpenGLVersion4x6x0;
 
         default: return  PXOpenGLVersionInvalid;
     }
@@ -1434,7 +1434,7 @@ const void* const PXOpenGLFunctionAdressFetch(const char* const functionName)
 
 void PXOpenGLContextConstruct(PXOpenGLContext* const openGLContext)
 {
-    MemoryClear(openGLContext, sizeof(PXOpenGLContext));
+    PXMemoryClear(openGLContext, sizeof(PXOpenGLContext));
 }
 
 void PXOpenGLContextDestruct(PXOpenGLContext* const openGLContext)
@@ -1446,7 +1446,7 @@ void PXOpenGLContextSet(PXOpenGLContext* const openGLContext, const PXOpenGLCont
 {
     const PXSize sizeofPXOpenGLContext = sizeof(PXOpenGLContext);
 
-    MemoryCopy(openGLContextSoure, sizeofPXOpenGLContext, openGLContext, sizeofPXOpenGLContext);
+    PXMemoryCopy(openGLContextSoure, sizeofPXOpenGLContext, openGLContext, sizeofPXOpenGLContext);
 }
 
 void PXOpenGLContextCopy(PXOpenGLContext* const openGLContext, const PXOpenGLContext* const openGLContextSoure)
@@ -1518,24 +1518,22 @@ PXBool PXOpenGLContextCreateForWindow(PXOpenGLContext* const openGLContext)
 
     PXTextCopyA(glslVersion, -1, openGLContext->GLSLVersionText, 64);
 
-
-
-
-
-// Parse version
+    // Parse version
     {
         int versionMajor = 0;
         int versionMinor = 0;
         int versionPatch = 0;
-        PXSize offset = 0;
 
-        offset += PXTextToIntA(version + offset, 64, &versionMajor);
-        offset += 1u; // dot
-        offset += PXTextToIntA(version + offset, 64, &versionMinor);
-        offset += 1u; // dot
-        offset += PXTextToIntA(version + offset, 64, &versionPatch);
+        PXText pxTextVersion;
+        PXTextMakeExternA(&pxTextVersion, version, 64);
 
-        const PXInt32U id = PXInt32Make(0, versionMajor, versionMinor, versionPatch);
+        PXTextToInt(&pxTextVersion, &versionMajor);
+        PXTextAdvance(&pxTextVersion, 1u); // dot
+        PXTextToInt(&pxTextVersion, &versionMinor);
+        PXTextAdvance(&pxTextVersion, 1u); // dot
+        PXTextToInt(&pxTextVersion, &versionPatch);
+
+        const PXInt32U id = PXInt24Make(versionMajor, versionMinor, versionPatch);
 
         openGLContext->Version = PXOpenGLVersionParse(id);
     }
@@ -1634,9 +1632,9 @@ PXBool PXOpenGLContextCreateForWindow(PXOpenGLContext* const openGLContext)
             PXOpenGLCacheFunction(functionNameList, &length, "glBindTexture", &openGLContext->PXOpenGLTextureBindCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glDeleteTextures", &openGLContext->PXOpenGLTextureDeleteCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glCreateProgram", &openGLContext->PXOpenGLShaderProgramCreateCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->PXOpenGLShaderProgramUseCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->PXOpenGLShaderProgramDeleteCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glCreatePXProgram", &openGLContext->PXOpenGLShaderPXProgramCreateCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glUsePXProgram", &openGLContext->PXOpenGLShaderPXProgramUseCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glDeletePXProgram", &openGLContext->PXOpenGLShaderPXProgramDeleteCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glShaderSource", &openGLContext->PXOpenGLShaderSourceCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->PXOpenGLShaderCreateCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->PXOpenGLShaderCompileCallBack);
@@ -1644,8 +1642,8 @@ PXBool PXOpenGLContextCreateForWindow(PXOpenGLContext* const openGLContext)
             PXOpenGLCacheFunction(functionNameList, &length, "glGetShaderInfoLog", &openGLContext->PXOpenGLShaderLogInfoGetCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glDeleteShader", &openGLContext->PXOpenGLShaderDeleteCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glAttachShader", &openGLContext->PXOpenGLAttachShaderCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glLinkProgram", &openGLContext->PXOpenGLLinkProgramCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glValidateProgram", &openGLContext->PXOpenGLValidateProgramCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glLinkPXProgram", &openGLContext->PXOpenGLLinkPXProgramCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glValidatePXProgram", &openGLContext->PXOpenGLValidatePXProgramCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glActiveTexture", &openGLContext->PXOpenGLActiveTextureCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glGenBuffers", &openGLContext->PXOpenGLGenBuffersCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glBindBuffer", &openGLContext->PXOpenGLBindBufferCallBack);
@@ -1914,7 +1912,7 @@ void PXOpenGLContextCreateWindowless(PXOpenGLContext* const openGLContext, const
 
     if (!openGLContext->AttachedWindow) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
     {
-        PXWindow* const window = (PXWindow* const)MemoryAllocate(sizeof(PXWindow) * 1u);
+        PXWindow* const window = (PXWindow* const)PXMemoryAllocate(sizeof(PXWindow) * 1u);
 
         PXWindowConstruct(window);
 
@@ -2593,14 +2591,14 @@ void PXOpenGLContextFlush()
     glFlush(); // Flush drawing command buffer to make drawing happen as soon as possible.
 }
 
-PXOpenGLShaderProgramID PXOpenGLShaderProgramCreate(PXOpenGL* const openGL)
+PXOpenGLShaderPXProgramID PXOpenGLShaderPXProgramCreate(PXOpenGL* const openGL)
 {
-    return (*openGL->PXOpenGLShaderProgramCreateCallBack)();
+    return (*openGL->PXOpenGLShaderPXProgramCreateCallBack)();
 }
 
-void PXOpenGLShaderProgramUse(PXOpenGL* const openGL, const PXOpenGLShaderProgramID shaderProgramID)
+void PXOpenGLShaderPXProgramUse(PXOpenGL* const openGL, const PXOpenGLShaderPXProgramID shaderPXProgramID)
 {
-    (openGL->PXOpenGLShaderProgramUseCallBack)(shaderProgramID);
+    (openGL->PXOpenGLShaderPXProgramUseCallBack)(shaderPXProgramID);
 }
 
 void PXOpenGLShaderSource(PXOpenGL* const openGL, unsigned int shader, int count, const char** string, const int* length)
@@ -2681,9 +2679,9 @@ void VertexArrayUpdate(int vertexArrayID, int size, void* data)
     //glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)size, data);
 }
 
-PXOpenGLID BF::PXOpenGL::ShaderProgramCreate()
+PXOpenGLID BF::PXOpenGL::ShaderPXProgramCreate()
 {
-    return PXOpenGLShaderProgramCreate();
+    return PXOpenGLShaderPXProgramCreate();
 }
 
 void BF::PXOpenGL::DepthMaskEnable(bool enable)
@@ -2722,16 +2720,16 @@ void BF::PXOpenGL::RenderBothSides(bool renderBothSides)
     }
 }
 
-char BF::PXOpenGL::UseShaderProgram(int shaderProgramID)
+char BF::PXOpenGL::UseShaderPXProgram(int shaderPXProgramID)
 {
-    const bool valid = shaderProgramID != -1;
+    const bool valid = shaderPXProgramID != -1;
 
     if(!valid)
     {
         return false;
     }
 
-    glUseProgram(shaderProgramID);
+    glUsePXProgram(shaderPXProgramID);
 
     return true;
 }
@@ -2930,19 +2928,19 @@ void BF::PXOpenGL::ShaderSetUniformVector4(int vector3UniformID, float x, float 
 
 */
 
-PXOpenGLShaderProgramID PXOpenGLShaderProgramCreate(PXOpenGLContext* const openGLContext)
+PXOpenGLShaderPXProgramID PXOpenGLShaderPXProgramCreate(PXOpenGLContext* const openGLContext)
 {
-    return openGLContext->PXOpenGLShaderProgramCreateCallBack();
+    return openGLContext->PXOpenGLShaderPXProgramCreateCallBack();
 }
 
-void PXOpenGLShaderProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderProgramID shaderProgramID)
+void PXOpenGLShaderPXProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID)
 {
-    openGLContext->PXOpenGLShaderProgramUseCallBack(shaderProgramID);
+    openGLContext->PXOpenGLShaderPXProgramUseCallBack(shaderPXProgramID);
 }
 
-void PXOpenGLShaderProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderProgramID shaderProgramID)
+void PXOpenGLShaderPXProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID)
 {
-    openGLContext->PXOpenGLShaderProgramDeleteCallBack(shaderProgramID);
+    openGLContext->PXOpenGLShaderPXProgramDeleteCallBack(shaderPXProgramID);
 }
 
 unsigned int PXOpenGLShaderTypeToID(const PXOpenGLShaderType openGLShaderType)
@@ -3014,19 +3012,19 @@ void PXOpenGLShaderDelete(PXOpenGLContext* const openGLContext, const PXOpenGLSh
     openGLContext->PXOpenGLShaderDeleteCallBack(shaderID);
 }
 
-void PXOpenGLShaderProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderProgramID shaderProgramID, const PXOpenGLShaderID shaderID)
+void PXOpenGLShaderPXProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID)
 {
-    openGLContext->PXOpenGLAttachShaderCallBack(shaderProgramID, shaderID);
+    openGLContext->PXOpenGLAttachShaderCallBack(shaderPXProgramID, shaderID);
 }
 
-void PXOpenGLShaderProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
+void PXOpenGLShaderPXProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
 {
-    openGLContext->PXOpenGLLinkProgramCallBack(shaderID);
+    openGLContext->PXOpenGLLinkPXProgramCallBack(shaderID);
 }
 
-void PXOpenGLShaderProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
+void PXOpenGLShaderPXProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
 {
-    openGLContext->PXOpenGLValidateProgramCallBack(shaderID);
+    openGLContext->PXOpenGLValidatePXProgramCallBack(shaderID);
 }
 
 void PXOpenGLDrawArrays(const PXOpenGLContext* const openGLContext, const PXOpenGLRenderMode renderMode, const PXSize offset, const PXSize amount)

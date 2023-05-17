@@ -4,7 +4,7 @@
 
 void PXLockClear(PXLock* const lock)
 {
-	MemoryClear(lock, sizeof(PXLock));
+	PXMemoryClear(lock, sizeof(PXLock));
 }
 
 PXActionResult PXLockCreate(PXLock* const lock, const PXLockType type)
@@ -34,7 +34,7 @@ PXActionResult PXLockCreate(PXLock* const lock, const PXLockType type)
 
 			if (!sucessful)
 			{
-				const PXActionResult actionResult = GetCurrentError();
+				const PXActionResult actionResult = PXErrorCurrent();
 
 				PXLockClear(lock);
 

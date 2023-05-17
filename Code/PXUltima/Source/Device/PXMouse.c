@@ -4,12 +4,12 @@
 #include <Media/PXText.h>
 #include <stdio.h>
 
-void MouseInputReset(PXMouse* const mouse)
+void PXMouseInputReset(PXMouse* const mouse)
 {
-	MemoryClear(mouse, sizeof(PXMouse));
+	PXMemoryClear(mouse, sizeof(PXMouse));
 }
 
-void MouseInputPrint(const PXMouse* const mouse)
+void PXMouseInputPrint(const PXMouse* const mouse)
 {
 	const PXSize buttonTextSize = 2 + 4 * 8+1;
 	char buttons[34+1];

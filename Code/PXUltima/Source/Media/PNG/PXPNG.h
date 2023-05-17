@@ -29,7 +29,7 @@ extern "C"
 	{
 		PXPNGInterlaceInvalid,
 		PXPNGInterlaceNone,
-		PXPNGInterlaceADAM7
+		PXPNGInterlacePXADAM7
 	}
 	PXPNGInterlaceMethod;
 
@@ -382,14 +382,14 @@ enough memory.*/
 	//----------------------------------------------------
 
 
-	PXPublic PXPNGChunkType ConvertToChunkType(const PXInt32U pngchunkType);
-	PXPublic PXInt32U ConvertFromChunkType(const PXPNGChunkType pngchunkType);
+	PXPublic PXPNGChunkType PXPNGChunkTypeFromID(const PXInt32U pngchunkType);
+	PXPublic PXInt32U PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType);
 
-	PXPublic PXPNGColorType ConvertToPNGColorType(const PXInt8U colorType);
-	PXPublic PXInt8U ConvertFromPNGColorType(const PXPNGColorType colorType);
+	PXPublic PXPNGColorType PXPNGColorTypeFromID(const PXInt8U colorType);
+	PXPublic PXInt8U PXPNGColorTypeToID(const PXPNGColorType colorType);
 
-	PXPublic PXPNGInterlaceMethod ConvertToPNGInterlaceMethod(const PXInt8U interlaceMethod);
-	PXPublic PXInt8U ConvertFromPNGInterlaceMethod(const PXPNGInterlaceMethod interlaceMethod);
+	PXPublic PXPNGInterlaceMethod PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod);
+	PXPublic PXInt8U PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod);
 
 
 

@@ -31,7 +31,7 @@
 #include <WinUser.h>
 #endif
 
-VirtualKey ConvertToVirtualKey(const char character)
+VirtualKey PXVirtualKeyFromID(const char character)
 {
 #if OSUnix
 #elif OSWindows

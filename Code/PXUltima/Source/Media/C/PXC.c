@@ -23,10 +23,10 @@ PXBool PXCElementClear(PXCElement* const pxCElement)
     char* nameSecound = pxCElement->ElementStructure.NameAlias;
     PXInt8U nameSizeSecound = pxCElement->ElementStructure.NameAliasSizeMaximal;
 
-    MemoryClear(name, nameSize);
-    MemoryClear(nameSecound, nameSizeSecound);
+    PXMemoryClear(name, nameSize);
+    PXMemoryClear(nameSecound, nameSizeSecound);
 
-    MemoryClear(pxCElement, sizeof(PXCElement));
+    PXMemoryClear(pxCElement, sizeof(PXCElement));
 
     pxCElement->Name = name;
     pxCElement->NameSizeMaximal = nameSize;

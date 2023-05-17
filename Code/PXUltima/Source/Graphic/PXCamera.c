@@ -5,7 +5,7 @@
 
 void PXCameraConstruct(PXCamera* const camera)
 {
-    MemoryClear(camera, sizeof(PXCamera));
+    PXMemoryClear(camera, sizeof(PXCamera));
 
 	camera->WalkSpeed = 0.2;
 	camera->ViewSpeed = 0.5;

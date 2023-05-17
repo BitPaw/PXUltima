@@ -50,7 +50,7 @@ void TestPXCompilerYAML()
 	PXSize size = 1024 * 2;
 	char buffer[1024*2];
 
-	MemoryClear(buffer, size);
+	PXMemoryClear(buffer, size);
 
 	PXFile inputStream;
 	PXFile outputStream;

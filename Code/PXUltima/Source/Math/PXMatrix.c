@@ -39,7 +39,7 @@ void PXMatrix4x4FPosition(const PXMatrix4x4F* const matrix, PXVector3F* const po
 
 void PXMatrix4x4FMoveTo(PXMatrix4x4F* const matrixInput, const PXVector3F* const position, PXMatrix4x4F* const matrixResult)
 {
-    MemoryCopy(matrixInput, sizeof(PXMatrix4x4F), matrixResult, sizeof(PXMatrix4x4F));
+    PXMemoryCopy(matrixInput, sizeof(PXMatrix4x4F), matrixResult, sizeof(PXMatrix4x4F));
 
 	matrixResult->Data[TransformX] = position->X;
 	matrixResult->Data[TransformY] = position->Y;
@@ -162,7 +162,7 @@ void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, const PXMatrix4x4F* con
 {
 	const PXSize sizeOfMatrix = sizeof(PXMatrix4x4F);
 
-	MemoryCopy(matrixA, sizeOfMatrix, matrixResult, sizeOfMatrix);
+	PXMemoryCopy(matrixA, sizeOfMatrix, matrixResult, sizeOfMatrix);
 }
 
 void PXMatrix4x4FMove3F(const PXMatrix4x4F* const matrixA, const PXVector3F* const vector3F, PXMatrix4x4F* const matrixResult)

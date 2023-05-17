@@ -109,34 +109,26 @@ extern "C"
 		(pxText)->Format = TextFormatUNICODE;\
 		(pxText)->TextA = text;
 
-#define PXTextMakeExternA(pxText, s)\
-		(pxText)->SizeAllocated = PXTextLengthA(s, -1);\
+#define PXTextMakeExternA(pxText, address, size)\
+		(pxText)->SizeAllocated = size;\
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = TextFormatASCII;\
-		(pxText)->TextA = s;
+		(pxText)->TextA = address;
 
 
-	PXPublic PXSize PXTextFromInt(const int number, PXText* const pxText);
 
-	PXPublic PXSize PXTextFromIntA(const int number,  char* string, const PXSize dataSize);
-	PXPublic PXSize PXTextFromIntW(const int number,  wchar_t* string, const PXSize dataSize);
-	PXPublic PXSize PXTextFromBoolA(const unsigned char number,  char* string, const PXSize dataSize);
-	PXPublic PXSize PXTextFromBoolW(const unsigned char number,  wchar_t* string, const PXSize dataSize);
-	PXPublic PXSize PXTextFromFloatA(const float number,  char* string, const PXSize dataSize);
-	PXPublic PXSize PXTextFromFloatW(const float number,  wchar_t* string, const PXSize dataSize);
-	PXPublic PXSize PXTextFromDoubleA(const double number,  char* string, const PXSize dataSize);
-	PXPublic PXSize PXTextFromDoubleW(const double number,  wchar_t* string, const PXSize dataSize);
+	PXPublic PXSize PXTextFromInt(PXText* const pxText, int number);
+	PXPublic PXSize PXTextFromBool(PXText* const pxText, const PXBool number);
+	PXPublic PXSize PXTextFromFloat(PXText* const pxText, const float number);
+	
 	PXPublic PXSize PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
 
-	PXPublic PXSize PXTextToIntA(const char* string, const PXSize dataSize, int* number);
-	PXPublic PXSize PXTextToIntW(const wchar_t* string, const PXSize dataSize, int* number);
-	PXPublic PXSize PXTextToBoolA(const char* string, const PXSize dataSize, unsigned char* number);
-	PXPublic PXSize PXTextToBoolW(const wchar_t* string, const PXSize dataSize, unsigned char* number);
-	PXPublic PXSize PXTextToFloatA(const char* string, const PXSize dataSize, float* number);
-	PXPublic PXSize PXTextToFloatW(const wchar_t* string, const PXSize dataSize, float* number);
-	PXPublic PXSize PXTextToDoubleA(const char* string, const PXSize dataSize, double* number);
-	PXPublic PXSize PXTextToDoubleW(const wchar_t* string, const PXSize dataSize, double* number);
+	PXPublic PXSize PXTextToInt(const PXText* const pxText, int* const number);
+	PXPublic PXSize PXTextToBool(const PXText* const pxText, PXBool* const number);
+	PXPublic PXSize PXTextToFloat(const PXText* const pxText, float* const number);
+
+
 
 	PXPublic PXSize PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
 	PXPublic PXSize PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
@@ -150,8 +142,8 @@ extern "C"
 	PXPublic PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
 	PXPublic PXSize PXTextClear(PXText* const pxText);
-	PXPublic PXSize PXTextClearA(char* string, const PXSize stringSize);
-	PXPublic PXSize PXTextClearW(wchar_t* string, const PXSize stringSize);
+
+	PXPublic void PXTextAdvance(PXText* const pxText, const PXSize advanceBy);
 
 	PXPublic PXSize PXTextLengthA(const char* string, const PXSize stringSize);
 	PXPublic PXSize PXTextLengthW(const wchar_t* string, const PXSize stringSize);

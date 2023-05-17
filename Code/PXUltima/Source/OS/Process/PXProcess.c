@@ -12,7 +12,7 @@
 
 void PXProcessConstruct(PXProcess* const pxProcess)
 {
-	MemoryClear(pxProcess, sizeof(PXProcess));
+	PXMemoryClear(pxProcess, sizeof(PXProcess));
 }
 
 void PXProcessCurrent(PXProcess* const pxProcess)
@@ -57,8 +57,8 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 			STARTUPINFO startupInfo;
 			PROCESS_INFORMATION processInfo;
 
-			MemoryClear(&startupInfo, sizeof(STARTUPINFO));
-			MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+			PXMemoryClear(&startupInfo, sizeof(STARTUPINFO));
+			PXMemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
 
 			startupInfo.cb = sizeof(STARTUPINFO);
 
@@ -90,8 +90,8 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 			STARTUPINFO startupInfo;
 			PROCESS_INFORMATION processInfo;
 
-			MemoryClear(&startupInfo, sizeof(STARTUPINFO));
-			MemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+			PXMemoryClear(&startupInfo, sizeof(STARTUPINFO));
+			PXMemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
 
 			startupInfo.cb = sizeof(STARTUPINFO);
 
@@ -207,7 +207,7 @@ PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const t
 
 PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo)
 {
-	MemoryClear(pxProcessMemoryInfo, sizeof(PXProcessMemoryInfo));
+	PXMemoryClear(pxProcessMemoryInfo, sizeof(PXProcessMemoryInfo));
 
 #if OSUnix
 	const int who = RUSAGE_SELF;
@@ -246,7 +246,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 
 		PROCESS_MEMORY_COUNTERS_EX processMemoryCountersEx;
 
-		MemoryClear(&processMemoryCountersEx, processMemoryCountersExSize);
+		PXMemoryClear(&processMemoryCountersEx, processMemoryCountersExSize);
 
 		processMemoryCountersEx.cb = processMemoryCountersExSize;
 

@@ -26,7 +26,7 @@
 
 void PXDebugConstruct(PXDebug* const pxDebug)
 {
-	MemoryClear(pxDebug, sizeof(PXDebug));
+	PXMemoryClear(pxDebug, sizeof(PXDebug));
 
 	pxDebug->ApplicatioName.SizeAllocated = sizeof(pxDebug->ApplicatioNameBuffer);
 	pxDebug->ApplicatioName.TextA = pxDebug->ApplicatioNameBuffer;
@@ -196,8 +196,8 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 
 
 	// Prevent failure because not inizilized
-	MemoryClear(&stackFrame, sizeof(STACKFRAME));
-	MemoryClear(&contextRecord, sizeof(CONTEXT));
+	PXMemoryClear(&stackFrame, sizeof(STACKFRAME));
+	PXMemoryClear(&contextRecord, sizeof(CONTEXT));
 
 	RtlCaptureContext(&contextRecord);
 
@@ -262,7 +262,7 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 
 		PXMSDebugSymbol pxMSDebugSymbol;
 
-		MemoryClear(&pxMSDebugSymbol, sizeof(PXMSDebugSymbol));
+		PXMemoryClear(&pxMSDebugSymbol, sizeof(PXMSDebugSymbol));
 		pxMSDebugSymbol.Symbol.SizeOfStruct = sizeof(PXMSDebugSymbol);
 		pxMSDebugSymbol.Symbol.MaxNameLength = PXMSDebugSymbolNameSize;
 
@@ -272,7 +272,7 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 		PXSize nameBufferSize = 512;
 		PXByte nameBuffer[512];
 
-		PXActionResult xxx = GetCurrentError();
+		PXActionResult xxx = PXErrorCurrent();
 
 
 		const DWORD  decResultSize = UnDecorateSymbolName(pxMSDebugSymbol.Symbol.Name, (PSTR)nameBuffer, nameBufferSize, UNDNAME_COMPLETE);

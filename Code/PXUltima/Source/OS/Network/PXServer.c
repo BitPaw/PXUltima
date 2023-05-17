@@ -10,7 +10,7 @@
 
 void PXServerConstruct(PXServer* const server)
 {
-    MemoryClear(server, sizeof(PXServer)); 
+    PXMemoryClear(server, sizeof(PXServer)); 
 }
 
 void PXServerDestruct(PXServer* const server)
@@ -49,7 +49,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
 
         server->ServerSocketListSize = pxSocketAdressSetupInfoListSize;
         server->ServerSocketListSizeAllocated = pxSocketAdressSetupInfoListSize;
-        server->ServerSocketList = MemoryAllocateClear(sizeof(PXSocket) * pxSocketAdressSetupInfoListSize);
+        server->ServerSocketList = PXMemoryAllocateClear(sizeof(PXSocket) * pxSocketAdressSetupInfoListSize);
 
         for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
         {

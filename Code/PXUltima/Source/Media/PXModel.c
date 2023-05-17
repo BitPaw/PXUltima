@@ -7,7 +7,7 @@
 
 void PXModelConstruct(PXModel* const model)
 {
-	MemoryClear(model, sizeof(PXModel));
+	PXMemoryClear(model, sizeof(PXModel));
 }
 
 void PXModelDestruct(PXModel* const model)
@@ -46,7 +46,7 @@ PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMater
     {
         const PXBool isInRange = amount >= materialID;
 
-        MemoryClear(pxMaterial, sizeof(PXMaterial));
+        PXMemoryClear(pxMaterial, sizeof(PXMaterial));
 
         if (!isInRange)
         {

@@ -195,11 +195,11 @@ extern "C"
 	PXPublic void PXShaderDataSet(PXShader* const shader, const PXShaderType type, const char* data, const PXSize size);
 
 
-	typedef struct PXShaderProgram_
+	typedef struct PXShaderPXProgram_
 	{
 		unsigned int ID;
 	}
-	PXShaderProgram;
+	PXShaderPXProgram;
 
 
 	typedef struct PXTexture_
@@ -394,7 +394,7 @@ extern "C"
 		PXDictionary ModelLookUp;
 		PXDictionary FontLookUp;
 		PXDictionary SoundLookup;
-		PXDictionary ShaderProgramLookup;
+		PXDictionary ShaderPXProgramLookup;
 		//--------------------------
 	}
 	PXGraphicContext;
@@ -437,15 +437,15 @@ extern "C"
 	//-------------------------------------
 
 	//---<Shader>-----------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const graphicContext);
+	PXPublic PXActionResult PXGraphicShaderPXProgramCreate(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicShaderCompile(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const unsigned int shaderID);
 
-	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXGraphicShaderPXProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderPXProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
 
 	PXPublic void PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
 	PXPublic unsigned int PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const unsigned int shaderID, const char* const name);
-	PXPublic void PXGraphicShaderProgramUse(PXGraphicContext* const graphicContext, const unsigned int shaderID);
+	PXPublic void PXGraphicShaderPXProgramUse(PXGraphicContext* const graphicContext, const unsigned int shaderID);
 	//-------------------------------------------------------------------------
 
 	//---<Rendering>-----------------------------------------------------------
@@ -508,7 +508,7 @@ extern "C"
 	PXPublic PXBool PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRenderable* const pxRenderable);
 
 
-	PXPublic void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderProgram);
+	PXPublic void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderPXProgram* const shaderPXProgram);
 	//PXPublic PXActionResult PXGraphicModelGenerate(PXGraphicContext* const graphicContext, PXRenderable** const renderable, const PXTextASCII filePath);
 	PXPublic PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXText* const filePath);
 	PXPublic PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);
@@ -524,7 +524,7 @@ extern "C"
 	// 	PXPublic PXActionResult Load(Collider* collider);
 
 	//PXPublic PXActionResult Load(PXFont& font, const wchar_t* filePath, bool loadAsynchronously = true);
-	//PXPublic PXActionResult Load(ShaderProgram& shaderProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath);
+	//PXPublic PXActionResult Load(ShaderPXProgram& shaderPXProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath);
 
 	//PXPublic PXActionResult Load(Image& image, const wchar_t* filePath, bool loadAsynchronously = true);
 

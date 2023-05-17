@@ -47,7 +47,7 @@ void PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSiz
 	MONITORENUMPROC lpfnEnum = PXMonitorListCallBack;
 	LPARAM          dwData = 0;
 
-	MemoryClear(&rectangleClip, sizeof(RECT));
+	PXMemoryClear(&rectangleClip, sizeof(RECT));
 
 	while(EnumDisplayMonitors(hdc, &rectangleClip, lpfnEnum, dwData));
 
@@ -55,7 +55,7 @@ void PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSiz
 	DISPLAY_DEVICEW displayDevice;
 	DWORD            dwFlags = 0;
 
-	MemoryClear(&displayDevice, sizeof(DISPLAY_DEVICEW));
+	PXMemoryClear(&displayDevice, sizeof(DISPLAY_DEVICEW));
 
 	displayDevice.cb = sizeof(DISPLAY_DEVICEW);
 

@@ -6,7 +6,7 @@
 
 void PXFMTConstruct(PXFMT* const fmt)
 {
-	MemoryClear(fmt, sizeof(PXFMT));
+	PXMemoryClear(fmt, sizeof(PXFMT));
 }
 
 PXActionResult PXFMTParse(PXFMT* const fmt, PXFile* const PXFile, const PXEndian endian)
@@ -45,7 +45,7 @@ PXActionResult PXFMTParse(PXFMT* const fmt, PXFile* const PXFile, const PXEndian
 	return PXActionSuccessful;
 }
 
-PXActionResult FMTSerialize(const PXFMT* const fmt, PXFile* const PXFile, const PXEndian endian)
+PXActionResult PXFMTSerialize(const PXFMT* const fmt, PXFile* const PXFile, const PXEndian endian)
 {
 	PXFileWriteB(PXFile, "fmt ", 4);
 	PXFileWriteI32U(PXFile, fmt->ChunkSize);

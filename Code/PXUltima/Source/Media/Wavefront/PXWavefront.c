@@ -19,7 +19,7 @@
 
 void PXWavefrontElementConstruct(PXWavefrontElement* objElement)
 {
-    MemoryClear(objElement, sizeof(PXWavefrontElement));
+    PXMemoryClear(objElement, sizeof(PXWavefrontElement));
 }
 
 void PXWavefrontElementDestruct(PXWavefrontElement* objElement)
@@ -29,14 +29,14 @@ void PXWavefrontElementDestruct(PXWavefrontElement* objElement)
 
 void PXWavefrontConstruct(PXWavefront* const obj)
 {
-    MemoryClear(obj, sizeof(PXWavefront));
+    PXMemoryClear(obj, sizeof(PXWavefront));
 }
 
 void PXWavefrontDestruct(PXWavefront* const obj)
 {
-    MemoryRelease(obj->ElementList, obj->ElementListSize);
+    PXMemoryRelease(obj->ElementList, obj->ElementListSize);
 
-    MemoryRelease(obj->MaterialFileList, obj->MaterialFileListSize);
+    PXMemoryRelease(obj->MaterialFileList, obj->MaterialFileListSize);
 }
 
 PXWavefrontLineType PXWavefrontPeekLine(const void* line, const PXSize size)
@@ -138,8 +138,8 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
     unsigned char drawSize[256];
     PXSize drawOrder[256];
 
-    MemoryClear(drawSize, sizeof(drawSize));
-    MemoryClear(drawOrder, sizeof(drawOrder));
+    PXMemoryClear(drawSize, sizeof(drawSize));
+    PXMemoryClear(drawOrder, sizeof(drawOrder));
 
     const PXSize headerOffset = 1024;
     PXSize headerCacheOffset = 0;
@@ -523,7 +523,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                     continue;
                 }
 
-                const PXActionResult materialFileCompileResult = MTLFileCompile(&materialFileStream, outputStream);
+                const PXActionResult materialFileCompileResult = PXMTLFileCompile(&materialFileStream, outputStream);
 
                 PXFileDestruct(&materialFileStream);
             }
@@ -586,8 +586,8 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
     PXFileReadI8U(inputStream, &numberOfMeshes);
 
-    MemoryClear(renderMode, sizeof(renderMode));
-    MemoryClear(renderSize, sizeof(renderSize));
+    PXMemoryClear(renderMode, sizeof(renderMode));
+    PXMemoryClear(renderSize, sizeof(renderSize));
 
     for (PXSize i = 0; i < numberOfMeshes; ++i)
     {
@@ -610,7 +610,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
     PXSize expectedSize = 40 * model->DataVertexListSize + infoHeaderSize;// +indexListSize;
 
 
-    model->Data = MemoryAllocate(expectedSize);
+    model->Data = PXMemoryAllocate(expectedSize);
     //---<End header>----------------------------------------------------------
 
 
@@ -641,7 +641,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
         if (mtlInlclueesListSize > 0)
         {
-            const PXSize amount = MTLFetchAmount(data, size);
+            const PXSize amount = PXMTLFetchAmount(data, size);
 
             model->MaterialList = PXFileCursorPosition(&modelHeaderStream);
 
@@ -649,9 +649,9 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
             for (PXSize i = 0; i < amount; ++i)
             {
-                MTLMaterial mtlMaterial;
+                PXMTLMaterial mtlMaterial;
 
-                const PXBool succ = MTLFetchMaterial(data, size, i, &mtlMaterial);
+                const PXBool succ = PXMTLFetchMaterial(data, size, i, &mtlMaterial);
 
                 // Write PXMaterial format
                 {
@@ -720,7 +720,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
 
 
-    float* buffer = MemoryAllocateClear(expectedSize);
+    float* buffer = PXMemoryAllocateClear(expectedSize);
     //MemorySet(buffer, expectedSize, 0xFF);
 
     float* vertexValueList = buffer;
@@ -800,7 +800,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
                             void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
                             const PXSize sizeEE = inputStream->DataSize - mtlEmbeddedDataOffset;
-                            const PXSize amount = MTLFetchAmount(data, sizeEE);
+                            const PXSize amount = PXMTLFetchAmount(data, sizeEE);
 
                             PXFileReadI16U(inputStream, &size);
                             materialName.SizeUsed = size;

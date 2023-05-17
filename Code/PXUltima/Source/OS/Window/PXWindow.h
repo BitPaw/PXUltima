@@ -258,15 +258,15 @@ extern "C"
 
 
 	// Event functions
-	PXPublic void TriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
-	PXPublic void TriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
-	PXPublic void TriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
-	PXPublic void TriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
-	PXPublic void TriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
-	PXPublic void TriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
+	PXPublic void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
+	PXPublic void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
+	PXPublic void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
+	PXPublic void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
+	PXPublic void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
+	PXPublic void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
 
 
-	PXPublic void TriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);
+	PXPublic void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);
 
 	// Keyboard
 	//typedef void (*KeyBoardKeyEvent)(const KeyBoardKeyInfo keyBoardKeyInfo);
@@ -280,7 +280,7 @@ extern "C"
 	//typedef void (*WindowClosedEvent)();
 
 
-	unsigned int CursorIconToID(const CursorIcon cursorIcon);
+	PXPublic unsigned int PXWindowCursorIconToID(const CursorIcon cursorIcon);
 
 #ifdef __cplusplus
 }

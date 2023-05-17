@@ -35,8 +35,8 @@ extern "C"
 	}
 	PXMouse;
 
-	PXPublic void MouseInputReset(PXMouse* const mouse);
-	PXPublic void MouseInputPrint(const PXMouse* const mouse);
+	PXPublic void PXMouseInputReset(PXMouse* const mouse);
+	PXPublic void PXMouseInputPrint(const PXMouse* const mouse);
 
 #ifdef __cplusplus
 }
