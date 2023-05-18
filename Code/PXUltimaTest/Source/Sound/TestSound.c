@@ -3,7 +3,7 @@
 #include <OS/File/PXFile.h>
 #include <Media/PXSound.h>
 #include <Media/WAV/PXWAV.h>
-#include <Media/MP3/MP3.h>
+#include <Media/MP3/PXMP3.h>
 
 void TestSoundAll()
 {
@@ -60,13 +60,13 @@ void TestSoundWAV()
 
 void TestSoundMP3()
 {
-	MP3 mp3;
+	PXMP3 mp3;
 
 	PXFile dataStream;
 
 	//PXFileMapToMemoryA(&dataStream, "A:/S.mp3", 0, PXMemoryAccessModeReadOnly);
 
-	MP3Parse(&mp3, &dataStream);
+	PXMP3Parse(&mp3, &dataStream);
 
 	PXFileDestruct(&dataStream);
 }

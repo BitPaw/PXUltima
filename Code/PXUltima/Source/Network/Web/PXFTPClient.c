@@ -1,6 +1,6 @@
 #include "PXFTPClient.h"
 
-#include <Media/FTP/FTP.h>
+#include <Media/FTP/PXFTP.h>
 
 PXActionResult PXFTPClientConnectToServer(PXFTPClient* const pxFTPClient, const char* ip, unsigned short port)
 {

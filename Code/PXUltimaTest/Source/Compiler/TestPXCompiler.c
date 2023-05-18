@@ -4,7 +4,7 @@
 
 #include <Compiler/PXCompiler.h>
 #include <Media/YAML/PXYAML.h>
-#include <Media/XML/XML.h>
+#include <Media/XML/PXXML.h>
 #include <Media/Wavefront/PXWavefront.h>
 
 
@@ -109,7 +109,7 @@ void TestPXCompilerXML()
 #endif
 	PXFileMapToMemory(&outputStream, inputStream.DataSize * 8, PXMemoryAccessModeReadAndWrite);
 
-	XMLFileCompile(&inputStream, &outputStream);
+	PXXMLFileCompile(&inputStream, &outputStream);
 
 	printf("____\n");
 }

@@ -195,11 +195,11 @@ extern "C"
 	PXPublic void PXShaderDataSet(PXShader* const shader, const PXShaderType type, const char* data, const PXSize size);
 
 
-	typedef struct PXShaderPXProgram_
+	typedef struct PXShaderProgram_
 	{
 		unsigned int ID;
 	}
-	PXShaderPXProgram;
+	PXShaderProgram;
 
 
 	typedef struct PXTexture_
@@ -437,11 +437,11 @@ extern "C"
 	//-------------------------------------
 
 	//---<Shader>-----------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicShaderPXProgramCreate(PXGraphicContext* const graphicContext);
+	PXPublic PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicShaderCompile(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const unsigned int shaderID);
 
-	PXPublic PXActionResult PXGraphicShaderPXProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderPXProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
 
 	PXPublic void PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
 	PXPublic unsigned int PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const unsigned int shaderID, const char* const name);
@@ -508,7 +508,7 @@ extern "C"
 	PXPublic PXBool PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRenderable* const pxRenderable);
 
 
-	PXPublic void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderPXProgram* const shaderPXProgram);
+	PXPublic void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);
 	//PXPublic PXActionResult PXGraphicModelGenerate(PXGraphicContext* const graphicContext, PXRenderable** const renderable, const PXTextASCII filePath);
 	PXPublic PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXText* const filePath);
 	PXPublic PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);

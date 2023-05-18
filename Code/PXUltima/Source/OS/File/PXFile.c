@@ -247,8 +247,8 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('E', 'L', 'F'): return FileFormatLinuxExecutableAndLinkable;
 				case PXInt24Make('O', 'U', 'T'): return FileFormatLinuxExecutableAndLinkable;
 				case PXInt24Make('F', 'N', 'T'): return FileFormatSpriteFont;
-				case PXInt24Make('G', 'I', 'F'): return FileFormatPXGIF;
-				case PXInt24Make('H', 'T', 'M'): return FileForPXMathTML;
+				case PXInt24Make('G', 'I', 'F'): return FileFormatGIF;
+				case PXInt24Make('H', 'T', 'M'): return FileFormatHTML;
 				case PXInt24Make('I', 'N', 'I'): return FileFormatINI;
 				case PXInt24Make('M', '4', 'A'): return FileFormatM4A;
 				case PXInt24Make('3', 'D', 'S'): return FileFormatA3DS;
@@ -260,12 +260,12 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('E', 'M', 'L'): return FileFormatEML;
 				case PXInt24Make('E', 'X', 'E'): return FileFormatWindowsExecutable;
 				case PXInt24Make('F', 'B', 'X'): return FileFormatFimBox;
-				case PXInt24Make('M', 'P', '3'): return FileFormatPXMP3;
+				case PXInt24Make('M', 'P', '3'): return FileFormatMP3;
 				case PXInt24Make('M', 'P', '4'): return FileFormatMP4;
 				case PXInt24Make('M', 'S', 'I'): return FileFormatMSI;
 				case PXInt24Make('M', 'T', 'L'): return FileFormatMTL;
 				case PXInt24Make('O', 'B', 'J'): return FileFormatOBJ;
-				case PXInt24Make('O', 'G', 'G'): return FileFormatPXOGG;
+				case PXInt24Make('O', 'G', 'G'): return FileFormatOGG;
 				case PXInt24Make('P', 'D', 'F'): return FileFormatPDF;
 				case PXInt24Make('P', 'H', 'P'): return FileFormatPHP;
 				case PXInt24Make('P', 'L', 'Y'): return FileFormatPLY;
@@ -274,11 +274,11 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('S', 'T', 'L'): return FileFormatSTL;
 				case PXInt24Make('S', 'V', 'G'): return FileFormatSVG;
 				case PXInt24Make('T', 'I', 'F'): return FileFormatTagImage;
-				case PXInt24Make('T', 'G', 'A'): return FileFormatPXTGA;
+				case PXInt24Make('T', 'G', 'A'): return FileFormatTGA;
 				case PXInt24Make('T', 'T', 'F'): return FileFormatTrueTypeFont;
 				case PXInt24Make('W', 'A', 'V'): return FileFormatWave;
 				case PXInt24Make('W', 'M', 'A'): return FileFormatWMA;
-				case PXInt24Make('X', 'M', 'L'): return FileFormatPXXML;
+				case PXInt24Make('X', 'M', 'L'): return FileFormatXML;
 				case PXInt24Make('Y', 'M', 'L'): return FileFormatYAML;
 			}
 
@@ -291,10 +291,10 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 			switch (list)
 			{
 				case PXInt32Make('F', 'L', 'A', 'C') : return FileFormatFLAC;
-				case PXInt32Make('M', 'I', 'D', 'I') : return FileFormatPXMIDI;
+				case PXInt32Make('M', 'I', 'D', 'I') : return FileFormatMIDI;
 				case PXInt32Make('S', 'T', 'E', 'P') : return FileFormatSTEP;
 				case PXInt32Make('T', 'I', 'F', 'F') : return FileFormatTagImage;
-				case PXInt32Make('J', 'P', 'E', 'G') : return FileFormatPXJPEG;
+				case PXInt32Make('J', 'P', 'E', 'G') : return FileFormatJPEG;
 				case PXInt32Make('J', 'S', 'O', 'N') : return FileFormatJSON;
 				case PXInt32Make('V', 'R', 'M', 'L') : return FileFormatVRML;
 				case PXInt32Make('W', 'E', 'B', 'M') : return FileFormatWEBM;

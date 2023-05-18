@@ -101,6 +101,13 @@ extern "C"
 		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = text;
 
+#define PXTextMakeFixedNamedA(pxText, s)\
+		(pxText)->SizeAllocated = sizeof(s);\
+		(pxText)->SizeUsed = sizeof(s);\
+		(pxText)->NumberOfCharacters = sizeof(s);\
+		(pxText)->Format = TextFormatASCII;\
+		(pxText)->TextA = text;
+
 #define PXTextMakeFixedW(pxText, s)\
 		wchar_t text[] = s;\
 		(pxText)->SizeAllocated = sizeof(text);\
@@ -110,7 +117,14 @@ extern "C"
 		(pxText)->TextA = text;
 
 #define PXTextMakeExternA(pxText, address, size)\
-		(pxText)->SizeAllocated = size;\
+		if(size == -1)\
+		{\
+			(pxText)->SizeAllocated = PXTextLengthA(address, -1);\
+		}\
+		else\
+		{\
+			(pxText)->SizeAllocated = size; \
+		}\
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = TextFormatASCII;\

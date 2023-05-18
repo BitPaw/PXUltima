@@ -2928,17 +2928,17 @@ void BF::PXOpenGL::ShaderSetUniformVector4(int vector3UniformID, float x, float 
 
 */
 
-PXOpenGLShaderPXProgramID PXOpenGLShaderPXProgramCreate(PXOpenGLContext* const openGLContext)
+PXOpenGLShaderPXProgramID PXOpenGLShaderProgramCreate(PXOpenGLContext* const openGLContext)
 {
     return openGLContext->PXOpenGLShaderPXProgramCreateCallBack();
 }
 
-void PXOpenGLShaderPXProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID)
+void PXOpenGLShaderProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID)
 {
     openGLContext->PXOpenGLShaderPXProgramUseCallBack(shaderPXProgramID);
 }
 
-void PXOpenGLShaderPXProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID)
+void PXOpenGLShaderProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID)
 {
     openGLContext->PXOpenGLShaderPXProgramDeleteCallBack(shaderPXProgramID);
 }
@@ -3012,17 +3012,17 @@ void PXOpenGLShaderDelete(PXOpenGLContext* const openGLContext, const PXOpenGLSh
     openGLContext->PXOpenGLShaderDeleteCallBack(shaderID);
 }
 
-void PXOpenGLShaderPXProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID)
+void PXOpenGLShaderProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID)
 {
     openGLContext->PXOpenGLAttachShaderCallBack(shaderPXProgramID, shaderID);
 }
 
-void PXOpenGLShaderPXProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
+void PXOpenGLShaderProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
 {
     openGLContext->PXOpenGLLinkPXProgramCallBack(shaderID);
 }
 
-void PXOpenGLShaderPXProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
+void PXOpenGLShaderProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID)
 {
     openGLContext->PXOpenGLValidatePXProgramCallBack(shaderID);
 }

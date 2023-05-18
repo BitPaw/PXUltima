@@ -13,11 +13,11 @@
 #include "Network/TestFTP.h"
 #include "Network/TestSBP.h"
 
-#include <Media/TIFF/TIFF.h>
+#include <Media/TIFF/PXTIFF.h>
 #include <Media/PXImage.h>
 #include <Media/PXText.h>
 
-#include <OS/Graphic/DirectX/DirectX.h>
+#include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Process/PXProcess.h>
 #include <OS/Debug/PXDebug.h>
 #include <OS/File/PXDirectory.h>
@@ -88,7 +88,7 @@ int main()
 #endif
 	
 
-#if 1 // TEST FILE DIALOG
+#if 0 // TEST FILE DIALOG
 
 	PXText pxText;
 	PXTextMakeFixedA(&pxText, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code");
@@ -106,7 +106,7 @@ int main()
 
 
 
-#if 0
+#if 1
 	PXImage image;
 
 	//ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.bmp");

@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include <OS/Memory/PXMemory.h>
-#include <Media/HUFFMAN/PXHuffmanTree.h>
+#include <Media/HUFFMAN/PXHuffman.h>
 #include <OS/File/PXFile.h>
 #include <Math/PXMath.h>
 #include <Media/LZ77/PXLZ77.h>

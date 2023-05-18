@@ -215,7 +215,7 @@ void TestImageAll()
 PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath)
 {
     PXText pxText;
-    PXTextMakeExternA(&pxText, filePath);
+    PXTextMakeExternA(&pxText, filePath, -1);
 
     const PXActionResult savePNG = PXImageLoad(image, &pxText);
 

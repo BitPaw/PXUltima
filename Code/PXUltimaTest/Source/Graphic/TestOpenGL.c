@@ -1,4 +1,4 @@
-#include "TestPXOpenGL.h"
+#include "TestOpenGL.h"
 
 
 #include <Media/PXImage.h>
@@ -414,20 +414,22 @@ void TestPXOpenGLVBO()
 
 
 	//This code will use an IndexBuffer to produce a triangle with 1 inner triangle that isn't drawn.
-//Vertex Shader Source Code
-	const char VertexShaderSource[] = "#version 330 core \n"
+
+	PXText vertexShaderSource;
+	PXTextMakeFixedNamedA(&vertexShaderSource, "#version 330 core \n"
 		"layout (location = 0) in vec3 aPos; \n"
 		"void main()\n"
 		"{\n"
 		"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-		"}";
-	//Fragment Shader Source Code
-	const char fragmentShaderSource[] = "#version 330 core\n"
+		"}");
+
+	PXText fragmentShaderSource;
+	PXTextMakeFixedNamedA(&fragmentShaderSource, "#version 330 core\n"
 		"out vec4 FragColor;\n"
 		"void main()\n"
 		"{\n"
 		"     FragColor = vec4(0.55f, 0.15f, 0.15f, 1.0f);\n"
-		"}";
+		"}");
 
 
 	PXOpenGLContextSelect(glContext);
@@ -441,9 +443,9 @@ void TestPXOpenGLVBO()
 	PXShader vertexShader;
 	PXShader fragmentShader;
 
-	PXShaderDataSet(&vertexShader, PXShaderTypeVertex, VertexShaderSource, sizeof(VertexShaderSource));
-	PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, fragmentShaderSource, sizeof(fragmentShaderSource));
-
+	PXShaderDataSet(&vertexShader, PXShaderTypeVertex, vertexShaderSource.TextA, vertexShaderSource.SizeUsed);
+	PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, fragmentShaderSource.TextA, fragmentShaderSource.SizeAllocated);
+	
 	PXGraphicShaderProgramLoadGLSL(&window.GraphicInstance, &shaderProgram, &vertexShader, &fragmentShader);
 
 #if 0

@@ -391,10 +391,10 @@ PXActionResult PXGraphicSkyboxRegisterD
 
     // Register Shaders
     {
-        PXShaderPXProgram shaderPXProgram;
+        PXShaderProgram shaderPXProgram;
         shaderPXProgram.ID = -1;
 
-        const PXActionResult shaderResult = PXGraphicShaderPXProgramLoadGLSL(graphicContext, &shaderPXProgram, shaderVertex, shaderFragment);
+        const PXActionResult shaderResult = PXGraphicShaderProgramLoadGLSL(graphicContext, &shaderPXProgram, shaderVertex, shaderFragment);
 
         skyBox->Renderable.MeshSegmentList[0].ShaderID = shaderPXProgram.ID;
     }
@@ -535,7 +535,7 @@ PXBool PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRen
     return PXTrue;
 }
 
-void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderPXProgram* const shaderPXProgram)
+void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram)
 {
     for (PXSize i = 0; i < renderable->MeshSegmentListSize; ++i)
     {
@@ -1255,7 +1255,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXDictionaryConstruct(&graphicContext->ModelLookUp, sizeof(PXInt32U), sizeof(PXModel), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderPXProgram), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
     graphicContext->PXOpenGLInstance.AttachedWindow = pxWindow;
 
@@ -1309,7 +1309,7 @@ PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)
     return successful;
 }
 
-PXActionResult PXGraphicShaderPXProgramCreate(PXGraphicContext* const graphicContext)
+PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const graphicContext)
 {
     return PXActionInvalid;
 }
@@ -1321,12 +1321,12 @@ PXActionResult PXGraphicShaderCompile(PXGraphicContext* const graphicContext)
 
 PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const unsigned int shaderID)
 {
-    PXOpenGLShaderPXProgramUse(&graphicContext->PXOpenGLInstance, shaderID);
+    PXOpenGLShaderProgramUse(&graphicContext->PXOpenGLInstance, shaderID);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicShaderPXProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderPXProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath)
+PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath)
 {
     PXShader vertexShader; PXShaderConstruct(&vertexShader);
     PXShader fragmentShader; PXShaderConstruct(&fragmentShader);
@@ -1395,7 +1395,7 @@ PXActionResult PXGraphicShaderPXProgramLoadGLSL(PXGraphicContext* const graphicC
 
     const PXSize shaderListSize = 2;
     PXShader* const shaderList[2] = { &vertexShader, &fragmentShader };
-    const PXOpenGLID shaderPXProgrammID = PXOpenGLShaderPXProgramCreate(&graphicContext->PXOpenGLInstance);
+    const PXOpenGLID shaderPXProgrammID = PXOpenGLShaderProgramCreate(&graphicContext->PXOpenGLInstance);
     unsigned int  sucessfulCounter = 0;
     PXBool isValidShader = 1;
 
@@ -1415,15 +1415,15 @@ PXActionResult PXGraphicShaderPXProgramLoadGLSL(PXGraphicContext* const graphicC
             break;
         }
 
-        PXOpenGLShaderPXProgramAttach(&graphicContext->PXOpenGLInstance, shaderPXProgrammID, shaderID);
+        PXOpenGLShaderProgramAttach(&graphicContext->PXOpenGLInstance, shaderPXProgrammID, shaderID);
 
         shader->ID = shaderID;
     }
 
     if (isValidShader)
     {
-        PXOpenGLShaderPXProgramLink(&graphicContext->PXOpenGLInstance, shaderPXProgrammID);
-        PXOpenGLShaderPXProgramValidate(&graphicContext->PXOpenGLInstance, shaderPXProgrammID);
+        PXOpenGLShaderProgramLink(&graphicContext->PXOpenGLInstance, shaderPXProgrammID);
+        PXOpenGLShaderProgramValidate(&graphicContext->PXOpenGLInstance, shaderPXProgrammID);
 
         shaderPXProgram->ID = shaderPXProgrammID;
     }
@@ -1442,7 +1442,7 @@ PXActionResult PXGraphicShaderPXProgramLoadGLSL(PXGraphicContext* const graphicC
 
     if (!isValidShader)
     {
-        PXOpenGLShaderPXProgramDelete(&graphicContext->PXOpenGLInstance, shaderPXProgrammID);
+        PXOpenGLShaderProgramDelete(&graphicContext->PXOpenGLInstance, shaderPXProgrammID);
     }
 
     if (!isValidShader)
@@ -1479,7 +1479,7 @@ unsigned int PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicConte
 
 void PXGraphicShaderPXProgramUse(PXGraphicContext* const graphicContext, const unsigned int shaderID)
 {
-    PXOpenGLShaderPXProgramUse(&graphicContext->PXOpenGLInstance, shaderID);
+    PXOpenGLShaderProgramUse(&graphicContext->PXOpenGLInstance, shaderID);
 }
 
 PXActionResult PXGraphicRenderElement(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount)

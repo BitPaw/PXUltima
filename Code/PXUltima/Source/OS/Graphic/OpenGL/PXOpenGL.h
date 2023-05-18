@@ -785,13 +785,13 @@ extern "C"
 	PXPublic void PXOpenGLShaderLogInfoGet(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
 	PXPublic void PXOpenGLShaderDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
 
-	PXPublic PXOpenGLShaderPXProgramID PXOpenGLShaderPXProgramCreate(PXOpenGLContext* const openGLContext);
-	PXPublic void PXOpenGLShaderPXProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID);
-	PXPublic void PXOpenGLShaderPXProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID);
+	PXPublic PXOpenGLShaderPXProgramID PXOpenGLShaderProgramCreate(PXOpenGLContext* const openGLContext);
+	PXPublic void PXOpenGLShaderProgramUse(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID);
+	PXPublic void PXOpenGLShaderProgramDelete(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID);
 
-	PXPublic void PXOpenGLShaderPXProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID);
-	PXPublic void PXOpenGLShaderPXProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
-	PXPublic void PXOpenGLShaderPXProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
+	PXPublic void PXOpenGLShaderProgramAttach(PXOpenGLContext* const openGLContext, const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID);
+	PXPublic void PXOpenGLShaderProgramLink(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
+	PXPublic void PXOpenGLShaderProgramValidate(PXOpenGLContext* const openGLContext, const PXOpenGLShaderID shaderID);
 
 	PXPublic GLint PXOpenGLShaderVariableIDGet(PXOpenGLContext* const openGLContext, GLuint program, const char* name);
 	PXPublic void PXOpenGLShaderVariableFx1(PXOpenGLContext* const openGLContext, GLint location, GLfloat v0);

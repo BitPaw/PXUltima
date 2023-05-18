@@ -1,7 +1,6 @@
 #include "TestSocket.h"
 
-#include <Media/HTTP/HTTP.h>
-
+#include <Media/HTTP/PXHTTP.h>
 #include <OS/Network/PXServer.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Debug/PXDebug.h>

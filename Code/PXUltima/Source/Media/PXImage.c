@@ -88,12 +88,12 @@ PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, cons
             parseToImage = PXBitmapParseToImage;
             break;
         }
-        case FileFormatPXGIF:
+        case FileFormatGIF:
         {
             parseToImage = PXGIFParseToImage;
             break;
         }
-        case FileFormatPXJPEG:
+        case FileFormatJPEG:
         {
             parseToImage = PXJPEGParseToImage;
             break;
@@ -103,7 +103,7 @@ PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, cons
             parseToImage = PXPNGParseToImage;
             break;
         }
-        case FileFormatPXTGA:
+        case FileFormatTGA:
         {
             parseToImage = PXTGAParseToImage;
             break;
@@ -153,14 +153,14 @@ PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, c
             fileExtension = "png";
             break;
         }
-        case FileFormatPXTGA:
+        case FileFormatTGA:
         {
             fileSize = PXTGAFilePredictSize(image->Width, image->Height, bitPerPixel);
             serializeFromImageFunction = PXTGASerializeFromImage;
             fileExtension = "tga";
             break;
         }
-        case FileFormatPXJPEG:
+        case FileFormatJPEG:
         {
             fileSize = PXJPEGFilePredictSize(image->Width, image->Height, bitPerPixel);
             serializeFromImageFunction = PXJPEGSerializeFromImage;
@@ -174,7 +174,7 @@ PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, c
             fileExtension = "tiff";
             break;
         }
-        case FileFormatPXGIF:
+        case FileFormatGIF:
         {
             fileSize = PXGIFFilePredictSize(image->Width, image->Height, bitPerPixel);
             serializeFromImageFunction = PXGIFSerializeFromImage;
