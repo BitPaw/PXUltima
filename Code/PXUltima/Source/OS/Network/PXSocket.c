@@ -696,7 +696,7 @@ PXActionResult PXSocketSetupAdress
         PXText portText;
         PXTextConstructWithBufferNamedA(&portText, portTextBuffer, 30);
         char* portTextAdress = 0;
-        
+
 
         portText.Format = pxSocketAdressSetupInfo->IP.Format;
 
@@ -718,7 +718,16 @@ PXActionResult PXSocketSetupAdress
             case TextFormatUTF8:
             {
 #if OSUnix
-                const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP->TextA, portNumberString, &adressHints, &adressResult);
+                struct addrinfo addressInfoHint;
+                struct addrinfo addressInfoResult;
+
+                PXMemoryClear(&addressInfoHint, sizeof(struct addrinfo));
+                addressInfoHint.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
+                addressInfoHint.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
+                addressInfoHint.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
+                addressInfoHint.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
+
+                const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHint, &addressInfoResult);
                 const PXBool validAdressInfo = adressInfoResult == 0;
 
 #elif OSWindows
@@ -730,7 +739,7 @@ PXActionResult PXSocketSetupAdress
                 addressInfoHintA.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
                 addressInfoHintA.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
                 addressInfoHintA.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
-                               
+
 
                 const int adressInfoResult = GetAddrInfoA(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHintA, &addressInfoListA);
                 const PXBool validAdressInfo = adressInfoResult == 0;
@@ -784,7 +793,7 @@ PXActionResult PXSocketSetupAdress
             case TextFormatUNICODE:
             {
 #if OSUnix
-#elif OSWindows               
+#elif OSWindows
                 ADDRINFOW addressInfoHintW;
                 ADDRINFOW* addressInfoListW = 0;
 
@@ -794,7 +803,7 @@ PXActionResult PXSocketSetupAdress
                 addressInfoHintW.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
                 addressInfoHintW.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
 
-                const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h 
+                const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
                 const PXBool validAdressInfo = adressInfoResultID == 0;
 
 
@@ -842,7 +851,7 @@ PXActionResult PXSocketSetupAdress
 #endif
 
                 break;
-            }  
+            }
 
 
         }
@@ -857,7 +866,7 @@ PXActionResult PXSocketSetupAdress
            // ...
         }
 
-  
+
 
         if(i == 0)
         {
@@ -914,7 +923,7 @@ PXActionResult PXSocketSetupAdress
         }*/
 
 
-      
+
     }
 
     return PXActionSuccessful;
@@ -973,7 +982,7 @@ PXActionResult PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, c
     const PXSize socketDataListSize = pxSocket->SocketPollingReadListSize;
     struct pollfd* socketDataList = buffer;
     int timeout = 50;
-      
+
     for (PXSize i = 0; i < socketDataListSize; ++i)
     {
         struct pollfd* pollingEntry = &socketDataList[i];
@@ -1103,12 +1112,19 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
             }
 
             highestSocketID = PXMathMaximumIU(highestSocketID, socketID);
+
+            #if OSUnix
+            #elif OSWindows
             selectListenRead.fd_array[j] = socketID;
+            #endif
 
             --restValues;
         }
 
-        selectListenRead.fd_count = j;       
+        #if OSUnix
+        #elif OSWindows
+        selectListenRead.fd_count = j;
+        #endif
 
         int numberOfSocketEvents = select(highestSocketID + 1, &selectListenRead, 0, 0, 0); // first parameter is ignored under windows
         const PXBool success = -1 != numberOfSocketEvents;
@@ -1124,7 +1140,13 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
 
         for (PXSize readableSocketIndex = 0; readableSocketIndex < numberOfSocketEvents; ++readableSocketIndex)
         {
-            const PXSocketID socketID = selectListenRead.fd_array[readableSocketIndex];
+             #if OSUnix
+              const PXSocketID socketID = 0;
+        #elif OSWindows
+          const PXSocketID socketID = selectListenRead.fd_array[readableSocketIndex];
+        #endif
+
+
             const PXBool isServer = pxSocket->ID == socketID;
 
             if (isServer)
@@ -1137,7 +1159,7 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
             }
         }
     }
-        
+
 #else
 
 for (PXSize i = 0; i < pxSocket->SocketPollingReadListSize; ++i)
@@ -1190,7 +1212,7 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
 #if OSUnix
         SO_REUSEADDR;      // Do not use SO_REUSEADDR, else the port can be hacked. SO_REUSEPORT
 #elif OSWindows
-        SO_EXCLUSIVEADDRUSE; 
+        SO_EXCLUSIVEADDRUSE;
 #endif
     const int opval = 1;
     const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(int));
@@ -1237,7 +1259,7 @@ PXActionResult PXSocketAccept(PXSocket* const server)
         server->ID,
         (struct sockaddr*)clientSocket.IP,
 #if OSUnix
-        (socklen_t*)&client.IPSize
+        (socklen_t*)&clientSocket.IPSize
 #elif OSWindows
         (int*)&clientSocket.IPSize
 #endif
@@ -1280,7 +1302,13 @@ PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const 
         }
     }
 
-    InvokeEvent(serverSocket->EventList.MessageSendCallback, serverSocket, clientID, inputBuffer, inputBufferSize);
+    PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
+    pxSocketDataMoveEventInfo.SocketSending = serverSocket;
+    pxSocketDataMoveEventInfo.SocketReceiving = clientID;
+    pxSocketDataMoveEventInfo.Data = inputBuffer;
+    pxSocketDataMoveEventInfo.DataSize = inputBufferSize;
+
+    InvokeEvent(serverSocket->EventList.MessageSendCallback, serverSocket->Owner, &pxSocketDataMoveEventInfo);
 
 #if SocketDebug
     printf("[PXSocket] <%i> --> <%i> %i Bytes\n", (int)serverSocket->ID, (int)clientID, (int)inputBufferSize);
@@ -1340,9 +1368,6 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
 
         InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket->Owner, &pxSocketDataMoveEventInfo);
     }
-
-
-    InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket, pxSocket->ID, inputBuffer, inputBufferSize);
 
 #if SocketDebug
     printf("[PXSocket] You --> <%i> %i Bytes\n", (int)pxSocket->ID, (int)inputBufferSize);
@@ -1452,7 +1477,7 @@ PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSoc
             read(clientID, buffer, buffserSize);
 #elif OSWindows
             recv(clientID, buffer, buffserSize, 0);
-#endif        
+#endif
 
         // StateChange(SocketStateIDLE);
 

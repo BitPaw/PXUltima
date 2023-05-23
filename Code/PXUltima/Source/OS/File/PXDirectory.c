@@ -50,17 +50,17 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 		case TextFormatUTF8:
 		{
 #if OSUnix
-			const int creationResult = mkdir(string, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+			const int creationResult = mkdir(directoryName->TextA, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			const PXBool successCreate = creationResult == 0;
 #elif OSWindows
 
 #if OSForcePOSIXForWindows
-			const int resultID = _mkdir(directoryName->TextW);
+			const int resultID = _mkdir(directoryName->TextA);
 			const PXBool successCreate = 0 == resultID;
 #else
 			const PXBool successCreate = CreateDirectoryA(directoryName->TextA, PXNull); // Windows XP, Kernel32.dll, fileapi.h
 #endif
-		
+
 #endif
 
 			PXActionOnErrorFetchAndExit(!successCreate);
@@ -84,7 +84,7 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 #else
 			const PXBool successCreate = CreateDirectoryW(directoryName->TextW, PXNull); // Windows XP, Kernel32.dll, fileapi.h
 #endif
-		
+
 #endif
 			PXActionOnErrorFetchAndExit(!successCreate);
 
@@ -92,7 +92,7 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 		}
 	}
 
-	/*	
+	/*
 	wchar_t directoryNameSegment[PathMaxSize];
 	PXSize starPos = 0;
 	PXSize successful = 0;
@@ -133,7 +133,7 @@ PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName)
 #if OSUnix
 		const char* const text = chdir(directoryName->TextA);
 #elif OSWindows
-		const char* const text = _chdir(directoryName->TextA);		
+		const char* const text = _chdir(directoryName->TextA);
 #endif
 		const PXBool successful = text != 0;
 
@@ -170,7 +170,7 @@ PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory)
 #if OSUnix
 		const char* const text = getcwd(workingDirectory->TextA, workingDirectory->SizeAllocated);
 #elif OSWindows
-		const char* const text = _getcwd(workingDirectory->TextA, workingDirectory->SizeAllocated);	
+		const char* const text = _getcwd(workingDirectory->TextA, workingDirectory->SizeAllocated);
 #endif
 		const PXBool successful = text != 0;
 
@@ -208,13 +208,13 @@ PXActionResult PXDirectoryDelete(const PXText* const directoryName)
 		const int resultID = rmdir(directoryName->TextA);
 		const PXBool successul = 0 == resultID;
 #elif OSWindows
-		const PXBool successul = RemoveDirectoryA(directoryName->TextA); // Windows XP, Kernel32.dll, fileapi.h		
+		const PXBool successul = RemoveDirectoryA(directoryName->TextA); // Windows XP, Kernel32.dll, fileapi.h
 #endif
 		PXActionOnErrorFetchAndExit(!successul);
 
 
 		return PXActionSuccessful;
-	}	
+	}
 	case TextFormatUNICODE:
 	{
 #if OSUnix
@@ -239,6 +239,7 @@ PXActionResult PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list
 
 PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo)
 {
+    #if 0
 	wchar_t buffer[300];
 	wchar_t extendedSearchFilter[50];
 	PXSize wriien = PXFileDirectoryPathExtract(pxDirectorySearchInfo->FolderPath, 512, buffer, 512);
@@ -364,6 +365,7 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 
 	FindClose(iteratorHandle);
 #endif
+#endif // 0
 
 	return PXActionSuccessful;
 }

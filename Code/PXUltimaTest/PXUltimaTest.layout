@@ -2,14 +2,14 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Linux 64 - Debug" />
-	<File name="Source/Network/TestSocket.c" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Source/TestSystemInfo.c" open="1" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2386" topLine="71" />
+			<Cursor1 position="394" topLine="3" />
 		</Cursor>
 	</File>
-	<File name="Source/main.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Source/main.c" open="1" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1866" topLine="103" />
+			<Cursor1 position="0" topLine="66" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

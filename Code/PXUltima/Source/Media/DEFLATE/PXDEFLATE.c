@@ -4,9 +4,9 @@
 #include <string.h>
 
 #include <OS/Memory/PXMemory.h>
-#include <Media/HUFFMAN/PXHuffman.h>
 #include <OS/File/PXFile.h>
 #include <Math/PXMath.h>
+#include <Media/Huffman/PXHuffman.h>
 #include <Media/LZ77/PXLZ77.h>
 
 #define DeflateEncodingInvalidID -1
@@ -157,7 +157,7 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
             {
                 PXBool foundEndOFBlock = PXFalse;
                 PXHuffmanTree literalAndLengthCodes;
-                PXHuffmanTree distanceCodes;               
+                PXHuffmanTree distanceCodes;
 
                 PXHuffmanTreeConstruct(&literalAndLengthCodes);
                 PXHuffmanTreeConstruct(&distanceCodes);
@@ -197,7 +197,7 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
                         }
                         case HuffmanCodeLiteral:
                         {
-                            // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);                           
+                            // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);
                             PXFileWriteI8U(pxOutputStream, resultLengthCode);
                             break;
                         }
@@ -610,7 +610,7 @@ unsigned deflateFixed
     PXFile* const PXFile,
     Hash* hash,
     const unsigned char* data,
-    PXSize datapos, 
+    PXSize datapos,
     PXSize dataend,
     const LodePNGCompressSettings* settings
 )
@@ -1236,7 +1236,7 @@ unsigned deflateDynamic
     PXSize numcodes_ll, numcodes_d, numcodes_lld, numcodes_lld_e, numcodes_cl;
     unsigned HLIT, HDIST, HCLEN;
 
- 
+
     PXHuffmanTreeConstruct(&tree_ll);
     PXHuffmanTreeConstruct(&tree_d);
     PXHuffmanTreeConstruct(&tree_cl);
@@ -1278,7 +1278,7 @@ unsigned deflateDynamic
            // for (PXSize index = datapos; index < dataend; ++index) // Data must be atleast "datasize"
            // {
            //     ((PXAdress)lz77CacheStream.Data)[index - datapos] = data[index]; // no LZ77, but still will be Huffman compressed
-           // }   
+           // }
         }
 
         /*Count the frequencies of lit, len and dist codes*/
@@ -1474,7 +1474,7 @@ PXActionResult PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxO
 {
     unsigned error = 0;
     PXSize blocksize;
-    Hash hash; 
+    Hash hash;
 
     LodePNGCompressSettings lodePNGCompressSettings;
 
@@ -1573,7 +1573,7 @@ PXActionResult PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxO
         case PXDeflateEncodingInvalid:
         default:
             return PXActionRefusedFormatSettingNotAllowed;
-    }  
+    }
 
     return PXActionSuccessful;
 }

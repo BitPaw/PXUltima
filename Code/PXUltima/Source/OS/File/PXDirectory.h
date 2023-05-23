@@ -9,6 +9,11 @@
 #define PXDirectorySearchForFiles (1 << 1)
 #define PXDirectorySearchForDirectoryAndFile PXDirectorySearchForDirectorys | PXDirectorySearchForFiles
 
+#if OSUnix
+#include <sys/types.h>
+#include <dirent.h>
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {

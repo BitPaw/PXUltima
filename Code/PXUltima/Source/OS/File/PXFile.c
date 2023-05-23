@@ -7,7 +7,6 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
-
 #if OSUnix
 #define PrintSVN vsnprintf
 #elif OSWindows
@@ -75,6 +74,8 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 		case TextFormatASCII:
 		{
 #if OSUnix
+
+#if 0
 			char directoryNameCache[PathMaxSize];
 			char baseNameCache[FileNameMaxSize];
 
@@ -89,7 +90,7 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 
 			for (PXSize i = fileNameLength - 1; i > 0; --i)
 			{
-				const unsigned char isDot = fileName[i] == '.';
+				const PXBool isDot = fileName[i] == '.';
 
 				if (isDot)
 				{
@@ -97,6 +98,9 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 					break;
 				}
 			}
+
+#endif // 0
+
 #elif OSWindows
 			char fileNameCache[FileNameMaxSize];
 
@@ -332,7 +336,7 @@ PXBool PXFileDoesExist(const PXText* const filePath)
 				return PXTrue;
 			}
 #endif
-			
+
 			break;
 		}
 		case TextFormatUNICODE:
@@ -350,7 +354,7 @@ PXBool PXFileDoesExist(const PXText* const filePath)
 			}
 
 #endif
-			
+
 			break;
 		}
 		default:
@@ -388,7 +392,7 @@ PXActionResult PXFileRemove(const PXText* const filePath)
 		case TextFormatUNICODE:
 		{
 #if OSUnix
-			
+
 #elif OSWindows
 
 #if OSForcePOSIXForWindows
@@ -399,7 +403,7 @@ PXActionResult PXFileRemove(const PXText* const filePath)
 #endif
 
 			PXActionExitOnError(!success);
-		
+
 #endif
 
 			break;
@@ -496,7 +500,7 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 			const int closeA = fclose(fileSource);
 			const int closeB = fclose(fileDestination);
 #elif OSWindows
-			const PXBool succesfull = CopyFileA(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h 
+			const PXBool succesfull = CopyFileA(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h
 
 			PXActionExitOnError(!succesfull);
 #endif
@@ -509,7 +513,7 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 			// Convert
 
 #elif OSWindows
-			const PXBool succesfull = CopyFileW(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h 
+			const PXBool succesfull = CopyFileW(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h
 
 			PXActionExitOnError(!succesfull);
 #endif
@@ -769,22 +773,24 @@ PXInt32U PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCa
 		case PXMemoryCachingModeInvalid:
 		case PXMemoryCachingModeDefault:
 #if OSUnix
-			return POSIX_FADV_NORMAL;
+			return 0;//POSIX_FADV_NORMAL;
 #elif OSWindows
 			return 0;
 #endif
 		case PXMemoryCachingModeRandom:
 #if OSUnix
-			return POSIX_FADV_RANDOM;
+			return 0;//POSIX_FADV_RANDOM;
 #elif OSWindows
 			return FILE_FLAG_RANDOM_ACCESS;
 #endif
 		case PXMemoryCachingModeSequential:
 #if OSUnix
-			return POSIX_FADV_SEQUENTIAL;
+			return 0;//POSIX_FADV_SEQUENTIAL;
 #elif OSWindows
 			return FILE_FLAG_SEQUENTIAL_SCAN;
 #endif
+
+#if OSWindows
 
 		case PXMemoryCachingModeTemporary:
 		case PXMemoryCachingModeUseOnce:
@@ -796,15 +802,16 @@ PXInt32U PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCa
 
 		case PXMemoryCachingModeNoBuffering:
 			return FILE_FLAG_NO_BUFFERING;
+#endif // OSWindows
 
 #if OSUnix
 		// UNIX only
 		case PXMemoryCachingModeNeedLater:
-			return POSIX_FADV_WILLNEED;
+			return 0;//POSIX_FADV_WILLNEED;
 
 		case PXMemoryCachingModeDontNeedNow:
-			return POSIX_FADV_DONTNEED;
-#endif	
+			return 0;//POSIX_FADV_DONTNEED;
+#endif
 	}
 }
 
@@ -848,7 +855,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 #if OSUnix
 	const char* readMode = 0u;
 
-	switch (fileOpenMode)
+	switch (pxFileOpenFromPathInfo->AccessMode)
 	{
 	case PXMemoryAccessModeReadOnly:
 		readMode = "rb";
@@ -866,9 +873,9 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 	// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
 	// int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
 
-	pxFile->FileHandle = fopen(filePath, readMode);
+	pxFile->ID = fopen(pxFileOpenFromPathInfo->Text.TextA, readMode);
 
-	return pxFile->FileHandle ? PXActionSuccessful : PXActionFailedFileOpen;
+	return pxFile->ID ? PXActionSuccessful : PXActionFailedFileOpen;
 
 
 #elif OSWindows
@@ -946,7 +953,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 					desiredAccess,
 					shareMode,
 					securityAttributes,
-					creationDisposition, 
+					creationDisposition,
 					flagsAndAttributes,
 					templateFile
 				);
@@ -1210,13 +1217,13 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 				printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", pxFile->Data, pxFile->DataSize, filePath);
 #endif
 
-				return PXActionSuccessful; 
-			}	
+				return PXActionSuccessful;
+			}
 		}
 	}
 #endif
 
-	// Filemapping failed, maybe due to lack of memory. File exists and is loaded, so we proceed normally. 
+	// Filemapping failed, maybe due to lack of memory. File exists and is loaded, so we proceed normally.
 
 
 	// Try allocating cache. To fetch data into
@@ -1293,11 +1300,12 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 PXActionResult PXFileClose(PXFile* const pxFile)
 {
 #if OSUnix
-	 const int closeResult = fclose(pxFile->FileHandle);
+	 const int closeResult = fclose(pxFile->ID);
 
 	 switch (closeResult)
 	 {
 		 case 0:
+		     pxFile->ID = 0;
 			 return PXActionSuccessful;
 
 		 default:
@@ -1502,7 +1510,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 		 {
 #if OSUnix
 			 pxFile->DataCursor = ftell(pxFile->ID);
-#elif OSWindows	
+#elif OSWindows
 
 #if OS32Bit
 			 LONG sizeLow = position;
@@ -1518,7 +1526,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 #endif
 			 break;
 		 }
-	 }	
+	 }
 }
 
  void PXFileCursorToBeginning(PXFile* const pxFile)
@@ -1531,7 +1539,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 const PXSize before = pxFile->DataCursor;
 	 PXFileCursorMoveTo(pxFile, pxFile->DataCursor + steps);
 	 const PXSize delta = pxFile->DataCursor - before;
-	
+
 	 return delta;
 }
 

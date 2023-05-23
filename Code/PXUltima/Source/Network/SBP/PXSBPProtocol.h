@@ -87,7 +87,7 @@ extern "C"
 
 
 
-	
+
 	typedef struct PXSBPChunkCache_
 	{
 		void* Message; // Payload data. Context of this data is not interpreted.
@@ -134,10 +134,10 @@ extern "C"
 	{
 		// External events
 		PXSBPOnMessageUpdatedFunction OnMessageUpdatedCallBack;
-		PXSBPOnMessageReceivedFunction OnMessageReceivedCallBack;	
+		PXSBPOnMessageReceivedFunction OnMessageReceivedCallBack;
 
 		PXSBPOnChunkSegmentUpdatedFunction OnChunkSegmentUpdatedCallBack;
-		PXSBPOnChunkReceivedFunction OnChunkReceivedCallBack;	
+		PXSBPOnChunkReceivedFunction OnChunkReceivedCallBack;
 
 		PXSBPReceiverOnMessageInvalid OnMessageInvalidCallBack;
 
@@ -216,8 +216,8 @@ extern "C"
 	PXPublic void PXSBPClientOnMessageUpdatedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnMessageReceivedFunction pxSBPOnMessageReceivedFunction);
 	PXPublic void PXSBPClientChunkSegmentUpdatedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnChunkSegmentUpdatedFunction pxSBPOnMessageReceivedFunction);
 	PXPublic void PXSBPClientChunkReceivedCallBackSet(PXSBPClient* const pxSBPClient, PXSBPOnChunkReceivedFunction pxSBPOnMessageReceivedFunction);
-	
-	
+
+
 
 
 	PXSBPOnMessageUpdatedFunction OnMessageUpdatedCallBack;
@@ -225,7 +225,7 @@ extern "C"
 
 	PXSBPOnChunkSegmentUpdatedFunction OnChunkSegmentUpdatedCallBack;
 	PXSBPOnChunkReceivedFunction OnChunkReceivedCallBack;
-	
+
 	PXPublic void PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize);
 	PXPublic void PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath);
 
@@ -250,38 +250,15 @@ extern "C"
 
 
 
-
-
-
-
-
-
-
-
-
-
 	PXPrivate PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
 
 	PXPrivate void PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRecieverState pxSBPRecieverState);
 
-
-
-
-
 	PXPublic PXInt16U PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage);
-		PXPublic PXBool PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage);
-      
-    PXPublic void PXSBPMessageConstruct(PXSBPChunkCache* const pxSBPMessage);
+    PXPublic PXBool PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage);
+
     PXPublic void PXSBPMessageConstructSet(PXSBPChunkCache* const pxSBPMessage);
     PXPublic void PXSBPMessageConstructAllocate(PXSBPChunkCache* const pxSBPMessage);
-
-
-
-
-
-
-
-
 
 
 #ifdef __cplusplus

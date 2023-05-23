@@ -8,6 +8,7 @@
 
 #if OSUnix
 #include <unistd.h>
+#include <pthread.h>
 #elif OSWindows
 #include <windows.h>
 #endif

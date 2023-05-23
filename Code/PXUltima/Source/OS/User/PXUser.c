@@ -3,12 +3,12 @@
 #include <OS/System/OSVersion.h>
 
 #if OSUnix
-
+#include <unistd.h>
 #elif OSWindows
 #include <windows.h>
 #include <userenv.h> // Could use GetUserProfileDirectoryW() but not needed yet
-#endif
 #include <ShlObj_core.h>
+#endif
 
 PXBool PXUserNameGet(PXText* const name)
 {
@@ -18,21 +18,24 @@ PXBool PXUserNameGet(PXText* const name)
 		case TextFormatASCII:
 		{
 #if OSUnix
+            name->SizeUsed  = getlogin_r(name->TextA, name->SizeAllocated); // unistd.h
 
-			return 0;
+            const PXBool success = name->SizeUsed > 0;
+
+			return success;
 
 #elif OSWindows
 			DWORD size = name->SizeAllocated;
 
 			const PXBool sucessful = GetComputerNameA(name, &size);
-			
+
 			name->SizeUsed = (PXSize)sucessful * (PXSize)size;
 
 			return sucessful;
 #endif
 
 			break;
-		}			
+		}
 		case TextFormatUNICODE:
 		{
 #if OSUnix
@@ -43,7 +46,7 @@ PXBool PXUserNameGet(PXText* const name)
 			DWORD size = name->SizeAllocated;
 
 			const PXBool sucessful = GetComputerNameW(name, &size);
-		
+
 			name->SizeUsed = (PXSize)sucessful * (PXSize)size;
 
 			return sucessful;
@@ -58,6 +61,12 @@ PXBool PXUserNameGet(PXText* const name)
 
 PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)
 {
+#if OSUnix
+
+    return PXFalse;
+
+#elif OSWindows
+
 	KNOWNFOLDERID* pathID = 0;
 
 	switch (pxUserEnviromentFolderID)
@@ -109,7 +118,7 @@ PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolde
 	temporalCache.TextW = 0;
 	temporalCache.Format = TextFormatUNICODE;
 
-	const HRESULT result = SHGetKnownFolderPath(pathID, KF_FLAG_DEFAULT_PATH, PXNull, temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h 
+	const HRESULT result = SHGetKnownFolderPath(pathID, KF_FLAG_DEFAULT_PATH, PXNull, temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h
 	const PXBool success = S_OK == result;
 
 	PXTextCopy(&temporalCache, name);
@@ -117,4 +126,5 @@ PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolde
 	CoTaskMemFree(temporalCache.TextW); // Needs to be called in ANY case.
 
 	return success;
+#endif
 }

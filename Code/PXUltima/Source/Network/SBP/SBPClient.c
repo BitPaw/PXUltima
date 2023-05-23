@@ -1,5 +1,7 @@
 #include "SBPClient.h"
 
+#if 0
+
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <OS/User/PXUser.h>
@@ -72,7 +74,7 @@ SBPResult SBPPXClientSendAndWaitResponse
 			const PXSize millisecondsDelta = TimeMillisecondsDelta(&timestampStart, &timestampCurrent);
 
 			// Check if timeout
-			{			
+			{
 
 				const unsigned char isTimeout = millisecondsDelta > TimeOutLimit;
 
@@ -176,7 +178,7 @@ void SBPPXClientRegisterMe()
 
 void SBPPXClientSendText(const char* text)
 {
-	
+
 }
 
 void SBPPXClientSendFile(const char* filePath)
@@ -262,7 +264,7 @@ void SBPPXClientSendFile(const char* filePath)
 
 	// Map file
 	{
-		File file;	
+		File file;
 
 		{
 			const PXActionResult filePXActionResult = file.MapToVirtualMemory(filePath, PXMemoryAccessMode::ReadOnly);
@@ -314,7 +316,7 @@ void SBPPXClientOnMessageSend(IOSocketMessage socketMessage)
 
 void SBPPXClientOnMessageReceive(IOSocketMessage socketMessage)
 {
-#if SocketDebug 
+#if SocketDebug
 	printf("[#][SBP-PXClient] Receive %zi Bytes from <%i>\n", socketMessage.MessageSize, socketMessage.SocketID);
 #endif
 }
@@ -386,7 +388,7 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 					//InvokeEvent(PackageIAMRecieveCallBack, name);
 
 					break;
-				}				
+				}
 				case SBPPackageHeaderPackageResponseID:
 				{
 
@@ -505,3 +507,5 @@ PXActionResult SBPPXClientDisconnectFromServer(PXSBPClient* const sbpPXClient)
 {
 	return PXClientDisconnectFromServer(&sbpPXClient->Client);
 }
+
+#endif

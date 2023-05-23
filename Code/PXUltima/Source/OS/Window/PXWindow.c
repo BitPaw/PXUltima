@@ -856,7 +856,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
             // glViewport(0,0, width, height);
 
-            InvokeEvent(PXWindow->WindowSizeChangedCallBack, PXWindow->EventReceiver, PXWindow, width, height);
+            InvokeEvent(PXWindow->WindowSizeChangedCallBack, PXWindow->EventReceiver, PXWindow);
 
             break;
         }
@@ -931,7 +931,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
                         if(re->valuators.mask_len)
                         {
-                            Mouse* mouse = &PXWindow->MouseCurrentInput;
+                            PXMouse* mouse = &PXWindow->MouseCurrentInput;
                             const double* values = re->raw_values;
                             const unsigned char isX = XIMaskIsSet(re->valuators.mask, 0);
                             const unsigned char isY = XIMaskIsSet(re->valuators.mask, 1);
@@ -950,8 +950,8 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
                             }
 
 
-                            mouse->InputAxis[0] = mouse->Position[0] - xpos;
-                            mouse->InputAxis[1] = mouse->Position[1] - ypos;
+                            mouse->Delta[0] = mouse->Position[0] - xpos;
+                            mouse->Delta[1] = mouse->Position[1] - ypos;
 
                             mouse->Position[0] = xpos;
                             mouse->Position[1] = ypos;
@@ -1009,7 +1009,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         {
             window->IsRunning = PXFalse;
             break;
-        }     
+        }
         case WindowEventMove:
             break;
         case WindowEventSize:
@@ -1879,7 +1879,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
             CWColormap | CWEventMask,
             &setWindowAttributes
         );
-        const unsigned char sucessful = PXWindowID;
+        const PXBool sucessful = PXWindowID;
 
         printf("[i][Window] Create <%i x %i> \n", window->Width, window->Height);
 
@@ -1891,12 +1891,30 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
     // Set Title
     {
-        char windowTitleA[256];
-
-        PXTextCopyWA(window->Title, 256, windowTitleA, 256);
-
         XMapWindow(window->DisplayCurrent, window->ID);
-        XStoreName(window->DisplayCurrent, window->ID, windowTitleA);
+
+        switch(window->Title.Format)
+        {
+            case TextFormatASCII:
+            case TextFormatUTF8:
+            {
+                 XStoreName(window->DisplayCurrent, window->ID, window->Title.TextA);
+
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                //char windowTitleA[256];
+
+                //PXTextCopyWA(window->Title, 256, windowTitleA, 256);
+
+                XStoreName(window->DisplayCurrent, window->ID, window->Title.TextW);
+
+                break;
+            }
+        }
+
+
     }
 
 #if 0 // Grab means literally Drag%Drop grab. This is not mouse motion
@@ -2110,7 +2128,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
         UpdateWindow(windowID);
 
         if (window->Mode == PXWindowModeNormal)
-        {        
+        {
             ShowWindow(windowID, SW_SHOW);
         }
     }
@@ -2402,7 +2420,7 @@ PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle)
         case TextFormatUNICODE:
         {
             return FindWindowW(0, windowTitle->TextW);
-        }  
+        }
     }
 
     return PXNull;
@@ -2648,7 +2666,7 @@ PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
     return PXFalse;
 
 #elif OSWindows
-	
+
 #if WindowsAtleastVista
 	POINT point;
 	point.x = 0;
@@ -2670,7 +2688,7 @@ PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
 	return successful;
 #else
 
-	const PXSize mouseMovePointSize = sizeof(MOUSEMOVEPOINT);	
+	const PXSize mouseMovePointSize = sizeof(MOUSEMOVEPOINT);
 	const int nVirtualWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	const int nVirtualHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 	const int nVirtualLeft = GetSystemMetrics(SM_XVIRTUALSCREEN);
@@ -2688,7 +2706,7 @@ PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
 
 	if (!success)
 	{
-		return PXFalse;			 
+		return PXFalse;
 	}
 
 	/*

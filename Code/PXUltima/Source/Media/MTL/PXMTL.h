@@ -2,7 +2,7 @@
 #define PXMTLINCLUDE
 
 #include <OS/File/PXFile.h>
-#include <Media\PXModel.h>
+#include <Media/PXModel.h>
 
 #define MTLNameSize 32u
 #define MTLFilePath 60u
@@ -32,15 +32,15 @@ extern "C"
 	{
 		IlluminationNone,
 		IlluminationColorAndAmbientDisable ,		// [0] Color on and Ambient off
-		IlluminationColorAndAmbientEnable,		// [1] Color on and Ambient on	
-		IlluminationHighlightEnable ,	// [2] Highlight on	
-		IlluminationReflectionOnRayTraceEnable,	// [3] Reflection on and Ray trace on	
-		IlluminationReflectionOnRayTraceTransparency, 	// [4] Transparency: Glass on, Reflection : Ray trace on	
-		IlluminationReflectionOnRayTraceFresnel, 	// [5] Reflection : Fresnel on and Ray trace on	
-		IlluminationReflectionOnRayTraceTransparencyFresnel, 	// [6] Transparency : Refraction on, Reflection : Fresnel offand Ray trace on	
-		IlluminationReflectionOnRayTraceFullEnable,	// [7] Transparency : Refraction on, Reflection : Fresnel onand Ray trace on	
-		IlluminationReflectionEnable, 	// [8] Reflection on and Ray trace off	
-		IlluminationTransparencyEnable, 	// [9] Transparency : Glass on, Reflection : Ray trace off	
+		IlluminationColorAndAmbientEnable,		// [1] Color on and Ambient on
+		IlluminationHighlightEnable ,	// [2] Highlight on
+		IlluminationReflectionOnRayTraceEnable,	// [3] Reflection on and Ray trace on
+		IlluminationReflectionOnRayTraceTransparency, 	// [4] Transparency: Glass on, Reflection : Ray trace on
+		IlluminationReflectionOnRayTraceFresnel, 	// [5] Reflection : Fresnel on and Ray trace on
+		IlluminationReflectionOnRayTraceTransparencyFresnel, 	// [6] Transparency : Refraction on, Reflection : Fresnel offand Ray trace on
+		IlluminationReflectionOnRayTraceFullEnable,	// [7] Transparency : Refraction on, Reflection : Fresnel onand Ray trace on
+		IlluminationReflectionEnable, 	// [8] Reflection on and Ray trace off
+		IlluminationTransparencyEnable, 	// [9] Transparency : Glass on, Reflection : Ray trace off
 		IlluminationShadowsEnable  	// [10] Casts shadows onto invisible surfaces
 	}
 	PXMaterialIlluminationMode;

@@ -1,6 +1,8 @@
 #ifndef SBPPXClientINCLUDE
 #define SBPPXClientINCLUDE
 
+#if 0
+
 #include <Media/PXType.h>
 
 #include <OS/Network/PXClient.h>
@@ -21,7 +23,7 @@ extern "C"
 		PXClient Client;
 
 		// Public
-		
+
 	}
 	PXSBPClient;
 
@@ -54,6 +56,8 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

@@ -1,5 +1,7 @@
 #include "SBPServer.h"
 
+#if 0
+
 #include <stdio.h>
 
 #include <OS/File/PXFile.h>
@@ -112,3 +114,5 @@ PXActionResult SBPServerSendFileA(PXSBPServer* const sbpServer, const PXSocketID
 
 	return PXActionInvalid;
 }
+
+#endif

@@ -1,6 +1,8 @@
 #ifndef SBPServerINCLUDE
 #define SBPServerINCLUDE
 
+#if 0
+
 #include <Media/PXType.h>
 #include <OS/Network/PXServer.h>
 #include <Network/SBP/PXSBPPackageProcessor.h>
@@ -42,6 +44,8 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif
