@@ -544,6 +544,12 @@ extern "C"
 
 
 	//---<Extensions>----------------------------------------------------------
+
+
+
+	typedef void (PXOpenGLAPICallType* PXOpenGLSwapIntervalSetFunction)(GLint interval); // wglSwapIntervalEXT, glXSwapIntervalEXT
+	typedef GLint (PXOpenGLAPICallType* PXOpenGLSwapIntervalGetFunction)(); // wglGetSwapIntervalEXT, glxGetSwapIntervalEXT
+
 #if OSUnix
 
 #elif OSWindows
@@ -698,6 +704,11 @@ extern "C"
 
 		//---<PXOpenGL v.4.6.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
+
+		//---<Extensions>------------------------------------------------------------
+		PXOpenGLSwapIntervalSetFunction PXOpenGLSwapIntervalSetCallBack;
+		PXOpenGLSwapIntervalGetFunction PXOpenGLSwapIntervalGetCallBack;
+		//---------------------------------------------------------------------------
 	}
 	PXOpenGLContext;
 
@@ -936,7 +947,10 @@ PXPublic const char* PXOpenGLStringGetI(PXOpenGLContext* const openGLContext, co
 //-------------------------------------------------------------------------
 
 
-
+//---<Extensions>----------------------------------------------------------
+PXPublic void PXOpenGLSwapIntervalSet(PXOpenGLContext* const openGLContext, const PXInt32U interval);
+PXPublic PXInt32U PXOpenGLSwapIntervalGet(PXOpenGLContext* const openGLContext);
+//-------------------------------------------------------------------------
 
 
 

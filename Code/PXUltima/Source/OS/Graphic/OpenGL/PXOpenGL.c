@@ -1339,6 +1339,16 @@ const char* PXOpenGLStringGetI(PXOpenGLContext* const openGLContext, const PXOpe
     return openGLContext->PXOpenGLStringICallBack(stringNameID, index);
 }
 
+void PXOpenGLSwapIntervalSet(PXOpenGLContext* const openGLContext, const PXInt32U interval)
+{
+    openGLContext->PXOpenGLSwapIntervalSetCallBack(interval);
+}
+
+PXInt32U PXOpenGLSwapIntervalGet(PXOpenGLContext* const openGLContext)
+{
+    return  openGLContext->PXOpenGLSwapIntervalGetCallBack();
+}
+
 unsigned int PXOpenGLTextureTypeToID(const PXOpenGLTextureType openGLTextureType)
 {
     switch (openGLTextureType)
@@ -1527,10 +1537,12 @@ PXBool PXOpenGLContextCreateForWindow(PXOpenGLContext* const openGLContext)
         PXText pxTextVersion;
         PXTextMakeExternA(&pxTextVersion, version, 64);
 
-        PXTextToInt(&pxTextVersion, &versionMajor);
-        PXTextAdvance(&pxTextVersion, 1u); // dot
-        PXTextToInt(&pxTextVersion, &versionMinor);
-        PXTextAdvance(&pxTextVersion, 1u); // dot
+        PXSize offset = 0;
+
+        offset = PXTextToInt(&pxTextVersion, &versionMajor);
+        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
+        offset = PXTextToInt(&pxTextVersion, &versionMinor);
+        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
         PXTextToInt(&pxTextVersion, &versionPatch);
 
         const PXInt32U id = PXInt24Make(versionMajor, versionMinor, versionPatch);
@@ -1632,9 +1644,9 @@ PXBool PXOpenGLContextCreateForWindow(PXOpenGLContext* const openGLContext)
             PXOpenGLCacheFunction(functionNameList, &length, "glBindTexture", &openGLContext->PXOpenGLTextureBindCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glDeleteTextures", &openGLContext->PXOpenGLTextureDeleteCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glCreatePXProgram", &openGLContext->PXOpenGLShaderPXProgramCreateCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUsePXProgram", &openGLContext->PXOpenGLShaderPXProgramUseCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDeletePXProgram", &openGLContext->PXOpenGLShaderPXProgramDeleteCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glCreateProgram", &openGLContext->PXOpenGLShaderPXProgramCreateCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->PXOpenGLShaderPXProgramUseCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->PXOpenGLShaderPXProgramDeleteCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glShaderSource", &openGLContext->PXOpenGLShaderSourceCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->PXOpenGLShaderCreateCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->PXOpenGLShaderCompileCallBack);
@@ -1642,8 +1654,8 @@ PXBool PXOpenGLContextCreateForWindow(PXOpenGLContext* const openGLContext)
             PXOpenGLCacheFunction(functionNameList, &length, "glGetShaderInfoLog", &openGLContext->PXOpenGLShaderLogInfoGetCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glDeleteShader", &openGLContext->PXOpenGLShaderDeleteCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glAttachShader", &openGLContext->PXOpenGLAttachShaderCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glLinkPXProgram", &openGLContext->PXOpenGLLinkPXProgramCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glValidatePXProgram", &openGLContext->PXOpenGLValidatePXProgramCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glLinkProgram", &openGLContext->PXOpenGLLinkPXProgramCallBack);
+            PXOpenGLCacheFunction(functionNameList, &length, "glValidateProgram", &openGLContext->PXOpenGLValidatePXProgramCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glActiveTexture", &openGLContext->PXOpenGLActiveTextureCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glGenBuffers", &openGLContext->PXOpenGLGenBuffersCallBack);
             PXOpenGLCacheFunction(functionNameList, &length, "glBindBuffer", &openGLContext->PXOpenGLBindBufferCallBack);
@@ -1813,6 +1825,17 @@ PXBool PXOpenGLContextCreateForWindow(PXOpenGLContext* const openGLContext)
         }
     }
 
+    // Extensions
+    {
+#if OSUnix
+        PXOpenGLCacheFunction(functionNameList, &length, "glXSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLCacheFunction(functionNameList, &length, "glxGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
+#elif OSWindows
+        PXOpenGLCacheFunction(functionNameList, &length, "wglSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLCacheFunction(functionNameList, &length, "wglGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
+#endif
+    }
+
     for (PXSize i = 0; i < length; i += 2)
     {
         void** functionAdress = functionNameList[i];
@@ -1922,7 +1945,7 @@ void PXOpenGLContextCreateWindowless(PXOpenGLContext* const openGLContext, const
 
         openGLContext->AttachedWindow = window;
 
-        PXOpenGLContextSet(openGLContext, &window->GraphicInstance.PXOpenGLInstance);
+        PXOpenGLContextSet(openGLContext, &window->GraphicInstance.OpenGLInstance);
 
         return; // We should have all data here, stoping.
     }

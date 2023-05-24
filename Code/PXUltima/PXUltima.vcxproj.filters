@@ -426,6 +426,9 @@
     <ClCompile Include="Source\Serialization\Serialization.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Math\PXGeometric.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Algorithm\Dijkstra\PXDijkstra.h">
@@ -840,6 +843,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serialization\Serialization.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\PXGeometric.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

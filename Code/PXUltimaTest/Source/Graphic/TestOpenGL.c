@@ -362,14 +362,14 @@ void TestPXOpenGLVAO()
 	printf("Windows ok\n");
 
 
-	PXOpenGLContextSelect(&window.GraphicInstance.PXOpenGLInstance);
+	PXOpenGLContextSelect(&window.GraphicInstance.OpenGLInstance);
 
 	PXGraphicModelRegisterFromModel(&window.GraphicInstance, &renderable, &model);
 
 
 	while (1)
 	{
-		//PXOpenGLVertexArrayBind(&window.GraphicInstance.PXOpenGLInstance, renderable.ID); ; // VAO
+		//PXOpenGLVertexArrayBind(&window.GraphicInstance.OpenGLInstance, renderable.ID); ; // VAO
 		//GraphicShaderUse(&_mainWindow.GraphicInstance, 1);
 		//CameraDataGet(&_mainWindow, 1);
 		//CameraDataUpdate(&_mainWindow, MainCamera);
@@ -378,14 +378,14 @@ void TestPXOpenGLVAO()
 
 
 
-		PXOpenGLBufferBind(&window.GraphicInstance.PXOpenGLInstance, PXOpenGLBufferArray, renderable.VBO);
+		PXOpenGLBufferBind(&window.GraphicInstance.OpenGLInstance, PXOpenGLBufferArray, renderable.VBO);
 
 		glDrawBuffer(GL_POINTS);
 		//glDrawElements(GL_LINES, 36, GL_UNSIGNED_INT, 0);
 
-		PXOpenGLBufferUnbind(&window.GraphicInstance.PXOpenGLInstance, PXOpenGLBufferArray);
+		PXOpenGLBufferUnbind(&window.GraphicInstance.OpenGLInstance, PXOpenGLBufferArray);
 
-		//PXOpenGLVertexArrayUnbind(&window.GraphicInstance.PXOpenGLInstance);
+		//PXOpenGLVertexArrayUnbind(&window.GraphicInstance.OpenGLInstance);
 	}
 
 }
@@ -409,14 +409,14 @@ void TestPXOpenGLVBO()
 
 	printf("Windows ok\n");
 
-	PXOpenGLContext* glContext = &window.GraphicInstance.PXOpenGLInstance;
+	PXOpenGLContext* glContext = &window.GraphicInstance.OpenGLInstance;
 
 
 
 	//This code will use an IndexBuffer to produce a triangle with 1 inner triangle that isn't drawn.
 
 	PXText vertexShaderSource;
-	PXTextMakeFixedNamedA(&vertexShaderSource, "#version 330 core \n"
+	PXTextMakeFixedNamedA(&vertexShaderSource, vertexShaderSourceBuffer, "#version 330 core \n"
 		"layout (location = 0) in vec3 aPos; \n"
 		"void main()\n"
 		"{\n"
@@ -424,7 +424,7 @@ void TestPXOpenGLVBO()
 		"}");
 
 	PXText fragmentShaderSource;
-	PXTextMakeFixedNamedA(&fragmentShaderSource, "#version 330 core\n"
+	PXTextMakeFixedNamedA(&fragmentShaderSource, fragmentShaderSourceBuffer, "#version 330 core\n"
 		"out vec4 FragColor;\n"
 		"void main()\n"
 		"{\n"

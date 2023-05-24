@@ -118,7 +118,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
             HWND owner = NULL;
 
             OPENFILENAMEA openFileName;        
-            MemoryClear(&openFileName, sizeof(OPENFILENAMEA));
+            PXMemoryClear(&openFileName, sizeof(OPENFILENAMEA));
 
             openFileName.lStructSize = sizeof(OPENFILENAMEA);
             openFileName.hwndOwner = owner;
@@ -138,7 +138,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
             HWND owner = NULL;
 
             OPENFILENAMEW openFileName;
-            MemoryClear(&openFileName, sizeof(OPENFILENAMEW));
+            PXMemoryClear(&openFileName, sizeof(OPENFILENAMEW));
 
             openFileName.lStructSize = sizeof(OPENFILENAMEW);
             openFileName.hwndOwner = owner;

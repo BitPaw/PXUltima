@@ -50,9 +50,11 @@ extern "C"
 	}
 	PXGraphicResourceType;
 
+	typedef PXInt32U PXGraphicResourceID;
+
 	typedef struct PXGraphicResourceInfo_
 	{
-		PXInt32U ID;
+		PXGraphicResourceID ID;
 		PXGraphicResourceLocation Location;
 		PXGraphicSystem System;
 
@@ -227,13 +229,15 @@ extern "C"
 	}
 	PXTextureCube;
 
-	typedef struct CSprite_
+	typedef struct PXSprite
 	{
-		unsigned int ID;
-		PXTexture* Texture;
+		PXGraphicResourceID ID;
+		PXTexture Texture;
+		PXMatrix4x4F Position;
 	}
-	CSprite;
+	PXSprite;
 
+	 
 
 
 	typedef enum RefreshRateMode_
@@ -376,7 +380,7 @@ extern "C"
 
 	typedef struct PXGraphicContext_
 	{
-		PXOpenGLContext PXOpenGLInstance;
+		PXOpenGLContext OpenGLInstance;
 
 		void* AttachedWindow;
 
@@ -391,6 +395,7 @@ extern "C"
 	
 		PXDictionary UIElementLookUp;
 		PXDictionary TextureLookUp;
+		PXDictionary SpritelLookUp;
 		PXDictionary ModelLookUp;
 		PXDictionary FontLookUp;
 		PXDictionary SoundLookup;
@@ -468,7 +473,9 @@ extern "C"
 	PXPublic PXActionResult PXGraphicTextureCubeRelease(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
 	//-------------------------------------------------------------------------
 
-
+	//---<Sprte>---------------------------------------------------------------
+	PXPublic PXActionResult PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
+	//-------------------------------------------------------------------------
 
 	//---<Font>----------------------------------------------------------------------
 	PXPublic PXActionResult PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXText* const filePath);

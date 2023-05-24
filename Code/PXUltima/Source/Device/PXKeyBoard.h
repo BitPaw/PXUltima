@@ -138,10 +138,10 @@ extern "C"
 
 	typedef struct PXKeyBoard_
 	{
-		unsigned int Letters; // A, B, C, D, ...
-		unsigned int Numbers; // 0,1,2... and +, -, /, ...
-		unsigned int Commands; // Enter, Escape, ect..
-		unsigned int Actions; // F-01 to F-xx
+		PXInt32U Letters; // A, B, C, D, ...
+		PXInt32U Numbers; // 0,1,2... and +, -, /, ...
+		PXInt32U Commands; // Enter, Escape, ect..
+		PXInt32U Actions; // F-01 to F-xx
 	}
 	PXKeyBoard;
 

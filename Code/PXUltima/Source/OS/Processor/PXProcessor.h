@@ -210,6 +210,8 @@ extern "C"
 	PXPublic unsigned int PXProcessorFrequencyCurrent();
 	PXPublic unsigned int PXProcessorTimeReal();
 
+    PXPublic PXInt32U PXProcessorTemperature();
+
 
 
 #ifdef __cplusplus

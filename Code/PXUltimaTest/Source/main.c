@@ -22,6 +22,7 @@
 #include <OS/Debug/PXDebug.h>
 #include <OS/File/PXDirectory.h>
 #include <OS/Dialog/PXDialog.h>
+#include <OS/Window/PXWindow.h>
 
 void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
 {
@@ -103,6 +104,40 @@ int main()
 	PXDialogPrint();
 
 #endif // 0 // TEST FILE DIALOG
+
+
+#define KeyBoardTest 1
+#if KeyBoardTest
+
+	PXWindow pxWindow;
+	PXText pxText;
+	PXTextMakeFixedA(&pxText, "Window input Test");
+
+	PXWindowConstruct(&pxWindow);
+	PXWindowCreate(&pxWindow, 600, 400, &pxText, PXTrue);
+
+	while (1)
+	{
+		printf("\033[H\033[J");
+		printf("\033[%d;%dH", 0, 0);
+		PXKeyBoardInputPrint(&pxWindow.KeyBoardCurrentInput);
+		PXThreadSleep(0, 100);
+	}
+
+#endif // 0
+
+
+
+#if 1
+	while (1)
+	{
+		const PXInt32U temperature = PXProcessorTemperature();
+
+		printf("CPU Temp : %i\n", temperature);
+
+		PXThreadSleep(0, 100);
+	}
+#endif // 1
 
 
 

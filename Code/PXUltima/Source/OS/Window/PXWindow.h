@@ -124,7 +124,7 @@ extern "C"
 	typedef void (*MouseLeaveEvent)(const void* const receiver, const PXWindow* sender);
 
 	// Keyboard
-	typedef void (*KeyBoardKeyEvent)(const void* const receiver, const PXWindow* sender, const KeyBoardKeyInfo keyBoardKeyInfo);
+	typedef void (*KeyBoardKeyEvent)(const void* const receiver, const PXWindow* sender, const KeyBoardKeyInfo* const keyBoardKeyInfo);
 
 	typedef void (*FocusEnterEvent)(const void* const receiver, const PXWindow* sender);
 	typedef void (*FocusLeaveEvent)(const void* const receiver, const PXWindow* sender);
@@ -266,7 +266,7 @@ extern "C"
 	PXPublic void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
 
 
-	PXPublic void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo);
+	PXPublic void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo* const keyBoardKeyInfo);
 
 	// Keyboard
 	//typedef void (*KeyBoardKeyEvent)(const KeyBoardKeyInfo keyBoardKeyInfo);

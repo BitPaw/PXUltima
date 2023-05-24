@@ -7,7 +7,12 @@
 #include <sys/time.h>
 #elif OSWindows
 #include <Windows.h>
+//#include <comdef.h>
+#include <Wbemidl.h>
 //#include <intrin.h> // MISSING
+
+#pragma comment(lib, "wbemuuid.lib")
+
 #endif
 
 #include <stdio.h>
@@ -629,5 +634,77 @@ unsigned int PXProcessorTimeReal()
         return 0;
     }
     return (double)time.tv_sec + (double)time.tv_usec * 0.000001;
+#endif
+}
+
+PXInt32U PXProcessorTemperature()
+{
+    // Assembly command?
+
+
+#if 0
+
+
+#if OSUnix
+    return -1;
+
+#elif OSWindows
+    PXInt32U cpuTemperature = -1;
+
+    HRESULT ci = CoInitialize(NULL);
+    HRESULT hr = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
+    if (SUCCEEDED(hr))
+    {
+        IWbemLocator* pLocator;
+        hr = CoCreateInstance(&CLSID_WbemAdministrativeLocator, NULL, CLSCTX_INPROC_SERVER, &IID_IWbemLocator, (LPVOID*)&pLocator);
+        if (SUCCEEDED(hr))
+        {
+            IWbemServices* pServices;
+            BSTR ns = SysAllocString(L"root\\WMI");
+
+            hr = pLocator->lpVtbl->ConnectServer(pLocator, ns, NULL, NULL, NULL, 0, NULL, NULL, &pServices);
+            pLocator->lpVtbl->Release(pLocator);
+            SysFreeString(ns);
+            if (SUCCEEDED(hr))
+            {
+                BSTR query = SysAllocString(L"SELECT * FROM Win32_TemperatureProbe");
+               // BSTR query = SysAllocString(L"SELECT * FROM MSAcpi_ThermalZoneTemperature");
+                BSTR wql = SysAllocString(L"WQL");
+                IEnumWbemClassObject* pEnum;
+                hr = pServices->lpVtbl->ExecQuery(pServices, wql, query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_FORWARD_ONLY, NULL, &pEnum);
+                SysFreeString(wql);
+                SysFreeString(query);
+                pServices->lpVtbl->Release(pServices);
+                if (SUCCEEDED(hr))
+                {
+                    IWbemClassObject* pObject = 0;
+                    ULONG returned = 0;
+                    hr = pEnum->lpVtbl->Next(pEnum, WBEM_INFINITE, 1, &pObject, &returned);
+                    pEnum->lpVtbl->Release(pEnum);
+                    if (SUCCEEDED(hr))
+                    {
+                        BSTR temp = SysAllocString(L"CurrentTemperature");
+                        VARIANT v;
+                        VariantInit(&v);
+                        hr = pObject->lpVtbl->Get(pObject, temp, 0, &v, NULL, NULL);
+                        pObject->lpVtbl->Release(pObject);
+                        SysFreeString(temp);
+                        if (SUCCEEDED(hr))
+                        {
+                            cpuTemperature = V_I4(&v);
+                        }
+                        VariantClear(&v);
+                    }
+                }
+            }
+            if (ci == S_OK)
+            {
+                CoUninitialize();
+            }
+        }
+    }
+    return cpuTemperature;
+
+#endif
 #endif
 }

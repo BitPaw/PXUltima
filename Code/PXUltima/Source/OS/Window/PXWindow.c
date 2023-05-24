@@ -1339,7 +1339,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             buttonInfo.GapState = (characterInfo & 0b10000000000000000000000000000000) >> 31; // Der Übergangszustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
 			*/
 
-            PXWindowTriggerOnKeyBoardKeyEvent(window, buttonInfo);
+            PXWindowTriggerOnKeyBoardKeyEvent(window, &buttonInfo);
 
             break;
         }
@@ -1942,8 +1942,8 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
     const PXSize maskLength = (XI_LASTEVENT + 7) / 8;
     unsigned char mask[maskLength];
 
-    MemoryClear(mask, sizeof(mask));
-    MemoryClear(&eventmask, sizeof(XIEventMask));
+    PXMemoryClear(mask, sizeof(mask));
+    PXMemoryClear(&eventmask, sizeof(XIEventMask));
 
     XISetMask(mask, XI_RawMotion);
     //XISetMask(mask, XI_RawButtonPress);
@@ -1960,52 +1960,84 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
 #elif OSWindows
 
+
+ 
+
+
+
+
+
+  
+  
+   
+
+
+
+   
+    PXWindowID windowID = 0;
+    DWORD windowStyle = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
     DWORD dwStyle = 0;
     HWND hWndParent = 0;
-    HINSTANCE hInstance = GetModuleHandle(NULL);
-    const wchar_t* lpClassName = L"PXUltima_WindowCreationAsyncThread";
-    const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
-    window->CursorID = cursorID;
-
-    if (!window->Mode == PXWindowModeNormal)
-    {
-        dwStyle |= WS_VISIBLE | WS_OVERLAPPEDWINDOW;
-    }
-
-    WNDCLASSW wndclass;
-
-    PXMemoryClear(&wndclass, sizeof(WNDCLASSW));
-
-    wndclass.style = CS_OWNDC; //  CS_HREDRAW | CS_VREDRAW;
-    wndclass.lpfnWndProc = PXWindowEventHandler;
-    wndclass.cbClsExtra = 0; // The number of extra bytes to allocate following the window-class structure.
-    wndclass.cbWndExtra = 0;
-    wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wndclass.hCursor = window->CursorID;
-    wndclass.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
-    wndclass.lpszMenuName = 0;
-    wndclass.lpszClassName = lpClassName;
-
-    const WORD classID = RegisterClassW(&wndclass);
-
-    lpClassName = (wchar_t*)classID;
-
-
-    DWORD windowStyle = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
     HMENU hMenu = 0;
     void* lpParam = 0;
-    PXWindowID windowID = 0;
+
+    UINT        style = CS_OWNDC; //  CS_HREDRAW | CS_VREDRAW;
+    WNDPROC     lpfnWndProc = PXWindowEventHandler;
+    int         cbClsExtra = 0; // The number of extra bytes to allocate following the window-class structure.
+    int         cbWndExtra = 0;
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+    HICON       hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    HCURSOR     hCursor = window->CursorID;
+    HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
+
+
+
+    // Cursor setup
+    {
+        const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
+        window->CursorID = cursorID;
+
+        if (!window->Mode == PXWindowModeNormal)
+        {
+            dwStyle |= WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+        }
+    }
+
 
     switch (window->Title.Format)
     {
         case TextFormatASCII:
         case TextFormatUTF8:
         {
+            char* windowClassName = 0;
+
+            // Registering of class
+            {
+                WNDCLASSA wndclass;
+
+                PXMemoryClear(&wndclass, sizeof(WNDCLASSA));
+
+                wndclass.style = style; 
+                wndclass.lpfnWndProc = lpfnWndProc;
+                wndclass.cbClsExtra = cbClsExtra; 
+                wndclass.cbWndExtra = cbWndExtra;
+                wndclass.hInstance = hInstance;
+                wndclass.hIcon = hIcon;
+                wndclass.hCursor = hCursor;
+                wndclass.hbrBackground = hbrBackground;
+                wndclass.lpszMenuName = 0;
+                wndclass.lpszClassName = "PXUltima_WindowCreate";
+
+                const WORD classID = RegisterClassA(&wndclass);
+
+                windowClassName = (char*)classID;
+            }
+
+
             windowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
             (
                 windowStyle,
-                lpClassName,
+                windowClassName,
                 window->Title.TextA,
                 dwStyle,
                 window->X,
@@ -2022,10 +2054,34 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
         }
         case TextFormatUNICODE:
         {
+            wchar_t* windowClassName = 0;
+
+            // Registering of class
+            {
+                WNDCLASSW wndclass;
+
+                PXMemoryClear(&wndclass, sizeof(WNDCLASSW));
+
+                wndclass.style = style;
+                wndclass.lpfnWndProc = lpfnWndProc;
+                wndclass.cbClsExtra = cbClsExtra;
+                wndclass.cbWndExtra = cbWndExtra;
+                wndclass.hInstance = hInstance;
+                wndclass.hIcon = hIcon;
+                wndclass.hCursor = hCursor;
+                wndclass.hbrBackground = hbrBackground;
+                wndclass.lpszMenuName = 0;
+                wndclass.lpszClassName = L"PXUltima_WindowCreate";
+
+                const WORD classID = RegisterClassA(&wndclass);
+
+                windowClassName = (char*)classID;
+            }
+
             windowID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
             (
                 windowStyle,
-                lpClassName,
+                windowClassName,
                 window->Title.TextW,
                 dwStyle,
                 window->X,
@@ -2505,8 +2561,6 @@ void PXWindowPosition(PXWindow* window, unsigned int* x, unsigned int* y)
         window->Width = rectangle.right - rectangle.left;
         window->Height = rectangle.bottom - rectangle.top;
     }
-
-    printf("Sreen res %i x %i\n", window->Width, window->Height);
 #endif
 }
 
@@ -2697,7 +2751,7 @@ PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
 	MOUSEMOVEPOINT mp_in;
 	MOUSEMOVEPOINT mp_out[64];
 
-	MemoryClear(&mp_in, mouseMovePointSize);
+	PXMemoryClear(&mp_in, mouseMovePointSize);
 
 	mp_in.x = 0x0000FFFF;//Ensure that this number will pass through.
 	mp_in.y = 0x0000FFFF;
@@ -2859,9 +2913,291 @@ void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mou
 {
 }
 
-void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo keyBoardKeyInfo)
+void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo* const keyBoardKeyInfo)
 {
-    printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo.KeyID, keyBoardKeyInfo.Key, keyBoardKeyInfo.Mode);
+    printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
+
+    PXKeyBoard* const keyBoard = &window->KeyBoardCurrentInput;
+
+    PXInt32U mask = 0;
+    PXInt32U data = 0;
+
+    if (keyBoardKeyInfo->Mode == ButtonStateDown)
+    {
+        switch (keyBoardKeyInfo->Key)
+        {
+            case KeyA: keyBoard->Letters |= KeyBoardIDLetterA; break;
+            case KeyB: keyBoard->Letters |= KeyBoardIDLetterB; break;
+            case KeyC: keyBoard->Letters |= KeyBoardIDLetterC; break;
+            case KeyD: keyBoard->Letters |= KeyBoardIDLetterD; break;
+            case KeyE: keyBoard->Letters |= KeyBoardIDLetterE; break;
+            case KeyF: keyBoard->Letters |= KeyBoardIDLetterF; break;
+            case KeyG: keyBoard->Letters |= KeyBoardIDLetterG; break;
+            case KeyH: keyBoard->Letters |= KeyBoardIDLetterH; break;
+            case KeyI: keyBoard->Letters |= KeyBoardIDLetterI; break;
+            case KeyJ: keyBoard->Letters |= KeyBoardIDLetterJ; break;
+            case KeyK: keyBoard->Letters |= KeyBoardIDLetterK; break;
+            case KeyL: keyBoard->Letters |= KeyBoardIDLetterL; break;
+            case KeyM: keyBoard->Letters |= KeyBoardIDLetterM; break;
+            case KeyN: keyBoard->Letters |= KeyBoardIDLetterN; break;
+            case KeyO: keyBoard->Letters |= KeyBoardIDLetterO; break;
+            case KeyP: keyBoard->Letters |= KeyBoardIDLetterP; break;
+            case KeyQ: keyBoard->Letters |= KeyBoardIDLetterQ; break;
+            case KeyR: keyBoard->Letters |= KeyBoardIDLetterR; break;
+            case KeyS: keyBoard->Letters |= KeyBoardIDLetterS; break;
+            case KeyT: keyBoard->Letters |= KeyBoardIDLetterT; break;
+            case KeyU: keyBoard->Letters |= KeyBoardIDLetterU; break;
+            case KeyV: keyBoard->Letters |= KeyBoardIDLetterV; break;
+            case KeyW: keyBoard->Letters |= KeyBoardIDLetterW; break;
+            case KeyX: keyBoard->Letters |= KeyBoardIDLetterX; break;
+            case KeyY: keyBoard->Letters |= KeyBoardIDLetterY; break;
+            case KeyZ: keyBoard->Letters |= KeyBoardIDLetterZ; break;
+            case KeySpace: keyBoard->Letters |= KeyBoardIDSpace; break;
+            case KeyApostrophe: keyBoard->Letters |= KeyBoardIDAPOSTROPHE; break;
+            case KeyComma: keyBoard->Letters |= KeyBoardIDComma; break;
+            case KeyGraveAccent: keyBoard->Letters |= KeyBoardIDGRAVE_ACCENT; break;
+            case KeySemicolon: keyBoard->Letters |= KeyBoardIDSemicolon; break;
+            case KeyPeriod: keyBoard->Letters |= KeyBoardIDDECIMAL; break;
+
+
+            case KeyEscape: keyBoard->Commands |= KeyBoardIDCommandEscape; break;
+            case KeyEnter: keyBoard->Commands |= KeyBoardIDCommandEnter; break;
+            case KeyTab: keyBoard->Commands |= KeyBoardIDCommandTab; break;
+            //case : keyBoard->Commands |= KeyBoardIDCommandShift; break;
+            case KeyBackspace: keyBoard->Commands |= KeyBoardIDBACKSPACE; break;
+            case KeyInsert: keyBoard->Commands |= KeyBoardIDINSERT; break;
+            case KeyDelete: keyBoard->Commands |= KeyBoardIDDELETE; break;
+            case KeyRight: keyBoard->Commands |= KeyBoardIDRIGHT; break;
+            case KeyLeft: keyBoard->Commands |= KeyBoardIDLEFT; break;
+            case KeyDown: keyBoard->Commands |= KeyBoardIDDOWN; break;
+            case KeyUp: keyBoard->Commands |= KeyBoardIDUP; break;
+            case KeyPageUp: keyBoard->Commands |= KeyBoardIDPAGE_UP; break;
+            case KeyPageDown: keyBoard->Commands |= KeyBoardIDPAGE_DOWN; break;
+            case KeyHome: keyBoard->Commands |= KeyBoardIDHOME; break;
+            case KeyEnd: keyBoard->Commands |= KeyBoardIDEND; break;
+            case KeyCapsLock: keyBoard->Commands |= KeyBoardIDCAPS_LOCK; break;
+            case KeyScrollLock: keyBoard->Commands |= KeyBoardIDSCROLL_LOCK; break;
+            case KeyNumLock: keyBoard->Commands |= KeyBoardIDNUM_LOCK; break;
+            case KeyPrintScreen: keyBoard->Commands |= KeyBoardIDPRINT_SCREEN; break;
+            case KeyPause: keyBoard->Commands |= KeyBoardIDPAUSE; break;
+            case KeyPadEnter: keyBoard->Commands |= KeyBoardIDPadENTER; break;
+            case KeyShiftLeft: keyBoard->Commands |= KeyBoardIDShiftLeft; break;
+            case KeyShiftRight: keyBoard->Commands |= KeyBoardIDShiftRight; break;
+            case KeyControlLeft: keyBoard->Commands |= KeyBoardIDCONTROLLEFT; break;
+            case KeyAltLeft: keyBoard->Commands |= KeyBoardIDALTLEFT; break;
+            //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDSUPERLEFT; break;
+            case KeyControlRight: keyBoard->Commands |= KeyBoardIDCONTROLRIGHT; break;
+            case KeyAltRight: keyBoard->Commands |= KeyBoardIDALTRIGHT; break;
+            //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDSUPERRIGHT; break;
+            //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDMENU; break;
+            //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDWORLD_1; break;
+            //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDWORLD_2; break;
+
+
+                // Numbers
+            case Key0: keyBoard->Numbers |= KeyBoardIDNumber0; break;
+            case Key1: keyBoard->Numbers |= KeyBoardIDNumber1; break;
+            case Key2: keyBoard->Numbers |= KeyBoardIDNumber2; break;
+            case Key3: keyBoard->Numbers |= KeyBoardIDNumber3; break;
+            case Key4: keyBoard->Numbers |= KeyBoardIDNumber4; break;
+            case Key5: keyBoard->Numbers |= KeyBoardIDNumber5; break;
+            case Key6: keyBoard->Numbers |= KeyBoardIDNumber6; break;
+            case Key7: keyBoard->Numbers |= KeyBoardIDNumber7; break;
+            case Key8: keyBoard->Numbers |= KeyBoardIDNumber8; break;
+            case Key9: keyBoard->Numbers |= KeyBoardIDNumber9; break;
+            case KeyPad0: keyBoard->Numbers |= KeyBoardIDNumberBlock0; break;
+            case KeyPad1: keyBoard->Numbers |= KeyBoardIDNumberBlock1; break;
+            case KeyPad2: keyBoard->Numbers |= KeyBoardIDNumberBlock2; break;
+            case KeyPad3: keyBoard->Numbers |= KeyBoardIDNumberBlock3; break;
+            case KeyPad4: keyBoard->Numbers |= KeyBoardIDNumberBlock4; break;
+            case KeyPad5: keyBoard->Numbers |= KeyBoardIDNumberBlock5; break;
+            case KeyPad6: keyBoard->Numbers |= KeyBoardIDNumberBlock6; break;
+            case KeyPad7: keyBoard->Numbers |= KeyBoardIDNumberBlock7; break;
+            case KeyPad8: keyBoard->Numbers |= KeyBoardIDNumberBlock8; break;
+            case KeyPad9: keyBoard->Numbers |= KeyBoardIDNumberBlock9; break;
+            case KeyMinus: keyBoard->Numbers |= KeyBoardIDNumberKeyMinus; break;
+           // case KeyPeriod: keyBoard->Numbers |= KeyBoardIDNumberKeyPeriod; break;
+            case KeySlash: keyBoard->Numbers |= KeyBoardIDNumberKeySlash; break;
+            case KeyEqual: keyBoard->Numbers |= KeyBoardIDNumberKeyEqual; break;
+            case KeyBrackedLeft: keyBoard->Numbers |= KeyBoardIDNumberKeyLEFT_BRACKET; break;
+            case KeyBackSlash: keyBoard->Numbers |= KeyBoardIDNumberKeyBACKSLASH; break;
+            case KeyBrackedRight: keyBoard->Numbers |= KeyBoardIDNumberKeyRIGHT_BRACKET; break;
+            case KeyPadDivide: keyBoard->Numbers |= KeyBoardIDNumberKeyPadDIVIDE; break;
+            case KeyPadMultiply: keyBoard->Numbers |= KeyBoardIDNumberKeyPadMULTIPLY; break;
+            case KeyPadSubtract: keyBoard->Numbers |= KeyBoardIDNumberKeyPadSUBTRACT; break;
+            case KeyPadAdd: keyBoard->Numbers |= KeyBoardIDNumberKeyPadADD; break;
+            case KeyPadEqual: keyBoard->Numbers |= KeyBoardIDNumberKeyPadEQUAL; break;
+
+                // Function key
+
+            case KeyF1: keyBoard->Actions |= KeyBoardIDF01; break;
+            case KeyF2: keyBoard->Actions |= KeyBoardIDF02; break;
+            case KeyF3: keyBoard->Actions |= KeyBoardIDF03; break;
+            case KeyF4: keyBoard->Actions |= KeyBoardIDF04; break;
+            case KeyF5: keyBoard->Actions |= KeyBoardIDF05; break;
+            case KeyF6: keyBoard->Actions |= KeyBoardIDF06; break;
+            case KeyF7: keyBoard->Actions |= KeyBoardIDF07; break;
+            case KeyF8: keyBoard->Actions |= KeyBoardIDF08; break;
+            case KeyF9: keyBoard->Actions |= KeyBoardIDF09; break;
+            case KeyF10: keyBoard->Actions |= KeyBoardIDF10; break;
+            case KeyF11: keyBoard->Actions |= KeyBoardIDF11; break;
+            case KeyF12: keyBoard->Actions |= KeyBoardIDF12; break;
+            case KeyF13: keyBoard->Actions |= KeyBoardIDF13; break;
+            case KeyF14: keyBoard->Actions |= KeyBoardIDF14; break;
+            case KeyF15: keyBoard->Actions |= KeyBoardIDF15; break;
+            case KeyF16: keyBoard->Actions |= KeyBoardIDF16; break;
+            case KeyF17: keyBoard->Actions |= KeyBoardIDF17; break;
+            case KeyF18: keyBoard->Actions |= KeyBoardIDF18; break;
+            case KeyF19: keyBoard->Actions |= KeyBoardIDF19; break;
+            case KeyF20: keyBoard->Actions |= KeyBoardIDF20; break;
+            case KeyF21: keyBoard->Actions |= KeyBoardIDF21; break;
+            case KeyF22: keyBoard->Actions |= KeyBoardIDF22; break;
+            case KeyF23: keyBoard->Actions |= KeyBoardIDF23; break;
+            case KeyF24: keyBoard->Actions |= KeyBoardIDF24; break;
+            case KeyF25: keyBoard->Actions |= KeyBoardIDF25; break;
+
+            default:
+                break;
+        }
+    }
+    else
+    {
+        switch (keyBoardKeyInfo->Key)
+        {
+            case KeyA: keyBoard->Letters &= ~KeyBoardIDLetterA; break;
+            case KeyB: keyBoard->Letters &= ~KeyBoardIDLetterB; break;
+            case KeyC: keyBoard->Letters &= ~KeyBoardIDLetterC; break;
+            case KeyD: keyBoard->Letters &= ~KeyBoardIDLetterD; break;
+            case KeyE: keyBoard->Letters &= ~KeyBoardIDLetterE; break;
+            case KeyF: keyBoard->Letters &= ~KeyBoardIDLetterF; break;
+            case KeyG: keyBoard->Letters &= ~KeyBoardIDLetterG; break;
+            case KeyH: keyBoard->Letters &= ~KeyBoardIDLetterH; break;
+            case KeyI: keyBoard->Letters &= ~KeyBoardIDLetterI; break;
+            case KeyJ: keyBoard->Letters &= ~KeyBoardIDLetterJ; break;
+            case KeyK: keyBoard->Letters &= ~KeyBoardIDLetterK; break;
+            case KeyL: keyBoard->Letters &= ~KeyBoardIDLetterL; break;
+            case KeyM: keyBoard->Letters &= ~KeyBoardIDLetterM; break;
+            case KeyN: keyBoard->Letters &= ~KeyBoardIDLetterN; break;
+            case KeyO: keyBoard->Letters &= ~KeyBoardIDLetterO; break;
+            case KeyP: keyBoard->Letters &= ~KeyBoardIDLetterP; break;
+            case KeyQ: keyBoard->Letters &= ~KeyBoardIDLetterQ; break;
+            case KeyR: keyBoard->Letters &= ~KeyBoardIDLetterR; break;
+            case KeyS: keyBoard->Letters &= ~KeyBoardIDLetterS; break;
+            case KeyT: keyBoard->Letters &= ~KeyBoardIDLetterT; break;
+            case KeyU: keyBoard->Letters &= ~KeyBoardIDLetterU; break;
+            case KeyV: keyBoard->Letters &= ~KeyBoardIDLetterV; break;
+            case KeyW: keyBoard->Letters &= ~KeyBoardIDLetterW; break;
+            case KeyX: keyBoard->Letters &= ~KeyBoardIDLetterX; break;
+            case KeyY: keyBoard->Letters &= ~KeyBoardIDLetterY; break;
+            case KeyZ: keyBoard->Letters &= ~KeyBoardIDLetterZ; break;
+            case KeySpace: keyBoard->Letters &= ~KeyBoardIDSpace; break;
+            case KeyApostrophe: keyBoard->Letters &= ~KeyBoardIDAPOSTROPHE; break;
+            case KeyComma: keyBoard->Letters &= ~KeyBoardIDComma; break;
+            case KeyGraveAccent: keyBoard->Letters &= ~KeyBoardIDGRAVE_ACCENT; break;
+            case KeySemicolon: keyBoard->Letters &= ~KeyBoardIDSemicolon; break;
+            case KeyPeriod: keyBoard->Letters &= ~KeyBoardIDDECIMAL; break;
+
+
+            case KeyEscape: keyBoard->Commands &= ~KeyBoardIDCommandEscape; break;
+            case KeyEnter: keyBoard->Commands &= ~KeyBoardIDCommandEnter; break;
+            case KeyTab: keyBoard->Commands &= ~KeyBoardIDCommandTab; break;
+                //case : keyBoard->Commands &= ~KeyBoardIDCommandShift; break;
+            case KeyBackspace: keyBoard->Commands &= ~KeyBoardIDBACKSPACE; break;
+            case KeyInsert: keyBoard->Commands &= ~KeyBoardIDINSERT; break;
+            case KeyDelete: keyBoard->Commands &= ~KeyBoardIDDELETE; break;
+            case KeyRight: keyBoard->Commands &= ~KeyBoardIDRIGHT; break;
+            case KeyLeft: keyBoard->Commands &= ~KeyBoardIDLEFT; break;
+            case KeyDown: keyBoard->Commands &= ~KeyBoardIDDOWN; break;
+            case KeyUp: keyBoard->Commands &= ~KeyBoardIDUP; break;
+            case KeyPageUp: keyBoard->Commands &= ~KeyBoardIDPAGE_UP; break;
+            case KeyPageDown: keyBoard->Commands &= ~KeyBoardIDPAGE_DOWN; break;
+            case KeyHome: keyBoard->Commands &= ~KeyBoardIDHOME; break;
+            case KeyEnd: keyBoard->Commands &= ~KeyBoardIDEND; break;
+            case KeyCapsLock: keyBoard->Commands &= ~KeyBoardIDCAPS_LOCK; break;
+            case KeyScrollLock: keyBoard->Commands &= ~KeyBoardIDSCROLL_LOCK; break;
+            case KeyNumLock: keyBoard->Commands &= ~KeyBoardIDNUM_LOCK; break;
+            case KeyPrintScreen: keyBoard->Commands &= ~KeyBoardIDPRINT_SCREEN; break;
+            case KeyPause: keyBoard->Commands &= ~KeyBoardIDPAUSE; break;
+            case KeyPadEnter: keyBoard->Commands &= ~KeyBoardIDPadENTER; break;
+            case KeyShiftLeft: keyBoard->Commands &= ~KeyBoardIDShiftLeft; break;
+            case KeyShiftRight: keyBoard->Commands &= ~KeyBoardIDShiftRight; break;
+            case KeyControlLeft: keyBoard->Commands &= ~KeyBoardIDCONTROLLEFT; break;
+            case KeyAltLeft: keyBoard->Commands &= ~KeyBoardIDALTLEFT; break;
+                //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDSUPERLEFT; break;
+            case KeyControlRight: keyBoard->Commands &= ~KeyBoardIDCONTROLRIGHT; break;
+            case KeyAltRight: keyBoard->Commands &= ~KeyBoardIDALTRIGHT; break;
+                //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDSUPERRIGHT; break;
+                //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDMENU; break;
+                //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDWORLD_1; break;
+                //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDWORLD_2; break;
+
+
+                    // Numbers
+            case Key0: keyBoard->Numbers &= ~KeyBoardIDNumber0; break;
+            case Key1: keyBoard->Numbers &= ~KeyBoardIDNumber1; break;
+            case Key2: keyBoard->Numbers &= ~KeyBoardIDNumber2; break;
+            case Key3: keyBoard->Numbers &= ~KeyBoardIDNumber3; break;
+            case Key4: keyBoard->Numbers &= ~KeyBoardIDNumber4; break;
+            case Key5: keyBoard->Numbers &= ~KeyBoardIDNumber5; break;
+            case Key6: keyBoard->Numbers &= ~KeyBoardIDNumber6; break;
+            case Key7: keyBoard->Numbers &= ~KeyBoardIDNumber7; break;
+            case Key8: keyBoard->Numbers &= ~KeyBoardIDNumber8; break;
+            case Key9: keyBoard->Numbers &= ~KeyBoardIDNumber9; break;
+            case KeyPad0: keyBoard->Numbers &= ~KeyBoardIDNumberBlock0; break;
+            case KeyPad1: keyBoard->Numbers &= ~KeyBoardIDNumberBlock1; break;
+            case KeyPad2: keyBoard->Numbers &= ~KeyBoardIDNumberBlock2; break;
+            case KeyPad3: keyBoard->Numbers &= ~KeyBoardIDNumberBlock3; break;
+            case KeyPad4: keyBoard->Numbers &= ~KeyBoardIDNumberBlock4; break;
+            case KeyPad5: keyBoard->Numbers &= ~KeyBoardIDNumberBlock5; break;
+            case KeyPad6: keyBoard->Numbers &= ~KeyBoardIDNumberBlock6; break;
+            case KeyPad7: keyBoard->Numbers &= ~KeyBoardIDNumberBlock7; break;
+            case KeyPad8: keyBoard->Numbers &= ~KeyBoardIDNumberBlock8; break;
+            case KeyPad9: keyBoard->Numbers &= ~KeyBoardIDNumberBlock9; break;
+            case KeyMinus: keyBoard->Numbers &= ~KeyBoardIDNumberKeyMinus; break;
+                // case KeyPeriod: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPeriod; break;
+            case KeySlash: keyBoard->Numbers &= ~KeyBoardIDNumberKeySlash; break;
+            case KeyEqual: keyBoard->Numbers &= ~KeyBoardIDNumberKeyEqual; break;
+            case KeyBrackedLeft: keyBoard->Numbers &= ~KeyBoardIDNumberKeyLEFT_BRACKET; break;
+            case KeyBackSlash: keyBoard->Numbers &= ~KeyBoardIDNumberKeyBACKSLASH; break;
+            case KeyBrackedRight: keyBoard->Numbers &= ~KeyBoardIDNumberKeyRIGHT_BRACKET; break;
+            case KeyPadDivide: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadDIVIDE; break;
+            case KeyPadMultiply: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadMULTIPLY; break;
+            case KeyPadSubtract: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadSUBTRACT; break;
+            case KeyPadAdd: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadADD; break;
+            case KeyPadEqual: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadEQUAL; break;
+
+                // Function key
+
+            case KeyF1: keyBoard->Actions &= ~KeyBoardIDF01; break;
+            case KeyF2: keyBoard->Actions &= ~KeyBoardIDF02; break;
+            case KeyF3: keyBoard->Actions &= ~KeyBoardIDF03; break;
+            case KeyF4: keyBoard->Actions &= ~KeyBoardIDF04; break;
+            case KeyF5: keyBoard->Actions &= ~KeyBoardIDF05; break;
+            case KeyF6: keyBoard->Actions &= ~KeyBoardIDF06; break;
+            case KeyF7: keyBoard->Actions &= ~KeyBoardIDF07; break;
+            case KeyF8: keyBoard->Actions &= ~KeyBoardIDF08; break;
+            case KeyF9: keyBoard->Actions &= ~KeyBoardIDF09; break;
+            case KeyF10: keyBoard->Actions &= ~KeyBoardIDF10; break;
+            case KeyF11: keyBoard->Actions &= ~KeyBoardIDF11; break;
+            case KeyF12: keyBoard->Actions &= ~KeyBoardIDF12; break;
+            case KeyF13: keyBoard->Actions &= ~KeyBoardIDF13; break;
+            case KeyF14: keyBoard->Actions &= ~KeyBoardIDF14; break;
+            case KeyF15: keyBoard->Actions &= ~KeyBoardIDF15; break;
+            case KeyF16: keyBoard->Actions &= ~KeyBoardIDF16; break;
+            case KeyF17: keyBoard->Actions &= ~KeyBoardIDF17; break;
+            case KeyF18: keyBoard->Actions &= ~KeyBoardIDF18; break;
+            case KeyF19: keyBoard->Actions &= ~KeyBoardIDF19; break;
+            case KeyF20: keyBoard->Actions &= ~KeyBoardIDF20; break;
+            case KeyF21: keyBoard->Actions &= ~KeyBoardIDF21; break;
+            case KeyF22: keyBoard->Actions &= ~KeyBoardIDF22; break;
+            case KeyF23: keyBoard->Actions &= ~KeyBoardIDF23; break;
+            case KeyF24: keyBoard->Actions &= ~KeyBoardIDF24; break;
+            case KeyF25: keyBoard->Actions &= ~KeyBoardIDF25; break;
+
+            default:
+                break;
+        }
+    }
 
     InvokeEvent(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
 }

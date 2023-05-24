@@ -86,6 +86,7 @@ extern "C"
 	PXPublic void PXMatrix4x4FPosition(const PXMatrix4x4F* const matrix, PXVector3F* const position);
 	PXPublic void PXMatrix4x4FMoveTo(PXMatrix4x4F* const matrixInput, const PXVector3F* const position, PXMatrix4x4F* const matrixResult);
 
+
 	PXPublic void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult);
 	PXPublic void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
 

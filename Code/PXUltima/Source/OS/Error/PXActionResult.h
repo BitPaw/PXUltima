@@ -24,6 +24,8 @@ extern "C"
 		PXActionNotSupportedByLibrary,
 		PXActionNotSupportedByOperatingSystem,
 
+		PXActionRefuedParameterNull, // Some needed Parameter is null
+
 		
 		PXActionRefuedInputBufferNull, // is NULL
 		PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is

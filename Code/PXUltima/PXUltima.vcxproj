@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Math\PXGeometric.h" />
     <ClInclude Include="Source\Algorithm\Dijkstra\PXDijkstra.h" />
     <ClInclude Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.h" />
     <ClInclude Include="Source\Compiler\PXCompiler.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Source\Serialization\Serialization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Math\PXGeometric.c" />
     <ClCompile Include="Source\Algorithm\Dijkstra\PXDijkstra.c" />
     <ClCompile Include="Source\Algorithm\KalmanFilter\PXKalmanFilter.c" />
     <ClCompile Include="Source\Compiler\PXCompiler.c" />
@@ -308,23 +310,27 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

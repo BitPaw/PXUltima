@@ -167,6 +167,7 @@ extern "C"
 			KeyF22,
 			KeyF23,
 			KeyF24,
+			KeyF25,
 		
 
 		KeyShiftLeft,

@@ -22,22 +22,24 @@ unsigned char PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const VirtualK
 
 void PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
 {
-	char letters[11];
-	char numbers[11];
-	char commands[11];
-	char actions[11];
+	char letters[64];
+	char numbers[64];
+	char commands[64];
+	char actions[64];
 
-	PXTextFromBinaryDataA(&keyBoard->Letters, sizeof(unsigned int), letters, 11u);
-	PXTextFromBinaryDataA(&keyBoard->Numbers, sizeof(unsigned int), numbers, 11u);
-	PXTextFromBinaryDataA(&keyBoard->Commands, sizeof(unsigned int), commands, 11u);
-	PXTextFromBinaryDataA(&keyBoard->Actions, sizeof(unsigned int), actions, 11u);
+	PXTextFromBinaryDataA(&keyBoard->Letters, sizeof(unsigned int), letters, 64);
+	PXTextFromBinaryDataA(&keyBoard->Numbers, sizeof(unsigned int), numbers, 64);
+	PXTextFromBinaryDataA(&keyBoard->Commands, sizeof(unsigned int), commands, 64);
+	PXTextFromBinaryDataA(&keyBoard->Actions, sizeof(unsigned int), actions, 64);
 
 	printf
 	(
-		"| Letters  | %s |\n"
-		"| Numbers  | %s |\n"
-		"| Commands | %s |\n"
-		"| PXActions  | %s |\n",
+		"+----------+------------------------------------+\n"
+		"| Letters  | %34s |\n"
+		"| Numbers  | %34s |\n"
+		"| Commands | %34s |\n"
+		"| Actions  | %34s |\n"
+		"+----------+------------------------------------+\n",
 		letters,
 		numbers,
 		commands,

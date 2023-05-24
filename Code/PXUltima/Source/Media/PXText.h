@@ -96,17 +96,18 @@ extern "C"
 #define PXTextMakeFixedA(pxText, s)\
 		char text[] = s;\
 		(pxText)->SizeAllocated = sizeof(text);\
-		(pxText)->SizeUsed = sizeof(text);\
-		(pxText)->NumberOfCharacters = sizeof(text);\
+		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
+		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = text;
 
-#define PXTextMakeFixedNamedA(pxText, s)\
-		(pxText)->SizeAllocated = sizeof(s);\
-		(pxText)->SizeUsed = sizeof(s);\
-		(pxText)->NumberOfCharacters = sizeof(s);\
+#define PXTextMakeFixedNamedA(pxText, name, s)\
+		char name[] = s;\
+		(pxText)->SizeAllocated = sizeof(name);\
+		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
+		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = TextFormatASCII;\
-		(pxText)->TextA = text;
+		(pxText)->TextA = name;
 
 #define PXTextMakeFixedW(pxText, s)\
 		wchar_t text[] = s;\

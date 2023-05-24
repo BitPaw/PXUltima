@@ -124,14 +124,14 @@ void TestWindowOpen()
 		"| Version  : %-44s |\n"
 		"| GLSL Ver.: %-44s |\n"
 		"+----------+----------------------------------------------+\n",
-		graphicContext->PXOpenGLInstance.Vendor,
-		graphicContext->PXOpenGLInstance.Renderer,
-		graphicContext->PXOpenGLInstance.VersionText,
-		graphicContext->PXOpenGLInstance.GLSLVersionText
+		graphicContext->OpenGLInstance.Vendor,
+		graphicContext->OpenGLInstance.Renderer,
+		graphicContext->OpenGLInstance.VersionText,
+		graphicContext->OpenGLInstance.GLSLVersionText
 	);
 
 
-	PXOpenGLContextSelect(&graphicContext->PXOpenGLInstance);
+	PXOpenGLContextSelect(&graphicContext->OpenGLInstance);
 
 	while (1)
 	{
@@ -146,7 +146,7 @@ void TestWindowOpen()
 
 		glFlush();
 
-		PXOpenGLRenderBufferSwap(&graphicContext->PXOpenGLInstance);
+		PXOpenGLRenderBufferSwap(&graphicContext->OpenGLInstance);
 	}
 
 	PXWindowDestruct(&window);

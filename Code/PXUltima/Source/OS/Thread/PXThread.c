@@ -55,6 +55,15 @@ void PXThreadResume(PXThread* const pxThread)
 #endif
 }
 
+void PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
+{
+#if OSUnix
+
+#elif OSWindows
+	Sleep(sleepTime); // Windows XP, Kernel32.dll, synchapi.h
+#endif
+}
+
 PXSize PXThreadCurrentID()
 {
 #if OSUnix

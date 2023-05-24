@@ -44,6 +44,7 @@ extern "C"
 
 	PXPublic void PXThreadSuspend(PXThread* const pxThread);
 	PXPublic void PXThreadResume(PXThread* const pxThread);
+	PXPublic void PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
 
 	PXPublic PXSize PXThreadCurrentID();
 	PXPublic void PXThreadCurrentGet(PXThread* const pxThread);
