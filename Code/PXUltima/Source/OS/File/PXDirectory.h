@@ -1,6 +1,9 @@
 #ifndef PXDirectoryINCLUDE
 #define PXDirectoryINCLUDE
 
+#define PXDirectoryUSE OSDeviceToUse == OSDeviceDestop
+#if PXDirectoryUSE
+
 #include <Media/PXType.h>
 #include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
@@ -117,4 +120,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

@@ -1,5 +1,7 @@
 #include "PXOpenGL.h"
 
+#if PXOpenGLUSE
+
 // wingdi.h
 #include <stdio.h>
 
@@ -3389,3 +3391,4 @@ void PXOpenGLPixelDataRead(PXOpenGLContext* const openGLContext, const int x, co
 
     glReadPixels(x, y, width, height, imageFormatID, dataTypeID, pixelData);
 }
+#endif

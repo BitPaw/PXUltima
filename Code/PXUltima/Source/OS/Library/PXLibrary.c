@@ -1,5 +1,7 @@
 #include "PXLibrary.h"
 
+#if PXLibraryUSE
+
 #include <OS/Error/PXActionResult.h>
 #include <OS/Memory/PXMemory.h>
 
@@ -244,3 +246,4 @@ PXBool PXLibraryParseSymbols()
 
 	return 0;
 }
+#endif

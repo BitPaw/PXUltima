@@ -2,7 +2,7 @@
 
 #include <OS/System/OSVersion.h>
 
-#include <errno.h>
+#include <errno.h> // POSIX
 
 #if OSUnix
 

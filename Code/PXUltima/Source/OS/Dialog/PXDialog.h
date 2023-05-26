@@ -1,6 +1,11 @@
 #ifndef PXDialogINCLUDE
 #define PXDialogINCLUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXDialogUSE OSDeviceToUse == OSDeviceDestop
+#if PXDialogUSE
+
 #include <Media/PXText.h>
 #include <Media/PXColor.h>
 
@@ -20,4 +25,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

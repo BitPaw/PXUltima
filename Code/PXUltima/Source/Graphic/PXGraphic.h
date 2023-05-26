@@ -1,6 +1,11 @@
 #ifndef PXGraphicINCLUDE
 #define PXGraphicINCLUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXGraphicUSE OSDeviceToUse == OSDeviceDestop
+#if PXGraphicUSE
+
 #include <Media/PXType.h>
 #include <Media/PXImage.h>
 #include <Media/PXFont.h>
@@ -380,7 +385,9 @@ extern "C"
 
 	typedef struct PXGraphicContext_
 	{
+#if PXOpenGLUSE
 		PXOpenGLContext OpenGLInstance;
+#endif
 
 		void* AttachedWindow;
 
@@ -428,11 +435,13 @@ extern "C"
 
 
 	//---<PXOpenGL Translate>----------------
+#if PXOpenGLUSE
 	PXPrivate PXOpenGLDataType PXGraphicDataTypeToPXOpenGL(const PXColorFormat imageDataFormat);
 	PXPrivate PXOpenGLImageFormat PXGraphicImageFormatToPXOpenGL(const PXColorFormat imageDataFormat);
 	PXPrivate PXOpenGLShaderType PXGraphicShaderFromPXOpenGL(const PXShaderType shaderType);
 	PXPrivate PXOpenGLTextureType ImageTypeGraphicToPXOpenGL(const PXGraphicImageType graphicImageType);
 	PXPublic PXOpenGLRenderMode PXGraphicRenderModeToPXOpenGL(const PXGraphicRenderMode graphicRenderMode);
+#endif
 	//-------------------------------------
 
 	//-------------------------------------
@@ -539,4 +548,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+#if false
+
 namespace PX
 {
     public class Window : IDisposable
@@ -77,20 +79,15 @@ namespace PX
             get
             {               
                 string title = string.Empty;
-                char[] buffer = new char[256];
+                char* buffer = stackalloc char[256];
 
-                fixed(char* bufferaAdress = buffer)
+                PXText pXText = PXText.MakeFromStringW(buffer, 256);
+                UInt64 length = PXWindowTitleGet(ref _pxWindow, ref pXText);
+
+                if (length > 0)
                 {
-                    PXText pXText = PXText.MakeFromStringW(bufferaAdress, 256);
-                    UInt64 length = PXWindowTitleGet(ref _pxWindow, ref pXText);
-
-                    if (length > 0)
-                    {
-                        title = new string(bufferaAdress, 0, (int)length);
-                    }
+                    title = new string(buffer, 0, (int)length);
                 }
-
-         
 
                 return title;
             }
@@ -107,7 +104,7 @@ namespace PX
 
         public unsafe void Create(string title)
         {
-            fixed (char* charBuffer = title)
+            fixed (char* charBuffer = title.ToCharArray())
             {
                 PXText pXText = PXText.MakeFromStringW(charBuffer, title.Length);
 
@@ -116,7 +113,7 @@ namespace PX
         }
         public unsafe void Create(int width, int height, string title)
         {
-            fixed (char* charBuffer = title)
+            fixed (char* charBuffer = title.ToCharArray())
             {
                 PXText pXText = PXText.MakeFromStringW(charBuffer, title.Length);
 
@@ -130,3 +127,4 @@ namespace PX
         }       
     }
 }
+#endif

@@ -1,6 +1,11 @@
 #ifndef PXBashINCLUDE
 #define PXBashINCLUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXBashUSE OSDeviceToUse == OSDeviceDestop
+#if PXBashUSE
+
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXText.h>
@@ -16,4 +21,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

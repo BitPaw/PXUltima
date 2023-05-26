@@ -1,9 +1,12 @@
 #ifndef PXWindowINCLUDE
 #define PXWindowINCLUDE
 
-#include <Media/PXType.h>
-
 #include <OS/System/OSVersion.h>
+
+#define PXWindowUSE OSDeviceToUse == OSDeviceDestop
+#if PXWindowUSE
+
+#include <Media/PXType.h>
 
 #if OSUnix
 
@@ -286,4 +289,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

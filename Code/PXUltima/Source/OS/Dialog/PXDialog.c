@@ -1,5 +1,7 @@
 #include "PXDialog.h"
 
+#if PXDialogUSE
+
 #include <OS/File/PXFile.h>
 
 
@@ -281,3 +283,5 @@ PXBool PXDialogPrint()
     return success;
 #endif
 }
+
+#endif

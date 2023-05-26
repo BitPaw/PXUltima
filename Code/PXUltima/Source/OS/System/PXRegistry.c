@@ -1,5 +1,7 @@
 #include "PXRegistry.h"
 
+#if PXRegistryUSE
+
 #include <OS/Memory/PXMemory.h>
 
 #if OSUnix
@@ -122,3 +124,5 @@ void PXRegistryKeyDelete(PXRegistry* const registry)
 #elif OSWindows
 #endif
 }
+
+#endif

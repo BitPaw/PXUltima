@@ -3,6 +3,9 @@
 
 #include <OS/System/OSVersion.h>
 
+#define PXSocketUSE OSDeviceToUse == OSDeviceDestop
+#if PXSocketUSE
+
 #if OSUnix
 #ifndef _XOPEN_SOURCE
     // Needed for some reason, as without the "netdb.h" does not get included properly
@@ -329,4 +332,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

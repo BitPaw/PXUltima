@@ -1,5 +1,7 @@
 #include "PXServer.h"
 
+#if PXSocketUSE
+
 #include <Event/PXEvent.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
@@ -149,3 +151,4 @@ PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
 
     return PXThreadSucessful;
 }
+#endif

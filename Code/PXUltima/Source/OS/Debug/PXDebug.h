@@ -1,6 +1,11 @@
 #ifndef PXDebugINLCUDE
 #define PXDebugINLCUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXDebugUSE OSDeviceToUse == OSDeviceDestop
+#if PXDebugUSE
+
 #include <Media/PXType.h>
 #include <Media/PXText.h>
 
@@ -63,4 +68,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

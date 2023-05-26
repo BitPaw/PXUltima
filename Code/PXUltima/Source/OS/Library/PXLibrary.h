@@ -3,6 +3,9 @@
 
 #include <OS/System/OSVersion.h>
 
+#define PXLibraryUSE OSDeviceToUse == OSDeviceDestop
+#if PXLibraryUSE
+
 #if OSUnix
 #include <sys/types.h>
 #include <dlfcn.h>
@@ -54,4 +57,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

@@ -3,6 +3,9 @@
 
 #include <OS/System/OSVersion.h>
 
+#define PXOpenGLUSE OSDeviceToUse == OSDeviceDestop
+#if PXOpenGLUSE
+
 #if OSUnix
 
 #include <X11/X.h>
@@ -984,4 +987,5 @@ PXPublic PXInt32U PXOpenGLSwapIntervalGet(PXOpenGLContext* const openGLContext);
 }
 #endif
 
+#endif
 #endif

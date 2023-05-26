@@ -1,6 +1,11 @@
 #ifndef PXVulcanINCLUDE
 #define PXVulcanINCLUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXVulcanUSE OSDeviceToUse == OSDeviceDestop
+#if PXVulcanUSE
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -16,4 +21,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

@@ -1,6 +1,11 @@
 #ifndef PXAudioINCLUDE
 #define PXAudioINCLUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXAudioUSE OSDeviceToUse == OSDeviceDestop
+#if PXAudioUSE
+
 #include <Media/PXType.h>
 
 #define PitchMaximum 2.9f
@@ -213,4 +218,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

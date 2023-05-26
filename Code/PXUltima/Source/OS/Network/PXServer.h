@@ -5,6 +5,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/Network/PXSocket.h>
 
+#if PXSocketUSE
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -43,4 +45,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

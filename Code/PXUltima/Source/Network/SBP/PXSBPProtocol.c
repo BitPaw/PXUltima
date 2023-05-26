@@ -1,5 +1,7 @@
 #include "PXSBPProtocol.h"
 
+#if PXSocketUSE
+
 #include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
@@ -569,3 +571,4 @@ void PXSBPEmitterSendChunk(PXSBPEmitter* const pxSBPEmitter, const void* data, c
 {
 
 }
+#endif

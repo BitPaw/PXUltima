@@ -1,5 +1,7 @@
 #include "PXBash.h"
 
+#if PXBashUSE
+
 PXActionResult PXBashExecute(const PXText* const programPath, const PXBool syncronous)
 {
 	/*
@@ -23,3 +25,4 @@ PXActionResult PXBashExecute(const PXText* const programPath, const PXBool syncr
 
 	return PXActionNotImplemented;
 }
+#endif

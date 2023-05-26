@@ -1,5 +1,7 @@
 #include "PXWindow.h"
 
+#if PXWindowUSE
+
 #include <stdio.h>
 
 #include <Event/PXEvent.h>
@@ -3249,3 +3251,4 @@ unsigned int PXWindowCursorIconToID(const CursorIcon cursorIcon)
             return CursorIconResizeAllID;
     }
 }
+#endif

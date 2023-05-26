@@ -1,6 +1,8 @@
 #ifndef PXSBPProtocolINCLUDE
 #define PXSBPProtocolINCLUDE
 
+#if PXSocketUSE
+
 #include <OS/Network/PXClient.h>
 #include <OS/Network/PXServer.h>
 #include <OS/File/PXFile.h>
@@ -265,4 +267,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

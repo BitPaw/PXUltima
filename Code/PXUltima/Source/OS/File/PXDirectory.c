@@ -1,5 +1,7 @@
 #include "PXDirectory.h"
 
+#if PXDirectoryUSE
+
 #include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 
@@ -369,3 +371,4 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 
 	return PXActionSuccessful;
 }
+#endif

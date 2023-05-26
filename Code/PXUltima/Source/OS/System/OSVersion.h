@@ -18,6 +18,12 @@
 #define OSForcePOSIXForWindows 0
 
 
+// Device
+#define OSDeviceDestop 'D'
+#define OSDeviceConsole 'C'
+
+#define OSDeviceToUse OSDeviceConsole
+
 //---<Detect OS version>----------------------------------------------------
 #if defined(unix) || defined(__unix) || defined(__unix__)
     #ifndef OSUnix

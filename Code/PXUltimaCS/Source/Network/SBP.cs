@@ -2,6 +2,8 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
+#if false
+
 namespace PX
 {
     [StructLayout(LayoutKind.Sequential, Size = 64)]
@@ -97,6 +99,7 @@ namespace PX
 
         public unsafe ActionResult ConnectToServer(string ip, ushort port)
         {
+            ActionResult actionResult = ActionResult.Invalid;
 
 #if false
             Encoding encoding =  Encoding.GetEncoding(ip);
@@ -118,12 +121,14 @@ namespace PX
             
 #else
 
-            fixed (char* adress = ip)
+            fixed (char* adress = ip.ToCharArray())
             {
                 PXText pXText = PXText.MakeFromStringW(adress, ip.Length);
 
-                return PXSBPClientConnectToServer(ref _pxSBPClient, ref pXText, port);
+                actionResult = PXSBPClientConnectToServer(ref _pxSBPClient, ref pXText, port);
             }
+
+            return actionResult;
 #endif
         }
 
@@ -214,3 +219,5 @@ namespace PX
         }
     }
 }
+
+#endif

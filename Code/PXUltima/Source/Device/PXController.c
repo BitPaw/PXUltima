@@ -87,7 +87,7 @@ PXBool PXControllerDataGet(PXController* controller)
     return 0u;
 
 #elif OSWindows
-#if (WINVER >= 0x0400) // newer than Windows NT 4.0
+#if (Version_Windows_NT)
 	JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
 	joystickInfo.dwSize = sizeof(JOYINFOEX);
@@ -131,6 +131,7 @@ PXBool PXControllerDataGet(PXController* controller)
 #endif
 }
 
+#if PXWindowUSE
 PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID)
 {
 #if OSUnix
@@ -159,3 +160,4 @@ PXBool PXControllerDetachToWindow(const PXControllerID controllerID)
 	return successful;
 #endif
 }
+#endif

@@ -1,5 +1,7 @@
 #include "PXFile.h"
 
+#if PXFileUSE
+
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
@@ -3380,3 +3382,4 @@ unsigned char FileDoesExistW(const wchar_t* filePath)
 	return 0;
 }*/
 
+#endif

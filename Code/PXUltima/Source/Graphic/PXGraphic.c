@@ -1,5 +1,7 @@
 #include "PXGraphic.h"
 
+#if PXGraphicUSE
+
 #include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
@@ -163,6 +165,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
     PXDictionaryAdd(&graphicContext->TextureLookUp, &texture->ID, texture);
     PXLockRelease(&graphicContext->_resourceLock);
 
+#if PXOpenGLUSE
     const PXOpenGLTextureType openGLTextureType = ImageTypeGraphicToPXOpenGL(texture->Type);
     const unsigned int openGLTextureTypeID = PXOpenGLTextureTypeToID(openGLTextureType);
 
@@ -220,6 +223,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
     //glGenerateMipmap(openGLTextureTypeID);
 
     PXOpenGLTextureUnbind(graphicContext, openGLTextureType);
+#endif
 
     return PXActionSuccessful;
 }
@@ -231,6 +235,7 @@ PXActionResult PXGraphicTextureRelease(PXGraphicContext* const graphicContext, P
 
 PXActionResult PXGraphicTextureCubeRegister(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube)
 {
+#if PXOpenGLUSE
     PXOpenGLID textureID = -1;
 
     // Check
@@ -292,6 +297,7 @@ PXActionResult PXGraphicTextureCubeRegister(PXGraphicContext* const graphicConte
     PXOpenGLTextureUnbind(&graphicContext->OpenGLInstance, PXOpenGLTextureTypeCubeMap);
 
     textureCube->ID = textureID;
+#endif
 
     return PXActionSuccessful;
 }
@@ -617,6 +623,7 @@ PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRend
 
 PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model)
 {
+#if PXOpenGLUSE
     PXOpenGLContext* const openGLContext = &graphicContext->OpenGLInstance;
 
     PXRenderableConstruct(renderable);
@@ -765,6 +772,7 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicCo
 
     // Model is not fully registered and ready to be rendered
     renderable->DoRendering = 1u;
+#endif
 
     return PXActionSuccessful;
 }
@@ -1121,6 +1129,7 @@ void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderabl
     pxRenderableMeshSegment->DoRendering = PXNo;
 }
 
+#if PXOpenGLUSE
 PXOpenGLDataType PXGraphicDataTypeToPXOpenGL(const PXColorFormat imageDataFormat)
 {
     switch (imageDataFormat)
@@ -1262,11 +1271,10 @@ PXOpenGLRenderMode PXGraphicRenderModeToPXOpenGL(const PXGraphicRenderMode graph
             return PXOpenGLRenderInvalid;
     }
 }
+#endif
 
 void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 {
-    PXWindow* const pxWindow = graphicContext->AttachedWindow;
-
     PXLockCreate(&graphicContext->_resourceLock, PXLockTypeGlobal);
 
     PXDictionaryConstruct(&graphicContext->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
@@ -1277,6 +1285,10 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXDictionaryConstruct(&graphicContext->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
+#if PXWindowUSE
+    PXWindow* const pxWindow = graphicContext->AttachedWindow;
+
+#if PXOpenGLUSE
     graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
 
     PXOpenGLContextCreateForWindow(&graphicContext->OpenGLInstance);
@@ -1305,6 +1317,8 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     glViewport(0, 0, pxWindow->Width, pxWindow->Height);
 
     PXOpenGLContextDeselect(&graphicContext->OpenGLInstance);
+#endif
+#endif   
 }
 
 void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo)
@@ -1314,6 +1328,7 @@ void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphic
 
 PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)
 {
+#if PXWindowUSE
     PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
 
    // PXOpenGLContextFlush(&graphicContext->OpenGLInstance);
@@ -1325,8 +1340,10 @@ PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)
 #elif OSWindows
         SwapBuffers(window->HandleDeviceContext);
 #endif
-
     return successful;
+#else
+    return PXActionNotSupportedByLibrary;
+#endif
 }
 
 PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const graphicContext)
@@ -1341,7 +1358,9 @@ PXActionResult PXGraphicShaderCompile(PXGraphicContext* const graphicContext)
 
 PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const unsigned int shaderID)
 {
+#if PXOpenGLUSE
     PXOpenGLShaderProgramUse(&graphicContext->OpenGLInstance, shaderID);
+#endif
 
     return PXActionSuccessful;
 }
@@ -1411,7 +1430,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicCon
         //-----
     }
 
-
+#if PXOpenGLUSE
 
     const PXSize shaderListSize = 2;
     PXShader* const shaderList[2] = { &vertexShader, &fragmentShader };
@@ -1474,7 +1493,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicCon
     //shaderPXProgram->ID = PXGraphicGenerateUniqeID(graphicContext);
     PXDictionaryAdd(&graphicContext->ShaderPXProgramLookup, &shaderPXProgram->ID, shaderPXProgram);
     PXLockRelease(&graphicContext->_resourceLock);
-
+#endif
 
     PXFileDestruct(&vertexShaderFile);
     PXFileDestruct(&fragmentFile);
@@ -1487,19 +1506,27 @@ PXActionResult PXGraphicRender(PXGraphicContext* const graphicContext, PXGraphic
 
 void PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4)
 {
+#if PXOpenGLUSE
     PXOpenGLShaderVariableMatrix4fv(&graphicContext->OpenGLInstance, locationID, 1, 0, matrix4x4);
+#endif
 }
 
 unsigned int PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const unsigned int shaderID, const char* const name)
 {
+#if PXOpenGLUSE
     const unsigned int locationID = PXOpenGLShaderVariableIDGet(&graphicContext->OpenGLInstance, shaderID, name);
 
     return locationID;
+#else
+    return -1;
+#endif  
 }
 
 void PXGraphicShaderPXProgramUse(PXGraphicContext* const graphicContext, const unsigned int shaderID)
 {
+#if PXOpenGLUSE
     PXOpenGLShaderProgramUse(&graphicContext->OpenGLInstance, shaderID);
+#endif
 }
 
 PXActionResult PXGraphicRenderElement(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount)
@@ -1511,3 +1538,4 @@ PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGra
 {
     return PXActionInvalid;
 }
+#endif

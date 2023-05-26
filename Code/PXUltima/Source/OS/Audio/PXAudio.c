@@ -1,5 +1,7 @@
 #include "PXAudio.h"
 
+#if PXAudioUSE
+
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 
@@ -396,3 +398,4 @@ PXAudioResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCap
 	return AudioResultSucessful;
 #endif
 }
+#endif

@@ -5,6 +5,8 @@
 #include <Media/PXType.h>
 #include <OS/Network/PXClient.h>
 
+#if PXSocketUSE
+
 #define FTPDefaultPort 21
 
 #ifdef __cplusplus
@@ -25,4 +27,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

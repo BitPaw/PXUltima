@@ -3,6 +3,9 @@
 
 #include <OS/System/OSVersion.h>
 
+#define PXDataBaseUSE OSDeviceToUse == OSDeviceDestop
+#if PXDataBaseUSE
+
 #if OSUnix
 #elif OSWindows
 #include <Windows.h>
@@ -128,4 +131,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

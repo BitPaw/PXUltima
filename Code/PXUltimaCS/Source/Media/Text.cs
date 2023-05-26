@@ -34,7 +34,7 @@ namespace PX
 
 		//public static PXText CreateFromString(string text)
 
-		public static PXText MakeFromStringW(char* text, int length)
+	public static PXText MakeFromStringW(char* text, int length)
 		{
 			PXText pxText = new PXText();
 

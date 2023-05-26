@@ -1,6 +1,11 @@
 #ifndef PXFileINCLUDE
 #define PXFileINCLUDE
 
+
+#define PXFileUSE OSDeviceToUse == OSDeviceDestop
+#if PXFileUSE
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -9,6 +14,7 @@
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Error/PXActionResult.h>
+
 
 #if OSUnix
 
@@ -451,4 +457,5 @@ void PXDirectoryIsDotFolder(const char* s)
 }
 #endif
 
+#endif
 #endif

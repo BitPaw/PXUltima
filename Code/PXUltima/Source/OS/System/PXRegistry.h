@@ -1,6 +1,11 @@
 #ifndef PXRegistryINCLUDE
 #define PXRegistryINCLUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXRegistryUSE OSDeviceToUse == OSDeviceDestop
+#if PXRegistryUSE
+
 #include <Media/PXType.h>
 
 #if OSUnix
@@ -54,4 +59,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

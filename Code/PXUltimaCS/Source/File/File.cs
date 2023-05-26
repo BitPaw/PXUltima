@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+#if false
+
 namespace PX
 {
     public enum Endian
@@ -248,28 +250,21 @@ namespace PX
 			get
 			{
 				string filePath = null;
+				char* buffer = stackalloc char[256];
+				int length = (int)PXFileFilePathGetW(ref _pxFile, buffer, (UIntPtr)256);
 
-				char[] buffser = new char[256];
-				int length = 0;
+                if (length > 0)
+                {
+                    filePath = new string(buffer, 0, length);
+                }
 
-				fixed(char* bufferAdress = buffser)
-				{
-                    length = (int)PXFileFilePathGetW(ref _pxFile, bufferAdress, (UIntPtr)256);
-
-					if (length > 0)
-					{
-						filePath = new string(buffser, 0, length);
-                    }
-                }		
-
-
-				return filePath;
+                return filePath;
 			}
 		}
 
         public static unsafe bool DoesExist(string filePath)
         {
-            fixed(char* filePathAdress = filePath)
+            fixed(char* filePathAdress = filePath.ToCharArray())
             {
                 PXText pxText = PXText.MakeFromStringW(filePathAdress, filePath.Length);
 
@@ -279,7 +274,7 @@ namespace PX
 
 		public static unsafe ActionResult Remove(string filePath)
         {
-            fixed (char* filePathAdress = filePath)
+            fixed (char* filePathAdress = filePath.ToCharArray())
             {
                 PXText pxText = PXText.MakeFromStringW(filePathAdress, filePath.Length);
 
@@ -289,11 +284,11 @@ namespace PX
 
         public static unsafe ActionResult Rename(string oldName, string newName)
 		{
-            fixed (char* oldNameAdress = oldName)
+            fixed (char* oldNameAdress = oldName.ToCharArray())
             {
                 PXText pxTextOldName = PXText.MakeFromStringW(oldNameAdress, oldName.Length);
 
-                fixed (char* newNameAdress = newName)
+                fixed (char* newNameAdress = newName.ToCharArray())
                 {
                     PXText pxTextNewName = PXText.MakeFromStringW(newNameAdress, newName.Length);
 
@@ -304,11 +299,11 @@ namespace PX
 
 		public static unsafe ActionResult Copy(string sourceFilePath, string destinationFilePath)
 		{
-            fixed (char* oldNameAdress = sourceFilePath)
+            fixed (char* oldNameAdress = sourceFilePath.ToCharArray())
             {
                 PXText pxTextOldName = PXText.MakeFromStringW(oldNameAdress, sourceFilePath.Length);
 
-                fixed (char* newNameAdress = destinationFilePath)
+                fixed (char* newNameAdress = destinationFilePath.ToCharArray())
                 {
                     PXText pxTextNewName = PXText.MakeFromStringW(newNameAdress, destinationFilePath.Length);
 
@@ -765,3 +760,4 @@ namespace PX
 		//-------------------------------------------------------------------------	
 	}
 }
+#endif

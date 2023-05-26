@@ -539,7 +539,7 @@ ucvector ucvector_init(unsigned char* buffer, PXSize size)
 
 
 
-typedef struct
+typedef struct LodePNGBitWriter_
 {
     ucvector* data;
     unsigned char bp; /*ok to overflow, indicates bit pos inside byte*/

@@ -1,5 +1,7 @@
 #include "PXDebug.h"
 
+#if PXDebugUSE
+
 #if OSUnix
 #include <sys/ptrace.h>
 #elif OSWindows
@@ -587,3 +589,4 @@ void PXDebugLoop(PXDebug* const pxDebug)
 		pxActionResult += 0;
 	}
 }
+#endif

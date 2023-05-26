@@ -1,5 +1,7 @@
 #include "PXSocket.h"
 
+#if PXSocketUSE
+
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <Event/PXEvent.h>
@@ -1594,4 +1596,5 @@ PXActionResult WindowsSocketAgentShutdown(void)
             return PXActionSuccessful;
     }
 }
+#endif
 #endif

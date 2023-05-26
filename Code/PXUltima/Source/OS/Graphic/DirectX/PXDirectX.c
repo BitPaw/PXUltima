@@ -1,5 +1,7 @@
 #include "PXDirectX.h"
 
+#if PXDirectXUSE
+
 #if OSUnix
 #elif OSWindows
 #include <windows.h>
@@ -92,3 +94,5 @@ void PXDirectXContextCreate(PXDirectXContext* const directXContext)
 	*/
 #endif
 }
+
+#endif

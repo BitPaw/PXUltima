@@ -1,5 +1,7 @@
 #include "PXDataBase.h"
 
+#if PXDataBaseUSE
+
 #include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>
@@ -460,3 +462,5 @@ void PXDataBaseConnectionExecute(DataBaseConnection* const dataBaseConnection, c
     return SQLResultSuccessful;
 #endif
 }
+
+#endif

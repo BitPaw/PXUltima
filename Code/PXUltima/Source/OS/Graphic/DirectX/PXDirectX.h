@@ -1,6 +1,11 @@
 #ifndef PXDirectXINCLUDE
 #define PXDirectXINCLUDE
 
+#include <OS/System/OSVersion.h>
+
+#define PXDirectXUSE OSDeviceToUse == OSDeviceDestop
+#if PXDirectXUSE
+
 #include <Media/PXType.h>
 
 #if OSUnix
@@ -36,4 +41,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif

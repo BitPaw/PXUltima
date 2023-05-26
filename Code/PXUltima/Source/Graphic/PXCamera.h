@@ -1,6 +1,8 @@
 #ifndef PXCameraINCLUDE
 #define PXCameraINCLUDE
 
+#if PXGraphicUSE
+
 #include <Media/PXType.h>
 #include <Math/PXMatrix.h>
 #include <Math/PXVector.h>
@@ -78,4 +80,5 @@ extern "C"
 }
 #endif
 
+#endif
 #endif
