@@ -15,54 +15,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\OS\Window.hpp">
+    <ClInclude Include="DataBase\PXDataBase.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Memory\Memory.hpp">
+    <ClInclude Include="Media\PXText.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Async\Thread.hpp">
+    <ClInclude Include="OS\Error\PXActionResult.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Async\Lock.hpp">
+    <ClInclude Include="OS\Window\PXWindow.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\File\DataStream.hpp">
+    <ClInclude Include="OS\User\PXUser.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Error\ActionResult.hpp">
+    <ClInclude Include="OS\File\PXDirectory.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\Matrix.hpp">
+    <ClInclude Include="OS\File\PXFile.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\Vector.hpp">
+    <ClInclude Include="OS\Memory\PXMemory.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Library\PXLibrary.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\OS\Window.cpp">
+    <ClCompile Include="DataBase\PXDataBase.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Memory\Memory.cpp">
+    <ClCompile Include="Media\PXText.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Async\Thread.cpp">
+    <ClCompile Include="OS\Error\PXActionResult.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Async\Lock.cpp">
+    <ClCompile Include="OS\Window\PXWindow.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\File\DataStream.cpp">
+    <ClCompile Include="OS\User\PXUser.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Error\ActionResult.cpp">
+    <ClCompile Include="OS\File\PXDirectory.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\Matrix.cpp">
+    <ClCompile Include="OS\File\PXFile.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\Vector.cpp">
+    <ClCompile Include="OS\Memory\PXMemory.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Library\PXLibrary.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

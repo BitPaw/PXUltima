@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{7c1a58aa-dd3c-4b5d-9fec-43657f95e234}</ProjectGuid>
+    <RootNamespace>PXUltimaC</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsManaged>false</CompileAsManaged>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsManaged>false</CompileAsManaged>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsManaged>false</CompileAsManaged>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsManaged>false</CompileAsManaged>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Algorithm\Dijkstra\PXDijkstra.c" />
+    <ClCompile Include="Algorithm\KalmanFilter\PXKalmanFilter.c" />
+    <ClCompile Include="Compiler\PXCompiler.c" />
+    <ClCompile Include="Compiler\PXCompilerSettings.c" />
+    <ClCompile Include="Container\BinaryTree\BinaryTree.c" />
+    <ClCompile Include="Container\Dictionary\PXDictionary.c" />
+    <ClCompile Include="Container\LinkedList\PXLinkedList.c" />
+    <ClCompile Include="Container\List\PXList.c" />
+    <ClCompile Include="Container\QuadTree\PXQuadTree.c" />
+    <ClCompile Include="Container\Queue\PXQueue.c" />
+    <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
+    <ClCompile Include="DataBase\PXDataBase.c" />
+    <ClCompile Include="Device\InputButton.c" />
+    <ClCompile Include="Device\PXController.c" />
+    <ClCompile Include="Device\PXKeyBoard.c" />
+    <ClCompile Include="Device\PXMouse.c" />
+    <ClCompile Include="Device\VirtualKey.c" />
+    <ClCompile Include="Event\PXEvent.c" />
+    <ClCompile Include="Graphic\PXCamera.c" />
+    <ClCompile Include="Graphic\PXGraphic.c" />
+    <ClCompile Include="Graphic\SoftwareRender\PXSoftwareRender.c" />
+    <ClCompile Include="Language\PXTranslator.c" />
+    <ClCompile Include="Log\PXLog.c" />
+    <ClCompile Include="Math\PXCollision.c" />
+    <ClCompile Include="Math\PXDiagram.c" />
+    <ClCompile Include="Math\PXGeometric.c" />
+    <ClCompile Include="Math\PXMath.c" />
+    <ClCompile Include="Math\PXMatrix.c" />
+    <ClCompile Include="Math\PXPhysic.c" />
+    <ClCompile Include="Math\PXVector.c" />
+    <ClCompile Include="Media\3DS\PX3DS.c" />
+    <ClCompile Include="Media\AAC\PXAAC.c" />
+    <ClCompile Include="Media\ADAM7\PXADAM7.c" />
+    <ClCompile Include="Media\ADLER\PXAdler32.c" />
+    <ClCompile Include="Media\AVI\PXAVI.c" />
+    <ClCompile Include="Media\Bitmap\PXBitmap.c" />
+    <ClCompile Include="Media\CPP\PXCPP.c" />
+    <ClCompile Include="Media\CRC32\PXCRC32.c" />
+    <ClCompile Include="Media\CSS\CSS.c" />
+    <ClCompile Include="Media\CS\PXCS.c" />
+    <ClCompile Include="Media\C\PXC.c" />
+    <ClCompile Include="Media\DEFLATE\PXDEFLATE.c" />
+    <ClCompile Include="Media\DLL\PXDLL.c" />
+    <ClCompile Include="Media\ELF\PXELF.c" />
+    <ClCompile Include="Media\Email\PXEmail.c" />
+    <ClCompile Include="Media\EXE\PXEXE.c" />
+    <ClCompile Include="Media\FilmBox\PXFilmBox.c" />
+    <ClCompile Include="Media\FLAC\PXFLAC.c" />
+    <ClCompile Include="Media\FMT\PXFMT.c" />
+    <ClCompile Include="Media\FTP\PXFTP.c" />
+    <ClCompile Include="Media\GIF\PXGIF.c" />
+    <ClCompile Include="Media\HTML\PXHTML.c" />
+    <ClCompile Include="Media\HTTP\PXHTTP.c" />
+    <ClCompile Include="Media\Huffman\PXHuffman.c" />
+    <ClCompile Include="Media\ID3\PXID3.c" />
+    <ClCompile Include="Media\INI\PXINI.c" />
+    <ClCompile Include="Media\IP\PXIP.c" />
+    <ClCompile Include="Media\ISBN\PXISBN.c" />
+    <ClCompile Include="Media\JPEG\PXJPEG.c" />
+    <ClCompile Include="Media\JSON\PXJSON.c" />
+    <ClCompile Include="Media\LAME\PXLAME.c" />
+    <ClCompile Include="Media\LZ77\PXLZ77.c" />
+    <ClCompile Include="Media\M4A\PXM4A.c" />
+    <ClCompile Include="Media\MD5\PXMD5.c" />
+    <ClCompile Include="Media\MIDI\PXMIDI.c" />
+    <ClCompile Include="Media\MP3\PXMP3.c" />
+    <ClCompile Include="Media\MP4\PXMP4.c" />
+    <ClCompile Include="Media\MSI\PXMSI.c" />
+    <ClCompile Include="Media\MTL\PXMTL.c" />
+    <ClCompile Include="Media\OGG\PXOGG.c" />
+    <ClCompile Include="Media\PDF\PXPDF.c" />
+    <ClCompile Include="Media\PHP\PXPHP.c" />
+    <ClCompile Include="Media\PLY\PXPLY.c" />
+    <ClCompile Include="Media\PNG\PXPNG.c" />
+    <ClCompile Include="Media\PXColor.c" />
+    <ClCompile Include="Media\PXFont.c" />
+    <ClCompile Include="Media\PXImage.c" />
+    <ClCompile Include="Media\PXModel.c" />
+    <ClCompile Include="Media\PXSound.c" />
+    <ClCompile Include="Media\PXText.c" />
+    <ClCompile Include="Media\PXType.c" />
+    <ClCompile Include="Media\PXUltimaInfo.c" />
+    <ClCompile Include="Media\QOI\PXQOI.c" />
+    <ClCompile Include="Media\RIFF\PXRIFF.c" />
+    <ClCompile Include="Media\RSA\PXRSA.c" />
+    <ClCompile Include="Media\SHA\PXSHA.c" />
+    <ClCompile Include="Media\SpriteFont\PXSpriteFont.c" />
+    <ClCompile Include="Media\STEP\PXSTEP.c" />
+    <ClCompile Include="Media\STL\PXSTL.c" />
+    <ClCompile Include="Media\SVG\PXSVG.c" />
+    <ClCompile Include="Media\TGA\PXTGA.c" />
+    <ClCompile Include="Media\TIFF\PXTIFF.c" />
+    <ClCompile Include="Media\TTF\PXTTF.c" />
+    <ClCompile Include="Media\UUID\PXUUID.c" />
+    <ClCompile Include="Media\VRML\PXVRML.c" />
+    <ClCompile Include="Media\Wavefront\PXWavefront.c" />
+    <ClCompile Include="Media\WAV\PXWAV.c" />
+    <ClCompile Include="Media\WEBM\PXWEBM.c" />
+    <ClCompile Include="Media\WEBP\PXWEBP.c" />
+    <ClCompile Include="Media\WMA\PXWMA.c" />
+    <ClCompile Include="Media\XingInfo\PXXingInfo.c" />
+    <ClCompile Include="Media\XML\PXXML.c" />
+    <ClCompile Include="Media\YAML\PXYAML.c" />
+    <ClCompile Include="Media\ZLIB\PXZLIB.c" />
+    <ClCompile Include="Network\SBP\PXSBPProtocol.c" />
+    <ClCompile Include="Network\Web\PXFTPClient.c" />
+    <ClCompile Include="Network\Web\PXWebServer.c" />
+    <ClCompile Include="OS\Audio\PXAudio.c" />
+    <ClCompile Include="OS\Bash\PXBash.c" />
+    <ClCompile Include="OS\ClipBoard\PXClipBoard.c" />
+    <ClCompile Include="OS\Debug\PXDebug.c" />
+    <ClCompile Include="OS\Dialog\PXDialog.c" />
+    <ClCompile Include="OS\Error\PXActionResult.c" />
+    <ClCompile Include="OS\File\PXDirectory.c" />
+    <ClCompile Include="OS\File\PXFile.c" />
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX.c" />
+    <ClCompile Include="OS\Graphic\OpenGL\PXOpenGL.c" />
+    <ClCompile Include="OS\Graphic\Vulcan\PXVulcan.c" />
+    <ClCompile Include="OS\HardDrive\PXHardDrive.c" />
+    <ClCompile Include="OS\Library\PXLibrary.c" />
+    <ClCompile Include="OS\Memory\PXMemory.c" />
+    <ClCompile Include="OS\Monitor\PXMonitor.c" />
+    <ClCompile Include="OS\Network\PXClient.c" />
+    <ClCompile Include="OS\Network\PXServer.c" />
+    <ClCompile Include="OS\Network\PXSocket.c" />
+    <ClCompile Include="OS\Processor\PXProcessor.c" />
+    <ClCompile Include="OS\Process\PXProcess.c" />
+    <ClCompile Include="OS\Program\PXProgram.c" />
+    <ClCompile Include="OS\Signal\PXSignal.c" />
+    <ClCompile Include="OS\System\PXRegistry.c" />
+    <ClCompile Include="OS\Thread\Await.c" />
+    <ClCompile Include="OS\Thread\PXLock.c" />
+    <ClCompile Include="OS\Thread\PXThread.c" />
+    <ClCompile Include="OS\Time\PXStopWatch.c" />
+    <ClCompile Include="OS\Time\PXTime.c" />
+    <ClCompile Include="OS\UI\PXUI.c" />
+    <ClCompile Include="OS\User\PXUser.c" />
+    <ClCompile Include="OS\Window\PXWindow.c" />
+    <ClCompile Include="Serialization\Serialization.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h" />
+    <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h" />
+    <ClInclude Include="Compiler\PXCompiler.h" />
+    <ClInclude Include="Compiler\PXCompilerSettings.h" />
+    <ClInclude Include="Container\BinaryTree\BinaryTree.h" />
+    <ClInclude Include="Container\Dictionary\PXDictionary.h" />
+    <ClInclude Include="Container\LinkedList\PXLinkedList.h" />
+    <ClInclude Include="Container\List\PXList.h" />
+    <ClInclude Include="Container\QuadTree\PXQuadTree.h" />
+    <ClInclude Include="Container\Queue\PXQueue.h" />
+    <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
+    <ClInclude Include="DataBase\PXDataBase.h" />
+    <ClInclude Include="Device\InputButton.h" />
+    <ClInclude Include="Device\PXController.h" />
+    <ClInclude Include="Device\PXKeyBoard.h" />
+    <ClInclude Include="Device\PXMouse.h" />
+    <ClInclude Include="Device\VirtualKey.h" />
+    <ClInclude Include="Event\PXEvent.h" />
+    <ClInclude Include="Graphic\PXCamera.h" />
+    <ClInclude Include="Graphic\PXGraphic.h" />
+    <ClInclude Include="Graphic\SoftwareRender\PXSoftwareRender.h" />
+    <ClInclude Include="Language\PXTranslator.h" />
+    <ClInclude Include="Log\PXLog.h" />
+    <ClInclude Include="Math\PXCollision.h" />
+    <ClInclude Include="Math\PXDiagram.h" />
+    <ClInclude Include="Math\PXGeometric.h" />
+    <ClInclude Include="Math\PXMath.h" />
+    <ClInclude Include="Math\PXMatrix.h" />
+    <ClInclude Include="Math\PXPhysic.h" />
+    <ClInclude Include="Math\PXVector.h" />
+    <ClInclude Include="Media\3DS\PX3DS.h" />
+    <ClInclude Include="Media\AAC\PXAAC.h" />
+    <ClInclude Include="Media\ADAM7\PXADAM7.h" />
+    <ClInclude Include="Media\ADLER\PXAdler32.h" />
+    <ClInclude Include="Media\AVI\PXAVI.h" />
+    <ClInclude Include="Media\Bitmap\PXBitmap.h" />
+    <ClInclude Include="Media\CPP\PXCPP.h" />
+    <ClInclude Include="Media\CRC32\PXCRC32.h" />
+    <ClInclude Include="Media\CSS\CSS.h" />
+    <ClInclude Include="Media\CS\PXCS.h" />
+    <ClInclude Include="Media\C\PXC.h" />
+    <ClInclude Include="Media\DEFLATE\PXDEFLATE.h" />
+    <ClInclude Include="Media\DLL\PXDLL.h" />
+    <ClInclude Include="Media\ELF\PXELF.h" />
+    <ClInclude Include="Media\Email\PXEmail.h" />
+    <ClInclude Include="Media\EXE\PXEXE.h" />
+    <ClInclude Include="Media\FilmBox\PXFilmBox.h" />
+    <ClInclude Include="Media\FLAC\PXFLAC.h" />
+    <ClInclude Include="Media\FMT\PXFMT.h" />
+    <ClInclude Include="Media\FTP\PXFTP.h" />
+    <ClInclude Include="Media\GIF\PXGIF.h" />
+    <ClInclude Include="Media\HTML\PXHTML.h" />
+    <ClInclude Include="Media\HTTP\PXHTTP.h" />
+    <ClInclude Include="Media\Huffman\PXHuffman.h" />
+    <ClInclude Include="Media\ID3\PXID3.h" />
+    <ClInclude Include="Media\INI\PXINI.h" />
+    <ClInclude Include="Media\IP\PXIP.h" />
+    <ClInclude Include="Media\ISBN\PXISBN.h" />
+    <ClInclude Include="Media\JPEG\PXJPEG.h" />
+    <ClInclude Include="Media\JSON\PXJSON.h" />
+    <ClInclude Include="Media\LAME\PXLAME.h" />
+    <ClInclude Include="Media\LZ77\PXLZ77.h" />
+    <ClInclude Include="Media\M4A\PXM4A.h" />
+    <ClInclude Include="Media\MD5\PXMD5.h" />
+    <ClInclude Include="Media\MIDI\PXMIDI.h" />
+    <ClInclude Include="Media\MP3\PXMP3.h" />
+    <ClInclude Include="Media\MP4\PXMP4.h" />
+    <ClInclude Include="Media\MSI\PXMSI.h" />
+    <ClInclude Include="Media\MTL\PXMTL.h" />
+    <ClInclude Include="Media\OGG\PXOGG.h" />
+    <ClInclude Include="Media\PDF\PXPDF.h" />
+    <ClInclude Include="Media\PHP\PXPHP.h" />
+    <ClInclude Include="Media\PLY\PXPLY.h" />
+    <ClInclude Include="Media\PNG\PXPNG.h" />
+    <ClInclude Include="Media\PXColor.h" />
+    <ClInclude Include="Media\PXFont.h" />
+    <ClInclude Include="Media\PXImage.h" />
+    <ClInclude Include="Media\PXModel.h" />
+    <ClInclude Include="Media\PXSound.h" />
+    <ClInclude Include="Media\PXText.h" />
+    <ClInclude Include="Media\PXType.h" />
+    <ClInclude Include="Media\PXUltimaInfo.h" />
+    <ClInclude Include="Media\QOI\PXQOI.h" />
+    <ClInclude Include="Media\RIFF\PXRIFF.h" />
+    <ClInclude Include="Media\RSA\PXRSA.h" />
+    <ClInclude Include="Media\SHA\PXSHA.h" />
+    <ClInclude Include="Media\SpriteFont\PXSpriteFont.h" />
+    <ClInclude Include="Media\STEP\PXSTEP.h" />
+    <ClInclude Include="Media\STL\PXSTL.h" />
+    <ClInclude Include="Media\SVG\PXSVG.h" />
+    <ClInclude Include="Media\TGA\PXTGA.h" />
+    <ClInclude Include="Media\TIFF\PXTIFF.h" />
+    <ClInclude Include="Media\TTF\PXTTF.h" />
+    <ClInclude Include="Media\UUID\PXUUID.h" />
+    <ClInclude Include="Media\VRML\PXVRML.h" />
+    <ClInclude Include="Media\Wavefront\PXWavefront.h" />
+    <ClInclude Include="Media\WAV\PXWAV.h" />
+    <ClInclude Include="Media\WEBM\PXWEBM.h" />
+    <ClInclude Include="Media\WEBP\PXWEBP.h" />
+    <ClInclude Include="Media\WMA\PXWMA.h" />
+    <ClInclude Include="Media\XingInfo\PXXingInfo.h" />
+    <ClInclude Include="Media\XML\PXXML.h" />
+    <ClInclude Include="Media\YAML\PXYAML.h" />
+    <ClInclude Include="Media\ZLIB\PXZLIB.h" />
+    <ClInclude Include="Network\SBP\PXSBPProtocol.h" />
+    <ClInclude Include="Network\Web\PXFTPClient.h" />
+    <ClInclude Include="Network\Web\PXWebServer.h" />
+    <ClInclude Include="OS\Audio\PXAudio.h" />
+    <ClInclude Include="OS\Bash\PXBash.h" />
+    <ClInclude Include="OS\ClipBoard\PXClipBoard.h" />
+    <ClInclude Include="OS\Debug\PXDebug.h" />
+    <ClInclude Include="OS\Dialog\PXDialog.h" />
+    <ClInclude Include="OS\Error\PXActionResult.h" />
+    <ClInclude Include="OS\File\PXDirectory.h" />
+    <ClInclude Include="OS\File\PXFile.h" />
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX.h" />
+    <ClInclude Include="OS\Graphic\OpenGL\PXOpenGL.h" />
+    <ClInclude Include="OS\Graphic\Vulcan\PXVulcan.h" />
+    <ClInclude Include="OS\HardDrive\PXHardDrive.h" />
+    <ClInclude Include="OS\Library\PXLibrary.h" />
+    <ClInclude Include="OS\Memory\PXMemory.h" />
+    <ClInclude Include="OS\Monitor\PXMonitor.h" />
+    <ClInclude Include="OS\Network\PXClient.h" />
+    <ClInclude Include="OS\Network\PXServer.h" />
+    <ClInclude Include="OS\Network\PXSocket.h" />
+    <ClInclude Include="OS\Processor\PXProcessor.h" />
+    <ClInclude Include="OS\Process\PXProcess.h" />
+    <ClInclude Include="OS\Program\PXProgram.h" />
+    <ClInclude Include="OS\Signal\PXSignal.h" />
+    <ClInclude Include="OS\System\OSVersion.h" />
+    <ClInclude Include="OS\System\PXRegistry.h" />
+    <ClInclude Include="OS\Thread\Await.h" />
+    <ClInclude Include="OS\Thread\PXLock.h" />
+    <ClInclude Include="OS\Thread\PXThread.h" />
+    <ClInclude Include="OS\Time\PXStopWatch.h" />
+    <ClInclude Include="OS\Time\PXTime.h" />
+    <ClInclude Include="OS\UI\PXUI.h" />
+    <ClInclude Include="OS\User\PXUser.h" />
+    <ClInclude Include="OS\Window\PXWindow.h" />
+    <ClInclude Include="Serialization\Serialization.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

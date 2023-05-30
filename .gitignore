@@ -354,14 +354,13 @@ MigrationBackup/
 *Temp*/
 /obj/Debug/
 
-Code/PXUltimaCS/obj/
 
-Code/PXUltimaSharpTest/obj/
-Code/PXUltimaSharp/obj/
-Code/PXUltimaSharp/bin/
-Code/PXUltimaSharp/obj/
-Code/PXUltimaSharpTest/bin/
-Code/PXUltimaSharpTest/obj/
-Code/PXUltimaSharpTest/obj/
-_TEST_DATA_OUTPUT_/
+
+Code/PXUltimaCS/bin/
+Code/PXUltimaCS/obj/
+Code/PXUltimaCSTest/bin/
+Code/PXUltimaCSTest/obj/
+
+Code/PXUltimaCTest/_TEST_DATA_OUTPUT_/
+Code/PXUltimaCTest/_TEST_DATA_INPUT_/
 #----------------------

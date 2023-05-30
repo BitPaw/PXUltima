@@ -15,60 +15,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CS\OS\Error\ActionResult.cpp">
+    <ClCompile Include="OS\Audio\Audio.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\File\DataStream.cpp">
+    <ClCompile Include="OS\Debug\Debug.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\Network\Server.cpp">
+    <ClCompile Include="OS\Error\ActionResult.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\Container\Dictionary\Dictionary.cpp">
+    <ClCompile Include="OS\File\DataStream.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\Audio\Audio.cpp">
+    <ClCompile Include="OS\Graphic\OpenGL\OpenGL.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\Debug\Debug.cpp">
+    <ClCompile Include="OS\Memory\Memory.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\Memory\Memory.cpp">
+    <ClCompile Include="OS\Network\Server.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\Window\Window.cpp">
+    <ClCompile Include="OS\Window\Window.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CS\OS\Graphic\PXOpenGL\PXOpenGL.cpp">
+    <ClCompile Include="Container\Dictionary\Dictionary.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\CS\OS\Error\ActionResult.hpp">
+    <ClInclude Include="OS\Audio\Audio.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\File\DataStream.hpp">
+    <ClInclude Include="OS\Debug\Debug.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\Network\Server.hpp">
+    <ClInclude Include="OS\Error\ActionResult.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\Container\Dictionary\Dictionary.hpp">
+    <ClInclude Include="OS\File\DataStream.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\Audio\Audio.hpp">
+    <ClInclude Include="OS\Graphic\OpenGL\OpenGL.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\Debug\Debug.hpp">
+    <ClInclude Include="OS\Memory\Memory.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\Memory\Memory.hpp">
+    <ClInclude Include="OS\Network\Server.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\Window\Window.hpp">
+    <ClInclude Include="OS\Window\Window.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CS\OS\Graphic\PXOpenGL\PXOpenGL.hpp">
+    <ClInclude Include="Container\Dictionary\Dictionary.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
