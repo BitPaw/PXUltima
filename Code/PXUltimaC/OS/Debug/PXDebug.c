@@ -14,7 +14,7 @@
 #endif
 
 #include <OS/Memory/PXMemory.h>
-#include <OS/Thread/PXThread.h>
+#include <OS/Async/PXThread.h>
 #include <OS/Library/PXLibrary.h>
 #include <OS/File/PXFile.h>
 
@@ -42,14 +42,16 @@ void PXDebugDestruct(PXDebug* const pxDebug)
 PXActionResult PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* const isPresent)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 	BOOL debuggerPresent = 0;
-	const BOOL result = CheckRemoteDebuggerPresent(pxDebug->Process.ProcessID, &debuggerPresent);
+	const BOOL result = CheckRemoteDebuggerPresent(pxDebug->Process.ProcessID, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h 
 	const PXBool success = result != 0;
 
-	PXActionOnErrorFetchAndExit(!success);
+	PXActionOnErrorFetchAndReturn(!success);
 
 	*isPresent = debuggerPresent;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 
 	return PXActionSuccessful;
@@ -59,7 +61,7 @@ PXBool PXDebugProcessBeeingDebuggedCurrent()
 {
 #if OSUnix
 #elif OSWindows
-	return IsDebuggerPresent();
+	return IsDebuggerPresent(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 }
 
@@ -72,7 +74,7 @@ void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
 		{
 #if OSUnix
 #elif OSWindows
-			OutputDebugStringA(message->TextA);
+			OutputDebugStringA(message->TextA); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 			break;
 		}
@@ -80,7 +82,7 @@ void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
 		{
 #if OSUnix
 #elif OSWindows
-			OutputDebugStringW(message->TextW);
+			OutputDebugStringW(message->TextW); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 			break;
 		}
@@ -90,11 +92,12 @@ void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
 PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 	PCSTR UserSearchPath = NULL;
 	BOOL fInvadeProcess = TRUE;
 
-	const BOOL result = SymInitialize(pxDebug->Process.ProcessID, UserSearchPath, fInvadeProcess); // Initializes the symbol handler for a process.
+	// Initializes the symbol handler for a process.
+	const BOOL result = SymInitialize(pxDebug->Process.ProcessID, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h 
 	const PXBool success = result != 0;
 
 #endif
@@ -111,7 +114,7 @@ PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const 
 		const PXActionResult result = PXThreadRun(&pxDebug->EventListenLoop, PXDebugLoop, pxDebug);
 
 		// If thread cannot be started, stop.
-		PXActionExitOnError(result);
+		PXActionReturnOnError(result);
 	}
 
 	// Start process
@@ -123,13 +126,13 @@ PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const 
 void PXDebugContinue(PXDebug* const pxDebug)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const DWORD dwThreadId = 0;
 	const DWORD dwContinueStatus = 0;
-	const PXBool x = ContinueDebugEvent(pxDebug->Process.ProcessID, dwThreadId, dwContinueStatus);
+	const PXBool x = ContinueDebugEvent(pxDebug->Process.ProcessID, dwThreadId, dwContinueStatus); // Windows XP, Kernel32.dll, debugapi.h
 	const PXBool isSicc = x != 0;
 
-	PXActionOnErrorFetchAndExit(!isSicc);
+	PXActionOnErrorFetchAndReturn(!isSicc);
 
 #endif
 }
@@ -139,7 +142,7 @@ void PXDebugPause(PXDebug* const pxDebug)
 #if OSUnix
 
 #elif OSWindows
-    DebugBreak();
+    DebugBreak(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 }
 
@@ -147,8 +150,8 @@ PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessID pxProcessID)
 {
 #if OSUnix
     return PXFalse;
-#elif OSWindows
-    return DebugBreakProcess(pxProcessID); // winbase.h, Windows XP
+#elif PXOSWindowsDestop
+    return DebugBreakProcess(pxProcessID); // Windows XP, Kernel32.dll, winbase.h
 #endif
 }
 
@@ -157,11 +160,11 @@ void PXDebugAttach(PXDebug* const pxDebug)
 #if OSUnix
 	const long result = ptrace(PTRACE_ATTACH, pxDebug->Process.ProcessID, 0, 0);
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
 	const PXBool sucessful = result != 0;
 
-	PXActionOnErrorFetchAndExit(!sucessful);
+	PXActionOnErrorFetchAndReturn(!sucessful);
 #endif
 }
 
@@ -170,11 +173,11 @@ void PXDebugDetach(PXDebug* const pxDebug)
 #if OSUnix
 	const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const BOOL sucessfulCode = DebugActiveProcessStop(pxDebug->Process.ProcessID);
 	const PXBool sucessful = sucessfulCode != 0;
 
-	PXActionOnErrorFetchAndExit(!sucessful);
+	PXActionOnErrorFetchAndReturn(!sucessful);
 #endif
 }
 
@@ -183,7 +186,7 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 #if OSUnix
 
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 	DWORD                          machineType = IMAGE_FILE_MACHINE_AMD64; // IMAGE_FILE_MACHINE_I386
 	HANDLE                         hThread = GetCurrentThread();
@@ -367,7 +370,7 @@ void OnDebugBreakPoint(PXDebug* const pxDebug)
 PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 	DEBUG_EVENT debugEvent;
 	DWORD dwMilliseconds = 0;
@@ -376,7 +379,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 	// WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h 
 	// WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h 
 	const BOOL result = WaitForDebugEvent(&debugEvent, 0); 
-	PXActionOnErrorFetchAndExit(!result);
+	PXActionOnErrorFetchAndReturn(!result);
 
 	switch (debugEvent.dwDebugEventCode) // Process the debugging event code.
 	{
@@ -574,7 +577,7 @@ void PXDebugLoop(PXDebug* const pxDebug)
 		const PXActionResult result = PXProcessCreate(&pxDebug->Process, &pxDebug->ApplicatioName, PXProcessCreationModeDebugProcessOnly);
 
 		// If starting the process failed, stop.
-		PXActionExitOnError(result);
+		PXActionReturnOnError(result);
 	}
 
 	pxDebug->IsRunning = PXTrue;

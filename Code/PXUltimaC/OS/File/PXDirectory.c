@@ -65,7 +65,7 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 
 #endif
 
-			PXActionOnErrorFetchAndExit(!successCreate);
+			PXActionOnErrorFetchAndReturn(!successCreate);
 
 			break;
 		}
@@ -88,7 +88,7 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 #endif
 
 #endif
-			PXActionOnErrorFetchAndExit(!successCreate);
+			PXActionOnErrorFetchAndReturn(!successCreate);
 
 			break;
 		}
@@ -139,7 +139,7 @@ PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName)
 #endif
 		const PXBool successful = text != 0;
 
-		PXActionOnErrorFetchAndExit(!successful);
+		PXActionOnErrorFetchAndReturn(!successful);
 
 
 		return PXActionSuccessful;
@@ -153,7 +153,7 @@ PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName)
 #endif
 		const PXBool successful = text != 0;
 
-		PXActionOnErrorFetchAndExit(!successful);
+		PXActionOnErrorFetchAndReturn(!successful);
 
 		return PXActionSuccessful;
 	}
@@ -176,7 +176,7 @@ PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory)
 #endif
 		const PXBool successful = text != 0;
 
-		PXActionOnErrorFetchAndExit(!successful);
+		PXActionOnErrorFetchAndReturn(!successful);
 
 
 		return PXActionSuccessful;
@@ -190,7 +190,7 @@ PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory)
 #endif
 		const PXBool successful = text != 0;
 
-		PXActionOnErrorFetchAndExit(!successful);
+		PXActionOnErrorFetchAndReturn(!successful);
 
 		return PXActionSuccessful;
 	}
@@ -212,7 +212,7 @@ PXActionResult PXDirectoryDelete(const PXText* const directoryName)
 #elif OSWindows
 		const PXBool successul = RemoveDirectoryA(directoryName->TextA); // Windows XP, Kernel32.dll, fileapi.h
 #endif
-		PXActionOnErrorFetchAndExit(!successul);
+		PXActionOnErrorFetchAndReturn(!successul);
 
 
 		return PXActionSuccessful;
@@ -225,7 +225,7 @@ PXActionResult PXDirectoryDelete(const PXText* const directoryName)
 		const PXBool successul = RemoveDirectoryW(directoryName->TextW); // Windows XP, Kernel32.dll, fileapi.h
 #endif
 
-		PXActionOnErrorFetchAndExit(!successul);
+		PXActionOnErrorFetchAndReturn(!successul);
 
 		return PXActionSuccessful;
 	}

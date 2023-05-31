@@ -27,26 +27,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -74,21 +74,25 @@
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,8 +103,6 @@
       <LanguageStandard>stdcpp14</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -121,8 +123,6 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -142,8 +142,6 @@
       <LanguageStandard>stdcpp14</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -164,8 +162,6 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -189,12 +185,10 @@
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="DataBase\PXDataBase.c" />
-    <ClCompile Include="Device\InputButton.c" />
-    <ClCompile Include="Device\PXController.c" />
-    <ClCompile Include="Device\PXKeyBoard.c" />
-    <ClCompile Include="Device\PXMouse.c" />
-    <ClCompile Include="Device\VirtualKey.c" />
-    <ClCompile Include="Event\PXEvent.c" />
+    <ClCompile Include="OS\Hardware\PXController.c" />
+    <ClCompile Include="OS\Hardware\PXKeyBoard.c" />
+    <ClCompile Include="OS\Hardware\PXMouse.c" />
+    <ClCompile Include="OS\Async\PXEvent.c" />
     <ClCompile Include="Graphic\PXCamera.c" />
     <ClCompile Include="Graphic\PXGraphic.c" />
     <ClCompile Include="Graphic\SoftwareRender\PXSoftwareRender.c" />
@@ -215,7 +209,7 @@
     <ClCompile Include="Media\Bitmap\PXBitmap.c" />
     <ClCompile Include="Media\CPP\PXCPP.c" />
     <ClCompile Include="Media\CRC32\PXCRC32.c" />
-    <ClCompile Include="Media\CSS\CSS.c" />
+    <ClCompile Include="Media\CSS\PXCSS.c" />
     <ClCompile Include="Media\CS\PXCS.c" />
     <ClCompile Include="Media\C\PXC.c" />
     <ClCompile Include="Media\DEFLATE\PXDEFLATE.c" />
@@ -295,27 +289,26 @@
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX.c" />
     <ClCompile Include="OS\Graphic\OpenGL\PXOpenGL.c" />
     <ClCompile Include="OS\Graphic\Vulcan\PXVulcan.c" />
-    <ClCompile Include="OS\HardDrive\PXHardDrive.c" />
+    <ClCompile Include="OS\Hardware\PXHardDrive.c" />
     <ClCompile Include="OS\Library\PXLibrary.c" />
     <ClCompile Include="OS\Memory\PXMemory.c" />
-    <ClCompile Include="OS\Monitor\PXMonitor.c" />
+    <ClCompile Include="OS\Hardware\PXMonitor.c" />
     <ClCompile Include="OS\Network\PXClient.c" />
     <ClCompile Include="OS\Network\PXServer.c" />
     <ClCompile Include="OS\Network\PXSocket.c" />
-    <ClCompile Include="OS\Processor\PXProcessor.c" />
+    <ClCompile Include="OS\Hardware\PXProcessor.c" />
     <ClCompile Include="OS\Process\PXProcess.c" />
     <ClCompile Include="OS\Program\PXProgram.c" />
     <ClCompile Include="OS\Signal\PXSignal.c" />
     <ClCompile Include="OS\System\PXRegistry.c" />
-    <ClCompile Include="OS\Thread\Await.c" />
-    <ClCompile Include="OS\Thread\PXLock.c" />
-    <ClCompile Include="OS\Thread\PXThread.c" />
+    <ClCompile Include="OS\Async\PXAwait.c" />
+    <ClCompile Include="OS\Async\PXLock.c" />
+    <ClCompile Include="OS\Async\PXThread.c" />
     <ClCompile Include="OS\Time\PXStopWatch.c" />
     <ClCompile Include="OS\Time\PXTime.c" />
     <ClCompile Include="OS\UI\PXUI.c" />
     <ClCompile Include="OS\User\PXUser.c" />
     <ClCompile Include="OS\Window\PXWindow.c" />
-    <ClCompile Include="Serialization\Serialization.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h" />
@@ -330,12 +323,10 @@
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="DataBase\PXDataBase.h" />
-    <ClInclude Include="Device\InputButton.h" />
-    <ClInclude Include="Device\PXController.h" />
-    <ClInclude Include="Device\PXKeyBoard.h" />
-    <ClInclude Include="Device\PXMouse.h" />
-    <ClInclude Include="Device\VirtualKey.h" />
-    <ClInclude Include="Event\PXEvent.h" />
+    <ClInclude Include="OS\Hardware\PXController.h" />
+    <ClInclude Include="OS\Hardware\PXKeyBoard.h" />
+    <ClInclude Include="OS\Hardware\PXMouse.h" />
+    <ClInclude Include="OS\Async\PXEvent.h" />
     <ClInclude Include="Graphic\PXCamera.h" />
     <ClInclude Include="Graphic\PXGraphic.h" />
     <ClInclude Include="Graphic\SoftwareRender\PXSoftwareRender.h" />
@@ -356,7 +347,7 @@
     <ClInclude Include="Media\Bitmap\PXBitmap.h" />
     <ClInclude Include="Media\CPP\PXCPP.h" />
     <ClInclude Include="Media\CRC32\PXCRC32.h" />
-    <ClInclude Include="Media\CSS\CSS.h" />
+    <ClInclude Include="Media\CSS\PXCSS.h" />
     <ClInclude Include="Media\CS\PXCS.h" />
     <ClInclude Include="Media\C\PXC.h" />
     <ClInclude Include="Media\DEFLATE\PXDEFLATE.h" />
@@ -436,28 +427,27 @@
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX.h" />
     <ClInclude Include="OS\Graphic\OpenGL\PXOpenGL.h" />
     <ClInclude Include="OS\Graphic\Vulcan\PXVulcan.h" />
-    <ClInclude Include="OS\HardDrive\PXHardDrive.h" />
+    <ClInclude Include="OS\Hardware\PXHardDrive.h" />
     <ClInclude Include="OS\Library\PXLibrary.h" />
     <ClInclude Include="OS\Memory\PXMemory.h" />
-    <ClInclude Include="OS\Monitor\PXMonitor.h" />
+    <ClInclude Include="OS\Hardware\PXMonitor.h" />
     <ClInclude Include="OS\Network\PXClient.h" />
     <ClInclude Include="OS\Network\PXServer.h" />
     <ClInclude Include="OS\Network\PXSocket.h" />
-    <ClInclude Include="OS\Processor\PXProcessor.h" />
+    <ClInclude Include="OS\Hardware\PXProcessor.h" />
     <ClInclude Include="OS\Process\PXProcess.h" />
     <ClInclude Include="OS\Program\PXProgram.h" />
     <ClInclude Include="OS\Signal\PXSignal.h" />
     <ClInclude Include="OS\System\OSVersion.h" />
     <ClInclude Include="OS\System\PXRegistry.h" />
-    <ClInclude Include="OS\Thread\Await.h" />
-    <ClInclude Include="OS\Thread\PXLock.h" />
-    <ClInclude Include="OS\Thread\PXThread.h" />
+    <ClInclude Include="OS\Async\PXAwait.h" />
+    <ClInclude Include="OS\Async\PXLock.h" />
+    <ClInclude Include="OS\Async\PXThread.h" />
     <ClInclude Include="OS\Time\PXStopWatch.h" />
     <ClInclude Include="OS\Time\PXTime.h" />
     <ClInclude Include="OS\UI\PXUI.h" />
     <ClInclude Include="OS\User\PXUser.h" />
     <ClInclude Include="OS\Window\PXWindow.h" />
-    <ClInclude Include="Serialization\Serialization.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

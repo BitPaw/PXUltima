@@ -16,7 +16,7 @@
 #include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
 #include <Container/Dictionary/PXDictionary.h>
-#include <OS/Thread/PXLock.h>
+#include <OS/Async/PXLock.h>
 #include <Media/PXColor.h>
 
 #define PXShaderNotRegisterd (unsigned int)-1
@@ -446,7 +446,7 @@ extern "C"
 	typedef struct PXGraphicContext_
 	{
 #if PXOpenGLUSE
-		PXOpenGLContext OpenGLInstance;
+		PXOpenGL OpenGLInstance;
 #endif
 
 		void* AttachedWindow;

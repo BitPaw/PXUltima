@@ -164,7 +164,7 @@ PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutp
         {
             const PXActionResult deflateResult = PXDEFLATEParse(pxInputSteam, pxOutputSteam);
 
-            PXActionExitOnError(deflateResult);
+            PXActionReturnOnError(deflateResult);
 
             break;
         }
@@ -220,7 +220,7 @@ PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutput
     {
         const PXActionResult delfateResult = PXDEFLATESerialize(pxInputSteam, pxOutputSteam);
 
-        PXActionExitOnError(delfateResult);
+        PXActionReturnOnError(delfateResult);
     }
 
     // Write ADLER

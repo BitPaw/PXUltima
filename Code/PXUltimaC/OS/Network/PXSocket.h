@@ -44,8 +44,8 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 
 #include <Media/PXType.h>
 #include <Media/PXText.h>
-#include <OS/Thread/PXLock.h>
-#include <OS/Thread/PXThread.h>
+#include <OS/Async/PXLock.h>
+#include <OS/Async/PXThread.h>
 #include <OS/Error/PXActionResult.h>
 #include <Container/Dictionary/PXDictionary.h>
 

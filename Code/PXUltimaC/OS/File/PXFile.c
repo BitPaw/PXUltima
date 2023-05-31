@@ -387,7 +387,7 @@ PXActionResult PXFileRemove(const PXText* const filePath)
 			const PXBool success = DeleteFileA(filePath->TextA);
 #endif
 
-			PXActionExitOnError(!success);
+			PXActionReturnOnError(!success);
 
 			break;
 		}
@@ -404,7 +404,7 @@ PXActionResult PXFileRemove(const PXText* const filePath)
 			const PXBool success = DeleteFileW(filePath->TextA);
 #endif
 
-			PXActionExitOnError(!success);
+			PXActionReturnOnError(!success);
 
 #endif
 
@@ -438,7 +438,7 @@ PXActionResult PXFileRename(const PXText* const oldName, const PXText* const new
 			const PXBool success = MoveFileA(oldName->TextA, newName->TextA); // Windows XP, Kernel32.dll, winbase.h
 #endif
 
-			PXActionExitOnError(!success);
+			PXActionReturnOnError(!success);
 
 			break;
 		}
@@ -455,7 +455,7 @@ PXActionResult PXFileRename(const PXText* const oldName, const PXText* const new
 			const PXBool success = MoveFileW(oldName->TextW, newName->TextW); // Windows XP, Kernel32.dll, winbase.h
 #endif
 
-			PXActionExitOnError(!success);
+			PXActionReturnOnError(!success);
 
 #endif
 
@@ -504,7 +504,7 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 #elif OSWindows
 			const PXBool succesfull = CopyFileA(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h
 
-			PXActionExitOnError(!succesfull);
+			PXActionReturnOnError(!succesfull);
 #endif
 
 			break;
@@ -517,7 +517,7 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 #elif OSWindows
 			const PXBool succesfull = CopyFileW(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h
 
-			PXActionExitOnError(!succesfull);
+			PXActionReturnOnError(!succesfull);
 #endif
 
 			break;
@@ -997,7 +997,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 
 		const PXBool successful = fileHandle != INVALID_HANDLE_VALUE;
 
-		PXActionOnErrorFetchAndExit(!successful);
+		PXActionOnErrorFetchAndReturn(!successful);
 
 		pxFile->ID = fileHandle;
 		pxFile->AccessMode = pxFileOpenFromPathInfo->AccessMode;
@@ -1405,14 +1405,14 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 		 {
 			 const BOOL flushSuccessful = FlushViewOfFile(pxFile->Data, pxFile->DataCursor);
 
-			 PXActionOnErrorFetchAndExit(flushSuccessful);
+			 PXActionOnErrorFetchAndReturn(flushSuccessful);
 		 }
 	 }
 
 	 {
 		 const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Data);
 
-		 PXActionOnErrorFetchAndExit(unmappingSucessful);
+		 PXActionOnErrorFetchAndReturn(unmappingSucessful);
 
 		 pxFile->Data = PXNull;
 	 }
@@ -1420,7 +1420,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 {
 		 const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingID);
 
-		 PXActionOnErrorFetchAndExit(closeMappingSucessful);
+		 PXActionOnErrorFetchAndReturn(closeMappingSucessful);
 
 		 pxFile->MappingID = -1;
 	 }
@@ -1443,7 +1443,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 		 const PXActionResult closeFile = PXFileClose(pxFile);
 
-		 PXActionExitOnError(closeFile);
+		 PXActionReturnOnError(closeFile);
 
 		 pxFile->ID = -1;
 	 }

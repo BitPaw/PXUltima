@@ -32,12 +32,12 @@
 #include <stdio.h>
 
 
-#if OSWindows
+#if PXOSWindowsDestop
 void PXUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead)
 {
-    const int textLength = GetWindowTextLengthW(uiElementID) + 1;
+    const int textLength = GetWindowTextLengthW(uiElementID) + 1; // Windows 2000, User32.dll, winuser.h
     const int maximum = PXMathMinimum(textLength, bufferSize);
-    const int lengthRead = GetWindowTextW(uiElementID, buffer, maximum);
+    const int lengthRead = GetWindowTextW(uiElementID, buffer, maximum); // Windows 2000, User32.dll, winuser.h
 
     *bufferRead = lengthRead;
 }
@@ -89,7 +89,7 @@ void PXUIElementEnable()
 void UIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     DWORD dwExStyle = 0;
     wchar_t* lpClassName = className;// Predefined class; Unicode assumed ;
     wchar_t* lpWindowName = name;
@@ -98,7 +98,7 @@ void UIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layo
     HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(window, GWLP_HINSTANCE);
     LPVOID lpParam = NULL; // Pointer not needed.
 
-    *ID = CreateWindowExW
+    *ID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
     (
         dwExStyle,
         lpClassName,
@@ -132,7 +132,7 @@ void ButtonConstruct(const PXWindowID window, OSButton* button, const unsigned i
     PXMemoryClear(button, sizeof(OSButton));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     button->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_USERBUTTON | WS_BORDER;
     button->Layout.X = x;
     button->Layout.Y = y;
@@ -148,7 +148,7 @@ void ComboBoxConstruct(const PXWindowID window, OSComboBox* comboBox, const unsi
     PXMemoryClear(comboBox, sizeof(OSComboBox));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     comboBox->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     comboBox->Layout.X = x;
@@ -167,7 +167,7 @@ void ListBoxConstruct(const PXWindowID window, OSListBox* listBox, const unsigne
     PXMemoryClear(listBox, sizeof(OSListBox));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     listBox->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     listBox->Layout.X = x;
@@ -184,7 +184,7 @@ void TextEditConstruct(const PXWindowID window, OSTextEdit* textEdit, const unsi
     PXMemoryClear(textEdit, sizeof(OSTextEdit));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     textEdit->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     textEdit->Layout.X = x;
@@ -199,7 +199,7 @@ void TextEditConstruct(const PXWindowID window, OSTextEdit* textEdit, const unsi
 void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIElementTextGet(textEdit->ID, buffer, bufferSize, bufferWritten);
 #endif
 }
@@ -209,7 +209,7 @@ void RichEditConstruct(const PXWindowID window, OSRichEdit* richEdit, const unsi
     PXMemoryClear(richEdit, sizeof(OSRichEdit));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     richEdit->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     richEdit->Layout.X = x;
@@ -226,7 +226,7 @@ void ScrollBarConstruct(const PXWindowID window, OSScrollBar* scrollBar, const u
     PXMemoryClear(scrollBar, sizeof(OSScrollBar));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     scrollBar->Layout.Style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
     scrollBar->Layout.X = x;
@@ -243,7 +243,7 @@ void PXUITextConstruct(const PXWindowID window, PXOSUIText* uiText, const unsign
     PXMemoryClear(uiText, sizeof(PXOSUIText));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     uiText->Layout.Style = WS_VISIBLE | WS_CHILD | SS_LEFT | WS_BORDER;
     uiText->Layout.X = x;
@@ -261,7 +261,7 @@ void OSCheckBoxConstruct(const PXWindowID window, PXUICheckBox* uiCheckBox, cons
     PXMemoryClear(uiCheckBox, sizeof(PXUICheckBox));
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     uiCheckBox->Layout.Style = WS_VISIBLE | WS_CHILD | BS_CHECKBOX | WS_BORDER;
     uiCheckBox->Layout.X = x;
@@ -278,7 +278,7 @@ void OSCheckBoxConstruct(const PXWindowID window, PXUICheckBox* uiCheckBox, cons
 void PXUITrackbarCreate(const PXWindowID window, PXUITrackbar* PXUITrackbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUITrackbar->Layout.Style = WS_VISIBLE | WS_CHILD | TBS_AUTOTICKS | WS_BORDER;
     PXUITrackbar->Layout.X = x;
     PXUITrackbar->Layout.Y = y;
@@ -292,7 +292,7 @@ void PXUITrackbarCreate(const PXWindowID window, PXUITrackbar* PXUITrackbar, con
 void PXUIStatusbarCreate(const PXWindowID window, PXUIStatusbar* PXUIStatusbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIStatusbar->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIStatusbar->Layout.X = x;
     PXUIStatusbar->Layout.Y = y;
@@ -306,7 +306,7 @@ void PXUIStatusbarCreate(const PXWindowID window, PXUIStatusbar* PXUIStatusbar, 
 void PXUIUpDownCreate(const PXWindowID window, PXUIUpDown* PXUIUpDown, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIUpDown->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIUpDown->Layout.X = x;
     PXUIUpDown->Layout.Y = y;
@@ -320,7 +320,7 @@ void PXUIUpDownCreate(const PXWindowID window, PXUIUpDown* PXUIUpDown, const uns
 void PXUIProgressbarCreate(const PXWindowID window, PXUIProgressbar* PXUIProgressbar, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIProgressbar->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIProgressbar->Layout.X = x;
     PXUIProgressbar->Layout.Y = y;
@@ -334,7 +334,7 @@ void PXUIProgressbarCreate(const PXWindowID window, PXUIProgressbar* PXUIProgres
 void PXUIHotKeyCreate(const PXWindowID window, PXUIHotKey* PXUIHotKey, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIHotKey->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIHotKey->Layout.X = x;
     PXUIHotKey->Layout.Y = y;
@@ -348,7 +348,7 @@ void PXUIHotKeyCreate(const PXWindowID window, PXUIHotKey* PXUIHotKey, const uns
 void PXUICalenderCreate(const PXWindowID window, PXUICalender* PXUICalender, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUICalender->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUICalender->Layout.X = x;
     PXUICalender->Layout.Y = y;
@@ -362,7 +362,7 @@ void PXUICalenderCreate(const PXWindowID window, PXUICalender* PXUICalender, con
 void PXUIToolTipCreate(const PXWindowID window, PXUIToolTip* PXUIToolTip, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIToolTip->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIToolTip->Layout.X = x;
     PXUIToolTip->Layout.Y = y;
@@ -376,7 +376,7 @@ void PXUIToolTipCreate(const PXWindowID window, PXUIToolTip* PXUIToolTip, const 
 void PXUIAnimateCreate(const PXWindowID window, PXUIAnimate* PXUIAnimate, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIAnimate->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIAnimate->Layout.X = x;
     PXUIAnimate->Layout.Y = y;
@@ -390,7 +390,7 @@ void PXUIAnimateCreate(const PXWindowID window, PXUIAnimate* PXUIAnimate, const 
 void PXUIDateTimePickerCreate(const PXWindowID window, PXUIDateTimePicker* PXUIDateTimePicker, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIDateTimePicker->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIDateTimePicker->Layout.X = x;
     PXUIDateTimePicker->Layout.Y = y;
@@ -404,7 +404,7 @@ void PXUIDateTimePickerCreate(const PXWindowID window, PXUIDateTimePicker* PXUID
 void PXUIGroupBoxCreate(const PXWindowID window, PXUIGroupBox* PXUIGroupBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIGroupBox->Layout.Style = WS_VISIBLE | WS_CHILD | BS_GROUPBOX | WS_BORDER;
     PXUIGroupBox->Layout.X = x;
     PXUIGroupBox->Layout.Y = y;
@@ -418,7 +418,7 @@ void PXUIGroupBoxCreate(const PXWindowID window, PXUIGroupBox* PXUIGroupBox, con
 void PXUIRadioButtonCreate(const PXWindowID window, PXUIRadioButton* PXUIRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIRadioButton->Layout.Style = WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON | WS_BORDER;
     PXUIRadioButton->Layout.X = x;
     PXUIRadioButton->Layout.Y = y;
@@ -432,7 +432,7 @@ void PXUIRadioButtonCreate(const PXWindowID window, PXUIRadioButton* PXUIRadioBu
 void PXUIGroupRadioButtonCreate(const PXWindowID window, PXUIGroupRadioButton* PXUIGroupRadioButton, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIGroupRadioButton->Layout.Style = WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_BORDER;
     PXUIGroupRadioButton->Layout.X = x;
     PXUIGroupRadioButton->Layout.Y = y;
@@ -446,7 +446,7 @@ void PXUIGroupRadioButtonCreate(const PXWindowID window, PXUIGroupRadioButton* P
 void PXUIListBoxCreate(const PXWindowID window, PXUIListBox* PXUIListBox, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIListBox->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIListBox->Layout.X = x;
     PXUIListBox->Layout.Y = y;
@@ -460,7 +460,7 @@ void PXUIListBoxCreate(const PXWindowID window, PXUIListBox* PXUIListBox, const 
 void PXUITreeViewCreate(const PXWindowID window, PXUITreeView* PXUITreeView, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUITreeView->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUITreeView->Layout.X = x;
     PXUITreeView->Layout.Y = y;
@@ -474,7 +474,7 @@ void PXUITreeViewCreate(const PXWindowID window, PXUITreeView* PXUITreeView, con
 void PXUIIPInputCreate(const PXWindowID window, PXUIIPInput* PXUIIPInput, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIIPInput->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIIPInput->Layout.X = x;
     PXUIIPInput->Layout.Y = y;
@@ -488,7 +488,7 @@ void PXUIIPInputCreate(const PXWindowID window, PXUIIPInput* PXUIIPInput, const 
 void PXUITabControlCreate(const PXWindowID window, PXUITabControl* PXUITabControl, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUITabControl->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUITabControl->Layout.X = x;
     PXUITabControl->Layout.Y = y;
@@ -502,7 +502,7 @@ void PXUITabControlCreate(const PXWindowID window, PXUITabControl* PXUITabContro
 void PXUIPageScrollerCreate(const PXWindowID window, PXUIPageScroller* PXUIPageScroller, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIPageScroller->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIPageScroller->Layout.X = x;
     PXUIPageScroller->Layout.Y = y;
@@ -516,7 +516,7 @@ void PXUIPageScrollerCreate(const PXWindowID window, PXUIPageScroller* PXUIPageS
 void PXUIFontSelectorCreate(const PXWindowID window, PXUIFontSelector* PXUIFontSelector, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIFontSelector->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;// NFS_USEFONTASSOC;
     PXUIFontSelector->Layout.X = x;
     PXUIFontSelector->Layout.Y = y;
@@ -530,7 +530,7 @@ void PXUIFontSelectorCreate(const PXWindowID window, PXUIFontSelector* PXUIFontS
 void PXUIHeaderCreate(const PXWindowID window, PXUIHeader* PXUIHeader, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUIHeader->Layout.Style = WS_VISIBLE | WS_CHILD | WS_BORDER;
     PXUIHeader->Layout.X = x;
     PXUIHeader->Layout.Y = y;
@@ -544,7 +544,7 @@ void PXUIHeaderCreate(const PXWindowID window, PXUIHeader* PXUIHeader, const uns
 void PXUILinkCreate(const PXWindowID window, PXUILink* PXUILink, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const wchar_t* buttonText)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     PXUILink->Layout.Style = WS_VISIBLE | WS_CHILD;
     PXUILink->Layout.X = x;
     PXUILink->Layout.Y = y;

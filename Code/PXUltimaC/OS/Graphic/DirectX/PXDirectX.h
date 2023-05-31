@@ -3,7 +3,7 @@
 
 #include <OS/System/OSVersion.h>
 
-#define PXDirectXUSE OSDeviceToUse == OSDeviceDestop
+#define PXDirectXUSE PXOSWindowsDestop
 #if PXDirectXUSE
 
 #include <Media/PXType.h>
@@ -22,7 +22,7 @@ extern "C"
 {
 #endif
 
-	typedef struct PXDirectXContext_
+	typedef struct PXDirectX
 	{
 		IDirect3D9* ContextD9;
 
@@ -30,12 +30,12 @@ extern "C"
 		char Description[MAX_DEVICE_IDENTIFIER_STRING];
 		char DeviceName[32];
 	}
-	PXDirectXContext;
+	PXDirectX;
 
-	PXPublic void PXDirectXContextConstruct(PXDirectXContext* const directXContext);
-	PXPublic void PXDirectXContextDestruct(PXDirectXContext* const directXContext);
+	PXPublic void PXDirectXContextConstruct(PXDirectX* const pxDirectX);
+	PXPublic void PXDirectXContextDestruct(PXDirectX* const pxDirectX);
 
-	PXPublic void PXDirectXContextCreate(PXDirectXContext* const directXContext);
+	PXPublic void PXDirectXContextCreate(PXDirectX* const pxDirectX);
 
 #ifdef __cplusplus
 }

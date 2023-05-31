@@ -564,7 +564,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			}
 
 			PXText numberText;
-			PXTextConstructFromAdress(&numberText, text, textSize);
+			PXTextConstructFromAdressA(&numberText, text, textSize);
 
 			if (probablyFloat && isValidFloatSyntax)
 			{

@@ -4,7 +4,6 @@
 #include <OS/Error/PXActionResult.h>
 #include <Media/PXType.h>
 #include <OS/File/PXFile.h>
-#include <Serialization/Serialization.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -30,8 +29,6 @@ extern "C"
 	PXPrivate PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size);
 
 	PXPublic PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
-
-	PXPublic PXActionResult PXYAMLFileParse(PXFile* const ymlTokenInputStream, PXSerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize);
 
 #ifdef __cplusplus
 }

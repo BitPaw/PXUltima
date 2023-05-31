@@ -42,7 +42,7 @@ PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath)
 
         const PXActionResult fileLoadingResult = PXFileOpenFromPath(&dataStream, &pxFileOpenFromPathInfo);
 
-        PXActionExitOnError(fileLoadingResult);
+        PXActionReturnOnError(fileLoadingResult);
     }
 
     //dataStream.FilePath = filePath;
@@ -52,7 +52,7 @@ PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath)
             const FileFormatExtension imageForPXMathint = PXFilePathExtensionDetectTry(filePath);
             const PXActionResult fileParsingResult = PXImageLoadD(image, &dataStream, imageForPXMathint);
 
-            PXActionExitOnSuccess(fileParsingResult);
+            PXActionReturnOnSuccess(fileParsingResult);
         }
 
 

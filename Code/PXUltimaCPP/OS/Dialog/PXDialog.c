@@ -32,7 +32,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
 
     // Do stuff
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 #if WindowsAtleastVista
 
@@ -158,8 +158,10 @@ PXBool PXDialogFileOpen(PXText* const filePath)
 
     return PXActionInvalid;
 
-#endif
 
+#endif
+#else
+return PXFalse;
 #endif
 }
 
@@ -168,7 +170,7 @@ PXBool PXDialogFileSave(PXText* const filePath)
 #if OSUnix
     return 0;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     switch (filePath->Format)
     {
         case TextFormatASCII:
@@ -215,6 +217,8 @@ PXBool PXDialogFileSave(PXText* const filePath)
     }
 
     return PXActionInvalid;
+#else
+    return PXFalse;
 #endif
 }
 
@@ -223,7 +227,7 @@ PXBool PXDialogColorSelect(PXColorRGBI8* const color)
 #if OSUnix
     return PXFalse;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     CHOOSECOLORW chooseColor;
    
     PXMemoryClear(&chooseColor, sizeof(CHOOSECOLORW));
@@ -249,6 +253,8 @@ PXBool PXDialogColorSelect(PXColorRGBI8* const color)
     }    
 
     return success;
+#else
+    return PXFalse;
 #endif
 }
 
@@ -257,7 +263,7 @@ PXBool PXDialogFontSelect()
 #if OSUnix
     return PXFalse;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     CHOOSEFONTW choosefonta;
     PXMemoryClear(&choosefonta, sizeof(CHOOSEFONTW));
     choosefonta.lStructSize = sizeof(CHOOSEFONTW);
@@ -265,6 +271,8 @@ PXBool PXDialogFontSelect()
     const PXBool success = ChooseFontW(&choosefonta); // Windows 2000, Comdlg32.dll, commdlg.h
 
     return success;
+#else
+    return PXFalse;
 #endif
 }
 
@@ -273,7 +281,7 @@ PXBool PXDialogPrint()
 #if OSUnix
     return PXFalse;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     PRINTDLGW printdlgw;
     PXMemoryClear(&printdlgw, sizeof(PRINTDLGW));
     printdlgw.lStructSize = sizeof(PRINTDLGW);
@@ -281,6 +289,8 @@ PXBool PXDialogPrint()
     const PXBool success = PrintDlgW(&printdlgw); // Windows 2000, Comdlg32.dll, commdlg.h
 
     return success;
+#else
+    return PXFalse;
 #endif
 }
 

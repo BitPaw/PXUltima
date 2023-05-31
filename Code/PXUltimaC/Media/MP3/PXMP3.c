@@ -793,7 +793,7 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 
 		const PXActionResult actionResult = PXID3Parse(&mp3->PXID3Info, PXFile);
 
-		PXActionExitOnError(actionResult);
+		PXActionReturnOnError(actionResult);
 	}
 
 	while(!PXFileIsAtEnd(PXFile))
@@ -1050,7 +1050,7 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 		{
 			const PXActionResult actionResult = PXXingInfoParse(&xingInfo, PXFile);
 
-			PXActionExitOnError(actionResult);
+			PXActionReturnOnError(actionResult);
 	
 #if PXMP3Debug
 			printf
@@ -1089,7 +1089,7 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 
 			const PXActionResult actionResult = PXLAMEParse(&lame, PXFile);
 
-			PXActionExitOnError(actionResult);
+			PXActionReturnOnError(actionResult);
 
 #if PXMP3Debug
 				printf

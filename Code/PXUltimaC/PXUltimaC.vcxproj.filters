@@ -51,22 +51,16 @@
     <ClCompile Include="DataBase\PXDataBase.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Device\InputButton.c">
+    <ClCompile Include="OS\Hardware\PXController.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Device\PXController.c">
+    <ClCompile Include="OS\Hardware\PXKeyBoard.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Device\PXKeyBoard.c">
+    <ClCompile Include="OS\Hardware\PXMouse.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Device\PXMouse.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Device\VirtualKey.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Event\PXEvent.c">
+    <ClCompile Include="OS\Async\PXEvent.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Graphic\SoftwareRender\PXSoftwareRender.c">
@@ -135,7 +129,7 @@
     <ClCompile Include="Media\CS\PXCS.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\CSS\CSS.c">
+    <ClCompile Include="Media\CSS\PXCSS.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\DEFLATE\PXDEFLATE.c">
@@ -369,7 +363,7 @@
     <ClCompile Include="OS\Graphic\Vulcan\PXVulcan.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\HardDrive\PXHardDrive.c">
+    <ClCompile Include="OS\Hardware\PXHardDrive.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Library\PXLibrary.c">
@@ -378,7 +372,7 @@
     <ClCompile Include="OS\Memory\PXMemory.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Monitor\PXMonitor.c">
+    <ClCompile Include="OS\Hardware\PXMonitor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Network\PXClient.c">
@@ -393,7 +387,7 @@
     <ClCompile Include="OS\Process\PXProcess.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Processor\PXProcessor.c">
+    <ClCompile Include="OS\Hardware\PXProcessor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Program\PXProgram.c">
@@ -405,13 +399,13 @@
     <ClCompile Include="OS\System\PXRegistry.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Thread\Await.c">
+    <ClCompile Include="OS\Async\PXAwait.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Thread\PXLock.c">
+    <ClCompile Include="OS\Async\PXLock.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Thread\PXThread.c">
+    <ClCompile Include="OS\Async\PXThread.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Time\PXStopWatch.c">
@@ -427,9 +421,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Window\PXWindow.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Serialization\Serialization.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -470,22 +461,16 @@
     <ClInclude Include="DataBase\PXDataBase.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Device\InputButton.h">
+    <ClInclude Include="OS\Hardware\PXController.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Device\PXController.h">
+    <ClInclude Include="OS\Hardware\PXKeyBoard.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Device\PXKeyBoard.h">
+    <ClInclude Include="OS\Hardware\PXMouse.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Device\PXMouse.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Device\VirtualKey.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Event\PXEvent.h">
+    <ClInclude Include="OS\Async\PXEvent.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Graphic\SoftwareRender\PXSoftwareRender.h">
@@ -554,7 +539,7 @@
     <ClInclude Include="Media\CS\PXCS.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\CSS\CSS.h">
+    <ClInclude Include="Media\CSS\PXCSS.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\DEFLATE\PXDEFLATE.h">
@@ -788,7 +773,7 @@
     <ClInclude Include="OS\Graphic\Vulcan\PXVulcan.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\HardDrive\PXHardDrive.h">
+    <ClInclude Include="OS\Hardware\PXHardDrive.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Library\PXLibrary.h">
@@ -797,7 +782,7 @@
     <ClInclude Include="OS\Memory\PXMemory.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Monitor\PXMonitor.h">
+    <ClInclude Include="OS\Hardware\PXMonitor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Network\PXClient.h">
@@ -812,7 +797,7 @@
     <ClInclude Include="OS\Process\PXProcess.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Processor\PXProcessor.h">
+    <ClInclude Include="OS\Hardware\PXProcessor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Program\PXProgram.h">
@@ -827,13 +812,13 @@
     <ClInclude Include="OS\System\PXRegistry.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Thread\Await.h">
+    <ClInclude Include="OS\Async\PXAwait.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Thread\PXLock.h">
+    <ClInclude Include="OS\Async\PXLock.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Thread\PXThread.h">
+    <ClInclude Include="OS\Async\PXThread.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Time\PXStopWatch.h">
@@ -849,9 +834,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Window\PXWindow.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Serialization\Serialization.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,7 +14,7 @@ extern "C"
 	typedef enum PXActionResult_
 	{
 		//---<General>-----------------------
-		PXActionInvalid, // Default iniitlialisation value, no not use.
+		PXActionInvalid, // Default iniitlialisation value, do not use.
 		PXActionSuccessful, // PXAction finished successful
 		PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
 		PXActionFailedMemoryRelease,
@@ -141,7 +141,63 @@ extern "C"
 		SocketIsBlocking,
 
 		WindowsSocketSystemNotInitialized,
-		//----------------------------------------
+		//-------------------------------------------------
+
+		//---<Audio>---------------------------------------
+			AudioResultDeviceIDInvalid,
+			AudioResultDeviceHandleInvalid,
+			AudioResultDeviceNoDriver,
+
+			AudioResultDriverNotReachable, // Maybe diabled, or deactivated
+			AudioResultDriverNotEnabled, // No driver to use
+
+
+			AudioResultDeviceAlreadyAllocated,
+			AudioResultOutOfMemory,
+
+			AudioResultNotSupported,
+
+			AudioResultErrorValueInvalid,
+
+
+			AudioResultFlagInvalid,
+			AudioResultParameterInvalid,
+
+			AudioResultDeviceHandleBusy,
+
+			AudioResultAliasNotFound,
+
+
+
+			AudioResultPXRegistryValueNotFound,
+
+			AudioResultDriverNoCallback,
+
+			AudioResultMoreData,
+
+
+			// Custom
+			AudioResultDeviceListNotBigEnough,
+
+
+			// Windows spesific
+			AudioResultPXRegistryDatabaseInvalid,
+			AudioResultPXRegistryKeyNotFound,
+			AudioResultPXRegistryWriteError,
+			AudioResultPXRegistryReadError,
+			AudioResultPXRegistryDeleteError,
+
+			AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
+
+
+
+			// only
+			AudioResultWaveFormatUnsupported,
+			AudioResultDeviceIsStillPlaying,
+			AudioResultReaderIsNotPrepared,
+			AudioResultDeviceIsSynchronous,
+		//-------------------------------------------------
+
 
 		// POSIX Error codes, these are pre-defined
 		UnkownError, // OTHER
@@ -226,9 +282,9 @@ extern "C"
 	}
 	PXActionResult;
 
-#define PXActionExitOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
-#define PXActionExitOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
-#define PXActionOnErrorFetchAndExit(b) if(b) { return PXErrorCurrent(); }
+#define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
+#define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
+#define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
 	PXPublic PXActionResult PXErrorCodeFromID(const int errorCode);
 	PXPublic PXActionResult PXErrorCurrent();

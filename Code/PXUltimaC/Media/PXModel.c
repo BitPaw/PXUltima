@@ -170,14 +170,14 @@ PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
 
         const PXActionResult fileLoadingResult = PXFileOpenFromPath(&dataStream, &pxFileOpenFromPathInfo);
 
-        PXActionExitOnError(fileLoadingResult);
+        PXActionReturnOnError(fileLoadingResult);
     }
 
     {
         const FileFormatExtension modelFileFormat = PXFilePathExtensionDetectTry(filePath);
         const PXActionResult fileParsingResult = PXModelLoadD(model, &dataStream, modelFileFormat);
 
-        PXActionExitOnSuccess(fileParsingResult);
+        PXActionReturnOnSuccess(fileParsingResult);
 
         PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;

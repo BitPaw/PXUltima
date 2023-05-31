@@ -2,9 +2,9 @@
 
 #if PXSocketUSE
 
-#include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-#include <Event/PXEvent.h>
+#include <OS/Async/PXEvent.h>
+#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 #include <stdio.h>
 
@@ -620,7 +620,7 @@ PXActionResult PXSocketCreate
     {
         const PXActionResult permissionGranted = WindowsSocketAgentStartup();
 
-        PXActionExitOnError(permissionGranted);
+        PXActionReturnOnError(permissionGranted);
     }
 #endif
 
@@ -685,7 +685,7 @@ PXActionResult PXSocketSetupAdress
     {
         const PXActionResult wsaResult = WindowsSocketAgentStartup();
 
-        PXActionExitOnError(wsaResult);
+        PXActionReturnOnError(wsaResult);
     }
 #endif
 
@@ -1215,7 +1215,7 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
     const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(int));
     const PXBool sucessful = optionsocketResult == 0;
 
-    PXActionOnErrorFetchAndExit(!sucessful)
+    PXActionOnErrorFetchAndReturn(!sucessful)
 
     return PXActionSuccessful;
 }

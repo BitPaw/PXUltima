@@ -74,7 +74,7 @@ extern "C"
 
 #define PXTextConstructBufferA(pxText, bufferSize) PXTextConstructNamedBufferA(pxText, __pxUnnamedInternalBuffer, bufferSize);
 
-#define PXTextConstructFromAdress(pxText, address, size)\
+#define PXTextConstructFromAdress(pxText, address, size, format)\
 		if(size == -1)\
 		{\
 			(pxText)->SizeAllocated = PXTextLengthA(address, -1);\
@@ -85,8 +85,11 @@ extern "C"
 		}\
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
-		(pxText)->Format = TextFormatASCII;\
+		(pxText)->Format = format;\
 		(pxText)->TextA = address;
+
+#define PXTextConstructFromAdressA(pxText, address, size) PXTextConstructFromAdress(pxText, address, size, TextFormatASCII)
+#define PXTextConstructFromAdressW(pxText, address, size) PXTextConstructFromAdress(pxText, address, size, TextFormatUNICODE)
 
 #define PXTextMakeFixedC(pxText, c)\
 		char character = c; \
@@ -104,13 +107,16 @@ extern "C"
 		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = text;
 
-#define PXTextMakeFixedNamedA(pxText, name, s)\
+#define PXTextMakeFixedNamed(pxText, name, s, format)\
 		char name[] = s;\
 		(pxText)->SizeAllocated = sizeof(name);\
-		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
-		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
-		(pxText)->Format = TextFormatASCII;\
+		(pxText)->SizeUsed = 0;\
+		(pxText)->NumberOfCharacters = 0;\
+		(pxText)->Format = format;\
 		(pxText)->TextA = name;
+
+#define PXTextMakeFixedNamedA(pxText, name, s) PXTextMakeFixedNamed(pxText, name, s, TextFormatASCII);
+#define PXTextMakeFixedNamedW(pxText, name, s) PXTextMakeFixedNamed(pxText, name, s, TextFormatUNICODE);
 
 #define PXTextMakeFixedW(pxText, s)\
 		wchar_t text[] = s;\

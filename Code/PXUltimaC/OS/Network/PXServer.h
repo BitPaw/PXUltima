@@ -37,9 +37,9 @@ extern "C"
 
 	PXPublic PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const ProtocolMode protocolMode);
 	PXPublic PXActionResult PXServerStop(PXServer* const server);
-	PXPublic PXActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID);
+	PXPublic PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socketID);
 
-	static PXThreadResult PXServerPXClientListeningThread(void* server);
+	static PXThreadResult PXServerClientListeningThread(void* server);
 
 #ifdef __cplusplus
 }

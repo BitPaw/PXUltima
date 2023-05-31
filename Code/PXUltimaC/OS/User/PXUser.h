@@ -10,7 +10,6 @@ extern "C"
 
 	PXPublic PXBool PXUserNameGet(PXText* const name);
 
-
 	typedef enum PXUserEnviromentFolderID_
 	{
 		PXUserEnviromentFolderIDInvalid,

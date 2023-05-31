@@ -35,7 +35,7 @@ namespace PX
 	public ref class PXOpenGL
 	{
 		private:
-		PXOpenGLContext* Context;
+		PXOpenGL* Context;
 
 		public:
 		PXOpenGL();

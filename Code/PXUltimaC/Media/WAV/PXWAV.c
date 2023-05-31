@@ -17,7 +17,7 @@ PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 	{
 		const PXActionResult actionResult = PXRIFFParse(&riff, PXFile);
 
-		PXActionExitOnError(actionResult);
+		PXActionReturnOnError(actionResult);
 
 		// Valid PXRIFF
 		{
@@ -35,7 +35,7 @@ PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 	{
 		const PXActionResult actionResult = PXFMTParse(&wav->Format, PXFile, riff.EndianFormat);
 
-		PXActionExitOnError(actionResult);
+		PXActionReturnOnError(actionResult);
 	}
 	//---------------------------------------
 

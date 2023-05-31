@@ -2,7 +2,7 @@
 
 #if PXSocketUSE
 
-#include <Event/PXEvent.h>
+#include <OS/Async/PXEvent.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
@@ -67,7 +67,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
             pxSocketAdressSetupInfoListSize
         );
 
-        PXActionExitOnError(adressResult);
+        PXActionReturnOnError(adressResult);
     }
 
     PXLockCreate(&server->PollingLock, PXLockTypeProcessOnly);
@@ -84,35 +84,35 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
         {
             const PXActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
 
-            PXActionExitOnError(socketCreateResult);
+            PXActionReturnOnError(socketCreateResult);
         }
 
         // Set Socket Options
         {
             const PXActionResult actionResult = PXSocketOptionsSet(pxSocket);
 
-            PXActionExitOnError(actionResult);
+            PXActionReturnOnError(actionResult);
         }
 
         // Bind Socket
         {
             const PXActionResult actionResult = PXSocketBind(pxSocket);
 
-            PXActionExitOnError(actionResult);
+            PXActionReturnOnError(actionResult);
         }
 
         // Listen
         {
             const PXActionResult actionResult = PXSocketListen(pxSocket);
 
-            PXActionExitOnError(actionResult);
+            PXActionReturnOnError(actionResult);
         }   
 
         PXSocketStateChange(pxSocket, SocketIDLE);
 
         InvokeEvent(pxSocket->EventList.ConnectionListeningCallback, pxSocket);   
 
-        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerPXClientListeningThread, pxSocket);       
+        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerClientListeningThread, pxSocket);       
     }
 
     return PXActionSuccessful;
@@ -125,12 +125,12 @@ PXActionResult PXServerStop(PXServer* const server)
 	return PXActionInvalid;
 }
 
-PXActionResult PXServerKickPXClient(PXServer* const server, const PXSocketID socketID)
+PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socketID)
 {
 	return PXActionInvalid;
 }
 
-PXThreadResult PXServerPXClientListeningThread(void* serverAdress)
+PXThreadResult PXServerClientListeningThread(void* serverAdress)
 {
     PXSocket* const serverSocket = (PXSocket*)serverAdress; 
 

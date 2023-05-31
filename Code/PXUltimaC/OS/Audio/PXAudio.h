@@ -7,6 +7,7 @@
 #if PXAudioUSE
 
 #include <Media/PXType.h>
+#include <OS/Error/PXActionResult.h>
 
 #define PitchMaximum 2.9f
 #define PitchMinimum 0.2f
@@ -21,8 +22,8 @@ typedef int PXAudioDeviceInputHandle;
 
 #if WindowsAtleastVista
 #include <mmeapi.h> // MISSING
-typedef void* PXAudioDeviceOutputHandle;
-typedef void* PXAudioDeviceInputHandle;
+typedef HWAVEOUT PXAudioDeviceOutputHandle;
+typedef HWAVEIN PXAudioDeviceInputHandle;
 #else
 typedef void* PXAudioDeviceOutputHandle;
 typedef void* PXAudioDeviceInputHandle;
@@ -42,67 +43,6 @@ extern "C"
 	}
 	PXSoundPlayStyle;
 
-	typedef enum PXAudioResult_
-	{
-		AudioResultInvalid,
-
-		AudioResultSucessful,
-
-		AudioResultDeviceIDInvalid,
-		AudioResultDeviceHandleInvalid,
-		AudioResultDeviceNoDriver,
-
-		AudioResultDriverNotReachable, // Maybe diabled, or deactivated
-		AudioResultDriverNotEnabled, // No driver to use
-
-
-		AudioResultDeviceAlreadyAllocated,
-		AudioResultOutOfMemory,
-
-		AudioResultNotSupported,
-
-		AudioResultErrorValueInvalid,
-
-
-		AudioResultFlagInvalid,
-		AudioResultParameterInvalid,
-
-		AudioResultDeviceHandleBusy,
-
-		AudioResultAliasNotFound,
-
-
-
-		AudioResultPXRegistryValueNotFound,
-
-		AudioResultDriverNoCallback,
-
-		AudioResultMoreData,
-
-
-		// Custom
-		AudioResultDeviceListNotBigEnough,
-
-
-		// Windows spesific
-		AudioResultPXRegistryDatabaseInvalid,
-		AudioResultPXRegistryKeyNotFound,
-		AudioResultPXRegistryWriteError,
-		AudioResultPXRegistryReadError,
-		AudioResultPXRegistryDeleteError,
-
-		AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
-
-
-
-		// only
-		AudioResultWaveFormatUnsupported,
-		AudioResultDeviceIsStillPlaying,
-		AudioResultReaderIsNotPrepared,
-		AudioResultDeviceIsSynchronous
-	}
-	PXAudioResult;
-
 	typedef struct PXAudioClip_
 	{
 		unsigned int ID;
@@ -117,7 +57,7 @@ extern "C"
 	}
 	PXAudioConfig;
 
-	typedef struct AudioSource_
+	typedef struct PXAudioSource_
 	{
 		unsigned int ID;
 		float Pitch; // [0.5 - 2.0]
@@ -166,19 +106,16 @@ extern "C"
 	}
 	PXAudioDeviceCapabilities;
 
-#if OSWindows
-	PXPrivate PXAudioResult PXAudioConvertMMResult(const unsigned int mmResultID);
+#if PXOSWindowsDestop
+	PXPrivate PXActionResult PXAudioConvertMMResult(const unsigned int mmResultID);
 #endif
-
-	PXPublic void PXAudioDeviceCapabilitiesPrinf(PXAudioDeviceCapabilities* const audioDeviceCapabilities);
-
 
 	PXPublic void PXAudioSourceConstruct(PXAudioSource* const audioSource);
 	PXPublic void PXAudioSourcePitchIncrease(PXAudioSource* const audioSource, float amount);
 	PXPublic void PXAudioSourcePitchReduce(PXAudioSource* const audioSource, float amount);
 
 
-	PXPublic PXAudioResult PXAudioOutputOpen
+	PXPublic PXActionResult PXAudioOutputOpen
 	(
 		PXAudioDeviceOutput* const audioDeviceOutput,
 		const unsigned int deviceID,
@@ -190,8 +127,8 @@ extern "C"
 		const unsigned short bitsPerSample,     /* number of bits per sample of mono data */
 		const unsigned short cbSize             /* the count in bytes of the size of */
 	);
-	PXPublic PXAudioResult PXAudioOutputPrepare(PXAudioDeviceOutput* const audioDeviceOutput);
-	PXPublic PXAudioResult PXAudioOutputWrite
+	PXPublic PXActionResult PXAudioOutputPrepare(PXAudioDeviceOutput* const audioDeviceOutput);
+	PXPublic PXActionResult PXAudioOutputWrite
 	(
 		PXAudioDeviceOutput* const audioDeviceOutput,
 		void* const dataBuffer,
@@ -201,18 +138,18 @@ extern "C"
 		const unsigned int flags,
 		const unsigned int loopControlCounter
 	);
-	PXPublic PXAudioResult PXAudioOutputClose(PXAudioDeviceOutput* const audioDeviceOutput);
-	PXPublic PXAudioResult PXAudioOutputVolumeGet(PXAudioDeviceOutput* const audioDeviceOutput, unsigned short* const volume);
+	PXPublic PXActionResult PXAudioOutputClose(PXAudioDeviceOutput* const audioDeviceOutput);
+	PXPublic PXActionResult PXAudioOutputVolumeGet(PXAudioDeviceOutput* const audioDeviceOutput, unsigned short* const volume);
 
-	PXPublic PXAudioResult PXAudioOutputVolumeSetEqual(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned int volume);
-	PXPublic PXAudioResult PXAudioOutputVolumeSetIndividual(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight);
-	PXPublic PXAudioResult PXAudioOutputPause(PXAudioDeviceOutput* const audioDeviceOutput);
-	PXPublic PXAudioResult PXAudioOutputPitchSet(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned int pitch);
-	PXPublic PXAudioResult PXAudioOutputPlaybackRateSet(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned int pitch);
+	PXPublic PXActionResult PXAudioOutputVolumeSetEqual(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned int volume);
+	PXPublic PXActionResult PXAudioOutputVolumeSetIndividual(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight);
+	PXPublic PXActionResult PXAudioOutputPause(PXAudioDeviceOutput* const audioDeviceOutput);
+	PXPublic PXActionResult PXAudioOutputPitchSet(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned int pitch);
+	PXPublic PXActionResult PXAudioOutputPlaybackRateSet(PXAudioDeviceOutput* const audioDeviceOutput, const unsigned int pitch);
 
 
-	PXPublic PXAudioResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* const audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* const audioDeviceCapabilitiesListSize);
-	PXPublic PXAudioResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* const audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* const audioDeviceCapabilitiesListSize);
+	PXPublic PXActionResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* const audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* const audioDeviceCapabilitiesListSize);
+	PXPublic PXActionResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* const audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* const audioDeviceCapabilitiesListSize);
 
 #ifdef __cplusplus
 }

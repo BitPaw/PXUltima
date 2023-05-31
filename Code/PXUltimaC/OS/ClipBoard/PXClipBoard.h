@@ -1,5 +1,5 @@
-#ifndef ClipBoardINCLUDE
-#define ClipBoardINCLUDE
+#ifndef PXPXClipBoardINCLUDE
+#define PXPXClipBoardINCLUDE
 
 #include <Media/PXType.h>
 #include <OS/Error/PXActionResult.h>
@@ -9,41 +9,41 @@ extern "C"
 {
 #endif
 
-	typedef enum ClipBoardFormat_
+	typedef enum PXClipBoardFormat_
 	{
-		ClipBoardFormatInvalid,
-		ClipBoardFormatText,
-		ClipBoardFormatBITMAP,
-		ClipBoardFormatMETAFILEPICT,
-		ClipBoardFormatSYLK,
-		ClipBoardFormatDIF,
-		ClipBoardFormatPXTIFF,
-		ClipBoardFormatOEMTEXT,
-		ClipBoardFormatDIB,
-		ClipBoardFormatPALETTE,
-		ClipBoardFormatPENDATA,
-		ClipBoardFormatPXRIFF,
-		ClipBoardFormatWAVE,
-		ClipBoardFormatUNICODETEXT,
-		ClipBoardFormatENHMETAFILE,
-		ClipBoardForPXMathDROP,
-		ClipBoardFormatLOCALE,
-		ClipBoardFormatDIBV5,
-		ClipBoardFormatMAX,
-		ClipBoardFormatOWNERDISPLAY,
-		ClipBoardFormatDSPTEXT,
-		ClipBoardFormatDSPBITMAP,
-		ClipBoardFormatDSPMETAFILEPICT,
-		ClipBoardFormatDSPENHMETAFILE,
-		ClipBoardFormatPRIVATEFIRST,
-		ClipBoardFormatPRIVATELAST,
-		ClipBoardFormatGDIOBJFIRST,
-		ClipBoardFormatGDIOBJLAST,
+		PXClipBoardFormatInvalid,
+		PXClipBoardFormatText,
+		PXClipBoardFormatPictureBitmap,
+		PXClipBoardFormatMetaFilePICT,
+		PXClipBoardFormatSYLK,
+		PXClipBoardFormatDIF,
+		PXClipBoardFormatPictureTIFF,
+		PXClipBoardFormatOEMTEXT,
+		PXClipBoardFormatDIB,
+		PXClipBoardFormatPALETTE,
+		PXClipBoardFormatPENDATA,
+		PXClipBoardFormatRIFF,
+		PXClipBoardFormatWAVE,
+		PXClipBoardFormatUNICODETEXT,
+		PXClipBoardFormatENHMETAFILE,
+		PXClipBoardForPXMathDROP,
+		PXClipBoardFormatLOCALE,
+		PXClipBoardFormatDIBV5,
+		PXClipBoardFormatMAX,
+		PXClipBoardFormatOWNERDISPLAY,
+		PXClipBoardFormatDSPTEXT,
+		PXClipBoardFormatDSPBITMAP,
+		PXClipBoardFormatDSPMETAFILEPICT,
+		PXClipBoardFormatDSPENHMETAFILE,
+		PXClipBoardFormatPRIVATEFIRST,
+		PXClipBoardFormatPRIVATELAST,
+		PXClipBoardFormatGDIOBJFIRST,
+		PXClipBoardFormatGDIOBJLAST,
 	}
-	ClipBoardFormat;
+	PXClipBoardFormat;
 
-	unsigned int PXClipBoardFormatToID(const ClipBoardFormat clipBoardFormat);
-	ClipBoardFormat PXClipBoardFormatFromID(const unsigned int clipBoardFormat);
+	PXPrivate PXInt32U PXClipBoardFormatToID(const PXClipBoardFormat PXClipBoardFormat);
+	PXPrivate PXClipBoardFormat PXClipBoardFormatFromID(const PXInt32U PXClipBoardFormat);
 
 	typedef struct PXClipBoard_
 	{
@@ -51,16 +51,16 @@ extern "C"
 	}
 	PXClipBoard;
 
-	// Open clipboard, close it imedidly after using!
-	// Fails if another window has the clipboard open.
-	PXPublic PXActionResult PXClipBoardOpen(PXClipBoard* const clipBoard);
+	// Open PXClipBoard, close it imedidly after using!
+	// Fails if another window has the PXClipBoard open.
+	PXPublic PXActionResult PXClipBoardOpen(PXClipBoard* const PXClipBoard);
 
 	// Use this right after using!
-	PXPublic PXActionResult PXClipBoardClose(PXClipBoard* const clipBoard);
+	PXPublic PXActionResult PXClipBoardClose(PXClipBoard* const PXClipBoard);
 
-	PXPublic PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const ClipBoardFormat format, const void* data);
+	PXPublic PXActionResult PXClipBoardSet(PXClipBoard* const PXClipBoard, const PXClipBoardFormat format, const void* data);
 
-	PXPublic PXActionResult PXClipBoardClear(PXClipBoard* const clipBoard);
+	PXPublic PXActionResult PXClipBoardClear(PXClipBoard* const PXClipBoard);
 
 
 #ifdef __cplusplus

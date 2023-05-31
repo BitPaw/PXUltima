@@ -7,55 +7,55 @@
 #include <Windows.h>
 #include <WinUser.h>
 
-#define ClipBoardFormatTEXTID CF_TEXT
-#define ClipBoardFormatBITMAPID CF_BITMAP
-#define ClipBoardFormatMETAFILEPICTID CF_METAFILEPICT
-#define ClipBoardFormatSYLKID CF_SYLK
-#define ClipBoardFormatDIFID CF_DIF
-#define ClipBoardFormatPXTIFFID   CF_TIFF
-#define ClipBoardFormatOEMTEXTID CF_OEMTEXT
-#define ClipBoardFormatDIBID CF_DIB
-#define ClipBoardFormatPALETTEID  CF_PALETTE
-#define ClipBoardFormatPENDATAID CF_PENDATA
-#define ClipBoardFormatPXRIFFID CF_RIFF
-#define ClipBoardFormatWAVEID CF_WAVE
-#define ClipBoardFormatUNICODETEXTID CF_UNICODETEXT
-#define ClipBoardFormatENHMETAFILEID CF_ENHMETAFILE
-#define ClipBoardFormatOWNERDISPLAYID CF_OWNERDISPLAY
-#define ClipBoardFormatDSPTEXTID   CF_DSPTEXT
-#define ClipBoardFormatDSPBITMAPID CF_DSPBITMAP
-#define ClipBoardFormatDSPMETAFILEPICTID CF_DSPMETAFILEPICT
-#define ClipBoardFormatDSPENHMETAFILEID  CF_DSPENHMETAFILE
-#define ClipBoardFormatPRIVATEFIRSTID CF_PRIVATEFIRST
-#define ClipBoardFormatPRIVATELASTID CF_PRIVATELAST
-#define ClipBoardFormatGDIOBJFIRSTID CF_GDIOBJFIRST
-#define ClipBoardFormatGDIOBJLASTID CF_GDIOBJLAST
+#define PXClipBoardFormatTEXTID CF_TEXT
+#define PXClipBoardFormatBITMAPID CF_BITMAP
+#define PXClipBoardFormatMETAFILEPICTID CF_METAFILEPICT
+#define PXClipBoardFormatSYLKID CF_SYLK
+#define PXClipBoardFormatDIFID CF_DIF
+#define PXClipBoardFormatPXTIFFID   CF_TIFF
+#define PXClipBoardFormatOEMTEXTID CF_OEMTEXT
+#define PXClipBoardFormatDIBID CF_DIB
+#define PXClipBoardFormatPALETTEID  CF_PALETTE
+#define PXClipBoardFormatPENDATAID CF_PENDATA
+#define PXClipBoardFormatPXRIFFID CF_RIFF
+#define PXClipBoardFormatWAVEID CF_WAVE
+#define PXClipBoardFormatUNICODETEXTID CF_UNICODETEXT
+#define PXClipBoardFormatENHMETAFILEID CF_ENHMETAFILE
+#define PXClipBoardFormatOWNERDISPLAYID CF_OWNERDISPLAY
+#define PXClipBoardFormatDSPTEXTID   CF_DSPTEXT
+#define PXClipBoardFormatDSPBITMAPID CF_DSPBITMAP
+#define PXClipBoardFormatDSPMETAFILEPICTID CF_DSPMETAFILEPICT
+#define PXClipBoardFormatDSPENHMETAFILEID  CF_DSPENHMETAFILE
+#define PXClipBoardFormatPRIVATEFIRSTID CF_PRIVATEFIRST
+#define PXClipBoardFormatPRIVATELASTID CF_PRIVATELAST
+#define PXClipBoardFormatGDIOBJFIRSTID CF_GDIOBJFIRST
+#define PXClipBoardFormatGDIOBJLASTID CF_GDIOBJLAST
 
-#if defined(WindowsAtleastNT)
-#define ClipBoardForPXMathDROPID CF_HDROP
-#define ClipBoardFormatLOCALEID CF_LOCALE
+#if WindowsAtleastNT
+#define PXClipBoardForPXMathDROPID CF_HDROP
+#define PXClipBoardFormatLOCALEID CF_LOCALE
 #else
-#define ClipBoardForPXMathDROP 15
-#define ClipBoardFormatLOCALE 16
+#define PXClipBoardForPXMathDROP 15
+#define PXClipBoardFormatLOCALE 16
 #endif
 
-#if defined(WindowsAtleast2000)
-#define ClipBoardFormatDIBV5ID CF_DIBV5
+#if WindowsAtleast2000
+#define PXClipBoardFormatDIBV5ID CF_DIBV5
 #else
-#define ClipBoardFormatDIBV5 17
+#define PXClipBoardFormatDIBV5 17
 #endif
 
-#if defined(WindowsAtleast2000)
-#define ClipBoardFormatMAXID CF_MAX
-#elif defined(WindowsAtleastNT)
-#define ClipBoardFormatMAX 17
+#if WindowsAtleast2000
+#define PXClipBoardFormatMAXID CF_MAX
+#elif WindowsAtleastNT
+#define PXClipBoardFormatMAX 17
 #else
-#define ClipBoardFormatMAX 15
+#define PXClipBoardFormatMAX 15
 #endif
 
 #endif
 
-unsigned int PXClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
+PXInt32U PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
 {
 
 #if OSUnix
@@ -65,94 +65,94 @@ unsigned int PXClipBoardFormatToID(const ClipBoardFormat clipBoardFormat)
 	switch (clipBoardFormat)
 	{
 	default:
-	case ClipBoardFormatInvalid:
+	case PXClipBoardFormatInvalid:
 		return -1;
 
-	case ClipBoardFormatText:
-		return ClipBoardFormatTEXTID;
+	case PXClipBoardFormatText:
+		return PXClipBoardFormatTEXTID;
 
-	case ClipBoardFormatBITMAP:
-		return ClipBoardFormatBITMAPID;
+	case PXClipBoardFormatPictureBitmap:
+		return PXClipBoardFormatBITMAPID;
 
-	case ClipBoardFormatMETAFILEPICT:
-		return ClipBoardFormatMETAFILEPICTID;
+	case PXClipBoardFormatMetaFilePICT:
+		return PXClipBoardFormatMETAFILEPICTID;
 
-	case ClipBoardFormatSYLK:
-		return ClipBoardFormatSYLKID;
+	case PXClipBoardFormatSYLK:
+		return PXClipBoardFormatSYLKID;
 
-	case ClipBoardFormatDIF:
-		return ClipBoardFormatDIFID;
+	case PXClipBoardFormatDIF:
+		return PXClipBoardFormatDIFID;
 
-	case ClipBoardFormatPXTIFF:
-		return ClipBoardFormatPXTIFFID;
+	case PXClipBoardFormatPictureTIFF:
+		return PXClipBoardFormatPXTIFFID;
 
-	case ClipBoardFormatOEMTEXT:
-		return ClipBoardFormatOEMTEXTID;
+	case PXClipBoardFormatOEMTEXT:
+		return PXClipBoardFormatOEMTEXTID;
 
-	case ClipBoardFormatDIB:
-		return ClipBoardFormatDIBID;
+	case PXClipBoardFormatDIB:
+		return PXClipBoardFormatDIBID;
 
-	case ClipBoardFormatPALETTE:
-		return ClipBoardFormatPALETTEID;
+	case PXClipBoardFormatPALETTE:
+		return PXClipBoardFormatPALETTEID;
 
-	case ClipBoardFormatPENDATA:
-		return ClipBoardFormatPENDATAID;
+	case PXClipBoardFormatPENDATA:
+		return PXClipBoardFormatPENDATAID;
 
-	case ClipBoardFormatPXRIFF:
-		return ClipBoardFormatPXRIFFID;
+	case PXClipBoardFormatRIFF:
+		return PXClipBoardFormatPXRIFFID;
 
-	case ClipBoardFormatWAVE:
-		return ClipBoardFormatWAVEID;
+	case PXClipBoardFormatWAVE:
+		return PXClipBoardFormatWAVEID;
 
-	case ClipBoardFormatUNICODETEXT:
-		return ClipBoardFormatUNICODETEXTID;
+	case PXClipBoardFormatUNICODETEXT:
+		return PXClipBoardFormatUNICODETEXTID;
 
-	case ClipBoardFormatENHMETAFILE:
-		return ClipBoardFormatENHMETAFILEID;
+	case PXClipBoardFormatENHMETAFILE:
+		return PXClipBoardFormatENHMETAFILEID;
 
-//	case ClipBoardForPXMathDROP:
-//		return ClipBoardForPXMathDROPID;
+//	case PXClipBoardForPXMathDROP:
+//		return PXClipBoardForPXMathDROPID;
 
-//	case ClipBoardFormatLOCALE:
-//		return ClipBoardFormatLOCALEID;
+//	case PXClipBoardFormatLOCALE:
+//		return PXClipBoardFormatLOCALEID;
 
-//	case ClipBoardFormatDIBV5:
-//		return ClipBoardFormatDIBV5ID;
+//	case PXClipBoardFormatDIBV5:
+//		return PXClipBoardFormatDIBV5ID;
 
-//	case ClipBoardFormatMAX:
-//		return ClipBoardFormatMAXID;
+//	case PXClipBoardFormatMAX:
+//		return PXClipBoardFormatMAXID;
 
-	case ClipBoardFormatOWNERDISPLAY:
-		return ClipBoardFormatOWNERDISPLAYID;
+	case PXClipBoardFormatOWNERDISPLAY:
+		return PXClipBoardFormatOWNERDISPLAYID;
 
-	case ClipBoardFormatDSPTEXT:
-		return ClipBoardFormatDSPTEXTID;
+	case PXClipBoardFormatDSPTEXT:
+		return PXClipBoardFormatDSPTEXTID;
 
-	case ClipBoardFormatDSPBITMAP:
-		return ClipBoardFormatDSPBITMAPID;
+	case PXClipBoardFormatDSPBITMAP:
+		return PXClipBoardFormatDSPBITMAPID;
 
-	case ClipBoardFormatDSPMETAFILEPICT:
-		return ClipBoardFormatDSPMETAFILEPICTID;
+	case PXClipBoardFormatDSPMETAFILEPICT:
+		return PXClipBoardFormatDSPMETAFILEPICTID;
 
-	case ClipBoardFormatDSPENHMETAFILE:
-		return ClipBoardFormatDSPENHMETAFILEID;
+	case PXClipBoardFormatDSPENHMETAFILE:
+		return PXClipBoardFormatDSPENHMETAFILEID;
 
-	case ClipBoardFormatPRIVATEFIRST:
-		return ClipBoardFormatPRIVATEFIRSTID;
+	case PXClipBoardFormatPRIVATEFIRST:
+		return PXClipBoardFormatPRIVATEFIRSTID;
 
-	case ClipBoardFormatPRIVATELAST:
-		return ClipBoardFormatPRIVATELASTID;
+	case PXClipBoardFormatPRIVATELAST:
+		return PXClipBoardFormatPRIVATELASTID;
 
-	case ClipBoardFormatGDIOBJFIRST:
-		return ClipBoardFormatGDIOBJFIRSTID;
+	case PXClipBoardFormatGDIOBJFIRST:
+		return PXClipBoardFormatGDIOBJFIRSTID;
 
-	case ClipBoardFormatGDIOBJLAST:
-		return ClipBoardFormatGDIOBJLASTID;
+	case PXClipBoardFormatGDIOBJLAST:
+		return PXClipBoardFormatGDIOBJLASTID;
 	}
 #endif
 }
 
-ClipBoardFormat PXClipBoardFormatFromID(const unsigned int clipBoardFormat)
+PXClipBoardFormat PXClipBoardFormatFromID(const PXInt32U clipBoardFormat)
 {
 #if OSUnix
     return PXActionInvalid;
@@ -160,89 +160,89 @@ ClipBoardFormat PXClipBoardFormatFromID(const unsigned int clipBoardFormat)
 #elif OSWindows
 	switch (clipBoardFormat)
 	{
-	case ClipBoardFormatTEXTID:
-		return ClipBoardFormatText;
+	case PXClipBoardFormatTEXTID:
+		return PXClipBoardFormatText;
 
-	case ClipBoardFormatBITMAPID:
-		return ClipBoardFormatBITMAP;
+	case PXClipBoardFormatBITMAPID:
+		return PXClipBoardFormatPictureBitmap;
 
-	case ClipBoardFormatMETAFILEPICTID:
-		return ClipBoardFormatMETAFILEPICT;
+	case PXClipBoardFormatMETAFILEPICTID:
+		return PXClipBoardFormatMetaFilePICT;
 
-	case ClipBoardFormatSYLKID:
-		return ClipBoardFormatSYLK;
+	case PXClipBoardFormatSYLKID:
+		return PXClipBoardFormatSYLK;
 
-	case ClipBoardFormatDIFID:
-		return ClipBoardFormatDIF;
+	case PXClipBoardFormatDIFID:
+		return PXClipBoardFormatDIF;
 
-	case ClipBoardFormatPXTIFFID:
-		return ClipBoardFormatPXTIFF;
+	case PXClipBoardFormatPXTIFFID:
+		return PXClipBoardFormatPictureTIFF;
 
-	case ClipBoardFormatOEMTEXTID:
-		return ClipBoardFormatOEMTEXT;
+	case PXClipBoardFormatOEMTEXTID:
+		return PXClipBoardFormatOEMTEXT;
 
-	case ClipBoardFormatDIBID:
-		return ClipBoardFormatDIB;
+	case PXClipBoardFormatDIBID:
+		return PXClipBoardFormatDIB;
 
-	case ClipBoardFormatPALETTEID:
-		return ClipBoardFormatPALETTE;
+	case PXClipBoardFormatPALETTEID:
+		return PXClipBoardFormatPALETTE;
 
-	case ClipBoardFormatPENDATAID:
-		return ClipBoardFormatPENDATA;
+	case PXClipBoardFormatPENDATAID:
+		return PXClipBoardFormatPENDATA;
 
-	case ClipBoardFormatPXRIFFID:
-		return ClipBoardFormatPXRIFF;
+	case PXClipBoardFormatPXRIFFID:
+		return PXClipBoardFormatRIFF;
 
-	case ClipBoardFormatWAVEID:
-		return ClipBoardFormatWAVE;
+	case PXClipBoardFormatWAVEID:
+		return PXClipBoardFormatWAVE;
 
-	case ClipBoardFormatUNICODETEXTID:
-		return ClipBoardFormatUNICODETEXT;
+	case PXClipBoardFormatUNICODETEXTID:
+		return PXClipBoardFormatUNICODETEXT;
 
-	case ClipBoardFormatENHMETAFILEID:
-		return ClipBoardFormatENHMETAFILE;
+	case PXClipBoardFormatENHMETAFILEID:
+		return PXClipBoardFormatENHMETAFILE;
 
-//	case ClipBoardForPXMathDROPID:
-//		return ClipBoardForPXMathDROP;
+//	case PXClipBoardForPXMathDROPID:
+//		return PXClipBoardForPXMathDROP;
 
-//	case ClipBoardFormatLOCALEID:
-//		return ClipBoardFormatLOCALE;
+//	case PXClipBoardFormatLOCALEID:
+//		return PXClipBoardFormatLOCALE;
 
-//	case ClipBoardFormatDIBV5ID:
-//		return ClipBoardFormatDIBV5;
+//	case PXClipBoardFormatDIBV5ID:
+//		return PXClipBoardFormatDIBV5;
 
-//	case ClipBoardFormatMAXID:
-//		return ClipBoardFormatMAX;
+//	case PXClipBoardFormatMAXID:
+//		return PXClipBoardFormatMAX;
 
-	case ClipBoardFormatOWNERDISPLAYID:
-		return ClipBoardFormatOWNERDISPLAY;
+	case PXClipBoardFormatOWNERDISPLAYID:
+		return PXClipBoardFormatOWNERDISPLAY;
 
-	case ClipBoardFormatDSPTEXTID:
-		return ClipBoardFormatDSPTEXT;
+	case PXClipBoardFormatDSPTEXTID:
+		return PXClipBoardFormatDSPTEXT;
 
-	case ClipBoardFormatDSPBITMAPID:
-		return ClipBoardFormatDSPBITMAP;
+	case PXClipBoardFormatDSPBITMAPID:
+		return PXClipBoardFormatDSPBITMAP;
 
-	case ClipBoardFormatDSPMETAFILEPICTID:
-		return ClipBoardFormatDSPMETAFILEPICT;
+	case PXClipBoardFormatDSPMETAFILEPICTID:
+		return PXClipBoardFormatDSPMETAFILEPICT;
 
-	case ClipBoardFormatDSPENHMETAFILEID:
-		return ClipBoardFormatDSPENHMETAFILE;
+	case PXClipBoardFormatDSPENHMETAFILEID:
+		return PXClipBoardFormatDSPENHMETAFILE;
 
-	case ClipBoardFormatPRIVATEFIRSTID:
-		return ClipBoardFormatPRIVATEFIRST;
+	case PXClipBoardFormatPRIVATEFIRSTID:
+		return PXClipBoardFormatPRIVATEFIRST;
 
-	case ClipBoardFormatPRIVATELASTID:
-		return ClipBoardFormatPRIVATELAST;
+	case PXClipBoardFormatPRIVATELASTID:
+		return PXClipBoardFormatPRIVATELAST;
 
-	case ClipBoardFormatGDIOBJFIRSTID:
-		return ClipBoardFormatGDIOBJFIRST;
+	case PXClipBoardFormatGDIOBJFIRSTID:
+		return PXClipBoardFormatGDIOBJFIRST;
 
-	case ClipBoardFormatGDIOBJLASTID:
-		return ClipBoardFormatGDIOBJLAST;
+	case PXClipBoardFormatGDIOBJLASTID:
+		return PXClipBoardFormatGDIOBJLAST;
 
 	default:
-		return ClipBoardFormatInvalid;
+		return PXClipBoardFormatInvalid;
 	}
 #endif // defined
 }
@@ -250,61 +250,60 @@ ClipBoardFormat PXClipBoardFormatFromID(const unsigned int clipBoardFormat)
 PXActionResult PXClipBoardOpen(PXClipBoard* const clipBoard)
 {
 #if OSUnix
-    return PXActionInvalid;
+    return PXActionNotImplemented;
 
-#elif OSWindows
-	HWND PXWindowID = NULL;
-	unsigned char success = OpenClipboard(PXWindowID);
+#elif PXOSWindowsDestop
+	HWND pxWindowID = NULL;
+	const PXBool success = OpenClipboard(pxWindowID); // Windows 2000, User32.dll, winuser.h
 
-	if (!success)
-	{
-		return PXErrorCurrent();
-	}
+	PXActionOnErrorFetchAndReturn(!success);
 
 	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
 PXActionResult PXClipBoardClose(PXClipBoard* const clipBoard)
 {
 #if OSUnix
-    return PXActionInvalid;
+    return PXActionNotImplemented;
 
-#elif OSWindows
-	return CloseClipboard();
+#elif PXOSWindowsDestop
+	return CloseClipboard(); // Windows 2000, User32.dll, winuser.h
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const ClipBoardFormat format, const void* data)
+PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFormat format, const void* data)
 {
-
 #if OSUnix
-	return PXActionInvalid;
-
-#elif OSWindows
+	return PXActionNotImplemented;
+#elif PXOSWindowsDestop
 	// Alloc something with GlobalAlloc()
 	// Maybe copy data?
 
 	const HGLOBAL memory = 0;
-	const unsigned int formatID = PXClipBoardFormatToID(format);
-	const HANDLE handle = SetClipboardData(formatID, memory);
-	const unsigned char successful = handle != 0;
+	const PXInt32U formatID = PXClipBoardFormatToID(format);
+	const HANDLE handle = SetClipboardData(formatID, memory); // Windows 2000, User32.dll, winuser.h
+	const PXBool successful = handle != 0;
 
-	if (!successful)
-	{
-		return PXErrorCurrent();
-	}
+	PXActionOnErrorFetchAndReturn(!successful);
 
 	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
 PXActionResult PXClipBoardClear(PXClipBoard* const clipBoard)
 {
 #if OSUnix
-    return PXActionInvalid;
-
-#elif OSWindows
-	return EmptyClipboard();
+    return PXActionNotImplemented;
+#elif PXOSWindowsDestop
+	return EmptyClipboard(); // Windows 2000, User32.dll, winuser.h
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }

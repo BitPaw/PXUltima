@@ -900,7 +900,7 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 				int* const i = va_arg(args, int*);
 
 				PXText pyText;
-				PXTextConstructFromAdress(&pyText, buffer + offsetData, offsetLength);
+				PXTextConstructFromAdressA(&pyText, buffer + offsetData, offsetLength);
 
 				const PXSize readBytes = PXTextToInt(&pyText, i);
 
@@ -916,7 +916,7 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 			{
 				float* number = va_arg(args, float*);
 				PXText pyText;
-				PXTextConstructFromAdress(&pyText, buffer + offsetData, offsetLength);
+				PXTextConstructFromAdressA(&pyText, buffer + offsetData, offsetLength);
 
 				const PXSize readBytes = PXTextToFloat(&buffer, number);
 
@@ -1123,9 +1123,12 @@ PXSize PXTextFromInt(PXText* const pxText, int number)
 
 		case TextFormatUNICODE:
 		{
-			pxText->SizeUsed = wsprintfW(pxText->TextW, L"%i", number);
+			PXText pxTextA;
+			PXTextConstructBufferA(&pxTextA, 16);
 
-			//pxText->SizeUsed = PXTextFromIntW(number, pxText->TextW, pxText->SizeAllocated);
+			PXTextFromInt(&pxTextA, number);
+
+			PXTextCopy(&pxTextA, &pxText);
 
 			return pxText->SizeUsed;
 		}

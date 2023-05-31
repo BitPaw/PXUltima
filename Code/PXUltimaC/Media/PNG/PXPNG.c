@@ -1982,7 +1982,7 @@ PXSize preProcessScanlines
             const PXSize outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
             const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXMemoryAccessModeReadAndWrite);
 
-            PXActionExitOnError(allocationResult);
+            PXActionReturnOnError(allocationResult);
 
             // non multiple of 8 bits per scanline, padding bits needed per scanline
             const PXBool paddingBitsNeeded = bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u;
@@ -2018,7 +2018,7 @@ PXSize preProcessScanlines
             const PXSize outsize = filter_passstart[7]; // image size plus an extra byte per scanline + possible padding bits
             const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXMemoryAccessModeReadAndWrite);
 
-            PXActionExitOnError(allocationResult);
+            PXActionReturnOnError(allocationResult);
 
             unsigned char* adam7 = (unsigned char*)PXMemoryAllocate(passstart[7]);
 

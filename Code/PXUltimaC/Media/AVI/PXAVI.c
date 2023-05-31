@@ -10,7 +10,7 @@ PXActionResult PXAVIParse(PXAVI* const avi, PXFile* const PXFile)
     {
         const PXActionResult riffResult = PXRIFFParse(&riff, PXFile);
 
-        PXActionExitOnError(riffResult);
+        PXActionReturnOnError(riffResult);
 
         // Valid PXRIFF
         {

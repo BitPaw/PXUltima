@@ -10,7 +10,7 @@
 #include <Media/PXText.h>
 
 #include <OS/Process/PXProcess.h>
-#include <OS/Thread/PXThread.h>
+#include <OS/Async/PXThread.h>
 #include <OS/Error/PXActionResult.h>
 
 #ifdef __cplusplus

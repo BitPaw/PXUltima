@@ -3,7 +3,7 @@
 #if PXSocketUSE
 
 #include <OS/Memory/PXMemory.h>
-#include <Event/PXEvent.h>
+#include <OS/Async/PXEvent.h>
 
 PXActionResult PXClientConstruct(PXClient* const pxClient)
 {

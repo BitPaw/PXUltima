@@ -17,7 +17,7 @@ extern "C"
 {
 #endif
 
-#if OSWindows
+#if PXOSWindowsDestop
 	PXPublic void PXUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead);
 	PXPublic void PXUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten);
 #endif

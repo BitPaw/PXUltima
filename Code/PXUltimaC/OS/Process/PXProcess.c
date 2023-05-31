@@ -70,7 +70,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 
 			const PXBool success = CreateProcessA(programmPath, NULL, NULL, NULL, 0, creationflags, NULL, NULL, &startupInfo, &processInfo);
 
-			PXActionOnErrorFetchAndExit(!success);
+			PXActionOnErrorFetchAndReturn(!success);
 
 			pxProcess->ProcessHandle = processInfo.hProcess;
 			pxProcess->ProcessID = processInfo.dwProcessId;
@@ -97,7 +97,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 
 			const PXBool success = CreateProcessW(programmPath, NULL, NULL, NULL, 0, DEBUG_PROCESS, NULL, NULL, &startupInfo, &processInfo);
 
-			PXActionOnErrorFetchAndExit(!success);
+			PXActionOnErrorFetchAndReturn(!success);
 
 			pxProcess->ProcessHandle = processInfo.hProcess;
 			pxProcess->ProcessID = processInfo.dwProcessId;
@@ -126,7 +126,7 @@ PXActionResult PXProcessOpen(PXProcess* const pxProcess)
 	const HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processID);
 	const PXBool successful = processHandle != 0;
 
-	PXActionOnErrorFetchAndExit(!successful);
+	PXActionOnErrorFetchAndReturn(!successful);
 
 	pxProcess->ProcessID = processID;
 	pxProcess->ProcessHandle = processHandle;
@@ -143,7 +143,7 @@ PXActionResult PXProcessClose(PXProcess* const pxProcess)
 #elif OSWindows
 	const BOOL successful = CloseHandle(pxProcess->ProcessHandle);
 
-	PXActionOnErrorFetchAndExit(!successful);
+	PXActionOnErrorFetchAndReturn(!successful);
 
 	pxProcess->ProcessHandle = PXNull;
 
@@ -257,7 +257,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 			&processMemoryCountersExSize
 		);
 
-		PXActionOnErrorFetchAndExit(!success);
+		PXActionOnErrorFetchAndReturn(!success);
 
 		pxProcessMemoryInfo->PageFaults = processMemoryCountersEx.PageFaultCount;
 		pxProcessMemoryInfo->PeakWorkingSetSize = processMemoryCountersEx.PeakWorkingSetSize;
@@ -285,7 +285,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 			&timeStampList[3] // userTime
 		);
 
-		PXActionOnErrorFetchAndExit(!success);
+		PXActionOnErrorFetchAndReturn(!success);
 
 		// Convert
 		for (PXSize i = 0; i < 4u; i++)

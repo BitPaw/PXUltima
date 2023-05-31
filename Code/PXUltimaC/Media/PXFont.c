@@ -34,7 +34,7 @@ PXActionResult PXFontLoad(PXFont* const font, const PXText* const filePath)
 
         const PXActionResult fileLoadingResult = PXFileOpenFromPath(&dataStream, &pxFileOpenFromPathInfo);
 
-        PXActionExitOnError(fileLoadingResult);
+        PXActionReturnOnError(fileLoadingResult);
     }
 
     //dataStream.FilePath = filePath;
@@ -43,7 +43,7 @@ PXActionResult PXFontLoad(PXFont* const font, const PXText* const filePath)
         const FileFormatExtension hint = PXFilePathExtensionDetectTry(filePath);
         const PXActionResult fileParsingResult = PXFontLoadD(font, &dataStream, hint);
 
-        PXActionExitOnSuccess(fileParsingResult);
+        PXActionReturnOnSuccess(fileParsingResult);
 
         PXActionResult fileGuessResult = PXActionInvalid;
         unsigned int fileFormatID = 1;

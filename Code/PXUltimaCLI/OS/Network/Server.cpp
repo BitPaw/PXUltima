@@ -1,3 +1,4 @@
+#include "PXServer.hpp"
 #include "Server.hpp"
 
 PX::Server::Server()
@@ -19,19 +20,4 @@ PX::Server::~Server()
 {
 	PXServerDestruct(_pxServer);
 	delete _pxServer;
-}
-
-PX::ActionResult PX::Server::Start(const unsigned short port)
-{
-    return (PX::ActionResult)PXServerStart(_pxServer, port, ProtocolModeTCP);
-}
-
-PX::ActionResult PX::Server::Stop()
-{
-    return (PX::ActionResult)PXServerStop(_pxServer);
-}
-
-PX::ActionResult PX::Server::ClientKick(const PXSocketID socketID)
-{
-    return (PX::ActionResult)PXActionInvalid;
 }

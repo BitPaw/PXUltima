@@ -56,14 +56,14 @@ PXActionResult PXGraphicTextureLoad(PXGraphicContext* const graphicContext, PXTe
     {
         const PXActionResult loadResult = PXImageLoad(&texture->Image, filePath);
 
-        PXActionExitOnError(loadResult);
+        PXActionReturnOnError(loadResult);
     }
 
     // Register as normal
     {
         const PXActionResult registerResult = PXGraphicTextureRegister(graphicContext, texture);
 
-        PXActionExitOnError(registerResult);
+        PXActionReturnOnError(registerResult);
     }
 
 
@@ -103,14 +103,14 @@ PXActionResult PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont*
     { 
         const PXActionResult loadResult = PXFontLoad(pxFont, filePath);
 
-        PXActionExitOnError(loadResult);
+        PXActionReturnOnError(loadResult);
     }
 
     // Register as normal
     {
         const PXActionResult registerResult = PXGraphicFontRegister(graphicContext, pxFont);
 
-        PXActionExitOnError(registerResult);
+        PXActionReturnOnError(registerResult);
     }
 
     return PXActionSuccessful;
@@ -576,7 +576,7 @@ PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRend
     {
         const PXActionResult createResult = PXGraphicModelCreate(graphicContext, &model);
 
-        PXActionExitOnError(createResult);
+        PXActionReturnOnError(createResult);
     }
 
     // create PXRenderable
@@ -608,14 +608,14 @@ PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRend
     {
         const PXActionResult loadResult = PXModelLoad(model, filePath);
 
-        PXActionExitOnError(loadResult);
+        PXActionReturnOnError(loadResult);
     }
 
     // Register model into renderable
     {
         const PXActionResult loadResult = PXGraphicModelRegisterFromModel(graphicContext, renderable, model);
 
-        PXActionExitOnError(loadResult);
+        PXActionReturnOnError(loadResult);
     }
 
     return PXActionSuccessful;
@@ -624,7 +624,7 @@ PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRend
 PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model)
 {
 #if PXOpenGLUSE
-    PXOpenGLContext* const openGLContext = &graphicContext->OpenGLInstance;
+    PXOpenGL* const openGLContext = &graphicContext->OpenGLInstance;
 
     PXRenderableConstruct(renderable);
 
@@ -1291,7 +1291,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 #if PXOpenGLUSE
     graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
 
-    PXOpenGLContextCreateForWindow(&graphicContext->OpenGLInstance);
+    PXOpenGLCreateForWindow(&graphicContext->OpenGLInstance);
 
     if (1)
     {
@@ -1316,7 +1316,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 
     glViewport(0, 0, pxWindow->Width, pxWindow->Height);
 
-    PXOpenGLContextDeselect(&graphicContext->OpenGLInstance);
+    PXOpenGLDeselect(&graphicContext->OpenGLInstance);
 #endif
 #endif   
 }
@@ -1328,22 +1328,11 @@ void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphic
 
 PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)
 {
-#if PXWindowUSE
     PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
 
    // PXOpenGLContextFlush(&graphicContext->OpenGLInstance);
 
-    const PXBool successful =
-#if OSUnix
-        1u; // No feedback?
-    glXSwapBuffers(window->DisplayCurrent, window->ID);
-#elif OSWindows
-        SwapBuffers(window->HandleDeviceContext);
-#endif
-    return successful;
-#else
-    return PXActionNotSupportedByLibrary;
-#endif
+    return PXWindowFrameBufferSwap(window);
 }
 
 PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const graphicContext)

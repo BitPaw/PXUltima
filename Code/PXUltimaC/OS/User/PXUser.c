@@ -27,7 +27,7 @@ PXBool PXUserNameGet(PXText* const name)
 #elif OSWindows
 			DWORD size = name->SizeAllocated;
 
-			const PXBool sucessful = GetComputerNameA(name, &size);
+			const PXBool sucessful = GetComputerNameA(name->TextA, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
 
 			name->SizeUsed = (PXSize)sucessful * (PXSize)size;
 
@@ -45,7 +45,7 @@ PXBool PXUserNameGet(PXText* const name)
 #elif OSWindows
 			DWORD size = name->SizeAllocated;
 
-			const PXBool sucessful = GetComputerNameW(name, &size);
+			const PXBool sucessful = GetComputerNameW(name->TextW, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
 
 			name->SizeUsed = (PXSize)sucessful * (PXSize)size;
 
@@ -66,6 +66,8 @@ PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolde
     return PXFalse;
 
 #elif OSWindows
+
+#if WindowsAtleastVista && PXOSWindowsDestop
 
 	KNOWNFOLDERID* pathID = 0;
 
@@ -126,5 +128,8 @@ PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolde
 	CoTaskMemFree(temporalCache.TextW); // Needs to be called in ANY case.
 
 	return success;
+#else
+	return PXFalse;
+#endif
 #endif
 }

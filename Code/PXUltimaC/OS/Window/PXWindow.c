@@ -4,13 +4,13 @@
 
 #include <stdio.h>
 
-#include <Event/PXEvent.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/Hardware/PXMonitor.h>
+#include <OS/Async/PXEvent.h>
+#include <OS/Async/PXAwait.h>
 #include <Media/PXText.h>
 #include <Graphic/PXGraphic.h>
 
-#include <OS/Memory/PXMemory.h>
-#include <OS/Monitor/PXMonitor.h>
-#include <OS/Thread/Await.h>
 #include <Math/PXMath.h>
 
 #if OSUnix
@@ -986,7 +986,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
         }
     }
 }
-#elif OSWindows
+#elif PXOSWindowsDestop
 LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam, LPARAM lParam)
 {
     const WindowEventType windowEventType = ToWindowEventType(eventID);
@@ -1321,7 +1321,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 
             const PXSize character = wParam;
             const PXSize characterInfo = lParam;
-            const VirtualKey virtualKey = PXVirtualKeyFromID(character);
+            const PXVirtualKey virtualKey = PXVirtualKeyFromID(character);
 
             PXKeyBoardKeyPressedSet(&window->KeyBoardCurrentInput, virtualKey, mode == ButtonStateRelease);
 
@@ -1960,22 +1960,8 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
     XFlush(window->DisplayCurrent);
 
 
-#elif OSWindows
-
-
- 
-
-
-
-
-
+#elif PXOSWindowsDestop
   
-  
-   
-
-
-
-   
     PXWindowID windowID = 0;
     DWORD windowStyle = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
     DWORD dwStyle = 0;
@@ -2173,6 +2159,10 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
         window->HandleDeviceContext = windowHandleToDeviceContext;
     }
+#else
+
+// OS does not support window creation or it is not implemented
+
 #endif
 
     PXGraphicInstantiate(&window->GraphicInstance);
@@ -2181,7 +2171,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
 
-    #if OSWindows
+    #if PXOSWindowsDestop
     {
         UpdateWindow(windowID);
 
@@ -2222,7 +2212,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
         // printf("");
     }
 #endif
-#elif OSWindows
+#elif PXOSWindowsDestop
     // Register input device
     {
         // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
@@ -2283,19 +2273,19 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
 
         PXWindowEventHandler(window, &windowEvent);
 
-#elif OSWindows
+#elif PXOSWindowsDestop
         MSG message;
 
-        const PXBool peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE);
+        const PXBool peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
 
         if(peekResult)
         {
-            const PXBool messageResult = GetMessageW(&message, 0, 0, 0);
+            const PXBool messageResult = GetMessageW(&message, 0, 0, 0); // Windows 2000, User32.dll, winuser.h
 
             if(messageResult)
             {
-                TranslateMessage(&message);
-                DispatchMessage(&message);
+                TranslateMessage(&message); // Windows 2000, User32.dll, winuser.h
+                DispatchMessage(&message); // Windows 2000, User32.dll, winuser.h
             }
             else
             {
@@ -2369,8 +2359,10 @@ void PXWindowDestruct(PXWindow* const window)
     //    glXDestroyContext(DisplayCurrent, PXOpenGLConextID);
     XDestroyWindow(window->DisplayCurrent, window->ID);
     XCloseDisplay(window->DisplayCurrent);
-#elif OSWindows
+#elif PXOSWindowsDestop
     CloseWindow(window->ID);
+#else
+    return; // Not supported on this OS
 #endif
 
     window->ID = PXNull;
@@ -2379,9 +2371,11 @@ void PXWindowDestruct(PXWindow* const window)
 PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
 {
 #if OSUnix
-    return 0;
-#elif OSWindows
+    return -1;
+#elif PXOSWindowsDestop
     return GetWindowThreadProcessId(windowID, PXNull);
+#else
+    return -1;
 #endif
 }
 
@@ -2394,24 +2388,28 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
         {
 #if OSUnix
             return 0;
-#elif OSWindows
+#elif PXOSWindowsDestop
             const PXBool success = SetWindowTextA(window->ID, title->TextA, title->SizeUsed); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
             return success;
+#else 
+            return PXFalse; // Not supported by OS
 #endif
         }
         case TextFormatUNICODE:
         {
 #if OSUnix
             return 0;
-#elif OSWindows
+#elif PXOSWindowsDestop
             const PXBool success = SetWindowTextW(window->ID, title->TextW, title->SizeUsed); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
             return success;
+#else 
+            return PXFalse; // Not supported by OS
 #endif
         }
     }
@@ -2428,7 +2426,7 @@ PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
         {
 #if OSUnix
             return 0;
-#elif OSWindows
+#elif PXOSWindowsDestop
             const int result = GetWindowTextA(window->ID, title->TextA, title->SizeAllocated); // Windows 2000, User32.dll, winuser.h
             const PXBool success = result > 0;
 
@@ -2441,13 +2439,15 @@ PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
             }
 
             return result;
+#else 
+            return PXFalse; // Not supported by OS
 #endif
         }
         case TextFormatUNICODE:
         {
 #if OSUnix
             return 0;
-#elif OSWindows
+#elif PXOSWindowsDestop
             const int result = GetWindowTextW(window->ID, title->TextW, title->SizeAllocated); // Windows 2000, User32.dll, winuser.h
             const PXBool success = result > 0;
 
@@ -2459,6 +2459,8 @@ PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
             }
 
             return result;
+#else 
+            return PXFalse; // Not supported by OS
 #endif
         }
         }
@@ -2473,11 +2475,23 @@ PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle)
         case TextFormatASCII:
         case TextFormatUTF8:
         {
-            return FindWindowA(0, windowTitle->TextA);
+#if OSUnix
+            return PXNull;
+#elif PXOSWindowsDestop
+            return FindWindowA(0, windowTitle->TextA); // Windows 2000, User32.dll, winuser.h
+#else 
+            return PXFalse; // Not supported by OS
+#endif
         }
         case TextFormatUNICODE:
         {
-            return FindWindowW(0, windowTitle->TextW);
+#if OSUnix
+            return PXNull;
+#elif PXOSWindowsDestop
+            return FindWindowW(0, windowTitle->TextW); // Windows 2000, User32.dll, winuser.h
+#else 
+            return PXNull; // Not supported by OS
+#endif
         }
     }
 
@@ -2510,10 +2524,10 @@ void PXWindowLookupRemove(const PXWindow* window)
 void PXWindowSize(PXWindow* const pxWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     RECT rect;
 
-    const unsigned char result = GetWindowRect(pxWindow->ID, &rect);
+    const unsigned char result = GetWindowRect(pxWindow->ID, &rect); // Windows 2000, User32.dll, winuser.h
     const unsigned char success = result != 0;
 
     // Get Last Error
@@ -2528,7 +2542,7 @@ void PXWindowSize(PXWindow* const pxWindow, unsigned int* x, unsigned int* y, un
 void PXWindowSizeChange(PXWindow* window, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     RECT rect;
 
     rect.left = x;
@@ -2541,7 +2555,7 @@ void PXWindowSizeChange(PXWindow* window, const unsigned int x, const unsigned i
 
     //AdjustWindowRectEx();
 
-    const unsigned char result = AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+    const unsigned char result = AdjustWindowRectEx(&rect, style, FALSE, exStyle); // Windows 2000, User32.dll, winuser.h
     const unsigned char success = result != 0;
 
     // Get Last Error
@@ -2552,9 +2566,9 @@ void PXWindowPosition(PXWindow* window, unsigned int* x, unsigned int* y)
 {
 #if OSUnix
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     RECT rectangle;
-    const PXBool success = GetWindowRect(window->ID, &rectangle);
+    const PXBool success = GetWindowRect(window->ID, &rectangle); // Windows 2000, User32.dll, winuser.h
 
     if (success)
     {
@@ -2588,7 +2602,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
     unsigned int vertical = 0;
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
     PXMonitorGetSize(&horizontal, &vertical);
 
@@ -2600,7 +2614,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 
             while(ShowCursor(1) < 0);
 
-            const unsigned char clipResult = ClipCursor(NULL);
+            const PXBool clipResult = ClipCursor(NULL);
             const HCURSOR cursorSet = SetCursor(window->CursorID);
 
             break;
@@ -2694,7 +2708,7 @@ PXBool PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y)
 #if OSUnix
     return PXFalse;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     POINT point;
     point.x = xPos;
     point.y = yPos;
@@ -2721,7 +2735,7 @@ PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
 #if OSUnix
     return PXFalse;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 #if WindowsAtleastVista
 	POINT point;
@@ -2805,8 +2819,8 @@ PXBool PXWindowIsInFocus(const PXWindow* const window)
 {
 #if OSUnix
     return PXFalse;
-#elif OSWindows
-    const HWND windowIDInFocus = GetForegroundWindow(); // User32.dll, Windows 2000
+#elif PXOSWindowsDestop
+    const HWND windowIDInFocus = GetForegroundWindow(); // Windows 2000, User32.dll, 
     const PXBool isInFocus = window->ID == windowIDInFocus;
 
     return isInFocus;

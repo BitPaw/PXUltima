@@ -6,7 +6,8 @@
 #include <Media/PXText.h>
 
 #if OSUnix
-#elif OSWindows
+// include audio lib
+#elif PXOSWindowsDestop
 
 #if WindowsAtleastVista
 #include <mmeapi.h> // Header should be found under XP build but it is not.
@@ -14,17 +15,15 @@
 #include <MMSystem.h> // alternavive header of MMEAPI.h?
 #endif
 
-#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "winmm.lib") // Library: Windows Multimedia 
 #endif
 
-#include <stdio.h>
-
-#if OSWindows
-PXAudioResult PXAudioConvertMMResult(const unsigned int mmResultID)
+#if PXOSWindowsDestop
+PXActionResult PXAudioConvertMMResult(const unsigned int mmResultID)
 {
 	switch (mmResultID)
 	{
-		case MMSYSERR_NOERROR:  return AudioResultSucessful;
+		case MMSYSERR_NOERROR:  return PXActionSuccessful;
 		case MMSYSERR_ERROR:return AudioResultErrorUnspecified;
 		case MMSYSERR_BADDEVICEID:  return AudioResultDeviceIDInvalid;
 		case MMSYSERR_NOTENABLED:   return AudioResultDriverNotEnabled;
@@ -53,38 +52,10 @@ PXAudioResult PXAudioConvertMMResult(const unsigned int mmResultID)
 		case WAVERR_SYNC: return AudioResultDeviceIsSynchronous;
 
 		default:
-			return AudioResultInvalid;
+			return PXActionInvalid;
 	}
 }
 #endif
-
-void PXAudioDeviceCapabilitiesPrinf(PXAudioDeviceCapabilities* const audioDeviceCapabilities)
-{
-	printf
-	(
-		"+----------------+--------+\n"
-		"| Type           : %5i\n"
-		"| DeviceID       : %5i\n"
-		"| ManufacturerID : %5i\n"
-		"| ProductID      : %5i\n"
-		"| DriverVersion  : Major:%i, Minor:%i\n"
-		"| ProductName    : %ls\n"
-		"| Formats        : %i\n"
-		"| Channels       : %i\n"
-		"| Support        : %i\n"
-		"+----------------+--------+\n",
-		audioDeviceCapabilities->Type,
-		audioDeviceCapabilities->DeviceID,
-		audioDeviceCapabilities->ManufacturerID,
-		audioDeviceCapabilities->ProductID,
-		audioDeviceCapabilities->DriverVersionMajor,
-		audioDeviceCapabilities->DriverVersionMinor,
-		audioDeviceCapabilities->ProductName,
-		audioDeviceCapabilities->dwFormats,
-		audioDeviceCapabilities->Channels,
-		audioDeviceCapabilities->dwSupport
-	);
-}
 
 void PXAudioSourceConstruct(PXAudioSource* const audioSource)
 {
@@ -119,12 +90,12 @@ void PXAudioSourcePitchReduce(PXAudioSource* const audioSource, float amount)
 	}
 }
 
-PXAudioResult PXAudioOutputOpen(PXAudioDeviceOutput* audioDeviceOutput, unsigned int deviceID, unsigned short formatTag, unsigned short channels, unsigned int samplesPerSec, unsigned int avgBytesPerSec, unsigned short blockAlign, unsigned short bitsPerSample, unsigned short cbSize)
+PXActionResult PXAudioOutputOpen(PXAudioDeviceOutput* audioDeviceOutput, unsigned int deviceID, unsigned short formatTag, unsigned short channels, unsigned int samplesPerSec, unsigned int avgBytesPerSec, unsigned short blockAlign, unsigned short bitsPerSample, unsigned short cbSize)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	WAVEFORMATEX waveFormatEX;
 	DWORD_PTR dwCallback = 0;
 	DWORD_PTR dwInstance = 0;
@@ -147,29 +118,31 @@ PXAudioResult PXAudioOutputOpen(PXAudioDeviceOutput* audioDeviceOutput, unsigned
 		dwInstance,
 		fdwOpen
 	);
-	const PXAudioResult audioResult = PXAudioConvertMMResult(result);
+	const PXActionResult audioResult = PXAudioConvertMMResult(result);
 
 	return audioResult;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXAudioResult PXAudioOutputPrepare(PXAudioDeviceOutput* audioDeviceOutput)
+PXActionResult PXAudioOutputPrepare(PXAudioDeviceOutput* audioDeviceOutput)
 {
 #if OSUnix
-	return AudioResultInvalid;
-
-#elif OSWindows
-	return AudioResultInvalid;
-
+	return PXActionNotImplemented;
+#elif PXOSWindowsDestop
+	return PXActionNotImplemented;
+#else 
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXAudioResult PXAudioOutputWrite(PXAudioDeviceOutput* audioDeviceOutput, void* dataBuffer, PXSize bufferLength, unsigned int bytesRecorded, unsigned int user, unsigned int flags, unsigned int loopControlCounter)
+PXActionResult PXAudioOutputWrite(PXAudioDeviceOutput* audioDeviceOutput, void* dataBuffer, PXSize bufferLength, unsigned int bytesRecorded, unsigned int user, unsigned int flags, unsigned int loopControlCounter)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	WAVEHDR waveHeader;
 	const UINT cbwh = sizeof(waveHeader);
 
@@ -183,132 +156,144 @@ PXAudioResult PXAudioOutputWrite(PXAudioDeviceOutput* audioDeviceOutput, void* d
 	// Prepare
 	{
 		const MMRESULT prepareResultID = waveOutPrepareHeader(audioDeviceOutput->Handle, &waveHeader, cbwh);
-		const PXAudioResult prepareResult = PXAudioConvertMMResult(prepareResultID);
-		const unsigned char wasSucessful = prepareResult == AudioResultSucessful;
-
-		if (!wasSucessful)
-		{
-			return prepareResult;
-		}
+		const PXActionResult prepareResult = PXAudioConvertMMResult(prepareResultID);
+		
+		PXActionReturnOnError(prepareResult);
 	}
 
 	// Write Data
 	{
 		const MMRESULT writeResultID = waveOutWrite(audioDeviceOutput->Handle, &waveHeader, cbwh);
-		const PXAudioResult writeResult = PXAudioConvertMMResult(writeResultID);
-		const unsigned char wasSucessful = writeResult == AudioResultSucessful;
+		const PXActionResult writeResult = PXAudioConvertMMResult(writeResultID);
 
-		if (!wasSucessful)
-		{
-			return writeResult;
-		}
+		PXActionReturnOnError(writeResult);
 	}
-#endif
 
-	return AudioResultSucessful;
+	return PXActionSuccessful;
+
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
 }
 
-PXAudioResult PXAudioOutputClose(PXAudioDeviceOutput* audioDeviceOutput)
+PXActionResult PXAudioOutputClose(PXAudioDeviceOutput* audioDeviceOutput)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 	const MMRESULT result = waveOutClose(audioDeviceOutput->Handle);
-	const PXAudioResult audioResult = PXAudioConvertMMResult(result);
+	const PXActionResult audioResult = PXAudioConvertMMResult(result);
 
 	audioDeviceOutput->Handle = 0;
 
 	return audioResult;
-
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXAudioResult PXAudioOutputVolumeGet(PXAudioDeviceOutput* audioDeviceOutput, unsigned short* const volume)
+PXActionResult PXAudioOutputVolumeGet(PXAudioDeviceOutput* audioDeviceOutput, unsigned short* const volume)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	DWORD volumeDW = 0;
 
 	const MMRESULT volumeResultID = waveOutGetVolume(audioDeviceOutput->Handle, &volumeDW);
-	const PXAudioResult audioResult = PXAudioConvertMMResult(volumeResultID);
-	const unsigned char sucessful = audioResult == AudioResultSucessful;
+	const PXActionResult audioResult = PXAudioConvertMMResult(volumeResultID);
+	const PXBool successful = PXActionSuccessful == audioResult;
 
-	if (!sucessful)
+	if (!successful)
 	{
-		*volume = 0;
+		*volume = -1;
 		return audioResult;
 	}
 
 	*volume = volumeDW;
-#endif
 
-	return AudioResultSucessful;
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
 }
 
-PXAudioResult PXAudioOutputVolumeSetEqual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int volume)
+PXActionResult PXAudioOutputVolumeSetEqual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int volume)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const MMRESULT volumeResultID = waveOutSetVolume(audioDeviceOutput->Handle, volume);
-	const PXAudioResult audioResult = PXAudioConvertMMResult(volumeResultID);
+	const PXActionResult audioResult = PXAudioConvertMMResult(volumeResultID);
 
 	return audioResult;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXAudioResult PXAudioOutputVolumeSetIndividual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight)
-{
-	unsigned int volumeCombined = (volumeLeft << 16) | volumeRight;
-	const PXAudioResult audioResult = PXAudioOutputVolumeSetEqual(audioDeviceOutput, volumeCombined);
-
-	return audioResult;
-}
-
-PXAudioResult PXAudioOutputPause(PXAudioDeviceOutput* audioDeviceOutput)
-{
-	return AudioResultInvalid;
-}
-
-PXAudioResult PXAudioOutputPitchSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
+PXActionResult PXAudioOutputVolumeSetIndividual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
+	const unsigned int volumeCombined = (volumeLeft << 16) | volumeRight;
+	const PXActionResult audioResult = PXAudioOutputVolumeSetEqual(audioDeviceOutput, volumeCombined);
+
+	return audioResult;
+
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXAudioOutputPause(PXAudioDeviceOutput* audioDeviceOutput)
+{
+	return PXActionNotImplemented;
+}
+
+PXActionResult PXAudioOutputPitchSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
+{
+#if OSUnix
+	return PXActionNotImplemented;
+
+#elif PXOSWindowsDestop
 	const MMRESULT pitchResultID = waveOutSetPitch(audioDeviceOutput->Handle, pitch);
-	const PXAudioResult pitchResult = PXAudioConvertMMResult(pitchResultID);
+	const PXActionResult pitchResult = PXAudioConvertMMResult(pitchResultID);
 
 	return pitchResult;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXAudioResult PXAudioOutputPlaybackRateSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
+PXActionResult PXAudioOutputPlaybackRateSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const MMRESULT playbackRateResultID = waveOutSetPlaybackRate(audioDeviceOutput->Handle, pitch);
-	const PXAudioResult playbackRateResult = PXAudioConvertMMResult(playbackRateResultID);
+	const PXActionResult playbackRateResult = PXAudioConvertMMResult(playbackRateResultID);
 
 	return playbackRateResult;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXAudioResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
+PXActionResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const UINT numberOfPutpudevices = waveOutGetNumDevs();
-	const unsigned char isListBigEngough = numberOfPutpudevices < audioDeviceCapabilitiesListSizeMax;
+	const PXBool isListBigEngough = numberOfPutpudevices < audioDeviceCapabilitiesListSizeMax;
 
 	if (!isListBigEngough)
 	{
@@ -322,13 +307,11 @@ PXAudioResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceCa
 		const UINT size = sizeof(WAVEOUTCAPSW);
 		WAVEOUTCAPSW wAVEOUTCAPSW;
 
-		const MMRESULT result = waveOutGetDevCapsW(i, &wAVEOUTCAPSW, size);
-		const PXAudioResult audioResult = PXAudioConvertMMResult(result);
-		const unsigned char sucessful = audioResult == AudioResultSucessful;
-
-		if (!sucessful)
 		{
-			return audioResult;
+			const MMRESULT result = waveOutGetDevCapsW(i, &wAVEOUTCAPSW, size);
+			const PXActionResult audioResult = PXAudioConvertMMResult(result);
+
+			PXActionReturnOnError(audioResult);
 		}
 
 		PXAudioDeviceCapabilities* audioDeviceCapabilities = &audioDeviceCapabilitiesList[i];
@@ -347,18 +330,20 @@ PXAudioResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceCa
 
 	audioDeviceCapabilitiesListSize = numberOfPutpudevices;
 
-	return AudioResultSucessful;
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXAudioResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
+PXActionResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
 {
 #if OSUnix
-	return AudioResultInvalid;
+	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const UINT numberOfInputDevices = waveInGetNumDevs();
-	const unsigned char isListBigEngough = numberOfInputDevices < audioDeviceCapabilitiesListSizeMax;
+	const PXBool isListBigEngough = numberOfInputDevices < audioDeviceCapabilitiesListSizeMax;
 
 	if (!isListBigEngough)
 	{
@@ -370,14 +355,13 @@ PXAudioResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCap
 	for (PXSize i = 0; i < numberOfInputDevices; ++i)
 	{
 		WAVEINCAPSW waveInputCapabilitiesW;
-		const UINT waveInputCapabilitiesWSize = sizeof(waveInputCapabilitiesW);
-		const MMRESULT result = waveInGetDevCapsW(i, &waveInputCapabilitiesW, waveInputCapabilitiesWSize);
-		const PXAudioResult audioResult = PXAudioConvertMMResult(result);
-		const unsigned char sucessful = audioResult == AudioResultSucessful;
 
-		if (!sucessful)
 		{
-			return audioResult;
+			const UINT waveInputCapabilitiesWSize = sizeof(waveInputCapabilitiesW);
+			const MMRESULT result = waveInGetDevCapsW(i, &waveInputCapabilitiesW, waveInputCapabilitiesWSize);
+			const PXActionResult audioResult = PXAudioConvertMMResult(result);
+
+			PXActionReturnOnError(audioResult);
 		}
 
 		PXAudioDeviceCapabilities* audioDeviceCapabilities = &audioDeviceCapabilitiesList[i];
@@ -395,7 +379,36 @@ PXAudioResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCap
 
 	audioDeviceCapabilitiesListSize = numberOfInputDevices;
 
-	return AudioResultSucessful;
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 #endif
+
+/*
+printf
+	(
+		"+----------------+--------+\n"
+		"| Type           : %5i\n"
+		"| DeviceID       : %5i\n"
+		"| ManufacturerID : %5i\n"
+		"| ProductID      : %5i\n"
+		"| DriverVersion  : Major:%i, Minor:%i\n"
+		"| ProductName    : %ls\n"
+		"| Formats        : %i\n"
+		"| Channels       : %i\n"
+		"| Support        : %i\n"
+		"+----------------+--------+\n",
+		audioDeviceCapabilities->Type,
+		audioDeviceCapabilities->DeviceID,
+		audioDeviceCapabilities->ManufacturerID,
+		audioDeviceCapabilities->ProductID,
+		audioDeviceCapabilities->DriverVersionMajor,
+		audioDeviceCapabilities->DriverVersionMinor,
+		audioDeviceCapabilities->ProductName,
+		audioDeviceCapabilities->dwFormats,
+		audioDeviceCapabilities->Channels,
+		audioDeviceCapabilities->dwSupport
+	);
+*/

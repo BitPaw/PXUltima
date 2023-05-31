@@ -305,10 +305,3 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
 
     outputStream->DataCursor = oldpos;
 }
-
-PXActionResult PXYAMLFileParse(PXFile* const ymlTokenInputStream, PXSerializationTypeInfo* const serializationTypeInfoList, const PXSize serializationTypeInfoListSize)
-{
-
-
-    return PXActionSuccessful;
-}

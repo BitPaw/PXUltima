@@ -21,26 +21,24 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 
-#include <stdio.h>
-
-void PXDirectXContextConstruct(PXDirectXContext* const directXContext)
+void PXDirectXContextConstruct(PXDirectX* const pxDirectX)
 {
-	PXMemoryClear(directXContext, sizeof(PXDirectXContext));
+	PXMemoryClear(pxDirectX, sizeof(PXDirectX));
 }
 
-void PXDirectXContextDestruct(PXDirectXContext* const directXContext)
+void PXDirectXContextDestruct(PXDirectX* const pxDirectX)
 {
 #if OSUnix
 #elif OSWindows
 #endif
 }
 
-void PXDirectXContextCreate(PXDirectXContext* const directXContext)
+void PXDirectXContextCreate(PXDirectX* const pxDirectX)
 {
-	PXDirectXContextConstruct(directXContext);
+	PXDirectXContextConstruct(pxDirectX);
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 	IDirect3D9* const context = Direct3DCreate9(D3D_SDK_VERSION);
 	const PXBool success = context;
@@ -48,7 +46,7 @@ void PXDirectXContextCreate(PXDirectXContext* const directXContext)
 	if (!success)
 		return E_FAIL;
 
-	directXContext->ContextD9 = context;
+	pxDirectX->ContextD9 = context;
 
 	const unsigned int amountOfAdapters = context->lpVtbl->GetAdapterCount(context);
 
@@ -60,9 +58,9 @@ void PXDirectXContextCreate(PXDirectXContext* const directXContext)
 
 		context->lpVtbl->GetAdapterIdentifier(context, i, 0, &aDAPTER_IDENTIFIER9);
 
-		PXTextCopyA(aDAPTER_IDENTIFIER9.Driver, MAX_DEVICE_IDENTIFIER_STRING, directXContext->Driver, MAX_DEVICE_IDENTIFIER_STRING);
-		PXTextCopyA(aDAPTER_IDENTIFIER9.Description, MAX_DEVICE_IDENTIFIER_STRING, directXContext->Description, MAX_DEVICE_IDENTIFIER_STRING);
-		PXTextCopyA(aDAPTER_IDENTIFIER9.DeviceName, 32, directXContext->DeviceName, 32);
+		PXTextCopyA(aDAPTER_IDENTIFIER9.Driver, MAX_DEVICE_IDENTIFIER_STRING, pxDirectX->Driver, MAX_DEVICE_IDENTIFIER_STRING);
+		PXTextCopyA(aDAPTER_IDENTIFIER9.Description, MAX_DEVICE_IDENTIFIER_STRING, pxDirectX->Description, MAX_DEVICE_IDENTIFIER_STRING);
+		PXTextCopyA(aDAPTER_IDENTIFIER9.DeviceName, 32, pxDirectX->DeviceName, 32);
 	}
 
 	/*
@@ -92,6 +90,8 @@ void PXDirectXContextCreate(PXDirectXContext* const directXContext)
 	if (FAILED(g_pD3D.CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,	D3DCREATE_SOFTWARE_VERTEXPROCESSING,&d3dpp, &d3dDevice)))
 		return E_FAIL;* /
 	*/
+#else
+	// Not supported
 #endif
 }
 

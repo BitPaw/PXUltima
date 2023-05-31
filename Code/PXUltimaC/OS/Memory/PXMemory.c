@@ -524,7 +524,7 @@ void* PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAcce
 	}
 #endif
 
-	const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, protectionModeID);
+	const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, protectionModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
 
 	PXActionResult x = PXErrorCurrent();
 
@@ -562,7 +562,7 @@ void PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 {
 #if OSUnix
 #elif OSWindows
-#if WindowsAtleast8
+#if WindowsAtleast8 && PXOSWindowsDestop
 	const HANDLE process = GetCurrentProcess();
 	const PXSize numberOfEntries = 2;
 	WIN32_MEMORY_RANGE_ENTRY memoryRangeEntry;
@@ -571,13 +571,14 @@ void PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 	memoryRangeEntry.VirtualAddress = (void*)adress;
 	memoryRangeEntry.NumberOfBytes = size;
 
-	//const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags);
+	//const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags); // Windows 8, Kernel32.dll, memoryapi.h
 
 #if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Pre-Fetched\n", adress, size);
 #endif
-
-#endif // defined(WindowsAtleast8)
+#else
+	// Not supported function
+#endif
 #else
 
 #if MemoryDebug
@@ -593,7 +594,7 @@ void PXMemoryVirtualRelease(const void* adress, const PXSize size)
 
 #elif OSWindows
 	DWORD freeType = MEM_RELEASE;
-	const unsigned char result = VirtualFree((void*)adress, 0, freeType);
+	const unsigned char result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
 #endif
 
 #if MemoryDebugOutput

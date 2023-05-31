@@ -1,7 +1,7 @@
 #ifndef PXProgramINCLUDE
 #define PXProgramINCLUDE
 
-#include <OS/Thread/PXThread.h>
+#include <OS/Async/PXThread.h>
 
 #if OSUnix
 #include <unistd.h>

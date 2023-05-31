@@ -24,11 +24,10 @@ typedef HGLRC PXOpenGLConextID;
 #endif
 
 #include <Graphic/PXGraphic.h>
-#include <Device/VirtualKey.h>
-#include <Device/PXMouse.h>
-#include <Device/PXKeyBoard.h>
+#include <OS/Hardware/PXMouse.h>
+#include <OS/Hardware/PXKeyBoard.h>
 #include <OS/Process/PXProcess.h>
-#include <OS/Thread/PXThread.h>
+#include <OS/Async/PXThread.h>
 
 #define UseRawMouseData 1
 #define PXWindowTitleSizeMax 256
@@ -105,7 +104,7 @@ extern "C"
 	typedef struct KeyBoardKeyInfo_
 	{
 		unsigned char KeyID;
-		VirtualKey Key;
+		PXVirtualKey Key;
 		ButtonState Mode;
 		unsigned short Repeat; // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
 		unsigned short ScanCode;// Der Scancode.Der Wert hängt vom OEM ab.
@@ -206,7 +205,7 @@ extern "C"
 
 #if OSUnix
 	PXPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
-#elif OSWindows
+#elif PXOSWindowsDestop
 	PXPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
 #endif
 

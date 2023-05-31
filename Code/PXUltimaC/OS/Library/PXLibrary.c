@@ -162,7 +162,7 @@ PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryNa
 #elif OSWindows
 			libraryName->SizeUsed = GetModuleFileNameExA(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextA, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
 
-			PXActionExitOnError(libraryName->SizeUsed == 0);
+			PXActionReturnOnError(libraryName->SizeUsed == 0);
 #endif
 
 			break;
@@ -176,7 +176,7 @@ PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryNa
 #elif OSWindows
 			libraryName->SizeUsed = GetModuleFileNameExW(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextW, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
 
-			PXActionExitOnError(libraryName->SizeUsed == 0);
+			PXActionReturnOnError(libraryName->SizeUsed == 0);
 #endif
 			break;
 		}

@@ -20,23 +20,71 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataBase\PXDataBase.hpp" />
+    <ClInclude Include="Math\PXMath.hpp" />
+    <ClInclude Include="Math\PXMatrix.hpp" />
+    <ClInclude Include="Math\PXVector.hpp" />
+    <ClInclude Include="Media\PXFont.hpp" />
+    <ClInclude Include="Media\PXImage.hpp" />
+    <ClInclude Include="Media\PXModel.hpp" />
+    <ClInclude Include="Media\PXSound.hpp" />
     <ClInclude Include="Media\PXText.hpp" />
+    <ClInclude Include="OS\Async\PXLock.hpp" />
+    <ClInclude Include="OS\Async\PXThread.hpp" />
+    <ClInclude Include="OS\Audio\PXAudio.hpp" />
+    <ClInclude Include="OS\ClipBoard\PXClipBoard.hpp" />
+    <ClInclude Include="OS\Debug\PXDebug.hpp" />
     <ClInclude Include="OS\Error\PXActionResult.hpp" />
     <ClInclude Include="OS\File\PXDirectory.hpp" />
     <ClInclude Include="OS\File\PXFile.hpp" />
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX.hpp" />
+    <ClInclude Include="OS\Graphic\OpenGL\PXOpenGL.hpp" />
+    <ClInclude Include="OS\Graphic\Vulcan\PXVulcan.hpp" />
+    <ClInclude Include="OS\Hardware\PXController.hpp" />
+    <ClInclude Include="OS\Hardware\PXHardDrive.hpp" />
+    <ClInclude Include="OS\Hardware\PXKeyBoard.hpp" />
+    <ClInclude Include="OS\Hardware\PXMonitor.hpp" />
+    <ClInclude Include="OS\Hardware\PXMouse.hpp" />
+    <ClInclude Include="OS\Hardware\PXProcessor.hpp" />
     <ClInclude Include="OS\Library\PXLibrary.hpp" />
     <ClInclude Include="OS\Memory\PXMemory.hpp" />
+    <ClInclude Include="OS\Network\PXClient.hpp" />
+    <ClInclude Include="OS\Network\PXServer.hpp" />
+    <ClInclude Include="OS\Network\PXSocket.hpp" />
     <ClInclude Include="OS\User\PXUser.hpp" />
     <ClInclude Include="OS\Window\PXWindow.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataBase\PXDataBase.cpp" />
+    <ClCompile Include="Math\PXMath.cpp" />
+    <ClCompile Include="Math\PXMatrix.cpp" />
+    <ClCompile Include="Math\PXVector.cpp" />
+    <ClCompile Include="Media\PXFont.cpp" />
+    <ClCompile Include="Media\PXImage.cpp" />
+    <ClCompile Include="Media\PXModel.cpp" />
+    <ClCompile Include="Media\PXSound.cpp" />
     <ClCompile Include="Media\PXText.cpp" />
+    <ClCompile Include="OS\Async\PXLock.cpp" />
+    <ClCompile Include="OS\Async\PXThread.cpp" />
+    <ClCompile Include="OS\Audio\PXAudio.cpp" />
+    <ClCompile Include="OS\ClipBoard\PXClipBoard.cpp" />
+    <ClCompile Include="OS\Debug\PXDebug.cpp" />
     <ClCompile Include="OS\Error\PXActionResult.cpp" />
     <ClCompile Include="OS\File\PXDirectory.cpp" />
     <ClCompile Include="OS\File\PXFile.cpp" />
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX.cpp" />
+    <ClCompile Include="OS\Graphic\OpenGL\PXOpenGL.cpp" />
+    <ClCompile Include="OS\Graphic\Vulcan\PXVulcan.cpp" />
+    <ClCompile Include="OS\Hardware\PXController.cpp" />
+    <ClCompile Include="OS\Hardware\PXHardDrive.cpp" />
+    <ClCompile Include="OS\Hardware\PXKeyBoard.cpp" />
+    <ClCompile Include="OS\Hardware\PXMonitor.cpp" />
+    <ClCompile Include="OS\Hardware\PXMouse.cpp" />
+    <ClCompile Include="OS\Hardware\PXProcessor.cpp" />
     <ClCompile Include="OS\Library\PXLibrary.cpp" />
     <ClCompile Include="OS\Memory\PXMemory.cpp" />
+    <ClCompile Include="OS\Network\PXClient.cpp" />
+    <ClCompile Include="OS\Network\PXServer.cpp" />
+    <ClCompile Include="OS\Network\PXSocket.cpp" />
     <ClCompile Include="OS\User\PXUser.cpp" />
     <ClCompile Include="OS\Window\PXWindow.cpp" />
   </ItemGroup>
@@ -54,26 +102,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -125,6 +173,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +191,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,6 +209,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -176,6 +227,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
