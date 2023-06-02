@@ -441,7 +441,7 @@ ThreadResult SBPPXClientReciveDataThread(void* sbpPXClientAdress)
 	return ThreadFunctionReturnValue;
 }
 
-*/
+
 
 void PXSBPClientConstruct(PXSBPClient* const sbpPXClient)
 {
@@ -472,7 +472,7 @@ PXActionResult SBPPXClientConnectToServer(PXSBPClient* const sbpPXClient, const 
 	{
 		const PXActionResult connectResult = PXClientConnectToServer(&sbpPXClient->Client, ip, port, &sbpPXClient->Client, PXClientCommunicationThread);
 
-		PXActionExitOnError(connectResult);
+		PXActionReturnOnError(connectResult);
 	}
 
 	// After connection, who are you?
@@ -505,3 +505,4 @@ PXActionResult SBPPXClientDisconnectFromServer(PXSBPClient* const sbpPXClient)
 {
 	return PXClientDisconnectFromServer(&sbpPXClient->Client);
 }
+*/

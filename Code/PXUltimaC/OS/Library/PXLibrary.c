@@ -92,7 +92,7 @@ PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 			const int mode = RTLD_NOW;
 			pxLibrary->ID = dlopen(filePath, mode);
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 			pxLibrary->ID = LoadLibraryA(filePath); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
 
@@ -104,13 +104,15 @@ PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 #if OSUnix
 			return 0;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 			pxLibrary->ID = LoadLibraryW(filePath); // Windows XP, Kernel32.dll, libloaderapi.h
 
 			return pxLibrary->ID != PXNull;
 #endif
 		}
 	}
+
+	return PXFalse;
 }
 
 PXBool PXLibraryClose(PXLibrary* const pxLibrary)
@@ -119,7 +121,7 @@ PXBool PXLibraryClose(PXLibrary* const pxLibrary)
 #if OSUnix
 		dlclose(pxLibrary->ID);
 #elif OSWindows
-		FreeLibrary(pxLibrary->ID); // Windows XP, Kernel32.dll, libloaderapi.h
+		FreeLibrary(pxLibrary->ID); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
 #endif
 
 	pxLibrary->ID = PXNull;

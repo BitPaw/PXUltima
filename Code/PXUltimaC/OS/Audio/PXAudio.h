@@ -20,7 +20,7 @@ typedef int PXAudioDeviceInputHandle;
 
 #include <windows.h>
 
-#if WindowsAtleastVista
+#if WindowsAtleastVista && PXOSWindowsDestop
 #include <mmeapi.h> // MISSING
 typedef HWAVEOUT PXAudioDeviceOutputHandle;
 typedef HWAVEIN PXAudioDeviceInputHandle;

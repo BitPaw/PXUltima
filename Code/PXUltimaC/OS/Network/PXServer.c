@@ -12,7 +12,7 @@
 
 void PXServerConstruct(PXServer* const server)
 {
-    PXMemoryClear(server, sizeof(PXServer)); 
+    PXMemoryClear(server, sizeof(PXServer));
 }
 
 void PXServerDestruct(PXServer* const server)
@@ -24,7 +24,7 @@ PXBool PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID s
 {
     for (PXSize i = 0; i < server->ServerSocketListSize; ++i)
     {
-        const PXSocket* const serverSocket = &server->ServerSocketList[i];
+        PXSocket* const serverSocket = &server->ServerSocketList[i];
         const PXBool isTarget = socketID == serverSocket->ID;
 
         if (isTarget)
@@ -44,14 +44,14 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
     {
         const PXSocketAdressSetupInfo pxSocketAdressSetupInfoList[2] =
         {
-            { {0,0,0,0,1}, port, IPAdressFamilyINET,PXSocketTypeStream, protocolMode},
-            { {0,0,0,0,1}, port, IPAdressFamilyINET6,PXSocketTypeStream, protocolMode }
+            { {0,0,0,0,TextFormatUTF8}, port, IPAdressFamilyINET,PXSocketTypeStream, protocolMode},
+            { {0,0,0,0,TextFormatUTF8}, port, IPAdressFamilyINET6,PXSocketTypeStream, protocolMode }
         };
         const PXSize pxSocketAdressSetupInfoListSize = 1;// sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
 
         server->ServerSocketListSize = pxSocketAdressSetupInfoListSize;
         server->ServerSocketListSizeAllocated = pxSocketAdressSetupInfoListSize;
-        server->ServerSocketList = PXMemoryAllocateClear(sizeof(PXSocket) * pxSocketAdressSetupInfoListSize);
+        server->ServerSocketList = (PXSocket*)PXMemoryAllocateClear(sizeof(PXSocket) * pxSocketAdressSetupInfoListSize);
 
         for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
         {
@@ -76,7 +76,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
     {
         PXSocket* const pxSocket = &server->ServerSocketList[i];
 
-        pxSocket->EventList = server->EventListener;
+        pxSocket->EventList = server->EventList;
         pxSocket->Owner = server->Owner;
         pxSocket->PollingLock = &server->PollingLock;
 
@@ -110,8 +110,6 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
 
         PXSocketStateChange(pxSocket, SocketIDLE);
 
-        InvokeEvent(pxSocket->EventList.ConnectionListeningCallback, pxSocket);   
-
         const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerClientListeningThread, pxSocket);       
     }
 
@@ -130,10 +128,8 @@ PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socke
 	return PXActionInvalid;
 }
 
-PXThreadResult PXServerClientListeningThread(void* serverAdress)
+PXThreadResult PXServerClientListeningThread(PXSocket* const serverSocket)
 {
-    PXSocket* const serverSocket = (PXSocket*)serverAdress; 
-
     if(!serverSocket)
     {
         return PXThreadSucessful;

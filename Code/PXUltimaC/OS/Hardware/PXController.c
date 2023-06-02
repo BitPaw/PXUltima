@@ -4,7 +4,7 @@
 
 #if OSUnix
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 #include <windows.h>
 #include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
@@ -15,7 +15,7 @@
 PXBool PXControllerScanDevices(NewControllerDetectedCallback callback)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 
 	for (PXSize i = 0; i < amountOfJoySticksSupported; i++)
@@ -78,6 +78,8 @@ const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 				break;
 		}*/
 	}
+#else
+	return PXFalse;
 #endif
 }
 
@@ -86,7 +88,7 @@ PXBool PXControllerDataGet(PXController* controller)
 #if OSUnix
     return 0u;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 #if (Version_Windows_NT)
 	JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
@@ -128,6 +130,8 @@ PXBool PXControllerDataGet(PXController* controller)
 
 	return successful;
 #endif
+#else
+	return PXFalse;
 #endif
 }
 
@@ -137,7 +141,7 @@ PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWin
 #if OSUnix
     return 0u;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	UINT uPeriod = 1;
 	BOOL fChanged = 1u;
 
@@ -145,6 +149,8 @@ PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWin
 	const unsigned char successful = captureResult == JOYERR_NOERROR;
 
 	return successful;
+#else
+	return PXFalse;
 #endif
 }
 
@@ -153,11 +159,13 @@ PXBool PXControllerDetachToWindow(const PXControllerID controllerID)
 #if OSUnix
     return 0u;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const MMRESULT releaseResult = joyReleaseCapture(controllerID);
 	const unsigned char successful = releaseResult == JOYERR_NOERROR;
 
 	return successful;
+#else
+	return PXFalse;
 #endif
 }
 #endif

@@ -161,7 +161,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXMemoryCachingMode CachingMode;
 		PXFileLocationMode LocationMode;
 
-#if OSUnix
+#if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
 		FILE* ID;
 		int MappingID;
 #elif OSWindows

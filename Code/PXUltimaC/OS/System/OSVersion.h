@@ -7,8 +7,6 @@
 #define OSForcePOSIXForWindows 0
 //---------------------------------------------------------
 
-
-
 // Device
 #define OSDeviceDestop 'D'
 #define OSDeviceConsole 'C'

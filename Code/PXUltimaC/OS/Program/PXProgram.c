@@ -33,9 +33,11 @@ PXThreadResult PXProgramExecuteThreadFunction(void* data)
     }
 
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     program->ReturnValue = ExecutePXProgram(_P_WAIT, program->FilePath, (const char* const*)program->ParameterList);
     program->ExecutionSuccessfull = program->ReturnValue == 0;
+#else
+    return -1;
 #endif
 
     if(program->PXProgramExecutedCallBack)
@@ -197,13 +199,13 @@ void PXProgramDetach(PXProgram* program)
 void PXProgramReadMemory(PXProgram* program)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     HANDLE hProcess = program->Handle;
     LPCVOID lpBaseAddress = 0;
     LPVOID* lpBuffer = 0;
     SIZE_T nSize = 0;
     SIZE_T* lpNumberOfBytesRead = 0;
 
-    unsigned char successful = ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, nSize, lpNumberOfBytesRead);
+    unsigned char successful = ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, nSize, lpNumberOfBytesRead); // Windows XP, Kernel32.dll, memoryapi.h 
 #endif
 }

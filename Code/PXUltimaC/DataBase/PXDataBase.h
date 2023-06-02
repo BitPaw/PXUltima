@@ -82,7 +82,7 @@ extern "C"
 	typedef struct PXSQLDataBaseConnection_
 	{
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 		SQLHENV EnvironmentID;
 		SQLHDBC ConnectionID;
 #endif	

@@ -431,7 +431,7 @@ PXActionResult PXFileRename(const PXText* const oldName, const PXText* const new
 		case TextFormatASCII:
 		case TextFormatUTF8:
 		{
-#if OSUnix || OSForcePOSIXForWindows
+#if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
 			const int resultID = rename(oldName->TextA, newName->TextA); // [POSIX]
 			const PXBool success = 0 == resultID;
 #elif OSWindows
@@ -448,7 +448,7 @@ PXActionResult PXFileRename(const PXText* const oldName, const PXText* const new
 
 #elif OSWindows
 
-#if OSForcePOSIXForWindows
+#if OSForcePOSIXForWindows || PXOSWindowsUseUWP
 			const int resultID = _wrename(oldName->TextW, newName->TextW); // [POSIX]
 			const PXBool success = 0 == resultID;
 #else
@@ -502,7 +502,7 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 			const int closeA = fclose(fileSource);
 			const int closeB = fclose(fileDestination);
 #elif OSWindows
-			const PXBool succesfull = CopyFileA(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h
+			const PXBool succesfull = CopyFileA(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
 
 			PXActionReturnOnError(!succesfull);
 #endif
@@ -515,7 +515,7 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 			// Convert
 
 #elif OSWindows
-			const PXBool succesfull = CopyFileW(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP, Kernel32.dll, winbase.h
+			const PXBool succesfull = CopyFileW(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
 
 			PXActionReturnOnError(!succesfull);
 #endif
@@ -854,30 +854,38 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 	}
 
 
-#if OSUnix
+#if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
 	const char* readMode = 0u;
 
 	switch (pxFileOpenFromPathInfo->AccessMode)
 	{
-	case PXMemoryAccessModeReadOnly:
-		readMode = "rb";
-		break;
+		case PXMemoryAccessModeReadOnly:
+			readMode = "rb";
+			break;
 
-	case PXMemoryAccessModeWriteOnly:
-		readMode = "wb";
-		break;
+		case PXMemoryAccessModeWriteOnly:
+			readMode = "wb";
+			break;
+		default:
+			return PXFalse;
 	}
-
-
-	(readMode != 0);
 
 	// Use this somewhere here
 	// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
 	// int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
 
+#if CVersionNewerThen2011
+	const errno_t result = fopen_s(&pxFile->ID, pxFileOpenFromPathInfo->Text.TextA, readMode);
+
+	return result == 0;
+
+#else
 	pxFile->ID = fopen(pxFileOpenFromPathInfo->Text.TextA, readMode);
 
 	return pxFile->ID ? PXActionSuccessful : PXActionFailedFileOpen;
+#endif
+
+
 
 
 #elif OSWindows
@@ -935,7 +943,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 			case TextFormatASCII:
 			case TextFormatUTF8:
 			{
-				const DWORD dwAttrib = GetFileAttributesA(pxFileOpenFromPathInfo->Text.TextA);
+				const DWORD dwAttrib = GetFileAttributesA(pxFileOpenFromPathInfo->Text.TextA); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 				const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
 				const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 
@@ -949,7 +957,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 					return PXActionFailedNotAFile;
 				}
 
-				fileHandle = CreateFileA
+				fileHandle = CreateFileA // Windows XP, Kernel32.dll, fileapi.h
 				(
 					pxFileOpenFromPathInfo->Text.TextA,
 					desiredAccess,
@@ -963,7 +971,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 			}
 			case TextFormatUNICODE:
 			{
-				const DWORD dwAttrib = GetFileAttributesW(pxFileOpenFromPathInfo->Text.TextW);
+				const DWORD dwAttrib = GetFileAttributesW(pxFileOpenFromPathInfo->Text.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 				const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
 				const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 
@@ -977,7 +985,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 					return PXActionFailedNotAFile;
 				}
 
-				fileHandle = CreateFileW
+				fileHandle = CreateFileW // Windows XP, Kernel32.dll, fileapi.h
 				(
 					pxFileOpenFromPathInfo->Text.TextW,
 					desiredAccess,
@@ -1327,7 +1335,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 	 if (pxFile->ID != -1)
 	 {
-		 const PXBool successful = CloseHandle(pxFile->ID);
+		 const PXBool successful = CloseHandle(pxFile->ID); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
 
 		 if (!successful)
 		 {
@@ -1483,7 +1491,17 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 #if OSUnix
 			 pxFile->DataCursor = ftell(pxFile->ID);
 #elif OSWindows
-			 pxFile->DataCursor = SetFilePointer(pxFile->ID, 0, 0, FILE_CURRENT);
+			 // Compile-ERROR: This seems to upset the compiler as its limited to 32-Bit value
+			 //pxFile->DataCursor = SetFilePointer(pxFile->ID, 0, 0, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h 
+			 const LARGE_INTEGER distanceToMove = { 0,0 }; // We do not move
+			 LARGE_INTEGER newFilePointer;
+
+			 const PXBool result = SetFilePointerEx(pxFile->ID, distanceToMove, &newFilePointer, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h 
+
+			 if (result)
+			 {
+				 pxFile->DataCursor = newFilePointer.QuadPart;
+			 }
 #endif
 
 		 }

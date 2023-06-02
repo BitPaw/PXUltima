@@ -54,6 +54,8 @@ typedef PXSize PXSocketID;
 #define SocketIDOffline -1
 #define IPv6LengthMax 65
 
+#define PXSocketBufferSize 2048u
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -181,55 +183,52 @@ extern "C"
 	}
 	PXSocketState;
 
+	//---<Events-------------------------------------------
 	typedef struct PXSocket_ PXSocket;
 
-	typedef void (*PXSocketCreatingEvent)(const PXSocket* const pxSocket, unsigned char* use);
-	typedef void (*PXSocketCreatedEvent)(const PXSocket* const pxSocket);
+
 
 	typedef struct PXSocketDataMoveEventInfo_
 	{
 		PXSocket* SocketSending;
 		PXSocketID SocketReceiving;
-		void* Data;
+		const void* Data;
 		PXSize DataSize;
 	}
 	PXSocketDataMoveEventInfo;
 
+
+
+	//-----------------------------------------------------
+	typedef void (*PXSocketCreatingEvent)(void* owner, const PXSocket* const pxSocket, PXBool* use);
+	typedef void (*PXSocketCreatedEvent)(void* owner, const PXSocket* const pxSocket);
+
+	typedef void (*PXSocketClosedEvent)(void* owner, const PXSocket* pxSocket);
+
+	typedef void (*PXSocketConnectedEvent)(void* owner, const PXSocket* serverSocket, const PXSocket* clientSocket);
+	typedef void (*PXSocketDisconnectedEvent)(void* owner, const PXSocket* serverSocket, const PXSocket* clientSocket);
+
+	typedef void (*PXSocketStateChangedEvent)(void* owner, const PXSocket* pxSocket, const PXSocketState oldState, const PXSocketState newState);
+
 	typedef void (*PXSocketDataSendEvent)(void* owner, const PXSocketDataMoveEventInfo* const pxSocketDataMoveEventInfo);
 	typedef void (*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataMoveEventInfo* const pxSocketDataMoveEventInfo);
 
-	// PXServer Only
-	typedef void (*PXSocketListeningEvent)(const PXSocket* const pxSocket);
-	typedef void (*PXSocketLinkedEvent)(const PXSocket* const pxSocket);
-
-	// PXClient Only
-	typedef void (*PXSocketConnectionEstablishedEvent)(const PXSocket* const pxSocket);
-	typedef void (*PXSocketConnectionTerminatedEvent)(const PXSocket* const pxSocket);
-
-	typedef void (*PXClientConnectedEvent)(const PXSocket* serverSocket, const PXSocket* clientSocket);
-	typedef void (*PXClientDisconnectedEvent)(const PXSocket* serverSocket, const PXSocket* clientSocket);
-	typedef void (*PXClientAcceptFailureEvent)(const PXSocket* serverSocket);
-
-	typedef struct PXSocketEventListener_
+	typedef struct PXSocketEventList_
 	{
-		//---<Event CallBack>---------
-		PXSocketCreatingEvent SocketCreatingCallback;
-		PXSocketCreatedEvent SocketCreatedCallback;
+		PXSocketCreatingEvent SocketCreatingCallBack;
+		PXSocketCreatedEvent SocketCreatedCallBack;
 
-		PXSocketDataSendEvent MessageSendCallback;
-		PXSocketDataReceiveEvent MessageReceiveCallback;
+		PXSocketClosedEvent SocketClosedCallBack;
 
-		// PXServer Only
-		PXSocketListeningEvent ConnectionListeningCallback;
-		PXSocketLinkedEvent ConnectionLinkedCallback;
+		PXSocketConnectedEvent SocketConnectedCallBack;
+		PXSocketDisconnectedEvent SocketDisconnectedCallBack;
 
-		// PXClient Only
-		PXSocketConnectionEstablishedEvent ConnectionEstablishedCallback;
-		PXSocketConnectionTerminatedEvent ConnectionTerminatedCallback;
-		//----------------------------
+		PXSocketStateChangedEvent SocketStateChangedCallBack;
+
+		PXSocketDataSendEvent SocketDataSendCallBack;
+		PXSocketDataReceiveEvent SocketDataReceiveCallBack;
 	}
-	PXSocketEventListener;
-
+	PXSocketEventList;
 
 	typedef struct PXSocket_
 	{
@@ -242,7 +241,7 @@ extern "C"
 		PXSocketType Type;
 		char IP[IPv6LengthMax];
 		PXSize IPSize;
-		unsigned short Port;
+		PXInt16U Port;
 
 
 		void* Owner;
@@ -254,9 +253,9 @@ extern "C"
 
 		//---<CPrivate IO>------------
 		PXThread CommunicationThread;
-		//----------------------------	
+		//----------------------------
 
-		PXSocketEventListener EventList;
+		PXSocketEventList EventList;
 	}
 	PXSocket;
 
@@ -299,7 +298,7 @@ extern "C"
 		PXSocket* const pxSocketList,
 		const PXSize PXSocketListSizeMax,
 		PXSize* PXSocketListSize,
-		PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo,
+		const PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo,
 		const PXSize pxSocketAdressSetupInfoSize
 	);
 
@@ -318,7 +317,7 @@ extern "C"
 	PXPublic PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const PXSocketID clientID, const void* inputBuffer, const PXSize inputBufferSize);
 
 	PXPublic PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
-	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
+	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocket, void* const outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
 	PXPublic PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSocketID clientID);
 
 	PXPublic PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);

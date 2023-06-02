@@ -12,15 +12,16 @@ PXActionResult PXClientConstruct(PXClient* const pxClient)
 
 PXActionResult PXClientDestruct(PXClient* const pxClient)
 {
-    
+    PXSocketDestruct(&pxClient->SocketServer);
+    PXSocketDestruct(&pxClient->SocketClient);
 }
 
 PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
 {
-    return PXSocketSend(&pxClient->SocketPXClient, data, dataSize, 0);
+    return PXSocketSend(&pxClient->SocketClient, data, dataSize, 0);
 }
 
-PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port, const void* threadObject, const ThreadFunction threadFunction)
+PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port)
 {
     PXSocket pxSocketList[5];
     PXSize pxSocketListSizeMax = 5;
@@ -58,13 +59,13 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
 
             if (connected)
             {  
-                PXMemoryCopy(pxSocket, sizeof(PXSocket), &client->SocketPXClient, sizeof(PXSocket));
+                PXMemoryCopy(pxSocket, sizeof(PXSocket), &client->SocketClient, sizeof(PXSocket));
 
-                client->SocketPXClient.EventList = client->EventListener;
+                client->SocketClient.EventList = client->EventList;
 
-                InvokeEvent(pxSocket->EventList.ConnectionEstablishedCallback, pxSocket);
+                InvokeEvent(pxSocket->EventList.SocketConnectedCallBack, client->Owner, pxSocket, PXNull);
 
-                const PXActionResult PXActionResult = PXThreadRun(&pxSocket->CommunicationThread, threadFunction, threadObject);
+                const PXActionResult PXActionResult = PXThreadRun(&pxSocket->CommunicationThread, PXClientCommunicationThread, pxSocket);
 
                 wasSucessful = 1u;
                 break; // Connect only once. If this is not here, we would connect more than once (with different protocol)
@@ -80,31 +81,27 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
     return PXActionSuccessful;
 }
 
-PXActionResult PXClientDisconnectFromServer(PXClient* const client)
+void PXClientDisconnectFromServer(PXClient* const client)
 {
-    return PXActionInvalid;
+    PXSocketClose(&client->SocketClient);
+    PXSocketConstruct(&client->SocketServer);
 }
 
-#define PXClientBufferSize 2048u
-
-PXThreadResult PXClientCommunicationThread(void* PXSocketAdress)
+PXThreadResult PXClientCommunicationThread(PXSocket* const pxSocket)
 {
-    PXSocket* const pxSocket = (PXSocket*)PXSocketAdress;
-
     while (PXSocketIsCurrentlyUsed(pxSocket))
-    {
-        const PXSize bufferSizeMax = 2048;
+    {      
+        PXByte buffer[PXSocketBufferSize];
         PXSize bufferSize = 0;
-        PXByte buffer[PXClientBufferSize];
 
-        PXMemoryClear(buffer, sizeof(unsigned char) * PXClientBufferSize);
-
-        const PXActionResult receiveingResult = PXSocketReceive(pxSocket, buffer, bufferSizeMax, &bufferSize);
+        const PXActionResult receiveingResult = PXSocketReceive(pxSocket, buffer, PXSocketBufferSize, &bufferSize);
         const PXBool sucessful = PXActionSuccessful == receiveingResult;
 
         if (!sucessful)
         {
             PXSocketDestruct(pxSocket);
+
+            return 1;
         }
     }
 

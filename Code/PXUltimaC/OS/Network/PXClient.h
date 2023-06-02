@@ -15,18 +15,14 @@ extern "C"
 
 	typedef struct PXClient_ PXClient;
 
-	typedef void (*ConnectedToServerEvent)(const PXClient* client);
-
 	typedef struct PXClient_
 	{
-		PXSocket SocketPXClient;
-		PXSocket SocketConnectedServer;
-
-		PXSocketEventListener EventListener;
-
-		ConnectedToServerEvent ConnectedToServerCallback;
+		PXSocketEventList EventList;
 
 		void* Owner;
+
+		PXSocket SocketClient;
+		PXSocket SocketServer;
 	}
 	PXClient;
 
@@ -35,10 +31,10 @@ extern "C"
 
 	PXPublic PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize);
 
-	PXPublic PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port, const void* threadObject, const ThreadFunction threadFunction);
-	PXPublic PXActionResult PXClientDisconnectFromServer(PXClient* const client);
+	PXPublic PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port);
+	PXPublic void PXClientDisconnectFromServer(PXClient* const client);
 
-	PXPublic PXThreadResult PXClientCommunicationThread(void* ioSocket);
+	PXPublic PXThreadResult PXClientCommunicationThread(PXSocket* const pxSocket);
 
 #ifdef __cplusplus
 }

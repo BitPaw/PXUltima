@@ -69,7 +69,7 @@ PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolde
 
 #if WindowsAtleastVista && PXOSWindowsDestop
 
-	KNOWNFOLDERID* pathID = 0;
+	const GUID* pathID = 0;
 
 	switch (pxUserEnviromentFolderID)
 	{
@@ -120,7 +120,7 @@ PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolde
 	temporalCache.TextW = 0;
 	temporalCache.Format = TextFormatUNICODE;
 
-	const HRESULT result = SHGetKnownFolderPath(pathID, KF_FLAG_DEFAULT_PATH, PXNull, temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h
+	const HRESULT result = SHGetKnownFolderPath((KNOWNFOLDERID*)pathID, KF_FLAG_DEFAULT_PATH, PXNull, (PWSTR*)temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h
 	const PXBool success = S_OK == result;
 
 	PXTextCopy(&temporalCache, name);

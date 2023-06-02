@@ -12,6 +12,8 @@ internal class Program
 
         Console.WriteLine("CPU " + processor.ToString());
 
+        PX.Client client = new PX.Client();
+       
 
         return 0;
     }

@@ -7,6 +7,7 @@
 #if PXRegistryUSE
 
 #include <Media/PXType.h>
+#include <OS/Error/PXActionResult.h>
 
 #if OSUnix
 typedef unsigned int PXRegistryID;
@@ -23,13 +24,6 @@ extern "C"
 {
 #endif
 
-	typedef enum PXRegistryResult_
-	{
-		PXRegistryResultInvalid,
-		PXRegistryResultSucessful
-	}
-	PXRegistryResult;
-
 	typedef enum PXRegistrySpace_
 	{
 		PXRegistrySpaceInvalid,
@@ -45,8 +39,8 @@ extern "C"
 	}
 	PXRegistry;
 
-	PXPublic PXRegistryResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
-	PXPublic PXRegistryResult PXRegistryConnectRemote(PXRegistry* const registry, const wchar_t* computerName, const PXRegistrySpace registrySpace);
+	PXPublic PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
+	PXPublic PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const wchar_t* computerName, const PXRegistrySpace registrySpace);
 
 	PXPublic void PXRegistryClose(PXRegistry* const registry);
 

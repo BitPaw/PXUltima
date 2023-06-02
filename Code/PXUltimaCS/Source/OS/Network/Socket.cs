@@ -1,4 +1,6 @@
-﻿namespace PX
+﻿using System.Drawing;
+
+namespace PX
 {
     public enum IPAdressFamily
     {
@@ -96,6 +98,71 @@
         ProtocolModeWindowsWNV,
         ProtocolModeWindowsMAX
     }
+
+    internal unsafe struct PXSocketDataMoveEventInfo
+    {
+        public PXSocket* SocketSending;
+        public void* SocketReceiving;
+        public void* Data;
+        public void* DataSize;
+    };
+
+    public class SocketDataMoveEventInfo
+    {
+        public PX.Socket SocketSending;
+        public uint SocketReceiving;
+        public byte[] Data;
+    };
+
+    internal struct PXSocket
+    {
+
+    }
+
+    internal struct PXSocketEventList
+    {
+        public PXSocketCreatingEvent SocketCreatingCallBack;
+        public PXSocketCreatedEvent SocketCreatedCallBack;
+
+        public PXSocketClosedEvent SocketClosedCallBack;
+
+        public PXSocketConnectedEvent SocketConnectedCallBack;
+        public PXSocketDisconnectedEvent SocketDisconnectedCallBack;
+
+        public PXSocketStateChangedEvent SocketStateChangedCallBack;
+
+        public PXSocketDataSendEvent SocketDataSendCallBack;
+        public PXSocketDataReceiveEvent SocketDataReceiveCallBack;
+    };
+
+    internal unsafe delegate void PXSocketCreatingEvent(void* owner, ref PXSocket pxSocket, byte* use);
+	internal unsafe delegate void PXSocketCreatedEvent(void* owner, ref PXSocket pxSocket);
+
+    internal unsafe delegate void PXSocketClosedEvent(void* owner, ref PXSocket pxSocket);
+
+    internal unsafe delegate void PXSocketConnectedEvent(void* owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
+	internal unsafe delegate void PXSocketDisconnectedEvent(void* owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
+
+	internal unsafe delegate void PXSocketStateChangedEvent(void* owner, ref PXSocket pxSocket);
+
+	internal unsafe delegate void PXSocketDataSendEvent(void* owner, ref PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo);
+	internal unsafe delegate void PXSocketDataReceiveEvent(void* owner, ref PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo);
+
+
+
+    public delegate void SocketCreatingEvent(PX.Socket pxSocket, ref bool use);
+    public delegate void SocketCreatedEvent(PX.Socket pxSocket);
+
+    public delegate void SocketClosedEvent(PX.Socket pxSocket);
+
+    public delegate void SocketConnectedEvent(PX.Socket serverSocket, PX.Socket clientSocket);
+    public delegate void SocketDisconnectedEvent(PX.Socket serverSocket, PX.Socket clientSocket);
+
+    public delegate void SocketStateChangedEvent(PX.Socket pxSocket);
+
+    public delegate void SocketDataSendEvent(PX.SocketDataMoveEventInfo pxSocketDataMoveEventInfo);
+    public delegate void SocketDataReceiveEvent(PX.SocketDataMoveEventInfo pxSocketDataMoveEventInfo);
+
 
     public class Socket
     {

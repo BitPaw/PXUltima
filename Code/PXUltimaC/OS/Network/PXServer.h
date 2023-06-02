@@ -26,7 +26,7 @@ extern "C"
 
 		PXLock PollingLock;
 
-		PXSocketEventListener EventListener;
+		PXSocketEventList EventList;
 	}
 	PXServer;
 
@@ -39,7 +39,7 @@ extern "C"
 	PXPublic PXActionResult PXServerStop(PXServer* const server);
 	PXPublic PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socketID);
 
-	static PXThreadResult PXServerClientListeningThread(void* server);
+	PXPrivate PXThreadResult PXServerClientListeningThread(PXSocket* const serverSocket);
 
 #ifdef __cplusplus
 }

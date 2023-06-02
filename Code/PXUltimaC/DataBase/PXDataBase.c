@@ -11,7 +11,7 @@ const PXSQLType PXSQLTypeFromID(const PXInt32U sqlTypeID)
 #if OSUnix
     return PXSQLTypeInvalid;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     switch (sqlTypeID)
     {
         // Mysql?
@@ -44,6 +44,8 @@ const PXSQLType PXSQLTypeFromID(const PXInt32U sqlTypeID)
         default:
             return PXSQLTypeInvalid;
     }
+#else     
+    return PXSQLTypeInvalid;
 #endif
 }
 
@@ -69,7 +71,7 @@ PXActionResult PXDataBaseConnectionConnect
 #if OSUnix
     return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
     // Allocate environment handle
     {
         const SQLRETURN result = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &dataBaseConnection->EnvironmentID);
@@ -262,7 +264,7 @@ PXActionResult PXDataBaseConnectionConnect
 void PXDataBaseConnectionDisconnect(PXSQLDataBaseConnection* const dataBaseConnection)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     if (dataBaseConnection->ConnectionID)
     {
         const SQLRETURN resultDisconnect = SQLDisconnect(dataBaseConnection->ConnectionID);
@@ -278,7 +280,7 @@ void PXDataBaseConnectionCleanup(PXSQLDataBaseConnection* const dataBaseConnecti
     PXDataBaseConnectionDisconnect(dataBaseConnection);
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     if (dataBaseConnection->EnvironmentID)
     {
         const SQLRETURN result = SQLFreeHandle(SQL_HANDLE_ENV, dataBaseConnection->EnvironmentID);
@@ -292,7 +294,7 @@ void PXDataBaseConnectionScanForDrivers(PXSQLDataBaseConnection* const dataBaseC
 {
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     SQLUSMALLINT direction = SQL_FETCH_FIRST;
     unsigned char finished = 0;
 
@@ -347,7 +349,7 @@ void PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnecti
 {
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
     SQLHSTMT handleStatement = 0;
     PXSize colums = 0;
     PXSize rows = 0;

@@ -4,7 +4,7 @@
 #include <Media/PXType.h>
 
 #include <OS/Network/PXClient.h>
-#include <OS/Thread/PXThread.h>
+#include <OS/Async/PXThread.h>
 
 #include "SBPProtocol.h"
 #include "PXSBPPackageProcessor.h"

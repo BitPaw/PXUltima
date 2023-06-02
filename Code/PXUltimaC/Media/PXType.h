@@ -20,6 +20,86 @@ extern "C"
 #define PXLanguageCPP 0
 #endif
 
+
+
+
+
+//-----------------------------------------------------------------------------
+// Detect C Version
+//-----------------------------------------------------------------------------
+#define CVersion 201703L
+
+#if (CVersion >= 199711L)
+#define CVersionAtleast1998 1
+#else
+#define CVersionAtleast1998 0
+#endif
+
+#if (CVersion >= 201103L)
+#define CVersionNewerThen2011 1
+#else
+#define CVersionNewerThen2011 0
+#endif
+
+#if (CVersion >= 201402L)
+#define CVersionNewerThen2014 1
+#else
+#define CVersionNewerThen2014 0
+#endif
+
+#if (CVersion >= 201703L)
+#define CVersionNewerThen2017 1
+#else
+#define CVersionNewerThen2017 0
+#endif
+
+#if (CVersion >= 202002L)
+#define CVersionNewerThen2020 1
+#else
+#define CVersionNewerThen2020 0
+#endif
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Detect C++ Version
+//-----------------------------------------------------------------------------
+#define CPPVersion __cplusplus
+
+// Before 1998, '__cplusplus' is == 1
+
+#if (CPPVersion >= 199711L)
+	#define CPPVersionAtleast1998 1
+#else
+	#define CPPVersionAtleast1998 0
+#endif
+
+#if (CPPVersion >= 201103L)
+#define CPPVersionNewerThen2011 1
+#else
+#define CPPVersionNewerThen2011 0
+#endif
+
+#if (CPPVersion >= 201402L)
+#define CPPVersionNewerThen2014 1
+#else
+#define CPPVersionNewerThen2014 0
+#endif
+
+#if (CPPVersion >= 201703L)
+#define CPPVersionNewerThen2017 1
+#else
+#define CPPVersionNewerThen2017 0
+#endif
+
+#if (CPPVersion >= 202002L)
+#define CPPVersionNewerThen2020 1
+#else
+#define CPPVersionNewerThen2020 0
+#endif
+//-----------------------------------------------------------------------------
+
+
+
+
 //-- Reivented public / private. The keywords are reserved, so we need other names.
 #if OSUnix
 #define PXPrivate static

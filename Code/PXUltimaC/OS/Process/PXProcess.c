@@ -156,10 +156,10 @@ PXSize PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const 
 #if OSUnix
 	return 0;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	SIZE_T numberOfBytesRead;
 
-	const BOOL result = WriteProcessMemory
+	const BOOL result = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
 	(
 		pxProcess->ProcessHandle,
 		targetAdress,
@@ -183,10 +183,10 @@ PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const t
 #if OSUnix
 	return 0;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	SIZE_T numberOfBytesRead;
 
-	const BOOL result = ReadProcessMemory
+	const BOOL result = ReadProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
 	(
 		pxProcess->ProcessHandle,
 		targetAdress,

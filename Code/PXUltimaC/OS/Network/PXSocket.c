@@ -677,7 +677,7 @@ PXActionResult PXSocketSetupAdress
     PXSocket* const pxSocketList,
     const PXSize socketListSizeMax,
     PXSize* PXSocketListSize,
-    PXSocketAdressSetupInfo* const pxSocketAdressSetupInfoList,
+    const PXSocketAdressSetupInfo* const pxSocketAdressSetupInfoList,
     const PXSize pxSocketAdressSetupInfoListSize
 )
 {
@@ -693,7 +693,7 @@ PXActionResult PXSocketSetupAdress
 
     for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
     {
-        PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo = &pxSocketAdressSetupInfoList[i];
+        const PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo = &pxSocketAdressSetupInfoList[i];
 
         PXText portText;
         PXTextConstructNamedBufferA(&portText, portTextBuffer, 30);
@@ -704,7 +704,7 @@ PXActionResult PXSocketSetupAdress
 
         if (pxSocketAdressSetupInfo->Port != -1)
         {
-            PXTextFromInt(pxSocketAdressSetupInfo->Port, &portText);
+            PXTextFromInt(&portText, pxSocketAdressSetupInfo->Port);
 
             portTextAdress = portText.TextA;
         }
@@ -794,13 +794,13 @@ PXActionResult PXSocketSetupAdress
                 ADDRINFOW addressInfoHintW;
                 ADDRINFOW* addressInfoListW = 0;
 
-                PXMemoryClear(&addressInfoHintW, sizeof(ADDRINFOA));
+                PXMemoryClear(&addressInfoHintW, sizeof(ADDRINFOW));
                 addressInfoHintW.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
                 addressInfoHintW.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
                 addressInfoHintW.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
                 addressInfoHintW.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
 
-                const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
+                const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, (wchar_t*)portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
                 const PXBool validAdressInfo = adressInfoResultID == 0;
 
 
@@ -950,7 +950,7 @@ void PXSocketClose(PXSocket* const pxSocket)
     closesocket(pxSocket->ID);
 #endif
 
-    InvokeEvent(pxSocket->EventList.ConnectionTerminatedCallback, pxSocket);
+    InvokeEvent(pxSocket->EventList.SocketClosedCallBack, pxSocket->Owner, pxSocket);
 
 #if SocketDebug
     printf("[PXSocket] <%i> Terminated\n", (int)pxSocket->ID);
@@ -961,7 +961,11 @@ void PXSocketClose(PXSocket* const pxSocket)
 
 void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState)
 {
+    const PXSocketState oldState = pxSocket->State;
+
     pxSocket->State = socketState;
+
+    InvokeEvent(pxSocket->EventList.SocketStateChangedCallBack, pxSocket->Owner, pxSocket, oldState, socketState);
 }
 
 PXActionResult PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize)
@@ -1211,7 +1215,7 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
 #elif OSWindows
         SO_EXCLUSIVEADDRUSE;
 #endif
-    const int opval = 1;
+    const char opval = 1;
     const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(int));
     const PXBool sucessful = optionsocketResult == 0;
 
@@ -1305,7 +1309,7 @@ PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const 
     pxSocketDataMoveEventInfo.Data = inputBuffer;
     pxSocketDataMoveEventInfo.DataSize = inputBufferSize;
 
-    InvokeEvent(serverSocket->EventList.MessageSendCallback, serverSocket->Owner, &pxSocketDataMoveEventInfo);
+    InvokeEvent(serverSocket->EventList.SocketDataSendCallBack, serverSocket->Owner, &pxSocketDataMoveEventInfo);
 
 #if SocketDebug
     printf("[PXSocket] <%i> --> <%i> %i Bytes\n", (int)serverSocket->ID, (int)clientID, (int)inputBufferSize);
@@ -1363,7 +1367,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
         pxSocketDataMoveEventInfo.Data = inputBuffer;
         pxSocketDataMoveEventInfo.DataSize = inputBufferSize;
 
-        InvokeEvent(pxSocket->EventList.MessageSendCallback, pxSocket->Owner, &pxSocketDataMoveEventInfo);
+        InvokeEvent(pxSocket->EventList.SocketDataSendCallBack, pxSocket->Owner, &pxSocketDataMoveEventInfo);
     }
 
 #if SocketDebug
@@ -1393,8 +1397,11 @@ PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, c
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten)
+PXActionResult PXSocketReceive(PXSocket* const pxSocket, void* const outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten)
 {
+    // Clear data
+    PXMemoryClear(outputBuffer, outputBufferSize);
+
     // I did not read any data yet
     *outputBytesWritten = 0;
 
@@ -1453,7 +1460,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
                 pxSocketDataMoveEventInfo.Data = outputBuffer;
                 pxSocketDataMoveEventInfo.DataSize = outputBufferSize;
 
-                InvokeEvent(pxSocket->EventList.MessageReceiveCallback, pxSocket->Owner, &pxSocketDataMoveEventInfo);
+                InvokeEvent(pxSocket->EventList.SocketDataReceiveCallBack, pxSocket->Owner, &pxSocketDataMoveEventInfo);
             }
         }
     }
@@ -1462,8 +1469,8 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, const void* outputBuffe
 
 PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSocketID clientID)
 {
-    char buffer[1024];
-    PXSize buffserSize = 1024;
+    char buffer[PXSocketBufferSize];
+    PXSize buffserSize = PXSocketBufferSize;
 
     // Read data
     {
@@ -1506,7 +1513,7 @@ PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSoc
                 pxSocketDataMoveEventInfo.Data = buffer;
                 pxSocketDataMoveEventInfo.DataSize = byteRead;
 
-                InvokeEvent(serverSocket->EventList.MessageReceiveCallback, serverSocket->Owner, &pxSocketDataMoveEventInfo);
+                InvokeEvent(serverSocket->EventList.SocketDataReceiveCallBack, serverSocket->Owner, &pxSocketDataMoveEventInfo);
             }
         }
     }

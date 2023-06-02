@@ -5,7 +5,7 @@
 #include <OS/Memory/PXMemory.h>
 
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 #pragma comment(lib, "Advapi32.lib")
 
 #ifndef LSTATUS
@@ -13,15 +13,15 @@
 #endif
 #endif
 
-PXRegistryResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace)
+PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace)
 {
 	return PXRegistryConnectRemote(registry, 0, registrySpace);
 }
 
-PXRegistryResult PXRegistryConnectRemote(PXRegistry* const registry, const wchar_t* computerName, const PXRegistrySpace registrySpace)
+PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const wchar_t* computerName, const PXRegistrySpace registrySpace)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 	HKEY hKey = 0;
 
 	switch (registrySpace)
@@ -43,23 +43,25 @@ PXRegistryResult PXRegistryConnectRemote(PXRegistry* const registry, const wchar
 	}
 
 
-	const LSTATUS status = RegConnectRegistryW(computerName, hKey, &registry->ID); // LSTATUS
-	const unsigned char sucessful = status == ERROR_SUCCESS;
+	const LSTATUS status = RegConnectRegistryW(computerName, hKey, &registry->ID); // Windows 2000, Advapi32.dll, winreg.h
+	const PXBool sucessful = status == ERROR_SUCCESS;
 
 	if (!sucessful)
 	{
 		// DO stuff;
-		return PXRegistryResultInvalid;
+		return PXActionInvalid;
 	}
 
-	return PXRegistryResultSucessful;
+	return PXActionSuccessful;
+#else 
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
 void PXRegistryClose(PXRegistry* const registry)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const LSTATUS status = RegCloseKey(registry->ID);
 
 	registry->ID = 0;
@@ -69,7 +71,7 @@ void PXRegistryClose(PXRegistry* const registry)
 void PXRegistryKeyCreate(PXRegistry* const registry)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 	HKEY hKey = 0;
 	LPCWSTR lpSubKey = 0;
 	DWORD Reserved = 0;
@@ -82,7 +84,7 @@ void PXRegistryKeyCreate(PXRegistry* const registry)
 
 	PXMemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
 
-	const LSTATUS status = RegCreateKeyExW
+	const LSTATUS status = RegCreateKeyExW // Windows 2000, Advapi32.dll, winreg.h
 	(
 		hKey,
 		lpSubKey,
@@ -100,28 +102,28 @@ void PXRegistryKeyCreate(PXRegistry* const registry)
 void PXRegistryKeyLoad(PXRegistry* const registry, const wchar_t* file)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 	HKEY hKey = 0;
 	SECURITY_ATTRIBUTES securityAttributes;
 	DWORD Flags = 0;
 
 	PXMemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
 
-	const LSTATUS status = RegSaveKeyExW(hKey, file, &securityAttributes, Flags);
+	const LSTATUS status = RegSaveKeyExW(hKey, file, &securityAttributes, Flags); // Windows 2000, Advapi32.dll, winreg.h
 #endif
 }
 
 void PXRegistryKeySave(PXRegistry* const registry)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 #endif
 }
 
 void PXRegistryKeyDelete(PXRegistry* const registry)
 {
 #if OSUnix
-#elif OSWindows
+#elif PXOSWindowsDestop
 #endif
 }
 
