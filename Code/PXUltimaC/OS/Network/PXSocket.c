@@ -651,9 +651,9 @@ PXActionResult PXSocketCreate
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketConnect(PXSocket* const pxSocket)
+PXActionResult PXSocketConnect(PXSocket* const pxClient, PXSocket* const pxServer)
 {
-    const int serverSocketID = connect(pxSocket->ID, (struct sockaddr*)pxSocket->IP, pxSocket->IPSize);
+    const int serverSocketID = connect(pxClient->ID, (struct sockaddr*)pxClient->IP, pxClient->IPSize);
     const PXBool connected = serverSocketID != -1;
 
     if(!connected)
@@ -668,6 +668,8 @@ PXActionResult PXSocketConnect(PXSocket* const pxSocket)
 #if SocketDebug
     printf("[PXSocket] Connected to server.\n");
 #endif
+
+    pxServer->ID = serverSocketID;
 
     return PXActionSuccessful;
 }
@@ -968,7 +970,7 @@ void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketSta
     InvokeEvent(pxSocket->EventList.SocketStateChangedCallBack, pxSocket->Owner, pxSocket, oldState, socketState);
 }
 
-PXActionResult PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize)
+PXActionResult PXSocketEventPull(PXSocket* const pxSocket)
 {
     PXSocketStateChange(pxSocket, SocketEventPolling);
 
@@ -1141,13 +1143,11 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
 
         for (PXSize readableSocketIndex = 0; readableSocketIndex < numberOfSocketEvents; ++readableSocketIndex)
         {
-             #if OSUnix
-              const PXSocketID socketID = 0;
-        #elif OSWindows
-          const PXSocketID socketID = selectListenRead.fd_array[readableSocketIndex];
-        #endif
-
-
+#if OSUnix
+            const PXSocketID socketID = 0;
+#elif OSWindows
+            const PXSocketID socketID = selectListenRead.fd_array[readableSocketIndex];
+#endif
             const PXBool isServer = pxSocket->ID == socketID;
 
             if (isServer)
@@ -1156,7 +1156,7 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
             }
             else
             {
-                PXSocketReceiveAsServer(pxSocket, socketID);
+                PXSocketReceive(pxSocket, socketID);
             }
         }
     }
@@ -1291,39 +1291,51 @@ PXActionResult PXSocketAccept(PXSocket* const server)
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const PXSocketID clientID, const void* inputBuffer, const PXSize inputBufferSize)
+PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxSocketReceiverID)
 {
-    // Do we even send anything? If not, quit
+    // Check if socket is active and ready to send
     {
-        const PXBool hasDataToSend = inputBuffer && inputBufferSize > 0; // if NULL or 0 Bytes, return
+        const PXBool isSenderReady = PXSocketIsCurrentlyUsed(pxSocketSender);
 
-        if (!hasDataToSend)
+        if (!isSenderReady)
         {
-            return PXActionSuccessful; // Do not send anything if the message is empty
+            return PXActionRefuedObjectNotReady;
+        }
+
+        const PXBool isReceiverReady = pxSocketReceiverID != -1;
+
+        if (!isReceiverReady)
+        {
+            return PXActionRefusedSocketNotConnected;
         }
     }
 
-    PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
-    pxSocketDataMoveEventInfo.SocketSending = serverSocket;
-    pxSocketDataMoveEventInfo.SocketReceiving = clientID;
-    pxSocketDataMoveEventInfo.Data = inputBuffer;
-    pxSocketDataMoveEventInfo.DataSize = inputBufferSize;
+    // Do we even send anything? If not, quit
+    {
+        if (!pxSocketSender->BufferOutput.Data)
+        {
+            return PXActionRefuedOutputBufferNull;
+        }
 
-    InvokeEvent(serverSocket->EventList.SocketDataSendCallBack, serverSocket->Owner, &pxSocketDataMoveEventInfo);
+        const PXBool hasDataToSend = pxSocketSender->BufferOutput.SizeMaximum > 0;
 
-#if SocketDebug
-    printf("[PXSocket] <%i> --> <%i> %i Bytes\n", (int)serverSocket->ID, (int)clientID, (int)inputBufferSize);
-#endif
+        if (!hasDataToSend)
+        {
+            return PXActionDidNothing; // Do not send anything if the message is empty
+        }
+    }
 
     // Send data
+    do
     {
-        const char* data = (const char*)inputBuffer;
+        const char* dataAdress = (PXAdress)pxSocketSender->BufferOutput.Data + pxSocketSender->BufferOutput.SizeOffset;
+        const int dataSize = pxSocketSender->BufferOutput.SizeMaximum - pxSocketSender->BufferOutput.SizeCurrent;
 
         const int writtenBytes =
 #if OSUnix
-            write(clientID, data, inputBufferSize);
+            write(pxSocketReceiverID, dataAdress, dataSize);
 #elif OSWindows
-            send(clientID, data, inputBufferSize, 0);
+            send(pxSocketReceiverID, dataAdress, dataSize, 0);
 #endif
         const PXBool sucessfulSend = writtenBytes != -1;
 
@@ -1332,106 +1344,65 @@ PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const 
             return PXActionFailedSocketSend;
         }
 
-        //if (inputBytesWritten) *inputBytesWritten = writtenBytes;
-    }
+        pxSocketSender->BufferOutput.SizeOffset += writtenBytes;
 
-    return PXActionSuccessful;
-}
-
-PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten)
-{
-    // Check if socket is active and ready to send
-    {
-        const PXBool isReady = PXSocketIsCurrentlyUsed(pxSocket);
-
-        if(!isReady)
         {
-            return PXActionRefusedSocketNotConnected;
+            PXSocketDataSendEventData pxSocketDataSendEventData;
+            pxSocketDataSendEventData.SocketSending = pxSocketSender;
+            pxSocketDataSendEventData.SocketReceiving = pxSocketReceiverID;
+            pxSocketDataSendEventData.Data = dataAdress;
+            pxSocketDataSendEventData.DataSize = writtenBytes;
+
+            InvokeEvent(pxSocketSender->EventList.SocketDataSendCallBack, pxSocketSender->Owner, &pxSocketDataSendEventData);
         }
-    }
 
-    // Do we even send anything? If not, quit
-    {
-        const PXBool hasDataToSend = inputBuffer && inputBufferSize > 0; // if NULL or 0 Bytes, return
-
-        if(!hasDataToSend)
-        {
-            return PXActionSuccessful; // Do not send anything if the message is empty
-        }
-    }
-
-    {
-        PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
-        pxSocketDataMoveEventInfo.SocketSending = pxSocket;
-        pxSocketDataMoveEventInfo.SocketReceiving = pxSocket->ID;
-        pxSocketDataMoveEventInfo.Data = inputBuffer;
-        pxSocketDataMoveEventInfo.DataSize = inputBufferSize;
-
-        InvokeEvent(pxSocket->EventList.SocketDataSendCallBack, pxSocket->Owner, &pxSocketDataMoveEventInfo);
-    }
+        pxSocketSender->BufferOutput.SizeCurrent += writtenBytes;
 
 #if SocketDebug
-    printf("[PXSocket] You --> <%i> %i Bytes\n", (int)pxSocket->ID, (int)inputBufferSize);
+        printf("[PXSocket] You --> <%i> %i Bytes\n", (int)pxSocket->ID, (int)inputBufferSize);
 #endif
-
-    // Send data
-    {
-        const char* data = (const char*)inputBuffer;
-
-        const int writtenBytes =
-#if OSUnix
-            write(pxSocket->ID, data, inputBufferSize);
-#elif OSWindows
-            send(pxSocket->ID, data, inputBufferSize, 0);
-#endif
-        const PXBool sucessfulSend = writtenBytes != -1;
-
-        if(!sucessfulSend)
-        {
-            return PXActionFailedSocketSend;
-        }
-
-        if(inputBytesWritten) *inputBytesWritten = writtenBytes;
     }
+    while (pxSocketSender->BufferOutput.SizeMaximum - pxSocketSender->BufferOutput.SizeCurrent);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketReceive(PXSocket* const pxSocket, void* const outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten)
+PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketID pxSocketSenderID)
 {
-    // Clear data
-    PXMemoryClear(outputBuffer, outputBufferSize);
-
-    // I did not read any data yet
-    *outputBytesWritten = 0;
-
     // Check if socket is active and ready to send
     {
-        const PXBool isReady = PXSocketIsCurrentlyUsed(pxSocket);
+        const PXBool isReceiverReady = PXSocketIsCurrentlyUsed(pxSocketReceiver);
 
-        if(!isReady)
+        if (!isReceiverReady)
+        {
+            return PXActionRefuedObjectNotReady;
+        }
+
+        const PXBool isSenderReady = pxSocketSenderID != -1;
+
+        if (!isSenderReady)
         {
             return PXActionRefusedSocketNotConnected;
-        }
+        }     
     }
 
     // Read data
     {
-        char* data = (char*)outputBuffer;
-        int length = outputBufferSize;
-
         //StateChange(SocketStateDataReceiving);
-
-        const unsigned int byteRead =
+        char* data = (PXAdress)pxSocketReceiver->BufferInput.Data + pxSocketReceiver->BufferInput.SizeCurrent;
+        const int availableSize = pxSocketReceiver->BufferInput.SizeMaximum - pxSocketReceiver->BufferInput.SizeCurrent;
+        const int sizeRead =
 #if OSUnix
-            read(pxSocket->ID, data, length);
+            read(pxSocketSenderID, data, availableSize);
 #elif OSWindows
-            recv(pxSocket->ID, data, length, 0);
+            recv(pxSocketSenderID, data, availableSize, 0);
 #endif
+
+
 
         // StateChange(SocketStateIDLE);
 
-        switch(byteRead)
+        switch (sizeRead)
         {
             case (unsigned int)-1:
                 return PXActionFailedSocketRecieve;
@@ -1439,81 +1410,28 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocket, void* const outputBuffe
             case 0:// endOfFile
             {
 #if SocketDebug
-                printf("[PXSocket] Connection <%i> close signal detected!\n", (int)pxSocket->ID);
+                printf("[PXSocket] Connection <%i> close signal detected!\n", (int)pxSocketSenderID);
 #endif
 
-                PXSocketClose(pxSocket);
+                PXSocketClientRemove(pxSocketReceiver, pxSocketSenderID);
 
                 return PXActionRefusedSocketNotConnected; // How to handle, 0 means connected but this is not the terminating phase.
             }
             default:
             {
-                *outputBytesWritten = byteRead;
-
-#if SocketDebug
-                printf("[PXSocket] You <-- <%li> %i Bytes\n", (int)pxSocket->ID, (int)byteRead);
-#endif
-
-                PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
-                pxSocketDataMoveEventInfo.SocketSending = pxSocket;
-                pxSocketDataMoveEventInfo.SocketReceiving = pxSocket->ID;
-                pxSocketDataMoveEventInfo.Data = outputBuffer;
-                pxSocketDataMoveEventInfo.DataSize = outputBufferSize;
-
-                InvokeEvent(pxSocket->EventList.SocketDataReceiveCallBack, pxSocket->Owner, &pxSocketDataMoveEventInfo);
-            }
-        }
-    }
-    return PXActionSuccessful;
-}
-
-PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSocketID clientID)
-{
-    char buffer[PXSocketBufferSize];
-    PXSize buffserSize = PXSocketBufferSize;
-
-    // Read data
-    {
-        //StateChange(SocketStateDataReceiving);
-
-        const unsigned int byteRead =
-#if OSUnix
-            read(clientID, buffer, buffserSize);
-#elif OSWindows
-            recv(clientID, buffer, buffserSize, 0);
-#endif
-
-        // StateChange(SocketStateIDLE);
-
-        switch (byteRead)
-        {
-            case (unsigned int)-1:
-                return PXActionFailedSocketRecieve;
-
-            case 0:// endOfFile
-            {
-#if SocketDebug
-                printf("[PXSocket] Connection <%i> close signal detected!\n", (int)clientID);
-#endif
-
-                PXSocketClientRemove(serverSocket, clientID);
-
-                return PXActionRefusedSocketNotConnected; // How to handle, 0 means connected but this is not the terminating phase.
-            }
-            default:
-            {
+                pxSocketReceiver->BufferInput.SizeCurrent += sizeRead;
 
 #if SocketDebug
                 printf("[PXSocket] <%i> <-- <%i> %i Bytes\n", (int)serverSocket->ID, (int)clientID, (int)byteRead);
 #endif
 
-                PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo;
-                pxSocketDataMoveEventInfo.SocketSending = serverSocket;
-                pxSocketDataMoveEventInfo.SocketReceiving = clientID;
-                pxSocketDataMoveEventInfo.Data = buffer;
-                pxSocketDataMoveEventInfo.DataSize = byteRead;
+                PXSocketDataReceivedEventData pxSocketDataReceivedEventData;
+                pxSocketDataReceivedEventData.SocketSending = pxSocketSenderID;
+                pxSocketDataReceivedEventData.SocketReceiving = pxSocketReceiver;
+                pxSocketDataReceivedEventData.Data = data;
+                pxSocketDataReceivedEventData.DataSize = sizeRead;
 
-                InvokeEvent(serverSocket->EventList.SocketDataReceiveCallBack, serverSocket->Owner, &pxSocketDataMoveEventInfo);
+                InvokeEvent(pxSocketReceiver->EventList.SocketDataReceiveCallBack, pxSocketReceiver->Owner, &pxSocketDataReceivedEventData);
             }
         }
     }

@@ -15,14 +15,13 @@ extern "C"
 
 	typedef struct PXClient_ PXClient;
 
+	// 584 Byte
 	typedef struct PXClient_
 	{
 		PXSocketEventList EventList;
-
-		void* Owner;
-
 		PXSocket SocketClient;
 		PXSocket SocketServer;
+		void* Owner;
 	}
 	PXClient;
 
@@ -32,7 +31,7 @@ extern "C"
 	PXPublic PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize);
 
 	PXPublic PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port);
-	PXPublic void PXClientDisconnectFromServer(PXClient* const client);
+	PXPublic PXActionResult PXClientDisconnectFromServer(PXClient* const client);
 
 	PXPublic PXThreadResult PXClientCommunicationThread(PXSocket* const pxSocket);
 

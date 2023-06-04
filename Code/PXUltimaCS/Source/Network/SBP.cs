@@ -1,6 +1,106 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
-using System.Text;
+
+namespace PX
+{
+    internal unsafe struct PXSBPReceiverEventList
+    {
+        public void* OnMessageUpdatedCallBack;
+        public void* OnMessageReceivedCallBack;
+
+        public void* OnChunkSegmentUpdatedCallBack;
+        public void* OnChunkReceivedCallBack;
+
+        public void* OnMessageInvalidCallBack;
+    };
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 64)]
+    internal unsafe struct PXSBPMessage
+    {
+        // Runtime info
+        public fixed byte FirstKnown[10];
+        public fixed byte LastKnown[10];
+
+        // Raw data
+        public void* MessageData; // Payload data. Context of this data is not interpreted.
+        public void* MessageSize;// Current size of the data chunk, cant be bigger than expected size.
+        public void* MessageSizeCached;
+
+        public int MessageBitSize;
+        public int StorageType;
+
+        // Delegation info
+        public ushort ID; // ID that belongs to message itself. So that chunks can conbine them.
+
+        public byte MessageSizeCachedInPercent;
+
+        // Extended delegation
+        public byte HasExtendedDelegation;
+    }
+
+    internal delegate void PXSBPOnMessageUpdatedFunction(ref PXSBPMessage pxSBPMessage); // If message has updated but not fully recieved
+    internal delegate void PXSBPOnMessageReceivedFunction(ref PXSBPMessage pxSBPMessage); // if message is fully recieved
+
+    public delegate void SBPOnMessageUpdatedFunction(SBPMessage sbpMessage); // If message has updated but not fully recieved
+    public delegate void SBPOnMessageReceivedFunction(SBPMessage sbpMessage); // if message is fully recieved
+
+    public class SBPMessage
+    {
+        // Runtime info
+        public Time FirstKnown;
+        public Time LastKnown;
+
+        // Raw data
+        public UIntPtr MessageData; // Payload data. Context of this data is not interpreted.
+        public ulong MessageSize;// Current size of the data chunk, cant be bigger than expected size.
+        public ulong MessageSizeCached;
+
+        public int MessageBitSize;
+        public int StorageType;
+
+        // Delegation info
+        public ushort ID; // ID that belongs to message itself. So that chunks can conbine them.
+
+        public int MessageSizeCachedInPercent;
+
+        // Extended delegation
+        public bool HasExtendedDelegation;
+
+        internal unsafe SBPMessage(ref PXSBPMessage pxSBPMessage)
+        {
+            // Runtime info
+            FirstKnown = new Time(); // (PXTime*)pxSBPMessage.LastKnown
+            LastKnown = new Time();
+
+            // Raw data
+            MessageData = (UIntPtr)pxSBPMessage.MessageData; // Payload data. Context of this data is not interpreted.
+            MessageSize = (ulong)pxSBPMessage.MessageSize;// Current size of the data chunk, cant be bigger than expected size.
+            MessageSizeCached = (ulong)pxSBPMessage.MessageSizeCached;
+
+            MessageBitSize = pxSBPMessage.MessageBitSize;
+            StorageType = pxSBPMessage.StorageType;
+
+            // Delegation info
+            ID = pxSBPMessage.ID; // ID that belongs to message itself. So that chunks can conbine them.
+
+            MessageSizeCachedInPercent = pxSBPMessage.MessageSizeCachedInPercent;
+
+            // Extended delegation
+            HasExtendedDelegation = pxSBPMessage.HasExtendedDelegation != 0;
+        }
+
+        public override string ToString()
+        {
+            ulong delta = FirstKnown.MillisecondsDelta(LastKnown);
+
+            return "Message (" + MessageSize + " Bytes in " + delta + " ms)";
+        }
+    }
+
+}
+
 
 #if false
 

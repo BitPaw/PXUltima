@@ -130,6 +130,8 @@ PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socke
 
 PXThreadResult PXServerClientListeningThread(PXSocket* const serverSocket)
 {
+    char pollBuffer[PXSocketBufferSize];
+
     if(!serverSocket)
     {
         return PXThreadSucessful;
@@ -137,13 +139,17 @@ PXThreadResult PXServerClientListeningThread(PXSocket* const serverSocket)
 
     PXDictionaryAdd(&serverSocket->SocketLookup, &serverSocket->ID, serverSocket);
 
+    PXBufferConstruct(&serverSocket->BufferInput, pollBuffer, PXSocketBufferSize, PXBufferTypeStack);
+
     while (serverSocket->State == SocketIDLE)
     {
-        PXSize pollBufferSize = 1024;
-        char pollBuffer[1024];
+        serverSocket->BufferInput.SizeCurrent = 0;
+        serverSocket->BufferInput.SizeOffset = 0;
 
-        PXSocketEventPull(serverSocket, pollBuffer, pollBufferSize);
+        PXSocketEventPull(serverSocket);
     }
+
+    PXBufferDestruct(&serverSocket->BufferInput);
 
     return PXThreadSucessful;
 }

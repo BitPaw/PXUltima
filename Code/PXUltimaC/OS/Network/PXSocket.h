@@ -48,9 +48,10 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <OS/Async/PXThread.h>
 #include <OS/Error/PXActionResult.h>
 #include <Container/Dictionary/PXDictionary.h>
+#include <Container/Buffer/PXBuffer.h>
 
-typedef PXSize PXSocketID;
-#define SocketDebug 1
+typedef PXInt32U PXSocketID;
+#define SocketDebug 0
 #define SocketIDOffline -1
 #define IPv6LengthMax 65
 
@@ -188,15 +189,23 @@ extern "C"
 
 
 
-	typedef struct PXSocketDataMoveEventInfo_
+	typedef struct PXSocketDataReceivedEventData_
 	{
-		PXSocket* SocketSending;
-		PXSocketID SocketReceiving;
 		const void* Data;
 		PXSize DataSize;
+		PXSocket* SocketReceiving;
+		PXSocketID SocketSending;
 	}
-	PXSocketDataMoveEventInfo;
+	PXSocketDataReceivedEventData;
 
+	typedef struct PXSocketDataSendEventData_
+	{
+		const void* Data;
+		PXSize DataSize;
+		PXSocket* SocketSending;
+		PXSocketID SocketReceiving;
+	}
+	PXSocketDataSendEventData;
 
 
 	//-----------------------------------------------------
@@ -210,8 +219,8 @@ extern "C"
 
 	typedef void (*PXSocketStateChangedEvent)(void* owner, const PXSocket* pxSocket, const PXSocketState oldState, const PXSocketState newState);
 
-	typedef void (*PXSocketDataSendEvent)(void* owner, const PXSocketDataMoveEventInfo* const pxSocketDataMoveEventInfo);
-	typedef void (*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataMoveEventInfo* const pxSocketDataMoveEventInfo);
+	typedef void (*PXSocketDataSendEvent)(void* owner, const PXSocketDataSendEventData* const pxSocketDataSendEventData);
+	typedef void (*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData);
 
 	typedef struct PXSocketEventList_
 	{
@@ -230,8 +239,12 @@ extern "C"
 	}
 	PXSocketEventList;
 
+
+
 	typedef struct PXSocket_
 	{
+		PXSocketEventList EventList;
+
 		PXSocketState State;
 
 		// Connection Info
@@ -246,16 +259,17 @@ extern "C"
 
 		void* Owner;
 
+		PXBuffer BufferInput;
+		PXBuffer BufferOutput;
+
 		//----------------------------
 		PXDictionary SocketLookup;
 		PXLock* PollingLock;
 		//----------------------------
 
-		//---<CPrivate IO>------------
+		//---<Private IO>------------
 		PXThread CommunicationThread;
-		//----------------------------
-
-		PXSocketEventList EventList;
+		//----------------------------		
 	}
 	PXSocket;
 
@@ -291,7 +305,7 @@ extern "C"
 		const ProtocolMode protocolMode
 	);
 
-	PXPublic PXActionResult PXSocketConnect(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXSocketConnect(PXSocket* const pxSocket, PXSocket* const pxServer);
 
 	PXPublic PXActionResult PXSocketSetupAdress
 	(
@@ -307,18 +321,15 @@ extern "C"
 
 	PXPublic void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState);
 
-	PXPublic PXActionResult PXSocketEventPull(PXSocket* const pxSocket, void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXSocketEventPull(PXSocket* const pxSocket);
 
 	PXPublic PXActionResult PXSocketBind(PXSocket* const pxSocket);
 	PXPublic PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket);
 	PXPublic PXActionResult PXSocketListen(PXSocket* const pxSocket);
 	PXPublic PXActionResult PXSocketAccept(PXSocket* const server);
 
-	PXPublic PXActionResult PXSocketSendAsServerToClient(PXSocket* const serverSocket, const PXSocketID clientID, const void* inputBuffer, const PXSize inputBufferSize);
-
-	PXPublic PXActionResult PXSocketSend(PXSocket* const pxSocket, const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
-	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocket, void* const outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
-	PXPublic PXActionResult PXSocketReceiveAsServer(PXSocket* const serverSocket, const PXSocketID clientID);
+	PXPublic PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxSocketReceiverID);
+	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocketSender, const PXSocketID pxSocketSenderID);
 
 	PXPublic PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);
 

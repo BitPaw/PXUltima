@@ -1128,8 +1128,8 @@ PXSize PXTextFromInt(PXText* const pxText, int number)
 
 			PXTextFromInt(&pxTextA, number);
 
-			PXTextCopy(&pxTextA, &pxText);
-
+			PXTextCopyAW(pxTextA.TextA, pxTextA.SizeUsed, pxText->TextW, pxText->SizeAllocated);
+			 
 			return pxText->SizeUsed;
 		}
 	}

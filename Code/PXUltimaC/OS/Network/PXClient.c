@@ -18,7 +18,13 @@ PXActionResult PXClientDestruct(PXClient* const pxClient)
 
 PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
 {
-    return PXSocketSend(&pxClient->SocketClient, data, dataSize, 0);
+    PXBufferConstruct(&pxClient->SocketClient.BufferOutput, data, dataSize, PXBufferExtern); 
+
+    const PXActionResult sendResult = PXSocketSend(&pxClient->SocketClient, pxClient->SocketClient.ID);
+
+    PXBufferDestruct(&pxClient->SocketClient.BufferOutput);
+
+    return sendResult;
 }
 
 PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port)
@@ -46,26 +52,32 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
 
     PXBool wasSucessful = 0;
 
+    client->SocketServer.EventList = client->EventList;
+    client->SocketServer.Owner = client->Owner;
+
     for (PXSize i = 0; i < PXSocketListSize; ++i)
     {
-        PXSocket* const pxSocket = &pxSocketList[i];
-        const PXActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
+        PXSocket* const pxSocketTemp = &pxSocketList[i];
+        pxSocketTemp->EventList = client->EventList;
+        pxSocketTemp->Owner = client->Owner;
+
+        const PXActionResult socketCreateResult = PXSocketCreate(pxSocketTemp, pxSocketTemp->Family, pxSocketTemp->Type, pxSocketTemp->Protocol);
         const PXBool creationSuccesful = PXActionSuccessful == socketCreateResult;
 
         if (creationSuccesful)
         {
-            const PXActionResult connectResult = PXSocketConnect(pxSocket);
-            const PXBool connected = PXActionSuccessful == connectResult;
+            const PXActionResult connectResult = PXSocketConnect(pxSocketTemp, &client->SocketServer);
+            const PXBool connected = PXActionSuccessful == connectResult; 
 
             if (connected)
             {  
-                PXMemoryCopy(pxSocket, sizeof(PXSocket), &client->SocketClient, sizeof(PXSocket));
+                // Copy buffered socket and do not use stack reference
+                PXSocket* const pxSocketClient = &client->SocketClient;
+                PXMemoryCopy(pxSocketTemp, sizeof(PXSocket), pxSocketClient, sizeof(PXSocket));
 
-                client->SocketClient.EventList = client->EventList;
+                InvokeEvent(pxSocketClient->EventList.SocketConnectedCallBack, client->Owner, &client->SocketClient, &client->SocketServer);
 
-                InvokeEvent(pxSocket->EventList.SocketConnectedCallBack, client->Owner, pxSocket, PXNull);
-
-                const PXActionResult PXActionResult = PXThreadRun(&pxSocket->CommunicationThread, PXClientCommunicationThread, pxSocket);
+                const PXActionResult PXActionResult = PXThreadRun(&pxSocketClient->CommunicationThread, PXClientCommunicationThread, pxSocketClient);
 
                 wasSucessful = 1u;
                 break; // Connect only once. If this is not here, we would connect more than once (with different protocol)
@@ -81,10 +93,12 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
     return PXActionSuccessful;
 }
 
-void PXClientDisconnectFromServer(PXClient* const client)
+PXActionResult PXClientDisconnectFromServer(PXClient* const client)
 {
     PXSocketClose(&client->SocketClient);
     PXSocketConstruct(&client->SocketServer);
+
+    return PXActionSuccessful;
 }
 
 PXThreadResult PXClientCommunicationThread(PXSocket* const pxSocket)

@@ -1,20 +1,30 @@
 ﻿
 using System;
 
-internal class Program
+namespace PX.Text
 {
-    public static int Main()
+
+    internal class Program
     {
-        Console.WriteLine("Welcome " + PX.User.Name);
+        public static int Main()
+        {
+            Console.WriteLine("Welcome " + PX.User.Name);
 
-        PX.Processor processor = new PX.Processor();
-        processor.Fetch();
+            PX.Processor processor = new PX.Processor();
+            processor.Fetch();
 
-        Console.WriteLine("CPU " + processor.ToString());
+            Console.WriteLine("CPU " + processor.ToString());
 
-        PX.Client client = new PX.Client();
-       
+            Test.TestSBP.TestConnect();
 
-        return 0;
+            Test.TestSocket.ConnectAndSend();
+
+
+
+           
+
+
+            return 0;
+        }
     }
 }

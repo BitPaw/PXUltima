@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+	<TargetFramework>netcoreapp3.1</TargetFramework>
 	<ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <BaseOutputPath>$(SolutionDir)[Export]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseOutputPath>
     <BaseIntermediateOutputPath>$(SolutionDir)[Temp]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseIntermediateOutputPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

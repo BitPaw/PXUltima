@@ -14,19 +14,20 @@ extern "C"
 
 	typedef struct PXClient_ PXClient;
 
+	// 160 Bytes
 	typedef struct PXServer_
 	{
+		PXSocketEventList EventList;
+
 		PXSocketState State;
 
 		PXSocket* ServerSocketList;
 		PXSize ServerSocketListSize;
 		PXSize ServerSocketListSizeAllocated;
 
-		void* Owner;
-
 		PXLock PollingLock;
 
-		PXSocketEventList EventList;
+		void* Owner;
 	}
 	PXServer;
 

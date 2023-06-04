@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace PX
 {
@@ -99,54 +100,143 @@ namespace PX
         ProtocolModeWindowsMAX
     }
 
-    internal unsafe struct PXSocketDataMoveEventInfo
+    public enum SocketState
     {
-        public PXSocket* SocketSending;
-        public void* SocketReceiving;
+        NotInitialised,
+
+        Initialised,
+
+        IDLE, // Waiting for action, currently doing nothing
+        EventPolling, // Polling for events on multible s
+        Offline,
+
+        Failed,
+
+        // PXClient only
+        Connecting,
+        Connected,
+        DataReceiving,
+        DataSending,
+        FileReceiving,
+        FileSending,
+
+        // PXServer only
+    };
+
+    internal unsafe struct PXSocketDataReceivedEventData
+    {
         public void* Data;
         public void* DataSize;
+        public PXSocket* SocketReceiving;
+        public uint SocketSending;
     };
 
-    public class SocketDataMoveEventInfo
+	internal unsafe struct PXSocketDataSendEventData
     {
-        public PX.Socket SocketSending;
+        public void* Data;
+        public void* DataSize;
+        public PXSocket* SocketSending;
         public uint SocketReceiving;
-        public byte[] Data;
     };
 
+    public class SocketDataReceivedEventData
+    {
+        public uint SocketSending { get; private set; }
+        public PX.Socket SocketReceiving { get; private set; }
+        public UIntPtr DataAdress { get; private set; }
+        public ulong DataSize { get; private set; }
+
+        internal unsafe SocketDataReceivedEventData(ref PXSocketDataReceivedEventData pxSocketDataReceivedEventData)
+        {
+            SocketReceiving = new PX.Socket(pxSocketDataReceivedEventData.SocketReceiving);
+            SocketSending= pxSocketDataReceivedEventData.SocketSending;
+            DataAdress = (UIntPtr)pxSocketDataReceivedEventData.Data;
+            DataSize = (ulong)pxSocketDataReceivedEventData.DataSize;
+        }
+
+        public override string ToString()
+        {
+            return "You <-- " + SocketSending + "(" + DataSize + " Bytes)";
+        }
+    }
+
+    public class SocketDataSendEventData
+    {
+        public PX.Socket SocketSending { get; private set; }
+        public uint SocketReceiving { get; private set; }
+        public UIntPtr DataAdress { get; private set; }
+        public ulong DataSize { get; private set; }
+
+        internal unsafe SocketDataSendEventData(ref PXSocketDataSendEventData pxSocketDataMoveEventInfo)
+        {
+            SocketSending = new PX.Socket(pxSocketDataMoveEventInfo.SocketSending);
+            SocketReceiving = pxSocketDataMoveEventInfo.SocketReceiving;
+            DataAdress = (UIntPtr)pxSocketDataMoveEventInfo.Data;
+            DataSize = (ulong)pxSocketDataMoveEventInfo.DataSize;
+        }
+
+        public override string ToString()
+        {
+            return "You --> " + SocketReceiving + "(" + DataSize + " Bytes)";
+        }
+    };
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 256)]
     internal struct PXSocket
     {
 
     }
 
-    internal struct PXSocketEventList
+    [StructLayout(LayoutKind.Sequential, Size = 64)]
+    internal unsafe struct PXSocketEventList
     {
-        public PXSocketCreatingEvent SocketCreatingCallBack;
-        public PXSocketCreatedEvent SocketCreatedCallBack;
+        /*
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketTEST PXSocketTESTCallBack;
 
-        public PXSocketClosedEvent SocketClosedCallBack;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketCreatingEvent SocketCreatingCallBack;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketCreatedEvent SocketCreatedCallBack;
 
-        public PXSocketConnectedEvent SocketConnectedCallBack;
-        public PXSocketDisconnectedEvent SocketDisconnectedCallBack;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketClosedEvent SocketClosedCallBack;
 
-        public PXSocketStateChangedEvent SocketStateChangedCallBack;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketConnectedEvent SocketConnectedCallBack;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketDisconnectedEvent SocketDisconnectedCallBack;
 
-        public PXSocketDataSendEvent SocketDataSendCallBack;
-        public PXSocketDataReceiveEvent SocketDataReceiveCallBack;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketStateChangedEvent SocketStateChangedCallBack;
+
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketDataSendEvent SocketDataSendCallBack;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public PXSocketDataReceiveEvent SocketDataReceiveCallBack;
+        */
+
+        public void* PXSocketTESTCallBack;
+
+        public void* SocketCreatingCallBack;
+        public void* SocketCreatedCallBack;
+
+        public void* SocketClosedCallBack;
+
+        public void* SocketConnectedCallBack;
+        public void* SocketDisconnectedCallBack;
+
+        public void* SocketStateChangedCallBack;
+
+        public void* SocketDataSendCallBack;
+        public void* SocketDataReceiveCallBack;
+
     };
 
-    internal unsafe delegate void PXSocketCreatingEvent(void* owner, ref PXSocket pxSocket, byte* use);
-	internal unsafe delegate void PXSocketCreatedEvent(void* owner, ref PXSocket pxSocket);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketCreatingEvent(UIntPtr owner, ref PXSocket pxSocket, ref byte use);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketCreatedEvent(UIntPtr owner, ref PXSocket pxSocket);
 
-    internal unsafe delegate void PXSocketClosedEvent(void* owner, ref PXSocket pxSocket);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketClosedEvent(UIntPtr owner, ref PXSocket pxSocket);
 
-    internal unsafe delegate void PXSocketConnectedEvent(void* owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
-	internal unsafe delegate void PXSocketDisconnectedEvent(void* owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketConnectedEvent(UIntPtr owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketDisconnectedEvent(UIntPtr owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
 
-	internal unsafe delegate void PXSocketStateChangedEvent(void* owner, ref PXSocket pxSocket);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketStateChangedEvent(UIntPtr owner, ref PXSocket pxSocket, SocketState oldState, SocketState newState);
 
-	internal unsafe delegate void PXSocketDataSendEvent(void* owner, ref PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo);
-	internal unsafe delegate void PXSocketDataReceiveEvent(void* owner, ref PXSocketDataMoveEventInfo pxSocketDataMoveEventInfo);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketDataSendEvent(UIntPtr owner, ref PXSocketDataSendEventData pxSocketDataSendEventData);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketDataReceiveEvent(UIntPtr owner, ref PXSocketDataReceivedEventData pxSocketDataReceivedEventData);
 
 
 
@@ -158,15 +248,26 @@ namespace PX
     public delegate void SocketConnectedEvent(PX.Socket serverSocket, PX.Socket clientSocket);
     public delegate void SocketDisconnectedEvent(PX.Socket serverSocket, PX.Socket clientSocket);
 
-    public delegate void SocketStateChangedEvent(PX.Socket pxSocket);
+    public delegate void SocketStateChangedEvent(PX.Socket pxSocket, SocketState oldState, SocketState newState);
 
-    public delegate void SocketDataSendEvent(PX.SocketDataMoveEventInfo pxSocketDataMoveEventInfo);
-    public delegate void SocketDataReceiveEvent(PX.SocketDataMoveEventInfo pxSocketDataMoveEventInfo);
+    public delegate void SocketDataSendEvent(PX.SocketDataSendEventData socketDataSendEventData);
+    public delegate void SocketDataReceiveEvent(PX.SocketDataReceivedEventData socketDataReceivedEventData);
+
 
 
     public class Socket
     {
-        
+        public Socket()
+        {
 
+        }
+        internal Socket(PXSocket socket)
+        {
+
+        }
+        internal unsafe Socket(PXSocket* socket)
+        {
+
+        }
     }
 }

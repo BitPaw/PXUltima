@@ -16,6 +16,7 @@ extern "C"
 		//---<General>-----------------------
 		PXActionInvalid, // Default iniitlialisation value, do not use.
 		PXActionSuccessful, // PXAction finished successful
+		PXActionDidNothing, // if the function did nothing
 		PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
 		PXActionFailedMemoryRelease,
 		PXActionDeniedNoPermission,
@@ -29,6 +30,8 @@ extern "C"
 		PXActionRefuedParameterNull, // Some needed Parameter is null
 
 		PXActionRefuedTextFormatUnsupported,
+
+		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
 
 		
 		PXActionRefuedInputBufferNull, // is NULL

@@ -30,7 +30,7 @@ namespace PX
         [FieldOffset(24)] public byte* TextA;
         [FieldOffset(24)] public char* TextW;
 
-        [FieldOffset(32)] public uint Format;
+        [FieldOffset(32)] public PXTextFormat Format;
 
         //public static PXText CreateFromString(string text)
 
@@ -42,7 +42,7 @@ namespace PX
             pxText.SizeAllocated = (ulong)length;
             pxText.SizeUsed = 0;
             pxText.TextA = buffer;
-            pxText.Format = 3;
+            pxText.Format = PXTextFormat.TextFormatUTF8;
 
             return pxText;
         }
@@ -55,7 +55,7 @@ namespace PX
             pxText.SizeAllocated = pxText.NumberOfCharacters * 2;
             pxText.SizeUsed = pxText.SizeAllocated;
             pxText.TextW = text;
-            pxText.Format = 2;
+            pxText.Format = PXTextFormat.TextFormatUNICODE;
 
             return pxText;
         }
