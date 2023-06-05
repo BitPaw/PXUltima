@@ -3,7 +3,6 @@ using System;
 
 namespace PX.Text
 {
-
     internal class Program
     {
         public static int Main()
@@ -17,11 +16,7 @@ namespace PX.Text
 
             Test.TestSBP.TestConnect();
 
-            Test.TestSocket.ConnectAndSend();
-
-
-
-           
+            Test.TestSocket.ConnectAndSend();         
 
 
             return 0;

@@ -92,13 +92,13 @@ extern "C"
 
     typedef struct PXLibrary_
     {
-        PXProcessHandle ProcessHandle;
-
 #if OSUnix
         void* ID;
 #elif OSWindows
         HMODULE ID; // LibraryHandle, HINSTANCE (semms is also okey)
 #endif
+
+        PXProcessHandle ProcessHandle;
     }
     PXLibrary;
 
