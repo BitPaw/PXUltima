@@ -1,7 +1,7 @@
 #ifndef PXDirectXINCLUDE
 #define PXDirectXINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXDirectXUSE PXOSWindowsDestop
 #if PXDirectXUSE

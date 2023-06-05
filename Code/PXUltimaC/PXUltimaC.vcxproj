@@ -74,25 +74,21 @@
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
-    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
-    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
-    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
-    <TargetName>PXUltima</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,7 +101,6 @@
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,7 +122,6 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
-      <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,7 +140,6 @@
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,7 +161,6 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
-      <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -181,7 +173,7 @@
     <ClCompile Include="Algorithm\KalmanFilter\PXKalmanFilter.c" />
     <ClCompile Include="Compiler\PXCompiler.c" />
     <ClCompile Include="Compiler\PXCompilerSettings.c" />
-    <ClCompile Include="Container\BinaryTree\BinaryTree.c" />
+    <ClCompile Include="Container\BinaryTree\PXBinaryTree.c" />
     <ClCompile Include="Container\Dictionary\PXDictionary.c" />
     <ClCompile Include="Container\LinkedList\PXLinkedList.c" />
     <ClCompile Include="Container\List\PXList.c" />
@@ -320,7 +312,7 @@
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h" />
     <ClInclude Include="Compiler\PXCompiler.h" />
     <ClInclude Include="Compiler\PXCompilerSettings.h" />
-    <ClInclude Include="Container\BinaryTree\BinaryTree.h" />
+    <ClInclude Include="Container\BinaryTree\PXBinaryTree.h" />
     <ClInclude Include="Container\Dictionary\PXDictionary.h" />
     <ClInclude Include="Container\LinkedList\PXLinkedList.h" />
     <ClInclude Include="Container\List\PXList.h" />
@@ -443,7 +435,7 @@
     <ClInclude Include="OS\Process\PXProcess.h" />
     <ClInclude Include="OS\Program\PXProgram.h" />
     <ClInclude Include="OS\Signal\PXSignal.h" />
-    <ClInclude Include="OS\System\OSVersion.h" />
+    <ClInclude Include="OS\System\PXOSVersion.h" />
     <ClInclude Include="OS\System\PXRegistry.h" />
     <ClInclude Include="OS\Async\PXAwait.h" />
     <ClInclude Include="OS\Async\PXLock.h" />

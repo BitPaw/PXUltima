@@ -1,7 +1,7 @@
 #ifndef PXAudioINCLUDE
 #define PXAudioINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXAudioUSE OSDeviceToUse == OSDeviceDestop
 #if PXAudioUSE

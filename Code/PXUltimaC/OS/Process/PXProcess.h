@@ -32,10 +32,20 @@ extern "C"
 
 	typedef struct PXProcess_
 	{
+		// Main Process
 		PXProcessHandle ProcessHandle;
 		PXProcessID ProcessID; // Context
+
+		// Main Thread
 		PXProcessThreadHandle ThreadHandle;
 		PXProcessThreadID ThreadID;
+		PXInt32U ThreadsAtStart;
+		PXInt32U ThreadBasePriority;
+		
+		// Parent Process
+		PXInt32U ProcessIDParent;
+
+		PXText ExecutableFilePath;
 	}
 	PXProcess;
 
@@ -95,13 +105,17 @@ extern "C"
 	}
 	PXProcessCreationMode;
 
+	typedef void (*PXProcessDetectedEvent)(PXProcess* const pxProcess);
+
 	PXPublic PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
 
-	PXPublic PXActionResult PXProcessOpen(PXProcess* const pxProcess);
+	PXPublic PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
+
+	PXPublic PXActionResult PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
 	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);
 
-	PXPublic PXSize PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
-	PXPublic PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
 
 	PXPublic PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 

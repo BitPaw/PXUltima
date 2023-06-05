@@ -1,7 +1,7 @@
 #ifndef PXOpenGLINCLUDE
 #define PXOpenGLINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXOpenGLUSE PXOSWindowsDestop
 #if PXOpenGLUSE

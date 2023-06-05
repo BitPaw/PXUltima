@@ -1,7 +1,7 @@
 #ifndef PXSocketInclude
 #define PXSocketInclude
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXSocketUSE OSDeviceToUse == OSDeviceDestop
 #if PXSocketUSE

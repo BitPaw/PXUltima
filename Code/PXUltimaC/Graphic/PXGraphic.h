@@ -1,7 +1,7 @@
 #ifndef PXGraphicINCLUDE
 #define PXGraphicINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXGraphicUSE OSDeviceToUse == OSDeviceDestop
 #if PXGraphicUSE

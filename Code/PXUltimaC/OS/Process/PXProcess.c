@@ -6,9 +6,11 @@
 #elif OSWindows
 //#include <processthreadsapi.h> Not found in XP build
 #include <psapi.h>
+#include <tlhelp32.h>
 #endif
 
 #include <OS/Memory/PXMemory.h>
+#include <OS/Async/PXEvent.h>
 
 void PXProcessConstruct(PXProcess* const pxProcess)
 {
@@ -68,7 +70,19 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 				PROCESS_QUERY_INFORMATION |
 				PROCESS_VM_READ;
 
-			const PXBool success = CreateProcessA(programmPath, NULL, NULL, NULL, 0, creationflags, NULL, NULL, &startupInfo, &processInfo);
+			const PXBool success = CreateProcessA // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+			(
+				programmPath, 
+				NULL, 
+				NULL, 
+				NULL, 
+				0, 
+				creationflags, 
+				NULL, 
+				NULL, 
+				&startupInfo, 
+				&processInfo
+			);
 
 			PXActionOnErrorFetchAndReturn(!success);
 
@@ -95,7 +109,19 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 
 			startupInfo.cb = sizeof(STARTUPINFO);
 
-			const PXBool success = CreateProcessW(programmPath, NULL, NULL, NULL, 0, DEBUG_PROCESS, NULL, NULL, &startupInfo, &processInfo);
+			const PXBool success = CreateProcessW // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+			(
+				programmPath, 
+				NULL, 
+				NULL, 
+				NULL, 
+				0, 
+				DEBUG_PROCESS, 
+				NULL,
+				NULL, 
+				&startupInfo, 
+				&processInfo
+			);
 
 			PXActionOnErrorFetchAndReturn(!success);
 
@@ -113,49 +139,102 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 	return PXActionSuccessful;
 }
 
-PXActionResult PXProcessOpen(PXProcess* const pxProcess)
+PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 {
-	const PXProcessID processID = pxProcess->ProcessID;
+#if OSUnix
+	return PXActionNotImplemented;
+#elif PXOSWindowsDestop
+	if (!pxProcessDetectedEvent)
+	{
+		return PXActionRefusedMissingCallBack;
+	}
 
+	const DWORD flag = TH32CS_SNAPPROCESS;
+	const DWORD processID = PXNull;
+	const HANDLE snapshotHandle = CreateToolhelp32Snapshot(flag, processID); // Windows XP, Kernel32.dll, tlhelp32.h
+	const PXBool success = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ERROR_BAD_LENGTH;
+	PROCESSENTRY32W processEntryW;
+	processEntryW.dwSize = sizeof(PROCESSENTRY32W);
+
+	PXActionOnErrorFetchAndReturn(!success);
+
+	PXBool successfulFetch = Process32First(snapshotHandle, &processEntryW);
+
+	if (!successfulFetch)
+	{
+		return PXActionFailedDataFetch;
+	}
+
+	for ( ; successfulFetch; )
+	{
+		PXProcess pxProcess;
+		pxProcess.ProcessHandle = GetProcessId(processEntryW.th32ProcessID);
+		pxProcess.ProcessID = processEntryW.th32ProcessID;
+		pxProcess.ThreadHandle = PXNull;
+		pxProcess.ThreadID = PXNull;
+		pxProcess.ThreadsAtStart = processEntryW.cntThreads;
+		pxProcess.ThreadBasePriority = processEntryW.pcPriClassBase;
+		pxProcess.ProcessIDParent = processEntryW.th32ParentProcessID;
+		pxProcess.ExecutableFilePath;
+
+		const PXSize executableFilePathSize = PXTextLengthW(processEntryW.szExeFile, MAX_PATH);
+
+		PXTextConstructFromAdressW(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, executableFilePathSize);
+
+		InvokeEvent(pxProcessDetectedEvent, &pxProcess);
+
+		successfulFetch = Process32Next(snapshotHandle, &processEntryW);
+	}
+	
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID)
+{
 	PXProcessConstruct(pxProcess);
 
 #if OSUnix
-	return PXActionInvalid;
-
+	return PXActionNotImplemented;
 #elif OSWindows
-	const HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processID);
+	const DWORD desiredAccess = PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION;
+	const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 	const PXBool successful = processHandle != 0;
 
 	PXActionOnErrorFetchAndReturn(!successful);
 
-	pxProcess->ProcessID = processID;
+	pxProcess->ProcessID = pxProcessID;
 	pxProcess->ProcessHandle = processHandle;
 
 	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
 PXActionResult PXProcessClose(PXProcess* const pxProcess)
 {
 #if OSUnix
-	return PXActionInvalid;
-
+	return PXActionNotImplemented;
 #elif OSWindows
-	const BOOL successful = CloseHandle(pxProcess->ProcessHandle);
+	const BOOL successful = CloseHandle(pxProcess->ProcessHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
 
 	PXActionOnErrorFetchAndReturn(!successful);
 
 	pxProcess->ProcessHandle = PXNull;
 
 	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXSize PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
-	return 0;
-
+	return PXActionNotImplemented;
 #elif PXOSWindowsDestop
 	SIZE_T numberOfBytesRead;
 
@@ -167,21 +246,19 @@ PXSize PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const 
 		bufferSize,
 		&numberOfBytesRead
 	);
-	const PXBool sucess = result != 0u;
 
-	if (!sucess)
-	{
-		return 0u;
-	}
+	PXActionOnErrorFetchAndReturn(!result);
 
-	return numberOfBytesRead;
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
-	return 0;
+	return PXActionNotImplemented;
 
 #elif PXOSWindowsDestop
 	SIZE_T numberOfBytesRead;
@@ -194,14 +271,12 @@ PXSize PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const t
 		bufferSize,
 		&numberOfBytesRead
 	);
-	const PXBool sucess = result != 0u;
 
-	if (!sucess)
-	{
-		return 0u;
-	}
+	PXActionOnErrorFetchAndReturn(!result);
 
-	return numberOfBytesRead;
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 

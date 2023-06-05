@@ -1,5 +1,5 @@
-#ifndef BinaryTreeDEFINED
-#define BinaryTreeDEFINED
+#ifndef PXBinaryTreeINCLUDE
+#define PXBinaryTreeINCLUDE
 
 #ifdef __cplusplus
 extern "C"

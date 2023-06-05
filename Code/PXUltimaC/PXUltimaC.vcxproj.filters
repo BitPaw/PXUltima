@@ -27,7 +27,7 @@
     <ClCompile Include="Compiler\PXCompilerSettings.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Container\BinaryTree\BinaryTree.c">
+    <ClCompile Include="Container\BinaryTree\PXBinaryTree.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Container\Dictionary\PXDictionary.c">
@@ -440,7 +440,7 @@
     <ClInclude Include="Compiler\PXCompilerSettings.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Container\BinaryTree\BinaryTree.h">
+    <ClInclude Include="Container\BinaryTree\PXBinaryTree.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Container\Dictionary\PXDictionary.h">
@@ -809,7 +809,7 @@
     <ClInclude Include="OS\Signal\PXSignal.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\System\OSVersion.h">
+    <ClInclude Include="OS\System\PXOSVersion.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\System\PXRegistry.h">

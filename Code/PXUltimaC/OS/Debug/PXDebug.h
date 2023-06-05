@@ -1,7 +1,7 @@
 #ifndef PXDebugINLCUDE
 #define PXDebugINLCUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXDebugUSE OSDeviceToUse == OSDeviceDestop
 #if PXDebugUSE

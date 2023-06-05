@@ -3,14 +3,12 @@
 
 #include <stddef.h>
 
-#include <OS/System/OSVersion.h>
-
+#include <OS/System/PXOSVersion.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 
 #ifdef __cplusplus
 #define PXLanguageC 0
@@ -19,9 +17,6 @@ extern "C"
 #define PXLanguageC 1
 #define PXLanguageCPP 0
 #endif
-
-
-
 
 
 //-----------------------------------------------------------------------------

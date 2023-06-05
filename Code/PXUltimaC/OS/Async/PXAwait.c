@@ -1,6 +1,6 @@
 #include "PXAwait.h"
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 #include <OS/Memory/PXMemory.h>
 
 PXBool PXAwaitChange(const volatile void* const dataAdress, const PXSize dataSize)

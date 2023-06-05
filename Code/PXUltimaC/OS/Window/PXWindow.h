@@ -1,7 +1,7 @@
 #ifndef PXWindowINCLUDE
 #define PXWindowINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXWindowUSE OSDeviceToUse == OSDeviceDestop
 #if PXWindowUSE

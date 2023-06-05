@@ -1,7 +1,7 @@
 #ifndef PXLockInclude
 #define PXLockInclude
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 #include <OS/Error/PXActionResult.h>
 
 #if OSUnix

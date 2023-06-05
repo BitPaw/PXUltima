@@ -1,7 +1,7 @@
 #ifndef PXLibraryINCLUDE
 #define PXLibraryINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXLibraryUSE OSDeviceToUse == OSDeviceDestop
 #if PXLibraryUSE
@@ -15,6 +15,7 @@ typedef void* LibraryDirectoryID;
 
 #elif OSWindows
 #include <windows.h>
+#include <DbgHelp.h>
 
 typedef FARPROC LibraryFunction;
 //typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
@@ -27,6 +28,67 @@ typedef FARPROC LibraryFunction;
 extern "C"
 {
 #endif
+
+    typedef enum PXSymbolType_
+    {
+        PXSymbolTypeNull,
+        PXSymbolTypeExe,
+        PXSymbolTypeCompiland,
+        PXSymbolTypeCompilandDetails,
+        PXSymbolTypeCompilandEnv,
+        PXSymbolTypeFunction,
+        PXSymbolTypeBlock,
+        PXSymbolTypeData,
+        PXSymbolTypeAnnotation,
+        PXSymbolTypeLabel,
+        PXSymbolTypePublicSymbol,
+        PXSymbolTypeUDT,
+        PXSymbolTypeEnum,
+        PXSymbolTypeFunctionType,
+        PXSymbolTypePointerType,
+        PXSymbolTypeArrayType,
+        PXSymbolTypeBaseType,
+        PXSymbolTypeTypedef,
+        PXSymbolTypeBaseClass,
+        PXSymbolTypeFriend,
+        PXSymbolTypeFunctionArgType,
+        PXSymbolTypeFuncDebugStart,
+        PXSymbolTypeFuncDebugEnd,
+        PXSymbolTypeUsingNamespace,
+        PXSymbolTypeVTableShape,
+        PXSymbolTypeVTable,
+        PXSymbolTypeCustom,
+        PXSymbolTypeThunk,
+        PXSymbolTypeCustomType,
+        PXSymbolTypeManagedType,
+        PXSymbolTypeDimension
+    }
+    PXSymbolType;
+
+    typedef struct PXSymbol_
+    {
+        ULONG TypeIndex;        // Type Index of symbol
+        ULONG Index;
+        ULONG Size;
+        void* ModBase;          // Base Address of module comtaining this symbol
+        ULONG Flags;
+
+        void* Address;          // Address of symbol including base address of module
+        ULONG Register;         // register holding value or pointer to value
+        ULONG Scope;            // scope of the symbol
+
+        PXSymbolType Type;// PDB classification
+        PXText Name;
+    } 
+    PXSymbol;
+
+
+
+    typedef void (*PXSymbolDetectedEvent)(const PXSymbol* const pxSymbol);
+
+
+
+
 
     typedef struct PXLibrary_
     {
@@ -46,7 +108,14 @@ extern "C"
 
     PXPublic PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName);
 
-    PXPublic PXBool PXLibraryParseSymbols();
+#if OSUnix
+#elif PXOSWindowsDestop
+    PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
+
+   // PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PCSTR SymbolName, DWORD64 SymbolAddress, ULONG SymbolSize, PVOID UserContext);
+#endif
+
+    PXPublic PXActionResult PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent);
 
     // void SymbolVector(); // PXProgramming interface to dynamic linking loader.
 

@@ -2,7 +2,7 @@
 #define PXMonitorINCLUDE
 
 #include <Media/PXType.h>
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #if OSUnix
 #elif OSWindows

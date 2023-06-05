@@ -1,7 +1,7 @@
 #ifndef OSSignalINCLUDE
 #define OSSignalINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 #include <Media/PXType.h>
 
 #ifdef __cplusplus

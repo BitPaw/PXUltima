@@ -26,6 +26,13 @@ extern "C"
 		PXActionNotSupportedByLibrary,
 		PXActionNotSupportedByOperatingSystem,
 
+		PXActionRefusedMissingCallBack,
+
+		PXActionFailedInitialization,
+		PXActionFailedCleanup,
+		PXActionFailedModuleLoad, 
+		PXActionFailedDataFetch,
+
 		//---<Function input>---
 		PXActionRefuedParameterNull, // Some needed Parameter is null
 

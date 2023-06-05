@@ -1,7 +1,7 @@
 #ifndef PXVulcanINCLUDE
 #define PXVulcanINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXVulcanUSE OSDeviceToUse == OSDeviceDestop
 #if PXVulcanUSE

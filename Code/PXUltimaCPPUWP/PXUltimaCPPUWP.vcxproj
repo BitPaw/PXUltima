@@ -287,7 +287,8 @@
     <ClInclude Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.h" />
     <ClInclude Include="..\PXUltimaC\Compiler\PXCompiler.h" />
     <ClInclude Include="..\PXUltimaC\Compiler\PXCompilerSettings.h" />
-    <ClInclude Include="..\PXUltimaC\Container\BinaryTree\BinaryTree.h" />
+    <ClInclude Include="..\PXUltimaC\Container\BinaryTree\PXBinaryTree.h" />
+    <ClInclude Include="..\PXUltimaC\Container\Buffer\PXBuffer.h" />
     <ClInclude Include="..\PXUltimaC\Container\Dictionary\PXDictionary.h" />
     <ClInclude Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.h" />
     <ClInclude Include="..\PXUltimaC\Container\List\PXList.h" />
@@ -413,7 +414,7 @@
     <ClInclude Include="..\PXUltimaC\OS\Process\PXProcess.h" />
     <ClInclude Include="..\PXUltimaC\OS\Program\PXProgram.h" />
     <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h" />
-    <ClInclude Include="..\PXUltimaC\OS\System\OSVersion.h" />
+    <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h" />
     <ClInclude Include="..\PXUltimaC\OS\System\PXRegistry.h" />
     <ClInclude Include="..\PXUltimaC\OS\Time\PXStopWatch.h" />
     <ClInclude Include="..\PXUltimaC\OS\Time\PXTime.h" />
@@ -429,7 +430,8 @@
     <ClCompile Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.c" />
     <ClCompile Include="..\PXUltimaC\Compiler\PXCompiler.c" />
     <ClCompile Include="..\PXUltimaC\Compiler\PXCompilerSettings.c" />
-    <ClCompile Include="..\PXUltimaC\Container\BinaryTree\BinaryTree.c" />
+    <ClCompile Include="..\PXUltimaC\Container\BinaryTree\PXBinaryTree.c" />
+    <ClCompile Include="..\PXUltimaC\Container\Buffer\PXBuffer.c" />
     <ClCompile Include="..\PXUltimaC\Container\Dictionary\PXDictionary.c" />
     <ClCompile Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.c" />
     <ClCompile Include="..\PXUltimaC\Container\List\PXList.c" />

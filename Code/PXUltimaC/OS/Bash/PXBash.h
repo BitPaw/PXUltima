@@ -1,7 +1,7 @@
 #ifndef PXBashINCLUDE
 #define PXBashINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXBashUSE OSDeviceToUse == OSDeviceDestop
 #if PXBashUSE

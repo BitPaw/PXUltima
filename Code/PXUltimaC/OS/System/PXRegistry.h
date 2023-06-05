@@ -1,7 +1,7 @@
 #ifndef PXRegistryINCLUDE
 #define PXRegistryINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXRegistryUSE OSDeviceToUse == OSDeviceDestop
 #if PXRegistryUSE

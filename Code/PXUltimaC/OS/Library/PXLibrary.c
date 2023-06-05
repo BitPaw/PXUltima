@@ -4,15 +4,14 @@
 
 #include <OS/Error/PXActionResult.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/Async/PXEvent.h>
 
 #if OSUnix
 
 #elif OSWindows
 //#include <dbghelp.h> // MISSING
 #include <stdio.h>
-
 #include <Psapi.h> // Psapi.lib
-
 
 #pragma comment( lib, "Dbghelp.lib" )
 
@@ -28,6 +27,8 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 }*/
 
 #endif
+
+// SymGetModuleInfo64 
 
 
 
@@ -187,65 +188,116 @@ PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryNa
 	return PXActionSuccessful;
 }
 
-PXBool PXLibraryParseSymbols()
+#if OSUnix
+#elif PXOSWindowsDestop
+BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
 {
+	PXSymbol pxSymbol;
+	pxSymbol.TypeIndex = pSymInfo->TypeIndex;
+	pxSymbol.Index = pSymInfo->Index;
+	pxSymbol.Size = pSymInfo->Size;
+	pxSymbol.ModBase = pSymInfo->ModBase;
+	pxSymbol.Flags = pSymInfo->Flags;
+	pxSymbol.Address = pSymInfo->Address;
+	pxSymbol.Register = pSymInfo->Register;
+	pxSymbol.Scope = pSymInfo->Scope;
+	pxSymbol.Type = pSymInfo->Tag;
+	//pxSymbol.Name;
+	PXTextConstructFromAdressA(&pxSymbol.Name, pSymInfo->Name, pSymInfo->NameLen);
 
+	InvokeEvent(((PXSymbolDetectedEvent)UserContext), &pxSymbol);
+
+	return PXTrue;
+}
+#endif
+/*
+//BOOL PXLibraryNameSymbolEnumerate(PCSTR SymbolName, DWORD64 SymbolAddress, ULONG SymbolSize, PVOID UserContext)
+{
+	printf("| %p | %zi | %-30s |\n", SymbolAddress, SymbolSize, SymbolName);
+
+	return PXTrue;
+}*/
+
+PXActionResult PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent)
+{
 #if OSUnix
 	return PXFalse;
 
-#elif OSWindows
-	/*
+#elif PXOSWindowsDestop
 
-	auto x = LoadLibraryA("user32.dll");
+	const HANDLE hCurrentProcess = GetCurrentProcess();
 
-	//HANDLE hProcess = GetCurrentProcess(); //  GetProcAddress
-	HANDLE hProcess = GetProcAddress(x, 0); //  GetProcAddress
+	// Initialize
+	{		
+		const PXBool status = SymInitialize(hCurrentProcess, PXNull, PXFalse); // DbgHelp.dll 5.1 or later 
 
-	DWORD64 BaseOfDll;
-	char* Mask = "*";
-	BOOL status;
-
-	status = SymInitialize(hProcess, NULL, FALSE);
-	if (status == FALSE)
-	{
-		return;
+		if (!status)
+		{
+			return PXActionFailedInitialization;
+		}
 	}
 
-	BaseOfDll = SymLoadModuleEx
+	const DWORD64 baseOfDll = SymLoadModuleEx // DbgHelp.dll 6.0 or later
 	(
-		hProcess,
-		NULL,
-		"user32.dll",
-		NULL,
+		hCurrentProcess,
+		PXNull,
+		libraryFilePath->TextA,
+		PXNull,
 		0,
 		0,
-		NULL,
+		PXNull,
 		0
 	);
 
-	if (BaseOfDll == 0)
+	// On load failure, cleanup and exit
 	{
-		SymCleanup(hProcess);
-		return;
+		const PXBool wasLoadingSuccessful = baseOfDll != 0;
+
+		if (!wasLoadingSuccessful)
+		{
+			const PXBool cleanupSuccess = SymCleanup(hCurrentProcess); // DbgHelp.dll 5.1 or later 
+
+			if (!cleanupSuccess)
+			{
+				return PXActionFailedCleanup; 
+			}
+
+			return PXActionFailedModuleLoad;
+		}
 	}
 
-	if (SymEnumSymbols(hProcess,     // Process handle from SymInitialize.
-		BaseOfDll,   // Base address of module.
-		Mask,        // Name of symbols to match.
-		EnumSymProc, // Symbol handler procedure.
-		NULL))       // User context.
+	// Enumerate all symvols
 	{
-		// SymEnumSymbols succeeded
-	}
-	else
-	{
-		// SymEnumSymbols failed
-		printf("SymEnumSymbols failed: %d\n", GetLastError());
+		// SymEnumSym, SymEnumerateSymbols64 is outdated?
+
+		const PXBool enumerateResult = SymEnumSymbols // DbgHelp.dll 5.1 or later 
+		(
+			hCurrentProcess,
+			baseOfDll,
+			0,
+			PXLibraryNameSymbolEnumerate,
+			pxSymbolDetectedEvent
+		);
+
+		if (!enumerateResult)
+		{
+			return PXActionFailedDataFetch;
+		}
 	}
 
-	SymCleanup(hProcess);*/
+	// Final cleanup
+	{
+		const PXBool cleanupSuccess = SymCleanup(hCurrentProcess); // DbgHelp.dll 5.1 or later 
+
+		if (!cleanupSuccess)
+		{
+			return PXActionFailedCleanup;
+		}
+	}
+
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
-
-	return 0;
 }
 #endif

@@ -25,6 +25,7 @@ BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT
 
 	PXTextCopyW(monitorInfo.szDevice, 32, monitor.Name, MonitorNameLength);
 
+	/*
 	printf
 	(
 		"[Monitor] %p <%ls> %ix%i\n",
@@ -33,6 +34,7 @@ BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT
 		monitor.Width,
 		monitor.Height
 	);
+	*/
 
 	return 1;
 }
@@ -73,6 +75,7 @@ void PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSiz
 			dwFlags
 		);
 
+		/*
 		printf
 		(
 			"+------------------------\n"
@@ -88,7 +91,7 @@ void PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSiz
 			displayDevice.DeviceID,
 			displayDevice.DeviceKey
 
-		);
+		);*/
 	}
 #endif
 }

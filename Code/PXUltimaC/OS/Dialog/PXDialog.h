@@ -1,7 +1,7 @@
 #ifndef PXDialogINCLUDE
 #define PXDialogINCLUDE
 
-#include <OS/System/OSVersion.h>
+#include <OS/System/PXOSVersion.h>
 
 #define PXDialogUSE OSDeviceToUse == OSDeviceDestop
 #if PXDialogUSE
