@@ -180,7 +180,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
     {
         PXOpenGLID textureID = 0;
 
-        PXOpenGLTextureCreate(graphicContext, 1u, &textureID);
+        PXOpenGLTextureCreate(&graphicContext->OpenGLInstance, 1u, &textureID);
 
         const PXBool registerSuccess = textureID != -1;
 
@@ -192,7 +192,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
         texture->ID = textureID;
     }
 
-    PXOpenGLTextureBind(graphicContext, openGLTextureType, texture->ID);
+    PXOpenGLTextureBind(&graphicContext->OpenGLInstance, openGLTextureType, texture->ID);
 
     // Texture Style
     {
@@ -216,13 +216,13 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
 
     const PXOpenGLImageFormat openGLImageFormat  = PXGraphicImageFormatToPXOpenGL(image->Format);
 
-    PXOpenGLTextureData2D(graphicContext, openGLTextureType, 0, PXOpenGLImageFormatRGBA, image->Width, image->Height, openGLImageFormat, PXOpenGLTypeByteUnsigned, image->PixelData);
+    PXOpenGLTextureData2D(&graphicContext->OpenGLInstance, openGLTextureType, 0, PXOpenGLImageFormatRGBA, image->Width, image->Height, openGLImageFormat, PXOpenGLTypeByteUnsigned, image->PixelData);
 
     // glTexImage2D(textureType, 0, GL_RGBA, image->Width, image->Height, 0, format, PXOpenGLTypeByteUnsigned, image->PixelData);
 
     //glGenerateMipmap(openGLTextureTypeID);
 
-    PXOpenGLTextureUnbind(graphicContext, openGLTextureType);
+    PXOpenGLTextureUnbind(&graphicContext->OpenGLInstance, openGLTextureType);
 #endif
 
     return PXActionSuccessful;
@@ -356,13 +356,13 @@ PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, P
 
         PXModelSegmentsAdd(&pxModel, 3u, vertexDataSize, -1);
 
-        pxModel.DataVertexList = vertexData;
+        pxModel.DataVertexList = (void*)vertexData;
         pxModel.DataVertexListSize = vertexDataSize;
 
         pxModel.DataVertexWidth = 3u;
         pxModel.DataVertexSize = vertexDataSize;
 
-        pxModel.IndexList = indexList;
+        pxModel.IndexList = (void*)indexList;
         pxModel.DataIndexWidth = 4u;
         pxModel.DataIndexSize = indexListSize;
 
@@ -474,7 +474,7 @@ PXBool PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const graphic
     }
 
     {
-        const PXRenderable* const renderableCurrent = currentModel.BlockData;
+        PXRenderable* const renderableCurrent = (PXRenderable*)currentModel.BlockData;
 
         *pxRenderable = renderableCurrent;
 
@@ -510,7 +510,7 @@ PXBool PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const graphic
 
 PXActionResult PXGraphicModelCreate(PXGraphicContext* const graphicContext, PXModel** const pxModel)
 {
-    PXModel* const model = (PXModel* const)PXMemoryAllocate(sizeof(PXModel) * 1u);
+    PXModel* const model = PXMemoryAllocateType(PXModel, 1u);
 
     if (!model)
     {
@@ -533,7 +533,7 @@ PXBool PXGraphicModelRegister(PXGraphicContext* const graphicContext, PXModel* c
 
 PXActionResult PXGraphicRenderableCreate(PXGraphicContext* const graphicContext, PXRenderable** const pxRenderable)
 {
-    PXRenderable* const renderable = (PXRenderable* const)PXMemoryAllocate(sizeof(PXRenderable) * 1u);
+    PXRenderable* const renderable = PXMemoryAllocateType(PXRenderable, 1u);
 
     if (!renderable)
     {
@@ -542,9 +542,9 @@ PXActionResult PXGraphicRenderableCreate(PXGraphicContext* const graphicContext,
 
     PXMemoryClear(renderable, sizeof(PXRenderable));
 
-    PXGraphicRenderableRegister(graphicContext, pxRenderable);
+    PXGraphicRenderableRegister(graphicContext, *pxRenderable);
 
-    *pxRenderable = renderable;
+    *pxRenderable = renderable; // TODO: Is this right?
 
     return PXActionSuccessful;
 }
@@ -732,7 +732,7 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicCo
     const PXSize modelListSize = PXModelMaterialAmount(model);
 
     renderable->MeshSegmentListSize = segmentsListSize;
-    renderable->MeshSegmentList = (PXRenderableMeshSegment*)PXMemoryAllocate(sizeof(PXRenderableMeshSegment) * segmentsListSize);
+    renderable->MeshSegmentList = PXMemoryAllocateType(PXRenderableMeshSegment, segmentsListSize);
 
     for (PXSize i = 0; i < segmentsListSize; ++i)
     {
@@ -1286,7 +1286,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
 #if PXWindowUSE
-    PXWindow* const pxWindow = graphicContext->AttachedWindow;
+    PXWindow* const pxWindow = (PXWindow*)graphicContext->AttachedWindow;
 
 #if PXOpenGLUSE
     graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
@@ -1399,7 +1399,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicCon
                 return actionResult;
             }
 
-            PXShaderDataSet(&vertexShader, PXShaderTypeVertex, vertexShaderFile.Data, vertexShaderFile.DataSize);
+            PXShaderDataSet(&vertexShader, PXShaderTypeVertex, (const char*)vertexShaderFile.Data, vertexShaderFile.DataSize);
         }
 
 
@@ -1414,7 +1414,7 @@ PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicCon
                 return actionResult;
             }
 
-            PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, fragmentFile.Data, fragmentFile.DataSize);
+            PXShaderDataSet(&fragmentShader, PXShaderTypeFragment, (const char*)fragmentFile.Data, fragmentFile.DataSize);
         }
         //-----
     }

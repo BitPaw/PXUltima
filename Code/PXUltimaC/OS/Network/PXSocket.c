@@ -595,13 +595,21 @@ unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode)
 void PXSocketConstruct(PXSocket* const pxSocket)
 {
     PXMemoryClear(pxSocket, sizeof(PXSocket));
-
+    PXThreadConstruct(&pxSocket->CommunicationThread);
     PXDictionaryConstruct(&pxSocket->SocketLookup, sizeof(PXSocketID), sizeof(PXSocket), PXDictionaryValueLocalityInternalEmbedded);
+
+    pxSocket->ID = PXHandleNotSet;
 }
 
 void PXSocketDestruct(PXSocket* const pxSocket)
 {
+    printf("[C] Socket destruct %i\n", pxSocket->ID);
 
+    PXSocketClose(pxSocket);
+    PXThreadDestruct(&pxSocket->CommunicationThread);
+    //PXDictionaryDestruct(&pxSocket->SocketLookup);
+
+    PXSocketConstruct(pxSocket);
 }
 
 PXActionResult PXSocketCreate
@@ -633,8 +641,12 @@ PXActionResult PXSocketCreate
 #if SocketDebug
             printf("[PXSocket] Failed create.\n");
 #endif
-
-            return PXActionFailedSocketCreation;
+    
+#if OSUnix
+            return PXErrorCurrent();
+#elif OSWindows
+            return PXWindowsSocketAgentErrorFetch();
+#endif          
         }
 
         pxSocket->ID = socketIDResult;
@@ -662,7 +674,11 @@ PXActionResult PXSocketConnect(PXSocket* const pxClient, PXSocket* const pxServe
         printf("[PXSocket] Connect to server failed!\n");
 #endif
 
-        return PXActionFailedSocketConnect;
+#if OSUnix
+        return PXErrorCurrent();
+#elif OSWindows
+        return PXWindowsSocketAgentErrorFetch();
+#endif  
     }
 
 #if SocketDebug
@@ -743,7 +759,15 @@ PXActionResult PXSocketSetupAdress
                 const int adressInfoResult = GetAddrInfoA(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHintA, &addressInfoListA);
                 const PXBool validAdressInfo = adressInfoResult == 0;
 
-                // Yeet?
+                if (!validAdressInfo)
+                {
+#if OSUnix
+                    return PXErrorCurrent();
+#elif OSWindows
+                    return PXWindowsSocketAgentErrorFetch();
+#endif  
+                }
+
 
                 for (ADDRINFOA* adressInfoCurrent = addressInfoListA; adressInfoCurrent; adressInfoCurrent = adressInfoCurrent->ai_next)
                 {
@@ -805,6 +829,14 @@ PXActionResult PXSocketSetupAdress
                 const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, (wchar_t*)portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
                 const PXBool validAdressInfo = adressInfoResultID == 0;
 
+                if (!validAdressInfo)
+                {
+#if OSUnix
+                    return PXErrorCurrent();
+#elif OSWindows
+                    return PXWindowsSocketAgentErrorFetch();
+#endif  
+                }
 
                 for (ADDRINFOW* adressInfoCurrent = addressInfoListW; adressInfoCurrent; adressInfoCurrent = adressInfoCurrent->ai_next)
                 {
@@ -848,81 +880,9 @@ PXActionResult PXSocketSetupAdress
                 FreeAddrInfoW(addressInfoListW);
 
 #endif
-
-                break;
-            }
-
-
-        }
-
-
-
-
-       /*
-
-        if (!validAdressInfo)
-        {
-           // ...
-        }
-
-
-
-        if(i == 0)
-        {
-
-
-                switch (adressInfoResult)
-        {
-            case 0:
-                break; // OK - Sucess
-
-#if OSWindows
-            case EAI_ADDRFAMILY:
-                return PXActionRefusedHostHasNoNetworkAddresses;
-#endif
-            case EAI_AGAIN:
-                return PXActionRefusedNameServerIsTemporaryOffline;
-
-            case EAI_BADFLAGS:
-                return PXActionRefusedSocketInvalidFlags;
-
-            case EAI_FAIL:
-                return PXActionRefusedNameServerIsPermanentOffline;
-
-            case EAI_FAMILY:
-                return PXActionRefusedRequestedAddressFamilyNotSupported;
-
-            case EAI_MEMORY:
-                return PXActionFailedAllocation;
-
-                // case EAI_NODATA:
-                 //    return SocketPXActionResultHostExistsButHasNoData;
-
-                 //case EAI_NONAME:
-                   //  return SocketPXActionResultIPOrPortNotKnown;
-
-            case EAI_SERVICE:
-                return RequestedServiceNotAvailableForSocket;
-
-            case EAI_SOCKTYPE:
-                return PXActionRefusedSocketTypeNotSupported;
-
-#if OSWindows
-            case WSANOTINITIALISED:
-                return WindowsSocketSystemNotInitialized;
-#endif
-            default:
-                // case EAI_SYSTEM:
-            {
-                // ErrorCode error = GetCurrentError();
-
                 break;
             }
         }
-        }*/
-
-
-
     }
 
     return PXActionSuccessful;
@@ -930,7 +890,7 @@ PXActionResult PXSocketSetupAdress
 
 PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
 {
-    return pxSocket->ID != -1;
+    return pxSocket->ID != PXHandleNotSet;
 }
 
 void PXSocketClose(PXSocket* const pxSocket)
@@ -958,7 +918,7 @@ void PXSocketClose(PXSocket* const pxSocket)
     printf("[PXSocket] <%i> Terminated\n", (int)pxSocket->ID);
 #endif
 
-    pxSocket->ID = SocketIDOffline;
+    pxSocket->ID = PXHandleNotSet;
 }
 
 void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState)
@@ -1116,25 +1076,29 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
 
             highestSocketID = PXMathMaximumIU(highestSocketID, socketID);
 
-            #if OSUnix
-            #elif OSWindows
+#if OSUnix
+#elif OSWindows
             selectListenRead.fd_array[j] = socketID;
-            #endif
+#endif
 
             --restValues;
         }
 
-        #if OSUnix
-        #elif OSWindows
+#if OSUnix
+#elif OSWindows
         selectListenRead.fd_count = j;
-        #endif
+#endif
 
         int numberOfSocketEvents = select(highestSocketID + 1, &selectListenRead, 0, 0, 0); // first parameter is ignored under windows
         const PXBool success = -1 != numberOfSocketEvents;
 
         if (!success)
         {
-            int errotID = WSAGetLastError();
+#if OSUnix
+            PXActionResult selectResult = PXErrorCurrent();
+#elif OSWindows
+            PXActionResult selectResult = PXWindowsSocketAgentErrorFetch();
+#endif 
 
             numberOfSocketEvents = 0;
         }
@@ -1190,7 +1154,12 @@ PXActionResult PXSocketBind(PXSocket* const pxSocket)
 #if SocketDebug
         printf("[PXSocket] Binding <%i> failed!\n", (int)pxSocket->ID);
 #endif
-        return PXActionFailedSocketBinding;
+
+#if OSUnix
+        return PXErrorCurrent();
+#elif OSWindows
+        return PXWindowsSocketAgentErrorFetch();
+#endif        
     }
 
 #if SocketDebug
@@ -1219,7 +1188,14 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
     const int optionsocketResult = setsockopt(pxSocket->ID, level, optionName, &opval, sizeof(int));
     const PXBool sucessful = optionsocketResult == 0;
 
-    PXActionOnErrorFetchAndReturn(!sucessful)
+    if (!sucessful)
+    {
+#if OSUnix
+        return PXErrorCurrent();
+#elif OSWindows
+        return PXWindowsSocketAgentErrorFetch();
+#endif     
+    }
 
     return PXActionSuccessful;
 }
@@ -1236,7 +1212,11 @@ PXActionResult PXSocketListen(PXSocket* const pxSocket)
         printf("[PXSocket] Listening failed!\n");
 #endif
 
-        return PXActionFailedSocketListening;
+#if OSUnix
+        return PXErrorCurrent();
+#elif OSWindows
+        return PXWindowsSocketAgentErrorFetch();
+#endif     
     }
 
 #if SocketDebug
@@ -1274,7 +1254,11 @@ PXActionResult PXSocketAccept(PXSocket* const server)
         printf("[PXSocket] Connection accept failed!\n");
 #endif
 
-        return PXActionFailedSocketBinding;
+#if OSUnix
+        return PXErrorCurrent();
+#elif OSWindows
+        return PXWindowsSocketAgentErrorFetch();
+#endif 
     }
 
 #if SocketDebug
@@ -1328,8 +1312,8 @@ PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxS
     // Send data
     do
     {
-        const char* dataAdress = (PXAdress)pxSocketSender->BufferOutput.Data + pxSocketSender->BufferOutput.SizeOffset;
-        const int dataSize = pxSocketSender->BufferOutput.SizeMaximum - pxSocketSender->BufferOutput.SizeCurrent;
+        const char* dataAdress = (char*)((PXAdress)pxSocketSender->BufferOutput.Data + pxSocketSender->BufferOutput.SizeOffset);
+        const int dataSize = pxSocketSender->BufferOutput.SizeMaximum - pxSocketSender->BufferOutput.SizeOffset;
 
         const int writtenBytes =
 #if OSUnix
@@ -1341,7 +1325,11 @@ PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxS
 
         if (!sucessfulSend)
         {
-            return PXActionFailedSocketSend;
+#if OSUnix
+            return PXErrorCurrent();
+#elif OSWindows
+            return PXWindowsSocketAgentErrorFetch();
+#endif     
         }
 
         pxSocketSender->BufferOutput.SizeOffset += writtenBytes;
@@ -1362,7 +1350,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxS
         printf("[PXSocket] You --> <%i> %i Bytes\n", (int)pxSocket->ID, (int)inputBufferSize);
 #endif
     }
-    while (pxSocketSender->BufferOutput.SizeMaximum - pxSocketSender->BufferOutput.SizeCurrent);
+    while (pxSocketSender->BufferOutput.SizeMaximum != pxSocketSender->BufferOutput.SizeCurrent);
 
     return PXActionSuccessful;
 }
@@ -1389,8 +1377,11 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketI
     // Read data
     {
         //StateChange(SocketStateDataReceiving);
-        char* data = (PXAdress)pxSocketReceiver->BufferInput.Data + pxSocketReceiver->BufferInput.SizeCurrent;
+        char* data = (char*)((PXAdress)pxSocketReceiver->BufferInput.Data + pxSocketReceiver->BufferInput.SizeCurrent);
         const int availableSize = pxSocketReceiver->BufferInput.SizeMaximum - pxSocketReceiver->BufferInput.SizeCurrent;
+
+        PXMemoryClear(data, availableSize);
+
         const int sizeRead =
 #if OSUnix
             read(pxSocketSenderID, data, availableSize);
@@ -1404,8 +1395,14 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketI
 
         switch (sizeRead)
         {
-            case (unsigned int)-1:
-                return PXActionFailedSocketRecieve;
+            case -1:
+            {
+#if OSUnix
+                return PXErrorCurrent();
+#elif OSWindows
+                return PXWindowsSocketAgentErrorFetch();
+#endif 
+            }
 
             case 0:// endOfFile
             {
@@ -1465,55 +1462,143 @@ PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocket
 #if OSWindows
 PXActionResult WindowsSocketAgentStartup(void)
 {
-    WORD wVersionRequested = MAKEWORD(2, 2);
+    const WORD wVersionRequested = MAKEWORD(2, 2);
     WSADATA wsaData;
     PXMemoryClear(&wsaData, sizeof(WSADATA));
     const int result = WSAStartup(wVersionRequested, &wsaData);
+    const PXBool successful = result == 0;
 
-    switch(result)
+    if (successful)
     {
-        case WSASYSNOTREADY:
-            return SubSystemNotReady;
-
-        case WSAVERNOTSUPPORTED:
-            return VersionNotSupported;
-
-        case WSAEINPROGRESS:
-            return BlockedByOtherOperation;
-
-        case WSAEPROCLIM:
-            return LimitReached;
-
-        case WSAEFAULT:
-            return InvalidParameter;
-
-        case 0:
-        default:
-            return PXActionSuccessful;
+        return PXActionSuccessful;
     }
+
+    return PXWindowsSocketAgentErrorFromID(result);
 }
 
 PXActionResult WindowsSocketAgentShutdown(void)
 {
     const int result = WSACleanup();
+    const PXBool successful = result == 0;
 
-    switch(result)
+    if (successful)
     {
-        case WSANOTINITIALISED:
-        {
-            return SubSystemNotInitialised;
-        }
-        case WSAENETDOWN:
-        {
-            return SubSystemNetworkFailed;
-        }
-        case WSAEINPROGRESS:
-        {
-            return SocketIsBlocking;
-        }
-        case 0:
+        return PXActionSuccessful;
+    }
+
+    return PXWindowsSocketAgentErrorFromID(result);
+}
+
+PXActionResult PXWindowsSocketAgentErrorFetch(void)
+{
+    const int wsaErrorID = WSAGetLastError();
+    const PXActionResult pxActionResult = PXWindowsSocketAgentErrorFromID(wsaErrorID);
+
+    return pxActionResult;
+}
+
+PXActionResult PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
+{
+    switch (errorID)
+    {
+        case WSAEBADF: // fall through
+        case WSA_INVALID_HANDLE: return PXActionRefuedObjectIDInvalid; // Specified event object handle is invalid.
+        case WSA_NOT_ENOUGH_MEMORY: return PXActionFailedMemoryAllocation; // Insufficient memory available.
+        case WSAEINVAL: // fall through
+        case WSA_INVALID_PARAMETER: return PXActionRefuedInputInvalid; // One or more parameters are invalid.
+        //case WSA_OPERATION_ABORTED:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        //case WSA_IO_INCOMPLETE: return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        //case WSA_IO_PENDING: return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSAEINTR: return PXActionInterruptedByFunctionCall; // xxxxxxxxxxxxxxxxx
+        case WSAEACCES: return PXActionRefuedPermissionDenied;
+        case WSAEFAULT: return PXActionRefuedAdressInvalid;
+        case WSAEMFILE: return PXActionFailedResourcedNotEnough;
+        case WSAEWOULDBLOCK:  return PXActionWouldBlock; // xxxxxxxxxxxxxxxxx
+        case WSAEINPROGRESS: return PXActionNowInProgress; // xxxxxxxxxxxxxxxxx
+        case WSAEALREADY: return PXActionAlreadyInProgress; // xxxxxxxxxxxxxxxxx
+        case WSAENOTSOCK: return PXActionRefuedObjectIDInvalid; // Socket operation on nonsocket.
+        //case WSAEDESTADDRREQ:  return xxxxxxxxxxxx; // Destination address required.
+        case WSAEMSGSIZE: return PXActionRefuedInputBufferTooBig; // Message too long.
+        case WSAEPROTOTYPE: return PXActionRefuedProtocolTypeInvalid; // Protocol wrong type for socket.
+        case WSAENOPROTOOPT: return PXActionRefuedProtocolOptionInvalid; // Bad protocol option.
+        case WSAEPROTONOSUPPORT: return PXActionRefuedProtocolNotSupported; // Protocol not supported.
+        case WSAESOCKTNOSUPPORT: return PXActionRefuedObjectTypeNotSupported; // Socket type not supported.
+        case WSAEOPNOTSUPP: return PXActionRefuedOperationNotSupported; // Operation not supported.
+        case WSAEPFNOSUPPORT:  return PXActionRefuedProtocolFamilyNotSupported; // Protocol family not supported.
+        case WSAEAFNOSUPPORT:   return PXActionRefuedAddressFamilyNotSupportedByProtocol; // Address family not supported by protocol family.
+        case WSAEADDRINUSE:   return PXActionRefuedAlreadyInUse; // Address already in use.
+        //case WSAEADDRNOTAVAIL:   return xxxxxxxxxxxx; // Cannot assign requested address.
+        case WSAENETDOWN:   return PXActionRefuedNetworkNotConnected; // Network is down.
+        case WSAENETUNREACH:   return PXActionRefuedNetworkNotReachable; // Network is unreachable.
+        case WSAENETRESET:   return PXActionFailedConnectionTerminatedByNetwork; // Network dropped connection on reset.
+        case WSAECONNABORTED:   return PXActionFailedConnectionTerminatedByOwnSoftware; // Software caused connection abort.
+        case WSAECONNRESET:   return PXActionFailedConnectionTerminatedByPeer; // Connection reset by peer.
+        case WSAENOBUFS:   return PXActionFailedMemoryAllocationInternal; // No buffer space available.
+        case WSAEISCONN:   return PXActionRefusedAlreadyConnected; // Socket is already connected.
+        case WSAENOTCONN:   return PXActionFailedNotConnected; // Socket is not connected.
+        case WSAESHUTDOWN:  return WindowsSocketSystemWasShutdown; // Cannot send after socket shutdown.
+        //case WSAETOOMANYREFS:   return xxxxxxxxxxxx; // Too many references.
+        //case WSAETIMEDOUT:   return xxxxxxxxxxxx; // Connection timed out.
+        case WSAECONNREFUSED:   return PXActionRefuedServiceNotRunning; // Connection refused.
+        //case WSAELOOP:   return xxxxxxxxxxxx; // Cannot translate name.
+        //case WSAENAMETOOLONG:   return xxxxxxxxxxxx; // Name too long.
+        //case WSAEHOSTDOWN:   return xxxxxxxxxxxx; // Host is down.
+        //case WSAEHOSTUNREACH:   return xxxxxxxxxxxx; // No route to host.
+        case WSAENOTEMPTY:   return PXActionFailedDirectoryIsNotEmpty; // Directory not empty.
+        case WSAEPROCLIM:   return PXActionFailedTooManyProcesses; // Too many processes.
+        case WSAEUSERS:   return PXActionFailedUserQuotaExceeded; // User quota exceeded.
+        case WSAEDQUOT:   return PXActionFailedDiskQuotaExceeded; // Disk quota exceeded.
+        case WSAESTALE:   return PXActionFailedHandleIsStale; // Stale file handle reference.
+        case WSAEREMOTE:   return PXActionFailedResourceNotAvailableLocally; // Item is remote.
+        case WSASYSNOTREADY:   return PXActionFailedNetworkSubsystemNotReady; // Network subsystem is unavailable.
+        case WSAVERNOTSUPPORTED:   return WindowsSocketVersionNotSupported; // Winsock.dll version out of range.
+        case WSANOTINITIALISED:   return WindowsSocketSystemNotInitialized; // Successful WSAStartup not yet performed.
+        case WSAEDISCON:   return PXActionRefusedResourceIsShuttingdown; // Graceful shutdown in progress.
+        case WSAENOMORE:   return xxxxxxxxxxxx; // No more results.
+        case WSAECANCELLED:   return xxxxxxxxxxxx; // Call has been canceled.
+        case WSAEINVALIDPROCTABLE:   return xxxxxxxxxxxx; // Procedure call table is invalid.
+        case WSAEINVALIDPROVIDER:   return xxxxxxxxxxxx; // Service provider is invalid.
+        case WSAEPROVIDERFAILEDINIT:   return xxxxxxxxxxxx; // Service provider failed to initialize
+        case WSASYSCALLFAILURE:   return xxxxxxxxxxxx; // System call failure.
+        case WSASERVICE_NOT_FOUND:   return xxxxxxxxxxxx; // Service not found.
+        case WSATYPE_NOT_FOUND:   return xxxxxxxxxxxx; // Class type not found.
+        case WSA_E_NO_MORE:   return xxxxxxxxxxxx; // No more results.
+        case WSA_E_CANCELLED:   return xxxxxxxxxxxx; // Call was canceled.
+        case WSAEREFUSED:   return xxxxxxxxxxxx; // Database query was refused.
+        case WSAHOST_NOT_FOUND:   return PXActionFailedHostNotFound; // Host not found.
+        case WSATRY_AGAIN:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSANO_RECOVERY:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSANO_DATA:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_RECEIVERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_SENDERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_NO_SENDERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_NO_RECEIVERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_REQUEST_CONFIRMED:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_ADMISSION_FAILURE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_POLICY_FAILURE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_BAD_STYLE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_BAD_OBJECT:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_TRAFFIC_CTRL_ERROR:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_GENERIC_ERROR:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_ESERVICETYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EPROVSPECBUF:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EFILTERSTYLE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EFILTERTYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EFILTERCOUNT:    return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EOBJLENGTH:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EFLOWCOUNT:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EUNKOWNPSOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EPOLICYOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EFLOWDESC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_EPSFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx 
+        case WSA_QOS_EPSFILTERSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_ESDMODEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_ESHAPERATEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+        case WSA_QOS_RESERVED_PETYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+
         default:
-            return PXActionSuccessful;
+            return PXActionInvalid;
     }
 }
 #endif

@@ -62,7 +62,7 @@ extern "C"
 		PXSize ColorMapDataSize;
 		unsigned char* ColorMapData; // Look-up table containing color map data
 		PXSize ImageDataSize;
-		unsigned char* ImageData; // Stored according to the image descriptor 	
+		PXByte* ImageData; // Stored according to the image descriptor 	
 		//----------------------------------
 
 

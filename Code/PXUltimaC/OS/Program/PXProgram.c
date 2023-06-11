@@ -70,7 +70,7 @@ PXActionResult PXProgramExecute(PXProgram* const program)
     return PXActionSuccessful;
 }
 
-PXActionResult PXProgramExecuteAS(PXProgram* program, const char* programPath, const char* parameterString, PXProgramExecutedEvent* callback)
+PXActionResult PXProgramExecuteAS(PXProgram* program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback)
 {
     PXTextCopyAW(programPath, 260, program->FilePath, 260);
 
@@ -97,7 +97,7 @@ PXActionResult PXProgramExecuteAS(PXProgram* program, const char* programPath, c
     return actionResult;
 }
 
-PXActionResult PXProgramExecuteAL(PXProgram* program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent* callback)
+PXActionResult PXProgramExecuteAL(PXProgram* program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback)
 {
     PXTextCopyA(program->FilePath, 260, programPath, 260);
 

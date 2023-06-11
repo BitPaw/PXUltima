@@ -30,8 +30,7 @@ void PXDebugConstruct(PXDebug* const pxDebug)
 {
 	PXMemoryClear(pxDebug, sizeof(PXDebug));
 
-	pxDebug->ApplicatioName.SizeAllocated = sizeof(pxDebug->ApplicatioNameBuffer);
-	pxDebug->ApplicatioName.TextA = pxDebug->ApplicatioNameBuffer;
+	PXTextConstructFromAdressA(&pxDebug->ApplicatioName, pxDebug->ApplicatioNameBuffer, sizeof(pxDebug->ApplicatioNameBuffer));
 }
 
 void PXDebugDestruct(PXDebug* const pxDebug)
@@ -44,7 +43,7 @@ PXActionResult PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* cons
 #if OSUnix
 #elif PXOSWindowsDestop
 	BOOL debuggerPresent = 0;
-	const BOOL result = CheckRemoteDebuggerPresent(pxDebug->Process.ProcessID, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h 
+	const BOOL result = CheckRemoteDebuggerPresent(pxDebug->Process.ProcessHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h 
 	const PXBool success = result != 0;
 
 	PXActionOnErrorFetchAndReturn(!success);
@@ -97,7 +96,7 @@ PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 	BOOL fInvadeProcess = TRUE;
 
 	// Initializes the symbol handler for a process.
-	const BOOL result = SymInitialize(pxDebug->Process.ProcessID, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h 
+	const BOOL result = SymInitialize(pxDebug->Process.ThreadHandle, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h 
 	const PXBool success = result != 0;
 
 #endif
@@ -111,7 +110,7 @@ PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const 
 
 	// Start Thread that will listen to given process.
 	{
-		const PXActionResult result = PXThreadRun(&pxDebug->EventListenLoop, PXDebugLoop, pxDebug);
+		const PXActionResult result = PXThreadRun(&pxDebug->EventListenLoop, (ThreadFunction)PXDebugLoop, pxDebug);
 
 		// If thread cannot be started, stop.
 		PXActionReturnOnError(result);
@@ -120,7 +119,7 @@ PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const 
 	// Start process
 
 
-	return PXThreadSucessful;
+	return PXActionSuccessful;
 }
 
 void PXDebugContinue(PXDebug* const pxDebug)
@@ -132,7 +131,7 @@ void PXDebugContinue(PXDebug* const pxDebug)
 	const PXBool x = ContinueDebugEvent(pxDebug->Process.ProcessID, dwThreadId, dwContinueStatus); // Windows XP, Kernel32.dll, debugapi.h
 	const PXBool isSicc = x != 0;
 
-	PXActionOnErrorFetchAndReturn(!isSicc);
+	//PXActionOnErrorFetchAndReturn(!isSicc);
 
 #endif
 }
@@ -146,16 +145,16 @@ void PXDebugPause(PXDebug* const pxDebug)
 #endif
 }
 
-PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessID pxProcessID)
+PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxProcessHandle)
 {
 #if OSUnix
     return PXFalse;
 #elif PXOSWindowsDestop
-    return DebugBreakProcess(pxProcessID); // Windows XP, Kernel32.dll, winbase.h
+    return DebugBreakProcess(pxProcessHandle); // Windows XP, Kernel32.dll, winbase.h
 #endif
 }
 
-void PXDebugAttach(PXDebug* const pxDebug)
+PXActionResult PXDebugAttach(PXDebug* const pxDebug)
 {
 #if OSUnix
 	const long result = ptrace(PTRACE_ATTACH, pxDebug->Process.ProcessID, 0, 0);
@@ -168,7 +167,7 @@ void PXDebugAttach(PXDebug* const pxDebug)
 #endif
 }
 
-void PXDebugDetach(PXDebug* const pxDebug)
+PXActionResult PXDebugDetach(PXDebug* const pxDebug)
 {
 #if OSUnix
 	const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
@@ -206,9 +205,9 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 
 	RtlCaptureContext(&contextRecord);
 
-	pxDebug->Process.ProcessID = GetCurrentProcess();
+	pxDebug->Process.ProcessHandle = GetCurrentProcess();
 
-	PDWORD64 displacement = 0;
+	DWORD64 displacement = 0;
 	//stackFrame.AddrPC.Offset = contextRecord.Eip;
 	//stackFrame.AddrPC.Mode = AddrModeFlat;
 	//stackFrame.AddrStack.Offset = contextRecord.Esp;
@@ -240,7 +239,7 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 		const BOOL result = StackWalk
 		(
 			machineType,
-			pxDebug->Process.ProcessID,
+			pxDebug->Process.ProcessHandle,
 			hThread,
 			&stackFrame,
 			&contextRecord,
@@ -271,7 +270,7 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 		pxMSDebugSymbol.Symbol.SizeOfStruct = sizeof(PXMSDebugSymbol);
 		pxMSDebugSymbol.Symbol.MaxNameLength = PXMSDebugSymbolNameSize;
 
-		const BOOL getResult = SymGetSymFromAddr(pxDebug->Process.ProcessID, (ULONG64)stackFrame.AddrPC.Offset, &displacement, &pxMSDebugSymbol.Symbol);
+		const BOOL getResult = SymGetSymFromAddr(pxDebug->Process.ProcessHandle, (ULONG64)stackFrame.AddrPC.Offset, &displacement, &pxMSDebugSymbol.Symbol);
 		const PXBool getFailed = getResult != 0;
 
 		PXSize nameBufferSize = 512;
@@ -483,11 +482,10 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			OnDebugProcessExit(pxDebug, exitThreadDebugInfo->dwExitCode);
 
-
-
 			break;
 		}
 		case EXIT_PROCESS_DEBUG_EVENT:
+		{
 			// Display the process's exit code.
 
 			const EXIT_PROCESS_DEBUG_INFO* const exitProcessDebugInfo = &debugEvent.u.ExitProcess;
@@ -497,8 +495,9 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 			pxDebug->IsRunning = PXFalse;
 
 			break;
-
+		}
 		case LOAD_DLL_DEBUG_EVENT:
+		{
 			// Read the debugging information included in the newly
 			// loaded DLL. Be sure to close the handle to the loaded DLL
 			// with CloseHandle.
@@ -516,7 +515,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			printf("[PXDebuger] 0x%p | DLL load <%s>\n", loadDLLDebugInfo->lpBaseOfDll, pxText.TextA);
 			break;
-
+		}
 		case UNLOAD_DLL_DEBUG_EVENT:
 		{
 			// Display a message that the DLL has been unloaded.
@@ -570,7 +569,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 #endif
 }
 
-void PXDebugLoop(PXDebug* const pxDebug)
+PXThreadResult PXDebugLoop(PXDebug* const pxDebug)
 {
 	// Create process to debug on
 	{
@@ -586,7 +585,9 @@ void PXDebugLoop(PXDebug* const pxDebug)
 	{
 		PXActionResult pxActionResult = PXDebugWaitForEvent(pxDebug);
 
-		pxActionResult += 0;
+		pxActionResult = PXActionInvalid;
 	}
+
+	return PXThreadSucessful;
 }
 #endif

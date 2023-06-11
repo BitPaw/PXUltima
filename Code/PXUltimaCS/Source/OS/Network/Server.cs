@@ -6,28 +6,28 @@ namespace PX
     public class Server : IDisposable
     {
         [StructLayout(LayoutKind.Sequential, Size = 160)]
-        private unsafe struct PXServer
+        private struct PXServer
         {
-            public void* SocketCreatingCallBack;
-            public void* SocketCreatedCallBack;
+            public IntPtr SocketCreatingCallBack;
+            public IntPtr SocketCreatedCallBack;
 
-            public void* SocketClosedCallBack;
+            public IntPtr SocketClosedCallBack;
 
-            public void* SocketConnectedCallBack;
-            public void* SocketDisconnectedCallBack;
+            public IntPtr SocketConnectedCallBack;
+            public IntPtr SocketDisconnectedCallBack;
 
-            public void* SocketStateChangedCallBack;
+            public IntPtr SocketStateChangedCallBack;
 
-            public void* SocketDataSendCallBack;
-            public void* SocketDataReceiveCallBack;
+            public IntPtr SocketDataSendCallBack;
+            public IntPtr SocketDataReceiveCallBack;
         }
 
-        [DllImport("PXUltima.dll")] private static extern void PXServerConstruct(ref PXServer server);
-        [DllImport("PXUltima.dll")] private static extern void PXServerDestruct(ref PXServer server);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXServerConstruct(ref PXServer server);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXServerDestruct(ref PXServer server);
 
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXServerStart(ref PXServer server, ushort port, ProtocolMode protocolMode);
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXServerStop(ref PXServer server);
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXServerKickClient(ref PXServer server, uint socketID);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXServerStart(ref PXServer server, ushort port, ProtocolMode protocolMode);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXServerStop(ref PXServer server);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXServerKickClient(ref PXServer server, uint socketID);
 
         private PXServer _pxServer;
 
@@ -51,14 +51,14 @@ namespace PX
 
             PXServerConstruct(ref _pxServer);
 
-            _pxServer.SocketCreatingCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatingEvent>(OnSocketCreatingCallBack).ToPointer();
-            _pxServer.SocketCreatedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatedEvent>(OnSocketCreatedCallBack).ToPointer();
-            _pxServer.SocketClosedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketClosedEvent>(OnSocketClosedCallBack).ToPointer();
-            _pxServer.SocketConnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketConnectedEvent>(OnSocketConnectedCallBack).ToPointer();
-            _pxServer.SocketDisconnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDisconnectedEvent>(OnSocketDisconnectedCallBack).ToPointer();
-            _pxServer.SocketStateChangedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketStateChangedEvent>(OnSocketStateChangedCallBack).ToPointer();
-            _pxServer.SocketDataSendCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataSendEvent>(OnSocketDataSendCallBack).ToPointer();
-            _pxServer.SocketDataReceiveCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataReceiveEvent>(OnSocketDataReceiveCallBack).ToPointer();
+            _pxServer.SocketCreatingCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatingEvent>(OnSocketCreatingCallBack);
+            _pxServer.SocketCreatedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatedEvent>(OnSocketCreatedCallBack);
+            _pxServer.SocketClosedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketClosedEvent>(OnSocketClosedCallBack);
+            _pxServer.SocketConnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketConnectedEvent>(OnSocketConnectedCallBack);
+            _pxServer.SocketDisconnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDisconnectedEvent>(OnSocketDisconnectedCallBack);
+            _pxServer.SocketStateChangedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketStateChangedEvent>(OnSocketStateChangedCallBack);
+            _pxServer.SocketDataSendCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataSendEvent>(OnSocketDataSendCallBack);
+            _pxServer.SocketDataReceiveCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataReceiveEvent>(OnSocketDataReceiveCallBack);
         }
 
         private void OnSocketDataReceiveCallBack(UIntPtr owner, ref PXSocketDataReceivedEventData pxSocketDataReceivedEventData)

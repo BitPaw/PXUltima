@@ -49,7 +49,7 @@ extern "C"
 
 	PXPublic void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* const data, const PXSize dataSize, const PXSize nodeSize);
 
-	PXPublic PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const PXSize index);
+	PXPublic PXBool PXLinkedListFixedNodeAt(const PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const PXSize index);
 	PXPublic PXBool PXLinkedListFixedNodeNext(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed);
 
 	//PXPublic PXBool PXLinkedListFixedNodeFetch(PXLinkedListFixed* const linkedListFixed, void* const element);

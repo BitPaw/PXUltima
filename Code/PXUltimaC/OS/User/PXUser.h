@@ -2,13 +2,14 @@
 #define PXUserINCLUDE
 
 #include <Media/PXText.h>
+#include <OS/Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	PXPublic PXBool PXUserNameGet(PXText* const name);
+	PXPublic PXActionResult PXUserNameGet(PXText* const name);
 
 	typedef enum PXUserEnviromentFolderID_
 	{

@@ -179,7 +179,7 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 		tga->PixelDepth = ConvertToPixelDepth(pixelDepth);
 
 		tga->ImageDataSize = tga->Width * tga->Height * (pixelDepth / 8u);
-		tga->ImageData = PXMemoryAllocate(sizeof(unsigned char) * tga->ImageDataSize);
+		tga->ImageData = PXMemoryAllocateType(PXByte, tga->ImageDataSize);
 	}
 	//----------------------------------------------------
 

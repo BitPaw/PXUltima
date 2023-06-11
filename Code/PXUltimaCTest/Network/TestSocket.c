@@ -4,14 +4,15 @@
 #include <OS/Network/PXServer.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Debug/PXDebug.h>
+#include <OS/Network/PXClient.h>
 
 #include <stdio.h>
 
-void OnSocketDataSend(const PXSocket* const sendingSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize)
+void OnSocketDataSend(void* owner, const PXSocketDataSendEventData* const pxSocketDataSendEventData)
 {
 
 }
-void OnSocketDataReceive(const PXSocket* const receiveSocket, const PXSocketID clientSocketID, const void* const message, const PXSize messageSize)
+void OnSocketDataReceive(void* owner, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData)
 {
     //PXHTTPRequest pxHTTPRequest;
     //PXFile PXFile;
@@ -20,7 +21,7 @@ void OnSocketDataReceive(const PXSocket* const receiveSocket, const PXSocketID c
 
     //const PXActionResult actionResult = PXHTTPRequestParse(&pxHTTPRequest, &PXFile);
 
-    const char exportBuffer[1024];
+    const char exportBuffer[2048];
 
     const char buffer[] =
         "HTTP/1.1 200 OK\r\n\r\n"
@@ -37,7 +38,7 @@ void OnSocketDataReceive(const PXSocket* const receiveSocket, const PXSocketID c
         "<h1>Socket Info</h1>"
         "<p>ID: %i</p>"
         "<h1>Recieved data</h1>"
-        "<p>%s</p>"
+        "<div>%s</div>"
         "</body>"
         "</html>";
 
@@ -45,12 +46,13 @@ void OnSocketDataReceive(const PXSocket* const receiveSocket, const PXSocketID c
     (
         exportBuffer,
         buffer,
-        clientSocketID,
-        message
+        (int)pxSocketDataReceivedEventData->SocketSending,
+        pxSocketDataReceivedEventData->Data
     );
+    PXBufferConstruct(&pxSocketDataReceivedEventData->SocketReceiving->BufferOutput, exportBuffer, exportSize, PXBufferTypeStack);
+    PXSocketSend(pxSocketDataReceivedEventData->SocketReceiving, pxSocketDataReceivedEventData->SocketSending);
 
-    PXSocketSendAsServerToClient(receiveSocket, clientSocketID, exportBuffer, exportSize);
-    PXSocketClientRemove(receiveSocket, clientSocketID);
+    PXSocketClientRemove(pxSocketDataReceivedEventData->SocketReceiving, pxSocketDataReceivedEventData->SocketSending);
 }
 
 
@@ -70,7 +72,43 @@ void OnClientAcceptFailure(const PXSocket* serverSocket)
 
 void TestSocket()
 {
+    while (1)
+    {
+        TestSocketClientGeneral();
+        PXThreadSleep(0, 10);
+    }
+
 	TestSocketServerGeneral();
+}
+
+void TestSocketClientGeneral()
+{
+    PXClient client;
+    PXClientConstruct(&client);
+
+    PXActionResult connectResult = PXClientConnectToSelf(&client, 25565);
+
+    if (connectResult == PXActionSuccessful)
+    {
+        printf("[C] Connect OK\n");
+
+        connectResult = PXClientSendData(&client, "Hello my name is bob", 21);
+
+        if (connectResult == PXActionSuccessful)
+        {
+            printf("[C] Send OK\n");
+        }
+        else
+        {
+            printf("[C] Send FAILED\n");
+        }
+    }
+    else
+    {
+        printf("[C] Connect FAILED\n");
+    }
+
+    PXClientDestruct(&client);
 }
 
 void TestSocketServerGeneral()
@@ -79,8 +117,8 @@ void TestSocketServerGeneral()
 
 	PXServerConstruct(&server);
 
-    server.EventListener.MessageSendCallback = OnSocketDataSend;
-    server.EventListener.MessageReceiveCallback = OnSocketDataReceive;
+    server.EventList.SocketDataSendCallBack = OnSocketDataSend;
+    server.EventList.SocketDataReceiveCallBack = OnSocketDataReceive;
 	//server.SocketEventListener.ConnectionLinkedCallback = OnClientConnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientDisconnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientAcceptFailure;

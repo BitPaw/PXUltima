@@ -19,6 +19,8 @@
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 
+void __cpuid(int cpuInfo[4], int function_id);
+
 void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
     const char* processorName = 0;
@@ -522,7 +524,7 @@ void PXProcessorFetchInfo(PXProcessor* const processor)
                 case 0x80000003:
                 case 0x80000004:
                 {
-                    processor->BrandNameSize += PXTextCopyA(CPUInfo, sizeof(CPUInfo), processor->BrandName + processor->BrandNameSize, 64);
+                    processor->BrandNameSize += PXTextCopyA((char*)CPUInfo, sizeof(CPUInfo), processor->BrandName + processor->BrandNameSize, 64);
                     break;
                 }
                 default:

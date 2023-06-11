@@ -18,12 +18,12 @@ namespace PX
             public byte BrandNameSize;
         }
 
-        [DllImport("PXUltima.dll")] private static extern void PXProcessorFetchInfo(ref PXProcessor processor);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXProcessorFetchInfo(ref PXProcessor processor);
 
-        [DllImport("PXUltima.dll")] private static extern uint PXProcessorFrequencyCurrent();
-        [DllImport("PXUltima.dll")] private static extern uint PXProcessorTimeReal();
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern uint PXProcessorFrequencyCurrent();
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern uint PXProcessorTimeReal();
 
-        [DllImport("PXUltima.dll")] private static extern uint PXProcessorTemperature();
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern uint PXProcessorTemperature();
 
 
         public static uint FrequencyCurrent { get { return PXProcessorFrequencyCurrent(); } }

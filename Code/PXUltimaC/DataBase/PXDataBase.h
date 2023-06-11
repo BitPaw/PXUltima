@@ -112,7 +112,7 @@ extern "C"
 
 	PXPublic void PXDataBaseConnectionScanForDrivers(PXSQLDataBaseConnection* const dataBaseConnection);
 
-	PXPublic void PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnection, const PXText* const PXSQLStatement);
+	PXPublic PXActionResult PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnection, const PXText* const PXSQLStatement);
 
 #ifdef __cplusplus
 }

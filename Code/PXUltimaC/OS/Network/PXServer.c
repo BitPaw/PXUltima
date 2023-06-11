@@ -51,7 +51,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
 
         server->ServerSocketListSize = pxSocketAdressSetupInfoListSize;
         server->ServerSocketListSizeAllocated = pxSocketAdressSetupInfoListSize;
-        server->ServerSocketList = (PXSocket*)PXMemoryAllocateClear(sizeof(PXSocket) * pxSocketAdressSetupInfoListSize);
+        server->ServerSocketList = PXMemoryAllocateType(PXSocket, pxSocketAdressSetupInfoListSize);
 
         for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
         {
@@ -63,7 +63,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
             server->ServerSocketList,
             server->ServerSocketListSizeAllocated,
             &server->ServerSocketListSize,
-            &pxSocketAdressSetupInfoList,
+            pxSocketAdressSetupInfoList,
             pxSocketAdressSetupInfoListSize
         );
 
@@ -110,7 +110,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
 
         PXSocketStateChange(pxSocket, SocketIDLE);
 
-        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerClientListeningThread, pxSocket);       
+        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, (ThreadFunction)PXServerClientListeningThread, pxSocket);
     }
 
     return PXActionSuccessful;

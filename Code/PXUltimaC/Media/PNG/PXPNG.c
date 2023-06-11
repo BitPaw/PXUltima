@@ -1894,7 +1894,7 @@ the scanlines with 1 extra byte per scanline
                     dummy = 0;
 
                     const PXSize sizeAA = 0xFFFF * 2;
-                    dummy = PXMemoryAllocate(sizeAA);
+                    dummy = (unsigned char*)PXMemoryAllocate(sizeAA);
 
                     PXSize written = 0;
 

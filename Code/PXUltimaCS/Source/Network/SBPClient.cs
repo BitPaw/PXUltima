@@ -11,14 +11,14 @@ namespace PX
 
         }
 
-        [DllImport("PXUltima.dll")] private static extern void PXSBPClientConstruct(ref PXSBPClient pxSBPClient);
-        [DllImport("PXUltima.dll")] private static extern void PXSBPClientDestruct(ref PXSBPClient pxSBPClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientConstruct(ref PXSBPClient pxSBPClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientDestruct(ref PXSBPClient pxSBPClient);
 
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXSBPClientConnectToServer(ref PXSBPClient pxSBPClient, ref PXText ip, ushort port);
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXSBPClientDisconnectFromServer(ref PXSBPClient pxSBPClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientConnectToServer(ref PXSBPClient pxSBPClient, ref PXText ip, ushort port);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientDisconnectFromServer(ref PXSBPClient pxSBPClient);
 
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXSBPClientSendMessage(ref PXSBPClient pxSBPClient, UIntPtr data, UIntPtr dataSize);
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXSBPClientSendFile(ref PXSBPClient pxSBPClient, ref PXText filePath);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientSendMessage(ref PXSBPClient pxSBPClient, UIntPtr data, UIntPtr dataSize);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientSendFile(ref PXSBPClient pxSBPClient, ref PXText filePath);
 
         private PXSBPClient _pxSBPClient = new PXSBPClient();
 

@@ -642,14 +642,13 @@ extern "C"
 	}
 	PXTTF;
 
-
     PXPublic EncodingID PXTTFEncodingFromID(const PlatformID platformID, unsigned char encodingID);
 
     PXPublic PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor);
-    PXPublic void PXTTFVersionTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType);
+    //PXPublic void PXTTFVersionTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType);
 
-    PXPublic PXTTFTableEntryType PXTTFTableEntryTypeFromID(const unsigned int tableEntryType);
-    PXPublic unsigned int PXTTFTableEntryTypeFromID(const PXTTFTableEntryType tableEntryType);
+    PXPublic PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType);
+    //PXPublic PXInt32U PXTTFTableEntryTypeFromID(const PXTTFTableEntryType tableEntryType);
 
     PXPublic void PXTTFConstruct(PXTTF* const ttf);
     PXPublic void PXTTFDestruct(PXTTF* const ttf);

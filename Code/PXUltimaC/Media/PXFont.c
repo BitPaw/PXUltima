@@ -73,7 +73,7 @@ PXActionResult PXFontLoadD(PXFont* const font, PXFile* const PXFile, const FileF
         case FileFormatSpriteFont:
         {
             font->FontElementSize = 1u;
-            font->FontElement = PXMemoryAllocateClear(sizeof(PXSpriteFont) * 1u);
+            font->FontElement = PXMemoryAllocateTypeCleared(PXSpriteFont, 1u);
 
             {
 
@@ -93,7 +93,7 @@ PXActionResult PXFontLoadD(PXFont* const font, PXFile* const PXFile, const FileF
         {
             PXTTF ttf;
 
-            PXPXTTFConstruct(&ttf);
+            PXTTFConstruct(&ttf);
 
             {
                // PXSize readBytes = 0;
@@ -102,7 +102,7 @@ PXActionResult PXFontLoadD(PXFont* const font, PXFile* const PXFile, const FileF
                 //PXActionExitOnError(filePXActionResult);
             }
 
-            PXPXTTFDestruct(&ttf);
+            PXTTFDestruct(&ttf);
 
             break;
         }

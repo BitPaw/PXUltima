@@ -52,10 +52,9 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 
 typedef PXInt32U PXSocketID;
 #define SocketDebug 0
-#define SocketIDOffline -1
 #define IPv6LengthMax 65
 
-#define PXSocketBufferSize 2048u
+#define PXSocketBufferSize 1024u
 
 #ifdef __cplusplus
 extern "C"
@@ -269,7 +268,7 @@ extern "C"
 
 		//---<Private IO>------------
 		PXThread CommunicationThread;
-		//----------------------------		
+		//----------------------------
 	}
 	PXSocket;
 
@@ -336,6 +335,8 @@ extern "C"
 #if OSWindows
 	PXPrivate PXActionResult WindowsSocketAgentStartup(void);
 	PXPrivate PXActionResult WindowsSocketAgentShutdown(void);
+	PXPrivate PXActionResult PXWindowsSocketAgentErrorFetch(void);
+	PXPrivate PXActionResult PXWindowsSocketAgentErrorFromID(const PXInt32S errorID);
 #endif
 
 #ifdef __cplusplus

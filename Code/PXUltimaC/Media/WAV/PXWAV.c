@@ -64,7 +64,7 @@ PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 
 	PXFileReadI32UE(PXFile, &wav->SoundDataSize, riff.EndianFormat);
 
-	wav->SoundData = PXMemoryAllocate(sizeof(PXByte) * wav->SoundDataSize);
+	wav->SoundData = PXMemoryAllocateType(PXByte, wav->SoundDataSize);
 
 	PXFileReadB(PXFile, wav->SoundData, wav->SoundDataSize);
 

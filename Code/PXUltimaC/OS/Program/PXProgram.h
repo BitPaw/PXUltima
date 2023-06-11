@@ -42,8 +42,8 @@ extern "C"
 	PXPrivate PXActionResult PXProgramExecute(PXProgram* const program);
 
 	// Execute function Asyncroinusly in another Thread.
-	PXPublic PXActionResult PXProgramExecuteAS(PXProgram* program, const char* programPath, const char* parameterString, PXProgramExecutedEvent* callback);
-	PXPublic PXActionResult PXProgramExecuteAL(PXProgram* program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent* callback);
+	PXPublic PXActionResult PXProgramExecuteAS(PXProgram* program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback);
+	PXPublic PXActionResult PXProgramExecuteAL(PXProgram* program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback);
 
 	PXPublic PXActionResult PXProgramExecuteWS(PXProgram* program, const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback);
 

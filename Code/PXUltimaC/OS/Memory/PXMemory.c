@@ -242,10 +242,10 @@ PXBool PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize,
 #endif
 }
 
-void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+const void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
 {
 #if MemoryUseSystemFunction
-	void* memoryPosition = memchr(inputBuffer, byteBlock, inputBufferSize);
+	const void* memoryPosition = memchr(inputBuffer, byteBlock, inputBufferSize);
 
 	return memoryPosition;
 #else
@@ -333,7 +333,7 @@ void* PXMemoryHeapAllocate(const PXSize requestedSizeInBytes)
 		return 0;
 	}
 
-	const void* adress = malloc(requestedSizeInBytes);
+	void* const adress = malloc(requestedSizeInBytes);
 
 	if(!adress)
 	{
@@ -359,17 +359,17 @@ void* PXMemoryHeapAllocate(const PXSize requestedSizeInBytes)
 	return adress;
 }
 
-void* PXMemoryAllocateClear(const PXSize requestedSizeInBytes)
+void* PXMemoryHeapAllocateCleared(const PXSize objectSize, const PXSize amount)
 {
-	if (!requestedSizeInBytes)
+	if (!objectSize || !amount)
 	{
-		return 0;
+		return PXNull;
 	}
 
-	const void* adress = calloc(1u, requestedSizeInBytes);
+	void* const adress = calloc(objectSize, amount);
 
 #if MemoryDebugOutput
-	printf("[#][Memory] 0x%p (%10zi B) Allocate Cleared\n", adress, requestedSizeInBytes);
+	printf("[#][Memory] 0x%p (%10zi B) Allocate on heap cleared\n", adress, requestedSizeInBytes);
 #endif
 
 	return adress;
@@ -377,7 +377,7 @@ void* PXMemoryAllocateClear(const PXSize requestedSizeInBytes)
 
 void* PXMemoryHeapReallocate(void* sourceAddress, const PXSize size)
 {
-	const void* adressReallocated = realloc(sourceAddress, size);
+	void* const adressReallocated = realloc(sourceAddress, size);
 
 #if MemorySanitise
 	if (!adress)
@@ -414,10 +414,10 @@ void* PXMemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, con
 	return adress;
 }
 #endif
-void* PXMemoryHeapReallocateClear(const void* const sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
+void* PXMemoryHeapReallocateClear(void* const sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
 {
-	const void* adressReallocated = realloc(sourceAddress, sizeAfter);
-	const unsigned char sizeIncredes = sizeAfter > sizeBefore;
+	void* const adressReallocated = realloc(sourceAddress, sizeAfter);
+	const PXBool sizeIncredes = sizeAfter > sizeBefore;
 
 	if (sizeIncredes)
 	{
@@ -443,7 +443,7 @@ void* PXMemoryHeapReallocateClear(const void* const sourceAddress, const PXSize 
 	return adressReallocated;
 }
 
-void PXMemoryRelease(const void* adress, const PXSize size)
+void PXMemoryRelease(void* adress, const PXSize size)
 {
 	if(!adress || !size)
 	{
@@ -594,14 +594,14 @@ void PXMemoryVirtualRelease(const void* adress, const PXSize size)
 
 #elif OSWindows
 	DWORD freeType = MEM_RELEASE;
-	const unsigned char result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
+	const PXBool result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
 #endif
 
 #if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Virtual free\n", adress, size);
 #endif
 
-	return result;
+	//return result; // We dont return info
 }
 
 void* PXMemoryVirtualReallocate(const void* adress, const PXSize size)

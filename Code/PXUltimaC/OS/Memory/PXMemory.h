@@ -85,7 +85,7 @@ extern "C"
 	// This function is not like memcmp that returns -1, 0, and 1!
 	PXPublic PXBool PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
 
-	PXPublic void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
+	PXPublic const void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
 
 	PXPublic PXSize PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 	PXPublic PXSize PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
@@ -100,19 +100,19 @@ extern "C"
 
 	PXPublic void* PXMemoryHeapAllocate(const PXSize size);
 
+	PXPublic void* PXMemoryHeapAllocateCleared(const PXSize objectSize, const PXSize amount);
+
 #if MemoryDebugOutput
 	PXPublic void* PXMemoryHeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line);
 #endif
-	// Allocate memory and clear is after. Its just a combination of malloc and memset
-	PXPublic void* PXMemoryAllocateClear(const PXSize size);
-
+	
 	PXPublic void* PXMemoryHeapReallocate(void* sourceAddress, const PXSize size);
 
 #if MemoryDebugOutput
 	PXPublic void* PXMemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line);
 #endif
-	PXPublic void* PXMemoryHeapReallocateClear(const void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
-	PXPublic void PXMemoryRelease(const void* adress, const PXSize size);
+	PXPublic void* PXMemoryHeapReallocateClear(void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
+	PXPublic void PXMemoryRelease(void* adress, const PXSize size);
 
 	// Allocate memory in virtual memory space.
 	// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
@@ -129,6 +129,9 @@ extern "C"
 }
 #endif
 
+
+#define PXObjectClear(objectType, adressofObject) PXMemoryClear(adressofObject, sizeof(objectType))
+
 #if 1 // Use default allocator
 
 #if MemoryDebugOutput
@@ -137,6 +140,8 @@ extern "C"
 #else
 #define PXMemoryReallocate(address, dataSize) PXMemoryHeapReallocate(address, dataSize)
 #define PXMemoryAllocate(dataSize) PXMemoryHeapAllocate(dataSize)
+#define PXMemoryAllocateType(type, dataSize) (type*)PXMemoryHeapAllocate(sizeof(type) * dataSize)
+#define PXMemoryAllocateTypeCleared(type, dataSize) (type*)PXMemoryHeapAllocateCleared(sizeof(type), dataSize)
 #endif
 
 #else // Use virtual alloc

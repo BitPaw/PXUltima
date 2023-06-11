@@ -43,7 +43,7 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 	//		return BadMessage;
 
 		case EBUSY:
-			return DeviceOrResourceBusy;
+			return PXActionRefusedResourceBusy;
 
 	//	case ECANCELED:
 	//		return OperationCanceled;

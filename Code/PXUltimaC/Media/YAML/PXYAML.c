@@ -217,7 +217,7 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
     while (!PXFileIsAtEnd(outputStream))
     {
         unsigned char depth = 0;
-        PXYAMLLineType lineType = 0;
+        PXYAMLLineType lineType = PXYAMLLineTypeInvalid;
 
         PXFileReadI8U(outputStream, &lineType);
         PXFileReadI8U(outputStream, &depth);
@@ -249,11 +249,14 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
             if (textBSize > 0)
             {
                 PXCompilerSymbolLexer lexer;
-                unsigned char lx = 0;
 
-                PXFileReadI8U(outputStream, &lx);
+                {
+                    PXInt8U lx = 0;
 
-                lexer = lx;
+                    PXFileReadI8U(outputStream, &lx);
+
+                    lexer = (PXCompilerSymbolLexer)lx;
+                }              
 
                 switch (lexer)
                 {

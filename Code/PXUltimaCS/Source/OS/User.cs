@@ -1,23 +1,28 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace PX
 {
     public class User
     {
-        [DllImport("PXUltima.dll")] private static extern byte PXUserNameGet(ref PXText name);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static unsafe extern PX.ActionResult PXUserNameGet(PXText* name);
 
         public static unsafe string Name
         {
             get
             {
-                byte* buffer = stackalloc byte[64];
-                PXText pXText = PXText.MakeFromBufferU(buffer, 64);
+                const int bufferSize = 64;
+                sbyte* bufferAdress = stackalloc sbyte[bufferSize];
+                PXText* pXTextAdress = stackalloc PXText[1];
+                string nameString = null;
 
-                PXUserNameGet(ref pXText);
+                pXTextAdress->MakeFromBufferW((IntPtr)bufferAdress, (IntPtr)bufferSize);
 
-                string buildDate = new string((sbyte*)pXText.TextA, 0, (int)pXText.SizeUsed);
+                PXUserNameGet(pXTextAdress);
 
-                return buildDate;
+                nameString = pXTextAdress->GenerateString();
+
+                return nameString;
             }
         }
     }

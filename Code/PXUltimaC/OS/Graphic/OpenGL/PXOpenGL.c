@@ -1331,14 +1331,14 @@ const char* PXOpenGLStringGet(const PXOpenGLStringName stringName)
 {
     const unsigned int stringNameID = PXOpenGLStringNameToID(stringName);
 
-    return glGetString(stringNameID);
+    return (const char*)glGetString(stringNameID);
 }
 
 const char* PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStringName stringName, const unsigned int index)
 {
     const unsigned int stringNameID = PXOpenGLStringNameToID(stringName);
 
-    return openGLContext->PXOpenGLStringICallBack(stringNameID, index);
+    return (const char*)openGLContext->PXOpenGLStringICallBack(stringNameID, index);
 }
 
 void PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval)
@@ -1411,7 +1411,7 @@ PXOpenGLVersion PXOpenGLVersionParse(const PXInt32U versionID)
     }
 }
 
-void PXOpenGLCacheFunction(void** loadList, PXSize* currentSize, char* name, void* functionADress)
+void PXOpenGLCacheFunction(void** loadList, PXSize* currentSize, const char* name, void* functionADress)
 {
     PXSize index = *currentSize;
 
@@ -1937,7 +1937,7 @@ void PXOpenGLCreateWindowless(PXOpenGL* const openGLContext, const PXSize width,
 
     if (!openGLContext->AttachedWindow) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
     {
-        PXWindow* const window = (PXWindow* const)PXMemoryAllocate(sizeof(PXWindow) * 1u);
+        PXWindow* const window = PXMemoryAllocateType(PXWindow, 1u);
 
         PXWindowConstruct(window);
 

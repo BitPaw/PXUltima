@@ -158,7 +158,7 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 	}
 }
 
-void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, const PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult)
 {
 	const PXSize sizeOfMatrix = sizeof(PXMatrix4x4F);
 

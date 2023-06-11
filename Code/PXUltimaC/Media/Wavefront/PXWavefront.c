@@ -705,7 +705,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
     model->DataNormalWidth = 3u;
     model->DataTextureWidth = 2u;
     model->DataColorWidth = 0u;
-    model->DataIndexWidth = renderMode;
+    model->DataIndexWidth = renderMode[0]; // TODO: is this right?
 
     model->DataVertexSize = vertexListSize;
     model->DataNormalSize = normalListSize;
@@ -720,7 +720,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
 
 
-    float* buffer = PXMemoryAllocateClear(expectedSize);
+    float* buffer = PXMemoryAllocateType(float, expectedSize);
     //MemorySet(buffer, expectedSize, 0xFF);
 
     float* vertexValueList = buffer;
@@ -739,8 +739,6 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
     PXSize parameterListOffset = 0;
     //MemorySet(parameterList, 0 * sizeof(float), 0xDD);
 
-
-
     while (!PXFileIsAtEnd(inputStream))
     {
         PXWavefrontLineType objLineType = PXWavefrontLineInvalid;
@@ -750,7 +748,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
             PXFileReadI8U(inputStream, &lineTypeID); // Line Type
 
-            objLineType = lineTypeID;
+            objLineType = (PXWavefrontLineType)lineTypeID;
         }
 
         switch (objLineType)
@@ -769,7 +767,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
                     PXFileReadI8U(inputStream, &compilerSymbolLexerID); // following datatype
 
-                    compilerSymbolLexer = compilerSymbolLexerID;
+                    compilerSymbolLexer = (PXCompilerSymbolLexer)compilerSymbolLexerID;
                 }
 
                 switch (compilerSymbolLexer)
@@ -784,7 +782,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
                     case PXCompilerSymbolLexerString:
                     {
                         unsigned short size = 0;
-                        char* name = model->Data;
+                        char* name = (char*)model->Data;
 
                         if (PXWavefrontLineMaterialLibraryUse == objLineType)
                         {
@@ -815,7 +813,7 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
 
                                 PXModelMaterialGet(model, i, &pxMaterial);
 
-                                const PXBool isValid = PXTextCompare(&materialName, &pxMaterial); // is found?
+                                const PXBool isValid = PXTextCompare(&materialName, &pxMaterial.Name); // is found?
 
                                 if (isValid)
                                 {

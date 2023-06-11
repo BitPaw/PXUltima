@@ -32,7 +32,7 @@ void PXLinkedListFixedNodeSet(PXLinkedListFixed* const linkedListFixed, void* co
     }
 }
 
-PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const PXSize index)
+PXBool PXLinkedListFixedNodeAt(const PXLinkedListFixed* const linkedListFixed, PXLinkedListNodeFixed* const pxLinkedListNodeFixed, const PXSize index)
 {
     const PXSize nodeBlockSize = PXLinkedListFixedNodeStride(linkedListFixed);
     const void* const data = (PXAdress)linkedListFixed->Data + nodeBlockSize * index;
@@ -41,8 +41,9 @@ PXBool PXLinkedListFixedNodeAt(PXLinkedListFixed* const linkedListFixed, PXLinke
 
     {
         const PXSize dataSize = PXLinkedListFixedDataSize(linkedListFixed);
+        PXLinkedListNodeFixed* nextNode = (PXLinkedListNodeFixed*)((PXAdress)pxLinkedListNodeFixed->BlockData + dataSize);
 
-        pxLinkedListNodeFixed->NodeNext = (PXAdress)pxLinkedListNodeFixed->BlockData + dataSize;
+        pxLinkedListNodeFixed->NodeNext = nextNode;
     }    
 
     /*
@@ -111,7 +112,7 @@ PXBool PXLinkedListFixedDataSize(const PXLinkedListFixed* const linkedListFixed)
 
 PXBool PXLinkedListFixedIsDataEmbedded(const PXLinkedListFixed* const linkedListFixed)
 {
-    return linkedListFixed->NodeSize != (void*)-1;
+    return linkedListFixed->NodeSize != (PXSize)-1;
 }
 
 PXSize PXLinkedListFixedNodeStride(const PXLinkedListFixed* const linkedListFixed)

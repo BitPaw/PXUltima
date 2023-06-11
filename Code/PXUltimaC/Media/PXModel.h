@@ -127,8 +127,8 @@ extern "C"
 	PXPublic void PXModelConstruct(PXModel* const model);
 	PXPublic void PXModelDestruct(PXModel* const model);
 
-	PXPublic PXSize PXModelMaterialAmount(PXModel* const model);
-	PXPublic PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial);
+	PXPublic PXSize PXModelMaterialAmount(const PXModel* const model);
+	PXPublic PXBool PXModelMaterialGet(const PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial);
 
 
 	PXPublic unsigned char PXModelSegmentsAmount(const PXModel* const model);

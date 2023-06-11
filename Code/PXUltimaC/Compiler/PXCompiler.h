@@ -107,18 +107,18 @@ extern "C"
 		PXBool DoPrintOutput;
 		
 		PXSize EndOfCommand;
-		char* EndOfCommandSize;
+		const char* EndOfCommandSize;
 
 
 		PXBool CommentsKeep;
 		PXSize CommentSingleLineSize;
-		char* CommentSingleLine;
+		const char* CommentSingleLine;
 
 		PXSize CommentMultibleLineBeginSize;
-		char* CommentMultibleLineBegin;
+		const char* CommentMultibleLineBegin;
 
 		PXSize CommentMultibleLineEndSize;
-		char* CommentMultibleLineEnd;
+		const char* CommentMultibleLineEnd;
 	}
 	PXCompilerSettings;
 

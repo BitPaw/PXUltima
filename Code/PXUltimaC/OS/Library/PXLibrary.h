@@ -67,15 +67,14 @@ extern "C"
 
     typedef struct PXSymbol_
     {
-        ULONG TypeIndex;        // Type Index of symbol
-        ULONG Index;
-        ULONG Size;
-        void* ModBase;          // Base Address of module comtaining this symbol
-        ULONG Flags;
-
-        void* Address;          // Address of symbol including base address of module
-        ULONG Register;         // register holding value or pointer to value
-        ULONG Scope;            // scope of the symbol
+        PXSize TypeIndex;        // Type Index of symbol
+        PXSize Index;
+        PXSize Size;
+        PXSize ModBase;          // Base Address of module comtaining this symbol
+        PXSize Flags;
+        PXSize Address;          // Address of symbol including base address of module
+        PXSize Register;         // register holding value or pointer to value
+        PXSize Scope;            // scope of the symbol
 
         PXSymbolType Type;// PDB classification
         PXText Name;
@@ -104,7 +103,7 @@ extern "C"
 
     PXPublic PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath); //  gain access to an executable object file. RTLD_LAZY
     PXPublic PXBool PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
-    PXPublic PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
+    PXPublic PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
 
     PXPublic PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName);
 

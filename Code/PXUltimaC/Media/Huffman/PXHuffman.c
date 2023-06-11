@@ -246,7 +246,7 @@ tree of the dynamic huffman tree lengths is generated*/
 	/*number of code length codes. Unlike the spec, the value 4 is added to it here already*/
 	//HCLEN = readBits(reader, 4) + 4;
 
-	bitlen_cl = PXMemoryAllocate(sizeof(unsigned int) * NUM_CODE_LENGTH_CODES);
+	bitlen_cl = PXMemoryAllocateType(unsigned int, NUM_CODE_LENGTH_CODES);
 	if (!bitlen_cl) return 83 /*alloc fail*/;
 
 	//HuffmanTree_init(&tree_cl);
@@ -272,8 +272,8 @@ tree of the dynamic huffman tree lengths is generated*/
 		if (error) break;
 
 		/*now we can use this tree to read the lengths for the tree that this function will return*/
-		bitlen_ll = PXMemoryAllocate(sizeof(unsigned int) * NUM_DEFLATE_CODE_SYMBOLS);
-		bitlen_d = PXMemoryAllocate(sizeof(unsigned int) * NUM_DISTANCE_SYMBOLS);
+		bitlen_ll = (unsigned int*)PXMemoryAllocate(sizeof(unsigned int) * NUM_DEFLATE_CODE_SYMBOLS);
+		bitlen_d = (unsigned int*)PXMemoryAllocate(sizeof(unsigned int) * NUM_DISTANCE_SYMBOLS);
 		if(!bitlen_ll || !bitlen_d) return 83;// /*alloc fail*/);
 
 		PXMemoryClear(bitlen_ll, NUM_DEFLATE_CODE_SYMBOLS * sizeof(*bitlen_ll));
@@ -476,10 +476,10 @@ void PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
 
 PXHuffmanCodeType PXHuffmanCodeTypeFromCode(const unsigned short code)
 {
-	const PXHuffmanCodeType symbolType =
-		HuffmanCodeLiteral * (code <= 255u) + 
-		HuffmanCodeLength * (code >= 257u && code <= 285u) +
-		HuffmanCodeEndOfBlock * (code == 256u); 
+	const PXHuffmanCodeType symbolType = (PXHuffmanCodeType)(
+		(PXSize)HuffmanCodeLiteral * (code <= 255u) + 
+		(PXSize)HuffmanCodeLength * (code >= 257u && code <= 285u) +
+		(PXSize)HuffmanCodeEndOfBlock * (code == 256u));
 
 	// if no case hits, we have 'HuffmanCodeInvalid' as its default 0
 

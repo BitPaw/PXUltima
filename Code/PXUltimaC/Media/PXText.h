@@ -86,10 +86,10 @@ extern "C"
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = format;\
-		(pxText)->TextA = address;
+		(pxText)->TextA = (char*)(address);
 
-#define PXTextConstructFromAdressA(pxText, address, size) PXTextConstructFromAdress(pxText, address, size, TextFormatASCII)
-#define PXTextConstructFromAdressW(pxText, address, size) PXTextConstructFromAdress(pxText, address, size, TextFormatUNICODE)
+#define PXTextConstructFromAdressA(pxText, address, size) PXTextConstructFromAdress(pxText, (char*)address, size, TextFormatASCII)
+#define PXTextConstructFromAdressW(pxText, address, size) PXTextConstructFromAdress(pxText, (char*)address, size, TextFormatUNICODE)
 
 #define PXTextMakeFixedC(pxText, c)\
 		char character = c; \

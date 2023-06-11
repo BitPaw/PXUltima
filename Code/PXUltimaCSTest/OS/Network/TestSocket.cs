@@ -26,23 +26,28 @@ namespace PX.Test
             client.OnDataSend += OnDataSend;
             client.OnDataReceive += OnDataReceive;
 
-#if true
+#if false
             server.Start(25565, ProtocolMode.ProtocolModeTCP);
 #endif
 
-            System.Threading.Thread.Sleep(200);
+           // System.Threading.Thread.Sleep(200);
 
-#if false
-            client.ConnectToServer("127.0.0.1", 25565);
+#if true
+            ActionResult actionResult  = client.ConnectToServer(25565);
 
-            System.Threading.Thread.Sleep(200);
+            Console.WriteLine("[C#] Connect to server : " + actionResult);
 
-            client.SendData("Hello_it_me");
+           // System.Threading.Thread.Sleep(250);
+
+            ActionResult sendResult = client.SendData("Hello_it_me");
+
+            Console.WriteLine("[C#] Send data : " + sendResult);
 #endif
+           // System.Threading.Thread.Sleep(250);
 
-            while (true) { }
 
-            client.Dispose();
+            client.Dispose(); 
+            server.Dispose();
         }
 
         private static void OnDataReceive(SocketDataReceivedEventData socketDataReceivedEventData)
@@ -52,7 +57,7 @@ namespace PX.Test
 
         private static void OnDataSend(SocketDataSendEventData socketDataSendEventData)
         {
-            Console.WriteLine("Client OnDataSend : " + socketDataSendEventData.ToString());
+            Console.WriteLine("[C#] Client OnDataSend : " + socketDataSendEventData.ToString());
         }
 
         private static void OnStateChanged(Socket pxSocket, SocketState oldState, SocketState newState)
@@ -62,7 +67,7 @@ namespace PX.Test
 
         private static void OnDisconnected(Socket serverSocket, Socket clientSocket)
         {
-            Console.WriteLine("Client OnDisconnected");
+            Console.WriteLine("[C#] Client OnDisconnected");
         }
 
         private static void OnConnected(Socket serverSocket, Socket clientSocket)
@@ -72,17 +77,17 @@ namespace PX.Test
 
         private static void OnClosed(Socket pxSocket)
         {
-            Console.WriteLine("Client OnClosed");
+            Console.WriteLine("[C#] Client OnClosed");
         }
 
         private static void OnCreated(Socket pxSocket)
         {
-            Console.WriteLine("Client OnCreated");
+            Console.WriteLine("[C#] Client OnCreated");
         }
 
         private static void OnCreating(Socket pxSocket, ref bool use)
         {
-            Console.WriteLine("Client OnCreating");
+            Console.WriteLine("[C#] Client OnCreating");
         }
     }
 }

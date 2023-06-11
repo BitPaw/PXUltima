@@ -192,7 +192,7 @@ extern "C"
 		unsigned int ID;
 		PXShaderType Type;
 		PXSize ContentSize;
-		char* Content;
+		const char* Content;
 	}
 	PXShader;
 

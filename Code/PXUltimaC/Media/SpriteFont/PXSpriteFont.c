@@ -31,7 +31,7 @@ PXSpriteFontCharacter* PXSpriteFontGetCharacter(PXSpriteFont* PXSpriteFont, cons
 
 		for (PXSize i = 0; i < page->CharacteListSize; ++i)
 		{
-			const PXSpriteFontCharacter* bitMapFontCharacter = &page->CharacteList[i];
+			PXSpriteFontCharacter* const bitMapFontCharacter = &page->CharacteList[i];
 			const PXInt32U target = bitMapFontCharacter->ID;
 			const PXBool isSameCharacter = target == character;
 

@@ -129,7 +129,7 @@ PXActionResult PXRIFFSerialize(const PXRIFF* const riff, PXFile* const PXFile)
 
 
 	PXFileWriteI32UE(PXFile, riffSignature, PXEndianLittle);
-	PXFileWriteI32UE(PXFile, &riff->ChunkSize, PXEndianLittle);
+	PXFileWriteI32UE(PXFile, riff->ChunkSize, PXEndianLittle);
 	PXFileWriteI32UE(PXFile, riffType, PXEndianLittle);
 
 	return PXActionSuccessful;

@@ -270,7 +270,12 @@ PXActionResult PXClipBoardClose(PXClipBoard* const clipBoard)
     return PXActionNotImplemented;
 
 #elif PXOSWindowsDestop
-	return CloseClipboard(); // Windows 2000, User32.dll, winuser.h
+	const PXBool successfull = CloseClipboard(); // Windows 2000, User32.dll, winuser.h
+
+	PXActionOnErrorFetchAndReturn(!successfull);
+
+	return PXActionSuccessful;
+
 #else
 	return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -302,7 +307,11 @@ PXActionResult PXClipBoardClear(PXClipBoard* const clipBoard)
 #if OSUnix
     return PXActionNotImplemented;
 #elif PXOSWindowsDestop
-	return EmptyClipboard(); // Windows 2000, User32.dll, winuser.h
+	const PXBool successfull = EmptyClipboard(); // Windows 2000, User32.dll, winuser.h
+
+	PXActionOnErrorFetchAndReturn(!successfull);
+
+	return PXActionSuccessful;
 #else
 	return PXActionNotSupportedByOperatingSystem;
 #endif

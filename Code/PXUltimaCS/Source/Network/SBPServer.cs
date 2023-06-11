@@ -11,13 +11,13 @@ namespace PX
 
         }
 
-        [DllImport("PXUltima.dll")] private static extern void PXSBPServerConstruct(ref PXSBPServer pxSBPServer);
-        [DllImport("PXUltima.dll")] private static extern void PXSBPServerDestruct(ref PXSBPServer pxSBPServer);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPServerConstruct(ref PXSBPServer pxSBPServer);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPServerDestruct(ref PXSBPServer pxSBPServer);
 
-        [DllImport("PXUltima.dll")] private static extern void PXSBPServerReceiverEventListSet(ref PXSBPServer pxSBPServe, ref PXSBPReceiverEventList pxSBPReceiverEventList);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPServerReceiverEventListSet(ref PXSBPServer pxSBPServe, ref PXSBPReceiverEventList pxSBPReceiverEventList);
 
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXSBPServerStart(ref PXSBPServer pxSBPServer, ushort port);
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXSBPServerStop(ref PXSBPServer pxSBPServer);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPServerStart(ref PXSBPServer pxSBPServer, ushort port);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPServerStop(ref PXSBPServer pxSBPServer);
 
         private PXSBPServer _pxSBPServer = new PXSBPServer();
 

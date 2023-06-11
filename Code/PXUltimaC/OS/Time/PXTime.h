@@ -54,8 +54,8 @@ extern "C"
 	}
 	PXTime;
 
-	PXPublic TimeDayOfWeek PXTimeMonthFromID(PXInt8U monthID);
-	PXPublic TimeMonth PXTimeDayFromID(PXInt8U dayID);
+	PXPublic TimeMonth  PXTimeMonthFromID(const PXInt8U monthID);
+	PXPublic TimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID);
 
 	PXPublic void PXTimeNow(PXTime* const time);
 	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);

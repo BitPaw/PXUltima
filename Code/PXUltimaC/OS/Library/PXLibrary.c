@@ -94,7 +94,7 @@ PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 			pxLibrary->ID = dlopen(filePath, mode);
 
 #elif PXOSWindowsDestop
-			pxLibrary->ID = LoadLibraryA(filePath); // Windows XP, Kernel32.dll, libloaderapi.h
+			pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
 
 			return pxLibrary->ID != PXNull;
@@ -106,7 +106,7 @@ PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 			return 0;
 
 #elif PXOSWindowsDestop
-			pxLibrary->ID = LoadLibraryW(filePath); // Windows XP, Kernel32.dll, libloaderapi.h
+			pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
 
 			return pxLibrary->ID != PXNull;
 #endif
@@ -130,7 +130,7 @@ PXBool PXLibraryClose(PXLibrary* const pxLibrary)
 	return result;
 }
 
-PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFunction, const PXText* symbolName)
+PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction libraryFunction, const PXText* symbolName)
 {
 #if OSUnix
 	const LibraryFunction functionPointer = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName->TextA);
@@ -138,7 +138,10 @@ PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* libraryFu
 	const PXBool successful = errorString;
 #elif OSWindows
 	const LibraryFunction functionPointer = GetProcAddress(pxLibrary->ID, symbolName->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
-	const PXBool successful = functionPointer;
+	const PXBool successful = functionPointer != PXNull;
+
+	PXActionOnErrorFetchAndReturn(!successful);
+
 #endif
 
 #if OSUnix
@@ -165,7 +168,7 @@ PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryNa
 #elif OSWindows
 			libraryName->SizeUsed = GetModuleFileNameExA(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextA, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
 
-			PXActionReturnOnError(libraryName->SizeUsed == 0);
+			PXActionOnErrorFetchAndReturn(libraryName->SizeUsed == 0);
 #endif
 
 			break;
@@ -179,7 +182,7 @@ PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryNa
 #elif OSWindows
 			libraryName->SizeUsed = GetModuleFileNameExW(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextW, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
 
-			PXActionReturnOnError(libraryName->SizeUsed == 0);
+			PXActionOnErrorFetchAndReturn(libraryName->SizeUsed == 0);
 #endif
 			break;
 		}
@@ -201,7 +204,7 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
 	pxSymbol.Address = pSymInfo->Address;
 	pxSymbol.Register = pSymInfo->Register;
 	pxSymbol.Scope = pSymInfo->Scope;
-	pxSymbol.Type = pSymInfo->Tag;
+	pxSymbol.Type = (PXSymbolType)pSymInfo->Tag;
 	//pxSymbol.Name;
 	PXTextConstructFromAdressA(&pxSymbol.Name, pSymInfo->Name, pSymInfo->NameLen);
 

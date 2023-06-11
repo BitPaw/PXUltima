@@ -11,17 +11,17 @@ namespace PX
             
         }
 
-        [DllImport("PXUltima.dll")] private static extern void PXDataBaseConnectionConstruct(ref PXSQLDataBaseConnection dataBaseConnection);
-        [DllImport("PXUltima.dll")] private static extern void PXDataBaseConnectionDestruct(ref PXSQLDataBaseConnection dataBaseConnection);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXDataBaseConnectionConstruct(ref PXSQLDataBaseConnection dataBaseConnection);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXDataBaseConnectionDestruct(ref PXSQLDataBaseConnection dataBaseConnection);
 
-        [DllImport("PXUltima.dll")] private static extern PX.ActionResult PXDataBaseConnectionConnect(ref PXSQLDataBaseConnection dataBaseConnection, ref PXText source, ref PXText database, ref PXText user, ref PXText password);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXDataBaseConnectionConnect(ref PXSQLDataBaseConnection dataBaseConnection, ref PXText source, ref PXText database, ref PXText user, ref PXText password);
 
-        [DllImport("PXUltima.dll")] private static extern void PXDataBaseConnectionDisconnect(ref PXSQLDataBaseConnection dataBaseConnection);
-        [DllImport("PXUltima.dll")] private static extern void PXDataBaseConnectionCleanup(ref PXSQLDataBaseConnection dataBaseConnection);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXDataBaseConnectionDisconnect(ref PXSQLDataBaseConnection dataBaseConnection);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXDataBaseConnectionCleanup(ref PXSQLDataBaseConnection dataBaseConnection);
 
-        [DllImport("PXUltima.dll")] private static extern void PXDataBaseConnectionScanForDrivers(ref PXSQLDataBaseConnection dataBaseConnection);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXDataBaseConnectionScanForDrivers(ref PXSQLDataBaseConnection dataBaseConnection);
 
-        [DllImport("PXUltima.dll")] private static extern void PXDataBaseConnectionExecute(ref PXSQLDataBaseConnection dataBaseConnection, ref PXText PXSQLStatement);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXDataBaseConnectionExecute(ref PXSQLDataBaseConnection dataBaseConnection, ref PXText PXSQLStatement);
 
 
         private PXSQLDataBaseConnection _pxSQLDataBaseConnection = new PXSQLDataBaseConnection();

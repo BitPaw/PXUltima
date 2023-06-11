@@ -3,9 +3,11 @@
     public enum ActionResult
     {
         //---<General>-----------------------
-        Invalid, // Default iniitlialisation value, no not use.
+        Invalid, // Default iniitlialisation value, do not use.
         Successful, //  finished successful
-        FailedAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
+        DidNothing, // if the function did nothing
+        FailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
+        FailedMemoryRelease,
         DeniedNoPermission,
         //-----------------------------------
 
@@ -13,10 +15,72 @@
         NotSupportedByLibrary,
         NotSupportedByOperatingSystem,
 
+        RefusedMissingCallBack,
+
+        FailedInitialization,
+        FailedCleanup,
+        FailedModuleLoad,
+        FailedDataFetch,
+
+        InterruptedByEvent,
+        InterruptedByFunctionCall,
+
+        RefuedPermissionDenied,
+        FailedResourcedNotEnough,
+
+        WouldBlock,
+        NowInProgress,
+        AlreadyInProgress,
+
+
+
+        RefuedNetworkNotConnected,
+        RefuedNetworkNotReachable,
+        FailedHostNotFound,
+
+        RefuedServiceNotRunning,
+
+        xxxxxxxxxxxx,
+
+        RefuedAlreadyInUse,
+
+        RefuedProtocolTypeInvalid,
+        RefuedProtocolOptionInvalid,
+        RefuedProtocolNotSupported,
+        RefuedProtocolFamilyNotSupported,
+
+        RefuedAddressFamilyNotSupportedByProtocol,
+
+
+
+        RefuedObjectTypeInvalid,
+        RefuedObjectTypeNotSupported,
+
+        RefuedOperationNotSupported,
+
+        Cancelled,
+
+        //---<Object>------------
+        RefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
+        RefuedObjectIDInvalid, // Use if you have an invalid ID or HANDLE
+                                       //-----------------------
+
+
+        //---<Function input>---
+        RefuedAdressInvalid, // System detected an invalid pointer
+
+
+        RefuedParameterNull, // Some needed Parameter is null
+
+        RefuedTextFormatUnsupported,
+
+
+        RefuedInputInvalid,
 
         RefuedInputBufferNull, // is NULL
         RefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
         RefuedInputBufferTooSmal, // cant 
+        RefuedInputBufferTooBig,
 
         RefuedOutputBufferNull, // is NULL 
         RefuedOutputBufferTooSmal, // 
@@ -28,6 +92,25 @@
         FailedElementNotFound,
 
         InvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -94,6 +177,16 @@
         RequestedServiceNotAvailableForSocket,
 
 
+        //---<Service>-----------------------
+        NoResposeCountNotConnect,
+        FailedConnectionFailure,
+        RefusedNotConnected, // Trying to use a command that requires an already established connection.
+        FailedSettingsInvalid,
+        FailedCommandDeploy, // Failure to awns from source to target
+        FailedCommandExecute, // Faiure to execute on target
+        FailedCommandRetrieve, // Failure to retrieve result from target
+                                       //-----------------------------------
+
         //---<Server>------------------------
         NoPXClientWithThisID,
         //-----------------------------------
@@ -112,8 +205,88 @@
         SubSystemNetworkFailed,
         SocketIsBlocking,
 
+
+        FailedDirectoryIsNotEmpty,
+
+        FailedTooManyProcesses,
+
+        FailedUserQuotaExceeded,
+        FailedDiskQuotaExceeded,
+
+        FailedHandleIsStale,
+
+        FailedResourceNotAvailableLocally,
+
+        FailedNetworkSubsystemNotReady,
+
+        RefusedResourceIsShuttingdown,
+
+        WindowsSocketVersionNotSupported,
         WindowsSocketSystemNotInitialized,
-        //----------------------------------------
+        WindowsSocketSystemWasShutdown,
+        //-------------------------------------------------
+
+        //---<Audio>---------------------------------------
+        AudioResultDeviceIDInvalid,
+        AudioResultDeviceHandleInvalid,
+        AudioResultDeviceNoDriver,
+
+        AudioResultDriverNotReachable, // Maybe diabled, or deactivated
+        AudioResultDriverNotEnabled, // No driver to use
+
+
+        AudioResultDeviceAlreadyAllocated,
+        AudioResultOutOfMemory,
+
+        AudioResultNotSupported,
+
+        AudioResultErrorValueInvalid,
+
+
+        AudioResultFlagInvalid,
+        AudioResultParameterInvalid,
+
+        AudioResultDeviceHandleBusy,
+
+        AudioResultAliasNotFound,
+
+
+
+        AudioResultPXRegistryValueNotFound,
+
+        AudioResultDriverNoCallback,
+
+        AudioResultMoreData,
+
+
+        // Custom
+        AudioResultDeviceListNotBigEnough,
+
+
+        // Windows spesific
+        AudioResultPXRegistryDatabaseInvalid,
+        AudioResultPXRegistryKeyNotFound,
+        AudioResultPXRegistryWriteError,
+        AudioResultPXRegistryReadError,
+        AudioResultPXRegistryDeleteError,
+
+        AudioResultErrorUnspecified,        // Bad, but windows, am i right?
+
+
+
+        // only
+        AudioResultWaveFormatUnsupported,
+        AudioResultDeviceIsStillPlaying,
+        AudioResultReaderIsNotPrepared,
+        AudioResultDeviceIsSynchronous,
+        //-------------------------------------------------
+
+        FailedConnectionTerminatedByNetwork,
+        FailedConnectionTerminatedByOwnSoftware,
+        FailedConnectionTerminatedByPeer,
+
+        FailedMemoryAllocationInternal,
+
 
         // POSIX Error codes, these are pre-defined
         UnkownError, // OTHER
@@ -127,7 +300,10 @@
         ArgumentListTooLong, // 2BIG
         BadFileDescriptor, // BADF
         BadMessage, // BADMSG
-        DeviceOrResourceBusy, // BUSY
+
+
+
+        RefusedResourceBusy, // BUSY
         OperationCanceled,// CANCELED
         NoChildProcesses, // CHILD
         ConnectionAborted, // CONNABORTED
@@ -146,7 +322,7 @@
         InterruptedFunction, // INTR
         InvalidArgument, // INVAL
         IOFailure, // IO
-        SocketIsConnected, // ISCONN
+        RefusedAlreadyConnected, // ISCONN
         IsADirectory, // ISDIR
         TooManyLevelsOfSymbolicLinks, // LOOP
         FileDescriptorValueTooLarge, // MFILE
@@ -170,7 +346,7 @@
         NoStreamResources, // NOSR
         NotAStream, // NOSTR
         FunctionNotSupported, // NOSYS
-        TheSocketIsNotConnected, // NOTCONN
+        FailedNotConnected, // NOTCONN
         NotADirectory, // NOTDIR
         DirectoryNotEmpty, // NOTEMPTY
         StateNotRecoverable, // NOTRECOVERABLE

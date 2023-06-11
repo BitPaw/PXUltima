@@ -15,11 +15,11 @@ void PXModelDestruct(PXModel* const model)
 
 }
 
-PXSize PXModelMaterialAmount(PXModel* const model)
+PXSize PXModelMaterialAmount(const PXModel* const model)
 {
     // Has materials?
     {
-        const PXBool hasMaterial = model->MaterialList;
+        const PXBool hasMaterial = model->MaterialList != PXNull;
 
         if (!hasMaterial)
         {
@@ -39,7 +39,7 @@ PXSize PXModelMaterialAmount(PXModel* const model)
     }
 }
 
-PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial)
+PXBool PXModelMaterialGet(const PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial)
 {
     const PXSize amount = PXModelMaterialAmount(model);
 
@@ -70,21 +70,21 @@ PXBool PXModelMaterialGet(PXModel* const model, const PXSize materialID, PXMater
         {
             unsigned short range = 0;
             PXFileReadI16U(&materialData, &range);
-            pxMaterial->Name.TextA = PXFileCursorPosition(&materialData);
+            pxMaterial->Name.TextA = (char*)PXFileCursorPosition(&materialData);
             pxMaterial->Name.SizeUsed  = range;
 
             PXFileCursorAdvance(&materialData, range);
 
             PXFileReadI16U(&materialData, &range);
-            pxMaterial->DiffuseTextureFilePath.TextA = PXFileCursorPosition(&materialData);
+            pxMaterial->DiffuseTextureFilePath.TextA = (char*)PXFileCursorPosition(&materialData);
             pxMaterial->DiffuseTextureFilePath.SizeUsed = range;
 
             PXFileCursorAdvance(&materialData, range);
 
-            PXFileReadFV(&materialData, &pxMaterial->Ambient, 3u);
-            PXFileReadFV(&materialData, &pxMaterial->Diffuse, 3u);
-            PXFileReadFV(&materialData, &pxMaterial->Specular, 3u);
-            PXFileReadFV(&materialData, &pxMaterial->Emission, 3u);
+            PXFileReadFV(&materialData, pxMaterial->Ambient, 3u);
+            PXFileReadFV(&materialData, pxMaterial->Diffuse, 3u);
+            PXFileReadFV(&materialData, pxMaterial->Specular, 3u);
+            PXFileReadFV(&materialData, pxMaterial->Emission, 3u);
 
             break;
         }
@@ -125,7 +125,7 @@ void PXModelSegmentsGet(const PXModel* const model, const PXSize index, MeshSegm
     PXFileReadI32U(&dataStream, &meshSegment->DrawClusterSize);
     PXFileReadI32U(&dataStream, &meshSegment->TextureID);
 
-	meshSegment->VertexData = model->DataVertexList;
+	meshSegment->VertexData = (float*)model->DataVertexList;
 }
 
 void PXModelSegmentsAdd(PXModel* const model, const unsigned int renderMode, const unsigned int renderSize, const unsigned int renderMaterial)
@@ -184,7 +184,7 @@ PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
 
         do
         {
-            const FileFormatExtension imageFileFormat = fileGuessResult + fileFormatID;
+            const FileFormatExtension imageFileFormat = (FileFormatExtension)((int)fileGuessResult + fileFormatID);
 
             fileGuessResult = PXModelLoadD(model, &dataStream, imageFileFormat);
 

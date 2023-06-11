@@ -162,7 +162,7 @@ PXActionResult PXID3Parse(PXID3* const id3, PXFile* const PXFile)
 
             if(!isValidVersion)
             {
-                return 0;
+                return PXActionRefusedInvalidVersion;
             }
         }
     }
@@ -348,7 +348,7 @@ PXActionResult PXID3Parse(PXID3* const id3, PXFile* const PXFile)
                                 break;
                             case Popularimeter:
                             {
-                                const unsigned char* emailToUser = PXFileCursorPosition(PXFile);
+                                const char* emailToUser = (char*)PXFileCursorPosition(PXFile);
                                 const PXSize maximalToRead = PXFileRemainingSize(PXFile) - 6u;
                                 const PXSize emailToUserSize = PXTextLengthA((char*)emailToUser, maximalToRead);
                                 unsigned char rating = 0;

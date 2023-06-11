@@ -2061,9 +2061,9 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
                 wndclass.lpszMenuName = 0;
                 wndclass.lpszClassName = L"PXUltima_WindowCreate";
 
-                const WORD classID = RegisterClassA(&wndclass);
+                const WORD classID = RegisterClassW(&wndclass);
 
-                windowClassName = (char*)classID;
+                windowClassName = (wchar_t*)classID;
             }
 
             windowID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
@@ -2099,7 +2099,7 @@ PXThreadResult PXWindowCreateThread(PXWindow* const window)
         window->ID = windowID;
         window->GraphicInstance.AttachedWindow = window;
 
-        PXWindowPosition(window, 0, 0);
+        PXWindowPosition(window, PXNull, PXNull);
     }
 
     // MISSING
@@ -2389,7 +2389,7 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 #if OSUnix
             return 0;
 #elif PXOSWindowsDestop
-            const PXBool success = SetWindowTextA(window->ID, title->TextA, title->SizeUsed); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = SetWindowTextA(window->ID, title->TextA); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
@@ -2403,7 +2403,7 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 #if OSUnix
             return 0;
 #elif PXOSWindowsDestop
-            const PXBool success = SetWindowTextW(window->ID, title->TextW, title->SizeUsed); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = SetWindowTextW(window->ID, title->TextW); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
@@ -2562,21 +2562,32 @@ void PXWindowSizeChange(PXWindow* window, const unsigned int x, const unsigned i
 #endif
 }
 
-void PXWindowPosition(PXWindow* window, unsigned int* x, unsigned int* y)
+PXActionResult PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
 {
 #if OSUnix
+    return PXActionNotImplemented;
 
 #elif PXOSWindowsDestop
     RECT rectangle;
     const PXBool success = GetWindowRect(window->ID, &rectangle); // Windows 2000, User32.dll, winuser.h
 
-    if (success)
+    if (!success)
     {
-        window->X = rectangle.left;
-        window->Y = rectangle.top;
-        window->Width = rectangle.right - rectangle.left;
-        window->Height = rectangle.bottom - rectangle.top;
+        *x = -1;
+        *y = -1;
+
+        return PXErrorCurrent();
     }
+
+    window->X = rectangle.left;
+    window->Y = rectangle.top;
+    window->Width = rectangle.right - rectangle.left;
+    window->Height = rectangle.bottom - rectangle.top;
+
+    return PXActionSuccessful;
+
+#else
+    return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 

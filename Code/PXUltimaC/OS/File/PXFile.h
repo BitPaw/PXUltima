@@ -5,6 +5,7 @@
 #define PXFileUSE OSDeviceToUse == OSDeviceDestop
 #if PXFileUSE
 
+#define PXFileCursorPositionInvalid (void*)-1
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -240,7 +241,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXSize* extension, PXSize extensionSize
 	);
 
-	PXPublic PXSize PXFilePathExtensionGet(const PXText* const filePath, const PXText* const extension);
+	PXPublic PXSize PXFilePathExtensionGet(const PXText* const filePath, PXText* const extension);
 
 
 

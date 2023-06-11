@@ -1,6 +1,6 @@
 #include "PXTTF.h"
 
-EncodingID PXPXTTFEncodingFromID(const PlatformID platformID, unsigned char encodingID)
+EncodingID PXTTFEncodingFromID(const PlatformID platformID, unsigned char encodingID)
 {
 	switch(platformID)
 	{
@@ -67,7 +67,7 @@ EncodingID PXPXTTFEncodingFromID(const PlatformID platformID, unsigned char enco
 	return EncodingInvalid;
 }
 
-PXTTFVersionType PXPXTTFVersionTypeFromID(unsigned short major, unsigned short minor)
+PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor)
 {
 	switch(minor)
 	{
@@ -96,12 +96,12 @@ PXTTFVersionType PXPXTTFVersionTypeFromID(unsigned short major, unsigned short m
 	return PXTTFVersionInvalid;
 }
 
-void PXPXTTFTableEntryTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType)
+void PXTTFTableEntryTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType)
 {
 
 }
 
-PXTTFTableEntryType PXPXTTFTableEntryTypeFromID(const unsigned int tableEntryType)
+PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType)
 {
 	switch(tableEntryType)
 	{
@@ -158,21 +158,21 @@ PXTTFTableEntryType PXPXTTFTableEntryTypeFromID(const unsigned int tableEntryTyp
 	}
 }
 
-void PXPXTTFConstruct(PXTTF* const ttf)
+void PXTTFConstruct(PXTTF* const ttf)
 {
 	PXMemoryClear(ttf, sizeof(PXTTF));
 }
 
-void PXPXTTFDestruct(PXTTF* const ttf)
+void PXTTFDestruct(PXTTF* const ttf)
 {
 	// TODO
 }
 
-PXActionResult PXPXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
+PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 {
 	PXTTFOffsetTable offsetTable;
 
-	PXPXTTFConstruct(ttf);
+	PXTTFConstruct(ttf);
 
 	/*
 

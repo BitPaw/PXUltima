@@ -107,6 +107,8 @@ extern "C"
 
 	typedef void (*PXProcessDetectedEvent)(PXProcess* const pxProcess);
 
+	PXPublic void PXProcessExitCurrent(const PXInt32U exitCode);
+
 	PXPublic PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
 
 	PXPublic PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
@@ -115,7 +117,7 @@ extern "C"
 	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);
 
 	PXPublic PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
-	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, void* const targetAdress, const void* const buffer, const PXSize bufferSize);
 
 	PXPublic PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 

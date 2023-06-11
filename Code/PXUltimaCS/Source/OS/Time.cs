@@ -47,29 +47,34 @@ namespace PX
 
     public class Time
     {
-        [DllImport("PXUltima.dll")] private static extern DayOfWeek PXTimeMonthFromID(byte monthID);
-        [DllImport("PXUltima.dll")] private static extern Month PXTimeDayFromID(byte dayID);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern DayOfWeek PXTimeMonthFromID(byte monthID);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern Month PXTimeDayFromID(byte dayID);
 
-        [DllImport("PXUltima.dll")] private static extern void PXTimeNow(ref PXTime time);
-        [DllImport("PXUltima.dll")] private static extern UIntPtr PXTimeMillisecondsDelta(ref PXTime timeA, ref PXTime timeB);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXTimeNow(ref PXTime time);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern UIntPtr PXTimeMillisecondsDelta(ref PXTime timeA, ref PXTime timeB);
 
-        [DllImport("PXUltima.dll")] private static extern UIntPtr PXTimeCounterStampGet();
-        [DllImport("PXUltima.dll")] private static extern UIntPtr PXTimeCounterFrequencyGet();
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern UIntPtr PXTimeCounterStampGet();
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern UIntPtr PXTimeCounterFrequencyGet();
 
-        public ushort Year;
-        public ushort Milliseconds;
-        public byte Second;
-        public byte Minute;
-        public byte Hour;
-        public byte Day;
-        public byte DayOfWeekID;
-        public byte MonthID;
+        public int Year;
+        public int Milliseconds;
+        public int Second;
+        public int Minute;
+        public int Hour;
+        public int Day;
+        public int DayOfWeekID;
+        public int MonthID;
 
         public DayOfWeek DayOfWeek 
         {
             get
             {
-                return PXTimeMonthFromID(DayOfWeekID);
+                if (DayOfWeekID > 0xFF) 
+                {
+                    return DayOfWeek.Invalid;
+                }
+
+                return PXTimeMonthFromID((byte)DayOfWeekID);
             }
         }
 
@@ -77,7 +82,12 @@ namespace PX
         {
             get
             {
-                return PXTimeDayFromID(MonthID);
+                if (MonthID > 0xFF)
+                {
+                    return Month.Invalid;
+                }
+
+                return PXTimeDayFromID((byte)MonthID);
             }
         }
 

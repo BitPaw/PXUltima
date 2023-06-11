@@ -26,7 +26,7 @@ extern "C"
 	{
 		PXBool Valid;
 		PXEndian EndianFormat;
-		unsigned int ChunkSize;
+		PXInt32U ChunkSize;
 		PXRIFFFormat Format;
 	}
 	PXRIFF;

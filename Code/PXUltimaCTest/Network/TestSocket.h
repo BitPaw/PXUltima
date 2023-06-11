@@ -11,6 +11,8 @@ extern "C"
 
     extern void TestSocket();
 
+    extern void TestSocketClientGeneral();
+
     extern void TestSocketServerGeneral();
 
 #ifdef __cplusplus

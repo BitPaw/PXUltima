@@ -7,7 +7,7 @@
 #include <Windows.h>
 #endif
 
-TimeDayOfWeek PXTimeMonthFromID(PXInt8U monthID)
+TimeMonth  PXTimeMonthFromID(const PXInt8U monthID)
 {
 	switch(monthID)
 	{
@@ -27,7 +27,7 @@ TimeDayOfWeek PXTimeMonthFromID(PXInt8U monthID)
 	}
 }
 
-TimeMonth PXTimeDayFromID(PXInt8U dayID)
+TimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID)
 {
 	switch(dayID)
 	{

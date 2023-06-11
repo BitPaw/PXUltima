@@ -10,10 +10,10 @@
 #include <fcntl.h>
 
 #if OSUnix
-#define PrintSVN vsnprintf
+#define PXPrintfvs vsnprintf
 #elif OSWindows
 // _O_RDONLY, _O_RDWR, _O_RDWR
-#define PrintSVN vsprintf_s
+#define PXPrintfvs vsprintf_s
 #endif
 
 
@@ -121,8 +121,8 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 
 				if (isDot)
 				{
-					PXTextCopyA(extension + i, extension->SizeAllocated, fileNameCache, FileNameMaxSize);
-					PXTextCopyA(fileNameCache, FileNameMaxSize, extension, extension->SizeAllocated);
+					PXTextCopyA(extension->TextA + i, extension->SizeAllocated, fileNameCache, FileNameMaxSize);
+					PXTextCopyA(fileNameCache, FileNameMaxSize, extension->TextA, extension->SizeAllocated);
 					break;
 				}
 			}
@@ -188,7 +188,7 @@ void PXFilePathSplittPositionW(const wchar_t* fullPath, PXSize fullPathMaxSize, 
 {
 }
 
-PXSize PXFilePathExtensionGet(const PXText* const filePath, const PXText* const extension)
+PXSize PXFilePathExtensionGet(const PXText* const filePath, PXText* const extension)
 {
 	PXText stringResult;
 	PXText pxTarget;
@@ -387,7 +387,7 @@ PXActionResult PXFileRemove(const PXText* const filePath)
 			const PXBool success = DeleteFileA(filePath->TextA);
 #endif
 
-			PXActionReturnOnError(!success);
+			PXActionOnErrorFetchAndReturn(!success);
 
 			break;
 		}
@@ -401,10 +401,10 @@ PXActionResult PXFileRemove(const PXText* const filePath)
 			const int resultID = _wremove(filePath->TextW);
 			const PXBool success = 0 == resultID;
 #else
-			const PXBool success = DeleteFileW(filePath->TextA);
+			const PXBool success = DeleteFileW(filePath->TextW);
 #endif
 
-			PXActionReturnOnError(!success);
+			PXActionOnErrorFetchAndReturn(!success);
 
 #endif
 
@@ -438,9 +438,9 @@ PXActionResult PXFileRename(const PXText* const oldName, const PXText* const new
 			const PXBool success = MoveFileA(oldName->TextA, newName->TextA); // Windows XP, Kernel32.dll, winbase.h
 #endif
 
-			PXActionReturnOnError(!success);
+			PXActionOnErrorFetchAndReturn(!success);
 
-			break;
+			return PXActionSuccessful;
 		}
 		case TextFormatUNICODE:
 		{
@@ -455,19 +455,17 @@ PXActionResult PXFileRename(const PXText* const oldName, const PXText* const new
 			const PXBool success = MoveFileW(oldName->TextW, newName->TextW); // Windows XP, Kernel32.dll, winbase.h
 #endif
 
-			PXActionReturnOnError(!success);
+			PXActionOnErrorFetchAndReturn(!success);
+
+			return PXActionSuccessful;
 
 #endif
-
-			break;
 		}
 		default:
 		{
 			return PXActionRefusedInvalidFilePath;
 		}
-	}
-
-	return PXActionSuccessful;
+	}	
 }
 
 PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* const destinationFilePath, const PXBool overrideIfExists)
@@ -502,9 +500,11 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 			const int closeA = fclose(fileSource);
 			const int closeB = fclose(fileDestination);
 #elif OSWindows
-			const PXBool succesfull = CopyFileA(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
+			const PXBool succesfull = CopyFileA(sourceFilePath->TextA, destinationFilePath->TextA, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
 
-			PXActionReturnOnError(!succesfull);
+			PXActionOnErrorFetchAndReturn(!succesfull);
+
+			return PXActionSuccessful;
 #endif
 
 			break;
@@ -513,14 +513,19 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 		{
 #if OSUnix
 			// Convert
+			return PXActionNotImplemented;
 
 #elif OSWindows
-			const PXBool succesfull = CopyFileW(sourceFilePath, destinationFilePath, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
+			const PXBool succesfull = CopyFileW(sourceFilePath->TextW, destinationFilePath->TextW, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
 
-			PXActionReturnOnError(!succesfull);
+			PXActionOnErrorFetchAndReturn(!succesfull);
+
+			return PXActionSuccessful;
 #endif
-
-			break;
+		}
+		default:
+		{
+			return PXActionRefuedTextFormatUnsupported;
 		}
 	}
 }
@@ -653,6 +658,7 @@ void PXFilePathSwapExtension(const PXText* const inputPath, PXText* const export
 PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName)
 {
 #if OSUnix
+	return PXActionNotImplemented;
 
 #elif OSWindows
 
@@ -670,20 +676,20 @@ PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName)
 
 		const char wind[] = "C:\\Windows\\System32\\";
 
-		const PXByte isSSEE = PXTextCompareA(fileName + 4u, 20u, wind, 20u);
+		const PXByte isSSEE = PXTextCompareA(fileName->TextA + 4u, 20u, wind, 20u);
 
 
-		char* texxxx = fileName + 4u;
+		char* texxxx = fileName->TextA + 4u;
 		PXSize xxxxxy = result - 4u;
 
 		if (isSSEE)
 		{
-			texxxx = fileName + 24u;
+			texxxx = fileName->TextA + 24u;
 			xxxxxy = result - 24u;
 		}
 		else
 		{
-			texxxx = fileName + 4u;
+			texxxx = fileName->TextA + 4u;
 			xxxxxy = result - 4u;
 		}
 
@@ -737,7 +743,7 @@ void PXFileConstruct(PXFile* const pxFile)
 {
 	PXMemoryClear(pxFile, sizeof(PXFile));
 
-	pxFile->ID = -1;
+	pxFile->ID = PXHandleNotSet;
 }
 
 void PXFileDestruct(PXFile* const pxFile)
@@ -1167,7 +1173,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 
 		// check if successful
 		{
-			const PXBool successful = fileMappingHandleResult;
+			const PXBool successful = fileMappingHandleResult != PXNull;
 
 			if (successful)
 			{
@@ -1333,7 +1339,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 }
 #endif
 
-	 if (pxFile->ID != -1)
+	 if (pxFile->ID != PXHandleNotSet)
 	 {
 		 const PXBool successful = CloseHandle(pxFile->ID); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
 
@@ -1342,7 +1348,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 			 return PXActionFailedFileClose;
 		 }
 
-		 pxFile->ID = -1;
+		 pxFile->ID = PXHandleNotSet;
 	 }
 
 	 return PXActionSuccessful;
@@ -1351,7 +1357,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
  PXActionResult PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXMemoryAccessMode protectionMode)
 {
-	 const void* data = PXMemoryVirtualAllocate(size, protectionMode);
+	 void* const data = PXMemoryVirtualAllocate(size, protectionMode);
 	 const PXBool successful = data != 0;
 
 	 if (!successful)
@@ -1430,7 +1436,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 		 PXActionOnErrorFetchAndReturn(closeMappingSucessful);
 
-		 pxFile->MappingID = -1;
+		 pxFile->MappingID = PXHandleNotSet;
 	 }
 
 	 // Close
@@ -1453,7 +1459,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 		 PXActionReturnOnError(closeFile);
 
-		 pxFile->ID = -1;
+		 pxFile->ID = PXHandleNotSet;
 	 }
 
 	 return PXActionSuccessful;
@@ -1506,7 +1512,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 		 }
 		 default:
-			 return -1;
+			 return PXFileCursorPositionInvalid;
 	 }
 }
 
@@ -1627,7 +1633,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 	 while (!PXFileIsAtEnd(pxFile))
 	 {
-		 const unsigned char* data = PXFileCursorPosition(pxFile);
+		 const char* data = (char*)PXFileCursorPosition(pxFile);
 		 const PXBool advance = !IsEndOfLineCharacter(*data) && !IsEndOfString(*data);
 
 		 if (!advance)
@@ -1647,7 +1653,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 		 return 0;
 	 }
 
-	 PXTextCopyA(dataPoint, length, exportBuffer, length);
+	 PXTextCopyA(dataPoint, length, (char*)exportBuffer, length);
 
 	 PXFileSkipEndOfLineCharacters(pxFile);
 
@@ -1660,7 +1666,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 	 while (!PXFileIsAtEnd(pxFile))
 	 {
-		 const char* data = PXFileCursorPosition(pxFile);
+		 const char* data = (char*)PXFileCursorPosition(pxFile);
 		 const char character = *data;
 		 const PXBool advance = !IsEndOfString(character) && !IsEmptySpace(character) && !IsEndOfLineCharacter(character);
 
@@ -1692,7 +1698,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 	 while (!PXFileIsAtEnd(pxFile))
 	 {
-		 const unsigned char* data = PXFileCursorPosition(pxFile);
+		 const char* data = (char*)PXFileCursorPosition(pxFile);
 		 const PXBool advance = !(IsEndOfLineCharacter(*data) || IsEndOfString(*data));
 
 		 if (!advance)
@@ -1735,7 +1741,7 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 pxText.SizeAllocated = PXFileRemainingSize(pxFile);
 	 pxText.SizeUsed = PXFileRemainingSize(pxFile);
 	 pxText.NumberOfCharacters = PXFileRemainingSize(pxFile);
-	 pxText.TextA = PXFileCursorPosition(pxFile);
+	 pxText.TextA = (char*)PXFileCursorPosition(pxFile);
 	 pxText.Format = TextFormatASCII;
 
 	 pxText.SizeUsed = PXTextToInt(&pxText, number);
@@ -2084,14 +2090,14 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
  void PXFileReadUntil(PXFile* const pxFile, void* value, const PXSize length, const char character)
 {
-	 const unsigned char* currentPosition = PXFileCursorPosition(pxFile);
+	 const char* currentPosition = (char*)PXFileCursorPosition(pxFile);
 
 	 PXSize lengthCopy = 0;
 
 	 while (!PXFileIsAtEnd(pxFile))
 	 {
-		 const unsigned char* data = PXFileCursorPosition(pxFile);
-		 const unsigned char advance = *data != character && length <= lengthCopy;
+		 const char* data = (char*)PXFileCursorPosition(pxFile);
+		 const PXBool advance = *data != character && length <= lengthCopy;
 
 		 if (!advance)
 		 {
@@ -2140,8 +2146,8 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
 	 for (size_t i = 0; i < valueLength; ++i)
 	 {
-		 void* text = value[i];
-		 PXSize size = valueElementSizeList[i];
+		 const void* text = value[i];
+		 const PXSize size = valueElementSizeList[i];
 		 const PXBool result = PXMemoryCompare(currentPosition, readableSize, text, size);
 
 		 if (result)
@@ -2600,18 +2606,18 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 
  PXSize PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
 {
-	 const unsigned char* currentPosition = PXFileCursorPosition(pxFile);
+	 const void* currentPosition = PXFileCursorPosition(pxFile);
 
 	 va_list args;
 	 va_start(args, format);
 
 	 const PXSize writableSize = PXFileRemainingSize(pxFile);
-	 const int writtenBytes = PrintSVN(currentPosition, writableSize, format, args);
+	 const int writtenBytes = PXPrintfvs(currentPosition, writableSize, format, args);
 
 	 va_end(args);
 
 	 {
-		 const unsigned char sucessful = writtenBytes >= 0;
+		 const PXBool sucessful = writtenBytes >= 0;
 
 		 if (!sucessful)
 		 {
@@ -2670,7 +2676,7 @@ PXSize PXFilePeekBits(PXFile* const pxFile, const PXSize amountOfBits)
 {
 	unsigned int bitMask = ((1u << amountOfBits) - 1u) << pxFile->DataCursorBitOffset; // 0000111111
 	unsigned int bitBlock;
-	unsigned char* a = PXFileCursorPosition(pxFile);
+	unsigned char* a = (unsigned char*)PXFileCursorPosition(pxFile);
 	unsigned char* b = a + 1;
 	unsigned char* c = a + 2;
 	unsigned char* d = a + 3;

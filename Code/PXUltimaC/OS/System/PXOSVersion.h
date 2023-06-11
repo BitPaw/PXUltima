@@ -77,7 +77,7 @@
 
 
 
-#if defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__)
+#if (defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__)) && !OSUnix
     #ifndef OSWindows64B
         #define OSWindows64B 1u
     #endif
@@ -85,7 +85,7 @@
     #ifndef OSWindows32B
         #define OSWindows32B 0u
     #endif
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__WIN32__)
+#elif (defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__WIN32__)) && !OSUnix
     #ifndef OSWindows64B
         #define OSWindows64B 0u // Cant be 64-Bit, as this is 32-Bit
     #endif
@@ -245,5 +245,18 @@
 #define PXOSWindowsDestop 1
 #endif
 //---------------------------------------------------------
+
+
+
+
+//---------------------------------------------------------
+// Calling convection
+//---------------------------------------------------------
+
+#define PXOSAPI WINAPI
+#define PXOSAPIInternal
+
+//---------------------------------------------------------
+
 
 #endif

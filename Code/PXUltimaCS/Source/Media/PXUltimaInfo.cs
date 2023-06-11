@@ -1,26 +1,31 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace PX
 {
     public class PXUltimaInfo
     {
-        [DllImport("PXUltima.dll")] private static extern void PXUltimaInfoBuildDate(ref PXText text);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXUltimaInfoBuildDate(ref PXText text);
 
         public static unsafe string BuildDate 
         {
             get
             {
-                byte* buffer = stackalloc byte[64];
+                const int bufferSize = 64;
+                sbyte* bufferAdress = stackalloc sbyte[bufferSize];
 
+#if false
+                PXText* pXTextAdress = stackalloc PXText[1];
+                PXText pXText = *pXTextAdress;
+#else
                 PXText pXText = new PXText();
-                pXText.SizeAllocated = 64;
-                pXText.TextA = buffer;
+#endif
+
+                pXText.MakeFromBufferW((IntPtr)bufferAdress, (IntPtr)bufferSize);
 
                 PXUltimaInfoBuildDate(ref pXText);
 
-                string buildDate = new string((sbyte*)pXText.TextA, 0, (int)pXText.SizeUsed);
-
-                return buildDate;
+                return pXText.GenerateString();
             } 
         }
     }

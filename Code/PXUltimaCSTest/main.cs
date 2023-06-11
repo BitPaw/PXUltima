@@ -14,9 +14,11 @@ namespace PX.Text
 
             Console.WriteLine("CPU " + processor.ToString());
 
-            Test.TestSBP.TestConnect();
+           // Test.TestSBP.TestConnect();
 
-            Test.TestSocket.ConnectAndSend();         
+            while (true) { Test.TestSocket.ConnectAndSend(); }
+
+         
 
 
             return 0;

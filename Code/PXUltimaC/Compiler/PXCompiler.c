@@ -270,7 +270,7 @@ void PXCompilerSymbolEntryExtract(PXFile* const dataStream, PXCompilerSymbolEntr
 	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Size);
 	size += PXFileReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
-	compilerSymbolEntry->ID = symbolID;
+	compilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
 
 #if PXCompilerSanitise
 	PXMemorySet(oldPos, '#', size);
@@ -290,7 +290,7 @@ void PXCompilerSymbolEntryPeek(PXFile* const dataStream, PXCompilerSymbolEntry* 
 	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Size);
 	size += PXFileReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
 
-	compilerSymbolEntry->ID = symbolID;
+	compilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
 
 	PXFileCursorRewind(dataStream, size);
 }
@@ -584,7 +584,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			}
 			else
 			{
-				unsigned int value = 0;
+				int value = 0;
 
 				const PXSize writtenNumbers = PXTextToInt(&numberText, &value);
 
@@ -638,7 +638,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	while (!PXFileIsAtEnd(inputStream))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
-		compilerSymbolEntry.Source = (const char*)PXFileCursorPosition(inputStream);
+		compilerSymbolEntry.Source = (char*)PXFileCursorPosition(inputStream);
 
 		//-----------------------------------------------------------------------------
 		// Consume whitespace

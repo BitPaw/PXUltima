@@ -49,10 +49,10 @@ extern "C"
 	// Enables a debugger to continue a thread that previously reported a debugging event.
 	PXPublic void PXDebugContinue(PXDebug* const pxDebug);
 	PXPublic void PXDebugPause(PXDebug* const pxDebug);
-	PXPublic PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessID pxProcessID);
-	PXPublic void PXDebugAttach(PXDebug* const pxDebug);
+	PXPublic PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxProcessHandle);
+	PXPublic PXActionResult PXDebugAttach(PXDebug* const pxDebug);
 	//PXPublic void PXDebugAttachToDebugger(PXDebug* const pxDebug);
-	PXPublic void PXDebugDetach(PXDebug* const pxDebug);
+	PXPublic PXActionResult PXDebugDetach(PXDebug* const pxDebug);
 
 	PXPublic void PXDebugStackTrace(PXDebug* const pxDebug);
 
@@ -62,7 +62,7 @@ extern "C"
 	// Only the thread that created the process being debugged can call this function.
 	PXPublic PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug);
 
-	PXPrivate void PXDebugLoop(PXDebug* const pxDebug);
+	PXPrivate PXThreadResult PXDebugLoop(PXDebug* const pxDebug);
 
 #ifdef __cplusplus
 }

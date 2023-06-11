@@ -30,21 +30,69 @@ extern "C"
 
 		PXActionFailedInitialization,
 		PXActionFailedCleanup,
-		PXActionFailedModuleLoad, 
+		PXActionFailedModuleLoad,
 		PXActionFailedDataFetch,
 
+		PXActionInterruptedByEvent,
+		PXActionInterruptedByFunctionCall,
+
+		PXActionRefuedPermissionDenied,
+		PXActionFailedResourcedNotEnough,
+
+		PXActionWouldBlock,
+		PXActionNowInProgress,
+		PXActionAlreadyInProgress,
+
+
+
+		PXActionRefuedNetworkNotConnected,
+		PXActionRefuedNetworkNotReachable,
+		PXActionFailedHostNotFound,
+
+		PXActionRefuedServiceNotRunning,
+
+		xxxxxxxxxxxx,
+
+		PXActionRefuedAlreadyInUse,
+
+		PXActionRefuedProtocolTypeInvalid,
+		PXActionRefuedProtocolOptionInvalid,
+		PXActionRefuedProtocolNotSupported,
+		PXActionRefuedProtocolFamilyNotSupported,
+
+		PXActionRefuedAddressFamilyNotSupportedByProtocol,
+
+
+
+		PXActionRefuedObjectTypeInvalid,
+		PXActionRefuedObjectTypeNotSupported,
+
+		PXActionRefuedOperationNotSupported,
+
+		PXActionCancelled,
+
+		//---<Object>------------
+		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
+		PXActionRefuedObjectIDInvalid, // Use if you have an invalid ID or HANDLE
+		//-----------------------
+
+
 		//---<Function input>---
+		PXActionRefuedAdressInvalid, // System detected an invalid pointer
+
+
 		PXActionRefuedParameterNull, // Some needed Parameter is null
 
 		PXActionRefuedTextFormatUnsupported,
 
-		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
 
+		PXActionRefuedInputInvalid,
 		
 		PXActionRefuedInputBufferNull, // is NULL
 		PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
 		PXActionRefuedInputBufferTooSmal, // cant 
-	
+		PXActionRefuedInputBufferTooBig,
+
 		PXActionRefuedOutputBufferNull, // is NULL 
 		PXActionRefuedOutputBufferTooSmal, // 
 
@@ -57,6 +105,24 @@ extern "C"
 		PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
 
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 		//---<File-General>------------------
@@ -150,7 +216,25 @@ extern "C"
 		SubSystemNetworkFailed,
 		SocketIsBlocking,
 
+
+			PXActionFailedDirectoryIsNotEmpty,
+
+			PXActionFailedTooManyProcesses,
+
+			PXActionFailedUserQuotaExceeded,
+			PXActionFailedDiskQuotaExceeded,
+
+			PXActionFailedHandleIsStale,
+
+			PXActionFailedResourceNotAvailableLocally,
+
+			PXActionFailedNetworkSubsystemNotReady,
+
+			PXActionRefusedResourceIsShuttingdown,
+
+			WindowsSocketVersionNotSupported,
 		WindowsSocketSystemNotInitialized,
+		WindowsSocketSystemWasShutdown,
 		//-------------------------------------------------
 
 		//---<Audio>---------------------------------------
@@ -208,6 +292,12 @@ extern "C"
 			AudioResultDeviceIsSynchronous,
 		//-------------------------------------------------
 
+			PXActionFailedConnectionTerminatedByNetwork,
+			PXActionFailedConnectionTerminatedByOwnSoftware,
+			PXActionFailedConnectionTerminatedByPeer,
+
+		PXActionFailedMemoryAllocationInternal,
+
 
 		// POSIX Error codes, these are pre-defined
 		UnkownError, // OTHER
@@ -221,7 +311,10 @@ extern "C"
 		ArgumentListTooLong, // 2BIG
 		BadFileDescriptor, // BADF
 		BadMessage, // BADMSG
-		DeviceOrResourceBusy, // BUSY
+
+		
+
+		PXActionRefusedResourceBusy, // BUSY
 		OperationCanceled,// CANCELED
 		NoChildProcesses, // CHILD
 		ConnectionAborted, // CONNABORTED
@@ -240,7 +333,7 @@ extern "C"
 		InterruptedFunction, // INTR
 		InvalidArgument, // INVAL
 		IOFailure, // IO
-		SocketIsConnected, // ISCONN
+		PXActionRefusedAlreadyConnected, // ISCONN
 		IsADirectory, // ISDIR
 		TooManyLevelsOfSymbolicLinks, // LOOP
 		FileDescriptorValueTooLarge, // MFILE
@@ -264,7 +357,7 @@ extern "C"
 		NoStreamResources, // NOSR
 		NotAStream, // NOSTR
 		FunctionNotSupported, // NOSYS
-		TheSocketIsNotConnected, // NOTCONN
+		PXActionFailedNotConnected, // NOTCONN
 		NotADirectory, // NOTDIR
 		DirectoryNotEmpty, // NOTEMPTY
 		StateNotRecoverable, // NOTRECOVERABLE
@@ -294,6 +387,7 @@ extern "C"
 
 #define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
 #define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
+#define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
 #define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
 	PXPublic PXActionResult PXErrorCodeFromID(const int errorCode);

@@ -13,16 +13,7 @@
 #include "Network/TestFTP.h"
 #include "Network/TestSBP.h"
 
-#include <Media/TIFF/PXTIFF.h>
-#include <Media/PXImage.h>
-#include <Media/PXText.h>
-
-#include <OS/Graphic/DirectX/PXDirectX.h>
-#include <OS/Process/PXProcess.h>
-#include <OS/Debug/PXDebug.h>
-#include <OS/File/PXDirectory.h>
-#include <OS/Dialog/PXDialog.h>
-#include <OS/Window/PXWindow.h>
+/*
 
 void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
 {
@@ -60,7 +51,7 @@ void PXTextMatchTest()
 
 	const PXBool c = PXTextMatchW(L"MyFile.*", 8, L"*.h", 3);
 	printf("");
-}
+}*/
 
 
 int main()
@@ -106,7 +97,7 @@ int main()
 #endif // 0 // TEST FILE DIALOG
 
 
-#define KeyBoardTest 1
+#define KeyBoardTest 0
 #if KeyBoardTest
 
 	PXWindow pxWindow;
@@ -128,7 +119,7 @@ int main()
 
 
 
-#if 1
+#if 0
 	while (1)
 	{
 		const PXInt32U temperature = PXProcessorTemperature();
@@ -141,7 +132,7 @@ int main()
 
 
 
-#if 1
+#if 0
 	PXImage image;
 
 	//ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.bmp");
@@ -170,12 +161,12 @@ int main()
 #endif
 
 
-#if 0
+#if 1
 	TestSocket();
 #endif // 1
 
 
-#if 1
+#if 0
 	TestSBPAll();
 #endif // 1
 

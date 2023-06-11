@@ -158,9 +158,9 @@ PXActionResult PXDataBaseConnectionConnect
                 (
                     dataBaseConnection->ConnectionID,
                     NULL,
-                    pxTextSQLConnectionString.TextA,
+                    (SQLCHAR*)pxTextSQLConnectionString.TextA,
                     pxTextSQLConnectionString.SizeUsed,
-                    pxTextSQLConnectionStringResult.TextA,
+                    (SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
                     pxTextSQLConnectionStringResult.SizeAllocated,
                     &writtenSize,
                     SQL_DRIVER_NOPROMPT
@@ -345,10 +345,11 @@ void PXDataBaseConnectionScanForDrivers(PXSQLDataBaseConnection* const dataBaseC
 #endif
 }
 
-void PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnection, const PXText* const pxTextSQLStatement)
+PXActionResult PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnection, const PXText* const pxTextSQLStatement)
 {
-
 #if OSUnix
+    return PXActionNotImplemented;
+
 #elif PXOSWindowsDestop
     SQLHSTMT handleStatement = 0;
     PXSize colums = 0;
@@ -384,7 +385,7 @@ void PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnecti
             case TextFormatASCII:
             case TextFormatUTF8:
             {
-                resultExecute = SQLExecDirectA(handleStatement, pxTextSQLStatement->TextA, SQL_NTS);
+                resultExecute = SQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->TextA, SQL_NTS);
                 break;
             }
             case TextFormatUNICODE:

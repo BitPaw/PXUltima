@@ -5,7 +5,7 @@ namespace PX
 {
     public class Client : IDisposable
     {
-        [StructLayout(LayoutKind.Sequential, Size = 600)]
+        [StructLayout(LayoutKind.Sequential, Size = 500)]
         private unsafe struct PXClient
         {
             public void* SocketCreatingCallBack;
@@ -28,17 +28,15 @@ namespace PX
             //public void* Owner;
         }
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientConstruct(ref PXClient pxClient);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientDestruct(ref PXClient pxClient);
-
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern unsafe PX.ActionResult PXClientSendData(ref PXClient pxClient, void* data, UIntPtr dataSize);
-
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXClientConstruct(ref PXClient pxClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXClientDestruct(ref PXClient pxClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientSendData(ref PXClient pxClient, IntPtr data, IntPtr dataSize);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientConnectToSelf(ref PXClient client, ushort port);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientConnectToServer(ref PXClient client, ref PXText ip, ushort port);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientDisconnectFromServer(ref PXClient client);
 
        // [MarshalAs(UnmanagedType.ByValArray, SizeConst = 584)]
         private PXClient _pxClient;
-
 
         public event SocketCreatingEvent OnCreating;
         public event SocketCreatedEvent OnCreated;
@@ -55,14 +53,14 @@ namespace PX
 
             PXClientConstruct(ref _pxClient);
 
-            _pxClient.SocketCreatingCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatingEvent>(OnSocketCreatingCallBack).ToPointer();
-            _pxClient.SocketCreatedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatedEvent>(OnSocketCreatedCallBack).ToPointer();
-            _pxClient.SocketClosedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketClosedEvent>(OnSocketClosedCallBack).ToPointer();
-            _pxClient.SocketConnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketConnectedEvent>(OnSocketConnectedCallBack).ToPointer();
-            _pxClient.SocketDisconnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDisconnectedEvent>(OnSocketDisconnectedCallBack).ToPointer();
-            _pxClient.SocketStateChangedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketStateChangedEvent>(OnSocketStateChangedCallBack).ToPointer();
-            _pxClient.SocketDataSendCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataSendEvent>(OnSocketDataSendCallBack).ToPointer();
-            _pxClient.SocketDataReceiveCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataReceiveEvent>(OnSocketDataReceiveCallBack).ToPointer();
+            //_pxClient.SocketCreatingCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatingEvent>(OnSocketCreatingCallBack).ToPointer();
+            //_pxClient.SocketCreatedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketCreatedEvent>(OnSocketCreatedCallBack).ToPointer();
+            //_pxClient.SocketClosedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketClosedEvent>(OnSocketClosedCallBack).ToPointer();
+            //_pxClient.SocketConnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketConnectedEvent>(OnSocketConnectedCallBack).ToPointer();
+            //_pxClient.SocketDisconnectedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDisconnectedEvent>(OnSocketDisconnectedCallBack).ToPointer();
+            //_pxClient.SocketStateChangedCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketStateChangedEvent>(OnSocketStateChangedCallBack).ToPointer();
+            //_pxClient.SocketDataSendCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataSendEvent>(OnSocketDataSendCallBack).ToPointer();
+            //_pxClient.SocketDataReceiveCallBack = Marshal.GetFunctionPointerForDelegate<PXSocketDataReceiveEvent>(OnSocketDataReceiveCallBack).ToPointer();
         }
 
         private void OnSocketDataReceiveCallBack(UIntPtr owner, ref PXSocketDataReceivedEventData pxSocketDataReceivedEventData)
@@ -119,16 +117,18 @@ namespace PX
         {
             fixed (char* messageAdress = message.ToCharArray())
             {
-                return SendData(messageAdress, message.Length * sizeof(char));
+                return SendData((IntPtr)messageAdress, (IntPtr)(message.Length * sizeof(char)));
             }
         }
-        public unsafe ActionResult SendData(void* data, int dataSize)
-        {
-            return PXClientSendData(ref _pxClient, data, (UIntPtr)dataSize);
-        }
-        public unsafe ActionResult SendData(void* data, UIntPtr dataSize)
+
+        public ActionResult SendData(IntPtr data, IntPtr dataSize)
         {
             return PXClientSendData(ref _pxClient, data, dataSize);
+        }
+
+        public ActionResult ConnectToServer(ushort port)
+        {
+            return PXClientConnectToSelf(ref _pxClient, port);
         }
 
         public unsafe ActionResult ConnectToServer(string ip, ushort port)

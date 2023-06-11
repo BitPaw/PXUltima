@@ -43,6 +43,16 @@ void PXProcessParent(PXProcess* const pxProcess)
 #endif
 }
 
+void PXProcessExitCurrent(const PXInt32U exitCode)
+{
+#if OSUnix
+	return PXActionNotImplemented;
+
+#elif OSWindows
+	ExitProcess(exitCode);
+#endif
+}
+
 PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode)
 {
 	PXProcessConstruct(pxProcess);
@@ -56,13 +66,13 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 			return PXActionNotImplemented;
 
 #elif OSWindows
-			STARTUPINFO startupInfo;
+			STARTUPINFOA startupInfo;
 			PROCESS_INFORMATION processInfo;
 
-			PXMemoryClear(&startupInfo, sizeof(STARTUPINFO));
+			PXMemoryClear(&startupInfo, sizeof(STARTUPINFOA));
 			PXMemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
 
-			startupInfo.cb = sizeof(STARTUPINFO);
+			startupInfo.cb = sizeof(STARTUPINFOA);
 
 			const DWORD creationflags =
 				DEBUG_ONLY_THIS_PROCESS |
@@ -72,7 +82,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 
 			const PXBool success = CreateProcessA // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 			(
-				programmPath, 
+				programmPath->TextA, 
 				NULL, 
 				NULL, 
 				NULL, 
@@ -80,7 +90,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 				creationflags, 
 				NULL, 
 				NULL, 
-				&startupInfo, 
+				&startupInfo,
 				&processInfo
 			);
 
@@ -101,17 +111,17 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 			return PXActionNotImplemented;
 
 #elif OSWindows
-			STARTUPINFO startupInfo;
+			STARTUPINFOW startupInfo;
 			PROCESS_INFORMATION processInfo;
 
-			PXMemoryClear(&startupInfo, sizeof(STARTUPINFO));
+			PXMemoryClear(&startupInfo, sizeof(STARTUPINFOW));
 			PXMemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
 
-			startupInfo.cb = sizeof(STARTUPINFO);
+			startupInfo.cb = sizeof(STARTUPINFOW);
 
 			const PXBool success = CreateProcessW // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 			(
-				programmPath, 
+				programmPath->TextW, 
 				NULL, 
 				NULL, 
 				NULL, 
@@ -152,7 +162,7 @@ PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 	const DWORD flag = TH32CS_SNAPPROCESS;
 	const DWORD processID = PXNull;
 	const HANDLE snapshotHandle = CreateToolhelp32Snapshot(flag, processID); // Windows XP, Kernel32.dll, tlhelp32.h
-	const PXBool success = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ERROR_BAD_LENGTH;
+	const PXBool success = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
 	PROCESSENTRY32W processEntryW;
 	processEntryW.dwSize = sizeof(PROCESSENTRY32W);
 
@@ -168,7 +178,7 @@ PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 	for ( ; successfulFetch; )
 	{
 		PXProcess pxProcess;
-		pxProcess.ProcessHandle = GetProcessId(processEntryW.th32ProcessID);
+		pxProcess.ProcessHandle = PXNull;
 		pxProcess.ProcessID = processEntryW.th32ProcessID;
 		pxProcess.ThreadHandle = PXNull;
 		pxProcess.ThreadID = PXNull;
@@ -241,7 +251,7 @@ PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void
 	const BOOL result = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
 	(
 		pxProcess->ProcessHandle,
-		targetAdress,
+		(LPVOID)targetAdress,
 		buffer,
 		bufferSize,
 		&numberOfBytesRead
@@ -255,7 +265,7 @@ PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void
 #endif
 }
 
-PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
 	return PXActionNotImplemented;
@@ -317,33 +327,39 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 
 	// Process memory info
 	{
-		const PXSize processMemoryCountersExSize = sizeof(PROCESS_MEMORY_COUNTERS_EX); // minimum: Windows XP SP2, SP1 does not support EX version
+#if WindowsAtleastVista && 0 // minimum: Windows XP SP2, SP1 does not support EX version
+		const DWORD processMemoryCountersSize = sizeof(PROCESS_MEMORY_COUNTERS_EX);
+		PROCESS_MEMORY_COUNTERS_EX processMemoryCounters;
+#else	
+		const DWORD processMemoryCountersSize = sizeof(PROCESS_MEMORY_COUNTERS);
+		PROCESS_MEMORY_COUNTERS processMemoryCounters;
+#endif
+		PXMemoryClear(&processMemoryCounters, processMemoryCountersSize);
+		processMemoryCounters.cb = processMemoryCountersSize;
 
-		PROCESS_MEMORY_COUNTERS_EX processMemoryCountersEx;
-
-		PXMemoryClear(&processMemoryCountersEx, processMemoryCountersExSize);
-
-		processMemoryCountersEx.cb = processMemoryCountersExSize;
-
-		const BOOL success = GetProcessMemoryInfo // GetPerformanceInfo is without process?
+		const PXBool success = GetProcessMemoryInfo // Windows XP (+UWP), Kernel32.dll, psapi.h
 		(
 			currentProcess,
-			&processMemoryCountersEx,
-			&processMemoryCountersExSize
+			&processMemoryCounters,
+			processMemoryCountersSize
 		);
 
 		PXActionOnErrorFetchAndReturn(!success);
 
-		pxProcessMemoryInfo->PageFaults = processMemoryCountersEx.PageFaultCount;
-		pxProcessMemoryInfo->PeakWorkingSetSize = processMemoryCountersEx.PeakWorkingSetSize;
-		pxProcessMemoryInfo->WorkingSetSize = processMemoryCountersEx.WorkingSetSize;
-		pxProcessMemoryInfo->QuotaPeakPagedPoolUsage = processMemoryCountersEx.QuotaPeakPagedPoolUsage;
-		pxProcessMemoryInfo->QuotaPagedPoolUsage = processMemoryCountersEx.QuotaPagedPoolUsage;
-		pxProcessMemoryInfo->QuotaPeakNonPagedPoolUsage = processMemoryCountersEx.QuotaPeakNonPagedPoolUsage;
-		pxProcessMemoryInfo->QuotaNonPagedPoolUsage = processMemoryCountersEx.QuotaNonPagedPoolUsage;
-		pxProcessMemoryInfo->PagefileUsage = processMemoryCountersEx.PagefileUsage;
-		pxProcessMemoryInfo->PeakPagefileUsage = processMemoryCountersEx.PeakPagefileUsage;
-		pxProcessMemoryInfo->PrivateUsage = processMemoryCountersEx.PrivateUsage;
+		pxProcessMemoryInfo->PageFaults = processMemoryCounters.PageFaultCount;
+		pxProcessMemoryInfo->PeakWorkingSetSize = processMemoryCounters.PeakWorkingSetSize;
+		pxProcessMemoryInfo->WorkingSetSize = processMemoryCounters.WorkingSetSize;
+		pxProcessMemoryInfo->QuotaPeakPagedPoolUsage = processMemoryCounters.QuotaPeakPagedPoolUsage;
+		pxProcessMemoryInfo->QuotaPagedPoolUsage = processMemoryCounters.QuotaPagedPoolUsage;
+		pxProcessMemoryInfo->QuotaPeakNonPagedPoolUsage = processMemoryCounters.QuotaPeakNonPagedPoolUsage;
+		pxProcessMemoryInfo->QuotaNonPagedPoolUsage = processMemoryCounters.QuotaNonPagedPoolUsage;
+		pxProcessMemoryInfo->PagefileUsage = processMemoryCounters.PagefileUsage;
+		pxProcessMemoryInfo->PeakPagefileUsage = processMemoryCounters.PeakPagefileUsage;
+
+#if WindowsAtleastVista && 0
+		pxProcessMemoryInfo->PrivateUsage = processMemoryCounters.PrivateUsage;
+#endif
+
 	}
 
 	// Additional fetch "process time"

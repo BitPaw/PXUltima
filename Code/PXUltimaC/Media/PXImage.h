@@ -21,7 +21,7 @@ extern "C"
 	}
 	PXImage;
 
-	typedef PXActionResult(*PXImageTranslateFunction)(PXImage* const pxImage, PXFile* const imageDataStream);
+	typedef PXActionResult(*PXImageTranslateFunction)(const PXImage* const pxImage, PXFile* const imageDataStream);
 
 	PXPublic void PXImageConstruct(PXImage* const image);
 	PXPublic void PXImageDestruct(PXImage* const image);

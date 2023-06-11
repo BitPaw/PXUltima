@@ -1,5 +1,53 @@
 #include "PXThread.h"
 
+// Note, TerminateThread() should not be used, it can lead to a memory leak in XP
+
+#include <stdio.h>
+
+void PXThreadConstruct(PXThread* const pxThread)
+{
+	pxThread->ThreadID = PXHandleNotSet;
+	pxThread->Mode = PXThreadModeInvalid;
+}
+
+void PXThreadDestruct(PXThread* const pxThread)
+{
+	if (!pxThread)
+	{
+		return;
+	}
+
+	printf("[C] Thread handle release %p : ", pxThread->ThreadID);
+
+	if (pxThread->ThreadID == PXHandleNotSet)
+	{
+	
+		printf("CANCLED\n");
+
+		return;
+	}
+
+#if OSUnix
+
+#elif OSWindows
+	const HANDLE currentThread = GetCurrentThread();
+	const PXBool isTargetCurrentThread = currentThread == pxThread->ThreadID;
+	const PXBool success = CloseHandle(pxThread->ThreadID); // Windows 2000 Professional (+UWP), Kernel32.dll, handleapi.h
+	
+	if (!success)
+	{
+		printf("FAILED\n");
+
+		return;
+	}
+
+	printf("OK\n");
+
+#endif
+
+	PXThreadConstruct(pxThread);
+}
+
 PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter)
 {
 #if OSUnix
@@ -28,6 +76,7 @@ PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction thread
 	if (pxThread)
 	{
 		pxThread->ThreadID = threadID;
+		pxThread->Mode = PXThreadModeRunning;
 	}
 
 #endif
@@ -35,34 +84,142 @@ PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction thread
 	return PXActionSuccessful;
 }
 
-void PXThreadSuspend(PXThread* const pxThread)
+PXActionResult PXThreadRunInOtherProcess(PXThread* const pxThread, const void* processHandle, const ThreadFunction threadFunction, const void* parameter)
 {
 #if OSUnix
-	
+	return PXActionNotImplemented;
+
 #elif OSWindows
-	const DWORD result = SuspendThread(pxThread->ThreadID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-	const PXBool successful = result != -1;
+
+	LPSECURITY_ATTRIBUTES  lpThreadAttributes = 0;
+	SIZE_T                 dwStackSize = 0;
+	LPTHREAD_START_ROUTINE lpStartAddress = threadFunction;
+	LPVOID                 lpParameter = parameter;
+	DWORD                  dwCreationFlags = 0;
+	LPDWORD                lpThreadId = 0;
+	const HANDLE threadID = CreateRemoteThread // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	(
+		processHandle,
+		lpThreadAttributes,
+		dwStackSize,
+		lpStartAddress,
+		lpParameter,
+		dwCreationFlags,
+		lpThreadId
+	);
+	const PXBool successful = PXNull != threadID;
+
+	PXActionOnErrorFetchAndReturn(!successful);
+
+	pxThread->ThreadID = threadID;
+
+	return PXActionSuccessful;
+#else 
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-void PXThreadResume(PXThread* const pxThread)
+PXActionResult PXThreadExitCurrent(const PXInt32U exitCode)
 {
 #if OSUnix
+	return PXActionNotImplemented;
+
+#elif OSWindows
+	ExitThread(exitCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+
+	return PXActionSuccessful;
+#else 
+	return PXActionNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXThreadYieldToOtherThreads()
+{
+#if OSUnix
+	return PXActionNotImplemented;
+
+#elif OSWindows
+	const PXBool successful = SwitchToThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+
+	PXActionOnErrorFetchAndReturn(!successful);
+
+	return PXActionSuccessful;
+#else 
+	return PXActionNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXThreadOpen(PXThread* const pxThread)
+{
+#if OSUnix
+	return PXActionNotImplemented;
+
+#elif OSWindows
+	DWORD dwDesiredAccess = 0;
+	BOOL  bInheritHandle = 0;
+	DWORD dwThreadId = 0;
+
+	const HANDLE threadID = OpenThread(dwDesiredAccess, bInheritHandle, dwThreadId); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	const PXBool success = PXNull != threadID;
+
+	PXActionOnErrorFetchAndReturn(!success);
+
+	return PXActionSuccessful;
+#else 
+	return PXActionNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXThreadSuspend(PXThread* const pxThread)
+{
+	if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefuedObjectIDInvalid;
+
+#if OSUnix
+	return PXActionNotImplemented;
+
+#elif OSWindows
+	const DWORD result = SuspendThread(pxThread->ThreadID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	const PXBool successful = result != -1;
+
+	PXActionOnErrorFetchAndReturn(!successful);
+
+	pxThread->Mode = PXThreadModeSuspended;
+
+	return PXActionSuccessful;
+#endif
+}
+
+PXActionResult PXThreadResume(PXThread* const pxThread)
+{
+	if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefuedObjectIDInvalid;
+
+#if OSUnix
+	return PXActionNotImplemented;
 
 #elif OSWindows
 	const DWORD suspendCount = ResumeThread(pxThread->ThreadID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 	const PXBool successful = suspendCount != -1;
 
-#endif
+	PXActionOnErrorFetchAndReturn(!successful);
+
+	pxThread->Mode = PXThreadModeRunning;
+
+	return PXActionSuccessful;
+#endif	
 }
 
-void PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
+PXActionResult PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
 {
+	//if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefuedObjectIDInvalid;
+
 #if OSUnix
+	return PXActionNotImplemented;
 
 #elif OSWindows
 	Sleep(sleepTime); // Windows XP (+UWP), Kernel32.dll, synchapi.h
 #endif
+
+	return PXActionSuccessful;
 }
 
 PXSize PXThreadCurrentID()
@@ -97,5 +254,8 @@ void PXThreadWaitForFinish(PXThread* const pxThread)
 		GetExitCodeThread(pxThread->ThreadID, &exitCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 	}
 	while(exitCode == STILL_ACTIVE);
+
+	pxThread->Mode = PXThreadModeFinished;
+
 #endif
 }

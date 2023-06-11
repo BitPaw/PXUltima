@@ -10,7 +10,7 @@
 #include <ShlObj_core.h>
 #endif
 
-PXBool PXUserNameGet(PXText* const name)
+PXActionResult PXUserNameGet(PXText* const name)
 {
 	switch (name->Format)
 	{
@@ -28,10 +28,12 @@ PXBool PXUserNameGet(PXText* const name)
 			DWORD size = name->SizeAllocated;
 
 			const PXBool sucessful = GetComputerNameA(name->TextA, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+			
+			PXActionOnErrorFetchAndReturn(!sucessful);
 
 			name->SizeUsed = (PXSize)sucessful * (PXSize)size;
 
-			return sucessful;
+			return PXActionSuccessful;
 #endif
 
 			break;
@@ -47,16 +49,19 @@ PXBool PXUserNameGet(PXText* const name)
 
 			const PXBool sucessful = GetComputerNameW(name->TextW, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
 
-			name->SizeUsed = (PXSize)sucessful * (PXSize)size;
+			PXActionOnErrorFetchAndReturn(!sucessful);
 
-			return sucessful;
+			name->NumberOfCharacters = (PXSize)sucessful * (PXSize)size;
+			name->SizeUsed = name->NumberOfCharacters * sizeof(wchar_t);
+
+			return PXActionSuccessful;
 #endif
 
 			break;
 		}
 	}
 
-	return PXFalse;
+	return PXActionRefusedFormatNotSupported;
 }
 
 PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)

@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+
+    <link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen">
+
+    <title>Erste Schritte</title>
+  </head>
+
+<body>
+
+    <div class="container">
+        <div id="header">
+            <h1>Erste Schritte</h1>
+            <h2>Visual C++ für Linux-Entwicklung</h2>
+        </div>
+    
+    <table>
+    <tr>    
+    <div id="main_content">
+        
+        <td>
+        <div id="lpanel">
+            <h1>Einrichten Ihres Projekts für die Linux-Entwicklung</h1>
+
+            <p>Mit dieser Workload können Sie C++-Code für Linux-Server, -Desktops und -Geräte erstellen. Sie können Ihre Verbindungen mit diesen Computern aus Visual Studio verwalten. VS kopiert Ihre Quellen automatisch und führt eine Remotekompilierung durch, und Sie können Ihre Anwendung mit dem Debugger starten. Unser Projektsystem unterstützt die Verwendung spezifischer Zielarchitekturen, ARM eingeschlossen.</p>
+            <img src="images\ArchOptions.gif"/>
+            
+            <h1>Verbindungsherstellung mit Linux</h1>
+            <h2>Erforderliche Komponenten</h2>
+            <p>Aktuell wird nur die Remotekompilierung auf dem Linux-Zielcomputer unterstützt. Es gelten keine Einschränkungen im Hinblick auf die Linux-Distributionen, aber es müssen einige Tools vorhanden sein. Insbesondere werden openssh-server, g++, gdb und gdbserver benötigt. Verwenden Sie Ihren bevorzugten Paket-Manager, um diese Tools zu installieren, z. B. auf Debian-basierten Systemen: sudo apt-get install openssh-server g++ gdb gdbserver</p>
+            
+            <h2>Erste Verbindung</h2>
+            <p>Wenn Sie einen Linux-Computer zum ersten Mal als Ziel verwenden, werden Sie zur Eingabe von Verbindungsinformationen aufgefordert. Diese Aufforderung wird durch das Erstellen des Projekts ausgelöst.</p>
+            <img src="images\firstconnection.png"/>
+                
+            <h2>Hinzufügen und Entfernen von Verbindungen</h2>
+            <p>Um eine neue Verbindung hinzuzufügen, wechseln Sie zu "Extras" > "Optionen", und suchen Sie nach "Verbindung". Der Verbindungs-Manager befindet sich unter "Plattformübergreifend". Hier können Sie Verbindungen hinzufügen und entfernen.</p>
+            <img src="images\ManageConnections.gif"/>
+            
+            <p>Wenn Sie die von einem Projekt genutzte Verbindung ändern möchten, aktualisieren Sie in den allgemeinen Einstellungen für die Projekteigenschaften die Option für den Remotebuildcomputer.</p>
+            <img src="images\ChangeRemote.gif"/>
+            
+            <h1>Projekteigenschaften</h1>
+            <p>Alle Optionen, die zum Steuern der C++-Kompilierung erforderlich sind, werden auf den Eigenschaftenseiten des Projekts verfügbar gemacht. Wir werden hier auf einige Besonderheiten im Hinblick auf die Funktionsweise für Linux eingehen. Zunächst werden Sie feststellen, dass der Remotestamm in den allgemeinen Einstellungen standardmäßig auf "~/projects/" festgelegt ist und das Remoteprojektverzeichnis mit dem Projektnamen an diesem Speicherort übereinstimmt.</p>
+            <img src="images\OutputTypes.gif"/>
+            
+            <p>Anhand der allgemeinen Einstellungen für das Projekt können Sie erkennen, wie die Ausgabe- und Zwischenverzeichnisse konfiguriert wurden. Außerdem sehen Sie, dass dieses Projekt als Anwendung konfiguriert wurde – aus diesem Grund befindet sich unsere ausführbare Datei unter "bin/x64/Debug/" und trägt den Namen "ConsoleApplication1.out". Beachten Sie, dass als Konfigurationstypen auch statische und dynamische Bibliotheken unterstützt werden.</p>
+            
+            <p>Fügen Sie zusätzliche Bibliotheksabhängigkeiten auf der Eigenschaftenseite "Linker" > "Eingabe" hinzu.</p>
+            <img src="images\linker.png"/>
+            
+            <p>Sie können zusätzliche Befehle an den Debugger übergeben, die vor dem Start ausgeführt werden – um beispielsweise grafische Apps auf dem Linux-Remotecomputer zu starten.</p>
+            <img src="images\debuggerexport.png"/>
+            
+            <p>Sie können außerdem Ereignisse zur Ausführung nach der Kompilierung senden, um das Remoteverhalten zu steuern – wie im vorliegenden Beispiel, bei dem ein GPIO-Pin exportiert wird, bei dessen Verwendung die ausführbare Datei nicht als Superuser ausgeführt werden muss.</p>
+            <img src="images\postbuild.png"/>
+            
+        </div>
+        </td>
+        <td>
+        <div id="rpanel">
+
+            <h1>Ressourcen</h1>
+
+            <p>Sehen Sie sich die Blogseite zu <a href="http://aka.ms/vslinux">VC++ für die Linux-Entwicklung</a> an, auf der wir Sie über Neuerungen auf dem Laufenden halten und ausführlichere Details zur Nutzung bereitstellen.</p>
+            <h1>Senden Sie uns Feedback</h1>
+            <p>Verwenden Sie die Feedbackfunktion in Visual Studio, oder kontaktieren Sie uns über die <a href=" https://developercommunity.visualstudio.com/">Entwicklercommunity</a>.</p>
+        </div>
+        </td>   
+    </div>
+    </tr>
+    </table>
+    </div>
+</body>
+</html>

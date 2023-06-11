@@ -127,7 +127,7 @@ PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, cons
 PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat)
 {
     PXByte filePathW[PathMaxSize];
-    PXByte* fileExtension = 0;
+    const char* fileExtension = 0;
 
     PXSize fileSize = 0;
     PXSize writtenBytes = 0;
@@ -297,7 +297,7 @@ void PXImageFlipVertical(PXImage* image)
     const PXSize bbp = PXColorFormatBytePerPixel(image->Format);;
     const PXSize scanLineWidthSize = image->Width * bbp;
     const PXSize scanLinesToSwap = image->Height / 2u;
-    unsigned char* copyBufferRow = PXMemoryAllocate(sizeof(unsigned char) * scanLineWidthSize);
+    PXByte* copyBufferRow = PXMemoryAllocateType(PXByte, scanLineWidthSize);
 
     if(!copyBufferRow)
     {
@@ -306,8 +306,8 @@ void PXImageFlipVertical(PXImage* image)
 
     for(PXSize scanlineIndex = 0; scanlineIndex < scanLinesToSwap; scanlineIndex++)
     {
-        unsigned char* bufferA = (unsigned char*)image->PixelData + (scanlineIndex * scanLineWidthSize);
-        unsigned char* bufferB = (unsigned char*)image->PixelData + ((image->Height - scanlineIndex) * scanLineWidthSize) - scanLineWidthSize;
+        PXByte* bufferA = (PXByte*)image->PixelData + (scanlineIndex * scanLineWidthSize);
+        PXByte* bufferB = (PXByte*)image->PixelData + ((image->Height - scanlineIndex) * scanLineWidthSize) - scanLineWidthSize;
 
         PXMemoryCopy(bufferB, scanLineWidthSize, copyBufferRow, scanLineWidthSize); // A -> Buffer 'Save A'
         PXMemoryCopy(bufferA, scanLineWidthSize, bufferB, scanLineWidthSize); // B -> A 'Move B to A(override)'

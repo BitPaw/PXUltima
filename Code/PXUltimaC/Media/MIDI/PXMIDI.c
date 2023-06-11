@@ -61,7 +61,7 @@ PXActionResult PXMIDIParse(PXMIDI* mid, PXFile* const PXFile)
 		return PXActionSuccessful;
 	}
 
-	mid->TrackList = (PXMIDITrack*)PXMemoryAllocate(sizeof(PXMIDITrack) * mid->TrackListSize);
+	mid->TrackList = PXMemoryAllocateType(PXMIDITrack, mid->TrackListSize);
 
 	// Parse Track Header
 	for(PXSize i = 0; i < mid->TrackListSize; ++i)
@@ -83,7 +83,7 @@ PXActionResult PXMIDIParse(PXMIDI* mid, PXFile* const PXFile)
 		PXFileReadI32UE(PXFile, chunkLength, PXEndianBig);
 
 		track->ID = i;
-		track->EventData = (PXByte*)PXMemoryAllocate(sizeof(PXByte) * chunkLength);
+		track->EventData = PXMemoryAllocateType(PXByte, chunkLength);
 		track->EventDataSize = chunkLength;
 
 		PXFileReadB(PXFile, track->EventData, chunkLength);
