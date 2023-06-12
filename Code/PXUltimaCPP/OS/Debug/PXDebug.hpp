@@ -26,7 +26,7 @@ namespace PX
 
 		void Continue();
 		void Pause();
-		bool PauseOther(const PXProcessID pxProcessID);
+		bool PauseOther(const PXProcessHandle pxProcessID);
 		void Attach();
 
 		void Detach();

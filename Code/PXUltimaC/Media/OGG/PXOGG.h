@@ -2,8 +2,8 @@
 #define PXPXOGGINCLUDE
 
 #include <Media/PXType.h>
-
 #include <OS/Error/PXActionResult.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -37,7 +37,7 @@ extern "C"
 	}
 	PXOGG;
 
-	PXPublic PXActionResult PXOGGParse(PXOGG* ogg, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PXOGGParse(PXOGG* const ogg, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

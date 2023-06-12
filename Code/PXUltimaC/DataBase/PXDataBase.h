@@ -9,7 +9,7 @@
 #if OSUnix
 #elif OSWindows
 #include <Windows.h>
-#include <sqlext.h>  
+#include <sqlext.h>
 #include <sqltypes.h>
 #endif
 

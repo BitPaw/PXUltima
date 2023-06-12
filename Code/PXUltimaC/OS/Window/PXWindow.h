@@ -26,7 +26,7 @@ typedef HGLRC PXOpenGLConextID;
 #include <Graphic/PXGraphic.h>
 #include <OS/Hardware/PXMouse.h>
 #include <OS/Hardware/PXKeyBoard.h>
-#include <OS/Process/PXProcess.h>
+#include <OS/Async/PXProcess.h>
 #include <OS/Async/PXThread.h>
 
 #define UseRawMouseData 1

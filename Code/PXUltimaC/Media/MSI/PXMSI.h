@@ -8,6 +8,12 @@ extern "C"
 {
 #endif
 
+	typedef struct PXMSI_
+	{
+		int x;
+	}
+	PXMSI;
+
 #ifdef __cplusplus
 }
 #endif

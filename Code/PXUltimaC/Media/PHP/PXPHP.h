@@ -9,6 +9,11 @@ extern "C"
 {
 #endif
 
+	typedef struct PXPHP_
+	{
+		int x;
+	}
+	PXPHP;
 
 #ifdef __cplusplus
 }

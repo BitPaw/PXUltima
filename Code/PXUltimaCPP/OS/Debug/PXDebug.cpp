@@ -51,7 +51,7 @@ void PX::Debug::Pause()
 	PXDebugPause(this);
 }
 
-bool PX::Debug::PauseOther(const PXProcessID pxProcessID)
+bool PX::Debug::PauseOther(const PXProcessHandle pxProcessID)
 {
 	return 	PXDebugPauseOther(this, pxProcessID);
 }

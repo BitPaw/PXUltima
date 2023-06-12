@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-	PXPublic unsigned int PXCRC32Generate(const unsigned char* const data, const PXSize length);
+	PXPublic PXInt32U PXCRC32Generate(const PXByte* const data, const PXSize length);
 
 #ifdef __cplusplus
 }

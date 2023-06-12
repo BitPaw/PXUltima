@@ -25,7 +25,7 @@ bool PX::Library::Close()
 	return PXLibraryClose(this);
 }
 
-bool PX::Library::GetSymbol(LibraryFunction* libraryFunction, const Text& symbolName)
+bool PX::Library::GetSymbol(LibraryFunction libraryFunction, const Text& symbolName)
 {
 	return PXLibraryGetSymbol(this, libraryFunction, &symbolName);
 }

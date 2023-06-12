@@ -9,16 +9,11 @@
 #define PXOGGHeaderTypeBeginningOfStream 0x02
 #define PXOGGHeaderTypeEndOfStream 0x04
 
-PXActionResult PXOGGParse(PXOGG* ogg, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PXOGGParse(PXOGG* const ogg, PXFile* const pxFile)
 {
-	PXFile dataStream;
-
 	PXMemoryClear(ogg, sizeof(PXOGG));
-	*dataRead = 0;
-	PXFileConstruct(&dataStream);
-	PXFileBufferExternal(&dataStream, data, dataSize);
 
-	while(!PXFileIsAtEnd(&dataStream))
+	while(!PXFileIsAtEnd(pxFile))
 	{
 		PXOGGPage page;
 
@@ -28,7 +23,7 @@ PXActionResult PXOGGParse(PXOGG* ogg, const void* data, const PXSize dataSize, P
 			// You can refocus it when the file is corrupted.
 			const unsigned char* headerSignature[] = PXOGGHeaderSignature;
 			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const unsigned char validHeaderSignature = PXFileReadAndCompare(&dataStream, headerSignature, headerSignatureSize);
+			const unsigned char validHeaderSignature = PXFileReadAndCompare(pxFile, headerSignature, headerSignatureSize);
 
 			if(!validHeaderSignature)
 			{
@@ -37,13 +32,13 @@ PXActionResult PXOGGParse(PXOGG* ogg, const void* data, const PXSize dataSize, P
 			}
 		}
 
-		PXFileReadI8U(&dataStream, &page.Version);
-		PXFileReadI8U(&dataStream, &page.HeaderType);
-		PXFileReadI32UE(&dataStream, &page.GranulePosition, PXEndianLittle);
-		PXFileReadI32UE(&dataStream, &page.SerialNumber, PXEndianLittle);
-		PXFileReadI32UE(&dataStream, &page.SequenceNumber, PXEndianLittle);
-		PXFileReadI32UE(&dataStream, &page.CRC32CheckSum, PXEndianLittle);
-		PXFileReadI8U(&dataStream, &page.PageSegments);
+		PXFileReadI8U(pxFile, &page.Version);
+		PXFileReadI8U(pxFile, &page.HeaderType);
+		PXFileReadI32UE(pxFile, &page.GranulePosition, PXEndianLittle);
+		PXFileReadI32UE(pxFile, &page.SerialNumber, PXEndianLittle);
+		PXFileReadI32UE(pxFile, &page.SequenceNumber, PXEndianLittle);
+		PXFileReadI32UE(pxFile, &page.CRC32CheckSum, PXEndianLittle);
+		PXFileReadI8U(pxFile, &page.PageSegments);
 
 		unsigned char segmentSizeList[0xFF];
 
@@ -71,7 +66,7 @@ PXActionResult PXOGGParse(PXOGG* ogg, const void* data, const PXSize dataSize, P
 
 		for(PXSize i = 0; i < page.PageSegments; ++i)
 		{
-			PXFileReadI8U(&dataStream, &segmentSizeList[i]);
+			PXFileReadI8U(pxFile, &segmentSizeList[i]);
 
 			printf
 			(
@@ -89,7 +84,7 @@ PXActionResult PXOGGParse(PXOGG* ogg, const void* data, const PXSize dataSize, P
 
 			for(PXSize i = 0; i < x; i++)
 			{
-				unsigned char* currentPos = (unsigned char*)PXFileCursorPosition(&dataStream) + i;
+				unsigned char* currentPos = (unsigned char*)PXFileCursorPosition(pxFile) + i;
 
 				char print = (*currentPos >= ' ' && *currentPos <= '~') ? *currentPos : '.';
 
@@ -103,11 +98,9 @@ PXActionResult PXOGGParse(PXOGG* ogg, const void* data, const PXSize dataSize, P
 
 			printf("\n");
 
-			PXFileCursorAdvance(&dataStream, x);
+			PXFileCursorAdvance(pxFile, x);
 		}
 	}
-
-	*dataRead = dataStream.DataCursor;
 
 	return PXActionSuccessful;
 }

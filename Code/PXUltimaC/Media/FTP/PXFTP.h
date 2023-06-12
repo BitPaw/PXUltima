@@ -3,6 +3,8 @@
 
 #include <Media/PXType.h>
 
+#define FTPDefaultPort 21
+
 #ifdef __cplusplus
 extern "C"
 {

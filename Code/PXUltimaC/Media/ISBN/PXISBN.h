@@ -8,7 +8,13 @@ extern "C"
 {
 #endif
 
-	PXPublic unsigned char PXISBNIsValid(const void* data, const PXSize dataSize);
+	typedef struct PXISBN_
+	{
+		int x;
+	}
+	PXISBN;
+
+	PXPublic PXBool PXISBNIsValid(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }

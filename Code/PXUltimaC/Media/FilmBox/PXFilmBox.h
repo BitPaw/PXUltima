@@ -2,20 +2,19 @@
 #define PXFBXINCLUDE
 
 #include <Media/PXType.h>
-
 #include <OS/Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	typedef struct PXFBX_
+	typedef struct PXFilmBox_
 	{
 		unsigned int __dummy__;
 	}
-	PXFBX;
+	PXFilmBox;
 
-	PXPublic PXActionResult PXFBXParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult PXFilmBoxParse(const void* data, const PXSize dataSize);
 
 #ifdef __cplusplus
 }

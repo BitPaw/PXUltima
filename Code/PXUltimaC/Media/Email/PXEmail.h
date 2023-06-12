@@ -1,16 +1,16 @@
-#ifndef EMLInclude
-#define EMLInclude
+#ifndef PXEmailINCLUDE
+#define PXEmailINCLUDE
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef struct EML_
+	typedef struct PXEmail_
 	{
 		unsigned int __dummy__;
 	}
-	EML;
+	PXEmail;
 
 #ifdef __cplusplus
 }

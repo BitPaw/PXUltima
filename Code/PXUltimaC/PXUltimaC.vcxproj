@@ -275,9 +275,6 @@
     <ClCompile Include="Media\XML\PXXML.c" />
     <ClCompile Include="Media\YAML\PXYAML.c" />
     <ClCompile Include="Media\ZLIB\PXZLIB.c" />
-    <ClCompile Include="Network\SBP\PXSBPProtocol.c" />
-    <ClCompile Include="Network\Web\PXFTPClient.c" />
-    <ClCompile Include="Network\Web\PXWebServer.c" />
     <ClCompile Include="OS\Audio\PXAudio.c" />
     <ClCompile Include="OS\Bash\PXBash.c" />
     <ClCompile Include="OS\ClipBoard\PXClipBoard.c" />
@@ -297,8 +294,8 @@
     <ClCompile Include="OS\Network\PXServer.c" />
     <ClCompile Include="OS\Network\PXSocket.c" />
     <ClCompile Include="OS\Hardware\PXProcessor.c" />
-    <ClCompile Include="OS\Process\PXProcess.c" />
-    <ClCompile Include="OS\Program\PXProgram.c" />
+    <ClCompile Include="OS\Async\PXProcess.c" />
+    <ClCompile Include="OS\Async\PXProgram.c" />
     <ClCompile Include="OS\Signal\PXSignal.c" />
     <ClCompile Include="OS\System\PXRegistry.c" />
     <ClCompile Include="OS\Async\PXAwait.c" />
@@ -310,6 +307,12 @@
     <ClCompile Include="OS\User\PXUser.c" />
     <ClCompile Include="OS\Window\PXWindow.c" />
     <ClCompile Include="Container\Buffer\PXBuffer.c" />
+    <ClCompile Include="Service\FTP\PXFTPServer.c" />
+    <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
+    <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
+    <ClCompile Include="Service\SBP\PXSBP.c" />
+    <ClCompile Include="Service\FTP\PXFTPClient.c" />
+    <ClCompile Include="Service\HTTP\PXHTTPClient.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h" />
@@ -414,9 +417,6 @@
     <ClInclude Include="Media\XML\PXXML.h" />
     <ClInclude Include="Media\YAML\PXYAML.h" />
     <ClInclude Include="Media\ZLIB\PXZLIB.h" />
-    <ClInclude Include="Network\SBP\PXSBPProtocol.h" />
-    <ClInclude Include="Network\Web\PXFTPClient.h" />
-    <ClInclude Include="Network\Web\PXWebServer.h" />
     <ClInclude Include="OS\Audio\PXAudio.h" />
     <ClInclude Include="OS\Bash\PXBash.h" />
     <ClInclude Include="OS\ClipBoard\PXClipBoard.h" />
@@ -436,8 +436,8 @@
     <ClInclude Include="OS\Network\PXServer.h" />
     <ClInclude Include="OS\Network\PXSocket.h" />
     <ClInclude Include="OS\Hardware\PXProcessor.h" />
-    <ClInclude Include="OS\Process\PXProcess.h" />
-    <ClInclude Include="OS\Program\PXProgram.h" />
+    <ClInclude Include="OS\Async\PXProcess.h" />
+    <ClInclude Include="OS\Async\PXProgram.h" />
     <ClInclude Include="OS\Signal\PXSignal.h" />
     <ClInclude Include="OS\System\PXOSVersion.h" />
     <ClInclude Include="OS\System\PXRegistry.h" />
@@ -450,6 +450,12 @@
     <ClInclude Include="OS\User\PXUser.h" />
     <ClInclude Include="OS\Window\PXWindow.h" />
     <ClInclude Include="Container\Buffer\PXBuffer.h" />
+    <ClInclude Include="Service\FTP\PXFTPServer.h" />
+    <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
+    <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
+    <ClInclude Include="Service\SBP\PXSBP.h" />
+    <ClInclude Include="Service\FTP\PXFTPClient.h" />
+    <ClInclude Include="Service\HTTP\PXHTTPClient.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

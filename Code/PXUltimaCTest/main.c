@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 
+#define PXLDAPTest 1
+
 #include "TestSystemInfo.h"
 #include "Graphic/TestWindow.h"
 #include "Graphic/TestOpenGL.h"
@@ -12,6 +14,14 @@
 #include "Network/TestSocket.h"
 #include "Network/TestFTP.h"
 #include "Network/TestSBP.h"
+
+
+#if PXLDAPTest
+#include <Network/LDAP/PXLDAP.h>
+#include <winber.h>
+#endif // PXLDAPTest
+
+
 
 /*
 
@@ -57,6 +67,104 @@ void PXTextMatchTest()
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+
+
+#if PXLDAPTest
+
+	printf("Begin");
+
+	PXLDAP pxLDAP;
+	PXLDAPConstruct(&pxLDAP);
+
+	PXLDAPConnectionInfo pxLDAPConnectionInfo;
+	pxLDAPConnectionInfo.ConnectionOriented = PXTrue;
+	PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.Host, Host, "ipa.demo1.freeipa.org");
+	PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.ConnectionDomain, ConnectionDomain, "uid=admin,cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org");
+	PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.AuthenticationCredentials, AuthenticationCredentials, "Secret123");
+	pxLDAPConnectionInfo.Port = PXLDAPPortDefault;
+	pxLDAPConnectionInfo.SSLUse = 0;
+	pxLDAPConnectionInfo.ConnectTimeout = 2000;
+	pxLDAPConnectionInfo.AuthenticationMethod = PXLDAPAuthenticationMethodInvalid;
+
+	PXActionResult openResult = PXLDAPOpen(&pxLDAP, &pxLDAPConnectionInfo);
+	
+
+	PXLDAPSearchInfo pxLDAPSearchInfo;
+	PXTextMakeFixedNamedA(&pxLDAPSearchInfo.EntryName, EntryName, "dc=demo1,dc=freeipa,dc=org");
+	PXTextMakeFixedNamedA(&pxLDAPSearchInfo.Filter, Filter, "(objectclass=person)");
+	pxLDAPSearchInfo.Async = PXFalse;
+	pxLDAPSearchInfo.OnlyTypesRequired = PXFalse;
+	pxLDAPSearchInfo.AttributeList = PXNull;
+	pxLDAPSearchInfo.Scope = PXLDAPScopeSubTree;
+
+	const PXActionResult searchResult = PXLDAPSearch(&pxLDAP, &pxLDAPSearchInfo);
+	const PXBool successful = PXActionSuccessful == searchResult;
+
+	if (successful)
+	{
+		
+
+		for (LDAPMessage* msg = ldap_first_entry(pxLDAP.ID, pxLDAP.SearchResult); msg; msg = ldap_next_entry(pxLDAP.ID, msg))
+		{
+			ULONG ReturnCode;                            // returned by server
+			PSTR MatchedDNs;         // free with ldap_memfree
+			PSTR ErrorMessage;       // free with ldap_memfree
+			PZPSTR Referrals;        // free with ldap_value_freeA
+			PLDAPControlA* ServerControls;               // free with ldap_free_controlsA
+			const ULONG result = ldap_parse_resultA(pxLDAP.ID, msg, &ReturnCode, &MatchedDNs,&ErrorMessage,&Referrals, &ServerControls, PXFalse);
+			const PXBool success = LDAP_SUCCESS == result;
+
+			if (success)
+			{
+				BerElement* berElement = 0;
+				
+				printf("[%p] ID:%i Type:%i\n", msg, msg->lm_msgid, msg->lm_msgtype);
+
+				for (char* attribute = ldap_first_attributeA(pxLDAP.ID, msg, &berElement); attribute; attribute = ldap_next_attributeA(pxLDAP.ID, msg, berElement))
+				{
+
+					struct berval** calxx = ldap_get_values_lenA(pxLDAP.ID, msg, attribute);
+					const PXBool valueFetchSuccess = PXNull != calxx;
+
+					if (valueFetchSuccess)
+					{
+						printf("\t- %-25s : %-25s\n", attribute, (*calxx)->bv_val);
+					
+					}
+					else
+					{
+						printf("\t- %-25s : %-25s\n", attribute, 0);
+					}				
+				}
+
+				printf("\n\n");
+			}
+			else
+			{
+				printf("[%p] Error\n", msg);
+			}
+
+			
+		}
+	}
+
+
+	PXLDAPDestruct(&pxLDAP);
+
+	printf("END");
+
+#endif 
+
+
+
+
+
+
+
+
+
+
 
 #if 0
 	PXTextMatchTest();

@@ -22,7 +22,7 @@ typedef FARPROC LibraryFunction;
 #endif
 
 #include <Media/PXText.h>
-#include <OS/Process/PXProcess.h>
+#include <OS/Async/PXProcess.h>
 
 #ifdef __cplusplus
 extern "C"
