@@ -18,7 +18,7 @@ PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegist
 	return PXRegistryConnectRemote(registry, 0, registrySpace);
 }
 
-PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const wchar_t* computerName, const PXRegistrySpace registrySpace)
+PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -99,7 +99,7 @@ void PXRegistryKeyCreate(PXRegistry* const registry)
 #endif
 }
 
-void PXRegistryKeyLoad(PXRegistry* const registry, const wchar_t* file)
+void PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const file)
 {
 #if OSUnix
 #elif PXOSWindowsDestop

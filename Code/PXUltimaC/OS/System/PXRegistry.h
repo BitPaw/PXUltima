@@ -7,6 +7,7 @@
 #if PXRegistryUSE
 
 #include <Media/PXType.h>
+#include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
 
 #if OSUnix
@@ -40,12 +41,12 @@ extern "C"
 	PXRegistry;
 
 	PXPublic PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
-	PXPublic PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const wchar_t* computerName, const PXRegistrySpace registrySpace);
+	PXPublic PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace);
 
 	PXPublic void PXRegistryClose(PXRegistry* const registry);
 
 	PXPublic void PXRegistryKeyCreate(PXRegistry* const registry);
-	PXPublic void PXRegistryKeyLoad(PXRegistry* const registry, const wchar_t* file);
+	PXPublic void PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const file);
 	PXPublic void PXRegistryKeySave(PXRegistry* const registry);
 	PXPublic void PXRegistryKeyDelete(PXRegistry* const registry);
 

@@ -113,7 +113,7 @@ extern "C"
 	PXPublic void PXTGADestruct(PXTGA* const tga);
 
 
-	PXPublic PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PXTGAParse(PXTGA* const tga, PXFile* const pxFile);
 	PXPublic PXActionResult PXTGAParseToImage(PXImage* const image, PXFile* const dataStream);
 
 	PXPublic PXActionResult PXTGASerializeFromImage(const PXImage* const image, PXFile* const dataStream);

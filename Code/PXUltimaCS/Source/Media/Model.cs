@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace PX
+﻿namespace PX
 {
-    public class Image
+    public class Model
     {
         public void Load(string filePath)
         {

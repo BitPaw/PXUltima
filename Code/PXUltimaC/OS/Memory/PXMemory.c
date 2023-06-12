@@ -330,7 +330,7 @@ void* PXMemoryHeapAllocate(const PXSize requestedSizeInBytes)
 {
 	if(!requestedSizeInBytes)
 	{
-		return 0;
+		return PXNull;
 	}
 
 	void* const adress = malloc(requestedSizeInBytes);
@@ -341,7 +341,7 @@ void* PXMemoryHeapAllocate(const PXSize requestedSizeInBytes)
 		printf("[x][Memory] Allocation failed! (%10zi B) Error: Out of memory\n", requestedSizeInBytes);
 #endif
 
-		return 0;
+		return PXNull;
 	}
 
 #if MemorySanitise

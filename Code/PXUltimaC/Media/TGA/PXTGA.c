@@ -134,14 +134,9 @@ void PXTGADestruct(PXTGA* const tga)
 
 }
 
-PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PXTGAParse(PXTGA* const tga, PXFile* const pxFile)
 {
-	PXFile dataStream;
-
-	PXFileConstruct(&dataStream);
-	PXFileBufferExternal(&dataStream, data, dataSize);
 	PXTGAConstruct(tga);
-	*dataRead = 0;
 
 	unsigned short colorPaletteChunkEntryIndex = 0;
 	unsigned short colorPaletteChunkSize = 0;
@@ -158,20 +153,20 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 		unsigned char pixelDepth = 0;
 		unsigned char imageTypeValue = 0;
 
-		PXFileReadI8U(&dataStream, &imageIDLengh);
-		PXFileReadI8U(&dataStream, &tga->ColorPaletteType);
-		PXFileReadI8U(&dataStream, &imageTypeValue);
+		PXFileReadI8U(&pxFile, &imageIDLengh);
+		PXFileReadI8U(&pxFile, &tga->ColorPaletteType);
+		PXFileReadI8U(&pxFile, &imageTypeValue);
 
-		PXFileReadI16UE(&dataStream, &colorPaletteChunkEntryIndex, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &colorPaletteChunkSize, PXEndianLittle);
-		PXFileReadI8U(&dataStream, &colorPaletteEntrySizeInBits);
+		PXFileReadI16UE(&pxFile, &colorPaletteChunkEntryIndex, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &colorPaletteChunkSize, PXEndianLittle);
+		PXFileReadI8U(&pxFile, &colorPaletteEntrySizeInBits);
 
-		PXFileReadI16UE(&dataStream, &tga->OriginX, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->OriginY, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->Width, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->Height, PXEndianLittle);
-		PXFileReadI8U(&dataStream, &pixelDepth);
-		PXFileReadI8U(&dataStream, &tga->ImageDescriptor);
+		PXFileReadI16UE(&pxFile, &tga->OriginX, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->OriginY, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->Width, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->Height, PXEndianLittle);
+		PXFileReadI8U(&pxFile, &pixelDepth);
+		PXFileReadI8U(&pxFile, &tga->ImageDescriptor);
 
 		tga->ImageInformationSize = imageIDLengh;
 
@@ -186,19 +181,19 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 	//---[Parse Image ID]--------------
 	if(tga->ImageInformationSize)
 	{
-		PXFileReadB(&dataStream, tga->ImageInformation, tga->ImageInformationSize);
+		PXFileReadB(&pxFile, tga->ImageInformation, tga->ImageInformationSize);
 	}
 	//----------------------------------
 
 	//---[Parse Color-Palette]----------
 	if(colorPaletteChunkSize > 0)
 	{
-		PXFileCursorAdvance(&dataStream, colorPaletteChunkSize);
+		PXFileCursorAdvance(&pxFile, colorPaletteChunkSize);
 	}
 	//--------------------------------
 
 	//---[ ImageData ]------------------
-	PXFileReadB(&dataStream, tga->ImageData, tga->ImageDataSize);
+	PXFileReadB(&pxFile, tga->ImageData, tga->ImageDataSize);
 	//-----------------------------------------------------------------
 
 
@@ -206,9 +201,9 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 	{
 		const unsigned int stringLengh = PXTGAFileIdentifierSize;
 		unsigned int compareLength = stringLengh;
-		const char lastCharacter = ((char*)dataStream.Data)[dataStream.DataSize - 1];
+		const char lastCharacter = ((char*)pxFile->Data)[pxFile->DataSize - 1];
 		const char isLastCharacter = lastCharacter == '.';
-		char* string = (char*)dataStream.Data + (dataStream.DataSize - stringLengh);
+		char* string = (char*)pxFile->Data + (pxFile->DataSize - stringLengh);
 
 		if(isLastCharacter)
 		{
@@ -216,7 +211,7 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 			string++;
 		}
 
-		footerEntryIndex = dataStream.DataSize - (26u - 1u);
+		footerEntryIndex = pxFile->DataSize - (26u - 1u);
 
 		const PXBool isPXTGAVersionTwo = PXMemoryCompare(PXTGAFileIdentifier, PXTGAFileIdentifierSize, string, compareLength - 1); // Is this string at this address?;
 
@@ -226,19 +221,19 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 		}
 	}
 
-	firstFieldAfterHeader = dataStream.DataCursor;
+	firstFieldAfterHeader = pxFile->DataCursor;
 
 	//---[ Parse Footer ]--------------------------------------------------------
-	dataStream.DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the PXTGA-Footer.
+	pxFile->DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the PXTGA-Footer.
 
-	PXFileReadI32UE(&dataStream, &extensionOffset, PXEndianLittle);
-	PXFileReadI32UE(&dataStream, &developerAreaOffset, PXEndianLittle);
+	PXFileReadI32UE(&pxFile, &extensionOffset, PXEndianLittle);
+	PXFileReadI32UE(&pxFile, &developerAreaOffset, PXEndianLittle);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
 	if(developerAreaOffset > 0)
 	{
-		dataStream.DataCursor = developerAreaOffset;// Jump to Developer Block
+		pxFile->DataCursor = developerAreaOffset;// Jump to Developer Block
 		// Parse Developer Fields
 		// Parse Developer Directory
 	}
@@ -249,8 +244,8 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 	{
 		unsigned short extensionSize = 0;
 
-		dataStream.DataCursor = extensionOffset; // Jump to Extension Header
-		PXFileReadI16UE(&dataStream,extensionSize, PXEndianLittle);
+		pxFile->DataCursor = extensionOffset; // Jump to Extension Header
+		PXFileReadI16UE(&pxFile,extensionSize, PXEndianLittle);
 
 		const unsigned char isExtensionSizeAsExpected = extensionSize == 495u;
 
@@ -259,40 +254,40 @@ PXActionResult PXTGAParse(PXTGA* tga, const void* data, const PXSize dataSize, P
 			return PXActionFailedFormatNotAsExpected;
 		}
 
-		PXFileReadB(&dataStream, tga->AuthorName, 41u);
-		PXFileReadB(&dataStream, tga->AuthorComment, 324u);
+		PXFileReadB(&pxFile, tga->AuthorName, 41u);
+		PXFileReadB(&pxFile, tga->AuthorComment, 324u);
 
 		// 12 Bytes
-		PXFileReadI16UE(&dataStream, &tga->DateTimeMonth, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->JobTimeDay, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->JobTimeYear, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->JobTimeHour, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->JobTimeMinute, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->JobTimeSecond, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->DateTimeMonth, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeDay, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeYear, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeHour, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeMinute, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeSecond, PXEndianLittle);
 
-		PXFileReadB(&dataStream, tga->JobID, 41u);
+		PXFileReadB(&pxFile, tga->JobID, 41u);
 
 		// 6 Bytes
-		PXFileReadI16UE(&dataStream, &tga->JobTimeHours, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->JobTimeMinutes, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->JobTimeSeconds, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeHours, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeMinutes, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->JobTimeSeconds, PXEndianLittle);
 
-		dataStream.DataCursor += 12u;
+		pxFile->DataCursor += 12u;
 
-		PXFileReadB(&dataStream, tga->SoftwareName, 41u);
+		PXFileReadB(&pxFile, tga->SoftwareName, 41u);
 
-		PXFileReadI16UE(&dataStream, &tga->VersionNumber, PXEndianLittle);
-		PXFileReadI8U(&dataStream, &tga->SoftwareVersion);
+		PXFileReadI16UE(&pxFile, &tga->VersionNumber, PXEndianLittle);
+		PXFileReadI8U(&pxFile, &tga->SoftwareVersion);
 
-		PXFileReadI32UE(&dataStream, &tga->BackGroundColor, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->PixelAspectRatioCounter, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->PixelAspectRatioDenominator, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->GammaCounter, PXEndianLittle);
-		PXFileReadI16UE(&dataStream, &tga->GammaDenominator, PXEndianLittle);
-		PXFileReadI32UE(&dataStream, tga->ColorCorrectionOffset, PXEndianLittle);
-		PXFileReadI32UE(&dataStream, tga->PostagestampOffset, PXEndianLittle);
-		PXFileReadI32UE(&dataStream, tga->ScanlineOffset, PXEndianLittle);
-		PXFileReadI8U(&dataStream,tga->AttributesType);
+		PXFileReadI32UE(&pxFile, &tga->BackGroundColor, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->PixelAspectRatioCounter, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->PixelAspectRatioDenominator, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->GammaCounter, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &tga->GammaDenominator, PXEndianLittle);
+		PXFileReadI32UE(&pxFile, tga->ColorCorrectionOffset, PXEndianLittle);
+		PXFileReadI32UE(&pxFile, tga->PostagestampOffset, PXEndianLittle);
+		PXFileReadI32UE(&pxFile, tga->ScanlineOffset, PXEndianLittle);
+		PXFileReadI8U(&pxFile,tga->AttributesType);
 
 		/*
 	if (ColorCorrectionOffset > 0)
