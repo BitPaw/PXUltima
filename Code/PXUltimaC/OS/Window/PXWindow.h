@@ -49,15 +49,6 @@ extern "C"
 	}
 	PXWindowCursorMode;
 
-	typedef enum ButtonState_
-	{
-		ButtonStateInvalid,
-		ButtonStateDown,
-		ButtonStateHold,
-		ButtonStateRelease
-	}
-	ButtonState;
-
 	typedef enum MouseButton_
 	{
 		MouseButtonInvalid,
@@ -105,7 +96,7 @@ extern "C"
 	{
 		unsigned char KeyID;
 		PXVirtualKey Key;
-		ButtonState Mode;
+		PXKeyPressState Mode;
 		unsigned short Repeat; // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
 		unsigned short ScanCode;// Der Scancode.Der Wert hängt vom OEM ab.
 		unsigned short SpecialKey;// Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
@@ -119,7 +110,7 @@ extern "C"
 
 	// Mouse
 	typedef void (*MouseScrollEvent)(const void* const receiver, const PXWindow* sender, const MouseScrollDirection mouseScrollDirection);
-	typedef void (*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const MouseButton mouseButton, const ButtonState buttonState);
+	typedef void (*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const MouseButton mouseButton, const PXKeyPressState buttonState);
 	typedef void (*MouseClickDoubleEvent)(const void* const receiver, const PXWindow* sender, const MouseButton mouseButton);
 	typedef void (*MouseMoveEvent)(const void* const receiver, const PXWindow* sender, const PXMouse* mouse);
 	typedef void (*MouseEnterEvent)(const void* const receiver, const PXWindow* sender);
@@ -261,7 +252,7 @@ extern "C"
 
 	// Event functions
 	PXPublic void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
-	PXPublic void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState);
+	PXPublic void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const PXKeyPressState buttonState);
 	PXPublic void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
 	PXPublic void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
 	PXPublic void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);

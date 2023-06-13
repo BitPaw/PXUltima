@@ -1303,18 +1303,18 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         case WindowEventKEYDOWN:
         case WindowEventKEYUP:
         {
-            ButtonState mode = ButtonStateInvalid;
+            PXKeyPressState mode = PXKeyPressStateInvalid;
 
             switch(eventID)
             {
                 case WM_KEYUP:
                 {
-                    mode = ButtonStateRelease;
+                    mode = PXKeyPressStateUp;
                     break;
                 }
                 case WM_KEYDOWN:
                 {
-                    mode = ButtonStateDown;
+                    mode = PXKeyPressStateDown;
                     break;
                 }
             }
@@ -1323,7 +1323,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             const PXSize characterInfo = lParam;
             const PXVirtualKey virtualKey = PXVirtualKeyFromID(character);
 
-            PXKeyBoardKeyPressedSet(&window->KeyBoardCurrentInput, virtualKey, mode == ButtonStateRelease);
+            PXKeyBoardKeyPressedSet(&window->KeyBoardCurrentInput, virtualKey, mode == PXKeyPressStateUp);
 
             KeyBoardKeyInfo buttonInfo;
             buttonInfo.KeyID = character;
@@ -1433,11 +1433,11 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         //case WindowEventMOUSEMOVE:
         //    break;
         case WindowEventLBUTTONDOWN:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, ButtonStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, PXKeyPressStateDown);
             break;
 
         case WindowEventLBUTTONUP:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, ButtonStateRelease);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, PXKeyPressStateUp);
             break;
 
         case WindowEventLBUTTONDBLCLK:
@@ -1445,11 +1445,11 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             break;
 
         case WindowEventRBUTTONDOWN:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, ButtonStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, PXKeyPressStateDown);
             break;
 
         case WindowEventRBUTTONUP:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, ButtonStateRelease);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, PXKeyPressStateUp);
             break;
 
         case WindowEventRBUTTONDBLCLK:
@@ -1457,11 +1457,11 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
             break;
 
         case WindowEventMBUTTONDOWN:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, ButtonStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, PXKeyPressStateDown);
             break;
 
         case WindowEventMBUTTONUP:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, ButtonStateRelease);
+            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, PXKeyPressStateUp);
             break;
 
         case WindowEventMBUTTONDBLCLK:
@@ -1475,7 +1475,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         case WindowEventXBUTTONDOWN:
         {
             MouseButton mouseButton = MouseButtonInvalid;
-            ButtonState buttonState = ButtonStateInvalid;
+            PXKeyPressState buttonState = PXKeyPressStateInvalid;
 
             const WORD releaseID = HIWORD(wParam);
             // const WORD xxxxx = LOWORD(wParam);
@@ -1490,13 +1490,13 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 
                     case WindowEventXBUTTONUP:
                     {
-                        buttonState = ButtonStateRelease;
+                        buttonState = PXKeyPressStateUp;
                         break;
                     }
 
                     case WindowEventXBUTTONDOWN:
                     {
-                        buttonState = ButtonStateDown;
+                        buttonState = PXKeyPressStateDown;
                         break;
                     }
                 }
@@ -2843,7 +2843,7 @@ void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mo
 
 }
 
-void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const ButtonState buttonState)
+void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const PXKeyPressState buttonState)
 {
     const PXMouse* const mouse = &window->MouseCurrentInput;
 
@@ -2852,19 +2852,19 @@ void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton 
 
     switch(buttonState)
     {
-        case ButtonStateInvalid:
+        case PXKeyPressStateInvalid:
             buttonStateText = "Invalid";
             break;
 
-        case ButtonStateDown:
+        case PXKeyPressStateDown:
             buttonStateText = "Down";
             break;
 
-        case ButtonStateHold:
+        case PXKeyPressStateHold:
             buttonStateText = "Hold";
             break;
 
-        case ButtonStateRelease:
+        case PXKeyPressStateUp:
             buttonStateText = "Release";
             break;
     }
@@ -2949,7 +2949,7 @@ void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKey
     PXInt32U mask = 0;
     PXInt32U data = 0;
 
-    if (keyBoardKeyInfo->Mode == ButtonStateDown)
+    if (keyBoardKeyInfo->Mode == PXKeyPressStateDown)
     {
         switch (keyBoardKeyInfo->Key)
         {

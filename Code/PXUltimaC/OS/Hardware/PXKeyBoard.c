@@ -5,6 +5,40 @@
 
 #include <stdio.h>
 
+
+
+#define PXKeyA 0x41
+#define PXKeyB 0x42  
+#define PXKeyC 0x43  
+#define PXKeyD 0x44  
+#define PXKeyE 0x45  
+#define PXKeyF 0x46  
+#define PXKeyG 0x47  
+#define PXKeyH 0x48  
+#define PXKeyI 0x49  
+#define PXKeyJ 0x4A  
+#define PXKeyK 0x4B  
+#define PXKeyL 0x4C  
+#define PXKeyM 0x4D  
+#define PXKeyN 0x4E  
+#define PXKeyO 0x4F  
+#define PXKeyP 0x50  
+#define PXKeyQ 0x51  
+#define PXKeyR 0x52  
+#define PXKeyS 0x53  
+#define PXKeyT 0x54  
+#define PXKeyU 0x55
+#define PXKeyV 0x56
+#define PXKeyW 0x57  
+#define PXKeyX 0x58
+#define PXKeyY 0x59
+#define PXKeyZ 0x5A
+
+
+
+
+
+
 #if OSUnix
 #define ButtonBackSpace  0x08
 #define ButtonTab  0x09
@@ -34,7 +68,7 @@
 #include <WinUser.h>
 #endif
 
-PXVirtualKey PXVirtualKeyFromID(const char character)
+PXVirtualKey PXVirtualKeyFromID(const PXInt8U character)
 {
 #if OSUnix
 #elif OSWindows
@@ -409,6 +443,51 @@ PXVirtualKey PXVirtualKeyFromID(const char character)
 #endif
 }
 
+PXInt8U PXVirtualKeyToID(const PXVirtualKey character)
+{
+	switch (character)
+	{
+
+
+		case KeyA: return PXKeyA;
+		case KeyB: return PXKeyB;
+		case KeyC: return PXKeyC;
+		case KeyD: return PXKeyD;
+		case KeyE: return PXKeyE;
+		case KeyF: return PXKeyF;
+		case KeyG: return PXKeyG;
+		case KeyH: return PXKeyH;
+		case KeyI: return PXKeyI;
+		case KeyJ: return PXKeyJ;
+		case KeyK: return PXKeyK;
+		case KeyL: return PXKeyL;
+		case KeyM: return PXKeyM;
+		case KeyN: return PXKeyN;
+		case KeyO: return PXKeyO;
+		case KeyP: return PXKeyP;
+		case KeyQ: return PXKeyQ;
+		case KeyR: return PXKeyR;
+		case KeyS: return PXKeyS;
+		case KeyT: return PXKeyT;
+		case KeyU: return PXKeyU;
+		case KeyV: return PXKeyV;
+		case KeyW: return PXKeyW;
+		case KeyX: return PXKeyX;
+		case KeyY: return PXKeyY;
+		case KeyZ: return PXKeyZ;
+
+		//case KeyBrackedLeft: return xxxxxxxxx;
+		//case KeyBackSlash: return xxxxxxxxx;
+		//case KeyBrackedRight: return xxxxxxxxx;
+		//case KeyGraveAccent: return xxxxxxxxx;
+		case KeyWorld1: return VK_LWIN;
+		case KeyWorld2: return VK_RWIN;
+
+		default:
+			return -1;
+	}
+}
+
 void PXKeyBoardInputReset(PXKeyBoard* const keyBoard)
 {
 	PXMemoryClear(keyBoard, sizeof(PXKeyBoard));
@@ -492,4 +571,63 @@ unsigned char PXInputButtonIsLongPressed(const unsigned charvalue)
 unsigned char PXInputButtonIsPressed(const unsigned char value)
 {
 	return value > 0;
+}
+
+PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
+{
+	switch (pxKeyPressStateID)
+	{ 
+		case 0: return PXKeyPressStateDown;
+		case KEYEVENTF_KEYUP: return PXKeyPressStateUp;
+		case KEYEVENTF_EXTENDEDKEY: return PXKeyPressStateHold;
+
+		default:
+			return PXKeyPressStateInvalid;
+	}
+}
+
+PXInt8U PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
+{
+	switch (pxKeyPressState)
+	{
+		case PXKeyPressStateDown: return 0;
+		case PXKeyPressStateUp: return KEYEVENTF_KEYUP;
+		case PXKeyPressStateHold: return KEYEVENTF_EXTENDEDKEY;
+
+		case PXKeyPressStateInvalid:
+		default:
+			return -1;
+	}
+}
+
+PXBool PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize)
+{
+#if OSUnix
+
+#elif OSWindows
+	INPUT inputs[4];
+	PXMemoryClear(inputs, sizeof(INPUT) * 4u);
+
+	// current sateneed to be fetched, as this input here
+	// is not checked for correct order.
+	// Example: 'A' is held forever
+
+	// GetAsyncKeyState
+
+	for (PXSize i = 0; i < inputListSize; ++i)
+	{
+		PXKeyBoardVirtualInput* const virtualInput = &inputList[i];
+		INPUT* input = &inputs[i];
+
+		input->type = INPUT_KEYBOARD;
+		input->ki.wVk = PXVirtualKeyToID(virtualInput->VirtualKey);
+		input->ki.dwFlags = PXKeyPressStateToID(virtualInput->KeyStrokeMode);
+	}
+
+	const UINT uSent = SendInput(inputListSize, inputs, sizeof(INPUT));
+
+	const PXBool sendSuccessful = uSent == ARRAYSIZE(inputs);
+
+	return sendSuccessful;
+#endif
 }

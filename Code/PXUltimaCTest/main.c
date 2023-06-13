@@ -1,7 +1,8 @@
 
 #include <stdio.h>
 
-#define PXLDAPTest 1
+#define PXLDAPTest 0
+#define PXKeyBoardVirtualTest 1
 
 #include "TestSystemInfo.h"
 #include "Graphic/TestWindow.h"
@@ -20,6 +21,11 @@
 #include <Network/LDAP/PXLDAP.h>
 #include <winber.h>
 #endif // PXLDAPTest
+
+
+#if PXKeyBoardVirtualTest
+#include <OS/Hardware/PXKeyBoard.h>
+#endif // PXKeyBoardVirtualTest
 
 
 
@@ -156,6 +162,19 @@ int main()
 
 #endif 
 
+
+#if PXKeyBoardVirtualTest
+
+	PXKeyBoardVirtualInput inputList[4];
+
+	PXKeyBoardVirtualInputSet(&inputList[0], KeyWorld1, PXKeyPressStateDown);
+	PXKeyBoardVirtualInputSet(&inputList[1], KeyD, PXKeyPressStateDown);
+
+	PXKeyBoardVirtualInputSet(&inputList[2], KeyD, PXKeyPressStateUp);
+	PXKeyBoardVirtualInputSet(&inputList[3], KeyWorld1, PXKeyPressStateUp);
+	
+	PXKeyBoardVirtualInsertAction(&inputList, 4);
+#endif // 0
 
 
 

@@ -323,7 +323,12 @@ extern "C"
 	}
 	PXKeyBoard;
 
-	PXPublic PXVirtualKey PXVirtualKeyFromID(const char character);
+
+
+
+
+	PXPublic PXVirtualKey PXVirtualKeyFromID(const PXInt8U character);
+	PXPublic PXInt8U PXVirtualKeyToID(const PXVirtualKey character);
 
 	PXPublic void PXKeyBoardInputReset(PXKeyBoard* const keyBoard);
 
@@ -334,6 +339,7 @@ extern "C"
 
 
 
+
 	// Remove this? Find better solution
 	PXPublic unsigned char PXInputButtonReset(unsigned char* value);
 	PXPublic unsigned char PXInputButtonIncrement(unsigned char* value);
@@ -341,6 +347,34 @@ extern "C"
 	PXPublic unsigned char PXInputButtonIsShortPressed(const unsigned char value);
 	PXPublic unsigned char PXInputButtonIsLongPressed(const unsigned charvalue);
 	PXPublic unsigned char PXInputButtonIsPressed(const unsigned char value);
+
+
+
+
+	typedef enum PXKeyPressState_
+	{
+		PXKeyPressStateInvalid, 
+		PXKeyPressStateDown,
+		PXKeyPressStateUp,
+		PXKeyPressStateHold,
+	}
+	PXKeyPressState;
+
+	PXPublic PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID);
+	PXPublic PXInt8U PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
+
+
+	typedef struct PXKeyBoardVirtualInput_
+	{
+		PXVirtualKey VirtualKey;
+		PXKeyPressState KeyStrokeMode;
+	}
+	PXKeyBoardVirtualInput;
+
+	#define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState; 
+
+	PXPublic PXBool PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize);
+
 
 #ifdef __cplusplus
 }

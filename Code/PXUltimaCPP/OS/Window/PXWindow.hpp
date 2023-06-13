@@ -16,15 +16,6 @@ namespace PX
 		LockAndHide
 	};
 
-	typedef enum ButtonState_
-	{
-		ButtonStateInvalid,
-		ButtonStateDown,
-		ButtonStateHold,
-		ButtonStateRelease
-	}
-	ButtonState;
-
 	typedef enum MouseButton_
 	{
 		MouseButtonInvalid,
