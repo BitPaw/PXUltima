@@ -1,5 +1,5 @@
-#ifndef PXFTPINCLUDE
-#define PXFTPINCLUDE
+#ifndef PXFTPClientINCLUDE
+#define PXFTPClientINCLUDE
 
 #include <Media/FTP/PXFTP.h>
 #include <OS/Network/PXClient.h>

@@ -22,25 +22,91 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Network\PXClient.c">
+    <ClCompile Include="..\PXUltimaC\OS\Window\PXWindow.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Async\PXThread.c">
+    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\CRC32\PXCRC32.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\ISBN\PXISBN.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\OGG\PXOGG.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\HTTP\PXHTTP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPClient.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPServer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\SBP\PXSBP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\System\PXRegistry.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\TGA\PXTGA.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Memory\PXMemory.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\Wavefront\PXWavefront.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\WAV\PXWAV.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXImage.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Graphic\OpenGL\PXOpenGL.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\MIDI\PXMIDI.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Graphic\PXGraphic.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXFont.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Network\PXClient.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\OS\Network\PXSocket.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Memory\PXMemory.c">
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXThread.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\OS\Error\PXActionResult.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\TTF\PXTTF.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\PXFont.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\Huffman\PXHuffman.c">
@@ -58,9 +124,6 @@
     <ClCompile Include="..\PXUltimaC\Media\RIFF\PXRIFF.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\PNG\PXPNG.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
@@ -70,43 +133,28 @@
     <ClCompile Include="..\PXUltimaC\OS\File\PXFile.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\Wavefront\PXWavefront.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\Compiler\PXCompiler.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\PXImage.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Program\PXProgram.c">
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProgram.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Graphic\OpenGL\PXOpenGL.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\SpriteFont\PXSpriteFont.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Process\PXProcess.c">
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProcess.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\OS\Time\PXTime.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Window\PXWindow.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\DataBase\PXDataBase.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Graphic\PXGraphic.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\PXModel.c">
@@ -119,9 +167,6 @@
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\OS\User\PXUser.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\System\PXRegistry.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\OS\Signal\PXSignal.c">
@@ -148,9 +193,6 @@
     <ClCompile Include="..\PXUltimaC\OS\Hardware\PXHardDrive.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\OS\Graphic\Vulcan\PXVulcan.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
@@ -175,19 +217,7 @@
     <ClCompile Include="..\PXUltimaC\OS\Async\PXEvent.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Network\Web\PXFTPClient.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Network\SBP\PXSBPProtocol.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Network\Web\PXWebServer.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\ZLIB\PXZLIB.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\WAV\PXWAV.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\WEBM\PXWEBM.c">
@@ -209,9 +239,6 @@
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\SVG\PXSVG.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\TGA\PXTGA.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\TIFF\PXTIFF.c">
@@ -262,9 +289,6 @@
     <ClCompile Include="..\PXUltimaC\Media\MTL\PXMTL.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\OGG\PXOGG.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\PDF\PXPDF.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
@@ -275,9 +299,6 @@
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\IP\PXIP.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\ISBN\PXISBN.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\JPEG\PXJPEG.c">
@@ -298,12 +319,6 @@
     <ClCompile Include="..\PXUltimaC\Media\MD5\PXMD5.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\MIDI\PXMIDI.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\FTP\PXFTP.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
@@ -311,9 +326,6 @@
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\HTML\PXHTML.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\HTTP\PXHTTP.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\INI\PXINI.c">
@@ -356,9 +368,6 @@
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\CPP\PXCPP.c">
-      <Filter>PXUltima</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PXUltimaC\Media\CRC32\PXCRC32.c">
       <Filter>PXUltima</Filter>
     </ClCompile>
     <ClCompile Include="..\PXUltimaC\Media\CS\PXCS.c">
@@ -444,16 +453,85 @@
     <ClInclude Include="pch.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Async\PXThread.h">
+    <ClInclude Include="..\PXUltimaC\OS\Window\PXWindow.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\DataBase\PXDataBase.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PHP\PXPHP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\OGG\PXOGG.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\MSI\PXMSI.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\Email\PXEmail.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\ISBN\PXISBN.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Debug\PXDebug.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Library\PXLibrary.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPClient.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPServer.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\FTP\PXFTP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\SBP\PXSBP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\System\PXRegistry.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\TGA\PXTGA.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Memory\PXMemory.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h">
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXThread.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Memory\PXMemory.h">
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Error\PXActionResult.h">
@@ -465,13 +543,10 @@
     <ClInclude Include="..\PXUltimaC\Media\RIFF\PXRIFF.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Library\PXLibrary.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\PXImage.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Program\PXProgram.h">
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProgram.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Compiler\PXCompiler.h">
@@ -483,19 +558,13 @@
     <ClInclude Include="..\PXUltimaC\Media\PXText.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Process\PXProcess.h">
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProcess.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\File\PXFile.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Time\PXTime.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Window\PXWindow.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\DataBase\PXDataBase.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.h">
@@ -513,16 +582,7 @@
     <ClInclude Include="..\PXUltimaC\Media\PXType.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Debug\PXDebug.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\System\PXRegistry.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h">
@@ -543,9 +603,6 @@
     <ClInclude Include="..\PXUltimaC\OS\Hardware\PXProcessor.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Hardware\PXController.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
@@ -553,9 +610,6 @@
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Hardware\PXHardDrive.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Graphic\Vulcan\PXVulcan.h">
@@ -583,15 +637,6 @@
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\OS\Async\PXAwait.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Network\Web\PXFTPClient.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Network\SBP\PXSBPProtocol.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Network\Web\PXWebServer.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\ZLIB\PXZLIB.h">
@@ -628,9 +673,6 @@
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\SVG\PXSVG.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\TGA\PXTGA.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\TIFF\PXTIFF.h">
@@ -675,28 +717,16 @@
     <ClInclude Include="..\PXUltimaC\Media\MP4\PXMP4.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\MSI\PXMSI.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\MTL\PXMTL.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\OGG\PXOGG.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\PDF\PXPDF.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\PHP\PXPHP.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\PLY\PXPLY.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\IP\PXIP.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\ISBN\PXISBN.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\JPEG\PXJPEG.h">
@@ -718,12 +748,6 @@
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\MIDI\PXMIDI.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\FTP\PXFTP.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\GIF\PXGIF.h">
@@ -751,9 +775,6 @@
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\ELF\PXELF.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\Email\PXEmail.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\EXE\PXEXE.h">
@@ -784,9 +805,6 @@
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\CPP\PXCPP.h">
-      <Filter>PXUltima</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
     <ClInclude Include="..\PXUltimaC\Media\CS\PXCS.h">
@@ -858,5 +876,10 @@
     <ClInclude Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.h">
       <Filter>PXUltima</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\PXUltimaC\PXUltimaC.cbp">
+      <Filter>PXUltima</Filter>
+    </None>
   </ItemGroup>
 </Project>

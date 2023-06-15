@@ -168,6 +168,8 @@ extern "C"
 
 		char HeaderCacheSize;
 		char HeaderCache[PXSBPMessageChunkHeaderSize];
+
+		PXBool EnableSBP;
 	}
 	PXSBPReceiver;
 
@@ -209,11 +211,15 @@ extern "C"
 		PXClient Client;
 		PXSBPReceiver Receiver;
 		PXSBPEmitter Emitter;
+
+		PXBool EnableSBP;
 	}
 	PXSBPClient;
 
 	PXPublic void PXSBPClientConstruct(PXSBPClient* const pxSBPClient);
 	PXPublic void PXSBPClientDestruct(PXSBPClient* const pxSBPClient);
+
+	PXPublic void PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiverEventList* const pxSBPReceiverEventList);
 
 	PXPublic PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port);
 	PXPublic PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient);

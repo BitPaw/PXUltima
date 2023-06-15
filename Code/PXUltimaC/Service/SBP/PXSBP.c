@@ -33,6 +33,7 @@ void PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver)
     PXMemoryClear(pxSBPReceiver, sizeof(PXSBPReceiver));
 
     pxSBPReceiver->State = PXSBPRecieverStateAwaitingHeaderBegin;
+    pxSBPReceiver->EnableSBP = PXFalse;
 
     //PXDictionaryConstruct(&pxSBPClient->Receiver.MessageLookup, sizeof(PXMessageID), sizeof(PXSBPMessage), PXDictionaryValueLocalityInternalEmbedded);
 }
@@ -50,8 +51,9 @@ void PXSBPServerConstruct(PXSBPServer* const pxSBPServer)
 void PXSBPServerDestruct(PXSBPServer* const pxSBPServer)
 {
     PXServerDestruct(&pxSBPServer->Server);
-    //PXSBPReceiverConstruct(&pxSBPServer->Receiver);
-    //PXSBPEmitterConstruct(&pxSBPServer->Emitter);
+
+    // Reset default state
+    PXSBPServerConstruct(pxSBPServer);
 }
 
 void PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceiverEventList* const pxSBPReceiverEventList)
@@ -61,12 +63,12 @@ void PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceive
 
 PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port)
 {
-    return PXServerStart(pxSBPServer, port, ProtocolModeTCP);
+    return PXServerStart(&pxSBPServer->Server, port, ProtocolModeTCP);
 }
 
 PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer)
 {
-    return PXServerStop(pxSBPServer);
+    return PXServerStop(&pxSBPServer->Server);
 }
 
 void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
@@ -75,6 +77,8 @@ void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
     PXSBPReceiverConstruct(&pxSBPClient->Receiver);
     PXSBPEmitterConstruct(&pxSBPClient->Emitter);
 
+    pxSBPClient->EnableSBP = PXFalse;
+
     pxSBPClient->Client.EventList.SocketDataReceiveCallBack = PXSBPOnDataRawReceive;
     pxSBPClient->Client.Owner = &pxSBPClient->Receiver;
 }
@@ -82,12 +86,17 @@ void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
 void PXSBPClientDestruct(PXSBPClient* const pxSBPClient)
 {
     PXClientDestruct(&pxSBPClient->Client);
+
+    PXSBPClientConstruct(pxSBPClient);
+}
+
+void PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiverEventList* const pxSBPReceiverEventList)
+{
+    pxSBPClient->Receiver.EventList = *pxSBPReceiverEventList;
 }
 
 PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port)
 {
-    //PXServerStart(&server.Server, 13370, ProtocolModeTCP);
-
     return PXClientConnectToServer(&pxSBPClient->Client, ip, port, &pxSBPClient->Client, PXClientCommunicationThread);
 }
 
@@ -98,6 +107,11 @@ PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
 
 PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize)
 {
+    if (!pxSBPClient->EnableSBP)
+    {
+        return PXClientSendData(&pxSBPClient->Client, data, dataSize);
+    }
+
     // Get free message ID channel.
     const PXInt16U messageID = 0xDEADBEEF;
 
@@ -111,7 +125,6 @@ PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void
         const PXAdress dataSourcePoint = (PXAdress)data + (dataSize - accumulator);
 
         accumulator -= packageSizeCurrent;
-
 
         if (i == 0)
         {
@@ -210,6 +223,18 @@ PXSize PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessage, const v
 
 void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData)
 {
+    if (!pxSBPReceiver->EnableSBP)
+    {
+        PXSBPMessage pxSBPMessage;
+        PXMemoryClear(&pxSBPMessage, sizeof(PXSBPMessage));
+
+        pxSBPMessage.MessageData = pxSocketDataReceivedEventData->Data;
+        pxSBPMessage.MessageSize = pxSocketDataReceivedEventData->DataSize;
+
+        InvokeEvent(pxSBPReceiver->EventList.OnMessageReceivedCallBack, &pxSBPMessage);
+        return;
+    }
+
     switch (pxSBPReceiver->State)
     {
         case PXSBPRecieverStateAwaitingHeaderBegin:

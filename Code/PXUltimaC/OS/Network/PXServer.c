@@ -118,9 +118,26 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
 
 PXActionResult PXServerStop(PXServer* const server)
 {
+    if (server->ServerSocketListSize == 0)
+    {
+        return PXActionRefuedObjectIDInvalid;
+    }
+
+    PXSocket* ServerSocketList;
+    PXSize ServerSocketListSize;
+
+    for (size_t i = 0; i < server->ServerSocketListSize; i++)
+    {
+        PXSocket* const serverSocket = &server->ServerSocketList[i];
+
+        PXSocketClose(&serverSocket);
+    }
+
+    server->ServerSocketListSize = 0;
+
     PXLockDelete(&server->PollingLock);
 
-	return PXActionInvalid;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socketID)

@@ -1,6 +1,6 @@
 #include "TestFTP.h"
 
-#include <Network/Web/PXFTPClient.h>
+#include <Service/FTP/PXFTPClient.h>
 #include <Media/PXText.h>
 #include <Media/FTP/PXFTP.h>
 
@@ -10,8 +10,8 @@ void OnSocketDataReceiveFTP(const PXSocket* const pxSocket, const void* const me
 {
 	int returnCode = 0;
 
-	PXText pxText;
-	PXTextMakeExternA(&pxText, message, messageSize);
+	PXText pxText;	
+	PXTextConstructFromAdressA(&pxText, message, messageSize);
 
 	PXSize parsedNumberSize = PXTextToInt(&pxText, &returnCode);
 
@@ -78,7 +78,7 @@ void TestFTPClientConnectGeneral()
 
 	PXClientConstruct(&client);
 
-	client.Client.EventListener.MessageReceiveCallback = OnSocketDataReceiveFTP;
+	client.Client.EventList.SocketDataReceiveCallBack = OnSocketDataReceiveFTP;
 
 	const PXActionResult pxActionResult = PXFTPClientConnectToServer(&client, "127.0.0.1", FTPDefaultPort);
 

@@ -390,12 +390,11 @@
     <ClInclude Include="..\PXUltimaC\Media\XML\PXXML.h" />
     <ClInclude Include="..\PXUltimaC\Media\YAML\PXYAML.h" />
     <ClInclude Include="..\PXUltimaC\Media\ZLIB\PXZLIB.h" />
-    <ClInclude Include="..\PXUltimaC\Network\SBP\PXSBPProtocol.h" />
-    <ClInclude Include="..\PXUltimaC\Network\Web\PXFTPClient.h" />
-    <ClInclude Include="..\PXUltimaC\Network\Web\PXWebServer.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXAwait.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXEvent.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXLock.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProcess.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProgram.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXThread.h" />
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudio.h" />
     <ClInclude Include="..\PXUltimaC\OS\Bash\PXBash.h" />
@@ -419,8 +418,6 @@
     <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h" />
     <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h" />
     <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Process\PXProcess.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Program\PXProgram.h" />
     <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h" />
     <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h" />
     <ClInclude Include="..\PXUltimaC\OS\System\PXRegistry.h" />
@@ -429,6 +426,12 @@
     <ClInclude Include="..\PXUltimaC\OS\UI\PXUI.h" />
     <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h" />
     <ClInclude Include="..\PXUltimaC\OS\Window\PXWindow.h" />
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPClient.h" />
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPServer.h" />
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.h" />
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.h" />
+    <ClInclude Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.h" />
+    <ClInclude Include="..\PXUltimaC\Service\SBP\PXSBP.h" />
     <ClInclude Include="PXUltimaCPPUWP.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
@@ -533,12 +536,11 @@
     <ClCompile Include="..\PXUltimaC\Media\XML\PXXML.c" />
     <ClCompile Include="..\PXUltimaC\Media\YAML\PXYAML.c" />
     <ClCompile Include="..\PXUltimaC\Media\ZLIB\PXZLIB.c" />
-    <ClCompile Include="..\PXUltimaC\Network\SBP\PXSBPProtocol.c" />
-    <ClCompile Include="..\PXUltimaC\Network\Web\PXFTPClient.c" />
-    <ClCompile Include="..\PXUltimaC\Network\Web\PXWebServer.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXAwait.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXEvent.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXLock.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProcess.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProgram.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXThread.c" />
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXAudio.c" />
     <ClCompile Include="..\PXUltimaC\OS\Bash\PXBash.c" />
@@ -562,8 +564,6 @@
     <ClCompile Include="..\PXUltimaC\OS\Network\PXClient.c" />
     <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c" />
     <ClCompile Include="..\PXUltimaC\OS\Network\PXSocket.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Process\PXProcess.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Program\PXProgram.c" />
     <ClCompile Include="..\PXUltimaC\OS\Signal\PXSignal.c" />
     <ClCompile Include="..\PXUltimaC\OS\System\PXRegistry.c" />
     <ClCompile Include="..\PXUltimaC\OS\Time\PXStopWatch.c" />
@@ -571,6 +571,12 @@
     <ClCompile Include="..\PXUltimaC\OS\UI\PXUI.c" />
     <ClCompile Include="..\PXUltimaC\OS\User\PXUser.c" />
     <ClCompile Include="..\PXUltimaC\OS\Window\PXWindow.c" />
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPClient.c" />
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPServer.c" />
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.c" />
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.c" />
+    <ClCompile Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.c" />
+    <ClCompile Include="..\PXUltimaC\Service\SBP\PXSBP.c" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="PXUltimaCPPUWP.cpp" />
     <ClCompile Include="pch.cpp">
@@ -583,6 +589,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\PXUltimaC\PXUltimaC.cbp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

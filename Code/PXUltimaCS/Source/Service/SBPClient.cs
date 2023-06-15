@@ -14,6 +14,8 @@ namespace PX
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientConstruct(ref PXSBPClient pxSBPClient);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientDestruct(ref PXSBPClient pxSBPClient);
 
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientReceiverEventListSet(ref PXSBPClient pxSBPReceiver, ref PXSBPReceiverEventList pxSBPReceiverEventList);
+
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientConnectToServer(ref PXSBPClient pxSBPClient, ref PXText ip, ushort port);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientDisconnectFromServer(ref PXSBPClient pxSBPClient);
 
@@ -22,19 +24,34 @@ namespace PX
 
         private PXSBPClient _pxSBPClient = new PXSBPClient();
 
-        public SBPClient()
+        public event SBPOnMessageUpdatedFunction OnMessageUpdated;
+        public event SBPOnMessageReceivedFunction OnMessageReceived;
+
+        public unsafe SBPClient()
         {
             PXSBPClientConstruct(ref _pxSBPClient);
+
+            PXSBPReceiverEventList pXSBPReceiverEventList = new PXSBPReceiverEventList();
+
+            pXSBPReceiverEventList.OnMessageUpdatedCallBack = Marshal.GetFunctionPointerForDelegate<PXSBPOnMessageUpdatedFunction>(OnMessageUpdatedCallBack).ToPointer();
+            pXSBPReceiverEventList.OnMessageReceivedCallBack = Marshal.GetFunctionPointerForDelegate<PXSBPOnMessageReceivedFunction>(OnMessageReceivedCallBack).ToPointer();
+
+            PXSBPClientReceiverEventListSet(ref _pxSBPClient, ref pXSBPReceiverEventList);
+        }
+
+        private void OnMessageReceivedCallBack(ref PXSBPMessage pxSBPMessage)
+        {
+            OnMessageReceived?.Invoke(new SBPMessage(ref pxSBPMessage));
+        }
+
+        private void OnMessageUpdatedCallBack(ref PXSBPMessage pxSBPMessage)
+        {
+            OnMessageUpdated?.Invoke(new SBPMessage(ref pxSBPMessage));
         }
 
         public void Dispose()
         {
             PXSBPClientDestruct(ref _pxSBPClient);
-        }
-
-        public void Send()
-        {
-
         }
 
         public unsafe ActionResult SendData(string message)

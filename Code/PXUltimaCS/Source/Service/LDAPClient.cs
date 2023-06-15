@@ -9,7 +9,7 @@ namespace PX
 
         }
 
-        public PX.ActionResult Open()
+        public PX.ActionResult Open(bool connectionOriented, string host, int port, bool useSSL, int timeout, string ConnectionDomain, string authenticationCredentials, int authenticationMethod)
         {
             return ActionResult.NotImplemented;
         }
@@ -19,7 +19,7 @@ namespace PX
             return ActionResult.NotImplemented; 
         }
 
-        public PX.ActionResult Search()
+        public PX.ActionResult Search(string entryName, string filter, int scope, bool onlyTypesRequired, bool async)
         {
             return ActionResult.NotImplemented;
         }

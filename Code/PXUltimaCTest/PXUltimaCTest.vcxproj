@@ -156,10 +156,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
-    <ClCompile Include="Network\TestSocket.c" />
+    <ClCompile Include="OS\TestSocket.c" />
+    <ClCompile Include="OS\TestSystemInfo.c" />
+    <ClCompile Include="Service\TestFTP.c" />
+    <ClCompile Include="Service\TestSBP.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Network\TestSocket.h" />
+    <ClInclude Include="OS\TestSocket.h" />
+    <ClInclude Include="OS\TestSystemInfo.h" />
+    <ClInclude Include="Service\TestFTP.h" />
+    <ClInclude Include="Service\TestSBP.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PXUltimaC\PXUltimaC.vcxproj">

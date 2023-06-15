@@ -26,7 +26,7 @@ PXActionResult PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPCo
 		{
 #if OSUnix
 			return PXActionNotImplemented;
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 			if (pxLDAPInfo->ConnectionOriented)
 			{
@@ -40,14 +40,17 @@ PXActionResult PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPCo
 			const PXBool successful = PXNull != pxLDAPClient->ID;
 
 			PXActionOnErrorFetchAndReturn(!successful); // LdapGetLastError()
-#endif
+
 			break;
+#else
+			return PXActionNotSupportedByOperatingSystem;
+#endif		
 		}
 		case TextFormatUNICODE:
 		{
 #if OSUnix
 			return PXActionNotImplemented;
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 			if (pxLDAPInfo->ConnectionOriented)
 			{
@@ -61,13 +64,19 @@ PXActionResult PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPCo
 			const PXBool successful = PXNull != pxLDAPClient->ID;
 
 			PXActionOnErrorFetchAndReturn(!successful); // LdapGetLastError()
-#endif
+
 			break;
+#else
+			return PXActionNotSupportedByOperatingSystem;
+#endif			
 		}
 
 		default:
 			return PXActionRefusedFormatNotSupported;
 	}
+
+#if OSUnix
+#elif PXOSWindowsDestop
 
 #if 1
 	// Set options
@@ -109,6 +118,9 @@ PXActionResult PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPCo
 	}
 
 	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
 }
 
 PXActionResult PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
@@ -120,7 +132,7 @@ PXActionResult PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 
 #if OSUnix
 	return PXActionNotImplemented;
-#elif OSWindows
+#elif PXOSWindowsDestop
 	const ULONG result = ldap_unbind(pxLDAPClient->ID);
 	const PXBool successful = LDAP_SUCCESS == result;
 
@@ -129,6 +141,8 @@ PXActionResult PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 	pxLDAPClient->ID = PXNull;
 
 	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -138,6 +152,10 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 	{
 		return PXActionRefuedObjectIDInvalid;
 	}
+
+#if OSUnix
+	return PXActionNotImplemented;
+#elif PXOSWindowsDestop
 
 	ULONG scope = 0;
 
@@ -163,6 +181,9 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 			scope = -1;
 			break;
 	}
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
 
 	switch (pxLDAPSearchInfo->EntryName.Format)
 	{
@@ -171,7 +192,7 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 		{
 #if OSUnix
 			return PXActionNotImplemented;
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 			if (pxLDAPSearchInfo->Async)
 			{
@@ -208,13 +229,15 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 			}
 
 			return PXActionSuccessful;
+#else
+			return PXActionNotSupportedByOperatingSystem;
 #endif
 		}
 		case TextFormatUNICODE:
 		{
 #if OSUnix
 			return PXActionNotImplemented;
-#elif OSWindows
+#elif PXOSWindowsDestop
 			const ULONG messageID = ldap_searchW
 			(
 				pxLDAPClient->ID,
@@ -226,11 +249,11 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 			);
 			const PXBool successful = LDAP_SUCCESS == messageID;
 
-			PXActionOnErrorFetchAndReturn(!successful);
-
-		
+			PXActionOnErrorFetchAndReturn(!successful);		
 
 			return PXActionSuccessful;
+#else
+			return PXActionNotSupportedByOperatingSystem;
 #endif
 		}
 

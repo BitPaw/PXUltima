@@ -660,6 +660,12 @@ PXActionResult PXSocketCreate
     pxSocket->Protocol = protocolMode;
     pxSocket->Type = socketType;
 
+
+    // make non blocking
+    u_long ul = 0;
+    int nRet = ioctlsocket(pxSocket->ID, FIONBIO, &ul);
+
+
     return PXActionSuccessful;
 }
 
@@ -918,7 +924,8 @@ void PXSocketClose(PXSocket* const pxSocket)
     printf("[PXSocket] <%i> Terminated\n", (int)pxSocket->ID);
 #endif
 
-    pxSocket->ID = PXHandleNotSet;
+    //pxSocket->ID = -1;
+    PXMemorySet(&pxSocket->ID, 0xFF, 4);
 }
 
 void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState)
@@ -1386,7 +1393,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketI
 #if OSUnix
             read(pxSocketSenderID, data, availableSize);
 #elif OSWindows
-            recv(pxSocketSenderID, data, availableSize, 0);
+            recv(pxSocketSenderID, data, availableSize, 0); // MSG_PEEK
 #endif
 
 

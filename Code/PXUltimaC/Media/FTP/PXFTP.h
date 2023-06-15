@@ -1,5 +1,5 @@
 #ifndef PXFTPINCLUDE
-#define PXFTPLINCLUDE
+#define PXFTPINCLUDE
 
 #include <Media/PXType.h>
 

@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <Network/SBP/PXSBPProtocol.h>
+#include <Service/SBP/PXSBP.h>
 
 void TestPXSBPOnMessageUpdated(const PXSBPMessage* const pxSBPMessage)
 {
@@ -33,18 +33,21 @@ void TestSBPClientServerResponse()
 	PXSBPServer server; PXSBPServerConstruct(&server);
 	PXSBPClient client; PXSBPClientConstruct(&client);
 
+	PXSBPReceiverEventList pxSBPReceiverEventList;
+	pxSBPReceiverEventList.OnMessageUpdatedCallBack = TestPXSBPOnMessageUpdated;
+	pxSBPReceiverEventList.OnMessageReceivedCallBack = TestPXSBPOnMessageReceived;
+	pxSBPReceiverEventList.OnChunkSegmentUpdatedCallBack = PXNull;
+	pxSBPReceiverEventList.OnChunkReceivedCallBack = PXNull;
+	pxSBPReceiverEventList.OnMessageInvalidCallBack = PXNull;
 
-	server.Receiver.OnMessageUpdatedCallBack = TestPXSBPOnMessageUpdated;
-	server.Receiver.OnMessageReceivedCallBack = TestPXSBPOnMessageReceived;	
-	server.Receiver.OnChunkReceivedCallBack = TestSBPOnChunkReceived;
-	
+	PXSBPServerReceiverEventListSet(&server, &pxSBPReceiverEventList);
 
 	PXServerStart(&server.Server, 13370, ProtocolModeTCP);
 
 	PXText ip;
 	PXTextMakeFixedA(&ip, "127.0.0.1");
 
-	PXSBPClientConnectToServer(&client, &ip, 25565);
+	PXSBPClientConnectToServer(&client, &ip, 13370);
 
 
 	char hello[] = "Hello, this is a message";

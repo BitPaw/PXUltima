@@ -35,10 +35,12 @@ extern "C"
 	{
 #if OSUnix
 		void* ID;
-#elif OSWindows
+#elif PXOSWindowsDestop
 		LDAP* ID;
 
 		LDAPMessage* SearchResult;
+#else 
+		void* ID;
 #endif
 	}
 	PXLDAPClient;

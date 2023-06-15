@@ -575,6 +575,9 @@ unsigned char PXInputButtonIsPressed(const unsigned char value)
 
 PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
 {
+#if OSUnix
+	return -1;
+#elif PXOSWindowsDestop
 	switch (pxKeyPressStateID)
 	{ 
 		case 0: return PXKeyPressStateDown;
@@ -584,10 +587,16 @@ PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
 		default:
 			return PXKeyPressStateInvalid;
 	}
+#else
+	return -1;
+#endif
 }
 
 PXInt8U PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
 {
+#if OSUnix
+	return -1;
+#elif PXOSWindowsDestop
 	switch (pxKeyPressState)
 	{
 		case PXKeyPressStateDown: return 0;
@@ -598,13 +607,16 @@ PXInt8U PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
 		default:
 			return -1;
 	}
+#else
+	return -1;
+#endif
 }
 
 PXBool PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize)
 {
 #if OSUnix
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 	INPUT inputs[4];
 	PXMemoryClear(inputs, sizeof(INPUT) * 4u);
 
@@ -629,5 +641,7 @@ PXBool PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputLi
 	const PXBool sendSuccessful = uSent == ARRAYSIZE(inputs);
 
 	return sendSuccessful;
+#else
+	return PXFalse;
 #endif
 }

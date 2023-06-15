@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 #define PXLDAPTest 0
-#define PXKeyBoardVirtualTest 1
+#define PXKeyBoardVirtualTest 0
 
-#include "TestSystemInfo.h"
+#include "OS/TestSystemInfo.h"
 #include "Graphic/TestWindow.h"
 #include "Graphic/TestOpenGL.h"
 #include "Graphic/TestFont.h"
@@ -12,9 +12,9 @@
 #include "Graphic/TestImage.h"
 #include "Compiler/TestYAML.h"
 #include "Sound/TestSound.h"
-#include "Network/TestSocket.h"
-#include "Network/TestFTP.h"
-#include "Network/TestSBP.h"
+#include "OS/TestSocket.h"
+#include "Service/TestFTP.h"
+#include "Service/TestSBP.h"
 
 
 #if PXLDAPTest
@@ -164,7 +164,6 @@ int main()
 
 
 #if PXKeyBoardVirtualTest
-
 	PXKeyBoardVirtualInput inputList[4];
 
 	PXKeyBoardVirtualInputSet(&inputList[0], KeyWorld1, PXKeyPressStateDown);
@@ -288,12 +287,12 @@ int main()
 #endif
 
 
-#if 1
+#if 0
 	TestSocket();
 #endif // 1
 
 
-#if 0
+#if 1
 	TestSBPAll();
 #endif // 1
 

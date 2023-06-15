@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PXUltimaCSTestForms": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
