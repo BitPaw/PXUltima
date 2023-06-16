@@ -47,14 +47,14 @@ namespace PX
 
     public class Time
     {
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern DayOfWeek PXTimeMonthFromID(byte monthID);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern Month PXTimeDayFromID(byte dayID);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern DayOfWeek PXTimeMonthFromID(byte monthID);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern Month PXTimeDayFromID(byte dayID);
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXTimeNow(ref PXTime time);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern UIntPtr PXTimeMillisecondsDelta(ref PXTime timeA, ref PXTime timeB);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXTimeNow(ref PXTime time);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern UIntPtr PXTimeMillisecondsDelta(ref PXTime timeA, ref PXTime timeB);
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern UIntPtr PXTimeCounterStampGet();
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern UIntPtr PXTimeCounterFrequencyGet();
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern UIntPtr PXTimeCounterStampGet();
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern UIntPtr PXTimeCounterFrequencyGet();
 
         public int Year;
         public int Milliseconds;

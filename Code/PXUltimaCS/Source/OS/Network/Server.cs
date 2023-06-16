@@ -22,12 +22,12 @@ namespace PX
             public IntPtr SocketDataReceiveCallBack;
         }
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXServerConstruct(ref PXServer server);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXServerDestruct(ref PXServer server);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXServerConstruct(ref PXServer server);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXServerDestruct(ref PXServer server);
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXServerStart(ref PXServer server, ushort port, ProtocolMode protocolMode);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXServerStop(ref PXServer server);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXServerKickClient(ref PXServer server, uint socketID);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXServerStart(ref PXServer server, ushort port, ProtocolMode protocolMode);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXServerStop(ref PXServer server);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXServerKickClient(ref PXServer server, uint socketID);
 
         private PXServer _pxServer;
 

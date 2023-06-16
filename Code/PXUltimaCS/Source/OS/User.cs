@@ -5,7 +5,7 @@ namespace PX
 {
     public class User
     {
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static unsafe extern PX.ActionResult PXUserNameGet(PXText* name);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static unsafe extern PX.ActionResult PXUserNameGet(PXText* name);
 
         public static unsafe string Name
         {

@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
+    <TargetFramework>net462</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <BaseOutputPath>$(SolutionDir)[Export]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseOutputPath>
@@ -13,6 +12,10 @@
   <ItemGroup>
     <ProjectReference Include="..\PXUltimaCS\PXUltimaCS.csproj" />
     <ProjectReference Include="..\PXUltimaC\PXUltimaC.vcxproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
 </Project>

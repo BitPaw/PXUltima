@@ -146,6 +146,8 @@ extern "C"
 	//-----------------------------------------------------
 	typedef struct PXSBPReceiverEventList_
 	{
+		void* Owner;
+
 		PXSBPOnMessageUpdatedFunction OnMessageUpdatedCallBack;
 		PXSBPOnMessageReceivedFunction OnMessageReceivedCallBack;
 

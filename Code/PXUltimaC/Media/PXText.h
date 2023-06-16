@@ -75,9 +75,9 @@ extern "C"
 #define PXTextConstructBufferA(pxText, bufferSize) PXTextConstructNamedBufferA(pxText, __pxUnnamedInternalBuffer, bufferSize);
 
 #define PXTextConstructFromAdress(pxText, address, size, format)\
-		if(size == -1)\
+		if((PXSize)size == (PXSize)-1)\
 		{\
-			(pxText)->SizeAllocated = PXTextLengthA(address, -1);\
+			(pxText)->SizeAllocated = PXTextLengthA(address, (PXSize)-1);\
 		}\
 		else\
 		{\

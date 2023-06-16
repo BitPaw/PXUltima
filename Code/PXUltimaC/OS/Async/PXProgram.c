@@ -14,7 +14,7 @@
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 
-PXThreadResult PXProgramExecuteThreadFunction(void* data)
+PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
 {
     PXProgram* program = (PXProgram*)data;
 

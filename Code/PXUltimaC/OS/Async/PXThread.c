@@ -89,7 +89,7 @@ PXActionResult PXThreadRunInOtherProcess(PXThread* const pxThread, const void* p
 #if OSUnix
 	return PXActionNotImplemented;
 
-#elif OSWindows
+#elif PXOSWindowsDestop
 
 	LPSECURITY_ATTRIBUTES  lpThreadAttributes = 0;
 	SIZE_T                 dwStackSize = 0;
@@ -97,7 +97,7 @@ PXActionResult PXThreadRunInOtherProcess(PXThread* const pxThread, const void* p
 	LPVOID                 lpParameter = parameter;
 	DWORD                  dwCreationFlags = 0;
 	LPDWORD                lpThreadId = 0;
-	const HANDLE threadID = CreateRemoteThread // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	const HANDLE threadID = CreateRemoteThread // Windows XP, Kernel32.dll, processthreadsapi.h
 	(
 		processHandle,
 		lpThreadAttributes,

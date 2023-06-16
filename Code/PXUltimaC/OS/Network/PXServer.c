@@ -145,7 +145,7 @@ PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socke
 	return PXActionInvalid;
 }
 
-PXThreadResult PXServerClientListeningThread(PXSocket* const serverSocket)
+PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocket)
 {
     char pollBuffer[PXSocketBufferSize];
 

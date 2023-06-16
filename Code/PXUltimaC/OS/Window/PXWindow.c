@@ -1774,7 +1774,7 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 }
 #endif
 
-PXThreadResult PXWindowCreateThread(PXWindow* const window)
+PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 {
     window->IsRunning = 0;
     window->CursorModeCurrent = PXWindowCursorShow;

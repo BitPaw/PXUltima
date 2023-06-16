@@ -225,18 +225,18 @@ namespace PX
 
     };
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketCreatingEvent(UIntPtr owner, ref PXSocket pxSocket, ref byte use);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketCreatedEvent(UIntPtr owner, ref PXSocket pxSocket);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketCreatingEvent(UIntPtr owner, ref PXSocket pxSocket, ref byte use);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketCreatedEvent(UIntPtr owner, ref PXSocket pxSocket);
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketClosedEvent(UIntPtr owner, ref PXSocket pxSocket);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketClosedEvent(UIntPtr owner, ref PXSocket pxSocket);
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketConnectedEvent(UIntPtr owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketDisconnectedEvent(UIntPtr owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketConnectedEvent(UIntPtr owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketDisconnectedEvent(UIntPtr owner, ref PXSocket serverSocket, ref PXSocket clientSocket);
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketStateChangedEvent(UIntPtr owner, ref PXSocket pxSocket, SocketState oldState, SocketState newState);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketStateChangedEvent(UIntPtr owner, ref PXSocket pxSocket, SocketState oldState, SocketState newState);
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketDataSendEvent(UIntPtr owner, ref PXSocketDataSendEventData pxSocketDataSendEventData);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] internal delegate void PXSocketDataReceiveEvent(UIntPtr owner, ref PXSocketDataReceivedEventData pxSocketDataReceivedEventData);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketDataSendEvent(UIntPtr owner, ref PXSocketDataSendEventData pxSocketDataSendEventData);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSocketDataReceiveEvent(UIntPtr owner, ref PXSocketDataReceivedEventData pxSocketDataReceivedEventData);
 
 
 

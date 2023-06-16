@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-#define PXLDAPTest 0
+#define PXLDAPTest 1
 #define PXKeyBoardVirtualTest 0
 
 #include "OS/TestSystemInfo.h"
@@ -18,7 +18,7 @@
 
 
 #if PXLDAPTest
-#include <Network/LDAP/PXLDAP.h>
+#include <Service/LDAP/PXLDAPClient.h>
 #include <winber.h>
 #endif // PXLDAPTest
 
@@ -80,8 +80,8 @@ int main()
 
 	printf("Begin");
 
-	PXLDAP pxLDAP;
-	PXLDAPConstruct(&pxLDAP);
+	PXLDAPClient pxLDAP;
+	PXLDAPClientConstruct(&pxLDAP);
 
 	PXLDAPConnectionInfo pxLDAPConnectionInfo;
 	pxLDAPConnectionInfo.ConnectionOriented = PXTrue;
@@ -93,7 +93,7 @@ int main()
 	pxLDAPConnectionInfo.ConnectTimeout = 2000;
 	pxLDAPConnectionInfo.AuthenticationMethod = PXLDAPAuthenticationMethodInvalid;
 
-	PXActionResult openResult = PXLDAPOpen(&pxLDAP, &pxLDAPConnectionInfo);
+	PXActionResult openResult = PXLDAPClientOpen(&pxLDAP, &pxLDAPConnectionInfo);
 	
 
 	PXLDAPSearchInfo pxLDAPSearchInfo;
@@ -104,7 +104,7 @@ int main()
 	pxLDAPSearchInfo.AttributeList = PXNull;
 	pxLDAPSearchInfo.Scope = PXLDAPScopeSubTree;
 
-	const PXActionResult searchResult = PXLDAPSearch(&pxLDAP, &pxLDAPSearchInfo);
+	const PXActionResult searchResult = PXLDAPClientSearch(&pxLDAP, &pxLDAPSearchInfo);
 	const PXBool successful = PXActionSuccessful == searchResult;
 
 	if (successful)
@@ -156,7 +156,7 @@ int main()
 	}
 
 
-	PXLDAPDestruct(&pxLDAP);
+	PXLDAPClientDestruct(&pxLDAP);
 
 	printf("END");
 

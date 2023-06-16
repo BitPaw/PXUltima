@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace PX
 {
-    public class SBPClient : IDisposable
+    public class SBPClient : UnmanagedStructure, IDisposable
     {
         [StructLayout(LayoutKind.Sequential, Size = 1400)]
         private struct PXSBPClient
@@ -11,42 +13,53 @@ namespace PX
 
         }
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientConstruct(ref PXSBPClient pxSBPClient);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientDestruct(ref PXSBPClient pxSBPClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXSBPClientConstruct(ref PXSBPClient pxSBPClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXSBPClientDestruct(ref PXSBPClient pxSBPClient);
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXSBPClientReceiverEventListSet(ref PXSBPClient pxSBPReceiver, ref PXSBPReceiverEventList pxSBPReceiverEventList);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXSBPClientReceiverEventListSet(ref PXSBPClient pxSBPReceiver, ref PXSBPReceiverEventList pxSBPReceiverEventList);
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientConnectToServer(ref PXSBPClient pxSBPClient, ref PXText ip, ushort port);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientDisconnectFromServer(ref PXSBPClient pxSBPClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXSBPClientConnectToServer(ref PXSBPClient pxSBPClient, ref PXText ip, ushort port);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXSBPClientDisconnectFromServer(ref PXSBPClient pxSBPClient);
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientSendMessage(ref PXSBPClient pxSBPClient, UIntPtr data, UIntPtr dataSize);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXSBPClientSendFile(ref PXSBPClient pxSBPClient, ref PXText filePath);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXSBPClientSendMessage(ref PXSBPClient pxSBPClient, UIntPtr data, UIntPtr dataSize);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXSBPClientSendFile(ref PXSBPClient pxSBPClient, ref PXText filePath);
 
-        private PXSBPClient _pxSBPClient = new PXSBPClient();
+        private PXSBPClient _pxSBPClient;
 
         public event SBPOnMessageUpdatedFunction OnMessageUpdated;
         public event SBPOnMessageReceivedFunction OnMessageReceived;
 
         public unsafe SBPClient()
         {
+            OwnerSet(this);
+
+            _pxSBPClient = new PXSBPClient();
+
             PXSBPClientConstruct(ref _pxSBPClient);
 
             PXSBPReceiverEventList pXSBPReceiverEventList = new PXSBPReceiverEventList();
 
-            pXSBPReceiverEventList.OnMessageUpdatedCallBack = Marshal.GetFunctionPointerForDelegate<PXSBPOnMessageUpdatedFunction>(OnMessageUpdatedCallBack).ToPointer();
-            pXSBPReceiverEventList.OnMessageReceivedCallBack = Marshal.GetFunctionPointerForDelegate<PXSBPOnMessageReceivedFunction>(OnMessageReceivedCallBack).ToPointer();
+            pXSBPReceiverEventList.Owner = Adress;
+            pXSBPReceiverEventList.OnMessageUpdatedCallBack = DelegateToAdress<PXSBPOnMessageUpdatedFunction>(OnMessageUpdatedCallBack);
+            pXSBPReceiverEventList.OnMessageReceivedCallBack = DelegateToAdress<PXSBPOnMessageReceivedFunction>(OnMessageReceivedCallBack);
 
             PXSBPClientReceiverEventListSet(ref _pxSBPClient, ref pXSBPReceiverEventList);
         }
 
-        private void OnMessageReceivedCallBack(ref PXSBPMessage pxSBPMessage)
+        private static unsafe void OnMessageReceivedCallBack(ref PXSBPMessage pxSBPMessage)
         {
-            OnMessageReceived?.Invoke(new SBPMessage(ref pxSBPMessage));
+            SBPClient sBPClient = ObjectFromAdress<SBPClient>(pxSBPMessage.Owner);
+            SBPMessage sbpMessageBuffer = new SBPMessage(ref pxSBPMessage);
+
+            sBPClient.OnMessageReceived?.Invoke(sbpMessageBuffer);
         }
 
-        private void OnMessageUpdatedCallBack(ref PXSBPMessage pxSBPMessage)
+        private static unsafe void OnMessageUpdatedCallBack(ref PXSBPMessage pxSBPMessage)
         {
-            OnMessageUpdated?.Invoke(new SBPMessage(ref pxSBPMessage));
+            SBPClient sBPClient = ObjectFromAdress<SBPClient>(pxSBPMessage.Owner);
+            SBPMessage sbpMessageBuffer = new SBPMessage(ref pxSBPMessage);
+
+            sBPClient.OnMessageUpdated?.Invoke(sbpMessageBuffer);
         }
 
         public void Dispose()

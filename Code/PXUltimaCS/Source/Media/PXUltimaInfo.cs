@@ -5,7 +5,7 @@ namespace PX
 {
     public class PXUltimaInfo
     {
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXUltimaInfoBuildDate(ref PXText text);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXUltimaInfoBuildDate(ref PXText text);
 
         public static unsafe string BuildDate 
         {

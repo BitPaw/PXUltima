@@ -1,4 +1,7 @@
 using PX;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace PXUltimaCSTestForms
 {
@@ -113,6 +116,16 @@ namespace PXUltimaCSTestForms
 
                 RichTextBoxLog.AppendText(message);
             }
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonServerStart_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

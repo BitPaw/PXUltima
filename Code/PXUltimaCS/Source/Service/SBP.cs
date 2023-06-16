@@ -5,6 +5,8 @@ namespace PX
 {
     internal unsafe struct PXSBPReceiverEventList
     {
+        public void* Owner;
+
         public void* OnMessageUpdatedCallBack;
         public void* OnMessageReceivedCallBack;
 
@@ -21,6 +23,8 @@ namespace PX
         // Runtime info
         public fixed byte FirstKnown[10];
         public fixed byte LastKnown[10];
+
+        public void* Owner;
 
         // Raw data
         public void* MessageData; // Payload data. Context of this data is not interpreted.
@@ -39,8 +43,9 @@ namespace PX
         public byte HasExtendedDelegation;
     }
 
-    internal delegate void PXSBPOnMessageUpdatedFunction(ref PXSBPMessage pxSBPMessage); // If message has updated but not fully recieved
-    internal delegate void PXSBPOnMessageReceivedFunction(ref PXSBPMessage pxSBPMessage); // if message is fully recieved
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSBPOnMessageUpdatedFunction(ref PXSBPMessage pxSBPMessage); // If message has updated but not fully recieved
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate void PXSBPOnMessageReceivedFunction(ref PXSBPMessage pxSBPMessage); // if message is fully recieved
 
     public delegate void SBPOnMessageUpdatedFunction(SBPMessage sbpMessage); // If message has updated but not fully recieved
     public delegate void SBPOnMessageReceivedFunction(SBPMessage sbpMessage); // if message is fully recieved
@@ -55,6 +60,9 @@ namespace PX
         public UIntPtr MessageData; // Payload data. Context of this data is not interpreted.
         public ulong MessageSize;// Current size of the data chunk, cant be bigger than expected size.
         public ulong MessageSizeCached;
+
+        // Perma stored
+        public byte[] MessageDataCopy;
 
         public int MessageBitSize;
         public int StorageType;
@@ -157,7 +165,7 @@ namespace PX
         [DllImport("PXUltima.dll")] private static extern void PXSBPClientSendFile(ref PXSBPClient pxSBPClient, ref PXText filePath);
 
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void SBPOnMessageReceivedFunction(string message);
 
         public event SBPOnMessageReceivedFunction OnMessageReceived;

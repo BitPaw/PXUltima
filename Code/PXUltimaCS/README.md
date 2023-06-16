@@ -14,7 +14,7 @@ using System.Runtime.InteropServices; // To use 'DllImport'
 
 public class MyCFunctionWrapper
 { 
-  [DllImport("MyCDLL.dll", CallingConvention = CallingConvention.Cdecl)]
+  [DllImport("MyCDLL.dll", CallingConvention = CallingConvention.StdCall)]
   private static extern int MyFunctionFromC(int x);
   
   public int MyFunctionFromCS(int x)
@@ -38,7 +38,7 @@ We need to use the [Marshal.GetFunctionPointerForDelegate()](https://learn.micro
 
 ```CS
 // Example delegate
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
+[UnmanagedFunctionPointer(CallingConvention.StdCall)] 
 internal delegate void MyDelegate(int number);
 
 // Requires no additional 'unsafe' signature

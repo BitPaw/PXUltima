@@ -28,12 +28,12 @@ namespace PX
             //public void* Owner;
         }
 
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXClientConstruct(ref PXClient pxClient);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern void PXClientDestruct(ref PXClient pxClient);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientSendData(ref PXClient pxClient, IntPtr data, IntPtr dataSize);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientConnectToSelf(ref PXClient client, ushort port);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientConnectToServer(ref PXClient client, ref PXText ip, ushort port);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.Cdecl)] private static extern PX.ActionResult PXClientDisconnectFromServer(ref PXClient client);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXClientConstruct(ref PXClient pxClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern void PXClientDestruct(ref PXClient pxClient);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXClientSendData(ref PXClient pxClient, IntPtr data, IntPtr dataSize);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXClientConnectToSelf(ref PXClient client, ushort port);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXClientConnectToServer(ref PXClient client, ref PXText ip, ushort port);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXClientDisconnectFromServer(ref PXClient client);
 
        // [MarshalAs(UnmanagedType.ByValArray, SizeConst = 584)]
         private PXClient _pxClient;

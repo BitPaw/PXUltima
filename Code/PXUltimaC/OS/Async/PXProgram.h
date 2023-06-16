@@ -37,7 +37,7 @@ extern "C"
 	}
 	PXProgram;
 
-	PXPublic PXThreadResult  PXProgramExecuteThreadFunction(void* data);
+	PXPublic PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data);
 
 	PXPrivate PXActionResult PXProgramExecute(PXProgram* const program);
 

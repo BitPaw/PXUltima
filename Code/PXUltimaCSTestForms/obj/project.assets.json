@@ -1,7 +1,28 @@
 {
   "version": 3,
   "targets": {
-    "net6.0-windows7.0": {
+    ".NETFramework,Version=v4.6.2": {
+      "PXUltimaC/1.0.0": {
+        "type": "project",
+        "compile": {
+          "bin/placeholder/PXUltimaC.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PXUltimaC.dll": {}
+        }
+      },
+      "PXUltimaCS/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6.2",
+        "compile": {
+          "bin/placeholder/PXUltimaCS.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PXUltimaCS.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.2/win7-x86": {
       "PXUltimaC/1.0.0": {
         "type": "project",
         "compile": {
@@ -36,7 +57,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net6.0-windows7.0": [
+    ".NETFramework,Version=v4.6.2": [
       "PXUltimaC >= 1.0.0",
       "PXUltimaCS >= 1.0.0"
     ]
@@ -63,15 +84,15 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net6.0-windows"
+        "net462"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net6.0-windows7.0": {
-          "targetAlias": "net6.0-windows",
+        "net462": {
+          "targetAlias": "net462",
           "projectReferences": {
             "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaCS\\PXUltimaCS.csproj": {
               "projectPath": "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaCS\\PXUltimaCS.csproj"
@@ -89,28 +110,14 @@
       }
     },
     "frameworks": {
-      "net6.0-windows7.0": {
-        "targetAlias": "net6.0-windows",
-        "imports": [
-          "net461",
-          "net462",
-          "net47",
-          "net471",
-          "net472",
-          "net48",
-          "net481"
-        ],
-        "assetTargetFallback": true,
-        "warn": true,
-        "frameworkReferences": {
-          "Microsoft.NETCore.App": {
-            "privateAssets": "all"
-          },
-          "Microsoft.WindowsDesktop.App.WindowsForms": {
-            "privateAssets": "none"
-          }
-        },
+      "net462": {
+        "targetAlias": "net462",
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "win7-x86": {
+        "#import": []
       }
     }
   }

@@ -19,6 +19,8 @@ extern "C"
 	{
 		PXSocketEventList EventList;
 
+		void* Owner;
+
 		PXSocketState State;
 
 		PXSocket* ServerSocketList;
@@ -26,8 +28,6 @@ extern "C"
 		PXSize ServerSocketListSizeAllocated;
 
 		PXLock PollingLock;
-
-		void* Owner;
 	}
 	PXServer;
 

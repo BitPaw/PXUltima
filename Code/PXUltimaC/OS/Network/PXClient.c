@@ -125,7 +125,7 @@ PXActionResult PXClientDisconnectFromServer(PXClient* const client)
     return PXActionSuccessful;
 }
 
-PXThreadResult PXClientCommunicationThread(PXSocket* const pxSocket)
+PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket* const pxSocket)
 {
     PXByte buffer[PXSocketBufferSize];
 
