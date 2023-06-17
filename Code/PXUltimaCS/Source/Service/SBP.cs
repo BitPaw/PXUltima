@@ -17,7 +17,7 @@ namespace PX
     };
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 64)]
+    [StructLayout(LayoutKind.Sequential, Size = 72)]
     internal unsafe struct PXSBPMessage
     {
         // Runtime info

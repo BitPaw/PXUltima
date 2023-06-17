@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 
 namespace PX
 {
@@ -31,13 +31,13 @@ namespace PX
 
         public unsafe SBPClient()
         {
-            OwnerSet(this);
-
             _pxSBPClient = new PXSBPClient();
 
             PXSBPClientConstruct(ref _pxSBPClient);
 
             PXSBPReceiverEventList pXSBPReceiverEventList = new PXSBPReceiverEventList();
+
+            OwnerSet(this);
 
             pXSBPReceiverEventList.Owner = Adress;
             pXSBPReceiverEventList.OnMessageUpdatedCallBack = DelegateToAdress<PXSBPOnMessageUpdatedFunction>(OnMessageUpdatedCallBack);
@@ -73,6 +73,11 @@ namespace PX
             {
                 return SendData((UIntPtr)messageAdress, (UIntPtr)(message.Length * sizeof(char)));
             }
+        }
+
+        public ActionResult SendObject<T>()
+        {
+            return ActionResult.NotImplemented;
         }
 
         public ActionResult SendData(UIntPtr data, UIntPtr dataSize)

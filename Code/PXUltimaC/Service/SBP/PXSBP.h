@@ -66,6 +66,8 @@ extern "C"
 		PXTime LastKnown;
 
 		// Raw data
+		void* Owner;
+
 		void* MessageData; // Payload data. Context of this data is not interpreted.
 		PXSize MessageSize;// Current size of the data chunk, cant be bigger than expected size.
 		PXSize MessageSizeCached;

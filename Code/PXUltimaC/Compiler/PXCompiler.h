@@ -88,7 +88,7 @@ extern "C"
 		
 		unsigned int Coloum;
 		unsigned int Line;
-		unsigned int Size;	
+		unsigned int Size;
 		//----------------------
 
 		PXCompilerSymbolLexer ID;

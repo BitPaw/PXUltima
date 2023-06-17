@@ -3,11 +3,23 @@ using System;
 
 namespace PX.Text
 {
+    internal class BingBong
+    {
+        public int x;
+        public float y;
+    }
+
     internal class Program
     {
         public static int Main()
         {
             Console.WriteLine("Welcome " + PX.User.Name);
+
+
+            BingBong vingBong = new BingBong();
+
+            var x = PX.Serializer.FromObject<BingBong>(vingBong);
+
 
             PX.Processor processor = new PX.Processor();
             processor.Fetch();

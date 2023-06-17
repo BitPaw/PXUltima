@@ -26,8 +26,9 @@ namespace PX
 
         public unsafe SBPServer()
         {
-            OwnerSet(this);
             PXSBPServerConstruct(ref _pxSBPServer);
+
+            OwnerSet(this);
 
             PXSBPReceiverEventList pXSBPReceiverEventList = new PXSBPReceiverEventList();
             pXSBPReceiverEventList.Owner = Adress;

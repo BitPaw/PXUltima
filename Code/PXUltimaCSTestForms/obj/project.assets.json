@@ -1,37 +1,7 @@
 {
   "version": 3,
   "targets": {
-    ".NETFramework,Version=v4.6.2": {
-      "PXUltimaC/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/PXUltimaC.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/PXUltimaC.dll": {}
-        }
-      },
-      "PXUltimaCS/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.6.2",
-        "compile": {
-          "bin/placeholder/PXUltimaCS.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/PXUltimaCS.dll": {}
-        }
-      }
-    },
-    ".NETFramework,Version=v4.6.2/win7-x86": {
-      "PXUltimaC/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/PXUltimaC.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/PXUltimaC.dll": {}
-        }
-      },
+    "net7.0-windows7.0": {
       "PXUltimaCS/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6.2",
@@ -45,11 +15,6 @@
     }
   },
   "libraries": {
-    "PXUltimaC/1.0.0": {
-      "type": "project",
-      "path": "../PXUltimaC/PXUltimaC.vcxproj",
-      "msbuildProject": "../PXUltimaC/PXUltimaC.vcxproj"
-    },
     "PXUltimaCS/1.0.0": {
       "type": "project",
       "path": "../PXUltimaCS/PXUltimaCS.csproj",
@@ -57,8 +22,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.6.2": [
-      "PXUltimaC >= 1.0.0",
+    "net7.0-windows7.0": [
       "PXUltimaCS >= 1.0.0"
     ]
   },
@@ -84,21 +48,18 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net462"
+        "net7.0-windows"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net462": {
-          "targetAlias": "net462",
+        "net7.0-windows7.0": {
+          "targetAlias": "net7.0-windows",
           "projectReferences": {
             "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaCS\\PXUltimaCS.csproj": {
               "projectPath": "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaCS\\PXUltimaCS.csproj"
-            },
-            "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\PXUltimaC.vcxproj": {
-              "projectPath": "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\PXUltimaC.vcxproj"
             }
           }
         }
@@ -110,14 +71,28 @@
       }
     },
     "frameworks": {
-      "net462": {
-        "targetAlias": "net462",
+      "net7.0-windows7.0": {
+        "targetAlias": "net7.0-windows",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App.WindowsForms": {
+            "privateAssets": "none"
+          }
+        },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
-      }
-    },
-    "runtimes": {
-      "win7-x86": {
-        "#import": []
       }
     }
   }

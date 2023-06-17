@@ -110,7 +110,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
 
         PXSocketStateChange(pxSocket, SocketIDLE);
 
-        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, (ThreadFunction)PXServerClientListeningThread, pxSocket);
+        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerClientListeningThread, pxSocket);
     }
 
     return PXActionSuccessful;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-#if false
-
 namespace PX
 {
     public enum Endian
@@ -760,4 +758,3 @@ namespace PX
 		//-------------------------------------------------------------------------	
 	}
 }
-#endif

@@ -26,7 +26,10 @@ namespace PXUltimaCSTestForms
             _sbpServer.OnMessageUpdated += OnServerMessageUpdated;
             _sbpServer.OnMessageReceived += OnServerMessageReceived;
 
+            TimerLogFetch.Enabled = true;
             TimerLogFetch.Start();
+
+            AddToLog("Start");
         }
 
         private void OnClientMessageUpdated(SBPMessage sbpMessage)
@@ -110,22 +113,12 @@ namespace PXUltimaCSTestForms
 
         private void TimerLogFetch_Tick(object sender, EventArgs e)
         {
-            if(_messageQueue.Count > 0)
+            if (_messageQueue.Count > 0)
             {
                 string message = _messageQueue.Dequeue();
 
                 RichTextBoxLog.AppendText(message);
             }
-        }
-
-        private void FormMain_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ButtonServerStart_Click_1(object sender, EventArgs e)
-        {
-
         }
     }
 }

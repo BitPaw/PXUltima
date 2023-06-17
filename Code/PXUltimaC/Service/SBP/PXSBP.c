@@ -228,6 +228,9 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
         PXSBPMessage pxSBPMessage;
         PXMemoryClear(&pxSBPMessage, sizeof(PXSBPMessage));
 
+        // BUILD MISSING MESSAGE
+
+        pxSBPMessage.Owner = pxSBPReceiver->EventList.Owner;
         pxSBPMessage.MessageData = pxSocketDataReceivedEventData->Data;
         pxSBPMessage.MessageSize = pxSocketDataReceivedEventData->DataSize;
 
