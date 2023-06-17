@@ -237,12 +237,21 @@
 //---------------------------------------------------------
 // Windows Universal Windows Platform detection
 //---------------------------------------------------------
+#if OSWindows
+
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 #define PXOSWindowsUseUWP 1
 #define PXOSWindowsDestop 0
 #else
 #define PXOSWindowsUseUWP 0
 #define PXOSWindowsDestop 1
+#endif
+
+#else
+
+#define PXOSWindowsUseUWP 0
+#define PXOSWindowsDestop 0
+
 #endif
 //---------------------------------------------------------
 
@@ -253,8 +262,15 @@
 // Calling convection
 //---------------------------------------------------------
 
+#if OSUnix
+#define PXOSAPI
+#define PXOSAPIInternal
+#elif OSWindows
 #define PXOSAPI WINAPI
 #define PXOSAPIInternal
+#endif
+
+
 
 //---------------------------------------------------------
 

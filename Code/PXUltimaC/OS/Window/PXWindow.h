@@ -161,7 +161,7 @@ extern "C"
 		PXGraphicContext GraphicInstance;
 
 
-		
+
 
 #if OSUnix
 		Display* DisplayCurrent;
@@ -227,7 +227,7 @@ extern "C"
 	PXPublic PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID);
 	PXPublic void PXWindowLookupRemove(const PXWindow* PXWindow);
 
-	PXPublic void PXWindowSize(PXWindow* const pxWindow, PXInt32S* x, PXInt32S* y, PXInt32S* width, PXInt32S* height);
+	PXPublic void PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height);
 	PXPublic void PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height);
 	PXPublic PXActionResult PXWindowPosition(PXWindow* const pxWindow, PXInt32S* x, PXInt32S* y);
 	PXPublic void PXWindowPositionChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y);

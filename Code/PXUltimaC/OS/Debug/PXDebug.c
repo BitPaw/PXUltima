@@ -43,7 +43,7 @@ PXActionResult PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* cons
 #if OSUnix
 #elif PXOSWindowsDestop
 	BOOL debuggerPresent = 0;
-	const BOOL result = CheckRemoteDebuggerPresent(pxDebug->Process.ProcessHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h 
+	const BOOL result = CheckRemoteDebuggerPresent(pxDebug->Process.ProcessHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
 	const PXBool success = result != 0;
 
 	PXActionOnErrorFetchAndReturn(!success);
@@ -96,7 +96,7 @@ PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 	BOOL fInvadeProcess = TRUE;
 
 	// Initializes the symbol handler for a process.
-	const BOOL result = SymInitialize(pxDebug->Process.ThreadHandle, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h 
+	const BOOL result = SymInitialize(pxDebug->Process.ThreadHandle, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h
 	const PXBool success = result != 0;
 
 #endif
@@ -375,9 +375,9 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 	DWORD dwMilliseconds = 0;
 	DWORD dwContinueStatus = DBG_CONTINUE; // This flag need to be set for the debugger in this functiom
 
-	// WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h 
-	// WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h 
-	const BOOL result = WaitForDebugEvent(&debugEvent, 0); 
+	// WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h
+	// WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h
+	const BOOL result = WaitForDebugEvent(&debugEvent, 0);
 	PXActionOnErrorFetchAndReturn(!result);
 
 	switch (debugEvent.dwDebugEventCode) // Process the debugging event code.
@@ -576,7 +576,8 @@ PXThreadResult PXDebugLoop(PXDebug* const pxDebug)
 		const PXActionResult result = PXProcessCreate(&pxDebug->Process, &pxDebug->ApplicatioName, PXProcessCreationModeDebugProcessOnly);
 
 		// If starting the process failed, stop.
-		PXActionReturnOnError(result);
+		//PXActionReturnOnError(result);
+		return -1;
 	}
 
 	pxDebug->IsRunning = PXTrue;

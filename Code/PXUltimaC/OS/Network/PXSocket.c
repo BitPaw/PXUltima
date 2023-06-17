@@ -641,12 +641,12 @@ PXActionResult PXSocketCreate
 #if SocketDebug
             printf("[PXSocket] Failed create.\n");
 #endif
-    
+
 #if OSUnix
             return PXErrorCurrent();
 #elif OSWindows
             return PXWindowsSocketAgentErrorFetch();
-#endif          
+#endif
         }
 
         pxSocket->ID = socketIDResult;
@@ -660,10 +660,11 @@ PXActionResult PXSocketCreate
     pxSocket->Protocol = protocolMode;
     pxSocket->Type = socketType;
 
-
+#if OSWindows
     // make non blocking
     u_long ul = 0;
     int nRet = ioctlsocket(pxSocket->ID, FIONBIO, &ul);
+#endif
 
 
     return PXActionSuccessful;
@@ -684,7 +685,7 @@ PXActionResult PXSocketConnect(PXSocket* const pxClient, PXSocket* const pxServe
         return PXErrorCurrent();
 #elif OSWindows
         return PXWindowsSocketAgentErrorFetch();
-#endif  
+#endif
     }
 
 #if SocketDebug
@@ -771,7 +772,7 @@ PXActionResult PXSocketSetupAdress
                     return PXErrorCurrent();
 #elif OSWindows
                     return PXWindowsSocketAgentErrorFetch();
-#endif  
+#endif
                 }
 
 
@@ -841,7 +842,7 @@ PXActionResult PXSocketSetupAdress
                     return PXErrorCurrent();
 #elif OSWindows
                     return PXWindowsSocketAgentErrorFetch();
-#endif  
+#endif
                 }
 
                 for (ADDRINFOW* adressInfoCurrent = addressInfoListW; adressInfoCurrent; adressInfoCurrent = adressInfoCurrent->ai_next)
@@ -1105,7 +1106,7 @@ const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
             PXActionResult selectResult = PXErrorCurrent();
 #elif OSWindows
             PXActionResult selectResult = PXWindowsSocketAgentErrorFetch();
-#endif 
+#endif
 
             numberOfSocketEvents = 0;
         }
@@ -1166,7 +1167,7 @@ PXActionResult PXSocketBind(PXSocket* const pxSocket)
         return PXErrorCurrent();
 #elif OSWindows
         return PXWindowsSocketAgentErrorFetch();
-#endif        
+#endif
     }
 
 #if SocketDebug
@@ -1201,7 +1202,7 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
         return PXErrorCurrent();
 #elif OSWindows
         return PXWindowsSocketAgentErrorFetch();
-#endif     
+#endif
     }
 
     return PXActionSuccessful;
@@ -1223,7 +1224,7 @@ PXActionResult PXSocketListen(PXSocket* const pxSocket)
         return PXErrorCurrent();
 #elif OSWindows
         return PXWindowsSocketAgentErrorFetch();
-#endif     
+#endif
     }
 
 #if SocketDebug
@@ -1265,7 +1266,7 @@ PXActionResult PXSocketAccept(PXSocket* const server)
         return PXErrorCurrent();
 #elif OSWindows
         return PXWindowsSocketAgentErrorFetch();
-#endif 
+#endif
     }
 
 #if SocketDebug
@@ -1336,7 +1337,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxS
             return PXErrorCurrent();
 #elif OSWindows
             return PXWindowsSocketAgentErrorFetch();
-#endif     
+#endif
         }
 
         pxSocketSender->BufferOutput.SizeOffset += writtenBytes;
@@ -1378,7 +1379,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketI
         if (!isSenderReady)
         {
             return PXActionRefusedSocketNotConnected;
-        }     
+        }
     }
 
     // Read data
@@ -1408,7 +1409,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketI
                 return PXErrorCurrent();
 #elif OSWindows
                 return PXWindowsSocketAgentErrorFetch();
-#endif 
+#endif
             }
 
             case 0:// endOfFile
@@ -1598,7 +1599,7 @@ PXActionResult PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
         case WSA_QOS_EUNKOWNPSOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
         case WSA_QOS_EPOLICYOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
         case WSA_QOS_EFLOWDESC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EPSFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx 
+        case WSA_QOS_EPSFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
         case WSA_QOS_EPSFILTERSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
         case WSA_QOS_ESDMODEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
         case WSA_QOS_ESHAPERATEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx

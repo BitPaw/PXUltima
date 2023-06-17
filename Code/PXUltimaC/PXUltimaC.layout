@@ -1,5 +1,90 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="Debug" />
+	<ActiveTarget name="Release" />
+	<File name="OS/Audio/PXAudio.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="416" topLine="4" />
+		</Cursor>
+	</File>
+	<File name="Media/PXType.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="598" topLine="35" />
+		</Cursor>
+	</File>
+	<File name="OS/Network/PXSocket.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="17384" topLine="652" />
+		</Cursor>
+	</File>
+	<File name="OS/File/PXFile.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="22290" topLine="869" />
+		</Cursor>
+	</File>
+	<File name="Algorithm/Dijkstra/PXDijkstra.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="53" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="Media/JPEG/PXJPEG.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="19555" topLine="501" />
+		</Cursor>
+	</File>
+	<File name="OS/Async/PXProcess.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3883" topLine="104" />
+		</Cursor>
+	</File>
+	<File name="OS/Async/PXThread.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="622" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="OS/File/PXFile.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="15350" topLine="369" />
+		</Cursor>
+	</File>
+	<File name="OS/Async/PXProcess.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6575" topLine="240" />
+		</Cursor>
+	</File>
+	<File name="Log/PXLog.c" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1142" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="OS/Window/PXWindow.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7668" topLine="216" />
+		</Cursor>
+	</File>
+	<File name="Service/SBP/PXSBP.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2700" topLine="84" />
+		</Cursor>
+	</File>
+	<File name="OS/Hardware/PXKeyBoard.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11831" topLine="467" />
+		</Cursor>
+	</File>
+	<File name="OS/Debug/PXDebug.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="14449" topLine="560" />
+		</Cursor>
+	</File>
+	<File name="OS/System/PXOSVersion.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6028" topLine="235" />
+		</Cursor>
+	</File>
+	<File name="OS/Window/PXWindow.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="82512" topLine="2580" />
+		</Cursor>
+	</File>
 </CodeBlocks_layout_file>

@@ -465,7 +465,7 @@ PXActionResult PXFileRename(const PXText* const oldName, const PXText* const new
 		{
 			return PXActionRefusedInvalidFilePath;
 		}
-	}	
+	}
 }
 
 PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* const destinationFilePath, const PXBool overrideIfExists)
@@ -881,7 +881,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 	// int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
 
 #if CVersionNewerThen2011
-	const errno_t result = fopen_s(&pxFile->ID, pxFileOpenFromPathInfo->Text.TextA, readMode);
+	const auto result = fopen_s(&pxFile->ID, pxFileOpenFromPathInfo->Text.TextA, readMode); // errno_t
 
 	return result == 0;
 
@@ -1404,9 +1404,9 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 	 const int result = munmap(pxFile->Data, pxFile->DataSize);
 	 const PXBool sucessful = result != -1;
 
-	 PXActionOnErrorFetchAndExit(!sucessful)
+	 PXActionOnErrorFetchAndExit(!sucessful);
 
-		 pxFile->Data = PXNull;
+     pxFile->Data = PXNull;
 	 pxFile->DataSize = 0;
 
 	 return PXActionSuccessful;
@@ -1498,11 +1498,11 @@ PXActionResult PXFileClose(PXFile* const pxFile)
 			 pxFile->DataCursor = ftell(pxFile->ID);
 #elif OSWindows
 			 // Compile-ERROR: This seems to upset the compiler as its limited to 32-Bit value
-			 //pxFile->DataCursor = SetFilePointer(pxFile->ID, 0, 0, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h 
+			 //pxFile->DataCursor = SetFilePointer(pxFile->ID, 0, 0, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 			 const LARGE_INTEGER distanceToMove = { 0,0 }; // We do not move
 			 LARGE_INTEGER newFilePointer;
 
-			 const PXBool result = SetFilePointerEx(pxFile->ID, distanceToMove, &newFilePointer, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h 
+			 const PXBool result = SetFilePointerEx(pxFile->ID, distanceToMove, &newFilePointer, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
 			 if (result)
 			 {

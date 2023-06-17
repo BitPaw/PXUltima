@@ -58,7 +58,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 	PXProcessConstruct(pxProcess);
 
 	switch (programmPath->Format)
-	{	
+	{
 		case TextFormatASCII:
 		case TextFormatUTF8:
 		{
@@ -82,14 +82,14 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 
 			const PXBool success = CreateProcessA // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 			(
-				programmPath->TextA, 
-				NULL, 
-				NULL, 
-				NULL, 
-				0, 
-				creationflags, 
-				NULL, 
-				NULL, 
+				programmPath->TextA,
+				NULL,
+				NULL,
+				NULL,
+				0,
+				creationflags,
+				NULL,
+				NULL,
 				&startupInfo,
 				&processInfo
 			);
@@ -121,15 +121,15 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 
 			const PXBool success = CreateProcessW // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 			(
-				programmPath->TextW, 
-				NULL, 
-				NULL, 
-				NULL, 
-				0, 
-				DEBUG_PROCESS, 
+				programmPath->TextW,
 				NULL,
-				NULL, 
-				&startupInfo, 
+				NULL,
+				NULL,
+				0,
+				DEBUG_PROCESS,
+				NULL,
+				NULL,
+				&startupInfo,
 				&processInfo
 			);
 
@@ -195,7 +195,7 @@ PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 
 		successfulFetch = Process32Next(snapshotHandle, &processEntryW);
 	}
-	
+
 	return PXActionSuccessful;
 #else
 	return PXActionNotSupportedByOperatingSystem;
@@ -330,7 +330,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 #if WindowsAtleastVista && 0 // minimum: Windows XP SP2, SP1 does not support EX version
 		const DWORD processMemoryCountersSize = sizeof(PROCESS_MEMORY_COUNTERS_EX);
 		PROCESS_MEMORY_COUNTERS_EX processMemoryCounters;
-#else	
+#else
 		const DWORD processMemoryCountersSize = sizeof(PROCESS_MEMORY_COUNTERS);
 		PROCESS_MEMORY_COUNTERS processMemoryCounters;
 #endif

@@ -8,28 +8,28 @@
 
 
 #define PXKeyA 0x41
-#define PXKeyB 0x42  
-#define PXKeyC 0x43  
-#define PXKeyD 0x44  
-#define PXKeyE 0x45  
-#define PXKeyF 0x46  
-#define PXKeyG 0x47  
-#define PXKeyH 0x48  
-#define PXKeyI 0x49  
-#define PXKeyJ 0x4A  
-#define PXKeyK 0x4B  
-#define PXKeyL 0x4C  
-#define PXKeyM 0x4D  
-#define PXKeyN 0x4E  
-#define PXKeyO 0x4F  
-#define PXKeyP 0x50  
-#define PXKeyQ 0x51  
-#define PXKeyR 0x52  
-#define PXKeyS 0x53  
-#define PXKeyT 0x54  
+#define PXKeyB 0x42
+#define PXKeyC 0x43
+#define PXKeyD 0x44
+#define PXKeyE 0x45
+#define PXKeyF 0x46
+#define PXKeyG 0x47
+#define PXKeyH 0x48
+#define PXKeyI 0x49
+#define PXKeyJ 0x4A
+#define PXKeyK 0x4B
+#define PXKeyL 0x4C
+#define PXKeyM 0x4D
+#define PXKeyN 0x4E
+#define PXKeyO 0x4F
+#define PXKeyP 0x50
+#define PXKeyQ 0x51
+#define PXKeyR 0x52
+#define PXKeyS 0x53
+#define PXKeyT 0x54
 #define PXKeyU 0x55
 #define PXKeyV 0x56
-#define PXKeyW 0x57  
+#define PXKeyW 0x57
 #define PXKeyX 0x58
 #define PXKeyY 0x59
 #define PXKeyZ 0x5A
@@ -206,7 +206,7 @@ PXVirtualKey PXVirtualKeyFromID(const PXInt8U character)
 			//case VK_APPS:
 
 
-			// 0x5E : reserved			 
+			// 0x5E : reserved
 
 			//case VK_SLEEP:
 
@@ -222,7 +222,7 @@ PXVirtualKey PXVirtualKeyFromID(const PXInt8U character)
 		case VK_NUMPAD9:return KeyPad9;
 		case VK_MULTIPLY:return KeyPadMultiply;
 		case VK_ADD: return KeyPadAdd;
-			//case VK_SEPARATOR: return 
+			//case VK_SEPARATOR: return
 		case VK_SUBTRACT: return KeyPadSubtract;
 		case VK_DECIMAL: return KeyPadDecimal;
 		case VK_DIVIDE: return KeyPadDivide;
@@ -480,8 +480,8 @@ PXInt8U PXVirtualKeyToID(const PXVirtualKey character)
 		//case KeyBackSlash: return xxxxxxxxx;
 		//case KeyBrackedRight: return xxxxxxxxx;
 		//case KeyGraveAccent: return xxxxxxxxx;
-		case KeyWorld1: return VK_LWIN;
-		case KeyWorld2: return VK_RWIN;
+		//case KeyWorld1: return VK_LWIN;
+		//case KeyWorld2: return VK_RWIN;
 
 		default:
 			return -1;
@@ -579,7 +579,7 @@ PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
 	return -1;
 #elif PXOSWindowsDestop
 	switch (pxKeyPressStateID)
-	{ 
+	{
 		case 0: return PXKeyPressStateDown;
 		case KEYEVENTF_KEYUP: return PXKeyPressStateUp;
 		case KEYEVENTF_EXTENDEDKEY: return PXKeyPressStateHold;

@@ -1,0 +1,1356 @@
+# depslib dependency file v1.0
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Algorithm/Dijkstra/PXDijkstra.c
+	"PXDijkstra.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Algorithm/Dijkstra/PXDijkstra.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXType.h
+	<stddef.h>
+	<OS/System/PXOSVersion.h>
+
+1687010605 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/System/PXOSVersion.h
+	<Windows.h>
+	<SdkDdkVer.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Algorithm/KalmanFilter/PXKalmanFilter.c
+	"PXKalmanFilter.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Algorithm/KalmanFilter/PXKalmanFilter.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Compiler/PXCompiler.c
+	"PXCompiler.h"
+	<stdio.h>
+	<OS/File/PXFile.h>
+	<Media/PXText.h>
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Compiler/PXCompiler.h
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Error/PXActionResult.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/File/PXFile.h
+	<stdlib.h>
+	<stdio.h>
+	<wchar.h>
+	<Media/PXType.h>
+	<Media/PXText.h>
+	<OS/Memory/PXMemory.h>
+	<OS/Error/PXActionResult.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<sys/mman.h>
+	<dirent.h>
+	<unistd.h>
+	<libgen.h>
+	<windows.h>
+	<direct.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXText.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Memory/PXMemory.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXMath.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Compiler/PXCompilerSettings.c
+	"PXCompilerSettings.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Compiler/PXCompilerSettings.h
+	<OS/System/PXOSVersion.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/BinaryTree/PXBinaryTree.c
+	"PXBinaryTree.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/BinaryTree/PXBinaryTree.h
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/Buffer/PXBuffer.c
+	"PXBuffer.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/Buffer/PXBuffer.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/Dictionary/PXDictionary.c
+	"PXDictionary.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/Dictionary/PXDictionary.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/LinkedList/PXLinkedList.c
+	"PXLinkedList.h"
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/LinkedList/PXLinkedList.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/List/PXList.c
+	"PXList.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/List/PXList.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/QuadTree/PXQuadTree.c
+	"PXQuadTree.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/QuadTree/PXQuadTree.h
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/Queue/PXQueue.c
+	"PXQueue.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/Queue/PXQueue.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/RingBuffer/PXRingBuffer.c
+	"PXRingBuffer.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Container/RingBuffer/PXRingBuffer.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/DataBase/PXDataBase.c
+	"PXDataBase.h"
+	<OS/Memory/PXMemory.h>
+	<stdio.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/DataBase/PXDataBase.h
+	<OS/System/PXOSVersion.h>
+	<Windows.h>
+	<sqlext.h>
+	<sqltypes.h>
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Graphic/PXCamera.c
+	"PXCamera.h"
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Graphic/PXCamera.h
+	<Media/PXType.h>
+	<Math/PXMatrix.h>
+	<Math/PXVector.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXMatrix.h
+	<Media/PXType.h>
+	<Math/PXVector.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXVector.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Graphic/SoftwareRender/PXSoftwareRender.c
+	"PXSoftwareRender.h"
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Graphic/SoftwareRender/PXSoftwareRender.h
+	<Media/PXType.h>
+	<Media/PXImage.h>
+	<Media/PXFont.h>
+	<Media/PXText.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXImage.h
+	<OS/File/PXFile.h>
+	<Media/PXColor.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXColor.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXFont.h
+	<OS/File/PXFile.h>
+	<Media/SpriteFont/PXSpriteFont.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/SpriteFont/PXSpriteFont.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+	<Media/PXImage.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Language/PXTranslator.c
+	"PXTranslator.h"
+	<Media/PXText.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Language/PXTranslator.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+	<OS/File/PXFile.h>
+
+1687013504 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Log/PXLog.c
+	"PXLog.h"
+	<Media/PXText.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Log/PXLog.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXCollision.c
+	"PXCollision.h"
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXCollision.h
+	<Media/PXType.h>
+	<Math/PXVector.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXDiagram.c
+	"PXDiagram.h"
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXDiagram.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXGeometric.c
+	"PXGeometric.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXGeometric.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXMath.c
+	"PXMath.h"
+	<math.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXMatrix.c
+	"PXMatrix.h"
+	<Math/PXMath.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXPhysic.c
+	"PXPhysic.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXPhysic.h
+	<Media/PXType.h>
+	<Math/PXVector.h>
+	<Math/PXMatrix.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Math/PXVector.c
+	"PXVector.h"
+	<Math/PXMath.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Graphic/PXGraphic.c
+	"PXGraphic.h"
+	<OS/File/PXFile.h>
+	<Media/PXText.h>
+	<OS/Graphic/OpenGL/PXOpenGL.h>
+	<OS/Window/PXWindow.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Graphic/PXGraphic.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+	<Media/PXImage.h>
+	<Media/PXFont.h>
+	<Media/PXModel.h>
+	<Media/PXSound.h>
+	<Media/PXColor.h>
+	<OS/Graphic/OpenGL/PXOpenGL.h>
+	<Math/PXMatrix.h>
+	<Container/LinkedList/PXLinkedList.h>
+	<Container/Dictionary/PXDictionary.h>
+	<OS/Async/PXLock.h>
+	<Media/PXColor.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXModel.h
+	<OS/File/PXFile.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXSound.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Graphic/OpenGL/PXOpenGL.h
+	<OS/System/PXOSVersion.h>
+	<X11/X.h>
+	<X11/Xlib.h>
+	<GL/glx.h>
+	<Windows.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXLock.h
+	<OS/System/PXOSVersion.h>
+	<OS/Error/PXActionResult.h>
+	<semaphore.h>
+	<windows.h>
+
+1687011341 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Window/PXWindow.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+	<GL/glx.h>
+	<X11/X.h>
+	<X11/Xlib.h>
+	<Windows.h>
+	<Graphic/PXGraphic.h>
+	<OS/Hardware/PXMouse.h>
+	<OS/Hardware/PXKeyBoard.h>
+	<OS/Async/PXProcess.h>
+	<OS/Async/PXThread.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXMouse.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXKeyBoard.h
+	<Media/PXType.h>
+
+1687010508 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXProcess.h
+	<Media/PXType.h>
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+	<OS/Time/PXTime.h>
+	<unistd.h>
+	<pthread.h>
+	<windows.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Time/PXTime.h
+	<Media/PXType.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXThread.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<pthread.h>
+	<unistd.h>
+	<windows.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/3DS/PX3DS.c
+	"PX3DS.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/3DS/PX3DS.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/AAC/PXAAC.c
+	"PXAAC.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/AAC/PXAAC.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ADAM7/PXADAM7.c
+	"PXADAM7.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ADAM7/PXADAM7.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<Media/PNG/PXPNG.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PNG/PXPNG.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<Media/PXImage.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ADLER/PXAdler32.c
+	"PXAdler32.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ADLER/PXAdler32.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/AVI/PXAVI.c
+	"PXAVI.h"
+	<Media/RIFF/PXRIFF.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/AVI/PXAVI.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/RIFF/PXRIFF.h
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Bitmap/PXBitmap.c
+	"PXBitmap.h"
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+	<Media/PXImage.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Bitmap/PXBitmap.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/C/PXC.c
+	"PXC.h"
+	<Compiler/PXCompiler.h>
+	<Media/PXText.h>
+	<Log/PXLog.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/C/PXC.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+	<Compiler/PXCompiler.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CPP/PXCPP.c
+	"PXCPP.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CPP/PXCPP.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CRC32/PXCRC32.c
+	"PXCRC32.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CRC32/PXCRC32.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CS/PXCS.c
+	"PXCS.h"
+	<Media/C/PXC.h>
+	<Media/PXText.h>
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CS/PXCS.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+	<Media/C/PXC.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CSS/PXCSS.c
+	"PXCSS.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CSS/PXCSS.h
+	<stddef.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/DEFLATE/PXDEFLATE.c
+	"PXDEFLATE.h"
+	<stdlib.h>
+	<string.h>
+	<OS/Memory/PXMemory.h>
+	<OS/File/PXFile.h>
+	<Math/PXMath.h>
+	<Media/Huffman/PXHuffman.h>
+	<Media/LZ77/PXLZ77.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/DEFLATE/PXDEFLATE.h
+	<OS/File/PXFile.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Huffman/PXHuffman.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/LZ77/PXLZ77.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/DLL/PXDLL.c
+	"PXDLL.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/DLL/PXDLL.h
+	<stddef.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ELF/PXELF.c
+	"PXELF.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ELF/PXELF.h
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Email/PXEmail.c
+	"PXEmail.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Email/PXEmail.h
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/EXE/PXEXE.c
+	"PXEXE.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/EXE/PXEXE.h
+	<stddef.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FilmBox/PXFilmBox.c
+	"PXFilmBox.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FilmBox/PXFilmBox.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FLAC/PXFLAC.c
+	"PXFLAC.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FLAC/PXFLAC.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FMT/PXFMT.c
+	"PXFMT.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FMT/PXFMT.h
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FTP/PXFTP.c
+	"PXFTP.h"
+	<stdio.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/FTP/PXFTP.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/GIF/PXGIF.c
+	"PXGIF.h"
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/GIF/PXGIF.h
+	<Media/PXImage.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/HTML/PXHTML.c
+	"PXHTML.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/HTML/PXHTML.h
+	<stddef.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/HTTP/PXHTTP.c
+	"PXHTTP.h"
+	<Compiler/PXCompiler.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/HTTP/PXHTTP.h
+	<Media/PXType.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Huffman/PXHuffman.c
+	"PXHuffman.h"
+	<OS/Memory/PXMemory.h>
+	<stdlib.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ID3/PXID3.c
+	"PXID3.h"
+	<Media/PXText.h>
+	<cstdio>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ID3/PXID3.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/INI/PXINI.c
+	"PXINI.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/INI/PXINI.h
+	<stddef.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/IP/PXIP.c
+	"PXIP.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/IP/PXIP.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ISBN/PXISBN.c
+	"PXISBN.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ISBN/PXISBN.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/JPEG/PXJPEG.c
+	"PXJPEG.h"
+	<stdlib.h>
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+	<OS/File/PXFile.h>
+	<Media/PXColor.h>
+	<stdio.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/JPEG/PXJPEG.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<Media/PXImage.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/JSON/PXJSON.c
+	"PXJSON.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/JSON/PXJSON.h
+	<stddef.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/LAME/PXLAME.c
+	"PXLAME.h"
+	<Media/PXText.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/LAME/PXLAME.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/LZ77/PXLZ77.c
+	"PXLZ77.h"
+	<Media/DEFLATE/PXDEFLATE.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/M4A/PXM4A.c
+	"PXM4A.h"
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/M4A/PXM4A.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MD5/PXMD5.c
+	"PXMD5.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MD5/PXMD5.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MIDI/PXMIDI.c
+	"PXMIDI.h"
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MIDI/PXMIDI.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MP3/PXMP3.c
+	"PXMP3.h"
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+	<Media/XingInfo/PXXingInfo.h>
+	<Media/LAME/PXLAME.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MP3/PXMP3.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<Media/ID3/PXID3.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/XingInfo/PXXingInfo.h
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MP4/PXMP4.c
+	"PXMP4.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MP4/PXMP4.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MSI/PXMSI.c
+	"PXMSI.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MSI/PXMSI.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MTL/PXMTL.c
+	"PXMTL.h"
+	<OS/File/PXFile.h>
+	<Media/PXText.h>
+	<OS/Memory/PXMemory.h>
+	<Compiler/PXCompiler.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/MTL/PXMTL.h
+	<OS/File/PXFile.h>
+	<Media/PXModel.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/OGG/PXOGG.c
+	"PXOGG.h"
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/OGG/PXOGG.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PDF/PXPDF.c
+	"PXPDF.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PDF/PXPDF.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PHP/PXPHP.c
+	"PXPHP.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PHP/PXPHP.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PLY/PXPLY.c
+	"PXPLY.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PLY/PXPLY.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PNG/PXPNG.c
+	"PXPNG.h"
+	<stdlib.h>
+	<OS/Memory/PXMemory.h>
+	<OS/Time/PXTime.h>
+	<Media/ZLIB/PXZLIB.h>
+	<Media/ADAM7/PXADAM7.h>
+	<Media/CRC32/PXCRC32.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ZLIB/PXZLIB.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<Media/PNG/PXPNG.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXColor.c
+	"PXColor.h"
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXFont.c
+	"PXFont.h"
+	<OS/Memory/PXMemory.h>
+	<OS/File/PXFile.h>
+	<Media/SpriteFont/PXSpriteFont.h>
+	<Media/TTF/PXTTF.h>
+	<Media/PXImage.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/TTF/PXTTF.h
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXImage.c
+	"PXImage.h"
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+	<Math/PXMath.h>
+	<Media/Bitmap/PXBitmap.h>
+	<Media/GIF/PXGIF.h>
+	<Media/JPEG/PXJPEG.h>
+	<Media/PNG/PXPNG.h>
+	<Media/TGA/PXTGA.h>
+	<Media/TIFF/PXTIFF.h>
+	<Media/SpriteFont/PXSpriteFont.h>
+	<Media/PXFont.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/TGA/PXTGA.h
+	<Media/PXImage.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/TIFF/PXTIFF.h
+	<Media/PXImage.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXModel.c
+	"PXModel.h"
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+	<Media/Wavefront/PXWavefront.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Wavefront/PXWavefront.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+	<OS/File/PXFile.h>
+	<Media/MTL/PXMTL.h>
+	<Media/PXModel.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXSound.c
+	"PXSound.h"
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXText.c
+	"PXText.h"
+	<OS/System/PXOSVersion.h>
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+	<stdarg.h>
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<assert.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXType.c
+	"PXType.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXUltimaInfo.c
+	"PXUltimaInfo.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXUltimaInfo.h
+	<Media/PXText.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/QOI/PXQOI.c
+	"PXQOI.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/QOI/PXQOI.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/RIFF/PXRIFF.c
+	"PXRIFF.h"
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/RSA/PXRSA.c
+	"PXRSA.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/RSA/PXRSA.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/SHA/PXSHA.c
+	"PXSHA.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/SHA/PXSHA.h
+	<stddef.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/SpriteFont/PXSpriteFont.c
+	"PXSpriteFont.h"
+	<stdio.h>
+	<Media/PXText.h>
+	<OS/File/PXFile.h>
+	<Media/PXImage.h>
+	<OS/Memory/PXMemory.h>
+	<Compiler/PXCompiler.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/STEP/PXSTEP.c
+	"PXSTEP.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/STEP/PXSTEP.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/STL/PXSTL.c
+	"PXSTL.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/STL/PXSTL.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/SVG/PXSVG.c
+	"PXSVG.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/SVG/PXSVG.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/TGA/PXTGA.c
+	"PXTGA.h"
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/TIFF/PXTIFF.c
+	"PXTIFF.h"
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/TTF/PXTTF.c
+	"PXTTF.h"
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/UUID/PXUUID.c
+	"PXUUID.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/UUID/PXUUID.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/VRML/PXVRML.c
+	"PXVRML.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/VRML/PXVRML.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WAV/PXWAV.c
+	"PXWAV.h"
+	<OS/Memory/PXMemory.h>
+	<Media/RIFF/PXRIFF.h>
+	<Math/PXMath.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WAV/PXWAV.h
+	<OS/File/PXFile.h>
+	<Media/FMT/PXFMT.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/Wavefront/PXWavefront.c
+	"PXWavefront.h"
+	<Compiler/PXCompiler.h>
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+	<Math/PXMath.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WEBM/PXWEBM.c
+	"PXWEBM.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WEBM/PXWEBM.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WEBP/PXWEBP.c
+	"PXWEBP.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WEBP/PXWEBP.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WMA/PXWMA.c
+	"PXWMA.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/WMA/PXWMA.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/XingInfo/PXXingInfo.c
+	"PXXingInfo.h"
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/XML/PXXML.c
+	"PXXML.h"
+	<Compiler/PXCompiler.h>
+	<Media/PXText.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/XML/PXXML.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/YAML/PXYAML.c
+	"PXYAML.h"
+	<Compiler/PXCompiler.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/YAML/PXYAML.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+	<OS/File/PXFile.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/ZLIB/PXZLIB.c
+	"PXZLIB.h"
+	<Math/PXMath.h>
+	<OS/File/PXFile.h>
+	<Media/DEFLATE/PXDEFLATE.h>
+	<Media/ADLER/PXAdler32.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXAwait.c
+	"PXAwait.h"
+	<OS/System/PXOSVersion.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXAwait.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXEvent.c
+	"PXEvent.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXEvent.h
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXLock.c
+	"PXLock.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXProgram.c
+	"PXProgram.h"
+	<stdio.h>
+	<spawn.h>
+	<wait.h>
+	<process.h>
+	<Media/PXText.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXProgram.h
+	<OS/Async/PXThread.h>
+	<unistd.h>
+	<windows.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXThread.c
+	"PXThread.h"
+	<stdio.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Bash/PXBash.c
+	"PXBash.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Bash/PXBash.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<Media/PXText.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/ClipBoard/PXClipBoard.c
+	"PXClipBoard.h"
+	<OS/System/PXOSVersion.h>
+	<Windows.h>
+	<WinUser.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/ClipBoard/PXClipBoard.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Dialog/PXDialog.c
+	"PXDialog.h"
+	<OS/File/PXFile.h>
+	<stdio.h>
+	<windows.h>
+	<CommDlg.h>
+	<Shlobj.h>
+	<combaseapi.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Dialog/PXDialog.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXText.h>
+	<Media/PXColor.h>
+
+1687010508 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXProcess.c
+	"PXProcess.h"
+	<unistd.h>
+	<sys/resource.h>
+	<psapi.h>
+	<tlhelp32.h>
+	<OS/Memory/PXMemory.h>
+	<OS/Async/PXEvent.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Audio/PXAudio.c
+	"PXAudio.h"
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+	<mmeapi.h>
+	<MMSystem.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Audio/PXAudio.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<windows.h>
+	<mmeapi.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Error/PXActionResult.c
+	"PXActionResult.h"
+	<OS/System/PXOSVersion.h>
+	<errno.h>
+
+1687010653 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Debug/PXDebug.c
+	"PXDebug.h"
+	<sys/ptrace.h>
+	<Windows.h>
+	<DbgHelp.h>
+	<OS/Memory/PXMemory.h>
+	<OS/Async/PXThread.h>
+	<OS/Library/PXLibrary.h>
+	<OS/File/PXFile.h>
+	<stdio.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Debug/PXDebug.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+	<Media/PXText.h>
+	<OS/Async/PXProcess.h>
+	<OS/Async/PXThread.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Library/PXLibrary.h
+	<OS/System/PXOSVersion.h>
+	<sys/types.h>
+	<dlfcn.h>
+	<windows.h>
+	<DbgHelp.h>
+	<Media/PXText.h>
+	<OS/Async/PXProcess.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/File/PXDirectory.c
+	"PXDirectory.h"
+	<OS/File/PXFile.h>
+	<Media/PXText.h>
+	<sys/mman.h>
+	<sys/stat.h>
+	<sys/types.h>
+	<unistd.h>
+	<dirent.h>
+	<io.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/File/PXDirectory.h
+	<Media/PXType.h>
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+	<sys/types.h>
+	<dirent.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Graphic/DirectX/PXDirectX.c
+	"PXDirectX.h"
+	<windows.h>
+	<d3d12.h>
+	<d3d9.h>
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Graphic/DirectX/PXDirectX.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+	<d3d9.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Graphic/OpenGL/PXOpenGL.c
+	"PXOpenGL.h"
+	<stdio.h>
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+	<OS/Memory/PXMemory.h>
+	<OS/Window/PXWindow.h>
+	<OS/Async/PXAwait.h>
+	<GLEW/glew.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Graphic/Vulcan/PXVulcan.c
+	"PXVulcan.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Graphic/Vulcan/PXVulcan.h
+	<OS/System/PXOSVersion.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXController.c
+	"PXController.h"
+	<OS/System/PXOSVersion.h>
+	<windows.h>
+	<joystickapi.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXController.h
+	<Media/PXType.h>
+	<OS/Window/PXWindow.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXHardDrive.c
+	"PXHardDrive.h"
+	<OS/System/PXOSVersion.h>
+	<OS/Memory/PXMemory.h>
+	<direct.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXHardDrive.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXMonitor.c
+	"PXMonitor.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXMonitor.h
+	<Media/PXType.h>
+	<OS/System/PXOSVersion.h>
+	<windows.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXMouse.c
+	"PXMouse.h"
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+	<stdio.h>
+
+1687010764 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXKeyBoard.c
+	"PXKeyBoard.h"
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+	<stdio.h>
+	<Windows.h>
+	<WinUser.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXProcessor.c
+	"PXProcessor.h"
+	<OS/System/PXOSVersion.h>
+	<time.h>
+	<sys/time.h>
+	<Windows.h>
+	<Wbemidl.h>
+	<stdio.h>
+	<Media/PXText.h>
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Hardware/PXProcessor.h
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Library/PXLibrary.c
+	"PXLibrary.h"
+	<OS/Error/PXActionResult.h>
+	<OS/Memory/PXMemory.h>
+	<OS/Async/PXEvent.h>
+	<stdio.h>
+	<Psapi.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Memory/PXMemory.c
+	"PXMemory.h"
+	<Math/PXMath.h>
+	<OS/Error/PXActionResult.h>
+	<stdlib.h>
+	<malloc.h>
+	<sys/mman.h>
+	<alloca.h>
+	<Windows.h>
+	<assert.h>
+	<stdio.h>
+	<Container/PXDictionary/PXDictionary.h>
+	<Time/Time.h>
+
+1687010789 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/File/PXFile.c
+	"PXFile.h"
+	<Media/PXText.h>
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+	<stdarg.h>
+	<fcntl.h>
+	<sys/mman.h>
+	<sys/stat.h>
+	<sys/types.h>
+	<unistd.h>
+	<dirent.h>
+	<io.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXClient.c
+	"PXClient.h"
+	<OS/Memory/PXMemory.h>
+	<OS/Async/PXEvent.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXClient.h
+	<Media/PXType.h>
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+	<OS/Network/PXSocket.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXSocket.h
+	<OS/System/PXOSVersion.h>
+	<arpa/inet.h>
+	<netinet/in.h>
+	<netdb.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<unistd.h>
+	<windows.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<iphlpapi.h>
+	<Media/PXType.h>
+	<Media/PXText.h>
+	<OS/Async/PXLock.h>
+	<OS/Async/PXThread.h>
+	<OS/Error/PXActionResult.h>
+	<Container/Dictionary/PXDictionary.h>
+	<Container/Buffer/PXBuffer.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXServer.c
+	"PXServer.h"
+	<OS/Async/PXEvent.h>
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+	<stdio.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXServer.h
+	<Media/PXType.h>
+	<OS/Error/PXActionResult.h>
+	<OS/Network/PXSocket.h>
+
+1687010820 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXSocket.c
+	"PXSocket.h"
+	<Media/PXText.h>
+	<OS/Async/PXEvent.h>
+	<OS/Memory/PXMemory.h>
+	<Math/PXMath.h>
+	<stdio.h>
+	<sys/select.h>
+	<poll.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Signal/PXSignal.c
+	"PXSignal.h"
+	<signal.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Signal/PXSignal.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/System/PXRegistry.c
+	"PXRegistry.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/System/PXRegistry.h
+	<OS/System/PXOSVersion.h>
+	<Media/PXType.h>
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+	<Windows.h>
+	<winreg.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Time/PXStopWatch.c
+	"PXStopWatch.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Time/PXStopWatch.h
+	<Media/PXType.h>
+	<OS/Time/PXTime.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Time/PXTime.c
+	"PXTime.h"
+	<OS/System/PXOSVersion.h>
+	<Windows.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/UI/PXUI.c
+	"PXUI.h"
+	<commctrl.h>
+	<commdlg.h>
+	<OS/Memory/PXMemory.h>
+	<Media/PXText.h>
+	<Math/PXMath.h>
+	<stdio.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/UI/PXUI.h
+	<OS/Error/PXActionResult.h>
+	<OS/Window/PXWindow.h>
+	<Windows.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/User/PXUser.c
+	"PXUser.h"
+	<OS/System/PXOSVersion.h>
+	<unistd.h>
+	<windows.h>
+	<userenv.h>
+	<ShlObj_core.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/User/PXUser.h
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/FTP/PXFTPClient.c
+	"PXFTPClient.h"
+	<Media/FTP/PXFTP.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/FTP/PXFTPClient.h
+	<Media/FTP/PXFTP.h>
+	<OS/Network/PXClient.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/FTP/PXFTPServer.c
+	"PXFTPServer.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/FTP/PXFTPServer.h
+	<Media/FTP/PXFTP.h>
+	<OS/Network/PXServer.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/HTTP/PXHTTPClient.c
+	"PXHTTPClient.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/HTTP/PXHTTPClient.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/HTTP/PXHTTPServer.c
+	"PXHTTPServer.h"
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/HTTP/PXHTTPServer.h
+	<OS/Error/PXActionResult.h>
+	<Media/PXType.h>
+
+1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/LDAP/PXLDAPClient.c
+	"PXLDAPClient.h"
+	<OS/Memory/PXMemory.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/LDAP/PXLDAPClient.h
+	<Media/PXText.h>
+	<OS/Error/PXActionResult.h>
+	<winldap.h>
+
+1687010880 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/SBP/PXSBP.c
+	"PXSBP.h"
+	<Math/PXMath.h>
+	<OS/File/PXFile.h>
+	<OS/Memory/PXMemory.h>
+	<OS/User/PXUser.h>
+	<OS/Async/PXEvent.h>
+
+1687010140 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Service/SBP/PXSBP.h
+	<OS/Network/PXClient.h>
+	<OS/Network/PXServer.h>
+	<OS/File/PXFile.h>
+	<Media/PXText.h>
+	<OS/Time/PXTime.h>
+	<Container/Dictionary/PXDictionary.h>
+
+1687011392 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Window/PXWindow.c
+	"PXWindow.h"
+	<stdio.h>
+	<OS/Memory/PXMemory.h>
+	<OS/Hardware/PXMonitor.h>
+	<OS/Async/PXEvent.h>
+	<OS/Async/PXAwait.h>
+	<Media/PXText.h>
+	<Graphic/PXGraphic.h>
+	<Math/PXMath.h>
+	<X11/cursorfont.h>
+	<X11/extensions/XInput.h>
+	<X11/extensions/XInput2.h>
+	<X11/Xmd.h>
+	<windowsx.h>
+	<WinUser.h>
+	<wtypes.h>
+	<Dbt.h>
+	<winuser.rh>
+

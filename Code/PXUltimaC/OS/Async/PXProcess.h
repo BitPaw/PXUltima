@@ -41,7 +41,7 @@ extern "C"
 		PXProcessThreadID ThreadID;
 		PXInt32U ThreadsAtStart;
 		PXInt32U ThreadBasePriority;
-		
+
 		// Parent Process
 		PXInt32U ProcessIDParent;
 
@@ -117,7 +117,7 @@ extern "C"
 	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);
 
 	PXPublic PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
-	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize);
 
 	PXPublic PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 

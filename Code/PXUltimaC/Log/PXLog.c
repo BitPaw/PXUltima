@@ -1,8 +1,8 @@
 #include "PXLog.h"
 
 #include <Media/PXText.h>
-#include <stdio.h>
-#include <stdarg.h>
+//#include <stdio.h>
+//#include <stdarg.h>
 
 void PXLogPrintf(const LoggingType loggingType, const char* const source, const char* const input,  ...)
 {
@@ -54,22 +54,22 @@ void PXLogPrintf(const LoggingType loggingType, const char* const source, const 
 	//sprintf(buffer, "[%c][%s] %s", loggingTypeSymbol, source, input);
 
 	{
-		va_list args;
-		va_start(args, input);
+		//va_list args;
+		//va_start(args, input);
 
-		vfprintf(stdout, source, args);
+		//vfprintf(stdout, source, args);
 
-		va_end(args);
+		//va_end(args);
 	}
 }
 
 void PXLogPrintString(const char* const source, PXSize length)
 {
-	for (size_t i = 0; i < length; ++i)
+	for (PXSize i = 0; i < length; ++i)
 	{
 		const char character = MakePrintable(source[i]);
 
-		printf("%c", character);
+		//printf("%c", character);
 	}
 }
 
@@ -77,5 +77,5 @@ void PXLogPrintStringLine(const char* const source, PXSize length)
 {
 	PXLogPrintString(source, length);
 
-	printf("\n");
+	//printf("\n");
 }

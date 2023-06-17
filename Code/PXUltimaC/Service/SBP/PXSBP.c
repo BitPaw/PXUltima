@@ -97,7 +97,7 @@ void PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiv
 
 PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port)
 {
-    return PXClientConnectToServer(&pxSBPClient->Client, ip, port, &pxSBPClient->Client, PXClientCommunicationThread);
+    return PXClientConnectToServer(&pxSBPClient->Client, ip, port);
 }
 
 PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
@@ -145,9 +145,9 @@ PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void
 
         if (i == 0)
         {
-            PXFileWriteI8U(&pxFileBuffer, 0b01000000);           
+            PXFileWriteI8U(&pxFileBuffer, 0b01000000);
             PXFileWriteI16UE(&pxFileBuffer, dataSize, PXEndianBig); // Write size
-           
+
             PXFileWriteB(&pxFileBuffer, dataSourcePoint, packageSizeCurrent-3);
         }
         else
@@ -192,7 +192,7 @@ PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const vo
 
 void PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRecieverState pxSBPRecieverState)
 {
-    pxSBPReceiver->State = pxSBPRecieverState;    
+    pxSBPReceiver->State = pxSBPRecieverState;
 }
 
 void PXSBPReceiverEventListSet(PXSBPReceiver* const pxSBPReceiver, PXSBPReceiverEventList* const pxSBPReceiverEventList)
@@ -241,7 +241,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
     switch (pxSBPReceiver->State)
     {
         case PXSBPRecieverStateAwaitingHeaderBegin:
-        {         
+        {
             PXMemoryClear(&pxSBPReceiver->MessageChunkCurrent, sizeof(PXSBPChunkCache)); // Clear current message
 
             // Check if message is too short
@@ -268,7 +268,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
                     break;
                 }
             }
-        
+
             // if message is exactly just the header
             {
                 const PXBool isHeaderOnly = pxSocketDataReceivedEventData->DataSize == PXSBPMessageChunkHeaderSize;
@@ -277,7 +277,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
                 {
                     PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateAwaitingDataStart);
                     break;
-                }           
+                }
             }
 
             // Is all the data available right now?
@@ -309,10 +309,10 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
                     PXSBPChunk pxSBPChunk;
                     pxSBPChunk.Data = pxSBPReceiver->MessageChunkCurrent.Message;
                     pxSBPChunk.ChannelID = pxSBPReceiver->MessageChunkCurrent.ID;
-                    pxSBPChunk.DataSize = pxSBPReceiver->MessageChunkCurrent.SizeExpected; // truncate message size 
+                    pxSBPChunk.DataSize = pxSBPReceiver->MessageChunkCurrent.SizeExpected; // truncate message size
 
                     PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateProcessingData);
-                    PXSBPOnDataChunkReceive(pxSBPReceiver, &pxSBPChunk);                   
+                    PXSBPOnDataChunkReceive(pxSBPReceiver, &pxSBPChunk);
                     PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateAwaitingHeaderBegin);// We wait for new header
 
                     {
@@ -340,11 +340,11 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
 
                 PXSBPOnDataChunkReceive(pxSBPReceiver, &pxSBPChunk);
             }
-       
+
             PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateAwaitingHeaderBegin);// We wait for new header
 
             break;
-        }     
+        }
         case PXSBPRecieverStateAwaitingHeaderEnd:
             // Parse header
 
@@ -375,7 +375,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
                 const PXSize additionalDataSize = pxSBPReceiver->MessageChunkCurrent.SizeCurrent - pxSBPReceiver->MessageChunkCurrent.SizeExpected;
                 const PXAdress additionalDataAdress = (PXAdress)pxSBPReceiver->MessageChunkCurrent.Message + pxSBPReceiver->MessageChunkCurrent.SizeExpected;
 
-                pxSBPChunk.DataSize = pxSBPReceiver->MessageChunkCurrent.SizeExpected; // truncate message size 
+                pxSBPChunk.DataSize = pxSBPReceiver->MessageChunkCurrent.SizeExpected; // truncate message size
 
                 PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateProcessingData);
                 PXSBPOnDataChunkReceive(pxSBPReceiver, &pxSBPChunk);
@@ -398,7 +398,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
             PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateProcessingData);
             PXSBPOnDataChunkReceive(pxSBPReceiver, &pxSBPChunk);
             PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateAwaitingHeaderBegin);// We wait for new header
-   
+
             break;
         }
         default:
@@ -523,12 +523,12 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
         PXDictionaryAdd(&pxSBPReceiver->MessageStreamLookup, &pxSBPChunk->ChannelID, &pxSBPMessage);
 
         InvokeEvent(pxSBPReceiver->EventList.OnMessageUpdatedCallBack, &pxSBPMessage);
-    }      
+    }
 }
 
 void PXSBPOnDataMessageReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPMessage* const pxSBPMessage)
 {
-    
+
 }
 
 void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)

@@ -648,7 +648,7 @@ WindowEventType ToWindowEventType(const unsigned int windowEventID)
 
 
 #if OSUnix
-void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
+void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
 {
     switch(event->type)
     {
@@ -657,16 +657,16 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
         {
             const XKeyEvent* keyEvent = &event->xkey;
             const unsigned int keyCode = keyEvent->keycode;
-            const unsigned char release = event->type == KeyRelease;
-            const KeySym keySym = XKeycodeToKeysym(PXWindow->DisplayCurrent, keyCode, 0);
+            const PXBool release = event->type == KeyRelease;
+            const KeySym keySym = XKeycodeToKeysym(pxWindow->DisplayCurrent, keyCode, 0);
             const char* keyName = XKeysymToString(keySym);
 
-            VirtualKey keyBoardKey = ConvertToVirtualKey(keySym);
+            PXVirtualKey keyBoardKey = ConvertToVirtualKey(keySym);
 
             KeyBoardKeyInfo keyBoardKeyInfo;
 
             keyBoardKeyInfo.Key = keyBoardKey;
-            keyBoardKeyInfo.Mode = release ? ButtonStateRelease : ButtonStateDown;
+            keyBoardKeyInfo.Mode = release ? PXKeyPressStateUp : PXKeyPressStateDown;
             keyBoardKeyInfo.Repeat = 0;
             keyBoardKeyInfo.ScanCode = keySym;
             keyBoardKeyInfo.SpecialKey = 0;
@@ -674,7 +674,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
             keyBoardKeyInfo.PreState = 0;
             keyBoardKeyInfo.GapState = 0;
 
-            InvokeEvent(PXWindow->KeyBoardKeyCallBack, PXWindow->EventReceiver, PXWindow, keyBoardKeyInfo);
+            InvokeEvent(pxWindow->KeyBoardKeyCallBack, pxWindow->EventReceiver, pxWindow, &keyBoardKeyInfo);
 
             if(release)
             {
@@ -692,29 +692,29 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
         {
             const XButtonEvent* buttonEvent = &event->xbutton;
             const unsigned int buttonID = buttonEvent->button;
-            const ButtonState buttonState = event->type == ButtonPress ? ButtonStateDown : ButtonStateRelease;
+            const PXKeyPressState buttonState = event->type == ButtonPress ? PXKeyPressStateDown : PXKeyPressStateUp;
             MouseButton mouseButton = MouseButtonInvalid;
 
             switch(buttonID)
             {
                 case MouseButtonLeft:
-                    InvokeEvent(PXWindow->MouseClickCallBack, PXWindow->EventReceiver, PXWindow, MouseButtonLeft, buttonState);
+                    InvokeEvent(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonLeft, buttonState);
                     break;
 
                 case MouseButtonMiddle:
-                    InvokeEvent(PXWindow->MouseClickCallBack, PXWindow->EventReceiver, PXWindow, MouseButtonMiddle, buttonState);
+                    InvokeEvent(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonMiddle, buttonState);
                     break;
 
                 case MouseButtonRight:
-                    InvokeEvent(PXWindow->MouseClickCallBack, PXWindow->EventReceiver, PXWindow, MouseButtonRight, buttonState);
+                    InvokeEvent(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonRight, buttonState);
                     break;
 
                 case MouseScrollUp:
-                    InvokeEvent(PXWindow->MouseScrollCallBack, PXWindow->EventReceiver, PXWindow, MouseScrollDirectionUp);
+                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, MouseScrollDirectionUp);
                     break;
 
                 case MouseScrollDown:
-                    InvokeEvent(PXWindow->MouseScrollCallBack, PXWindow->EventReceiver, PXWindow, MouseScrollDirectionDown);
+                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, MouseScrollDirectionDown);
                     break;
 
             }
@@ -727,22 +727,22 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
         }
         case EnterNotify:
         {
-            InvokeEvent(PXWindow->MouseEnterCallBack, PXWindow->EventReceiver, PXWindow);
+            InvokeEvent(pxWindow->MouseEnterCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case LeaveNotify:
         {
-            InvokeEvent(PXWindow->MouseLeaveCallBack, PXWindow->EventReceiver, PXWindow);
+            InvokeEvent(pxWindow->MouseLeaveCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case FocusIn:
         {
-            InvokeEvent(PXWindow->FocusEnterCallBack, PXWindow->EventReceiver, PXWindow);
+            InvokeEvent(pxWindow->FocusEnterCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case FocusOut:
         {
-            InvokeEvent(PXWindow->FocusLeaveCallBack, PXWindow->EventReceiver, PXWindow);
+            InvokeEvent(pxWindow->FocusLeaveCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case KeymapNotify:
@@ -858,7 +858,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
             // glViewport(0,0, width, height);
 
-            InvokeEvent(PXWindow->WindowSizeChangedCallBack, PXWindow->EventReceiver, PXWindow);
+            InvokeEvent(pxWindow->WindowSizeChangedCallBack, pxWindow->EventReceiver, pxWindow);
 
             break;
         }
@@ -920,7 +920,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
         {
             XGenericEventCookie cookie = event->xcookie; // Make Copy
 
-            const int result = XGetEventData(PXWindow->DisplayCurrent, &cookie);
+            const int result = XGetEventData(pxWindow->DisplayCurrent, &cookie);
             const unsigned char sucessful = result != 0 && cookie.data;
 
             if(sucessful)
@@ -933,7 +933,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
                         if(re->valuators.mask_len)
                         {
-                            PXMouse* mouse = &PXWindow->MouseCurrentInput;
+                            PXMouse* mouse = &pxWindow->MouseCurrentInput;
                             const double* values = re->raw_values;
                             const unsigned char isX = XIMaskIsSet(re->valuators.mask, 0);
                             const unsigned char isY = XIMaskIsSet(re->valuators.mask, 1);
@@ -960,7 +960,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
 
                             printf("[Event] RawMotion %5.4lf %5.4lf\n", xpos, ypos);
 
-                            InvokeEvent(PXWindow->MouseMoveCallBack, PXWindow->EventReceiver, PXWindow, mouse);
+                            InvokeEvent(pxWindow->MouseMoveCallBack, pxWindow->EventReceiver, pxWindow, mouse);
 
                             //printf("[Event] RawMotion %5.4lf %5.4lf\n", window.MouseDeltaX, window.MouseDeltaY);
 
@@ -974,7 +974,7 @@ void PXWindowEventHandler(PXWindow* const PXWindow, const XEvent* const event)
                 printf("[Event] GenericEvent %i\n", cookie.evtype);
             }
 
-            XFreeEventData(PXWindow->DisplayCurrent, &cookie);
+            XFreeEventData(pxWindow->DisplayCurrent, &cookie);
 
             break;
         }
@@ -1961,7 +1961,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
 
 #elif PXOSWindowsDestop
-  
+
     PXWindowID windowID = 0;
     DWORD windowStyle = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
     DWORD dwStyle = 0;
@@ -2005,9 +2005,9 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
                 PXMemoryClear(&wndclass, sizeof(WNDCLASSA));
 
-                wndclass.style = style; 
+                wndclass.style = style;
                 wndclass.lpfnWndProc = lpfnWndProc;
-                wndclass.cbClsExtra = cbClsExtra; 
+                wndclass.cbClsExtra = cbClsExtra;
                 wndclass.cbWndExtra = cbWndExtra;
                 wndclass.hInstance = hInstance;
                 wndclass.hIcon = hIcon;
@@ -2394,7 +2394,7 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
             // could get extended error
 
             return success;
-#else 
+#else
             return PXFalse; // Not supported by OS
 #endif
         }
@@ -2408,7 +2408,7 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
             // could get extended error
 
             return success;
-#else 
+#else
             return PXFalse; // Not supported by OS
 #endif
         }
@@ -2439,7 +2439,7 @@ PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
             }
 
             return result;
-#else 
+#else
             return PXFalse; // Not supported by OS
 #endif
         }
@@ -2459,7 +2459,7 @@ PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
             }
 
             return result;
-#else 
+#else
             return PXFalse; // Not supported by OS
 #endif
         }
@@ -2479,7 +2479,7 @@ PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle)
             return PXNull;
 #elif PXOSWindowsDestop
             return FindWindowA(0, windowTitle->TextA); // Windows 2000, User32.dll, winuser.h
-#else 
+#else
             return PXFalse; // Not supported by OS
 #endif
         }
@@ -2489,7 +2489,7 @@ PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle)
             return PXNull;
 #elif PXOSWindowsDestop
             return FindWindowW(0, windowTitle->TextW); // Windows 2000, User32.dll, winuser.h
-#else 
+#else
             return PXNull; // Not supported by OS
 #endif
         }
@@ -2521,14 +2521,14 @@ void PXWindowLookupRemove(const PXWindow* window)
     currentWindow = 0;
 }
 
-void PXWindowSize(PXWindow* const pxWindow, unsigned int* x, unsigned int* y, unsigned int* width, unsigned int* height)
+void PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
     RECT rect;
 
     const unsigned char result = GetWindowRect(pxWindow->ID, &rect); // Windows 2000, User32.dll, winuser.h
-    const unsigned char success = result != 0;
+    const PXBool success = result != 0;
 
     // Get Last Error
 
@@ -2539,7 +2539,7 @@ void PXWindowSize(PXWindow* const pxWindow, unsigned int* x, unsigned int* y, un
 #endif
 }
 
-void PXWindowSizeChange(PXWindow* window, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
+void PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -2591,7 +2591,7 @@ PXActionResult PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
 #endif
 }
 
-void PXWindowPositionChange(PXWindow* window, const unsigned int x, const unsigned int y)
+void PXWindowPositionChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y)
 {
 }
 
@@ -2831,7 +2831,7 @@ PXBool PXWindowIsInFocus(const PXWindow* const window)
 #if OSUnix
     return PXFalse;
 #elif PXOSWindowsDestop
-    const HWND windowIDInFocus = GetForegroundWindow(); // Windows 2000, User32.dll, 
+    const HWND windowIDInFocus = GetForegroundWindow(); // Windows 2000, User32.dll,
     const PXBool isInFocus = window->ID == windowIDInFocus;
 
     return isInFocus;
