@@ -296,15 +296,15 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
-				case PXInt32Make('F', 'L', 'A', 'C') : return FileFormatFLAC;
-				case PXInt32Make('M', 'I', 'D', 'I') : return FileFormatMIDI;
-				case PXInt32Make('S', 'T', 'E', 'P') : return FileFormatSTEP;
-				case PXInt32Make('T', 'I', 'F', 'F') : return FileFormatTagImage;
-				case PXInt32Make('J', 'P', 'E', 'G') : return FileFormatJPEG;
-				case PXInt32Make('J', 'S', 'O', 'N') : return FileFormatJSON;
-				case PXInt32Make('V', 'R', 'M', 'L') : return FileFormatVRML;
-				case PXInt32Make('W', 'E', 'B', 'M') : return FileFormatWEBM;
-				case PXInt32Make('W', 'E', 'B', 'P') : return FileFormatWEBP;
+				case PXInt32Make('F', 'L', 'A', 'C'): return FileFormatFLAC;
+				case PXInt32Make('M', 'I', 'D', 'I'): return FileFormatMIDI;
+				case PXInt32Make('S', 'T', 'E', 'P'): return FileFormatSTEP;
+				case PXInt32Make('T', 'I', 'F', 'F'): return FileFormatTagImage;
+				case PXInt32Make('J', 'P', 'E', 'G'): return FileFormatJPEG;
+				case PXInt32Make('J', 'S', 'O', 'N'): return FileFormatJSON;
+				case PXInt32Make('V', 'R', 'M', 'L'): return FileFormatVRML;
+				case PXInt32Make('W', 'E', 'B', 'M'): return FileFormatWEBM;
+				case PXInt32Make('W', 'E', 'B', 'P'): return FileFormatWEBP;
 			}
 
 			break;
@@ -813,7 +813,7 @@ PXInt32U PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCa
 #endif // OSWindows
 
 #if OSUnix
-		// UNIX only
+			// UNIX only
 		case PXMemoryCachingModeNeedLater:
 			return 0;//POSIX_FADV_WILLNEED;
 
@@ -823,26 +823,26 @@ PXInt32U PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCa
 	}
 }
 
- void PXFileBufferAllocate(PXFile* const pxFile, const PXSize dataSize)
+void PXFileBufferAllocate(PXFile* const pxFile, const PXSize dataSize)
 {
-	 PXFileConstruct(pxFile);
+	PXFileConstruct(pxFile);
 
-	 pxFile->Data = PXMemoryAllocate(dataSize);
-	 pxFile->DataAllocated = dataSize;
-	 pxFile->DataSize = dataSize;
-	 pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
-	 pxFile->LocationMode = PXFileLocationModeInternal;
+	pxFile->Data = PXMemoryAllocate(dataSize);
+	pxFile->DataAllocated = dataSize;
+	pxFile->DataSize = dataSize;
+	pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
+	pxFile->LocationMode = PXFileLocationModeInternal;
 }
 
- void PXFileBufferExternal(PXFile* const pxFile, void* const data, const PXSize dataSize)
+void PXFileBufferExternal(PXFile* const pxFile, void* const data, const PXSize dataSize)
 {
-	 PXFileConstruct(pxFile);
+	PXFileConstruct(pxFile);
 
-	 pxFile->Data = data;
-	 pxFile->DataAllocated = dataSize;
-	 pxFile->DataSize = dataSize;
-	 pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
-	 pxFile->LocationMode = PXFileLocationModeExternal;
+	pxFile->Data = data;
+	pxFile->DataAllocated = dataSize;
+	pxFile->DataSize = dataSize;
+	pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
+	pxFile->LocationMode = PXFileLocationModeExternal;
 }
 
 PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPathInfo* const pxFileOpenFromPathInfo)
@@ -1263,24 +1263,24 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 
 		switch (fileOpenMode)
 		{
-		case PXMemoryAccessModeReadOnly:
-		{
-			osHandleMode = _O_RDONLY;
-			fdOpenMode = "rb";
-			break;
-		}
-		case  PXMemoryAccessModeWriteOnly:
-		{
-			osHandleMode = _O_RDWR;//_O_WRONLY;
-			fdOpenMode = "wb";
-			break;
-		}
-		case  PXMemoryAccessModeReadAndWrite:
-		{
-			osHandleMode = _O_RDWR;
-			fdOpenMode = "wb";
-			break;
-		}
+			case PXMemoryAccessModeReadOnly:
+			{
+				osHandleMode = _O_RDONLY;
+				fdOpenMode = "rb";
+				break;
+			}
+			case  PXMemoryAccessModeWriteOnly:
+			{
+				osHandleMode = _O_RDWR;//_O_WRONLY;
+				fdOpenMode = "wb";
+				break;
+			}
+			case  PXMemoryAccessModeReadAndWrite:
+			{
+				osHandleMode = _O_RDWR;
+				fdOpenMode = "wb";
+				break;
+			}
 		}
 
 
@@ -1299,14 +1299,14 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 			else
 			{
 				// handle?
-	}
- }
+			}
+		}
 		else
 		{
 			// handle?
 		}
 
-	 }
+	}
 #endif
 
 
@@ -1316,1321 +1316,1321 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 PXActionResult PXFileClose(PXFile* const pxFile)
 {
 #if OSUnix
-	 const int closeResult = fclose(pxFile->ID);
+	const int closeResult = fclose(pxFile->ID);
 
-	 switch (closeResult)
-	 {
-		 case 0:
-		     pxFile->ID = 0;
-			 return PXActionSuccessful;
+	switch (closeResult)
+	{
+		case 0:
+			pxFile->ID = 0;
+			return PXActionSuccessful;
 
-		 default:
-			 return PXActionFailedFileClose;
-	 }
+		default:
+			return PXActionFailedFileClose;
+	}
 #elif OSWindows
 
 #if 0
-	 if (pxFile->FileHandleCStyle)
-	 {
-		 _fclose_nolock(pxFile->FileHandleCStyle);
+	if (pxFile->FileHandleCStyle)
+	{
+		_fclose_nolock(pxFile->FileHandleCStyle);
 
-		 pxFile->FileHandleCStyle = PXNull;
-		 pxFile->FileHandle = PXNull;
-	 }
+		pxFile->FileHandleCStyle = PXNull;
+		pxFile->FileHandle = PXNull;
+	}
 #endif
 
-	 if (pxFile->ID != PXHandleNotSet)
-	 {
-		 const PXBool successful = CloseHandle(pxFile->ID); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
+	if (pxFile->ID != PXHandleNotSet)
+	{
+		const PXBool successful = CloseHandle(pxFile->ID); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
 
-		 if (!successful)
-		 {
-			 return PXActionFailedFileClose;
-		 }
+		if (!successful)
+		{
+			return PXActionFailedFileClose;
+		}
 
-		 pxFile->ID = PXHandleNotSet;
-	 }
+		pxFile->ID = PXHandleNotSet;
+	}
 
-	 return PXActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
- PXActionResult PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXMemoryAccessMode protectionMode)
+PXActionResult PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXMemoryAccessMode protectionMode)
 {
-	 void* const data = PXMemoryVirtualAllocate(size, protectionMode);
-	 const PXBool successful = data != 0;
+	void* const data = PXMemoryVirtualAllocate(size, protectionMode);
+	const PXBool successful = data != 0;
 
-	 if (!successful)
-	 {
-		 return PXActionFailedMemoryAllocation;
-	 }
+	if (!successful)
+	{
+		return PXActionFailedMemoryAllocation;
+	}
 
-	 PXFileConstruct(pxFile);
+	PXFileConstruct(pxFile);
 
-	 pxFile->AccessMode = protectionMode;
-	 pxFile->LocationMode = PXFileLocationModeMappedVirtual;
-	 pxFile->Data = data;
-	 pxFile->DataSize = size;
+	pxFile->AccessMode = protectionMode;
+	pxFile->LocationMode = PXFileLocationModeMappedVirtual;
+	pxFile->Data = data;
+	pxFile->DataSize = size;
 
-	 return PXActionSuccessful;
+	return PXActionSuccessful;
 }
 
- PXActionResult PXFileUnmapFromMemory(PXFile* const pxFile)
+PXActionResult PXFileUnmapFromMemory(PXFile* const pxFile)
 {
-	 // Write pending data
-	 PXBool isWriteMapped = 0;
+	// Write pending data
+	PXBool isWriteMapped = 0;
 
-	 switch (pxFile->AccessMode)
-	 {
-		 default:
-		 case PXMemoryAccessModeInvalid:
-		 case PXMemoryAccessModeNoReadWrite:
-		 case PXMemoryAccessModeReadOnly:
-			 isWriteMapped = PXFalse;
-			 break;
+	switch (pxFile->AccessMode)
+	{
+		default:
+		case PXMemoryAccessModeInvalid:
+		case PXMemoryAccessModeNoReadWrite:
+		case PXMemoryAccessModeReadOnly:
+			isWriteMapped = PXFalse;
+			break;
 
-		 case PXMemoryAccessModeWriteOnly:
-		 case PXMemoryAccessModeReadAndWrite:
-			 isWriteMapped = PXTrue;
-			 break;
-	 }
+		case PXMemoryAccessModeWriteOnly:
+		case PXMemoryAccessModeReadAndWrite:
+			isWriteMapped = PXTrue;
+			break;
+	}
 
 
 #if MemoryDebugOutput
-	 printf("[#][Memory] 0x%p (%10zi B) MMAP-Release\n", pxFile->Data, pxFile->DataSize);
+	printf("[#][Memory] 0x%p (%10zi B) MMAP-Release\n", pxFile->Data, pxFile->DataSize);
 #endif
 
 #if OSUnix
-	 const int result = munmap(pxFile->Data, pxFile->DataSize);
-	 const PXBool sucessful = result != -1;
+	const int result = munmap(pxFile->Data, pxFile->DataSize);
+	const PXBool sucessful = result != -1;
 
-	 PXActionOnErrorFetchAndExit(!sucessful);
+	PXActionOnErrorFetchAndReturn(!sucessful);
 
-     pxFile->Data = PXNull;
-	 pxFile->DataSize = 0;
+	pxFile->Data = PXNull;
+	pxFile->DataSize = 0;
 
-	 return PXActionSuccessful;
+	return PXActionSuccessful;
 
 #elif OSWindows
 
-	 // Write pending data
-	 {
-		 if (isWriteMapped)
-		 {
-			 const BOOL flushSuccessful = FlushViewOfFile(pxFile->Data, pxFile->DataCursor);
+	// Write pending data
+	{
+		if (isWriteMapped)
+		{
+			const BOOL flushSuccessful = FlushViewOfFile(pxFile->Data, pxFile->DataCursor);
 
-			 PXActionOnErrorFetchAndReturn(flushSuccessful);
-		 }
-	 }
+			PXActionOnErrorFetchAndReturn(flushSuccessful);
+		}
+	}
 
-	 {
-		 const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Data);
+	{
+		const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Data);
 
-		 PXActionOnErrorFetchAndReturn(unmappingSucessful);
+		PXActionOnErrorFetchAndReturn(unmappingSucessful);
 
-		 pxFile->Data = PXNull;
-	 }
+		pxFile->Data = PXNull;
+	}
 
-	 {
-		 const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingID);
+	{
+		const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingID);
 
-		 PXActionOnErrorFetchAndReturn(closeMappingSucessful);
+		PXActionOnErrorFetchAndReturn(closeMappingSucessful);
 
-		 pxFile->MappingID = PXHandleNotSet;
-	 }
+		pxFile->MappingID = PXHandleNotSet;
+	}
 
-	 // Close
-	 {
+	// Close
+	{
 
-		 if (isWriteMapped)
-		 {
-			 //fseek();
+		if (isWriteMapped)
+		{
+			//fseek();
 
-			 LARGE_INTEGER largeInteger;
+			LARGE_INTEGER largeInteger;
 
-			 largeInteger.QuadPart = pxFile->DataCursor;
+			largeInteger.QuadPart = pxFile->DataCursor;
 
-			 const BOOL setSuccessful = SetFilePointerEx(pxFile->ID, largeInteger, 0, FILE_BEGIN);
+			const BOOL setSuccessful = SetFilePointerEx(pxFile->ID, largeInteger, 0, FILE_BEGIN);
 
-			 const BOOL endSuccessful = SetEndOfFile(pxFile->ID);
-		 }
+			const BOOL endSuccessful = SetEndOfFile(pxFile->ID);
+		}
 
-		 const PXActionResult closeFile = PXFileClose(pxFile);
+		const PXActionResult closeFile = PXFileClose(pxFile);
 
-		 PXActionReturnOnError(closeFile);
+		PXActionReturnOnError(closeFile);
 
-		 pxFile->ID = PXHandleNotSet;
-	 }
+		pxFile->ID = PXHandleNotSet;
+	}
 
-	 return PXActionSuccessful;
+	return PXActionSuccessful;
 #endif
 }
 
- PXSize PXFileRemainingSize(const PXFile* const pxFile)
- {
-	 return pxFile->DataSize - pxFile->DataCursor;
- }
-
- PXSize PXFileRemainingSizeRelativeFromAddress(const PXFile* const pxFile, const void* const adress)
+PXSize PXFileRemainingSize(const PXFile* const pxFile)
 {
-	 return ((PXSize)pxFile->Data - (PXSize)adress) - pxFile->DataSize;
+	return pxFile->DataSize - pxFile->DataCursor;
 }
 
- PXBool PXFileIsAtEnd(const PXFile* const pxFile)
+PXSize PXFileRemainingSizeRelativeFromAddress(const PXFile* const pxFile, const void* const adress)
 {
-	 return pxFile->DataCursor >= pxFile->DataSize;
+	return ((PXSize)pxFile->Data - (PXSize)adress) - pxFile->DataSize;
 }
 
- void* PXFileCursorPosition(PXFile* const pxFile)
+PXBool PXFileIsAtEnd(const PXFile* const pxFile)
 {
-	 switch (pxFile->LocationMode)
-	 {
-		 case PXFileLocationModeInternal: // Memory is handled internally.
-		 case PXFileLocationModeExternal: // Memory is stored outside this object
-		 case PXFileLocationModeMappedVirtual: // Used 'VirtalAlloc()' / 'mmap()'
-		 case PXFileLocationModeMappedFromDisk: // Used 'FileView()' / 'fmap()'
-			 return (PXAdress)pxFile->Data + pxFile->DataCursor;
+	return pxFile->DataCursor >= pxFile->DataSize;
+}
 
-		 case PXFileLocationModeDirectCached: // Read & Write operations are cached into a buffer first.
-		 case PXFileLocationModeDirectUncached: // Read & Write operations are directly put into
-		 {
+void* PXFileCursorPosition(PXFile* const pxFile)
+{
+	switch (pxFile->LocationMode)
+	{
+		case PXFileLocationModeInternal: // Memory is handled internally.
+		case PXFileLocationModeExternal: // Memory is stored outside this object
+		case PXFileLocationModeMappedVirtual: // Used 'VirtalAlloc()' / 'mmap()'
+		case PXFileLocationModeMappedFromDisk: // Used 'FileView()' / 'fmap()'
+			return (PXAdress)pxFile->Data + pxFile->DataCursor;
+
+		case PXFileLocationModeDirectCached: // Read & Write operations are cached into a buffer first.
+		case PXFileLocationModeDirectUncached: // Read & Write operations are directly put into
+		{
 #if OSUnix
-			 pxFile->DataCursor = ftell(pxFile->ID);
+			pxFile->DataCursor = ftell(pxFile->ID);
 #elif OSWindows
-			 // Compile-ERROR: This seems to upset the compiler as its limited to 32-Bit value
-			 //pxFile->DataCursor = SetFilePointer(pxFile->ID, 0, 0, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
-			 const LARGE_INTEGER distanceToMove = { 0,0 }; // We do not move
-			 LARGE_INTEGER newFilePointer;
+			// Compile-ERROR: This seems to upset the compiler as its limited to 32-Bit value
+			//pxFile->DataCursor = SetFilePointer(pxFile->ID, 0, 0, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+			const LARGE_INTEGER distanceToMove = { 0,0 }; // We do not move
+			LARGE_INTEGER newFilePointer;
 
-			 const PXBool result = SetFilePointerEx(pxFile->ID, distanceToMove, &newFilePointer, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+			const PXBool result = SetFilePointerEx(pxFile->ID, distanceToMove, &newFilePointer, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
-			 if (result)
-			 {
-				 pxFile->DataCursor = newFilePointer.QuadPart;
-			 }
+			if (result)
+			{
+				pxFile->DataCursor = newFilePointer.QuadPart;
+			}
 #endif
 
-		 }
-		 default:
-			 return PXFileCursorPositionInvalid;
-	 }
+		}
+		default:
+			return PXFileCursorPositionInvalid;
+	}
 }
 
- void PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position)
+void PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position)
 {
-	 const PXSize minimalInBoundsPosition = PXMathMinimumIU(pxFile->DataSize, position); // Prevent cursor from going out of bounce
+	const PXSize minimalInBoundsPosition = PXMathMinimumIU(pxFile->DataSize, position); // Prevent cursor from going out of bounce
 
-	 switch (pxFile->LocationMode)
-	 {
-		 case PXFileLocationModeInternal: // Memory is handled internally.
-		 case PXFileLocationModeExternal: // Memory is stored outside this object
-		 case PXFileLocationModeMappedVirtual: // Used 'VirtalAlloc()' / 'mmap()'
-		 case PXFileLocationModeMappedFromDisk: // Used 'FileView()' / 'fmap()'
-		 {
-			 pxFile->DataCursor = minimalInBoundsPosition;
-			 break;
-		 }
+	switch (pxFile->LocationMode)
+	{
+		case PXFileLocationModeInternal: // Memory is handled internally.
+		case PXFileLocationModeExternal: // Memory is stored outside this object
+		case PXFileLocationModeMappedVirtual: // Used 'VirtalAlloc()' / 'mmap()'
+		case PXFileLocationModeMappedFromDisk: // Used 'FileView()' / 'fmap()'
+		{
+			pxFile->DataCursor = minimalInBoundsPosition;
+			break;
+		}
 
-		 case PXFileLocationModeDirectCached: // Read & Write operations are cached into a buffer first.
-		 case PXFileLocationModeDirectUncached: // Read & Write operations are directly put into
-		 {
+		case PXFileLocationModeDirectCached: // Read & Write operations are cached into a buffer first.
+		case PXFileLocationModeDirectUncached: // Read & Write operations are directly put into
+		{
 #if OSUnix
-			 pxFile->DataCursor = ftell(pxFile->ID);
+			pxFile->DataCursor = ftell(pxFile->ID);
 #elif OSWindows
 
 #if OS32Bit
-			 LONG sizeLow = position;
-			 LONG sizeHigh = 0;
+			LONG sizeLow = position;
+			LONG sizeHigh = 0;
 #else OS64Bit
 
-			 LONG sizeLow = position & 0x00000000FFFFFFFF;
-			 LONG sizeHigh = (position & 0xFFFFFFFF00000000) >> 32;
+			LONG sizeLow = position & 0x00000000FFFFFFFF;
+			LONG sizeHigh = (position & 0xFFFFFFFF00000000) >> 32;
 #endif
 
-			 pxFile->DataCursor = SetFilePointer(pxFile->ID, sizeLow, sizeHigh, FILE_BEGIN); // Windows XP, Kernel32.dll, fileapi.h
+			pxFile->DataCursor = SetFilePointer(pxFile->ID, sizeLow, sizeHigh, FILE_BEGIN); // Windows XP, Kernel32.dll, fileapi.h
 
 #endif
-			 break;
-		 }
-	 }
+			break;
+		}
+	}
 }
 
- void PXFileCursorToBeginning(PXFile* const pxFile)
+void PXFileCursorToBeginning(PXFile* const pxFile)
 {
-	 PXFileCursorMoveTo(pxFile, 0);
+	PXFileCursorMoveTo(pxFile, 0);
 }
 
- PXSize PXFileCursorAdvance(PXFile* const pxFile, const PXSize steps)
+PXSize PXFileCursorAdvance(PXFile* const pxFile, const PXSize steps)
 {
-	 const PXSize before = pxFile->DataCursor;
-	 PXFileCursorMoveTo(pxFile, pxFile->DataCursor + steps);
-	 const PXSize delta = pxFile->DataCursor - before;
+	const PXSize before = pxFile->DataCursor;
+	PXFileCursorMoveTo(pxFile, pxFile->DataCursor + steps);
+	const PXSize delta = pxFile->DataCursor - before;
 
-	 return delta;
+	return delta;
 }
 
- void PXFileCursorRewind(PXFile* const pxFile, const PXSize steps)
+void PXFileCursorRewind(PXFile* const pxFile, const PXSize steps)
 {
-	 if (pxFile->DataCursor <= steps)
-	 {
-		 PXFileCursorMoveTo(pxFile, 0);
-		 return;
-	 }
+	if (pxFile->DataCursor <= steps)
+	{
+		PXFileCursorMoveTo(pxFile, 0);
+		return;
+	}
 
-	 PXFileCursorMoveTo(pxFile, pxFile->DataCursor - steps); // Check underflow
+	PXFileCursorMoveTo(pxFile, pxFile->DataCursor - steps); // Check underflow
 }
 
- void PXFileCursorToEnd(PXFile* const pxFile)
+void PXFileCursorToEnd(PXFile* const pxFile)
 {
-	 PXFileCursorMoveTo(pxFile, pxFile->DataCursor);
+	PXFileCursorMoveTo(pxFile, pxFile->DataCursor);
 }
 
- PXSize PXFileSkipEndOfLineCharacters(PXFile* const pxFile)
+PXSize PXFileSkipEndOfLineCharacters(PXFile* const pxFile)
 {
-	 const PXSize oldPosition = pxFile->DataCursor;
+	const PXSize oldPosition = pxFile->DataCursor;
 
-	 while (!PXFileIsAtEnd(pxFile))
-	 {
-		 const char* data = PXFileCursorPosition(pxFile);
-		 const PXBool advance = IsEmptySpace(*data) || IsTab(*data) || IsEndOfLineCharacter(*data);
+	while (!PXFileIsAtEnd(pxFile))
+	{
+		const char* data = PXFileCursorPosition(pxFile);
+		const PXBool advance = IsEmptySpace(*data) || IsTab(*data) || IsEndOfLineCharacter(*data);
 
-		 if (!advance)
-		 {
-			 break;
-		 }
+		if (!advance)
+		{
+			break;
+		}
 
-		 PXFileCursorAdvance(pxFile, 1u);
-	 }
+		PXFileCursorAdvance(pxFile, 1u);
+	}
 
-	 return pxFile->DataCursor - oldPosition;
+	return pxFile->DataCursor - oldPosition;
 }
 
- PXSize PXFileSkipEmptySpace(PXFile* const pxFile)
+PXSize PXFileSkipEmptySpace(PXFile* const pxFile)
 {
-	 const PXSize dataPositionBefore = pxFile->DataCursor;
+	const PXSize dataPositionBefore = pxFile->DataCursor;
 
-	 while (!PXFileIsAtEnd(pxFile))
-	 {
-		 const unsigned char* data = PXFileCursorPosition(pxFile);
-		 const PXBool advance = IsEndOfLineCharacter(*data) && !IsEndOfString(*data);
+	while (!PXFileIsAtEnd(pxFile))
+	{
+		const unsigned char* data = PXFileCursorPosition(pxFile);
+		const PXBool advance = IsEndOfLineCharacter(*data) && !IsEndOfString(*data);
 
-		 if (!advance)
-		 {
-			 break;
-		 }
+		if (!advance)
+		{
+			break;
+		}
 
-		 PXFileCursorAdvance(pxFile, 1u);
-	 }
+		PXFileCursorAdvance(pxFile, 1u);
+	}
 
-	 return pxFile->DataCursor - dataPositionBefore;
+	return pxFile->DataCursor - dataPositionBefore;
 }
 
- PXSize PXFileReadNextLineInto(PXFile* const pxFile, void* exportBuffer, const PXSize exportBufferSize)
+PXSize PXFileReadNextLineInto(PXFile* const pxFile, void* exportBuffer, const PXSize exportBufferSize)
 {
-	 const PXSize dataPositionBefore = pxFile->DataCursor;
+	const PXSize dataPositionBefore = pxFile->DataCursor;
 
-	 PXFileSkipEndOfLineCharacters(pxFile);
+	PXFileSkipEndOfLineCharacters(pxFile);
 
-	 while (!PXFileIsAtEnd(pxFile))
-	 {
-		 const char* data = (char*)PXFileCursorPosition(pxFile);
-		 const PXBool advance = !IsEndOfLineCharacter(*data) && !IsEndOfString(*data);
+	while (!PXFileIsAtEnd(pxFile))
+	{
+		const char* data = (char*)PXFileCursorPosition(pxFile);
+		const PXBool advance = !IsEndOfLineCharacter(*data) && !IsEndOfString(*data);
 
-		 if (!advance)
-		 {
-			 break;
-		 }
+		if (!advance)
+		{
+			break;
+		}
 
-		 PXFileCursorAdvance(pxFile, 1u);
-	 }
+		PXFileCursorAdvance(pxFile, 1u);
+	}
 
-	 const char* dataPoint = (char*)pxFile->Data + dataPositionBefore;
-	 const PXSize dataPositionAfter = pxFile->DataCursor;
-	 const PXSize length = dataPositionAfter - dataPositionBefore;
+	const char* dataPoint = (char*)pxFile->Data + dataPositionBefore;
+	const PXSize dataPositionAfter = pxFile->DataCursor;
+	const PXSize length = dataPositionAfter - dataPositionBefore;
 
-	 if (length == 0)
-	 {
-		 return 0;
-	 }
+	if (length == 0)
+	{
+		return 0;
+	}
 
-	 PXTextCopyA(dataPoint, length, (char*)exportBuffer, length);
+	PXTextCopyA(dataPoint, length, (char*)exportBuffer, length);
 
-	 PXFileSkipEndOfLineCharacters(pxFile);
+	PXFileSkipEndOfLineCharacters(pxFile);
 
-	 return length;
+	return length;
 }
 
- PXSize PXFileSkipBlock(PXFile* const pxFile)
+PXSize PXFileSkipBlock(PXFile* const pxFile)
 {
-	 const PXSize oldPosition = pxFile->DataCursor;
+	const PXSize oldPosition = pxFile->DataCursor;
 
-	 while (!PXFileIsAtEnd(pxFile))
-	 {
-		 const char* data = (char*)PXFileCursorPosition(pxFile);
-		 const char character = *data;
-		 const PXBool advance = !IsEndOfString(character) && !IsEmptySpace(character) && !IsEndOfLineCharacter(character);
+	while (!PXFileIsAtEnd(pxFile))
+	{
+		const char* data = (char*)PXFileCursorPosition(pxFile);
+		const char character = *data;
+		const PXBool advance = !IsEndOfString(character) && !IsEmptySpace(character) && !IsEndOfLineCharacter(character);
 
-		 if (!advance)
-		 {
-			 break;
-		 }
+		if (!advance)
+		{
+			break;
+		}
 
-		 PXFileCursorAdvance(pxFile, 1u);
-	 }
+		PXFileCursorAdvance(pxFile, 1u);
+	}
 
-	 return pxFile->DataCursor - oldPosition;
+	return pxFile->DataCursor - oldPosition;
 }
 
- PXSize PXFileSkipToNextBlock(PXFile* const pxFile)
+PXSize PXFileSkipToNextBlock(PXFile* const pxFile)
 {
-	 const PXSize oldPosition = pxFile->DataCursor;
+	const PXSize oldPosition = pxFile->DataCursor;
 
-	 PXFileSkipBlock(pxFile);
+	PXFileSkipBlock(pxFile);
 
-	 PXFileSkipEmptySpace(pxFile);
+	PXFileSkipEmptySpace(pxFile);
 
-	 return pxFile->DataCursor - oldPosition;
+	return pxFile->DataCursor - oldPosition;
 }
 
- PXSize PXFileSkipLine(PXFile* const pxFile)
+PXSize PXFileSkipLine(PXFile* const pxFile)
 {
-	 const PXSize positionBefore = pxFile->DataCursor;
+	const PXSize positionBefore = pxFile->DataCursor;
 
-	 while (!PXFileIsAtEnd(pxFile))
-	 {
-		 const char* data = (char*)PXFileCursorPosition(pxFile);
-		 const PXBool advance = !(IsEndOfLineCharacter(*data) || IsEndOfString(*data));
+	while (!PXFileIsAtEnd(pxFile))
+	{
+		const char* data = (char*)PXFileCursorPosition(pxFile);
+		const PXBool advance = !(IsEndOfLineCharacter(*data) || IsEndOfString(*data));
 
-		 if (!advance)
-		 {
-			 break;
-		 }
+		if (!advance)
+		{
+			break;
+		}
 
-		 PXFileCursorAdvance(pxFile, 1u);
-	 }
+		PXFileCursorAdvance(pxFile, 1u);
+	}
 
-	 PXFileSkipEndOfLineCharacters(pxFile);
+	PXFileSkipEndOfLineCharacters(pxFile);
 
-	 const PXSize skippedBytes = pxFile->DataCursor - positionBefore;
+	const PXSize skippedBytes = pxFile->DataCursor - positionBefore;
 
-	 return skippedBytes;
+	return skippedBytes;
 }
 
- PXSize PXFileDataCopy(PXFile* const pxInputStream, PXFile* const pxOutputStream, const PXSize length)
+PXSize PXFileDataCopy(PXFile* const pxInputStream, PXFile* const pxOutputStream, const PXSize length)
 {
-	 void* const insertionPoint = PXFileCursorPosition(pxOutputStream); // Position of output
-	 const PXSize copyedBytes = PXFileReadB(pxInputStream, insertionPoint, length); // Copy from input to output
-	 const PXSize movedBytes = PXFileCursorAdvance(pxOutputStream, copyedBytes); // Move output by copyed amount
+	void* const insertionPoint = PXFileCursorPosition(pxOutputStream); // Position of output
+	const PXSize copyedBytes = PXFileReadB(pxInputStream, insertionPoint, length); // Copy from input to output
+	const PXSize movedBytes = PXFileCursorAdvance(pxOutputStream, copyedBytes); // Move output by copyed amount
 
-	 return movedBytes; // return moved amount of bytes
+	return movedBytes; // return moved amount of bytes
 }
 
- PXSize PXFileReadTextIU8(PXFile* const pxFile, PXInt8U* const number)
+PXSize PXFileReadTextIU8(PXFile* const pxFile, PXInt8U* const number)
 {
-	 unsigned int value = 0;
-	 const PXSize size = PXFileReadTextI(pxFile, &value);
+	unsigned int value = 0;
+	const PXSize size = PXFileReadTextI(pxFile, &value);
 
-	 *number = value;
+	*number = value;
 
-	 return size;
+	return size;
 }
 
- PXSize PXFileReadTextI(PXFile* const pxFile, int* const number)
+PXSize PXFileReadTextI(PXFile* const pxFile, int* const number)
 {
-	 PXText pxText;
-	 pxText.SizeAllocated = PXFileRemainingSize(pxFile);
-	 pxText.SizeUsed = PXFileRemainingSize(pxFile);
-	 pxText.NumberOfCharacters = PXFileRemainingSize(pxFile);
-	 pxText.TextA = (char*)PXFileCursorPosition(pxFile);
-	 pxText.Format = TextFormatASCII;
+	PXText pxText;
+	pxText.SizeAllocated = PXFileRemainingSize(pxFile);
+	pxText.SizeUsed = PXFileRemainingSize(pxFile);
+	pxText.NumberOfCharacters = PXFileRemainingSize(pxFile);
+	pxText.TextA = (char*)PXFileCursorPosition(pxFile);
+	pxText.Format = TextFormatASCII;
 
-	 pxText.SizeUsed = PXTextToInt(&pxText, number);
+	pxText.SizeUsed = PXTextToInt(&pxText, number);
 
-	 PXFileCursorAdvance(pxFile, pxText.SizeUsed);
+	PXFileCursorAdvance(pxFile, pxText.SizeUsed);
 
-	 return pxText.SizeUsed;
+	return pxText.SizeUsed;
 }
 
- PXSize PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian)
- {
-	 const PXSize writtenBytes = PXFileReadB(pxFile, valueAdress, valueSize);
-
-	 PXEndianSwap(valueAdress, valueSize, pxEndian, EndianCurrentSystem);
-
-	 return writtenBytes;
- }
-
- PXSize PXFileReadIXXVE(PXFile* const pxFile, void* const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian)
- {
-	 const PXSize totalSize = valueSizeSingle * valueListSize;
-	 const PXSize writtenBytes = PXFileReadB(pxFile, valueList, totalSize);
-
-	 PXEndianSwapV(valueList, totalSize, valueSizeSingle, pxEndian, EndianCurrentSystem);
-
-	 return writtenBytes;
- }
-
- PXSize PXFileReadI8S(PXFile* const pxFile, PXInt8S* const value)
+PXSize PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt8S));
+	const PXSize writtenBytes = PXFileReadB(pxFile, valueAdress, valueSize);
+
+	PXEndianSwap(valueAdress, valueSize, pxEndian, EndianCurrentSystem);
+
+	return writtenBytes;
 }
 
- PXSize PXFileReadI8SV(PXFile* const pxFile, PXInt8S* const valueList, const PXSize valueListSize)
+PXSize PXFileReadIXXVE(PXFile* const pxFile, void* const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt8S) * valueListSize);
+	const PXSize totalSize = valueSizeSingle * valueListSize;
+	const PXSize writtenBytes = PXFileReadB(pxFile, valueList, totalSize);
+
+	PXEndianSwapV(valueList, totalSize, valueSizeSingle, pxEndian, EndianCurrentSystem);
+
+	return writtenBytes;
 }
 
- PXSize PXFileReadI8U(PXFile* const pxFile, PXInt8U* const value)
+PXSize PXFileReadI8S(PXFile* const pxFile, PXInt8S* const value)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt8U));
+	return PXFileReadB(pxFile, value, sizeof(PXInt8S));
 }
 
- PXSize PXFileReadI8UV(PXFile* const pxFile, PXInt8U* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI8SV(PXFile* const pxFile, PXInt8S* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt8U) * valueListSize);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt8S) * valueListSize);
 }
 
- PXSize PXFileReadI16S(PXFile* const pxFile, PXInt16S* const value)
+PXSize PXFileReadI8U(PXFile* const pxFile, PXInt8U* const value)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt16S));
+	return PXFileReadB(pxFile, value, sizeof(PXInt8U));
 }
 
- PXSize PXFileReadI16SV(PXFile* const pxFile, PXInt16S* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI8UV(PXFile* const pxFile, PXInt8U* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt16S) * valueListSize);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt8U) * valueListSize);
 }
 
- PXSize PXFileReadI16SE(PXFile* const pxFile, PXInt16S* const value, const PXEndian pxEndian)
+PXSize PXFileReadI16S(PXFile* const pxFile, PXInt16S* const value)
 {
-	 return PXFileReadIXXE(pxFile, value, sizeof(PXInt16S), pxEndian);
+	return PXFileReadB(pxFile, value, sizeof(PXInt16S));
 }
 
- PXSize PXFileReadI16SVE(PXFile* const pxFile, PXInt16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI16SV(PXFile* const pxFile, PXInt16S* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt16S), pxEndian);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt16S) * valueListSize);
 }
 
- PXSize PXFileReadI16U(PXFile* const pxFile, PXInt16U* const value)
+PXSize PXFileReadI16SE(PXFile* const pxFile, PXInt16S* const value, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt16U));
+	return PXFileReadIXXE(pxFile, value, sizeof(PXInt16S), pxEndian);
 }
 
- PXSize PXFileReadI16UV(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI16SVE(PXFile* const pxFile, PXInt16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt16U) * valueListSize);
+	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt16S), pxEndian);
 }
 
- PXSize PXFileReadI16UE(PXFile* const pxFile, PXInt16U* const value, const PXEndian pxEndian)
+PXSize PXFileReadI16U(PXFile* const pxFile, PXInt16U* const value)
 {
-	 return PXFileReadIXXE(pxFile, value, sizeof(PXInt16U), pxEndian);
+	return PXFileReadB(pxFile, value, sizeof(PXInt16U));
 }
 
- PXSize PXFileReadI16UVE(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI16UV(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt16U), pxEndian);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt16U) * valueListSize);
 }
 
- PXSize PXFileReadI32S(PXFile* const pxFile, PXInt32S* const value)
+PXSize PXFileReadI16UE(PXFile* const pxFile, PXInt16U* const value, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt32S));
+	return PXFileReadIXXE(pxFile, value, sizeof(PXInt16U), pxEndian);
 }
 
- PXSize PXFileReadI32SV(PXFile* const pxFile, PXInt32S* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI16UVE(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt32S) * valueListSize);
+	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt16U), pxEndian);
 }
 
- PXSize PXFileReadI32SE(PXFile* const pxFile, PXInt32S* const value, const PXEndian pxEndian)
+PXSize PXFileReadI32S(PXFile* const pxFile, PXInt32S* const value)
 {
-	 return PXFileReadIXXE(pxFile, value, sizeof(PXInt32S), pxEndian);
+	return PXFileReadB(pxFile, value, sizeof(PXInt32S));
 }
 
- PXSize PXFileReadI32SVE(PXFile* const pxFile, PXInt32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI32SV(PXFile* const pxFile, PXInt32S* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt32S), pxEndian);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt32S) * valueListSize);
 }
 
- PXSize PXFileReadI32U(PXFile* const pxFile, PXInt32U* const value)
+PXSize PXFileReadI32SE(PXFile* const pxFile, PXInt32S* const value, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt32U));
+	return PXFileReadIXXE(pxFile, value, sizeof(PXInt32S), pxEndian);
 }
 
- PXSize PXFileReadI32UV(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI32SVE(PXFile* const pxFile, PXInt32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt32U) * valueListSize);
+	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt32S), pxEndian);
 }
 
- PXSize PXFileReadI32UE(PXFile* const pxFile, PXInt32U* const value, const PXEndian pxEndian)
+PXSize PXFileReadI32U(PXFile* const pxFile, PXInt32U* const value)
 {
-	 return PXFileReadIXXE(pxFile, value, sizeof(PXInt32U), pxEndian);
+	return PXFileReadB(pxFile, value, sizeof(PXInt32U));
 }
 
- PXSize PXFileReadI32UVE(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI32UV(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt32U), pxEndian);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt32U) * valueListSize);
 }
 
- PXSize PXFileReadI64S(PXFile* const pxFile, PXInt64S* const value)
+PXSize PXFileReadI32UE(PXFile* const pxFile, PXInt32U* const value, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt64S));
+	return PXFileReadIXXE(pxFile, value, sizeof(PXInt32U), pxEndian);
 }
 
- PXSize PXFileReadI64SV(PXFile* const pxFile, PXInt64S* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI32UVE(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt64S) * valueListSize);
+	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt32U), pxEndian);
 }
 
- PXSize PXFileReadI64SE(PXFile* const pxFile, PXInt64S* const value, const PXEndian pxEndian)
+PXSize PXFileReadI64S(PXFile* const pxFile, PXInt64S* const value)
 {
-	 return PXFileReadIXXE(pxFile, value, sizeof(PXInt64S), pxEndian);
+	return PXFileReadB(pxFile, value, sizeof(PXInt64S));
 }
 
- PXSize PXFileReadI64VE(PXFile* const pxFile, PXInt64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI64SV(PXFile* const pxFile, PXInt64S* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt64S), pxEndian);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt64S) * valueListSize);
 }
 
- PXSize PXFileReadI64U(PXFile* const pxFile, PXInt64U* const value)
+PXSize PXFileReadI64SE(PXFile* const pxFile, PXInt64S* const value, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, value, sizeof(PXInt64U));
+	return PXFileReadIXXE(pxFile, value, sizeof(PXInt64S), pxEndian);
 }
 
- PXSize PXFileReadI64UV(PXFile* const pxFile, PXInt64U* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI64VE(PXFile* const pxFile, PXInt64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(PXInt64U) * valueListSize);
+	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt64S), pxEndian);
 }
 
- PXSize PXFileReadI64UE(PXFile* const pxFile, PXInt64U* const value, const PXEndian pxEndian)
+PXSize PXFileReadI64U(PXFile* const pxFile, PXInt64U* const value)
 {
-	 return PXFileReadIXXE(pxFile, value, sizeof(PXInt64U), pxEndian);
+	return PXFileReadB(pxFile, value, sizeof(PXInt64U));
 }
 
- PXSize PXFileReadI64UVE(PXFile* const pxFile, PXInt64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI64UV(PXFile* const pxFile, PXInt64U* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt64U), pxEndian);
+	return PXFileReadB(pxFile, valueList, sizeof(PXInt64U) * valueListSize);
 }
 
- PXSize PXFileReadF(PXFile* const pxFile, float* const value)
+PXSize PXFileReadI64UE(PXFile* const pxFile, PXInt64U* const value, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, value, sizeof(float));
+	return PXFileReadIXXE(pxFile, value, sizeof(PXInt64U), pxEndian);
 }
 
- PXSize PXFileReadFV(PXFile* const pxFile, float* const valueList, const PXSize valueListSize)
+PXSize PXFileReadI64UVE(PXFile* const pxFile, PXInt64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(float) * valueListSize);
+	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt64U), pxEndian);
 }
 
- PXSize PXFileReadD(PXFile* const pxFile, double* const value)
+PXSize PXFileReadF(PXFile* const pxFile, float* const value)
 {
-	 return PXFileReadB(pxFile, value, sizeof(double));
+	return PXFileReadB(pxFile, value, sizeof(float));
 }
 
- PXSize PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize valueListSize)
+PXSize PXFileReadFV(PXFile* const pxFile, float* const valueList, const PXSize valueListSize)
 {
-	 return PXFileReadB(pxFile, valueList, sizeof(double) * valueListSize);
+	return PXFileReadB(pxFile, valueList, sizeof(float) * valueListSize);
 }
 
- PXSize PXFileReadMultible(PXFile* const pxFile, PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize)
+PXSize PXFileReadD(PXFile* const pxFile, double* const value)
 {
-	 PXSize totalReadBytes = 0;
-
-	 for (PXSize i = 0; i < pxFileElementListSize; ++i)
-	 {
-		 PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
-
-		 switch (pxFileDataElementType->Type)
-		 {
-			 case PXDataTypeInt8S:
-				 totalReadBytes += PXFileReadI8S(pxFile, (PXInt8S*)pxFileDataElementType->Adress);
-				 break;
-
-			 case PXDataTypeInt8U:
-				 totalReadBytes += PXFileReadI8U(pxFile, (PXInt8S*)pxFileDataElementType->Adress);
-				 break;
-
-			 case PXDataTypeLEInt16S:
-				 totalReadBytes += PXFileReadI16SE(pxFile, (PXInt16S*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt16U:
-				 totalReadBytes += PXFileReadI16UE(pxFile, (PXInt16U*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt32S:
-				 totalReadBytes += PXFileReadI32SE(pxFile, (PXInt32S*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt32U:
-				 totalReadBytes += PXFileReadI32UE(pxFile, (PXInt32U*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt64S:
-				 totalReadBytes += PXFileReadI64SE(pxFile, (PXInt64S*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt64U:
-				 totalReadBytes += PXFileReadI64UE(pxFile, (PXInt64U*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeBEInt16S:
-				 totalReadBytes += PXFileReadI16SE(pxFile, (PXInt16S*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt16U:
-				 totalReadBytes += PXFileReadI16UE(pxFile, (PXInt16U*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt32S:
-				 totalReadBytes += PXFileReadI32SE(pxFile, (PXInt32S*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt32U:
-				 totalReadBytes += PXFileReadI32UE(pxFile, (PXInt32U*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt64S:
-				 totalReadBytes += PXFileReadI64SE(pxFile, (PXInt64S*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt64U:
-				 totalReadBytes += PXFileReadI64UE(pxFile, (PXInt64U*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeFloat:
-				 totalReadBytes += PXFileReadF(pxFile, (float*)pxFileDataElementType->Adress);
-				 break;
-
-			 case PXDataTypeDouble:
-				 totalReadBytes += PXFileReadD(pxFile, (double*)pxFileDataElementType->Adress);
-				 break;
-
-			 case PXDataTypeTypeInvalid:
-			 default:
-				 break;
-		 }
-	 }
-
-	 return totalReadBytes;
+	return PXFileReadB(pxFile, value, sizeof(double));
 }
 
- PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
+PXSize PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize valueListSize)
 {
-	 switch (pxFile->LocationMode)
-	 {
-		 case PXFileLocationModeInternal:
-		 case PXFileLocationModeExternal:
-		 case PXFileLocationModeMappedVirtual:
-		 case PXFileLocationModeMappedFromDisk:
-		 {
-			 const void* currentPosition = PXFileCursorPosition(pxFile);
-			 const PXSize moveSize = PXFileCursorAdvance(pxFile, length);
+	return PXFileReadB(pxFile, valueList, sizeof(double) * valueListSize);
+}
 
-			 PXMemoryCopy(currentPosition, moveSize, value, moveSize);
+PXSize PXFileReadMultible(PXFile* const pxFile, PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize)
+{
+	PXSize totalReadBytes = 0;
 
-			 return moveSize;
-		 }
+	for (PXSize i = 0; i < pxFileElementListSize; ++i)
+	{
+		PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
 
-		 case PXFileLocationModeDirectCached:
-		 {
-			 break;
-		 }
-		 case PXFileLocationModeDirectUncached:
-		 {
+		switch (pxFileDataElementType->Type)
+		{
+			case PXDataTypeInt8S:
+				totalReadBytes += PXFileReadI8S(pxFile, (PXInt8S*)pxFileDataElementType->Adress);
+				break;
+
+			case PXDataTypeInt8U:
+				totalReadBytes += PXFileReadI8U(pxFile, (PXInt8S*)pxFileDataElementType->Adress);
+				break;
+
+			case PXDataTypeLEInt16S:
+				totalReadBytes += PXFileReadI16SE(pxFile, (PXInt16S*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt16U:
+				totalReadBytes += PXFileReadI16UE(pxFile, (PXInt16U*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt32S:
+				totalReadBytes += PXFileReadI32SE(pxFile, (PXInt32S*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt32U:
+				totalReadBytes += PXFileReadI32UE(pxFile, (PXInt32U*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt64S:
+				totalReadBytes += PXFileReadI64SE(pxFile, (PXInt64S*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt64U:
+				totalReadBytes += PXFileReadI64UE(pxFile, (PXInt64U*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeBEInt16S:
+				totalReadBytes += PXFileReadI16SE(pxFile, (PXInt16S*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt16U:
+				totalReadBytes += PXFileReadI16UE(pxFile, (PXInt16U*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt32S:
+				totalReadBytes += PXFileReadI32SE(pxFile, (PXInt32S*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt32U:
+				totalReadBytes += PXFileReadI32UE(pxFile, (PXInt32U*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt64S:
+				totalReadBytes += PXFileReadI64SE(pxFile, (PXInt64S*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt64U:
+				totalReadBytes += PXFileReadI64UE(pxFile, (PXInt64U*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeFloat:
+				totalReadBytes += PXFileReadF(pxFile, (float*)pxFileDataElementType->Adress);
+				break;
+
+			case PXDataTypeDouble:
+				totalReadBytes += PXFileReadD(pxFile, (double*)pxFileDataElementType->Adress);
+				break;
+
+			case PXDataTypeTypeInvalid:
+			default:
+				break;
+		}
+	}
+
+	return totalReadBytes;
+}
+
+PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
+{
+	switch (pxFile->LocationMode)
+	{
+		case PXFileLocationModeInternal:
+		case PXFileLocationModeExternal:
+		case PXFileLocationModeMappedVirtual:
+		case PXFileLocationModeMappedFromDisk:
+		{
+			const void* currentPosition = PXFileCursorPosition(pxFile);
+			const PXSize moveSize = PXFileCursorAdvance(pxFile, length);
+
+			PXMemoryCopy(currentPosition, moveSize, value, moveSize);
+
+			return moveSize;
+		}
+
+		case PXFileLocationModeDirectCached:
+		{
+			break;
+		}
+		case PXFileLocationModeDirectUncached:
+		{
 #if OSUnix
-			 const PXSize writtenBytes = fread(value, sizeof(PXByte), length, pxFile->ID);
+			const PXSize writtenBytes = fread(value, sizeof(PXByte), length, pxFile->ID);
 
-			 return writtenBytes;
+			return writtenBytes;
 
 #elif OSWindows
-			 DWORD writtenBytes = 0;
+			DWORD writtenBytes = 0;
 
-			 const PXBool success = ReadFile(pxFile->ID, value, length, &writtenBytes, PXNull);
+			const PXBool success = ReadFile(pxFile->ID, value, length, &writtenBytes, PXNull);
 
-			 if (!success)
-			 {
-				 return 0;
-			 }
+			if (!success)
+			{
+				return 0;
+			}
 
-			 pxFile->DataCursor += writtenBytes;
+			pxFile->DataCursor += writtenBytes;
 
-			 return writtenBytes;
+			return writtenBytes;
 #endif
-		 }
-	 }
+		}
+	}
 
-	 return 0;
- }
-
- PXSize PXFileReadTextA(PXFile* const pxFile, PXTextASCII value, const PXSize length)
-{
-	 const PXSize size = PXFileReadB(pxFile, value, length);
-
-	 value[size] = 0;
-
-	 return size;
+	return 0;
 }
 
- PXSize PXFileReadTextW(PXFile* const pxFile, PXTextUNICODE value, const PXSize length)
+PXSize PXFileReadTextA(PXFile* const pxFile, PXTextASCII value, const PXSize length)
 {
-	 const PXSize size = PXFileReadB(pxFile, value, length);
+	const PXSize size = PXFileReadB(pxFile, value, length);
 
-	 value[size] = 0;
+	value[size] = 0;
 
-	 return size;
+	return size;
 }
 
- PXSize PXFileReadTextU(PXFile* const pxFile, PXTextUNICODE value, const PXSize length)
+PXSize PXFileReadTextW(PXFile* const pxFile, PXTextUNICODE value, const PXSize length)
 {
-	 const PXSize size = PXFileReadB(pxFile, value, length);
+	const PXSize size = PXFileReadB(pxFile, value, length);
 
-	 value[size] = 0;
+	value[size] = 0;
 
-	 return size;
+	return size;
 }
 
- void PXFileReadUntil(PXFile* const pxFile, void* value, const PXSize length, const char character)
+PXSize PXFileReadTextU(PXFile* const pxFile, PXTextUNICODE value, const PXSize length)
 {
-	 const char* currentPosition = (char*)PXFileCursorPosition(pxFile);
+	const PXSize size = PXFileReadB(pxFile, value, length);
 
-	 PXSize lengthCopy = 0;
+	value[size] = 0;
 
-	 while (!PXFileIsAtEnd(pxFile))
-	 {
-		 const char* data = (char*)PXFileCursorPosition(pxFile);
-		 const PXBool advance = *data != character && length <= lengthCopy;
-
-		 if (!advance)
-		 {
-			 break;
-		 }
-
-		 ++lengthCopy;
-
-		 PXFileCursorAdvance(pxFile, 1u);
-	 }
-
-	 const PXSize readableSize = PXFileRemainingSize(pxFile);
-
-	 PXMemoryCopy(currentPosition, readableSize, value, lengthCopy);
+	return size;
 }
 
- PXBool PXFileReadAndCompareI64U(PXFile* const pxFile, const PXInt64U value)
+void PXFileReadUntil(PXFile* const pxFile, void* value, const PXSize length, const char character)
 {
-	 const PXInt64U valueA = 0;
-	 const PXInt64U valueSize = sizeof(PXInt64U);
-	 const PXSize readBytes = PXFileReadB(pxFile, &valueA, valueSize);
-	 const PXBool successful = readBytes == valueSize;
+	const char* currentPosition = (char*)PXFileCursorPosition(pxFile);
 
-	 return successful;
+	PXSize lengthCopy = 0;
+
+	while (!PXFileIsAtEnd(pxFile))
+	{
+		const char* data = (char*)PXFileCursorPosition(pxFile);
+		const PXBool advance = *data != character && length <= lengthCopy;
+
+		if (!advance)
+		{
+			break;
+		}
+
+		++lengthCopy;
+
+		PXFileCursorAdvance(pxFile, 1u);
+	}
+
+	const PXSize readableSize = PXFileRemainingSize(pxFile);
+
+	PXMemoryCopy(currentPosition, readableSize, value, lengthCopy);
 }
 
- PXBool PXFileReadAndCompare(PXFile* const pxFile, const void* value, const PXSize length)
+PXBool PXFileReadAndCompareI64U(PXFile* const pxFile, const PXInt64U value)
 {
-	 const void* currentPosition = PXFileCursorPosition(pxFile);
-	 const PXSize readableSize = PXFileRemainingSize(pxFile);
+	const PXInt64U valueA = 0;
+	const PXInt64U valueSize = sizeof(PXInt64U);
+	const PXSize readBytes = PXFileReadB(pxFile, &valueA, valueSize);
+	const PXBool successful = readBytes == valueSize;
 
-	 const PXBool result = PXMemoryCompare(currentPosition, readableSize, value, length);
-
-	 if (result)
-	 {
-		 PXFileCursorAdvance(pxFile, length);
-	 }
-
-	 return result;
+	return successful;
 }
 
- PXBool PXFileReadAndCompareV(PXFile* const pxFile, const void** value, const PXSize* valueElementSizeList, const PXSize valueLength)
+PXBool PXFileReadAndCompare(PXFile* const pxFile, const void* value, const PXSize length)
 {
-	 const void* currentPosition = PXFileCursorPosition(pxFile);
-	 const PXSize readableSize = PXFileRemainingSize(pxFile);
+	const void* currentPosition = PXFileCursorPosition(pxFile);
+	const PXSize readableSize = PXFileRemainingSize(pxFile);
 
-	 for (size_t i = 0; i < valueLength; ++i)
-	 {
-		 const void* text = value[i];
-		 const PXSize size = valueElementSizeList[i];
-		 const PXBool result = PXMemoryCompare(currentPosition, readableSize, text, size);
+	const PXBool result = PXMemoryCompare(currentPosition, readableSize, value, length);
 
-		 if (result)
-		 {
-			 PXFileCursorAdvance(pxFile, size);
-			 return PXTrue;
-		 }
-	 }
+	if (result)
+	{
+		PXFileCursorAdvance(pxFile, length);
+	}
 
-	 return PXFalse;
+	return result;
 }
 
- PXSize PXFileWriteI8S(PXFile* const pxFile, const PXInt8S value)
+PXBool PXFileReadAndCompareV(PXFile* const pxFile, const void** value, const PXSize* valueElementSizeList, const PXSize valueLength)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt8S));
+	const void* currentPosition = PXFileCursorPosition(pxFile);
+	const PXSize readableSize = PXFileRemainingSize(pxFile);
+
+	for (size_t i = 0; i < valueLength; ++i)
+	{
+		const void* text = value[i];
+		const PXSize size = valueElementSizeList[i];
+		const PXBool result = PXMemoryCompare(currentPosition, readableSize, text, size);
+
+		if (result)
+		{
+			PXFileCursorAdvance(pxFile, size);
+			return PXTrue;
+		}
+	}
+
+	return PXFalse;
 }
 
- PXSize PXFileWriteI8SV(PXFile* const pxFile, const PXInt8S* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteI8S(PXFile* const pxFile, const PXInt8S value)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt8S) * valueListSize);
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt8S));
 }
 
- PXSize PXFileWriteI8U(PXFile* const pxFile, const PXInt8U value)
+PXSize PXFileWriteI8SV(PXFile* const pxFile, const PXInt8S* const valueList, const PXSize valueListSize)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt8U));
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt8S) * valueListSize);
 }
 
- PXSize PXFileWriteAtI8U(PXFile* const pxFile, const PXInt8U value, const PXSize index)
+PXSize PXFileWriteI8U(PXFile* const pxFile, const PXInt8U value)
 {
-	 const PXSize positionBefore = pxFile->DataCursor; // save current position
-
-	 pxFile->DataCursor = index; // jump to offset
-
-	 const PXSize writtenBytes = PXFileWriteI8U(pxFile, value); // Length
-
-	 pxFile->DataCursor = positionBefore; // Reset old position
-
-	 return writtenBytes;
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt8U));
 }
 
- PXSize PXFileWriteI8UV(PXFile* const pxFile, const PXInt8U* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteAtI8U(PXFile* const pxFile, const PXInt8U value, const PXSize index)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt8U) * valueListSize);
+	const PXSize positionBefore = pxFile->DataCursor; // save current position
+
+	pxFile->DataCursor = index; // jump to offset
+
+	const PXSize writtenBytes = PXFileWriteI8U(pxFile, value); // Length
+
+	pxFile->DataCursor = positionBefore; // Reset old position
+
+	return writtenBytes;
 }
 
- PXSize PXFileWriteI16S(PXFile* const pxFile, const PXInt16S const value)
+PXSize PXFileWriteI8UV(PXFile* const pxFile, const PXInt8U* const valueList, const PXSize valueListSize)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt16S));
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt8U) * valueListSize);
 }
 
- PXSize PXFileWriteI16SV(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteI16S(PXFile* const pxFile, const PXInt16S const value)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt16S) * valueListSize);
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt16S));
 }
 
- PXSize PXFileWriteI16SE(PXFile* const pxFile, const PXInt16S const value, const PXEndian pxEndian)
+PXSize PXFileWriteI16SV(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize)
 {
-	 const PXSize dataSize = sizeof(PXInt16S);
-	 PXInt16S dataValue = value;
-
-	 PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
-
-	 PXFileWriteB(pxFile, &dataValue, dataSize);
-
-	 return dataSize;
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt16S) * valueListSize);
 }
 
- PXSize PXFileWriteI16SVE(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileWriteI16SE(PXFile* const pxFile, const PXInt16S const value, const PXEndian pxEndian)
 {
-	 PXSize accumulator = 0;
+	const PXSize dataSize = sizeof(PXInt16S);
+	PXInt16S dataValue = value;
 
-	 for (PXSize i = 0; i < valueListSize; ++i)
-	 {
-		 accumulator += PXFileWriteI16SE(pxFile, &valueList[i], pxEndian);
-	 }
+	PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
 
-	 return accumulator;
+	PXFileWriteB(pxFile, &dataValue, dataSize);
+
+	return dataSize;
 }
 
- PXSize PXFileWriteI16U(PXFile* const pxFile, const PXInt16U const value)
+PXSize PXFileWriteI16SVE(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt16U));
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXFileWriteI16SE(pxFile, &valueList[i], pxEndian);
+	}
+
+	return accumulator;
 }
 
- PXSize PXFileWriteAtI16U(PXFile* const pxFile, const PXInt16U const value, const PXSize index)
+PXSize PXFileWriteI16U(PXFile* const pxFile, const PXInt16U const value)
 {
-	 const PXSize positionBefore = pxFile->DataCursor; // save current position
-
-	 pxFile->DataCursor = index; // jump to offset
-
-	 const PXSize writtenBytes = PXFileWriteI16U(pxFile, value); // Length
-
-	 pxFile->DataCursor = positionBefore; // Reset old position
-
-	 return writtenBytes;
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt16U));
 }
 
- PXSize PXFileWriteI16UV(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteAtI16U(PXFile* const pxFile, const PXInt16U const value, const PXSize index)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt16U) * valueListSize);
+	const PXSize positionBefore = pxFile->DataCursor; // save current position
+
+	pxFile->DataCursor = index; // jump to offset
+
+	const PXSize writtenBytes = PXFileWriteI16U(pxFile, value); // Length
+
+	pxFile->DataCursor = positionBefore; // Reset old position
+
+	return writtenBytes;
 }
 
- PXSize PXFileWriteI16UE(PXFile* const pxFile, const PXInt16U const value, const PXEndian pxEndian)
+PXSize PXFileWriteI16UV(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize)
 {
-	 const PXSize dataSize = sizeof(PXInt16U);
-	 PXInt16U dataValue = value;
-
-	 PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
-
-	 PXFileWriteB(pxFile, &dataValue, dataSize);
-
-	 return dataSize;
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt16U) * valueListSize);
 }
 
- PXSize PXFileWriteI16UVE(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileWriteI16UE(PXFile* const pxFile, const PXInt16U const value, const PXEndian pxEndian)
 {
-	 PXSize accumulator = 0;
+	const PXSize dataSize = sizeof(PXInt16U);
+	PXInt16U dataValue = value;
 
-	 for (PXSize i = 0; i < valueListSize; ++i)
-	 {
-		 accumulator += PXFileWriteI16UE(pxFile, &valueList[i], pxEndian);
-	 }
+	PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
 
-	 return accumulator;
+	PXFileWriteB(pxFile, &dataValue, dataSize);
+
+	return dataSize;
 }
 
- PXSize PXFileWriteI32S(PXFile* const pxFile, const PXInt32S value)
+PXSize PXFileWriteI16UVE(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt32S));
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXFileWriteI16UE(pxFile, &valueList[i], pxEndian);
+	}
+
+	return accumulator;
 }
 
- PXSize PXFileWriteI32SV(PXFile* const pxFile, const PXInt32S* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteI32S(PXFile* const pxFile, const PXInt32S value)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt32S) * valueListSize);
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt32S));
 }
 
- PXSize PXFileWriteI32SE(PXFile* const pxFile, const PXInt32S value, const PXEndian pxEndian)
+PXSize PXFileWriteI32SV(PXFile* const pxFile, const PXInt32S* const valueList, const PXSize valueListSize)
 {
-	 const PXSize dataSize = sizeof(PXInt32S);
-	 PXInt32S dataValue = value;
-
-	 PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
-
-	 PXFileWriteB(pxFile, &dataValue, dataSize);
-
-	 return dataSize;
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt32S) * valueListSize);
 }
 
- PXSize PXFileWriteI32SVE(PXFile* const pxFile, const PXInt32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileWriteI32SE(PXFile* const pxFile, const PXInt32S value, const PXEndian pxEndian)
 {
-	 PXSize accumulator = 0;
+	const PXSize dataSize = sizeof(PXInt32S);
+	PXInt32S dataValue = value;
 
-	 for (PXSize i = 0; i < valueListSize; ++i)
-	 {
-		 accumulator += PXFileWriteI32SE(pxFile, &valueList[i], pxEndian);
-	 }
+	PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
 
-	 return accumulator;
+	PXFileWriteB(pxFile, &dataValue, dataSize);
+
+	return dataSize;
 }
 
- PXSize PXFileWriteI32U(PXFile* const pxFile, const PXInt32U value)
+PXSize PXFileWriteI32SVE(PXFile* const pxFile, const PXInt32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt32U));
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXFileWriteI32SE(pxFile, &valueList[i], pxEndian);
+	}
+
+	return accumulator;
 }
 
- PXSize PXFileWriteAtI32U(PXFile* const pxFile, const PXInt32U value, const PXSize index)
+PXSize PXFileWriteI32U(PXFile* const pxFile, const PXInt32U value)
 {
-	 const PXSize positionBefore = pxFile->DataCursor; // save current position
-
-	 pxFile->DataCursor = index; // jump to offset
-
-	 const PXSize writtenBytes = PXFileWriteI32U(pxFile, value); // Length
-
-	 pxFile->DataCursor = positionBefore; // Reset old position
-
-	 return writtenBytes;
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt32U));
 }
 
- PXSize PXFileWriteI32UV(PXFile* const pxFile, const PXInt32U* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteAtI32U(PXFile* const pxFile, const PXInt32U value, const PXSize index)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt32U) * valueListSize);
+	const PXSize positionBefore = pxFile->DataCursor; // save current position
+
+	pxFile->DataCursor = index; // jump to offset
+
+	const PXSize writtenBytes = PXFileWriteI32U(pxFile, value); // Length
+
+	pxFile->DataCursor = positionBefore; // Reset old position
+
+	return writtenBytes;
 }
 
- PXSize PXFileWriteI32UE(PXFile* const pxFile, const PXInt32U value, const PXEndian pxEndian)
+PXSize PXFileWriteI32UV(PXFile* const pxFile, const PXInt32U* const valueList, const PXSize valueListSize)
 {
-	 const PXSize dataSize = sizeof(PXInt32U);
-	 PXInt32U dataValue = value;
-
-	 PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
-
-	 PXFileWriteB(pxFile, &dataValue, dataSize);
-
-	 return dataSize;
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt32U) * valueListSize);
 }
 
- PXSize PXFileWriteAtI32UE(PXFile* const pxFile, const PXInt32U value, const PXEndian pxEndian, const PXSize index)
+PXSize PXFileWriteI32UE(PXFile* const pxFile, const PXInt32U value, const PXEndian pxEndian)
 {
-	 const PXSize positionBefore = pxFile->DataCursor; // save current position
+	const PXSize dataSize = sizeof(PXInt32U);
+	PXInt32U dataValue = value;
 
-	 pxFile->DataCursor = index; // jump to offset
+	PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
 
-	 const PXSize writtenBytes = PXFileWriteI32UE(pxFile, value, pxEndian); // Length
+	PXFileWriteB(pxFile, &dataValue, dataSize);
 
-	 pxFile->DataCursor = positionBefore; // Reset old position
-
-	 return writtenBytes;
+	return dataSize;
 }
 
- PXSize PXFileWriteI32UVE(PXFile* const pxFile, const PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileWriteAtI32UE(PXFile* const pxFile, const PXInt32U value, const PXEndian pxEndian, const PXSize index)
 {
-	 PXSize accumulator = 0;
+	const PXSize positionBefore = pxFile->DataCursor; // save current position
 
-	 for (PXSize i = 0; i < valueListSize; ++i)
-	 {
-		 accumulator += PXFileWriteI32UE(pxFile, &valueList[i], pxEndian);
-	 }
+	pxFile->DataCursor = index; // jump to offset
 
-	 return accumulator;
+	const PXSize writtenBytes = PXFileWriteI32UE(pxFile, value, pxEndian); // Length
+
+	pxFile->DataCursor = positionBefore; // Reset old position
+
+	return writtenBytes;
 }
 
- PXSize PXFileWriteI64S(PXFile* const pxFile, const PXInt64S const value)
+PXSize PXFileWriteI32UVE(PXFile* const pxFile, const PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt64S));
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXFileWriteI32UE(pxFile, &valueList[i], pxEndian);
+	}
+
+	return accumulator;
 }
 
- PXSize PXFileWriteI64SV(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteI64S(PXFile* const pxFile, const PXInt64S const value)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt64S) * valueListSize);
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt64S));
 }
 
- PXSize PXFileWriteI64SE(PXFile* const pxFile, const PXInt64S const value, const PXEndian pxEndian)
+PXSize PXFileWriteI64SV(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize)
 {
-	 const PXSize dataSize = sizeof(PXInt64S);
-	 PXInt64S dataValue = value;
-
-	 PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
-
-	 PXFileWriteB(pxFile, &dataValue, dataSize);
-
-	 return dataSize;
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt64S) * valueListSize);
 }
 
- PXSize PXFileWriteI64VE(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileWriteI64SE(PXFile* const pxFile, const PXInt64S const value, const PXEndian pxEndian)
 {
-	 PXSize accumulator = 0;
+	const PXSize dataSize = sizeof(PXInt64S);
+	PXInt64S dataValue = value;
 
-	 for (PXSize i = 0; i < valueListSize; ++i)
-	 {
-		 accumulator += PXFileWriteI64SE(pxFile, &valueList[i], pxEndian);
-	 }
+	PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
 
-	 return accumulator;
+	PXFileWriteB(pxFile, &dataValue, dataSize);
+
+	return dataSize;
 }
 
- PXSize PXFileWriteI64U(PXFile* const pxFile, const PXInt64U const value)
+PXSize PXFileWriteI64VE(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(PXInt64U));
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXFileWriteI64SE(pxFile, &valueList[i], pxEndian);
+	}
+
+	return accumulator;
 }
 
- PXSize PXFileWriteI64UV(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteI64U(PXFile* const pxFile, const PXInt64U const value)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(PXInt64U) * valueListSize);
+	return PXFileWriteB(pxFile, &value, sizeof(PXInt64U));
 }
 
- PXSize PXFileWriteI64UE(PXFile* const pxFile, const PXInt64U const value, const PXEndian pxEndian)
+PXSize PXFileWriteI64UV(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize)
 {
-	 const PXSize dataSize = sizeof(PXInt64U);
-	 PXInt64U dataValue = value;
-
-	 PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
-
-	 PXFileWriteB(pxFile, &dataValue, dataSize);
-
-	 return dataSize;
+	return PXFileWriteB(pxFile, valueList, sizeof(PXInt64U) * valueListSize);
 }
 
- PXSize PXFileWriteI64UVE(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileWriteI64UE(PXFile* const pxFile, const PXInt64U const value, const PXEndian pxEndian)
 {
-	 PXSize accumulator = 0;
+	const PXSize dataSize = sizeof(PXInt64U);
+	PXInt64U dataValue = value;
 
-	 for (PXSize i = 0; i < valueListSize; ++i)
-	 {
-		 accumulator += PXFileWriteI64UE(pxFile, &valueList[i], pxEndian);
-	 }
+	PXEndianSwap(&dataValue, dataSize, EndianCurrentSystem, pxEndian);
 
-	 return accumulator;
+	PXFileWriteB(pxFile, &dataValue, dataSize);
+
+	return dataSize;
 }
 
- PXSize PXFileWriteF(PXFile* const pxFile, const float value)
+PXSize PXFileWriteI64UVE(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(float));
+	PXSize accumulator = 0;
+
+	for (PXSize i = 0; i < valueListSize; ++i)
+	{
+		accumulator += PXFileWriteI64UE(pxFile, &valueList[i], pxEndian);
+	}
+
+	return accumulator;
 }
 
- PXSize PXFileWriteFV(PXFile* const pxFile, const float* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteF(PXFile* const pxFile, const float value)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(float) * valueListSize);
+	return PXFileWriteB(pxFile, &value, sizeof(float));
 }
 
- PXSize PXFileWriteD(PXFile* const pxFile, const double value)
+PXSize PXFileWriteFV(PXFile* const pxFile, const float* const valueList, const PXSize valueListSize)
 {
-	 return PXFileWriteB(pxFile, &value, sizeof(double));
+	return PXFileWriteB(pxFile, valueList, sizeof(float) * valueListSize);
 }
 
- PXSize PXFileWriteDV(PXFile* const pxFile, const double* const valueList, const PXSize valueListSize)
+PXSize PXFileWriteD(PXFile* const pxFile, const double value)
 {
-	 return PXFileWriteB(pxFile, valueList, sizeof(double) * valueListSize);
+	return PXFileWriteB(pxFile, &value, sizeof(double));
 }
 
- PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length)
+PXSize PXFileWriteDV(PXFile* const pxFile, const double* const valueList, const PXSize valueListSize)
 {
-	 const PXSize writableSize = PXFileRemainingSize(pxFile);
-	 void* const currentPosition = PXFileCursorPosition(pxFile);
-	 const PXSize copyedBytes = PXMemoryCopy(value, length, currentPosition, writableSize);
-
-	 PXFileCursorAdvance(pxFile, copyedBytes);
-
-	 return copyedBytes;
+	return PXFileWriteB(pxFile, valueList, sizeof(double) * valueListSize);
 }
 
- PXSize PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize dataSize, const PXSize index)
+PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length)
 {
-	 const PXSize positionBefore = pxFile->DataCursor; // save current position
+	const PXSize writableSize = PXFileRemainingSize(pxFile);
+	void* const currentPosition = PXFileCursorPosition(pxFile);
+	const PXSize copyedBytes = PXMemoryCopy(value, length, currentPosition, writableSize);
 
-	 pxFile->DataCursor = index; // jump to offset
+	PXFileCursorAdvance(pxFile, copyedBytes);
 
-	 const PXSize writtenBytes = PXFileWriteB(pxFile, data, dataSize); // Length
-
-	 pxFile->DataCursor = positionBefore; // Reset old position
-
-	 return writtenBytes;
+	return copyedBytes;
 }
 
- PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize)
+PXSize PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize dataSize, const PXSize index)
 {
-	 PXSize totalReadBytes = 0;
+	const PXSize positionBefore = pxFile->DataCursor; // save current position
 
-	 for (PXSize i = 0; i < pxFileElementListSize; ++i)
-	 {
-		 PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
+	pxFile->DataCursor = index; // jump to offset
 
-		 switch (pxFileDataElementType->Type)
-		 {
-			 case PXDataTypeInt8S:
-				 totalReadBytes += PXFileWriteI8S(pxFile, *(PXInt8S*)pxFileDataElementType->Adress);
-				 break;
+	const PXSize writtenBytes = PXFileWriteB(pxFile, data, dataSize); // Length
 
-			 case PXDataTypeInt8U:
-				 totalReadBytes += PXFileWriteI8U(pxFile, *(PXInt8S*)pxFileDataElementType->Adress);
-				 break;
+	pxFile->DataCursor = positionBefore; // Reset old position
 
-			 case PXDataTypeLEInt16S:
-				 totalReadBytes += PXFileWriteI16SE(pxFile, *(PXInt16S*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt16U:
-				 totalReadBytes += PXFileWriteI16UE(pxFile, *(PXInt16U*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt32S:
-				 totalReadBytes += PXFileWriteI32SE(pxFile, *(PXInt32S*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt32U:
-				 totalReadBytes += PXFileWriteI32UE(pxFile, *(PXInt32U*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt64S:
-				 totalReadBytes += PXFileWriteI64SE(pxFile, *(PXInt64S*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeLEInt64U:
-				 totalReadBytes += PXFileWriteI64UE(pxFile, *(PXInt64U*)pxFileDataElementType->Adress, PXEndianLittle);
-				 break;
-
-			 case PXDataTypeBEInt16S:
-				 totalReadBytes += PXFileWriteI16SE(pxFile, *(PXInt16S*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt16U:
-				 totalReadBytes += PXFileWriteI16UE(pxFile, *(PXInt16U*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt32S:
-				 totalReadBytes += PXFileWriteI32SE(pxFile, *(PXInt32S*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt32U:
-				 totalReadBytes += PXFileWriteI32UE(pxFile, *(PXInt32U*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt64S:
-				 totalReadBytes += PXFileWriteI64SE(pxFile, *(PXInt64S*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeBEInt64U:
-				 totalReadBytes += PXFileWriteI64UE(pxFile, *(PXInt64U*)pxFileDataElementType->Adress, PXEndianBig);
-				 break;
-
-			 case PXDataTypeFloat:
-				 totalReadBytes += PXFileWriteF(pxFile, *(float*)pxFileDataElementType->Adress);
-				 break;
-
-			 case PXDataTypeDouble:
-				 totalReadBytes += PXFileWriteD(pxFile, *(double*)pxFileDataElementType->Adress);
-				 break;
-
-			 case PXDataTypeTypeInvalid:
-			 default:
-				 break;
-		 }
-	 }
-
-	 return totalReadBytes;
+	return writtenBytes;
 }
 
- PXSize PXFileWriteFill(PXFile* const pxFile, const unsigned char value, const PXSize length)
+PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize)
 {
-	 void* const beforePosition = PXFileCursorPosition(pxFile);
-	 const PXSize writableSize = PXFileRemainingSize(pxFile);
-	 const PXSize write = PXMathMinimumIU(writableSize, length);
+	PXSize totalReadBytes = 0;
 
-	 PXMemorySet(beforePosition, value, write);
+	for (PXSize i = 0; i < pxFileElementListSize; ++i)
+	{
+		PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
 
-	 PXFileCursorAdvance(pxFile, write);
+		switch (pxFileDataElementType->Type)
+		{
+			case PXDataTypeInt8S:
+				totalReadBytes += PXFileWriteI8S(pxFile, *(PXInt8S*)pxFileDataElementType->Adress);
+				break;
 
-	 return write;
+			case PXDataTypeInt8U:
+				totalReadBytes += PXFileWriteI8U(pxFile, *(PXInt8S*)pxFileDataElementType->Adress);
+				break;
+
+			case PXDataTypeLEInt16S:
+				totalReadBytes += PXFileWriteI16SE(pxFile, *(PXInt16S*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt16U:
+				totalReadBytes += PXFileWriteI16UE(pxFile, *(PXInt16U*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt32S:
+				totalReadBytes += PXFileWriteI32SE(pxFile, *(PXInt32S*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt32U:
+				totalReadBytes += PXFileWriteI32UE(pxFile, *(PXInt32U*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt64S:
+				totalReadBytes += PXFileWriteI64SE(pxFile, *(PXInt64S*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeLEInt64U:
+				totalReadBytes += PXFileWriteI64UE(pxFile, *(PXInt64U*)pxFileDataElementType->Adress, PXEndianLittle);
+				break;
+
+			case PXDataTypeBEInt16S:
+				totalReadBytes += PXFileWriteI16SE(pxFile, *(PXInt16S*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt16U:
+				totalReadBytes += PXFileWriteI16UE(pxFile, *(PXInt16U*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt32S:
+				totalReadBytes += PXFileWriteI32SE(pxFile, *(PXInt32S*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt32U:
+				totalReadBytes += PXFileWriteI32UE(pxFile, *(PXInt32U*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt64S:
+				totalReadBytes += PXFileWriteI64SE(pxFile, *(PXInt64S*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeBEInt64U:
+				totalReadBytes += PXFileWriteI64UE(pxFile, *(PXInt64U*)pxFileDataElementType->Adress, PXEndianBig);
+				break;
+
+			case PXDataTypeFloat:
+				totalReadBytes += PXFileWriteF(pxFile, *(float*)pxFileDataElementType->Adress);
+				break;
+
+			case PXDataTypeDouble:
+				totalReadBytes += PXFileWriteD(pxFile, *(double*)pxFileDataElementType->Adress);
+				break;
+
+			case PXDataTypeTypeInvalid:
+			default:
+				break;
+		}
+	}
+
+	return totalReadBytes;
 }
 
- PXSize PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize)
+PXSize PXFileWriteFill(PXFile* const pxFile, const unsigned char value, const PXSize length)
+{
+	void* const beforePosition = PXFileCursorPosition(pxFile);
+	const PXSize writableSize = PXFileRemainingSize(pxFile);
+	const PXSize write = PXMathMinimumIU(writableSize, length);
+
+	PXMemorySet(beforePosition, value, write);
+
+	PXFileCursorAdvance(pxFile, write);
+
+	return write;
+}
+
+PXSize PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize)
 {
 #if 1
-	 return PXFileWriteB(pxFile, text, textSize);
+	return PXFileWriteB(pxFile, text, textSize);
 #else
-	 const PXSize writableSize = PXFileRemainingSize(pxFile);
-	 char* const currentPosition = (char* const)PXFileCursorPosition(pxFile);
+	const PXSize writableSize = PXFileRemainingSize(pxFile);
+	char* const currentPosition = (char* const)PXFileCursorPosition(pxFile);
 
-	 const PXSize writtenBytes = PXTextCopyA(text, textSize, currentPosition, writableSize);
+	const PXSize writtenBytes = PXTextCopyA(text, textSize, currentPosition, writableSize);
 
-	 PXFileCursorAdvance(pxFile, writtenBytes);
+	PXFileCursorAdvance(pxFile, writtenBytes);
 
-	 return writtenBytes;
+	return writtenBytes;
 #endif
 }
 
- PXSize PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE const text, PXSize textSize)
+PXSize PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE const text, PXSize textSize)
 {
-	 const PXSize writableSize = PXFileRemainingSize(pxFile);
-	 wchar_t* const currentPosition = (wchar_t* const)PXFileCursorPosition(pxFile);
+	const PXSize writableSize = PXFileRemainingSize(pxFile);
+	wchar_t* const currentPosition = (wchar_t* const)PXFileCursorPosition(pxFile);
 
-	 const PXSize writtenBytes = PXTextCopyW(text, textSize, currentPosition, writableSize);
+	const PXSize writtenBytes = PXTextCopyW(text, textSize, currentPosition, writableSize);
 
-	 PXFileCursorAdvance(pxFile, writtenBytes);
+	PXFileCursorAdvance(pxFile, writtenBytes);
 
-	 return writtenBytes;
+	return writtenBytes;
 }
 
- PXSize PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
+PXSize PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
 {
-	 const void* currentPosition = PXFileCursorPosition(pxFile);
+	const void* currentPosition = PXFileCursorPosition(pxFile);
 
-	 va_list args;
-	 va_start(args, format);
+	va_list args;
+	va_start(args, format);
 
-	 const PXSize writableSize = PXFileRemainingSize(pxFile);
-	 const int writtenBytes = PXPrintfvs(currentPosition, writableSize, format, args);
+	const PXSize writableSize = PXFileRemainingSize(pxFile);
+	const int writtenBytes = PXPrintfvs(currentPosition, writableSize, format, args);
 
-	 va_end(args);
+	va_end(args);
 
-	 {
-		 const PXBool sucessful = writtenBytes >= 0;
+	{
+		const PXBool sucessful = writtenBytes >= 0;
 
-		 if (!sucessful)
-		 {
-			 return 0;
-		 }
-	 }
+		if (!sucessful)
+		{
+			return 0;
+		}
+	}
 
-	 PXFileCursorAdvance(pxFile, writtenBytes);
+	PXFileCursorAdvance(pxFile, writtenBytes);
 
-	 return writtenBytes;
+	return writtenBytes;
 }
 
- PXSize PXFileWriteWF(PXFile* const pxFile, const PXTextUNICODE format, ...)
+PXSize PXFileWriteWF(PXFile* const pxFile, const PXTextUNICODE format, ...)
 {
 	return  0;
 }
@@ -3091,9 +3091,9 @@ FILE* fileHandle = FileHandleCStyle;
 PXActionResult FileWriteToDisk(const char* format, ...)
 {
 #if OSUnix
-    FILE* fileHandle = FileHandle;
+	FILE* fileHandle = FileHandle;
 #elif OSWindows
-    FILE* fileHandle = FileHandleCStyle;
+	FILE* fileHandle = FileHandleCStyle;
 #endif
 
 	va_list args;
@@ -3386,11 +3386,11 @@ unsigned char FileDoesExistA(const char* filePath)
 unsigned char FileDoesExistW(const wchar_t* filePath)
 {
 #if OSUnix
-    char filePathA[PathMaxSize];
+	char filePathA[PathMaxSize];
 
-    Text::Copy(filePath, PathMaxSize, filePathA, PathMaxSize);
+	Text::Copy(filePath, PathMaxSize, filePathA, PathMaxSize);
 
-    return DoesFileExist(filePathA);
+	return DoesFileExist(filePathA);
 
 #elif OSWindows
 	FILE* file = OSFileOpenW(filePath, L"rb");

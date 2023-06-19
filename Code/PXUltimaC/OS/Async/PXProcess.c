@@ -300,7 +300,7 @@ PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemo
 	const int returnCode = getrusage(who, &rusageData);
 	const PXBool success = returnCode == 0;
 
-	PXActionOnErrorFetchAndExit(!success);
+	PXActionOnErrorFetchAndReturn(!success);
 
 	{
 		PXTime* pxTime = &pxProcessMemoryInfo->ExecuteTimeUser;

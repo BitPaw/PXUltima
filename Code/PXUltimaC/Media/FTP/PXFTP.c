@@ -1,7 +1,5 @@
 #include "PXFTP.h"
 
-#include <stdio.h>
-
 PXFTPResult PXFTPResultParse(const unsigned short resultID)
 {
 	switch (resultID)
@@ -99,179 +97,117 @@ PXFTPResult PXFTPResultParse(const unsigned short resultID)
 	}
 }
 
-PXSize PXFTPCommandBuildBare(const char* tag, char* const dataBuffer, const PXSize dataBufferSize)
+PXSize PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* const parameterA)
 {
-	// PXTextPrint
+	const char syntaxDouble[] = "%s %s\r\n"; 
+	const char syntaxSingle[] = "%s \r\n";
 
-	return sprintf_s(dataBuffer, dataBufferSize, "%s \r\n", tag);
-}
+	switch (pxFTPCommand)
+	{
+		case PXFTPCommandUser:
+			return PXTextPrint(pxText, syntaxDouble, "USER", parameterA);
 
-PXSize PXFTPCommandBuild(const char* tag, const char* middle, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return sprintf_s(dataBuffer, dataBufferSize, "%s %s\r\n", tag, middle);
-}
+		case PXFTPCommandPassword: // PASS
+			return PXTextPrint(pxText, syntaxDouble, "PASS", parameterA);
 
-PXSize PXFTPCommandBuildUser(const char* username, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("USER", username, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandAccount: // ACCT
+			return PXTextPrint(pxText, syntaxDouble, "ACCT", parameterA);
+			
+		case PXFTPCommandWorkingDirectoryChange: // CWD
+			return PXTextPrint(pxText, syntaxDouble, "CWD", parameterA);
 
-PXSize PXFTPCommandBuildPassword(const char* password, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("PASS", password, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandDirectoryGoToParent: // CDUP
+			return PXTextPrint(pxText, syntaxSingle, "CDUP");
 
-PXSize PXFTPCommandBuiltWorkDirectoryChange(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("CWD", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandSMNT: // SMNT
+			return PXTextPrint(pxText, syntaxDouble, "SMNT", parameterA);
 
-PXSize PXFTPCommandBuildCDUP(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("CDUP", dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandQuit: // QUIT
+			return PXTextPrint(pxText, syntaxSingle, "QUIT");
 
-PXSize PXFTPCommandBuildSMNT(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("SMNT", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandREIN: // REIN
+			return PXTextPrint(pxText, syntaxSingle, "REIN");
 
-PXSize PXFTPCommandBuildQUIT(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("QUIT", dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandPORT:
+			return PXTextPrint(pxText, syntaxDouble, "PORT", parameterA);
 
-PXSize PXFTPCommandBuildREIN(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("REIN", dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandPASV:
+			return PXTextPrint(pxText, syntaxSingle, "PASV");
 
-PXSize PXFTPCommandBuildPORT(const char* port, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("PORT", port, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandTYPE:
+			return PXTextPrint(pxText, syntaxDouble, "TYPE", parameterA);
 
-PXSize PXFTPCommandBuildPASV(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("PASV", dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandSTRU:
+			return PXTextPrint(pxText, syntaxDouble, "STRU", parameterA);
 
-PXSize PXFTPCommandBuildTYPE(const char* code, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("TYPE", code, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandMODE:
+			return PXTextPrint(pxText, syntaxDouble, "MODE", parameterA);
 
-PXSize PXFTPCommandBuildSTRU(const char* code, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("STRU", code, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandRETR:
+			return PXTextPrint(pxText, syntaxDouble, "RETR", parameterA);
 
-PXSize PXFTPCommandBuildMODE(const char* mode, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("MODE", mode, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandSTOR:
+			return PXTextPrint(pxText, syntaxDouble, "STOR", parameterA);
 
-PXSize PXFTPCommandBuildRETR(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("RETR", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandStoreUnique:
+			return PXTextPrint(pxText, syntaxSingle, "STOU");
 
-PXSize PXFTPCommandBuildSTOR(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("STOR", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandAPPE:
+			return PXTextPrint(pxText, syntaxDouble, "APPE", parameterA);
 
-PXSize PXFTPCommandBuildSTOU(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("STOU", dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandALLO:
+			return PXTextPrint(pxText, syntaxDouble, "ALLO", parameterA);
 
-PXSize PXFTPCommandBuildAPPE(const char* marker, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("APPE", marker, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandREST:
+			return PXTextPrint(pxText, syntaxDouble, "REST", parameterA);
 
-PXSize PXFTPCommandBuildALLO(const char* text, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("ALLO", text, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandFileRenameFrom: // RNFR
+			return PXTextPrint(pxText, syntaxDouble, "RNFR", parameterA);
 
-PXSize PXFTPCommandBuildREST(const char* marker, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("REST", marker, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandFileRenameTo: // RNTO
+			return PXTextPrint(pxText, syntaxDouble, "RNTO", parameterA);
 
-PXSize PXFTPCommandBuildRNFR(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("RNFR", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandAbort: // ABOR
+			return PXTextPrint(pxText, syntaxSingle, "ABOR");
 
-PXSize PXFTPCommandBuildRNTO(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("RNTO", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandDelete: // DELE
+			return PXTextPrint(pxText, syntaxDouble, "DELE", parameterA);
 
-PXSize PXFTPCommandBuildAbort(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("ABOR", dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandDirectoryRemove:
+			return PXTextPrint(pxText, syntaxDouble, "RMD", parameterA);
 
-PXSize PXFTPCommandBuildDELE(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("DELE", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandMKD:
+			return PXTextPrint(pxText, syntaxDouble, "MKD", parameterA);
 
-PXSize PXFTPCommandBuildDirectoryRemove(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("RMD", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandDirectoryPrint:
+			return PXTextPrint(pxText, syntaxSingle, "PWD");
 
-PXSize PXFTPCommandBuildMKD(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("MKD", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandList:
 
-PXSize PXFTPCommandBuildDirectoryPrint(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("PWD", dataBuffer, dataBufferSize);
-}
+			//return PXFTPCommandBuildBare("NLST", pxText);
 
-PXSize PXFTPCommandBuildDirectoryListAllFromCurrnet(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("NLST", dataBuffer, dataBufferSize);
-}
+			return PXTextPrint(pxText, syntaxDouble, "LIST", parameterA);
 
-PXSize PXFTPCommandBuildLIST(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("LIST", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandNLST:
+			return PXTextPrint(pxText, syntaxDouble, "NLST", parameterA);
 
-PXSize PXFTPCommandBuildNLST(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("NLST", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandSITE:
+			return PXTextPrint(pxText, syntaxDouble, "SITE", parameterA);
 
-PXSize PXFTPCommandBuildSITE(const char* text, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("SITE", text, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandSYST:
+			return PXTextPrint(pxText, syntaxSingle, "SYST");
 
-PXSize PXFTPCommandBuildSYST(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("SYST", dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandSTAT:
+			return PXTextPrint(pxText, syntaxDouble, "STAT", parameterA);
 
-PXSize PXFTPCommandBuildStat(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("STAT", pathname, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandHELP:
+			return PXTextPrint(pxText, syntaxDouble, "HELP", parameterA);
 
-PXSize PXFTPCommandBuildHelp(const char* helpString, char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuild("HELP", helpString, dataBuffer, dataBufferSize);
-}
+		case PXFTPCommandNOOP:
+			return PXTextPrint(pxText, syntaxSingle, "NOOP");
 
-PXSize PXFTPCommandBuildNoOperation(char* const dataBuffer, const PXSize dataBufferSize)
-{
-	return PXFTPCommandBuildBare("NOOP", dataBuffer, dataBufferSize);
+		case PXFTPCommandInvalid:
+		default:
+			return 0;
+	}
 }

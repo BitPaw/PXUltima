@@ -8,6 +8,7 @@
 #define PXLDAPPortDefault 389
 #elif OSWindows
 #include <winldap.h> // Wldap32.dll
+#include <winber.h>
 #define PXLDAPPortDefault LDAP_PORT
 #endif
 

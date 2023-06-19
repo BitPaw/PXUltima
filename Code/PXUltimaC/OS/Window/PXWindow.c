@@ -1780,7 +1780,11 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     window->CursorModeCurrent = PXWindowCursorShow;
 
 #if OSUnix
-    XInitThreads();
+
+    // Make this thread safe
+    {
+        const int result = XInitThreads();
+    }
 
     // Create display
     {

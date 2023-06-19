@@ -22,6 +22,10 @@
 #define PXTextUnkownLength -1
 #define PXTextIndexNotFound -1
 
+
+
+
+
 #ifdef __cplusplus
 extern "C"
 {

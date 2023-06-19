@@ -34,218 +34,6 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="Globals">
-    <ProjectGuid>{8acbdd82-ca82-4c40-bc22-a1c484282400}</ProjectGuid>
-    <Keyword>Linux</Keyword>
-    <RootNamespace>PXUltimaCLinux</RootNamespace>
-    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
-    <ApplicationType>Linux</ApplicationType>
-    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
-    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
-    <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings" />
-  <ImportGroup Label="Shared" />
-  <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <ItemGroup>
-    <ClInclude Include="..\PXUltimaC\Algorithm\Dijkstra\PXDijkstra.h" />
-    <ClInclude Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.h" />
-    <ClInclude Include="..\PXUltimaC\Compiler\PXCompiler.h" />
-    <ClInclude Include="..\PXUltimaC\Compiler\PXCompilerSettings.h" />
-    <ClInclude Include="..\PXUltimaC\Container\BinaryTree\PXBinaryTree.h" />
-    <ClInclude Include="..\PXUltimaC\Container\Buffer\PXBuffer.h" />
-    <ClInclude Include="..\PXUltimaC\Container\Dictionary\PXDictionary.h" />
-    <ClInclude Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.h" />
-    <ClInclude Include="..\PXUltimaC\Container\List\PXList.h" />
-    <ClInclude Include="..\PXUltimaC\Container\QuadTree\PXQuadTree.h" />
-    <ClInclude Include="..\PXUltimaC\Container\Queue\PXQueue.h" />
-    <ClInclude Include="..\PXUltimaC\Container\RingBuffer\PXRingBuffer.h" />
-    <ClInclude Include="..\PXUltimaC\DataBase\PXDataBase.h" />
-    <ClInclude Include="..\PXUltimaC\Graphic\PXCamera.h" />
-    <ClInclude Include="..\PXUltimaC\Graphic\PXGraphic.h" />
-    <ClInclude Include="..\PXUltimaC\Graphic\SoftwareRender\PXSoftwareRender.h" />
-    <ClInclude Include="..\PXUltimaC\Language\PXTranslator.h" />
-    <ClInclude Include="..\PXUltimaC\Log\PXLog.h" />
-    <ClInclude Include="..\PXUltimaC\Math\PXCollision.h" />
-    <ClInclude Include="..\PXUltimaC\Math\PXDiagram.h" />
-    <ClInclude Include="..\PXUltimaC\Math\PXGeometric.h" />
-    <ClInclude Include="..\PXUltimaC\Math\PXMath.h" />
-    <ClInclude Include="..\PXUltimaC\Math\PXMatrix.h" />
-    <ClInclude Include="..\PXUltimaC\Math\PXPhysic.h" />
-    <ClInclude Include="..\PXUltimaC\Math\PXVector.h" />
-    <ClInclude Include="..\PXUltimaC\Media\3DS\PX3DS.h" />
-    <ClInclude Include="..\PXUltimaC\Media\AAC\PXAAC.h" />
-    <ClInclude Include="..\PXUltimaC\Media\ADAM7\PXADAM7.h" />
-    <ClInclude Include="..\PXUltimaC\Media\ADLER\PXAdler32.h" />
-    <ClInclude Include="..\PXUltimaC\Media\AVI\PXAVI.h" />
-    <ClInclude Include="..\PXUltimaC\Media\Bitmap\PXBitmap.h" />
-    <ClInclude Include="..\PXUltimaC\Media\CPP\PXCPP.h" />
-    <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h" />
-    <ClInclude Include="..\PXUltimaC\Media\CSS\PXCSS.h" />
-    <ClInclude Include="..\PXUltimaC\Media\CS\PXCS.h" />
-    <ClInclude Include="..\PXUltimaC\Media\C\PXC.h" />
-    <ClInclude Include="..\PXUltimaC\Media\DEFLATE\PXDEFLATE.h" />
-    <ClInclude Include="..\PXUltimaC\Media\DLL\PXDLL.h" />
-    <ClInclude Include="..\PXUltimaC\Media\ELF\PXELF.h" />
-    <ClInclude Include="..\PXUltimaC\Media\Email\PXEmail.h" />
-    <ClInclude Include="..\PXUltimaC\Media\EXE\PXEXE.h" />
-    <ClInclude Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.h" />
-    <ClInclude Include="..\PXUltimaC\Media\FLAC\PXFLAC.h" />
-    <ClInclude Include="..\PXUltimaC\Media\FMT\PXFMT.h" />
-    <ClInclude Include="..\PXUltimaC\Media\FTP\PXFTP.h" />
-    <ClInclude Include="..\PXUltimaC\Media\GIF\PXGIF.h" />
-    <ClInclude Include="..\PXUltimaC\Media\HTML\PXHTML.h" />
-    <ClInclude Include="..\PXUltimaC\Media\HTTP\PXHTTP.h" />
-    <ClInclude Include="..\PXUltimaC\Media\Huffman\PXHuffman.h" />
-    <ClInclude Include="..\PXUltimaC\Media\ID3\PXID3.h" />
-    <ClInclude Include="..\PXUltimaC\Media\INI\PXINI.h" />
-    <ClInclude Include="..\PXUltimaC\Media\IP\PXIP.h" />
-    <ClInclude Include="..\PXUltimaC\Media\ISBN\PXISBN.h" />
-    <ClInclude Include="..\PXUltimaC\Media\JPEG\PXJPEG.h" />
-    <ClInclude Include="..\PXUltimaC\Media\JSON\PXJSON.h" />
-    <ClInclude Include="..\PXUltimaC\Media\LAME\PXLAME.h" />
-    <ClInclude Include="..\PXUltimaC\Media\LZ77\PXLZ77.h" />
-    <ClInclude Include="..\PXUltimaC\Media\M4A\PXM4A.h" />
-    <ClInclude Include="..\PXUltimaC\Media\MD5\PXMD5.h" />
-    <ClInclude Include="..\PXUltimaC\Media\MIDI\PXMIDI.h" />
-    <ClInclude Include="..\PXUltimaC\Media\MP3\PXMP3.h" />
-    <ClInclude Include="..\PXUltimaC\Media\MP4\PXMP4.h" />
-    <ClInclude Include="..\PXUltimaC\Media\MSI\PXMSI.h" />
-    <ClInclude Include="..\PXUltimaC\Media\MTL\PXMTL.h" />
-    <ClInclude Include="..\PXUltimaC\Media\OGG\PXOGG.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PDF\PXPDF.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PHP\PXPHP.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PLY\PXPLY.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PNG\PXPNG.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXColor.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXFont.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXImage.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXModel.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXSound.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXText.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXType.h" />
-    <ClInclude Include="..\PXUltimaC\Media\PXUltimaInfo.h" />
-    <ClInclude Include="..\PXUltimaC\Media\QOI\PXQOI.h" />
-    <ClInclude Include="..\PXUltimaC\Media\RIFF\PXRIFF.h" />
-    <ClInclude Include="..\PXUltimaC\Media\RSA\PXRSA.h" />
-    <ClInclude Include="..\PXUltimaC\Media\SHA\PXSHA.h" />
-    <ClInclude Include="..\PXUltimaC\Media\SpriteFont\PXSpriteFont.h" />
-    <ClInclude Include="..\PXUltimaC\Media\STEP\PXSTEP.h" />
-    <ClInclude Include="..\PXUltimaC\Media\STL\PXSTL.h" />
-    <ClInclude Include="..\PXUltimaC\Media\SVG\PXSVG.h" />
-    <ClInclude Include="..\PXUltimaC\Media\TGA\PXTGA.h" />
-    <ClInclude Include="..\PXUltimaC\Media\TIFF\PXTIFF.h" />
-    <ClInclude Include="..\PXUltimaC\Media\TTF\PXTTF.h" />
-    <ClInclude Include="..\PXUltimaC\Media\UUID\PXUUID.h" />
-    <ClInclude Include="..\PXUltimaC\Media\VRML\PXVRML.h" />
-    <ClInclude Include="..\PXUltimaC\Media\Wavefront\PXWavefront.h" />
-    <ClInclude Include="..\PXUltimaC\Media\WAV\PXWAV.h" />
-    <ClInclude Include="..\PXUltimaC\Media\WEBM\PXWEBM.h" />
-    <ClInclude Include="..\PXUltimaC\Media\WEBP\PXWEBP.h" />
-    <ClInclude Include="..\PXUltimaC\Media\WMA\PXWMA.h" />
-    <ClInclude Include="..\PXUltimaC\Media\XingInfo\PXXingInfo.h" />
-    <ClInclude Include="..\PXUltimaC\Media\XML\PXXML.h" />
-    <ClInclude Include="..\PXUltimaC\Media\YAML\PXYAML.h" />
-    <ClInclude Include="..\PXUltimaC\Media\ZLIB\PXZLIB.h" />
-    <ClInclude Include="..\PXUltimaC\Network\SBP\PXSBPProtocol.h" />
-    <ClInclude Include="..\PXUltimaC\Network\Web\PXFTPClient.h" />
-    <ClInclude Include="..\PXUltimaC\Network\Web\PXWebServer.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Async\PXAwait.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Async\PXEvent.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Async\PXLock.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Async\PXThread.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudio.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Bash\PXBash.h" />
-    <ClInclude Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Debug\PXDebug.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Dialog\PXDialog.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Error\PXActionResult.h" />
-    <ClInclude Include="..\PXUltimaC\OS\File\PXDirectory.h" />
-    <ClInclude Include="..\PXUltimaC\OS\File\PXFile.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Graphic\DirectX\PXDirectX.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Graphic\OpenGL\PXOpenGL.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Graphic\Vulcan\PXVulcan.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXController.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXHardDrive.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXMonitor.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXMouse.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXProcessor.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Library\PXLibrary.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Memory\PXMemory.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Process\PXProcess.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Program\PXProgram.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h" />
-    <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h" />
-    <ClInclude Include="..\PXUltimaC\OS\System\PXRegistry.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Time\PXStopWatch.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Time\PXTime.h" />
-    <ClInclude Include="..\PXUltimaC\OS\UI\PXUI.h" />
-    <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Window\PXWindow.h" />
-  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PXUltimaC\Algorithm\Dijkstra\PXDijkstra.c" />
     <ClCompile Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.c" />
@@ -346,12 +134,11 @@
     <ClCompile Include="..\PXUltimaC\Media\XML\PXXML.c" />
     <ClCompile Include="..\PXUltimaC\Media\YAML\PXYAML.c" />
     <ClCompile Include="..\PXUltimaC\Media\ZLIB\PXZLIB.c" />
-    <ClCompile Include="..\PXUltimaC\Network\SBP\PXSBPProtocol.c" />
-    <ClCompile Include="..\PXUltimaC\Network\Web\PXFTPClient.c" />
-    <ClCompile Include="..\PXUltimaC\Network\Web\PXWebServer.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXAwait.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXEvent.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXLock.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProcess.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProgram.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXThread.c" />
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXAudio.c" />
     <ClCompile Include="..\PXUltimaC\OS\Bash\PXBash.c" />
@@ -375,8 +162,6 @@
     <ClCompile Include="..\PXUltimaC\OS\Network\PXClient.c" />
     <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c" />
     <ClCompile Include="..\PXUltimaC\OS\Network\PXSocket.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Process\PXProcess.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Program\PXProgram.c" />
     <ClCompile Include="..\PXUltimaC\OS\Signal\PXSignal.c" />
     <ClCompile Include="..\PXUltimaC\OS\System\PXRegistry.c" />
     <ClCompile Include="..\PXUltimaC\OS\Time\PXStopWatch.c" />
@@ -384,8 +169,271 @@
     <ClCompile Include="..\PXUltimaC\OS\UI\PXUI.c" />
     <ClCompile Include="..\PXUltimaC\OS\User\PXUser.c" />
     <ClCompile Include="..\PXUltimaC\OS\Window\PXWindow.c" />
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPClient.c" />
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPServer.c" />
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.c" />
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.c" />
+    <ClCompile Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.c" />
+    <ClCompile Include="..\PXUltimaC\Service\SBP\PXSBP.c" />
   </ItemGroup>
-  <ItemDefinitionGroup />
+  <ItemGroup>
+    <None Include="..\PXUltimaC\PXUltimaC.cbp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PXUltimaC\Algorithm\Dijkstra\PXDijkstra.h" />
+    <ClInclude Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.h" />
+    <ClInclude Include="..\PXUltimaC\Compiler\PXCompiler.h" />
+    <ClInclude Include="..\PXUltimaC\Compiler\PXCompilerSettings.h" />
+    <ClInclude Include="..\PXUltimaC\Container\BinaryTree\PXBinaryTree.h" />
+    <ClInclude Include="..\PXUltimaC\Container\Buffer\PXBuffer.h" />
+    <ClInclude Include="..\PXUltimaC\Container\Dictionary\PXDictionary.h" />
+    <ClInclude Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.h" />
+    <ClInclude Include="..\PXUltimaC\Container\List\PXList.h" />
+    <ClInclude Include="..\PXUltimaC\Container\QuadTree\PXQuadTree.h" />
+    <ClInclude Include="..\PXUltimaC\Container\Queue\PXQueue.h" />
+    <ClInclude Include="..\PXUltimaC\Container\RingBuffer\PXRingBuffer.h" />
+    <ClInclude Include="..\PXUltimaC\DataBase\PXDataBase.h" />
+    <ClInclude Include="..\PXUltimaC\Graphic\PXCamera.h" />
+    <ClInclude Include="..\PXUltimaC\Graphic\PXGraphic.h" />
+    <ClInclude Include="..\PXUltimaC\Graphic\SoftwareRender\PXSoftwareRender.h" />
+    <ClInclude Include="..\PXUltimaC\Language\PXTranslator.h" />
+    <ClInclude Include="..\PXUltimaC\Log\PXLog.h" />
+    <ClInclude Include="..\PXUltimaC\Math\PXCollision.h" />
+    <ClInclude Include="..\PXUltimaC\Math\PXDiagram.h" />
+    <ClInclude Include="..\PXUltimaC\Math\PXGeometric.h" />
+    <ClInclude Include="..\PXUltimaC\Math\PXMath.h" />
+    <ClInclude Include="..\PXUltimaC\Math\PXMatrix.h" />
+    <ClInclude Include="..\PXUltimaC\Math\PXPhysic.h" />
+    <ClInclude Include="..\PXUltimaC\Math\PXVector.h" />
+    <ClInclude Include="..\PXUltimaC\Media\3DS\PX3DS.h" />
+    <ClInclude Include="..\PXUltimaC\Media\AAC\PXAAC.h" />
+    <ClInclude Include="..\PXUltimaC\Media\ADAM7\PXADAM7.h" />
+    <ClInclude Include="..\PXUltimaC\Media\ADLER\PXAdler32.h" />
+    <ClInclude Include="..\PXUltimaC\Media\AVI\PXAVI.h" />
+    <ClInclude Include="..\PXUltimaC\Media\Bitmap\PXBitmap.h" />
+    <ClInclude Include="..\PXUltimaC\Media\CPP\PXCPP.h" />
+    <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h" />
+    <ClInclude Include="..\PXUltimaC\Media\CSS\PXCSS.h" />
+    <ClInclude Include="..\PXUltimaC\Media\CS\PXCS.h" />
+    <ClInclude Include="..\PXUltimaC\Media\C\PXC.h" />
+    <ClInclude Include="..\PXUltimaC\Media\DEFLATE\PXDEFLATE.h" />
+    <ClInclude Include="..\PXUltimaC\Media\DLL\PXDLL.h" />
+    <ClInclude Include="..\PXUltimaC\Media\ELF\PXELF.h" />
+    <ClInclude Include="..\PXUltimaC\Media\Email\PXEmail.h" />
+    <ClInclude Include="..\PXUltimaC\Media\EXE\PXEXE.h" />
+    <ClInclude Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.h" />
+    <ClInclude Include="..\PXUltimaC\Media\FLAC\PXFLAC.h" />
+    <ClInclude Include="..\PXUltimaC\Media\FMT\PXFMT.h" />
+    <ClInclude Include="..\PXUltimaC\Media\FTP\PXFTP.h" />
+    <ClInclude Include="..\PXUltimaC\Media\GIF\PXGIF.h" />
+    <ClInclude Include="..\PXUltimaC\Media\HTML\PXHTML.h" />
+    <ClInclude Include="..\PXUltimaC\Media\HTTP\PXHTTP.h" />
+    <ClInclude Include="..\PXUltimaC\Media\Huffman\PXHuffman.h" />
+    <ClInclude Include="..\PXUltimaC\Media\ID3\PXID3.h" />
+    <ClInclude Include="..\PXUltimaC\Media\INI\PXINI.h" />
+    <ClInclude Include="..\PXUltimaC\Media\IP\PXIP.h" />
+    <ClInclude Include="..\PXUltimaC\Media\ISBN\PXISBN.h" />
+    <ClInclude Include="..\PXUltimaC\Media\JPEG\PXJPEG.h" />
+    <ClInclude Include="..\PXUltimaC\Media\JSON\PXJSON.h" />
+    <ClInclude Include="..\PXUltimaC\Media\LAME\PXLAME.h" />
+    <ClInclude Include="..\PXUltimaC\Media\LZ77\PXLZ77.h" />
+    <ClInclude Include="..\PXUltimaC\Media\M4A\PXM4A.h" />
+    <ClInclude Include="..\PXUltimaC\Media\MD5\PXMD5.h" />
+    <ClInclude Include="..\PXUltimaC\Media\MIDI\PXMIDI.h" />
+    <ClInclude Include="..\PXUltimaC\Media\MP3\PXMP3.h" />
+    <ClInclude Include="..\PXUltimaC\Media\MP4\PXMP4.h" />
+    <ClInclude Include="..\PXUltimaC\Media\MSI\PXMSI.h" />
+    <ClInclude Include="..\PXUltimaC\Media\MTL\PXMTL.h" />
+    <ClInclude Include="..\PXUltimaC\Media\OGG\PXOGG.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PDF\PXPDF.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PHP\PXPHP.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PLY\PXPLY.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PNG\PXPNG.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXColor.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXFont.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXImage.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXModel.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXSound.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXText.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXType.h" />
+    <ClInclude Include="..\PXUltimaC\Media\PXUltimaInfo.h" />
+    <ClInclude Include="..\PXUltimaC\Media\QOI\PXQOI.h" />
+    <ClInclude Include="..\PXUltimaC\Media\RIFF\PXRIFF.h" />
+    <ClInclude Include="..\PXUltimaC\Media\RSA\PXRSA.h" />
+    <ClInclude Include="..\PXUltimaC\Media\SHA\PXSHA.h" />
+    <ClInclude Include="..\PXUltimaC\Media\SpriteFont\PXSpriteFont.h" />
+    <ClInclude Include="..\PXUltimaC\Media\STEP\PXSTEP.h" />
+    <ClInclude Include="..\PXUltimaC\Media\STL\PXSTL.h" />
+    <ClInclude Include="..\PXUltimaC\Media\SVG\PXSVG.h" />
+    <ClInclude Include="..\PXUltimaC\Media\TGA\PXTGA.h" />
+    <ClInclude Include="..\PXUltimaC\Media\TIFF\PXTIFF.h" />
+    <ClInclude Include="..\PXUltimaC\Media\TTF\PXTTF.h" />
+    <ClInclude Include="..\PXUltimaC\Media\UUID\PXUUID.h" />
+    <ClInclude Include="..\PXUltimaC\Media\VRML\PXVRML.h" />
+    <ClInclude Include="..\PXUltimaC\Media\Wavefront\PXWavefront.h" />
+    <ClInclude Include="..\PXUltimaC\Media\WAV\PXWAV.h" />
+    <ClInclude Include="..\PXUltimaC\Media\WEBM\PXWEBM.h" />
+    <ClInclude Include="..\PXUltimaC\Media\WEBP\PXWEBP.h" />
+    <ClInclude Include="..\PXUltimaC\Media\WMA\PXWMA.h" />
+    <ClInclude Include="..\PXUltimaC\Media\XingInfo\PXXingInfo.h" />
+    <ClInclude Include="..\PXUltimaC\Media\XML\PXXML.h" />
+    <ClInclude Include="..\PXUltimaC\Media\YAML\PXYAML.h" />
+    <ClInclude Include="..\PXUltimaC\Media\ZLIB\PXZLIB.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXAwait.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXEvent.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXLock.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProcess.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProgram.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXThread.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudio.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Bash\PXBash.h" />
+    <ClInclude Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Debug\PXDebug.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Dialog\PXDialog.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Error\PXActionResult.h" />
+    <ClInclude Include="..\PXUltimaC\OS\File\PXDirectory.h" />
+    <ClInclude Include="..\PXUltimaC\OS\File\PXFile.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Graphic\DirectX\PXDirectX.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Graphic\OpenGL\PXOpenGL.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Graphic\Vulcan\PXVulcan.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXController.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXHardDrive.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXMonitor.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXMouse.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXProcessor.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Library\PXLibrary.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Memory\PXMemory.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h" />
+    <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h" />
+    <ClInclude Include="..\PXUltimaC\OS\System\PXRegistry.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Time\PXStopWatch.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Time\PXTime.h" />
+    <ClInclude Include="..\PXUltimaC\OS\UI\PXUI.h" />
+    <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Window\PXWindow.h" />
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPClient.h" />
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPServer.h" />
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.h" />
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.h" />
+    <ClInclude Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.h" />
+    <ClInclude Include="..\PXUltimaC\Service\SBP\PXSBP.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8acbdd82-ca82-4c40-bc22-a1c484282400}</ProjectGuid>
+    <Keyword>Linux</Keyword>
+    <RootNamespace>PXUltimaCLinux</RootNamespace>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Link>
+      <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

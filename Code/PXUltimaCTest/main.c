@@ -19,15 +19,13 @@
 
 #if PXLDAPTest
 #include <Service/LDAP/PXLDAPClient.h>
-#include <winber.h>
+
 #endif // PXLDAPTest
 
 
 #if PXKeyBoardVirtualTest
 #include <OS/Hardware/PXKeyBoard.h>
 #endif // PXKeyBoardVirtualTest
-
-
 
 /*
 

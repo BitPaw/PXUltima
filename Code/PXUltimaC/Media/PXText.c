@@ -148,7 +148,12 @@ PXSize PXTextPrint(PXText* const pxText, const char* style, ...)
 	va_list args;
 	va_start(args, style);
 
+#if OSUnix
+	pxText->SizeUsed = vsnprintf(pxText->TextA, pxText->SizeAllocated, style, args);
+#elif OSWindows
 	pxText->SizeUsed = vsprintf_s(pxText->TextA, pxText->SizeAllocated, style, args);
+#endif
+
 	pxText->NumberOfCharacters = pxText->SizeUsed;
 
 	va_end(args);

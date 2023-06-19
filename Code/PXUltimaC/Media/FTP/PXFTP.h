@@ -2,6 +2,7 @@
 #define PXFTPINCLUDE
 
 #include <Media/PXType.h>
+#include <Media/PXText.h>
 
 #define FTPDefaultPort 21
 
@@ -121,111 +122,43 @@ extern "C"
 
 	PXPublic PXFTPResult PXFTPResultParse(const unsigned short resultID);
 
-
-
-	PXPublic PXSize PXFTPCommandBuildBare(const char* tag, char* const dataBuffer, const PXSize dataBufferSize);
-	PXPublic PXSize PXFTPCommandBuild(const char* tag, const char* middle, char* const dataBuffer, const PXSize dataBufferSize);
-
-
 	// USER <SP> <username> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildUser(const char* username, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// 	PASS <SP> <password> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildPassword(const char* password, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// ACCT <SP> <account - information> <CRLF>
-	//PXPublic PXSize PXFTPCommandBuildAccountInfo(const char* username, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// CWD <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuiltWorkDirectoryChange(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// CDUP <CRLF>
-	PXPublic PXSize PXFTPCommandBuildCDUP(char* const dataBuffer, const PXSize dataBufferSize);
-
 	// SMNT <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildSMNT(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// QUIT <CRLF>
-	PXPublic PXSize PXFTPCommandBuildQUIT(char* const dataBuffer, const PXSize dataBufferSize);
-
 	// REIN <CRLF>
-	PXPublic PXSize PXFTPCommandBuildREIN(char* const dataBuffer, const PXSize dataBufferSize);
-
 	// PORT <SP> <host - port> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildPORT(const char* port, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// PASV <CRLF>
-	PXPublic PXSize PXFTPCommandBuildPASV(char* const dataBuffer, const PXSize dataBufferSize);
-
-	// 	TYPE <SP> <type - code> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildTYPE(const char* code, char* const dataBuffer, const PXSize dataBufferSize);
-
+	// TYPE <SP> <type - code> <CRLF>
 	// STRU <SP> <structure - code> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildSTRU(const char* code, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// MODE <SP> <mode - code> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildMODE(const char* mode, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// RETR <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildRETR(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
-	// STOR <SP> <pathname> <CRLF>		
-	PXPublic PXSize PXFTPCommandBuildSTOR(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
+	// STOR <SP> <pathname> <CRLF>
 	// STOU <CRLF>
-	PXPublic PXSize PXFTPCommandBuildSTOU(char* const dataBuffer, const PXSize dataBufferSize);
-
 	// APPE <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildAPPE(const char* marker, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// ALLO <SP> <decimal - integer>	[<SP> R <SP> <decimal - integer>] <CRLF>
-	PXPublic PXSize PXFTPCommandBuildALLO(const char* text, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// REST <SP> <marker> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildREST(const char* marker, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// RNFR <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildRNFR(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// RNTO <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildRNTO(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// ABOR <CRLF>
-	PXPublic PXSize PXFTPCommandBuildAbort(char* const dataBuffer, const PXSize dataBufferSize);
-
 	// DELE <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildDELE(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// RMD <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildDirectoryRemove(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// MKD <SP> <pathname> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildMKD(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// PWD <CRLF>
-	PXPublic PXSize PXFTPCommandBuildDirectoryPrint(char* const dataBuffer, const PXSize dataBufferSize);
-
 	// LIST[<SP> <pathname>] <CRLF>
-	PXPublic PXSize PXFTPCommandBuildDirectoryListAllFromCurrnet(char* const dataBuffer, const PXSize dataBufferSize);
-	PXPublic PXSize PXFTPCommandBuildLIST(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// NLST[<SP> <pathname>] <CRLF>
-	PXPublic PXSize PXFTPCommandBuildNLST(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// SITE <SP> <string> <CRLF>
-	PXPublic PXSize PXFTPCommandBuildSITE(const char* text, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// SYST <CRLF>
-	PXPublic PXSize PXFTPCommandBuildSYST(char* const dataBuffer, const PXSize dataBufferSize);
-
 	// STAT[<SP> <pathname>] <CRLF>
-	PXPublic PXSize PXFTPCommandBuildStat(const char* pathname, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// HELP[<SP> <string>] <CRLF>
-	PXPublic PXSize PXFTPCommandBuildHelp(const char* helpString, char* const dataBuffer, const PXSize dataBufferSize);
-
 	// NOOP <CRLF>
-	PXPublic PXSize PXFTPCommandBuildNoOperation(char* const dataBuffer, const PXSize dataBufferSize);
+
+
+	PXPublic PXSize PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* const parameterA);
+
 
 #ifdef __cplusplus
 }

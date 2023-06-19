@@ -1,0 +1,860 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="PXUltima">
+      <UniqueIdentifier>{7c54a0ea-85ee-4c3c-a23d-5eb841a52f09}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\PXUltimaC\Service\SBP\PXSBP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Window\PXWindow.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Network\PXSocket.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\File\PXFile.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Debug\PXDebug.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProcess.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Log\PXLog.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Network\PXClient.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXProgram.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXThread.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPClient.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPServer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Library\PXLibrary.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Memory\PXMemory.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXProcessor.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\System\PXRegistry.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Signal\PXSignal.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Time\PXStopWatch.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Time\PXTime.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\UI\PXUI.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\User\PXUser.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Error\PXActionResult.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Audio\PXAudio.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Bash\PXBash.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXController.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Dialog\PXDialog.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\File\PXDirectory.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Graphic\DirectX\PXDirectX.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXHardDrive.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXMonitor.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Hardware\PXMouse.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Graphic\OpenGL\PXOpenGL.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Graphic\Vulcan\PXVulcan.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXAwait.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXEvent.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\OS\Async\PXLock.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\XingInfo\PXXingInfo.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\XML\PXXML.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\YAML\PXYAML.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\ZLIB\PXZLIB.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\RSA\PXRSA.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\SHA\PXSHA.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\SpriteFont\PXSpriteFont.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\STEP\PXSTEP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\STL\PXSTL.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\SVG\PXSVG.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\TGA\PXTGA.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\TIFF\PXTIFF.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\TTF\PXTTF.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\UUID\PXUUID.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\VRML\PXVRML.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\WAV\PXWAV.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\Wavefront\PXWavefront.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\WEBM\PXWEBM.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\WEBP\PXWEBP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\WMA\PXWMA.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXColor.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXFont.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXImage.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\MD5\PXMD5.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\MIDI\PXMIDI.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXModel.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\MP3\PXMP3.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\MP4\PXMP4.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\MSI\PXMSI.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\MTL\PXMTL.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\OGG\PXOGG.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PDF\PXPDF.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PHP\PXPHP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PLY\PXPLY.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PNG\PXPNG.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\QOI\PXQOI.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\RIFF\PXRIFF.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXSound.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXText.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXType.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\PXUltimaInfo.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\Email\PXEmail.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\EXE\PXEXE.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\FLAC\PXFLAC.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\FMT\PXFMT.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\FTP\PXFTP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\GIF\PXGIF.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\HTML\PXHTML.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\HTTP\PXHTTP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\Huffman\PXHuffman.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\ID3\PXID3.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\INI\PXINI.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\IP\PXIP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\ISBN\PXISBN.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\JPEG\PXJPEG.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\JSON\PXJSON.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\LAME\PXLAME.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\LZ77\PXLZ77.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\M4A\PXM4A.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\3DS\PX3DS.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\AAC\PXAAC.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\ADAM7\PXADAM7.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\ADLER\PXAdler32.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\AVI\PXAVI.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\Bitmap\PXBitmap.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\C\PXC.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\CPP\PXCPP.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\CRC32\PXCRC32.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\CS\PXCS.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\CSS\PXCSS.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\DEFLATE\PXDEFLATE.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\DLL\PXDLL.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Media\ELF\PXELF.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Graphic\PXCamera.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Math\PXCollision.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\DataBase\PXDataBase.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Math\PXDiagram.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Math\PXGeometric.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Graphic\PXGraphic.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Math\PXMath.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Math\PXMatrix.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Math\PXPhysic.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\QuadTree\PXQuadTree.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\Queue\PXQueue.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\RingBuffer\PXRingBuffer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Graphic\SoftwareRender\PXSoftwareRender.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Language\PXTranslator.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Math\PXVector.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\BinaryTree\PXBinaryTree.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\Buffer\PXBuffer.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Compiler\PXCompiler.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Compiler\PXCompilerSettings.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\Dictionary\PXDictionary.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Algorithm\Dijkstra\PXDijkstra.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaC\Container\List\PXList.c">
+      <Filter>PXUltima</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\PXUltimaC\PXUltimaC.cbp">
+      <Filter>PXUltima</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Window\PXWindow.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProcess.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Compiler\PXCompiler.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\SBP\PXSBP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXText.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXProgram.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPClient.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPServer.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Library\PXLibrary.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Memory\PXMemory.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXProcessor.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\System\PXRegistry.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Time\PXStopWatch.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Time\PXTime.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\UI\PXUI.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Error\PXActionResult.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudio.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Bash\PXBash.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXController.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Debug\PXDebug.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Dialog\PXDialog.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\File\PXDirectory.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Graphic\DirectX\PXDirectX.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\File\PXFile.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXHardDrive.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXKeyBoard.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXMonitor.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Hardware\PXMouse.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Graphic\OpenGL\PXOpenGL.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXThread.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Graphic\Vulcan\PXVulcan.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXAwait.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXEvent.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\OS\Async\PXLock.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\XingInfo\PXXingInfo.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\XML\PXXML.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\YAML\PXYAML.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\ZLIB\PXZLIB.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\RSA\PXRSA.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\SHA\PXSHA.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\SpriteFont\PXSpriteFont.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\STEP\PXSTEP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\STL\PXSTL.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\SVG\PXSVG.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\TGA\PXTGA.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\TIFF\PXTIFF.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\TTF\PXTTF.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\UUID\PXUUID.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\VRML\PXVRML.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\WAV\PXWAV.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\Wavefront\PXWavefront.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\WEBM\PXWEBM.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\WEBP\PXWEBP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\WMA\PXWMA.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXColor.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXFont.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXImage.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\MD5\PXMD5.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\MIDI\PXMIDI.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXModel.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\MP3\PXMP3.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\MP4\PXMP4.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\MSI\PXMSI.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\MTL\PXMTL.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\OGG\PXOGG.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PDF\PXPDF.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PHP\PXPHP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PLY\PXPLY.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PNG\PXPNG.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\QOI\PXQOI.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\RIFF\PXRIFF.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXSound.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXType.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\PXUltimaInfo.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\Email\PXEmail.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\EXE\PXEXE.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\FLAC\PXFLAC.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\FMT\PXFMT.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\FTP\PXFTP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\GIF\PXGIF.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\HTML\PXHTML.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\HTTP\PXHTTP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\Huffman\PXHuffman.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\ID3\PXID3.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\INI\PXINI.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\IP\PXIP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\ISBN\PXISBN.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\JPEG\PXJPEG.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\JSON\PXJSON.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\LAME\PXLAME.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\LZ77\PXLZ77.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\M4A\PXM4A.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\3DS\PX3DS.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\AAC\PXAAC.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\ADAM7\PXADAM7.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\ADLER\PXAdler32.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\AVI\PXAVI.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\Bitmap\PXBitmap.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\C\PXC.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\CPP\PXCPP.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\CS\PXCS.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\CSS\PXCSS.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\DEFLATE\PXDEFLATE.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\DLL\PXDLL.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Media\ELF\PXELF.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Graphic\PXCamera.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Math\PXCollision.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\DataBase\PXDataBase.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Math\PXDiagram.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Math\PXGeometric.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Graphic\PXGraphic.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Log\PXLog.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Math\PXMath.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Math\PXMatrix.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Math\PXPhysic.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\QuadTree\PXQuadTree.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\Queue\PXQueue.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\RingBuffer\PXRingBuffer.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Graphic\SoftwareRender\PXSoftwareRender.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Language\PXTranslator.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Math\PXVector.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\BinaryTree\PXBinaryTree.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\Buffer\PXBuffer.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Compiler\PXCompilerSettings.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\Dictionary\PXDictionary.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Algorithm\Dijkstra\PXDijkstra.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaC\Container\List\PXList.h">
+      <Filter>PXUltima</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
