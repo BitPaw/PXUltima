@@ -29,6 +29,8 @@ namespace PX
         public event SBPOnMessageUpdatedFunction OnMessageUpdated;
         public event SBPOnMessageReceivedFunction OnMessageReceived;
 
+        public bool IsConnected { get => true; }
+
         public unsafe SBPClient()
         {
             _pxSBPClient = new PXSBPClient();
@@ -74,6 +76,15 @@ namespace PX
                 return SendData((UIntPtr)messageAdress, (UIntPtr)(message.Length * sizeof(char)));
             }
         }
+
+        public unsafe ActionResult SendData(byte[] message)
+        {
+            fixed (byte* messageAdress = &message[0])
+            {
+                return PXSBPClientSendMessage(ref _pxSBPClient, (UIntPtr)messageAdress, (UIntPtr)message.Length);
+            }
+        }
+
 
         public ActionResult SendObject<T>()
         {

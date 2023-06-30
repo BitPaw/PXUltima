@@ -45,4 +45,7 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="..\[Export]\PXUltimaC\64B-Windows-Debug\PXUltima.dll" />
+  </ItemGroup>
 </Project>

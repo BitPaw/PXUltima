@@ -6,12 +6,12 @@
 
 void TestPXSBPOnMessageUpdated(const PXSBPMessage* const pxSBPMessage)
 {
-	printf("Message iupdated %i Bytes\n", pxSBPMessage->MessageSize);
+	printf("Message iupdated %i Bytes\n", pxSBPMessage->DataSizeCurrent);
 
 }
 void TestPXSBPOnMessageReceived(const PXSBPMessage* const pxSBPMessage)
 {
-	printf("Message Received %i Bytes\n", pxSBPMessage->MessageSize);
+	printf("Message Received %i Bytes\n", pxSBPMessage->DataSizeCurrent);
 }
 
 void TestSBPOnChunkReceived(const PXSBPChunk* const pxSBPChunk)

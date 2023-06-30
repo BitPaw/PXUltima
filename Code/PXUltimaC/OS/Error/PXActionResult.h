@@ -24,6 +24,7 @@ extern "C"
 
 		PXActionNotImplemented,
 		PXActionNotSupportedByLibrary,
+		PXActionLibraryNotFound,
 		PXActionNotSupportedByOperatingSystem,
 
 		PXActionRefusedMissingCallBack,

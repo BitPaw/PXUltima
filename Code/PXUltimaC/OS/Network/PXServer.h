@@ -40,6 +40,8 @@ extern "C"
 	PXPublic PXActionResult PXServerStop(PXServer* const server);
 	PXPublic PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socketID);
 
+	PXPublic PXActionResult PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize);
+
 	PXPrivate PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocket);
 
 #ifdef __cplusplus

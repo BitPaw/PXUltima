@@ -12,11 +12,20 @@ void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
 {
     PXMemoryClear(pxSBPMessage, sizeof(PXSBPMessage));
 
-    pxSBPMessage->ID = -1;
-
     PXTimeNow(&pxSBPMessage->FirstKnown);
 
+    pxSBPMessage->ID = -1;
     pxSBPMessage->LastKnown = pxSBPMessage->FirstKnown;
+}
+void PXSBPMessageConstructFlat(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize, const void* const owner)
+{
+    PXSBPMessageConstruct(pxSBPMessage);
+
+    pxSBPMessage->Owner = owner;
+    pxSBPMessage->Data = data;
+    pxSBPMessage->DataSizeCurrent = dataSize;
+    pxSBPMessage->DataSizeExpected = dataSize;
+    pxSBPMessage->StorageType = PXSBPMessageStorageTypeDirect;
 }
 PXBool PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk)
 {
@@ -33,7 +42,7 @@ void PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver)
     PXMemoryClear(pxSBPReceiver, sizeof(PXSBPReceiver));
 
     pxSBPReceiver->State = PXSBPRecieverStateAwaitingHeaderBegin;
-    pxSBPReceiver->EnableSBP = PXFalse;
+    pxSBPReceiver->EnableSBP = PXTrue;
 
     //PXDictionaryConstruct(&pxSBPClient->Receiver.MessageLookup, sizeof(PXMessageID), sizeof(PXSBPMessage), PXDictionaryValueLocalityInternalEmbedded);
 }
@@ -71,13 +80,42 @@ PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer)
     return PXServerStop(&pxSBPServer->Server);
 }
 
+PXActionResult PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize)
+{
+    for (PXSize i = 0; i < pxSBPServer->Server.ServerSocketListSize; i++)
+    {
+        PXSocket* const serverSubSocket = &pxSBPServer->Server.ServerSocketList[i];
+
+        for (PXSize i = 0; i < serverSubSocket->SocketLookup.EntryAmountCurrent; i++) // All sockets
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+
+            PXDictionaryIndex(&serverSubSocket->SocketLookup, i, &pxDictionaryEntry);
+
+            const PXSocketID clientID = *(PXSocketID*)pxDictionaryEntry.Key;
+
+            PXBufferConstruct(&serverSubSocket->BufferOutput, data, dataSize, PXBufferTypeStack);
+
+            pxSBPServer->Emitter.MessageID = -1;
+            pxSBPServer->Emitter.SocketSender = serverSubSocket;
+            pxSBPServer->Emitter.SocketReceiverID = clientID;
+
+            PXSBPEmitterDeploy(&pxSBPServer->Emitter, data, dataSize);
+        }
+
+        PXBufferDestruct(&serverSubSocket->BufferOutput);
+    }
+
+    return PXActionSuccessful;
+}
+
 void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
 {
     PXClientConstruct(&pxSBPClient->Client);
     PXSBPReceiverConstruct(&pxSBPClient->Receiver);
     PXSBPEmitterConstruct(&pxSBPClient->Emitter);
 
-    pxSBPClient->EnableSBP = PXFalse;
+    pxSBPClient->EnableSBP = PXTrue;
 
     pxSBPClient->Client.EventList.SocketDataReceiveCallBack = PXSBPOnDataRawReceive;
     pxSBPClient->Client.Owner = &pxSBPClient->Receiver;
@@ -112,53 +150,12 @@ PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void
         return PXClientSendData(&pxSBPClient->Client, data, dataSize);
     }
 
-    // Get free message ID channel.
-    const PXInt16U messageID = 0xDEADBEEF;
+    pxSBPClient->Emitter.SocketSender = &pxSBPClient->Client.SocketClient;
+    pxSBPClient->Emitter.SocketReceiverID = pxSBPClient->Client.SocketClient.ID;
 
-    // How many packages do we have?
-    const PXSize numberOfPackages = (dataSize / pxSBPClient->Emitter.PackageSizeMaximal)+1;
-    PXSize accumulator = dataSize;
+    const PXActionResult result = PXSBPEmitterDeploy(&pxSBPClient->Emitter, data, dataSize);
 
-    for (PXSize i = 0; i < numberOfPackages; ++i)
-    {
-        PXInt16U packageSizeCurrent = PXMathMinimumIU(accumulator, pxSBPClient->Emitter.PackageSizeMaximal);
-        const PXAdress dataSourcePoint = (PXAdress)data + (dataSize - accumulator);
-
-        accumulator -= packageSizeCurrent;
-
-        if (i == 0)
-        {
-            packageSizeCurrent += 3u;
-        }
-
-        char cache[1024];
-
-        PXFile pxFileBuffer;
-        PXFileBufferExternal(&pxFileBuffer, cache, 1024);
-
-        // write header
-        PXFileWriteI8U(&pxFileBuffer, '°');
-        PXFileWriteI8U(&pxFileBuffer, '°');
-
-        PXFileWriteI16UE(&pxFileBuffer, messageID, PXEndianBig);
-        PXFileWriteI16UE(&pxFileBuffer, packageSizeCurrent, PXEndianBig);
-
-        if (i == 0)
-        {
-            PXFileWriteI8U(&pxFileBuffer, 0b01000000);
-            PXFileWriteI16UE(&pxFileBuffer, dataSize, PXEndianBig); // Write size
-
-            PXFileWriteB(&pxFileBuffer, dataSourcePoint, packageSizeCurrent-3);
-        }
-        else
-        {
-            PXFileWriteB(&pxFileBuffer, dataSourcePoint, packageSizeCurrent); // Write size
-        }
-
-        PXClientSendData(&pxSBPClient->Client, pxFileBuffer.Data, pxFileBuffer.DataCursor);
-    }
-
-    return PXActionSuccessful;
+    return result;
 }
 
 PXActionResult PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath)
@@ -226,13 +223,8 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
     if (!pxSBPReceiver->EnableSBP)
     {
         PXSBPMessage pxSBPMessage;
-        PXMemoryClear(&pxSBPMessage, sizeof(PXSBPMessage));
 
-        // BUILD MISSING MESSAGE
-
-        pxSBPMessage.Owner = pxSBPReceiver->EventList.Owner;
-        pxSBPMessage.MessageData = pxSocketDataReceivedEventData->Data;
-        pxSBPMessage.MessageSize = pxSocketDataReceivedEventData->DataSize;
+        PXSBPMessageConstructFlat(&pxSBPMessage, pxSocketDataReceivedEventData->Data, pxSocketDataReceivedEventData->DataSize, pxSBPReceiver->EventList.Owner);
 
         InvokeEvent(pxSBPReceiver->EventList.OnMessageReceivedCallBack, &pxSBPMessage);
         return;
@@ -418,18 +410,18 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
         if (isFound)
         {
-            pxSBPMessage->MessageSizeCached += PXMemoryCopy
+            pxSBPMessage->DataSizeExpected += PXMemoryCopy
             (
-                (PXAdress)pxSBPMessage->MessageData + pxSBPMessage->MessageSizeCached,
-                pxSBPMessage->MessageSize - pxSBPMessage->MessageSizeCached,
+                (PXAdress)pxSBPMessage->Data + pxSBPMessage->DataSizeExpected,
+                pxSBPMessage->DataSizeCurrent - pxSBPMessage->DataSizeExpected,
                 pxSBPChunk->Data,
                 pxSBPChunk->DataSize
             );
 
-            pxSBPMessage->MessageSizeCachedInPercent = pxSBPMessage->MessageSizeCached / pxSBPMessage->MessageSize;
+            pxSBPMessage->MessageSizeCachedInPercent = pxSBPMessage->DataSizeExpected / pxSBPMessage->DataSizeCurrent;
 
             // is done?
-            if (pxSBPMessage->MessageSizeCached == pxSBPMessage->MessageSize)
+            if (pxSBPMessage->DataSizeExpected == pxSBPMessage->DataSizeCurrent)
             {
                 // We are done
                 InvokeEvent(pxSBPReceiver->EventList.OnChunkReceivedCallBack, pxSBPChunk);
@@ -459,10 +451,10 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
             PXFileReadI8U(&pxFile, &flagValue);
 
-            pxSBPMessage.MessageBitSize = (PXSBPMessageBitSize)((flagValue & 0b11000000) >> 6u) + 1;
+            PXSBPMessageBitSize pxSBPMessageBitSize = (PXSBPMessageBitSize)((flagValue & 0b11000000) >> 6u) + 1;
             pxSBPMessage.HasExtendedDelegation = (flagValue & 0b00100000) >> 5u;
 
-            switch (pxSBPMessage.MessageBitSize)
+            switch (pxSBPMessageBitSize)
             {
                 case PXSBPMessageBitSize8Bit:
                 {
@@ -470,7 +462,7 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
                     PXFileReadI8U(&pxFile, &size);
 
-                    pxSBPMessage.MessageSize = size;
+                    pxSBPMessage.DataSizeCurrent = size;
 
                     break;
                 }
@@ -480,7 +472,7 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
                     PXFileReadI16UE(&pxFile, &size, PXEndianBig);
 
-                    pxSBPMessage.MessageSize = size;
+                    pxSBPMessage.DataSizeCurrent = size;
 
                     break;
                 }
@@ -490,7 +482,7 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
                     PXFileReadI32UE(&pxFile, &size, PXEndianBig);
 
-                    pxSBPMessage.MessageSize = size;
+                    pxSBPMessage.DataSizeCurrent = size;
 
                     break;
                 }
@@ -500,18 +492,21 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
                     PXFileReadI64UE(&pxFile, &size, PXEndianBig);
 
-                    pxSBPMessage.MessageSize = size;
+                    pxSBPMessage.DataSizeCurrent = size;
 
                     break;
                 }
             }
 
-            pxSBPMessage.MessageSize -= pxFile.DataCursor;
-            pxSBPMessage.MessageData = (PXAdress)pxSBPChunk->Data + pxFile.DataCursor;
+            pxSBPMessage.DataSizeCurrent -= pxFile.DataCursor;
+            pxSBPMessage.Data = (PXAdress)pxSBPChunk->Data + pxFile.DataCursor;
+            pxSBPMessage.Owner = pxSBPReceiver->EventList.Owner;
         }
 
         // Is chunk singular and can be consumed instandly?
-        if (pxSBPMessage.MessageSize == pxSBPChunk->DataSize)
+        const PXBool isConsumableRightNow = pxSBPMessage.DataSizeCurrent == pxSBPChunk->DataSize;
+
+        if (isConsumableRightNow)
         {
             pxSBPMessage.StorageType = PXSBPMessageStorageTypeDirect;
             InvokeEvent(pxSBPReceiver->EventList.OnMessageReceivedCallBack, &pxSBPMessage);
@@ -526,15 +521,62 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
     }
 }
 
-void PXSBPOnDataMessageReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPMessage* const pxSBPMessage)
-{
-
-}
-
 void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)
 {
     PXMemoryClear(pxSBPEmitter, sizeof(PXSBPEmitter));
 
-    pxSBPEmitter->PackageSizeMaximal = 1024u;
+    pxSBPEmitter->PackageSizeMaximal = PXSocketBufferSize;
+}
+
+PXActionResult PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize)
+{
+    PXActionResult sendResult = PXActionInvalid;
+
+    // How many packages do we have?
+    const PXSize numberOfPackages = (messageSize / pxSBPEmitter->PackageSizeMaximal) + 1;
+    PXSize accumulator = messageSize;
+
+    for (PXSize i = 0; i < numberOfPackages; ++i)
+    {
+        PXInt16U packageSizeCurrent = PXMathMinimumIU(accumulator, pxSBPEmitter->PackageSizeMaximal);
+        const PXAdress dataSourcePoint = (PXAdress)message + (messageSize - accumulator);
+
+        accumulator -= packageSizeCurrent;
+
+        if (i == 0)
+        {
+            packageSizeCurrent += 3u;
+        }
+
+        char cache[1024];
+
+        PXFile pxFileBuffer;
+        PXFileBufferExternal(&pxFileBuffer, cache, 1024);
+
+        // write header
+        PXFileWriteI8U(&pxFileBuffer, '°');
+        PXFileWriteI8U(&pxFileBuffer, '°');
+
+        PXFileWriteI16UE(&pxFileBuffer, pxSBPEmitter->MessageID, PXEndianBig);
+        PXFileWriteI16UE(&pxFileBuffer, packageSizeCurrent, PXEndianBig);
+
+        if (i == 0)
+        {
+            PXFileWriteI8U(&pxFileBuffer, 0b01000000);
+            PXFileWriteI16UE(&pxFileBuffer, messageSize, PXEndianBig); // Write size
+
+            PXFileWriteB(&pxFileBuffer, dataSourcePoint, packageSizeCurrent - 3);
+        }
+        else
+        {
+            PXFileWriteB(&pxFileBuffer, dataSourcePoint, packageSizeCurrent); // Write size
+        }
+
+        PXBufferConstruct(&pxSBPEmitter->SocketSender->BufferOutput, pxFileBuffer.Data, pxFileBuffer.DataCursor, PXBufferTypeStack);
+        sendResult = PXSocketSend(pxSBPEmitter->SocketSender, pxSBPEmitter->SocketReceiverID);
+        PXBufferDestruct(&pxSBPEmitter->SocketSender->BufferOutput);
+    }
+
+    return sendResult;
 }
 #endif

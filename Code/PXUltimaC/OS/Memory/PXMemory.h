@@ -112,6 +112,7 @@ extern "C"
 	PXPublic void* PXMemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line);
 #endif
 	PXPublic void* PXMemoryHeapReallocateClear(void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
+	PXPublic void* PXMemoryHeapReallocateTypeClear(void* const adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter);
 	PXPublic void PXMemoryRelease(void* adress, const PXSize size);
 
 	// Allocate memory in virtual memory space.
@@ -142,6 +143,7 @@ extern "C"
 #define PXMemoryAllocate(dataSize) PXMemoryHeapAllocate(dataSize)
 #define PXMemoryAllocateType(type, dataSize) (type*)PXMemoryHeapAllocate(sizeof(type) * dataSize)
 #define PXMemoryAllocateTypeCleared(type, dataSize) (type*)PXMemoryHeapAllocateCleared(sizeof(type), dataSize)
+#define PXMemoryReallocateTypeCleared(type, adressCurrent, dataSizeBefore, dataSizeAfter) (type*)PXMemoryHeapReallocateClear(adressCurrent, sizeof(type), dataSizeBefore, dataSizeAfter)
 #endif
 
 #else // Use virtual alloc

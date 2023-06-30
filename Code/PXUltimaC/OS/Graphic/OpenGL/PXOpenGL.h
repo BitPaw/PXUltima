@@ -754,8 +754,7 @@ extern "C"
 	PXPublic void PXOpenGLTextureParameterF(PXOpenGL* const openGLContext, const PXOpenGLTextureType textureType, const PXOpenGLTextureParameterMode pname, const float param);
 
 	PXPrivate PXOpenGLVersion PXOpenGLVersionParse(const PXInt32U versionID);
-	PXPrivate void PXOpenGLCacheFunction(void** loadList, PXSize* currentSize, const char* name, void* functionADress);
-	PXPrivate const void* const PXOpenGLFunctionAdressFetch(const char* const functionName);
+	PXPrivate PXBool PXOpenGLFunctionAdressFetch(const char* const functionName, void** functionAdress);
 
 	PXPublic void PXOpenGLAPICallType PXOpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 	//-------------------------------------------------------------------------

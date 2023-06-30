@@ -148,15 +148,39 @@ PXSize PXTextPrint(PXText* const pxText, const char* style, ...)
 	va_list args;
 	va_start(args, style);
 
+	switch (pxText->Format)
+	{
+		case TextFormatASCII:	
+		case TextFormatUTF8:
+		{
 #if OSUnix
-	pxText->SizeUsed = vsnprintf(pxText->TextA, pxText->SizeAllocated, style, args);
+			pxText->SizeUsed = vsnprintf(pxText->TextA, pxText->SizeAllocated, style, args);
 #elif OSWindows
-	pxText->SizeUsed = vsprintf_s(pxText->TextA, pxText->SizeAllocated, style, args);
+			pxText->SizeUsed = vsprintf_s(pxText->TextA, pxText->SizeAllocated, style, args);
 #endif
+			break;
+		}
+
+		case TextFormatUNICODE:
+		{
+#if OSUnix
+			pxText->SizeUsed = vsnwprintf(pxText->TextW, pxText->SizeAllocated / 2, style, args);
+#elif OSWindows
+			pxText->SizeUsed = vswprintf_s(pxText->TextW, pxText->SizeAllocated/2, (wchar_t*)style, args);
+#endif
+			break;
+		}
+
+		default:
+			return 0;
+	}
 
 	pxText->NumberOfCharacters = pxText->SizeUsed;
 
 	va_end(args);
+
+	// Mark end of data
+	//PXMemorySet(pxText->TextA + pxText->SizeUsed + 1, '\0', pxText->SizeAllocated - pxText->SizeUsed - 1);
 
 	return pxText->SizeUsed;
 }

@@ -140,15 +140,16 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 			char extensionA[ExtensionMaxSize];
 
 			PXTextCopyWA(fullPath, PathMaxSize, fullPathA, PathMaxSize);
-
-			FilePathSplittA
+			
+			/* ???? 
+			PXFilePathSplitt
 			(
 				fullPathA, PathMaxSize,
 				driveA, DriveMaxSize,
 				directoryA, DirectoryMaxSize,
 				fileNameA, FileNameMaxSize,
 				extensionA, ExtensionMaxSize
-			);
+			);*/
 
 			PXTextCopyAW(driveA, DriveMaxSize, drive, DriveMaxSize);
 			PXTextCopyAW(directoryA, DirectoryMaxSize, directory, DirectoryMaxSize);
@@ -880,7 +881,7 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 	// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
 	// int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
 
-#if CVersionNewerThen2011
+#if CVersionNewerThen2011 && OSWindows
 	const auto result = fopen_s(&pxFile->ID, pxFileOpenFromPathInfo->Text.TextA, readMode); // errno_t
 
 	return result == 0;
@@ -1313,6 +1314,70 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 	return PXActionSuccessful;
 }
 
+PXActionResult PXFileOpenTemporal(PXFile* const pxFile)
+{
+	PXFileConstruct(pxFile);
+
+	// Use virual memory if possible
+
+
+
+
+	// If no virual memory can or should be used, we need to make a temp-file
+
+#if OSUnix
+#elif OSWindows
+	
+	PXText tempFileFullPath;
+	PXTextConstructNamedBufferW(&tempFileFullPath, tempFileFullPathBuffer, MAX_PATH);
+	
+	{
+		PXText tempPath;
+		PXTextConstructNamedBufferW(&tempPath, tempPathBuffer, MAX_PATH);
+
+		// Gets the temp path env string (no guarantee it's a valid path).
+		tempPath.SizeUsed = GetTempPathW(tempPath.SizeAllocated/2, tempPath.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+
+		const PXBool successfulTempPathFetch = tempPath.SizeUsed > 0;
+
+
+		// Generates a temporary file name. 
+		tempFileFullPath.SizeUsed = GetTempFileNameW
+		(
+			tempPath.TextW, // directory for tmp files
+			TEXT("PXUltima"),     // temp file name prefix 
+			0,                // create unique name 
+			tempFileFullPath.TextW // buffer for name 
+		);
+
+
+
+		const PXBool successfulTempPathCreate = tempFileFullPath.SizeUsed > 0;
+	}
+	
+	pxFile->ID = CreateFileW  // Windows XP, Kernel32.dll, fileapi.h
+	(
+		tempFileFullPath.TextW, // file name 
+		GENERIC_ALL,			// open for write 
+		0,						// do not share 
+		NULL,					// default security 
+		CREATE_ALWAYS,			// overwrite existing
+		FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,// normal file 
+		NULL					// no template 
+	);              
+
+
+	pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
+	pxFile->CachingMode = PXMemoryCachingModeTemporary;
+	pxFile->LocationMode = PXFileLocationModeDirectCached;
+
+
+#else
+#endif
+
+	return PXActionSuccessful;
+}
+
 PXActionResult PXFileClose(PXFile* const pxFile)
 {
 #if OSUnix
@@ -1557,6 +1622,8 @@ void PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position)
 
 void PXFileCursorToBeginning(PXFile* const pxFile)
 {
+	FlushFileBuffers(pxFile->ID);
+
 	PXFileCursorMoveTo(pxFile, 0);
 }
 
@@ -1611,10 +1678,10 @@ PXSize PXFileSkipEmptySpace(PXFile* const pxFile)
 
 	while (!PXFileIsAtEnd(pxFile))
 	{
-		const unsigned char* data = PXFileCursorPosition(pxFile);
-		const PXBool advance = IsEndOfLineCharacter(*data) && !IsEndOfString(*data);
+		const char* data = PXFileCursorPosition(pxFile);
+		const PXBool isEmtpySpace = IsEmptySpace(*data) && !IsEndOfString(*data);
 
-		if (!advance)
+		if (!isEmtpySpace)
 		{
 			break;
 		}
@@ -2029,11 +2096,7 @@ PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
 
 			return moveSize;
 		}
-
 		case PXFileLocationModeDirectCached:
-		{
-			break;
-		}
 		case PXFileLocationModeDirectUncached:
 		{
 #if OSUnix
@@ -2044,10 +2107,17 @@ PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
 #elif OSWindows
 			DWORD writtenBytes = 0;
 
+			if (pxFile->DataCursor >= pxFile->DataSize)
+			{
+				return 0;
+			}
+
 			const PXBool success = ReadFile(pxFile->ID, value, length, &writtenBytes, PXNull);
 
 			if (!success)
 			{
+				PXActionResult result = PXErrorCurrent();
+
 				return 0;
 			}
 
@@ -2458,13 +2528,43 @@ PXSize PXFileWriteDV(PXFile* const pxFile, const double* const valueList, const 
 
 PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length)
 {
-	const PXSize writableSize = PXFileRemainingSize(pxFile);
-	void* const currentPosition = PXFileCursorPosition(pxFile);
-	const PXSize copyedBytes = PXMemoryCopy(value, length, currentPosition, writableSize);
+	switch (pxFile->LocationMode)
+	{
+		case PXFileLocationModeInternal:
+		case PXFileLocationModeExternal:
+		case PXFileLocationModeMappedVirtual:
+		case PXFileLocationModeMappedFromDisk:
+		{
+			const PXSize writableSize = PXFileRemainingSize(pxFile);
+			void* const currentPosition = PXFileCursorPosition(pxFile);
+			const PXSize copyedBytes = PXMemoryCopy(value, length, currentPosition, writableSize);
 
-	PXFileCursorAdvance(pxFile, copyedBytes);
+			PXFileCursorAdvance(pxFile, copyedBytes);
 
-	return copyedBytes;
+			return copyedBytes;
+		}
+
+		case PXFileLocationModeDirectCached:
+		case PXFileLocationModeDirectUncached:
+		{
+			DWORD writtenBytes = 0;
+
+			const PXBool result = WriteFile(pxFile->ID, value, length, &writtenBytes, PXNull); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+
+			if (!result)
+			{
+				return 0;
+			}
+
+			pxFile->DataCursor += writtenBytes;
+			pxFile->DataSize += writtenBytes;
+
+			return writtenBytes;
+		}
+
+		default:
+			return 0;
+	}
 }
 
 PXSize PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize dataSize, const PXSize index)

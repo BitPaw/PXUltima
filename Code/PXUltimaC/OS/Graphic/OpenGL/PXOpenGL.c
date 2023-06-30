@@ -1411,19 +1411,9 @@ PXOpenGLVersion PXOpenGLVersionParse(const PXInt32U versionID)
     }
 }
 
-void PXOpenGLCacheFunction(void** loadList, PXSize* currentSize, const char* name, void* functionADress)
+PXBool PXOpenGLFunctionAdressFetch(const char* const functionName, void** functionAdress)
 {
-    PXSize index = *currentSize;
-
-    loadList[index] = functionADress;
-    loadList[index + 1] = name;
-
-    *currentSize += 2u;
-}
-
-const void* const PXOpenGLFunctionAdressFetch(const char* const functionName)
-{
-    const void* const functionAdress =
+    *functionAdress =
 #if OSUnix
     (const void* const)glXGetProcAddress(functionName);
 #elif OSWindows
@@ -1436,12 +1426,13 @@ const void* const PXOpenGLFunctionAdressFetch(const char* const functionName)
         case 0x1: // fall though
         case 0x2: // fall though
         case 0x3:
-            return 0x0;
+            *functionAdress = PXNull;
+            return PXFalse;
             // default: do nothing
     }
 #endif
 
-    return functionAdress;
+    return PXTrue;
 }
 
 void PXOpenGLConstruct(PXOpenGL* const openGLContext)
@@ -1463,7 +1454,7 @@ void PXOpenGLSet(PXOpenGL* const openGLContext, const PXOpenGL* const openGLCont
 
 void PXOpenGLCopy(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure)
 {
-   
+
 }
 
 PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
@@ -1488,13 +1479,13 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     {
         const PXBool successful = visualInfo != 0;
 
-        if(!successful)
+        if (!successful)
         {
             return; // no appropriate visual found
         }
     }
 
-   openGLContext->PXOpenGLConext = glXCreateContext(window->DisplayCurrent, visualInfo, NULL, GL_TRUE);
+    openGLContext->PXOpenGLConext = glXCreateContext(window->DisplayCurrent, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
 
@@ -1553,10 +1544,6 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     }
 
     // Fetch functions
-
-    PXSize length = 0;
-    void* functionNameList[128];
-
     switch (openGLContext->Version)
     {
         default: return;
@@ -1575,7 +1562,7 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion4x3x0:
         {
-            PXOpenGLCacheFunction(functionNameList, &length, "glDebugMessageCallback", &openGLContext->PXOpenGLDebugMessageCallback);
+            PXOpenGLFunctionAdressFetch("glDebugMessageCallback", &openGLContext->PXOpenGLDebugMessageCallback);
 
             // Fall though1
         }
@@ -1585,7 +1572,7 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion4x1x0:
         {
-            PXOpenGLCacheFunction(functionNameList, &length, "glVertexAttribLPointer", &openGLContext->PXOpenGLVertexAttribLPointerCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribLPointer", &openGLContext->PXOpenGLVertexAttribLPointerCallBack);
 
             // Fall though1
         }
@@ -1593,9 +1580,9 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         {
             // Fall though1
         }
-        case PXOpenGLVersion3x3x0: 
+        case PXOpenGLVersion3x3x0:
         {
-            PXOpenGLCacheFunction(functionNameList, &length, "glVertexAttribDivisor", &openGLContext->PXOpenGLVertexAttribDivisorCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribDivisor", &openGLContext->PXOpenGLVertexAttribDivisorCallBack);
 
             // Fall though1
         }
@@ -1605,35 +1592,35 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion3x1x0:
         {
-            PXOpenGLCacheFunction(functionNameList, &length, "glDrawArraysInstanced", &openGLContext->PXOpenGLDrawArraysInstancedCallBack);            
+            PXOpenGLFunctionAdressFetch("glDrawArraysInstanced", &openGLContext->PXOpenGLDrawArraysInstancedCallBack);
 
             // Fall though1
         }
         case PXOpenGLVersion3x0x0:
         {
-            PXOpenGLCacheFunction(functionNameList, &length, "glGetStringi", &openGLContext->PXOpenGLStringICallBack);
+            PXOpenGLFunctionAdressFetch("glGetStringi", &openGLContext->PXOpenGLStringICallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glGenFramebuffers", &openGLContext->PXOpenGLFrameBufferCreateCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDeleteFramebuffers", &openGLContext->PXOpenGLFrameBufferDeleteCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glBindFramebuffer", &openGLContext->PXOpenGLFrameBufferBindCallBack);
+            PXOpenGLFunctionAdressFetch("glGenFramebuffers", &openGLContext->PXOpenGLFrameBufferCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteFramebuffers", &openGLContext->PXOpenGLFrameBufferDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glBindFramebuffer", &openGLContext->PXOpenGLFrameBufferBindCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glGenRenderbuffers", &openGLContext->PXOpenGLRenderBufferCreateCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glBindRenderbuffer", &openGLContext->PXOpenGLRenderBufferBindCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDeleteRenderbuffers", &openGLContext->PXOpenGLRenderBufferDeleteCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glRenderbufferStorage", &openGLContext->PXOpenGLRenderBufferStorageCallBack);
+            PXOpenGLFunctionAdressFetch("glGenRenderbuffers", &openGLContext->PXOpenGLRenderBufferCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glBindRenderbuffer", &openGLContext->PXOpenGLRenderBufferBindCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteRenderbuffers", &openGLContext->PXOpenGLRenderBufferDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glRenderbufferStorage", &openGLContext->PXOpenGLRenderBufferStorageCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glFramebufferTexture2D", &openGLContext->PXOpenGLFrameBufferLinkTexture2DCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glFramebufferRenderbuffer", &openGLContext->PXOpenGLFrameBufferLinkRenderBufferCallBack);
+            PXOpenGLFunctionAdressFetch("glFramebufferTexture2D", &openGLContext->PXOpenGLFrameBufferLinkTexture2DCallBack);
+            PXOpenGLFunctionAdressFetch("glFramebufferRenderbuffer", &openGLContext->PXOpenGLFrameBufferLinkRenderBufferCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glGenVertexArrays", &openGLContext->PXOpenGLGenVertexArraysCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glBindVertexArray", &openGLContext->PXOpenGLBindVertexArrayCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glVertexAttribIPointer", &openGLContext->PXOpenGLVertexAttribIPointerCallBack);
-
-
+            PXOpenGLFunctionAdressFetch("glGenVertexArrays", &openGLContext->PXOpenGLGenVertexArraysCallBack);
+            PXOpenGLFunctionAdressFetch("glBindVertexArray", &openGLContext->PXOpenGLBindVertexArrayCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribIPointer", &openGLContext->PXOpenGLVertexAttribIPointerCallBack);
 
 
 
-                // Fall though1
+
+
+            // Fall though1
 
         }
         case PXOpenGLVersion2x1x0:
@@ -1642,52 +1629,52 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion2x0x0:
         {
-            PXOpenGLCacheFunction(functionNameList, &length, "glGenTextures", &openGLContext->PXOpenGLTextureCreateCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glBindTexture", &openGLContext->PXOpenGLTextureBindCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDeleteTextures", &openGLContext->PXOpenGLTextureDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glGenTextures", &openGLContext->PXOpenGLTextureCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glBindTexture", &openGLContext->PXOpenGLTextureBindCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteTextures", &openGLContext->PXOpenGLTextureDeleteCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glCreateProgram", &openGLContext->PXOpenGLShaderPXProgramCreateCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUseProgram", &openGLContext->PXOpenGLShaderPXProgramUseCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDeleteProgram", &openGLContext->PXOpenGLShaderPXProgramDeleteCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glShaderSource", &openGLContext->PXOpenGLShaderSourceCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glCreateShader", &openGLContext->PXOpenGLShaderCreateCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glCompileShader", &openGLContext->PXOpenGLShaderCompileCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glGetShaderiv", &openGLContext->PXOpenGLShaderGetivCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glGetShaderInfoLog", &openGLContext->PXOpenGLShaderLogInfoGetCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDeleteShader", &openGLContext->PXOpenGLShaderDeleteCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glAttachShader", &openGLContext->PXOpenGLAttachShaderCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glLinkProgram", &openGLContext->PXOpenGLLinkPXProgramCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glValidateProgram", &openGLContext->PXOpenGLValidatePXProgramCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glActiveTexture", &openGLContext->PXOpenGLActiveTextureCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glGenBuffers", &openGLContext->PXOpenGLGenBuffersCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glBindBuffer", &openGLContext->PXOpenGLBindBufferCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glBufferData", &openGLContext->PXOpenGLBufferDataCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glVertexAttribPointer", &openGLContext->PXOpenGLVertexAttribPointerCallBack);
+            PXOpenGLFunctionAdressFetch("glCreateProgram", &openGLContext->PXOpenGLShaderPXProgramCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glUseProgram", &openGLContext->PXOpenGLShaderPXProgramUseCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteProgram", &openGLContext->PXOpenGLShaderPXProgramDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glShaderSource", &openGLContext->PXOpenGLShaderSourceCallBack);
+            PXOpenGLFunctionAdressFetch("glCreateShader", &openGLContext->PXOpenGLShaderCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glCompileShader", &openGLContext->PXOpenGLShaderCompileCallBack);
+            PXOpenGLFunctionAdressFetch("glGetShaderiv", &openGLContext->PXOpenGLShaderGetivCallBack);
+            PXOpenGLFunctionAdressFetch("glGetShaderInfoLog", &openGLContext->PXOpenGLShaderLogInfoGetCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteShader", &openGLContext->PXOpenGLShaderDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glAttachShader", &openGLContext->PXOpenGLAttachShaderCallBack);
+            PXOpenGLFunctionAdressFetch("glLinkProgram", &openGLContext->PXOpenGLLinkPXProgramCallBack);
+            PXOpenGLFunctionAdressFetch("glValidateProgram", &openGLContext->PXOpenGLValidatePXProgramCallBack);
+            PXOpenGLFunctionAdressFetch("glActiveTexture", &openGLContext->PXOpenGLActiveTextureCallBack);
+            PXOpenGLFunctionAdressFetch("glGenBuffers", &openGLContext->PXOpenGLGenBuffersCallBack);
+            PXOpenGLFunctionAdressFetch("glBindBuffer", &openGLContext->PXOpenGLBindBufferCallBack);
+            PXOpenGLFunctionAdressFetch("glBufferData", &openGLContext->PXOpenGLBufferDataCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribPointer", &openGLContext->PXOpenGLVertexAttribPointerCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glEnableVertexAttribArray", &openGLContext->PXOpenGLVertexAttribArrayEnableCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glDisableVertexAttribArray", &openGLContext->PXOpenGLVertexAttribArrayDisableCallBack);
+            PXOpenGLFunctionAdressFetch("glEnableVertexAttribArray", &openGLContext->PXOpenGLVertexAttribArrayEnableCallBack);
+            PXOpenGLFunctionAdressFetch("glDisableVertexAttribArray", &openGLContext->PXOpenGLVertexAttribArrayDisableCallBack);
 
-            PXOpenGLCacheFunction(functionNameList, &length, "glDisableVertexArrayAttrib", &openGLContext->PXOpenGLDisableVertexArrayAttribCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glGetUniformLocation", &openGLContext->PXOpenGLGetUniformLocation);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform1f", &openGLContext->PXOpenGLUniform1fCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform1fv", &openGLContext->PXOpenGLUniform1fvCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform1i", &openGLContext->PXOpenGLUniform1iCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform1iv", &openGLContext->PXOpenGLUniform1ivCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform2f", &openGLContext->PXOpenGLUniform2fCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform2fv", &openGLContext->PXOpenGLUniform2fvCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform2i", &openGLContext->PXOpenGLUniform2iCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform2iv", &openGLContext->PXOpenGLUniform2ivCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform3f", &openGLContext->PXOpenGLUniform3fCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform3fv", &openGLContext->PXOpenGLUniform3fvCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform3i", &openGLContext->PXOpenGLUniform3iCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform3iv", &openGLContext->PXOpenGLUniform3ivCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform4f", &openGLContext->PXOpenGLUniform4fCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform4fv", &openGLContext->PXOpenGLUniform4fvCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform4i", &openGLContext->PXOpenGLUniform4iCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniform4iv", &openGLContext->PXOpenGLUniform4ivCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniformMatrix2fv", &openGLContext->PXOpenGLUniformMatrix2fvCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniformMatrix3fv", &openGLContext->PXOpenGLUniformMatrix3fvCallBack);
-            PXOpenGLCacheFunction(functionNameList, &length, "glUniformMatrix4fv", &openGLContext->PXOpenGLUniformMatrix4fvCallBack);
+            PXOpenGLFunctionAdressFetch("glDisableVertexArrayAttrib", &openGLContext->PXOpenGLDisableVertexArrayAttribCallBack);
+            PXOpenGLFunctionAdressFetch("glGetUniformLocation", &openGLContext->PXOpenGLGetUniformLocation);
+            PXOpenGLFunctionAdressFetch("glUniform1f", &openGLContext->PXOpenGLUniform1fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform1fv", &openGLContext->PXOpenGLUniform1fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform1i", &openGLContext->PXOpenGLUniform1iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform1iv", &openGLContext->PXOpenGLUniform1ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2f", &openGLContext->PXOpenGLUniform2fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2fv", &openGLContext->PXOpenGLUniform2fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2i", &openGLContext->PXOpenGLUniform2iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2iv", &openGLContext->PXOpenGLUniform2ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3f", &openGLContext->PXOpenGLUniform3fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3fv", &openGLContext->PXOpenGLUniform3fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3i", &openGLContext->PXOpenGLUniform3iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3iv", &openGLContext->PXOpenGLUniform3ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4f", &openGLContext->PXOpenGLUniform4fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4fv", &openGLContext->PXOpenGLUniform4fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4i", &openGLContext->PXOpenGLUniform4iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4iv", &openGLContext->PXOpenGLUniform4ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniformMatrix2fv", &openGLContext->PXOpenGLUniformMatrix2fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniformMatrix3fv", &openGLContext->PXOpenGLUniformMatrix3fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniformMatrix4fv", &openGLContext->PXOpenGLUniformMatrix4fvCallBack);
 
             // Fall though1
         }
@@ -1830,20 +1817,12 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     // Extensions
     {
 #if OSUnix
-        PXOpenGLCacheFunction(functionNameList, &length, "glXSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
-        PXOpenGLCacheFunction(functionNameList, &length, "glxGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
+        PXOpenGLFunctionAdressFetch("glXSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLFunctionAdressFetch("glxGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
 #elif OSWindows
-        PXOpenGLCacheFunction(functionNameList, &length, "wglSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
-        PXOpenGLCacheFunction(functionNameList, &length, "wglGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
+        PXOpenGLFunctionAdressFetch("wglSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLFunctionAdressFetch("wglGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
 #endif
-    }
-
-    for (PXSize i = 0; i < length; i += 2)
-    {
-        void** functionAdress = functionNameList[i];
-        const char* functionName = functionNameList[i + 1];
-
-        *functionAdress = PXOpenGLFunctionAdressFetch(functionName);
     }
 
 #if 0 // print extensions
@@ -3073,7 +3052,7 @@ void PXOpenGLDrawArraysInstanced(const PXOpenGL* const openGLContext, const PXOp
     const GLenum renderModeID = PXOpenGLRenderModeToID(renderMode);
 
     if (isSupported)
-    {   
+    {
         openGLContext->PXOpenGLDrawArraysInstancedCallBack(renderModeID, startOffset, amount, instanceAmount);
     }
     else

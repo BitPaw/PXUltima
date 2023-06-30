@@ -196,9 +196,9 @@ extern "C"
 	typedef unsigned __int64 PXInt64U;
 #endif // OSUnix
 
-#if OS32Bit
+#if OS32B
 	typedef PXInt32U PXSize;
-#elif OS64Bit
+#elif OS64B
 	typedef PXInt64U PXSize;
 #else
 #error Invalid Bit Version

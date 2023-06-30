@@ -661,7 +661,7 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
             const KeySym keySym = XKeycodeToKeysym(pxWindow->DisplayCurrent, keyCode, 0);
             const char* keyName = XKeysymToString(keySym);
 
-            PXVirtualKey keyBoardKey = ConvertToVirtualKey(keySym);
+            PXVirtualKey keyBoardKey = PXVirtualKeyFromID(keySym);
 
             KeyBoardKeyInfo keyBoardKeyInfo;
 
@@ -2385,6 +2385,8 @@ PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
 
 PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 {
+    PXTextCopy(title, &window->Title);
+
     switch (title->Format)
     {
         case TextFormatASCII:
@@ -2393,7 +2395,7 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 #if OSUnix
             return 0;
 #elif PXOSWindowsDestop
-            const PXBool success = SetWindowTextA(window->ID, title->TextA); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = SetWindowTextA(window->ID, window->Title.TextA); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
@@ -2407,7 +2409,8 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 #if OSUnix
             return 0;
 #elif PXOSWindowsDestop
-            const PXBool success = SetWindowTextW(window->ID, title->TextW); // Windows 2000, User32.dll, winuser.h
+
+            const PXBool success = SetWindowTextW(window->ID, window->Title.TextW); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
@@ -2693,9 +2696,21 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 #endif
 }
 
-PXBool PXWindowFrameBufferSwap(PXWindow* window)
+PXBool PXWindowFrameBufferSwap(const PXWindow* const window)
 {
-    return PXGraphicImageBufferSwap(&window->GraphicInstance);
+#if OSUnix
+    //glXSwapBuffers();
+    return PXFalse;
+
+#elif OSWindows
+
+   const PXBool result = SwapBuffers(window->HandleDeviceContext);
+
+   return result;
+
+#else
+    return PXFalse;
+#endif
 }
 
 PXBool PXWindowInteractable(PXWindow* window)

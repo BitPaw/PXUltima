@@ -193,7 +193,7 @@ PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputS
 					break;
 				}
 
-				const PXMaterialIlluminationMode illuminationMode = PXMTLIlluminationModeFromID(compilerSymbolEntry.DataI);
+				const PXMaterialIlluminationMode illuminationMode = PXMTLIlluminationModeFromID(compilerSymbolEntry.DataI32U);
 
 				materialSizeDelta += PXFileWriteI8U(outputStream, illuminationMode);
 

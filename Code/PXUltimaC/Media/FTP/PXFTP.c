@@ -105,7 +105,16 @@ PXSize PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, 
 	switch (pxFTPCommand)
 	{
 		case PXFTPCommandUser:
-			return PXTextPrint(pxText, syntaxDouble, "USER", parameterA);
+		{
+			if (parameterA == PXNull)
+			{
+				return PXTextPrint(pxText, syntaxDouble, "USER", "anonymous");
+			}
+			else
+			{
+				return PXTextPrint(pxText, syntaxDouble, "USER", parameterA);
+			}
+		}
 
 		case PXFTPCommandPassword: // PASS
 			return PXTextPrint(pxText, syntaxDouble, "PASS", parameterA);

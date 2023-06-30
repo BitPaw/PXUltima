@@ -69,7 +69,9 @@ extern "C"
 		PXCompilerSymbolLexerString,
 
 		PXCompilerSymbolLexerStringBegin,
-		PXCompilerSymbolLexerStringEnd
+		PXCompilerSymbolLexerStringEnd,
+
+		PXCompilerSymbolLexerEndOfFile
 	}
 	PXCompilerSymbolLexer;
 
@@ -81,7 +83,8 @@ extern "C"
 		{
 			char* Source;
 			float DataF;
-			unsigned int DataI;
+			int DataI32S;
+			unsigned int DataI32U;
 			unsigned short DataS;
 			unsigned char DataC;
 		};	
@@ -130,15 +133,15 @@ extern "C"
 		const PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
 
-	PXPublic void PXCompilerSymbolEntryExtract
+	PXPublic PXSize PXCompilerSymbolEntryExtract
 	(
-		PXFile* const dataStream,
-		PXCompilerSymbolEntry* compilerSymbolEntry
+		PXFile* const pxFile,
+		PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
-	PXPublic void PXCompilerSymbolEntryPeek
+	PXPublic PXSize PXCompilerSymbolEntryPeek
 	(
-		PXFile* const dataStream,
-		PXCompilerSymbolEntry* compilerSymbolEntry
+		PXFile* const pxFile,
+		PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
 
 	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);

@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-#define PXLDAPTest 1
+#define PXLDAPTest 0
 #define PXKeyBoardVirtualTest 0
 
 #include "OS/TestSystemInfo.h"
@@ -15,6 +15,8 @@
 #include "OS/TestSocket.h"
 #include "Service/TestFTP.h"
 #include "Service/TestSBP.h"
+
+#include <Media/PXFont.h>
 
 
 #if PXLDAPTest
@@ -71,6 +73,20 @@ void PXTextMatchTest()
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+#if 1
+
+	vswprintf_s
+
+	PXText filePath;
+	PXTextMakeFixedA(&filePath, "_TEST_DATA_INPUT_/A.fnt");
+
+	PXSpriteFont pxSpriteFont;
+	PXActionResult result = PXFontLoad(&pxSpriteFont, &filePath);
+
+	printf("OK\n");
+
+#endif
 
 
 

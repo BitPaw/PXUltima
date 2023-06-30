@@ -120,5 +120,19 @@ namespace PXUltimaCSTestForms
                 RichTextBoxLog.AppendText(message);
             }
         }
+
+        private void ButtonSendAsServer_Click(object sender, EventArgs e)
+        {
+            string message = RichTextBoxServerInputMessage.Text;
+
+            PX.ActionResult connectResult = _sbpServer.SendToAll(message);
+
+            if (connectResult == PX.ActionResult.Successful)
+            {
+                RichTextBoxServerInputMessage.Clear();
+            }
+
+            AddToLog("Server send : " + connectResult);
+        }
     }
 }

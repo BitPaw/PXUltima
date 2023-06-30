@@ -1,16 +1,19 @@
 #include "PXMemory.hpp"
 
 template<typename T>
-inline T* PX::Memory::Allocate(const PXSize size)
+T* PX::Memory::Allocate(const PXSize size)
 {
-	const PXSize requestedBytes = size * sizeof(T);
-	T* adress = (T*)PXMemoryAllocate(requestedBytes);
-
-	return adress;
+	return PXMemoryAllocateType(T, requestedBytes);
 }
 
 template<typename T>
-inline T* PX::Memory::Reallocate(const T* const adress, const PXSize size)
+T* PX::Memory::AllocateCleared(const PXSize amount)
+{
+	return PXMemoryAllocateTypeCleared(T, amount);
+}
+
+template<typename T>
+T* PX::Memory::Reallocate(const T* const adress, const PXSize size)
 {
 	const PXSize requestedBytes = size * sizeof(T);
 	T* adressReallocated = (T*)PXMemoryReallocate(adress, requestedBytes);

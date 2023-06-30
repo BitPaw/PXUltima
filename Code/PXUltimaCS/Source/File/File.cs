@@ -11,24 +11,24 @@ namespace PX
 		Little
     }
 
+    [StructLayout(LayoutKind.Sequential, Size = 72)]
+    internal unsafe struct PXFile
+    {
+        //---<PosisionData>---
+        public void* Data; // [Do not use directly] Data from where to read/write depending on the used method of linking.
+        public void* DataCursor; // [Do not use directly] Current position of the data.
+        public void* DataCursorBitOffset; // [Do not use directly] Current offset in bits of current byte
+        public void* DataSize; // [Do not use directly] The total size of the data block.
+        public void* DataAllocated; // [Do not use directly] The size of the data pace in which you can move without triggering an invalid access.
+                                    //--------------------
+
+        public uint AccessMode;
+        public uint CachingMode;
+        public uint LocationMode;
+    }
+
     public class File
     {
-		[StructLayout(LayoutKind.Sequential, Size = 72)]
-		private unsafe struct PXFile
-        {
-			//---<PosisionData>---
-			public void* Data; // [Do not use directly] Data from where to read/write depending on the used method of linking.
-			public void* DataCursor; // [Do not use directly] Current position of the data.
-			public void* DataCursorBitOffset; // [Do not use directly] Current offset in bits of current byte
-			public void* DataSize; // [Do not use directly] The total size of the data block.
-			public void* DataAllocated; // [Do not use directly] The size of the data pace in which you can move without triggering an invalid access.
-										//--------------------
-
-			public uint AccessMode;
-			public uint CachingMode;
-			public uint LocationMode;
-		}
-
 		private PXFile _pxFile = new PXFile();
 
 		public unsafe ulong DataCursor => (ulong)_pxFile.DataCursor;
@@ -125,10 +125,10 @@ namespace PX
 		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadI64UE(ref PXFile pxFile, ref UInt64 value,  Endian pxEndian);
 		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadI64UVE(ref PXFile pxFile, ref UInt64  valueList,  UIntPtr valueListSize,  Endian pxEndian);
 
-		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadF(ref PXFile pxFile, ref float[] value);
+		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadF(ref PXFile pxFile, ref float value);
 		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadFV(ref PXFile pxFile, ref float[] valueList, UIntPtr valueListSize);
 
-		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadD(ref PXFile pxFile, ref double[] value);
+		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadD(ref PXFile pxFile, ref double value);
 		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadDV(ref PXFile pxFile, ref  double[] valueList, UIntPtr valueListSize);
 
 		//[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileReadMultible(ref PXFile pxFile, PXFileDataElementType* pxFileElementList, UIntPtr pxFileElementListSize);
@@ -315,10 +315,15 @@ namespace PX
         {
 			PXFileBufferAllocate(ref _pxFile, size);
         }
-		//---------------------------------------------------------------------
 
-		//---<Open>------------------------------------------------------------
-		public unsafe ActionResult OpenFromPath(string filePath, int pxAccessMode, int pxMemoryCachingMode)
+        public unsafe void BufferExternal(UIntPtr data, UIntPtr dataSize)
+        {
+            PXFileBufferExternal(ref _pxFile, (void*)data, dataSize);
+        }
+        //---------------------------------------------------------------------
+
+        //---<Open>------------------------------------------------------------
+        public unsafe ActionResult OpenFromPath(string filePath, int pxAccessMode, int pxMemoryCachingMode)
 		{
 			fixed (char* adress = filePath.ToCharArray())
 			{
@@ -403,7 +408,23 @@ namespace PX
 			return (ulong)PXFileReadTextI(ref _pxFile, ref number);
 		}
 
-		public ulong Read(ref byte  value)
+        public ulong Read(ref bool value)
+        {
+            byte valueTemp = 0; 
+            ulong result = (ulong)PXFileReadI8U(ref _pxFile, ref valueTemp);
+
+            if (result == 0)
+            {
+                return result;              
+            }
+
+            value = valueTemp != 0x00;
+
+            return result;
+        }
+
+
+        public ulong Read(ref byte  value)
         {
 			return (ulong)PXFileReadI8U(ref _pxFile, ref value);
 		}
@@ -415,15 +436,15 @@ namespace PX
 
 		public ulong Read( ref short  value)
 		{
-			return 0;
-		}
+            return (ulong)PXFileReadI16S(ref _pxFile, ref value);
+        }
 		public ulong Read(ref short[] valueList,  ulong valueListSize)
         {
             return 0;
         }
         public ulong Read(ref short  value,  Endian pxEndian)
         {
-            return 0;
+            return (ulong)PXFileReadI16SE(ref _pxFile, ref value, pxEndian);
         }
         public ulong Read(ref short[] valueList,  ulong valueListSize,  Endian pxEndian)
         {
@@ -431,7 +452,7 @@ namespace PX
         }
         public ulong Read(ref ushort  value)
         {
-            return 0;
+            return (ulong)PXFileReadI16U(ref _pxFile, ref value);
         }
         public ulong Read(ref ushort[] valueList,  ulong valueListSize)
         {
@@ -439,7 +460,7 @@ namespace PX
         }
         public ulong Read(ref ushort  value,  Endian pxEndian)
         {
-            return 0;
+            return (ulong)PXFileReadI16UE(ref _pxFile, ref value, pxEndian);
         }
         public ulong Read(ref ushort[] valueList,  ulong valueListSize,  Endian pxEndian)
         {
@@ -448,7 +469,7 @@ namespace PX
 
         public ulong Read(ref int  value)
         {
-            return 0;
+            return (ulong)PXFileReadI32S(ref _pxFile, ref value);
         }
         public ulong Read(ref int[] valueList,  ulong valueListSize)
         {
@@ -456,15 +477,15 @@ namespace PX
         }
         public ulong Read(ref int  value,  Endian pxEndian)
         {
-            return 0;
+            return (ulong)PXFileReadI32SE(ref _pxFile, ref value, pxEndian);
         }
         public ulong Read(ref int[] valueList,  ulong valueListSize,  Endian pxEndian)
         {
             return 0;
         }
-        public ulong Read(ref uint  value)
+        public ulong Read(ref uint value)
         {
-            return 0;
+            return (ulong)PXFileReadI32U(ref _pxFile, ref value);
         }
         public ulong Read(ref uint[] valueList,  ulong valueListSize)
         {
@@ -472,7 +493,7 @@ namespace PX
         }
         public ulong Read(ref uint  value,  Endian pxEndian)
         {
-            return 0;
+            return (ulong)PXFileReadI32UE(ref _pxFile, ref value, pxEndian);
         }
         public ulong Read(ref uint[] valueList,  ulong valueListSize,  Endian pxEndian)
         {
@@ -515,7 +536,7 @@ namespace PX
 
         public ulong Read(ref float  value)
         {
-            return 0;
+            return (ulong)PXFileReadF(ref _pxFile, ref value);
         }
         public ulong Read(ref float[]  valueList,  ulong valueListSize)
         {
@@ -524,7 +545,7 @@ namespace PX
 
         public ulong Read(ref double  value)
         {
-            return 0;
+            return (ulong)PXFileReadD(ref _pxFile, ref value);
         }
         public ulong Read(ref double[] valueList,  ulong valueListSize)
         {

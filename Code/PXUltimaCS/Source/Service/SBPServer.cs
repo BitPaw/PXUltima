@@ -19,6 +19,9 @@ namespace PX
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXSBPServerStart(ref PXSBPServer pxSBPServer, ushort port);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXSBPServerStop(ref PXSBPServer pxSBPServer);
 
+
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] private static extern PX.ActionResult PXSBPServerSendToAll(ref PXSBPServer pxSBPServer, UIntPtr data, UIntPtr dataSize);
+
         private PXSBPServer _pxSBPServer = new PXSBPServer();
 
         public event SBPOnMessageUpdatedFunction OnMessageUpdated;
@@ -65,6 +68,16 @@ namespace PX
         public ActionResult Stop()
         {
             return PXSBPServerStop(ref _pxSBPServer);
+        }
+
+        public unsafe ActionResult SendToAll(string message)
+        {
+            fixed (char* charBuffer = message.ToCharArray())
+            {
+                UIntPtr dataSize = (UIntPtr)(message.Length * 2);
+
+                return PXSBPServerSendToAll(ref _pxSBPServer, (UIntPtr)charBuffer, dataSize);
+            }
         }
     }
 }

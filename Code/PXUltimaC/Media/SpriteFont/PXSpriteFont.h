@@ -29,11 +29,49 @@ extern "C"
 	typedef enum PXSpriteFontLineType_
 	{
 		PXSpriteFontLineUnkown,
-		PXSpriteFontLineInfo,
-		PXSpriteFontLineCommon,
-		PXSpriteFontLinePage,
-		PXSpriteFontLineCharacterCount,
-		PXSpriteFontLineCharacterDefinition
+
+		PXSpriteFontSymbolX,
+		PXSpriteFontSymbolY,
+
+		PXSpriteFontSymbolID,
+		PXSpriteFontSymbolAntilising,
+
+
+		PXSpriteFontSymbolCharacterDefinition,
+		PXSpriteFontSymbolBase,
+		PXSpriteFontSymbolInfo,
+		PXSpriteFontSymbolFontName,
+		PXSpriteFontSymbolFontSize,
+		PXSpriteFontSymbolBold,
+		PXSpriteFontSymbolPage,
+		PXSpriteFontSymbolFilePath,
+		PXSpriteFontSymbolChannel,
+
+
+		PXSpriteFontSymbolCharacterList,
+		PXSpriteFontSymbolCharacterAmount,
+		PXSpriteFontSymbolCharacterWidth,
+		PXSpriteFontSymbolPageList,
+
+		PXSpriteFontSymbolItalic,
+		PXSpriteFontSymbolScaleWidth,
+		PXSpriteFontSymbolScaleHeight,
+		PXSpriteFontSymbolPacked,
+		PXSpriteFontSymbolHeight,
+		PXSpriteFontSymbolCommon,
+		PXSpriteFontSymbolSmooth,
+
+		PXSpriteFontSymbolCharSet,
+		PXSpriteFontSymbolUnicode,
+		PXSpriteFontSymbolPadding,
+		PXSpriteFontSymbolSpacing,
+		PXSpriteFontSymbolXOffset,
+		PXSpriteFontSymbolYOffset,
+
+		PXSpriteFontSymbolXAdvance,
+		PXSpriteFontSymbolStretchH,
+		PXSpriteFontSymbolLineHeight
+
 	}
 	PXSpriteFontLineType;
 
@@ -107,7 +145,7 @@ extern "C"
 
 	PXPublic PXActionResult PXSpriteFontParse(PXSpriteFont* const pxSpriteFont, PXFile* const PXFile);
 
-	PXPrivate PXSpriteFontLineType PeekLineType(const void* line, const PXSize fileDataSize);
+	PXPrivate PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSize);
 
 	PXPublic void PXSpriteFontPrtinf(const PXSpriteFont* pxSpriteFont);
 

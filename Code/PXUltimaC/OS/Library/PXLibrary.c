@@ -130,27 +130,26 @@ PXBool PXLibraryClose(PXLibrary* const pxLibrary)
 	return result;
 }
 
-PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction libraryFunction, const PXText* symbolName)
+PXBool PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName)
 {
 #if OSUnix
-	const LibraryFunction functionPointer = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName->TextA);
+	*libraryFunction = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName);
 	const char* errorString = dlerror();
 	const PXBool successful = errorString;
 #elif OSWindows
-	const LibraryFunction functionPointer = GetProcAddress(pxLibrary->ID, symbolName->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
-	const PXBool successful = functionPointer != PXNull;
+	*libraryFunction = GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+	const PXBool successful = *libraryFunction != PXNull;
 
 	PXActionOnErrorFetchAndReturn(!successful);
 
 #endif
 
-#if OSUnix
-	libraryFunction = (void*)functionPointer;
-#elif OSWindows
-	libraryFunction = functionPointer;
-#endif
+	return PXTrue;
+}
 
-	return 1u;
+PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName)
+{
+	return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA);
 }
 
 PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName)

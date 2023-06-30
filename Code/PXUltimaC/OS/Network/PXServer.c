@@ -120,7 +120,7 @@ PXActionResult PXServerStop(PXServer* const server)
 {
     if (server->ServerSocketListSize == 0)
     {
-        return PXActionRefuedObjectIDInvalid;
+        return PXActionRefusedSocketNotConnected;
     }
 
     PXSocket* ServerSocketList;
@@ -143,6 +143,31 @@ PXActionResult PXServerStop(PXServer* const server)
 PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socketID)
 {
 	return PXActionInvalid;
+}
+
+PXActionResult PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize)
+{
+    for (PXSize i = 0; i < server->ServerSocketListSize; i++)
+    {
+        PXSocket* const serverSubSocket = &server->ServerSocketList[i];
+
+        for (PXSize i = 0; i < serverSubSocket->SocketLookup.EntryAmountCurrent; i++) // All sockets
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+
+            PXDictionaryIndex(&serverSubSocket->SocketLookup, i, &pxDictionaryEntry);
+
+            const PXSocketID clientID = *(PXSocketID*)pxDictionaryEntry.Key;          
+
+            PXBufferConstruct(&serverSubSocket->BufferOutput, data, dataSize, PXBufferTypeStack);
+
+            PXSocketSend(serverSubSocket, clientID);          
+        }
+
+        PXBufferDestruct(&serverSubSocket->BufferOutput);
+    }      
+
+    return PXActionSuccessful;
 }
 
 PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocket)

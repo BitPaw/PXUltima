@@ -264,6 +264,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	//---<Open>------------------------------------------------------------
 	PXPublic PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPathInfo* const pxFileOpenFromPathInfo);
+	PXPublic PXActionResult PXFileOpenTemporal(PXFile* const pxFile);
 	//---------------------------------------------------------------------
 
 	//---<Close>-----------------------------------------------------------

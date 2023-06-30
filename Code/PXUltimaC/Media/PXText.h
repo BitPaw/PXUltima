@@ -68,15 +68,25 @@ extern "C"
 	//const int xxss = sizeof(PXTextFormat);
 
 
-#define PXTextConstructNamedBufferA(pxText, bufferCacheName, bufferCacheSize)\
+
+#define PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, format)\
 		char bufferCacheName[bufferCacheSize];\
 		(pxText)->SizeAllocated = sizeof(bufferCacheName);\
 		(pxText)->SizeUsed = 0;\
 		(pxText)->NumberOfCharacters = 0;\
-		(pxText)->Format = TextFormatASCII;\
-		(pxText)->TextA = bufferCacheName;
+		(pxText)->Format = format;\
+		(pxText)->TextA = bufferCacheName;\
+		PXMemorySet((pxText)->TextA, '°', (pxText)->SizeAllocated);
+
+
+#define PXTextConstructNamedBufferA(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, TextFormatASCII)
+#define PXTextConstructNamedBufferW(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize*2, TextFormatUNICODE)
+
 
 #define PXTextConstructBufferA(pxText, bufferSize) PXTextConstructNamedBufferA(pxText, __pxUnnamedInternalBuffer, bufferSize);
+#define PXTextConstructBufferW(pxText, bufferSize) PXTextConstructNamedBufferW(pxText, __pxUnnamedInternalBuffer, bufferSize);
+
+
 
 #define PXTextConstructFromAdress(pxText, address, size, format)\
 		if((PXSize)size == (PXSize)-1)\
@@ -113,14 +123,14 @@ extern "C"
 
 #define PXTextMakeFixedNamed(pxText, name, s, format)\
 		char name[] = s;\
-		(pxText)->SizeAllocated = sizeof(name);\
-		(pxText)->SizeUsed = 0;\
+		(pxText)->SizeAllocated = sizeof(name) - 1u;\
+		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = 0;\
 		(pxText)->Format = format;\
 		(pxText)->TextA = name;
 
-#define PXTextMakeFixedNamedA(pxText, name, s) PXTextMakeFixedNamed(pxText, name, s, TextFormatASCII);
-#define PXTextMakeFixedNamedW(pxText, name, s) PXTextMakeFixedNamed(pxText, name, s, TextFormatUNICODE);
+#define PXTextMakeFixedNamedA(pxText, name, str) PXTextMakeFixedNamed(pxText, name, str, TextFormatASCII);
+#define PXTextMakeFixedNamedW(pxText, name, str) PXTextMakeFixedNamed(pxText, name, str, TextFormatUNICODE);
 
 #define PXTextMakeFixedW(pxText, s)\
 		wchar_t text[] = s;\

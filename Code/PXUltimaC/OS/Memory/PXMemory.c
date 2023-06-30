@@ -443,6 +443,11 @@ void* PXMemoryHeapReallocateClear(void* const sourceAddress, const PXSize sizeBe
 	return adressReallocated;
 }
 
+void* PXMemoryHeapReallocateTypeClear(void* const adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter)
+{
+	return PXMemoryHeapReallocateClear(adress, objectSize * numberOfElementsBefore, objectSize * numberOfElementsAfter);
+}
+
 void PXMemoryRelease(void* adress, const PXSize size)
 {
 	if(!adress || !size)

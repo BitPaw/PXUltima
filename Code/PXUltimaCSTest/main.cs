@@ -16,10 +16,13 @@ namespace PX.Text
             Console.WriteLine("Welcome " + PX.User.Name);
 
 
+            PX.Client client = new PX.Client();
+            client.ConnectToServer("127.0.0.1", 25565);
+
+
             BingBong vingBong = new BingBong();
 
             var x = PX.Serializer.FromObject<BingBong>(vingBong);
-
 
             PX.Processor processor = new PX.Processor();
             processor.Fetch();

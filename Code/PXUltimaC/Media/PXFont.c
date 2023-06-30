@@ -85,6 +85,8 @@ PXActionResult PXFontLoadD(PXFont* const font, PXFile* const PXFile, const FileF
                 {
                     return filePXActionResult;
                 }
+
+                PXSpriteFontPrtinf(font->FontElement);
             }
 
             break;

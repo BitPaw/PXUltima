@@ -393,7 +393,7 @@ PXActionResult PXGraphicSkyboxRegisterD
 {
     // Load Textures
     {
-        const PXText* const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
+        const PXText** const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
         PXActionResult resultList[6];
 
         for (PXSize i = 0; i < 6u; ++i)
@@ -728,8 +728,8 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicCo
     //-------------------------------------------------------------------------
 
     //---<Register all textures>-----------------------------------------------
-    const PXSize segmentsListSize = PXModelSegmentsAmount(model);
-    const PXSize modelListSize = PXModelMaterialAmount(model);
+    const PXSize segmentsListSize = 1;// PXModelSegmentsAmount(model);
+    const PXSize modelListSize = 1;// PXModelMaterialAmount(model);
 
     renderable->MeshSegmentListSize = segmentsListSize;
     renderable->MeshSegmentList = PXMemoryAllocateType(PXRenderableMeshSegment, segmentsListSize);
@@ -1483,6 +1483,8 @@ PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicCon
     PXDictionaryAdd(&graphicContext->ShaderPXProgramLookup, &shaderPXProgram->ID, shaderPXProgram);
     PXLockRelease(&graphicContext->_resourceLock);
 #endif
+
+    printf("[PX] Shader program ID:%i\n", shaderPXProgram->ID);
 
     PXFileDestruct(&vertexShaderFile);
     PXFileDestruct(&fragmentFile);

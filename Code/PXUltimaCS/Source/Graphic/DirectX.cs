@@ -1,7 +1,12 @@
-﻿namespace PX
-{
-    public class DirectX
-    {
+﻿using System;
 
+namespace PX
+{
+    public class DirectX : IDisposable
+    {
+        public void Dispose()
+        {
+           
+        }
     }
 }

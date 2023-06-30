@@ -1,5 +1,4 @@
-#ifndef PXCPPMemoryINCLUDE
-#define PXCPPMemoryINCLUDE
+#pragma once
 
 #include <OS/Memory/PXMemory.h>
 
@@ -42,6 +41,9 @@ namespace PX
 		template<typename T>
 		static T* Allocate(const PXSize size);
 
+		template<typename T>
+		static T* AllocateCleared(const PXSize amount);
+
 		// Changes the size of a given byteblock.knging the poniter.
 		// The function will return NULL if the system is "out of memory".
 		template<typename T>
@@ -80,8 +82,6 @@ namespace PX
 #if MemoryDebugOutput
 		static void* HeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line);
 #endif
-		// Allocate memory and clear is after. Its just a combination of malloc and memset
-		static void* AllocateClear(const PXSize size);
 
 		static void* HeapReallocate(void* sourceAddress, const PXSize size);
 
@@ -102,22 +102,4 @@ namespace PX
 
 		static PXMemoryAccessModeType PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode);
 	};
-
-#if 1 // Use default allocator
-
-#if MemoryDebugOutput
-#define PXMemoryReallocate(address, dataSize) PXMemoryHeapReallocateDetailed(address, dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-#define PXMemoryAllocate(dataSize) PXMemoryHeapAllocateDetailed(dataSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-#else
-#define PXMemoryReallocate(address, dataSize) PXMemoryHeapReallocate(address, dataSize)
-#define PXMemoryAllocate(dataSize) PXMemoryHeapAllocate(dataSize)
-#endif
-
-#else // Use virtual alloc
-
-#define PXMemoryReallocate(address, dataSize) PXMemoryVirtualReallocate(address, dataSize)
-#define PXMemoryAllocate(dataSize) MemoryVirtualAllocate(dataSize, PXMemoryAccessModeReadAndWrite)
-#endif
 }
-
-#endif

@@ -2,7 +2,6 @@
 
   <PropertyGroup>
 	<TargetFramework>net462</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
     <ImplicitUsings>disable</ImplicitUsings>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <BaseOutputPath>$(SolutionDir)[Export]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseOutputPath>

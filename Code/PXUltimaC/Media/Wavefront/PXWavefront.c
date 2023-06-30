@@ -192,7 +192,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                 PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
 
                 PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI);
+                PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
 
                 break;
             }
@@ -327,7 +327,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // read token, expect int
 
                     // Save 1st value
-                    vertexData[0] = compilerSymbolEntry.DataI;
+                    vertexData[0] = compilerSymbolEntry.DataI32U;
 
                     PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Peek for next token
 
@@ -337,7 +337,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                         {
                             PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful skip to 2nd integer
 
-                            vertexData[1] = compilerSymbolEntry.DataI; // Save 2nd value 
+                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value 
 
                             PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Get 3rd integer
 
@@ -349,7 +349,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                             }
 
                             PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                            vertexData[2] = compilerSymbolEntry.DataI;
+                            vertexData[2] = compilerSymbolEntry.DataI32U;
 
                             break;
                         }
@@ -372,7 +372,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                                         // Error
                                     }
 
-                                    vertexData[2] = compilerSymbolEntry.DataI; // Save value
+                                    vertexData[2] = compilerSymbolEntry.DataI32U; // Save value
 
                                     break;
                                 }
@@ -380,7 +380,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                                 {
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful, remove the secound value
 
-                                    vertexData[1] = compilerSymbolEntry.DataI; // Save value
+                                    vertexData[1] = compilerSymbolEntry.DataI32U; // Save value
 
                                     // Exptect 2nd '/'
                                     {
@@ -406,7 +406,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                                             // Error
                                         }
 
-                                        vertexData[2] = compilerSymbolEntry.DataI;
+                                        vertexData[2] = compilerSymbolEntry.DataI32U;
 
                                         PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
                                     }                                   

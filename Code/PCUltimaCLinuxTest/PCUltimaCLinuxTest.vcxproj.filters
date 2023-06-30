@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="PXUltimaTest">
+      <UniqueIdentifier>{5aa6668c-38a2-4eba-8072-6f6adaa3b127}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\PXUltimaCTest\Service\TestSBP.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\main.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Service\TestFTP.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Sound\TestSound.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\OS\TestSystemInfo.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Graphic\TestOpenGL.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\OS\TestSocket.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Graphic\TestWindow.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Debug\TestDebug.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Graphic\TestFont.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Graphic\TestImage.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Compiler\TestPXCompiler.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PXUltimaCTest\Compiler\TestYAML.c">
+      <Filter>PXUltimaTest</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PXUltimaCTest\Service\TestFTP.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Service\TestSBP.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Sound\TestSound.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\OS\TestSocket.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\OS\TestSystemInfo.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Graphic\TestOpenGL.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Graphic\TestWindow.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Debug\TestDebug.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Graphic\TestFont.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Graphic\TestImage.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Compiler\TestPXCompiler.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PXUltimaCTest\Compiler\TestYAML.h">
+      <Filter>PXUltimaTest</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

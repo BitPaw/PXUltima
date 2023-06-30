@@ -238,7 +238,7 @@ extern "C"
 	PXPublic void PXWindowCursorCaptureMode(PXWindow* const pxWindow, const PXWindowCursorMode cursorMode);
 	//voidPXWindowScreenShotTake(Image image);
 
-	PXPublic PXBool PXWindowFrameBufferSwap(PXWindow* const pxWindow);
+	PXPublic PXBool PXWindowFrameBufferSwap(const PXWindow* const pxWindow);
 
 	PXPublic PXBool PXWindowInteractable(PXWindow* const pxWindow);
 

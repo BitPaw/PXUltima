@@ -68,11 +68,11 @@ extern "C"
 		// Raw data
 		void* Owner;
 
-		void* MessageData; // Payload data. Context of this data is not interpreted.
-		PXSize MessageSize;// Current size of the data chunk, cant be bigger than expected size.
-		PXSize MessageSizeCached;
+		void* Data; // Payload data. Context of this data is not interpreted.
+		PXSize DataSizeCurrent;// Current size of the data chunk, cant be bigger than expected size.
+		PXSize DataSizeExpected;
 
-		PXSBPMessageBitSize MessageBitSize;
+		//PXSBPMessageBitSize MessageBitSize;
 		PXSBPMessageStorageType StorageType;
 
 		// Delegation info
@@ -89,6 +89,7 @@ extern "C"
 	typedef void (*PXSBPOnMessageReceivedFunction)(const PXSBPMessage* const pxSBPMessage); // if message is fully recieved
 
 	PXPublic void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage);
+	PXPublic void PXSBPMessageConstructFlat(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize, const void* const owner);
 	PXPublic void PXSBPMessageParse(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize);
 	//-----------------------------------------------------
 
@@ -185,7 +186,6 @@ extern "C"
 
 	PXPrivate void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData);
 	PXPrivate void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChunk* const pxSBPChunk);
-	PXPrivate void PXSBPOnDataMessageReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPMessage* const pxSBPMessage);
 	//-----------------------------------------------------
 
 
@@ -199,10 +199,16 @@ extern "C"
 
 		// Message queue?
 		PXInt16U PackageSizeMaximal;
+
+		PXInt16U MessageID;
+
+		PXSocket* SocketSender;
+		PXSocketID SocketReceiverID;
 	}
 	PXSBPEmitter;
 
 	PXPublic void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter);
+	PXPublic PXActionResult PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize);
 	//-----------------------------------------------------
 
 
@@ -252,6 +258,8 @@ extern "C"
 
 	PXPublic PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port);
 	PXPublic PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer);
+
+	PXPublic PXActionResult PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize);
 	//-----------------------------------------------------
 
 #ifdef __cplusplus

@@ -15,114 +15,98 @@
 
 //---<Detect OS version>----------------------------------------------------
 #if defined(unix) || defined(__unix) || defined(__unix__)
-    #ifndef OSUnix
-        #define OSUnix 1u
-    #endif
+#define OSUnix 1u
 #else
-    #ifndef OSUnix
-        #define OSUnix 0u
-    #endif
+#define OSUnix 0u
 #endif
 //-----------------------------------------------------------------------------
 #if defined(linux) || defined(__linux) || defined(__linux__)
-    #ifndef OSLinux
-        #define OSLinux 1u
-    #endif
+#define OSLinux 1u
 #else
-    #ifndef OSLinux
-        #define OSLinux 0u
-    #endif
+#define OSLinux 0u
 #endif
 //-----------------------------------------------------------------------------
 #if defined(__APPLE__) || defined(__MACH__)
-    #ifndef OSApple
-        #define OSApple 1u
-    #endif
+#define OSApple 1u
 #else
-    #ifndef OSApple
-        #define OSApple 0u
-    #endif
+#define OSApple 0u
 #endif
 //-----------------------------------------------------------------------------
 #if defined(__ANDROID__)
-    #ifndef OSAndroid
-        #define OSAndroid 1u
-    #endif
+#define OSAndroid 1u
 #else
-    #ifndef OSAndroid
-        #define OSAndroid 0u
-    #endif
+#define OSAndroid 0u
 #endif
 //-----------------------------------------------------------------------------
-#if defined(__x86_64__ ) || defined(__ppc64__) // Linux 64-Bit
-#ifndef OSLinux64B
-#define OSLinux64B 1u
+#if \
+defined(__NT__) || \
+defined(WIN32) || \
+defined(_WIN32) || \
+defined(__WIN32__) || \
+defined(WIN64) || \
+defined(_WIN64) || \
+defined(__WIN64) || \
+defined(__WIN64__)
+#define OSWindows 1u
+#else
+#define OSWindows 0u
 #endif
+//-----------------------------------------------------------------------------
 
-#ifndef OSLinux32B
+
+//-----------------------------------------------------------------------------
+// Detect x86, x64, ARM, ...
+//-----------------------------------------------------------------------------
+#if \
+defined(__x86_64__ ) || \
+defined(__ppc64__) || \
+defined(WIN64) || \
+defined(_WIN64) || \
+defined(__WIN64) || \
+defined(__WIN64__)
+  
+#define OS32B 0u
+#define OS64B 1u
+
+#elif \
+defined(__x86__ ) || \
+defined(__ppc86__) || \
+defined(WIN32) || \
+defined(_WIN32) || \
+defined(__WIN32) || \
+defined(__WIN32__)
+
+#define OS32B 1u
+#define OS64B 0u
+
+#endif
+//-----------------------------------------------------------------------------
+
+
+
+// Linux OS-Bit Version
+#if OSLinux && OS64B
 #define OSLinux32B 0u
-#endif
-#elif  defined(__x86__ ) || defined(__ppc86__)
-#ifndef OSLinux64B
 #define OSLinux64B 1u
-#endif
-
-#ifndef OSLinux64B
+#elif OSLinux && OS32B
+#define OSLinux32B 1u
+#define OSLinux64B 0u
+#else
+#define OSLinux32B 0u
 #define OSLinux64B 0u
 #endif
-#else
-#define OSLinux64B 0u
-#define OSLinux32B 0u
-#endif
+//----------------------------------
 
-
-
-#if (defined(WIN64) || defined(_WIN64) || defined(__WIN64) || defined(__WIN64__)) && !OSUnix
-    #ifndef OSWindows64B
-        #define OSWindows64B 1u
-    #endif
-
-    #ifndef OSWindows32B
-        #define OSWindows32B 0u
-    #endif
-#elif (defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__WIN32__)) && !OSUnix
-    #ifndef OSWindows64B
-        #define OSWindows64B 0u // Cant be 64-Bit, as this is 32-Bit
-    #endif
-
-    #ifndef OSWindows32B
-        #define OSWindows32B 1u
-    #endif
-#else
-#define OSWindows64B 0u
+// Windows OS-BitVersion
+#if OSWindows && OS64B
 #define OSWindows32B 0u
-#endif
-
-#if (OSWindows64B || OSWindows32B)
-    #ifndef OSWindows
-        #define OSWindows 1u
-    #endif
+#define OSWindows64B 1u
+#elif OSWindows && OS32B
+#define OSWindows32B 1u
+#define OSWindows64B 0u
 #else
-    #ifndef OSWindows
-        #define OSWindows 0u
-    #endif
-#endif
-
-// Bit
-#if (OSWindows64B || OSLinux64B)
-    #ifndef OS32Bit
-        #define OS32Bit 0u
-    #endif
-    #ifndef OS64Bit
-        #define OS64Bit 1u
-    #endif
-#elif (OSWindows32B || OSLinux32B)
-    #ifndef OS32Bit
-        #define OS32Bit 1u
-    #endif
-    #ifndef OS64Bit
-        #define OS64Bit 0u
-    #endif
+#define OSWindows32B 0u
+#define OSWindows64B 0u
 #endif
 //-----------------------------------------------------------------------------
 
@@ -239,7 +223,7 @@
 //---------------------------------------------------------
 #if OSWindows
 
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP) && false
 #define PXOSWindowsUseUWP 1
 #define PXOSWindowsDestop 0
 #else
@@ -257,11 +241,9 @@
 
 
 
-
 //---------------------------------------------------------
 // Calling convection
 //---------------------------------------------------------
-
 #if OSUnix
 #define PXOSAPI
 #define PXOSAPIInternal
@@ -269,10 +251,6 @@
 #define PXOSAPI WINAPI
 #define PXOSAPIInternal
 #endif
-
-
-
 //---------------------------------------------------------
-
 
 #endif

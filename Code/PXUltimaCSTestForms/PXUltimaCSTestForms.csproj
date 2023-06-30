@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
 	<ImplicitUsings>disable</ImplicitUsings>
     <BaseOutputPath>$(SolutionDir)[Export]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseOutputPath>

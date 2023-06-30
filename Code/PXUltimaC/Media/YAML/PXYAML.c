@@ -169,7 +169,7 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
                         {
                             PXFileWriteI16U(outputStream, sizeof(unsigned int));
                             PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                            PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI);
+                            PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
                             break;
                         }
 
@@ -231,6 +231,9 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
             unsigned short textBSize = 0;
             char textB[256];
 
+            PXText pxTextBuffer;
+            PXTextConstructFromAdressA(&pxTextBuffer, textB, 256);
+
             char emotySpace[25];
 
             PXMemoryClear(textA, 256u);
@@ -262,19 +265,22 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
                 {
                     case PXCompilerSymbolLexerBool:
                     {
-                        unsigned char x = 0;
+                        PXBool x = 0;
 
                         PXFileReadI8U(outputStream, &x);
-                        sprintf_s(textB, 256, "%x", x);
+
+                        PXTextFromBool(&pxTextBuffer, x);
+
                         break;
                     }
 
                     case PXCompilerSymbolLexerInteger:
                     {
-                        unsigned int x = 0;
+                        PXInt32U x = 0;
 
                         PXFileReadI32U(outputStream, &x);
-                        sprintf_s(textB, 256, "%i", x);
+
+                        PXTextFromInt(&pxTextBuffer, x);
 
                         break;
                     }
@@ -285,7 +291,7 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
 
                         PXFileReadF(outputStream, &x);
 
-                        sprintf_s(textB, 256, "%f", x);
+                        PXTextFromInt(&pxTextBuffer, x);
 
                         break;
                     }

@@ -19,8 +19,8 @@ void OnSocketDataReceiveFTP(const PXSocket* const pxSocket, const void* const me
 	{
 		const PXFTPResult pxFTPResult = PXFTPResultParse(returnCode);
 
-		char bufferThing[1024];
-		PXSize bufferOffset = 0;
+		PXText command;
+		PXTextConstructBufferA(&command, 1024);
 
 		printf("[FTP] Code:%i Server:%s\n", returnCode, (char*)message + parsedNumberSize + 1);
 
@@ -28,11 +28,11 @@ void OnSocketDataReceiveFTP(const PXSocket* const pxSocket, const void* const me
 		{
 			case PXFTPResultLoginReady:
 			{
-				bufferOffset += PXFTPCommandBuildUser("anonymous", bufferThing + bufferOffset, bufferOffset);
-				bufferOffset += PXFTPCommandBuildPassword("BitPaw", bufferThing + bufferOffset, bufferOffset);
+				PXFTPCommandBuild(PXFTPCommandUser, &command, PXNull);
+				PXFTPCommandBuild(PXFTPCommandPassword, &command, "BitPaw");
 				//PXFTPCommandBuildCurrentWorkDirectory();
 
-				PXSocketSend(pxSocket, bufferThing, bufferOffset, 0);
+				PXSocketSend(pxSocket, command.TextA, command.SizeUsed, 0);
 
 				break;
 			}
@@ -40,17 +40,17 @@ void OnSocketDataReceiveFTP(const PXSocket* const pxSocket, const void* const me
 			{
 				printf("[PX] Login ok\n");
 
-				bufferOffset += PXFTPCommandBuildDirectoryPrint(bufferThing + bufferOffset, bufferOffset);
+				PXFTPCommandBuild(PXFTPCommandDirectoryPrint, &command, PXNull);
 
-				PXSocketSend(pxSocket, bufferThing, bufferOffset, 0);
+				PXSocketSend(pxSocket, command.TextA, command.SizeUsed, 0);
 
 				break;
 			}
 			case PXFTPResultPathNameCreated:
 			{
-				bufferOffset += PXFTPCommandBuildSYST(bufferThing, bufferOffset);
+				PXFTPCommandBuild(PXFTPCommandSYST, &command, PXNull);
 
-				PXSocketSend(pxSocket, bufferThing, bufferOffset, 0);
+				PXSocketSend(pxSocket, command.TextA, command.SizeUsed, 0);
 
 				break;
 			}

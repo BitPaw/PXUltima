@@ -257,42 +257,33 @@ void PXCompilerSymbolEntryAdd(PXFile* const dataStream, const PXCompilerSymbolEn
 #endif
 }
 
-void PXCompilerSymbolEntryExtract(PXFile* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+PXSize PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	void* const oldPos = PXFileCursorPosition(dataStream);
-	PXSize size = 0;
+	PXSize readBytes = 0;
+	PXInt8U symbolID = 0;
 
-	unsigned char symbolID = 0;
-
-	size += PXFileReadI8U(dataStream, &symbolID);
-	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Coloum);
-	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Line);
-	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Size);
-	size += PXFileReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
+	readBytes += PXFileReadI8U(pxFile, &symbolID);
+	readBytes += PXFileReadI32U(pxFile, &compilerSymbolEntry->Coloum);
+	readBytes += PXFileReadI32U(pxFile, &compilerSymbolEntry->Line);
+	readBytes += PXFileReadI32U(pxFile, &compilerSymbolEntry->Size);
+	readBytes += PXFileReadB(pxFile, &compilerSymbolEntry->Source, sizeof(void*));
 
 	compilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
 
-#if PXCompilerSanitise
-	PXMemorySet(oldPos, '#', size);
-#endif
+	if (readBytes == 0)
+	{
+		compilerSymbolEntry->Coloum = -1;
+		compilerSymbolEntry->Line = -1;
+	}
+
+	return readBytes;
 }
 
-void PXCompilerSymbolEntryPeek(PXFile* const dataStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+PXSize PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	void* const oldPos = PXFileCursorPosition(dataStream);
-	PXSize size = 0;
+	const PXSize readBytes = PXCompilerSymbolEntryExtract(pxFile, compilerSymbolEntry);
 
-	unsigned char symbolID = 0;
-
-	size += PXFileReadI8U(dataStream, &symbolID);
-	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Coloum);
-	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Line);
-	size += PXFileReadI32U(dataStream, &compilerSymbolEntry->Size);
-	size += PXFileReadB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
-
-	compilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
-
-	PXFileCursorRewind(dataStream, size);
+	PXFileCursorRewind(pxFile, readBytes);
 }
 
 PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
@@ -592,7 +583,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 				{
 					compilerSymbolEntry->Source = 0;
 					compilerSymbolEntry->Size = writtenNumbers;
-					compilerSymbolEntry->DataI = value;
+					compilerSymbolEntry->DataI32U = value;
 
 					return PXCompilerSymbolLexerInteger;
 				}			
@@ -625,6 +616,29 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 
 void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings)
 {
+	if (!inputStream)
+	{
+		return;
+	}
+
+	if (!outputStream)
+	{
+		return;
+	}
+
+	if (!compilerSettings)
+	{
+		return;
+	}
+
+	// Do you have a valid input file?
+
+	// Do we have a valid outputfile?
+
+	// Settings invalid?
+
+
+
 	PXSize currentLine = 0;
 	PXSize currentColoum = 0;
 	PXBool isFirstWhiteSpaceInLine = 1u;
@@ -638,6 +652,9 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	while (!PXFileIsAtEnd(inputStream))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
+		PXObjectClear(PXCompilerSymbolEntry, &compilerSymbolEntry);
+
+		compilerSymbolEntry.Size = PXFileRemainingSize(inputStream);
 		compilerSymbolEntry.Source = (char*)PXFileCursorPosition(inputStream);
 
 		//-----------------------------------------------------------------------------
@@ -786,6 +803,9 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 			}
 		}
 	}
+
+	// Mark end of output Stream
+	PXFileCursorToBeginning(outputStream);
 }
 
 PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
@@ -833,7 +853,7 @@ PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSym
 
 	const PXBool isInt = compilerSymbolEntry->ID == PXCompilerSymbolLexerInteger;
 
-	*value = compilerSymbolEntry->DataI;
+	*value = compilerSymbolEntry->DataI32U;
 
 	return isInt;
 }
