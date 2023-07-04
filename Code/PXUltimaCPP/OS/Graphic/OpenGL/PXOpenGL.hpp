@@ -351,6 +351,7 @@ namespace PX
 		PXDLLExport void DrawVertexXYZF(const float x, const float y, const float z);
 		PXDLLExport void DrawColorRGBF(const float red, const float green, const float blue);
 		PXDLLExport void DrawEnd();
+		PXDLLExport void Rectangle(const float xA, const float yA, const float xB, const float yB);
 
 		PXDLLExport void TextureParameter(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const OpenGLTextureParameterValue openGLTextureParameterValue);
 		PXDLLExport void TextureParameterI(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const int param);

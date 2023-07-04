@@ -242,7 +242,7 @@ extern "C"
 	}
 	PXOpenGLRenderMode;
 
-	PXPrivate int PXOpenGLRenderModeToID(const PXOpenGLRenderMode openGLRenderMode);
+	PXPublic int PXOpenGLRenderModeToID(const PXOpenGLRenderMode openGLRenderMode);
 
 
 
@@ -748,6 +748,7 @@ extern "C"
 	PXPublic void PXOpenGLDrawVertexXYZF(PXOpenGL* const openGLContext, const float x, const float y, const float z);
 	PXPublic void PXOpenGLDrawColorRGBF(PXOpenGL* const openGLContext, const float red, const float green, const float blue);
 	PXPublic void PXOpenGLDrawEnd(PXOpenGL* const openGLContext);
+	PXPublic void PXOpenGLRectangleF(PXOpenGL* const openGLContext, const float xA, const float yA, const float xB, const float yB);
 
 	PXPublic void PXOpenGLTextureParameter(PXOpenGL* const openGLContext, const PXOpenGLTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue);
 	PXPublic void PXOpenGLTextureParameterI(PXOpenGL* const openGLContext, const PXOpenGLTextureType textureType, const PXOpenGLTextureParameterMode pname, const int param);

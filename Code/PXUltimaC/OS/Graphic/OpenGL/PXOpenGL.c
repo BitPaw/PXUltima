@@ -2050,6 +2050,11 @@ void PXOpenGLDrawEnd(PXOpenGL* const openGLContext)
     glEnd();
 }
 
+void PXOpenGLRectangleF(PXOpenGL* const openGLContext, const float xA, const float yA, const float xB, const float yB)
+{
+    glRectf(xA, yA, xB, yB);
+}
+
 void PXOpenGLTextureParameter(PXOpenGL* const openGLContext, const PXOpenGLTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue)
 {
     const GLint openGLTextureParameterValueID = PXOpenGLTextureParameterValueToID(openGLTextureParameterValue);

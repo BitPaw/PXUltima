@@ -77,30 +77,42 @@ void PX::OpenGL::DrawOrder(const OpenGLDrawOrderMode openGLDrawOrderMode)
 
 void PX::OpenGL::ClearColor(const float red, const float green, const float blue, const float alpha)
 {
+    PXOpenGLClearColor(this, red, green, blue, alpha);
 }
 
 void PX::OpenGL::Clear(const unsigned int clearID)
 {
+    PXOpenGLClear(this, clearID);
 }
 
 void PX::OpenGL::DrawScaleF(const float x, const float y, const float z)
 {
+    PXOpenGLDrawScaleF(this, x, y, z);
 }
 
 void PX::OpenGL::DrawBegin(const OpenGLRenderMode openGLRenderMode)
 {
+    PXOpenGLDrawBegin(this, (PXOpenGLRenderMode)openGLRenderMode);
 }
 
 void PX::OpenGL::DrawVertexXYZF(const float x, const float y, const float z)
 {
+    PXOpenGLDrawVertexXYZF(this, x, y, z);
 }
 
 void PX::OpenGL::DrawColorRGBF(const float red, const float green, const float blue)
 {
+
 }
 
 void PX::OpenGL::DrawEnd()
 {
+    PXOpenGLDrawEnd(this);
+}
+
+void PX::OpenGL::Rectangle(const float xA, const float yA, const float xB, const float yB)
+{
+    PXOpenGLRectangleF(this, xA, yA, xB, yB);
 }
 
 void PX::OpenGL::TextureParameter(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const OpenGLTextureParameterValue openGLTextureParameterValue)
