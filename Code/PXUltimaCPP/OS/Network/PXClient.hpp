@@ -10,13 +10,13 @@ namespace PX
 	class Client : public PXClient
 	{
 		public:
-		Client();
-		~Client();
+		PXDLLExport Client();
+		PXDLLExport ~Client();
 
-		PX::ActionResult SendData(const void* const data, const PXSize dataSize);
+		PXDLLExport PX::ActionResult SendData(const void* const data, const PXSize dataSize);
 
-		PX::ActionResult ConnectToServer(const PX::Text& const ip, const PXInt16U port, const void* threadObject, const ThreadFunction threadFunction);
-		PX::ActionResult DisconnectFromServer();
+		PXDLLExport PX::ActionResult ConnectToServer(const PX::Text& const ip, const PXInt16U port, const void* threadObject, const ThreadFunction threadFunction);
+		PXDLLExport PX::ActionResult DisconnectFromServer();
 	};
 }
 

@@ -76,7 +76,7 @@ int main()
 
 #if 1
 
-	vswprintf_s
+	vswprintf_s;
 
 	PXText filePath;
 	PXTextMakeFixedA(&filePath, "_TEST_DATA_INPUT_/A.fnt");

@@ -191,19 +191,19 @@ namespace PX
 	class Socket : public PXSocket
 	{
 		public:
-		Socket();
-		~Socket();
+		PXDLLExport Socket();
+		PXDLLExport ~Socket();
 
-		PX::ActionResult Create
+		PXDLLExport PX::ActionResult Create
 		(
 			const IPAdressFamily adressFamily,
 			const PXSocketType socketType,
 			const ProtocolMode protocolMode
 		);
 
-		PX::ActionResult Connect();
+		PXDLLExport PX::ActionResult Connect();
 
-		PX::ActionResult SetupAdress
+		PXDLLExport PX::ActionResult SetupAdress
 		(
 			const PXSize PXSocketListSizeMax,
 			PXSize* PXSocketListSize,
@@ -211,24 +211,24 @@ namespace PX
 			const PXSize pxSocketAdressSetupInfoSize
 		);
 
-		PXBool IsCurrentlyUsed(PXSocket* const pxSocket);
-		void Close(PXSocket* const pxSocket);
+		PXDLLExport bool IsCurrentlyUsed(PXSocket* const pxSocket);
+		PXDLLExport void Close(PXSocket* const pxSocket);
 
 
-		PX::ActionResult EventPull(void* const buffer, const PXSize bufferSize);
+		PXDLLExport PX::ActionResult EventPull(void* const buffer, const PXSize bufferSize);
 
-		PX::ActionResult Bind();
-		PX::ActionResult OptionsSet();
-		PX::ActionResult Listen();
-		PX::ActionResult Accept();
+		PXDLLExport PX::ActionResult Bind();
+		PXDLLExport PX::ActionResult OptionsSet();
+		PXDLLExport PX::ActionResult Listen();
+		PXDLLExport PX::ActionResult Accept();
 
-		PX::ActionResult SendAsServerToClient(const PXSocketID clientID, const void* inputBuffer, const PXSize inputBufferSize);
+		PXDLLExport PX::ActionResult SendAsServerToClient(const PXSocketID clientID, const void* inputBuffer, const PXSize inputBufferSize);
 
-		PX::ActionResult Send(const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
-		PX::ActionResult Receive(const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
-		PX::ActionResult ReceiveAsServer(const PXSocketID clientID);
+		PXDLLExport PX::ActionResult Send(const void* inputBuffer, const PXSize inputBufferSize, PXSize* inputBytesWritten);
+		PXDLLExport PX::ActionResult Receive(const void* outputBuffer, const PXSize outputBufferSize, PXSize* outputBytesWritten);
+		PXDLLExport PX::ActionResult ReceiveAsServer(const PXSocketID clientID);
 
-		PX::ActionResult ClientRemove(const PXSocketID clientID);
+		PXDLLExport PX::ActionResult ClientRemove(const PXSocketID clientID);
 	};
 }
 

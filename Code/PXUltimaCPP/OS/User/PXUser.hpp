@@ -23,8 +23,8 @@ namespace PX
 	class User
 	{
 		public:
-		static bool NameGet(PX::Text& text);
-		static bool EnviromentFolderGet(PX::Text& text, const UserEnviromentFolder userEnviromentFolder);
+		PXDLLExport static bool NameGet(PX::Text& text);
+		PXDLLExport static bool EnviromentFolderGet(PX::Text& text, const UserEnviromentFolder userEnviromentFolder);
 	};
 }
 

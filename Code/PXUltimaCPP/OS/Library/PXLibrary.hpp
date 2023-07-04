@@ -9,17 +9,17 @@ namespace PX
     class Library : public PXLibrary
     {
         public:
-        Library();
-        Library(const Text& const filePath);
-        ~Library();
+        PXDLLExport Library();
+        PXDLLExport Library(const Text& const filePath);
+        PXDLLExport ~Library();
 
-        bool Open(const Text& const filePath); //  gain access to an executable object file. RTLD_LAZY
-        bool Close(); // close a dlopen object
-        bool GetSymbol(LibraryFunction* libraryFunction, const Text& symbolName); // obtain the address of a symbol from a dlopen object
+        PXDLLExport bool Open(const Text& const filePath); //  gain access to an executable object file. RTLD_LAZY
+        PXDLLExport bool Close(); // close a dlopen object
+        PXDLLExport bool GetSymbol(LibraryFunction* libraryFunction, const Text& symbolName); // obtain the address of a symbol from a dlopen object
 
-        PX::ActionResult Name(Text& const libraryName);
+        PXDLLExport PX::ActionResult Name(Text& const libraryName);
 
-        bool ParseSymbols();
+        PXDLLExport bool ParseSymbols();
     };
 }
 #endif

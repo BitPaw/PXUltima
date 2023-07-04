@@ -320,58 +320,58 @@ namespace PX
 	{
 		public:
 		//---<Utility>-------------------------------------------------------------
-		OpenGL();
-		~OpenGL();
+		PXDLLExport OpenGL();
+		PXDLLExport ~OpenGL();
 
-		void Set(OpenGL& pxOpenGL);
-		void Copy(OpenGL& pxOpenGL);
+		PXDLLExport void Set(OpenGL& pxOpenGL);
+		PXDLLExport void Copy(OpenGL& pxOpenGL);
 
-		bool CreateForWindow();
-		void CreateWindowless(const PXSize width, const PXSize height);
-		void Select();
-		bool Deselect();
-		void Release();
+		PXDLLExport bool CreateForWindow();
+		PXDLLExport void CreateWindowless(const PXSize width, const PXSize height);
+		PXDLLExport void Select();
+		PXDLLExport bool Deselect();
+		PXDLLExport void Release();
 
-		void RenderBufferSwap();
+		PXDLLExport void RenderBufferSwap();
 
-		void Flush();
-		void ViewSize(const PXSize x, const PXSize y, const PXSize width, const PXSize height);
+		PXDLLExport void Flush();
+		PXDLLExport void ViewSize(const PXSize x, const PXSize y, const PXSize width, const PXSize height);
 
 
-		void PolygonRenderOrder(const OpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode);
+		PXDLLExport void PolygonRenderOrder(const OpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode);
 
-		void SettingChange(const OpenGLToggle toggle, const bool state);
+		PXDLLExport void SettingChange(const OpenGLToggle toggle, const bool state);
 
-		void DrawOrder(const OpenGLDrawOrderMode openGLDrawOrderMode);
+		PXDLLExport void DrawOrder(const OpenGLDrawOrderMode openGLDrawOrderMode);
 
-		void ClearColor(const float red, const float green, const float blue, const float alpha);
-		void Clear(const unsigned int clearID);
-		void DrawScaleF(const float x, const float y, const float z);
-		void DrawBegin(const OpenGLRenderMode openGLRenderMode);
-		void DrawVertexXYZF(const float x, const float y, const float z);
-		void DrawColorRGBF(const float red, const float green, const float blue);
-		void DrawEnd();
+		PXDLLExport void ClearColor(const float red, const float green, const float blue, const float alpha);
+		PXDLLExport void Clear(const unsigned int clearID);
+		PXDLLExport void DrawScaleF(const float x, const float y, const float z);
+		PXDLLExport void DrawBegin(const OpenGLRenderMode openGLRenderMode);
+		PXDLLExport void DrawVertexXYZF(const float x, const float y, const float z);
+		PXDLLExport void DrawColorRGBF(const float red, const float green, const float blue);
+		PXDLLExport void DrawEnd();
 
-		void TextureParameter(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const OpenGLTextureParameterValue openGLTextureParameterValue);
-		void TextureParameterI(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const int param);
-		void TextureParameterF(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const float param);
+		PXDLLExport void TextureParameter(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const OpenGLTextureParameterValue openGLTextureParameterValue);
+		PXDLLExport void TextureParameterI(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const int param);
+		PXDLLExport void TextureParameterF(const OpenGLTextureType textureType, const OpenGLTextureParameterMode pname, const float param);
 
 		// render
 
-		void DrawArrays(const OpenGLRenderMode renderMode, const PXSize offset, const PXSize amount);
-		void DrawElements(const OpenGLRenderMode renderMode, const PXSize amount, const OpenGLDataType openGLDataType, const void* const indexList);
+		PXDLLExport void DrawArrays(const OpenGLRenderMode renderMode, const PXSize offset, const PXSize amount);
+		PXDLLExport void DrawElements(const OpenGLRenderMode renderMode, const PXSize amount, const OpenGLDataType openGLDataType, const void* const indexList);
 
 
 
-		void DrawArraysInstanced(const OpenGLRenderMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount);
+		PXDLLExport void DrawArraysInstanced(const OpenGLRenderMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount);
 
 		//---<Texture>-------------------------------------------------------------
-		void TextureActivate(const unsigned int index);
-		void TextureCreate(GLsizei n, GLuint* textures); // glGenTextures
-		void TextureBind(const OpenGLTextureType textureType, GLuint texture); // glBindTexture
-		void TextureUnbind(const OpenGLTextureType textureType);
-		void TextureDelete(GLsizei n, const GLuint* textures); // glDeleteTextures
-		void TextureData2D
+		PXDLLExport void TextureActivate(const unsigned int index);
+		PXDLLExport void TextureCreate(GLsizei n, GLuint* textures); // glGenTextures
+		PXDLLExport void TextureBind(const OpenGLTextureType textureType, GLuint texture); // glBindTexture
+		PXDLLExport void TextureUnbind(const OpenGLTextureType textureType);
+		PXDLLExport void TextureDelete(GLsizei n, const GLuint* textures); // glDeleteTextures
+		PXDLLExport void TextureData2D
 		(
 
 			const OpenGLTextureType glTextureType,
@@ -387,49 +387,49 @@ namespace PX
 
 
 		//---<Shader>-----------------------------------------------------------------
-		unsigned int ShaderTypeToID(const OpenGLShaderType openGLShaderType);
-		PXOpenGLShaderID ShaderCreate(const OpenGLShaderType openGLShaderType);
-		void ShaderSource(const PXOpenGLShaderID shaderID, const PXSize count, const char** string, PXSize* const length);
-		unsigned char ShaderCompile(const PXOpenGLShaderID shaderID);
-		void ShaderGetiv(const PXOpenGLShaderID shaderID, GLenum pname, GLint* params);
-		void ShaderLogInfoGet(const PXOpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
-		void ShaderDelete(const PXOpenGLShaderID shaderID);
+		PXDLLExport unsigned int ShaderTypeToID(const OpenGLShaderType openGLShaderType);
+		PXDLLExport PXOpenGLShaderID ShaderCreate(const OpenGLShaderType openGLShaderType);
+		PXDLLExport void ShaderSource(const PXOpenGLShaderID shaderID, const PXSize count, const char** string, PXSize* const length);
+		PXDLLExport unsigned char ShaderCompile(const PXOpenGLShaderID shaderID);
+		PXDLLExport void ShaderGetiv(const PXOpenGLShaderID shaderID, GLenum pname, GLint* params);
+		PXDLLExport void ShaderLogInfoGet(const PXOpenGLShaderID shaderID, GLsizei maxLength, GLsizei* length, char* infoLog);
+		PXDLLExport void ShaderDelete(const PXOpenGLShaderID shaderID);
 
-		PXOpenGLShaderPXProgramID ShaderProgramCreate();
-		void ShaderProgramUse(const PXOpenGLShaderPXProgramID shaderPXProgramID);
-		void ShaderProgramDelete(const PXOpenGLShaderPXProgramID shaderPXProgramID);
+		PXDLLExport PXOpenGLShaderPXProgramID ShaderProgramCreate();
+		PXDLLExport void ShaderProgramUse(const PXOpenGLShaderPXProgramID shaderPXProgramID);
+		PXDLLExport void ShaderProgramDelete(const PXOpenGLShaderPXProgramID shaderPXProgramID);
 
-		void ShaderProgramAttach(const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID);
-		void ShaderProgramLink(const PXOpenGLShaderID shaderID);
-		void ShaderProgramValidate(const PXOpenGLShaderID shaderID);
+		PXDLLExport void ShaderProgramAttach(const PXOpenGLShaderPXProgramID shaderPXProgramID, const PXOpenGLShaderID shaderID);
+		PXDLLExport void ShaderProgramLink(const PXOpenGLShaderID shaderID);
+		PXDLLExport void ShaderProgramValidate(const PXOpenGLShaderID shaderID);
 
-		GLint ShaderVariableIDGet(GLuint program, const char* name);
-		void ShaderVariableFx1(GLint location, GLfloat v0);
-		void ShaderVariableFx1xN(GLint location, GLsizei count, const GLfloat* value);
-		void ShaderVariableIx1(GLint location, GLint v0);
-		void ShaderVariableIx1xN(GLint location, GLsizei count, const GLint* value);
-		void ShaderVariableFx2(GLint location, GLfloat v0, GLfloat v1);
-		void ShaderVariableFx2xN(GLint location, GLsizei count, const GLfloat* value);
-		void ShaderVariableIx2(GLint location, GLint v0, GLint v1);
-		void ShaderVariableIx2xN(GLint location, GLsizei count, const GLint* value);
-		void ShaderVariableFx3(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-		void ShaderVariableFx3xN(GLint location, GLsizei count, const GLfloat* value);
-		void ShaderVariableIx3(GLint location, GLint v0, GLint v1, GLint v2);
-		void ShaderVariableIx3xN(GLint location, GLsizei count, const GLint* value);
-		void ShaderVariableFx4(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-		void ShaderVariableFx4xN(GLint location, GLsizei count, const GLfloat* value);
-		void ShaderVariableIx4(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-		void ShaderVariableIx4xN(GLint location, GLsizei count, const GLint* value);
-		void ShaderVariableMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-		void ShaderVariableMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-		void ShaderVariableMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+		PXDLLExport GLint ShaderVariableIDGet(GLuint program, const char* name);
+		PXDLLExport void ShaderVariableFx1(GLint location, GLfloat v0);
+		PXDLLExport void ShaderVariableFx1xN(GLint location, GLsizei count, const GLfloat* value);
+		PXDLLExport void ShaderVariableIx1(GLint location, GLint v0);
+		PXDLLExport void ShaderVariableIx1xN(GLint location, GLsizei count, const GLint* value);
+		PXDLLExport void ShaderVariableFx2(GLint location, GLfloat v0, GLfloat v1);
+		PXDLLExport void ShaderVariableFx2xN(GLint location, GLsizei count, const GLfloat* value);
+		PXDLLExport void ShaderVariableIx2(GLint location, GLint v0, GLint v1);
+		PXDLLExport void ShaderVariableIx2xN(GLint location, GLsizei count, const GLint* value);
+		PXDLLExport void ShaderVariableFx3(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+		PXDLLExport void ShaderVariableFx3xN(GLint location, GLsizei count, const GLfloat* value);
+		PXDLLExport void ShaderVariableIx3(GLint location, GLint v0, GLint v1, GLint v2);
+		PXDLLExport void ShaderVariableIx3xN(GLint location, GLsizei count, const GLint* value);
+		PXDLLExport void ShaderVariableFx4(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+		PXDLLExport void ShaderVariableFx4xN(GLint location, GLsizei count, const GLfloat* value);
+		PXDLLExport void ShaderVariableIx4(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+		PXDLLExport void ShaderVariableIx4xN(GLint location, GLsizei count, const GLint* value);
+		PXDLLExport void ShaderVariableMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+		PXDLLExport void ShaderVariableMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+		PXDLLExport void ShaderVariableMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 		//-------------------------------------------------------------------------
 
 		//---<Buffers>-------------------------------------------------------------
-		void VertexArrayGenerate(const unsigned int amount, unsigned int* const vaoList);
-		void VertexArrayBind(const unsigned int vaoID);
-		void VertexArrayUnbind();
-		void VertexArrayAttributeDefine
+		PXDLLExport void VertexArrayGenerate(const unsigned int amount, unsigned int* const vaoList);
+		PXDLLExport void VertexArrayBind(const unsigned int vaoID);
+		PXDLLExport void VertexArrayUnbind();
+		PXDLLExport void VertexArrayAttributeDefine
 		(
 
 			const unsigned int index,
@@ -439,35 +439,35 @@ namespace PX
 			const unsigned int stride,
 			const PXSize offset
 		);
-		void VertexAttributeDivisor(const PXSize index, const PXSize divisor);
-		void VertexArrayEnable(const unsigned int vertexArrayAtributeID);
-		void VertexArrayDisable(const unsigned int vertexArrayAtributeID);
+		PXDLLExport void VertexAttributeDivisor(const PXSize index, const PXSize divisor);
+		PXDLLExport void VertexArrayEnable(const unsigned int vertexArrayAtributeID);
+		PXDLLExport void VertexArrayDisable(const unsigned int vertexArrayAtributeID);
 
-		void BufferGenerate(const unsigned int amount, unsigned int* const bufferIDList);
-		void BufferBind(const OpenGLBufferType bufferType, const unsigned int bufferID);
-		void BufferData(const OpenGLBufferType bufferType, const unsigned int size, const void* const data, const OpenGLStoreMode openGLStoreMode);
-		void BufferUnbind(const OpenGLBufferType bufferType);
+		PXDLLExport void BufferGenerate(const unsigned int amount, unsigned int* const bufferIDList);
+		PXDLLExport void BufferBind(const OpenGLBufferType bufferType, const unsigned int bufferID);
+		PXDLLExport void BufferData(const OpenGLBufferType bufferType, const unsigned int size, const void* const data, const OpenGLStoreMode openGLStoreMode);
+		PXDLLExport void BufferUnbind(const OpenGLBufferType bufferType);
 		//-------------------------------------------------------------------------
 
 		//-------------------------------------------------------------------------
-		void FrameBufferCreate(const unsigned int amount, unsigned int* const framebufferIDList);
-		void RenderBufferStorage(const OpenGLRenderBufferFormat internalformat, const int width, const int height);
+		PXDLLExport void FrameBufferCreate(const unsigned int amount, unsigned int* const framebufferIDList);
+		PXDLLExport void RenderBufferStorage(const OpenGLRenderBufferFormat internalformat, const int width, const int height);
 
 		// If we bind to 0, we select the "main window"
-		void FrameBufferBind(const OpenGLFrameBufferMode target, const unsigned int framebufferID);
+		PXDLLExport void FrameBufferBind(const OpenGLFrameBufferMode target, const unsigned int framebufferID);
 
-		void FrameBufferDestroy(const unsigned int amount, unsigned int* const framebufferIDList);
+		PXDLLExport void FrameBufferDestroy(const unsigned int amount, unsigned int* const framebufferIDList);
 
-		void RenderBufferCreate(GLsizei n, GLuint* renderbuffers);
-
-
-		void RenderBufferBind(const unsigned int renderbuffer);
-
-		void RenderBufferDelete(GLsizei n, GLuint* renderbuffers);
+		PXDLLExport void RenderBufferCreate(GLsizei n, GLuint* renderbuffers);
 
 
-		void FrameBufferLinkTexture2D(const OpenGLRenderBufferAttachmentPoint attachment, const OpenGLTextureType textarget, const unsigned int textureID, const int level);
-		GLuint FrameBufferLinkRenderBuffer(const OpenGLRenderBufferAttachmentPoint attachment, const unsigned int renderbuffer);
+		PXDLLExport void RenderBufferBind(const unsigned int renderbuffer);
+
+		PXDLLExport void RenderBufferDelete(GLsizei n, GLuint* renderbuffers);
+
+
+		PXDLLExport void FrameBufferLinkTexture2D(const OpenGLRenderBufferAttachmentPoint attachment, const OpenGLTextureType textarget, const unsigned int textureID, const int level);
+		PXDLLExport GLuint FrameBufferLinkRenderBuffer(const OpenGLRenderBufferAttachmentPoint attachment, const unsigned int renderbuffer);
 		//-------------------------------------------------------------------------
 
 
@@ -475,7 +475,7 @@ namespace PX
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.1.1.0>------------------------------------------------------
-		void PixelDataRead
+		PXDLLExport void PixelDataRead
 		(
 
 			const int x,
@@ -490,15 +490,15 @@ namespace PX
 
 
 	//---<PXOpenGL v.3.0.0>------------------------------------------------------
-		const char* StringGetI(const OpenGLStringName stringName, const unsigned int index);
+		PXDLLExport const char* StringGetI(const OpenGLStringName stringName, const unsigned int index);
 		//-------------------------------------------------------------------------
 
 
 
 
 		//---<Extensions>----------------------------------------------------------
-		void SwapIntervalSet(const PXInt32U interval);
-		PXInt32U SwapIntervalGet();
+		PXDLLExport void SwapIntervalSet(const PXInt32U interval);
+		PXDLLExport PXInt32U SwapIntervalGet();
 		//-------------------------------------------------------------------------
 
 	};

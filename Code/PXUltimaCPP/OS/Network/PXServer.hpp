@@ -9,12 +9,12 @@ namespace PX
 	class Server : public PXServer
 	{
 		public:
-		Server();
-		~Server();
+		PXDLLExport Server();
+		PXDLLExport ~Server();
 
-		PX::ActionResult Start(const PXInt16U port, const ProtocolMode protocolMode);
-		PX::ActionResult Stop();
-		PX::ActionResult KickClient(const PXSocketID socketID);
+		PXDLLExport PX::ActionResult Start(const PXInt16U port, const ProtocolMode protocolMode);
+		PXDLLExport PX::ActionResult Stop();
+		PXDLLExport PX::ActionResult KickClient(const PXSocketID socketID);
 	};
 }
 

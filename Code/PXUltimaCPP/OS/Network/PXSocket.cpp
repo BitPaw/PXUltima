@@ -23,7 +23,7 @@ PX::ActionResult PX::Socket::SetupAdress(const PXSize PXSocketListSizeMax, PXSiz
     return PX::ActionResult();
 }
 
-PXBool PX::Socket::IsCurrentlyUsed(PXSocket* const pxSocket)
+bool PX::Socket::IsCurrentlyUsed(PXSocket* const pxSocket)
 {
     return PXBool();
 }

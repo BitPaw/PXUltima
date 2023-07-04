@@ -17,9 +17,9 @@ namespace PX
 	class Text : public PXText
 	{
 		public:
-		Text();
+		PXDLLExport Text();
 
-		Text(const char* adress, PXSize size);
+		PXDLLExport Text(const char* adress, PXSize size);
 
 		template<PXSize stringLength>
 		PXDLLExport Text(const char(&stringAdress)[stringLength]);

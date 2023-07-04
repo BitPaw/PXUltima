@@ -70,45 +70,44 @@ namespace PX
 	class Window : public PXWindow
 	{
 		public:
+		PXDLLExport Window();
+		PXDLLExport ~Window();
 
-		Window();
-		~Window();
+		PXDLLExport float ScreenRatio();
 
-		float ScreenRatio();
-
-		void Create(const PXInt32S width, const PXInt32S height, const Text& const title, const bool async);
-		void CreateHidden(const PXInt32S width, const PXInt32S height, const bool async);
+		PXDLLExport void Create(const PXInt32S width, const PXInt32S height, const Text& const title, const bool async);
+		PXDLLExport void CreateHidden(const PXInt32S width, const PXInt32S height, const bool async);
 
 
-		PXProcessThreadID ThreadProcessID(const PXWindowID windowID);
+		PXDLLExport PXProcessThreadID ThreadProcessID(const PXWindowID windowID);
 
-		bool TitleSet(const Text& const title);
-		PXSize TitleGet(Text& const title);
+		PXDLLExport bool TitleSet(const Text& const title);
+		PXDLLExport PXSize TitleGet(Text& const title);
 
-		PXWindowID FindViaTitle(const Text& const windowTitle);
+		PXDLLExport PXWindowID FindViaTitle(const Text& const windowTitle);
 
-		void IconCorner();
-		void IconTaskBar();
+		PXDLLExport void IconCorner();
+		PXDLLExport void IconTaskBar();
 
-		void Size(PXInt32S& x, PXInt32S& y, PXInt32S& width, PXInt32S& height);
-		void SizeChange(const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height);
-		void Position(PXInt32S& x, PXInt32S& y);
-		void PositionChange(const PXInt32S x, const PXInt32S y);
-		void PositonCenterScreen();
-		void Cursor();
+		PXDLLExport void Size(PXInt32S& x, PXInt32S& y, PXInt32S& width, PXInt32S& height);
+		PXDLLExport void SizeChange(const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height);
+		PXDLLExport void Position(PXInt32S& x, PXInt32S& y);
+		PXDLLExport void PositionChange(const PXInt32S x, const PXInt32S y);
+		PXDLLExport void PositonCenterScreen();
+		PXDLLExport void Cursor();
 		//voidPXWindowCursor(const CursorIcon cursorIcon);
-		void CursorTexture();
-		void CursorCaptureMode(const WindowCursorMode cursorMode);
+		PXDLLExport void CursorTexture();
+		PXDLLExport void CursorCaptureMode(const WindowCursorMode cursorMode);
 		//voidPXWindowScreenShotTake(Image image);
 
-		bool FrameBufferSwap();
+		PXDLLExport bool FrameBufferSwap();
 
-		bool Interactable();
+		PXDLLExport bool Interactable();
 
-		bool CursorPositionInWindowGet(PXInt32S& x, PXInt32S& y);
-		bool CursorPositionInDestopGet(PXInt32S& x, PXInt32S& y);
+		PXDLLExport bool CursorPositionInWindowGet(PXInt32S& x, PXInt32S& y);
+		PXDLLExport bool CursorPositionInDestopGet(PXInt32S& x, PXInt32S& y);
 
-		bool IsInFocus();
+		PXDLLExport bool IsInFocus();
 	};
 }
 

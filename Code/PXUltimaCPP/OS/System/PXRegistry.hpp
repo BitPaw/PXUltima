@@ -18,18 +18,18 @@ namespace PX
 	class Registry : public PXRegistry
 	{
 		public:
-		Registry();
-		~Registry();
+		PXDLLExport Registry();
+		PXDLLExport ~Registry();
 
-		PX::ActionResult ConnectSpace(const PXRegistrySpace registrySpace);
-		PX::ActionResult ConnectRemote(const PX::Text& computerName, const PXRegistrySpace registrySpace);
+		PXDLLExport PX::ActionResult ConnectSpace(const PXRegistrySpace registrySpace);
+		PXDLLExport PX::ActionResult ConnectRemote(const PX::Text& computerName, const PXRegistrySpace registrySpace);
 
-		void Close();
+		PXDLLExport void Close();
 
-		void KeyCreate();
-		void KeyLoad(PX::Text& file);
-		void KeySave();
-		void KeyDelete();
+		PXDLLExport void KeyCreate();
+		PXDLLExport void KeyLoad(PX::Text& file);
+		PXDLLExport void KeySave();
+		PXDLLExport void KeyDelete();
 	};
 }
 

@@ -8,10 +8,10 @@ namespace PX
 	class DirectX : public PXDirectX
 	{
 		public:
-		DirectX();
-		~DirectX();
+		PXDLLExport DirectX();
+		PXDLLExport ~DirectX();
 
-		void ContextCreate();
+		PXDLLExport void ContextCreate();
 	};
 }
 
