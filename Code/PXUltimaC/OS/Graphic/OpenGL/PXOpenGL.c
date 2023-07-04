@@ -1974,14 +1974,7 @@ void PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext)
 {
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
-#if OSUnix
-    glXSwapBuffers(window->DisplayCurrent, window->ID);
-
-#elif OSWindows
-    BOOL successful = SwapBuffers(window->HandleDeviceContext);
-
-    successful += 0;
-#endif
+    PXWindowFrameBufferSwap(window);
 }
 
 void PXOpenGLFlush(PXOpenGL* const openGLContext)

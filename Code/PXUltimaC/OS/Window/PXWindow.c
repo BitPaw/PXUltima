@@ -2738,7 +2738,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 PXBool PXWindowFrameBufferSwap(const PXWindow* const window)
 {
 #if OSUnix
-    //glXSwapBuffers();
+    glXSwapBuffers(window->DisplayCurrent, window->ID);
     return PXFalse;
 
 #elif OSWindows

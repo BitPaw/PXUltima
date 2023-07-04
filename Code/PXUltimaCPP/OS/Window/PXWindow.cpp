@@ -87,7 +87,7 @@ void PX::Window::CursorCaptureMode(const WindowCursorMode cursorMode)
 
 bool PX::Window::FrameBufferSwap()
 {
-	return false;
+	return PXWindowFrameBufferSwap(this);
 }
 
 bool PX::Window::Interactable()
