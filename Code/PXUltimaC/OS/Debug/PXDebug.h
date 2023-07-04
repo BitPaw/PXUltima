@@ -44,7 +44,7 @@ extern "C"
 	PXPublic PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug);
 
 
-	PXPublic PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const applicationName);
+	PXPublic PXActionResult PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName);
 
 	// Enables a debugger to continue a thread that previously reported a debugging event.
 	PXPublic void PXDebugContinue(PXDebug* const pxDebug);

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-#if false
-
 namespace PX
 {
     public class Window : IDisposable
@@ -32,7 +30,7 @@ namespace PX
         [DllImport("PXUltima.dll")] private static extern void PXWindowCreateHidden(ref PXWindow window, int width, int height, bool async);
 
         [DllImport("PXUltima.dll")] private static extern bool PXWindowTitleSet(ref PXWindow window, ref PXText title);
-        [DllImport("PXUltima.dll")] private static extern UInt64 PXWindowTitleGet(ref PXWindow window, ref PXText title);
+        [DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXWindowTitleGet(ref PXWindow window, PXText* title);
 
         [DllImport("PXUltima.dll")] private static extern void PXWindowIconCorner();
         [DllImport("PXUltima.dll")] private static extern void PXWindowIconTaskBar();
@@ -80,9 +78,11 @@ namespace PX
             {               
                 string title = string.Empty;
                 char* buffer = stackalloc char[256];
+                PXText* pXText = stackalloc PXText[1];
 
-                PXText pXText = PXText.MakeFromStringW(buffer, 256);
-                UInt64 length = PXWindowTitleGet(ref _pxWindow, ref pXText);
+                pXText->MakeFromBufferW((IntPtr)buffer, (IntPtr)256);
+
+                ulong length = (ulong)PXWindowTitleGet(ref _pxWindow, pXText);
 
                 if (length > 0)
                 {
@@ -127,4 +127,3 @@ namespace PX
         }       
     }
 }
-#endif

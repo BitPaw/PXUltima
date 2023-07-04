@@ -35,7 +35,7 @@ PXSize PX::Process::MemoryWrite(const void* const targetAdress, const void* cons
 	return PXProcessMemoryWrite(this, targetAdress, buffer, bufferSize);
 }
 
-PXSize PX::Process::MemoryRead(void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+PXSize PX::Process::MemoryRead(void* const targetAdress, void* const buffer, const PXSize bufferSize)
 {
 	return PXProcessMemoryRead(this, targetAdress, buffer, bufferSize);;
 }

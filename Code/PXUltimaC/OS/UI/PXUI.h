@@ -18,8 +18,8 @@ extern "C"
 #endif
 
 #if PXOSWindowsDestop
-	PXPublic void PXUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead);
-	PXPublic void PXUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten);
+	PXPublic void PXOSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead);
+	PXPublic void PXOSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten);
 #endif
 
 	PXPublic void PXUIElementEnable();
@@ -35,7 +35,7 @@ extern "C"
 	}UILayout;
 
 
-	PXPublic void UIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name);
+	PXPublic void PXUIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name);
 
 	typedef struct OSButton_
 	{

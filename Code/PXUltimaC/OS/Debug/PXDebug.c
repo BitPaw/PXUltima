@@ -102,7 +102,7 @@ PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 #endif
 }
 
-PXActionResult PXDebugStartProcessA(PXDebug* const pxDebug, const PXText* const applicationName)
+PXActionResult PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName)
 {
 	PXDebugConstruct(pxDebug);
 

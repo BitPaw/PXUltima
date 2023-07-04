@@ -10,14 +10,14 @@
 #define ButtonCustomD 0b01000000
 #define ButtonCustomE 0b10000000
 
-#define IsPressedButtonLeft(mouse)	   (mouse->Buttons & ButtonLeft)
-#define IsPressedButtonMiddle(mouse)  ((mouse->Buttons & ButtonMiddle) >> 1)
-#define IsPressedButtonRight(mouse)   ((mouse->Buttons & ButtonRight) >> 2)
-#define IsPressedButtonCustomA(mouse) ((mouse->Buttons & ButtonCustomA) >> 3)
-#define IsPressedButtonCustomB(mouse) ((mouse->Buttons & ButtonCustomB) >> 4)
-#define IsPressedButtonCustomC(mouse) ((mouse->Buttons & ButtonCustomC) >> 5)
-#define IsPressedButtonCustomD(mouse) ((mouse->Buttons & ButtonCustomD) >> 6)
-#define IsPressedButtonCustomE(mouse) ((mouse->Buttons & ButtonCustomE) >> 7)
+#define IsPressedButtonLeft(buttons)	   (buttons & ButtonLeft)
+#define IsPressedButtonMiddle(buttons)  ((buttons & ButtonMiddle) >> 1)
+#define IsPressedButtonRight(buttons)   ((buttons & ButtonRight) >> 2)
+#define IsPressedButtonCustomA(buttons) ((buttons & ButtonCustomA) >> 3)
+#define IsPressedButtonCustomB(buttons) ((buttons & ButtonCustomB) >> 4)
+#define IsPressedButtonCustomC(buttons) ((buttons & ButtonCustomC) >> 5)
+#define IsPressedButtonCustomD(buttons) ((buttons & ButtonCustomD) >> 6)
+#define IsPressedButtonCustomE(buttons) ((buttons & ButtonCustomE) >> 7)
 
 #include <Media/PXType.h>
 
@@ -28,8 +28,9 @@ extern "C"
 
 	typedef struct PXMouse_
 	{
-		int Position[2]; // Window-Position (0/0 to x/y)
-		int Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)
+		PXInt32S Position[2]; // Window-Position (0/0 to x/y)
+		PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)
+		float DeltaNormalisized[2];
 		float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
 		unsigned char Buttons;
 	}

@@ -36,6 +36,11 @@
 //#include <hidusage.h>
 #include <Dbt.h>
 
+#include <dwmapi.h> // Set tilebar color
+
+
+#pragma comment(lib, "dwmapi.lib")
+
 #define DefautPositionX CW_USEDEFAULT
 #define DefautPositionY CW_USEDEFAULT
 
@@ -987,10 +992,10 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
     }
 }
 #elif PXOSWindowsDestop
-LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam)
 {
     const WindowEventType windowEventType = ToWindowEventType(eventID);
-    PXWindow* window = PXWindowLookupFind(windowsID);
+    PXWindow* const window = PXWindowLookupFind(windowsID);
 
     if(!window)
     {
@@ -1042,7 +1047,9 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
         case WindowEventTextGetLength:
             break;
         case WindowEventPaint:
+        {
             break;
+        }      
         case WindowEventClose:
         {
             PXBool closeWindow = 0;
@@ -1264,14 +1271,16 @@ LRESULT CALLBACK PXWindowEventHandler(HWND windowsID, UINT eventID, WPARAM wPara
 #if UseRawMouseData
                         if(rawInput.header.dwType == RIM_TYPEMOUSE)
                         {
-                            int positionX = 0;
-                            int positionY = 0;
-                            int deltaX = rawInput.data.mouse.lLastX;
-                            int deltaY = rawInput.data.mouse.lLastY;
+                            PXInt32S positionX = 0;
+                            PXInt32S positionY = 0;
+                            PXInt32S deltaX = rawInput.data.mouse.lLastX;
+                            PXInt32S deltaY = rawInput.data.mouse.lLastY;
 
                             PXWindowCursorPositionInWindowGet(window, &positionX, &positionY);
 
                             PXWindowTriggerOnMouseMoveEvent(window, positionX, positionY, deltaX, deltaY);
+
+                            
 
                             // Wheel data needs to be pointer casted to interpret an unsigned short as a short, with no conversion
                             // otherwise it'll overflow when going negative.
@@ -2106,6 +2115,16 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
         PXWindowPosition(window, PXNull, PXNull);
     }
 
+    
+    // Setup cursorPosition
+    PXWindowCursorPositionInWindowGet(window, &window->MouseCurrentInput.Position[0], &window->MouseCurrentInput.Position[1]);
+
+  //  window->MouseCurrentInput.Position[0] -= window->Width //;
+   // window->MouseCurrentInput.Position[1] -= window->Height / 2;
+
+
+    PXWindowTitleBarColorSet(window);
+
     // MISSING
 
     // PixelDraw system
@@ -2528,6 +2547,26 @@ void PXWindowLookupRemove(const PXWindow* window)
     currentWindow = 0;
 }
 
+PXActionResult PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
+{
+#if OSUnix
+    return PXActionNotSupportedByOperatingSystem;
+#elif OSWindows
+
+    const BOOL useDarkMode = PXTrue;
+    const BOOL setAttributeSuccess = SUCCEEDED(DwmSetWindowAttribute(pxWindow->ID, DWMWA_USE_IMMERSIVE_DARK_MODE, &useDarkMode, sizeof(BOOL))); // Windows Vista, Dwmapi.dll;Uxtheme.dll, dwmapi.h
+
+    if (!setAttributeSuccess)
+    {
+        return PXActionCancelled;
+    }
+
+    return PXActionSuccessful;
+#else
+    return PXActionNotSupportedByOperatingSystem;
+#endif
+}
+
 void PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height)
 {
 #if OSUnix
@@ -2729,10 +2768,10 @@ PXBool PXWindowInteractable(PXWindow* window)
     }
 }
 
-PXBool PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y)
+PXBool PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
 {
-    int xPos = 0;
-    int yPos = 0;
+    PXInt32S xPos = 0;
+    PXInt32S yPos = 0;
     const PXBool sucessfulA = PXWindowCursorPositionInDestopGet(window, &xPos, &yPos);
 
 #if OSUnix
@@ -2760,7 +2799,7 @@ PXBool PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y)
 #endif
 }
 
-PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y)
+PXBool PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
 {
 #if OSUnix
     return PXFalse;
@@ -2864,10 +2903,66 @@ void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mo
 
 void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const PXKeyPressState buttonState)
 {
-    const PXMouse* const mouse = &window->MouseCurrentInput;
+    PXMouse* const mouse = &window->MouseCurrentInput;
 
     const char* buttonStateText = 0;
     const char* mouseButtonText = 0;
+
+    switch (buttonState)
+    {
+        case PXKeyPressStateDown:
+        {
+            switch (mouseButton)
+            {
+                case MouseButtonLeft:
+                {
+                    mouse->Buttons |= ButtonLeft;
+                    break;
+                }
+                case MouseButtonMiddle:
+                {
+                    mouse->Buttons |= ButtonMiddle;
+                    break;
+                }
+                case MouseButtonRight:
+                {
+                    mouse->Buttons |= ButtonRight;
+                    break;
+                }
+            }
+            break;
+        }
+        case PXKeyPressStateUp:
+        {
+            switch (mouseButton)
+            {
+                case MouseButtonLeft:
+                {
+                    mouse->Buttons &= ~ButtonLeft;
+                    break;
+                }
+                case MouseButtonMiddle:
+                {
+                    mouse->Buttons &= ~ButtonMiddle;
+                    break;
+                }
+                case MouseButtonRight:
+                {
+                    mouse->Buttons &= ~ButtonRight;
+                    break;
+                }
+            }
+            break;
+        }
+
+        default:
+            break;
+    }
+
+
+
+
+
 
     switch(buttonState)
     {
@@ -2937,16 +3032,57 @@ void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseB
     InvokeEvent(window->MouseClickDoubleCallBack, window->EventReceiver, window, mouseButton);
 }
 
-void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY)
-{
-    PXMouse* mouse = &window->MouseCurrentInput;
+#define UseOSDelta 0
 
-    mouse->Position[0] = PXMathLimit(positionX, 0, window->Width);
-    mouse->Position[1] = window->Height - PXMathLimit(positionY, 0, window->Height);
-    mouse->Delta[0] = deltaX;
-    mouse->Delta[1] = deltaY;
-    mouse->PositionNormalisized[0] = mouse->Position[0] / (window->Width / 2.0f) - 1;
-    mouse->PositionNormalisized[1] = mouse->Position[1] / (window->Height / 2.0f) - 1;
+void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY)
+{
+    PXMouse* const mouse = &window->MouseCurrentInput;
+
+    const PXInt32S mousePositionOld[2] =
+    {
+        mouse->Position[0],
+        mouse->Position[1]
+    };
+    const PXInt32S mousePositionNew[2] =
+    {
+#if UseOSDelta
+        mousePositionOld + deltaX,
+        mousePositionOld - deltaY
+#else
+        PXMathLimit(positionX, 0, window->Width),
+        window->Height - PXMathLimit(positionY, 0, window->Height)
+#endif
+    };
+
+    const PXInt32S mousePositionDeltaNew[2] = 
+    {
+        #if UseOSDelta
+        mousePositionNew[0] - mousePositionOld[0],
+        mousePositionNew[1] - mousePositionOld[1]
+        #else
+        deltaX,
+        deltaY
+        #endif
+    };
+
+    const PXBool hasDelta = (mousePositionDeltaNew[0] != 0 && mousePositionDeltaNew[1] != 0) || 1;
+
+    if (hasDelta)
+    {
+        mouse->Delta[0] = mousePositionDeltaNew[0];
+        mouse->Delta[1] = mousePositionDeltaNew[1];
+        mouse->DeltaNormalisized[0] = (mousePositionDeltaNew[0] / ((float)window->Width / 2.0f)) - 1.0f;
+        mouse->DeltaNormalisized[1] = (mousePositionDeltaNew[1] / ((float)window->Height / 2.0f)) - 1.0f;
+        mouse->Position[0] = mousePositionNew[0];
+        mouse->Position[1] = mousePositionNew[1];
+        mouse->PositionNormalisized[0] = (mousePositionNew[0] / ((float)window->Width / 2.0f)) - 1.0f;
+        mouse->PositionNormalisized[1] = (mousePositionNew[1] / ((float)window->Height / 2.0f)) - 1.0f;
+    }
+    else
+    {
+        mouse->Delta[0] = 0;
+        mouse->Delta[1] = 0;
+    }
 
     InvokeEvent(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
 }

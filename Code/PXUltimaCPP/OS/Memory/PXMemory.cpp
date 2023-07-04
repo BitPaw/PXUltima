@@ -3,7 +3,7 @@
 template<typename T>
 T* PX::Memory::Allocate(const PXSize size)
 {
-	return PXMemoryAllocateType(T, requestedBytes);
+	return PXMemoryAllocateType(T, size);
 }
 
 template<typename T>

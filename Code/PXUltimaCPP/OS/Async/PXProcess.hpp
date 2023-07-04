@@ -20,7 +20,7 @@ namespace PX
 		PX::ActionResult Close();
 
 		PXSize MemoryWrite(const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
-		PXSize MemoryRead(void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+		PXSize MemoryRead(void* const targetAdress, void* const buffer, const PXSize bufferSize);
 
 		static PX::ActionResult MemoryInfoFetch(PXProcessMemoryInfo& pxProcessMemoryInfo);
 	};

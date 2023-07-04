@@ -473,9 +473,13 @@ extern "C"
 
 
 	//-------------------------------------------------------------------------
-	PXPublic void PXUIElementConstruct(PXUIElement* const pxUIElement);
+	PXPublic void PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
 	PXPublic void PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
 	PXPublic void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height);
+
+	PXPublic void PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
+	PXPublic void PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
+	PXPublic void PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
 
 	PXPrivate PXInt32U PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext);
 
@@ -523,7 +527,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<Rendering>-----------------------------------------------------------
-	PXPublic PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext);
+	PXPublic PXBool PXGraphicFrameBufferSwap(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicRenderElement(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	PXPublic PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	//-------------------------------------------------------------------------

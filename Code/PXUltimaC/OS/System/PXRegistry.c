@@ -7,10 +7,6 @@
 #if OSUnix
 #elif PXOSWindowsDestop
 #pragma comment(lib, "Advapi32.lib")
-
-#ifndef LSTATUS
-#define LSTATUS long 
-#endif
 #endif
 
 PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace)
@@ -21,6 +17,7 @@ PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegist
 PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace)
 {
 #if OSUnix
+	return PXActionNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 	HKEY hKey = 0;
 
@@ -39,17 +36,34 @@ PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText*
 			break;
 
 		default:
-			break;
+			return PXActionRefuedInputInvalid;
 	}
 
 
-	const LSTATUS status = RegConnectRegistryW(computerName, hKey, &registry->ID); // Windows 2000, Advapi32.dll, winreg.h
-	const PXBool sucessful = status == ERROR_SUCCESS;
-
-	if (!sucessful)
+	switch (computerName->Format)
 	{
-		// DO stuff;
-		return PXActionInvalid;
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			const LSTATUS statusID = RegConnectRegistryA(computerName->TextA, hKey, &registry->ID);  // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			const LSTATUS statusID = RegConnectRegistryW(computerName->TextW, hKey, &registry->ID); // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+
+		default:
+			return PXActionRefuedTextFormatUnsupported;
 	}
 
 	return PXActionSuccessful;
@@ -58,22 +72,65 @@ PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText*
 #endif
 }
 
-void PXRegistryClose(PXRegistry* const registry)
+PXActionResult PXRegistryClose(PXRegistry* const registry)
 {
 #if OSUnix
+	return PXActionNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
-	const LSTATUS status = RegCloseKey(registry->ID);
+	const LSTATUS statusID = RegCloseKey(registry->ID);
+	const PXBool successful = ERROR_SUCCESS == statusID;
+
+	PXActionOnErrorFetchAndReturn(!successful);
 
 	registry->ID = 0;
+
+	return PXActionSuccessful;
+
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-void PXRegistryKeyCreate(PXRegistry* const registry)
+PXActionResult PXRegistryKeyListAll(PXRegistry* const registry)
+{
+	PXBool repeat = 0;
+
+	PXText pxTextKeyName;
+	PXTextConstructBufferA(&pxTextKeyName, 256);
+
+	for (DWORD i = 0; repeat ; ++i) // repeat until "ERROR_NO_MORE_ITEMS"
+	{
+		DWORD textSize = pxTextKeyName.SizeAllocated;
+
+		const LSTATUS statusID = RegEnumKeyExA
+		(
+			registry->ID,
+			i,
+			pxTextKeyName.TextA,
+			&textSize,
+			0, // lpReserved
+			0, // lpClass
+			0, // lpcchClass
+			0 // lpftLastWriteTime
+		);
+		const PXBool successful = ERROR_SUCCESS == statusID;
+
+		if (successful)
+		{
+			pxTextKeyName.SizeUsed = textSize;
+		}
+
+		repeat = ERROR_NO_MORE_ITEMS != statusID;
+	}
+
+	return PXActionSuccessful;
+}
+
+PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
+	return PXActionNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
-	HKEY hKey = 0;
-	LPCWSTR lpSubKey = 0;
 	DWORD Reserved = 0;
 	LPWSTR lpClass = 0;
 	DWORD dwOptions = 0;
@@ -84,46 +141,179 @@ void PXRegistryKeyCreate(PXRegistry* const registry)
 
 	PXMemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
 
-	const LSTATUS status = RegCreateKeyExW // Windows 2000, Advapi32.dll, winreg.h
-	(
-		hKey,
-		lpSubKey,
-		Reserved,
-		lpClass,
-		dwOptions,
-		samDesired,
-		&securityAttributes,
-		phkResult,
-		&dwDisposition
-	);
+	switch (pxTextKeyName->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			const LSTATUS statusID = RegCreateKeyExA // Windows 2000, Advapi32.dll, winreg.h
+			(
+				registry->ID,
+				pxTextKeyName->TextA,
+				Reserved,
+				lpClass,
+				dwOptions,
+				samDesired,
+				&securityAttributes,
+				phkResult,
+				&dwDisposition
+			);
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			const LSTATUS statusID = RegCreateKeyExW // Windows 2000, Advapi32.dll, winreg.h
+			(
+				registry->ID,
+				pxTextKeyName->TextW,
+				Reserved,
+				lpClass,
+				dwOptions,
+				samDesired,
+				&securityAttributes,
+				phkResult,
+				&dwDisposition
+			);
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+		default:
+			return PXActionRefuedTextFormatUnsupported;
+	}
+
+
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-void PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const file)
+PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile)
 {
 #if OSUnix
+	return PXActionNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
-	HKEY hKey = 0;
 	SECURITY_ATTRIBUTES securityAttributes;
 	DWORD Flags = 0;
 
 	PXMemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
+	
+	switch (pxTextKeyName->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			const LSTATUS statusID = RegLoadKeyA(registry->ID, pxTextKeyName->TextA, pxTextFile->TextA); // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
 
-	const LSTATUS status = RegSaveKeyExW(hKey, file, &securityAttributes, Flags); // Windows 2000, Advapi32.dll, winreg.h
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			const LSTATUS statusID = RegLoadKeyW(registry->ID, pxTextKeyName->TextW, pxTextFile->TextW); // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+
+		default:
+			return PXActionRefuedTextFormatUnsupported;
+	}
+
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-void PXRegistryKeySave(PXRegistry* const registry)
+PXActionResult PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
+	return PXActionNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
+
+	SECURITY_ATTRIBUTES securityAttributes;
+
+	PXMemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
+
+	switch (pxTextKeyName->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			const LSTATUS statusID = RegSaveKeyA(registry->ID, pxTextKeyName->TextA, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			const LSTATUS statusID = RegSaveKeyW(registry->ID, pxTextKeyName->TextW, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+
+		default:
+			return PXActionRefuedTextFormatUnsupported;
+	}
+
+	return PXActionSuccessful;	
+
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-void PXRegistryKeyDelete(PXRegistry* const registry)
+PXActionResult PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
+	return PXActionNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
+
+	switch (pxTextKeyName->Format)
+	{
+		case TextFormatASCII:
+		case TextFormatUTF8:
+		{
+			const LSTATUS statusID = RegDeleteKeyA(registry->ID, pxTextKeyName->TextA); // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+		case TextFormatUNICODE:
+		{
+			const LSTATUS statusID = RegDeleteKeyW(registry->ID, pxTextKeyName->TextW); // Windows 2000, Advapi32.dll, winreg.h
+			const PXBool successful = ERROR_SUCCESS == statusID;
+
+			PXActionOnErrorFetchAndReturn(!successful);
+
+			break;
+		}
+
+		default:
+			return PXActionRefuedTextFormatUnsupported;
+	}
+
+	return PXActionSuccessful;
+
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 

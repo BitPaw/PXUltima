@@ -50,7 +50,6 @@ extern "C"
 
 		PXSpriteFontSymbolCharacterList,
 		PXSpriteFontSymbolCharacterAmount,
-		PXSpriteFontSymbolCharacterWidth,
 		PXSpriteFontSymbolPageList,
 
 		PXSpriteFontSymbolItalic,
@@ -126,6 +125,8 @@ extern "C"
 		PXSize CharacteListSize;
 		PXSpriteFontCharacter* CharacteList;
 		PXImage FontTextureMap;
+
+		int TextureID;
 	}
 	PXSpriteFontPage;
 

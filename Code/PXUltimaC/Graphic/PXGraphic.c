@@ -135,14 +135,13 @@ PXActionResult PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXF
         pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
         pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
         pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
-        pxTexture.Image = pxSpriteFont->FontPageList->FontTextureMap;
+        pxTexture.Image = pxSpriteFont->FontPageList->FontTextureMap;    
 
-
-        PXImageRemoveColor(&pxTexture.Image, 0, 0, 0);
+        //PXImageRemoveColor(&pxTexture.Image, 0, 0, 0);
 
         PXGraphicTextureRegister(graphicContext, &pxTexture);
 
-        printf("Texture ID : %i\n", pxTexture.ID);
+        pxSpriteFont->FontPageList[0].TextureID = pxTexture.ID;
     }
 
     return PXActionSuccessful;
@@ -164,7 +163,7 @@ PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, 
     texture->ID = PXGraphicGenerateUniqeID(graphicContext);
     PXDictionaryAdd(&graphicContext->TextureLookUp, &texture->ID, texture);
     PXLockRelease(&graphicContext->_resourceLock);
-
+    
 #if PXOpenGLUSE
     const PXOpenGLTextureType openGLTextureType = ImageTypeGraphicToPXOpenGL(texture->Type);
     const unsigned int openGLTextureTypeID = PXOpenGLTextureTypeToID(openGLTextureType);
@@ -879,13 +878,14 @@ void PXRenderableConstruct(PXRenderable* const pxRenderable)
     pxRenderable->IBO = -1;
 }
 
-void PXUIElementConstruct(PXUIElement* const pxUIElement)
+void PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType)
 {
     PXMemoryClear(pxUIElement, sizeof(PXUIElement));
 
     pxUIElement->ID = -1;
     pxUIElement->TextureID = -1;
     pxUIElement->ShaderID = -1;
+    pxUIElement->Type = pxUIElementType;
 
     PXUIElementColorSet4F(pxUIElement, 1, 0, 1, 1);
 
@@ -906,6 +906,29 @@ void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, c
     pxUIElement->Y = y;
     pxUIElement->Width = width;
     pxUIElement->Height = height;
+}
+
+void PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText)
+{
+    PXText nameBuffer;
+    PXTextConstructFromAdressA(&nameBuffer, pxUIElement->Name, 32);
+
+    PXTextCopy(pxText, &nameBuffer);
+}
+
+void PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text)
+{
+    PXTextCopyA(text, -1, pxUIElement->Name, 32);
+}
+
+void PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    PXTextPrint(pxUIElement, format, args);
+
+    va_end(args);
 }
 
 PXInt32U PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext)
@@ -1326,9 +1349,15 @@ void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphic
  
 }
 
-PXBool PXGraphicImageBufferSwap(PXGraphicContext* const graphicContext)
+PXBool PXGraphicFrameBufferSwap(PXGraphicContext* const graphicContext)
 {
     PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
+
+    
+    window->MouseCurrentInput.Delta[0] = 0;
+    window->MouseCurrentInput.Delta[1] = 0;
+    window->MouseCurrentInput.DeltaNormalisized[0] = 0;
+    window->MouseCurrentInput.DeltaNormalisized[1] = 0;
 
    // PXOpenGLContextFlush(&graphicContext->OpenGLInstance);
 

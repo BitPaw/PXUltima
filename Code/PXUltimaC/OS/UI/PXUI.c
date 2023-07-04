@@ -33,7 +33,7 @@
 
 
 #if PXOSWindowsDestop
-void PXUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead)
+void PXOSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead)
 {
     const int textLength = GetWindowTextLengthW(uiElementID) + 1; // Windows 2000, User32.dll, winuser.h
     const int maximum = PXMathMinimum(textLength, bufferSize);
@@ -42,7 +42,7 @@ void PXUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, co
     *bufferRead = lengthRead;
 }
 
-void PXUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten)
+void PXOSUIElementTextSet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferWritten)
 {
     //const int lengthWrittem = SetWindowTextW(uiElementID, buffer, bufferSize);
 
@@ -86,7 +86,7 @@ void PXUIElementEnable()
 }
 
 
-void UIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name)
+void PXOSUIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -139,7 +139,7 @@ void ButtonConstruct(const PXWindowID window, OSButton* button, const unsigned i
     button->Layout.Width = width;
     button->Layout.Height = height;
 
-    UIElementConstruct(window, &button->ID, &button->Layout, WC_BUTTONW, buttonText);
+    PXOSUIElementConstruct(window, &button->ID, &button->Layout, WC_BUTTONW, buttonText);
 #endif
 }
 
@@ -158,7 +158,7 @@ void ComboBoxConstruct(const PXWindowID window, OSComboBox* comboBox, const unsi
 
     // WC_COMBOBOXEXW or WC_COMBOBOXW ??
 
-    UIElementConstruct(window, &comboBox->ID, &comboBox->Layout, WC_COMBOBOXEXW, buttonText);
+    PXOSUIElementConstruct(window, &comboBox->ID, &comboBox->Layout, WC_COMBOBOXEXW, buttonText);
 #endif
 }
 
@@ -175,7 +175,7 @@ void ListBoxConstruct(const PXWindowID window, OSListBox* listBox, const unsigne
     listBox->Layout.Width = width;
     listBox->Layout.Height = height;
 
-    UIElementConstruct(window, &listBox->ID, &listBox->Layout, WC_LISTBOXW, buttonText);
+    PXOSUIElementConstruct(window, &listBox->ID, &listBox->Layout, WC_LISTBOXW, buttonText);
 #endif
 }
 
@@ -192,7 +192,7 @@ void TextEditConstruct(const PXWindowID window, OSTextEdit* textEdit, const unsi
     textEdit->Layout.Width = width;
     textEdit->Layout.Height = height;
 
-    UIElementConstruct(window, &textEdit->ID, &textEdit->Layout, WC_EDITW, buttonText);
+    PXOSUIElementConstruct(window, &textEdit->ID, &textEdit->Layout, WC_EDITW, buttonText);
 #endif
 }
 
@@ -200,7 +200,7 @@ void TextEditContentGet(OSTextEdit* textEdit, const wchar_t* buffer, const PXSiz
 {
 #if OSUnix
 #elif PXOSWindowsDestop
-    PXUIElementTextGet(textEdit->ID, buffer, bufferSize, bufferWritten);
+    PXOSUIElementTextGet(textEdit->ID, buffer, bufferSize, bufferWritten);
 #endif
 }
 
@@ -217,7 +217,7 @@ void RichEditConstruct(const PXWindowID window, OSRichEdit* richEdit, const unsi
     richEdit->Layout.Width = width;
     richEdit->Layout.Height = height;
 
-    UIElementConstruct(window, &richEdit->ID, &richEdit->Layout, L"RICHEDIT_CLASS", buttonText);
+    PXOSUIElementConstruct(window, &richEdit->ID, &richEdit->Layout, L"RICHEDIT_CLASS", buttonText);
 #endif
 }
 
@@ -234,7 +234,7 @@ void ScrollBarConstruct(const PXWindowID window, OSScrollBar* scrollBar, const u
     scrollBar->Layout.Width = width;
     scrollBar->Layout.Height = height;
 
-    UIElementConstruct(window, &scrollBar->ID, &scrollBar->Layout, WC_SCROLLBARW, buttonText);
+    PXOSUIElementConstruct(window, &scrollBar->ID, &scrollBar->Layout, WC_SCROLLBARW, buttonText);
 #endif
 }
 
@@ -251,7 +251,7 @@ void PXUITextConstruct(const PXWindowID window, PXOSUIText* uiText, const unsign
     uiText->Layout.Width = width;
     uiText->Layout.Height = height;
 
-    UIElementConstruct(window, &uiText->ID, &uiText->Layout, WC_STATICW, buttonText);
+    PXOSUIElementConstruct(window, &uiText->ID, &uiText->Layout, WC_STATICW, buttonText);
 #endif
 
 }
@@ -269,7 +269,7 @@ void OSCheckBoxConstruct(const PXWindowID window, PXUICheckBox* uiCheckBox, cons
     uiCheckBox->Layout.Width = width;
     uiCheckBox->Layout.Height = height;
 
-    UIElementConstruct(window, &uiCheckBox->ID, &uiCheckBox->Layout, WC_BUTTONW, buttonText);
+    PXOSUIElementConstruct(window, &uiCheckBox->ID, &uiCheckBox->Layout, WC_BUTTONW, buttonText);
 
     CheckDlgButton(uiCheckBox->ID, 1, BST_CHECKED); // BST_UNCHECKED
 #endif
@@ -285,7 +285,7 @@ void PXUITrackbarCreate(const PXWindowID window, PXUITrackbar* PXUITrackbar, con
     PXUITrackbar->Layout.Width = width;
     PXUITrackbar->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUITrackbar->ID, &PXUITrackbar->Layout, TRACKBAR_CLASSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUITrackbar->ID, &PXUITrackbar->Layout, TRACKBAR_CLASSW, buttonText);
 #endif
 }
 
@@ -299,7 +299,7 @@ void PXUIStatusbarCreate(const PXWindowID window, PXUIStatusbar* PXUIStatusbar, 
     PXUIStatusbar->Layout.Width = width;
     PXUIStatusbar->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIStatusbar->ID, &PXUIStatusbar->Layout, STATUSCLASSNAMEW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIStatusbar->ID, &PXUIStatusbar->Layout, STATUSCLASSNAMEW, buttonText);
 #endif
 }
 
@@ -313,7 +313,7 @@ void PXUIUpDownCreate(const PXWindowID window, PXUIUpDown* PXUIUpDown, const uns
     PXUIUpDown->Layout.Width = width;
     PXUIUpDown->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIUpDown->ID, &PXUIUpDown->Layout, UPDOWN_CLASSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIUpDown->ID, &PXUIUpDown->Layout, UPDOWN_CLASSW, buttonText);
 #endif
 }
 
@@ -327,7 +327,7 @@ void PXUIProgressbarCreate(const PXWindowID window, PXUIProgressbar* PXUIProgres
     PXUIProgressbar->Layout.Width = width;
     PXUIProgressbar->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIProgressbar->ID, &PXUIProgressbar->Layout, PROGRESS_CLASSW, buttonText); // "Progress bar"
+    PXOSUIElementConstruct(window, &PXUIProgressbar->ID, &PXUIProgressbar->Layout, PROGRESS_CLASSW, buttonText); // "Progress bar"
 #endif
 }
 
@@ -341,7 +341,7 @@ void PXUIHotKeyCreate(const PXWindowID window, PXUIHotKey* PXUIHotKey, const uns
     PXUIHotKey->Layout.Width = width;
     PXUIHotKey->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIHotKey->ID, &PXUIHotKey->Layout, HOTKEY_CLASSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIHotKey->ID, &PXUIHotKey->Layout, HOTKEY_CLASSW, buttonText);
 #endif
 }
 
@@ -355,7 +355,7 @@ void PXUICalenderCreate(const PXWindowID window, PXUICalender* PXUICalender, con
     PXUICalender->Layout.Width = width;
     PXUICalender->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUICalender->ID, &PXUICalender->Layout, MONTHCAL_CLASSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUICalender->ID, &PXUICalender->Layout, MONTHCAL_CLASSW, buttonText);
 #endif
 }
 
@@ -369,7 +369,7 @@ void PXUIToolTipCreate(const PXWindowID window, PXUIToolTip* PXUIToolTip, const 
     PXUIToolTip->Layout.Width = width;
     PXUIToolTip->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIToolTip->ID, &PXUIToolTip->Layout, TOOLTIPS_CLASSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIToolTip->ID, &PXUIToolTip->Layout, TOOLTIPS_CLASSW, buttonText);
 #endif
 }
 
@@ -383,7 +383,7 @@ void PXUIAnimateCreate(const PXWindowID window, PXUIAnimate* PXUIAnimate, const 
     PXUIAnimate->Layout.Width = width;
     PXUIAnimate->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIAnimate->ID, &PXUIAnimate->Layout, ANIMATE_CLASSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIAnimate->ID, &PXUIAnimate->Layout, ANIMATE_CLASSW, buttonText);
 #endif
 }
 
@@ -397,7 +397,7 @@ void PXUIDateTimePickerCreate(const PXWindowID window, PXUIDateTimePicker* PXUID
     PXUIDateTimePicker->Layout.Width = width;
     PXUIDateTimePicker->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIDateTimePicker->ID, &PXUIDateTimePicker->Layout, DATETIMEPICK_CLASSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIDateTimePicker->ID, &PXUIDateTimePicker->Layout, DATETIMEPICK_CLASSW, buttonText);
 #endif
 }
 
@@ -411,7 +411,7 @@ void PXUIGroupBoxCreate(const PXWindowID window, PXUIGroupBox* PXUIGroupBox, con
     PXUIGroupBox->Layout.Width = width;
     PXUIGroupBox->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIGroupBox->ID, &PXUIGroupBox->Layout, WC_BUTTONW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIGroupBox->ID, &PXUIGroupBox->Layout, WC_BUTTONW, buttonText);
 #endif
 }
 
@@ -425,7 +425,7 @@ void PXUIRadioButtonCreate(const PXWindowID window, PXUIRadioButton* PXUIRadioBu
     PXUIRadioButton->Layout.Width = width;
     PXUIRadioButton->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIRadioButton->ID, &PXUIRadioButton->Layout, WC_BUTTONW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIRadioButton->ID, &PXUIRadioButton->Layout, WC_BUTTONW, buttonText);
 #endif
 }
 
@@ -439,7 +439,7 @@ void PXUIGroupRadioButtonCreate(const PXWindowID window, PXUIGroupRadioButton* P
     PXUIGroupRadioButton->Layout.Width = width;
     PXUIGroupRadioButton->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIGroupRadioButton->ID, &PXUIGroupRadioButton->Layout, WC_BUTTONW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIGroupRadioButton->ID, &PXUIGroupRadioButton->Layout, WC_BUTTONW, buttonText);
 #endif
 }
 
@@ -453,7 +453,7 @@ void PXUIListBoxCreate(const PXWindowID window, PXUIListBox* PXUIListBox, const 
     PXUIListBox->Layout.Width = width;
     PXUIListBox->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIListBox->ID, &PXUIListBox->Layout, WC_LISTBOXW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIListBox->ID, &PXUIListBox->Layout, WC_LISTBOXW, buttonText);
 #endif
 }
 
@@ -467,7 +467,7 @@ void PXUITreeViewCreate(const PXWindowID window, PXUITreeView* PXUITreeView, con
     PXUITreeView->Layout.Width = width;
     PXUITreeView->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUITreeView->ID, &PXUITreeView->Layout, WC_TREEVIEWW, buttonText);
+    PXOSUIElementConstruct(window, &PXUITreeView->ID, &PXUITreeView->Layout, WC_TREEVIEWW, buttonText);
 #endif
 }
 
@@ -481,7 +481,7 @@ void PXUIIPInputCreate(const PXWindowID window, PXUIIPInput* PXUIIPInput, const 
     PXUIIPInput->Layout.Width = width;
     PXUIIPInput->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIIPInput->ID, &PXUIIPInput->Layout, WC_IPADDRESSW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIIPInput->ID, &PXUIIPInput->Layout, WC_IPADDRESSW, buttonText);
 #endif
 }
 
@@ -495,7 +495,7 @@ void PXUITabControlCreate(const PXWindowID window, PXUITabControl* PXUITabContro
     PXUITabControl->Layout.Width = width;
     PXUITabControl->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUITabControl->ID, &PXUITabControl->Layout, WC_TABCONTROLW, buttonText);
+    PXOSUIElementConstruct(window, &PXUITabControl->ID, &PXUITabControl->Layout, WC_TABCONTROLW, buttonText);
 #endif
 }
 
@@ -509,7 +509,7 @@ void PXUIPageScrollerCreate(const PXWindowID window, PXUIPageScroller* PXUIPageS
     PXUIPageScroller->Layout.Width = width;
     PXUIPageScroller->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIPageScroller->ID, &PXUIPageScroller->Layout, WC_PAGESCROLLERW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIPageScroller->ID, &PXUIPageScroller->Layout, WC_PAGESCROLLERW, buttonText);
 #endif
 }
 
@@ -523,7 +523,7 @@ void PXUIFontSelectorCreate(const PXWindowID window, PXUIFontSelector* PXUIFontS
     PXUIFontSelector->Layout.Width = width;
     PXUIFontSelector->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIFontSelector->ID, &PXUIFontSelector->Layout, WC_NATIVEFONTCTLW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIFontSelector->ID, &PXUIFontSelector->Layout, WC_NATIVEFONTCTLW, buttonText);
 #endif
 }
 
@@ -537,7 +537,7 @@ void PXUIHeaderCreate(const PXWindowID window, PXUIHeader* PXUIHeader, const uns
     PXUIHeader->Layout.Width = width;
     PXUIHeader->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUIHeader->ID, &PXUIHeader->Layout, WC_HEADERW, buttonText);
+    PXOSUIElementConstruct(window, &PXUIHeader->ID, &PXUIHeader->Layout, WC_HEADERW, buttonText);
 #endif
 }
 
@@ -551,6 +551,6 @@ void PXUILinkCreate(const PXWindowID window, PXUILink* PXUILink, const unsigned 
     PXUILink->Layout.Width = width;
     PXUILink->Layout.Height = height;
 
-    UIElementConstruct(window, &PXUILink->ID, &PXUILink->Layout, WC_LINK, buttonText);
+    PXOSUIElementConstruct(window, &PXUILink->ID, &PXUILink->Layout, WC_LINK, buttonText);
 #endif
 }

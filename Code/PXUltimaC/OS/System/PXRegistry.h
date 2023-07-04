@@ -43,12 +43,14 @@ extern "C"
 	PXPublic PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
 	PXPublic PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace);
 
-	PXPublic void PXRegistryClose(PXRegistry* const registry);
+	PXPublic PXActionResult PXRegistryClose(PXRegistry* const registry);
 
-	PXPublic void PXRegistryKeyCreate(PXRegistry* const registry);
-	PXPublic void PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const file);
-	PXPublic void PXRegistryKeySave(PXRegistry* const registry);
-	PXPublic void PXRegistryKeyDelete(PXRegistry* const registry);
+	PXPublic PXActionResult PXRegistryKeyListAll(PXRegistry* const registry);
+
+	PXPublic PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName);
+	PXPublic PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile);
+	PXPublic PXActionResult PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName);
+	PXPublic PXActionResult PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName);
 
 #ifdef __cplusplus
 }

@@ -143,7 +143,7 @@ extern "C"
 #define PXMemoryAllocate(dataSize) PXMemoryHeapAllocate(dataSize)
 #define PXMemoryAllocateType(type, dataSize) (type*)PXMemoryHeapAllocate(sizeof(type) * dataSize)
 #define PXMemoryAllocateTypeCleared(type, dataSize) (type*)PXMemoryHeapAllocateCleared(sizeof(type), dataSize)
-#define PXMemoryReallocateTypeCleared(type, adressCurrent, dataSizeBefore, dataSizeAfter) (type*)PXMemoryHeapReallocateClear(adressCurrent, sizeof(type), dataSizeBefore, dataSizeAfter)
+#define PXMemoryReallocateTypeCleared(type, adressCurrent, dataSizeBefore, dataSizeAfter) (type*)PXMemoryHeapReallocateTypeClear(adressCurrent, sizeof(type), dataSizeBefore, dataSizeAfter)
 #endif
 
 #else // Use virtual alloc

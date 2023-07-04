@@ -197,7 +197,7 @@ extern "C"
 #if OSUnix
 	PXPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
 #elif PXOSWindowsDestop
-	PXPrivate LRESULT CALLBACK PXWindowEventHandler(HWND PXWindowsID, UINT eventID, WPARAM wParam, LPARAM lParam);
+	PXPrivate LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
 #endif
 
 	PXPrivate PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const PXWindowAdress);
@@ -227,6 +227,8 @@ extern "C"
 	PXPublic PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID);
 	PXPublic void PXWindowLookupRemove(const PXWindow* PXWindow);
 
+	PXPublic PXActionResult PXWindowTitleBarColorSet(const PXWindow* const pxWindow);
+
 	PXPublic void PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height);
 	PXPublic void PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height);
 	PXPublic PXActionResult PXWindowPosition(PXWindow* const pxWindow, PXInt32S* x, PXInt32S* y);
@@ -242,8 +244,8 @@ extern "C"
 
 	PXPublic PXBool PXWindowInteractable(PXWindow* const pxWindow);
 
-	PXPublic PXBool PXWindowCursorPositionInWindowGet(PXWindow* window, int* x, int* y);
-	PXPublic PXBool PXWindowCursorPositionInDestopGet(PXWindow* window, int* x, int* y);
+	PXPublic PXBool PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
+	PXPublic PXBool PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
 
 
 	// Checks if the current window is the one in focus.
@@ -254,7 +256,7 @@ extern "C"
 	PXPublic void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
 	PXPublic void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const PXKeyPressState buttonState);
 	PXPublic void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
-	PXPublic void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const int positionX, const int positionY, const int deltaX, const int deltaY);
+	PXPublic void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
 	PXPublic void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
 	PXPublic void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
 

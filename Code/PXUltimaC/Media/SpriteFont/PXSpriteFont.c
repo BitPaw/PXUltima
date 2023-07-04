@@ -391,14 +391,16 @@ PXActionResult PXSpriteFontParse(PXSpriteFont* const pxSpriteFont, PXFile* const
 
 						if (currentCharacterIndex >= pxSpriteFont->FontPageList->CharacteListSize) // List not big enough
 						{
-							pxSpriteFont->FontPageList[currentPageIndex].CharacteList = PXMemoryReallocateTypeCleared
+							PXSpriteFontPage* const pxSpriteFontPage = &pxSpriteFont->FontPageList[currentPageIndex];
+
+							pxSpriteFontPage->CharacteList = PXMemoryReallocateTypeCleared
 							(
 								PXSpriteFontCharacter,
-								pxSpriteFont->FontPageList[currentPageIndex].CharacteList,
-								pxSpriteFont->FontPageList[currentPageIndex].CharacteListSize,
-								pxSpriteFont->FontPageList[currentPageIndex].CharacteListSize + 1
+								pxSpriteFontPage->CharacteList,
+								pxSpriteFontPage->CharacteListSize,
+								pxSpriteFontPage->CharacteListSize + 1
 							);
-							pxSpriteFont->FontPageList[currentPageIndex].CharacteListSize++;
+							pxSpriteFontPage->CharacteListSize++;
 						}
 
 						PXSpriteFontCharacter* const pxSpriteFontCharacter = &pxSpriteFont->FontPageList[currentPageIndex].CharacteList[currentCharacterIndex++];
@@ -847,7 +849,7 @@ PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSiz
 				case PXInt40Make('c', 'h', 'a', 'r', 's'): return PXSpriteFontSymbolCharacterList;
 				case PXInt40Make('c', 'o', 'u', 'n', 't'): return PXSpriteFontSymbolCharacterAmount;
 				case PXInt40Make('p', 'a', 'g', 'e', 's'): return PXSpriteFontSymbolPageList;
-				case PXInt40Make('w', 'i', 'd', 't', 'h'): return PXSpriteFontSymbolCharacterWidth;
+				case PXInt40Make('w', 'i', 'd', 't', 'h'): return PXSpriteFontSymbolScaleWidth;
 
 				default:
 					return PXSpriteFontLineUnkown;
@@ -863,7 +865,7 @@ PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSiz
 				case PXInt48Make('s', 'c', 'a', 'l', 'e', 'W'): return PXSpriteFontSymbolScaleWidth;
 				case PXInt48Make('s', 'c', 'a', 'l', 'e', 'H'): return PXSpriteFontSymbolScaleHeight;
 				case PXInt48Make('p', 'a', 'c', 'k', 'e', 'd'): return PXSpriteFontSymbolPacked;
-				case PXInt48Make('h', 'e', 'i', 'g', 'h', 't'): return PXSpriteFontSymbolHeight;
+				case PXInt48Make('h', 'e', 'i', 'g', 'h', 't'): return PXSpriteFontSymbolScaleHeight;
 				case PXInt48Make('c', 'o', 'm', 'm', 'o', 'n'): return PXSpriteFontSymbolCommon;
 				case PXInt48Make('s', 'm', 'o', 'o', 't', 'h'): return PXSpriteFontSymbolSmooth;
 
