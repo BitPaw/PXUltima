@@ -595,7 +595,7 @@ d = SplittIntLED(i);
 
 		PXPublic void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
 
-		PXPublic void PXEndianSwapV(void* const data,  const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
+		PXPublic void PXEndianSwapV(void** const data,  const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
 
 		//-----------------------------------------------------------------------------
 

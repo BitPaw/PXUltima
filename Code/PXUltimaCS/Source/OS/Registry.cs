@@ -61,17 +61,32 @@ namespace PX
 		{
 			PXRegistryKeyCreate(ref _pxRegistry);
 		}
-		public void KeyLoad(string key)
+		public unsafe void KeyLoad(string key)
 		{
-			PXRegistryKeyLoad(ref _pxRegistry);
+            fixed (char* computerNameAdress = key.ToCharArray())
+            {
+                PXText pxText = PXText.MakeFromStringW(computerNameAdress, key.Length);
+
+                PXRegistryKeyLoad(ref _pxRegistry, ref pxText);
+            }       
 		}
-		public void KeySave(string key, )
+		public unsafe void KeySave(string key)
 		{
-			PXRegistryKeySave(ref _pxRegistry);
+            fixed (char* computerNameAdress = key.ToCharArray())
+            {
+                PXText pxText = PXText.MakeFromStringW(computerNameAdress, key.Length);
+
+                PXRegistryKeySave(ref _pxRegistry, ref pxText);
+            }       
 		}
-		public void KeyDelete()
+		public unsafe void KeyDelete(string key)
 		{
-			PXRegistryKeyDelete(ref _pxRegistry);
+            fixed (char* computerNameAdress = key.ToCharArray())
+            {
+                PXText pxText = PXText.MakeFromStringW(computerNameAdress, key.Length);
+
+                PXRegistryKeyDelete(ref _pxRegistry, ref pxText);
+            }        
 		}
 	}
 }

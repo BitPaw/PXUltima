@@ -13,4 +13,10 @@
     <ProjectReference Include="..\PXUltimaCS\PXUltimaCS.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="PXUltima.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

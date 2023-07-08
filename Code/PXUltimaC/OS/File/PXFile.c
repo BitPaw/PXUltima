@@ -1827,12 +1827,23 @@ PXSize PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSiz
 	return writtenBytes;
 }
 
-PXSize PXFileReadIXXVE(PXFile* const pxFile, void* const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian)
-{
-	const PXSize totalSize = valueSizeSingle * valueListSize;
-	const PXSize writtenBytes = PXFileReadB(pxFile, valueList, totalSize);
+PXSize PXFileReadIXXVE(PXFile* const pxFile, void** const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian)
+{	
+	PXSize writtenBytes = 0;
 
-	PXEndianSwapV(valueList, totalSize, valueSizeSingle, pxEndian, EndianCurrentSystem);
+	if (!valueList)
+	{
+		return 0;
+	}
+
+	for (PXSize i = 0; i < valueListSize; i++)
+	{
+		void* const adress = valueList[i];
+
+		writtenBytes = PXFileReadB(pxFile, adress, valueSizeSingle);
+	}
+
+	PXEndianSwapV(valueList, valueListSize * valueSizeSingle, valueSizeSingle, pxEndian, EndianCurrentSystem);
 
 	return writtenBytes;
 }
@@ -1892,7 +1903,7 @@ PXSize PXFileReadI16UE(PXFile* const pxFile, PXInt16U* const value, const PXEndi
 	return PXFileReadIXXE(pxFile, value, sizeof(PXInt16U), pxEndian);
 }
 
-PXSize PXFileReadI16UVE(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI16UVE(PXFile* const pxFile, PXInt16U** const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
 	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt16U), pxEndian);
 }

@@ -1989,21 +1989,20 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     HINSTANCE hInstance = GetModuleHandle(NULL);
     HICON       hIcon = LoadIcon(NULL, IDI_APPLICATION);
     HCURSOR     hCursor = window->CursorID;
-    HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
-
-
+   // HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
+    
+    HBRUSH hbrBackground = CreateSolidBrush(RGB(38, 38, 38));
 
     // Cursor setup
     {
         const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
         window->CursorID = cursorID;
 
-        if (!window->Mode == PXWindowModeNormal)
+        if (window->Mode == PXWindowModeNormal)
         {
-            dwStyle |= WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+            dwStyle |= WS_OVERLAPPEDWINDOW;// | WS_VISIBLE;
         }
     }
-
 
     switch (window->Title.Format)
     {
@@ -2109,23 +2108,15 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
             return PXThreadActionFailed;
         }
 
+
+
+
         window->ID = windowID;
         window->GraphicInstance.AttachedWindow = window;
 
-        PXWindowPosition(window, PXNull, PXNull);
+
     }
 
-    
-    // Setup cursorPosition
-    PXWindowCursorPositionInWindowGet(window, &window->MouseCurrentInput.Position[0], &window->MouseCurrentInput.Position[1]);
-
-  //  window->MouseCurrentInput.Position[0] -= window->Width //;
-   // window->MouseCurrentInput.Position[1] -= window->Height / 2;
-
-
-    PXWindowTitleBarColorSet(window);
-
-    // MISSING
 
     // PixelDraw system
     {
@@ -2188,24 +2179,40 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
 #endif
 
+    //---<POST-Update>----------------
+    PXWindowPosition(window, PXNull, PXNull);
+    PXWindowCursorPositionInWindowGet(window, &window->MouseCurrentInput.Position[0], &window->MouseCurrentInput.Position[1]);
+    PXWindowTitleBarColorSet(window);
+    PXWindowLookupAdd(window);
+    //--------------------------
+
+#if PXOSWindowsDestop
+    UpdateWindow(windowID);
+
+    if (window->Mode == PXWindowModeNormal)
+    {
+#if 0 // Use animation
+
+        const BOOL animationResult = AnimateWindow(windowID, 100, AW_ACTIVATE | AW_CENTER);
+
+        if (!animationResult)
+        {
+            PXActionResult pxActionResult = PXErrorCurrent();
+
+            printf("ERR\n");
+        }
+#else
+        ShowWindow(windowID, SW_NORMAL);
+#endif  
+    }
+#endif
+
     PXGraphicInstantiate(&window->GraphicInstance);
 
-    PXWindowLookupAdd(window);
+    window->IsRunning = 1;
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
-
-    #if PXOSWindowsDestop
-    {
-        UpdateWindow(windowID);
-
-        if (window->Mode == PXWindowModeNormal)
-        {
-            ShowWindow(windowID, SW_SHOW);
-        }
-    }
-    #endif
-
-    window->IsRunning = 1;
+      
 
 #if OSUnix
 #if 0
@@ -2326,6 +2333,7 @@ void PXWindowConstruct(PXWindow* const window)
     PXMemoryClear(window, sizeof(PXWindow));
     window->Title.SizeAllocated = 256;
     window->Title.TextA = window->TitleBuffer;
+    window->Mode = PXWindowModeNormal;
 }
 
 float PXWindowScreenRatio(const PXWindow* const window)
@@ -2382,13 +2390,22 @@ void PXWindowDestruct(PXWindow* const window)
     //    glXDestroyContext(DisplayCurrent, PXOpenGLConextID);
     XDestroyWindow(window->DisplayCurrent, window->ID);
     XCloseDisplay(window->DisplayCurrent);
+
+    window->ID = PXNull;
+
 #elif PXOSWindowsDestop
-    CloseWindow(window->ID);
+
+    // Minimizes but does not destroy the specified window.
+    CloseWindow(window->ID); // Windows 2000, User32.dll, winuser.h
+
+    // Finally destroy the window
+    DestroyWindow(window->ID); // Windows 2000, User32.dll, winuser.h
+
+    window->ID = PXNull;
+
 #else
     return; // Not supported on this OS
 #endif
-
-    window->ID = PXNull;
 }
 
 PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
@@ -2637,8 +2654,20 @@ PXActionResult PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
 #endif
 }
 
-void PXWindowPositionChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y)
+PXActionResult PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y)
 {
+#if OSUnix
+    return PXActionNotImplemented;
+
+#elif PXOSWindowsDestop
+
+   // const PXBool result = MoveWindow(pxWindow->ID, );
+
+    return PXActionNotImplemented;
+
+#else
+    return PXActionNotSupportedByOperatingSystem;
+#endif
 }
 
 void PXWindowPositonCenterScreen(PXWindow* window)

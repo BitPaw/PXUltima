@@ -886,8 +886,9 @@ void PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType 
     pxUIElement->TextureID = -1;
     pxUIElement->ShaderID = -1;
     pxUIElement->Type = pxUIElementType;
+    pxUIElement->NameTextScale = 1;
 
-    PXUIElementColorSet4F(pxUIElement, 1, 0, 1, 1);
+    PXUIElementColorSet4F(pxUIElement, 1, 1, 1, 1);
 
     PXTextCopyA("[N/A]", 5, pxUIElement->Name, 32);
 }
@@ -900,12 +901,13 @@ void PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, cons
     pxUIElement->BackGroundColor.Alpha = alpha;
 }
 
-void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height)
+void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode)
 {
     pxUIElement->X = x;
     pxUIElement->Y = y;
     pxUIElement->Width = width;
     pxUIElement->Height = height;
+    pxUIElement->PositionMode = pxUIElementPositionMode;
 }
 
 void PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText)
@@ -931,6 +933,28 @@ void PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const form
     va_end(args);
 }
 
+void PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont)
+{
+    pxUIElement->FontID = pxFont;
+}
+
+void PXUIElementHoverable(PXUIElement* const pxUIElement, const PXBool isHoverable)
+{
+    pxUIElement->IsHoverable = isHoverable;
+}
+
+void PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
+{
+    pxUIElement->Parent = pxUIElementParent;
+
+    PXUIElementChildSet(pxUIElementParent, pxUIElement);
+}
+
+void PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
+{
+    pxUIElement->Child = pxUIElementParent;
+}
+
 PXInt32U PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext)
 {
     return ++graphicContext->UniqeIDGeneratorCounter;
@@ -952,6 +976,61 @@ PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext
 
         PXDictionaryAdd(&graphicContext->UIElementLookUp, &pxUIElement->ID, pxUIElement);
     }
+
+
+
+    switch (pxUIElement->Type)
+    {
+        case PXUIElementTypeRenderFrame:
+        {
+            PXOpenGL* const pxOpenGL = &graphicContext->OpenGLInstance;
+
+            // Texture
+            PXOpenGLTextureCreate(pxOpenGL, 1, &pxUIElement->FrameRenderTextureID);
+            PXOpenGLTextureBind(pxOpenGL, PXOpenGLTextureType2D, pxUIElement->FrameRenderTextureID);
+
+            PXOpenGLTextureData2D(pxOpenGL, PXOpenGLTextureType2D, 0, PXOpenGLImageFormatRGB, pxUIElement->FrameRenderWidth, pxUIElement->Height, PXOpenGLImageFormatRGB, PXOpenGLTypeByteSigned, PXNull);
+
+            PXOpenGLTextureParameter(pxOpenGL, PXOpenGLTextureType2D, PXOpenGLTextureMIN_FILTER, PXOpenGLTextureParameterValueNEAREST);
+            PXOpenGLTextureParameter(pxOpenGL, PXOpenGLTextureType2D, PXOpenGLTextureMAG_FILTER, PXOpenGLTextureParameterValueNEAREST);
+
+            // Framebuffer
+            PXOpenGLFrameBufferCreate(pxOpenGL, 1, &pxUIElement->FrameBufferID);
+            PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, pxUIElement->FrameBufferID);
+
+            // Renderbuffer as depthbuffer
+            PXOpenGLRenderBufferCreate(pxOpenGL, 1, &pxUIElement->FrameRenderID);
+            PXOpenGLRenderBufferBind(pxOpenGL, pxUIElement->FrameRenderID);
+            PXOpenGLRenderBufferStorage(pxOpenGL, PXOpenGLRenderBufferFormatDepthComponent, pxUIElement->FrameRenderWidth, pxUIElement->Height);
+           
+            // Link buffer
+            PXOpenGLFrameBufferLinkRenderBuffer(pxOpenGL, PXOpenGLRenderBufferAttachmentPointDepth, pxUIElement->FrameRenderID);
+
+
+
+            PXOpenGLFrameBufferLinkTexture2D(pxOpenGL, PXOpenGLRenderBufferAttachmentPointColor, PXOpenGLTextureType2D, pxUIElement->FrameRenderTextureID, 0);
+
+            // Set the list of draw buffers.
+           // GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+            //glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+
+           // // Always check that our framebuffer is ok
+            //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+             //   return false;
+
+
+            PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, 0);
+            PXOpenGLRenderBufferBind(pxOpenGL, 0);
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+
+
 
     /*
     switch (pxUIElement->Type)

@@ -311,7 +311,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileReadTextI(PXFile* const pxFile, int* const number);
 
 	PXPublic PXSize PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian);
-	PXPublic PXSize PXFileReadIXXVE(PXFile* const pxFile, void* const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian);
+	PXPublic PXSize PXFileReadIXXVE(PXFile* const pxFile, void** const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian);
 
 	PXPublic PXSize PXFileReadI8S(PXFile* const pxFile, PXInt8S* const value);
 	PXPublic PXSize PXFileReadI8SV(PXFile* const pxFile, PXInt8S* const valueList, const PXSize valueListSize);
@@ -325,7 +325,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileReadI16U(PXFile* const pxFile, PXInt16U* const value);
 	PXPublic PXSize PXFileReadI16UV(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize);
 	PXPublic PXSize PXFileReadI16UE(PXFile* const pxFile, PXInt16U* const value, const PXEndian pxEndian);
-	PXPublic PXSize PXFileReadI16UVE(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+	PXPublic PXSize PXFileReadI16UVE(PXFile* const pxFile, PXInt16U** const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
 	PXPublic PXSize PXFileReadI32S(PXFile* const pxFile, PXInt32S* const value);
 	PXPublic PXSize PXFileReadI32SV(PXFile* const pxFile, PXInt32S* const valueList, const PXSize valueListSize);

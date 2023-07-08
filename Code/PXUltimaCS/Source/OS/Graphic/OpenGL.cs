@@ -322,10 +322,10 @@ namespace PX
     {
         public void* PXOpenGLConext;
 
-        public fixed byte Vendor[64];
-        public fixed byte Renderer[64];
-        public fixed byte VersionText[64];
-        public fixed byte GLSLVersionText[64];
+        public fixed sbyte Vendor[64];
+        public fixed sbyte Renderer[64];
+        public fixed sbyte VersionText[64];
+        public fixed sbyte GLSLVersionText[64];
         public OpenGLVersion Version;
 
         public void* AttachedWindow;
@@ -567,32 +567,52 @@ namespace PX
 
         private PXOpenGL _pxOpenGL = new PXOpenGL();
 
-        public string Vendor
+        public unsafe string Vendor
         {
             get
             {
-                return string.Empty;
+                fixed(sbyte* adress = _pxOpenGL.Vendor)
+                {
+                    string vendor = new string(adress, 0, 64);
+
+                    return vendor;
+                }           
             }
         }
-        public string Renderer
+        public unsafe string Renderer
         {
             get
             {
-                return string.Empty;
+                fixed (sbyte* adress = _pxOpenGL.Renderer)
+                {
+                    string vendor = new string(adress, 0, 64);
+
+                    return vendor;
+                }
             }
         }
-        public string VersionText
+        public unsafe string VersionText
         {
             get
             {
-                return string.Empty;
+                fixed (sbyte* adress = _pxOpenGL.VersionText)
+                {
+                    string vendor = new string(adress, 0, 64);
+
+                    return vendor;
+                }
             }
         }
-        public string GLSLVersionText
+        public unsafe string GLSLVersionText
         {
             get
             {
-                return string.Empty;
+                fixed (sbyte* adress = _pxOpenGL.GLSLVersionText)
+                {
+                    string vendor = new string(adress, 0, 64);
+
+                    return vendor;
+                }
             }
         }
         //  public PXOpenGLVersion Version;

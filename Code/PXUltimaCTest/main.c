@@ -17,6 +17,7 @@
 #include "Service/TestSBP.h"
 
 #include <Media/PXFont.h>
+#include <Media/TTF/PXTTF.h>
 
 
 #if PXLDAPTest
@@ -74,7 +75,30 @@ int main()
 {
 	printf("[i] Starting testing...\n");
 
-#if 1
+
+
+
+	PXTTF ttf;
+
+	PXFile pxFile;
+
+	PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+	PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, "C:\\Windows\\Fonts\\arial.ttf");
+
+	pxFileOpenFromPathInfo.FileSize = 0;
+	pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+	pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+	pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+	pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+	pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+	PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
+
+	PXActionResult xx = PXTTFParse(&ttf, &pxFile);
+
+	printf("");
+
+#if 0
 
 	vswprintf_s;
 

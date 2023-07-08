@@ -58,10 +58,12 @@ namespace PX
 
 
 
+
         private PXWindow _pxWindow = new PXWindow();
 
         public unsafe Window()
         {
+            
             PXWindowConstruct(ref _pxWindow);
         }
 

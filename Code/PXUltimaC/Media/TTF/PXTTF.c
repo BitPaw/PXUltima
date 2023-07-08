@@ -1,6 +1,20 @@
 #include "PXTTF.h"
 
-EncodingID PXTTFEncodingFromID(const PlatformID platformID, unsigned char encodingID)
+PlatformID PXTTFPlatformFromID(const PXInt16U platformID)
+{
+	switch (platformID)
+	{
+		case 0u: return PlatformUnicode;
+		case 1u: return PlatformMacintosh;
+		case 2u: return PlatformReserved;
+		case 3u: return PlatformWindows;
+
+		default:
+			return PlatformInvalid;
+	}
+}
+
+EncodingID PXTTFEncodingFromID(const PlatformID platformID, const PXInt16U encodingID)
 {
 	switch(platformID)
 	{
@@ -67,6 +81,7 @@ EncodingID PXTTFEncodingFromID(const PlatformID platformID, unsigned char encodi
 	return EncodingInvalid;
 }
 
+
 PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor)
 {
 	switch(minor)
@@ -105,55 +120,55 @@ PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType)
 {
 	switch(tableEntryType)
 	{
-		case PXInt32Make('a', 'c', 'n', 't'): return PXTTFTableEntryAccentAttachment;
-		case PXInt32Make('a', 'n', 'k', 'r'): return PXTTFTableEntryAnchorPoint;
-		case PXInt32Make('a', 'v', 'a', 'r'): return PXTTFTableEntryAxisVariation;
-		case PXInt32Make('b', 'd', 'a', 't'): return PXTTFTableEntryBitmapData;
-		case PXInt32Make('b', 'h', 'e', 'd'): return PXTTFTableEntryBitmapFontHeader;
-		case PXInt32Make('b', 'l', 'o', 'c'): return PXTTFTableEntryBitmapLocation;
-		case PXInt32Make('b', 's', 'l', 'n'): return PXTTFTableEntryBaseline;
-		case PXInt32Make('c', 'm', 'a', 'p'): return PXTTFTableEntryCharacterCodeMapping;
-		case PXInt32Make('c', 'v', 'a', 'r'): return PXTTFTableEntryCVTVariation;
-		case PXInt32Make('c', 'v', 't', ' '): return PXTTFTableEntryControlValue;
-		case PXInt32Make('D', 'S', 'I', 'G'): return PXTTFTableEntryDigitalSignature;
-		case PXInt32Make('E', 'B', 'S', 'C'): return PXTTFTableEntryEmbeddedBitmapScalingControl;
-		case PXInt32Make('f', 'd', 's', 'c'): return PXTTFTableEntryFontDescriptor;
-		case PXInt32Make('f', 'e', 'a', 't'): return PXTTFTableEntryLayoutFeature;
-		case PXInt32Make('f', 'm', 't', 'x'): return PXTTFTableEntryFontMetrics;
-		case PXInt32Make('f', 'o', 'n', 'd'): return PXTTFTableEntryFontFamilyCompatibility;
-		case PXInt32Make('f', 'p', 'g', 'm'): return PXTTFTableEntryFontPXProgram;
-		case PXInt32Make('f', 'v', 'a', 'r'): return PXTTFTableEntryFontVariation;
-		case PXInt32Make('g', 'a', 's', 'p'): return PXTTFTableEntryGridFittingAndScanConversionProcedure;
-		case PXInt32Make('g', 'l', 'y', 'f'): return PXTTFTableEntryGlyphOutline;
-		case PXInt32Make('g', 'v', 'a', 'r'): return PXTTFTableEntryGlyphVariation;
-		case PXInt32Make('h', 'd', 'm', 'x'): return PXTTFTableEntryHorizontalDeviceMetrics;
-		case PXInt32Make('h', 'e', 'a', 'd'): return PXTTFTableEntryFontHeader;
-		case PXInt32Make('h', 'h', 'e', 'a'): return PXTTFTableEntryHorizontalHeader;
-		case PXInt32Make('h', 'm', 't', 'x'): return PXTTFTableEntryHorizontalMetrics;
-		case PXInt32Make('j', 'u', 's', 't'): return PXTTFTableEntryJustification;
-		case PXInt32Make('k', 'e', 'r', 'n'): return PXTTFTableEntryKerning;
-		case PXInt32Make('k', 'e', 'r', 'x'): return PXTTFTableEntryExtendedKerning;
-		case PXInt32Make('l', 'c', 'a', 'r'): return PXTTFTableEntryLigatureCaret;
-		case PXInt32Make('l', 'o', 'c', 'a'): return PXTTFTableEntryGlyphLocation;
-		case PXInt32Make('l', 't', 'a', 'g'): return PXTTFTableEntryLanguageTag;
-		case PXInt32Make('L', 'T', 'S', 'H'): return PXTTFTableEntryLinearThreshold;
-		case PXInt32Make('m', 'a', 'x', 'p'): return PXTTFTableEntryMaximumProfile;
-		case PXInt32Make('m', 'e', 't', 'a'): return PXTTFTableEntryMetadata;
-		case PXInt32Make('m', 'o', 'r', 't'): return PXTTFTableEntryMetamorphosisTabledeprecated;
-		case PXInt32Make('m', 'o', 'r', 'x'): return PXTTFTableEntryExtendedMetamorphosis;
-		case PXInt32Make('n', 'a', 'm', 'e'): return PXTTFTableEntryName;
-		case PXInt32Make('o', 'p', 'b', 'd'): return PXTTFTableEntryOpticalBounds;
-		case PXInt32Make('O', 'S', '/', '2'): return PXTTFTableEntryCompatibility;
-		case PXInt32Make('p', 'o', 's', 't'): return PXTTFTableEntryGlyphNameAndPostScriptCompatibility;
-		case PXInt32Make('p', 'r', 'e', 'p'): return PXTTFTableEntryControlValuePXProgram;
-		case PXInt32Make('p', 'r', 'o', 'p'): return PXTTFTableEntryProperties;
-		case PXInt32Make('s', 'b', 'i', 'x'): return PXTTFTableEntryExtendedBitmaps;
-		case PXInt32Make('t', 'r', 'a', 'k'): return PXTTFTableEntryTracking;
-		case PXInt32Make('v', 'h', 'e', 'a'): return PXTTFTableEntryVerticalHeader;
-		case PXInt32Make('v', 'm', 't', 'x'): return PXTTFTableEntryVerticalMetrics;
-		case PXInt32Make('V', 'D', 'M', 'X'): return PXTTFTableEntryVerticalDeviceMetrics;
-		case PXInt32Make('x', 'r', 'e', 'f'): return PXTTFTableEntryCrossReference;
-		case PXInt32Make('Z', 'a', 'p', 'f'): return PXTTFTableEntryGlyphReference;
+		case PXInt32MakeEndianBig('a', 'c', 'n', 't'): return PXTTFTableEntryAccentAttachment;
+		case PXInt32MakeEndianBig('a', 'n', 'k', 'r'): return PXTTFTableEntryAnchorPoint;
+		case PXInt32MakeEndianBig('a', 'v', 'a', 'r'): return PXTTFTableEntryAxisVariation;
+		case PXInt32MakeEndianBig('b', 'd', 'a', 't'): return PXTTFTableEntryBitmapData;
+		case PXInt32MakeEndianBig('b', 'h', 'e', 'd'): return PXTTFTableEntryBitmapFontHeader;
+		case PXInt32MakeEndianBig('b', 'l', 'o', 'c'): return PXTTFTableEntryBitmapLocation;
+		case PXInt32MakeEndianBig('b', 's', 'l', 'n'): return PXTTFTableEntryBaseline;
+		case PXInt32MakeEndianBig('c', 'm', 'a', 'p'): return PXTTFTableEntryCharacterCodeMapping;
+		case PXInt32MakeEndianBig('c', 'v', 'a', 'r'): return PXTTFTableEntryCVTVariation;
+		case PXInt32MakeEndianBig('c', 'v', 't', ' '): return PXTTFTableEntryControlValue;
+		case PXInt32MakeEndianBig('D', 'S', 'I', 'G'): return PXTTFTableEntryDigitalSignature;
+		case PXInt32MakeEndianBig('E', 'B', 'S', 'C'): return PXTTFTableEntryEmbeddedBitmapScalingControl;
+		case PXInt32MakeEndianBig('f', 'd', 's', 'c'): return PXTTFTableEntryFontDescriptor;
+		case PXInt32MakeEndianBig('f', 'e', 'a', 't'): return PXTTFTableEntryLayoutFeature;
+		case PXInt32MakeEndianBig('f', 'm', 't', 'x'): return PXTTFTableEntryFontMetrics;
+		case PXInt32MakeEndianBig('f', 'o', 'n', 'd'): return PXTTFTableEntryFontFamilyCompatibility;
+		case PXInt32MakeEndianBig('f', 'p', 'g', 'm'): return PXTTFTableEntryFontPXProgram;
+		case PXInt32MakeEndianBig('f', 'v', 'a', 'r'): return PXTTFTableEntryFontVariation;
+		case PXInt32MakeEndianBig('g', 'a', 's', 'p'): return PXTTFTableEntryGridFittingAndScanConversionProcedure;
+		case PXInt32MakeEndianBig('g', 'l', 'y', 'f'): return PXTTFTableEntryGlyphOutline;
+		case PXInt32MakeEndianBig('g', 'v', 'a', 'r'): return PXTTFTableEntryGlyphVariation;
+		case PXInt32MakeEndianBig('h', 'd', 'm', 'x'): return PXTTFTableEntryHorizontalDeviceMetrics;
+		case PXInt32MakeEndianBig('h', 'e', 'a', 'd'): return PXTTFTableEntryFontHeader;
+		case PXInt32MakeEndianBig('h', 'h', 'e', 'a'): return PXTTFTableEntryHorizontalHeader;
+		case PXInt32MakeEndianBig('h', 'm', 't', 'x'): return PXTTFTableEntryHorizontalMetrics;
+		case PXInt32MakeEndianBig('j', 'u', 's', 't'): return PXTTFTableEntryJustification;
+		case PXInt32MakeEndianBig('k', 'e', 'r', 'n'): return PXTTFTableEntryKerning;
+		case PXInt32MakeEndianBig('k', 'e', 'r', 'x'): return PXTTFTableEntryExtendedKerning;
+		case PXInt32MakeEndianBig('l', 'c', 'a', 'r'): return PXTTFTableEntryLigatureCaret;
+		case PXInt32MakeEndianBig('l', 'o', 'c', 'a'): return PXTTFTableEntryGlyphLocation;
+		case PXInt32MakeEndianBig('l', 't', 'a', 'g'): return PXTTFTableEntryLanguageTag;
+		case PXInt32MakeEndianBig('L', 'T', 'S', 'H'): return PXTTFTableEntryLinearThreshold;
+		case PXInt32MakeEndianBig('m', 'a', 'x', 'p'): return PXTTFTableEntryMaximumProfile;
+		case PXInt32MakeEndianBig('m', 'e', 't', 'a'): return PXTTFTableEntryMetadata;
+		case PXInt32MakeEndianBig('m', 'o', 'r', 't'): return PXTTFTableEntryMetamorphosisTabledeprecated;
+		case PXInt32MakeEndianBig('m', 'o', 'r', 'x'): return PXTTFTableEntryExtendedMetamorphosis;
+		case PXInt32MakeEndianBig('n', 'a', 'm', 'e'): return PXTTFTableEntryName;
+		case PXInt32MakeEndianBig('o', 'p', 'b', 'd'): return PXTTFTableEntryOpticalBounds;
+		case PXInt32MakeEndianBig('O', 'S', '/', '2'): return PXTTFTableEntryCompatibility;
+		case PXInt32MakeEndianBig('p', 'o', 's', 't'): return PXTTFTableEntryGlyphNameAndPostScriptCompatibility;
+		case PXInt32MakeEndianBig('p', 'r', 'e', 'p'): return PXTTFTableEntryControlValuePXProgram;
+		case PXInt32MakeEndianBig('p', 'r', 'o', 'p'): return PXTTFTableEntryProperties;
+		case PXInt32MakeEndianBig('s', 'b', 'i', 'x'): return PXTTFTableEntryExtendedBitmaps;
+		case PXInt32MakeEndianBig('t', 'r', 'a', 'k'): return PXTTFTableEntryTracking;
+		case PXInt32MakeEndianBig('v', 'h', 'e', 'a'): return PXTTFTableEntryVerticalHeader;
+		case PXInt32MakeEndianBig('v', 'm', 't', 'x'): return PXTTFTableEntryVerticalMetrics;
+		case PXInt32MakeEndianBig('V', 'D', 'M', 'X'): return PXTTFTableEntryVerticalDeviceMetrics;
+		case PXInt32MakeEndianBig('x', 'r', 'e', 'f'): return PXTTFTableEntryCrossReference;
+		case PXInt32MakeEndianBig('Z', 'a', 'p', 'f'): return PXTTFTableEntryGlyphReference;
 		default: return PXTTFTableEntryUnkown;
 	}
 }
@@ -168,139 +183,164 @@ void PXTTFDestruct(PXTTF* const ttf)
 	// TODO
 }
 
-PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
+PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const pxFile)
 {
 	PXTTFOffsetTable offsetTable;
 
 	PXTTFConstruct(ttf);
 
-	/*
+	// Ferch header
+	{
+		const PXInt16U* const dataList[] =
+		{
+			&offsetTable.Version.Major,
+			&offsetTable.Version.Minor,
+			&offsetTable.NumberOfTables,
+			&offsetTable.SearchRange,
+			&offsetTable.EntrySelctor,
+			&offsetTable.RangeShift
+		};
+		const PXInt8U dataListSize = sizeof(dataList) / sizeof(PXInt16U*);
 
-	PXFileRead(&dataStream, &offsetTable.Version.Major, PXEndianBig);
-	PXFileRead(&dataStream, &offsetTable.Version.Minor, PXEndianBig);
-	PXFileRead(&dataStream, &offsetTable.NumberOfTables, PXEndianBig);
-	PXFileRead(&dataStream, &offsetTable.SearchRange, PXEndianBig);
-	PXFileRead(&dataStream, &offsetTable.EntrySelctor, PXEndianBig);
-	PXFileRead(&dataStream, &offsetTable.RangeShift, PXEndianBig);
+		PXFileReadI16UVE(pxFile, dataList, dataListSize, PXEndianBig);
+	}
 
-	for(PXSize i = 0; i < offsetTable.NumberOfTables; i++)
+	for(PXSize i = 0; i < offsetTable.NumberOfTables; ++i)
 	{
 		PXTTFTableEntry tableEntry;
+		PXSize sourcePosition = 0;
 
-		PXFileRead(&dataStream, tableEntry.TypeRaw, 4u);
-		PXFileRead(&dataStream, tableEntry.CheckSum, PXEndianBig);
-		PXFileRead(&dataStream, tableEntry.Offset, PXEndianBig);
-		PXFileRead(&dataStream, tableEntry.Length, PXEndianBig);
+		// Parse entry
+		{
+			const PXInt32U* const dataList[] =
+			{
+				&tableEntry.TypeID,
+				&tableEntry.CheckSum,
+				&tableEntry.Offset,
+				&tableEntry.Length
+			};
+			const PXInt8U dataListSize = sizeof(dataList) / sizeof(PXInt32U*);
 
-		const unsigned int typeID = MakeInt(tableEntry.TypeRaw[0], tableEntry.TypeRaw[1], tableEntry.TypeRaw[2], tableEntry.TypeRaw[3]);
+			PXFileReadI32UVE(pxFile, dataList, dataListSize, PXEndianBig);
 
-		tableEntry.Type = ConvertTableEntryType(typeID);
+			tableEntry.Type = PXTTFTableEntryTypeFromID(tableEntry.TypeID);
+		}
 
 		printf
 		(
-			"[PXTTF][i] Chunk:[%c%c%c%c], Known:%c, Offset:%6i, Length:%6i\n",
-			tableEntry.TypeRaw[0],
-			tableEntry.TypeRaw[1],
-			tableEntry.TypeRaw[2],
+			"[TTF] Chunk:[%c%c%c%c], Known:%c, Offset:%6i, Length:%6i\n",
 			tableEntry.TypeRaw[3],
+			tableEntry.TypeRaw[2],
+			tableEntry.TypeRaw[1],
+			tableEntry.TypeRaw[0],
 			tableEntry.Type == PXTTFTableEntryUnkown ? '-' : 'x',
 			tableEntry.Offset,
 			tableEntry.Length
 		);
+
+		sourcePosition = pxFile->DataCursor;
+		PXFileCursorMoveTo(pxFile, tableEntry.Offset);
 
 		switch(tableEntry.Type)
 		{
 			//---<Essential>---------------------------------------------------		
 			case PXTTFTableEntryFontHeader:
 			{
-				PXFileReadI16U(&dataStream, &ttf->Header.Version.Major, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Header.Version.Minor, PXEndianLittle);
-				PXFileReadI16U(&dataStream, &ttf->Header.Revision.Major, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Header.Revision.Minor, PXEndianLittle);
-				PXFileReadI32U(&dataStream, &ttf->Header.CheckSumAdjustment, PXEndianBig);
-				PXFileReadI32U(&dataStream, &ttf->Header.MagicNumber, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Header.Flags, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Header.UnitsPerEM, PXEndianBig);
-				PXFileReadLLU(&dataStream, &ttf->Header.Created, PXEndianBig);
-				PXFileReadLLU(&dataStream, &ttf->Header.Modified, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Header.Minimum[0], PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Header.Minimum[1], PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Header.Maximum[0], PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Header.Maximum[1], PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Header.MacStyle, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Header.LowestRecPpem, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Header.FontDirectionHint, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Header.IndexToLocFormat, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Header.GlyphDataFormat, PXEndianBig);
+#if 0
+				PXFileReadI16U(pxFile, &ttf->Header.Version.Major, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Header.Version.Minor, PXEndianLittle);
+				PXFileReadI16U(pxFile, &ttf->Header.Revision.Major, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Header.Revision.Minor, PXEndianLittle);
+				PXFileReadI32U(pxFile, &ttf->Header.CheckSumAdjustment, PXEndianBig);
+				PXFileReadI32U(pxFile, &ttf->Header.MagicNumber, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Header.Flags, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Header.UnitsPerEM, PXEndianBig);
+				PXFileReadI64U(pxFile, &ttf->Header.Created, PXEndianBig);
+				PXFileReadI64U(pxFile, &ttf->Header.Modified, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Header.Minimum[0], PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Header.Minimum[1], PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Header.Maximum[0], PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Header.Maximum[1], PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Header.MacStyle, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Header.LowestRecPpem, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Header.FontDirectionHint, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Header.IndexToLocFormat, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Header.GlyphDataFormat, PXEndianBig);
+#endif
 				break;
 			}
 			case PXTTFTableEntryHorizontalHeader:
 			{
-				PXFileReadI16U(&dataStream, &ttf->HorizontalHeader.Version.Major, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->HorizontalHeader.Version.Minor, PXEndianLittle);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.Ascender, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.Descender, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.LineGap, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->HorizontalHeader.AdvanceWidthMaximum, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.MinimumLeftSideBearing, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.MinimumRightSideBearing, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.MaximalExtendX, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.CaretSlopeRun, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.CaretSlopeRise, PXEndianBig);
-				PXFileReadB(&dataStream, &ttf->HorizontalHeader.Reserved, 10u);
-				PXFileReadS(&dataStream, &ttf->HorizontalHeader.MetricDataFormat, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->HorizontalHeader.NumberOfHorizontalMetrics, PXEndianBig);
+#if 0
+				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.Version.Major, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.Version.Minor, PXEndianLittle);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.Ascender, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.Descender, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.LineGap, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.AdvanceWidthMaximum, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MinimumLeftSideBearing, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MinimumRightSideBearing, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MaximalExtendX, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.CaretSlopeRun, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.CaretSlopeRise, PXEndianBig);
+				PXFileReadB(pxFile, &ttf->HorizontalHeader.Reserved, 10u);
+				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MetricDataFormat, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.NumberOfHorizontalMetrics, PXEndianBig);
+#endif
 				break;
 			}
 			case PXTTFTableEntryMaximumProfile:
 			{
-				PXFileReadI16U(&dataStream, &ttf->MaximumProfile.Version.Major, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->MaximumProfile.Version.Minor, PXEndianLittle);
+#if 0
+				PXFileReadI16U(pxFile, &ttf->MaximumProfile.Version.Major, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->MaximumProfile.Version.Minor, PXEndianLittle);
 
 				const unsigned char trustedTypeFonts = ttf->MaximumProfile.Version.Major == 1 && ttf->MaximumProfile.Version.Minor == 0;
 				const unsigned char openTypeFonts = ttf->MaximumProfile.Version.Major == 0 && ttf->MaximumProfile.Version.Minor == 5;
 				const unsigned char validVersion = trustedTypeFonts || openTypeFonts;
 
-				PXFileReadI16U(&dataStream, &ttf->MaximumProfile.NumberOfGlyphs, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->MaximumProfile.NumberOfGlyphs, PXEndianBig);
 
-				assert(validVersion);
+				//assert(validVersion);
 
 				if(trustedTypeFonts && !openTypeFonts)
 				{
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.PointsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.ContoursMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.ComponentPointsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.ComponentContoursMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.ZonesMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.TwilightPointsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.StorageMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.FunctionDefsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.InstructionDefsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.StackElementsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.SizeOfInstructionsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.ComponentElementsMaximal, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->MaximumProfile.ComponentDepthMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.PointsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.ContoursMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.ComponentPointsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.ComponentContoursMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.ZonesMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.TwilightPointsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.StorageMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.FunctionDefsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.InstructionDefsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.StackElementsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.SizeOfInstructionsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.ComponentElementsMaximal, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->MaximumProfile.ComponentDepthMaximal, PXEndianBig);
 				}
+#endif
 
 				break;
 			}
 			case PXTTFTableEntryCompatibility:
 			{
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.Version, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.xAvgCharWidth, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.usWeightClass, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.usWidthClass, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.fsType, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySubscriptXSize, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySubscriptYSize, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySubscriptXOffset, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySubscriptYOffset, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySuperscriptXSize, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySuperscriptYSize, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySuperscriptXOffset, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.ySuperscriptYOffset, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.yStrikeoutPosition, PXEndianBig);
-				PXFileReadS(&dataStream, &ttf->Compatibility.sFamilyClass, PXEndianBig);
+#if 0
+				PXFileReadI16U(pxFile, &ttf->Compatibility.Version, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.xAvgCharWidth, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.usWeightClass, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.usWidthClass, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.fsType, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySubscriptXSize, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySubscriptYSize, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySubscriptXOffset, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySubscriptYOffset, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySuperscriptXSize, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySuperscriptYSize, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySuperscriptXOffset, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.ySuperscriptYOffset, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.yStrikeoutPosition, PXEndianBig);
+				PXFileReadI16S(pxFile, &ttf->Compatibility.sFamilyClass, PXEndianBig);
 
 				// Parse PANROSE
 				{
@@ -316,16 +356,16 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 					unsigned char bMidline;
 					unsigned char bXHeight;
 
-					PXFileReadI8U(&dataStream, &bFamilyType);
-					PXFileReadI8U(&dataStream, &bSerifStyle);
-					PXFileReadI8U(&dataStream, &bWeight);
-					PXFileReadI8U(&dataStream, &bProportion);
-					PXFileReadI8U(&dataStream, &bContrast);
-					PXFileReadI8U(&dataStream, &bStrokeVariation);
-					PXFileReadI8U(&dataStream, &bArmStyle);
-					PXFileReadI8U(&dataStream, &bLetterform);
-					PXFileReadI8U(&dataStream, &bMidline);
-					PXFileReadI8U(&dataStream, &bXHeight);
+					PXFileReadI8U(pxFile, &bFamilyType);
+					PXFileReadI8U(pxFile, &bSerifStyle);
+					PXFileReadI8U(pxFile, &bWeight);
+					PXFileReadI8U(pxFile, &bProportion);
+					PXFileReadI8U(pxFile, &bContrast);
+					PXFileReadI8U(pxFile, &bStrokeVariation);
+					PXFileReadI8U(pxFile, &bArmStyle);
+					PXFileReadI8U(pxFile, &bLetterform);
+					PXFileReadI8U(pxFile, &bMidline);
+					PXFileReadI8U(pxFile, &bXHeight);
 
 					//panrose.FamilyType = ConvertPXTTFFamilyType(bFamilyType);
 					//panrose.SerifStyle = ConvertPXTTFSerifStyle(bSerifStyle);
@@ -339,35 +379,35 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 					//panrose.HeightX = ConvertPXTTFHeightX(bXHeight);
 				}
 
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.ulUnicodeRange[0], PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.ulUnicodeRange[1], PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.ulUnicodeRange[2], PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.ulUnicodeRange[3], PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.ulUnicodeRange[0], PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.ulUnicodeRange[1], PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.ulUnicodeRange[2], PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.ulUnicodeRange[3], PXEndianBig);
 
-				PXFileReadB(&dataStream, &ttf->Compatibility.achVendID, 4u);
+				PXFileReadB(pxFile, &ttf->Compatibility.achVendID, 4u);
 
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.fsSelection, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.fsFirstCharIndex, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Compatibility.fsLastCharIndex, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.fsSelection, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.fsFirstCharIndex, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Compatibility.fsLastCharIndex, PXEndianBig);
 
 				if(ttf->Compatibility.Version > 0)
 				{
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.sTypoAscender, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.sTypoDescender, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.sTypoLineGap, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.usWinAscent, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.usWinDescent, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.ulCodePageRange1, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.ulCodePageRange2, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.sxHeight, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.sCapHeight, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.usDefaultChar, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.usBreakChar, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.usMaxContext, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.usLowerPointSize, PXEndianBig);
-					PXFileReadI16U(&dataStream, &ttf->Compatibility.usUpperPointSize, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.sTypoAscender, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.sTypoDescender, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.sTypoLineGap, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.usWinAscent, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.usWinDescent, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.ulCodePageRange1, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.ulCodePageRange2, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.sxHeight, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.sCapHeight, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.usDefaultChar, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.usBreakChar, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.usMaxContext, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.usLowerPointSize, PXEndianBig);
+					PXFileReadI16U(pxFile, &ttf->Compatibility.usUpperPointSize, PXEndianBig);
 				}
-
+#endif 
 				break;
 			}
 
@@ -378,8 +418,10 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 			}
 			case PXTTFTableEntryGlyphNameAndPostScriptCompatibility: // post
 			{
-				PXFileReadI16U(&dataStream, &ttf->PostScript.Version.Major, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->PostScript.Version.Minor, PXEndianLittle);
+#if 0
+				PXFileReadI16U(pxFile, &ttf->PostScript.Version.Major, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->PostScript.Version.Minor, PXEndianLittle);
+#endif
 
 				//PostScript.Version.Check();
 
@@ -409,14 +451,16 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 					default:
 						printf("Illegal Version");
 						break;
-				}* /
+				}*/
 
 				break;
 			}
 			case PXTTFTableEntryKerning: // kern
 			{
-				PXFileReadI16U(&dataStream, &ttf->Kerning.Version, PXEndianBig);
-				PXFileReadI16U(&dataStream, &ttf->Kerning.NumberOfSubtables, PXEndianBig);
+#if 0
+				PXFileReadI16U(pxFile, &ttf->Kerning.Version, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->Kerning.NumberOfSubtables, PXEndianBig);
+#endif
 
 				/*
 
@@ -470,7 +514,7 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 							break;
 						}
 					}
-				}* /
+				}*/
 
 				break;
 			}
@@ -482,6 +526,42 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 			}
 			case PXTTFTableEntryGlyphOutline: // glyf
 			{
+				TableEntryGlyphOutlineEntry tableEntryGlyphOutlineEntry;
+
+				PXMemoryClear(&tableEntryGlyphOutlineEntry, sizeof(TableEntryGlyphOutlineEntry));
+				
+				PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
+				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Minimum[0], PXEndianBig);
+				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Minimum[1], PXEndianBig);
+				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Maximum[0], PXEndianBig);
+				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Maximum[1], PXEndianBig);
+
+				const PXBool isSimpleGlyph = tableEntryGlyphOutlineEntry.ContourListSize >= 0;
+
+				if (isSimpleGlyph)
+				{
+					PXFileReadI16UVE(pxFile, tableEntryGlyphOutlineEntry.ContourList, tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
+
+					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.InstructionListSize, PXEndianBig);
+
+					PXFileReadB(pxFile, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
+
+
+					PXFileReadI8U(pxFile, &tableEntryGlyphOutlineEntry.FlagList);
+
+					// xCoordinates
+					//PXFileReadB(pxFile, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
+
+					// yCoordinates
+					//PXFileReadB(pxFile, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
+				}
+				else // compound glyph
+				{
+					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
+					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
+				}
+		
+
 				break;
 			}
 			case PXTTFTableEntryFontPXProgram: // fpgm
@@ -493,27 +573,29 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 			// Windows 
 			case PXTTFTableEntryCharacterCodeMapping:
 			{
-				/*
-				PXFileReadI16U(&PXFile, &ttf->CharacterMapping.Version, PXEndianBig);
-				PXFileReadI16U(&PXFile, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
+				PXFileReadI16U(pxFile, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
+				PXFileReadI16U(pxFile, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
 
-				CharacterMapping.EncodingRecordList = new EncodingRecord[CharacterMapping.NumberOfTables];
+				ttf->CharacterMapping.EncodingRecordListSize = sizeof(EncodingRecord) * ttf->CharacterMapping.NumberOfTables;
+				ttf->CharacterMapping.EncodingRecordList = PXMemoryAllocateTypeCleared(EncodingRecord, ttf->CharacterMapping.NumberOfTables);
 
-				for(PXSize i = 0; i < CharacterMapping.NumberOfTables; i++)
+				for(PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)
 				{
-					EncodingRecord& encodingRecord = CharacterMapping.EncodingRecordList[i];
+					EncodingRecord* const encodingRecord = &ttf->CharacterMapping.EncodingRecordList[i];
 
-					unsigned short platformID;
-					unsigned short encodingID;
+					PXInt16U platformID = 0;
+					PXInt16U encodingID = 0;
 
-					PXFileReadI16U(&PXFile, &ttf->platformID, PXEndianBig);
-					PXFileReadI16U(&PXFile, &ttf->encodingID, PXEndianBig);
-					PXFileReadI16U(&PXFile, &ttf->encodingRecord.SubtableOffset, PXEndianBig);
+					PXFileReadI16U(pxFile, &platformID, PXEndianBig);
+					PXFileReadI16U(pxFile, &encodingID, PXEndianBig);
+					PXFileReadI32U(pxFile, &encodingRecord->SubtableOffset, PXEndianBig);
 
-					encodingRecord.Platform = ConvertPlatformID(platformID);
-					encodingRecord.Encoding = ConvertEncodingID(encodingRecord.Platform, encodingID);
+					encodingRecord->Platform = PXTTFPlatformFromID(platformID);
+					encodingRecord->Encoding = PXTTFEncodingFromID(encodingRecord->Platform, encodingID);
+
+					// Proceed?
 				}
-				* /
+				
 				break;
 			}
 			case PXTTFTableEntryLinearThreshold:
@@ -524,7 +606,7 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 
 				LinearThreshold.PelsHeightList = Memory::Allocate<Byte__>(LinearThreshold.NumberOfGlyphs);
 
-				PXFileReadI16U(&PXFile, &ttf->LinearThreshold.PelsHeightList, LinearThreshold.NumberOfGlyphs);* /
+				PXFileReadI16U(&PXFile, &ttf->LinearThreshold.PelsHeightList, LinearThreshold.NumberOfGlyphs);*/
 
 				break;
 			}
@@ -568,13 +650,14 @@ PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const dataStream)
 							}
 						}
 					}
-				}* /
+				}*/
 
 				break;
 			}
 		}
-	}
-	*/
+	
+		PXFileCursorMoveTo(pxFile, sourcePosition);
+	}	
 
 	return PXActionSuccessful;
 }

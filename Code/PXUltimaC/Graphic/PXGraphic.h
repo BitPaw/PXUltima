@@ -328,6 +328,8 @@ extern "C"
 		PXUIElementTypeRadioButton,
 		PXUIElementTypeToolTip,
 
+		PXUIElementTypeRenderFrame,
+
 		PXUIElementTypeCustom
 	}
 	PXUIElementType;
@@ -392,6 +394,14 @@ extern "C"
 	UIContainerRoot;
 
 
+	typedef enum PXUIElementPositionMode_
+	{
+		PXUIElementPositionInvalid,
+		PXUIElementPositionGlobally,
+		PXUIElementPositionRelative
+	}
+	PXUIElementPositionMode;
+
 
 	typedef struct PXUIElement_ PXUIElement;
 
@@ -413,7 +423,7 @@ extern "C"
 		//---<Render Settings>-------------------
 		PXRenderable Renderable;
 		PXColorRGBAF BackGroundColor;
-		void* FontID;
+		PXFont* FontID;
 		PXInt32U TextureID;
 		PXInt32U ShaderID;
 		//---------------------------------------
@@ -428,12 +438,27 @@ extern "C"
 		//---<Property>--------------------------
 		PXInt16U ID;
 		PXUIElementType Type;
+		PXUIElementPositionMode PositionMode;
 		char Name[32];
+		float NameTextScale;
 		float X;
 		float Y;
 		float Width;
 		float Height;
 		//---------------------------------------
+
+		//---<Hiracy>----------------------------
+		PXUIElement* Parent;
+		PXUIElement* Sibling;
+		PXUIElement* Child;
+		//---------------------------------------
+
+		PXInt32U FrameRenderWidth;
+		PXInt32U FrameRenderHeight;
+		PXInt32U FrameBufferID;
+		PXInt32U FrameRenderID;
+		PXInt32U FrameRenderTextureID;
+
 
 		//---<Events>----------------------------
 		PXUIOnClick OnClickCallback;
@@ -475,11 +500,15 @@ extern "C"
 	//-------------------------------------------------------------------------
 	PXPublic void PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
 	PXPublic void PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
-	PXPublic void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height);
+	PXPublic void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
 
 	PXPublic void PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
 	PXPublic void PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
 	PXPublic void PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
+	PXPublic void PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont);
+	PXPublic void PXUIElementHoverable(PXUIElement* const pxUIElement, const PXBool isHoverable);
+	PXPublic void PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
+	PXPublic void PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
 
 	PXPrivate PXInt32U PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext);
 

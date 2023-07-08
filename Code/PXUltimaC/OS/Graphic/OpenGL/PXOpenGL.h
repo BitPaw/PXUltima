@@ -192,6 +192,7 @@ extern "C"
 	typedef enum PXOpenGLRenderBufferFormat_
 	{
 		PXOpenGLRenderBufferFormatInvalid,
+		PXOpenGLRenderBufferFormatDepthComponent,
 		PXOpenGLRenderBufferFormatDepth24Stencil8
 	}
 	PXOpenGLRenderBufferFormat;

@@ -26,32 +26,14 @@ void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endian
 	}
 }
 
-void PXEndianSwapV(void* const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo)
+void PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
+	const PXSize amount = dataSize / elementSize;
+
+	for (PXSize i = 0; i < amount; ++i)
 	{
-		const PXBool inoutIsOutput = endianFrom == endianTo;
+		void* const insertPoint = data[i];
 
-		if (inoutIsOutput)
-		{
-			return;
-		}
-	}
-
-	const PXSize blockSize = elementSize / 2;
-	const PXSize blockAmount = elementSize / dataSize;
-
-	for (PXSize j = 0; j < blockAmount; ++j)
-	{
-		PXByte* blockStart = (PXByte*)data + elementSize * j;
-
-		for (PXSize i = 0; i < blockSize; ++i)
-		{
-			PXByte* a = (PXByte*)blockStart + i;
-			PXByte* b = ((PXByte*)blockStart + elementSize) - (i + 1);
-
-			PXByte c = *a; // Backup a
-			*a = *b; // b -> a
-			*b = c; // a -> b
-		}
+		PXEndianSwap(insertPoint, elementSize, endianFrom, endianTo);
 	}
 }

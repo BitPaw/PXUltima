@@ -1090,6 +1090,7 @@ int PXOpenGLRenderBufferFormatToID(const PXOpenGLRenderBufferFormat dataType)
 {
     switch (dataType)
     {
+        case PXOpenGLRenderBufferFormatDepthComponent: return GL_DEPTH_COMPONENT;
         case PXOpenGLRenderBufferFormatDepth24Stencil8: return GL_DEPTH24_STENCIL8;
         case PXOpenGLRenderBufferFormatInvalid:
         default:

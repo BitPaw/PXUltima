@@ -29,7 +29,7 @@ extern "C"
         PXTTFTableEntryFontPXProgram, // fpgm
         PXTTFTableEntryFontVariation, // fvar
         PXTTFTableEntryGridFittingAndScanConversionProcedure, // gasp
-        PXTTFTableEntryGlyphOutline, // glyf
+        PXTTFTableEntryGlyphOutline, // glyf, defines the appearance of the glyphs in the font.
         PXTTFTableEntryGlyphVariation, // gvar
         PXTTFTableEntryHorizontalDeviceMetrics, // hdmx
         PXTTFTableEntryFontHeader, // head
@@ -78,8 +78,8 @@ extern "C"
 
     typedef struct PXTTFVersion_
     {
-        unsigned short Major;
-        unsigned short Minor;
+        PXInt16U Major;
+        PXInt16U Minor;
         PXTTFVersionType Type;
     }
     PXTTFVersion;
@@ -114,7 +114,12 @@ extern "C"
 
 	typedef struct PXTTFTableEntry_
 	{
-		char TypeRaw[4];
+        union
+        {
+            char TypeRaw[4];
+            unsigned int TypeID;
+        };
+
 		PXTTFTableEntryType Type;
 		unsigned int CheckSum;
 		unsigned int Offset;
@@ -182,6 +187,7 @@ extern "C"
         PlatformUnicode,// Various
         PlatformMacintosh,// Script manager code
         PlatformISO,// ISO encoding[deprecated]
+        PlatformReserved,
         PlatformWindows,// Windows encoding
         PlatformCustom
     }
@@ -191,14 +197,15 @@ extern "C"
     {
         PlatformID Platform;
         EncodingID Encoding; // Platform specific.
-        unsigned int SubtableOffset;// 	Byte__ offset from beginning of table to the subtable for this encoding.
+        PXInt32U SubtableOffset;// 	Byte__ offset from beginning of table to the subtable for this encoding.
     }
     EncodingRecord;    
     
     typedef struct PXTTFCharacterMapping_
     {
-        unsigned short Version; // Table version number(0).
-        unsigned short NumberOfTables; // Number of encoding tables that follow.
+        PXInt16U Version; // Table version number(0).
+        PXInt16U NumberOfTables; // Number of encoding tables that follow.
+        PXSize EncodingRecordListSize;
         EncodingRecord* EncodingRecordList;
     }
     PXTTFCharacterMapping;
@@ -592,10 +599,10 @@ extern "C"
     typedef struct PXTTFOffsetTable_
     {
         PXTTFVersion Version;
-        unsigned short NumberOfTables;
-        unsigned short SearchRange;
-        unsigned short EntrySelctor;
-        unsigned short RangeShift;
+        PXInt16U NumberOfTables;
+        PXInt16U SearchRange;
+        PXInt16U EntrySelctor;
+        PXInt16U RangeShift;
     }
     PXTTFOffsetTable;
 
@@ -603,22 +610,52 @@ extern "C"
     typedef struct PXTTFMaximumProfile_
     {
         PXTTFVersion Version;
-        unsigned short NumberOfGlyphs; // the number of glyphs in the font
-        unsigned short PointsMaximal; // points in non - compound glyph
-        unsigned short ContoursMaximal; // contours in non - compound glyph
-        unsigned short ComponentPointsMaximal; //points in compound glyph
-        unsigned short ComponentContoursMaximal; //	contours in compound glyph
-        unsigned short ZonesMaximal; // set to 2
-        unsigned short TwilightPointsMaximal;//points used in Twilight Zone(Z0)
-        unsigned short StorageMaximal; // number of Storage Area locations
-        unsigned short FunctionDefsMaximal; // number of FDEFs
-        unsigned short InstructionDefsMaximal; // number of IDEFs
-        unsigned short StackElementsMaximal; // maximum stack depth
-        unsigned short SizeOfInstructionsMaximal; // byte count for glyph instructions
-        unsigned short ComponentElementsMaximal; // number of glyphs referenced at top level
-        unsigned short ComponentDepthMaximal; // levels of recursion, set to 0 if font has only simple glyphs
+        PXInt16S NumberOfGlyphs; // the number of glyphs in the font
+        PXInt16S PointsMaximal; // points in non - compound glyph
+        PXInt16S ContoursMaximal; // contours in non - compound glyph
+        PXInt16S ComponentPointsMaximal; //points in compound glyph
+        PXInt16S ComponentContoursMaximal; //	contours in compound glyph
+        PXInt16S ZonesMaximal; // set to 2
+        PXInt16S TwilightPointsMaximal;//points used in Twilight Zone(Z0)
+        PXInt16S StorageMaximal; // number of Storage Area locations
+        PXInt16S FunctionDefsMaximal; // number of FDEFs
+        PXInt16S InstructionDefsMaximal; // number of IDEFs
+        PXInt16S StackElementsMaximal; // maximum stack depth
+        PXInt16S SizeOfInstructionsMaximal; // byte count for glyph instructions
+        PXInt16S ComponentElementsMaximal; // number of glyphs referenced at top level
+        PXInt16S ComponentDepthMaximal; // levels of recursion, set to 0 if font has only simple glyphs
     }
     PXTTFMaximumProfile;
+
+
+#define PXOutlineFlagOnCurve        0b100000000
+#define PXOutlineFlagShortVectorX   0b010000000
+#define PXOutlineFlagShortVectorY   0b001000000
+#define PXOutlineFlagRepeat         0b000100000
+#define PXOutlineFlagShortVectorXB  0b000010000
+#define PXOutlineFlagShortVectorYB  0b000001000
+#define PXOutlineFlagReserved       0b000000111
+
+    typedef struct TableEntryGlyphOutlineEntry_
+    {
+        PXInt16U* ContourList;
+        PXInt16S ContourListSize;
+        PXInt16U Minimum[2];
+        PXInt16U Maximum[2];
+
+
+        // Simple glyphs
+        PXInt8U FlagList;
+
+        PXInt8U* InstructionList;
+        PXInt16U InstructionListSize;
+
+
+        // Compound glyphs
+        PXInt16U ComponentFlagList;
+        PXInt16U GlyphIndex;
+    }
+    TableEntryGlyphOutlineEntry;
 
 
 	// Tag Image File Format
@@ -642,12 +679,13 @@ extern "C"
 	}
 	PXTTF;
 
-    PXPublic EncodingID PXTTFEncodingFromID(const PlatformID platformID, unsigned char encodingID);
+    PXPrivate PlatformID PXTTFPlatformFromID(const PXInt16U platformID);
+    PXPrivate EncodingID PXTTFEncodingFromID(const PlatformID platformID, const PXInt16U encodingID);
 
-    PXPublic PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor);
+    PXPrivate PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor);
     //PXPublic void PXTTFVersionTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType);
 
-    PXPublic PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType);
+    PXPrivate PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType);
     //PXPublic PXInt32U PXTTFTableEntryTypeFromID(const PXTTFTableEntryType tableEntryType);
 
     PXPublic void PXTTFConstruct(PXTTF* const ttf);

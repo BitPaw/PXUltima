@@ -142,14 +142,10 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
     //---[ Parsing Header ]----------------------------------------------------
     {
         PXInt16UCluster byteCluster;
-        PXInt32U valueList[3];
+        PXInt32U* valueList[3] = { &sizeOfFile, &reservedBlock, &dataOffset };
 
         PXFileReadB(dataStream, byteCluster.Data, 2u);
         PXFileReadI32UVE(dataStream, valueList, 3u, PXEndianLittle);
-
-        sizeOfFile = valueList[0];
-        reservedBlock = valueList[1];
-        dataOffset = valueList[2];
 
         const PXBitmapType type = ConvertToPXBitmapType(byteCluster.Value);
 

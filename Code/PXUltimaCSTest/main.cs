@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace PX.Text
+namespace PXText
 {
     internal class BingBong
     {
@@ -14,6 +14,14 @@ namespace PX.Text
         public static int Main()
         {
             Console.WriteLine("Welcome " + PX.User.Name);
+
+
+            PX.Window window = new PX.Window();
+
+            Window
+
+            OpenGL openGL = new OpenGL();
+            openGL.CreateWindowless(100,100);
 
 
             PX.Client client = new PX.Client();
