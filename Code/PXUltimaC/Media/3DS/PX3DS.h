@@ -1,21 +1,20 @@
 #ifndef PX3DSINCLUDE
 #define PX3DSINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXModel.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef struct PX3DS
+	typedef struct PXAutodesk3DS
 	{
 		unsigned int __dummy__;
 	}
-	PX3DS;
+	PXAutodesk3DS;
 
-	PXPublic PXActionResult PX3DSParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult PXAutodesk3DSParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

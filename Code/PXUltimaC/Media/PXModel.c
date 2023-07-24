@@ -3,7 +3,16 @@
 #include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
+
+// Model file formats
+
+#include <Media/3DS/PX3DS.h>
+#include <Media/STL/PXSTL.h>
+#include <Media/FilmBox/PXFilmBox.h>
 #include <Media/Wavefront/PXWavefront.h>
+#include <Media/VRML/PXVRML.h>
+#include <Media/PLY/PXPLY.h>
+
 
 void PXModelConstruct(PXModel* const model)
 {
@@ -17,6 +26,7 @@ void PXModelDestruct(PXModel* const model)
 
 PXSize PXModelMaterialAmount(const PXModel* const model)
 {
+    /*
     // Has materials?
     {
         const PXBool hasMaterial = model->MaterialList != PXNull;
@@ -36,11 +46,12 @@ PXSize PXModelMaterialAmount(const PXModel* const model)
         PXFileReadI32U(&materialData, &amount);
 
         return amount;
-    }
+    }*/
 }
 
 PXBool PXModelMaterialGet(const PXModel* const model, const PXSize materialID, PXMaterial* const pxMaterial)
 {
+    /*
     const PXSize amount = PXModelMaterialAmount(model);
 
     {
@@ -91,8 +102,9 @@ PXBool PXModelMaterialGet(const PXModel* const model, const PXSize materialID, P
 
         PXFileCursorAdvance(&materialData, materialSize-2u);
     }
+*/
 
-    return PXYes;
+    return PXFalse;
 }
 
 unsigned char PXModelSegmentsAmount(const PXModel* const model)
@@ -198,64 +210,49 @@ PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
     }
 }
 
-PXActionResult PXModelLoadD(PXModel* const model, PXFile* const fileStream, const FileFormatExtension modelType)
+PXActionResult PXModelLoadD(PXModel* const pxModel, PXFile* const pxFile, const FileFormatExtension modelType)
 {
-    PXFile modelCompileCache;
-
-    PXSize bytesRead = 0;
-    ModelCompilerFunction modelCompilerFunction = 0;
     ModelParserFunction modelParserFunction = 0;
-
-    PXFileMapToMemory(&modelCompileCache, fileStream->DataSize * 200, PXMemoryAccessModeReadAndWrite);
 
     switch (modelType)
     {
- /*       case FileFormatA3DS:
+        case FileFormatA3DS:
         {
-
+            modelParserFunction = PXAutodesk3DSParseFromFile;
             break;
         }
-        case FileFormatFimBox:
+        case FileFormatFilmBox:
         {
-
-            break;
-        }*/
-        case FileFormatOBJ:
-        {
-            modelCompilerFunction = PXWavefrontFileCompile;
-            modelParserFunction = PXWavefrontParseToModel;
+            modelParserFunction = PXFilmBoxParseFromFile;
             break;
         }
-   /*     case FileFormatPLY:
+        case FileFormatWavefront:
         {
-
+            modelParserFunction = PXWavefrontParseFromFile;
+            break;
+        }
+        case FileFormatPLY:
+        {
+            modelParserFunction = PXPLYParseFromFile;
             break;
         }
         case FileFormatSTL:
         {
-
+            modelParserFunction = PXSTLParseFromFile;
             break;
         }
         case FileFormatVRML:
         {
-
+            modelParserFunction = PXVRMLParseFromFile;
             break;
-        }*/
+        }
         default:
         {
             return PXActionRefusedFormatNotSupported;
         }
     }
 
-    const PXActionResult actionResult = modelCompilerFunction(fileStream, &modelCompileCache);
-    const PXBool sucessfull = PXActionSuccessful == actionResult;
-
-    if (sucessfull)
-    {
-        modelParserFunction(&modelCompileCache, model);
-    }
-
-    PXFileDestruct(&modelCompileCache);
+    const PXActionResult actionResult = modelParserFunction(pxModel, pxFile);
 
     return actionResult;
 }

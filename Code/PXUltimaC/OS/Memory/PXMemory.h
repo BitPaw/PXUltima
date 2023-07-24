@@ -10,6 +10,7 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 #endif
 
 //---<Settings>---
+#define MemorySizeUnkown -1
 #define MemoryAssertEnable 0
 #define MemoryDebugOutput 0
 #define MemoryDebugLeakDetection 0
@@ -144,6 +145,9 @@ extern "C"
 #define PXMemoryAllocateType(type, dataSize) (type*)PXMemoryHeapAllocate(sizeof(type) * dataSize)
 #define PXMemoryAllocateTypeCleared(type, dataSize) (type*)PXMemoryHeapAllocateCleared(sizeof(type), dataSize)
 #define PXMemoryReallocateTypeCleared(type, adressCurrent, dataSizeBefore, dataSizeAfter) (type*)PXMemoryHeapReallocateTypeClear(adressCurrent, sizeof(type), dataSizeBefore, dataSizeAfter)
+
+#define PXNew(type) (type*)PXMemoryHeapAllocate(sizeof(type))
+#define PXDelete(type, adress) PXMemoryRelease(adress, sizeof(type))
 #endif
 
 #else // Use virtual alloc

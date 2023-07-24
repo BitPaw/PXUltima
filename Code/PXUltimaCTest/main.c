@@ -20,6 +20,10 @@
 #include <Media/TTF/PXTTF.h>
 
 
+
+#include <OS/Graphic/DirectX/PXDirectX.h>
+
+
 #if PXLDAPTest
 #include <Service/LDAP/PXLDAPClient.h>
 
@@ -29,6 +33,7 @@
 #if PXKeyBoardVirtualTest
 #include <OS/Hardware/PXKeyBoard.h>
 #endif // PXKeyBoardVirtualTest
+#include <OS/Window/PXWindow.h>
 
 /*
 
@@ -74,6 +79,68 @@ void PXTextMatchTest()
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+
+	// Direct X - Test
+	PXWindow pxWindow;
+	PXWindowConstruct(&pxWindow);
+
+	PXWindowCreateA(&pxWindow, -1, -1, "Direct X - Test", PXTrue);
+
+	PXAwaitChangeCU(&pxWindow.IsRunning);
+
+
+	PXDirectX* directX = &pxWindow.GraphicInstance.DirectXInstance;
+
+
+
+	const float vertices[] =
+	{
+		 150.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, // x, y, z, rhw, color
+		 250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00,
+		  50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff,
+	};
+
+
+	PXVertexBuffer pxVertexBuffer;
+
+	pxVertexBuffer.VertexData = vertices;
+	pxVertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
+	pxVertexBuffer.Format = PXVertexBufferFormatXYZUXC;
+
+	PXDirectXVertexBufferCreate(directX, &pxVertexBuffer);
+
+
+	while (1)
+	{
+		PXDirectXClear(directX, 0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(30, 30, 30), 1.0f, 0);
+
+		PXDirectXSceneBegin(directX);
+
+		PXDirectXStreamSourceSet(directX, 0, &pxVertexBuffer, 0, 20);
+		PXDirectXVertexFixedFunctionSet(directX, pxVertexBuffer.Format);
+		PXDirectXPrimitiveDraw(directX, PXGraphicRenderModeTriangle, 0, 1);
+
+		PXDirectXSceneEnd(directX);
+
+		PXDirectXPresent(directX, 0, 0, 0, 0);
+	}
+
+	PXWindowDestruct(&pxWindow);
+
+
+	printf("\n");
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 #include "PXSTL.h"
 
-PXActionResult PXSTLParse(const void* data, const PXSize dataSize)
+PXActionResult PXSTLParseFromFile(PXModel* const pxModel, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionNotImplemented;
 }

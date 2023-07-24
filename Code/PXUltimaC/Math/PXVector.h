@@ -60,10 +60,10 @@ extern "C"
 	PXPublic void PXVector3FConstruct(PXVector3F* const vector3F);
 	PXPublic void PXVector4FConstruct(PXVector4F* const vector4F);
 
-	PXPublic void PXVector2FSet(const PXVector2F* const vector, PXVector2F* const vectorSet, PXVector2F* const vectorResult);
-	PXPublic void PXVector2FSetXY(const PXVector2F* const vector, const float x, const float y, PXVector2F* const vectorResult);
-	PXPublic void PXVector3FSetXYZ(const PXVector3F* const vector, const float x, const float y, const float z, PXVector3F* const vectorResult);
-	PXPublic void PXVector4FSetXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult);
+	PXPublic void PXVector2FSet(PXVector2F* const vector, const PXVector2F* const vectorSet);
+	PXPublic void PXVector2FSetXY(PXVector2F* const vector, const float x, const float y);
+	PXPublic void PXVector3FSetXYZ(PXVector3F* const vector, const float x, const float y, const float z);
+	PXPublic void PXVector4FSetXYZW(PXVector4F* const vector, const float x, const float y, const float z, const float w);
 
 	PXPublic void PXVector2FAddXY(const PXVector2F* const vector, const float x, const float y, PXVector2F* const vectorResult);
 	PXPublic void PXVector3FAdd(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);

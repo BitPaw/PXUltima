@@ -197,11 +197,24 @@ void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, 
 	matrixResult->Data[ScaleZ] = matrixA->Data[ScaleZ] + scalar;
 }
 
-void PXMatrix4x4FScaleSet(const float x, const float y, const float z, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F)
 {
-	matrixResult->Data[ScaleX] = x;
-	matrixResult->Data[ScaleY] = y;
-	matrixResult->Data[ScaleZ] = z;
+	pxMatrix4x4F->Data[ScaleX] = pxVector3F->X;
+	pxMatrix4x4F->Data[ScaleY] = pxVector3F->Y;
+	pxMatrix4x4F->Data[ScaleZ] = pxVector3F->Z;
+}
+
+void PXMatrix4x4FScaleSetXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y)
+{
+	pxMatrix4x4F->Data[ScaleX] = x;
+	pxMatrix4x4F->Data[ScaleY] = y;
+}
+
+void PXMatrix4x4FScaleSetXYZ(PXMatrix4x4F* const xpMatrix4x4F, const float x, const float y, const float z)
+{
+	const PXVector3F pxVector3F = {x, y, z};
+
+	PXMatrix4x4FScaleSet(xpMatrix4x4F, &pxVector3F);
 }
 
 void PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z)

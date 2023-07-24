@@ -95,6 +95,10 @@ extern "C"
 
 	PXPublic PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const model);
 
+
+
+	PXPublic PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,7 +1,7 @@
 #ifndef PXSoundINCLUDE
 #define PXSoundINCLUDE
 
-#include <Media/PXType.h>
+#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -10,15 +10,30 @@ extern "C"
 
 	typedef struct PXSound_
 	{
-		unsigned short NumerOfChannels;
-		unsigned int SampleRate;
-		unsigned short BitsPerSample;
+		PXInt32U SampleRate;
+		PXInt16U NumerOfChannels;
+		PXInt16U BitsPerSample;
 
 		PXSize DataSize;
 		void* Data;
 	}
 	PXSound;
 
+	typedef PXActionResult(*PXSoundTranslateFunction)(const PXSound* const pxSound, PXFile* const pxFile);
+
+	PXPublic void PXSoundConstruct(PXSound* const pxSound);
+	PXPublic void PXSoundDestruct(PXSound* const pxSound);
+
+	PXPublic PXActionResult PXSoundLoad(PXSound* const pxSound, const PXText* const filePath);
+	PXPublic PXActionResult PXSoundLoadAs(PXSound* const pxSound, const PXFile* const pxFile, const FileFormatExtension guessedFormat);
+
+	PXPublic PXActionResult PXSoundSave(PXSound* const pxSound, const PXText* const filePath, const FileFormatExtension fileFormat);
+	PXPublic PXActionResult PXSoundSaveAs
+	(
+		PXSound* const pxSound,
+		const PXFile* const pxFile,
+		const FileFormatExtension fileFormat
+	);
 
 #ifdef __cplusplus
 }

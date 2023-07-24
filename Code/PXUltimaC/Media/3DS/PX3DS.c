@@ -1,6 +1,6 @@
 #include "PX3DS.h"
 
-PXActionResult PX3DSParse(const void* data, const PXSize dataSize)
+PXActionResult PXAutodesk3DSParseFromFile(PXModel* const pxModel, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionNotImplemented;
 }

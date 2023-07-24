@@ -808,7 +808,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	PXFileCursorToBeginning(outputStream);
 }
 
-PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
+PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText)
 {
 	PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -842,9 +842,20 @@ PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, char* const 
 		dataBlockSize = (compilerSymbolEntry.Coloum - coloumStart) + compilerSymbolEntry.Size;
 	}
 
-	*textSize = PXTextCopyA(dataBlockPoint, dataBlockSize, text, textMaxSize);
+	pxText->SizeUsed = PXTextCopyA(dataBlockPoint, dataBlockSize, pxText->TextA, pxText->SizeAllocated);
 
 	return PXYes;
+}
+
+PXBool PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
+{
+	PXText pxText;
+	PXTextConstructFromAdressA(&pxText, text, textMaxSize);
+	const PXBool result = PXCompilerParseStringUntilNewLine(inputStream, &pxText);
+
+	*textSize = pxText.SizeUsed;
+
+	return result;
 }
 
 PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value)
@@ -864,7 +875,9 @@ PXBool PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values
 
 	PXCompilerSymbolEntryPeek(inputStream, &compilerSymbolEntry);
 
-	const PXBool isFloat = compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
+	const PXBool isFloat = 	compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
+	const PXBool isInt = compilerSymbolEntry.ID == PXCompilerSymbolLexerInteger;
+	const PXBool isValid = isFloat || isInt;
 
 	if (isFloat)
 	{
@@ -873,16 +886,23 @@ PXBool PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values
 		PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
 	}
 
-	return isFloat;
+	if (isInt)
+	{
+		*values = compilerSymbolEntry.DataI32S;
+
+		PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
+	}
+
+	return isValid;
 }
 
 PXBool PXCompilerParseFloatList(PXFile* const inputStream, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
 {
 	for (PXSize i = 0; i < valuesMaxSize; ++i)
 	{
-		const PXBool isFloat = PXCompilerParseFloatSingle(inputStream, &values[*valuesSize]);
+		const PXBool isValid = PXCompilerParseFloatSingle(inputStream, &values[*valuesSize]);
 
-		if (!isFloat)
+		if (!isValid)
 		{
 			// we are at the line end
 

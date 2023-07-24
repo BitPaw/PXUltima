@@ -172,7 +172,7 @@ PXBool PXDictionaryFind(PXDictionary* const dictionary, const void* const key, v
 	return PXTrue;
 }
 
-PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const keyResult)
+PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult)
 {
 	for (PXSize i = 0; i < dictionary->EntryAmountCurrent; ++i)
 	{
@@ -184,7 +184,7 @@ PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const k
 
 		if (isTarget)
 		{
-			*keyResult = pxDictionaryEntry.Key;
+			*valueResult = *(void**)pxDictionaryEntry.Value;
 			return PXTrue;
 		}
 	}

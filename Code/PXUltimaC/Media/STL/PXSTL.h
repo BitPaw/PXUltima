@@ -1,9 +1,7 @@
 #ifndef PXSTLINCLUDE
 #define PXSTLINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXModel.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -16,7 +14,7 @@ extern "C"
 	}
 	PXSTL;
 
-	PXPublic PXActionResult PXSTLParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult PXSTLParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

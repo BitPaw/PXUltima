@@ -214,7 +214,7 @@ PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputS
 		unsigned int sizeA = 0;
 		unsigned int sizeB = 0;
 
-		for (PXSize i = 0; i < materialAmount-1; ++i)
+		for (PXSize i = 0; i < materialAmount - 1; ++i)
 		{
 			PXFileReadI32U(&headerStream, &sizeA);
 			PXFileReadI32U(&headerStream, &sizeB);
@@ -228,7 +228,7 @@ PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputS
 
 		PXFileReadI32U(&headerStream, &sizeA);
 
-        PXFileWriteAtI32U(&headerStream, materialSizeDelta- sizeA, positionA);
+		PXFileWriteAtI32U(&headerStream, materialSizeDelta - sizeA, positionA);
 	}
 
 	//outputStream->DataCursor = startoffset + tokenSteam.DataCursor; // Only save the actuan size
@@ -236,148 +236,7 @@ PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputS
 	return PXActionSuccessful;
 }
 
-PXSize PXMTLFetchAmount(const void* const data, const PXSize dataSize)
-{
-	PXFile mtlStream;
-
-	if (!data || !dataSize)
-	{
-		return 0;
-	}
-
-	PXFileBufferExternal(&mtlStream, data, dataSize);
-
-	unsigned int materialListSize = 0;
-
-	PXFileReadI32U(&mtlStream, &materialListSize);
-
-	return materialListSize;
-}
-
-PXBool PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial)
-{
-	const PXSize amount = PXMTLFetchAmount(data, dataSize);
-
-	PXMemoryClear(mtlMaterial, sizeof(PXMTLMaterial));
-
-	if (materialID > amount) // Material ID wrong/Too high
-	{
-		return PXNo;
-	}
-
-	PXFile mtlPXFile;
-	PXFile mtlHeaderStream;
-
-	PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
-	PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
-
-	for (PXSize i = 0; i <= materialID; ++i)
-	{
-		const PXBool isTarget = materialID == i;
-		unsigned int materialDataSize = 0;
-
-		PXFileReadI32U(&mtlHeaderStream, &materialDataSize);
-
-		if (isTarget)
-		{
-			mtlPXFile.DataSize = materialDataSize;	// Set max size for now
-
-			while (!PXFileIsAtEnd(&mtlPXFile))
-			{
-				PXMTLLineType mtlLineType;
-
-				{
-					unsigned char lineTypeID = 0;
-
-					PXFileReadI8U(&mtlPXFile, &lineTypeID);
-
-					mtlLineType = lineTypeID;
-				}
-
-				switch (mtlLineType)
-				{
-					case MTLLineName:
-					{
-						PXFileReadI8U(&mtlPXFile, &mtlMaterial->NameSize);
-						mtlMaterial->Name = (char*)PXFileCursorPosition(&mtlPXFile);
-
-						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->NameSize);
-						break;
-					}
-					case MTLLineTexture:
-					{
-						PXFileReadI8U(&mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
-						mtlMaterial->DiffuseTexturePath = (char*)PXFileCursorPosition(&mtlPXFile);
-
-						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
-						break;
-					}
-					case MTLLineColorAmbient:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Ambient, 3u);
-						break;
-					}
-					case MTLLineColorDiffuse:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Diffuse, 3u);
-						break;
-					}
-					case MTLLineColorSpecular:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Specular, 3u);
-						break;
-					}
-					case MTLLineColorEmission:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Emission, 3u);
-						break;
-					}
-					case MTLLineWeight:
-						PXFileReadF(&mtlPXFile, &mtlMaterial->Weight);
-						break;
-
-					case MTLLineDissolved:
-						PXFileReadF(&mtlPXFile, &mtlMaterial->Dissolved);
-						break;
-
-					case MTLLineDensity:
-						PXFileReadF(&mtlPXFile, &mtlMaterial->Density);
-						break;
-
-					case MTLLineIllumination:
-					{
-						unsigned char illuminationID = 0;
-
-						PXFileReadI8U(&mtlPXFile, &illuminationID);
-
-						mtlMaterial->Illumination = illuminationID;
-						break;
-					}
-
-					default:
-					{
-#if 0 // Skip or fail if anything is wrong
-						PXFileCursorAdvance(&mtlPXFile, sizeof(unsigned char)); // Handle
-						break;
-#else
-						PXMemoryClear(mtlMaterial, sizeof(PXMTLMaterial));
-						return PXNo;
-#endif
-					}
-				}
-
-			}
-		}
-		else 		// else, do nothing -> skip
-		{
-			mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
-		}
-	}
-
-	return PXYes;
-}
-
-PXActionResult PXMTLParseToMaterial(PXFile* const inputStream, PXMaterialList* const pxMaterialList)
+PXActionResult PXMTLParseToMaterial(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
 {
 	/*
 	PXFile
@@ -641,5 +500,145 @@ void BF::MTL::PrintContent()
 	}
 
 	printf("================\n");
+}*/
+
+PXSize PXMTLFetchAmount(const void* const data, const PXSize dataSize)
+{
+	PXFile mtlStream;
+
+	if (!data || !dataSize)
+	{
+		return 0;
+	}
+
+	PXFileBufferExternal(&mtlStream, data, dataSize);
+
+	unsigned int materialListSize = 0;
+
+	PXFileReadI32U(&mtlStream, &materialListSize);
+
+	return materialListSize;
 }
-*/
+
+PXBool PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial)
+{
+	const PXSize amount = PXMTLFetchAmount(data, dataSize);
+
+	PXMemoryClear(mtlMaterial, sizeof(PXMTLMaterial));
+
+	if (materialID > amount) // Material ID wrong/Too high
+	{
+		return PXNo;
+	}
+
+	PXFile mtlPXFile;
+	PXFile mtlHeaderStream;
+
+	PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
+	PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
+
+	for (PXSize i = 0; i <= materialID; ++i)
+	{
+		const PXBool isTarget = materialID == i;
+		unsigned int materialDataSize = 0;
+
+		PXFileReadI32U(&mtlHeaderStream, &materialDataSize);
+
+		if (isTarget)
+		{
+			mtlPXFile.DataSize = materialDataSize;	// Set max size for now
+
+			while (!PXFileIsAtEnd(&mtlPXFile))
+			{
+				PXMTLLineType mtlLineType;
+
+				{
+					unsigned char lineTypeID = 0;
+
+					PXFileReadI8U(&mtlPXFile, &lineTypeID);
+
+					mtlLineType = lineTypeID;
+				}
+
+				switch (mtlLineType)
+				{
+					case MTLLineName:
+					{
+						PXFileReadI8U(&mtlPXFile, &mtlMaterial->NameSize);
+						mtlMaterial->Name = (char*)PXFileCursorPosition(&mtlPXFile);
+
+						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->NameSize);
+						break;
+					}
+					case MTLLineTexture:
+					{
+						PXFileReadI8U(&mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
+						mtlMaterial->DiffuseTexturePath = (char*)PXFileCursorPosition(&mtlPXFile);
+
+						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
+						break;
+					}
+					case MTLLineColorAmbient:
+					{
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Ambient, 3u);
+						break;
+					}
+					case MTLLineColorDiffuse:
+					{
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Diffuse, 3u);
+						break;
+					}
+					case MTLLineColorSpecular:
+					{
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Specular, 3u);
+						break;
+					}
+					case MTLLineColorEmission:
+					{
+						PXFileReadFV(&mtlPXFile, mtlMaterial->Emission, 3u);
+						break;
+					}
+					case MTLLineWeight:
+						PXFileReadF(&mtlPXFile, &mtlMaterial->Weight);
+						break;
+
+					case MTLLineDissolved:
+						PXFileReadF(&mtlPXFile, &mtlMaterial->Dissolved);
+						break;
+
+					case MTLLineDensity:
+						PXFileReadF(&mtlPXFile, &mtlMaterial->Density);
+						break;
+
+					case MTLLineIllumination:
+					{
+						unsigned char illuminationID = 0;
+
+						PXFileReadI8U(&mtlPXFile, &illuminationID);
+
+						mtlMaterial->Illumination = illuminationID;
+						break;
+					}
+
+					default:
+					{
+#if 0 // Skip or fail if anything is wrong
+						PXFileCursorAdvance(&mtlPXFile, sizeof(unsigned char)); // Handle
+						break;
+#else
+						PXMemoryClear(mtlMaterial, sizeof(PXMTLMaterial));
+						return PXNo;
+#endif
+					}
+				}
+
+			}
+		}
+		else 		// else, do nothing -> skip
+		{
+			mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
+		}
+	}
+
+	return PXYes;
+}

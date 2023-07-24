@@ -435,6 +435,9 @@
     <ClCompile Include="Service\FTP\PXFTPServer.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\Graphic\PXGraphicGeneral.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -858,6 +861,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Service\FTP\PXFTPServer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Graphic\PXGraphicGeneral.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -89,9 +89,9 @@ extern "C"
 
 
 #define PXTextConstructFromAdress(pxText, address, size, format)\
-		if((PXSize)size == (PXSize)-1)\
+		if((PXSize)size == (PXSize)PXTextLengthUnkown)\
 		{\
-			(pxText)->SizeAllocated = PXTextLengthA(address, (PXSize)-1);\
+			(pxText)->SizeAllocated = PXTextLengthA(address, (PXSize)PXTextLengthUnkown);\
 		}\
 		else\
 		{\
@@ -101,6 +101,8 @@ extern "C"
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = format;\
 		(pxText)->TextA = (char*)(address);
+
+#define PXTextLengthUnkown -1
 
 #define PXTextConstructFromAdressA(pxText, address, size) PXTextConstructFromAdress(pxText, (char*)address, size, TextFormatASCII)
 #define PXTextConstructFromAdressW(pxText, address, size) PXTextConstructFromAdress(pxText, (char*)address, size, TextFormatUNICODE)

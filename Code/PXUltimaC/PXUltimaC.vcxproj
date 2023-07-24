@@ -189,6 +189,7 @@
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="DataBase\PXDataBase.c" />
+    <ClCompile Include="OS\Graphic\PXGraphicGeneral.c" />
     <ClCompile Include="OS\Hardware\PXController.c" />
     <ClCompile Include="OS\Hardware\PXKeyBoard.c" />
     <ClCompile Include="OS\Hardware\PXMouse.c" />
@@ -331,6 +332,7 @@
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="DataBase\PXDataBase.h" />
+    <ClInclude Include="OS\Graphic\PXGraphicGeneral.h" />
     <ClInclude Include="OS\Hardware\PXController.h" />
     <ClInclude Include="OS\Hardware\PXKeyBoard.h" />
     <ClInclude Include="OS\Hardware\PXMouse.h" />

@@ -266,12 +266,12 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('D', 'L', 'L'): return FileFormatWindowsDynamicLinkedLibrary;
 				case PXInt24Make('E', 'M', 'L'): return FileFormatEML;
 				case PXInt24Make('E', 'X', 'E'): return FileFormatWindowsExecutable;
-				case PXInt24Make('F', 'B', 'X'): return FileFormatFimBox;
+				case PXInt24Make('F', 'B', 'X'): return FileFormatFilmBox;
 				case PXInt24Make('M', 'P', '3'): return FileFormatMP3;
 				case PXInt24Make('M', 'P', '4'): return FileFormatMP4;
 				case PXInt24Make('M', 'S', 'I'): return FileFormatMSI;
 				case PXInt24Make('M', 'T', 'L'): return FileFormatMTL;
-				case PXInt24Make('O', 'B', 'J'): return FileFormatOBJ;
+				case PXInt24Make('O', 'B', 'J'): return FileFormatWavefront;
 				case PXInt24Make('O', 'G', 'G'): return FileFormatOGG;
 				case PXInt24Make('P', 'D', 'F'): return FileFormatPDF;
 				case PXInt24Make('P', 'H', 'P'): return FileFormatPHP;

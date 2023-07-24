@@ -9,7 +9,7 @@ PXInt8U PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
 			return 0;
 
 		case PXColorFormatAlphaBinary:
-		case PXColorFormatAlphaByte:
+		case PXColorFormatA8:
 			return 1;
 
 		case PXColorFormatRGBI8:

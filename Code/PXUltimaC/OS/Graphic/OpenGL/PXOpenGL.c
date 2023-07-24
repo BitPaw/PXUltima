@@ -2183,7 +2183,7 @@ void APIENTRY PXOpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id
     fprintf
     (
         stderr,
-        "[x][PXOpenGL][%s][%s][%s] %s\n",
+        "[x][OpenGL][%s][%s][%s] %s\n",
         sourceText,
         typeText,
         servertyText,

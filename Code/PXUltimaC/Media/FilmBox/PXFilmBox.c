@@ -1,6 +1,6 @@
 #include "PXFilmBox.h"
 
-PXActionResult PXFilmBoxParse(const void* data, const PXSize dataSize)
+PXActionResult PXFilmBoxParseFromFile(PXModel* const pxModel, PXFile* const pxFile)
 {
-	return PXActionSuccessful;
+	return PXActionNotImplemented;
 }

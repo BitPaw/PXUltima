@@ -2124,7 +2124,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
         const WORD  nSize = sizeof(PIXELFORMATDESCRIPTOR);
         const WORD  nVersion = 1;
-        const DWORD dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+        const DWORD dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SUPPORT_DIRECTDRAW | PFD_DIRECT3D_ACCELERATED | PFD_DOUBLEBUFFER;
         const BYTE  iPixelType = PFD_TYPE_RGBA; // The kind of framebuffer. RGBA or palette.
         const BYTE  cColorBits = 32;   // Colordepth of the framebuffer.
         const BYTE  cRedBits = 0;
@@ -2339,6 +2339,14 @@ void PXWindowConstruct(PXWindow* const window)
 float PXWindowScreenRatio(const PXWindow* const window)
 {
     return (float)window->Width / (float)window->Height;
+}
+
+void PXWindowCreateA(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* const title, const PXBool async)
+{
+    PXText pxText;
+    PXTextConstructFromAdressA(&pxText, title, PXTextUnkownLength);
+
+    PXWindowCreate(window, width, height, &pxText, async);
 }
 
 void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async)

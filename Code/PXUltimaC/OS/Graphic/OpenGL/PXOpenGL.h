@@ -573,7 +573,7 @@ extern "C"
 
 
 
-
+	typedef struct PXWindow_ PXWindow;
 
 	typedef struct PXOpenGL_
 	{
@@ -585,7 +585,7 @@ extern "C"
 		char GLSLVersionText[64];
 		PXOpenGLVersion Version;
 
-        void* AttachedWindow;
+		PXWindow* AttachedWindow;
 
 
 

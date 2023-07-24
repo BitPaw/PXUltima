@@ -1,6 +1,6 @@
 #include "PXVRML.h"
 
-PXActionResult PXVRMLParse(const void* data, const PXSize dataSize)
+PXActionResult PXVRMLParseFromFile(PXModel* const pxModel, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionNotImplemented;
 }

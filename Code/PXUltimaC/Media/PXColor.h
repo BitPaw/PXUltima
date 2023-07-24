@@ -13,7 +13,7 @@ extern "C"
 		PXColorFormatInvalid,
 
 		PXColorFormatAlphaBinary,
-		PXColorFormatAlphaByte,
+		PXColorFormatA8,
 
 		// RGB
 		PXColorFormatRGBI8,
@@ -43,7 +43,26 @@ extern "C"
 		PXColorFormatBGRAF,
 		PXColorFormatBGRAD,
 
-		PXColorFormatYCbCrI8
+
+
+
+		PXColorFormatYCbCrI8,
+
+
+
+
+
+
+
+		PXColorFormatARGBI8,
+		PXColorFormatARGBF16,
+		PXColorFormatARGBF32,
+
+		PXColorFormatXRGBI8,
+		
+		PXColorFormatRGBI5,
+
+
 	}
 	PXColorFormat;
 

@@ -54,7 +54,9 @@ extern "C"
 	PXPublic PXBool PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value);
 	PXPublic void PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry);
 	PXPublic PXBool PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void** const value);
-	PXPublic PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const keyResult);
+
+
+	PXPublic PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult);
 
 #ifdef __cplusplus
 }

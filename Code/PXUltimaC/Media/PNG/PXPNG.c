@@ -2083,7 +2083,7 @@ PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const
             case PXColorFormatInvalid:
                 return PXActionFailedFormatInvalid;
 
-            case PXColorFormatAlphaByte:
+            case PXColorFormatA8:
                 colorType = PXPNGColorGrayscaleAlpha;
                 break;
 

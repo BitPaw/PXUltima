@@ -149,7 +149,8 @@ extern "C"
 	PXPublic void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings);
 
 
-	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize);
+	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText);
+	PXPublic PXBool PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize);
 	
 	PXPublic PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value);
 

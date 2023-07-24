@@ -207,6 +207,8 @@ extern "C"
 
 	PXPublic float PXWindowScreenRatio(const PXWindow* const window);
 
+	PXPublic void PXWindowCreateA(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* const title, const PXBool async);
+
 	// Create a window based on the OS implementation.
 	// if a NULL pointer is used as a title, the window will be hidden.
 	PXPublic void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async);

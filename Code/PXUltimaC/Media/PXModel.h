@@ -8,30 +8,14 @@ extern "C"
 {
 #endif
 
-	typedef struct PXMaterial_
-	{
-		PXText Name;
-		PXText DiffuseTextureFilePath;
+	typedef struct PXMaterial_ PXMaterial;
 
-		float Ambient[3];
-		float Diffuse[3];
-		float Specular[3];
-		float Emission[3];
+	typedef struct PXMaterialContainer_
+	{		
+		PXMaterial* MaterialList;
+		PXSize MaterialListSize;
 	}
-	PXMaterial;
-
-	typedef struct PXMaterialList_
-	{
-		// private
-		void* Data;
-		PXSize DataSize;
-		//-------
-		
-		PXSize NumberOfMatrials;
-
-	}
-	PXMaterialList;
-
+	PXMaterialContainer;
 
 
 	// The renderable part of a mesh.
@@ -83,6 +67,7 @@ extern "C"
 
 		//---------------------------------------------------------------------
 		void* Data;
+		PXSize DataSize;
 
 		// MeshRenderList
 		// unsigned char -> Mode
@@ -91,37 +76,34 @@ extern "C"
 		// 
 
 		//---<Material>---
-		void* MaterialList;
+		PXMaterialContainer MaterialContainer;
 		//----------------
 
 		//----------------
-		void* DataVertexList;
-		PXSize DataVertexListSize;
-		
+		float* DataVertexList;
 		PXSize DataVertexWidth;
 		PXSize DataVertexSize;
 
+		float* DataNormalList;
 		PXSize DataNormalWidth;
 		PXSize DataNormalSize;
 
+		float* DataTextureList;
 		PXSize DataTextureWidth;
 		PXSize DataTextureSize;
 
+		float* DataColorList;
 		PXSize DataColorWidth;
 		PXSize DataColorSize;
-		//----------------
 
-
-		//----------------
-		void* IndexList;
+		PXInt32U* DataIndexList;
 		PXSize DataIndexWidth;
 		PXSize DataIndexSize;
 		//--------------------
 	}
 	PXModel;
 
-	typedef PXActionResult(*ModelCompilerFunction)(PXFile* const inputStream, PXFile* const outputStream);
-	typedef PXActionResult(*ModelParserFunction)(PXFile* const inputStream, PXModel* const model);
+	typedef PXActionResult(*ModelParserFunction)(PXModel* const pxModel, PXFile* const pxFile);
 
 
 	PXPublic void PXModelConstruct(PXModel* const model);
@@ -139,7 +121,7 @@ extern "C"
 	PXPublic PXSize PXModelVertexDataStride(const PXModel* const model);
 
 	PXPublic PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath);
-	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXFile* const fileStream, const FileFormatExtension modelType);
+	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXFile* const pxFile, const FileFormatExtension modelType);
 
 #ifdef __cplusplus
 }

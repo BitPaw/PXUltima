@@ -12,12 +12,15 @@
 #include <Media/PXModel.h>
 #include <Media/PXSound.h>
 #include <Media/PXColor.h>
-#include <OS/Graphic/OpenGL/PXOpenGL.h>
 #include <Math/PXMatrix.h>
 #include <Container/LinkedList/PXLinkedList.h>
 #include <Container/Dictionary/PXDictionary.h>
 #include <OS/Async/PXLock.h>
 #include <Media/PXColor.h>
+
+#include <OS/Graphic/DirectX/PXDirectX.h>
+#include <OS/Graphic/OpenGL/PXOpenGL.h>
+
 
 #define PXShaderNotRegisterd (unsigned int)-1
 
@@ -26,34 +29,7 @@ extern "C"
 {
 #endif
 
-	typedef enum PXGraphicResourceLocation_
-	{
-		PXGraphicResourceLocationInvalid,
-		PXGraphicResourceLocationFullyUnloaded, // Resource is known but not loaded
-		PXGraphicResourceLocationLoadedNotRegisterd, // Rsource is loaded but not known by external rendering systems
-		PXGraphicResourceLocationLoadAndRegistered, // Resource si loaded and registerd
-		PXGraphicResourceLocationRegisteredOnly, // Resouce is uploaded and not loaded anymore.
-	}
-	PXGraphicResourceLocation;
-
-	typedef enum PXGraphicSystem_
-	{
-		PXGraphicSystemInvalid,
-		PXGraphicSystemPXOpenGL,
-		PXGraphicSystemDirectX,
-		PXGraphicSystemVulcan
-	}
-	PXGraphicSystem;
-
-	typedef enum PXGraphicResourceType_
-	{
-		PXGraphicResourceTypeInvalid,
-		PXGraphicResourceTypeModel,
-		PXGraphicResourceTypeTexure,
-		PXGraphicResourceTypeSkyBox,
-		PXGraphicResourceTypeFont
-	}
-	PXGraphicResourceType;
+	
 
 	typedef PXInt32U PXGraphicResourceID;
 
@@ -78,114 +54,7 @@ extern "C"
 
 
 
-	typedef enum PXGraphicRenderFilter_
-	{
-		PXGraphicRenderFilterInvalid,
-		PXGraphicRenderFilterNoFilter, // No filter Option, use this for Pixelated Textures.
-		PXGraphicRenderFilterBilinear, // Level I Filter
-		PXGraphicRenderFilterTrilinear // Level II Filter
-	}
-	PXGraphicRenderFilter;
 
-	typedef enum PXShaderType_
-	{
-		PXShaderTypeInvalid,
-		PXShaderTypeVertex,     // .vert - a vertex shader
-		PXShaderTypeFragment,   // .frag - a fragment shader
-		PXShaderTypeTessellationControl,    // .tesc - a tessellation control shader
-		PXShaderTypeTessellationEvaluation,     // .tese - a tessellation evaluation shader
-		PXShaderTypeGeometry,      // .geom - a geometry shader
-		PXShaderTypeCompute,   // .comp - a compute shader
-	}
-	PXShaderType;
-
-	typedef enum PXGraphicImageLayout_
-	{
-		PXGraphicImageLayoutInvalid,
-
-		// Returns the value of the texture element that is nearest to the specified texture coordinates.
-		PXGraphicImageLayoutNearest,
-
-		// Returns the weighted average of the four texture elements that are closest to the specified texture coordinates.
-		// These can include items wrapped or repeated from other parts of a texture, depending on the values of GL_TEXTURE_WRAP_Sand GL_TEXTURE_WRAP_T, and on the exact mapping.
-		PXGraphicImageLayoutLinear,
-
-		//Chooses the mipmap that most closely matches the size of the pixel being texturedand
-		//uses the GL_NEAREST criterion(the texture element closest to the specified texture coordinates) to produce a texture value.
-		PXGraphicImageLayoutMipMapNearestNearest,
-
-		//Chooses the mipmap that most closely matches the size of the pixel being texturedand
-		//uses the GL_LINEAR criterion(a weighted average of the four texture elements that are closest to the specified texture coordinates) to produce a texture value.
-		PXGraphicImageLayoutMipMapLinearNearest,
-
-		//Chooses the two mipmaps that most closely match the size of the pixel being texturedand
-		//uses the GL_NEAREST criterion(the texture element closest to the specified texture coordinates)
-		//to produce a texture value from each mipmap.The final texture value is a weighted average of those two values.
-		PXGraphicImageLayoutMipMapNNearestLinear,
-
-		//Chooses the two mipmaps that most closely match the size of the pixel being texturedand
-		//uses the GL_LINEAR criterion(a weighted average of the texture elements that are closest to the specified texture coordinates)
-		//to produce a texture value from each mipmap.The final texture value is a weighted average of those two values.
-		PXGraphicImageLayoutMipMapLinearLinear
-	}
-	PXGraphicImageLayout;
-
-	typedef enum PXGraphicImageWrap_
-	{
-		PXGraphicImageWrapInvalid,
-
-		// Images will be used 'as is' and will not be streched whatsoever.
-		PXGraphicImageWrapNoModification,
-
-		// Strech
-		PXGraphicImageWrapStrechEdges,
-
-		PXGraphicImageWrapStrechEdgesAndMirror,
-
-		// Tiles the image in a gridformat
-		PXGraphicImageWrapRepeat,
-
-		// Tiles the image in a gridformat but also flip them every time.
-		PXGraphicImageWrapRepeatAndMirror,
-	}
-	PXGraphicImageWrap;
-
-	typedef enum PXGraphicImageType_
-	{
-		PXGraphicImageTypeInvalid,
-
-		PXGraphicImageTypeTexture2D,
-		PXGraphicImageTypeTexture3D,
-
-		PXGraphicImageTypeTextureCubeContainer,
-		PXGraphicImageTypeTextureCubeRight,
-		PXGraphicImageTypeTextureCubeLeft,
-		PXGraphicImageTypeTextureCubeTop,
-		PXGraphicImageTypeTextureCubeDown,
-		PXGraphicImageTypeTextureCubeBack,
-		PXGraphicImageTypeTextureCubeFront
-	}
-	PXGraphicImageType;
-
-	typedef enum PXGraphicRenderMode_
-	{
-		PXGraphicRenderModeInvalid,
-		PXGraphicRenderModePoint,
-		PXGraphicRenderModeLine,
-		PXGraphicRenderModeLineLoop,
-		PXGraphicRenderModeLineStrip,
-		PXGraphicRenderModeLineStripAdjacency,
-		PXGraphicRenderModeLineAdjacency,
-		PXGraphicRenderModeTriangle,
-		PXGraphicRenderModeTriangleAdjacency,
-		PXGraphicRenderModeTriangleFAN,
-		PXGraphicRenderModeTriangleStrip,
-		PXGraphicRenderModeTriangleStripAdjacency,
-		PXGraphicRenderModeWireFrame,
-		PXGraphicRenderModeSquare,
-		PXGraphicRenderModePatches
-	}
-	PXGraphicRenderMode;
 
 	typedef struct PXShader_
 	{
@@ -209,49 +78,31 @@ extern "C"
 	PXShaderProgram;
 
 
-	typedef struct PXTexture_
-	{
-		unsigned int ID;
+	
 
-		PXGraphicImageType Type;
-		PXGraphicRenderFilter Filter;
-		PXGraphicImageLayout LayoutNear;
-		PXGraphicImageLayout LayoutFar;
-		PXGraphicImageWrap WrapHeight;
-		PXGraphicImageWrap WrapWidth;
+	PXPublic void PXTextureConstruct(PXTexture2D* const texture);
+	PXPublic void PXTextureDestruct(PXTexture2D* const texture);
 
-		PXImage Image;
-	}
-	PXTexture;
 
-	PXPublic void PXTextureConstruct(PXTexture* const texture);
-	PXPublic void PXTextureDestruct(PXTexture* const texture);
+	
 
-	typedef struct PXTextureCube_
-	{
-		unsigned int ID;
-		PXImage ImageList[6];
-	}
-	PXTextureCube;
 
 	typedef struct PXSprite
 	{
 		PXGraphicResourceID ID;
-		PXTexture Texture;
+		PXTexture2D Texture;
 		PXMatrix4x4F Position;
+
+		PXVector2F TextureScaleOffset;
+
+		PXMargin Margin;
 	}
 	PXSprite;
 
 	 
 
 
-	typedef enum RefreshRateMode_
-	{
-		PXRefreshRateUnlimited,
-		PXRefreshRateVSync,
-		PXRefreshRateCustomSync
-	}
-	RefreshRateMode;
+
 
 	typedef struct PXGraphicConfig_
 	{
@@ -354,39 +205,6 @@ extern "C"
 	PXUIScalingType;
 
 
-	// Offset the whole child-Container
-	// (Make empty space)
-	typedef struct PXUIMargin_
-	{
-		float LeftTop;
-		float Top;
-		float Right;
-		float Bottom;
-	}
-	PXUIMargin;
-
-	// Offset the space as the child container 
-	// (Make object take more space)
-	typedef struct PXUIPadding_
-	{
-		float LeftTop;
-		float Top;
-		float Right;
-		float Bottom;
-	}
-	PXUIPadding;
-
-	typedef struct PXUILayout_
-	{
-		PXUIMargin Margin;
-		PXUIPadding Padding;
-
-		void* Parent;
-		void* Child;
-	}PXUILayout;
-
-
-
 	typedef struct UIContainerRoot_
 	{
 		unsigned char _SUMMY__;
@@ -470,8 +288,13 @@ extern "C"
 
 	typedef struct PXGraphicContext_
 	{
-#if PXOpenGLUSE
+		PXDirectX DirectXInstance;
 		PXOpenGL OpenGLInstance;
+
+#if PXOpenGLUSE
+
+	
+	
 #endif
 
 		void* AttachedWindow;
@@ -485,6 +308,8 @@ extern "C"
 
 		PXLinkedListFixed _renderList; // PXRenderable
 	
+		PXDictionary ResourceImageLookUp;
+
 		PXDictionary UIElementLookUp;
 		PXDictionary TextureLookUp;
 		PXDictionary SpritelLookUp;
@@ -524,11 +349,11 @@ extern "C"
 
 
 
-
+	PXPublic void PXMarginSet(PXMargin* const pxMargin, const float left, const float bottom, const float right, const float top);
 
 
 	//---<PXOpenGL Translate>----------------
-#if PXOpenGLUSE
+#if PXOpenGLUSE || 1
 	PXPrivate PXOpenGLDataType PXGraphicDataTypeToPXOpenGL(const PXColorFormat imageDataFormat);
 	PXPrivate PXOpenGLImageFormat PXGraphicImageFormatToPXOpenGL(const PXColorFormat imageDataFormat);
 	PXPrivate PXOpenGLShaderType PXGraphicShaderFromPXOpenGL(const PXShaderType shaderType);
@@ -549,6 +374,7 @@ extern "C"
 	PXPublic PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const unsigned int shaderID);
 
 	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 
 	PXPublic void PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
 	PXPublic unsigned int PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const unsigned int shaderID, const char* const name);
@@ -561,14 +387,18 @@ extern "C"
 	PXPublic PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	//-------------------------------------------------------------------------
 
+	// Load image resource and register it to prevent multible loads of the same file
+	PXPublic PXActionResult PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImage* const pxImage, const PXText* const pxImageFilePath);
+
 
 	//---<Texture>----------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, PXImage* const image);
+	PXPublic PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, PXImage* const pxImage);
 
-	PXPublic PXActionResult PXGraphicTextureLoad(PXGraphicContext* const graphicContext, PXTexture* const texture, const PXText* const filePath);
-	PXPublic PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, PXTexture* const texture);
-	PXPublic PXActionResult PXGraphicTextureRelease(PXGraphicContext* const graphicContext, PXTexture* const texture);
-	PXPublic PXActionResult PXGraphicTextureUse(PXGraphicContext* const graphicContext, PXTexture* const texture);
+	PXPublic PXActionResult PXGraphicTextureLoad(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const PXText* const filePath);
+	PXPublic PXActionResult PXGraphicTextureLoadA(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const char* const filePath);
+	PXPublic PXActionResult PXGraphicTextureRegister(PXGraphicContext* const graphicContext, PXTexture2D* const texture);
+	PXPublic PXActionResult PXGraphicTextureRelease(PXGraphicContext* const graphicContext, PXTexture2D* const texture);
+	PXPublic PXActionResult PXGraphicTextureUse(PXGraphicContext* const graphicContext, PXTexture2D* const texture);
 
 	PXPublic PXActionResult PXGraphicTextureCubeRegister(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
 	PXPublic PXActionResult PXGraphicTextureCubeRegisterUse(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
@@ -576,6 +406,10 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<Sprte>---------------------------------------------------------------
+	PXPublic PXActionResult PXSpriteConstruct(PXSprite* const pxSprite);
+
+	PXPublic PXActionResult PXSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
+
 	PXPublic PXActionResult PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
 	//-------------------------------------------------------------------------
 
@@ -601,6 +435,19 @@ extern "C"
 		const PXText* const textureBottom,
 		const PXText* const textureBack,
 		const PXText* const textureFront
+	);
+	PXPublic PXActionResult PXGraphicSkyboxRegisterA
+	(
+		PXGraphicContext* const graphicContext,
+		PXSkyBox* const skyBox,
+		const char* const shaderVertex,
+		const char* const shaderFragment,
+		const char* const textureRight,
+		const char* const textureLeft,
+		const char* const textureTop,
+		const char* const textureBottom,
+		const char* const textureBack,
+		const char* const textureFront
 	);
 	PXPublic PXActionResult PXGraphicSkyboxUse(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
 	PXPublic PXActionResult PXGraphicSkyboxRelease(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);

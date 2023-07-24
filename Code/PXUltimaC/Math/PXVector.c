@@ -55,30 +55,31 @@ void PXVector4FConstruct(PXVector4F* const vector4F)
 	vector4F->W = 0;
 }
 
-void PXVector2FSet(const PXVector2F* const vector, PXVector2F* const vectorSet, PXVector2F* const vectorResult)
+void PXVector2FSet(PXVector2F* const vector, const PXVector2F* const vectorSet)
 {
-	
+	vector->X = vectorSet->X;
+	vector->Y = vectorSet->Y;
 }
 
-void PXVector2FSetXY(const PXVector2F* const vector, const float x, const float y, PXVector2F* const vectorResult)
+void PXVector2FSetXY(PXVector2F* const vector, const float x, const float y)
 {
-	vectorResult->X = vector->X - x;
-	vectorResult->Y = vector->Y - y;
+	vector->X = x;
+	vector->Y = y;
 }
 
-void PXVector3FSetXYZ(const PXVector3F* const vector, const float x, const float y, const float z, PXVector3F* const vectorResult)
+void PXVector3FSetXYZ(PXVector3F* const vector, const float x, const float y, const float z)
 {
-	vectorResult->X = vector->X - x;
-	vectorResult->Y = vector->Y - y;
-	vectorResult->Z = vector->Z - z;
+	vector->X = x;
+	vector->Y = y;
+	vector->Z = z;
 }
 
-void PXVector4FSetXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult)
+void PXVector4FSetXYZW(PXVector4F* const vector, const float x, const float y, const float z, const float w)
 {
-	vectorResult->X = vector->X - x;
-	vectorResult->Y = vector->Y - y;
-	vectorResult->Z = vector->Z - z;
-	vectorResult->W = vector->W - w;
+	vector->X = x;
+	vector->Y = y;
+	vector->Z = z;
+	vector->W = w;
 }
 
 void PXVector3FSubstract(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult)

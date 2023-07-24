@@ -91,7 +91,7 @@ extern "C"
 
 	PXPublic PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
 
-	PXPublic PXActionResult PXMTLParseToMaterial(PXFile* const inputStream, PXMaterialList* const pxMaterialList);
+	PXPublic PXActionResult PXMTLParseToMaterial(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

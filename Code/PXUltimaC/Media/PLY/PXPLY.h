@@ -1,9 +1,7 @@
 #ifndef PXPLYINCLUDE
 #define PXPLYINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXModel.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -16,7 +14,7 @@ extern "C"
 	}
 	PXPLY;
 
-	PXPublic PXActionResult PXPLYParse(PXPLY* ply, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PXPLYParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

@@ -1,21 +1,20 @@
 #ifndef PXVRMLINCLUDE
 #define PXVRMLINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXModel.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
 	typedef struct PXVRML_
 	{
 		unsigned int __dummy__;
 	}
 	PXVRML;
 
-	PXPublic PXActionResult PXVRMLParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult PXVRMLParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

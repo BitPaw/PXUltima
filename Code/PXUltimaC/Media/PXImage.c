@@ -25,6 +25,16 @@ void PXImageDestruct(PXImage* const image)
     PXImageConstruct(image);
 }
 
+void PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
+{
+    PXMemoryCopy(pxImageSource, sizeof(PXImage), pxImageTarget, sizeof(PXImage));
+}
+
+void PXImageCopyAsNew(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
+{
+    
+}
+
 PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath)
 {
     PXFile dataStream;
