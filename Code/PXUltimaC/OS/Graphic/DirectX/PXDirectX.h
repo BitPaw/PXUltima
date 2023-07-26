@@ -86,6 +86,9 @@ extern "C"
         char Description[MAX_DEVICE_IDENTIFIER_STRING];
         char DeviceName[32];
 
+
+        PXDirectXVersion DirectXVersion;
+
         // Direct X - v.10+
         IDXGIAdapter VideoAdapter;
 
@@ -145,9 +148,7 @@ extern "C"
     PXPublic PXActionResult PXDirectXClipPlaneGet(PXDirectX* const pxDirectX,DWORD Index, float* pPlane);
     PXPublic PXActionResult PXDirectXRenderStateSet(PXDirectX* const pxDirectX,D3DRENDERSTATETYPE State, DWORD Value);
     PXPublic PXActionResult PXDirectXRenderStateGet(PXDirectX* const pxDirectX,D3DRENDERSTATETYPE State, DWORD* pValue);
-    PXPublic PXActionResult PXDirectXStateBlockCreate(PXDirectX* const pxDirectX,D3DSTATEBLOCKTYPE Type, IDirect3DStateBlock9** ppSB);
-    PXPublic PXActionResult PXDirectXStateBlockBegin(PXDirectX* const pxDirectX);
-    PXPublic PXActionResult PXDirectXStateBlockEnd(PXDirectX* const pxDirectX,IDirect3DStateBlock9** ppSB);
+
     PXPublic PXActionResult PXDirectXClipStatusSet(PXDirectX* const pxDirectX,const D3DCLIPSTATUS9* pClipStatus);
     PXPublic PXActionResult PXDirectXClipStatusGet(PXDirectX* const pxDirectX,D3DCLIPSTATUS9* pClipStatus);
 
@@ -180,17 +181,19 @@ extern "C"
 
 
 
-
     //-----------------------------------------------------
-    // Direct X - Utility
+    // Direct X - Magic number conversion
     //-----------------------------------------------------
     PXPrivate PXColorFormat PXDirectXColorFormatToID(const D3DFORMAT format);
     PXPrivate D3DFORMAT PXDirectXColorFormatFromID(const PXColorFormat pxColorFormat);
     PXPrivate void PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3DMATERIAL9* const d3dMaterial);
     PXPrivate void PXDirectXMaterialFromPXMaterial(D3DMATERIAL9* const d3dMaterial, const PXMaterial* const pxMaterial);
     PXPrivate D3DPRIMITIVETYPE PXDirectXDrawTypeFromPX(const PXGraphicRenderMode pxGraphicRenderMode);
-    PXPrivate PXInt32U PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat); 
+    PXPrivate PXInt32U PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat);
 
+    //-----------------------------------------------------
+    // Direct X - Utility
+    //-----------------------------------------------------
     PXPublic void PXDirectXContextConstruct(PXDirectX* const pxDirectX);
     PXPublic void PXDirectXContextDestruct(PXDirectX* const pxDirectX);
 
@@ -203,9 +206,16 @@ extern "C"
     PXPublic PXActionResult PXDirectXSceneEnd(PXDirectX* const pxDirectX);
 
     //-----------------------------------------------------
+    // Direct X - Fixed Scripting
+    //-----------------------------------------------------
+    PXPublic PXActionResult PXDirectXStateBlockCreate(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
+    PXPublic PXActionResult PXDirectXStateBlockBegin(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
+    PXPublic PXActionResult PXDirectXStateBlockEnd(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript); // IDirect3DStateBlock9,D3DSTATEBLOCKTYPE
+
+    //-----------------------------------------------------
     // Direct X - Draw
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, const D3DRECT* pRects, const PXInt32U Flags, const PXInt32U colorRGBAID, const float Z, const PXInt32U Stencil);
+    PXPublic PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, const D3DRECT* pRects, const PXInt32U Flags, const PXColorRGBAF* const pxColorRGBAF, const float Z, const PXInt32U Stencil);
     PXPublic PXActionResult PXDirectXColorFill(PXDirectX* const pxDirectX, IDirect3DSurface9* pSurface, const RECT* pRect, D3DCOLOR color);
     PXPublic PXActionResult PXDirectXReset(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters);
     PXPublic PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
@@ -257,6 +267,17 @@ extern "C"
     //-----------------------------------------------------
     // Direct X - Shader
     //-----------------------------------------------------
+
+    PXPublic PXActionResult PXDirectXShaderProgramCompileVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader);
+    PXPublic PXActionResult PXDirectXShaderProgramCompileVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader);
+    PXPublic PXActionResult PXDirectXShaderProgramCompileVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader);
+
+    PXPublic PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const pxShader);
+
+    PXPublic PXActionResult PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* const pxShader, const PXText* const shaderFilePath);
+
+
+
     PXPublic PXActionResult PXDirectXVertexShaderCreate(PXDirectX* const pxDirectX, const DWORD* pFunction, IDirect3DVertexShader9** ppShader);
     PXPublic PXActionResult PXDirectXVertexShaderSet(PXDirectX* const pxDirectX, IDirect3DVertexShader9* pShader);
     PXPublic PXActionResult PXDirectXVertexShaderGet(PXDirectX* const pxDirectX, IDirect3DVertexShader9** ppShader);

@@ -179,10 +179,12 @@ extern "C"
 
 		// Direct X
 
-		PXVertexBufferFormatXYZ, // GL_V3F
-		PXVertexBufferFormatXYZRHW,
+		PXVertexBufferFormatXYZ, // Normal spcace (x, y, z)
+		PXVertexBufferFormatXYZC, // Normal spcace (x, y, z, color-RGB as 32-int)
 
-		PXVertexBufferFormatXYZUXC, // X, Y, Z, Tx, Ty, RGB as 32-int
+		PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space. 
+
+		PXVertexBufferFormatXYZHWC, // X, Y, Z, Tx, Ty, color-RGB as 32-int
 
 		PXVertexBufferFormatXYZB1,
 		PXVertexBufferFormatXYZB2,
@@ -196,13 +198,23 @@ extern "C"
 
 
 
-	typedef struct PXTexture2D_
+	typedef struct PXResourceID_
 	{
 		union
 		{
-			void* DirectXID; // IDirect3DTexture9
+			void* DirectXInterface;
 			PXInt32U OpenGLID;
 		};
+
+		PXInt32U PXID;
+	}
+	PXResourceID;
+
+
+
+	typedef struct PXTexture2D_
+	{
+		PXResourceID ResourceID; // IDirect3DTexture9
 
 		PXGraphicImageType Type;
 		PXGraphicRenderFilter Filter;
@@ -218,11 +230,7 @@ extern "C"
 
 	typedef struct PXTexture3D_
 	{
-		union
-		{
-			void* DirectXInterface; // IDirect3DVolumeTexture9
-			PXInt32U OpenGLID;
-		};
+		PXResourceID ResourceID; // IDirect3DVolumeTexture9
 
 		PXInt32U Width;
 		PXInt32U Height;
@@ -232,13 +240,10 @@ extern "C"
 	}
 	PXTexture3D;
 
+	// A Texture for a cube. 6 Sides, used for actual boxes like a skybox.
 	typedef struct PXTextureCube_
 	{
-		union
-		{
-			void* DirectXInterface; // IDirect3DCubeTexture9
-			PXInt32U OpenGLID;
-		};
+		PXResourceID ResourceID; // IDirect3DCubeTexture9
 
 		PXColorFormat Format;
 
@@ -248,18 +253,36 @@ extern "C"
 
 
 
+	typedef enum PXDrawScriptType_
+	{
+		PXDrawScriptTypeInvalid,
+		PXDrawScriptTypeAll,
+		PXDrawScriptTypePixelState,
+		PXDrawScriptTypeVertexState
+	}
+	PXDrawScriptType;
+
+	// A sequence of actions that tells the fixed pipline how to act.
+	// This is a precursor of a shader, so it's use is discurraged for
+	// modern applications and hardware that support shaders, not only
+	// for performance reasons but for versitility too.
+	typedef struct PXDrawScript_
+	{
+		PXResourceID ResourceID;
+
+		PXDrawScriptType Type;
+	}
+	PXDrawScript;
+
+
 	typedef struct PXVertexBuffer_
 	{
-		union
-		{
-			void* DirectXInterface; // IDirect3DVertexBuffer9, ID3D11Buffer
-			PXInt32U OpenGLID;
-		};
-
-
+		PXResourceID ResourceID; // IDirect3DVertexBuffer9, ID3D11Buffer
 
 		void* VertexData;
 		PXSize VertexDataSize;
+
+		PXSize VertexDataRowSize;
 
 		PXVertexBufferFormat Format;
 	}
@@ -268,11 +291,7 @@ extern "C"
 
 	typedef struct PXIndexBuffer_
 	{
-		union
-		{
-			void* DirectXInterface; // IDirect3DIndexBuffer9
-			PXInt32U OpenGLID;
-		};
+		PXResourceID ResourceID; // IDirect3DIndexBuffer9
 
 		void* IndexData;
 		PXInt32U IndexDataSize;
@@ -280,6 +299,19 @@ extern "C"
 		PXDataType DataType;
 	}
 	PXIndexBuffer;
+
+
+
+
+	typedef struct PXVertexStructure_
+	{
+		PXVertexBuffer VertexBuffer;
+		PXIndexBuffer IndexBuffer;
+	}
+	PXVertexStructure;
+
+
+
 
 
 	typedef struct PXDepthStencilSurface_
@@ -314,11 +346,7 @@ extern "C"
 
 	typedef struct PXRenderTarget_
 	{
-		union
-		{
-			void* DirectXInterface; // IDirect3DVertexBuffer9
-			PXInt32U OpenGLID;
-		};
+		PXResourceID ResourceID; // IDirect3DVertexBuffer9
 	}
 	PXRenderTarget;
 
@@ -347,6 +375,27 @@ extern "C"
 	PXPadding;
 
 
+
+	typedef struct PXShader_
+	{
+		PXResourceID ResourceID; // IDirect3DVertexShader9, IDirect3DPixelShader9
+	
+		PXShaderType Type;
+
+		PXSize ContentSize;
+		const char* Content;
+	}
+	PXShader;
+
+
+	typedef struct PXShaderProgram_
+	{
+		PXResourceID ResourceID;
+
+		PXShader VertexShader;
+		PXShader PixelShader;
+	}
+	PXShaderProgram;
 
 
 

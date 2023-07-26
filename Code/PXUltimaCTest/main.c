@@ -96,34 +96,42 @@ int main()
 
 	const float vertices[] =
 	{
-		 150.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, // x, y, z, rhw, color
-		 250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00,
-		  50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff,
-	};
+#if 1
+		-0.5f, -0.5f, 1, 0xffff0000, // x, y, z, rhw, color
+		0.0f,  0.5f, 1, 0xff00ffff,
+		 0.5f, -0.5f, 1, 0xff00ff00
+	
+
+#else 
+		50.0f, 50.0f, 0.5f, 1.0f, 0xffff0000, // x, y, z, rhw, color
+		250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00,
+		50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff,
+#endif
+};
 
 
-	PXVertexBuffer pxVertexBuffer;
+	PXVertexStructure pxVertexStructure;
+	PXObjectClear(PXVertexStructure, &pxVertexStructure);
+	pxVertexStructure.VertexBuffer.VertexData = vertices;
+	pxVertexStructure.VertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
+	pxVertexStructure.VertexBuffer.VertexDataRowSize = sizeof(vertices) / 3;
+	pxVertexStructure.VertexBuffer.Format = PXVertexBufferFormatXYZC; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
-	pxVertexBuffer.VertexData = vertices;
-	pxVertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
-	pxVertexBuffer.Format = PXVertexBufferFormatXYZUXC;
-
-	PXDirectXVertexBufferCreate(directX, &pxVertexBuffer);
+	PXDirectXVertexBufferCreate(directX, &pxVertexStructure.VertexBuffer);
 
 
 	while (1)
 	{
-		PXDirectXClear(directX, 0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(30, 30, 30), 1.0f, 0);
+		const PXColorRGBAF pxColorRGBAF = { 0.3f,0.3f,0.3f,1.0f };
 
-		PXDirectXSceneBegin(directX);
+		PXGraphicClear(&pxWindow.GraphicInstance, &pxColorRGBAF);
 
-		PXDirectXStreamSourceSet(directX, 0, &pxVertexBuffer, 0, 20);
-		PXDirectXVertexFixedFunctionSet(directX, pxVertexBuffer.Format);
-		PXDirectXPrimitiveDraw(directX, PXGraphicRenderModeTriangle, 0, 1);
+		PXGraphicSceneBegin(&pxWindow.GraphicInstance);
 
-		PXDirectXSceneEnd(directX);
+		PXGraphicVertexStructureDraw(&pxWindow.GraphicInstance, &pxVertexStructure);
 
-		PXDirectXPresent(directX, 0, 0, 0, 0);
+		PXGraphicSceneEnd(&pxWindow.GraphicInstance);
+		PXGraphicSceneDeploy(&pxWindow.GraphicInstance);
 	}
 
 	PXWindowDestruct(&pxWindow);

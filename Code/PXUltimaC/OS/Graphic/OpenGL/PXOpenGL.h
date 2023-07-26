@@ -33,6 +33,7 @@ typedef HGLRC PXOpenGLConextID;
 //---------------------------
 
 #include <Media/PXType.h>
+#include <OS/Graphic/PXGraphicGeneral.h>
 
 typedef unsigned int PXOpenGLID;
 typedef unsigned int PXOpenGLShaderPXProgramID;
@@ -251,16 +252,16 @@ extern "C"
 	{
 		PXOpenGLBufferArray,//Vertex attributes
 		PXOpenGLBufferAtomicCounter, 	//Atomic counter storage
-		PXOpenGLBufferCopyRead 	,//Buffer copy source
-		PXOpenGLBufferCopyWrite 	,//Buffer copy destination
+		PXOpenGLBufferCopyRead,//Buffer copy source
+		PXOpenGLBufferCopyWrite,//Buffer copy destination
 		PXOpenGLBufferDispatchIndirect, //	Indirect compute dispatch commands
 		PXOpenGLBufferDrawIndirect,	//Indirect command arguments
 		PXOpenGLBufferElementArray,	//Vertex array indices
-		PXOpenGLBufferPixelPack 	,//Pixel read target
-		PXOpenGLBufferPixelUnpack ,//	Texture data source
+		PXOpenGLBufferPixelPack,//Pixel read target
+		PXOpenGLBufferPixelUnpack,//	Texture data source
 		PXOpenGLBufferQuery,//Query result buffer
-		PXOpenGLBufferShaderStorage ,	//Read - write storage for shaders
-		PXOpenGLBufferTexture 	,// Texture data buffer
+		PXOpenGLBufferShaderStorage,	//Read - write storage for shaders
+		PXOpenGLBufferTexture,// Texture data buffer
 		PXOpenGLBufferTransformFeedback,//	Transform feedback buffer
 		PXOpenGLBufferUniform
 	}
@@ -481,12 +482,12 @@ extern "C"
 	typedef void (PXOpenGLAPICallType* PXOpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
 	typedef void (PXOpenGLAPICallType* PXOpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
 	typedef void (PXOpenGLAPICallType* PXOpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
-    //-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.2.1.0>------------------------------------------------------
-    //-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
 
-    //---<PXOpenGL v.3.0.0>------------------------------------------------------
+	//---<PXOpenGL v.3.0.0>------------------------------------------------------
 	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferCreateFunction)(GLsizei n, GLuint* ids); // glGenFramebuffers
 	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferDeleteFunction)(GLsizei n, GLuint* framebuffers); // glDeleteFramebuffers
 	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferBindFunction)(GLenum target, GLuint framebuffer); // glBindFramebuffer
@@ -497,7 +498,7 @@ extern "C"
 	typedef void (PXOpenGLAPICallType* PXOpenGLRenderBufferStorageFunction)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height); // glRenderbufferStorage
 
 	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferLinkTexture2DFunction)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-	typedef GLuint (PXOpenGLAPICallType* PXOpenGLFrameBufferLinkRenderBufferFunction)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+	typedef GLuint(PXOpenGLAPICallType* PXOpenGLFrameBufferLinkRenderBufferFunction)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 
 	typedef void (PXOpenGLAPICallType* PXOpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
 	typedef void (PXOpenGLAPICallType* PXOpenGLBindVertexArrayFunction)(GLuint arrayID);
@@ -523,24 +524,24 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.1.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType * PXOpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
+	typedef void (PXOpenGLAPICallType* PXOpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.2.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.3.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType*DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
-	typedef void (PXOpenGLAPICallType*PXOpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
+	typedef void (PXOpenGLAPICallType* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+	typedef void (PXOpenGLAPICallType* PXOpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.4.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.5.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType*PXOpenGLNamedBufferData)(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
-	typedef void (PXOpenGLAPICallType*PXOpenGLEnableVertexAttribArray)(GLuint index);
-	typedef void (PXOpenGLAPICallType*PXOpenGLEnableVertexArrayAttrib)(GLuint vaobj, GLuint index);
+	typedef void (PXOpenGLAPICallType* PXOpenGLNamedBufferData)(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
+	typedef void (PXOpenGLAPICallType* PXOpenGLEnableVertexAttribArray)(GLuint index);
+	typedef void (PXOpenGLAPICallType* PXOpenGLEnableVertexArrayAttrib)(GLuint vaobj, GLuint index);
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.6.0>------------------------------------------------------
@@ -552,7 +553,7 @@ extern "C"
 
 
 	typedef void (PXOpenGLAPICallType* PXOpenGLSwapIntervalSetFunction)(GLint interval); // wglSwapIntervalEXT, glXSwapIntervalEXT
-	typedef GLint (PXOpenGLAPICallType* PXOpenGLSwapIntervalGetFunction)(); // wglGetSwapIntervalEXT, glxGetSwapIntervalEXT
+	typedef GLint(PXOpenGLAPICallType* PXOpenGLSwapIntervalGetFunction)(); // wglGetSwapIntervalEXT, glxGetSwapIntervalEXT
 
 #if OSUnix
 
@@ -733,8 +734,8 @@ extern "C"
 	PXPublic void PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext);
 
 	PXPublic void PXOpenGLFlush(PXOpenGL* const openGLContext);
-	PXPublic void PXOpenGLViewSize(PXOpenGL* const openGLContext, const PXSize x, const PXSize y, const PXSize width, const PXSize height);
-
+	PXPublic void PXOpenGLViewPortSet(PXOpenGL* const openGLContext, const PXViewPort* const pxViewPort);
+	PXPublic void PXOpenGLViewPortGet(PXOpenGL* const openGLContext, PXViewPort* const pxViewPort);
 
 	PXPublic void PXOpenGLPolygonRenderOrder(const PXOpenGL* const openGLContext, const PXOpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode);
 
@@ -742,7 +743,7 @@ extern "C"
 
 	PXPublic void PXOpenGLDrawOrder(PXOpenGL* const openGLContext, const PXOpenGLDrawOrderMode openGLDrawOrderMode);
 
-	PXPublic void PXOpenGLClearColor(PXOpenGL* const openGLContext, const float red, const float green, const float blue, const float alpha);
+	PXPublic void PXOpenGLClearColor(PXOpenGL* const openGLContext, const PXColorRGBAF* const pxColorRGBAF);
 	PXPublic void PXOpenGLClear(PXOpenGL* const openGLContext, const unsigned int clearID);
 	PXPublic void PXOpenGLDrawScaleF(PXOpenGL* const openGLContext, const float x, const float y, const float z);
 	PXPublic void PXOpenGLDrawBegin(PXOpenGL* const openGLContext, const PXOpenGLRenderMode openGLRenderMode);
@@ -767,15 +768,15 @@ extern "C"
 	PXPublic void PXOpenGLDrawElements(const PXOpenGL* const openGLContext, const PXOpenGLRenderMode renderMode, const PXSize amount, const PXOpenGLDataType openGLDataType, const void* const indexList);
 
 
-	
+
 	PXPublic void PXOpenGLDrawArraysInstanced(const PXOpenGL* const openGLContext, const PXOpenGLRenderMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount);
 
 	//---<Texture>-------------------------------------------------------------
 	PXPublic void PXOpenGLTextureActivate(PXOpenGL* const openGLContext, const unsigned int index);
-	PXPublic void PXOpenGLTextureCreate(PXOpenGL* const openGLContext, GLsizei n, GLuint* textures); // glGenTextures
+	PXPublic void PXOpenGLTextureCreate(PXOpenGL* const openGLContext, const PXInt32S amount, PXInt32U* const textureIDList); // glGenTextures
 	PXPublic void PXOpenGLTextureBind(PXOpenGL* const openGLContext, const PXOpenGLTextureType textureType, GLuint texture); // glBindTexture
 	PXPublic void PXOpenGLTextureUnbind(PXOpenGL* const openGLContext, const PXOpenGLTextureType textureType);
-	PXPublic void PXOpenGLTextureDelete(PXOpenGL* const openGLContext, GLsizei n, const GLuint* textures); // glDeleteTextures
+	PXPublic void PXOpenGLTextureDelete(PXOpenGL* const openGLContext, const PXInt32S amount, const PXInt32U* const textureIDList); // glDeleteTextures
 	PXPublic void PXOpenGLTextureData2D
 	(
 		PXOpenGL* const openGLContext,
@@ -897,7 +898,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.1.2.1>------------------------------------------------------
-    //-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.1.3.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
@@ -916,73 +917,87 @@ extern "C"
 //-------------------------------------------------------------------------
 
 //---<PXOpenGL v.3.0.0>------------------------------------------------------
-PXPublic const char* PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStringName stringName, const unsigned int index);
-//-------------------------------------------------------------------------
+	PXPublic const char* PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStringName stringName, const unsigned int index);
+	//-------------------------------------------------------------------------
 
-//---<PXOpenGL v.3.1.0>------------------------------------------------------
-//-------------------------------------------------------------------------
+	//---<PXOpenGL v.3.1.0>------------------------------------------------------
+	//-------------------------------------------------------------------------
 
-//---<PXOpenGL v.3.2.0>------------------------------------------------------
-//-------------------------------------------------------------------------
-
-
-//---<PXOpenGL v.4.0.0>------------------------------------------------------
-//-------------------------------------------------------------------------
-
-//---<PXOpenGL v.4.1.0>------------------------------------------------------
-
-//-------------------------------------------------------------------------
-
-//---<PXOpenGL v.4.2.0>------------------------------------------------------
-//-------------------------------------------------------------------------
-
-//---<PXOpenGL v.4.3.0>------------------------------------------------------
-
-//-------------------------------------------------------------------------
-
-//---<PXOpenGL v.4.4.0>------------------------------------------------------
-//-------------------------------------------------------------------------
-
-//---<PXOpenGL v.4.5.0>------------------------------------------------------
-
-//-------------------------------------------------------------------------
-
-//---<PXOpenGL v.4.6.0>------------------------------------------------------
-//-------------------------------------------------------------------------
+	//---<PXOpenGL v.3.2.0>------------------------------------------------------
+	//-------------------------------------------------------------------------
 
 
-//---<Extensions>----------------------------------------------------------
-PXPublic void PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval);
-PXPublic PXInt32U PXOpenGLSwapIntervalGet(PXOpenGL* const openGLContext);
-//-------------------------------------------------------------------------
+	//---<PXOpenGL v.4.0.0>------------------------------------------------------
+	//-------------------------------------------------------------------------
+
+	//---<PXOpenGL v.4.1.0>------------------------------------------------------
+
+	//-------------------------------------------------------------------------
+
+	//---<PXOpenGL v.4.2.0>------------------------------------------------------
+	//-------------------------------------------------------------------------
+
+	//---<PXOpenGL v.4.3.0>------------------------------------------------------
+
+	//-------------------------------------------------------------------------
+
+	//---<PXOpenGL v.4.4.0>------------------------------------------------------
+	//-------------------------------------------------------------------------
+
+	//---<PXOpenGL v.4.5.0>------------------------------------------------------
+
+	//-------------------------------------------------------------------------
+
+	//---<PXOpenGL v.4.6.0>------------------------------------------------------
+	//-------------------------------------------------------------------------
 
 
-
-	/*
-	CPublic PXOpenGLID PXOpenGLToRenderMode(const PXGraphicRenderMode renderMode);
-	CPublic PXOpenGLID PXOpenGLToShaderType(const ShaderType shaderType);
-	CPublic PXOpenGLID PXOpenGLToImageFormat(const ImageDataFormat imageFormat);
-	CPublic PXOpenGLID PXOpenGLToImageType(const PXGraphicImageType imageType);
-	CPublic PXOpenGLID PXOpenGLToImageWrap(const PXGraphicImageWrap imageWrap);
-	CPublic PXOpenGLID PXOpenGLToImageLayout(const PXGraphicImageLayout layout);
+	//---<Extensions>----------------------------------------------------------
+	PXPublic void PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval);
+	PXPublic PXInt32U PXOpenGLSwapIntervalGet(PXOpenGL* const openGLContext);
+	//-------------------------------------------------------------------------
 
 
+		// PX functions
+	PXPrivate PXOpenGLDataType PXGraphicDataTypeToPXOpenGL(const PXColorFormat imageDataFormat);
+	PXPrivate PXOpenGLImageFormat PXGraphicImageFormatToPXOpenGL(const PXColorFormat imageDataFormat);
+	PXPrivate PXOpenGLShaderType PXGraphicShaderFromPXOpenGL(const PXShaderType shaderType);
+	PXPrivate PXOpenGLTextureType ImageTypeGraphicToPXOpenGL(const PXGraphicImageType graphicImageType);
+	PXPublic PXOpenGLRenderMode PXGraphicRenderModeToPXOpenGL(const PXGraphicRenderMode graphicRenderMode);
 
 
+	PXPublic PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture2D* const texture);
+	PXPublic PXActionResult PXOpenGLTexture3DCreate(PXOpenGL* const pxOpenGL, PXTexture3D* const texture);
+	PXPublic PXActionResult PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube* const pxTextureCube);
 
-
-
+	PXPublic PXActionResult PXOpenGLShaderProgramCompileVP(PXOpenGL* const pxOpenGL, PXShaderProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
 
 
 
+		/*
+		CPublic PXOpenGLID PXOpenGLToRenderMode(const PXGraphicRenderMode renderMode);
+		CPublic PXOpenGLID PXOpenGLToShaderType(const ShaderType shaderType);
+		CPublic PXOpenGLID PXOpenGLToImageFormat(const ImageDataFormat imageFormat);
+		CPublic PXOpenGLID PXOpenGLToImageType(const PXGraphicImageType imageType);
+		CPublic PXOpenGLID PXOpenGLToImageWrap(const PXGraphicImageWrap imageWrap);
+		CPublic PXOpenGLID PXOpenGLToImageLayout(const PXGraphicImageLayout layout);
 
-	CPublic void PXOpenGLVertexAttributeArrayDefine(PXOpenGL* const openGL, const PXSize sizeOfElement, const PXSize listSize, const unsigned int* list);
 
-	CPublic void VertexArrayDefine(unsigned int* vertexArrayID);
-	CPublic void VertexDataDefine(unsigned int* vertexID, int size, void* data);
-	CPublic void IndexDataDefine(unsigned int* indexID, int size, void* data);
-	CPublic void VertexArrayUpdate(int vertexArrayID, int size, void* data);
-	*/
+
+
+
+
+
+
+
+
+		CPublic void PXOpenGLVertexAttributeArrayDefine(PXOpenGL* const openGL, const PXSize sizeOfElement, const PXSize listSize, const unsigned int* list);
+
+		CPublic void VertexArrayDefine(unsigned int* vertexArrayID);
+		CPublic void VertexDataDefine(unsigned int* vertexID, int size, void* data);
+		CPublic void IndexDataDefine(unsigned int* indexID, int size, void* data);
+		CPublic void VertexArrayUpdate(int vertexArrayID, int size, void* data);
+		*/
 
 #ifdef __cplusplus
 }

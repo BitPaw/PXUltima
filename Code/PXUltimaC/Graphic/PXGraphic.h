@@ -20,6 +20,7 @@
 
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
+#include <OS/Graphic/PXGraphicGeneral.h>
 
 
 #define PXShaderNotRegisterd (unsigned int)-1
@@ -56,14 +57,7 @@ extern "C"
 
 
 
-	typedef struct PXShader_
-	{
-		unsigned int ID;
-		PXShaderType Type;
-		PXSize ContentSize;
-		const char* Content;
-	}
-	PXShader;
+
 
 
 	PXPublic void PXShaderConstruct(PXShader* const shader);
@@ -71,11 +65,7 @@ extern "C"
 	PXPublic void PXShaderDataSet(PXShader* const shader, const PXShaderType type, const char* data, const PXSize size);
 
 
-	typedef struct PXShaderProgram_
-	{
-		unsigned int ID;
-	}
-	PXShaderProgram;
+
 
 
 	
@@ -291,12 +281,6 @@ extern "C"
 		PXDirectX DirectXInstance;
 		PXOpenGL OpenGLInstance;
 
-#if PXOpenGLUSE
-
-	
-	
-#endif
-
 		void* AttachedWindow;
 
 		PXLock _resourceLock;
@@ -318,6 +302,8 @@ extern "C"
 		PXDictionary SoundLookup;
 		PXDictionary ShaderPXProgramLookup;
 		//--------------------------
+
+		PXGraphicSystem GraphicSystem;
 	}
 	PXGraphicContext;
 
@@ -344,23 +330,44 @@ extern "C"
 
 
 
+	PXPublic PXActionResult PXGraphicViewPortSet(PXGraphicContext* const graphicContext, const PXViewPort* const pxViewPort);
+	PXPublic PXActionResult PXGraphicViewPortGet(PXGraphicContext* const graphicContext, PXViewPort* const pxViewPort);
+
+
+	PXPublic void PXGraphicSelect(PXGraphicContext* const graphicContext);
+	PXPublic void PXGraphicDeselect(PXGraphicContext* const graphicContext);
+
+	PXPublic void PXGraphicSwapIntervalSet(PXGraphicContext* const graphicContext, const PXInt32U interval);
+	PXPublic PXInt32U PXGraphicSwapIntervalGet(PXGraphicContext* const graphicContext);
+
+
+
+
+	//-----------------------------------------------------
+	// Draw
+	//-----------------------------------------------------
+	PXPublic void PXGraphicClear(PXGraphicContext* const graphicContext, const PXColorRGBAF* const backgroundColor);
+	PXPublic PXBool PXGraphicSceneDeploy(PXGraphicContext* const graphicContext);
+
+	PXPublic void PXGraphicSceneBegin(PXGraphicContext* const graphicContext);
+	PXPublic void PXGraphicSceneEnd(PXGraphicContext* const graphicContext);
+
+	PXPublic void PXGraphicVertexStructureDraw(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure);
+;
+
+
+
+
+
+
+
+
 
 	PXPublic void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
 
 
 
 	PXPublic void PXMarginSet(PXMargin* const pxMargin, const float left, const float bottom, const float right, const float top);
-
-
-	//---<PXOpenGL Translate>----------------
-#if PXOpenGLUSE || 1
-	PXPrivate PXOpenGLDataType PXGraphicDataTypeToPXOpenGL(const PXColorFormat imageDataFormat);
-	PXPrivate PXOpenGLImageFormat PXGraphicImageFormatToPXOpenGL(const PXColorFormat imageDataFormat);
-	PXPrivate PXOpenGLShaderType PXGraphicShaderFromPXOpenGL(const PXShaderType shaderType);
-	PXPrivate PXOpenGLTextureType ImageTypeGraphicToPXOpenGL(const PXGraphicImageType graphicImageType);
-	PXPublic PXOpenGLRenderMode PXGraphicRenderModeToPXOpenGL(const PXGraphicRenderMode graphicRenderMode);
-#endif
-	//-------------------------------------
 
 	//-------------------------------------
 	PXPublic void PXGraphicInstantiate(PXGraphicContext* const graphicContext);
@@ -373,8 +380,8 @@ extern "C"
 	PXPublic PXActionResult PXGraphicShaderCompile(PXGraphicContext* const graphicContext);
 	PXPublic PXActionResult PXGraphicShaderUse(PXGraphicContext* const graphicContext, const unsigned int shaderID);
 
-	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSL(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
-	PXPublic PXActionResult PXGraphicShaderProgramLoadGLSLA(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXGraphicShaderProgramLoad(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXGraphicShaderProgramLoadA(PXGraphicContext* const graphicContext, PXShaderProgram* const shaderPXProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 
 	PXPublic void PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
 	PXPublic unsigned int PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const unsigned int shaderID, const char* const name);
@@ -382,7 +389,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<Rendering>-----------------------------------------------------------
-	PXPublic PXBool PXGraphicFrameBufferSwap(PXGraphicContext* const graphicContext);
+
 	PXPublic PXActionResult PXGraphicRenderElement(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	PXPublic PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGraphicRenderMode renderMode, PXSize start, PXSize amount);
 	//-------------------------------------------------------------------------
