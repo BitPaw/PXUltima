@@ -277,7 +277,7 @@ extern "C"
 	//typedef void (*WindowClosedEvent)();
 
 
-	PXPublic unsigned int PXWindowCursorIconToID(const CursorIcon cursorIcon);
+	PXPrivate PXInt32U PXWindowCursorIconToID(const CursorIcon cursorIcon);
 
 #ifdef __cplusplus
 }

@@ -13,7 +13,7 @@ void PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVe
 	{
 		PXVector3F gravityMovement;
 
-		PXVector3FMultiplyS(&gravityDircetion, gravityForce, &gravityMovement); // gravity diection + gravity power
+		PXVector3FMultiplyS(gravityDircetion, gravityForce, &gravityMovement); // gravity diection + gravity power
 		PXVector3FAdd(&physicProperties->Force, &gravityMovement, &physicProperties->Force); // add that to applyed force
 	}
 
@@ -25,7 +25,7 @@ void PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVe
 
 		PXVector3FAdd(&physicProperties->Velocity, &acceleration, &physicProperties->Velocity);
 
-		PXVector3FSetXYZ(&physicProperties->Force, 0, 0, 0, &physicProperties->Force);
+		PXVector3FSetXYZ(&physicProperties->Force, 0, 0, 0);
 	}
 
 

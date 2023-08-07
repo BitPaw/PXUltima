@@ -48,7 +48,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
         IFileDialog* fileDialog = bufferVV;
         //MemoryClear(&pfd, sizeof(IFileDialog));
 
-        fileDialog->lpVtbl = bufferAAA;
+       // fileDialog->lpVtbl-> = bufferAAA;
 
         // hr = CoCreateInstance(&CLSID_IExample, 0, CLSCTX_INPROC_SERVER, &IID_IExample, & exampleObj)))
 

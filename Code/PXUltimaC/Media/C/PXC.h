@@ -254,7 +254,7 @@ extern "C"
 	PXCElement;
 
 	PXPublic PXBool PXCElementHasName(PXCElement* const pxCElement);
-	PXPublic PXBool PXCElementClear(PXCElement* const pxCElement);
+	PXPublic void PXCElementClear(PXCElement* const pxCElement);
 
 
 	PXPublic CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize);

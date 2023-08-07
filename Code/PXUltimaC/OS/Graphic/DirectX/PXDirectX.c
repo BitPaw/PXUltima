@@ -1,34 +1,47 @@
 #include "PXDirectX.h"
 
-#if PXDirectXUSE
-
 #if OSUnix
 #elif OSWindows
 #include <windows.h>
-//#include <dxdiag.h>
-//#include <dsetup.h> // unsupported legacy lib, not updated
-//#include <d3d12.h>
-
-#if WindowsAtleastVista
-//#include <d3d12.h>
-#include <D3D9.h>
-#else
-#include <d3d9.h>
 #endif
 
+
+#if PXDX9Use
+//#include <dxdiag.h>
+//#include <dsetup.h> // unsupported legacy lib, not updated
+// #include <d3d9.h> // Already included
 #include <d3dcompiler.h>
+#include <d3d9caps.h>
+#include <d3dx9shader.h>
+
 #pragma comment(lib, "D3DCompiler.lib")
-
-
 #pragma comment(lib, "D3d9.lib")
+#pragma comment(lib, "D3dx9.lib")
+
+#endif
+
+
+#if PXDX10Use
+#include <d3d10shader.h> 
 #pragma comment(lib, "D3d10.lib")
+#endif
+
+#if PXDX10x1Use
 #pragma comment(lib, "D3d10_1.lib")
+#endif
+
+#if PXDX11Use
 #pragma comment(lib, "D3d11.lib")
+#endif
+
+#if PXDX12Use
 #pragma comment(lib, "D3d12.lib")
 #endif
 
+
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
+
 
 void PXDirectXContextConstruct(PXDirectX* const pxDirectX)
 {
@@ -39,6 +52,8 @@ void PXDirectXContextDestruct(PXDirectX* const pxDirectX)
 {
 #if OSUnix
 #elif OSWindows
+#if PXDX9Use
+
     if (pxDirectX->DX9)
     {
         pxDirectX->DX9->lpVtbl->Release(pxDirectX->DX9);
@@ -48,6 +63,7 @@ void PXDirectXContextDestruct(PXDirectX* const pxDirectX)
     {
         pxDirectX->DX9Context->lpVtbl->Release(pxDirectX->DX9Context);
     }  
+#endif
 #endif
 }
 
@@ -269,7 +285,7 @@ PXActionResult PXDirectXIndexBufferCreate(PXDirectX* const pxDirectX, PXIndexBuf
         0,
         dataFormat,
         0,
-        &pxIndexBuffer->ResourceID.DirectXInterface,
+        &(IDirect3DIndexBuffer9*)pxIndexBuffer->ResourceID.DirectXInterface,
         PXNull
     );
 
@@ -336,7 +352,7 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
     
     switch (pxDirectXVersion)
     {
-#if 0
+#if PXDX12Use
         case PXDirectXVersionNewest:
         case PXDirectXVersion12Emulate1x0Core:
         case PXDirectXVersion12Emulate9x1:
@@ -380,6 +396,8 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
             break;
         }
 #endif       
+
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -446,6 +464,10 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 
             break;
         }
+#endif
+
+#if PXDX10x1Use
+
         case PXDirectXVersion10x1Simulate10x0:
         case PXDirectXVersion10x1Simulate9x1:
         case PXDirectXVersion10x1Simulate9x2:
@@ -488,6 +510,10 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 
             break;
         }
+#endif
+
+#if PXDX10Use
+
         case PXDirectXVersion10x0:
         {
             D3D10_DRIVER_TYPE dxDriverType = 0;
@@ -517,6 +543,9 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 
             break;
         }   
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
 
@@ -563,17 +592,116 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 
             break;
         }
+#endif
 
         default:
             return PXActionRefusedFormatNotSupported;
-    }
-
-#else
-    return PXActionNotSupportedByOperatingSystem;
+    }   
 #endif
+
+    return PXActionNotSupportedByOperatingSystem;
 }
 
+PXActionResult PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name)
+{
+    IDirect3DVertexShader9* pShader = NULL;
+    ID3DXConstantTable* pConstantTable = NULL;
+    DWORD* pData = NULL;
+
+    pxDirectX->DX9->lpVtbl->GetVertexShader(pxDirectX->DX9, &pShader);
+
+
+    UINT pSizeOfData;
+
+    pShader->lpVtbl->GetFunction(pShader, NULL, &pSizeOfData);
+    //findWeirdMirrorsEdgeShader(pSizeOfData);
+    pData = malloc(pSizeOfData);
+    pShader->lpVtbl->GetFunction(pShader, pData, &pSizeOfData);
+
+   // bool shaderSeen = hasSeenShader(pSizeOfData);
+
+    D3DXCONSTANT_DESC pConstantDesc[32];
+    UINT pConstantNum = 32;
+
+    const HRESULT err = D3DXGetShaderConstantTable(pData, &pConstantTable);
+
+
+
+    D3DXCONSTANTTABLE_DESC pDesc;
+    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
+    for (UINT i = 0; i < pDesc.Constants; ++i)
+    {
+        D3DXHANDLE Handle = pConstantTable->lpVtbl->GetConstant(pConstantTable, NULL, i);
+        if (Handle == NULL) continue;
+        pConstantTable->lpVtbl->GetConstantDesc(pConstantTable, Handle, pConstantDesc, &pConstantNum);
+      
+
+        printf("\n");
+        
+#if 0
+        for (UINT j = 0; j < pConstantNum; j++)
+        {
+            removeExistingMatrices(pConstantDesc[j]);
+            parse4by4Matrices(pConstantDesc[j]);
+            parseIndividualFloats(pConstantDesc[j]);
+        }
 #endif
+    }
+
+    return PXActionSuccessful;
+
+
+    /*
+
+
+
+
+
+
+
+
+
+
+
+
+    ID3DXConstantTable* pConstantTable = PXNull;
+
+    DWORD bufferData[1024];
+    D3DXCONSTANT_DESC pConstantDesc[32];
+    UINT pConstantNum = 32;
+
+    const HRESULT HRESULT = D3DXGetShaderConstantTable(bufferData, &pConstantTable);
+        
+    //if (pConstantTable == NULL) goto grexit;
+
+    D3DXCONSTANTTABLE_DESC pDesc;
+
+
+    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
+
+
+    for (UINT i = 0; i < pDesc.Constants; i++)
+    {
+        D3DXHANDLE Handle = pConstantTable->GetConstant(NULL, i);
+        if (Handle == NULL) continue;
+        pConstantTable->GetConstantDesc(Handle, pConstantDesc, &pConstantNum);
+        for (UINT j = 0; j < pConstantNum; j++)
+        {
+            removeExistingMatrices(pConstantDesc[j]);
+            parse4by4Matrices(pConstantDesc[j]);
+            parseIndividualFloats(pConstantDesc[j]);
+        }
+    }
+
+    pxDirectX->DX10->lpVtbl.tab;
+
+
+    ID3DXConstantTable id3DXConstantTable;
+
+    id3DXConstantTable.lpVtbl->
+
+    return NotSupported;*/
+}
 
 PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexBuffer* const pxVertexBuffer)
 {
@@ -587,6 +715,7 @@ PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexB
 
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -617,6 +746,10 @@ PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexB
 
             return PXActionSuccessful;
         }
+#endif
+
+#if PXDX9Use
+
         case PXDirectXVersion9:
         {
             const DWORD flagID = PXDirectXVertexFormatFromPXVertexBufferFormat(pxVertexBuffer->Format);
@@ -628,7 +761,7 @@ PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexB
                 0,
                 flagID,
                 D3DPOOL_DEFAULT,
-                &pxVertexBuffer->ResourceID.DirectXInterface,
+                &(IDirect3DVertexBuffer9*)pxVertexBuffer->ResourceID.DirectXInterface,
                 PXNull
             );
             const PXBool bufferCreateSuccess = bufferCreateResult > 0;
@@ -652,6 +785,7 @@ PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexB
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -671,6 +805,7 @@ PXActionResult PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D*
 
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -706,6 +841,9 @@ PXActionResult PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D*
 
             return PXActionSuccessful;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const UINT levels = 0;
@@ -729,6 +867,7 @@ PXActionResult PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D*
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -748,6 +887,7 @@ PXActionResult PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D*
 
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -783,6 +923,9 @@ PXActionResult PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D*
 
             return PXActionSuccessful;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const UINT levels = 0;
@@ -807,6 +950,7 @@ PXActionResult PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D*
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -826,6 +970,7 @@ PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureC
 
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -834,11 +979,12 @@ PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureC
         case PXDirectXVersion11Emulate10x1:
         case PXDirectXVersion11Emulate11x0:
         case PXDirectXVersion11Emulate11x1:
-        {
-          
-
+        { 
             return PXActionSuccessful;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
 
@@ -857,12 +1003,13 @@ PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureC
                 usage,
                 format,
                 pool,
-                &pxTextureCube->ResourceID.DirectXInterface,
+                &(IDirect3DCubeTexture9*)pxTextureCube->ResourceID.DirectXInterface,
                 &sharedHandle
             );
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -873,12 +1020,19 @@ PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureC
 #endif
 }
 
+PXActionResult PXDirectXVertexStructureRegister(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure)
+{
+    PXDirectXVertexBufferCreate(pxDirectX, &pxVertexStructure->VertexBuffer);
+    PXDirectXIndexBufferCreate(pxDirectX, &pxVertexStructure->IndexBuffer);
 
+    return PXActionSuccessful;
+}
 
 PXActionResult PXDirectXMaterialSet(PXDirectX* const pxDirectX, const PXMaterial* const pxMaterial)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -892,6 +1046,9 @@ PXActionResult PXDirectXMaterialSet(PXDirectX* const pxDirectX, const PXMaterial
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             D3DMATERIAL9 d3dMaterial;
@@ -905,6 +1062,7 @@ PXActionResult PXDirectXMaterialSet(PXDirectX* const pxDirectX, const PXMaterial
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -917,6 +1075,7 @@ PXActionResult PXDirectXMaterialGet(PXDirectX* const pxDirectX, PXMaterial* cons
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -926,10 +1085,11 @@ PXActionResult PXDirectXMaterialGet(PXDirectX* const pxDirectX, PXMaterial* cons
         case PXDirectXVersion11Emulate11x0:
         case PXDirectXVersion11Emulate11x1:
         {
-
-
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
 
@@ -945,6 +1105,7 @@ PXActionResult PXDirectXMaterialGet(PXDirectX* const pxDirectX, PXMaterial* cons
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -954,10 +1115,11 @@ PXActionResult PXDirectXMaterialGet(PXDirectX* const pxDirectX, PXMaterial* cons
     return PXActionSuccessful;
 }
 
-PXActionResult PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort* const pxViewPort)
+PXActionResult PXDirectXLightSet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index) // D3DLIGHT9
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -967,14 +1129,244 @@ PXActionResult PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort
         case PXDirectXVersion11Emulate11x0:
         case PXDirectXVersion11Emulate11x1:
         {
-
-
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
+            D3DLIGHT9 d3dLight9;           
+            d3dLight9.Diffuse.r = pxLight->Diffuse[0];
+            d3dLight9.Diffuse.g = pxLight->Diffuse[1];
+            d3dLight9.Diffuse.b = pxLight->Diffuse[2];
+            d3dLight9.Diffuse.a = pxLight->Diffuse[3];
+            d3dLight9.Specular.r = pxLight->Specular[0];
+            d3dLight9.Specular.g = pxLight->Specular[1];
+            d3dLight9.Specular.b = pxLight->Specular[2];
+            d3dLight9.Specular.a = pxLight->Specular[3];
+            d3dLight9.Ambient.r = pxLight->Ambient[0];
+            d3dLight9.Ambient.g = pxLight->Ambient[1];
+            d3dLight9.Ambient.b = pxLight->Ambient[2];
+            d3dLight9.Ambient.a = pxLight->Ambient[3];
+            d3dLight9.Position.x = pxLight->Position[0];
+            d3dLight9.Position.y = pxLight->Position[1];
+            d3dLight9.Position.z = pxLight->Position[2];
+            d3dLight9.Direction.x = pxLight->Direction[0];
+            d3dLight9.Direction.y = pxLight->Direction[1];
+            d3dLight9.Direction.z = pxLight->Direction[2];
+            d3dLight9.Range = pxLight->CutoffRange;
+            d3dLight9.Falloff = pxLight->Falloff;
+            d3dLight9.Attenuation0 = pxLight->AttenuationConstant;
+            d3dLight9.Attenuation1 = pxLight->AttenuationLinear;
+            d3dLight9.Attenuation2 = pxLight->AttenuationQuadratic;
+            d3dLight9.Theta = pxLight->Theta;
+            d3dLight9.Phi = pxLight->Phi;
+
+            switch (pxLight->Type)
+            {
+                case PXLightTypePoint:
+                    d3dLight9.Type = D3DLIGHT_POINT;
+                    break;
+
+                case PXLightTypeSpot:
+                    d3dLight9.Type = D3DLIGHT_SPOT;
+                    break;
+
+                case PXLightTypeDirectional:
+                    d3dLight9.Type = D3DLIGHT_DIRECTIONAL;
+                    break;
+
+                default:
+                    d3dLight9.Type = 0;
+                    break;
+            }
+
+            const HRESULT result = pxDirectX->DX9->lpVtbl->SetLight(pxDirectX->DX9, index, &d3dLight9);
+
+            return PXActionSuccessful;
+        }
+#endif
+
+        default:
+            return PXActionNotSupportedByLibrary;
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXDirectXLightGet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index)
+{
+    switch (pxDirectX->DirectXVersion)
+    {
+#if PXDX11Use
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+            return PXActionNotSupportedByLibrary;
+        }
+#endif
+
+#if PXDX9Use
+        case PXDirectXVersion9:
+        {
+            D3DLIGHT9 d3dLight9;
+            
+            const HRESULT result = pxDirectX->DX9->lpVtbl->GetLight(pxDirectX->DX9, index, &d3dLight9);   
+         
+            pxLight->Diffuse[0] = d3dLight9.Diffuse.r;
+            pxLight->Diffuse[1] = d3dLight9.Diffuse.g;
+            pxLight->Diffuse[2] = d3dLight9.Diffuse.b;
+            pxLight->Diffuse[3] = d3dLight9.Diffuse.a;
+            pxLight->Specular[0] = d3dLight9.Specular.r;
+            pxLight->Specular[1] = d3dLight9.Specular.g;
+            pxLight->Specular[2] = d3dLight9.Specular.b;
+            pxLight->Specular[3] = d3dLight9.Specular.a;
+            pxLight->Ambient[0] = d3dLight9.Ambient.r;
+            pxLight->Ambient[1] = d3dLight9.Ambient.g;
+            pxLight->Ambient[2] = d3dLight9.Ambient.b;
+            pxLight->Ambient[3] = d3dLight9.Ambient.a;
+            pxLight->Position[0] = d3dLight9.Position.x;
+            pxLight->Position[1] = d3dLight9.Position.y;
+            pxLight->Position[2] = d3dLight9.Position.z;
+            pxLight->Direction[0] = d3dLight9.Direction.x;
+            pxLight->Direction[1] = d3dLight9.Direction.y;
+            pxLight->Direction[2] = d3dLight9.Direction.z;
+            pxLight->CutoffRange = d3dLight9.Range;
+            pxLight->Falloff = d3dLight9.Falloff;
+            pxLight->AttenuationConstant = d3dLight9.Attenuation0;
+            pxLight->AttenuationLinear = d3dLight9.Attenuation1;
+            pxLight->AttenuationQuadratic = d3dLight9.Attenuation2;
+            pxLight->Theta = d3dLight9.Theta;
+            pxLight->Phi = d3dLight9.Phi;
+
+            switch (d3dLight9.Type)
+            {
+                case D3DLIGHT_POINT:
+                    pxLight->Type = PXLightTypePoint;
+                    break;
+
+                case D3DLIGHT_SPOT:
+                    pxLight->Type = PXLightTypeSpot;
+                    break;
+
+                case D3DLIGHT_DIRECTIONAL:
+                    pxLight->Type = PXLightTypeDirectional;
+                    break;
+
+                default:
+                    pxLight->Type = PXLightTypeInvalid;
+                    break;
+            }
+
+            return PXActionSuccessful;
+        }
+#endif
 
 
+        default:
+            return PXActionNotSupportedByLibrary;
+    }
+}
+
+PXActionResult PXDirectXLightEnableSet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, const PXBool enable)
+{
+    switch (pxDirectX->DirectXVersion)
+    {
+#if PXDX11Use
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+            return PXActionNotSupportedByLibrary;
+        }
+#endif
+
+#if PXDX9Use
+        case PXDirectXVersion9:
+        {
+            const HRESULT result = pxDirectX->DX9->lpVtbl->LightEnable(pxDirectX->DX9, index, enable);
+
+            pxLight->Enabled = enable;
+
+            return PXActionSuccessful;
+        }
+#endif
+
+        default:
+            return PXActionNotSupportedByLibrary;
+    }
+}
+
+PXActionResult PXDirectXLightEnableGet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, PXBool* const enable)
+{
+    switch (pxDirectX->DirectXVersion)
+    {
+#if PXDX11Use
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+            return PXActionNotSupportedByLibrary;
+        }
+#endif
+
+#if PXDX9Use
+        case PXDirectXVersion9:
+        {
+            BOOL enableBool = 0;
+
+            const HRESULT result = pxDirectX->DX9->lpVtbl->GetLightEnable(pxDirectX->DX9, index, &enableBool);
+
+            pxLight->Enabled = enableBool;
+            *enable = enableBool;
+
+            return PXActionSuccessful;
+        }
+#endif
+
+        default:
+            return PXActionNotSupportedByLibrary;
+    }
+}
+
+PXActionResult PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort* const pxViewPort)
+{
+    switch (pxDirectX->DirectXVersion)
+    {
+#if PXDX11Use
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+            return PXActionNotSupportedByLibrary;
+        }
+#endif
+
+#if PXDX9Use
+        case PXDirectXVersion9:
+        {
             D3DVIEWPORT9 viewPort;
 
             // Convert
@@ -994,6 +1386,7 @@ PXActionResult PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort
             );
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1007,6 +1400,7 @@ PXActionResult PXDirectXViewportGet(PXDirectX* const pxDirectX, PXViewPort* cons
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1022,6 +1416,9 @@ PXActionResult PXDirectXViewportGet(PXDirectX* const pxDirectX, PXViewPort* cons
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             D3DVIEWPORT9 viewPort;
@@ -1044,20 +1441,20 @@ PXActionResult PXDirectXViewportGet(PXDirectX* const pxDirectX, PXViewPort* cons
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
     }
 
-
-
     return PXActionSuccessful;
 }
 
-PXActionResult PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphicRenderMode pxGraphicRenderMode, const PXInt32U startVertex, const PXInt32U primitiveCount)
+PXActionResult PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U startVertex, const PXInt32U primitiveCount)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1071,10 +1468,13 @@ PXActionResult PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphi
 
             return PXActionSuccessful;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
 
-            const D3DPRIMITIVETYPE primitiveType = PXDirectXDrawTypeFromPX(pxGraphicRenderMode);
+            const D3DPRIMITIVETYPE primitiveType = PXDirectXDrawTypeFromPX(PXGraphicDrawMode);
 
             const HRESULT result = pxDirectX->DX9->lpVtbl->DrawPrimitive
             (
@@ -1087,6 +1487,7 @@ PXActionResult PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphi
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1095,16 +1496,16 @@ PXActionResult PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphi
     return PXActionSuccessful;
 }
 
-D3DPRIMITIVETYPE PXDirectXDrawTypeFromPX(const PXGraphicRenderMode pxGraphicRenderMode)
+D3DPRIMITIVETYPE PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphicDrawMode)
 {
-    switch (pxGraphicRenderMode)
+    switch (PXGraphicDrawMode)
     {
-        case PXGraphicRenderModePoint: return D3DPT_POINTLIST;
-        case PXGraphicRenderModeLineLoop: return D3DPT_LINELIST;
-        case PXGraphicRenderModeLineStrip: return D3DPT_LINESTRIP;
-        case PXGraphicRenderModeTriangle: return D3DPT_TRIANGLELIST;
-        case PXGraphicRenderModeTriangleStrip: return D3DPT_TRIANGLESTRIP;
-        case PXGraphicRenderModeTriangleFAN: return D3DPT_TRIANGLEFAN;
+        case PXGraphicDrawModePoint: return D3DPT_POINTLIST;
+        case PXGraphicDrawModeLineLoop: return D3DPT_LINELIST;
+        case PXGraphicDrawModeLineStrip: return D3DPT_LINESTRIP;
+        case PXGraphicDrawModeTriangle: return D3DPT_TRIANGLELIST;
+        case PXGraphicDrawModeTriangleStrip: return D3DPT_TRIANGLESTRIP;
+        case PXGraphicDrawModeTriangleFAN: return D3DPT_TRIANGLEFAN;
 
         default:
             return 0; // Invalid mode does not exist!
@@ -1115,6 +1516,7 @@ PXActionResult PXDirectXSceneBegin(PXDirectX* const pxDirectX)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1128,12 +1530,16 @@ PXActionResult PXDirectXSceneBegin(PXDirectX* const pxDirectX)
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const HRESULT result = pxDirectX->DX9->lpVtbl->BeginScene(pxDirectX->DX9);
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1148,6 +1554,7 @@ PXActionResult PXDirectXSceneEnd(PXDirectX* const pxDirectX)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1161,12 +1568,16 @@ PXActionResult PXDirectXSceneEnd(PXDirectX* const pxDirectX)
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const HRESULT result = pxDirectX->DX9->lpVtbl->EndScene(pxDirectX->DX9);
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1181,6 +1592,7 @@ PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, 
 {   
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1201,6 +1613,8 @@ PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, 
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const UINT colorI8 = D3DCOLOR_ARGB
@@ -1224,6 +1638,7 @@ PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, 
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1237,6 +1652,7 @@ PXActionResult PXDirectXVertexFixedFunctionSet(PXDirectX* const pxDirectX, const
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1250,6 +1666,10 @@ PXActionResult PXDirectXVertexFixedFunctionSet(PXDirectX* const pxDirectX, const
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
+
         case PXDirectXVersion9:
         {
             const DWORD flagID = PXDirectXVertexFormatFromPXVertexBufferFormat(pxVertexBufferFormat);
@@ -1262,6 +1682,7 @@ PXActionResult PXDirectXVertexFixedFunctionSet(PXDirectX* const pxDirectX, const
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1276,6 +1697,7 @@ PXActionResult PXDirectXVertexFixedFunctionGet(PXDirectX* const pxDirectX, PXVer
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1289,6 +1711,9 @@ PXActionResult PXDirectXVertexFixedFunctionGet(PXDirectX* const pxDirectX, PXVer
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             DWORD flagID = 0;
@@ -1301,6 +1726,7 @@ PXActionResult PXDirectXVertexFixedFunctionGet(PXDirectX* const pxDirectX, PXVer
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1315,6 +1741,7 @@ PXActionResult PXDirectXStreamSourceSet(PXDirectX* const pxDirectX, const PXInt3
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1328,6 +1755,9 @@ PXActionResult PXDirectXStreamSourceSet(PXDirectX* const pxDirectX, const PXInt3
 
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const HRESULT result = pxDirectX->DX9->lpVtbl->SetStreamSource
@@ -1341,6 +1771,7 @@ PXActionResult PXDirectXStreamSourceSet(PXDirectX* const pxDirectX, const PXInt3
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1354,10 +1785,11 @@ PXActionResult PXDirectXStreamSourceGet(PXDirectX* const pxDirectX, const PXInt3
     return PXActionSuccessful;
 }
 
-PXActionResult PXDirectXStateBlockCreate(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType)
+PXActionResult PXDirectXDrawScriptCreate(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1369,6 +1801,9 @@ PXActionResult PXDirectXStateBlockCreate(PXDirectX* const pxDirectX, PXDrawScrip
         {
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             D3DSTATEBLOCKTYPE stateBlcokType = 0;
@@ -1393,6 +1828,7 @@ PXActionResult PXDirectXStateBlockCreate(PXDirectX* const pxDirectX, PXDrawScrip
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1401,10 +1837,12 @@ PXActionResult PXDirectXStateBlockCreate(PXDirectX* const pxDirectX, PXDrawScrip
     return PXActionSuccessful;
 }
 
-PXActionResult PXDirectXStateBlockBegin(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript)
+
+PXActionResult PXDirectXDrawScriptBegin(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1416,12 +1854,16 @@ PXActionResult PXDirectXStateBlockBegin(PXDirectX* const pxDirectX, PXDrawScript
         {
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const HRESULT result = pxDirectX->DX9->lpVtbl->BeginStateBlock(pxDirectX->DX9);
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
@@ -1430,10 +1872,11 @@ PXActionResult PXDirectXStateBlockBegin(PXDirectX* const pxDirectX, PXDrawScript
     return PXActionSuccessful;
 }
 
-PXActionResult PXDirectXStateBlockEnd(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript)
+PXActionResult PXDirectXDrawScriptEnd(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1445,6 +1888,9 @@ PXActionResult PXDirectXStateBlockEnd(PXDirectX* const pxDirectX, PXDrawScript* 
         {
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const HRESULT result = pxDirectX->DX9->lpVtbl->EndStateBlock
@@ -1455,12 +1901,54 @@ PXActionResult PXDirectXStateBlockEnd(PXDirectX* const pxDirectX, PXDrawScript* 
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
     }
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXDirectXDrawScriptDelete(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript)
+{
+    switch (pxDirectX->DirectXVersion)
+    {
+#if PXDX11Use
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+            return PXActionNotSupportedByLibrary;
+        }
+#endif
+
+#if PXDX9Use
+        case PXDirectXVersion9:
+        {
+            IDirect3DStateBlock9* const direct3DStateBlock9 = (IDirect3DStateBlock9*)pxDrawScript->ResourceID.DirectXInterface;
+
+            const ULONG result = direct3DStateBlock9->lpVtbl->Release(direct3DStateBlock9);
+
+            return PXActionSuccessful;
+        }
+#endif
+
+        default:
+            return PXActionNotSupportedByLibrary;
+    }
+
+    return PXActionNotSupportedByLibrary;
+}
+
+PXActionResult PXDirectXDrawScriptExecute(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript)
+{
+    return PXActionNotImplemented;
 }
 
 PXActionResult PXDirectXReset(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters)
@@ -1472,6 +1960,7 @@ PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceR
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1483,12 +1972,14 @@ PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceR
         {
             return PXActionNotSupportedByLibrary;
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             const HRESULT result = pxDirectX->DX9->lpVtbl->Present
             (
                 pxDirectX->DX9,
-                pSourceRect,
                 pSourceRect,
                 pDestRect,
                 hDestWindowOverride,
@@ -1497,18 +1988,19 @@ PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceR
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
     }
 }
 
-PXActionResult PXDirectXPrimitiveIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicRenderMode pxGraphicRenderMode, const PXInt32U BaseVertexIndex, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U startIndex, const PXInt32U primCount)
+PXActionResult PXDirectXPrimitiveIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U BaseVertexIndex, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U startIndex, const PXInt32U primCount)
 {
     return PXActionNotImplemented;
 }
 
-PXActionResult PXDirectXShaderProgramCompileVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader)
+PXActionResult PXDirectXShaderProgramCreateVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader)
 {
     PXDirectXShaderCompile(pxDirectX, &pxShaderProgram->VertexShader, vertexShader);
     PXDirectXShaderCreate(pxDirectX, &pxShaderProgram->VertexShader);
@@ -1519,7 +2011,7 @@ PXActionResult PXDirectXShaderProgramCompileVP(PXDirectX* const pxDirectX, PXSha
     return PXActionSuccessful;
 }
 
-PXActionResult PXDirectXShaderProgramCompileVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader)
+PXActionResult PXDirectXShaderProgramCreateVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader)
 {
     PXText pxTextVertexShaderW;
     PXText pxTextPixelShaderW;
@@ -1530,10 +2022,10 @@ PXActionResult PXDirectXShaderProgramCompileVPA(PXDirectX* const pxDirectX, PXSh
     PXTextCopyAW(vertexShader, PXTextUnkownLength, pxTextVertexShaderW.TextW, pxTextPixelShaderW.SizeAllocated);
     PXTextCopyAW(pixelShader, PXTextUnkownLength, pxTextPixelShaderW.TextW, pxTextPixelShaderW.SizeAllocated);
 
-    PXDirectXShaderProgramCompileVP(pxDirectX, pxShaderProgram, &pxTextVertexShaderW, &pxTextPixelShaderW);
+    return PXDirectXShaderProgramCreateVP(pxDirectX, pxShaderProgram, &pxTextVertexShaderW, &pxTextPixelShaderW);
 }
 
-PXActionResult PXDirectXShaderProgramCompileVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader)
+PXActionResult PXDirectXShaderProgramCreateVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader)
 {
     PXText pxTextVertexShaderW;
     PXText pxTextPixelShaderW;
@@ -1541,13 +2033,29 @@ PXActionResult PXDirectXShaderProgramCompileVPW(PXDirectX* const pxDirectX, PXSh
     PXTextConstructFromAdressW(&pxTextVertexShaderW, vertexShader, PXTextUnkownLength);
     PXTextConstructFromAdressW(&pxTextPixelShaderW, pixelShader, PXTextUnkownLength);
 
-    PXDirectXShaderProgramCompileVP(pxDirectX, pxShaderProgram, &pxTextVertexShaderW, &pxTextPixelShaderW);
+    return PXDirectXShaderProgramCreateVP(pxDirectX, pxShaderProgram, &pxTextVertexShaderW, &pxTextPixelShaderW);
+}
+
+PXActionResult PXDirectXShaderProgramCreate(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram)
+{
+    return PXActionNotImplemented;
+}
+
+PXActionResult PXDirectXShaderProgramSelect(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram)
+{
+    return PXActionNotImplemented;
+}
+
+PXActionResult PXDirectXShaderProgramDelete(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram)
+{
+    return PXActionNotImplemented;
 }
 
 PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const pxShader)
 {
     switch (pxDirectX->DirectXVersion)
     {
+#if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
         case PXDirectXVersion11Emulate9x1:
         case PXDirectXVersion11Emulate9x2:
@@ -1593,6 +2101,9 @@ PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const
                     return PXActionRefusedFormatNotSupported;
             }
         }
+#endif
+
+#if PXDX9Use
         case PXDirectXVersion9:
         {
             switch (pxShader->Type)
@@ -1625,18 +2136,75 @@ PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const
 
             return PXActionSuccessful;
         }
+#endif
 
         default:
             return PXActionNotSupportedByLibrary;
-    }
-
-   
+    }   
 
     return PXActionSuccessful;
 }
 
+PXActionResult PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader* const pxShader)
+{
+    switch (pxDirectX->DirectXVersion)
+    {
+#if PXDX11Use
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+            return PXActionRefusedFormatNotSupported;
+        }
+#endif
+
+#if PXDX9Use
+        case PXDirectXVersion9:
+        {
+            switch (pxShader->Type)
+            {
+                case PXShaderTypeVertex:
+                {
+                    const HRESULT result = pxDirectX->DX9->lpVtbl->SetVertexShader
+                    (
+                        pxDirectX->DX9,
+                        (IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
+                    );
+
+                    break;
+                }
+                case PXShaderTypeFragment:
+                {
+                    const HRESULT result = pxDirectX->DX9->lpVtbl->SetPixelShader
+                    (
+                        pxDirectX->DX9,
+                        (IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
+                    );
+
+                    break;
+                }
+                default:
+                    return PXActionRefusedFormatNotSupported;
+            }
+
+            return PXActionSuccessful;
+        }
+#endif
+
+        default:
+            return PXActionNotSupportedByLibrary;
+    }
+}
+
 PXActionResult PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* const pxShader, const PXText* const shaderFilePath)
 {
+#if 0
+
     ID3DBlob* ps_blob_ptr = NULL;
     ID3DBlob* error_blob = NULL;
     UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -1645,7 +2213,7 @@ PXActionResult PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* cons
 #endif
 
     // COMPILE VERTEX SHADER
-    const HRESULT result = D3DCompileFromFile
+    const HRESULT result = D3DCompileFromFile // D3DCompiler_47.dll, d3dcompiler.h
     (
         shaderFilePath->TextW,
         PXNull,
@@ -1678,5 +2246,21 @@ PXActionResult PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* cons
         shaderCode->Release();
     }*/
 
+#endif
+
     return PXActionCompilingError;
+}
+
+PXActionResult PXDirectXTransformSet(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE State, const D3DMATRIX* pMatrix)
+{
+    return PXActionNotImplemented;
+}
+
+PXActionResult PXDirectXVertexStructureDraw(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera)
+{
+    PXDirectXStreamSourceSet(pxDirectX, 0, &pxVertexStructure->VertexBuffer, 0, pxVertexStructure->VertexBuffer.VertexDataRowSize);
+    PXDirectXVertexFixedFunctionSet(pxDirectX, pxVertexStructure->VertexBuffer.Format);
+    PXDirectXPrimitiveDraw(pxDirectX, PXGraphicDrawModeTriangle, 0, 1);
+
+    return PXActionSuccessful;
 }

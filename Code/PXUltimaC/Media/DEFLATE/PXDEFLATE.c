@@ -1601,7 +1601,7 @@ PXActionResult PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxO
 
 
 
-PXPublic PXActionResult PXLZ77Encode
+PXActionResult PXLZ77Encode
 (
     //PXFile* const pxOutputStream,
     PXFile* const pxCacheStream,
@@ -1614,11 +1614,11 @@ PXPublic PXActionResult PXLZ77Encode
     const PXLZ77ESetting* const pxLZ77ESetting
 )
 {
-
+    return PXActionNotImplemented;
 }
-PXPublic PXActionResult PXLZ77Decode()
+PXActionResult PXLZ77Decode()
 {
-
+    return PXActionNotImplemented;
 }
 
 

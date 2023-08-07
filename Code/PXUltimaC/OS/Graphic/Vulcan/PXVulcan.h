@@ -14,11 +14,8 @@ extern "C"
 
 	typedef void (*PXVulcanInstanceProcAddrGetFunction)();
 
-
 	typedef struct PXVulcan_
 	{
-		unsigned int __dummy__;
-
 		PXLibrary LibraryID;
 
 		PXVulcanInstanceProcAddrGetFunction InstanceProcAddrGetCallBack;

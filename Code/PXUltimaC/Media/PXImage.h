@@ -29,17 +29,6 @@ extern "C"
 	PXPublic void PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource);
 	PXPublic void PXImageCopyAsNew(PXImage* const pxImageTarget, const PXImage* const pxImageSource);
 
-	PXPublic PXActionResult PXImageLoad(PXImage* const image, const PXText* const filePath);
-	PXPublic PXActionResult PXImageLoadD(PXImage* const image, PXFile* const dataStream, const FileFormatExtension guessedFormat);
-
-	PXPublic PXActionResult PXImageSave(PXImage* const image, const PXText* const filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
-	PXPublic PXActionResult PXImageSaveD
-	(
-		PXImage* image,
-		PXFile* const PXFile,
-		const FileFormatExtension fileFormat,
-		const PXColorFormat dataFormat
-	);
 
 	PXPublic PXBool PXImageResize(PXImage* const image, const PXColorFormat format, const PXSize width, const PXSize height);
 	PXPublic void PXImageFlipHorizontal(PXImage* image);

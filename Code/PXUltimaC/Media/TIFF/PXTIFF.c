@@ -147,7 +147,7 @@ PXActionResult PXTIFFParse(PXTIFF* const tiff, PXFile* const dataStream)
                     break;
 
                 default:
-                    return ;
+                    return PXActionRefusedInvalidHeaderSignature;
             }
         }
 

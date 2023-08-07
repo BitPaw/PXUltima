@@ -186,7 +186,7 @@ PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
     }
 
     {
-        const FileFormatExtension modelFileFormat = PXFilePathExtensionDetectTry(filePath);
+        const PXFileFormat modelFileFormat = PXFilePathExtensionDetectTry(filePath);
         const PXActionResult fileParsingResult = PXModelLoadD(model, &dataStream, modelFileFormat);
 
         PXActionReturnOnSuccess(fileParsingResult);
@@ -196,7 +196,7 @@ PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
 
         do
         {
-            const FileFormatExtension imageFileFormat = (FileFormatExtension)((int)fileGuessResult + fileFormatID);
+            const PXFileFormat imageFileFormat = (PXFileFormat)((int)fileGuessResult + fileFormatID);
 
             fileGuessResult = PXModelLoadD(model, &dataStream, imageFileFormat);
 
@@ -210,7 +210,7 @@ PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath)
     }
 }
 
-PXActionResult PXModelLoadD(PXModel* const pxModel, PXFile* const pxFile, const FileFormatExtension modelType)
+PXActionResult PXModelLoadD(PXModel* const pxModel, PXFile* const pxFile, const PXFileFormat modelType)
 {
     ModelParserFunction modelParserFunction = 0;
 

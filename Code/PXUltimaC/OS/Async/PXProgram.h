@@ -18,11 +18,15 @@ extern "C"
 {
 #endif
 
-	typedef void (*PXProgramExecutedEvent)(const unsigned char succesful, PXSize returnResult, const PXActionResult errorCode);
+	typedef void (*PXProgramExecutedEvent)(const PXBool succesful, const PXSize returnResult, const PXActionResult errorCode);
 
 	typedef struct PXProgram_
 	{
 		ProcessHandle Handle;
+
+#if OSUnix
+		int MemoryFileHandle;
+#endif
 
 		wchar_t FilePath[260];
 
@@ -51,9 +55,10 @@ extern "C"
 	PXPublic ProcessHandle PXProgramCurrentProcess();
 	PXPublic ProcessID PXProgramCurrentProcessID();
 
-	PXPublic void PXProgramAttach(PXProgram* program);
-	PXPublic void PXProgramDetach(PXProgram* program);
-	PXPublic void PXProgramReadMemory(PXProgram* program);
+	PXPublic PXActionResult PXProgramAttach(PXProgram* const pxProgram);
+	PXPublic PXActionResult PXProgramDetach(PXProgram* const pxProgram);
+	PXPublic PXActionResult PXProgramReadMemory(PXProgram* const pxProgram, const void* const adress, void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten);
+	PXPublic PXActionResult PXProgramWriteMemory(PXProgram* const pxProgram, const void* const adress, const void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten);
 
 #ifdef __cplusplus
 }

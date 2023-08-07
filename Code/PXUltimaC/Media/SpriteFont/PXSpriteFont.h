@@ -9,6 +9,7 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
 #include <Media/PXImage.h>
+#include <OS/Graphic/PXGraphicGeneral.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -74,18 +75,6 @@ extern "C"
 	}
 	PXSpriteFontLineType;
 
-	typedef struct PXSpriteFontCharacter_
-	{
-		unsigned int ID;
-		float Position[2]; // Position of the character image in the texture.
-		float Size[2];	// Size of the character image in the texture.
-		float Offset[2];// Offset from the position-center.
-		int XAdvance; // How much the current position should be advanced after drawing the character.
-		int Page; // The texture page where the character image is found.
-		int Chanal;// The texture channel where the character image is found (1 = blue, 2 = green, 4 = red, 8 = alpha, 15 = all channels).
-	}
-	PXSpriteFontCharacter;
-
 	typedef struct PXSpriteFontInfo_
 	{
 		char Name[PXSpriteFontFontNameSize]; // Name of this font. (synonym: face)
@@ -119,32 +108,18 @@ extern "C"
 	}
 	PXSpriteFontCommonData;
 
-	typedef struct PXSpriteFontPage_
-	{
-		int PageID;
-		PXSize CharacteListSize;
-		PXSpriteFontCharacter* CharacteList;
-		PXImage FontTextureMap;
-
-		int TextureID;
-	}
-	PXSpriteFontPage;
-
 	typedef struct PXSpriteFont_
 	{
 		PXSpriteFontInfo Info;
 		PXSpriteFontCommonData CommonData;
 		PXSize FontPageListSize;
-		PXSpriteFontPage* FontPageList;
 	}
 	PXSpriteFont;
 
 	PXPublic void PXSpriteFontConstruct(PXSpriteFont* const pxSpriteFont);
 	PXPublic void PXSpriteFontDestruct(PXSpriteFont* const pxSpriteFont);
 
-	PXPublic PXSpriteFontCharacter* PXSpriteFontGetCharacter(PXSpriteFont* pxSpriteFont, const wchar_t character);
-
-	PXPublic PXActionResult PXSpriteFontParse(PXSpriteFont* const pxSpriteFont, PXFile* const PXFile);
+	PXPublic PXActionResult PXSpriteFontParse(PXFont* const pxFont, PXFile* const pxFile);
 
 	PXPrivate PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSize);
 

@@ -170,7 +170,6 @@ extern "C"
 	PXDataType;
 
 
-
 	typedef unsigned char PXByte;
 	typedef unsigned char PXBool;
 	typedef unsigned char* PXAdress;
@@ -565,6 +564,11 @@ d = SplittIntLED(i);
 			};
 		}
 		PXInt64UCluster;
+
+
+
+
+		PXPublic PXInt8U PXDataTypeSize(const PXDataType pxDataType);
 
 
 

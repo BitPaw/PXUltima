@@ -78,6 +78,8 @@ const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 				break;
 		}*/
 	}
+	return amountOfJoySticksSupported > 0;
+
 #else
 	return PXFalse;
 #endif

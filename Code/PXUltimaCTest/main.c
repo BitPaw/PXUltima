@@ -16,7 +16,6 @@
 #include "Service/TestFTP.h"
 #include "Service/TestSBP.h"
 
-#include <Media/PXFont.h>
 #include <Media/TTF/PXTTF.h>
 
 
@@ -90,10 +89,6 @@ int main()
 	PXAwaitChangeCU(&pxWindow.IsRunning);
 
 
-	PXDirectX* directX = &pxWindow.GraphicInstance.DirectXInstance;
-
-
-
 	const float vertices[] =
 	{
 #if 1
@@ -109,6 +104,8 @@ int main()
 #endif
 };
 
+	PXGraphicSelect(&pxWindow.GraphicInstance);
+
 
 	PXVertexStructure pxVertexStructure;
 	PXObjectClear(PXVertexStructure, &pxVertexStructure);
@@ -117,8 +114,7 @@ int main()
 	pxVertexStructure.VertexBuffer.VertexDataRowSize = sizeof(vertices) / 3;
 	pxVertexStructure.VertexBuffer.Format = PXVertexBufferFormatXYZC; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
-	PXDirectXVertexBufferCreate(directX, &pxVertexStructure.VertexBuffer);
-
+	PXGraphicVertexStructureRegister(&pxWindow.GraphicInstance, &pxVertexStructure);
 
 	while (1)
 	{

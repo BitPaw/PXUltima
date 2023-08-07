@@ -88,7 +88,7 @@ void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
 	}
 }
 
-PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
+PXActionResult PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -98,6 +98,10 @@ PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 	// Initializes the symbol handler for a process.
 	const BOOL result = SymInitialize(pxDebug->Process.ThreadHandle, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h
 	const PXBool success = result != 0;
+
+	PXActionReturnOnError(!success);
+
+	return PXActionSuccessful;
 
 #endif
 }
@@ -164,6 +168,8 @@ PXActionResult PXDebugAttach(PXDebug* const pxDebug)
 	const PXBool sucessful = result != 0;
 
 	PXActionOnErrorFetchAndReturn(!sucessful);
+
+	return PXActionSuccessful;
 #endif
 }
 
@@ -177,6 +183,8 @@ PXActionResult PXDebugDetach(PXDebug* const pxDebug)
 	const PXBool sucessful = sucessfulCode != 0;
 
 	PXActionOnErrorFetchAndReturn(!sucessful);
+
+	return PXActionSuccessful;
 #endif
 }
 
@@ -565,6 +573,10 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 	// Resume executing the thread that reported the debugging event.
 	const BOOL succ = ContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, dwContinueStatus);
+
+	PXActionReturnOnError(!succ);
+
+	return PXActionSuccessful;
 
 #endif
 }

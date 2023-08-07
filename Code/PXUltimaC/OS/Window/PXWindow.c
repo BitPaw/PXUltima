@@ -1273,6 +1273,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
                         {
                             PXInt32S positionX = 0;
                             PXInt32S positionY = 0;
+                           
                             PXInt32S deltaX = rawInput.data.mouse.lLastX;
                             PXInt32S deltaY = rawInput.data.mouse.lLastY;
 
@@ -3106,8 +3107,10 @@ void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S posi
 
     if (hasDelta)
     {
-        mouse->Delta[0] = mousePositionDeltaNew[0];
-        mouse->Delta[1] = mousePositionDeltaNew[1];
+        //mouse->Delta[0] = mousePositionDeltaNew[0];
+        //mouse->Delta[1] = mousePositionDeltaNew[1];
+        mouse->Delta[0] += deltaX;
+        mouse->Delta[1] += deltaY;
         mouse->DeltaNormalisized[0] = (mousePositionDeltaNew[0] / ((float)window->Width / 2.0f)) - 1.0f;
         mouse->DeltaNormalisized[1] = (mousePositionDeltaNew[1] / ((float)window->Height / 2.0f)) - 1.0f;
         mouse->Position[0] = mousePositionNew[0];
@@ -3421,10 +3424,11 @@ void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKey
     InvokeEvent(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
 }
 
-unsigned int PXWindowCursorIconToID(const CursorIcon cursorIcon)
+PXInt32U PXWindowCursorIconToID(const CursorIcon cursorIcon)
 {
     switch (cursorIcon)
     {
+        default:
         case CursorIconInvalid:
             return -1;
 

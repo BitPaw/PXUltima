@@ -279,12 +279,15 @@ PXActionResult PXXMLFileCompile(PXFile* const inputStream, PXFile* const outputS
 
     while (!PXFileIsAtEnd(outputStream))
     {
-        unsigned char depth = 0;
+        PXInt8U depth = 0;
+        PXInt8U modeID = 0;
         PXXMLSymbol mode = 0;
 
         PXMemoryClear(textBuffer, 512);
         PXFileReadI8U(outputStream, &depth);
-        PXFileReadI8U(outputStream, &mode);
+        PXFileReadI8U(outputStream, &modeID);
+
+        mode = (PXXMLSymbol)modeID;
 
         for (PXSize i = 0; i < (PXSize)depth+1; ++i)
         {

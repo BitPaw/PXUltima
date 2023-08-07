@@ -23,7 +23,7 @@ void PXClientDestruct(PXClient* const pxClient)
 
 PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
 {
-    if (pxClient->SocketClient.ID == PXHandleNotSet)
+    if (pxClient->SocketClient.ID == PXSocketUnused)
     {
         return PXActionRefuedObjectIDInvalid;
     }

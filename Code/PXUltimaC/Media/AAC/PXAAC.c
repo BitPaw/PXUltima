@@ -1,6 +1,6 @@
 #include "PXAAC.h"
 
-PXActionResult PXAACParse(const void* data, const PXSize dataSize)
+PXActionResult PXAACParseFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	return PXActionInvalid;
 }

@@ -9,8 +9,8 @@ void PXCameraConstruct(PXCamera* const camera)
 {
     PXMemoryClear(camera, sizeof(PXCamera));
 
-	camera->WalkSpeed = 0.2;
-	camera->ViewSpeed = 0.5;
+	camera->WalkSpeed = 2;
+	camera->ViewSpeed = 0.4;
 	camera->FollowSpeed = 0.98f; 
 	camera->FieldOfView = 45;
 	camera->Height = 1;
@@ -107,7 +107,7 @@ void PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F)
 	const float ry = PXMathSinus(pitchRAD);
 	const float rz = PXMathCosinus(pitchRAD) * PXMathSinus(yawRAD);
 
-	PXVector3FSetXYZ(&camera->LookAtPosition, rx, ry, rz, &camera->LookAtPosition);
+	PXVector3FSetXYZ(&camera->LookAtPosition, rx, ry, rz);
 	PXVector3FNormalize(&camera->LookAtPosition, &camera->LookAtPosition);
 }
 
@@ -169,7 +169,7 @@ void PXCameraFollow(PXCamera* const camera, const float deltaTime)
 	}
 
 	PXMatrix4x4FPosition(&camera->MatrixModel, &cameraPositionCurrent); // Get current camera pos
-	PXMatrix4x4FPosition(&camera->Target, &desiredPosition); // get current target pos
+	PXMatrix4x4FPosition(camera->Target, &desiredPosition); // get current target pos
 
 	PXVector3FAdd(&desiredPosition, &camera->Offset, &desiredPosition); // add offset to target pos
 

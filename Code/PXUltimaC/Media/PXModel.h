@@ -121,7 +121,7 @@ extern "C"
 	PXPublic PXSize PXModelVertexDataStride(const PXModel* const model);
 
 	PXPublic PXActionResult PXModelLoad(PXModel* const model, const PXText* const filePath);
-	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXFile* const pxFile, const FileFormatExtension modelType);
+	PXPublic PXActionResult PXModelLoadD(PXModel* const model, PXFile* const pxFile, const PXFileFormat modelType);
 
 #ifdef __cplusplus
 }

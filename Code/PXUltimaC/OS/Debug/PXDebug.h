@@ -41,7 +41,7 @@ extern "C"
 	PXPublic void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message);
 
 
-	PXPublic PXBool PXDebugDebuggerInitialize(PXDebug* const pxDebug);
+	PXPublic PXActionResult PXDebugDebuggerInitialize(PXDebug* const pxDebug);
 
 
 	PXPublic PXActionResult PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName);

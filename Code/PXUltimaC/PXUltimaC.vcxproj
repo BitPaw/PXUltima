@@ -73,30 +73,34 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level1</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -106,6 +110,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
+      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,7 +119,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level1</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -128,6 +133,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <CallingConvention>StdCall</CallingConvention>
+      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,7 +143,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level1</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -147,6 +153,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
+      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,7 +162,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level1</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -169,6 +176,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <CallingConvention>StdCall</CallingConvention>
+      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -201,7 +209,6 @@
     <ClCompile Include="Log\PXLog.c" />
     <ClCompile Include="Math\PXCollision.c" />
     <ClCompile Include="Math\PXDiagram.c" />
-    <ClCompile Include="Math\PXGeometric.c" />
     <ClCompile Include="Math\PXMath.c" />
     <ClCompile Include="Math\PXMatrix.c" />
     <ClCompile Include="Math\PXPhysic.c" />
@@ -251,10 +258,7 @@
     <ClCompile Include="Media\PLY\PXPLY.c" />
     <ClCompile Include="Media\PNG\PXPNG.c" />
     <ClCompile Include="Media\PXColor.c" />
-    <ClCompile Include="Media\PXFont.c" />
     <ClCompile Include="Media\PXImage.c" />
-    <ClCompile Include="Media\PXModel.c" />
-    <ClCompile Include="Media\PXSound.c" />
     <ClCompile Include="Media\PXText.c" />
     <ClCompile Include="Media\PXType.c" />
     <ClCompile Include="Media\PXUltimaInfo.c" />
@@ -344,7 +348,6 @@
     <ClInclude Include="Log\PXLog.h" />
     <ClInclude Include="Math\PXCollision.h" />
     <ClInclude Include="Math\PXDiagram.h" />
-    <ClInclude Include="Math\PXGeometric.h" />
     <ClInclude Include="Math\PXMath.h" />
     <ClInclude Include="Math\PXMatrix.h" />
     <ClInclude Include="Math\PXPhysic.h" />
@@ -394,10 +397,7 @@
     <ClInclude Include="Media\PLY\PXPLY.h" />
     <ClInclude Include="Media\PNG\PXPNG.h" />
     <ClInclude Include="Media\PXColor.h" />
-    <ClInclude Include="Media\PXFont.h" />
     <ClInclude Include="Media\PXImage.h" />
-    <ClInclude Include="Media\PXModel.h" />
-    <ClInclude Include="Media\PXSound.h" />
     <ClInclude Include="Media\PXText.h" />
     <ClInclude Include="Media\PXType.h" />
     <ClInclude Include="Media\PXUltimaInfo.h" />

@@ -195,14 +195,19 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
             case PXBitmapHeaderOS22XBitMapHeader:
             {
                 {
-                    PXInt16U valueList[4u];
+                    PXInt16U height;
+                    PXInt16U width;
 
-                    PXFileReadI16UVE(dataStream, valueList, 4u, PXEndianLittle);
+                    const PXFileDataElementType pxDataStreamElementList[] =
+                    {
+                        {PXDataTypeLEInt16U, &height},
+                        {PXDataTypeLEInt16U, &width},
+                        {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfColorPlanes},
+                        {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfBitsPerPixel}
+                    };
+                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    bmp.InfoHeader.Width = valueList[0];
-                    bmp.InfoHeader.Height = valueList[1];
-                    bmp.InfoHeader.NumberOfColorPlanes = valueList[2];
-                    bmp.InfoHeader.NumberOfBitsPerPixel = valueList[3];
+                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
                 }
 
                 if(bmp.InfoHeaderType == PXBitmapHeaderOS22XBitMapHeader)

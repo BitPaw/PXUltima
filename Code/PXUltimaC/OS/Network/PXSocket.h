@@ -51,10 +51,12 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <Container/Buffer/PXBuffer.h>
 
 typedef PXInt32U PXSocketID;
+
 #define SocketDebug 0
 #define IPv6LengthMax 65
-
 #define PXSocketBufferSize 1024u
+#define PXSocketUnused (PXSocketID)-1
+
 
 #ifdef __cplusplus
 extern "C"

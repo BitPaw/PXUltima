@@ -1,13 +1,13 @@
 #ifndef PXAACINCLUDE
 #define PXAACINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
+#include <OS/Graphic/PXGraphicGeneral.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
 
 	typedef struct PXAAC_
 	{
@@ -15,7 +15,7 @@ extern "C"
 	}
 	PXAAC;
 
-	PXPublic PXActionResult PXAACParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult PXAACParseFromFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

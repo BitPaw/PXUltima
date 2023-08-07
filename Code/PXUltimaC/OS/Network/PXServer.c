@@ -126,11 +126,11 @@ PXActionResult PXServerStop(PXServer* const server)
     PXSocket* ServerSocketList;
     PXSize ServerSocketListSize;
 
-    for (size_t i = 0; i < server->ServerSocketListSize; i++)
+    for (PXSize i = 0; i < server->ServerSocketListSize; i++)
     {
         PXSocket* const serverSocket = &server->ServerSocketList[i];
 
-        PXSocketClose(&serverSocket);
+        PXSocketClose(serverSocket);
     }
 
     server->ServerSocketListSize = 0;

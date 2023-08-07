@@ -35,7 +35,7 @@ extern "C"
 	}UILayout;
 
 
-	PXPublic void PXUIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name);
+	//PXPublic void PXUIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* Layout, const wchar_t* className, const wchar_t* name);
 
 	typedef struct OSButton_
 	{

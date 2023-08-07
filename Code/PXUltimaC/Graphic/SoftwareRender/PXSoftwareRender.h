@@ -3,8 +3,9 @@
 
 #include <Media/PXType.h>
 #include <Media/PXImage.h>
-#include <Media/PXFont.h>
 #include <Media/PXText.h>
+
+#include <OS/Graphic/PXGraphicGeneral.h>
 
 #ifdef __cplusplus
 extern "C"

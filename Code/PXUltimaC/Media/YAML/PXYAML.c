@@ -45,7 +45,7 @@ PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size)
 
     // unkown thing detected, check if it is a declaration
     {
-        const char expectedColon = ((char*)line)[size - 1] ;
+        const char expectedColon = ((char*)line)[size - 1];
         const PXBool isColon = ':' == expectedColon;
 
         if (isColon)
@@ -151,43 +151,43 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
                         switch (compilerSymbolEntry.ID)
                         {
 
-                        case PXCompilerSymbolLexerNewLine:
-                        case PXCompilerSymbolLexerWhiteSpace:
-                            PXFileWriteI16U(outputStream, 0);
-                            indentCounter = compilerSymbolEntry.Size;
-                            break;
+                            case PXCompilerSymbolLexerNewLine:
+                            case PXCompilerSymbolLexerWhiteSpace:
+                                PXFileWriteI16U(outputStream, 0);
+                                indentCounter = compilerSymbolEntry.Size;
+                                break;
 
-                        case PXCompilerSymbolLexerBool:
-                        {
-                            PXFileWriteI16U(outputStream, sizeof(unsigned char));
-                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerBool);
-                            PXFileWriteI8U(outputStream, compilerSymbolEntry.DataC);
-                            break;
-                        }
+                            case PXCompilerSymbolLexerBool:
+                            {
+                                PXFileWriteI16U(outputStream, sizeof(unsigned char));
+                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerBool);
+                                PXFileWriteI8U(outputStream, compilerSymbolEntry.DataC);
+                                break;
+                            }
 
-                        case PXCompilerSymbolLexerInteger:
-                        {
-                            PXFileWriteI16U(outputStream, sizeof(unsigned int));
-                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                            PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
-                            break;
-                        }
+                            case PXCompilerSymbolLexerInteger:
+                            {
+                                PXFileWriteI16U(outputStream, sizeof(unsigned int));
+                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                                PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
+                                break;
+                            }
 
-                        case PXCompilerSymbolLexerFloat:
-                        {
-                            PXFileWriteI16U(outputStream, sizeof(float));
-                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
-                            PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
-                            break;
-                        }
-                        case PXCompilerSymbolLexerGenericElement:
-                        case PXCompilerSymbolLexerString:
-                        {
-                            PXFileWriteI16U(outputStream, compilerSymbolEntry.Size);
-                            PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
-                            PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-                            break;
-                        }
+                            case PXCompilerSymbolLexerFloat:
+                            {
+                                PXFileWriteI16U(outputStream, sizeof(float));
+                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
+                                PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
+                                break;
+                            }
+                            case PXCompilerSymbolLexerGenericElement:
+                            case PXCompilerSymbolLexerString:
+                            {
+                                PXFileWriteI16U(outputStream, compilerSymbolEntry.Size);
+                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
+                                PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                                break;
+                            }
                         }
 
                         break;
@@ -216,101 +216,108 @@ PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const output
 
     while (!PXFileIsAtEnd(outputStream))
     {
-        unsigned char depth = 0;
+        PXInt8U depth = 0;
+        PXInt8U lineTypeID = 0;
+
         PXYAMLLineType lineType = PXYAMLLineTypeInvalid;
 
-        PXFileReadI8U(outputStream, &lineType);
+        PXFileReadI8U(outputStream, &lineTypeID);
         PXFileReadI8U(outputStream, &depth);
+
+        lineType = (PXYAMLLineType)lineTypeID;
+
 
         switch (lineType)
         {
-        case PXYAMLLineTypeKeyValueDeclare:
-        {
-            unsigned short textASize = 0;
-            char textA[256];
-            unsigned short textBSize = 0;
-            char textB[256];
-
-            PXText pxTextBuffer;
-            PXTextConstructFromAdressA(&pxTextBuffer, textB, 256);
-
-            char emotySpace[25];
-
-            PXMemoryClear(textA, 256u);
-            PXMemoryClear(textB, 256u);
-            PXMemoryClear(emotySpace, 25u);
-
-            PXFileReadI16U(outputStream, &textASize);
-            PXFileReadB(outputStream, textA, textASize);
-            PXFileReadI16U(outputStream, &textBSize);
-
-            for (PXSize i = 0; i < depth; i++)
+            case PXYAMLLineTypeKeyValueDeclare:
             {
-                emotySpace[i] = ' ';
-            }
+                unsigned short textASize = 0;
+                char textA[256];
+                unsigned short textBSize = 0;
+                char textB[256];
 
-            if (textBSize > 0)
-            {
-                PXCompilerSymbolLexer lexer;
+                PXText pxTextBuffer;
+                PXTextConstructFromAdressA(&pxTextBuffer, textB, 256);
 
+                char emotySpace[25];
+
+                PXMemoryClear(textA, 256u);
+                PXMemoryClear(textB, 256u);
+                PXMemoryClear(emotySpace, 25u);
+
+                PXFileReadI16U(outputStream, &textASize);
+                PXFileReadB(outputStream, textA, textASize);
+                PXFileReadI16U(outputStream, &textBSize);
+
+                for (PXSize i = 0; i < depth; i++)
                 {
-                    PXInt8U lx = 0;
+                    emotySpace[i] = ' ';
+                }
 
-                    PXFileReadI8U(outputStream, &lx);
-
-                    lexer = (PXCompilerSymbolLexer)lx;
-                }              
-
-                switch (lexer)
+                if (textBSize > 0)
                 {
-                    case PXCompilerSymbolLexerBool:
+                    PXCompilerSymbolLexer lexer;
+
                     {
-                        PXBool x = 0;
+                        PXInt8U lx = 0;
 
-                        PXFileReadI8U(outputStream, &x);
+                        PXFileReadI8U(outputStream, &lx);
 
-                        PXTextFromBool(&pxTextBuffer, x);
-
-                        break;
+                        lexer = (PXCompilerSymbolLexer)lx;
                     }
 
-                    case PXCompilerSymbolLexerInteger:
+                    switch (lexer)
                     {
-                        PXInt32U x = 0;
+                        case PXCompilerSymbolLexerBool:
+                        {
+                            PXBool x = 0;
 
-                        PXFileReadI32U(outputStream, &x);
+                            PXFileReadI8U(outputStream, &x);
 
-                        PXTextFromInt(&pxTextBuffer, x);
+                            PXTextFromBool(&pxTextBuffer, x);
 
-                        break;
-                    }
+                            break;
+                        }
 
-                    case PXCompilerSymbolLexerFloat:
-                    {
-                        float x = 0;
+                        case PXCompilerSymbolLexerInteger:
+                        {
+                            PXInt32U x = 0;
 
-                        PXFileReadF(outputStream, &x);
+                            PXFileReadI32U(outputStream, &x);
 
-                        PXTextFromInt(&pxTextBuffer, x);
+                            PXTextFromInt(&pxTextBuffer, x);
 
-                        break;
-                    }
+                            break;
+                        }
 
-                    case PXCompilerSymbolLexerString:
-                    {
-                        PXFileReadB(outputStream, textB, textBSize);
-                        break;
+                        case PXCompilerSymbolLexerFloat:
+                        {
+                            float x = 0;
+
+                            PXFileReadF(outputStream, &x);
+
+                            PXTextFromInt(&pxTextBuffer, x);
+
+                            break;
+                        }
+
+                        case PXCompilerSymbolLexerString:
+                        {
+                            PXFileReadB(outputStream, textB, textBSize);
+                            break;
+                        }
                     }
                 }
+
+                printf("[YAML][%i] %s %s:%s\n", depth, emotySpace, textA, textB);
             }
 
-            printf("[YAML][%i] %s %s:%s\n", depth, emotySpace, textA, textB);
-        }
-
-        default:
-            break;
+            default:
+                break;
         }
     }
 
     outputStream->DataCursor = oldpos;
+
+    return PXActionSuccessful;
 }

@@ -5,10 +5,8 @@
 #if OSUnix
 #include <spawn.h>
 #include <wait.h>
-#define ExecutePXProgram spawnv
 #elif OSWindows
 #include <process.h>
-#define ExecutePXProgram _spawnv
 #endif
 
 #include <Media/PXText.h>
@@ -34,7 +32,7 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
 
 
 #elif PXOSWindowsDestop
-    program->ReturnValue = ExecutePXProgram(_P_WAIT, program->FilePath, (const char* const*)program->ParameterList);
+    program->ReturnValue = _spawnv(_P_WAIT, program->FilePath, (const char* const*)program->ParameterList);
     program->ExecutionSuccessfull = program->ReturnValue == 0;
 #else
     return -1;
@@ -42,7 +40,7 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
 
     if(program->PXProgramExecutedCallBack)
     {
-        program->PXProgramExecutedCallBack(program->ExecutionSuccessfull, program->ReturnValue, 0);
+        program->PXProgramExecutedCallBack(program->ExecutionSuccessfull, program->ReturnValue, PXActionInvalid);
     }
 
     // Free?
@@ -152,7 +150,7 @@ PXActionResult PXProgramExecuteWS(PXProgram* program, const wchar_t* programPath
 ProcessHandle PXProgramCurrentProcess()
 {
 #if OSUnix
-    return 0;
+    return getpid(); // get process identification
 #elif OSWindows
     return GetCurrentProcess();
 #endif
@@ -167,45 +165,90 @@ ProcessID PXProgramCurrentProcessID()
 #endif
 }
 
-void PXProgramAttach(PXProgram* program)
+PXActionResult PXProgramAttach(PXProgram* const pxProgram)
 {
 #if OSUnix
+    char processFileName[64];
+
+    sprintf(processFileName, "/proc/%d/mem", pid); 
+
+    pxProgram->MemoryFileHandle = open(processFileName, O_RDWR); // Linux, fcntl.h
+    const PXBool openSuccess = pxProgram->MemoryFileHandle != -1;
+
+    PXActionReturnOnError(!openSuccess);
+    
+    return PXActionSuccessful;
+
 #elif OSWindows
     DWORD dwDesiredAccess = 0;
     BOOL bInheritHandle = 0;
     DWORD dwProcessID = 0;
-    HANDLE handleID = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID);
+    pxProgram->Handle = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID); // Windows XP (+UWP), Kernel32.dll
+    const PXBool openSuccess = pxProgram->Handle != -1;
 
-    program->Handle = handleID;
+    PXActionReturnOnError(!openSuccess);
+
+    return PXActionSuccessful;
+#else
+    return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-void PXProgramDetach(PXProgram* program)
+PXActionResult PXProgramDetach(PXProgram* const pxProgram)
 {
 #if OSUnix
+
+    const int result = close(pxProgram->MemoryFileHandle);
+
+    return PXActionSuccessful;
+
 #elif OSWindows
     HANDLE handleID = 0;
 
-    const unsigned char closeResult = CloseHandle(program->Handle);
+    const PXBool closeResult = CloseHandle(pxProgram->Handle);
 
-    if(closeResult)
-    {
-        program->Handle = 0;
-    }
+    PXActionReturnOnError(!closeResult);
 
+    pxProgram->Handle = PXNull;
+
+    return PXActionSuccessful;
+#else
+    return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
-void PXProgramReadMemory(PXProgram* program)
+PXActionResult PXProgramReadMemory(PXProgram* const pxProgram, const void* const adress, void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten)
 {
 #if OSUnix
-#elif PXOSWindowsDestop
-    HANDLE hProcess = program->Handle;
-    LPCVOID lpBaseAddress = 0;
-    LPVOID* lpBuffer = 0;
-    SIZE_T nSize = 0;
-    SIZE_T* lpNumberOfBytesRead = 0;
 
-    unsigned char successful = ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, nSize, lpNumberOfBytesRead); // Windows XP, Kernel32.dll, memoryapi.h 
+    lseek(pxProgram->MemoryFileHandle, adress, SEEK_SET);
+    *bufferSizeWritten = read(pxProgram->MemoryFileHandle, buffer, bufferSize);
+
+    return PXActionSuccessful;
+
+#elif PXOSWindowsDestop
+    const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h 
+
+    return PXActionSuccessful;
+#else
+    return PXActionNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXProgramWriteMemory(PXProgram* const pxProgram, const void* const adress, const void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten)
+{
+#if OSUnix
+
+    lseek(pxProgram->MemoryFileHandle, adress, SEEK_SET);
+    *bufferSizeWritten = write(pxProgram->MemoryFileHandle, buffer, bufferSize);
+
+    return PXActionSuccessful;
+
+#elif PXOSWindowsDestop
+    const PXBool readResult = WriteProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h 
+
+    return PXActionSuccessful;
+#else
+    return PXActionNotSupportedByOperatingSystem;
 #endif
 }

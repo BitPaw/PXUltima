@@ -133,25 +133,24 @@ PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName)
 	case TextFormatUTF8:
 	{
 #if OSUnix
-		const char* const text = chdir(directoryName->TextA);
+		const int resultID = chdir(directoryName->TextA);
 #elif OSWindows
-		const char* const text = _chdir(directoryName->TextA);
+		const int resultID = _chdir(directoryName->TextA);
 #endif
-		const PXBool successful = text != 0;
+		const PXBool successful = resultID == 0;
 
 		PXActionOnErrorFetchAndReturn(!successful);
-
 
 		return PXActionSuccessful;
 	}
 	case TextFormatUNICODE:
 	{
 #if OSUnix
-		const char* const text = 0; // TODO: Add conversion?
+		const int resultID = 0; // TODO: Add conversion?
 #elif OSWindows
-		const char* const text = _wchdir(directoryName->TextW);
+		const int resultID = _wchdir(directoryName->TextW);
 #endif
-		const PXBool successful = text != 0;
+		const PXBool successful = resultID == 0;
 
 		PXActionOnErrorFetchAndReturn(!successful);
 

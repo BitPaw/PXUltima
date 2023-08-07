@@ -68,61 +68,63 @@ void PXDirectoryIsDotFolder(const char* s)
 #endif
 
 
-	typedef enum FileFormatExtension_
+	typedef enum PXFileFormat_
 	{
-		FileFormatInvalid,
-		FileFormatUnkown,
+		PXFileFormatInvalid,
+		PXFileFormatUnkown,
 
-		FileFormatA3DS,
-		FileFormatAAC,
-		FileFormatAVI,
-		FileFormatBitMap,
-		FileFormatC,
-		FileFormatCSharp,
-		FileFormatCSS,
-		FileFormatCPP,
-		FileFormatWindowsDynamicLinkedLibrary,
-		FileFormatLinuxExecutableAndLinkable,
-		FileFormatEML,
-		FileFormatWindowsExecutable,
-		FileFormatFilmBox,
-		FileFormatFLAC,
-		FileFormatSpriteFont,
-		FileFormatGIF,
-		FileFormatHTML,
-		FileFormatINI,
-		FileFormatJPEG,
-		FileFormatJSON,
-		FileFormatM4A,
-		FileFormatMIDI,
-		FileFormatMP3,
-		FileFormatMP4,
-		FileFormatMSI,
-		FileFormatMTL,
-		FileFormatWavefront,
-		FileFormatOGG,
-		FileFormatPDF,
-		FileFormatPHP,
-		FileFormatPLY,
-		FileFormatPNG,
-		FileFormatQOI,
-		FileFormatSTEP,
-		FileFormatSTL,
-		FileFormatSVG,
-		FileFormatTGA,
-		FileFormatTagImage,
-		FileFormatTrueTypeFont,
-		FileFormatVRML,
-		FileFormatWave,
-		FileFormatWEBM,
-		FileFormatWEBP,
-		FileFormatWMA,
-		FileFormatXML,
-		FileFormatYAML
+		PXFileFormatA3DS,
+		PXFileFormatAAC,
+		PXFileFormatAVI,
+		PXFileFormatBitMap,
+		PXFileFormatC,
+		PXFileFormatCSharp,
+		PXFileFormatCSS,
+		PXFileFormatCPP,
+		PXFileFormatWindowsDynamicLinkedLibrary,
+		PXFileFormatLinuxExecutableAndLinkable,
+		PXFileFormatEML,
+		PXFileFormatWindowsExecutable,
+		PXFileFormatFilmBox,
+		PXFileFormatFLAC,
+		PXFileFormatSpriteFont,
+		PXFileFormatGIF,
+		PXFileFormatHTML,
+		PXFileFormatINI,
+		PXFileFormatJPEG,
+		PXFileFormatJSON,
+		PXFileFormatM4A,
+		PXFileFormatMIDI,
+		PXFileFormatMP3,
+		PXFileFormatMP4,
+		PXFileFormatMSI,
+		PXFileFormatMTL,
+		PXFileFormatWavefront,
+		PXFileFormatOGG,
+		PXFileFormatPDF,
+		PXFileFormatPHP,
+		PXFileFormatPLY,
+		PXFileFormatPNG,
+		PXFileFormatQOI,
+		PXFileFormatSTEP,
+		PXFileFormatSTL,
+		PXFileFormatSVG,
+		PXFileFormatTGA,
+		PXFileFormatTagImage,
+		PXFileFormatTrueTypeFont,
+		PXFileFormatVRML,
+		PXFileFormatWave,
+		PXFileFormatWEBM,
+		PXFileFormatWEBP,
+		PXFileFormatWMA,
+		PXFileFormatXML,
+		PXFileFormatYAML
 	}
-	FileFormatExtension;
+	PXFileFormat;
 
-	PXPublic FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath);
+
+
+	PXPublic PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath);
 
 
 
@@ -334,7 +336,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileReadI32U(PXFile* const pxFile, PXInt32U* const value);
 	PXPublic PXSize PXFileReadI32UV(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize);
 	PXPublic PXSize PXFileReadI32UE(PXFile* const pxFile, PXInt32U* const value, const PXEndian pxEndian);
-	PXPublic PXSize PXFileReadI32UVE(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+	PXPublic PXSize PXFileReadI32UVE(PXFile* const pxFile, PXInt32U** const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
 	PXPublic PXSize PXFileReadI64S(PXFile* const pxFile, PXInt64S* const value);
 	PXPublic PXSize PXFileReadI64SV(PXFile* const pxFile, PXInt64S* const valueList, const PXSize valueListSize);
@@ -351,7 +353,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileReadD(PXFile* const pxFile, double* const value);
 	PXPublic PXSize PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize valueListSize);
 
-	PXPublic PXSize PXFileReadMultible(PXFile* const pxFile, PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize);
+	PXPublic PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize);
 
 	PXPublic PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length);
 
@@ -372,7 +374,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 
 	PXPublic PXBool PXFileReadAndCompare(PXFile* const pxFile, const void* value, const PXSize length);
-	PXPublic PXBool PXFileReadAndCompareV(PXFile* const pxFile, const void** value, const PXSize* valueElementSizeList, const PXSize valueLength);
+	PXPublic PXBool PXFileReadAndCompareV(PXFile* const pxFile, const void** const value, const PXSize* const valueElementSizeList, const PXSize valueLength);
 	//unsigned char PXFileReadAndCompareC(PXFile* PXFile, const char value);
 	//unsigned char PXFileReadAndCompareIU(PXFile* PXFile, const unsigned int value);
 
@@ -385,14 +387,14 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileWriteAtI8U(PXFile* const pxFile, const PXInt8U value, const PXSize index);
 	PXPublic PXSize PXFileWriteI8UV(PXFile* const pxFile, const PXInt8U* const valueList, const PXSize valueListSize);
 
-	PXPublic PXSize PXFileWriteI16S(PXFile* const pxFile, const PXInt16S const value);
+	PXPublic PXSize PXFileWriteI16S(PXFile* const pxFile, const PXInt16S value);
 	PXPublic PXSize PXFileWriteI16SV(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize);
-	PXPublic PXSize PXFileWriteI16SE(PXFile* const pxFile, const PXInt16S const value, const PXEndian pxEndian);
+	PXPublic PXSize PXFileWriteI16SE(PXFile* const pxFile, const PXInt16S value, const PXEndian pxEndian);
 	PXPublic PXSize PXFileWriteI16SVE(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-	PXPublic PXSize PXFileWriteI16U(PXFile* const pxFile, const PXInt16U const value);
-	PXPublic PXSize PXFileWriteAtI16U(PXFile* const pxFile, const PXInt16U const value, const PXSize index);
+	PXPublic PXSize PXFileWriteI16U(PXFile* const pxFile, const PXInt16U value);
+	PXPublic PXSize PXFileWriteAtI16U(PXFile* const pxFile, const PXInt16U value, const PXSize index);
 	PXPublic PXSize PXFileWriteI16UV(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize);
-	PXPublic PXSize PXFileWriteI16UE(PXFile* const pxFile, const PXInt16U const value, const PXEndian pxEndian);
+	PXPublic PXSize PXFileWriteI16UE(PXFile* const pxFile, const PXInt16U value, const PXEndian pxEndian);
 	PXPublic PXSize PXFileWriteI16UVE(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
 	PXPublic PXSize PXFileWriteI32S(PXFile* const pxFile, const PXInt32S value);
@@ -406,13 +408,13 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileWriteAtI32UE(PXFile* const pxFile, const PXInt32U value, const PXEndian pxEndian, const PXSize index);
 	PXPublic PXSize PXFileWriteI32UVE(PXFile* const pxFile, const PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
-	PXPublic PXSize PXFileWriteI64S(PXFile* const pxFile, const PXInt64S const value);
+	PXPublic PXSize PXFileWriteI64S(PXFile* const pxFile, const PXInt64S value);
 	PXPublic PXSize PXFileWriteI64SV(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize);
-	PXPublic PXSize PXFileWriteI64SE(PXFile* const pxFile, const PXInt64S const value, const PXEndian pxEndian);
+	PXPublic PXSize PXFileWriteI64SE(PXFile* const pxFile, const PXInt64S value, const PXEndian pxEndian);
 	PXPublic PXSize PXFileWriteI64VE(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-	PXPublic PXSize PXFileWriteI64U(PXFile* const pxFile, const PXInt64U const value);
+	PXPublic PXSize PXFileWriteI64U(PXFile* const pxFile, const PXInt64U value);
 	PXPublic PXSize PXFileWriteI64UV(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize);
-	PXPublic PXSize PXFileWriteI64UE(PXFile* const pxFile, const PXInt64U const value, const PXEndian pxEndian);
+	PXPublic PXSize PXFileWriteI64UE(PXFile* const pxFile, const PXInt64U value, const PXEndian pxEndian);
 	PXPublic PXSize PXFileWriteI64UVE(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
 	PXPublic PXSize PXFileWriteF(PXFile* const pxFile, const float value);
@@ -432,7 +434,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize);
 
 	// Write UNICODE string \0 terminated
-	PXPublic PXSize PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE const text, PXSize textSize);
+	PXPublic PXSize PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE text, PXSize textSize);
 
 	PXPublic PXSize PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...);
 	PXPublic PXSize PXFileWriteWF(PXFile* const pxFile, const PXTextUNICODE format, ...);

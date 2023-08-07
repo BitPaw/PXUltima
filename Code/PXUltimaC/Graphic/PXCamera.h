@@ -7,45 +7,14 @@
 #include <Media/PXType.h>
 #include <Math/PXMatrix.h>
 #include <Math/PXVector.h>
+#include <OS/Graphic/PXGraphicGeneral.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef enum PXCameraPerspective_
-	{
-		PXCameraPerspective2D,
-		PXCameraPerspective3D // Perspective
-	}
-	PXCameraPerspective;
-
-	typedef struct PXCamera_
-	{
-		PXMatrix4x4F MatrixModel;
-		PXMatrix4x4F MatrixView;
-		PXMatrix4x4F MatrixProjection;
-
-		float WalkSpeed;
-		float ViewSpeed;
-
-		PXVector3F LookAtPosition;
-		PXVector3F CurrentRotation;		
-
-		//---<Follow>---
-		PXVector3F Offset;
-		PXMatrix4x4F* Target;
-		float FollowSpeed; // Ranges from 0 to 1 .. FollowSpeed; = 0.98f
-
-		PXCameraPerspective Perspective;
-
-		float FieldOfView;
-		PXSize Height;
-		PXSize Width;
-		float Near;
-		float Far;	
-	}
-	PXCamera;
+	
 
 	PXPublic void PXCameraConstruct(PXCamera* const camera);
 	PXPublic void PXCameraDestruct(PXCamera* const camera);

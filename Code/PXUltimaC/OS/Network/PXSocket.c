@@ -598,7 +598,7 @@ void PXSocketConstruct(PXSocket* const pxSocket)
     PXThreadConstruct(&pxSocket->CommunicationThread);
     PXDictionaryConstruct(&pxSocket->SocketLookup, sizeof(PXSocketID), sizeof(PXSocket), PXDictionaryValueLocalityInternalEmbedded);
 
-    pxSocket->ID = PXHandleNotSet;
+    pxSocket->ID = PXSocketUnused;
 }
 
 void PXSocketDestruct(PXSocket* const pxSocket)
@@ -897,7 +897,7 @@ PXActionResult PXSocketSetupAdress
 
 PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
 {
-    return pxSocket->ID != PXHandleNotSet;
+    return pxSocket->ID != PXSocketUnused;
 }
 
 void PXSocketClose(PXSocket* const pxSocket)

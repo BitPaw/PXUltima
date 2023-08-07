@@ -183,8 +183,10 @@ void PXTTFDestruct(PXTTF* const ttf)
 	// TODO
 }
 
-PXActionResult PXTTFParse(PXTTF* const ttf, PXFile* const pxFile)
+PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 {
+	PXTTF* ttf = PXNull;
+
 	PXTTFOffsetTable offsetTable;
 
 	PXTTFConstruct(ttf);

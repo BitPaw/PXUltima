@@ -414,6 +414,40 @@ void* PXMemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, con
 	return adress;
 }
 #endif
+PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSize, const PXSize dataAddressSizeRequired)
+{
+	{
+		const PXBool needsResize = *dataAddressSize < dataAddressSizeRequired;
+
+		if (!needsResize)
+		{
+			return PXTrue; // Array is big enough, resize not needed
+		}
+	}
+
+	void* newAdress = PXMemoryHeapReallocateTypeClear
+	(
+		*dataAddress,
+		typeSize,
+		*dataAddressSize,
+		dataAddressSizeRequired
+	);
+
+	{
+		const PXBool reallocSuccess = newAdress != 0;
+
+		if (!reallocSuccess)
+		{
+			return PXFalse;
+		}
+	}
+	
+	*dataAddressSize = dataAddressSizeRequired;
+	*dataAddress = newAdress;
+
+	return PXTrue;
+	
+}
 void* PXMemoryHeapReallocateClear(void* const sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
 {
 	void* const adressReallocated = realloc(sourceAddress, sizeAfter);

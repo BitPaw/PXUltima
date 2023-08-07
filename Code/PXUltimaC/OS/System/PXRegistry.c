@@ -151,7 +151,7 @@ PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* con
 				registry->ID,
 				pxTextKeyName->TextA,
 				Reserved,
-				lpClass,
+				 lpClass,
 				dwOptions,
 				samDesired,
 				&securityAttributes,
@@ -192,6 +192,8 @@ PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* con
 #else
 	return PXActionNotSupportedByOperatingSystem;
 #endif
+
+	return PXActionSuccessful;
 }
 
 PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile)
@@ -233,6 +235,8 @@ PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const
 #else
 	return PXActionNotSupportedByOperatingSystem;
 #endif
+
+	return PXActionSuccessful;
 }
 
 PXActionResult PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName)

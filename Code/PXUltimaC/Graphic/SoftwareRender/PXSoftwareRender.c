@@ -34,6 +34,7 @@ void PXImageDrawTextA(PXImage* const image, const PXSize x, const PXSize y, cons
 
 void PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const wchar_t* text)
 {
+#if 0
     float fontSize = 0.002;
     float lastPositionX = x;
 
@@ -85,6 +86,7 @@ void PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y, cons
         lastPositionX += PXSpriteFontCharacter->XAdvance;
         //lastPositionX += 15;
     }
+#endif
 }
 
 void PXImageMerge(PXImage* const image, const PXSize x, const PXSize y, const PXSize insertX, const PXSize insertY, const PXSize insertWidth, const PXSize insertHeight, const PXImage* const imageInsert)

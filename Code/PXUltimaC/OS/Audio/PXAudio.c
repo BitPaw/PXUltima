@@ -328,7 +328,7 @@ PXActionResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceC
 		audioDeviceCapabilities->Channels = wAVEOUTCAPSW.wChannels;
 	}
 
-	audioDeviceCapabilitiesListSize = numberOfPutpudevices;
+	*audioDeviceCapabilitiesListSize = numberOfPutpudevices;
 
 	return PXActionSuccessful;
 #else
@@ -377,7 +377,7 @@ PXActionResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCa
 		audioDeviceCapabilities->Channels = waveInputCapabilitiesW.wChannels;
 	}
 
-	audioDeviceCapabilitiesListSize = numberOfInputDevices;
+	*audioDeviceCapabilitiesListSize = numberOfInputDevices;
 
 	return PXActionSuccessful;
 #else

@@ -15,7 +15,7 @@ PXBool PXCElementHasName(PXCElement* const pxCElement)
     return hasName;
 }
 
-PXBool PXCElementClear(PXCElement* const pxCElement)
+void PXCElementClear(PXCElement* const pxCElement)
 {
     char* name = pxCElement->Name;
     PXInt8U nameSize = pxCElement->NameSizeMaximal;
@@ -908,6 +908,8 @@ PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const ou
         printf("Colon missing\n");
 
     }
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXCFileLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream)
@@ -1281,7 +1283,7 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
                         {
                             case PXCompilerSymbolLexerString: // Need to me the extern "C" thing
                             {
-                                const PXBool isNameMangeling = (compilerSymbolEntry.Source == 'C') && (compilerSymbolEntry.Size == 1);
+                                const PXBool isNameMangeling = (compilerSymbolEntry.Source[0] == 'C') && (compilerSymbolEntry.Size == 1);
 
                                 if (isNameMangeling)
                                 {
@@ -1353,6 +1355,8 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
             }
         }
     }
+
+    return PXActionSuccessful;
 }
 
 void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
@@ -1369,7 +1373,7 @@ void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
 
     // Fake name
     PXFileReadI8U(inputStream, &pxCElement->NameSizeCurrent);
-    pxCElement->Name = PXFileCursorPosition(inputStream);
+    pxCElement->Name = (char*)PXFileCursorPosition(inputStream);
     PXFileCursorAdvance(inputStream, pxCElement->NameSizeCurrent);
 
     switch (pxCElement->Type)
@@ -1406,7 +1410,7 @@ void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
         {
             // Alias
             PXFileReadI8U(inputStream, &pxCElement->ElementStructure.NameAliasSizeCurrent);
-            pxCElement->ElementStructure.NameAlias = PXFileCursorPosition(inputStream);
+            pxCElement->ElementStructure.NameAlias = (char*)PXFileCursorPosition(inputStream);
             PXFileCursorAdvance(inputStream, pxCElement->ElementStructure.NameAliasSizeCurrent);
 
             PXFileReadI16U(inputStream, &pxCElement->ElementStructure.MemberAmount);
@@ -1443,7 +1447,7 @@ void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
             else
             {
                 PXFileReadI8U(inputStream, &pxCElement->ElementVariable.NameOfTypeSizeCurrent);
-                pxCElement->ElementVariable.NameOfType = PXFileCursorPosition(inputStream);
+                pxCElement->ElementVariable.NameOfType = (char*)PXFileCursorPosition(inputStream);
                 PXFileCursorAdvance(inputStream, pxCElement->ElementVariable.NameOfTypeSizeCurrent);
             }
 

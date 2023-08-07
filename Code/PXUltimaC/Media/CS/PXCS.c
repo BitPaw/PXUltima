@@ -13,7 +13,7 @@ PXCSKeyWord PXCSFetchNext(PXFile* const inputSteam)
 
 		PXFileReadI8U(inputSteam, &keyID);
 
-		keyWord = (PXInt8U)keyID;
+		keyWord = (PXCSKeyWord)keyID;
 	}
 
 	return keyWord;

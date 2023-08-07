@@ -174,7 +174,7 @@ PXActionResult PXDataBaseConnectionConnect
             {
                 const wchar_t driver[] = L"MySQL ODBC 8.0 Unicode Driver";
 
-                pxTextSQLConnectionString.SizeUsed = wsprintf
+                pxTextSQLConnectionString.SizeUsed = wsprintfW
                 (
                     pxTextSQLConnectionString.TextW,
                     L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",

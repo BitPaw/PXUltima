@@ -45,6 +45,12 @@ extern "C"
 		PXActionAlreadyInProgress,
 
 
+		PXActionRefusedInvalidEnumValue,
+		PXActionRefusedInvalidVariable,
+		PXActionRefusedInvalidOperationSpecified,
+		PXActionFailedStackOverflow,
+		PXActionFailedStackUnderflow,
+
 
 		PXActionRefuedNetworkNotConnected,
 		PXActionRefuedNetworkNotReachable,
@@ -88,7 +94,7 @@ extern "C"
 
 
 		PXActionRefuedInputInvalid,
-		
+
 		PXActionRefuedInputBufferNull, // is NULL
 		PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
 		PXActionRefuedInputBufferTooSmal, // cant 
@@ -105,7 +111,7 @@ extern "C"
 
 		PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
 
-	
+
 
 
 
@@ -218,84 +224,84 @@ extern "C"
 		SocketIsBlocking,
 
 
-			PXActionFailedDirectoryIsNotEmpty,
+		PXActionFailedDirectoryIsNotEmpty,
 
-			PXActionFailedTooManyProcesses,
+		PXActionFailedTooManyProcesses,
 
-			PXActionFailedUserQuotaExceeded,
-			PXActionFailedDiskQuotaExceeded,
+		PXActionFailedUserQuotaExceeded,
+		PXActionFailedDiskQuotaExceeded,
 
-			PXActionFailedHandleIsStale,
+		PXActionFailedHandleIsStale,
 
-			PXActionFailedResourceNotAvailableLocally,
+		PXActionFailedResourceNotAvailableLocally,
 
-			PXActionFailedNetworkSubsystemNotReady,
+		PXActionFailedNetworkSubsystemNotReady,
 
-			PXActionRefusedResourceIsShuttingdown,
+		PXActionRefusedResourceIsShuttingdown,
 
-			WindowsSocketVersionNotSupported,
+		WindowsSocketVersionNotSupported,
 		WindowsSocketSystemNotInitialized,
 		WindowsSocketSystemWasShutdown,
 		//-------------------------------------------------
 
 		//---<Audio>---------------------------------------
-			AudioResultDeviceIDInvalid,
-			AudioResultDeviceHandleInvalid,
-			AudioResultDeviceNoDriver,
+		AudioResultDeviceIDInvalid,
+		AudioResultDeviceHandleInvalid,
+		AudioResultDeviceNoDriver,
 
-			AudioResultDriverNotReachable, // Maybe diabled, or deactivated
-			AudioResultDriverNotEnabled, // No driver to use
-
-
-			AudioResultDeviceAlreadyAllocated,
-			AudioResultOutOfMemory,
-
-			AudioResultNotSupported,
-
-			AudioResultErrorValueInvalid,
+		AudioResultDriverNotReachable, // Maybe diabled, or deactivated
+		AudioResultDriverNotEnabled, // No driver to use
 
 
-			AudioResultFlagInvalid,
-			AudioResultParameterInvalid,
+		AudioResultDeviceAlreadyAllocated,
+		AudioResultOutOfMemory,
 
-			AudioResultDeviceHandleBusy,
+		AudioResultNotSupported,
 
-			AudioResultAliasNotFound,
-
-
-
-			AudioResultPXRegistryValueNotFound,
-
-			AudioResultDriverNoCallback,
-
-			AudioResultMoreData,
+		AudioResultErrorValueInvalid,
 
 
-			// Custom
-			AudioResultDeviceListNotBigEnough,
+		AudioResultFlagInvalid,
+		AudioResultParameterInvalid,
 
+		AudioResultDeviceHandleBusy,
 
-			// Windows spesific
-			AudioResultPXRegistryDatabaseInvalid,
-			AudioResultPXRegistryKeyNotFound,
-			AudioResultPXRegistryWriteError,
-			AudioResultPXRegistryReadError,
-			AudioResultPXRegistryDeleteError,
-
-			AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
+		AudioResultAliasNotFound,
 
 
 
-			// only
-			AudioResultWaveFormatUnsupported,
-			AudioResultDeviceIsStillPlaying,
-			AudioResultReaderIsNotPrepared,
-			AudioResultDeviceIsSynchronous,
+		AudioResultPXRegistryValueNotFound,
+
+		AudioResultDriverNoCallback,
+
+		AudioResultMoreData,
+
+
+		// Custom
+		AudioResultDeviceListNotBigEnough,
+
+
+		// Windows spesific
+		AudioResultPXRegistryDatabaseInvalid,
+		AudioResultPXRegistryKeyNotFound,
+		AudioResultPXRegistryWriteError,
+		AudioResultPXRegistryReadError,
+		AudioResultPXRegistryDeleteError,
+
+		AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
+
+
+
+		// only
+		AudioResultWaveFormatUnsupported,
+		AudioResultDeviceIsStillPlaying,
+		AudioResultReaderIsNotPrepared,
+		AudioResultDeviceIsSynchronous,
 		//-------------------------------------------------
 
-			PXActionFailedConnectionTerminatedByNetwork,
-			PXActionFailedConnectionTerminatedByOwnSoftware,
-			PXActionFailedConnectionTerminatedByPeer,
+		PXActionFailedConnectionTerminatedByNetwork,
+		PXActionFailedConnectionTerminatedByOwnSoftware,
+		PXActionFailedConnectionTerminatedByPeer,
 
 		PXActionFailedMemoryAllocationInternal,
 
@@ -313,7 +319,7 @@ extern "C"
 		BadFileDescriptor, // BADF
 		BadMessage, // BADMSG
 
-		
+
 
 		PXActionRefusedResourceBusy, // BUSY
 		OperationCanceled,// CANCELED

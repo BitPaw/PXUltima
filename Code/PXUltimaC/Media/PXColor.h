@@ -13,7 +13,34 @@ extern "C"
 		PXColorFormatInvalid,
 
 		PXColorFormatAlphaBinary,
+
+		// Single channel
+		PXColorFormatR8,
+		PXColorFormatG8,
+		PXColorFormatB8,
 		PXColorFormatA8,
+
+		PXColorFormatR16,
+		PXColorFormatG16,
+		PXColorFormatB16,
+		PXColorFormatA16,
+
+		PXColorFormatR32,
+		PXColorFormatG32,
+		PXColorFormatB32,
+		PXColorFormatA32,
+
+		PXColorFormatRF,
+		PXColorFormatGF,
+		PXColorFormatBF,
+		PXColorFormatAF,
+
+		PXColorFormatRD,
+		PXColorFormatGD,
+		PXColorFormatBD,
+		PXColorFormatAD,
+
+
 
 		// RGB
 		PXColorFormatRGBI8,
@@ -61,6 +88,16 @@ extern "C"
 		PXColorFormatXRGBI8,
 		
 		PXColorFormatRGBI5,
+
+
+
+
+
+		PXColorFormatLuminance,
+		PXColorFormatLuminanceAlpha,
+		PXColorFormatColorIndex,
+		PXColorFormatStencilIndex,
+		PXColorFormatDepthComponent
 
 
 	}

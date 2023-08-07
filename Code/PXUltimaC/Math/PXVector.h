@@ -94,7 +94,7 @@ extern "C"
 
 
 
-	PXPublic void PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB);
+	PXPublic float PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB);
 
 
 	PXPublic float PXVector3FLength(const PXVector3F* const vector);

@@ -112,6 +112,12 @@ extern "C"
 #if MemoryDebugOutput
 	PXPublic void* PXMemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line);
 #endif
+
+	PXPublic PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSizeCurrent, const PXSize dataAddressSizeRequired);
+
+
+#define PXMemoryResizeArray(type, adress, sizeCurrent, sizeRequired) PXMemoryHeapResizeArray(sizeof(type), adress, sizeCurrent, sizeRequired);
+
 	PXPublic void* PXMemoryHeapReallocateClear(void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
 	PXPublic void* PXMemoryHeapReallocateTypeClear(void* const adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter);
 	PXPublic void PXMemoryRelease(void* adress, const PXSize size);
@@ -145,6 +151,8 @@ extern "C"
 #define PXMemoryAllocateType(type, dataSize) (type*)PXMemoryHeapAllocate(sizeof(type) * dataSize)
 #define PXMemoryAllocateTypeCleared(type, dataSize) (type*)PXMemoryHeapAllocateCleared(sizeof(type), dataSize)
 #define PXMemoryReallocateTypeCleared(type, adressCurrent, dataSizeBefore, dataSizeAfter) (type*)PXMemoryHeapReallocateTypeClear(adressCurrent, sizeof(type), dataSizeBefore, dataSizeAfter)
+
+
 
 #define PXNew(type) (type*)PXMemoryHeapAllocate(sizeof(type))
 #define PXDelete(type, adress) PXMemoryRelease(adress, sizeof(type))

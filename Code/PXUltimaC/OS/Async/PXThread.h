@@ -6,10 +6,6 @@
 
 // Return IDs
 
-#define PXThreadSucessful 0
-#define PXThreadActionFailed (void*)1
-
-
 #if OSUnix
 #include <pthread.h>
 #include <unistd.h>
@@ -25,6 +21,9 @@ typedef HANDLE PXThreadIDType;
 typedef struct IUnknown IUnknown;
 #endif
 #endif
+
+#define PXThreadSucessful (PXThreadResult)0
+#define PXThreadActionFailed (PXThreadResult)1
 
 #ifdef __cplusplus
 extern "C"

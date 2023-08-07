@@ -198,10 +198,10 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
             case PXWavefrontLineObjectName:
             case PXWavefrontLineObjectGroup:
             {
-                char namedElement[256];
-                PXSize namedElementSize = 0;
+                PXText elementName;
+                PXTextConstructBufferA(&elementName, 256);
 
-                const PXBool isString = PXCompilerParseStringUntilNewLine(&tokenSteam, namedElement, 256, &namedElementSize);
+                const PXBool isString = PXCompilerParseStringUntilNewLine(&tokenSteam, &elementName);
 
                 if (!isString)
                 {
@@ -211,8 +211,8 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                 }
 
                 PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
-                PXFileWriteI16U(outputStream, namedElementSize);
-                PXFileWriteA(outputStream, namedElement, namedElementSize);
+                PXFileWriteI16U(outputStream, elementName.SizeUsed);
+                PXFileWriteA(outputStream, elementName.TextA, elementName.SizeUsed);
 
                 switch (objPeekLine)
                 {
@@ -945,18 +945,24 @@ PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const
     return PXActionSuccessful;
 }
 
-PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXWavefrontParseFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
     PXFile tokenSteam;
     PXSize errorCounter = 0;
 
     PXSize drawoffsetCounter = 0;
-    PXSize drawCurrentCounter = 0;
     PXSize drawCurrentIndex = 0;
 
-    PXModelConstruct(pxModel);
+
+    PXInt32U counterVertex = 0;
+    PXInt32U counterVertexMaxID = 0;
+    PXInt32U counterNormal = 0;
+    PXInt32U counterTexture = 0;
+    PXInt32U counterIndex = 0;
 
     PXFileOpenTemporal(&tokenSteam);
+
+
 
     // Lexer - Level I
     {
@@ -1046,15 +1052,15 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
                     switch (objPeekLine)
                     {
                         case PXWavefrontLineVertexGeometric:
-                            ++pxModel->DataVertexSize;
+                            ++counterVertex;
                             //printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "v", vector[0], vector[1], vector[2]);
-                            pxModel->DataVertexWidth = PXMathMaximum(pxModel->DataVertexWidth, valuesDetected);
+                            //pxModel->DataVertexWidth = PXMathMaximum(pxModel->DataVertexWidth, valuesDetected);
                             break;
 
                         case PXWavefrontLineVertexNormal:
-                            ++pxModel->DataNormalSize;
+                            ++counterNormal;
                            // printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "vn", vector[0], vector[1], vector[2]);
-                            pxModel->DataNormalWidth = PXMathMaximum(pxModel->DataNormalWidth, valuesDetected);
+                            //pxModel->DataNormalWidth = PXMathMaximum(pxModel->DataNormalWidth, valuesDetected);
                             break;
 
                         case PXWavefrontLineVertexParameter:
@@ -1062,9 +1068,9 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
                             break;
 
                         case PXWavefrontLineVertexTexture:
-                            ++pxModel->DataTextureSize;
+                            ++counterTexture;
                           //  printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "vt", vector[0], vector[1], vector[2]);
-                            pxModel->DataTextureWidth = PXMathMaximum(pxModel->DataTextureWidth, valuesDetected);
+                            //pxModel->DataTextureWidth = PXMathMaximum(pxModel->DataTextureWidth, valuesDetected);
                             break;
                     }
                 }
@@ -1073,7 +1079,7 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
             }
             case PXWavefrontLineFaceElement:
             {
-                PXSize cornerPoints = 0;
+                //PXSize cornerPoints = 0;
               //  PXSize cursorPos = outputStream->DataCursor;
 
               //  PXFileWriteI8U(outputStream, 0xFF);
@@ -1209,19 +1215,21 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
                         vertexData[i] -= 1u;
                     }
 
+                    counterVertexMaxID = PXMathMaximumIU(counterVertexMaxID, vertexData[0]);
+
                     //PXFileWriteI32UV(outputStream, vertexData, 3u);
 
                     //  printf("Face _> %i, %i, %i\n", vertexData[0], vertexData[1], vertexData[2]);
 
                       //----------------------------------
 
-                    ++cornerPoints;
+                    ++counterIndex;
                 }
 
-                pxModel->DataIndexWidth = PXMathMaximum(pxModel->DataIndexWidth, cornerPoints);
+                //pxModel->DataIndexWidth = PXMathMaximum(pxModel->DataIndexWidth, cornerPoints);
 
-                ++pxModel->DataIndexSize;
-                drawCurrentCounter += cornerPoints;
+          
+               // counterIndex += cornerPoints;
 
               //  PXFileWriteAtI8U(outputStream, cornerPoints, cursorPos);
 
@@ -1245,37 +1253,65 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
 
     // Stage - 2 - Allocate space
     {
-        PXSize memoryDataVertexSize = pxModel->DataVertexWidth * pxModel->DataVertexSize * sizeof(float);
-        PXSize memoryDataNormalSize = pxModel->DataNormalWidth * pxModel->DataNormalSize * sizeof(float);
-        PXSize memoryDataTextureSize = pxModel->DataTextureWidth * pxModel->DataTextureSize * sizeof(float);
-        PXSize memoryDataColorSize = pxModel->DataColorWidth * pxModel->DataColorSize * sizeof(float);
-        PXSize memoryDataIndexSize = pxModel->DataIndexWidth * pxModel->DataIndexSize * sizeof(PXInt32U);
 
+        PXSize memoryDataNormalSize = 3 * counterNormal * sizeof(float);
+        PXSize memoryDataTextureSize = 2 * counterTexture * sizeof(float);
+       // PXSize memoryDataColorSize = pxModel->DataColorWidth * pxModel->DataColorSize * sizeof(float);
+
+
+        /*
         pxModel->DataSize =
             memoryDataVertexSize +
             memoryDataNormalSize +
             memoryDataTextureSize +
             memoryDataColorSize +
-            memoryDataIndexSize;
+            memoryDataIndexSize;*/
 
-        pxModel->Data = PXMemoryAllocate(pxModel->DataSize); 
+       // pxModel->Data = PXMemoryAllocate(pxModel->DataSize); 
+
+        if (counterVertex && memoryDataNormalSize && memoryDataTextureSize)
+        {
+            pxVertexStructure->VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
+       
+        }
+        else if (counterVertex && !memoryDataNormalSize && memoryDataTextureSize)
+        {
+            pxVertexStructure->VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
+        }
+
+        pxVertexStructure->VertexBuffer.VertexDataRowSize = PXVertexBufferFormatStrideSize(pxVertexStructure->VertexBuffer.Format);
+        pxVertexStructure->VertexBuffer.VertexDataSize = pxVertexStructure->VertexBuffer.VertexDataRowSize * counterVertex * sizeof(float);
+        pxVertexStructure->VertexBuffer.VertexData = PXMemoryHeapAllocateCleared(sizeof(float), pxVertexStructure->VertexBuffer.VertexDataSize / sizeof(float));
+        
+
+        // Setup index array
+
+        pxVertexStructure->IndexBuffer.DrawModeID = PXDrawModeIDTriangle; // PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+        pxVertexStructure->IndexBuffer.DataType =
+            PXDataTypeInt8U     * (counterVertexMaxID <= 0xFF) +
+            PXDataTypeLEInt16U  * ((counterVertexMaxID > 0xFF) && (counterVertexMaxID <= 0xFFFF)) +
+            PXDataTypeLEInt32U  * (counterVertexMaxID > 0xFFFF);
+
+        pxVertexStructure->IndexBuffer.IndexTypeSize = PXDataTypeSize(pxVertexStructure->IndexBuffer.DataType);
+        pxVertexStructure->IndexBuffer.IndexDataAmount = counterIndex;
+        pxVertexStructure->IndexBuffer.IndexData = PXMemoryHeapAllocateCleared(pxVertexStructure->IndexBuffer.IndexTypeSize, counterIndex);
+        pxVertexStructure->IndexBuffer.IndexDataSize = pxVertexStructure->IndexBuffer.IndexTypeSize * counterIndex;
 
        // pxModel->MaterialList = PXMemoryAllocateTypeCleared(PXMaterial, pxModel->MaterialListSize);
 
 
-        pxModel->DataVertexList = pxModel->Data;
-        pxModel->DataNormalList = (char*)pxModel->DataVertexList + memoryDataVertexSize;
-        pxModel->DataTextureList = (char*)pxModel->DataNormalList + memoryDataNormalSize;
-        pxModel->DataColorList = (char*)pxModel->DataTextureList + memoryDataTextureSize;
-        pxModel->DataIndexList = (char*)pxModel->DataColorList + memoryDataColorSize;
+        //pxModel->DataVertexList = pxModel->Data;
+        //pxModel->DataNormalList = (char*)pxModel->DataVertexList + memoryDataVertexSize;
+        //pxModel->DataTextureList = (char*)pxModel->DataNormalList + memoryDataNormalSize;
+        //pxModel->DataColorList = (char*)pxModel->DataTextureList + memoryDataTextureSize;
+        //pxModel->DataIndexList = (char*)pxModel->DataColorList + memoryDataColorSize;
 
 
         // Reset all size values
-        pxModel->DataVertexSize = 0;
-        pxModel->DataNormalSize = 0;
-        pxModel->DataTextureSize = 0;
-        pxModel->DataColorSize = 0;
-        pxModel->DataIndexSize = 0;
+        counterVertex = 0;
+        counterNormal = 0;
+        counterTexture = 0;
+        counterIndex = 0;
         
         PXFileCursorToBeginning(&tokenSteam);
     }
@@ -1402,13 +1438,16 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
                     switch (objPeekLine)
                     {
                         case PXWavefrontLineVertexGeometric:
-                            PXMemoryCopy(vector, sizeof(float) * valuesDetected, &pxModel->DataVertexList[pxModel->DataVertexSize], sizeof(float) * pxModel->DataVertexWidth * valuesDetected);
-                            pxModel->DataVertexSize += valuesDetected;
-                            break;
+                        {
+                            float* const position = (PXByte*)pxVertexStructure->VertexBuffer.VertexData + counterVertex * pxVertexStructure->VertexBuffer.VertexDataRowSize * sizeof(float) + sizeof(float) * 2;
 
+                            PXMemoryCopy(vector, sizeof(float) * valuesDetected, position, sizeof(float) * valuesDetected);
+                            ++counterVertex;
+                            break;
+                        }
                         case PXWavefrontLineVertexNormal:
-                            PXMemoryCopy(vector, sizeof(float) * valuesDetected, &pxModel->DataNormalList[pxModel->DataNormalSize], sizeof(float) * pxModel->DataNormalWidth * valuesDetected);
-                            pxModel->DataNormalSize += valuesDetected;
+                            //PXMemoryCopy(vector, sizeof(float) * valuesDetected, &pxModel->DataNormalList[pxModel->DataNormalSize], sizeof(float) * pxModel->DataNormalWidth * valuesDetected);
+                            counterNormal += valuesDetected;
                             break;
 
                         case PXWavefrontLineVertexParameter:
@@ -1416,8 +1455,10 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
                             break;
 
                         case PXWavefrontLineVertexTexture:
-                            PXMemoryCopy(vector, sizeof(float) * valuesDetected, &pxModel->DataTextureList[pxModel->DataTextureSize], sizeof(float) * pxModel->DataTextureWidth * valuesDetected);
-                            pxModel->DataTextureSize += valuesDetected;
+                          //  float* position = &((float*)pxVertexStructure->VertexBuffer.VertexData)[counterVertex * 8 + 5];
+
+                          //  PXMemoryCopy(vector, sizeof(float) * valuesDetected, position, sizeof(float) * pxModel->DataTextureWidth * valuesDetected);
+                            counterTexture += valuesDetected;
                             break;
                     }
                 }
@@ -1556,7 +1597,38 @@ PXActionResult PXWavefrontParseFromFile(PXModel* const pxModel, PXFile* const px
                         vertexData[i] -= 1u;
                     }
 
-                    pxModel->DataIndexList[pxModel->DataIndexSize++] = vertexData[0];
+
+                    void* const input = (PXAdress)pxVertexStructure->IndexBuffer.IndexData + counterIndex * pxVertexStructure->IndexBuffer.IndexTypeSize;
+                  
+                    
+#if 1
+                    const PXSize dataSize = pxVertexStructure->IndexBuffer.IndexTypeSize;
+                    PXMemoryCopy(vertexData, dataSize, input, dataSize);
+
+
+#else
+                    switch (pxVertexStructure->IndexBuffer.DataType)
+                    {
+
+                        case PXDataTypeInt8U:
+                            *(PXInt8U*)input = vertexData[0];
+                            break;
+
+                        case PXDataTypeLEInt16U:
+                            *(PXInt16U*)input = vertexData[0];
+                            break;
+
+                        case PXDataTypeLEInt32U:
+                            *(PXInt32U*)input = vertexData[0];
+                            break;
+                    }
+#endif
+
+                    
+
+                
+              
+                    counterIndex++;
 
 
                   //  PXFileWriteI32UV(outputStream, vertexData, 3u);

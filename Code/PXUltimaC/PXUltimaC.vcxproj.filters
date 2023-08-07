@@ -84,9 +84,6 @@
     <ClCompile Include="Math\PXDiagram.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Math\PXGeometric.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Math\PXMath.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -300,16 +297,7 @@
     <ClCompile Include="Media\PXColor.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\PXFont.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Media\PXImage.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Media\PXModel.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Media\PXSound.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\PXText.c">
@@ -507,9 +495,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Math\PXDiagram.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\PXGeometric.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Math\PXMath.h">
@@ -725,16 +710,7 @@
     <ClInclude Include="Media\PXColor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\PXFont.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Media\PXImage.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Media\PXModel.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Media\PXSound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\PXText.h">

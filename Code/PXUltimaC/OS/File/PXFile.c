@@ -201,7 +201,7 @@ PXSize PXFilePathExtensionGet(const PXText* const filePath, PXText* const extens
 	if (!hasExtension)
 	{
 		PXTextClear(extension);
-		return;
+		return 0;
 	}
 
 	PXTextMoveByOffset(&stringResult, 1u);
@@ -211,7 +211,7 @@ PXSize PXFilePathExtensionGet(const PXText* const filePath, PXText* const extens
 	return writtenBytes;
 }
 
-FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
+PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 {
 	PXText pxText;
 	PXTextConstructNamedBufferA(&pxText, extensionBuffer, ExtensionMaxSize);
@@ -223,13 +223,13 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 	switch (writtenBytes)
 	{
 		case 0:
-			return FileFormatInvalid;
+			return PXFileFormatInvalid;
 
 		case 1u:
 		{
 			switch (*pxText.TextA)
 			{
-				case 'O': return FileFormatLinuxExecutableAndLinkable;
+				case 'O': return PXFileFormatLinuxExecutableAndLinkable;
 			}
 
 			break;
@@ -240,7 +240,7 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
-				case PXInt16Make('S', 'O'): return FileFormatLinuxExecutableAndLinkable;
+				case PXInt16Make('S', 'O'): return PXFileFormatLinuxExecutableAndLinkable;
 			}
 
 			break;
@@ -251,42 +251,42 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
-				case PXInt24Make('E', 'L', 'F'): return FileFormatLinuxExecutableAndLinkable;
-				case PXInt24Make('O', 'U', 'T'): return FileFormatLinuxExecutableAndLinkable;
-				case PXInt24Make('F', 'N', 'T'): return FileFormatSpriteFont;
-				case PXInt24Make('G', 'I', 'F'): return FileFormatGIF;
-				case PXInt24Make('H', 'T', 'M'): return FileFormatHTML;
-				case PXInt24Make('I', 'N', 'I'): return FileFormatINI;
-				case PXInt24Make('M', '4', 'A'): return FileFormatM4A;
-				case PXInt24Make('3', 'D', 'S'): return FileFormatA3DS;
-				case PXInt24Make('A', 'C', 'C'): return FileFormatAAC;
-				case PXInt24Make('A', 'V', 'I'): return FileFormatAVI;
-				case PXInt24Make('B', 'M', 'P'): return FileFormatBitMap;
-				case PXInt24Make('C', 'S', 'S'): return FileFormatCSS;
-				case PXInt24Make('D', 'L', 'L'): return FileFormatWindowsDynamicLinkedLibrary;
-				case PXInt24Make('E', 'M', 'L'): return FileFormatEML;
-				case PXInt24Make('E', 'X', 'E'): return FileFormatWindowsExecutable;
-				case PXInt24Make('F', 'B', 'X'): return FileFormatFilmBox;
-				case PXInt24Make('M', 'P', '3'): return FileFormatMP3;
-				case PXInt24Make('M', 'P', '4'): return FileFormatMP4;
-				case PXInt24Make('M', 'S', 'I'): return FileFormatMSI;
-				case PXInt24Make('M', 'T', 'L'): return FileFormatMTL;
-				case PXInt24Make('O', 'B', 'J'): return FileFormatWavefront;
-				case PXInt24Make('O', 'G', 'G'): return FileFormatOGG;
-				case PXInt24Make('P', 'D', 'F'): return FileFormatPDF;
-				case PXInt24Make('P', 'H', 'P'): return FileFormatPHP;
-				case PXInt24Make('P', 'L', 'Y'): return FileFormatPLY;
-				case PXInt24Make('P', 'N', 'G'): return FileFormatPNG;
-				case PXInt24Make('Q', 'U', 'I'): return FileFormatQOI;
-				case PXInt24Make('S', 'T', 'L'): return FileFormatSTL;
-				case PXInt24Make('S', 'V', 'G'): return FileFormatSVG;
-				case PXInt24Make('T', 'I', 'F'): return FileFormatTagImage;
-				case PXInt24Make('T', 'G', 'A'): return FileFormatTGA;
-				case PXInt24Make('T', 'T', 'F'): return FileFormatTrueTypeFont;
-				case PXInt24Make('W', 'A', 'V'): return FileFormatWave;
-				case PXInt24Make('W', 'M', 'A'): return FileFormatWMA;
-				case PXInt24Make('X', 'M', 'L'): return FileFormatXML;
-				case PXInt24Make('Y', 'M', 'L'): return FileFormatYAML;
+				case PXInt24Make('E', 'L', 'F'): return PXFileFormatLinuxExecutableAndLinkable;
+				case PXInt24Make('O', 'U', 'T'): return PXFileFormatLinuxExecutableAndLinkable;
+				case PXInt24Make('F', 'N', 'T'): return PXFileFormatSpriteFont;
+				case PXInt24Make('G', 'I', 'F'): return PXFileFormatGIF;
+				case PXInt24Make('H', 'T', 'M'): return PXFileFormatHTML;
+				case PXInt24Make('I', 'N', 'I'): return PXFileFormatINI;
+				case PXInt24Make('M', '4', 'A'): return PXFileFormatM4A;
+				case PXInt24Make('3', 'D', 'S'): return PXFileFormatA3DS;
+				case PXInt24Make('A', 'C', 'C'): return PXFileFormatAAC;
+				case PXInt24Make('A', 'V', 'I'): return PXFileFormatAVI;
+				case PXInt24Make('B', 'M', 'P'): return PXFileFormatBitMap;
+				case PXInt24Make('C', 'S', 'S'): return PXFileFormatCSS;
+				case PXInt24Make('D', 'L', 'L'): return PXFileFormatWindowsDynamicLinkedLibrary;
+				case PXInt24Make('E', 'M', 'L'): return PXFileFormatEML;
+				case PXInt24Make('E', 'X', 'E'): return PXFileFormatWindowsExecutable;
+				case PXInt24Make('F', 'B', 'X'): return PXFileFormatFilmBox;
+				case PXInt24Make('M', 'P', '3'): return PXFileFormatMP3;
+				case PXInt24Make('M', 'P', '4'): return PXFileFormatMP4;
+				case PXInt24Make('M', 'S', 'I'): return PXFileFormatMSI;
+				case PXInt24Make('M', 'T', 'L'): return PXFileFormatMTL;
+				case PXInt24Make('O', 'B', 'J'): return PXFileFormatWavefront;
+				case PXInt24Make('O', 'G', 'G'): return PXFileFormatOGG;
+				case PXInt24Make('P', 'D', 'F'): return PXFileFormatPDF;
+				case PXInt24Make('P', 'H', 'P'): return PXFileFormatPHP;
+				case PXInt24Make('P', 'L', 'Y'): return PXFileFormatPLY;
+				case PXInt24Make('P', 'N', 'G'): return PXFileFormatPNG;
+				case PXInt24Make('Q', 'U', 'I'): return PXFileFormatQOI;
+				case PXInt24Make('S', 'T', 'L'): return PXFileFormatSTL;
+				case PXInt24Make('S', 'V', 'G'): return PXFileFormatSVG;
+				case PXInt24Make('T', 'I', 'F'): return PXFileFormatTagImage;
+				case PXInt24Make('T', 'G', 'A'): return PXFileFormatTGA;
+				case PXInt24Make('T', 'T', 'F'): return PXFileFormatTrueTypeFont;
+				case PXInt24Make('W', 'A', 'V'): return PXFileFormatWave;
+				case PXInt24Make('W', 'M', 'A'): return PXFileFormatWMA;
+				case PXInt24Make('X', 'M', 'L'): return PXFileFormatXML;
+				case PXInt24Make('Y', 'M', 'L'): return PXFileFormatYAML;
 			}
 
 			break;
@@ -297,22 +297,22 @@ FileFormatExtension PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
-				case PXInt32Make('F', 'L', 'A', 'C'): return FileFormatFLAC;
-				case PXInt32Make('M', 'I', 'D', 'I'): return FileFormatMIDI;
-				case PXInt32Make('S', 'T', 'E', 'P'): return FileFormatSTEP;
-				case PXInt32Make('T', 'I', 'F', 'F'): return FileFormatTagImage;
-				case PXInt32Make('J', 'P', 'E', 'G'): return FileFormatJPEG;
-				case PXInt32Make('J', 'S', 'O', 'N'): return FileFormatJSON;
-				case PXInt32Make('V', 'R', 'M', 'L'): return FileFormatVRML;
-				case PXInt32Make('W', 'E', 'B', 'M'): return FileFormatWEBM;
-				case PXInt32Make('W', 'E', 'B', 'P'): return FileFormatWEBP;
+				case PXInt32Make('F', 'L', 'A', 'C'): return PXFileFormatFLAC;
+				case PXInt32Make('M', 'I', 'D', 'I'): return PXFileFormatMIDI;
+				case PXInt32Make('S', 'T', 'E', 'P'): return PXFileFormatSTEP;
+				case PXInt32Make('T', 'I', 'F', 'F'): return PXFileFormatTagImage;
+				case PXInt32Make('J', 'P', 'E', 'G'): return PXFileFormatJPEG;
+				case PXInt32Make('J', 'S', 'O', 'N'): return PXFileFormatJSON;
+				case PXInt32Make('V', 'R', 'M', 'L'): return PXFileFormatVRML;
+				case PXInt32Make('W', 'E', 'B', 'M'): return PXFileFormatWEBM;
+				case PXInt32Make('W', 'E', 'B', 'P'): return PXFileFormatWEBP;
 			}
 
 			break;
 		}
 	}
 
-	return FileFormatUnkown;
+	return PXFileFormatUnkown;
 }
 
 PXBool PXFileDoesExist(const PXText* const filePath)
@@ -1345,7 +1345,7 @@ PXActionResult PXFileOpenTemporal(PXFile* const pxFile)
 		tempFileFullPath.SizeUsed = GetTempFileNameW
 		(
 			tempPath.TextW, // directory for tmp files
-			TEXT("PXUltima"),     // temp file name prefix 
+			L"PXUltima",     // temp file name prefix 
 			0,                // create unique name 
 			tempFileFullPath.TextW // buffer for name 
 		);
@@ -1658,7 +1658,7 @@ PXSize PXFileSkipEndOfLineCharacters(PXFile* const pxFile)
 
 	while (!PXFileIsAtEnd(pxFile))
 	{
-		const char* data = PXFileCursorPosition(pxFile);
+		const char* data = (char*)PXFileCursorPosition(pxFile);
 		const PXBool advance = IsEmptySpace(*data) || IsTab(*data) || IsEndOfLineCharacter(*data);
 
 		if (!advance)
@@ -1678,7 +1678,7 @@ PXSize PXFileSkipEmptySpace(PXFile* const pxFile)
 
 	while (!PXFileIsAtEnd(pxFile))
 	{
-		const char* data = PXFileCursorPosition(pxFile);
+		const char* data = (char*)PXFileCursorPosition(pxFile);
 		const PXBool isEmtpySpace = IsEmptySpace(*data) && !IsEndOfString(*data);
 
 		if (!isEmtpySpace)
@@ -1943,7 +1943,7 @@ PXSize PXFileReadI32UE(PXFile* const pxFile, PXInt32U* const value, const PXEndi
 	return PXFileReadIXXE(pxFile, value, sizeof(PXInt32U), pxEndian);
 }
 
-PXSize PXFileReadI32UVE(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian)
+PXSize PXFileReadI32UVE(PXFile* const pxFile, PXInt32U** const valueList, const PXSize valueListSize, const PXEndian pxEndian)
 {
 	return PXFileReadIXXVE(pxFile, valueList, valueListSize, sizeof(PXInt32U), pxEndian);
 }
@@ -2008,13 +2008,13 @@ PXSize PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize 
 	return PXFileReadB(pxFile, valueList, sizeof(double) * valueListSize);
 }
 
-PXSize PXFileReadMultible(PXFile* const pxFile, PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize)
+PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize)
 {
 	PXSize totalReadBytes = 0;
 
 	for (PXSize i = 0; i < pxFileElementListSize; ++i)
 	{
-		PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
+		const PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
 
 		switch (pxFileDataElementType->Type)
 		{
@@ -2023,7 +2023,7 @@ PXSize PXFileReadMultible(PXFile* const pxFile, PXFileDataElementType* const pxF
 				break;
 
 			case PXDataTypeInt8U:
-				totalReadBytes += PXFileReadI8U(pxFile, (PXInt8S*)pxFileDataElementType->Adress);
+				totalReadBytes += PXFileReadI8U(pxFile, (PXInt8U*)pxFileDataElementType->Adress);
 				break;
 
 			case PXDataTypeLEInt16S:
@@ -2197,7 +2197,7 @@ void PXFileReadUntil(PXFile* const pxFile, void* value, const PXSize length, con
 
 PXBool PXFileReadAndCompareI64U(PXFile* const pxFile, const PXInt64U value)
 {
-	const PXInt64U valueA = 0;
+	PXInt64U valueA = 0;
 	const PXInt64U valueSize = sizeof(PXInt64U);
 	const PXSize readBytes = PXFileReadB(pxFile, &valueA, valueSize);
 	const PXBool successful = readBytes == valueSize;
@@ -2220,9 +2220,9 @@ PXBool PXFileReadAndCompare(PXFile* const pxFile, const void* value, const PXSiz
 	return result;
 }
 
-PXBool PXFileReadAndCompareV(PXFile* const pxFile, const void** value, const PXSize* valueElementSizeList, const PXSize valueLength)
+PXBool PXFileReadAndCompareV(PXFile* const pxFile, const void** const value, const PXSize* const valueElementSizeList, const PXSize valueLength)
 {
-	const void* currentPosition = PXFileCursorPosition(pxFile);
+	const void* const currentPosition = PXFileCursorPosition(pxFile);
 	const PXSize readableSize = PXFileRemainingSize(pxFile);
 
 	for (size_t i = 0; i < valueLength; ++i)
@@ -2274,7 +2274,7 @@ PXSize PXFileWriteI8UV(PXFile* const pxFile, const PXInt8U* const valueList, con
 	return PXFileWriteB(pxFile, valueList, sizeof(PXInt8U) * valueListSize);
 }
 
-PXSize PXFileWriteI16S(PXFile* const pxFile, const PXInt16S const value)
+PXSize PXFileWriteI16S(PXFile* const pxFile, const PXInt16S value)
 {
 	return PXFileWriteB(pxFile, &value, sizeof(PXInt16S));
 }
@@ -2284,7 +2284,7 @@ PXSize PXFileWriteI16SV(PXFile* const pxFile, const PXInt16S* const valueList, c
 	return PXFileWriteB(pxFile, valueList, sizeof(PXInt16S) * valueListSize);
 }
 
-PXSize PXFileWriteI16SE(PXFile* const pxFile, const PXInt16S const value, const PXEndian pxEndian)
+PXSize PXFileWriteI16SE(PXFile* const pxFile, const PXInt16S value, const PXEndian pxEndian)
 {
 	const PXSize dataSize = sizeof(PXInt16S);
 	PXInt16S dataValue = value;
@@ -2302,18 +2302,18 @@ PXSize PXFileWriteI16SVE(PXFile* const pxFile, const PXInt16S* const valueList, 
 
 	for (PXSize i = 0; i < valueListSize; ++i)
 	{
-		accumulator += PXFileWriteI16SE(pxFile, &valueList[i], pxEndian);
+		accumulator += PXFileWriteI16SE(pxFile, valueList[i], pxEndian);
 	}
 
 	return accumulator;
 }
 
-PXSize PXFileWriteI16U(PXFile* const pxFile, const PXInt16U const value)
+PXSize PXFileWriteI16U(PXFile* const pxFile, const PXInt16U value)
 {
 	return PXFileWriteB(pxFile, &value, sizeof(PXInt16U));
 }
 
-PXSize PXFileWriteAtI16U(PXFile* const pxFile, const PXInt16U const value, const PXSize index)
+PXSize PXFileWriteAtI16U(PXFile* const pxFile, const PXInt16U value, const PXSize index)
 {
 	const PXSize positionBefore = pxFile->DataCursor; // save current position
 
@@ -2331,7 +2331,7 @@ PXSize PXFileWriteI16UV(PXFile* const pxFile, const PXInt16U* const valueList, c
 	return PXFileWriteB(pxFile, valueList, sizeof(PXInt16U) * valueListSize);
 }
 
-PXSize PXFileWriteI16UE(PXFile* const pxFile, const PXInt16U const value, const PXEndian pxEndian)
+PXSize PXFileWriteI16UE(PXFile* const pxFile, const PXInt16U value, const PXEndian pxEndian)
 {
 	const PXSize dataSize = sizeof(PXInt16U);
 	PXInt16U dataValue = value;
@@ -2349,7 +2349,7 @@ PXSize PXFileWriteI16UVE(PXFile* const pxFile, const PXInt16U* const valueList, 
 
 	for (PXSize i = 0; i < valueListSize; ++i)
 	{
-		accumulator += PXFileWriteI16UE(pxFile, &valueList[i], pxEndian);
+		accumulator += PXFileWriteI16UE(pxFile, valueList[i], pxEndian);
 	}
 
 	return accumulator;
@@ -2383,7 +2383,7 @@ PXSize PXFileWriteI32SVE(PXFile* const pxFile, const PXInt32S* const valueList, 
 
 	for (PXSize i = 0; i < valueListSize; ++i)
 	{
-		accumulator += PXFileWriteI32SE(pxFile, &valueList[i], pxEndian);
+		accumulator += PXFileWriteI32SE(pxFile, valueList[i], pxEndian);
 	}
 
 	return accumulator;
@@ -2443,13 +2443,13 @@ PXSize PXFileWriteI32UVE(PXFile* const pxFile, const PXInt32U* const valueList, 
 
 	for (PXSize i = 0; i < valueListSize; ++i)
 	{
-		accumulator += PXFileWriteI32UE(pxFile, &valueList[i], pxEndian);
+		accumulator += PXFileWriteI32UE(pxFile, valueList[i], pxEndian);
 	}
 
 	return accumulator;
 }
 
-PXSize PXFileWriteI64S(PXFile* const pxFile, const PXInt64S const value)
+PXSize PXFileWriteI64S(PXFile* const pxFile, const PXInt64S value)
 {
 	return PXFileWriteB(pxFile, &value, sizeof(PXInt64S));
 }
@@ -2459,7 +2459,7 @@ PXSize PXFileWriteI64SV(PXFile* const pxFile, const PXInt64S* const valueList, c
 	return PXFileWriteB(pxFile, valueList, sizeof(PXInt64S) * valueListSize);
 }
 
-PXSize PXFileWriteI64SE(PXFile* const pxFile, const PXInt64S const value, const PXEndian pxEndian)
+PXSize PXFileWriteI64SE(PXFile* const pxFile, const PXInt64S value, const PXEndian pxEndian)
 {
 	const PXSize dataSize = sizeof(PXInt64S);
 	PXInt64S dataValue = value;
@@ -2477,13 +2477,13 @@ PXSize PXFileWriteI64VE(PXFile* const pxFile, const PXInt64S* const valueList, c
 
 	for (PXSize i = 0; i < valueListSize; ++i)
 	{
-		accumulator += PXFileWriteI64SE(pxFile, &valueList[i], pxEndian);
+		accumulator += PXFileWriteI64SE(pxFile, valueList[i], pxEndian);
 	}
 
 	return accumulator;
 }
 
-PXSize PXFileWriteI64U(PXFile* const pxFile, const PXInt64U const value)
+PXSize PXFileWriteI64U(PXFile* const pxFile, const PXInt64U value)
 {
 	return PXFileWriteB(pxFile, &value, sizeof(PXInt64U));
 }
@@ -2493,7 +2493,7 @@ PXSize PXFileWriteI64UV(PXFile* const pxFile, const PXInt64U* const valueList, c
 	return PXFileWriteB(pxFile, valueList, sizeof(PXInt64U) * valueListSize);
 }
 
-PXSize PXFileWriteI64UE(PXFile* const pxFile, const PXInt64U const value, const PXEndian pxEndian)
+PXSize PXFileWriteI64UE(PXFile* const pxFile, const PXInt64U value, const PXEndian pxEndian)
 {
 	const PXSize dataSize = sizeof(PXInt64U);
 	PXInt64U dataValue = value;
@@ -2511,7 +2511,7 @@ PXSize PXFileWriteI64UVE(PXFile* const pxFile, const PXInt64U* const valueList, 
 
 	for (PXSize i = 0; i < valueListSize; ++i)
 	{
-		accumulator += PXFileWriteI64UE(pxFile, &valueList[i], pxEndian);
+		accumulator += PXFileWriteI64UE(pxFile, valueList[i], pxEndian);
 	}
 
 	return accumulator;

@@ -2,7 +2,7 @@
 
 #include <Math/PXMath.h>
 
-void PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB)
+float PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB)
 {
 	// d = Root((x2?x1)^2 + (y2?y1)^2)
 	return PXMathSquareRoot(PXMathPowerOfTwo(vectorB->X - vectorA->X) + PXMathPowerOfTwo(vectorB->Y - vectorA->X));

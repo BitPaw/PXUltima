@@ -284,31 +284,36 @@ PXSize PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* co
 	const PXSize readBytes = PXCompilerSymbolEntryExtract(pxFile, compilerSymbolEntry);
 
 	PXFileCursorRewind(pxFile, readBytes);
+
+	return readBytes;
 }
 
 PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	switch (textSize == 1)
+	if (textSize == 1)
 	{
-		case '.': return PXCompilerSymbolLexerDot;
-		case ',': return PXCompilerSymbolLexerComma;
-		case ':': return PXCompilerSymbolLexerColon;
-		case ';': return PXCompilerSymbolLexerSemiColon;
-		case '?': return PXCompilerSymbolLexerQuestionmark;
-		case '!': return PXCompilerSymbolLexerExclamation;
-		case '#': return PXCompilerSymbolLexerHash;
-		case '+': return PXCompilerSymbolLexerPlus;
-		case '-': return PXCompilerSymbolLexerMinus;
-		case '/': return PXCompilerSymbolLexerSlash;
-		case '*': return PXCompilerSymbolLexerAsterisk;
-		case '\\': return PXCompilerSymbolLexerSlashBack;
-		case '&': return PXCompilerSymbolLexerAmpercant;
-		case '%': return PXCompilerSymbolLexerPercent;
-		case '|': return PXCompilerSymbolLexerBar;
-		case '°': return PXCompilerSymbolLexerDegree;
-		case '^': return PXCompilerSymbolLexerExponent;
-		case '~': return PXCompilerSymbolLexerTilde;
-		case '\'': return PXCompilerSymbolLexerApostrophe;
+		switch (text[0])
+		{
+			case '.': return PXCompilerSymbolLexerDot;
+			case ',': return PXCompilerSymbolLexerComma;
+			case ':': return PXCompilerSymbolLexerColon;
+			case ';': return PXCompilerSymbolLexerSemiColon;
+			case '?': return PXCompilerSymbolLexerQuestionmark;
+			case '!': return PXCompilerSymbolLexerExclamation;
+			case '#': return PXCompilerSymbolLexerHash;
+			case '+': return PXCompilerSymbolLexerPlus;
+			case '-': return PXCompilerSymbolLexerMinus;
+			case '/': return PXCompilerSymbolLexerSlash;
+			case '*': return PXCompilerSymbolLexerAsterisk;
+			case '\\': return PXCompilerSymbolLexerSlashBack;
+			case '&': return PXCompilerSymbolLexerAmpercant;
+			case '%': return PXCompilerSymbolLexerPercent;
+			case '|': return PXCompilerSymbolLexerBar;
+			case '°': return PXCompilerSymbolLexerDegree;
+			case '^': return PXCompilerSymbolLexerExponent;
+			case '~': return PXCompilerSymbolLexerTilde;
+			case '\'': return PXCompilerSymbolLexerApostrophe;
+		}
 	}
 
 	switch (text[0])
