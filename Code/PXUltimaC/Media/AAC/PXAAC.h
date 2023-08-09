@@ -1,7 +1,7 @@
 #ifndef PXAACINCLUDE
 #define PXAACINCLUDE
 
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -15,7 +15,8 @@ extern "C"
 	}
 	PXAAC;
 
-	PXPublic PXActionResult PXAACParseFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAACSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

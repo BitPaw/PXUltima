@@ -14,7 +14,8 @@ extern "C"
 	}
 	PXFilmBox;
 
-	PXPublic PXActionResult PXFilmBoxParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXFilmBoxLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXFilmBoxSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

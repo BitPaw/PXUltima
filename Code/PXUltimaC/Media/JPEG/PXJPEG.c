@@ -252,7 +252,7 @@ void PXJPEGDestruct(PXJPEG* const jpeg)
 
 }
 
-PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream)
+PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
@@ -263,7 +263,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
     {
         PXInt16UCluster startBlock;
 
-        PXFileReadB(dataStream, startBlock.Data, 2u);
+        PXFileReadB(pxFile, startBlock.Data, 2u);
 
         const PXJPEGMarker marker = ConvertToPXJPEGMarker(startBlock.Value);
         const PXBool validStart = marker == PXJPEGMarkerStartOfImage;
@@ -278,7 +278,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
 #endif
     }
 
-    while(!PXFileIsAtEnd(dataStream))
+    while(!PXFileIsAtEnd(pxFile))
     {
         PXJPEGMarker chunkMarker = PXJPEGMarkerInvalid;
         unsigned short chunkLength = -1;
@@ -288,7 +288,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
         {
             PXInt16UCluster markerData;
 
-            PXFileReadB(dataStream, markerData.Data, 2u);
+            PXFileReadB(pxFile, markerData.Data, 2u);
 
             chunkMarker = ConvertToPXJPEGMarker(markerData.Value);
 
@@ -301,15 +301,15 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                 return PXActionSuccessful;
             }
 
-            PXFileReadI16UE(dataStream, &chunkLength, PXEndianBig);
+            PXFileReadI16UE(pxFile, &chunkLength, PXEndianBig);
 
             chunkLength -= 2u; // dont count header
 
-            expectedOffset = dataStream->DataCursor + chunkLength;
+            expectedOffset = pxFile->DataCursor + chunkLength;
 
 #if JPGDebug
 
-            unsigned int percentage = (dataStream->DataCursor / (float)dataStream->DataSize) * 100;
+            unsigned int percentage = (pxFile->DataCursor / (float)pxFile->DataSize) * 100;
 
             printf("\n[i][JPG] Chunk <%2x%2x> deteced. Size:%i Bytes (Parsed : %i%%)\n", markerData.A, markerData.B, chunkLength, percentage);
 #endif
@@ -338,7 +338,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
                 }
 
                 for(PXSize i = 0; i < frame.ComponentListSize; ++i)
@@ -354,7 +354,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
                     frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
                     frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
@@ -389,7 +389,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     {
                         unsigned char cluster = 0;
 
-                        remainingBytes -= PXFileReadI8U(dataStream, &cluster);
+                        remainingBytes -= PXFileReadI8U(pxFile, &cluster);
 
                         precision = (cluster & 0b11110000) >> 4;
                         matixID = (cluster & 0b00001111);
@@ -397,7 +397,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
 
                     unsigned char* matrixAdress = jpeg->QuantizationTable[matixID];
 
-                    remainingBytes -= PXFileReadB(dataStream, matrixAdress, 64u);
+                    remainingBytes -= PXFileReadB(pxFile, matrixAdress, 64u);
 
 #if JPGDebug
                     printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
@@ -434,7 +434,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     {
                         unsigned char huffmanTableInfo;
 
-                        remainingBytes -= PXFileReadI8U(dataStream, &huffmanTableInfo);
+                        remainingBytes -= PXFileReadI8U(pxFile, &huffmanTableInfo);
 
                         jpegHuffmanTable.ID = (huffmanTableInfo & 0b00001111);
                         jpegHuffmanTable.Type = (huffmanTableInfo & 0b00010000) >> 4u;
@@ -458,7 +458,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     {
                         unsigned char symbol = 0;
 
-                        remainingBytes -= PXFileReadI8U(dataStream, &symbol);
+                        remainingBytes -= PXFileReadI8U(pxFile, &symbol);
 
 #if JPGDebug
                         printf
@@ -485,7 +485,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     {
                         unsigned char symbol = 0;
 
-                        remainingBytes -= PXFileReadI8U(dataStream, &symbol);
+                        remainingBytes -= PXFileReadI8U(pxFile, &symbol);
 
 #if JPGDebug
                         printf
@@ -503,21 +503,21 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
             }
             case PXJPEGMarkerStartOfScan:
             {
-                PXFileReadI8U(dataStream, &jpeg->ScanStart.ScanSelectorSize);
+                PXFileReadI8U(pxFile, &jpeg->ScanStart.ScanSelectorSize);
 
                 for(PXSize i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
                 {
                     PXJPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
                     unsigned char huffmanTableUsed = 0;
 
-                    PXFileReadI8U(dataStream, &scanSelector->ID);
-                    PXFileReadI8U(dataStream, &huffmanTableUsed);
+                    PXFileReadI8U(pxFile, &scanSelector->ID);
+                    PXFileReadI8U(pxFile, &huffmanTableUsed);
 
                     scanSelector->DC = ((huffmanTableUsed & 0b11110000) >> 4u);
                     scanSelector->ACTable = (huffmanTableUsed & 0b00001111);
                 }
 
-                PXFileCursorAdvance(dataStream, 3u); // mandatorily to skip these, why?
+                PXFileCursorAdvance(pxFile, 3u); // mandatorily to skip these, why?
 
                 // Compressed image data starts here --------------------------------
 
@@ -530,7 +530,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
 
                 //PXFileReadB(&PXFile, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
 
-                const PXSize imageDataSize = PXFileRemainingSize(dataStream) - 2u;
+                const PXSize imageDataSize = PXFileRemainingSize(pxFile) - 2u;
 
                 // Correct expected offset, as the "chunk length" seems to be only considering the data iself and not the whole chunk.
 
@@ -544,7 +544,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     imageDataSize
                 );
 #endif
-                PXFileCursorAdvance(dataStream, imageDataSize);
+                PXFileCursorAdvance(pxFile, imageDataSize);
 
                 break;
             }
@@ -552,7 +552,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
             {
                 char identifier[5];
 
-                PXFileReadB(dataStream, identifier, 5u);
+                PXFileReadB(pxFile, identifier, 5u);
 
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
@@ -567,7 +567,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
                 }
 
 #if JPGDebug
@@ -599,7 +599,7 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                         jpeg->FileInfo.ThumbnailDataSize = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
                         jpeg->FileInfo.ThumbnailData = PXMemoryAllocate(sizeof(unsigned char) * jpeg->FileInfo.ThumbnailDataSize);
 
-                        PXFileReadB(dataStream, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
+                        PXFileReadB(pxFile, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
                     }
                 }
 
@@ -610,26 +610,25 @@ PXActionResult PXJPEGParseToImage(PXImage* const image, PXFile* const dataStream
                 jpeg->CommentSize = chunkLength;
                 jpeg->Comment = PXMemoryAllocate(sizeof(char) * chunkLength);
 
-                PXFileReadB(dataStream, jpeg->Comment, chunkLength);
+                PXFileReadB(pxFile, jpeg->Comment, chunkLength);
 
                 break;
             }
         }
 
 #if JPGDebug
-        if(dataStream->DataCursor != expectedOffset)
+        if(pxFile->DataCursor != expectedOffset)
         {
-            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - dataStream->DataCursor);
+            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - pxFile->DataCursor);
         }
 #endif
         //--<Allign>----
-        dataStream->DataCursor = expectedOffset;
+        pxFile->DataCursor = expectedOffset;
         //--------------
     }
 
     return PXActionSuccessful;
 }
-
 
 
 
@@ -956,7 +955,7 @@ void generateHuffmanTable(const uint8_t numCodes[16], const uint8_t* values, Bit
 
 
 
-PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* const dataStream)
+PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFile)
 {
     unsigned char isRGB = 1u;
     unsigned char quality = 100u;
@@ -969,7 +968,7 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
 
     // Header Signature
     {
-        PXFileWriteI16UE(dataStream, PXJPEGMarkerStartOfImageID, EndianCurrentSystem);
+        PXFileWriteI16UE(pxFile, PXJPEGMarkerStartOfImageID, EndianCurrentSystem);
     }
 
     // APP0
@@ -985,16 +984,16 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
         jpegFileInfo.ThumbnailDataSize = 0;
         jpegFileInfo.ThumbnailData = 0;
 
-        PXFileWriteI16UE(dataStream, PXJPEGMarkerApplicationSegment00ID, EndianCurrentSystem);
-        PXFileWriteI16UE(dataStream, 16u, PXEndianBig);
-        PXFileWriteB(dataStream, "JFIF", 5u);
-        PXFileWriteI8U(dataStream, jpegFileInfo.VersionMajor);
-        PXFileWriteI8U(dataStream, jpegFileInfo.VersionMinor);
-        PXFileWriteI8U(dataStream, jpegFileInfo.DensityUnits);
-        PXFileWriteI16UE(dataStream, jpegFileInfo.DensityX, PXEndianBig);
-        PXFileWriteI16UE(dataStream, jpegFileInfo.DensityY, PXEndianBig);
-        PXFileWriteI8U(dataStream, jpegFileInfo.ThumbnailX);
-        PXFileWriteI8U(dataStream, jpegFileInfo.ThumbnailY);
+        PXFileWriteI16UE(pxFile, PXJPEGMarkerApplicationSegment00ID, EndianCurrentSystem);
+        PXFileWriteI16UE(pxFile, 16u, PXEndianBig);
+        PXFileWriteB(pxFile, "JFIF", 5u);
+        PXFileWriteI8U(pxFile, jpegFileInfo.VersionMajor);
+        PXFileWriteI8U(pxFile, jpegFileInfo.VersionMinor);
+        PXFileWriteI8U(pxFile, jpegFileInfo.DensityUnits);
+        PXFileWriteI16UE(pxFile, jpegFileInfo.DensityX, PXEndianBig);
+        PXFileWriteI16UE(pxFile, jpegFileInfo.DensityY, PXEndianBig);
+        PXFileWriteI8U(pxFile, jpegFileInfo.ThumbnailX);
+        PXFileWriteI8U(pxFile, jpegFileInfo.ThumbnailY);
     }
 
     // ////////////////////////////////////////
@@ -1012,17 +1011,17 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
     }
 
     // write quantization tables
-    PXFileWriteI16UE(dataStream, PXJPEGMarkerDefineQuantizationTableListID, EndianCurrentSystem);
-    PXFileWriteI16UE(dataStream, 2 + (isRGB ? 2 : 1) * (1 + 8 * 8), PXEndianBig);  // length: 65 bytes per table + 2 bytes for this length field
+    PXFileWriteI16UE(pxFile, PXJPEGMarkerDefineQuantizationTableListID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxFile, 2 + (isRGB ? 2 : 1) * (1 + 8 * 8), PXEndianBig);  // length: 65 bytes per table + 2 bytes for this length field
 
     // each table has 64 entries and is preceded by an ID byte
-    PXFileWriteI8U(dataStream, 0u); // first  quantization table
-    PXFileWriteB(dataStream, quantLuminance, sizeof(unsigned char) * 64u);
+    PXFileWriteI8U(pxFile, 0u); // first  quantization table
+    PXFileWriteB(pxFile, quantLuminance, sizeof(unsigned char) * 64u);
 
     if(isRGB)// chrominance is only relevant for color images
     {
-        PXFileWriteI8U(dataStream, 1u);  // second quantization table
-        PXFileWriteB(dataStream, quantChrominance, sizeof(unsigned char) * 64u);
+        PXFileWriteI8U(pxFile, 1u);  // second quantization table
+        PXFileWriteB(pxFile, quantChrominance, sizeof(unsigned char) * 64u);
     }
 
     // ////////////////////////////////////////
@@ -1030,34 +1029,34 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
     // length: 6 bytes general info + 3 per channel + 2 bytes for this length field
     unsigned char numComponents = isRGB ? 3 : 1;
 
-    PXFileWriteI16UE(dataStream, PXJPEGMarkerStartOfFrameHuffmanBaselineDCTID, EndianCurrentSystem);
-    PXFileWriteI16UE(dataStream, 2 + 6 + 3 * numComponents, PXEndianBig);
+    PXFileWriteI16UE(pxFile, PXJPEGMarkerStartOfFrameHuffmanBaselineDCTID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxFile, 2 + 6 + 3 * numComponents, PXEndianBig);
 
 
-    PXFileWriteI8U(dataStream, 8u); // 8 bits per channel
+    PXFileWriteI8U(pxFile, 8u); // 8 bits per channel
 
     // image dimensions (big-endian)
-    PXFileWriteI16UE(dataStream, image->Height, PXEndianBig);
-    PXFileWriteI16UE(dataStream, image->Width, PXEndianBig);
+    PXFileWriteI16UE(pxFile, image->Height, PXEndianBig);
+    PXFileWriteI16UE(pxFile, image->Width, PXEndianBig);
 
     // sampling and quantization tables for each component
             // 1 component (grayscale, Y only) or 3 components (Y,Cb,Cr)
-    PXFileWriteI8U(dataStream, numComponents);
+    PXFileWriteI8U(pxFile, numComponents);
 
 
     for(PXSize id = 1; id <= numComponents; ++id)
     {
-        PXFileWriteI8U(dataStream, id);                    // component ID (Y=1, Cb=2, Cr=3)
+        PXFileWriteI8U(pxFile, id);                    // component ID (Y=1, Cb=2, Cr=3)
         // bitmasks for sampling: highest 4 bits: horizontal, lowest 4 bits: vertical
-        PXFileWriteI8U(dataStream, id == 1 && downsample ? 0x22 : 0x11); // 0x11 is default YCbCr 4:4:4 and 0x22 stands for YCbCr 4:2:0
-        PXFileWriteI8U(dataStream, id == 1 ? 0 : 1);       // use quantization table 0 for Y, else table 1
+        PXFileWriteI8U(pxFile, id == 1 && downsample ? 0x22 : 0x11); // 0x11 is default YCbCr 4:4:4 and 0x22 stands for YCbCr 4:2:0
+        PXFileWriteI8U(pxFile, id == 1 ? 0 : 1);       // use quantization table 0 for Y, else table 1
     }
 
     // ////////////////////////////////////////
     // Huffman tables
     // DHT marker - define Huffman tables
-    PXFileWriteI16UE(dataStream, PXJPEGMarkerDefineHuffmanTableListID, EndianCurrentSystem);
-    PXFileWriteI16UE(dataStream, isRGB ? (2 + 208 + 208) : (2 + 208), PXEndianBig);
+    PXFileWriteI16UE(pxFile, PXJPEGMarkerDefineHuffmanTableListID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxFile, isRGB ? (2 + 208 + 208) : (2 + 208), PXEndianBig);
 
 
     // 2 bytes for the length field, store chrominance only if needed
@@ -1068,15 +1067,15 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
 
 // store luminance's DC+AC Huffman table definitions
     // highest 4 bits: 0 => DC, lowest 4 bits: 0 => Y (baseline)
-    PXFileWriteI8U(dataStream, 0x00);
+    PXFileWriteI8U(pxFile, 0x00);
 
-    PXFileWriteB(dataStream, DcLuminanceCodesPerBitsize, sizeof(DcLuminanceCodesPerBitsize));
-    PXFileWriteB(dataStream, DcLuminanceValues, sizeof(DcLuminanceValues));
+    PXFileWriteB(pxFile, DcLuminanceCodesPerBitsize, sizeof(DcLuminanceCodesPerBitsize));
+    PXFileWriteB(pxFile, DcLuminanceValues, sizeof(DcLuminanceValues));
 
-    PXFileWriteI8U(dataStream, 0x10);// highest 4 bits: 1 => AC, lowest 4 bits: 0 => Y (baseline)
+    PXFileWriteI8U(pxFile, 0x10);// highest 4 bits: 1 => AC, lowest 4 bits: 0 => Y (baseline)
 
-    PXFileWriteB(dataStream, AcLuminanceCodesPerBitsize, sizeof(AcLuminanceCodesPerBitsize));
-    PXFileWriteB(dataStream, AcLuminanceValues, sizeof(AcLuminanceValues));
+    PXFileWriteB(pxFile, AcLuminanceCodesPerBitsize, sizeof(AcLuminanceCodesPerBitsize));
+    PXFileWriteB(pxFile, AcLuminanceValues, sizeof(AcLuminanceValues));
 
 
     // compute actual Huffman code tables (see Jon's code for precalculated tables)
@@ -1092,17 +1091,17 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
     {
         // store luminance's DC+AC Huffman table definitions
         // highest 4 bits: 0 => DC, lowest 4 bits: 1 => Cr,Cb (baseline)
-        PXFileWriteI8U(dataStream, 0x01);
+        PXFileWriteI8U(pxFile, 0x01);
 
-        PXFileWriteB(dataStream, DcChrominanceCodesPerBitsize, sizeof(DcChrominanceCodesPerBitsize));
-        PXFileWriteB(dataStream, DcChrominanceValues, sizeof(DcChrominanceValues));
+        PXFileWriteB(pxFile, DcChrominanceCodesPerBitsize, sizeof(DcChrominanceCodesPerBitsize));
+        PXFileWriteB(pxFile, DcChrominanceValues, sizeof(DcChrominanceValues));
 
 
         // highest 4 bits: 1 => AC, lowest 4 bits: 1 => Cr,Cb (baseline)
-        PXFileWriteI8U(dataStream, 0x11);
+        PXFileWriteI8U(pxFile, 0x11);
 
-        PXFileWriteB(dataStream, AcChrominanceCodesPerBitsize, sizeof(AcChrominanceCodesPerBitsize));
-        PXFileWriteB(dataStream, AcChrominanceValues, sizeof(AcChrominanceValues));
+        PXFileWriteB(pxFile, AcChrominanceCodesPerBitsize, sizeof(AcChrominanceCodesPerBitsize));
+        PXFileWriteB(pxFile, AcChrominanceValues, sizeof(AcChrominanceValues));
 
         // compute actual Huffman code tables (see Jon's code for precalculated tables)
         generateHuffmanTable(DcChrominanceCodesPerBitsize, DcChrominanceValues, huffmanChrominanceDC);
@@ -1111,25 +1110,25 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
 
     // ////////////////////////////////////////
     // start of scan (there is only a single scan for baseline PXJPEGs)
-    PXFileWriteI16UE(dataStream, PXJPEGMarkerStartOfScanID, EndianCurrentSystem);
-    PXFileWriteI16UE(dataStream, 2 + 1 + 2 * numComponents + 3, PXEndianBig);
+    PXFileWriteI16UE(pxFile, PXJPEGMarkerStartOfScanID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxFile, 2 + 1 + 2 * numComponents + 3, PXEndianBig);
 
 
     // assign Huffman tables to each component
-    PXFileWriteI8U(dataStream, numComponents);
+    PXFileWriteI8U(pxFile, numComponents);
 
     for(PXSize id = 1; id <= numComponents; ++id)
     {
         // component ID (Y=1, Cb=2, Cr=3)
-        PXFileWriteI8U(dataStream, id);
+        PXFileWriteI8U(pxFile, id);
         // highest 4 bits: DC Huffman table, lowest 4 bits: AC Huffman table
-        PXFileWriteI8U(dataStream, id == 1 ? 0x00 : 0x11); // Y: tables 0 for DC and AC; Cb + Cr: tables 1 for DC and AC
+        PXFileWriteI8U(pxFile, id == 1 ? 0x00 : 0x11); // Y: tables 0 for DC and AC; Cb + Cr: tables 1 for DC and AC
     }
 
     // constant values for our baseline PXJPEGs with a single sequential scan
-    PXFileWriteI8U(dataStream, 0u); // spectral selection: must start at  0
-    PXFileWriteI8U(dataStream, 63u); // spectral selection: must stop  at 63
-    PXFileWriteI8U(dataStream, 0u); // successive approximation: must be  0
+    PXFileWriteI8U(pxFile, 0u); // spectral selection: must start at  0
+    PXFileWriteI8U(pxFile, 63u); // spectral selection: must stop  at 63
+    PXFileWriteI8U(pxFile, 0u); // successive approximation: must be  0
 
     // adjust quantization tables with AAN scaling factors to simplify DCT
     float scaledLuminance[64u];
@@ -1231,7 +1230,7 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
                     }
 
                 // encode Y channel
-                lastYDC = PXJPEGEncodeBlock(dataStream, &buffer, Y, scaledLuminance, lastYDC, huffmanLuminanceDC, huffmanLuminanceAC);
+                lastYDC = PXJPEGEncodeBlock(pxFile, &buffer, Y, scaledLuminance, lastYDC, huffmanLuminanceDC, huffmanLuminanceAC);
             }
 
             if(!isRGB)
@@ -1264,8 +1263,8 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
 
 
             // encode Cb + Cr channels
-            lastCbDC = PXJPEGEncodeBlock(dataStream, &buffer, Cb, scaledChrominance, lastCbDC, huffmanChrominanceDC, huffmanChrominanceAC);
-            lastCrDC = PXJPEGEncodeBlock(dataStream, &buffer, Cr, scaledChrominance, lastCrDC, huffmanChrominanceDC, huffmanChrominanceAC);
+            lastCbDC = PXJPEGEncodeBlock(pxFile, &buffer, Cb, scaledChrominance, lastCbDC, huffmanChrominanceDC, huffmanChrominanceAC);
+            lastCrDC = PXJPEGEncodeBlock(pxFile, &buffer, Cr, scaledChrominance, lastCrDC, huffmanChrominanceDC, huffmanChrominanceAC);
         }
 
     // fill remaining bits with 1s
@@ -1273,14 +1272,14 @@ PXActionResult PXJPEGSerializeFromImage(const PXImage* const image, PXFile* cons
     bitCode.code = 0x7F;
     bitCode.numBits = 7;
 
-    writeBits(dataStream, &buffer, bitCode); // seven set bits: 0x7F = binary 0111 1111
+    writeBits(pxFile, &buffer, bitCode); // seven set bits: 0x7F = binary 0111 1111
 
    // PXFileWriteI8U(&PXFile, &buffer);
    // PXFileWriteI16U(&PXFile, );
 
     // End Tag
     {
-        PXFileWriteI16UE(dataStream, PXJPEGMarkerEndOfImageID, PXEndianLittle);
+        PXFileWriteI16UE(pxFile, PXJPEGMarkerEndOfImageID, PXEndianLittle);
     }
 
     return PXActionSuccessful;

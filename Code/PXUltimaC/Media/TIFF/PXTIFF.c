@@ -114,8 +114,10 @@ PXSize PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSi
     return 0;
 }
 
-PXActionResult PXTIFFParse(PXTIFF* const tiff, PXFile* const dataStream)
+PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
+    PXTIFF* tiff = PXNull;
+
     PXMemoryClear(tiff, sizeof(PXTIFF));
 
 
@@ -130,7 +132,7 @@ PXActionResult PXTIFFParse(PXTIFF* const tiff, PXFile* const dataStream)
             const char versionB[2] = PXTIFFormatB;
             char headerTag[2];
 
-            PXFileReadB(dataStream, headerTag, 2u);
+            PXFileReadB(pxFile, headerTag, 2u);
 
             const char select =
                 'B' * (headerTag[0] == versionB[0] && headerTag[1] == versionB[1]) + // big
@@ -151,29 +153,29 @@ PXActionResult PXTIFFParse(PXTIFF* const tiff, PXFile* const dataStream)
             }
         }
 
-        PXFileReadI16UE(dataStream, &tIFFHeader.Version, tIFFHeader.Endianness); // Version, expect this to be "42"
-        PXFileReadI32UE(dataStream, &tIFFHeader.OffsetToIFD, tIFFHeader.Endianness);
+        PXFileReadI16UE(pxFile, &tIFFHeader.Version, tIFFHeader.Endianness); // Version, expect this to be "42"
+        PXFileReadI32UE(pxFile, &tIFFHeader.OffsetToIFD, tIFFHeader.Endianness);
 
         // Jump to adress
-        dataStream->DataCursor = tIFFHeader.OffsetToIFD;
+        pxFile->DataCursor = tIFFHeader.OffsetToIFD;
 
         // Now we are at IFD page 0
-        while (!PXFileIsAtEnd(dataStream))
+        while (!PXFileIsAtEnd(pxFile))
         {
             PXTIFFPage tiffPage;
 
             PXMemoryClear(&tiffPage, sizeof(PXTIFFPage));
 
-            PXFileReadI16UE(dataStream, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes
+            PXFileReadI16UE(pxFile, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes
 
             for (unsigned short i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
                 PXTIFFTag tiffTag;
 
-                PXFileReadI16UE(dataStream, &tiffTag.TypeID, tIFFHeader.Endianness); // 2-Bytes
-                PXFileReadI16UE(dataStream, &tiffTag.DataTypeID, tIFFHeader.Endianness); // 2-Bytes
-                PXFileReadI32UE(dataStream, &tiffTag.NumberOfValues, tIFFHeader.Endianness); // 4-Bytes
-                PXFileReadI32UE(dataStream, &tiffTag.DataOffset, tIFFHeader.Endianness); // 4-Bytes
+                PXFileReadI16UE(pxFile, &tiffTag.TypeID, tIFFHeader.Endianness); // 2-Bytes
+                PXFileReadI16UE(pxFile, &tiffTag.DataTypeID, tIFFHeader.Endianness); // 2-Bytes
+                PXFileReadI32UE(pxFile, &tiffTag.NumberOfValues, tIFFHeader.Endianness); // 4-Bytes
+                PXFileReadI32UE(pxFile, &tiffTag.DataOffset, tIFFHeader.Endianness); // 4-Bytes
 
                 tiffTag.Type = PXTIFFTagTypeFromID(tiffTag.TypeID);
                 tiffTag.DataType = PXTIFFTypeFromID(tiffTag.DataTypeID);
@@ -288,7 +290,7 @@ PXActionResult PXTIFFParse(PXTIFF* const tiff, PXFile* const dataStream)
                 }
             }
 
-            PXFileReadI32UE(dataStream, &tiffPage.OffsetToNextIFD, tIFFHeader.Endianness); // 4-Bytes
+            PXFileReadI32UE(pxFile, &tiffPage.OffsetToNextIFD, tIFFHeader.Endianness); // 4-Bytes
         }
 
 
@@ -306,18 +308,9 @@ PXActionResult PXTIFFParse(PXTIFF* const tiff, PXFile* const dataStream)
     return PXActionSuccessful;
 }
 
-PXActionResult PXTIFFParseToImage(PXImage* const image, PXFile* const dataStream)
+PXActionResult PXTIFFSaveToFile(PXImage* const pxImage, PXFile* const pxFile)
 {
-    PXTIFF tiff;
-
-    PXTIFFParse(&tiff, dataStream);
-
-    return PXActionInvalid;
-}
-
-PXActionResult PXTIFFSerializeFromImage(const PXImage* const image, PXFile* const dataStream)
-{
-    return PXActionInvalid;
+    return PXActionRefusedNotImplemented;
 }
 
 PXTIFFCompression PXTIFFCompressionFromID(const unsigned short tiffCompressionID)

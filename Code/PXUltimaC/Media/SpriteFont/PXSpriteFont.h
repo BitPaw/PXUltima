@@ -9,7 +9,7 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
 #include <Media/PXImage.h>
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -119,7 +119,8 @@ extern "C"
 	PXPublic void PXSpriteFontConstruct(PXSpriteFont* const pxSpriteFont);
 	PXPublic void PXSpriteFontDestruct(PXSpriteFont* const pxSpriteFont);
 
-	PXPublic PXActionResult PXSpriteFontParse(PXFont* const pxFont, PXFile* const pxFile);
+	PXPublic PXActionResult PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFile);
+	PXPublic PXActionResult PXSpriteFontSaveToFile(PXFont* const pxFont, PXFile* const pxFile);
 
 	PXPrivate PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSize);
 

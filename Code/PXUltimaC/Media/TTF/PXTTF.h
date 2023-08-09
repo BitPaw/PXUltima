@@ -2,7 +2,7 @@
 #define PXPXTTFINCLUDE
 
 #include <OS/File/PXFile.h>
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -692,7 +692,8 @@ extern "C"
     PXPublic void PXTTFConstruct(PXTTF* const ttf);
     PXPublic void PXTTFDestruct(PXTTF* const ttf);
 
-	PXPublic PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const dataStream);
+	PXPublic PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile);
+    PXPublic PXActionResult PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

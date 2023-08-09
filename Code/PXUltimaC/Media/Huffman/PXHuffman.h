@@ -76,12 +76,12 @@ extern "C"
 
 
 	PXPublic unsigned reverseBits(unsigned bits, unsigned num);
-	PXPublic unsigned int PXHuffmanDistanceTreeGenerateDynamic(PXFile* const dataStream, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance);
+	PXPublic unsigned int PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance);
 
 	/* Safely check if a + b > c, even if overflow could happen. */
 	PXPublic int lodepng_gtofl(PXSize a, PXSize b, PXSize c);
 	PXPublic int lodepng_addofl(PXSize a, PXSize b, PXSize* result);
-	PXPublic unsigned int PXHuffmanSymbolDecode(PXFile* const dataStream, const PXHuffmanTree* const codetree);
+	PXPublic unsigned int PXHuffmanSymbolDecode(PXFile* const pxFile, const PXHuffmanTree* const codetree);
 
 
 #ifdef __cplusplus

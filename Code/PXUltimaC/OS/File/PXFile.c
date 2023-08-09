@@ -5,6 +5,7 @@
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
+#include <Media/PXResource.h>
 
 #include <stdarg.h>
 #include <fcntl.h>
@@ -514,7 +515,7 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 		{
 #if OSUnix
 			// Convert
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 			const PXBool succesfull = CopyFileW(sourceFilePath->TextW, destinationFilePath->TextW, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
@@ -659,7 +660,7 @@ void PXFilePathSwapExtension(const PXText* const inputPath, PXText* const export
 PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 
@@ -849,6 +850,12 @@ void PXFileBufferExternal(PXFile* const pxFile, void* const data, const PXSize d
 PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPathInfo* const pxFileOpenFromPathInfo)
 {
 	PXFileConstruct(pxFile);
+
+	// Analyse type
+	{
+		PXFileTypeInfoProbe(&pxFile->TypeInfo, &pxFileOpenFromPathInfo->Text);
+	}
+
 
 	// Does file even exist?
 	{

@@ -15,7 +15,7 @@
 #include <OS/Async/PXLock.h>
 #include <Media/PXColor.h>
 
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
 
@@ -515,16 +515,6 @@ extern "C"
 
 
 
-
-	typedef PXActionResult(*PXResourceTranslateFunction)(void* const pxResource, PXFile* const pxFile);
-
-	PXPublic PXResourceTranslateFunction PXGraphicResourceTranslateFunctionFetch(const PXFileFormat pxFileFormat);
-
-
-	PXPublic PXActionResult PXGraphicResourceLoad(void* resource, const PXText* const filePath);
-	PXPublic PXActionResult PXGraphicResourceLoadA(void* resource, const char* const filePath);
-
-
 	//PXPublic PXActionResult Load(PXModel& model, const wchar_t* filePath, const bool loadAsynchronously = true);
 	//PXPublic PXActionResult Load(PXRenderable& renderable, PXModel* model, const wchar_t* filePath, bool loadAsynchronously = true);
 	//PXPublic PXActionResult Load(PXRenderable& renderable, const float* vertexData, const PXSize vertexDataSize, const unsigned int* indexList, const PXSize indexListSize);
@@ -537,6 +527,39 @@ extern "C"
 	//PXPublic PXActionResult Load(ShaderPXProgram& shaderPXProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath);
 
 	//PXPublic PXActionResult Load(Image& image, const wchar_t* filePath, bool loadAsynchronously = true);
+
+
+
+	PXPublic void PXCameraConstruct(PXCamera* const camera);
+	PXPublic void PXCameraDestruct(PXCamera* const camera);
+
+
+	//-----------
+	PXPublic float PXCameraAspectRatio(const PXCamera* const camera);
+	PXPublic void PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height);
+
+	PXPublic void PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective cameraPerspective);
+	PXPublic void PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane);
+	PXPublic void PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOfView, const float aspectRatio, const float nearPlane, const float farPlane);
+	//-----------
+
+	//---<Transform>-----------------------------------------------------------
+	PXPublic void PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F);
+	PXPublic void PXCameraRotateXYZ(PXCamera* const camera, const float x, const float y, const float z);
+
+	PXPublic void PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F);
+	PXPublic void PXCameraMoveXYZ(PXCamera* const camera, const float x, const float y, const float z);
+
+	PXPublic void PXCameraFollow(PXCamera* const camera, const float deltaTime);
+	//-------------------------------------------------------------------------
+
+	//-------------------------------------------------------------------------
+	PXPublic void PXCameraUpdate(PXCamera* const camera, const float deltaTime);
+	//-------------------------------------------------------------------------
+
+
+
+
 
 #ifdef __cplusplus
 }

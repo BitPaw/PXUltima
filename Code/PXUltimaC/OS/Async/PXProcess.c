@@ -46,7 +46,7 @@ void PXProcessParent(PXProcess* const pxProcess)
 void PXProcessExitCurrent(const PXInt32U exitCode)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 	ExitProcess(exitCode);
@@ -63,7 +63,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 		case TextFormatUTF8:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 			STARTUPINFOA startupInfo;
@@ -108,7 +108,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 		case TextFormatUNICODE:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 			STARTUPINFOW startupInfo;
@@ -152,7 +152,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 	if (!pxProcessDetectedEvent)
 	{
@@ -207,7 +207,7 @@ PXActionResult PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID 
 	PXProcessConstruct(pxProcess);
 
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif OSWindows
 	const DWORD desiredAccess = PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION;
 	const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -227,7 +227,7 @@ PXActionResult PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID 
 PXActionResult PXProcessClose(PXProcess* const pxProcess)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif OSWindows
 	const BOOL successful = CloseHandle(pxProcess->ProcessHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
 
@@ -244,7 +244,7 @@ PXActionResult PXProcessClose(PXProcess* const pxProcess)
 PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 	SIZE_T numberOfBytesRead;
 
@@ -268,7 +268,7 @@ PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void
 PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	SIZE_T numberOfBytesRead;

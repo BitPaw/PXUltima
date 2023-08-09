@@ -9,7 +9,7 @@
 #include <OS/Async/PXEvent.h>
 #include <OS/Async/PXAwait.h>
 #include <Media/PXText.h>
-#include <Graphic/PXGraphic.h>
+#include <OS/Graphic/PXGraphic.h>
 
 #include <Math/PXMath.h>
 
@@ -2637,7 +2637,7 @@ void PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt3
 PXActionResult PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
 {
 #if OSUnix
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
     RECT rectangle;
@@ -2666,13 +2666,13 @@ PXActionResult PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
 PXActionResult PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y)
 {
 #if OSUnix
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 
    // const PXBool result = MoveWindow(pxWindow->ID, );
 
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #else
     return PXActionNotSupportedByOperatingSystem;

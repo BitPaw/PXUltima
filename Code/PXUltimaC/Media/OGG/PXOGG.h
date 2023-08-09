@@ -5,6 +5,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
 
+#include <Media/PXResource.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -37,7 +39,8 @@ extern "C"
 	}
 	PXOGG;
 
-	PXPublic PXActionResult PXOGGParse(PXOGG* const ogg, PXFile* const pxFile);
+	PXPublic PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

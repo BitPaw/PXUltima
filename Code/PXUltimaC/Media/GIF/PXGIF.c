@@ -14,7 +14,7 @@ PXSize PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSiz
     return 0;
 }
 
-PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const dataStream)
+PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const pxFile)
 {
     PXGIF gif;
 
@@ -25,7 +25,7 @@ PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const dataStream)
         {
             const char headerTag[3] = PXGIFHeader;
             const PXSize headerTagSize = sizeof(headerTag);
-            const PXBool validHeader = PXFileReadAndCompare(dataStream, headerTag, headerTagSize);
+            const PXBool validHeader = PXFileReadAndCompare(pxFile, headerTag, headerTagSize);
 
             if (!validHeader)
             {
@@ -39,7 +39,7 @@ PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const dataStream)
             const char* const versionDataList[2] = { versionA, versionB };
             const PXSize versionSizeList[2] = { sizeof(versionA),  sizeof(versionB) };
             const PXSize versionSizeListSize = sizeof(versionDataList) / sizeof(void*);
-            const PXBool validVersion = PXFileReadAndCompareV(dataStream, versionDataList, versionSizeList, versionSizeListSize);
+            const PXBool validVersion = PXFileReadAndCompareV(pxFile, versionDataList, versionSizeList, versionSizeListSize);
 
             if (!validVersion)
             {
@@ -50,14 +50,14 @@ PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const dataStream)
 
     // Logical Screen Descriptor.
     {
-        PXFileReadI16UE(dataStream, &gif.Width, PXEndianLittle);
-        PXFileReadI16UE(dataStream, &gif.Height, PXEndianLittle);
+        PXFileReadI16UE(pxFile, &gif.Width, PXEndianLittle);
+        PXFileReadI16UE(pxFile, &gif.Height, PXEndianLittle);
 
         unsigned char packedFields = 0;
 
-        PXFileReadI8U(dataStream, &packedFields);
-        PXFileReadI8U(dataStream, &gif.BackgroundColorIndex);
-        PXFileReadI8U(dataStream, &gif.PixelAspectRatio);
+        PXFileReadI8U(pxFile, &packedFields);
+        PXFileReadI8U(pxFile, &gif.BackgroundColorIndex);
+        PXFileReadI8U(pxFile, &gif.PixelAspectRatio);
 
         gif.GlobalColorTableSize = packedFields & 0b00000111;
         gif.IsSorted = (packedFields & 0b00001000) >> 3;
@@ -75,12 +75,12 @@ PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const dataStream)
 
             unsigned char packedFields = 0;
 
-            PXFileReadI8U(dataStream, &imageDescriptor.Separator);
-            PXFileReadI16UE(dataStream, &imageDescriptor.LeftPosition, PXEndianLittle);
-            PXFileReadI16UE(dataStream, &imageDescriptor.TopPosition, PXEndianLittle);
-            PXFileReadI16UE(dataStream, &imageDescriptor.Width, PXEndianLittle);
-            PXFileReadI16UE(dataStream, &imageDescriptor.Height, PXEndianLittle);
-            PXFileReadI8U(dataStream, &packedFields);
+            PXFileReadI8U(pxFile, &imageDescriptor.Separator);
+            PXFileReadI16UE(pxFile, &imageDescriptor.LeftPosition, PXEndianLittle);
+            PXFileReadI16UE(pxFile, &imageDescriptor.TopPosition, PXEndianLittle);
+            PXFileReadI16UE(pxFile, &imageDescriptor.Width, PXEndianLittle);
+            PXFileReadI16UE(pxFile, &imageDescriptor.Height, PXEndianLittle);
+            PXFileReadI8U(pxFile, &packedFields);
 
             imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
             imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;
@@ -107,7 +107,7 @@ PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const dataStream)
     return PXActionSuccessful;
 }
 
-PXActionResult PXGIFSerializeFromImage(const PXImage* const image, PXFile* const dataStream)
+PXActionResult PXGIFSerializeFromImage(const PXImage* const image, PXFile* const pxFile)
 {
     return PXActionInvalid;
 }

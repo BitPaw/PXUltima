@@ -57,7 +57,7 @@ PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXActionResult PXYAMLFileCompile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;

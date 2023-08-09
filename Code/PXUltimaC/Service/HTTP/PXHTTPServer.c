@@ -2,10 +2,10 @@
 
 PXActionResult PXHTTPServerStart(PXHTTPServer* const pxHTTPServer)
 {
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXHTTPServerStop(PXHTTPServer* const pxHTTPServer)
 {
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 }

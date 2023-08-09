@@ -2,13 +2,13 @@
 
 #include <Media/RIFF/PXRIFF.h>
 
-PXActionResult PXAVIParse(PXAVI* const avi, PXFile* const PXFile)
+PXActionResult PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
     PXRIFF riff;
 
     // PXRIFF
     {
-        const PXActionResult riffResult = PXRIFFParse(&riff, PXFile);
+        const PXActionResult riffResult = PXRIFFParse(&riff, pxFile);
 
         PXActionReturnOnError(riffResult);
 
@@ -24,4 +24,9 @@ PXActionResult PXAVIParse(PXAVI* const avi, PXFile* const PXFile)
     }
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAVISaveToFile(PXVideo* const pxVideo, PXFile* const pxFile)
+{
+    return PXActionRefusedNotImplemented;
 }

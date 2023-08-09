@@ -4,18 +4,21 @@
 #include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
 	typedef struct PXFLAC_
 	{
 		unsigned int __dummy__;
 	}
 	PXFLAC;
 
-	PXPublic PXActionResult PXFLACParse(const void* data, const PXSize dataSize);
+	PXPublic PXActionResult PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

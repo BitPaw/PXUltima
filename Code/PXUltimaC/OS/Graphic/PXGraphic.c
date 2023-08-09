@@ -13,39 +13,7 @@
 
 #include <gl/GL.h>
 
-
-
-#include <Media/3DS/PX3DS.h>
-#include <Media/AAC/PXAAC.h>
-#include <Media/AVI/PXAVI.h>
-#include <Media/Bitmap/PXBitmap.h>
-#include <Media/FilmBox/PXFilmBox.h>
-#include <Media/FLAC/PXFLAC.h>
-#include <Media/GIF/PXGIF.h>
-#include <Media/JPEG/PXJPEG.h>
-#include <Media/MIDI/PXMIDI.h>
-#include <Media/MP3/PXMP3.h>
-#include <Media/MP4/PXMP4.h>
-#include <Media/OGG/PXOGG.h>
-#include <Media/PLY/PXPLY.h>
-#include <Media/PNG/PXPNG.h>
-#include <Media/SpriteFont/PXSpriteFont.h>
-#include <Media/STEP/PXSTEP.h>
-#include <Media/STL/PXSTL.h>
-#include <Media/SVG/PXSVG.h>
-#include <Media/WEBM/PXWEBM.h>
-#include <Media/WEBP/PXWEBP.h>
-#include <Media/Wavefront/PXWavefront.h>
-#include <Media/PDF/PXPDF.h>
-#include <Media/TTF/PXTTF.h>
-#include <Media/VRML/PXVRML.h>
-#include <Media/WAV/PXWAV.h>
-#include <Media/WMA/PXWMA.h>
-#include <Media/XML/PXXML.h>
-#include <Media/YAML/PXYAML.h>
-
-
-
+#include <Math/PXMath.h>
 
 PXActionResult PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImage* const pxImage, const PXText* const pxImageFilePath)
 {
@@ -73,7 +41,7 @@ PXActionResult PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImag
     {
         printf("[PXGraphic] Texture load <%s>... ", pxImageFilePath->TextA);
 
-        const PXActionResult loadResult = PXGraphicResourceLoad(pxImage, pxImageFilePath);
+        const PXActionResult loadResult = PXResourceLoad(pxImage, pxImageFilePath);
 
         if (PXActionSuccessful != loadResult)
         {
@@ -190,7 +158,7 @@ PXActionResult PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont*
 {
     // Load texture
     { 
-        const PXActionResult loadResult = PXGraphicResourceLoad(pxFont, filePath);
+        const PXActionResult loadResult = PXResourceLoad(pxFont, filePath);
 
         PXActionReturnOnError(loadResult);
     }
@@ -550,18 +518,6 @@ PXActionResult PXGraphicSkyboxUse(PXGraphicContext* const graphicContext, PXSkyB
     */
 
     return PXActionInvalid;
-}
-
-PXSize PXGraphicModelListSize(const PXGraphicContext* const graphicContext)
-{
-
-
-    return PXYes;
-}
-
-PXBool PXGraphicModelListGetFromIndex(const PXGraphicContext* const graphicContext, PXModel** pxModel, const PXSize index)
-{
-    return PXYes;
 }
 
 PXSize PXGraphicRenderableListSize(const PXGraphicContext* const graphicContext)
@@ -1272,7 +1228,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXDictionaryConstruct(&graphicContext->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->TextureLookUp, sizeof(PXInt32U), sizeof(PXTexture2D), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->ModelLookUp, sizeof(PXInt32U), sizeof(PXModel), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&graphicContext->ModelLookUp, sizeof(PXInt32U), sizeof(PXVertexStructure), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
@@ -1287,27 +1243,15 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
 
     PXOpenGLCreateForWindow(&graphicContext->OpenGLInstance);
+   
+    //glEnable(GL_DEPTH_TEST); // X-RAY
 
-    if (1)
-    {
-       // glEnable(GL_CULL_FACE);
-      //  glCullFace(GL_BACK);
-    }
+    // glEnable(GL_BLEND);
+      // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+       // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_COLOR, GL_DST_COLOR);
 
-    if (1) // X-RAY
-    {
-        //glEnable(GL_DEPTH_TEST);
-    }
-
-    if (1)
-    {
-       // glEnable(GL_BLEND);
-       // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_COLOR, GL_DST_COLOR);
-
-         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-         //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-    }
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
     PXOpenGLDeselect(&graphicContext->OpenGLInstance);
 #endif
@@ -1589,11 +1533,11 @@ PXActionResult PXGraphicVertexStructureSelect(PXGraphicContext* const graphicCon
     {
         case PXGraphicSystemPXOpenGL:
         {
-            return PXActionNotImplemented;
+            return PXActionRefusedNotImplemented;
         }
         case PXGraphicSystemDirectX:
         {
-            return PXActionNotImplemented;
+            return PXActionRefusedNotImplemented;
         }
         default:
             return PXActionNotSupportedByLibrary;
@@ -1606,11 +1550,11 @@ PXActionResult PXGraphicVertexStructureRelease(PXGraphicContext* const graphicCo
     {
         case PXGraphicSystemPXOpenGL:
         {
-            return PXActionNotImplemented;
+            return PXActionRefusedNotImplemented;
         }
         case PXGraphicSystemDirectX:
         {
-            return PXActionNotImplemented;
+            return PXActionRefusedNotImplemented;
         }
         default:
             return PXActionNotSupportedByLibrary;
@@ -1985,135 +1929,189 @@ PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGra
 }
 #endif
 
-
-
-
-
-
-PXResourceTranslateFunction PXGraphicResourceTranslateFunctionFetch(const PXFileFormat pxFileFormat)
+void PXCameraConstruct(PXCamera* const camera)
 {
-    switch (pxFileFormat)
-    {
-        case PXFileFormatA3DS: return PXAutodesk3DSParseFromFile;
-        case PXFileFormatAAC: return PXAACParseFromFile;
-        case PXFileFormatAVI: return PXAVIParse;
-        case PXFileFormatBitMap: return PXBitmapParseToImage;
-        case PXFileFormatC: return PXNull;
-        case PXFileFormatCSharp: return PXNull;
-        case PXFileFormatCSS: return PXNull;
-        case PXFileFormatCPP: return PXNull;
-        case PXFileFormatWindowsDynamicLinkedLibrary: return PXNull;
-        case PXFileFormatLinuxExecutableAndLinkable: return PXNull;
-        case PXFileFormatEML: return PXNull;
-        case PXFileFormatWindowsExecutable: return PXNull;
-        case PXFileFormatFilmBox: return PXFilmBoxParseFromFile;
-        case PXFileFormatFLAC: return PXFLACParse;
-        case PXFileFormatSpriteFont: return PXSpriteFontParse;
-        case PXFileFormatGIF: return PXGIFParseToImage;
-        case PXFileFormatHTML: return PXNull;
-        case PXFileFormatINI: return PXNull;
-        case PXFileFormatJPEG: return PXJPEGParseToImage;
-        case PXFileFormatJSON: return PXNull;
-        case PXFileFormatM4A: return PXNull;
-        case PXFileFormatMIDI: return PXNull;
-        case PXFileFormatMP3: return PXMP3Parse;
-        case PXFileFormatMP4: return PXNull;
-        case PXFileFormatMSI: return PXNull;
-        case PXFileFormatMTL: return PXNull;
-        case PXFileFormatWavefront: return PXWavefrontParseFromFile;
-        case PXFileFormatOGG: return PXOGGParse;
-        case PXFileFormatPDF: return PXPDFCompile;
-        case PXFileFormatPHP: return PXNull;
-        case PXFileFormatPLY: return PXPLYParseFromFile;
-        case PXFileFormatPNG: return PXPNGParseToImage;
-        case PXFileFormatQOI: return PXNull;
-        case PXFileFormatSTEP: return PXSTEPParse;
-        case PXFileFormatSTL: return PXSTLParseFromFile;
-        case PXFileFormatSVG: return PXSVGParse;
-        case PXFileFormatTGA: return PXNull;
-        case PXFileFormatTagImage: return PXNull;
-        case PXFileFormatTrueTypeFont: return PXTTFParse;
-        case PXFileFormatVRML: return PXVRMLParseFromFile;
-        case PXFileFormatWave: return PXWAVParse;
-        case PXFileFormatWEBM: return PXWEBPParse;
-        case PXFileFormatWEBP: return PXWEBPParse;
-        case PXFileFormatWMA: return PXWMAParse;
-        case PXFileFormatXML: return PXXMLFileCompile;
-        case PXFileFormatYAML: return PXYAMLFileCompile;
+    PXMemoryClear(camera, sizeof(PXCamera));
 
-        default:
-            return PXNull;
+    camera->WalkSpeed = 2;
+    camera->ViewSpeed = 0.4;
+    camera->FollowSpeed = 0.98f;
+    camera->FieldOfView = 45;
+    camera->Height = 1;
+    camera->Width = 1;
+    camera->Near = -0.001;
+    camera->Far = 100000;
+
+    PXMatrix4x4FIdentity(&camera->MatrixModel);
+    PXMatrix4x4FIdentity(&camera->MatrixView);
+    PXMatrix4x4FIdentity(&camera->MatrixProjection);
+
+    PXCameraViewChange(camera, PXCameraPerspective3D);
+}
+
+void PXCameraDestruct(PXCamera* const camera)
+{
+
+}
+
+void PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane)
+{
+    const float scaling = 0.10;
+    const float left = -(width / 2.0f) * scaling;
+    const float right = (width / 2.0f) * scaling;
+    const float bottom = -(height / 2.0f) * scaling;
+    const float top = (height / 2.0f) * scaling;
+
+    camera->Width = width;
+    camera->Height = height;
+    camera->Near = nearPlane;
+    camera->Far = farPlane;
+
+    PXMatrix4x4FOrthographic(&camera->MatrixProjection, left, right, bottom, top, nearPlane, farPlane);
+}
+
+void PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOfView, const float aspectRatio, const float nearPlane, const float farPlane)
+{
+    camera->FieldOfView = fieldOfView;
+    camera->Near = nearPlane;
+    camera->Far = farPlane;
+
+    PXMatrix4x4FPerspective(&camera->MatrixProjection, fieldOfView, aspectRatio, nearPlane, farPlane);
+}
+
+void PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height)
+{
+    camera->Width = width;
+    camera->Height = height;
+
+    PXCameraViewChange(camera, camera->Perspective);
+}
+
+float PXCameraAspectRatio(const PXCamera* const camera)
+{
+    return (float)camera->Width / (float)camera->Height;
+}
+
+void PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective cameraPerspective)
+{
+    camera->Perspective = cameraPerspective;
+
+    switch (cameraPerspective)
+    {
+        case PXCameraPerspective2D:
+        {
+            PXCameraViewChangeToOrthographic(camera, camera->Width, camera->Height, camera->Near, camera->Far);
+            break;
+        }
+
+        case PXCameraPerspective3D:
+        {
+            const float aspectRatio = PXCameraAspectRatio(camera);
+
+            PXCameraViewChangeToPerspective(camera, camera->FieldOfView, aspectRatio, camera->Near, camera->Far);
+
+            break;
+        }
     }
 }
 
-
-PXActionResult PXGraphicResourceLoad(void* resource, const PXText* const filePath)
+void PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F)
 {
-    PXFile pxFile;
-    PXFileFormat pxFileFormat;
+    const float maxValue = 85.0f;
+    const float minValue = -85.0f;
 
-    // Loading file
-    {
-        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-        pxFileOpenFromPathInfo.Text = *filePath;
-        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
-        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
-        pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
-        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+    camera->CurrentRotation.X -= vector3F->X * camera->ViewSpeed;
+    camera->CurrentRotation.Y -= vector3F->Y * camera->ViewSpeed;
 
-        pxFileFormat = PXFilePathExtensionDetectTry(filePath);
+    camera->CurrentRotation.Y = PXMathLimit(camera->CurrentRotation.Y, minValue, maxValue);
 
-        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
+    const float pitchRAD = PXMathDegreeToRadians(camera->CurrentRotation.Y);
+    const float yawRAD = PXMathDegreeToRadians(camera->CurrentRotation.X);
+    const float rx = PXMathCosinus(pitchRAD) * PXMathCosinus(yawRAD);
+    const float ry = PXMathSinus(pitchRAD);
+    const float rz = PXMathCosinus(pitchRAD) * PXMathSinus(yawRAD);
 
-        PXActionReturnOnError(fileLoadingResult);
-    }
-
-    // Try to load assumed format
-    {
-        PXResourceTranslateFunction pxResourceTranslateFunction = PXGraphicResourceTranslateFunctionFetch(pxFileFormat);
-
-        if (pxResourceTranslateFunction == PXNull)
-        {
-            return PXActionNotImplemented;
-        }
-
-        const PXActionResult fileParsingResult = pxResourceTranslateFunction(resource, &pxFile);
-
-        PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try
-
-        return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
-
-    }
-
-#if 0
-    {
-
-        PXActionResult fileGuessResult = PXActionInvalid;
-        unsigned int fileFormatID = 1;
-
-        do
-        {
-            const PXFileFormat imageFileFormat = fileGuessResult + fileFormatID;
-
-            fileGuessResult = PXImageLoadD(image, &pxFile, imageFileFormat);
-
-            fileFormatID++;
-        }
-        while (fileGuessResult == PXActionRefusedInvalidHeaderSignature);
-
-        PXFileDestruct(&pxFile);
-
-        return fileGuessResult;
-    }
-#endif
+    PXVector3FSetXYZ(&camera->LookAtPosition, rx, ry, rz);
+    PXVector3FNormalize(&camera->LookAtPosition, &camera->LookAtPosition);
 }
 
-PXActionResult PXGraphicResourceLoadA(void* resource, const char* const filePath)
+void PXCameraRotateXYZ(PXCamera* const camera, const float x, const float y, const float z)
 {
-    PXText pxText;
+    const PXVector3F vector = { x, y, z };
 
-    PXTextConstructFromAdressA(&pxText, filePath, PXTextUnkownLength);
+    PXCameraRotate(camera, &vector);
+}
 
-    return PXGraphicResourceLoad(resource, &pxText);  
+void PXCameraMoveXYZ(PXCamera* const camera, const float x, const float y, const float z)
+{
+    const PXVector3F vector3F = { x, y, z };
+
+    PXCameraMove(camera, &vector3F);
+}
+
+void PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F)
+{
+    PXVector3F xAxis = { 0,0,0 };
+    const PXVector3F yAxis = { 0, vector3F->Y, 0 };
+    PXVector3F zAxis = { 0,0,0 };
+
+    // ...
+    {
+        const PXVector3F up = { 0, 1, 0 };
+        const PXVector3F lookAtPosition = { camera->LookAtPosition.X, camera->LookAtPosition.Y, camera->LookAtPosition.Z };
+
+        PXVector3FCrossProduct(&lookAtPosition, &up, &xAxis);
+        PXVector3FNormalize(&xAxis, &xAxis);
+        PXVector3FMultiplyXYZ(&xAxis, vector3F->X, 0, vector3F->X, &xAxis);
+
+        zAxis = lookAtPosition;
+
+        PXVector3FNormalize(&zAxis, &zAxis);
+        PXVector3FMultiplyXYZ(&zAxis, vector3F->Z, 0, vector3F->Z, &zAxis);
+    }
+
+    {
+        PXVector3F targetedMovement = { 0,0,0 };
+
+        PXVector3FAdd(&targetedMovement, &xAxis, &targetedMovement);
+        PXVector3FAdd(&targetedMovement, &yAxis, &targetedMovement);
+        PXVector3FAdd(&targetedMovement, &zAxis, &targetedMovement);
+        PXVector3FMultiplyS(&targetedMovement, camera->WalkSpeed, &targetedMovement);
+
+        PXMatrix4x4FMove3F(&camera->MatrixModel, &targetedMovement, &camera->MatrixModel);
+    }
+}
+
+void PXCameraFollow(PXCamera* const camera, const float deltaTime)
+{
+    PXVector3F cameraPositionCurrent;
+    PXVector3F desiredPosition;
+
+    if (!camera->Target)
+    {
+        return;
+    }
+
+    PXMatrix4x4FPosition(&camera->MatrixModel, &cameraPositionCurrent); // Get current camera pos
+    PXMatrix4x4FPosition(camera->Target, &desiredPosition); // get current target pos
+
+    PXVector3FAdd(&desiredPosition, &camera->Offset, &desiredPosition); // add offset to target pos
+
+    PXVector3FInterpolate(&cameraPositionCurrent, &desiredPosition, camera->FollowSpeed * deltaTime, &desiredPosition); // calculate delta movement
+
+    PXMatrix4x4FMoveTo(&camera->MatrixModel, &desiredPosition, &camera->MatrixModel); // Set delte movement
+}
+
+void PXCameraUpdate(PXCamera* const camera, const float deltaTime)
+{
+    const float walkSpeedSmoothed = camera->WalkSpeed * deltaTime;
+    const float viewSpeedSmoothed = camera->ViewSpeed * deltaTime;
+    const PXVector3F up = { 0,1,0 };
+    PXVector3F currentPosition;
+    PXVector3F centerPosition;
+
+    PXMatrix4x4FPosition(&camera->MatrixModel, &currentPosition);
+    PXVector3FAdd(&currentPosition, &camera->LookAtPosition, &centerPosition);
+
+    PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up, &camera->MatrixView);
 }

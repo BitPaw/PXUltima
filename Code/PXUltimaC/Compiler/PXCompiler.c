@@ -13,15 +13,15 @@ void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings)
 	PXMemoryClear(compilerSettings, sizeof(PXCompilerSettings));
 }
 
-void PXCompilerSymbolEntryAdd(PXFile* const dataStream, const PXCompilerSymbolEntry* const compilerSymbolEntry)
+void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	const unsigned char symbolID = compilerSymbolEntry->ID;
 
-	PXFileWriteI8U(dataStream, symbolID);
-	PXFileWriteI32U(dataStream, compilerSymbolEntry->Coloum);
-	PXFileWriteI32U(dataStream, compilerSymbolEntry->Line);
-	PXFileWriteI32U(dataStream, compilerSymbolEntry->Size);
-	PXFileWriteB(dataStream, &compilerSymbolEntry->Source, sizeof(void*));
+	PXFileWriteI8U(pxFile, symbolID);
+	PXFileWriteI32U(pxFile, compilerSymbolEntry->Coloum);
+	PXFileWriteI32U(pxFile, compilerSymbolEntry->Line);
+	PXFileWriteI32U(pxFile, compilerSymbolEntry->Size);
+	PXFileWriteB(pxFile, &compilerSymbolEntry->Source, sizeof(void*));
 
 
 #if 0

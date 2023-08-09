@@ -9,8 +9,10 @@
 #define PXOGGHeaderTypeBeginningOfStream 0x02
 #define PXOGGHeaderTypeEndOfStream 0x04
 
-PXActionResult PXOGGParse(PXOGG* const ogg, PXFile* const pxFile)
+PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
+	PXOGG* ogg = PXNull;
+
 	PXMemoryClear(ogg, sizeof(PXOGG));
 
 	while(!PXFileIsAtEnd(pxFile))
@@ -103,4 +105,9 @@ PXActionResult PXOGGParse(PXOGG* const ogg, PXFile* const pxFile)
 	}
 
 	return PXActionSuccessful;
+}
+
+PXActionResult PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }

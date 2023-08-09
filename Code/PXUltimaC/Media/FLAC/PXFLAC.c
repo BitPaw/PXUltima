@@ -1,6 +1,11 @@
 #include "PXFLAC.h"
 
-PXActionResult PXFLACParse(const void* data, const PXSize dataSize)
+PXActionResult PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+{
+	return PXActionInvalid;
+}
+
+PXActionResult PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	return PXActionInvalid;
 }

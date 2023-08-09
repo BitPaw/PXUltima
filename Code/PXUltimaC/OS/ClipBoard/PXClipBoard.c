@@ -250,7 +250,7 @@ PXClipBoardFormat PXClipBoardFormatFromID(const PXInt32U clipBoardFormat)
 PXActionResult PXClipBoardOpen(PXClipBoard* const clipBoard)
 {
 #if OSUnix
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	HWND pxWindowID = NULL;
@@ -267,7 +267,7 @@ PXActionResult PXClipBoardOpen(PXClipBoard* const clipBoard)
 PXActionResult PXClipBoardClose(PXClipBoard* const clipBoard)
 {
 #if OSUnix
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	const PXBool successfull = CloseClipboard(); // Windows 2000, User32.dll, winuser.h
@@ -284,7 +284,7 @@ PXActionResult PXClipBoardClose(PXClipBoard* const clipBoard)
 PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFormat format, const void* data)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 	// Alloc something with GlobalAlloc()
 	// Maybe copy data?
@@ -305,7 +305,7 @@ PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFor
 PXActionResult PXClipBoardClear(PXClipBoard* const clipBoard)
 {
 #if OSUnix
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 	const PXBool successfull = EmptyClipboard(); // Windows 2000, User32.dll, winuser.h
 

@@ -4,18 +4,21 @@
 #include <Media/PXType.h>
 
 #include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
 	typedef struct PXSVG_
 	{
 		unsigned int __dummy__;
 	}
 	PXSVG;
 
-	PXPublic PXActionResult PXSVGParse(PXSVG* svg, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PXSVGLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXSVGSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

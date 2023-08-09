@@ -6,7 +6,7 @@
 #include <OS/File/PXFile.h>
 
 #include <Media/MTL/PXMTL.h>
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 
 #define PXWavefrontNameSize 64u
 #define PXWavefrontElementNameLength 50u
@@ -97,7 +97,8 @@ extern "C"
 
 
 
-	PXPublic PXActionResult PXWavefrontParseFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXWavefrontSaveFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

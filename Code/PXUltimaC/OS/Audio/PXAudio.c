@@ -93,7 +93,7 @@ void PXAudioSourcePitchReduce(PXAudioSource* const audioSource, float amount)
 PXActionResult PXAudioOutputOpen(PXAudioDeviceOutput* audioDeviceOutput, unsigned int deviceID, unsigned short formatTag, unsigned short channels, unsigned int samplesPerSec, unsigned int avgBytesPerSec, unsigned short blockAlign, unsigned short bitsPerSample, unsigned short cbSize)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	WAVEFORMATEX waveFormatEX;
@@ -129,9 +129,9 @@ PXActionResult PXAudioOutputOpen(PXAudioDeviceOutput* audioDeviceOutput, unsigne
 PXActionResult PXAudioOutputPrepare(PXAudioDeviceOutput* audioDeviceOutput)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #else 
 	return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -140,7 +140,7 @@ PXActionResult PXAudioOutputPrepare(PXAudioDeviceOutput* audioDeviceOutput)
 PXActionResult PXAudioOutputWrite(PXAudioDeviceOutput* audioDeviceOutput, void* dataBuffer, PXSize bufferLength, unsigned int bytesRecorded, unsigned int user, unsigned int flags, unsigned int loopControlCounter)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	WAVEHDR waveHeader;
@@ -179,7 +179,7 @@ PXActionResult PXAudioOutputWrite(PXAudioDeviceOutput* audioDeviceOutput, void* 
 PXActionResult PXAudioOutputClose(PXAudioDeviceOutput* audioDeviceOutput)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 
@@ -197,7 +197,7 @@ PXActionResult PXAudioOutputClose(PXAudioDeviceOutput* audioDeviceOutput)
 PXActionResult PXAudioOutputVolumeGet(PXAudioDeviceOutput* audioDeviceOutput, unsigned short* const volume)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	DWORD volumeDW = 0;
@@ -223,7 +223,7 @@ PXActionResult PXAudioOutputVolumeGet(PXAudioDeviceOutput* audioDeviceOutput, un
 PXActionResult PXAudioOutputVolumeSetEqual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int volume)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	const MMRESULT volumeResultID = waveOutSetVolume(audioDeviceOutput->Handle, volume);
@@ -238,7 +238,7 @@ PXActionResult PXAudioOutputVolumeSetEqual(PXAudioDeviceOutput* audioDeviceOutpu
 PXActionResult PXAudioOutputVolumeSetIndividual(PXAudioDeviceOutput* audioDeviceOutput, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	const unsigned int volumeCombined = (volumeLeft << 16) | volumeRight;
@@ -253,13 +253,13 @@ PXActionResult PXAudioOutputVolumeSetIndividual(PXAudioDeviceOutput* audioDevice
 
 PXActionResult PXAudioOutputPause(PXAudioDeviceOutput* audioDeviceOutput)
 {
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAudioOutputPitchSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	const MMRESULT pitchResultID = waveOutSetPitch(audioDeviceOutput->Handle, pitch);
@@ -274,7 +274,7 @@ PXActionResult PXAudioOutputPitchSet(PXAudioDeviceOutput* audioDeviceOutput, con
 PXActionResult PXAudioOutputPlaybackRateSet(PXAudioDeviceOutput* audioDeviceOutput, const unsigned int pitch)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	const MMRESULT playbackRateResultID = waveOutSetPlaybackRate(audioDeviceOutput->Handle, pitch);
@@ -289,7 +289,7 @@ PXActionResult PXAudioOutputPlaybackRateSet(PXAudioDeviceOutput* audioDeviceOutp
 PXActionResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	const UINT numberOfPutpudevices = waveOutGetNumDevs();
@@ -339,7 +339,7 @@ PXActionResult PXAudioDevicesFetchOutput(PXAudioDeviceCapabilities* audioDeviceC
 PXActionResult PXAudioDevicesFetchInput(PXAudioDeviceCapabilities* audioDeviceCapabilitiesList, const PXSize audioDeviceCapabilitiesListSizeMax, PXSize* audioDeviceCapabilitiesListSize)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 	const UINT numberOfInputDevices = waveInGetNumDevs();

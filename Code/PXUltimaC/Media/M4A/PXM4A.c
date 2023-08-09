@@ -65,24 +65,24 @@ PXM4AChunkID ConvertToM4AChunkID(const PXInt32U chunkID)
 
 PXActionResult PXM4AParse(PXM4A* m4a, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	PXFile dataStream;
+	PXFile pxFile;
 
 	PXMemoryClear(m4a, sizeof(PXM4A));
 	*dataRead = 0;
-	PXFileConstruct(&dataStream);
-	PXFileBufferExternal(&dataStream, data, dataSize);
+	PXFileConstruct(&pxFile);
+	PXFileBufferExternal(&pxFile, data, dataSize);
 
-	while(!PXFileIsAtEnd(&dataStream))
+	while(!PXFileIsAtEnd(&pxFile))
 	{
 		PXM4AChunk chunk;
 
 		unsigned int chunkSize = 0;
 		PXInt32UCluster typePrimaryID;
 
-		PXFileReadI32UE(&dataStream, &chunkSize, PXEndianBig);
-		PXFileReadB(&dataStream, typePrimaryID.Data, 4u);
+		PXFileReadI32UE(&pxFile, &chunkSize, PXEndianBig);
+		PXFileReadB(&pxFile, typePrimaryID.Data, 4u);
 
-		const PXSize positionPrediction = dataStream.DataCursor + chunkSize - 8;
+		const PXSize positionPrediction = pxFile.DataCursor + chunkSize - 8;
 		const PXM4AChunkID typePrimary = ConvertToM4AChunkID(typePrimaryID.Value);
 
 #if M4ADebugLog
@@ -104,9 +104,9 @@ PXActionResult PXM4AParse(PXM4A* m4a, const void* data, const PXSize dataSize, P
 				unsigned int sizeB = 0;
 				char isoSignature[8]; // isom3gp4
 
-				PXFileReadB(&dataStream, chunk.TypeSub, 4u);
-				PXFileReadI32UE(&dataStream, &sizeB, PXEndianBig);
-				PXFileReadB(&dataStream, isoSignature, 8u);
+				PXFileReadB(&pxFile, chunk.TypeSub, 4u);
+				PXFileReadI32UE(&pxFile, &sizeB, PXEndianBig);
+				PXFileReadB(&pxFile, isoSignature, 8u);
 
 				break;
 			}
@@ -165,15 +165,15 @@ PXActionResult PXM4AParse(PXM4A* m4a, const void* data, const PXSize dataSize, P
 			}
 		}
 
-		if(dataStream.DataCursor < positionPrediction)
+		if(pxFile.DataCursor < positionPrediction)
 		{
-			const unsigned int offset = positionPrediction - dataStream.DataCursor;
+			const unsigned int offset = positionPrediction - pxFile.DataCursor;
 
 #if M4ADebugLog
 			printf("[M4A] Illegal allignment detected! Moving %i Bytes\n", offset);
 #endif
 
-			dataStream.DataCursor = positionPrediction;
+			pxFile.DataCursor = positionPrediction;
 		}
 	}
 

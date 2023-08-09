@@ -129,7 +129,7 @@ unsigned int ConvertFromPXBitmapInfoHeaderType(const PXBitmapInfoHeaderType info
     }
 }
 
-PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStream)
+PXActionResult PXBitmapLoadToImage(PXImage* const image, PXFile* const pxFile)
 {
     PXBitmap bmp;
 
@@ -144,8 +144,8 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
         PXInt16UCluster byteCluster;
         PXInt32U* valueList[3] = { &sizeOfFile, &reservedBlock, &dataOffset };
 
-        PXFileReadB(dataStream, byteCluster.Data, 2u);
-        PXFileReadI32UVE(dataStream, valueList, 3u, PXEndianLittle);
+        PXFileReadB(pxFile, byteCluster.Data, 2u);
+        PXFileReadI32UVE(pxFile, valueList, 3u, PXEndianLittle);
 
         const PXBitmapType type = ConvertToPXBitmapType(byteCluster.Value);
 
@@ -164,7 +164,7 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
 
     //---[ DIP ]---------------------------------------------------------------
     {
-        PXFileReadI32UE(dataStream, &bmp.InfoHeader.HeaderSize, PXEndianLittle);
+        PXFileReadI32UE(pxFile, &bmp.InfoHeader.HeaderSize, PXEndianLittle);
 
         bmp.InfoHeaderType = ConvertToPXBitmapInfoHeaderType(bmp.InfoHeader.HeaderSize);
 
@@ -187,7 +187,7 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
                 };
                 const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
                 break;
             }
@@ -207,7 +207,7 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
                 }
 
                 if(bmp.InfoHeaderType == PXBitmapHeaderOS22XBitMapHeader)
@@ -227,7 +227,7 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
                 }
 
                 break;
@@ -261,8 +261,8 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
     {
         PXByte* const data = (PXByte* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
-        PXFileReadB(dataStream, data, imageDataLayout.RowImageDataSize); // Read/Write image data
-        PXFileCursorAdvance(dataStream, imageDataLayout.RowPaddingSize); // Skip padding
+        PXFileReadB(pxFile, data, imageDataLayout.RowImageDataSize); // Read/Write image data
+        PXFileCursorAdvance(pxFile, imageDataLayout.RowPaddingSize); // Skip padding
 
         for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3)
         {
@@ -276,12 +276,12 @@ PXActionResult PXBitmapParseToImage(PXImage* const image, PXFile* const dataStre
     return PXActionSuccessful;
 }
 
-PXActionResult PXBitmapSerialize(const PXBitmap* const bmp, PXFile* const dataStream)
+PXActionResult PXBitmapSerialize(const PXBitmap* const bmp, PXFile* const pxFile)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXFile* const dataStream)
+PXActionResult PXBitmapSaveFromImage(const PXImage* const image, PXFile* const pxFile)
 {
     PXBitmap bitMap;
 
@@ -290,16 +290,16 @@ PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXFile* co
     //---<Header>-----
     {
         PXInt16UCluster byteCluster;
-        unsigned int sizeOfFile = dataStream->DataSize;
+        unsigned int sizeOfFile = pxFile->DataSize;
         unsigned int reservedBlock = 0;
         unsigned int dataOffset = 54u;
 
         byteCluster.Value = ConvertFromPXBitmapType(PXBitmapWindows);
 
-        PXFileWriteB(dataStream, byteCluster.Data, 2u);
-        PXFileWriteI32UE(dataStream, sizeOfFile, PXEndianLittle);
-        PXFileWriteI32UE(dataStream, reservedBlock, PXEndianLittle);
-        PXFileWriteI32UE(dataStream, dataOffset, PXEndianLittle);
+        PXFileWriteB(pxFile, byteCluster.Data, 2u);
+        PXFileWriteI32UE(pxFile, sizeOfFile, PXEndianLittle);
+        PXFileWriteI32UE(pxFile, reservedBlock, PXEndianLittle);
+        PXFileWriteI32UE(pxFile, dataOffset, PXEndianLittle);
     }
     //----------------
 
@@ -315,7 +315,7 @@ PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXFile* co
         bitMap.InfoHeader.Height = image->Height;
         //---------------------------------------------------------------------
 
-        PXFileWriteI32UE(dataStream, bitMap.InfoHeader.HeaderSize, PXEndianLittle);
+        PXFileWriteI32UE(pxFile, bitMap.InfoHeader.HeaderSize, PXEndianLittle);
 
         switch (bmpInfoHeaderType)
         {
@@ -324,16 +324,16 @@ PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXFile* co
                 bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution = 1u;
                 bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution = 1u;
 
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.Width, PXEndianLittle);
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.Height, PXEndianLittle);
-                PXFileWriteI16UE(dataStream, bitMap.InfoHeader.NumberOfColorPlanes, PXEndianLittle);
-                PXFileWriteI16UE(dataStream, bitMap.InfoHeader.NumberOfBitsPerPixel, PXEndianLittle);
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod, PXEndianLittle);
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize, PXEndianLittle);
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution, PXEndianLittle);
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution, PXEndianLittle);
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette, PXEndianLittle);
-                PXFileWriteI32SE(dataStream, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.Width, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.Height, PXEndianLittle);
+                PXFileWriteI16UE(pxFile, bitMap.InfoHeader.NumberOfColorPlanes, PXEndianLittle);
+                PXFileWriteI16UE(pxFile, bitMap.InfoHeader.NumberOfBitsPerPixel, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette, PXEndianLittle);
+                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed, PXEndianLittle);
                 break;
             }
         }
@@ -358,10 +358,10 @@ PXActionResult PXBitmapSerializeFromImage(const PXImage* const image, PXFile* co
                     dataInsertPoint[i]
                 };
 
-                PXFileWriteB(dataStream, pixelBuffer, 3u);
+                PXFileWriteB(pxFile, pixelBuffer, 3u);
             }
 
-            PXFileWriteFill(dataStream, 0, imageDataLayout.RowPaddingSize);
+            PXFileWriteFill(pxFile, 0, imageDataLayout.RowPaddingSize);
         }
     }
 

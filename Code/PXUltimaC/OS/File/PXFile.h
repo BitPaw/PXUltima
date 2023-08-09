@@ -150,6 +150,38 @@ void PXDirectoryIsDotFolder(const char* s)
 	}
 	PXFileDataElementType;
 
+	typedef struct PXFile_ PXFile;
+
+	typedef PXActionResult(*PXResourceTranslateFunction)(void* const pxResource, PXFile* const pxFile);
+
+	typedef enum PXFileResourceType_
+	{
+		PXFileResourceTypeInvalid,
+		PXFileResourceTypeUnkown,
+		PXFileResourceTypeImage,
+		PXFileResourceTypeSound,
+		PXFileResourceTypeVideo,
+		PXFileResourceTypeFont,
+		PXFileResourceTypeVertexStructure,
+		PXFileResourceTypeExecutable,
+		PXFileResourceTypeLibrary,
+		PXFileResourceTypeStructuredText,
+		PXFileResourceTypeCode
+	}
+	PXFileResourceType;
+
+	typedef struct PXFileTypeInfo_
+	{
+		PXFileFormat FormatExpected;
+		PXFileFormat FormatReal;
+		PXFileResourceType ResourceType; // Type of resource. Image, Sound, Video...
+
+
+		PXResourceTranslateFunction ResourceLoadFunction;
+		PXResourceTranslateFunction ResourceSaveFunction;
+	}
+	PXFileTypeInfo;
+
 	typedef struct PXFile_
 	{
 		//---<PosisionData>---
@@ -171,6 +203,8 @@ void PXDirectoryIsDotFolder(const char* s)
 		HANDLE ID;
 		HANDLE MappingID;
 #endif
+
+		PXFileTypeInfo TypeInfo;
 	}
 	PXFile;
 
@@ -279,9 +313,9 @@ void PXDirectoryIsDotFolder(const char* s)
 	//---------------------------------------------------------------------
 
 	//---<Parsing Utility>-----------------------------------------------------
-	PXPublic PXSize PXFileRemainingSize(const PXFile* const dataStream);
-	PXPublic PXSize PXFileRemainingSizeRelativeFromAddress(const PXFile* const dataStream, const void* const adress);
-	PXPublic PXBool PXFileIsAtEnd(const PXFile* const dataStream);
+	PXPublic PXSize PXFileRemainingSize(const PXFile* const pxFile);
+	PXPublic PXSize PXFileRemainingSizeRelativeFromAddress(const PXFile* const pxFile, const void* const adress);
+	PXPublic PXBool PXFileIsAtEnd(const PXFile* const pxFile);
 
 	PXPublic void* PXFileCursorPosition(PXFile* const pxFile);
 	PXPublic void PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position);

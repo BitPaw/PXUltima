@@ -40,9 +40,9 @@ extern "C"
 
 	PXPublic PXSize PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const pxFile);
 
-	PXPublic PXActionResult PXGIFSerializeFromImage(const PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXGIFSerializeFromImage(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

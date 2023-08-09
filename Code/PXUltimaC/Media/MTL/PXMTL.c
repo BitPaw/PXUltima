@@ -271,11 +271,11 @@ PXActionResult PXMTLParseToMaterial(PXMaterialContainer* const pxMaterialList, P
 /*
 PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	PXFile dataStream;
+	PXFile pxFile;
 
 	MTLConstruct(mtl);
-	PXFileConstruct(&dataStream);
-	PXFileBufferExternal(&dataStream, data, dataSize);
+	PXFileConstruct(&pxFile);
+	PXFileBufferExternal(&pxFile, data, dataSize);
 	*dataRead = 0;
 
 	// Count How many materials are needed
@@ -284,7 +284,7 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 
 		do
 		{
-			const unsigned char* currentLine = PXFileCursorPosition(&dataStream);
+			const unsigned char* currentLine = PXFileCursorPosition(&pxFile);
 			const unsigned char isNewMaterialUsed = *currentLine == 'n';
 
 			if(isNewMaterialUsed)
@@ -292,14 +292,14 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 				++materialCounter;
 			}
 		}
-		while(PXFileSkipLine(&dataStream));
+		while(PXFileSkipLine(&pxFile));
 
 		mtl->MaterialListSize = materialCounter;
 		mtl->MaterialList = MemoryAllocate(sizeof(MTLMaterial) * materialCounter);
 
 		MemorySet(mtl->MaterialList, sizeof(MTLMaterial) * materialCounter, 0);
 
-		PXFileCursorToBeginning(&dataStream);
+		PXFileCursorToBeginning(&pxFile);
 	}
 
 	// Raw Parse
@@ -308,13 +308,13 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 
 	do
 	{
-		const char* currentLine = PXFileCursorPosition(&dataStream);
+		const char* currentLine = PXFileCursorPosition(&pxFile);
 		const MTLLineType lineType = MTLPeekLine(currentLine);
 
-		PXFileSkipBlock(&dataStream); // Skip first element
+		PXFileSkipBlock(&pxFile); // Skip first element
 
-		const char* dataPoint = PXFileCursorPosition(&dataStream);
-		const PXSize maxSize = PXFileRemainingSize(&dataStream);
+		const char* dataPoint = PXFileCursorPosition(&pxFile);
+		const PXSize maxSize = PXFileRemainingSize(&pxFile);
 		const PXSize lineSize = TextLengthUntilA(dataPoint, maxSize, '\n');
 
 		switch(lineType)
@@ -444,7 +444,7 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 			}
 		}
 	}
-	while(PXFileSkipLine(&dataStream));
+	while(PXFileSkipLine(&pxFile));
 
 	return PXActionSuccessful;
 }

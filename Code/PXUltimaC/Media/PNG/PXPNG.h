@@ -402,8 +402,8 @@ enough memory.*/
 
 	PXPublic PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream);
-	PXPublic PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXPNGSaveToFile(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

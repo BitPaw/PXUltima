@@ -113,10 +113,10 @@ extern "C"
 	PXPublic void PXTGADestruct(PXTGA* const tga);
 
 
-	PXPublic PXActionResult PXTGAParse(PXTGA* const tga, PXFile* const pxFile);
-	PXPublic PXActionResult PXTGAParseToImage(PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXTGASaveToFile(PXImage* const pxImage, PXFile* const pxFile);
 
-	PXPublic PXActionResult PXTGASerializeFromImage(const PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXTGASerializeFromImage(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

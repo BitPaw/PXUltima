@@ -23,6 +23,6 @@ PXActionResult PXBashExecute(const PXText* const programPath, const PXBool syncr
 
 	free(data);*/
 
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 }
 #endif

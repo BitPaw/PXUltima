@@ -87,7 +87,7 @@ PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction thread
 PXActionResult PXThreadRunInOtherProcess(PXThread* const pxThread, const void* processHandle, const ThreadFunction threadFunction, const void* parameter)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 
@@ -122,7 +122,7 @@ PXActionResult PXThreadRunInOtherProcess(PXThread* const pxThread, const void* p
 PXActionResult PXThreadExitCurrent(const PXInt32U exitCode)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 	ExitThread(exitCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -136,7 +136,7 @@ PXActionResult PXThreadExitCurrent(const PXInt32U exitCode)
 PXActionResult PXThreadYieldToOtherThreads()
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 	const PXBool successful = SwitchToThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -152,7 +152,7 @@ PXActionResult PXThreadYieldToOtherThreads()
 PXActionResult PXThreadOpen(PXThread* const pxThread)
 {
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 	DWORD dwDesiredAccess = 0;
@@ -175,7 +175,7 @@ PXActionResult PXThreadSuspend(PXThread* const pxThread)
 	if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefuedObjectIDInvalid;
 
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 	const DWORD result = SuspendThread(pxThread->ThreadID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -194,7 +194,7 @@ PXActionResult PXThreadResume(PXThread* const pxThread)
 	if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefuedObjectIDInvalid;
 
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 	const DWORD suspendCount = ResumeThread(pxThread->ThreadID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -213,7 +213,7 @@ PXActionResult PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
 	//if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefuedObjectIDInvalid;
 
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 	Sleep(sleepTime); // Windows XP (+UWP), Kernel32.dll, synchapi.h

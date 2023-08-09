@@ -918,7 +918,7 @@ PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSiz
     return sum;
 }
 
-PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
+PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
 {
     PXPNG png;
     PXPNGConstruct(&png);
@@ -937,7 +937,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
         //---<Check PNG Header>------------------------------------------------
         {
             const PXInt64U pngFileHeader = PNGHeaderSequenz;
-            const PXBool isValidHeader = PXFileReadAndCompareI64U(dataStream, pngFileHeader);
+            const PXBool isValidHeader = PXFileReadAndCompareI64U(pxFile, pngFileHeader);
 
             if (!isValidHeader)
             {
@@ -946,7 +946,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
         }
 
         // Allocate Memory for later ImageData Chunks
-        imageDataChunkCacheSizeMAX = dataStream->DataSize - 0u;
+        imageDataChunkCacheSizeMAX = pxFile->DataSize - 0u;
         imageDataChunkCache = PXMemoryAllocate(sizeof(PXByte) * imageDataChunkCacheSizeMAX);
 
         //---------------------------------------------------------------------
@@ -968,10 +968,10 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
 
             PXMemoryClear(&chunk, sizeof(PXPNGChunk));
 
-            //chunk.ChunkData = dataStream.Data + dataStream.DataCursor;
+            //chunk.ChunkData = pxFile.Data + pxFile.DataCursor;
 
-            PXFileReadI32UE(dataStream, &chunk.Lengh, PXEndianBig);
-            PXFileReadB(dataStream, chunk.ChunkID.Data, 4u);
+            PXFileReadI32UE(pxFile, &chunk.Lengh, PXEndianBig);
+            PXFileReadB(pxFile, chunk.ChunkID.Data, 4u);
 
             // Check
             {
@@ -989,7 +989,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
 
                 chunk.ChunkType = PXPNGChunkTypeFromID(chunk.ChunkID.Value);
 
-                predictedOffset = dataStream->DataCursor + chunk.Lengh;
+                predictedOffset = pxFile->DataCursor + chunk.Lengh;
             }
 
 #if PNGDebugInfo
@@ -1028,7 +1028,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
                     png.ImageHeader.ColorType = PXPNGColorTypeFromID(colorTypeRaw);
                     png.ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(interlaceMethodRaw);
@@ -1049,7 +1049,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                     {
                         unsigned char* paletteInsertion = png.Palette + i * 4;
 
-                        PXFileReadB(dataStream, paletteInsertion, 3u); // Read RGB value
+                        PXFileReadB(pxFile, paletteInsertion, 3u); // Read RGB value
 
                         paletteInsertion[3] = 0xFF; // Add alpha
                     }
@@ -1059,7 +1059,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                 case PXPNGChunkImageData:
                 {
                     /*
-                    PXZLIB PXZLIB(dataStream.Data + dataStream.DataCursor, chunk.Lengh);
+                    PXZLIB PXZLIB(pxFile.Data + pxFile.DataCursor, chunk.Lengh);
 
                     // Dump content into buffer
                     // There may be multiple IDAT chunks; if so, they shall appear consecutively with no other intervening chunks.
@@ -1097,7 +1097,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                     //PXZLIB.Unpack(imageDataChunkCache, imageDataChunkCacheSizeUSED);
 
 
-                    PXFileReadB(dataStream, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
+                    PXFileReadB(pxFile, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
 
                     imageDataChunkCacheSizeUSED += chunk.Lengh;
 
@@ -1121,7 +1121,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
 
                             unsigned short value;
 
-                            PXFileReadI16UE(dataStream, &value, PXEndianBig);
+                            PXFileReadI16UE(pxFile, &value, PXEndianBig);
 
                             // color->key_defined = 1;
                              //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
@@ -1137,9 +1137,9 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                             unsigned short green;
                             unsigned short blue;
 
-                            PXFileReadI16UE(dataStream, &red, PXEndianBig);
-                            PXFileReadI16UE(dataStream, &green, PXEndianBig);
-                            PXFileReadI16UE(dataStream, &blue, PXEndianBig);
+                            PXFileReadI16UE(pxFile, &red, PXEndianBig);
+                            PXFileReadI16UE(pxFile, &green, PXEndianBig);
+                            PXFileReadI16UE(pxFile, &blue, PXEndianBig);
 
                             //color->key_defined = 1;
                             //color->key_r = 256u * data[0] + data[1];
@@ -1159,7 +1159,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                             {
                                 unsigned char value = 0;
 
-                                PXFileReadI8U(dataStream, &value);
+                                PXFileReadI8U(pxFile, &value);
 
                                 png.Palette[i * 4 + 3] = value;
                             }
@@ -1177,7 +1177,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                 }
                 case PXPNGChunkImageGamma:
                 {
-                    PXFileReadI32UE(dataStream, &png.Gamma, PXEndianBig);
+                    PXFileReadI32UE(pxFile, &png.Gamma, PXEndianBig);
 
                     break;
                 }
@@ -1196,13 +1196,13 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                     };
                     const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
                     break;
                 }
                 case PXPNGChunkStandardRGBColorSpace:
                 {
-                    // dataStream.Read(RenderingIntent);
+                    // pxFile.Read(RenderingIntent);
 
                     // COpy array
 
@@ -1210,13 +1210,13 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                 }
                 case PXPNGChunkEmbeddedICCProfile:
                 {
-                    //  dataStream.DataCursor += chunk.Lengh;
+                    //  pxFile.DataCursor += chunk.Lengh;
 
                     break;
                 }
                 case PXPNGChunkTextualData:
                 {
-                    //  dataStream.DataCursor += chunk.Lengh;
+                    //  pxFile.DataCursor += chunk.Lengh;
 
 
                     break;
@@ -1228,13 +1228,13 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                     // Compression method 	        1 byte
                     // Compressed text datastream 	n bytes
 
-                  //  dataStream.DataCursor += chunk.Lengh;
+                  //  pxFile.DataCursor += chunk.Lengh;
 
                     break;
                 }
                 case PXPNGChunkInternationalTextualData:
                 {
-                    //  dataStream.DataCursor += chunk.Lengh;
+                    //  pxFile.DataCursor += chunk.Lengh;
 
                     break;
                 }
@@ -1249,20 +1249,20 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                         case PXPNGColorGrayscale:
                         case PXPNGColorGrayscaleAlpha:
                         {
-                            //  dataStream.Read(png.BackgroundColor.GreyScale, PXEndianBig);
+                            //  pxFile.Read(png.BackgroundColor.GreyScale, PXEndianBig);
                             break;
                         }
                         case PXPNGColorRGB:
                         case PXPNGColorRGBA:
                         {
-                            // dataStream.Read(png.BackgroundColor.Red, PXEndianBig);
-                            // dataStream.Read(png.BackgroundColor.Green, PXEndianBig);
-                            // dataStream.Read(png.BackgroundColor.Blue, PXEndianBig);
+                            // pxFile.Read(png.BackgroundColor.Red, PXEndianBig);
+                            // pxFile.Read(png.BackgroundColor.Green, PXEndianBig);
+                            // pxFile.Read(png.BackgroundColor.Blue, PXEndianBig);
                             break;
                         }
                         case PXPNGColorPalette:
                         {
-                            //dataStream.Read(png.BackgroundColor.PaletteIndex);
+                            //pxFile.Read(png.BackgroundColor.PaletteIndex);
                             break;
                         }
                     }
@@ -1273,9 +1273,9 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                 {
                     unsigned char unitSpecifier = 0;
 
-                    PXFileReadI32UE(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
-                    PXFileReadI32UE(dataStream, &png.PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
-                    PXFileReadI8U(dataStream, &unitSpecifier);
+                    PXFileReadI32UE(pxFile, &png.PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
+                    PXFileReadI32UE(pxFile, &png.PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
+                    PXFileReadI8U(pxFile, &unitSpecifier);
 
                     switch (unitSpecifier)
                     {
@@ -1324,7 +1324,7 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                     {
                         char calcbyte;
 
-                        dataStream.Read(calcbyte);
+                        pxFile.Read(calcbyte);
 
                         result = (result << (i * 8)) | calcbyte;
                     }
@@ -1348,26 +1348,26 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
 
                     for (PXSize i = 0; i < listSize; i++)
                     {
-                        PXFileReadI16UE(dataStream, &list[i], PXEndianBig);
+                        PXFileReadI16UE(pxFile, &list[i], PXEndianBig);
                     }
 
                     break;
                 }
                 case PXPNGChunkLastModificationTime:
                 {
-                    PXFileReadI16UE(dataStream, &png.LastModificationTime.Year, PXEndianBig);
-                    PXFileReadI8U(dataStream, &png.LastModificationTime.Month);
-                    PXFileReadI8U(dataStream, &png.LastModificationTime.Day);
-                    PXFileReadI8U(dataStream, &png.LastModificationTime.Hour);
-                    PXFileReadI8U(dataStream, &png.LastModificationTime.Minute);
-                    PXFileReadI8U(dataStream, &png.LastModificationTime.Second);
+                    PXFileReadI16UE(pxFile, &png.LastModificationTime.Year, PXEndianBig);
+                    PXFileReadI8U(pxFile, &png.LastModificationTime.Month);
+                    PXFileReadI8U(pxFile, &png.LastModificationTime.Day);
+                    PXFileReadI8U(pxFile, &png.LastModificationTime.Hour);
+                    PXFileReadI8U(pxFile, &png.LastModificationTime.Minute);
+                    PXFileReadI8U(pxFile, &png.LastModificationTime.Second);
 
                     break;
                 }
                 case PXPNGChunkCustom:
                 default:
                 {
-                    PXFileCursorAdvance(dataStream, chunk.Lengh);
+                    PXFileCursorAdvance(pxFile, chunk.Lengh);
                     break;
                 }
             }
@@ -1379,9 +1379,9 @@ PXActionResult PXPNGParseToImage(PXImage* const image, PXFile* const dataStream)
                 printf("[i][PNG] Chunk did not handle all Bytes\n");
             }
 #endif
-            dataStream->DataCursor = predictedOffset;
+            pxFile->DataCursor = predictedOffset;
 
-            PXFileReadI32UE(dataStream, &chunk.CRC, PXEndianBig); // 4 Bytes
+            PXFileReadI32UE(pxFile, &chunk.CRC, PXEndianBig); // 4 Bytes
 
             //---<Check CRC>---
             // TODO: Yes
@@ -2060,7 +2060,7 @@ PXSize preProcessScanlines
     return error;
 }
 
-PXActionResult PXPNGSerializeFromImage(const PXImage* const image, PXFile* const pxExportStream)
+PXActionResult PXPNGSaveToFile(const PXImage* const image, PXFile* const pxExportStream)
 {
     //---<Signature>--- 8 Bytes
     {

@@ -5,6 +5,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
 
+#include <Media/PXResource.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -61,8 +63,8 @@ extern "C"
 	}
 	PXMIDI;
 
-	PXPublic PXActionResult PXMIDIParse(PXMIDI* const mid, PXFile* const PXFile);
-	PXPublic PXActionResult PXMIDISerialize(PXMIDI* const mid, PXFile* const PXFile);
+	PXPublic PXActionResult PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXMIDISaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

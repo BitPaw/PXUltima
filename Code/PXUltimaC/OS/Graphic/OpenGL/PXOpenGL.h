@@ -33,7 +33,7 @@ typedef HGLRC PXOpenGLConextID;
 //---------------------------
 
 #include <Media/PXType.h>
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 
 typedef ptrdiff_t GLintptr;
 typedef ptrdiff_t GLsizeiptr;

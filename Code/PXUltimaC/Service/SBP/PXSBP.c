@@ -160,7 +160,7 @@ PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void
 
 PXActionResult PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize)

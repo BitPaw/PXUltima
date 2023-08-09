@@ -5,6 +5,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
 
+#include <Media/PXResource.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -34,7 +36,8 @@ extern "C"
 	}
 	PXAVI;
 
-	PXPublic PXActionResult PXAVIParse(PXAVI* const avi, PXFile* const PXFile);
+	PXPublic PXActionResult PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAVISaveToFile(PXVideo* const pxVideo, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

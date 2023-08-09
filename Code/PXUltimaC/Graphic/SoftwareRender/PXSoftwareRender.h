@@ -5,7 +5,7 @@
 #include <Media/PXImage.h>
 #include <Media/PXText.h>
 
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"

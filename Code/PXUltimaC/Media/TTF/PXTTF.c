@@ -183,7 +183,7 @@ void PXTTFDestruct(PXTTF* const ttf)
 	// TODO
 }
 
-PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 {
 	PXTTF* ttf = PXNull;
 
@@ -207,7 +207,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 		PXFileReadI16UVE(pxFile, dataList, dataListSize, PXEndianBig);
 	}
 
-	for(PXSize i = 0; i < offsetTable.NumberOfTables; ++i)
+	for (PXSize i = 0; i < offsetTable.NumberOfTables; ++i)
 	{
 		PXTTFTableEntry tableEntry;
 		PXSize sourcePosition = 0;
@@ -243,7 +243,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 		sourcePosition = pxFile->DataCursor;
 		PXFileCursorMoveTo(pxFile, tableEntry.Offset);
 
-		switch(tableEntry.Type)
+		switch (tableEntry.Type)
 		{
 			//---<Essential>---------------------------------------------------		
 			case PXTTFTableEntryFontHeader:
@@ -305,7 +305,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 
 				//assert(validVersion);
 
-				if(trustedTypeFonts && !openTypeFonts)
+				if (trustedTypeFonts && !openTypeFonts)
 				{
 					PXFileReadI16U(pxFile, &ttf->MaximumProfile.PointsMaximal, PXEndianBig);
 					PXFileReadI16U(pxFile, &ttf->MaximumProfile.ContoursMaximal, PXEndianBig);
@@ -392,7 +392,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 				PXFileReadI16U(pxFile, &ttf->Compatibility.fsFirstCharIndex, PXEndianBig);
 				PXFileReadI16U(pxFile, &ttf->Compatibility.fsLastCharIndex, PXEndianBig);
 
-				if(ttf->Compatibility.Version > 0)
+				if (ttf->Compatibility.Version > 0)
 				{
 					PXFileReadI16U(pxFile, &ttf->Compatibility.sTypoAscender, PXEndianBig);
 					PXFileReadI16U(pxFile, &ttf->Compatibility.sTypoDescender, PXEndianBig);
@@ -531,7 +531,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 				TableEntryGlyphOutlineEntry tableEntryGlyphOutlineEntry;
 
 				PXMemoryClear(&tableEntryGlyphOutlineEntry, sizeof(TableEntryGlyphOutlineEntry));
-				
+
 				PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
 				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Minimum[0], PXEndianBig);
 				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Minimum[1], PXEndianBig);
@@ -562,7 +562,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
 					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
 				}
-		
+
 
 				break;
 			}
@@ -581,7 +581,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 				ttf->CharacterMapping.EncodingRecordListSize = sizeof(EncodingRecord) * ttf->CharacterMapping.NumberOfTables;
 				ttf->CharacterMapping.EncodingRecordList = PXMemoryAllocateTypeCleared(EncodingRecord, ttf->CharacterMapping.NumberOfTables);
 
-				for(PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)
+				for (PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)
 				{
 					EncodingRecord* const encodingRecord = &ttf->CharacterMapping.EncodingRecordList[i];
 
@@ -597,7 +597,7 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 
 					// Proceed?
 				}
-				
+
 				break;
 			}
 			case PXTTFTableEntryLinearThreshold:
@@ -657,9 +657,14 @@ PXActionResult PXTTFParse(PXFont* const pxFont, PXFile* const pxFile)
 				break;
 			}
 		}
-	
+
 		PXFileCursorMoveTo(pxFile, sourcePosition);
-	}	
+	}
 
 	return PXActionSuccessful;
+}
+
+PXActionResult PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }

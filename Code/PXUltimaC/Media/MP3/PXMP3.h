@@ -6,6 +6,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <Media/ID3/PXID3.h>
 
+#include <Media/PXResource.h>
+
 #define PXMP3Debug 1
 
 #ifdef __cplusplus
@@ -226,7 +228,8 @@ extern "C"
 	static MPEGGenre ConvertMPEGToGenre(const unsigned char mpegGenre);
 	static unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre);
 
-	PXPublic PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile);
+	PXPublic PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 
 #ifdef __cplusplus

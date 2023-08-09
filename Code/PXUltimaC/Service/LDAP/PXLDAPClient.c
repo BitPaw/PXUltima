@@ -25,7 +25,7 @@ PXActionResult PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPCo
 		case TextFormatUTF8:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
 			if (pxLDAPInfo->ConnectionOriented)
@@ -49,7 +49,7 @@ PXActionResult PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPCo
 		case TextFormatUNICODE:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
 			if (pxLDAPInfo->ConnectionOriented)
@@ -131,7 +131,7 @@ PXActionResult PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 	}
 
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 	const ULONG result = ldap_unbind(pxLDAPClient->ID);
 	const PXBool successful = LDAP_SUCCESS == result;
@@ -154,7 +154,7 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 	}
 
 #if OSUnix
-	return PXActionNotImplemented;
+	return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
 	ULONG scope = 0;
@@ -191,7 +191,7 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 		case TextFormatUTF8:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
 			if (pxLDAPSearchInfo->Async)
@@ -236,7 +236,7 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 		case TextFormatUNICODE:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 			const ULONG messageID = ldap_searchW
 			(

@@ -2,13 +2,13 @@
 
 #include <Media/PXText.h>
 
-PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const dataStream)
+PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const pxFile)
 {
 	// Check signature (4 Bytes)
 	{
 		const char signature[] = { 'L', 'A', 'M', 'E' };
 		const PXSize signatueSize = sizeof(signature);
-		const PXBool isValid = PXFileReadAndCompare(&dataStream, signature, signatueSize);
+		const PXBool isValid = PXFileReadAndCompare(&pxFile, signature, signatueSize);
 
 		if(!isValid)
 		{
@@ -18,10 +18,10 @@ PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const dataStream)
 
 	// Fetch version (5 Bytes)
 	{
-		PXFileReadTextIU8(&dataStream, &lame->MajorVersion); // 1 character
-		const char isDot = PXFileReadAndCompare(&dataStream, '.', sizeof(unsigned char));
-		PXFileReadTextIU8(&dataStream, lame->MinorVersion); // 2 character
-		PXFileReadI8U(&dataStream, &lame->ReleaseVersion); // letter
+		PXFileReadTextIU8(&pxFile, &lame->MajorVersion); // 1 character
+		const char isDot = PXFileReadAndCompare(&pxFile, '.', sizeof(unsigned char));
+		PXFileReadTextIU8(&pxFile, lame->MinorVersion); // 2 character
+		PXFileReadI8U(&pxFile, &lame->ReleaseVersion); // letter
 	}
 
 	{
@@ -52,14 +52,14 @@ PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const dataStream)
 		};
 		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-		PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 	}
 
 	// Parse: source frequency
 	{
 		unsigned char sourcefrequencyID = 0;
 
-		PXFileReadI8U(&dataStream, &sourcefrequencyID);
+		PXFileReadI8U(&pxFile, &sourcefrequencyID);
 
 		switch(sourcefrequencyID)
 		{
@@ -94,7 +94,7 @@ PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const dataStream)
 		};
 		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-		PXFileReadMultible(dataStream, pxDataStreamElementList, pxDataStreamElementListSize);
+		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 	}
 
     return PXActionSuccessful;

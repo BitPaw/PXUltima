@@ -785,18 +785,22 @@ unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre)
 	return -1; // MPEGGenreUnknown
 }
 
-PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
+PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
+	PXMP3 pxMP3;
+	
+	PXMP3* mp3 = &pxMP3;
+
 	PXMemoryClear(mp3, sizeof(PXMP3));
 
 	{
 
-		const PXActionResult actionResult = PXID3Parse(&mp3->PXID3Info, PXFile);
+		const PXActionResult actionResult = PXID3Parse(&mp3->PXID3Info, pxFile);
 
 		PXActionReturnOnError(actionResult);
 	}
 
-	while(!PXFileIsAtEnd(PXFile))
+	while (!PXFileIsAtEnd(pxFile))
 	{
 		PXXingInfo xingInfo;
 
@@ -806,7 +810,7 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 
 		// Parse mp3
 		{
-			const PXByte* const mp3HeaderDataBlock = (const PXByte* const)PXFileCursorPosition(PXFile);
+			const PXByte* const mp3HeaderDataBlock = (const PXByte* const)PXFileCursorPosition(pxFile);
 
 			// Parse Byte 1/4
 			{
@@ -1020,20 +1024,20 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 				}
 			}
 
-			PXFileCursorAdvance(PXFile, 4u);
+			PXFileCursorAdvance(pxFile, 4u);
 
 			// Header parsing finished..
 
-		
 
 
 
 
 
 
-			//cursorPositionPredict = dataStream.DataCursor + mp3Header.FrameLength;
 
-			PXFileCursorAdvance(PXFile, 32u);
+			//cursorPositionPredict = pxFile.DataCursor + mp3Header.FrameLength;
+
+			PXFileCursorAdvance(pxFile, 32u);
 
 #if PXMP3Debug
 			printf
@@ -1048,10 +1052,10 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 
 		// info header
 		{
-			const PXActionResult actionResult = PXXingInfoParse(&xingInfo, PXFile);
+			const PXActionResult actionResult = PXXingInfoParse(&xingInfo, pxFile);
 
 			PXActionReturnOnError(actionResult);
-	
+
 #if PXMP3Debug
 			printf
 			(
@@ -1066,9 +1070,9 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 		{
 			const char tag[] = { 'L','a', 'v', 'c' };
 			const PXSize tagSize = sizeof(tag);
-			const unsigned char isTag = PXFileReadAndCompare(PXFile, tag, tagSize);
+			const unsigned char isTag = PXFileReadAndCompare(pxFile, tag, tagSize);
 
-			if(isTag)
+			if (isTag)
 			{
 #if PXMP3Debug
 				printf
@@ -1077,7 +1081,7 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 				);
 #endif
 
-				PXFileCursorAdvance(PXFile, 257u);
+				PXFileCursorAdvance(pxFile, 257u);
 
 				continue; // After this header there is a PXMP3 header next, so parse it.
 			}
@@ -1087,51 +1091,56 @@ PXActionResult PXMP3Parse(PXMP3* const mp3, PXFile* const PXFile)
 		{
 			PXLAME lame;
 
-			const PXActionResult actionResult = PXLAMEParse(&lame, PXFile);
+			const PXActionResult actionResult = PXLAMEParse(&lame, pxFile);
 
 			PXActionReturnOnError(actionResult);
 
 #if PXMP3Debug
-				printf
-				(
-					"[PXMP3][PXLAME] Chunk |\n"
-				);
+			printf
+			(
+				"[PXMP3][PXLAME] Chunk |\n"
+			);
 #endif
 
 		}
 
 
 		{
-			const PXBool tagDetected = PXFileReadAndCompare(PXFile,"TAG", 3u);
+			const PXBool tagDetected = PXFileReadAndCompare(pxFile, "TAG", 3u);
 
-			if(tagDetected)
+			if (tagDetected)
 			{
-				const PXSize offset = PXFileRemainingSize(PXFile);
+				const PXSize offset = PXFileRemainingSize(pxFile);
 
 				// I currently dont know what this is.
 				// But it comes at the end of the file.. so i am finished?
 
-				PXFileCursorAdvance(PXFile, offset);
+				PXFileCursorAdvance(pxFile, offset);
 			}
 		}
 
 		// Check if reader is still alligned
 		{
-			const PXBool isAlligned = cursorPositionPredict == PXFile->DataCursor;
+			const PXBool isAlligned = cursorPositionPredict == pxFile->DataCursor;
 
-			if(!isAlligned)
+			if (!isAlligned)
 			{
-				int offset = cursorPositionPredict - PXFile->DataCursor;
+				int offset = cursorPositionPredict - pxFile->DataCursor;
 
 #if PXMP3Debug
 				printf("[PXMP3] detected failed allignment! Off by : %i Bytes\n", offset);
 #endif
 
-				PXFile->DataCursor = cursorPositionPredict;
-				//dataStream.CursorAdvance(mp3Header.FrameLength);
+				pxFile->DataCursor = cursorPositionPredict;
+				//pxFile.CursorAdvance(mp3Header.FrameLength);
 			}
 		}
 	}
 
-	return PXActionSuccessful;
+	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }

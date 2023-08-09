@@ -69,7 +69,7 @@ PXActionResult PXDataBaseConnectionConnect
 )
 {
 #if OSUnix
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
     // Allocate environment handle
@@ -348,7 +348,7 @@ void PXDataBaseConnectionScanForDrivers(PXSQLDataBaseConnection* const dataBaseC
 PXActionResult PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnection, const PXText* const pxTextSQLStatement)
 {
 #if OSUnix
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
     SQLHSTMT handleStatement = 0;

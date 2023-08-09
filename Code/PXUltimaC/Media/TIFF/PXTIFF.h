@@ -195,10 +195,10 @@ extern "C"
 
 	PXPublic PXSize PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXTIFFParse(PXTIFF* const tiff, PXFile* const dataStream);
-	PXPublic PXActionResult PXTIFFParseToImage(PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXTIFFSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
 
-	PXPublic PXActionResult PXTIFFSerializeFromImage(const PXImage* const image, PXFile* const dataStream);
+	PXPublic PXActionResult PXTIFFSerializeFromImage(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

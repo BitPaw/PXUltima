@@ -7,15 +7,19 @@
 #define WAVSignatureLIST { 'L', 'I', 'S', 'T' }
 #define WAVSignatureData { 'd', 'a', 't', 'a' }
 
-PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
+PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
+	PXWave pxWave;
+
+	PXWave* wav = PXNull;
+
 	PXRIFF riff;
 
-	PXMemoryClear(wav, sizeof(PXWAV));
+	PXMemoryClear(wav, sizeof(PXWave));
 
 	// PXRIFF
 	{
-		const PXActionResult actionResult = PXRIFFParse(&riff, PXFile);
+		const PXActionResult actionResult = PXRIFFParse(&riff, pxFile);
 
 		PXActionReturnOnError(actionResult);
 
@@ -33,7 +37,7 @@ PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
-		const PXActionResult actionResult = PXFMTParse(&wav->Format, PXFile, riff.EndianFormat);
+		const PXActionResult actionResult = PXFMTParse(&wav->Format, pxFile, riff.EndianFormat);
 
 		PXActionReturnOnError(actionResult);
 	}
@@ -43,35 +47,35 @@ PXActionResult PXWAVParse(PXWAV* const wav, PXFile* const PXFile)
 	{
 		const char signature[] = WAVSignatureLIST;
 		const PXSize signatureSize = sizeof(signature);
-		const PXBool isPXRIFFListChunk = PXFileReadAndCompare(PXFile, signature, signatureSize);
+		const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxFile, signature, signatureSize);
 
-		if(isPXRIFFListChunk)
+		if (isPXRIFFListChunk)
 		{
-			PXFileCursorAdvance(PXFile, 30u);
+			PXFileCursorAdvance(pxFile, 30u);
 		}
 	}
 	//---------------------------------------
 	{
 		const char signature[] = WAVSignatureData;
 		const PXSize signatureSize = sizeof(signature);
-		const PXBool validDataChunk = PXFileReadAndCompare(PXFile, signature, signatureSize);
+		const PXBool validDataChunk = PXFileReadAndCompare(pxFile, signature, signatureSize);
 
-		if(!validDataChunk)
+		if (!validDataChunk)
 		{
 			return PXActionFailedFormatNotAsExpected;
 		}
 	}
 
-	PXFileReadI32UE(PXFile, &wav->SoundDataSize, riff.EndianFormat);
+	PXFileReadI32UE(pxFile, &wav->SoundDataSize, riff.EndianFormat);
 
 	wav->SoundData = PXMemoryAllocateType(PXByte, wav->SoundDataSize);
 
-	PXFileReadB(PXFile, wav->SoundData, wav->SoundDataSize);
+	PXFileReadB(pxFile, wav->SoundData, wav->SoundDataSize);
 
 	return PXActionSuccessful;
 }
 
-PXActionResult PXWAVSerialize(PXWAV* const wav, PXFile* const PXFile)
+PXActionResult PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	unsigned int bitdepth = 16, bpm = 120;
 	float wave = 0, duration = 12;
@@ -104,10 +108,10 @@ PXActionResult PXWAVSerialize(PXWAV* const wav, PXFile* const PXFile)
 	{
 		PXRIFF riff;
 		riff.EndianFormat = targetEndian;
-		riff.ChunkSize = dataSize+36;
+		riff.ChunkSize = dataSize + 36;
 		riff.Format = PXRIFFWaveformAudio;
 
-		const PXActionResult riffResult = PXRIFFSerialize(&riff, PXFile);
+		const PXActionResult riffResult = PXRIFFSerialize(&riff, pxFile);
 	}
 
 	// Write Format chunk
@@ -123,24 +127,24 @@ PXActionResult PXWAVSerialize(PXWAV* const wav, PXFile* const PXFile)
 			bitdepth// BitsPerSample;
 		};
 
-		const PXActionResult fmtResult = PXFMTSerialize(&fmt, PXFile, targetEndian);
+		const PXActionResult fmtResult = PXFMTSerialize(&fmt, pxFile, targetEndian);
 	}
 
 	//Data chunk
 	{
 		const char data[] = WAVSignatureData;
 
-		PXFileWriteB(PXFile, data, 4u);
-		PXFileWriteI32U(PXFile, dataSize);
+		PXFileWriteB(pxFile, data, 4u);
+		PXFileWriteI32U(pxFile, dataSize);
 	}
 
 	for (PXSize section = 0; section < (duration / 60) * bpm; section++)
 	{
 		for (PXSize i = 0; i < (44100 * 60) / bpm; i++)
 		{
-			float sample = (frequences[section] > 0) * 0.5f *  ((1 + PXMathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) +  PXMathSinus(wave);
+			float sample = (frequences[section] > 0) * 0.5f * ((1 + PXMathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) + PXMathSinus(wave);
 			unsigned int correctedsample = sample * maxAmp;
-			PXFileWriteB(PXFile, &correctedsample, bitdepth / 8);
+			PXFileWriteB(pxFile, &correctedsample, bitdepth / 8);
 			wave += 2 * 3.14159265358979323846 * frequences[section] * (100 / (((i >= ((44100 * 60) / bpm) * i) + 1))) / 44100;
 		}
 	}

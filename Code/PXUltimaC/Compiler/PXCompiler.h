@@ -129,7 +129,7 @@ extern "C"
 
 	PXPrivate void PXCompilerSymbolEntryAdd
 	(
-		PXFile* const dataStream, 
+		PXFile* const pxFile, 
 		const PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
 

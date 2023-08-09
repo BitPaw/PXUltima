@@ -20,7 +20,7 @@
 #define PXDirectXUSE PXOSWindowsDestop
 #if PXDirectXUSE
 
-#include <OS/Graphic/PXGraphicGeneral.h>
+#include <Media/PXResource.h>
 
 #if OSUnix
 // UNIX has no DirectX support

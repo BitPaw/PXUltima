@@ -1948,12 +1948,12 @@ PXActionResult PXDirectXDrawScriptDelete(PXDirectX* const pxDirectX, PXDrawScrip
 
 PXActionResult PXDirectXDrawScriptExecute(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXReset(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
@@ -1997,7 +1997,7 @@ PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceR
 
 PXActionResult PXDirectXPrimitiveIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U BaseVertexIndex, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U startIndex, const PXInt32U primCount)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXShaderProgramCreateVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader)
@@ -2038,17 +2038,17 @@ PXActionResult PXDirectXShaderProgramCreateVPW(PXDirectX* const pxDirectX, PXSha
 
 PXActionResult PXDirectXShaderProgramCreate(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXShaderProgramSelect(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXShaderProgramDelete(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const pxShader)
@@ -2253,7 +2253,7 @@ PXActionResult PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* cons
 
 PXActionResult PXDirectXTransformSet(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE State, const D3DMATRIX* pMatrix)
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXVertexStructureDraw(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera)

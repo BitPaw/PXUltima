@@ -14,7 +14,8 @@ extern "C"
 	}
 	PXAutodesk3DS;
 
-	PXPublic PXActionResult PXAutodesk3DSParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXAutodesk3DSLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXAutodesk3DSSafeFromFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

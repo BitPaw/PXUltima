@@ -18,7 +18,7 @@ void PXSpriteFontDestruct(PXSpriteFont* const pxPXSpriteFont)
 
 }
 
-PXActionResult PXSpriteFontParse(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 {
 	PXSpriteFont pxSpriteFontEE;
 	PXSpriteFont* pxSpriteFont = &pxSpriteFontEE;
@@ -311,7 +311,7 @@ PXActionResult PXSpriteFontParse(PXFont* const pxFont, PXFile* const pxFile)
 
 										PXFilePathSwapFileName(&fontFilePath, &resultFullPath, &fileName);
 
-										const PXActionResult actionResult = PXGraphicResourceLoad(&pxFontPage->Texture.Image, &resultFullPath);
+										const PXActionResult actionResult = PXResourceLoad(&pxFontPage->Texture.Image, &resultFullPath);
 
 										if (actionResult == PXActionSuccessful)
 										{
@@ -762,6 +762,11 @@ PXActionResult PXSpriteFontParse(PXFont* const pxFont, PXFile* const pxFile)
 	PXFileDestruct(&tokenStream);
 
 	return PXActionSuccessful;
+}
+
+PXActionResult PXSpriteFontSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }
 
 PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSize)

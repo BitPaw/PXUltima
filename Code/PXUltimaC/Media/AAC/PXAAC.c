@@ -1,6 +1,11 @@
 #include "PXAAC.h"
 
-PXActionResult PXAACParseFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAACSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }

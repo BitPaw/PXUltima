@@ -22,7 +22,7 @@ extern "C"
 		PXActionDeniedNoPermission,
 		//-----------------------------------
 
-		PXActionNotImplemented,
+		PXActionRefusedNotImplemented,
 		PXActionNotSupportedByLibrary,
 		PXActionLibraryNotFound,
 		PXActionNotSupportedByOperatingSystem,
@@ -369,7 +369,7 @@ extern "C"
 		DirectoryNotEmpty, // NOTEMPTY
 		StateNotRecoverable, // NOTRECOVERABLE
 		NotASocket, // NOTSOCK
-		NotSupported, // NOTSUP
+		PXActionRefusedNotSupported, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
 		InappropriateIOControlOperation, // NOTTY
 		NoSuchDeviceOrAddress, // NXIO
 		OperationNotSupportedOnSocket, // OPNOTSUPP

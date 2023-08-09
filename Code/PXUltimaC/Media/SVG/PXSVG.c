@@ -1,6 +1,11 @@
 #include "PXSVG.h"
 
-PXActionResult PXSVGParse(PXSVG* svg, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PXSVGLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXSVGSaveToFile(PXImage* const pxImage, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }

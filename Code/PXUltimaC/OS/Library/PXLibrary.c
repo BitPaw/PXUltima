@@ -162,7 +162,7 @@ PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryNa
 		case TextFormatASCII:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 			libraryName->SizeUsed = GetModuleFileNameExA(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextA, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
@@ -176,7 +176,7 @@ PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryNa
 		case TextFormatUNICODE:
 		{
 #if OSUnix
-			return PXActionNotImplemented;
+			return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 			libraryName->SizeUsed = GetModuleFileNameExW(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextW, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h

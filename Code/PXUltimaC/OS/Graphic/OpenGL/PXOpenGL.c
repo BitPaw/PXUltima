@@ -1943,31 +1943,31 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
             char* teeext = func(window->HandleDeviceContext);
 
             {
-                PXFile dataStream;
+                PXFile pxFile;
 
                 const PXSize teextSize = PXTextFindFirstA(teeext, 0xFFFF, '\0');
-                PXFileBufferExternal(&dataStream, teeext, teextSize);
+                PXFileBufferExternal(&pxFile, teeext, teextSize);
 
                 PXSize x = 99999;
 
                 char wurst[256];
 
-                while (!PXFileIsAtEnd(&dataStream))
+                while (!PXFileIsAtEnd(&pxFile))
                 {
                     MemoryClear(wurst, sizeof(256));
 
-                    char* adres = PXFileCursorPosition(&dataStream);
+                    char* adres = PXFileCursorPosition(&pxFile);
 
                     PXSize textSize = 0;
 
-                    x = PXFileSkipBlock(&dataStream);
+                    x = PXFileSkipBlock(&pxFile);
 
                     textSize = x + 1;
 
-                    PXFileCursorRewind(&dataStream, x);
+                    PXFileCursorRewind(&pxFile, x);
 
-                    PXFileReadA(&dataStream, wurst, textSize - 1);
-                    PXFileCursorAdvance(&dataStream, 1);
+                    PXFileReadA(&pxFile, wurst, textSize - 1);
+                    PXFileCursorAdvance(&pxFile, 1);
 
                     printf("%s\n", wurst);
                 }
@@ -2206,6 +2206,11 @@ void PXOpenGLRectangleTxF(PXOpenGL* const openGLContext, const float xA, const f
 
 PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera)
 {
+    if (pxVertexStructure->VertexBuffer.VertexDataRowSize == 0)
+    {
+        return;
+    }
+
     const PXBool hasShader = pxVertexStructure->ShaderProgramReference != PXNull;
     const PXBool supportVAO = 1;
     const PXBool supportBuffers = 1;
@@ -4681,7 +4686,7 @@ PXActionResult PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL, PXVer
 {
    //pxOpenGL->Vertex(1, pxVertexStructure->ResourceID.OpenGLID); glDeleteVertexArrays
 
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 #endif

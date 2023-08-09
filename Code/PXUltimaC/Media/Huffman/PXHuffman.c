@@ -207,7 +207,7 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 	return 0;
 }
 
-unsigned int PXHuffmanDistanceTreeGenerateDynamic(PXFile* const dataStream, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance)
+unsigned int PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance)
 {
 #define NUM_CODE_LENGTH_CODES 19
 
@@ -231,9 +231,9 @@ tree of the dynamic huffman tree lengths is generated*/
 	PXHuffmanTreeConstruct(&tree_cl);
 
 	PXHuffmanNumberCode huffmanNumberCode;
-	huffmanNumberCode.NumberOfLiteralCodes = PXFileReadBits(dataStream, 5u) + 257u;
-	huffmanNumberCode.NumberOfDistanceCodes = PXFileReadBits(dataStream, 5u) + 1u;
-	huffmanNumberCode.NumberOfLengthCodes = PXFileReadBits(dataStream, 4u) + 4u;
+	huffmanNumberCode.NumberOfLiteralCodes = PXFileReadBits(pxFile, 5u) + 257u;
+	huffmanNumberCode.NumberOfDistanceCodes = PXFileReadBits(pxFile, 5u) + 1u;
+	huffmanNumberCode.NumberOfLengthCodes = PXFileReadBits(pxFile, 4u) + 4u;
 
 	HLIT = huffmanNumberCode.NumberOfLiteralCodes;
 	HDIST = huffmanNumberCode.NumberOfDistanceCodes;
@@ -261,7 +261,7 @@ tree of the dynamic huffman tree lengths is generated*/
 		for (PXSize index = 0; index != HCLEN; ++index)
 		{
 			//ensureBits9(reader, 3); /*out of bounds already checked above */
-			bitlen_cl[CLCL_ORDER[index]] = PXFileReadBits(dataStream, 3u);
+			bitlen_cl[CLCL_ORDER[index]] = PXFileReadBits(pxFile, 3u);
 		}
 		for (PXSize index = HCLEN; index != NUM_CODE_LENGTH_CODES; ++index)
 		{
@@ -285,7 +285,7 @@ tree of the dynamic huffman tree lengths is generated*/
 		{
 			unsigned code;
 			//ensureBits25(reader, 22); /* up to 15 bits for huffman code, up to 7 extra bits below*/
-			code =  PXHuffmanSymbolDecode(dataStream, &tree_cl);
+			code =  PXHuffmanSymbolDecode(pxFile, &tree_cl);
 			if (code <= 15) /*a length code*/
 			{
 				if (i < HLIT) bitlen_ll[i] = code;
@@ -299,7 +299,7 @@ tree of the dynamic huffman tree lengths is generated*/
 
 				if (i == 0) return(54); /*can't repeat previous if i is 0*/
 
-				replength += PXFileReadBits(dataStream, 2u);
+				replength += PXFileReadBits(pxFile, 2u);
 
 				if (i < HLIT + 1) value = bitlen_ll[i - 1];
 				else value = bitlen_d[i - HLIT - 1];
@@ -315,7 +315,7 @@ tree of the dynamic huffman tree lengths is generated*/
 			else if (code == 17) /*repeat "0" 3-10 times*/
 			{
 				PXSize replength = 3; /*read in the bits that indicate repeat length*/
-				replength += PXFileReadBits(dataStream, 3u);
+				replength += PXFileReadBits(pxFile, 3u);
 
 				/*repeat this value in the next lengths*/
 				for (n = 0; n < replength; ++n)
@@ -330,7 +330,7 @@ tree of the dynamic huffman tree lengths is generated*/
 			else if (code == 18) /*repeat "0" 11-138 times*/
 			{
 				PXSize replength = 11; /*read in the bits that indicate repeat length*/
-				replength += PXFileReadBits(dataStream, 7u);
+				replength += PXFileReadBits(pxFile, 7u);
 
 				/*repeat this value in the next lengths*/
 				for (n = 0; n < replength; ++n)
@@ -388,10 +388,10 @@ int lodepng_addofl(PXSize a, PXSize b, PXSize* result)
 	return *result < a;
 }
 
-unsigned int PXHuffmanSymbolDecode(PXFile* const dataStream, const PXHuffmanTree* const codetree)
+unsigned int PXHuffmanSymbolDecode(PXFile* const pxFile, const PXHuffmanTree* const codetree)
 {
 	PXHuffmanSymbol huffmanSymbol;
-	huffmanSymbol.Code = PXFilePeekBits(dataStream, FIRSTBITS);
+	huffmanSymbol.Code = PXFilePeekBits(pxFile, FIRSTBITS);
 	huffmanSymbol.Length = codetree->table_len[huffmanSymbol.Code];
 	huffmanSymbol.Value = codetree->table_value[huffmanSymbol.Code];
 
@@ -399,21 +399,21 @@ unsigned int PXHuffmanSymbolDecode(PXFile* const dataStream, const PXHuffmanTree
 
 	if (finished)
 	{
-		PXFileCursorMoveBits(dataStream, huffmanSymbol.Length);
+		PXFileCursorMoveBits(pxFile, huffmanSymbol.Length);
 
 		return huffmanSymbol.Value;
 	}
 	else
 	{
-		PXFileCursorMoveBits(dataStream, FIRSTBITS);
+		PXFileCursorMoveBits(pxFile, FIRSTBITS);
 
 		const unsigned int extraBitsToRead = huffmanSymbol.Length - FIRSTBITS;
-		const unsigned int extraBits = PXFilePeekBits(dataStream, extraBitsToRead);
+		const unsigned int extraBits = PXFilePeekBits(pxFile, extraBitsToRead);
 		const unsigned int index2 = huffmanSymbol.Value + extraBits;
 		const unsigned int moveBits = codetree->table_len[index2] - FIRSTBITS;
 		const unsigned int result = codetree->table_value[index2];
 
-		PXFileCursorMoveBits(dataStream, moveBits);
+		PXFileCursorMoveBits(pxFile, moveBits);
 
 		return result;
 	}

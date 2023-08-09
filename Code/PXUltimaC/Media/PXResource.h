@@ -1,6 +1,8 @@
-#ifndef PXGraphicGeneralINCLUDE
-#define PXGraphicGeneralINCLUDE
+#ifndef PXResourceINCLUDE
+#define PXResourceINCLUDE
 
+#include <OS/File/PXFile.h>
+#include <Media/PXColor.h>
 #include <Math/PXVector.h>
 #include <Math/PXMatrix.h>
 #include <Media/PXImage.h>
@@ -504,7 +506,7 @@ extern "C"
 		PXLightTypePoint,
 		PXLightTypeSpot,
 		PXLightTypeDirectional
-	} 
+	}
 	PXLightType;
 
 	typedef struct PXLight_
@@ -553,7 +555,7 @@ extern "C"
 	PXPublic PXFontPageCharacter* PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID);
 
 #define PXFontPageGet(adress, index) (!currentPageIndex) ?  &(adress)->MainPage : &(adress)->AdditionalPageList[currentPageIndex-1];
-	
+
 
 
 	typedef struct PXFont_
@@ -669,9 +671,26 @@ extern "C"
 
 
 
+	typedef struct PXVideo_
+	{
+		int __Dummy__;
+	}
+	PXVideo;
+
+
+	
+
+
+
+	PXPublic PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);
+
+
+	PXPublic PXActionResult PXResourceLoad(void* resource, const PXText* const filePath);
+	PXPublic PXActionResult PXResourceLoadA(void* resource, const char* const filePath);
+
+
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif

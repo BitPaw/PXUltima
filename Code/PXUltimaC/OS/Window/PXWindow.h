@@ -23,7 +23,7 @@ typedef HWND PXWindowID;
 typedef HGLRC PXOpenGLConextID;
 #endif
 
-#include <Graphic/PXGraphic.h>
+#include <OS/Graphic/PXGraphic.h>
 #include <OS/Hardware/PXMouse.h>
 #include <OS/Hardware/PXKeyBoard.h>
 #include <OS/Async/PXProcess.h>

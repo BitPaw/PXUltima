@@ -1614,11 +1614,11 @@ PXActionResult PXLZ77Encode
     const PXLZ77ESetting* const pxLZ77ESetting
 )
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 PXActionResult PXLZ77Decode()
 {
-    return PXActionNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 

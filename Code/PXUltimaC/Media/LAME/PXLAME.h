@@ -54,7 +54,7 @@ extern "C"
 	}
 	PXLAME;
 
-	PXPublic PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const dataStream);
+	PXPublic PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }
