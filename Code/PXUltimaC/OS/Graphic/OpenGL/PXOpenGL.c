@@ -1385,6 +1385,11 @@ const char* PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStri
 
 PXActionResult PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval)
 {
+    if (!openGLContext->PXOpenGLSwapIntervalSetCallBack)
+    {
+        return PXActionRefusedNotSupported;
+    }
+
     openGLContext->PXOpenGLSwapIntervalSetCallBack(interval);
 
     return PXOpenGLErrorCurrent();
@@ -1646,6 +1651,8 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
 
         openGLContext->Version = PXOpenGLVersionParse(id);
     }
+
+#if !PXOpenGLForceLegacy
 
     // Fetch functions
     switch (openGLContext->Version)
@@ -1929,6 +1936,8 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
 #endif
     }
 
+#endif
+
 #if 0 // print extensions
 
     // Get extensions
@@ -2028,7 +2037,7 @@ void PXOpenGLCreateWindowless(PXOpenGL* const openGLContext, const PXSize width,
 
     if (!openGLContext->AttachedWindow) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
     {
-        PXWindow* const window = PXMemoryAllocateType(PXWindow, 1u);
+        PXWindow* const window = PXNew(PXWindow);
 
         PXWindowConstruct(window);
 
@@ -2211,9 +2220,9 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
         return;
     }
 
-    const PXBool hasShader = pxVertexStructure->ShaderProgramReference != PXNull;
-    const PXBool supportVAO = 1;
-    const PXBool supportBuffers = 1;
+    const PXBool canUseShader = pxVertexStructure->ShaderProgramReference && pxOpenGL->PXOpenGLShaderPXProgramUseCallBack;
+    const PXBool supportVAO = pxOpenGL->PXOpenGLBindVertexArrayCallBack != PXNull;
+    const PXBool supportBuffers = pxOpenGL->PXOpenGLBindBufferCallBack != PXNull;
     const PXInt32U indexBufferTypeID = PXOpenGLTypeToID(pxVertexStructure->IndexBuffer.DataType);
 
     void* indexData = 0;
@@ -2233,14 +2242,9 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
         }
         else
         {
-            pxOpenGL->PXOpenGLBindVertexArrayCallBack(0);
-            pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0); // Select VBO
-            pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, 0); // Select IBO
-
             // Setup vertex data client side
             switch (pxVertexStructure->VertexBuffer.Format)
-            {       
-
+            {
                 case PXVertexBufferFormatT2F_XYZ:
                 {
                     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -2280,7 +2284,28 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
     //-----------------------------------------------------
     // ShaderSetup
     //-----------------------------------------------------
-    if (hasShader)
+    PXMatrix4x4F modifiedViewMatrix;
+    PXMatrix4x4F modifiedModelMatrix;
+
+    PXMatrix4x4FCopy(&pxCamera->MatrixView, &modifiedViewMatrix);
+    PXMatrix4x4FCopy(&pxVertexStructure->ModelMatrix, &modifiedModelMatrix);
+
+    if (pxVertexStructure->IgnoreViewPosition)
+    {
+        PXMatrix4x4FResetAxisW(&modifiedViewMatrix);
+    }
+
+    if (pxVertexStructure->IgnoreViewRotation)
+    {
+        PXMatrix4x4FIdentity(&modifiedViewMatrix);       
+       
+        PXMatrix4x4FMoveXYZ(&modifiedModelMatrix, 0, 0, -0.5, &modifiedModelMatrix);
+       // PXMatrix4x4FScaleByXY(&modifiedModelMatrix, 0.5, 0.5);
+    }
+
+    PXMatrix4x4FScaleByMargin(&modifiedModelMatrix, &pxVertexStructure->Margin);
+
+    if (canUseShader)
     {
         PXInt32U _matrixModel;
         PXInt32U _matrixViewID;
@@ -2293,8 +2318,8 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
         PXOpenGLShaderVariableIDFetch(pxOpenGL, pxVertexStructure->ShaderProgramReference, &_matrixProjectionID, "MatrixProjection");
         // PXOpenGLShaderVariableIDFetch(pxOpenGL, pxSkyBox->ShaderProgramReference, &_materialTextureID, "MaterialTexture");
 
-        pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixModel, 1, 0, pxVertexStructure->ModelMatrix.Data);
-        pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixViewID, 1, 0, pxCamera->MatrixView.Data);
+        pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixModel, 1, 0, &modifiedModelMatrix.Data);
+        pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixViewID, 1, 0, modifiedViewMatrix.Data);
         pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixProjectionID, 1, 0, pxCamera->MatrixProjection.Data);
     }
     else // Legacy matrix stuff
@@ -2303,30 +2328,9 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
 
         glMatrixMode(GL_MODELVIEW);
         glLoadMatrixf(pxCamera->MatrixProjection.Data);
-        glMultMatrixf(pxCamera->MatrixView.Data);
-        glMultMatrixf(pxVertexStructure->ModelMatrix.Data);
+        glMultMatrixf(modifiedViewMatrix.Data);
+        glMultMatrixf(modifiedModelMatrix.Data);
         glPushMatrix();
-
-   
-
-
-        //glTranslated(20.0, 20.0, 0.0);
-
-
-
-       // glLoadIdentity();					// Reset The View
-       // glTranslatef(0, 0.0f, -1.0f);				// Move Left And Into The Screen
-        //glScalef(0.0000005f, 0.0000005f, 0.0000005f);
-      //  glScalef(0.5f, 0.5f, 0.5f);
-
-        //glMatrixMode(GL_MODELVIEW);
-        //glLoadMatrixf(pxCamera->MatrixView.Data);
-
-        //glMatrixMode(GL_PROJECTION);
-        //glLoadMatrixf( pxCamera->MatrixProjection.Data);
-
-      // glMatrixMode(GL_MODELVIEW);
-      // glLoadMatrix();
     }
 
 
@@ -2334,7 +2338,7 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
     // Draw
     //-----------------------------------------------------
 
-    glColor4f(1, 1, 1, 1);
+   
     // glDepthMask(GL_TRUE);
     //glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
@@ -2342,27 +2346,56 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
     //glBlendFunc(GL_ONE, GL_ONE);
     //glCullFace(GL_BACK);
 
-    PXOpenGLDrawOrder(pxOpenGL, PXOpenGLDrawOrderModeCounterClockwise);
+    PXOpenGLDrawOrder(pxOpenGL, PXOpenGLDrawOrderModeClockwise);
 
-    glPointSize(10);
-    glLineWidth(8);
+   // glClear(GL_DEPTH_BUFFER_BIT);
+
+   // glPolygonMode(GL_NONE, GL_FILL);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+   // glBlendFunc(GL_SRC_COLOR, GL_ZERO);
+    //glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+    glDepthMask(GL_FALSE);
 
 
-    if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDPoint)
+    glPointSize(20);
+    glLineWidth(10);
+
+
+    if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDTriangle)
     {
-        glDrawArrays(GL_POINTS, 0, pxVertexStructure->IndexBuffer.IndexDataAmount);
-    }
-    if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
-    {
-       glDrawElements(GL_LINE_LOOP, pxVertexStructure->IndexBuffer.IndexDataAmount, indexBufferTypeID, indexData);
+        glColor4f(1, 1, 1, 1);
+
+        if (pxVertexStructure->IndexBuffer.Texture2D)
+        {
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, pxVertexStructure->IndexBuffer.Texture2D->ResourceID.OpenGLID);
+        }
+
+        glDrawElements(GL_TRIANGLES, pxVertexStructure->IndexBuffer.IndexDataAmount, indexBufferTypeID, indexData);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
     }
     if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDSquare)
     {
-        glDrawElements(GL_QUADS, 0, pxVertexStructure->IndexBuffer.IndexDataAmount, indexBufferTypeID, indexData);
+        glColor4f(1, 1, 1, 1);
+        //glDrawElements(GL_QUADS, 0, pxVertexStructure->IndexBuffer.IndexDataAmount, indexBufferTypeID, indexData);
     }
-    if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDTriangle)
+    if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
     {
-        glDrawElements(GL_TRIANGLES, pxVertexStructure->IndexBuffer.IndexDataAmount, indexBufferTypeID, indexData);
+        glColor4f(0, 1, 0, 1);
+       //glDrawElements(GL_LINE_LOOP, pxVertexStructure->IndexBuffer.IndexDataAmount, indexBufferTypeID, indexData);
+    }   
+    if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDPoint)
+    {
+        glColor4f(1, 1, 0, 1);
+       // glDrawArrays(GL_POINTS, 0, pxVertexStructure->IndexBuffer.IndexDataAmount);
     }
     //-----------------------------------------------------
 
@@ -2384,93 +2417,21 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
             pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
         }
         else
-        {
-            glPopMatrix();
-
+        { 
             glDisableClientState(GL_VERTEX_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             glDisableClientState(GL_INDEX_ARRAY);
         }
     }
 
+    if (!canUseShader)
+    {
+        glPopMatrix();
+    }
+
     glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
-    //-----------------------------------------------------
-
-        /*
-
-        for (PXSize i = 0; i < 1; ++i)
-        {
-            const PXRenderableMeshSegment* const pxRenderableMeshSegment = &pxRenderable->MeshSegmentList[i];
-            const size_t renderAmount = pxRenderableMeshSegment->NumberOfVertices;
-
-            const PXOpenGLRenderMode renderMode = PXGraphicDrawModeToPXOpenGL(pxRenderableMeshSegment->RenderMode);
-
-           // PXOpenGLTextureBind();
-
-            PXOpenGLTextureBind(pxOpenGL, PXOpenGLTextureType2D, pxRenderableMeshSegment->TextureID);
-
-            // Render
-            //glDrawBuffer(GL_POINTS);
-            //glDrawElements(GL_LINES, pxRenderable->RenderSize, GL_UNSIGNED_INT, 0);
-            //glDrawArrays(GL_POINTS, renderAmountOffset, renderAmount);
-            //glDrawArrays(GL_LINES, 0, pxRenderable->RenderSize);
-            if (ownsIBO)
-            {
-                PXOpenGLBufferBind(pxOpenGL, PXOpenGLBufferElementArray, pxRenderable->IBO);
-                // OpenGLDrawElements(openGLContext, renderMode, renderAmount, OpenGLTypeByteUnsigned, 0);
-                PXOpenGLBufferUnbind(pxOpenGL, PXOpenGLBufferElementArray);
-            }
-            else
-            {
-                PXOpenGLDrawArrays(pxOpenGL, renderMode, renderAmountOffset, renderAmount);
-            }
-
-            renderAmountOffset += renderAmount;
-        }*/ 
-    
-   
-
-    
-   
-
-      //glDrawElements(GL_QUADS, indexAmount, GL_UNSIGNED_BYTE, indexData);
-      //glDrawElements(GL_LINE_LOOP, indexAmount, GL_UNSIGNED_BYTE, indexData);
-      //glDrawArrays(GL_LINE_LOOP, 0, indexAmount);
-
-     // glBindTexture(GL_TEXTURE_2D, 0);
-     // glDisable(GL_TEXTURE_2D);
-
- 
-
-
-    /*
-   glScalef(0.5f, 0.5f, 1);
-
-  // glMatrixMode(GL_MODELVIEW);
-  // glLoadIdentity();
-
-  // glPushMatrix();
-  // glTranslated(20.0, 20.0, 0.0);
-
-   glColor4f(1, 1, 1, 1);
-   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-   glEnableClientState(GL_VERTEX_ARRAY);
-
-
-   glVertexPointer(3, GL_FLOAT, 0, bfEngine->pxModelTEST.DataVertexList);
-
-  // glDrawArrays(GL_TRIANGLES, 0, bfEngine->pxModelTEST.DataVertexSize);
-
-   glDisableClientState(GL_VERTEX_ARRAY);
-
-
-   glScalef(2, 2, 1);
-   */
-
-   // glPopMatrix();
-
 
     return PXActionSuccessful;
 }
@@ -3396,6 +3357,14 @@ PXActionResult PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXShaderP
 
 PXActionResult PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
 {
+    if (!pxOpenGL->PXOpenGLShaderPXProgramCreateCallBack)
+    {
+        PXResourceIDMarkAsUnused(&pxShaderProgram->ResourceID);
+        PXResourceIDMarkAsUnused(&pxShaderProgram->VertexShader.ResourceID);
+        PXResourceIDMarkAsUnused(&pxShaderProgram->PixelShader.ResourceID);
+        return PXActionNotSupportedByLibrary;
+    }
+
     pxShaderProgram->ResourceID.OpenGLID = pxOpenGL->PXOpenGLShaderPXProgramCreateCallBack();
 
     const PXBool success = pxShaderProgram->ResourceID.OpenGLID != -1;
@@ -3481,6 +3450,11 @@ PXActionResult PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderPro
 
 PXActionResult PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
 {
+    if (!pxOpenGL->PXOpenGLShaderPXProgramUseCallBack)
+    {
+        return PXActionNotSupportedByLibrary;
+    }
+
     if (!pxShaderProgram)
     {
         pxOpenGL->PXOpenGLShaderPXProgramUseCallBack(0); // unbind shader
@@ -3602,17 +3576,14 @@ void PXOpenGLTextureActivate(PXOpenGL* const openGLContext, const unsigned int i
 
 PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D)
 {
-    const unsigned int openGLTextureTypeID = GL_TEXTURE_2D;
-
     PXImage* const image = &pxTexture2D->Image;
-
 
     // Create image resource on GPU side
     {
         const PXInt32U amount = 1u;
 
-        openGLContext->PXOpenGLTextureCreateCallBack(amount, &pxTexture2D->ResourceID.OpenGLID);
-        
+        glGenTextures(amount, &pxTexture2D->ResourceID.OpenGLID);
+
         const PXBool success = pxTexture2D->ResourceID.OpenGLID != -1;
 
         if (!success)
@@ -3625,7 +3596,8 @@ PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2
 
     // Bind resource
     {
-        openGLContext->PXOpenGLTextureBindCallBack(openGLTextureTypeID, pxTexture2D->ResourceID.OpenGLID);
+        
+        glBindTexture(GL_TEXTURE_2D, pxTexture2D->ResourceID.OpenGLID);
 
         const PXActionResult createResult = PXOpenGLErrorCurrent();
 
@@ -3642,10 +3614,10 @@ PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2
         //const int textueFilterNear = PXOpenGLToImageLayout(texture->LayoutNear);
        // const int textueFilterFar = PXOpenGLToImageLayout(texture->LayoutFar);
 
-        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Remember! This stuff is required for some reason, its not optional!
-        glTexParameteri(openGLTextureTypeID, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // if not done, textures might be black.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Remember! This stuff is required for some reason, its not optional!
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // if not done, textures might be black.
         //glTexParameteri(openGLTextureTypeID, GL_GENERATE_MIPMAP, GL_FALSE);
     }
 
@@ -3657,11 +3629,9 @@ PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2
     }
 
     // image data upload
-    {
-        PXOpenGLTexture2DDataWrite(openGLContext, pxTexture2D);
+    PXOpenGLTexture2DDataWrite(openGLContext, pxTexture2D);
 
-        openGLContext->PXOpenGLTextureBindCallBack(openGLTextureTypeID, 0);
-    }  
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     return PXActionSuccessful;
 }
@@ -3733,6 +3703,8 @@ void PXOpenGLTexture2DDataWrite(PXOpenGL* const openGLContext, PXTexture2D* cons
 
 void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCamera* const pxCamera)
 {
+    void* indexBuffer = 0;
+
     if (!(pxOpenGL && pxSkyBox && pxCamera))
     {
         return;
@@ -3752,10 +3724,12 @@ void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCa
 
     glDepthMask(GL_FALSE);
 
+    glEnable(GL_BLEND);
 
     //PXOpenGLPolygonRenderOrder(openGLContext, PXOpenGLPolygonRenderOrderModeClockwise);
 
     // ShaderSetup
+    if(pxOpenGL->PXOpenGLShaderCreateCallBack && pxSkyBox->ShaderProgramReference)
     {
         PXInt32U _matrixViewID;
         PXInt32U _matrixProjectionID;
@@ -3770,11 +3744,34 @@ void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCa
         pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixProjectionID, 1, 0, pxCamera->MatrixProjection.Data);
         pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixViewID, 1, 0, viewTri.Data);
     }
+    else
+    {
+        PXOpenGLShaderProgramSelect(pxOpenGL, 0);
 
-    pxOpenGL->PXOpenGLBindVertexArrayCallBack(pxSkyBox->VertexStructure.ResourceID.OpenGLID);
+        glInterleavedArrays(GL_V3F, pxSkyBox->VertexStructure.VertexBuffer.VertexDataRowSize * sizeof(float), pxSkyBox->VertexStructure.VertexBuffer.VertexData);
+
+        glColor4f(0.5f, 0.2f, 0.2f, 1.0f);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadMatrixf(pxCamera->MatrixProjection.Data);
+        glMultMatrixf(viewTri.Data);
+        //glMultMatrixf(pxSkyBox->VertexStructure.ModelMatrix.Data);
+        glPushMatrix();
+
+        indexBuffer = pxSkyBox->VertexStructure.IndexBuffer.IndexData;
+    }
+
+    if (pxOpenGL->PXOpenGLBindVertexArrayCallBack)
+    {
+        pxOpenGL->PXOpenGLBindVertexArrayCallBack(pxSkyBox->VertexStructure.ResourceID.OpenGLID);
+    }
+
+  
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, pxSkyBox->VertexStructure.VertexBuffer.ResourceID.OpenGLID);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, pxSkyBox->VertexStructure.IndexBuffer.ResourceID.OpenGLID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, pxSkyBox->TextureCube.ResourceID.OpenGLID);
+
+   // glBindTexture(GL_TEXTURE_2D, pxSkyBox->TextureCube.ResourceID.OpenGLID);
 
     //PXOpenGLBufferBind(openGLContext, PXOpenGLBufferElementArray, skybox->VertexStructure.IndexBuffer.ResourceID.OpenGLID);
    // PXOpenGLTextureBind(openGLContext, PXOpenGLTextureTypeCubeMap, skybox->TextureCube.ResourceID.OpenGLID);
@@ -3785,17 +3782,17 @@ void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCa
     }
     if (pxSkyBox->VertexStructure.IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
     {
-        glDrawElements(GL_LINE_LOOP, pxSkyBox->VertexStructure.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, 0);
+        glDrawElements(GL_LINE_LOOP, pxSkyBox->VertexStructure.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
     if (pxSkyBox->VertexStructure.IndexBuffer.DrawModeID & PXDrawModeIDSquare)
     {
-        //glDrawElements(GL_QUADS, 0, pxSkyBox->VertexStructure.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, 0); // Not supported?
+        //glDrawElements(GL_QUADS, 0, pxSkyBox->VertexStructure.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer); // Not supported?
     }
 
     if (pxSkyBox->VertexStructure.IndexBuffer.DrawModeID & PXDrawModeIDTriangle)
     {
-        glDrawElements(GL_TRIANGLES, pxSkyBox->VertexStructure.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, 0);
+        glDrawElements(GL_TRIANGLES, pxSkyBox->VertexStructure.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
     }
  
 
@@ -3819,7 +3816,11 @@ void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCa
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, 0);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
-    pxOpenGL->PXOpenGLBindVertexArrayCallBack(0);
+
+    if (pxOpenGL->PXOpenGLBindVertexArrayCallBack)
+    {
+        pxOpenGL->PXOpenGLBindVertexArrayCallBack(0);
+    }
 
     glDepthMask(GL_TRUE);
 
@@ -4182,9 +4183,9 @@ PXActionResult PXOpenGLTexture3DCreate(PXOpenGL* const pxOpenGL, PXTexture3D* co
 PXActionResult PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube* const pxTextureCube)
 {
     {
-        const PXInt32U amount = 0;
+        const PXInt32U amount = 1;
 
-        pxOpenGL->PXOpenGLTextureCreateCallBack(amount, &pxTextureCube->ResourceID.OpenGLID);
+        glGenTextures(amount, &pxTextureCube->ResourceID.OpenGLID);
 
         const PXBool success = pxTextureCube->ResourceID.OpenGLID != -1;
 
@@ -4194,17 +4195,17 @@ PXActionResult PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube
         }
     }
 
-    pxOpenGL->PXOpenGLTextureBindCallBack(GL_TEXTURE_CUBE_MAP, pxTextureCube->ResourceID.OpenGLID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, pxTextureCube->ResourceID.OpenGLID);
 
-    PXOpenGLTextureParameter(pxOpenGL, PXGraphicTextureTypeCubeContainer, PXOpenGLTextureWRAP_S, PXOpenGLTextureParameterValueClampToEdge);
-    PXOpenGLTextureParameter(pxOpenGL, PXGraphicTextureTypeCubeContainer, PXOpenGLTextureWRAP_T, PXOpenGLTextureParameterValueClampToEdge);
-    PXOpenGLTextureParameter(pxOpenGL, PXGraphicTextureTypeCubeContainer, PXOpenGLTextureWRAP_R, PXOpenGLTextureParameterValueClampToEdge);
-    PXOpenGLTextureParameter(pxOpenGL, PXGraphicTextureTypeCubeContainer, PXOpenGLTextureMAG_FILTER, PXOpenGLTextureParameterValueLINEAR);
-    PXOpenGLTextureParameter(pxOpenGL, PXGraphicTextureTypeCubeContainer, PXOpenGLTextureMIN_FILTER, PXOpenGLTextureParameterValueLINEAR);
-    PXOpenGLTextureParameterI(pxOpenGL, PXGraphicTextureTypeCubeContainer, PXOpenGLTextureBASE_LEVEL, 0);
-    PXOpenGLTextureParameterI(pxOpenGL, PXGraphicTextureTypeCubeContainer, PXOpenGLTextureMAX_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
 
-    PXOpenGLSettingChange(pxOpenGL, PXOpenGLToggleTextureCubeMapSeamless, PXTrue);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     const PXInt16U openGLTextureTypeList[6] =
     {
@@ -4251,216 +4252,162 @@ PXActionResult PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube
         );
     }
 
-    pxOpenGL->PXOpenGLTextureBindCallBack(GL_TEXTURE_CUBE_MAP, 0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite)
-{    
+PXActionResult PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite)
+{
     const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 1 || pxSprite->TextureScaleOffset.Y != 1;
 
     if (!hasScaling)
     {
-        float base[2] =
+        const float vertexData[] =
         {
-            -1 * pxSprite->Position.XX,
-             1 * pxSprite->Position.YY
+            0, 1, -1, -1, 0,// 01
+            1, 1,  1, -1, 0,// 00  
+            1, 0,  1,  1, 0,// 10
+            0, 0, -1,  1, 0,
         };
+        const PXInt8U indexData[] = { 0, 1, 2, 2, 3, 0 };
+        const PXInt8U indexAmount = sizeof(indexData) / sizeof(PXInt8U);
+
+        pxSprite->VertexStructure.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
+        pxSprite->VertexStructure.VertexBuffer.VertexData = vertexData;
+        pxSprite->VertexStructure.VertexBuffer.VertexDataRowSize = (sizeof(vertexData) / sizeof(float)) / 4u;
+        pxSprite->VertexStructure.VertexBuffer.VertexDataSize = sizeof(vertexData);
+
+        pxSprite->VertexStructure.IndexBuffer.IndexTypeSize = 1u;
+        pxSprite->VertexStructure.IndexBuffer.IndexData = indexData;
+        pxSprite->VertexStructure.IndexBuffer.IndexDataSize = sizeof(indexData);
+        pxSprite->VertexStructure.IndexBuffer.IndexDataAmount = indexAmount;
+        pxSprite->VertexStructure.IndexBuffer.DataType = PXDataTypeInt8U;
+        pxSprite->VertexStructure.IndexBuffer.DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+
+        PXOpenGLVertexStructureRegister(pxOpenGL, &pxSprite->VertexStructure);
+    }
+    else
+    {
+        const float textureWidth = pxSprite->VertexStructure.IndexBuffer.Texture2D->Image.Width;
+        const float textureHeight = pxSprite->VertexStructure.IndexBuffer.Texture2D->Image.Height;
+
+        float offset[2] =
+        {
+
+            //pxSprite->Position.XX, pxSprite->Position.YY
+          // 0.05f,  0.05f
+            textureWidth / (float)pxOpenGL->AttachedWindow->Width, textureHeight / (float)pxOpenGL->AttachedWindow->Height
+        };
+        // float tx[2] = { (pxSprite->Texture.Image.Width + 200)/ (float)window->Width, (pxSprite->Texture.Image.Height + 200) / (float)window->Height };
+
+        const float tx[2] =
+        {
+            pxSprite->TextureScaleOffset.X / textureWidth,
+            pxSprite->TextureScaleOffset.Y / textureHeight
+        };
+
 
         const float vertexData[] =
         {
-            0, 1, base[0], base[0], 0,// 01
-            1, 1, base[1], base[0], 0,// 00  
-            1, 0, base[1], base[1], 0,// 10
-            0, 0, base[0], base[1], 0,
+            // Left-Lower-Quadrant
+            0,      1,              -1,                -1,                0,  // 00
+            tx[0],  1,              -1 + offset[0],    -1,                0,// 10
+            tx[0],  1 - tx[1],        -1 + offset[0],    -1 + offset[1],    0,// 11
+            0,      1 - tx[1],        -1,                -1 + offset[1],    0,// 01
+
+            // Left-Upper-Quadrant
+            0,      tx[1],          -1,                 1 - offset[1],    0, // 00
+            tx[0],  tx[1],          -1 + offset[0],     1 - offset[1],    0,// 10
+            tx[0],  0,              -1 + offset[0],     1,                0,// 11
+            0,      0,              -1,                 1,                0, // 01
+
+            // Right-Lower-Quadrant
+            1 - tx[0],  1,           1 - offset[0],    -1,                0,
+            1,          1,           1,                -1,                0, // OK
+            1,          1 - tx[1],   1,                -1 + offset[1],    0,
+            1 - tx[0],  1 - tx[1],   1 - offset[0],    -1 + offset[1],    0,
+
+            // Right-Upper-Quadrant
+            1 - tx[0],  tx[1],       1 - offset[0],     1 - offset[1],    0,
+            1,          tx[1],       1,                 1 - offset[1],    0,
+            1,          0,           1,                 1,                0,
+            1 - tx[0],  0,           1 - offset[0],     1,                0
         };
-        const unsigned char indexData[] = { 0,1,2,3, };
-        const unsigned char indexAmount = sizeof(indexData) / sizeof(unsigned char);
+        const PXInt8U indexData[] =
+        {
+#if Quad
+            0,1,2,3, // Left-Lower
+            3,2,5,4, // Left-Middle
+            4,5,6,7, // Left-Upper
 
+            5,12,15,6, // Middle-Top
+            2,11,12,5, // Middle-Middle
+            1,8,11,2, // Middle-Bot
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, pxSprite->TextureReference.ResourceID.OpenGLID);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_INDEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        glInterleavedArrays(GL_T2F_V3F, 5 * sizeof(float), vertexData);
-
-        glIndexPointer(GL_UNSIGNED_BYTE, 0, indexData);
-
-        glDrawElements(GL_QUADS, indexAmount, GL_UNSIGNED_BYTE, indexData);
-        //glDrawElements(GL_LINE_LOOP, indexAmount, GL_UNSIGNED_BYTE, indexData);
-        //glDrawArrays(GL_LINE_LOOP, 0, indexAmount);
-
-
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        glDisableClientState(GL_INDEX_ARRAY);
-
-        return PXActionSuccessful;
-    }
-
-
-
-    PXVector3F position;
-
-    PXMatrix4x4FPosition(&pxSprite->Position, &position);
-
-
-    glEnable(GL_TEXTURE_2D);
-
-    glEnable(GL_DEPTH_TEST);
-
-    //glEnable(GL_BLEND);
-
-   // glEnable(GL_RGBA_MODE);
-
-    //glEnable(GL_ALPHA_TEST);
-
-    //glAlphaFunc(GL_GREATER, 0.50005);
-
-    glColor4f(1, 1, 1, 1);
-
-    PXOpenGLShaderProgramSelect(pxOpenGL, 0);
-    glBindTexture(GL_TEXTURE_2D, pxSprite->TextureReference.ResourceID.OpenGLID);
-
-    //glBlendFunc(GL_ONE, GL_ONE); // Direct 1:1 mixing
-
-   // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Direct 1:1 mixing
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-
-    glPointSize(10);
-
-
-
-    float startPosition[4] =
-    {
-        -1 * pxSprite->Margin.Left, // Left
-        -1 * pxSprite->Margin.Bottom, // Bellow
-        +1 * pxSprite->Margin.Right, // Right
-        +1 * pxSprite->Margin.Top // Top
-    };
-
-    float base[2] =
-    {
-        0, 0
-        // pxSprite->Margin.X,       pxSprite->Margin.Y,
-    };
-    float offset[2] =
-    {
-
-        //pxSprite->Position.XX, pxSprite->Position.YY
-      // 0.05f,  0.05f
-        (pxSprite->TextureReference.Image.Width) / (float)pxOpenGL->AttachedWindow->Width, (pxSprite->TextureReference.Image.Height) / (float)pxOpenGL->AttachedWindow->Height
-    };
-    // float tx[2] = { (pxSprite->Texture.Image.Width + 200)/ (float)window->Width, (pxSprite->Texture.Image.Height + 200) / (float)window->Height };
-
-    const float tx[2] =
-    {
-        pxSprite->TextureScaleOffset.X / (float)pxSprite->TextureReference.Image.Width,
-        pxSprite->TextureScaleOffset.Y / (float)pxSprite->TextureReference.Image.Height
-    };
-
-
-    const float vertexData[] =
-    {
-        // Left-Lower-Quadrant
-        0,      1,              startPosition[0],                startPosition[1],                0,  // 00
-        tx[0],  1,              startPosition[0] + offset[0],    startPosition[1],                0,// 10
-        tx[0],  1 - tx[1],        startPosition[0] + offset[0],    startPosition[1] + offset[1],    0,// 11
-        0,      1 - tx[1],        startPosition[0],                startPosition[1] + offset[1],    0,// 01
-
-        // Left-Upper-Quadrant
-        0,      tx[1],          startPosition[0],                startPosition[3] - offset[1],    0, // 00
-        tx[0],  tx[1],          startPosition[0] + offset[0],    startPosition[3] - offset[1],    0,// 10
-        tx[0],  0,              startPosition[0] + offset[0],    startPosition[3],                0,// 11
-        0,      0,              startPosition[0],                startPosition[3],                0, // 01
-
-        // Right-Lower-Quadrant
-        1 - tx[0],  1,          startPosition[2] - offset[0],    startPosition[1],                0,
-        1,          1,          startPosition[2],                startPosition[1],                0, // OK
-        1,          1 - tx[1],  startPosition[2],                startPosition[1] + offset[1],    0,
-        1 - tx[0],  1 - tx[1],  startPosition[2] - offset[0],    startPosition[1] + offset[1],    0,
-
-        // Right-Upper-Quadrant
-        1 - tx[0],  tx[1],      startPosition[2] - offset[0],    startPosition[3] - offset[1],    0,
-        1,          tx[1],      startPosition[2],                startPosition[3] - offset[1],    0,
-        1,          0,          startPosition[2],                startPosition[3],                0,
-        1 - tx[0],  0,          startPosition[2] - offset[0],    startPosition[3],                0
-    };
-    const unsigned char indexData[] =
-    {
-        0,1,2,3, // Left-Lower
-        3,2,5,4, // Left-Middle
-        4,5,6,7, // Left-Upper
-
-        5,12,15,6, // Middle-Top
-        2,11,12,5, // Middle-Middle
-        1,8,11,2, // Middle-Bot
-
-        12,13,14,15, // Right-Upper
-        12,11,10,13, // Right-Middle
-        8,9,10,11 // Right-Lower
-    };
-    const unsigned char indexAmount = sizeof(indexData) / sizeof(unsigned char);
-
-#if 0
-    // glBegin(GL_TRIANGLES);
-     //glVertex2f(-0.7, -0.5);
-     //glVertex2f(0.7, -0.5);
-     //glVertex2f(0, 0.7);
-    glBegin(GL_QUADS);
-
-    glTexCoord2f(0, 1); glVertex2f(base[0], base[0]); // 01
-    glTexCoord2f(1, 1); glVertex2f(base[1], base[0]); // 00  
-    glTexCoord2f(1, 0); glVertex2f(base[1], base[1]); // 10
-    glTexCoord2f(0, 0); glVertex2f(base[0], base[1]);
-
-    glEnd();
+            12,13,14,15, // Right-Upper
+            12,11,10,13, // Right-Middle
+            8,9,10,11 // Right-Lower
 #else
+            0,1,2, // Left-Lower
+            2,3,0,
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_INDEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            3,2,5, // Left-Middle
+            5,4,3,
 
-    glInterleavedArrays(GL_T2F_V3F, 5 * sizeof(float), vertexData);
-    // glTexCoordPointer(2, GL_FLOAT, 3 * sizeof(float), vertexData);
-  //  glVertexPointer(3, GL_FLOAT, 2 * sizeof(float), vertexData);
+            4,5,6, // Left-Upper
+            6,7,4,
 
-    glIndexPointer(GL_UNSIGNED_BYTE, 0, indexData);
+            5,12,15, // Middle-Top
+            15,6,5,
 
+            2,11,12, // Middle-Middle
+            12,5,2,
 
+            1,8,11, // Middle-Bot
+            11,2,1,
 
+            12,13,14, // Right-Upper
+            14,15,12,
 
-    // glDrawBuffer(GL_LINE_LOOP);
+            12,11,10, // Right-Middle
+            10,13,12,
 
-    glDrawElements(GL_QUADS, indexAmount, GL_UNSIGNED_BYTE, indexData);
-
-    //glDrawElements(GL_LINE_LOOP, indexAmount, GL_UNSIGNED_BYTE, indexData);
-
-    //glDrawArrays(GL_LINE_LOOP, 0, indexAmount);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_INDEX_ARRAY);
-
+            8,9,10, // Right-Lower
+            10,11,8
 
 #endif
+        };
+        const PXInt8U indexAmount = sizeof(indexData) / sizeof(PXInt8U);
 
-    glDisable(GL_BLEND);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
+        pxSprite->VertexStructure.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
+        pxSprite->VertexStructure.VertexBuffer.VertexData = vertexData;
+        pxSprite->VertexStructure.VertexBuffer.VertexDataRowSize = (sizeof(vertexData) / sizeof(float)) / 4u;
+        pxSprite->VertexStructure.VertexBuffer.VertexDataSize = sizeof(vertexData);
 
+        pxSprite->VertexStructure.IndexBuffer.IndexTypeSize = 1u;
+        pxSprite->VertexStructure.IndexBuffer.IndexData = indexData;
+        pxSprite->VertexStructure.IndexBuffer.IndexDataSize = sizeof(indexData);
+        pxSprite->VertexStructure.IndexBuffer.IndexDataAmount = indexAmount;
+        pxSprite->VertexStructure.IndexBuffer.DataType = PXDataTypeInt8U;
+        pxSprite->VertexStructure.IndexBuffer.DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+
+        PXOpenGLVertexStructureRegister(pxOpenGL, &pxSprite->VertexStructure);
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, const PXSprite* const pxSprite, const PXCamera* const pxCamera)
+{    
+
+
+    PXOpenGLVertexStructureDraw(pxOpenGL, &pxSprite->VertexStructure, pxCamera); // &pxSprite->ModelMatrix
+
+    //pxSprite->VertexStructure->IgnoreViewPosition = 0;
+
+
+   // PXMatrix4x4FCopy(&tempCopy, &pxSprite->ModelMatrix);
 
     return PXActionSuccessful;
 }
@@ -4534,11 +4481,39 @@ PXActionResult PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, PXLight* const p
 
 PXActionResult PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure)
 {
-    // VAO
+    if (pxOpenGL->PXOpenGLGenVertexArraysCallBack)
+    {
+        pxOpenGL->PXOpenGLGenVertexArraysCallBack(1, &(pxVertexStructure->ResourceID.OpenGLID)); // VAO
+        pxOpenGL->PXOpenGLBindVertexArrayCallBack(pxVertexStructure->ResourceID.OpenGLID);
+    }
+    else
+    {
+        PXResourceIDMarkAsUnused(&pxVertexStructure->ResourceID);
+    }
 
-    pxOpenGL->PXOpenGLGenVertexArraysCallBack(1, &(pxVertexStructure->ResourceID.OpenGLID));
 
-    pxOpenGL->PXOpenGLBindVertexArrayCallBack(pxVertexStructure->ResourceID.OpenGLID);
+    if (!pxOpenGL->PXOpenGLBindBufferCallBack) // Is it possible to have a buffer?
+    {
+        // Declare IDs as unused as we can't use buffers
+        PXResourceIDMarkAsUnused(&pxVertexStructure->VertexBuffer.ResourceID);
+        PXResourceIDMarkAsUnused(&pxVertexStructure->IndexBuffer.ResourceID);
+
+        // Copy references, we can't trust if these are not on the stack.
+        void* vertexData = pxVertexStructure->VertexBuffer.VertexData;
+        void* indexData = pxVertexStructure->IndexBuffer.IndexData;
+
+        // Copy vertex data
+        pxVertexStructure->VertexBuffer.VertexData = PXMemoryAllocate(pxVertexStructure->VertexBuffer.VertexDataSize);
+        PXMemoryCopy(vertexData, pxVertexStructure->VertexBuffer.VertexDataSize, pxVertexStructure->VertexBuffer.VertexData, pxVertexStructure->VertexBuffer.VertexDataSize);
+
+        // Copy index data
+        pxVertexStructure->IndexBuffer.IndexData = PXMemoryAllocate(pxVertexStructure->IndexBuffer.IndexDataSize);
+        PXMemoryCopy(indexData, pxVertexStructure->IndexBuffer.IndexDataSize, pxVertexStructure->IndexBuffer.IndexData, pxVertexStructure->IndexBuffer.IndexDataSize);
+
+        return PXActionRefusedNotSupported;
+    } 
+
+   
 
 
     const PXBool hasIndexData = pxVertexStructure->IndexBuffer.IndexDataSize > 0;

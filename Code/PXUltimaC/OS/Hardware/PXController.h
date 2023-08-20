@@ -23,6 +23,8 @@ extern "C"
 		PXControllerID ID;
 
 		PXInt32S Axis[6];  // X,Y,Z,R,U,V
+		float AxisNormalised[6];
+
 		PXInt32U ButtonPressedBitList;
 		PXInt32U ButtonAmountPressed;        // current button number pressed
 		PXInt32U ControlPad;

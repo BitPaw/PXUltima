@@ -2,6 +2,7 @@
 
 #include <Math/PXMath.h>
 #include <OS/Memory/PXMemory.h>
+#include <Media/PXResource.h>
 
 void PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
 {
@@ -195,6 +196,57 @@ void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, 
 	matrixResult->Data[ScaleX] = matrixA->Data[ScaleX] + scalar;
 	matrixResult->Data[ScaleY] = matrixA->Data[ScaleY] + scalar;
 	matrixResult->Data[ScaleZ] = matrixA->Data[ScaleZ] + scalar;
+}
+
+void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXMargin* const pxMargin)
+{
+#if 1
+
+	const PXMargin offset = 
+	{
+		1 - pxMargin->Left,
+		1 - pxMargin->Top,
+		1 - pxMargin->Right,
+		1 - pxMargin->Bottom
+	};
+
+	const float offsetTotalWidth = (pxMargin->Left + pxMargin->Right) / 2.0f;
+	const float offsetTotalHeight = (pxMargin->Top + pxMargin->Bottom) / 2.0f;
+
+	pxMatrix4x4F->Data[ScaleX] *= offsetTotalWidth;
+	pxMatrix4x4F->Data[ScaleY] *= offsetTotalHeight;
+
+	//pxMatrix4x4F->Data[TransformX] += offset.Left + offset.Right;
+	//pxMatrix4x4F->Data[TransformY] -= offset.Top + offset.Bottom;
+
+
+
+#else
+	const float moveX = 1 - pxMargin->Right;
+	const float shrinkX = 1 - pxMargin->Left;
+	const float moveY = 1 - pxMargin->Top;
+	const float shrinkY = 1 - pxMargin->Bottom;
+
+	const float totalWidth = 1 - (moveX + shrinkX);
+	const float totalHeight = 1 - (moveY + shrinkY);
+
+	pxMatrix4x4F->Data[TransformX] += (moveX - shrinkX);
+	pxMatrix4x4F->Data[TransformY] -= (moveY - shrinkY);
+	//matrixResult->Data[TransformZ] = 1;
+
+	pxMatrix4x4F->Data[ScaleX] *= totalWidth;
+	pxMatrix4x4F->Data[ScaleY] *= totalHeight;
+	//pxMatrix4x4F->Data[ScaleZ] = 1.0f;
+#endif // 0
+
+
+
+}
+
+void PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y)
+{
+	pxMatrix4x4F->Data[ScaleX] *= x;
+	pxMatrix4x4F->Data[ScaleY] *= y;
 }
 
 void PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F)

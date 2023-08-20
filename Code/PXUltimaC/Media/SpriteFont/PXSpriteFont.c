@@ -26,7 +26,7 @@ PXActionResult PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFi
 	PXSpriteFontConstruct(pxSpriteFont);
 
 	PXFile tokenStream;
-	PXFileOpenTemporal(&tokenStream);
+	PXFileOpenTemporal(&tokenStream, pxFile->DataSize * 5);
 
 	PXSize currentPageIndex = 0;
 	PXSize currentCharacterIndex = 0;
@@ -771,6 +771,11 @@ PXActionResult PXSpriteFontSaveToFile(PXFont* const pxFont, PXFile* const pxFile
 
 PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSize)
 {
+	if (!line || !fileDataSize)
+	{
+		return PXSpriteFontInvalid;
+	}
+
 	switch (fileDataSize)
 	{
 		case 1:

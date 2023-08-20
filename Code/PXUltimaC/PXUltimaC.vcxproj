@@ -35,7 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -111,6 +111,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +124,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_CONSOLE;WINVER=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -131,7 +132,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
     </ClCompile>
@@ -154,6 +155,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -174,7 +176,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
     </ClCompile>
@@ -196,15 +198,14 @@
     <ClCompile Include="Container\QuadTree\PXQuadTree.c" />
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
-    <ClCompile Include="DataBase\PXDataBase.c" />
+    <ClCompile Include="OS\DataBase\PXDataBase.c" />
     <ClCompile Include="Media\PXResource.c" />
     <ClCompile Include="OS\Hardware\PXController.c" />
     <ClCompile Include="OS\Hardware\PXKeyBoard.c" />
     <ClCompile Include="OS\Hardware\PXMouse.c" />
     <ClCompile Include="OS\Async\PXEvent.c" />
-    <ClCompile Include="Graphic\PXCamera.c" />
     <ClCompile Include="OS\Graphic\PXGraphic.c" />
-    <ClCompile Include="Graphic\SoftwareRender\PXSoftwareRender.c" />
+    <ClCompile Include="OS\Graphic\SoftwareRender\PXSoftwareRender.c" />
     <ClCompile Include="Language\PXTranslator.c" />
     <ClCompile Include="Log\PXLog.c" />
     <ClCompile Include="Math\PXCollision.c" />
@@ -335,15 +336,14 @@
     <ClInclude Include="Container\QuadTree\PXQuadTree.h" />
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
-    <ClInclude Include="DataBase\PXDataBase.h" />
+    <ClInclude Include="OS\DataBase\PXDataBase.h" />
     <ClInclude Include="Media\PXResource.h" />
     <ClInclude Include="OS\Hardware\PXController.h" />
     <ClInclude Include="OS\Hardware\PXKeyBoard.h" />
     <ClInclude Include="OS\Hardware\PXMouse.h" />
     <ClInclude Include="OS\Async\PXEvent.h" />
-    <ClInclude Include="Graphic\PXCamera.h" />
     <ClInclude Include="OS\Graphic\PXGraphic.h" />
-    <ClInclude Include="Graphic\SoftwareRender\PXSoftwareRender.h" />
+    <ClInclude Include="OS\Graphic\SoftwareRender\PXSoftwareRender.h" />
     <ClInclude Include="Language\PXTranslator.h" />
     <ClInclude Include="Log\PXLog.h" />
     <ClInclude Include="Math\PXCollision.h" />

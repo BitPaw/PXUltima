@@ -286,6 +286,11 @@ extern "C"
 		//--------------------------
 
 		PXGraphicSystem GraphicSystem;
+
+		// Cached most-common objects
+		PXVertexStructure SpriteScaled;
+		PXVertexStructure SpriteUnScaled;
+
 	}
 	PXGraphicContext;
 
@@ -339,7 +344,7 @@ extern "C"
 	// Sprite
 	//-----------------------------------------------------
 	PXPublic PXActionResult PXGraphicSpriteConstruct(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
-	PXPublic PXActionResult PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
 	PXPublic PXActionResult PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath);
 	PXPublic PXActionResult PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
 	PXPublic PXActionResult PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
@@ -409,9 +414,6 @@ extern "C"
 
 	PXPublic void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
 
-
-
-	PXPublic void PXMarginSet(PXMargin* const pxMargin, const float left, const float bottom, const float right, const float top);
 
 	//-------------------------------------
 	PXPublic void PXGraphicInstantiate(PXGraphicContext* const graphicContext);

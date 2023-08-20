@@ -3,6 +3,9 @@
 
 #include <OS/System/PXOSVersion.h>
 
+
+#define PXOpenGLForceLegacy 0
+
 #define PXOpenGLUSE PXOSWindowsDestop
 #if PXOpenGLUSE
 
@@ -490,6 +493,7 @@ extern "C"
 
 		PXBool IsTexture2DEnabled;
 
+#if !PXOpenGLForceLegacy
 
 		//---<PXOpenGL v.1.2.0>------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -614,6 +618,7 @@ extern "C"
 		PXOpenGLSwapIntervalSetFunction PXOpenGLSwapIntervalSetCallBack;
 		PXOpenGLSwapIntervalGetFunction PXOpenGLSwapIntervalGetCallBack;
 		//---------------------------------------------------------------------------
+#endif
 	}
 	PXOpenGL;
 
@@ -877,7 +882,8 @@ extern "C"
 	PXPublic PXActionResult PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube* const pxTextureCube);
 
 
-	PXPublic PXActionResult PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
 
 	//-----------------------------------------------------
 	// Fixed Scripting

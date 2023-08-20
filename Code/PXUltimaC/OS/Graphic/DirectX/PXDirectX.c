@@ -604,6 +604,8 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 
 PXActionResult PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name)
 {
+#if WindowsAtleast10 // if the "D3DX9_43.DLL" is missing
+
     IDirect3DVertexShader9* pShader = NULL;
     ID3DXConstantTable* pConstantTable = NULL;
     DWORD* pData = NULL;
@@ -649,6 +651,9 @@ PXActionResult PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const 
     }
 
     return PXActionSuccessful;
+#else
+    return PXActionRefusedNotSupported;
+#endif
 
 
     /*

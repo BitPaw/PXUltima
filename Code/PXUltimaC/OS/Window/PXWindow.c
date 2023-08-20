@@ -1021,12 +1021,14 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
             break;
         case WindowEventSize:
         {
+#if 1
             window->Width = LOWORD(lParam);
             window->Height = HIWORD(lParam);
 
             window->HasSizeChanged = PXYes;
 
             InvokeEvent(window->WindowSizeChangedCallBack, window->EventReceiver, window);
+#endif
 
             break;
         }
@@ -2577,7 +2579,7 @@ PXActionResult PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
 {
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
-#elif OSWindows
+#elif WindowsAtleast10
 
     const BOOL useDarkMode = PXTrue;
     const BOOL setAttributeSuccess = SUCCEEDED(DwmSetWindowAttribute(pxWindow->ID, DWMWA_USE_IMMERSIVE_DARK_MODE, &useDarkMode, sizeof(BOOL))); // Windows Vista, Dwmapi.dll;Uxtheme.dll, dwmapi.h

@@ -127,7 +127,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
     PXSize errorCounter = 0;
     PXFile tokenSteam;
 
-    PXFileOpenTemporal(&tokenSteam);
+    PXFileOpenTemporal(&tokenSteam, inputStream->DataSize * 2);
 
     unsigned int vertexListSize = 0;
     unsigned int normalListSize = 0;
@@ -960,7 +960,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
     PXInt32U counterTexture = 0;
     PXInt32U counterIndex = 0;
 
-    PXFileOpenTemporal(&tokenSteam);
+    PXFileOpenTemporal(&tokenSteam, pxFile->DataSize * 6);
 
 
 

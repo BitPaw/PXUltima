@@ -44,6 +44,20 @@ PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBuffer
     }
 }
 
+void PXVertexStructureConstruct(PXVertexStructure* const pxVertexStructure)
+{
+    PXObjectClear(PXVertexStructure, pxVertexStructure);
+
+    PXMatrix4x4FIdentity(&pxVertexStructure->ModelMatrix);
+    
+    PXMarginSet(&pxVertexStructure->Margin, 1, 1, 1, 1);
+}
+
+void PXVertexStructureDestruct(PXVertexStructure* const pxVertexStructure)
+{
+    
+}
+
 PXFontPageCharacter* PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID)
 {
     PXFontPageCharacter* lastMatch = PXNull;
@@ -68,6 +82,7 @@ PXFontPageCharacter* PXFontPageCharacterFetch(PXFontPage* const pxFontPage, cons
 
 PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
 {
+    printf("[PX] Resource load <%s>\n", filePath->TextA);
 
     PXFile pxFile;
 

@@ -18,7 +18,7 @@
 
 #include <Media/TTF/PXTTF.h>
 
-
+#include <OS/Audio/PXAudio.h>
 
 #include <OS/Graphic/DirectX/PXDirectX.h>
 
@@ -80,6 +80,71 @@ int main()
 	printf("[i] Starting testing...\n");
 
 
+	PXAudio pxAudio;
+	PXAudioDevice pxAudioDevice;
+	PXObjectClear(PXAudioDevice, &pxAudioDevice);
+
+	PXActionResult init = PXAudioInitialize(&pxAudio, PXAudioSystemWindowsMultiMedia);
+
+	{
+		PXAudioDevice pxAudioDevice;
+
+		PXInt32U amount = 0;
+		PXAudioDeviceAmount(&pxAudio, AudioDeviceTypeInput, &amount);
+
+		printf("--- Input Devices ---\n");
+
+		for (size_t i = 0; i < amount; i++)
+		{
+			PXAudioDeviceFetch(&pxAudio, AudioDeviceTypeInput, i, &pxAudioDevice);
+
+			printf("[%i] %s, %s\n", i, pxAudioDevice.DeviceName, pxAudioDevice.DisplayName);
+		}
+
+		PXAudioDeviceAmount(&pxAudio, AudioDeviceTypeOutput, &amount);
+
+		printf("--- Output Devices ---\n");
+
+		for (size_t i = 0; i < amount; i++)
+		{
+			PXAudioDeviceFetch(&pxAudio, AudioDeviceTypeOutput, i, &pxAudioDevice);
+
+			printf("[%i] %s, %s\n", i, pxAudioDevice.DeviceName, pxAudioDevice.DisplayName);
+		}
+	}
+
+	PXSound pxSound;
+
+	PXResourceLoadA(&pxSound, "H:\\[Cache]\\chip.wav");
+
+
+
+	//PXActionResult open = PXAudioDeviceOpen(&pxAudio, &pxAudioDevice, AudioDeviceTypeOutput, 0);
+
+
+
+	PXAudioDeviceLoad(&pxAudio, &pxAudioDevice, &pxSound, AudioDeviceTypeOutput, 0);
+
+	//PXAudioDeviceStart(&pxAudio, &pxAudioDevice);
+
+	//PXAudioDevicePitchSet(&pxAudio, &pxAudioDevice, 0x00011000);
+	//PXAudioDeviceVolumeSetEqual(&pxAudio, &pxAudioDevice, 0xFFFF);
+
+	while (1)
+	{
+		//PXAudioDeviceStop(&pxAudio, &pxAudioDevice);
+		printf(".");
+		PXThreadSleep(0, 1);
+		//PXAudioDeviceStart(&pxAudio, &pxAudioDevice);
+		PXThreadSleep(0, 1);
+	}
+
+
+	PXActionResult close = PXAudioDeviceClose(&pxAudio, &pxAudioDevice);
+
+
+
+#if 0
 	// Direct X - Test
 	PXWindow pxWindow;
 	PXWindowConstruct(&pxWindow);
@@ -137,12 +202,13 @@ int main()
 
 
 
+#endif
 
 
 
 
 
-
+#if 0
 
 
 
@@ -168,6 +234,7 @@ int main()
 	PXActionResult xx = PXTTFParse(&ttf, &pxFile);
 
 	printf("");
+#endif
 
 #if 0
 

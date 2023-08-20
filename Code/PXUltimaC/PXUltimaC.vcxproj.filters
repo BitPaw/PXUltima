@@ -48,7 +48,7 @@
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="DataBase\PXDataBase.c">
+    <ClCompile Include="OS\DataBase\PXDataBase.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Hardware\PXController.c">
@@ -63,10 +63,7 @@
     <ClCompile Include="OS\Async\PXEvent.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Graphic\SoftwareRender\PXSoftwareRender.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphic\PXCamera.c">
+    <ClCompile Include="OS\Graphic\SoftwareRender\PXSoftwareRender.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Graphic\PXGraphic.c">
@@ -461,7 +458,7 @@
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="DataBase\PXDataBase.h">
+    <ClInclude Include="OS\DataBase\PXDataBase.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Hardware\PXController.h">
@@ -476,10 +473,7 @@
     <ClInclude Include="OS\Async\PXEvent.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Graphic\SoftwareRender\PXSoftwareRender.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphic\PXCamera.h">
+    <ClInclude Include="OS\Graphic\SoftwareRender\PXSoftwareRender.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Graphic\PXGraphic.h">

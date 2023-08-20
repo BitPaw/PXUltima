@@ -254,9 +254,7 @@ extern "C"
 
 
 		AudioResultDeviceAlreadyAllocated,
-		AudioResultOutOfMemory,
 
-		AudioResultNotSupported,
 
 		AudioResultErrorValueInvalid,
 
@@ -293,7 +291,7 @@ extern "C"
 
 
 		// only
-		AudioResultWaveFormatUnsupported,
+		
 		AudioResultDeviceIsStillPlaying,
 		AudioResultReaderIsNotPrepared,
 		AudioResultDeviceIsSynchronous,

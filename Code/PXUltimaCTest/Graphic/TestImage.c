@@ -232,7 +232,7 @@ PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath)
     return savePNG;
 }
 
-PXActionResult ImageSaveTest(PXImage* const image, const char* const filePath, const FileFormatExtension fileFormat, const PXColorFormat dataFormat)
+PXActionResult ImageSaveTest(PXImage* const image, const char* const filePath, const PXFileFormat fileFormat, const PXColorFormat dataFormat)
 {
     PXText pxText;
 

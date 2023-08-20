@@ -9,13 +9,14 @@
 
 PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	PXWave pxWave;
+	PXWave* wav = PXNew(PXWave);
+	PXMemoryClear(wav, sizeof(PXWave));
 
-	PXWave* wav = PXNull;
+	pxSound->BaseObject = wav;
 
 	PXRIFF riff;
 
-	PXMemoryClear(wav, sizeof(PXWave));
+
 
 	// PXRIFF
 	{
@@ -40,6 +41,16 @@ PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 		const PXActionResult actionResult = PXFMTParse(&wav->Format, pxFile, riff.EndianFormat);
 
 		PXActionReturnOnError(actionResult);
+
+		pxSound->ChunkSize = wav->Format.ChunkSize;
+		pxSound->AudioFormat = wav->Format.AudioFormat;
+		pxSound->NumerOfChannels = wav->Format.NumerOfChannels;
+		pxSound->SampleRate = wav->Format.SampleRate;
+		pxSound->ByteRate = wav->Format.ByteRate;
+		pxSound->BlockAllign = wav->Format.BlockAllign;
+		pxSound->BitsPerSample = wav->Format.BitsPerSample;
+		
+		//pxSound->BlockAllign = (wav->Format.NumerOfChannels * wav->Format.BitsPerSample) / 8u;
 	}
 	//---------------------------------------
 
@@ -68,9 +79,10 @@ PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 	PXFileReadI32UE(pxFile, &wav->SoundDataSize, riff.EndianFormat);
 
-	wav->SoundData = PXMemoryAllocateType(PXByte, wav->SoundDataSize);
+	pxSound->DataSize = wav->SoundDataSize;
+	pxSound->Data = PXMemoryAllocateType(PXByte, wav->SoundDataSize);
 
-	PXFileReadB(pxFile, wav->SoundData, wav->SoundDataSize);
+	PXFileReadB(pxFile, pxSound->Data, pxSound->DataSize);
 
 	return PXActionSuccessful;
 }

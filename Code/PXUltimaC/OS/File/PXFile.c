@@ -664,6 +664,8 @@ PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName)
 
 #elif OSWindows
 
+#if WindowsAtleastVista
+
 	const DWORD flags = FILE_NAME_NORMALIZED | VOLUME_NAME_DOS; // FILE_NAME_NORMALIZED
 
 	const DWORD result = GetFinalPathNameByHandleA(pxFile->ID, fileName->TextA, fileName->SizeAllocated, flags);
@@ -707,6 +709,9 @@ PXActionResult PXFileName(const PXFile* const pxFile, PXText* const fileName)
 	{
 		fileName->SizeUsed = result;
 	}
+#else
+	return PXActionRefusedNotSupported;
+#endif
 
 #endif
 
@@ -1321,14 +1326,28 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 	return PXActionSuccessful;
 }
 
-PXActionResult PXFileOpenTemporal(PXFile* const pxFile)
+PXActionResult PXFileOpenTemporal(PXFile* const pxFile, const PXSize expectedFileSize)
 {
 	PXFileConstruct(pxFile);
 
-	// Use virual memory if possible
+	{
+		// Use virual memory if possible
+		void* virtualAdress = PXMemoryVirtualAllocate(expectedFileSize, PXMemoryAccessModeReadAndWrite);
 
+		if (virtualAdress)
+		{
+			// Allocation successful
 
+			pxFile->Data = virtualAdress;
+			pxFile->DataSize = expectedFileSize;
+			pxFile->DataAllocated = expectedFileSize;
+			pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
+			pxFile->CachingMode = PXMemoryCachingModeSequential;
+			pxFile->LocationMode = PXFileLocationModeMappedVirtual;
 
+			return PXActionSuccessful;
+		}
+	}
 
 	// If no virual memory can or should be used, we need to make a temp-file
 
@@ -2860,7 +2879,7 @@ PXSize PXFileWriteBits(PXFile* const pxFile, const PXSize bitData, const PXSize 
 	return amountOfBits;
 }
 
-PXBool PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
+PXActionResult PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 {
 #if 1
 
@@ -2868,6 +2887,10 @@ PXBool PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 	return 0; // TODO
 
 #elif OSWindows
+
+
+#if WindowsAtleastVista
+
 	const PXSize length = GetFinalPathNameByHandleA(pxFile->ID, filePath->TextA, filePath->SizeAllocated, VOLUME_NAME_DOS); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
 	const PXBool successful = 0u != length;
 
@@ -2884,6 +2907,11 @@ PXBool PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 	PXTextReplace(filePath, '\\', '/');
 
 	return PXActionSuccessful;
+#else
+	return PXActionRefusedNotSupported;
+#endif
+
+
 #endif
 
 #else

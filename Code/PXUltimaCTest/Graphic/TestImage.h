@@ -19,7 +19,7 @@ extern "C"
     extern void ImageWriteText();
 
     PXActionResult ImageLoadTest(PXImage* const image, const char* const filePath);
-    PXActionResult ImageSaveTest(PXImage* const image, const char* const filePath, const FileFormatExtension fileFormat, const PXColorFormat dataFormat);
+    PXActionResult ImageSaveTest(PXImage* const image, const char* const filePath, const PXFileFormat fileFormat, const PXColorFormat dataFormat);
 
 #ifdef __cplusplus
 }

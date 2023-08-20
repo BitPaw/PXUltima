@@ -7,7 +7,13 @@
 #elif OSWindows
 #include <windows.h>
 #include <userenv.h> // Could use GetUserProfileDirectoryW() but not needed yet
+
+#if WindowsAtleastVista
 #include <ShlObj_core.h>
+#endif // 0
+
+
+
 #endif
 
 PXActionResult PXUserNameGet(PXText* const name)

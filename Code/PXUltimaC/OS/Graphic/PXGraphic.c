@@ -284,10 +284,35 @@ PXActionResult PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const
 
 PXActionResult PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite)
 {
-    //pxSprite->ID = PXGraphicGenerateUniqeID(graphicContext);
+    pxSprite->PXID = PXGraphicGenerateUniqeID(graphicContext);
 
-   // PXDictionaryAdd(&graphicContext->SpritelLookUp, &pxSprite->ID, pxSprite);
+    PXDictionaryAdd(&graphicContext->SpritelLookUp, &pxSprite->PXID, pxSprite);
     
+    const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 1 || pxSprite->TextureScaleOffset.Y != 1;
+
+    if (hasScaling)
+    {
+        if (graphicContext->SpriteScaled.ResourceID.OpenGLID == 0)
+        {
+            PXOpenGLSpriteRegister(&graphicContext->OpenGLInstance, pxSprite);
+        }
+        else
+        {
+            pxSprite->VertexStructure.StructureOverride = &graphicContext->SpriteScaled;
+        }
+    }
+    else
+    {
+        if (graphicContext->SpriteUnScaled.ResourceID.OpenGLID == 0)
+        {
+            PXOpenGLSpriteRegister(&graphicContext->OpenGLInstance, pxSprite);
+        }
+        else
+        {
+            pxSprite->VertexStructure.StructureOverride = &graphicContext->SpriteUnScaled;
+        }
+    }
+
     return PXActionSuccessful;
 }
 
@@ -1266,6 +1291,11 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     pxViewPort.ClippingMaximum = 1;
 
     PXGraphicViewPortSet(graphicContext, &pxViewPort);
+
+
+    
+    //PXMatrix4x4FIdentity(&graphicContext->SpriteScaled.ModelMatrix);
+   // PXMatrix4x4FIdentity(&graphicContext->SpriteUnScaled.ModelMatrix);
 }
 
 
@@ -1364,14 +1394,6 @@ PXActionResult PXGraphicSwapIntervalGet(PXGraphicContext* const graphicContext, 
     }
 }
 
-void PXMarginSet(PXMargin* const pxMargin, const float left, const float bottom, const float right, const float top)
-{
-    pxMargin->Left = left;
-    pxMargin->Bottom = bottom;
-    pxMargin->Right = right;
-    pxMargin->Top = top;
-}
-
 void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo)
 {
  
@@ -1460,7 +1482,7 @@ void PXGraphicSceneEnd(PXGraphicContext* const graphicContext)
 
 PXActionResult PXGraphicVertexStructureRegister(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure)
 {
-    PXMatrix4x4FIdentity(&pxVertexStructure->ModelMatrix);
+   // PXMatrix4x4FIdentity(&pxVertexStructure->ModelMatrix);
 
     switch (graphicContext->GraphicSystem)
     {
@@ -1479,11 +1501,14 @@ PXActionResult PXGraphicVertexStructureRegister(PXGraphicContext* const graphicC
 
 PXActionResult PXGraphicVertexStructureDraw(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera)
 {
+    PXMatrix4x4F modelMatrix;
+    PXMatrix4x4FIdentity(&modelMatrix);
+
     switch (graphicContext->GraphicSystem)
     {
         case PXGraphicSystemPXOpenGL:
         {
-            return PXOpenGLVertexStructureDraw(&graphicContext->OpenGLInstance, pxVertexStructure, pxCamera);
+            return PXOpenGLVertexStructureDraw(&graphicContext->OpenGLInstance, pxVertexStructure, pxCamera, &modelMatrix);
         }
         case PXGraphicSystemDirectX:
         {
@@ -1498,25 +1523,39 @@ PXActionResult PXGraphicSpriteConstruct(PXGraphicContext* const graphicContext, 
 {
     PXObjectClear(PXSprite, pxSprite);
 
-    PXMatrix4x4FIdentity(&pxSprite->Position);
+    PXVertexStructureConstruct(&pxSprite->VertexStructure);
+
+
+    //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
+    //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
 
     PXVector2FSetXY(&pxSprite->TextureScaleOffset, 1, 1);
 
-    PXMarginSet(&pxSprite->Margin, 1, 1, 1, 1);
+  //  PXMarginSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
 
 PXActionResult PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath)
 {
-    return PXGraphicTexture2DLoadA(graphicContext, &pxSprite->TextureReference, textureFilePath);
+    PXTexture2D* pxTexture = PXNew(PXTexture2D);
+
+    PXActionResult loadTextureResult = PXGraphicTexture2DLoadA(graphicContext, pxTexture, textureFilePath);
+
+    float aspectRationX = pxTexture->Image.Width / pxTexture->Image.Height;
+
+    PXMatrix4x4FScaleSetXY(&pxSprite->VertexStructure.ModelMatrix, aspectRationX, 1);
+
+    pxSprite->VertexStructure.IndexBuffer.Texture2D = pxTexture;
+
+    return loadTextureResult;
 }
 
-PXActionResult PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, PXSprite* const pxSprite)
+PXActionResult PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const PXSprite* const pxSprite, const PXCamera* const pxCamera)
 {
     switch (graphicContext->GraphicSystem)
     {
         case PXGraphicSystemPXOpenGL:
         {
-            return PXOpenGLSpriteDraw(&graphicContext->OpenGLInstance, pxSprite);
+            return PXOpenGLSpriteDraw(&graphicContext->OpenGLInstance, pxSprite, pxCamera);
         }
         case PXGraphicSystemDirectX:
         {
@@ -1956,22 +1995,24 @@ void PXCameraDestruct(PXCamera* const camera)
 
 void PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane)
 {
-    const float scaling = 0.10;
+    const float scaling = 0.005;
     const float left = -(width / 2.0f) * scaling;
     const float right = (width / 2.0f) * scaling;
     const float bottom = -(height / 2.0f) * scaling;
     const float top = (height / 2.0f) * scaling;
 
+    camera->Perspective = PXCameraPerspective2D;
     camera->Width = width;
     camera->Height = height;
     camera->Near = nearPlane;
     camera->Far = farPlane;
 
-    PXMatrix4x4FOrthographic(&camera->MatrixProjection, left, right, bottom, top, nearPlane, farPlane);
+    PXMatrix4x4FOrthographic(&camera->MatrixProjection, left, right, bottom, top, nearPlane, farPlane);  
 }
 
 void PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOfView, const float aspectRatio, const float nearPlane, const float farPlane)
 {
+    camera->Perspective = PXCameraPerspective3D;
     camera->FieldOfView = fieldOfView;
     camera->Near = nearPlane;
     camera->Far = farPlane;

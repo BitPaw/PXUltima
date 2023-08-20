@@ -810,6 +810,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	}
 
 	// Mark end of output Stream
+	outputStream->DataSize = outputStream->DataCursor;
 	PXFileCursorToBeginning(outputStream);
 }
 

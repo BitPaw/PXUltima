@@ -29,6 +29,8 @@ extern "C"
 
 	typedef enum PXSpriteFontLineType_
 	{
+		PXSpriteFontInvalid,
+
 		PXSpriteFontLineUnkown,
 
 		PXSpriteFontSymbolX,

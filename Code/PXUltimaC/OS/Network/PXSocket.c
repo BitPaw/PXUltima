@@ -714,6 +714,9 @@ PXActionResult PXSocketSetupAdress
     }
 #endif
 
+
+#if 1 // DEACTIAVTE when compile for windows XP
+
     *PXSocketListSize = 0;
 
     for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
@@ -752,7 +755,7 @@ PXActionResult PXSocketSetupAdress
                 const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHint, &addressInfoResult);
                 const PXBool validAdressInfo = adressInfoResult == 0;
 
-#elif OSWindows
+#elif OSWindow
                 ADDRINFOA addressInfoHintA;
                 ADDRINFOA* addressInfoListA = 0;
 
@@ -784,18 +787,18 @@ PXActionResult PXSocketSetupAdress
 
                     PXMemoryClear(pxSocket->IP, IPv6LengthMax);
 
-                    result = inet_ntop(adressInfoCurrent->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
+                    result = inet_ntop(adressInfoCurrent->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax); // Windows Vista (+UWP), Ws2_32.dll, ws2tcpip.h 
 
                     switch (adressInfoCurrent->ai_family)
                     {
                     case AF_INET:
                     {
-                        pxSocket->Port = ntohs((((struct sockaddr_in*)adressInfoCurrent->ai_addr)->sin_port));
+                        pxSocket->Port = ntohs((((struct sockaddr_in*)adressInfoCurrent->ai_addr)->sin_port)); // Windows Vista (+UWP), Ws2_32.dll, ws2tcpip.h 
                         break;
                     }
                     case AF_INET6:
                     {
-                        pxSocket->Port = ntohs((((struct sockaddr_in6*)adressInfoCurrent->ai_addr)->sin6_port));
+                        pxSocket->Port = ntohs((((struct sockaddr_in6*)adressInfoCurrent->ai_addr)->sin6_port)); // Windows Vista (+UWP), Ws2_32.dll, ws2tcpip.h 
                         break;
                     }
                     default:
@@ -891,6 +894,7 @@ PXActionResult PXSocketSetupAdress
             }
         }
     }
+#endif
 
     return PXActionSuccessful;
 }

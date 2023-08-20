@@ -4,7 +4,7 @@
 
 #if OSUnix
 
-#elif PXOSWindowsDestop
+#elif WindowsAtleastVista
 
 #include <windows.h>
 #include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
@@ -15,7 +15,7 @@
 PXBool PXControllerScanDevices(NewControllerDetectedCallback callback)
 {
 #if OSUnix
-#elif PXOSWindowsDestop
+#elif WindowsAtleastVista
 const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 
 	for (PXSize i = 0; i < amountOfJoySticksSupported; i++)
@@ -90,7 +90,7 @@ PXBool PXControllerDataGet(PXController* controller)
 #if OSUnix
     return 0u;
 
-#elif PXOSWindowsDestop
+#elif WindowsAtleastVista
 #if (Version_Windows_NT)
 	JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
@@ -113,6 +113,14 @@ PXBool PXControllerDataGet(PXController* controller)
 		controller->ButtonPressedBitList = joystickInfo.dwButtons;
 		controller->ButtonAmountPressed = joystickInfo.dwButtonNumber;
 		controller->ControlPad = joystickInfo.dwPOV;
+
+
+		controller->AxisNormalised[PXControllerAxisX] = (controller->Axis[PXControllerAxisX] * 2.0f) / (float)0xFFFF - 1;
+		controller->AxisNormalised[PXControllerAxisY] = (controller->Axis[PXControllerAxisY] * 2.0f) / (float)0xFFFF - 1;
+		controller->AxisNormalised[PXControllerAxisZ] = (controller->Axis[PXControllerAxisZ] * 2.0f) / (float)0xFFFF - 1;
+		controller->AxisNormalised[PXControllerAxisR] = (controller->Axis[PXControllerAxisR] * 2.0f) / (float)0xFFFF - 1;
+		controller->AxisNormalised[PXControllerAxisU] = (controller->Axis[PXControllerAxisU] * 2.0f) / (float)0xFFFF - 1;
+		controller->AxisNormalised[PXControllerAxisV] = (controller->Axis[PXControllerAxisV] * 2.0f) / (float)0xFFFF - 1;
 	}
 
 	return successful;
@@ -143,7 +151,7 @@ PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWin
 #if OSUnix
     return 0u;
 
-#elif PXOSWindowsDestop
+#elif WindowsAtleastVista
 	UINT uPeriod = 1;
 	BOOL fChanged = 1u;
 
@@ -161,7 +169,7 @@ PXBool PXControllerDetachToWindow(const PXControllerID controllerID)
 #if OSUnix
     return 0u;
 
-#elif PXOSWindowsDestop
+#elif WindowsAtleastVista
 	const MMRESULT releaseResult = joyReleaseCapture(controllerID);
 	const unsigned char successful = releaseResult == JOYERR_NOERROR;
 

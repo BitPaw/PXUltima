@@ -152,7 +152,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	typedef struct PXFile_ PXFile;
 
-	typedef PXActionResult(*PXResourceTranslateFunction)(void* const pxResource, PXFile* const pxFile);
+	typedef PXActionResult (*PXResourceTranslateFunction)(void* const pxResource, PXFile* const pxFile);
 
 	typedef enum PXFileResourceType_
 	{
@@ -205,6 +205,8 @@ void PXDirectoryIsDotFolder(const char* s)
 #endif
 
 		PXFileTypeInfo TypeInfo;
+
+		PXText FilePath;
 	}
 	PXFile;
 
@@ -300,7 +302,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	//---<Open>------------------------------------------------------------
 	PXPublic PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPathInfo* const pxFileOpenFromPathInfo);
-	PXPublic PXActionResult PXFileOpenTemporal(PXFile* const pxFile);
+	PXPublic PXActionResult PXFileOpenTemporal(PXFile* const pxFile, const PXSize expectedFileSize);
 	//---------------------------------------------------------------------
 
 	//---<Close>-----------------------------------------------------------
@@ -488,7 +490,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	//-------------------------------------------------------------------------
 
 
-	PXPublic PXBool PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
+	PXPublic PXActionResult PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
 
 
 #ifdef __cplusplus

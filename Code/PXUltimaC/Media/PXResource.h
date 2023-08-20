@@ -228,7 +228,9 @@ extern "C"
 	PXPublic PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat);
 
 
-
+	// To keep track of the object reference.
+	// OpenGL uses 32-Bit Integer as an ID.
+	// DirectX uses direct pointers to object references.
 	typedef struct PXResourceID_
 	{
 		union
@@ -243,6 +245,37 @@ extern "C"
 
 #define PXResourceIDIsUnused(pxPesourceID) (pxPesourceID)->DirectXInterface == (void*)-1
 #define PXResourceIDMarkAsUnused(pxPesourceID) (pxPesourceID)->DirectXInterface = (void*)-1
+
+
+
+	// Offset the whole child-Container
+	// (Make empty space)
+	typedef struct PXMargin_
+	{
+		float Left;
+		float Top;	
+		float Right;
+		float Bottom;
+	}
+	PXMargin;
+
+#define PXMarginSet(adress, l, t, r, b) \
+	(adress)->Left = l; \
+	(adress)->Top = t; \
+	(adress)->Right = r; \
+	(adress)->Bottom = b;
+
+
+	// Offset the space as the child container 
+	// (Make object take more space)
+	typedef struct PXPadding_
+	{
+		float LeftTop;
+		float Top;
+		float Right;
+		float Bottom;
+	}
+	PXPadding;
 
 
 
@@ -381,6 +414,16 @@ extern "C"
 
 
 
+	typedef struct PXIndexRange_
+	{
+		void* DataPoint;
+		PXSize DataRange;
+				
+	}
+	PXIndexRange;
+
+	// Index buffer, used to store the vertex render order.
+	// Additionally contains info about how to actually render, like modes.
 	typedef struct PXIndexBuffer_
 	{
 		PXResourceID ResourceID; // IDirect3DIndexBuffer9
@@ -393,24 +436,55 @@ extern "C"
 
 		PXDataType DataType;
 		PXInt32U DrawModeID;
+
+		PXTexture2D* Texture2D;
 	}
 	PXIndexBuffer;
 
 
-
+	typedef struct PXVertexStructure_ PXVertexStructure;
 
 	typedef struct PXVertexStructure_
 	{
 		PXResourceID ResourceID;
 
+		//-----------------------------
+		// Render info
+		//-----------------------------
 		PXMatrix4x4F ModelMatrix;
-
 		PXShaderProgram* ShaderProgramReference;
+		//-----------------------------
 
+
+		//-----------------------------
+		// Vertex data
+		//-----------------------------
 		PXVertexBuffer VertexBuffer;
 		PXIndexBuffer IndexBuffer;
+
+		PXVertexStructure* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
+		PXVertexStructure* StructureParent; // Structural parent of structure
+		PXVertexStructure* StructureSibling; // Stuctual sibling, works like a linked list.
+		PXVertexStructure* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
+		//-----------------------------
+
+
+		//-----------------------------
+		// Settings
+		//-----------------------------
+		PXBool IgnoreViewPosition; // Removes positiondata from the view matrix
+		PXBool IgnoreViewRotation; // remove rotationdata from the view matrix
+		PXMargin Margin;
+		//-----------------------------
 	}
 	PXVertexStructure;
+
+
+	PXPublic void PXVertexStructureConstruct(PXVertexStructure* const pxVertexStructure);
+	PXPublic void PXVertexStructureDestruct(PXVertexStructure* const pxVertexStructure);
+
+
+
 
 	typedef struct PXVertexElement_
 	{
@@ -443,10 +517,10 @@ extern "C"
 
 	typedef struct PXViewPort_
 	{
-		PXInt32U X;
-		PXInt32U Y;
-		PXInt32U Width;
-		PXInt32U Height;
+		PXInt32S X;
+		PXInt32S Y;
+		PXInt32S Width;
+		PXInt32S Height;
 		float ClippingMinimum;
 		float ClippingMaximum;
 	}
@@ -470,28 +544,7 @@ extern "C"
 	PXRenderTarget;
 
 
-	// Offset the whole child-Container
-	// (Make empty space)
-	typedef struct PXMargin_
-	{
-		float Left;
-		float Bottom;
-		float Right;
-		float Top;
-	}
-	PXMargin;
 
-
-	// Offset the space as the child container 
-	// (Make object take more space)
-	typedef struct PXPadding_
-	{
-		float LeftTop;
-		float Top;
-		float Right;
-		float Bottom;
-	}
-	PXPadding;
 
 
 
@@ -596,13 +649,11 @@ extern "C"
 
 	typedef struct PXSprite
 	{
-		PXMatrix4x4F Position;
-
-		PXTexture2D TextureReference; // This could be a pointer
+		unsigned int PXID;
 
 		PXVector2F TextureScaleOffset;
 
-		PXMargin Margin;
+		PXVertexStructure VertexStructure;
 	}
 	PXSprite;
 
@@ -612,6 +663,7 @@ extern "C"
 	// Camera
 	typedef enum PXCameraPerspective_
 	{
+		PXCameraPerspectiveInvalid,
 		PXCameraPerspective2D,
 		PXCameraPerspective3D // Perspective
 	}
@@ -637,8 +689,8 @@ extern "C"
 		PXCameraPerspective Perspective;
 
 		float FieldOfView;
-		PXSize Height;
-		PXSize Width;
+		PXInt32S Height;
+		PXInt32S Width;
 		float Near;
 		float Far;
 	}
@@ -659,14 +711,125 @@ extern "C"
 
 	typedef struct PXSound_
 	{
-		PXInt32U SampleRate;
-		PXInt16U NumerOfChannels;
-		PXInt16U BitsPerSample;
+		void* BaseObject;
+		void* Data;
 
 		PXSize DataSize;
-		void* Data;
+
+		PXInt32U ChunkSize;
+		PXInt32U SampleRate;
+		PXInt32U ByteRate;
+
+		PXInt16U AudioFormat;
+		PXInt16U NumerOfChannels;
+		PXInt16U BlockAllign;
+		PXInt16U BitsPerSample;	
 	}
 	PXSound;
+
+
+
+
+
+	typedef enum PXAudioDeviceRole_
+	{
+		PXAudioDeviceRoleInvalid,
+		PXAudioDeviceRoleNotDefault,
+		PXAudioDeviceRoleDefaultConsole,
+		PXAudioDeviceRoleDefaultMultimedia,
+		PXAudioDeviceRoleDefaultCommunications,
+		PXAudioDeviceRoleDefaultGame,
+		PXAudioDeviceRoleGlobalDefault		
+	} 
+	PXAudioDeviceRole;
+
+
+	typedef enum PXAudioDeviceType_
+	{
+		AudioDeviceTypeInvalid,
+		AudioDeviceTypeInput,
+		AudioDeviceTypeOutput
+	}
+	PXAudioDeviceType;
+
+	typedef struct PXAudioDevice_
+	{
+		struct
+		{
+			int HandleID;
+		}
+		Handle;
+
+		PXInt32U DeviceID;
+
+		char DeviceName[256];
+		char DisplayName[256];
+		PXAudioDeviceRole Role;
+
+
+		float Pitch; // [0.5 - 2.0]
+		float Volume;
+		float Position[3];
+		float Velocity[3];
+		PXBool Looping;
+
+
+
+		PXAudioDeviceType Type;
+
+		PXInt16U ManufacturerID;
+		PXInt16U ProductID;
+		PXInt16U DriverVersionMajor;
+		PXInt16U DriverVersionMinor;
+
+		PXInt32U SupportFlags;
+		PXInt32U FormatSupportFlags;
+
+		PXInt16U        FormatTag;         /* format type */
+		PXInt16U        Channels;          /* number of channels (i.e. mono, stereo...) */
+		PXInt32U       SamplesPerSecound;     /* sample rate */
+		PXInt32U       AverageBytesPerSecound;    /* for buffer estimation */
+		PXInt16U        BlockAlignSize;        /* block size of data */
+		PXInt16U        BitsPerSample;     /* number of bits per sample of mono data */
+
+		union
+		{
+			PXInt16U wValidBitsPerSample; // Valid bits in each sample container
+			PXInt16U wSamplesPerBlock;    // Samples per block of audio data; valid
+			// if wBitsPerSample=0 (but rarely used).
+			PXInt16U wReserved;           // Zero if neither case above applies.
+		} Samples;
+		PXInt32U dwChannelMask;          // Positions of the audio channels
+		GUID SubFormat;               // Format identifier GUID
+	} 
+	PXAudioDevice;
+
+
+
+	/*
+	typedef struct PXAudioSource_
+	{
+		void* Xinterface; // IXAudio2SourceVoice
+
+		unsigned int ID;
+		float Pitch; // [0.5 - 2.0]
+		float Volume;
+		float Position[3];
+		float Velocity[3];
+		unsigned char Looping;
+
+
+		//PXInt16U        wFormatTag;         /* format type * /
+		PXInt16U Channels;          /* number of channels (i.e. mono, stereo...) * /
+		PXInt32U SamplesPerSecound;     /* sample rate * /
+		PXInt32U AverageBytesPerSecound;    /* for buffer estimation * /
+		PXInt16U BlockAlignSize;        /* block size of data * /
+		PXInt16U BitsPerSample;     /* number of bits per sample of mono data * /
+
+
+	}
+	PXAudioSource;*/
+
 
 
 
@@ -676,6 +839,10 @@ extern "C"
 		int __Dummy__;
 	}
 	PXVideo;
+
+
+
+
 
 
 	

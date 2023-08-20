@@ -13,7 +13,8 @@
 #include <stdio.h>
 #include <Psapi.h> // Psapi.lib
 
-#pragma comment( lib, "Dbghelp.lib" )
+#pragma comment( lib, "Dbghelp.lib" ) 
+#pragma comment( lib, "Psapi.lib " )
 
 /* PSYMBOL_INFO:MISSING
 
