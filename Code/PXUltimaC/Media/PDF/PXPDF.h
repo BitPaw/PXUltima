@@ -17,7 +17,8 @@ extern "C"
 	}
 	PXPDF;
 
-	PXPublic PXActionResult PXPDFCompile(PXPDF* const pxPDF, PXFile* const fileStream);
+	PXPublic PXActionResult PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile);
+	PXPublic PXActionResult PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

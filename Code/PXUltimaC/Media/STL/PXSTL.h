@@ -14,7 +14,8 @@ extern "C"
 	}
 	PXSTL;
 
-	PXPublic PXActionResult PXSTLParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXSTLLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXSTLSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

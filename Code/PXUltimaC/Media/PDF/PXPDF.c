@@ -1,11 +1,11 @@
 #include "PXPDF.h"
 
-PXActionResult PXPDFCompile(PXPDF* const pxPDF, PXFile* const fileStream)
+PXActionResult PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile)
 {
     // Check for header
     {
         const char signature[5] = { '%', 'P', 'D', 'F', '-' };
-        const PXBool validSignature = PXFileReadAndCompare(fileStream, signature, sizeof(signature));
+        const PXBool validSignature = PXFileReadAndCompare(pxFile, signature, sizeof(signature));
 
         if (!validSignature)
         {
@@ -15,12 +15,17 @@ PXActionResult PXPDFCompile(PXPDF* const pxPDF, PXFile* const fileStream)
 
     // Fetch Versionc
     {
-        PXFileReadTextIU8(fileStream, &pxPDF->VersionMajor);
-        PXFileCursorAdvance(fileStream, 1u); // Move over the dot
-        PXFileReadTextIU8(fileStream, &pxPDF->VersionMinor);
-        PXFileSkipEndOfLineCharacters(fileStream);
+        PXFileReadTextIU8(pxFile, &pxPDF->VersionMajor);
+        PXFileCursorAdvance(pxFile, 1u); // Move over the dot
+        PXFileReadTextIU8(pxFile, &pxPDF->VersionMinor);
+        PXFileSkipEndOfLineCharacters(pxFile);
     }
 
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile)
+{
+    return PXActionRefusedNotImplemented;
 }

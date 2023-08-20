@@ -236,7 +236,7 @@ PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputS
 	return PXActionSuccessful;
 }
 
-PXActionResult PXMTLParseToMaterial(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
+PXActionResult PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
 {
 	/*
 	PXFile
@@ -266,6 +266,10 @@ PXActionResult PXMTLParseToMaterial(PXMaterialContainer* const pxMaterialList, P
 	}*/
 }
 
+PXActionResult PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
+}
 
 
 /*

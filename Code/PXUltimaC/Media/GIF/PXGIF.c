@@ -14,7 +14,7 @@ PXSize PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSiz
     return 0;
 }
 
-PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const pxFile)
+PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
     PXGIF gif;
 
@@ -103,11 +103,10 @@ PXActionResult PXGIFParseToImage(PXImage* const image, PXFile* const pxFile)
 
     //-----------------------------------------------------------------
 
-
     return PXActionSuccessful;
 }
 
-PXActionResult PXGIFSerializeFromImage(const PXImage* const image, PXFile* const pxFile)
+PXActionResult PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile)
 {
-    return PXActionInvalid;
+    return PXActionRefusedNotImplemented;
 }

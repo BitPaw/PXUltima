@@ -1,9 +1,7 @@
 #ifndef PXSTEPINCLUDE
 #define PXSTEPINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -17,7 +15,8 @@ extern "C"
 	}
 	PXSTEP;
 
-	PXPublic PXActionResult PXSTEPParse(PXSTEP* step, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PXSTEPLoadFromFile(PXSTEP* const step, PXFile* const pxFile);
+	PXPublic PXActionResult PXSTEPSaveToFile(PXSTEP* const step, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

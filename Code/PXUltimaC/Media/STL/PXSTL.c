@@ -1,6 +1,11 @@
 #include "PXSTL.h"
 
-PXActionResult PXSTLParseFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXSTLLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXSTLSaveToFile(PXModel* const pxModel, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

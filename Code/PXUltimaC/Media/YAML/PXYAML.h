@@ -28,7 +28,8 @@ extern "C"
 
 	PXPrivate PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size);
 
-	PXPublic PXActionResult PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const pxFile);
+	PXPublic PXActionResult PXYAMLSaveToFile(PXFile* const inputStream, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

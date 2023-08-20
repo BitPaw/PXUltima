@@ -1,6 +1,11 @@
 #include "PXSTEP.h"
 
-PXActionResult PXSTEPParse(PXSTEP* step, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PXSTEPLoadFromFile(PXSTEP* const step, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXSTEPSaveToFile(PXSTEP* const step, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }

@@ -14,7 +14,8 @@ extern "C"
 	}
 	PXPLY;
 
-	PXPublic PXActionResult PXPLYParseFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXPLYLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXPLYSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

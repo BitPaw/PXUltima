@@ -100,6 +100,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileFormatMSI,
 		PXFileFormatMTL,
 		PXFileFormatWavefront,
+		PXFileFormatMatroska, // .mkv
 		PXFileFormatOGG,
 		PXFileFormatPDF,
 		PXFileFormatPHP,
@@ -162,7 +163,10 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileResourceTypeSound,
 		PXFileResourceTypeVideo,
 		PXFileResourceTypeFont,
+		PXFileResourceTypeDocument,
 		PXFileResourceTypeVertexStructure,
+		PXFileResourceTypeRenderShader,
+		PXFileResourceTypeRenderMaterial,
 		PXFileResourceTypeExecutable,
 		PXFileResourceTypeLibrary,
 		PXFileResourceTypeStructuredText,

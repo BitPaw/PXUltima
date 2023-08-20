@@ -46,7 +46,7 @@ PXXMLSymbol PXXMLPeekLine(const char* const text, const PXSize textSize)
 
 
 
-PXActionResult PXXMLFileCompile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -375,4 +375,9 @@ PXActionResult PXXMLFileCompile(PXFile* const inputStream, PXFile* const outputS
 
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXXMLSaveToFile(PXFile* const inputStream, PXFile* const outputStream)
+{
+    return PXActionRefusedNotImplemented;
 }

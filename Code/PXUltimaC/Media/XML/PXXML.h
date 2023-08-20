@@ -30,7 +30,8 @@ extern "C"
 
 	PXPublic PXXMLSymbol PXXMLPeekLine(const char* const text, const PXSize textSize);
 
-	PXPublic PXActionResult PXXMLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXXMLSaveToFile(PXFile* const inputStream, PXFile* const outputStream);
 
 #ifdef __cplusplus
 }

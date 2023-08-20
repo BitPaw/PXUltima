@@ -129,7 +129,7 @@ unsigned int ConvertFromPXBitmapInfoHeaderType(const PXBitmapInfoHeaderType info
     }
 }
 
-PXActionResult PXBitmapLoadToImage(PXImage* const image, PXFile* const pxFile)
+PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
 {
     PXBitmap bmp;
 
@@ -281,7 +281,7 @@ PXActionResult PXBitmapSerialize(const PXBitmap* const bmp, PXFile* const pxFile
     return PXActionSuccessful;
 }
 
-PXActionResult PXBitmapSaveFromImage(const PXImage* const image, PXFile* const pxFile)
+PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFile)
 {
     PXBitmap bitMap;
 

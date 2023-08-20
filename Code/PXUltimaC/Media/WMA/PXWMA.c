@@ -1,6 +1,11 @@
 #include "PXWMA.h"
 
-PXActionResult PXWMAParse(PXWMA* wma, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PXWMALoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXWMASaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
 }

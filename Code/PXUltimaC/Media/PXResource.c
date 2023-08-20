@@ -18,9 +18,13 @@
 #include <Media/STEP/PXSTEP.h>
 #include <Media/STL/PXSTL.h>
 #include <Media/SVG/PXSVG.h>
+#include <Media/HTML/PXHTML.h>
+#include <Media/JSON/PXJSON.h>
+#include <Media/INI/PXINI.h>
 #include <Media/WEBM/PXWEBM.h>
 #include <Media/WEBP/PXWEBP.h>
 #include <Media/Wavefront/PXWavefront.h>
+#include <Media/Matroska/PXMatroska.h>
 #include <Media/PDF/PXPDF.h>
 #include <Media/TTF/PXTTF.h>
 #include <Media/VRML/PXVRML.h>
@@ -184,8 +188,8 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatBitMap:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
-            pxFileTypeInfo->ResourceLoadFunction = PXBitmapLoadToImage;
-            pxFileTypeInfo->ResourceSaveFunction = PXBitmapSaveFromImage;
+            pxFileTypeInfo->ResourceLoadFunction = PXBitmapLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXBitmapSaveToFile;
             break;
 
         case PXFileFormatC:
@@ -256,8 +260,8 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatGIF:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeVideo;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXGIFLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXGIFSaveToFile;
             break;
 
         case PXFileFormatHTML:
@@ -268,8 +272,8 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatINI:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXINILoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXINISaveToFile;
             break;
 
         case PXFileFormatJPEG:
@@ -280,8 +284,8 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatJSON:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXJSONLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXJSONSaveToFile;
             break;
 
         case PXFileFormatM4A:
@@ -308,14 +312,14 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
 
         case PXFileFormatMSI:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeUnkown;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
             pxFileTypeInfo->ResourceLoadFunction = PXNull;
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
 
         case PXFileFormatMTL:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeRenderMaterial;
+            pxFileTypeInfo->ResourceLoadFunction = PXMTLLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXMTLSaveToFile;
             break;
 
         case PXFileFormatWavefront:
@@ -324,6 +328,12 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             pxFileTypeInfo->ResourceSaveFunction = PXWavefrontSaveFromFile;
             break;
 
+        case PXFileFormatMatroska:
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeVideo;
+            pxFileTypeInfo->ResourceLoadFunction = PXMatroskaLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXMatroskaSaveToFile;
+            break;            
+
         case PXFileFormatOGG:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
             pxFileTypeInfo->ResourceLoadFunction = PXOGGLoadFromFile;
@@ -331,45 +341,45 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             break;
 
         case PXFileFormatPDF:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXPDFCompile;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeDocument;
+            pxFileTypeInfo->ResourceLoadFunction = PXPDFLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXPDFSaveToFile;
             break;
 
         case PXFileFormatPHP:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeCode;
             pxFileTypeInfo->ResourceLoadFunction = PXNull;
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
             break;
 
         case PXFileFormatPLY:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXPLYParseFromFile;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceLoadFunction = PXPLYLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXPLYSaveToFile;
             break;
 
         case PXFileFormatPNG:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
             pxFileTypeInfo->ResourceLoadFunction = PXPNGLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXPNGSaveToFile;
             break;
 
         case PXFileFormatQOI:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
             pxFileTypeInfo->ResourceLoadFunction = PXNull;
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
             break;
 
         case PXFileFormatSTEP:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXSTEPParse;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceLoadFunction = PXSTEPLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXSTEPSaveToFile;
             break;
 
         case PXFileFormatSTL:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXSTLParseFromFile;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceLoadFunction = PXSTLLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXSTLSaveToFile;
             break;
 
         case PXFileFormatSVG:
@@ -422,20 +432,20 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatWMA:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXWMAParse;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXWMALoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXWMASaveToFile;
             break;
 
         case PXFileFormatXML:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
-            pxFileTypeInfo->ResourceLoadFunction = PXXMLFileCompile;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXXMLLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXXMLSaveToFile;
             break;
 
         case PXFileFormatYAML:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
             pxFileTypeInfo->ResourceLoadFunction = PXYAMLLoadFromFile;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceSaveFunction = PXYAMLSaveToFile;
             break;
 
 

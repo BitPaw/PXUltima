@@ -273,6 +273,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('M', 'S', 'I'): return PXFileFormatMSI;
 				case PXInt24Make('M', 'T', 'L'): return PXFileFormatMTL;
 				case PXInt24Make('O', 'B', 'J'): return PXFileFormatWavefront;
+				case PXInt24Make('M', 'K', 'V'): return PXFileFormatMatroska;
 				case PXInt24Make('O', 'G', 'G'): return PXFileFormatOGG;
 				case PXInt24Make('P', 'D', 'F'): return PXFileFormatPDF;
 				case PXInt24Make('P', 'H', 'P'): return PXFileFormatPHP;

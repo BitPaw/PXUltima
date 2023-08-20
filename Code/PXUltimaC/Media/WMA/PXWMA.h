@@ -1,9 +1,7 @@
 #ifndef PXWMAINCLUDE
 #define PXWMAINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -17,7 +15,8 @@ extern "C"
 	}
 	PXWMA;
 
-	PXPublic PXActionResult PXWMAParse(PXWMA* wma, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PXWMALoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXWMASaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

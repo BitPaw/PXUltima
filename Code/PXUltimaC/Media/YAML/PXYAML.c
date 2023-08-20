@@ -321,3 +321,8 @@ PXActionResult PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const outpu
 
     return PXActionSuccessful;
 }
+
+PXActionResult PXYAMLSaveToFile(PXFile* const inputStream, PXFile* const pxFile)
+{
+    return PXActionRefusedNotImplemented;
+}
