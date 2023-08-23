@@ -7,16 +7,6 @@
 
 #define PXWavefrontDetectMaterial 0
 
-#define PXCompilerSymbolLexerPXWavefrontMaterialLibraryIncludeID 'I'
-#define PXCompilerSymbolLexerPXWavefrontMaterialLibraryUselID 'U'
-#define PXCompilerSymbolLexerPXWavefrontObjectNameID 'O'
-#define PXCompilerSymbolLexerPXWavefrontSmoothShadingID 'S'
-#define PXCompilerSymbolLexerPXWavefrontObjectGroupID 'G'
-#define PXCompilerSymbolLexerPXWavefrontVertexGerometricID 'v'
-#define PXCompilerSymbolLexerPXWavefrontVertexNormalID 'n'
-#define PXCompilerSymbolLexerPXWavefrontVertexParameterID 'p'
-#define PXCompilerSymbolLexerPXWavefrontVertexTextureID 't'
-
 void PXWavefrontElementConstruct(PXWavefrontElement* objElement)
 {
     PXMemoryClear(objElement, sizeof(PXWavefrontElement));
@@ -962,8 +952,6 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
 
     PXFileOpenTemporal(&tokenSteam, pxFile->DataSize * 6);
 
-
-
     // Lexer - Level I
     {
         PXCompilerSettings compilerSettings;
@@ -1251,6 +1239,9 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
         }
     }
 
+    // 
+    PXBool requireToCalculateNormals = PXFalse; 
+
     // Stage - 2 - Allocate space
     {
 
@@ -1272,11 +1263,15 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
         if (counterVertex && memoryDataNormalSize && memoryDataTextureSize)
         {
             pxVertexStructure->VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
-
         }
         else if (counterVertex && !memoryDataNormalSize && memoryDataTextureSize)
         {
-            pxVertexStructure->VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
+            // We would set this in that format, but we want normals.
+            // pxVertexStructure->VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
+
+            pxVertexStructure->VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
+
+            requireToCalculateNormals = PXTrue;
         }
 
         pxVertexStructure->VertexBuffer.VertexDataRowSize = PXVertexBufferFormatStrideSize(pxVertexStructure->VertexBuffer.Format);
@@ -1439,7 +1434,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
                     {
                         case PXWavefrontLineVertexGeometric:
                         {
-                            float* const position = (PXByte*)pxVertexStructure->VertexBuffer.VertexData + counterVertex * pxVertexStructure->VertexBuffer.VertexDataRowSize * sizeof(float) + sizeof(float) * 2;
+                            float* const position = (float*)PXVertexBufferInsertionPoint(&pxVertexStructure->VertexBuffer, PXVertexBufferDataTypeNormal, counterVertex);
 
                             PXMemoryCopy(vector, sizeof(float) * valuesDetected, position, sizeof(float) * valuesDetected);
                             ++counterVertex;
@@ -1672,6 +1667,47 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
     {
         return PXActionCompilingError;
     }
+
+    if (!requireToCalculateNormals)
+    {
+        return PXActionSuccessful;
+    }
+
+
+    // Calculate normals
+
+
+    for (PXSize i = 0; i < counterVertex; ++i)
+    {
+        float* const positionData = (float*)PXVertexBufferInsertionPoint(&pxVertexStructure->VertexBuffer, PXVertexBufferDataTypeNormal, i);
+        float* const normalData = (float*)PXVertexBufferInsertionPoint(&pxVertexStructure->VertexBuffer, PXVertexBufferDataTypeVertex, i);
+
+        PXVector3F normalVector;
+        PXVector3F positionVector = 
+        {
+            positionData[0],
+            positionData[1],
+            positionData[2]
+        };
+        const PXVector3F positionVectorConst = {1,1,1};
+
+        float normalFactor = PXVector3FDotProduct(&positionVectorConst, &positionVector);
+
+        if (normalFactor != 0.0)
+        {
+            normalFactor = 1.0f / PXMathSquareRoot(normalFactor);
+        }
+        else
+        {
+            normalFactor = 0.0;
+        }
+       
+        normalData[0] = normalFactor;
+        normalData[1] = normalFactor;
+        normalData[2] = normalFactor;
+    }
+
+
 
     return PXActionSuccessful;
 }

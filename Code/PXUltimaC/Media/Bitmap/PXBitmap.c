@@ -4,6 +4,12 @@
 #include <Math/PXMath.h>
 #include <Media/PXImage.h>
 
+#define PXQuickSwap(a, b) \
+a = a + b; \
+b = a - b; \
+a = a - b;
+
+
 #define PXBitmapHeaderIDWindows                  PXInt16Make('B', 'M')
 #define PXBitmapHeaderIDOS2StructBitmapArray     PXInt16Make('B', 'A')
 #define PXBitmapHeaderIDOS2StructColorIcon       PXInt16Make('C', 'I')
@@ -264,12 +270,9 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
         PXFileReadB(pxFile, data, imageDataLayout.RowImageDataSize); // Read/Write image data
         PXFileCursorAdvance(pxFile, imageDataLayout.RowPaddingSize); // Skip padding
 
-        for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3)
+        for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3u)
         {
-            const PXByte swap = data[i]; // Save Blue(current)
-
-            data[i] = data[i + 2]; // Override Blue(current) with Red(new)
-            data[i+2] = swap; // Override Red(current) with Blue(new)
+            PXQuickSwap(data[i], data[i+2]) // BGR -> RGB, just swap Blue and Red, Green stays.
         }
     }
 
@@ -289,17 +292,24 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
 
     //---<Header>-----
     {
-        PXInt16UCluster byteCluster;
-        unsigned int sizeOfFile = pxFile->DataSize;
-        unsigned int reservedBlock = 0;
-        unsigned int dataOffset = 54u;
+        {
+            PXInt16UCluster byteCluster;
+            
+            byteCluster.Value = ConvertFromPXBitmapType(PXBitmapWindows);
 
-        byteCluster.Value = ConvertFromPXBitmapType(PXBitmapWindows);
+            PXFileWriteB(pxFile, byteCluster.Data, 2u);
+        }
+     
+        {
+            const PXInt32U data[3] =
+            {
+                pxFile->DataSize, // sizeOfFile
+                0, // reservedBlock
+                54u // dataOffset
+            };
 
-        PXFileWriteB(pxFile, byteCluster.Data, 2u);
-        PXFileWriteI32UE(pxFile, sizeOfFile, PXEndianLittle);
-        PXFileWriteI32UE(pxFile, reservedBlock, PXEndianLittle);
-        PXFileWriteI32UE(pxFile, dataOffset, PXEndianLittle);
+            PXFileWriteI32UVE(pxFile, data, 3u, PXEndianLittle);
+        }      
     }
     //----------------
 

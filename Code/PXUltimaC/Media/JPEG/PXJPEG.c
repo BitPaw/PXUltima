@@ -80,7 +80,7 @@
 #define PXJPEGMarkerTemporaryID PXInt16Make(0xFF, 0x01)
 #define PXJPEGMarkerReservedID PXInt16Make(0xFF, 0x02)
 
-PXJPEGMarker ConvertToPXJPEGMarker(const PXInt16U jpegMarker)
+PXJPEGMarker PXJPEGMarkerFromID(const PXInt16U jpegMarker)
 {
     switch(jpegMarker)
     {
@@ -155,7 +155,7 @@ PXJPEGMarker ConvertToPXJPEGMarker(const PXInt16U jpegMarker)
     }
 }
 
-PXInt16U ConvertFromPXJPEGMarker(const PXJPEGMarker jpegMarker)
+PXInt16U PXJPEGMarkerToID(const PXJPEGMarker jpegMarker)
 {
     switch(jpegMarker)
     {
@@ -265,7 +265,7 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 
         PXFileReadB(pxFile, startBlock.Data, 2u);
 
-        const PXJPEGMarker marker = ConvertToPXJPEGMarker(startBlock.Value);
+        const PXJPEGMarker marker = PXJPEGMarkerFromID(startBlock.Value);
         const PXBool validStart = marker == PXJPEGMarkerStartOfImage;
 
         if(!validStart)
@@ -290,7 +290,7 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 
             PXFileReadB(pxFile, markerData.Data, 2u);
 
-            chunkMarker = ConvertToPXJPEGMarker(markerData.Value);
+            chunkMarker = PXJPEGMarkerFromID(markerData.Value);
 
             if(chunkMarker == PXJPEGMarkerEndOfImage)
             {
@@ -608,7 +608,7 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
             case PXJPEGMarkerComment:
             {
                 jpeg->CommentSize = chunkLength;
-                jpeg->Comment = PXMemoryAllocate(sizeof(char) * chunkLength);
+                jpeg->Comment = PXNewList(char, chunkLength);
 
                 PXFileReadB(pxFile, jpeg->Comment, chunkLength);
 

@@ -228,6 +228,7 @@ extern "C"
 	PXPublic PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat);
 
 
+
 	// To keep track of the object reference.
 	// OpenGL uses 32-Bit Integer as an ID.
 	// DirectX uses direct pointers to object references.
@@ -381,6 +382,20 @@ extern "C"
 	PXDrawScript;
 
 
+	//-----------------------------------------------------
+	// Vertex rendering info
+	//-----------------------------------------------------
+
+	typedef enum PXVertexBufferDataType_
+	{
+		PXVertexBufferDataTypeInvalid,
+
+		PXVertexBufferDataTypeVertex,
+		PXVertexBufferDataTypeTexture,
+		PXVertexBufferDataTypeNormal
+	}
+	PXVertexBufferDataType;
+
 	typedef struct PXVertexBuffer_
 	{
 		PXResourceID ResourceID; // IDirect3DVertexBuffer9, ID3D11Buffer
@@ -393,6 +408,10 @@ extern "C"
 		PXVertexBufferFormat Format;
 	}
 	PXVertexBuffer;
+
+	PXPublic void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index);
+
+
 
 
 #define PXDrawModeIDQuad					1 << 0

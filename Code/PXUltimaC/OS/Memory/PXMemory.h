@@ -155,6 +155,7 @@ extern "C"
 #define PXCopy(type, source, target) PXMemoryCopy(source, sizeof(type), target, sizeof(type));
 
 #define PXNew(type) (type*)PXMemoryHeapAllocateCleared(sizeof(type), 1u)
+#define PXNewList(type, amount) (type*)PXMemoryHeapAllocateCleared(sizeof(type), sizeof(type) * amount)
 #define PXDelete(type, adress) PXMemoryRelease(adress, sizeof(type))
 #endif
 

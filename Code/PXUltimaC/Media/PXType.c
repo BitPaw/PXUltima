@@ -40,6 +40,57 @@ PXInt8U PXDataTypeSize(const PXDataType pxDataType)
 	}
 }
 
+#define PX_X86_BSWAP_ALLOW OS32B 
+
+void PXEndianSwapI32U(PXInt32U* const value)
+{
+
+	
+
+#if PX_X86_BSWAP_ALLOW
+
+	PXInt32U wurst = *value;
+	
+	__asm
+	{
+		mov EAX, 0x0
+		mov EDX, 0x0
+
+		mov EAX, wurst
+		mov EDX, [wurst] // Load variable into register 
+
+		BSWAP EDX        // Execute byte swap in register 'EAX'
+		mov [wurst], EDX
+	}
+
+	*value = wurst;
+
+#else
+
+#endif // 0
+}
+
+void PXEndianSwapI16U(PXInt16U* const value)
+{
+
+#if PX_X86_BSWAP_ALLOW
+
+	__asm
+	{
+		mov ax, 4
+		mov bx, 8
+		xchg ax, bx
+	}
+
+#else
+
+#endif // 0
+
+
+
+
+}
+
 void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
 	{

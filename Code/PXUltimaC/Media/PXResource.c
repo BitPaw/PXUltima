@@ -48,6 +48,58 @@ PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBuffer
     }
 }
 
+void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index)
+{
+    switch (pxVertexBuffer->Format)
+    {
+        case PXVertexBufferFormatT2F_XYZ: 
+        {
+            switch (pxVertexBufferDataType)
+            {
+                case PXVertexBufferDataTypeVertex:
+                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 2);
+
+                case PXVertexBufferDataTypeTexture:
+                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 0);
+
+                default:
+                    return PXNull;
+            }
+        }
+        case PXVertexBufferFormatT2F_N3F_XYZ:
+        {
+            switch (pxVertexBufferDataType)
+            {
+                case PXVertexBufferDataTypeVertex:
+                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 5);
+
+                case PXVertexBufferDataTypeTexture:
+                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 0);
+
+                case PXVertexBufferDataTypeNormal:
+                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 2);
+
+                default:
+                    return PXNull;
+            }
+        }
+        case PXVertexBufferFormatXYZ:
+        {
+            switch (pxVertexBufferDataType)
+            {
+                case PXVertexBufferDataTypeVertex:
+                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 0);
+
+                default:
+                    return PXNull;
+            }
+        }
+
+        default:
+            return PXNull;
+    }   
+}
+
 void PXVertexStructureConstruct(PXVertexStructure* const pxVertexStructure)
 {
     PXObjectClear(PXVertexStructure, pxVertexStructure);
@@ -455,4 +507,6 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
             break;
     }
+
+    return PXActionSuccessful;
 }

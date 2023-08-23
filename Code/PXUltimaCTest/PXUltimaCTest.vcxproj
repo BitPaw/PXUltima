@@ -181,7 +181,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="..\[Export]\PXUltimaC\64B-Windows-Debug\PXUltima.dll">
+    <CopyFileToFolders Include="..\[Export]\PXUltimaC\32B-Windows-Release\PXUltima.dll">
       <FileType>Document</FileType>
     </CopyFileToFolders>
   </ItemGroup>

@@ -175,8 +175,8 @@ extern "C"
 	PXJPEG;
 
 
-	PXPrivate PXJPEGMarker ConvertToPXJPEGMarker(const PXInt16U jpegMarker);
-	PXPrivate PXInt16U ConvertFromPXJPEGMarker(const PXJPEGMarker jpegMarker);
+	PXPrivate PXJPEGMarker PXJPEGMarkerFromID(const PXInt16U jpegMarker);
+	PXPrivate PXInt16U PXJPEGMarkerToID(const PXJPEGMarker jpegMarker);
 
 	PXPublic void PXJPEGConstruct(PXJPEG* const jpeg);
 	PXPublic void PXJPEGDestruct(PXJPEG* const jpeg);

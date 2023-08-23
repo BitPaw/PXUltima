@@ -80,6 +80,21 @@ int main()
 	printf("[i] Starting testing...\n");
 
 
+	// X86
+	{
+		PXInt32U coolNumber = 0xAABBCCDD;
+
+		PXEndianSwapI32U(&coolNumber);
+
+		PXBool result = coolNumber == 0xDDCCBBAA;
+
+		printf("Hello, \n");
+
+	}
+
+
+
+
 	PXAudio pxAudio;
 	PXAudioDevice pxAudioDevice;
 	PXObjectClear(PXAudioDevice, &pxAudioDevice);

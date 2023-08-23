@@ -597,6 +597,11 @@ d = SplittIntLED(i);
 #define EndianCurrentSystem PXEndianBig
 #endif
 
+
+		PXPublic void PXEndianSwapI32U(PXInt32U* const value);
+		PXPublic void PXEndianSwapI16U(PXInt16U* const value);
+
+
 		PXPublic void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
 
 		PXPublic void PXEndianSwapV(void** const data,  const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
