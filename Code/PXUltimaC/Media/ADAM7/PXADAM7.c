@@ -1,5 +1,7 @@
 #include "PXADAM7.h"
 
+#include <Math/PXMath.h>
+
 /*Try the code, if it returns error, also return the error.*/
 #define CERROR_TRY_RETURN(call){\
   unsigned error = call;\
@@ -89,13 +91,9 @@ PXSize PXADAM7CaluclateExpectedSize(PXSize width, PXSize height, PXSize bpp)
 
 unsigned char PXADAM7paethPredictor(short a, short b, short c)
 {
-#define LODEPNG_MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define LODEPNG_MIN(a, b) (((a) < (b)) ? (a) : (b))
-#define LODEPNG_ABS(x) ((x) < 0 ? -(x) : (x))
-
-    short pa = LODEPNG_ABS(b - c);
-    short pb = LODEPNG_ABS(a - c);
-    short pc = LODEPNG_ABS(a + b - c - c);
+    short pa = PXMathAbsoluteI16(b - c);
+    short pb = PXMathAbsoluteI16(a - c);
+    short pc = PXMathAbsoluteI16(a + b - c - c);
     /* return input value associated with smallest of pa, pb, pc (with certain priority if equal) */
     if (pb < pa) { a = b; pa = pb; }
     return (pc < pa) ? c : a;
@@ -405,23 +403,26 @@ void PXADAM7_deinterlace(unsigned char* out, const unsigned char* in, PXSize w, 
     }
     else /*bpp < 8: Adam7 with pixels < 8 bit is a bit trickier: with bit pointers*/
     {
-        for (PXSize i = 0; i != 7; ++i)
+        for (PXInt8U i = 0; i != 7u; ++i)
         {
-            unsigned x, y, b;
-            unsigned ilinebits = bpp * passw[i];
-            unsigned olinebits = bpp * w;
-            PXSize obp, ibp; /*bit pointers (for out and in buffer)*/
-            for (y = 0; y < passh[i]; ++y)
-                for (x = 0; x < passw[i]; ++x)
+            const PXSize ilinebits = bpp * passw[i];
+            const PXSize olinebits = bpp * w;
+
+            for (PXSize y = 0; y < passh[i]; ++y)
+            {
+                for (PXSize x = 0; x < passw[i]; ++x)
                 {
-                    ibp = (8 * passstart[i]) + (y * ilinebits + x * bpp);
-                    obp = (PXADAM7_IY[i] + (PXSize)y * PXADAM7_DY[i]) * olinebits + (PXADAM7_IX[i] + (PXSize)x * PXADAM7_DX[i]) * bpp;
-                    for (b = 0; b < bpp; ++b)
+                    // bit pointers (for out and in buffer)
+                    const PXSize ibp = (8 * passstart[i]) + (y * ilinebits + x * bpp);
+                    const PXSize obp = (PXADAM7_IY[i] + (PXSize)y * PXADAM7_DY[i]) * olinebits + (PXADAM7_IX[i] + (PXSize)x * PXADAM7_DX[i]) * bpp;
+                    
+                    for (PXSize b = 0; b < bpp; ++b)
                     {
                         unsigned char bit = readBitFromReversedStream(&ibp, in);
                         PXADAM7setBitOfReversedStream(&obp, out, bit);
                     }
                 }
+            }
         }
     }
 }

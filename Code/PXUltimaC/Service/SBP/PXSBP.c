@@ -10,7 +10,7 @@
 
 void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
 {
-    PXMemoryClear(pxSBPMessage, sizeof(PXSBPMessage));
+    PXClear(PXSBPMessage, pxSBPMessage);
 
     PXTimeNow(&pxSBPMessage->FirstKnown);
 
@@ -72,7 +72,7 @@ void PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceive
 
 PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port)
 {
-    return PXServerStart(&pxSBPServer->Server, port, ProtocolModeTCP);
+    return PXServerStart(&pxSBPServer->Server, port, PXProtocolModeTCP);
 }
 
 PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer)

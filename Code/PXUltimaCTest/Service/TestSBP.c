@@ -42,7 +42,7 @@ void TestSBPClientServerResponse()
 
 	PXSBPServerReceiverEventListSet(&server, &pxSBPReceiverEventList);
 
-	PXServerStart(&server.Server, 13370, ProtocolModeTCP);
+	PXServerStart(&server.Server, 13370, PXProtocolModeTCP);
 
 	PXText ip;
 	PXTextMakeFixedA(&ip, "127.0.0.1");

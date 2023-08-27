@@ -32,9 +32,14 @@ int PXMathFloorD(const double a)
 	return PXMathFloor(a);
 }
 
-PXSize PXMathAbsoluteI(const int a)
+PXSize PXMathAbsoluteI16(const PXInt16S value)
 {
-	return PXMathAbsolute(a);
+	return PXMathAbsolute(value);
+}
+
+PXSize PXMathAbsoluteI32(const PXInt32S value)
+{
+	return PXMathAbsolute(value);
 }
 
 double PXMathAbsoluteD(const double a)

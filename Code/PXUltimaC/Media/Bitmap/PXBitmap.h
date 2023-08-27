@@ -1,23 +1,17 @@
 #ifndef PXBitmapINCLUDE
 #define PXBitmapINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#ifndef Image_
-	typedef struct PXImage_ PXImage;
-#endif
-
     typedef enum PXBitmapType_
     {
         PXBitmapInvalid,
-        PXBitmapWindows,					// [BM] Windows 3.1x, 95, NT, ... etc.
+        PXBitmapWindows,				// [BM] Windows 3.1x, 95, NT, ... etc.
         PXBitmapOS2StructBitmapArray,	// [BA] OS/2 struct bitmap array        
         PXBitmapOS2StructColorIcon,		// [CI] OS/2 struct color icon       
         PXBitmapOS2ConstColorPointer,	// [CP] OS/2 const color pointer       
@@ -31,17 +25,17 @@ extern "C"
 	{
 		PXBitmapHeaderUnkownOrInvalid,
 		PXBitmapHeaderBitMapCoreHeader, 	// [12-Bytes] Windows 2.0 or later		
-		PXBitmapHeaderOS21XBitMapHeader,  // [12-Bytes] OS/2 1.x		
-		PXBitmapHeaderOS22XBitMapHeader,  // [16-Bytes] This variant of the previous header contains only the first 16 bytes and the remaining bytes are assumed to be zero values.	
+		PXBitmapHeaderOS21XBitMapHeader,	// [12-Bytes] OS/2 1.x		
+		PXBitmapHeaderOS22XBitMapHeader,	// [16-Bytes] This variant of the previous header contains only the first 16 bytes and the remaining bytes are assumed to be zero values.	
 		PXBitmapHeaderBitMapInfoHeader, 	// [40-Bytes] Windows NT, 3.1x or later		
-		PXBitmapHeaderBitMapV2InfoHeader, // [52-Bytes] Undocumented 
-		PXBitmapHeaderBitMapV3InfoHeader, // [56-Bytes] Not officially documented, but this documentation was posted on Adobe's forums,	
-		PXBitmapHeaderBitMapV4Header, 	// [108-Bytes] Windows NT 4.0, 95 or later 
+		PXBitmapHeaderBitMapV2InfoHeader,	// [52-Bytes] Undocumented 
+		PXBitmapHeaderBitMapV3InfoHeader,	// [56-Bytes] Not officially documented, but this documentation was posted on Adobe's forums,	
+		PXBitmapHeaderBitMapV4Header,		// [108-Bytes] Windows NT 4.0, 95 or later 
 		PXBitmapHeaderBitMapV5Header 		// [124-Bytes] Windows NT 5.0, 98 or later 
 	}
 	PXBitmapInfoHeaderType;
 
-	typedef struct BitMapInfoHeader_
+	typedef struct PXBitMapInfoHeader_
 	{
 		PXInt32U CompressionMethod; // [4-Bytes] compression method being used.See the next table for a list of possible values	
 		PXInt32U ImageSize; // [4-Bytes] image size.This is the size of the raw bitmap data; a dummy 0 can be given for BI_RGB bitmaps.
@@ -52,9 +46,9 @@ extern "C"
 		PXInt32U NumberOfColorsInTheColorPalette; // [4-Bytes] number of colors in the color palette, or 0 to default to 2n 
 		PXInt32U NumberOfImportantColorsUsed; 	// [4-Bytes] number of important colors used, or 0 when every color is important; generally ignored
 	}
-	BitMapInfoHeader;
+	PXBitMapInfoHeader;
 
-	typedef struct OS22XBitMapHeader_
+	typedef struct PXOS22XBitMapHeader_
 	{
 		PXInt16U HorizontalandVerticalResolutions; // An enumerated value specifying the units for the horizontaland vertical resolutions(offsets 38 and 42).The only defined value is 0, meaning pixels per metre		
 		PXInt16U DirectionOfBits; // An enumerated value indicating the direction in which the bits fill the bitmap.The only defined value is 0, meaning the origin is the lower - left corner.Bits fill from left - to - right, then bottom - to - top.
@@ -64,7 +58,7 @@ extern "C"
 		PXInt32U ColorEncoding; // An enumerated value indicating the color encoding for each entry in the color table.The only defined value is 0, indicating RGB.
 		PXInt32U ApplicationDefinedByte; // 	An application - defined identifier.Not used for image rendering
 	}
-	OS22XBitMapHeader;
+	PXOS22XBitMapHeader;
 
 	typedef struct PXBitmapInfoHeader_
 	{
@@ -80,8 +74,8 @@ extern "C"
 
 		union
 		{
-			BitMapInfoHeader BitMapInfo;
-			OS22XBitMapHeader OS22XBitMap;
+			PXBitMapInfoHeader BitMapInfo;
+			PXOS22XBitMapHeader OS22XBitMap;
 		}
 		ExtendedInfo;
 	}
@@ -110,11 +104,11 @@ extern "C"
 	PXBitmapImageDataLayout;
 
 	//---<Private Functions>------------------------------------------------------
-	PXPrivate PXBitmapType ConvertToPXBitmapType(const unsigned short bmpTypeID);
-	PXPrivate unsigned short ConvertFromPXBitmapType(const PXBitmapType headerType);
+	PXPrivate inline PXBitmapType PXBitmapTypeFromID(const PXInt16U bmpTypeID);
+	PXPrivate inline PXInt16U PXBitmapTypeToID(const PXBitmapType headerType);
 
-	PXPrivate PXBitmapInfoHeaderType ConvertToPXBitmapInfoHeaderType(const unsigned int infoHeaderType);
-	PXPrivate unsigned int ConvertFromPXBitmapInfoHeaderType(const PXBitmapInfoHeaderType infoHeaderType);
+	PXPrivate inline PXBitmapInfoHeaderType PXBitmapInfoHeaderTypeFromID(const PXInt8U infoHeaderType);
+	PXPrivate inline PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType);
 	//----------------------------------------------------------------------------
 
 	//---<Public Functions--------------------------------------------------------
@@ -123,7 +117,7 @@ extern "C"
 
 	// Calculate information about the layout how the raw image data is stored.
 	// There will be "amount of vertical rows", and "pixeldata" + "padding" .
-	PXPublic void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
+	PXPrivate void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
 
 	//----------------------------------------------------------------------------
 	PXPublic PXSize PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);

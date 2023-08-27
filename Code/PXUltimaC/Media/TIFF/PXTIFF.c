@@ -116,9 +116,10 @@ PXSize PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSi
 
 PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
-    PXTIFF* tiff = PXNull;
+    PXTIFF pxTIFFOBject;
+    PXTIFF* tiff = &pxTIFFOBject;
 
-    PXMemoryClear(tiff, sizeof(PXTIFF));
+    PXClear(PXTIFF, tiff);
 
 
     PXTIFFHeader tIFFHeader;
@@ -128,23 +129,17 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
     {
         // Get engianess
         {
-            const char versionA[2] = PXTIFFormatA;
-            const char versionB[2] = PXTIFFormatB;
-            char headerTag[2];
+            PXInt16UCluster headerTag;
 
-            PXFileReadB(pxFile, headerTag, 2u);
+            PXFileReadB(pxFile, headerTag.Data, 2u);
 
-            const char select =
-                'B' * (headerTag[0] == versionB[0] && headerTag[1] == versionB[1]) + // big
-                'L' * (headerTag[0] == versionA[0] && headerTag[1] == versionA[1]); // little
-
-            switch (select)
+            switch (headerTag.Value)
             {
-                case 'B':
+                case PXInt16Make('M', 'M'):
                     tIFFHeader.Endianness = PXEndianBig;
                     break;
 
-                case 'L':
+                case PXInt16Make('I', 'I'):
                     tIFFHeader.Endianness = PXEndianLittle;
                     break;
 
@@ -164,11 +159,11 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
         {
             PXTIFFPage tiffPage;
 
-            PXMemoryClear(&tiffPage, sizeof(PXTIFFPage));
+            PXClear(PXTIFFPage, &tiffPage);
 
             PXFileReadI16UE(pxFile, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes
 
-            for (unsigned short i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
+            for (PXInt16U i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
                 PXTIFFTag tiffTag;
 

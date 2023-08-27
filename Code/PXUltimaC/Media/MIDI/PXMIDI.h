@@ -1,10 +1,6 @@
 #ifndef PXMIDINCLUDE
 #define PXMIDINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
-
 #include <Media/PXResource.h>
 
 #ifdef __cplusplus
@@ -40,9 +36,9 @@ extern "C"
 
 	typedef struct PXMIDINote_
 	{
-		unsigned char DeltaTime;
-		unsigned char KeyNote;
-		unsigned char Volume;
+		PXInt8U DeltaTime;
+		PXInt8U KeyNote;
+		PXInt8U Volume;
 	}
 	PXMIDINote;
 
@@ -56,10 +52,10 @@ extern "C"
 
 	typedef struct PXMIDI_
 	{
-		unsigned short Format;
-		unsigned short MusicSpeed;
-		unsigned int TrackListSize;
 		PXMIDITrack* TrackList;
+		PXInt16U TrackListSize;
+		PXInt16U Format;
+		PXInt16U MusicSpeed;
 	}
 	PXMIDI;
 

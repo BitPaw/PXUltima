@@ -382,22 +382,21 @@ enough memory.*/
 	//----------------------------------------------------
 
 
-	PXPublic PXPNGChunkType PXPNGChunkTypeFromID(const PXInt32U pngchunkType);
-	PXPublic PXInt32U PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType);
+	PXPrivate inline PXPNGChunkType PXPNGChunkTypeFromID(const PXInt32U pngchunkType);
+	PXPrivate inline PXInt32U PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType);
 
-	PXPublic PXPNGColorType PXPNGColorTypeFromID(const PXInt8U colorType);
-	PXPublic PXInt8U PXPNGColorTypeToID(const PXPNGColorType colorType);
+	PXPrivate inline PXPNGColorType PXPNGColorTypeFromID(const PXInt8U colorType);
+	PXPrivate inline PXInt8U PXPNGColorTypeToID(const PXPNGColorType colorType);
 
-	PXPublic PXPNGInterlaceMethod PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod);
-	PXPublic PXInt8U PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod);
+	PXPrivate inline PXPNGInterlaceMethod PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod);
+	PXPrivate inline PXInt8U PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod);
 
+	PXPrivate inline PXInt8U PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
 
 
 	PXPublic void PXPNGConstruct(PXPNG* const png);
 	PXPublic void PXPNGDestruct(PXPNG* const png);
 
-
-	PXPublic PXInt8U PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
 	PXPublic PXInt8U PXPNGBitsPerPixel(const PXPNG* const png);
 
 	PXPublic PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);

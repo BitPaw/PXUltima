@@ -23,7 +23,11 @@
 #define PXMathLimit(x, low, high)  (low*(x <= low) + high*(x >= high) + x *((x > low) && (x < high)))
 #define PXMathFloor(a) ((int)(a))
 //#define PXMathCeiling(a)
-#define PXMathAbsolute(a) (a * ((a >= 0) - (a < 0)))
+
+
+//#define PXMathAbsolute(a) (a * ((a >= 0) - (a < 0)))
+#define PXMathAbsolute(x) ((x) < 0 ? -(x) : (x))
+
 //-----------------------------------------------------------------------------
 
 #ifdef __cplusplus
@@ -40,7 +44,8 @@ extern "C"
 	PXPublic int PXMathFloorI(const int a);
 	PXPublic int PXMathFloorD(const double a);
 
-	PXPublic PXSize PXMathAbsoluteI(const int value);
+	PXPublic PXSize PXMathAbsoluteI16(const PXInt16S value);
+	PXPublic PXSize PXMathAbsoluteI32(const PXInt32S value);
 	PXPublic double PXMathAbsoluteD(const double value);
 
 

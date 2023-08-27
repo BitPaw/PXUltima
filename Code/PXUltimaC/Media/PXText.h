@@ -4,6 +4,11 @@
 #include <Media/PXType.h>
 
 //---<Makros>------------------------------------------------------------------
+
+#define PXTextIsLetterCaseLower(character) ((character & 0b00100000) >> 5)
+#define PXTextIsLetterCaseUpper(character) !PXTextIsLetterCaseLower(character)
+
+
 #define MakeLetterCaseLower(character) (character | 0b00100000)
 #define MakeLetterCaseUpper(character) (character & 0b11011111)
 #define CompareLetterCaseIgnore(a, b) (MakeLetterCaseLower(a) == b) || (MakeLetterCaseUpper(a) == b)

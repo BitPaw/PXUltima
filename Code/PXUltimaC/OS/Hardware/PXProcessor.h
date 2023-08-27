@@ -209,6 +209,18 @@ extern "C"
     PXPublic PXInt32U PXProcessorTemperature();
 
 
+    //-----------------------------------------------------
+    // Intrinsic function
+    //-----------------------------------------------------
+
+    // NOP - Execute no command.
+    // Can have a side effect where the pipeline can still process stuff
+    // So this command is not useless, it can help to flush out parralel running actions.
+    PXPublic void PXProcessorNoOperation();
+
+    PXPublic void PXProcessorSwapByteOrderI16U(PXInt16U* const value);
+    PXPublic void PXProcessorSwapByteOrderI32U(PXInt32U* const value);
+    PXPublic void PXProcessorSwapByteOrderI64U(PXInt64U* const value);
 
 #ifdef __cplusplus
 }

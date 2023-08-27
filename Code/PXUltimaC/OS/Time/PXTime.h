@@ -8,7 +8,7 @@ extern "C"
 {
 #endif	
 
-	typedef enum TimeDayOfWeek_
+	typedef enum PXTimeDayOfWeek_
 	{
 		DayInvalid,
 		DayMonday,
@@ -19,9 +19,9 @@ extern "C"
 		DaySaturday,
 		DaySunday
 	}
-	TimeDayOfWeek;
+	PXTimeDayOfWeek;
 
-	typedef enum TimeMonth_
+	typedef enum PXTimeMonth_
 	{
 		MonthInvalid,
 		MonthJanuary,
@@ -37,7 +37,7 @@ extern "C"
 		MonthNovember,
 		MonthDecember
 	}
-	TimeMonth;
+	PXTimeMonth;
 
 
 	// 10 Byte
@@ -54,8 +54,8 @@ extern "C"
 	}
 	PXTime;
 
-	PXPublic TimeMonth  PXTimeMonthFromID(const PXInt8U monthID);
-	PXPublic TimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID);
+	PXPublic PXTimeMonth  PXTimeMonthFromID(const PXInt8U monthID);
+	PXPublic PXTimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID);
 
 	PXPublic void PXTimeNow(PXTime* const time);
 	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);

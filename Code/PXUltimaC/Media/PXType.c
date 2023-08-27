@@ -42,6 +42,7 @@ PXInt8U PXDataTypeSize(const PXDataType pxDataType)
 
 #define PX_X86_BSWAP_ALLOW OS32B 
 
+/*
 void PXEndianSwapI32U(PXInt32U* const value)
 {
 
@@ -68,7 +69,7 @@ void PXEndianSwapI32U(PXInt32U* const value)
 #else
 
 #endif // 0
-}
+}*/
 
 void PXEndianSwapI16U(PXInt16U* const value)
 {

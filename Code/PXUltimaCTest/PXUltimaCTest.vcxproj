@@ -180,11 +180,6 @@
       <Project>{7c1a58aa-dd3c-4b5d-9fec-43657f95e234}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="..\[Export]\PXUltimaC\32B-Windows-Release\PXUltima.dll">
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

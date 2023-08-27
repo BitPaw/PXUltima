@@ -153,236 +153,236 @@
 
 #define SOCK_Invalid 0xFF
 
-ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode)
+PXProtocolMode PXProtocolModeFromID(const PXInt8U protocolMode)
 {
     switch(protocolMode)
     {
         case ProtocolHOPOPTS:
-            return ProtocolModeHOPOPTS;
+            return PXProtocolModeHOPOPTS;
 
         case ProtocolICMP:
-            return ProtocolModeICMP;
+            return PXProtocolModeICMP;
 
         case ProtocolIGMP:
-            return ProtocolModeIGMP;
+            return PXProtocolModeIGMP;
 
         case ProtocolGGP:
-            return ProtocolModeGGP;
+            return PXProtocolModeGGP;
 
         case ProtocolIPV4:
-            return ProtocolModeIPV4;
+            return PXProtocolModeIPV4;
 
         case ProtocolST:
-            return ProtocolModeST;
+            return PXProtocolModeST;
 
         case ProtocolTCP:
-            return ProtocolModeTCP;
+            return PXProtocolModeTCP;
 
         case ProtocolCBT:
-            return ProtocolModeCBT;
+            return PXProtocolModeCBT;
 
         case ProtocolEGP:
-            return ProtocolModeEGP;
+            return PXProtocolModeEGP;
 
         case ProtocolIGP:
-            return ProtocolModeIGP;
+            return PXProtocolModeIGP;
 
         case ProtocolPUP:
-            return ProtocolModePUP;
+            return PXProtocolModePUP;
 
         case ProtocolUDP:
-            return ProtocolModeUDP;
+            return PXProtocolModeUDP;
 
         case ProtocolIDP:
-            return ProtocolModeIDP;
+            return PXProtocolModeIDP;
 
         case ProtocolRDP:
-            return ProtocolModeRDP;
+            return PXProtocolModeRDP;
 
         case ProtocolIPV6:
-            return ProtocolModeIPV6;
+            return PXProtocolModeIPV6;
 
         case ProtocolROUTING:
-            return ProtocolModeROUTING;
+            return PXProtocolModeROUTING;
 
         case ProtocolFRAGMENT:
-            return ProtocolModeFRAGMENT;
+            return PXProtocolModeFRAGMENT;
 
         case ProtocolESP:
-            return ProtocolModeESP;
+            return PXProtocolModeESP;
 
         case ProtocolAH:
-            return ProtocolModeAH;
+            return PXProtocolModeAH;
 
         case ProtocolICMPV6:
-            return ProtocolModeICMPV6;
+            return PXProtocolModeICMPV6;
 
         case ProtocolNONE:
-            return ProtocolModeNONE;
+            return PXProtocolModeNONE;
 
         case ProtocolDSTOPTS:
-            return ProtocolModeDSTOPTS;
+            return PXProtocolModeDSTOPTS;
 
         case ProtocolND:
-            return ProtocolModeND;
+            return PXProtocolModeND;
 
         case ProtocolICLFXBM:
-            return ProtocolModeICLFXBM;
+            return PXProtocolModeICLFXBM;
 
         case ProtocolPIM:
-            return ProtocolModePIM;
+            return PXProtocolModePIM;
 
         case ProtocolPGM:
-            return ProtocolModePGM;
+            return PXProtocolModePGM;
 
         case ProtocolL2TP:
-            return ProtocolModeL2TP;
+            return PXProtocolModeL2TP;
 
         case ProtocolSCTP:
-            return ProtocolModeSCTP;
+            return PXProtocolModeSCTP;
 
         case ProtocolRAW:
-            return ProtocolModeRAW;
+            return PXProtocolModeRAW;
 
         case ProtocolMAX:
-            return ProtocolModeMAX;
+            return PXProtocolModeMAX;
 
         case ProtocolWindowsRAW:
-            return ProtocolModeWindowsRAW;
+            return PXProtocolModeWindowsRAW;
 
         case ProtocolWindowsIPSEC:
-            return ProtocolModeWindowsIPSEC;
+            return PXProtocolModeWindowsIPSEC;
 
         case ProtocolWindowsIPSECOFFLOAD:
-            return ProtocolModeWindowsIPSECOFFLOAD;
+            return PXProtocolModeWindowsIPSECOFFLOAD;
 
         case ProtocolWindowsWNV:
-            return ProtocolModeWindowsWNV;
+            return PXProtocolModeWindowsWNV;
 
         case ProtocolWindowsMAX:
-            return ProtocolModeWindowsMAX;
+            return PXProtocolModeWindowsMAX;
 
         default:
-            return ProtocolModeInvalid;
+            return PXProtocolModeInvalid;
     }
 }
 
-unsigned int ConvertFromProtocolMode(const ProtocolMode protocolMode)
+PXInt8U ConvertFromProtocolMode(const PXProtocolMode protocolMode)
 {
     switch(protocolMode)
     {
         default:
-        case ProtocolModeInvalid:
+        case PXProtocolModeInvalid:
             return ProtocolInvalid;
 
-        case ProtocolModeHOPOPTS:
+        case PXProtocolModeHOPOPTS:
             return ProtocolHOPOPTS;
 
-        case ProtocolModeICMP:
+        case PXProtocolModeICMP:
             return ProtocolICMP;
 
-        case ProtocolModeIGMP:
+        case PXProtocolModeIGMP:
             return ProtocolIGMP;
 
-        case ProtocolModeGGP:
+        case PXProtocolModeGGP:
             return ProtocolGGP;
 
-        case ProtocolModeIPV4:
+        case PXProtocolModeIPV4:
             return ProtocolIPV4;
 
-        case ProtocolModeST:
+        case PXProtocolModeST:
             return ProtocolST;
 
-        case ProtocolModeTCP:
+        case PXProtocolModeTCP:
             return ProtocolTCP;
 
-        case ProtocolModeCBT:
+        case PXProtocolModeCBT:
             return ProtocolCBT;
 
-        case ProtocolModeEGP:
+        case PXProtocolModeEGP:
             return ProtocolEGP;
 
-        case ProtocolModeIGP:
+        case PXProtocolModeIGP:
             return ProtocolIGP;
 
-        case ProtocolModePUP:
+        case PXProtocolModePUP:
             return ProtocolPUP;
 
-        case ProtocolModeUDP:
+        case PXProtocolModeUDP:
             return ProtocolUDP;
 
-        case ProtocolModeIDP:
+        case PXProtocolModeIDP:
             return ProtocolIDP;
 
-        case ProtocolModeRDP:
+        case PXProtocolModeRDP:
             return ProtocolRDP;
 
-        case ProtocolModeIPV6:
+        case PXProtocolModeIPV6:
             return ProtocolIPV6;
 
-        case ProtocolModeROUTING:
+        case PXProtocolModeROUTING:
             return ProtocolROUTING;
 
-        case ProtocolModeFRAGMENT:
+        case PXProtocolModeFRAGMENT:
             return ProtocolFRAGMENT;
 
-        case ProtocolModeESP:
+        case PXProtocolModeESP:
             return ProtocolESP;
 
-        case ProtocolModeAH:
+        case PXProtocolModeAH:
             return ProtocolAH;
 
-        case ProtocolModeICMPV6:
+        case PXProtocolModeICMPV6:
             return ProtocolICMPV6;
 
-        case ProtocolModeNONE:
+        case PXProtocolModeNONE:
             return ProtocolNONE;
 
-        case ProtocolModeDSTOPTS:
+        case PXProtocolModeDSTOPTS:
             return ProtocolDSTOPTS;
 
-        case ProtocolModeND:
+        case PXProtocolModeND:
             return ProtocolND;
 
-        case ProtocolModeICLFXBM:
+        case PXProtocolModeICLFXBM:
             return ProtocolICLFXBM;
 
-        case ProtocolModePIM:
+        case PXProtocolModePIM:
             return ProtocolPIM;
 
-        case ProtocolModePGM:
+        case PXProtocolModePGM:
             return ProtocolPGM;
 
-        case ProtocolModeL2TP:
+        case PXProtocolModeL2TP:
             return ProtocolL2TP;
 
-        case ProtocolModeSCTP:
+        case PXProtocolModeSCTP:
             return ProtocolSCTP;
 
-        case ProtocolModeRAW:
+        case PXProtocolModeRAW:
             return ProtocolRAW;
 
-        case ProtocolModeMAX:
+        case PXProtocolModeMAX:
             return ProtocolMAX;
 
-        case ProtocolModeWindowsRAW:
+        case PXProtocolModeWindowsRAW:
             return ProtocolWindowsRAW;
 
-        case ProtocolModeWindowsIPSEC:
+        case PXProtocolModeWindowsIPSEC:
             return ProtocolWindowsIPSEC;
 
-        case ProtocolModeWindowsIPSECOFFLOAD:
+        case PXProtocolModeWindowsIPSECOFFLOAD:
             return ProtocolWindowsIPSECOFFLOAD;
 
-        case ProtocolModeWindowsWNV:
+        case PXProtocolModeWindowsWNV:
             return ProtocolWindowsWNV;
 
-        case ProtocolModeWindowsMAX:
+        case PXProtocolModeWindowsMAX:
             return ProtocolWindowsMAX;
     }
 }
 
-PXSocketType ConvertToSocketType(const unsigned int socketType)
+PXSocketType PXSocketTypeFromID(const PXInt8U socketType)
 {
     switch(socketType)
     {
@@ -406,7 +406,7 @@ PXSocketType ConvertToSocketType(const unsigned int socketType)
     }
 }
 
-unsigned int ConvertFromSocketType(const PXSocketType socketType)
+PXInt8U PXSocketTypeToID(const PXSocketType socketType)
 {
     switch(socketType)
     {
@@ -431,7 +431,7 @@ unsigned int ConvertFromSocketType(const PXSocketType socketType)
     }
 }
 
-IPAdressFamily ConvertToIPAdressFamily(const unsigned int ipMode)
+IPAdressFamily PXIPAdressFamilyFromID(const PXInt8U ipMode)
 {
     switch(ipMode)
     {
@@ -471,7 +471,7 @@ IPAdressFamily ConvertToIPAdressFamily(const unsigned int ipMode)
     }
 }
 
-unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode)
+PXInt8U PXIPAdressFamilyToID(const IPAdressFamily ipMode)
 {
     switch(ipMode)
     {
@@ -617,11 +617,11 @@ PXActionResult PXSocketCreate
     PXSocket* const pxSocket,
     const IPAdressFamily adressFamily,
     const PXSocketType socketType,
-    const ProtocolMode protocolMode
+    const PXProtocolMode protocolMode
 )
 {
-    const int ipAdressFamilyID = ConvertFromIPAdressFamily(adressFamily);
-    const int socketTypeID = ConvertFromSocketType(socketType);
+    const int ipAdressFamilyID = PXIPAdressFamilyToID(adressFamily);
+    const int socketTypeID = PXSocketTypeToID(socketType);
     const int protocolModeID = ConvertFromProtocolMode(protocolMode);
 
 #if OSWindows
@@ -832,8 +832,8 @@ PXActionResult PXSocketSetupAdress
 
                 PXMemoryClear(&addressInfoHintW, sizeof(ADDRINFOW));
                 addressInfoHintW.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
-                addressInfoHintW.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
-                addressInfoHintW.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
+                addressInfoHintW.ai_family = PXIPAdressFamilyToID(pxSocketAdressSetupInfo->IPMode);
+                addressInfoHintW.ai_socktype = PXSocketTypeToID(pxSocketAdressSetupInfo->SocketType); // Datagram socket
                 addressInfoHintW.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
 
                 const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, (wchar_t*)portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h

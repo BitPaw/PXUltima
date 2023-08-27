@@ -38,7 +38,7 @@ PXBool PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID s
     return PXFalse;
 }
 
-PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const ProtocolMode protocolMode)
+PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const PXProtocolMode protocolMode)
 {
     // Setup adress info
     {

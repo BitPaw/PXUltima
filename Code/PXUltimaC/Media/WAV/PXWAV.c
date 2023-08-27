@@ -38,7 +38,7 @@ PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
-		const PXActionResult actionResult = PXFMTParse(&wav->Format, pxFile, riff.EndianFormat);
+		const PXActionResult actionResult = PXFMTLoadFromFile(&wav->Format, pxFile, riff.EndianFormat);
 
 		PXActionReturnOnError(actionResult);
 
@@ -139,7 +139,7 @@ PXActionResult PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 			bitdepth// BitsPerSample;
 		};
 
-		const PXActionResult fmtResult = PXFMTSerialize(&fmt, pxFile, targetEndian);
+		const PXActionResult fmtResult = PXFMTSaveToFile(&fmt, pxFile, targetEndian);
 	}
 
 	//Data chunk

@@ -5,7 +5,7 @@
 #include <Media/DEFLATE/PXDEFLATE.h>
 #include <Media/ADLER/PXAdler32.h>
 
-PXZLIBCompressionLevel ConvertToCompressionLevel(const PXInt8U compressionLevel)
+PXZLIBCompressionLevel PXZLIBCompressionLevelFromID(const PXInt8U compressionLevel)
 {
     switch(compressionLevel)
     {
@@ -26,7 +26,7 @@ PXZLIBCompressionLevel ConvertToCompressionLevel(const PXInt8U compressionLevel)
     }
 }
 
-unsigned char ConvertFromCompressionLevel(const PXZLIBCompressionLevel compressionLevel)
+PXInt8U PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel)
 {
     switch(compressionLevel)
     {
@@ -48,7 +48,7 @@ unsigned char ConvertFromCompressionLevel(const PXZLIBCompressionLevel compressi
     }
 }
 
-PXZLIBCompressionMethod ConvertToCompressionMethod(const PXInt8U compressionMethod)
+PXZLIBCompressionMethod PXZLIBCompressionMethodFromID(const PXInt8U compressionMethod)
 {
     switch(compressionMethod)
     {
@@ -63,7 +63,7 @@ PXZLIBCompressionMethod ConvertToCompressionMethod(const PXInt8U compressionMeth
     }
 }
 
-unsigned char ConvertFromCompressionMethod(const PXZLIBCompressionMethod compressionMethod)
+PXInt8U PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod)
 {
     switch(compressionMethod)
     {
@@ -108,7 +108,7 @@ PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutp
         {
             const PXInt8U compressionMethodValue = (compressionFormatByte & 0b00001111);
 
-            PXZLIB.Header.CompressionMethod = ConvertToCompressionMethod(compressionMethodValue);
+            PXZLIB.Header.CompressionMethod = PXZLIBCompressionMethodFromID(compressionMethodValue);
             PXZLIB.Header.CompressionInfo = (compressionFormatByte & 0b11110000) >> 4;
 
             // log_2(WindowSize) - 8 = CompressionInfo
@@ -134,7 +134,7 @@ PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutp
 
             PXZLIB.Header.CheckFlag = (flagByte & 0b00011111);
             PXZLIB.Header.PXDictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
-            PXZLIB.Header.CompressionLevel = ConvertToCompressionLevel(compressionLevelValue);
+            PXZLIB.Header.CompressionLevel = PXZLIBCompressionLevelFromID(compressionLevelValue);
         }
         //-------------------------------------------------------------------------        
     }
@@ -185,11 +185,11 @@ PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutput
 {
     // Write PXZLIB Header
     {
-        const PXByte compressionMethod = ConvertFromCompressionMethod(PXZLIBCompressionMethodDeflate);
+        const PXByte compressionMethod = PXZLIBCompressionMethodToID(PXZLIBCompressionMethodDeflate);
         const PXByte compressionInfo = 7u; // 1-7
 
         const PXByte dictionary = 0;
-        const PXByte level = ConvertFromCompressionLevel(PXZLIBCompressionLevelFastest);
+        const PXByte level = PXZLIBCompressionLevelToID(PXZLIBCompressionLevelFastest);
 
         // Byte 1
         // 0b00001111

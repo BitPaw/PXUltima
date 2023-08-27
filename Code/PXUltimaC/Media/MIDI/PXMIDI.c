@@ -1,24 +1,20 @@
 #include "PXMIDI.h"
 
 #include <OS/File/PXFile.h>
-#include <OS/Memory/PXMemory.h>
 
-
-#define PXMIDITrackHeaderID {'M','T','h','d'}
-#define PXMIDITrackChunkID  {'M','T','r','k'}
-
+const static char PXMIDITrackHeaderID[4] = { 'M','T','h','d' };
+const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };
 
 PXActionResult PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	/*
+	PXMIDI* const pxMIDI = PXNew(PXMIDI);
+
 	// Parse Chunk header
 	{
-		unsigned int chunkLength = 0;
+		PXInt16U chunkLength = 0;
 
 		{
-			const char headerSignature[] = PXMIDITrackHeaderID;
-			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const PXBool isValid = PXFileReadAndCompare(PXFile, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXFileReadAndCompare(pxFile, PXMIDITrackHeaderID, sizeof(PXMIDITrackHeaderID));
 
 			if (!isValid)
 			{
@@ -26,29 +22,33 @@ PXActionResult PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 			}
 		}
 
-		PXFileReadI16UE(PXFile, chunkLength, PXEndianBig);
-		PXFileReadI16UE(PXFile, &mid->Format, PXEndianBig);
-		PXFileReadI16UE(PXFile, &mid->TrackListSize, PXEndianBig);
-		PXFileReadI16UE(PXFile, &mid->MusicSpeed, PXEndianBig);
+		const PXFileDataElementType pxDataStreamElementList[] =
+		{
+			{PXDataTypeBEInt16U, &chunkLength},
+			{PXDataTypeBEInt16U, &pxMIDI->Format},
+			{PXDataTypeBEInt16U, &pxMIDI->TrackListSize},
+			{PXDataTypeBEInt16U, &pxMIDI->MusicSpeed}
+		};
+		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
+
+		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 	}
 
-	if (!mid->TrackListSize)
+	if (!pxMIDI->TrackListSize)
 	{
 		return PXActionSuccessful;
 	}
 
-	mid->TrackList = PXMemoryAllocateType(PXMIDITrack, mid->TrackListSize);
+	pxMIDI->TrackList = PXNewList(PXMIDITrack, pxMIDI->TrackListSize);
 
 	// Parse Track Header
-	for (PXSize i = 0; i < mid->TrackListSize; ++i)
+	for (PXInt16U i = 0; i < pxMIDI->TrackListSize; ++i)
 	{
-		PXMIDITrack* track = &mid->TrackList[i];
-		unsigned int chunkLength = 0;
+		PXMIDITrack* const track = &pxMIDI->TrackList[i];
+		PXInt32U chunkLength = 0;
 
 		{
-			const char headerSignature[] = PXMIDITrackChunkID;
-			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const PXBool isValid = PXFileReadAndCompare(PXFile, headerSignature, headerSignatureSize);
+			const PXBool isValid = PXFileReadAndCompare(pxFile, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
 
 			if (!isValid)
 			{
@@ -56,66 +56,45 @@ PXActionResult PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 			}
 		}
 
-		PXFileReadI32UE(PXFile, chunkLength, PXEndianBig);
+		PXFileReadI32UE(pxFile, chunkLength, PXEndianBig);
 
 		track->ID = i;
-		track->EventData = PXMemoryAllocateType(PXByte, chunkLength);
+		track->EventData = PXNewList(PXByte, chunkLength);
 		track->EventDataSize = chunkLength;
 
-		PXFileReadB(PXFile, track->EventData, chunkLength);
+		PXFileReadB(pxFile, track->EventData, chunkLength);
 	}
 
 	return PXActionSuccessful;
-	*/
-
-	return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXMIDISaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	/*
-File file;
+	PXMIDI* pxMIDI = PXNull;
 
-{
-	const PXActionResult fileOpenResult = file.Open(filePath, FileOpenMode::Write);
-	const bool sucessful = fileOpenResult == PXActionSuccessful;
-
-	if(!sucessful)
 	{
-		return fileOpenResult;
-	}
-}
+		const PXInt16U chunkLength = 6;
+		const PXFileDataElementType pxDataStreamElementList[] =
+		{
+			{PXDataTypeTextx4, PXMIDITrackHeaderID},
+			{PXDataTypeBEInt16U, &chunkLength},
+			{PXDataTypeBEInt16U, &pxMIDI->Format},
+			{PXDataTypeBEInt16U, &pxMIDI->TrackListSize},
+			{PXDataTypeBEInt16U, &pxMIDI->MusicSpeed}
+		};
+		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-const char midiTagData[] = PXMIDITrackHeaderID;
+		PXFileWriteMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+	}	
 
-file.WriteToDisk(midiTagData, 4u); // "MThd"
-file.WriteToDisk(6u, PXEndianBig);
-file.WriteToDisk(Format, PXEndianBig);
-file.WriteToDisk(TrackListSize, PXEndianBig);
-file.WriteToDisk(MusicSpeed, PXEndianBig);
-
-for(PXSize i = 0; i < TrackListSize; i++)
-{
-	const char midiTrackTag[] = PXMIDITrackChunkID;
-
-	PXMIDITrack& track = TrackList[i];
-
-	file.WriteToDisk(midiTrackTag, 4u);
-	file.WriteToDisk(track.EventDataSize, PXEndianBig);
-	file.WriteToDisk(track.EventData, track.EventDataSize);
-}
-
-{
-	const PXActionResult fileCloseResult = file.Close();
-	const bool sucessful = fileCloseResult == PXActionSuccessful;
-
-	if(!sucessful)
+	for (PXInt16U i = 0; i < pxMIDI->TrackListSize; ++i)
 	{
-		return fileCloseResult;
+		PXMIDITrack* const track = &pxMIDI->TrackList[i];
+
+		PXFileWriteB(pxFile, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
+		PXFileWriteI32UE(pxFile, track->EventDataSize, PXEndianBig);
+		PXFileWriteB(pxFile, track->EventData, track->EventDataSize);
 	}
-}
 
-return PXActionSuccessful;*/
-
-	return PXActionRefusedNotImplemented;
+	return PXActionSuccessful;
 }

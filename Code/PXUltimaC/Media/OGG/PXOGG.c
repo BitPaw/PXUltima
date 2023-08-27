@@ -3,7 +3,7 @@
 #include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 
-#define PXOGGHeaderSignature { 'O','g','g','S' }
+const static char PXOGGHeaderSignature[4] = { 'O','g','g','S' };
 
 #define PXOGGHeaderTypeContinuation 0x01
 #define PXOGGHeaderTypeBeginningOfStream 0x02
@@ -23,24 +23,29 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 		{
 			// Header tag does exist multible times.
 			// You can refocus it when the file is corrupted.
-			const unsigned char* headerSignature[] = PXOGGHeaderSignature;
-			const PXSize headerSignatureSize = sizeof(headerSignature);
-			const unsigned char validHeaderSignature = PXFileReadAndCompare(pxFile, headerSignature, headerSignatureSize);
+			const PXSize headerSignatureSize = sizeof(PXOGGHeaderSignature);
+			const PXBool validHeaderSignature = PXFileReadAndCompare(pxFile, PXOGGHeaderSignature, headerSignatureSize);
 
 			if(!validHeaderSignature)
 			{
-				printf("Chunk Index missing!\n");
 				return PXActionRefusedInvalidHeaderSignature;
 			}
 		}
 
-		PXFileReadI8U(pxFile, &page.Version);
-		PXFileReadI8U(pxFile, &page.HeaderType);
-		PXFileReadI32UE(pxFile, &page.GranulePosition, PXEndianLittle);
-		PXFileReadI32UE(pxFile, &page.SerialNumber, PXEndianLittle);
-		PXFileReadI32UE(pxFile, &page.SequenceNumber, PXEndianLittle);
-		PXFileReadI32UE(pxFile, &page.CRC32CheckSum, PXEndianLittle);
-		PXFileReadI8U(pxFile, &page.PageSegments);
+
+		const PXFileDataElementType pxDataStreamElementList[] =
+		{
+			{PXDataTypeInt8U, &page.Version},
+			{PXDataTypeInt8U, &page.HeaderType},
+			{PXDataTypeLEInt32U, &page.GranulePosition},
+			{PXDataTypeLEInt32U, &page.SerialNumber},
+			{PXDataTypeLEInt32U, &page.SequenceNumber},
+			{PXDataTypeLEInt32U, &page.CRC32CheckSum},
+			{PXDataTypeInt8U, &page.PageSegments}
+		};
+		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
+
+		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
 		unsigned char segmentSizeList[0xFF];
 
@@ -108,6 +113,8 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 }
 
 PXActionResult PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
-{
+{	
+	PXFileWriteB(pxFile, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
+
 	return PXActionRefusedNotImplemented;
 }

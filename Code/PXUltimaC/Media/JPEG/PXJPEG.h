@@ -99,60 +99,60 @@ extern "C"
 
 	typedef struct PXJPEGFrameComponent_
 	{
-		unsigned char ID;
-		unsigned char SamplingFactorHorizonal;
-		unsigned char SamplingFactorVertical;
-		unsigned char QuantizationTableID;
+		PXInt8U ID;
+		PXInt8U SamplingFactorHorizonal;
+		PXInt8U SamplingFactorVertical;
+		PXInt8U QuantizationTableID;
 	}
 	PXJPEGFrameComponent;
 
 	typedef struct PXJPEGFrame_
 	{
-		unsigned char Precision;
-		unsigned short Height;
-		unsigned short Width;
-		unsigned char ComponentListSize;
 		PXJPEGFrameComponent ComponentList[255];
+		PXInt16U Width;
+		PXInt16U Height;
+		PXInt8U Precision;	
+		PXInt8U ComponentListSize;
 	}
 	PXJPEGFrame;
 
 	typedef struct PXJPEGFileInfo_
 	{
-		unsigned char VersionMajor;
-		unsigned char VersionMinor;
-		unsigned char DensityUnits;
-		unsigned short DensityX;
-		unsigned short DensityY;
-		unsigned char ThumbnailX;
-		unsigned char ThumbnailY;
+		void* ThumbnailData;
+		PXInt32U ThumbnailDataSize;
 
-		unsigned int ThumbnailDataSize;
-		unsigned char* ThumbnailData;
+		PXInt16U DensityX;
+		PXInt16U DensityY;
+		PXInt8U VersionMajor;
+		PXInt8U VersionMinor;
+		PXInt8U DensityUnits;
+		PXInt8U ThumbnailX;
+		PXInt8U ThumbnailY;	
 	}
 	PXJPEGFileInfo;
 
 	typedef struct PXJPEGHuffmanTable_
 	{
-		unsigned char ID;
-		unsigned char Type;
+		PXInt8U ID;
+		PXInt8U Type;
 	}
 	PXJPEGHuffmanTable;
 
 	typedef struct PXJPEGScanSelector_
 	{
-		unsigned char ID;
-		unsigned char DC;
-		unsigned char ACTable;
+		PXInt8U ID;
+		PXInt8U DC;
+		PXInt8U ACTable;
 	}
 	PXJPEGScanSelector;
 
 	typedef struct PXJPEGScanStart_
 	{
-		unsigned char ScanSelectorSize;
 		PXJPEGScanSelector ScanSelector[3];
-		unsigned char SpectralSelectFrom;
-		unsigned char SpectralSelectTo;
-		unsigned char SuccessiveAproximation;
+		PXInt8U ScanSelectorSize;	
+		PXInt8U SpectralSelectFrom;
+		PXInt8U SpectralSelectTo;
+		PXInt8U SuccessiveAproximation;
 	}
 	PXJPEGScanStart;
 
@@ -160,7 +160,7 @@ extern "C"
 	{
 		PXJPEGFileInfo FileInfo;
 
-		unsigned char QuantizationTable[2][64];
+		PXInt8U QuantizationTable[2][64];
 
 		PXSize HuffmanTableSize;
 		PXJPEGHuffmanTable* HuffmanTable;
@@ -175,8 +175,8 @@ extern "C"
 	PXJPEG;
 
 
-	PXPrivate PXJPEGMarker PXJPEGMarkerFromID(const PXInt16U jpegMarker);
-	PXPrivate PXInt16U PXJPEGMarkerToID(const PXJPEGMarker jpegMarker);
+	PXPrivate inline PXJPEGMarker PXJPEGMarkerFromID(const PXInt16U jpegMarker);
+	PXPrivate inline PXInt16U PXJPEGMarkerToID(const PXJPEGMarker jpegMarker);
 
 	PXPublic void PXJPEGConstruct(PXJPEG* const jpeg);
 	PXPublic void PXJPEGDestruct(PXJPEG* const jpeg);

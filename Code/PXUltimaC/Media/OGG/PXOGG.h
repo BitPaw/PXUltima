@@ -1,9 +1,5 @@
-#ifndef PXPXOGGINCLUDE
-#define PXPXOGGINCLUDE
-
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
+#ifndef PXOGGINCLUDE
+#define PXOGGINCLUDE
 
 #include <Media/PXResource.h>
 
@@ -11,18 +7,6 @@
 extern "C"
 {
 #endif
-
-	typedef struct PXOGGPage_
-	{
-		unsigned char Version; // Often a zero
-		unsigned char HeaderType;
-		unsigned long long GranulePosition; // 8 Bytes
-		unsigned int SerialNumber;
-		unsigned int SequenceNumber;
-		unsigned int CRC32CheckSum; // CRC32, is generated using a polynomial value of 0x04C11DB7.
-		unsigned char PageSegments;
-	}
-	PXOGGPage;
 
 	typedef enum PXOGGHeaderType_
 	{
@@ -32,6 +16,18 @@ extern "C"
 		PXOGGHeaderEnd
 	}
 	PXOGGHeaderType;
+
+	typedef struct PXOGGPage_
+	{	
+		PXInt64U GranulePosition; // 8 Bytes
+		PXInt32U SerialNumber;
+		PXInt32U SequenceNumber;
+		PXInt32U CRC32CheckSum; // CRC32, is generated using a polynomial value of 0x04C11DB7.
+		PXInt8U PageSegments;
+		PXInt8U HeaderType;
+		PXInt8U Version; // Often a zero
+	}
+	PXOGGPage;
 
 	typedef struct PXOGG_
 	{

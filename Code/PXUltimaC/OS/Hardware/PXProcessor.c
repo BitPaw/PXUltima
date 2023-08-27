@@ -11,6 +11,8 @@
 #include <Wbemidl.h>
 //#include <intrin.h> // MISSING
 
+#include <intrin.h>
+
 #pragma comment(lib, "wbemuuid.lib")
 
 #endif
@@ -18,8 +20,6 @@
 #include <stdio.h>
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
-
-void __cpuid(int cpuInfo[4], int function_id);
 
 void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
@@ -712,4 +712,19 @@ PXInt32U PXProcessorTemperature()
 
 #endif
 #endif
+}
+
+void PXProcessorSwapByteOrderI16U(PXInt16U* const value)
+{
+    *value = _byteswap_ushort(*value);
+}
+
+void PXProcessorSwapByteOrderI32U(PXInt32U* const value)
+{
+    *value = _byteswap_ulong(*value);
+}
+
+void PXProcessorSwapByteOrderI64U(PXInt64U* const value)
+{
+    *value = _byteswap_uint64(*value);
 }

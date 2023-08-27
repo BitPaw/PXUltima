@@ -50,7 +50,7 @@ PXWindow* currentWindow = 0;
 
 #if OSWindows
 
-typedef enum WindowEventType_
+typedef enum PXWindowEventType_
 {
     WindowEventInvalid,
     WindowEventNoMessage,
@@ -310,9 +310,10 @@ typedef enum WindowEventType_
         WindowEventPENWINFIRST,
         WindowEventPENWINLAST,
         WindowEventAPP
-}WindowEventType;
+}
+PXWindowEventType;
 
-WindowEventType ToWindowEventType(const unsigned int windowEventID)
+PXWindowEventType ToWindowEventType(const unsigned int windowEventID)
 {
     switch(windowEventID)
     {
@@ -994,7 +995,7 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
 #elif PXOSWindowsDestop
 LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam)
 {
-    const WindowEventType windowEventType = ToWindowEventType(eventID);
+    const PXWindowEventType windowEventType = ToWindowEventType(eventID);
     PXWindow* const window = PXWindowLookupFind(windowsID);
 
     if(!window)
@@ -1337,7 +1338,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
 
             PXKeyBoardKeyPressedSet(&window->KeyBoardCurrentInput, virtualKey, mode == PXKeyPressStateUp);
 
-            KeyBoardKeyInfo buttonInfo;
+            PXKeyBoardKeyInfo buttonInfo;
             buttonInfo.KeyID = character;
             buttonInfo.Key = virtualKey;
             buttonInfo.Mode = mode;
@@ -1445,39 +1446,39 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         //case WindowEventMOUSEMOVE:
         //    break;
         case WindowEventLBUTTONDOWN:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, PXKeyPressStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, PXMouseButtonLeft, PXKeyPressStateDown);
             break;
 
         case WindowEventLBUTTONUP:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonLeft, PXKeyPressStateUp);
+            PXWindowTriggerOnMouseClickEvent(window, PXMouseButtonLeft, PXKeyPressStateUp);
             break;
 
         case WindowEventLBUTTONDBLCLK:
-            PXWindowTriggerOnMouseClickDoubleEvent(window, MouseButtonLeft);
+            PXWindowTriggerOnMouseClickDoubleEvent(window, PXMouseButtonLeft);
             break;
 
         case WindowEventRBUTTONDOWN:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, PXKeyPressStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, PXMouseButtonRight, PXKeyPressStateDown);
             break;
 
         case WindowEventRBUTTONUP:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonRight, PXKeyPressStateUp);
+            PXWindowTriggerOnMouseClickEvent(window, PXMouseButtonRight, PXKeyPressStateUp);
             break;
 
         case WindowEventRBUTTONDBLCLK:
-            PXWindowTriggerOnMouseClickDoubleEvent(window, MouseButtonRight);
+            PXWindowTriggerOnMouseClickDoubleEvent(window, PXMouseButtonRight);
             break;
 
         case WindowEventMBUTTONDOWN:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, PXKeyPressStateDown);
+            PXWindowTriggerOnMouseClickEvent(window, PXMouseButtonMiddle, PXKeyPressStateDown);
             break;
 
         case WindowEventMBUTTONUP:
-            PXWindowTriggerOnMouseClickEvent(window, MouseButtonMiddle, PXKeyPressStateUp);
+            PXWindowTriggerOnMouseClickEvent(window, PXMouseButtonMiddle, PXKeyPressStateUp);
             break;
 
         case WindowEventMBUTTONDBLCLK:
-            PXWindowTriggerOnMouseClickDoubleEvent(window, MouseButtonMiddle);
+            PXWindowTriggerOnMouseClickDoubleEvent(window, PXMouseButtonMiddle);
             break;
 
         case WindowEventMOUSEWHEEL:
@@ -1486,7 +1487,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         case WindowEventXBUTTONUP:
         case WindowEventXBUTTONDOWN:
         {
-            MouseButton mouseButton = MouseButtonInvalid;
+            PXMouseButton mouseButton = PXMouseButtonInvalid;
             PXKeyPressState buttonState = PXKeyPressStateInvalid;
 
             const WORD releaseID = HIWORD(wParam);
@@ -1517,11 +1518,11 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
                 switch(releaseID)
                 {
                     case XBUTTON1:
-                        mouseButton = MouseButtonSpecialA;
+                        mouseButton = PXMouseButtonSpecialA;
                         break;
 
                     case XBUTTON2:
-                        mouseButton = MouseButtonSpecialB;
+                        mouseButton = PXMouseButtonSpecialB;
                         break;
                 }
 
@@ -2941,7 +2942,7 @@ void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mo
 
 }
 
-void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const PXKeyPressState buttonState)
+void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const PXMouseButton mouseButton, const PXKeyPressState buttonState)
 {
     PXMouse* const mouse = &window->MouseCurrentInput;
 
@@ -2954,17 +2955,17 @@ void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton 
         {
             switch (mouseButton)
             {
-                case MouseButtonLeft:
+                case PXMouseButtonLeft:
                 {
                     mouse->Buttons |= ButtonLeft;
                     break;
                 }
-                case MouseButtonMiddle:
+                case PXMouseButtonMiddle:
                 {
                     mouse->Buttons |= ButtonMiddle;
                     break;
                 }
-                case MouseButtonRight:
+                case PXMouseButtonRight:
                 {
                     mouse->Buttons |= ButtonRight;
                     break;
@@ -2976,17 +2977,17 @@ void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton 
         {
             switch (mouseButton)
             {
-                case MouseButtonLeft:
+                case PXMouseButtonLeft:
                 {
                     mouse->Buttons &= ~ButtonLeft;
                     break;
                 }
-                case MouseButtonMiddle:
+                case PXMouseButtonMiddle:
                 {
                     mouse->Buttons &= ~ButtonMiddle;
                     break;
                 }
-                case MouseButtonRight:
+                case PXMouseButtonRight:
                 {
                     mouse->Buttons &= ~ButtonRight;
                     break;
@@ -3025,39 +3026,39 @@ void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton 
 
     switch(mouseButton)
     {
-        case MouseButtonInvalid:
+        case PXMouseButtonInvalid:
             mouseButtonText = "Invalid";
             break;
 
-        case MouseButtonLeft:
+        case PXMouseButtonLeft:
             mouseButtonText = "Left";
             break;
 
-        case MouseButtonMiddle:
+        case PXMouseButtonMiddle:
             mouseButtonText = "Middle";
             break;
 
-        case MouseButtonRight:
+        case PXMouseButtonRight:
             mouseButtonText = "Right";
             break;
 
-        case MouseButtonSpecialA:
+        case PXMouseButtonSpecialA:
             mouseButtonText = "Special A";
             break;
 
-        case MouseButtonSpecialB:
+        case PXMouseButtonSpecialB:
             mouseButtonText = "Special B";
             break;
 
-        case MouseButtonSpecialC:
+        case PXMouseButtonSpecialC:
             mouseButtonText = "Special C";
             break;
 
-        case MouseButtonSpecialD:
+        case PXMouseButtonSpecialD:
             mouseButtonText = "Special D";
             break;
 
-        case MouseButtonSpecialE:
+        case PXMouseButtonSpecialE:
             mouseButtonText = "Special E";
             break;
     }
@@ -3067,7 +3068,7 @@ void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton 
     InvokeEvent(window->MouseClickCallBack, window->EventReceiver, window, mouseButton, buttonState);
 }
 
-void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton)
+void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton)
 {
     InvokeEvent(window->MouseClickDoubleCallBack, window->EventReceiver, window, mouseButton);
 }
@@ -3137,7 +3138,7 @@ void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mou
 {
 }
 
-void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo* const keyBoardKeyInfo)
+void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)
 {
     printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
 
@@ -3426,51 +3427,51 @@ void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKey
     InvokeEvent(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
 }
 
-PXInt32U PXWindowCursorIconToID(const CursorIcon cursorIcon)
+PXInt32U PXWindowCursorIconToID(const PXCursorIcon cursorIcon)
 {
     switch (cursorIcon)
     {
         default:
-        case CursorIconInvalid:
+        case PXCursorIconInvalid:
             return -1;
 
-        case CursorIconNormal:
+        case PXCursorIconNormal:
             return CursorIconNormalID;
 
-        case CursorIconIBeam:
+        case PXCursorIconIBeam:
             return CursorIconIBeamID;
 
-        case CursorIconWait:
+        case PXCursorIconWait:
             return CursorIconWaitID;
 
-        case CursorIconCross:
+        case PXCursorIconCross:
             return CursorIconCrossID;
 
-        case CursorIconUp:
+        case PXCursorIconUp:
             return CursorIconUpID;
 
-        case CursorIconHand:
+        case PXCursorIconHand:
             return CursorIconHandID;
 
-        case CursorIconNotAllowed:
+        case PXCursorIconNotAllowed:
             return CursorIconNoAllowedID;
 
-        case CursorIconAppStarting:
+        case PXCursorIconAppStarting:
             return CursorIconAppStartingID;
 
-        case CursorIconResizeHorizontal:
+        case PXCursorIconResizeHorizontal:
             return CursorIconResizeHorizontalID;
 
-        case CursorIconResizeVertical:
+        case PXCursorIconResizeVertical:
             return CursorIconResizeVerticalID;
 
-        case CursorIconResizeClockwise:
+        case PXCursorIconResizeClockwise:
             return CursorIconResizeClockwiseID;
 
-        case CursorIconResizeClockwiseCounter:
+        case PXCursorIconResizeClockwiseCounter:
             return CursorIconResizeClockwiseCounterID;
 
-        case CursorIconResizeAll:
+        case PXCursorIconResizeAll:
             return CursorIconResizeAllID;
     }
 }

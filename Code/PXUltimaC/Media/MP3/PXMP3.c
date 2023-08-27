@@ -132,7 +132,7 @@
 #define MPEGGenreIDEuroHouse 124u
 #define MPEGGenreIDDanceHall 125u
 
-MPEGGenre ConvertMPEGToGenre(const unsigned char mpegGenre)
+PXMPEGGenre PXMPEGGenreFromID(const PXInt8U mpegGenre)
 {
 	switch(mpegGenre)
 	{
@@ -522,7 +522,7 @@ MPEGGenre ConvertMPEGToGenre(const unsigned char mpegGenre)
 	}
 }
 
-unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre)
+PXInt8U PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
 {
 	switch(mpegGenre)
 	{
@@ -795,7 +795,7 @@ PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 	{
 
-		const PXActionResult actionResult = PXID3Parse(&mp3->PXID3Info, pxFile);
+		const PXActionResult actionResult = PXID3LoadFromFile(&mp3->PXID3Info, pxFile);
 
 		PXActionReturnOnError(actionResult);
 	}

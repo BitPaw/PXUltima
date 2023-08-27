@@ -1,12 +1,7 @@
 #ifndef PXMP3INCLUDE
 #define PXMP3INCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
 #include <Media/ID3/PXID3.h>
-
-#include <Media/PXResource.h>
 
 #define PXMP3Debug 1
 
@@ -14,7 +9,8 @@
 extern "C"
 {
 #endif
-	typedef enum MPEGGenre_
+
+	typedef enum PXMPEGGenre_
 	{
 		MPEGGenreUnknown,
 
@@ -145,18 +141,7 @@ extern "C"
 		EuroHouse,
 		DanceHall
 	}
-	MPEGGenre;
-
-	typedef struct MPEGAudioTag
-	{
-		// char[3] == TAG
-		char Title[30];
-		char Artist[30];
-		char Album[30];
-		char Year[4];
-		char Comment[30];
-		MPEGGenre Genre;
-	};
+	PXMPEGGenre;
 
 	typedef enum PXMP3ChannelMode_
 	{
@@ -166,7 +151,6 @@ extern "C"
 		PXMP3ChannelSingle
 	}
 	PXMP3ChannelMode;
-
 
 	typedef enum PXMP3Emphasis_
 	{
@@ -194,6 +178,17 @@ extern "C"
 		MPEGVersion25
 	}
 	PXMP3MPEGVersion;
+
+	typedef struct MPEGAudioTag
+	{
+		// char[3] == TAG
+		char Title[30];
+		char Artist[30];
+		char Album[30];
+		char Year[4];
+		char Comment[30];
+		PXMPEGGenre Genre;
+	};
 
 	typedef struct PXMP3Header_
 	{
@@ -224,13 +219,11 @@ extern "C"
 	}
 	PXMP3;
 
-	
-	static MPEGGenre ConvertMPEGToGenre(const unsigned char mpegGenre);
-	static unsigned char ConvertMPEGFromGenre(const MPEGGenre mpegGenre);
+	PXPrivate inline PXInt8U PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
+	PXPrivate inline PXMPEGGenre PXMPEGGenreFromID(const PXInt8U mpegGenre);
 
 	PXPublic PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
 	PXPublic PXActionResult PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile);
-
 
 #ifdef __cplusplus
 }

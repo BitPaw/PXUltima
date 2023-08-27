@@ -21,13 +21,13 @@ extern "C"
 	}
 	PXGraphicSystem;
 
-	typedef enum RefreshRateMode_
+	typedef enum PXRefreshRateMode_
 	{
 		PXRefreshRateUnlimited,
 		PXRefreshRateVSync,
 		PXRefreshRateCustomSync
 	}
-	RefreshRateMode;
+	PXRefreshRateMode;
 
 	typedef enum PXGraphicResourceLocation_
 	{

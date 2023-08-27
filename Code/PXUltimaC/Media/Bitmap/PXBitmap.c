@@ -17,7 +17,7 @@ a = a - b;
 #define PXBitmapHeaderIDOS2StructIcon            PXInt16Make('I', 'C')
 #define PXBitmapHeaderIDOS2Pointer               PXInt16Make('P', 'T')
 
-PXBitmapType ConvertToPXBitmapType(const unsigned short bmpTypeID)
+PXBitmapType PXBitmapTypeFromID(const PXInt16U bmpTypeID)
 {
     switch(bmpTypeID)
     {
@@ -44,7 +44,7 @@ PXBitmapType ConvertToPXBitmapType(const unsigned short bmpTypeID)
     }
 }
 
-unsigned short ConvertFromPXBitmapType(const PXBitmapType headerType)
+PXInt16U PXBitmapTypeToID(const PXBitmapType headerType)
 {
     switch(headerType)
     {
@@ -72,7 +72,7 @@ unsigned short ConvertFromPXBitmapType(const PXBitmapType headerType)
     }
 }
 
-PXBitmapInfoHeaderType ConvertToPXBitmapInfoHeaderType(const unsigned int infoHeaderType)
+PXBitmapInfoHeaderType PXBitmapInfoHeaderTypeFromID(const PXInt8U infoHeaderType)
 {
     switch(infoHeaderType)
     {
@@ -103,7 +103,7 @@ PXBitmapInfoHeaderType ConvertToPXBitmapInfoHeaderType(const unsigned int infoHe
     }
 }
 
-unsigned int ConvertFromPXBitmapInfoHeaderType(const PXBitmapInfoHeaderType infoHeaderType)
+PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
 {
     switch(infoHeaderType)
     {
@@ -153,18 +153,16 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
         PXFileReadB(pxFile, byteCluster.Data, 2u);
         PXFileReadI32UVE(pxFile, valueList, 3u, PXEndianLittle);
 
-        const PXBitmapType type = ConvertToPXBitmapType(byteCluster.Value);
+        bmp.Type = PXBitmapTypeFromID(byteCluster.Value);
 
         {
-            const PXBool isValidType = type != PXBitmapInvalid;
+            const PXBool isValidType = bmp.Type != PXBitmapInvalid;
 
             if(!isValidType)
             {
                 return PXActionRefusedInvalidHeaderSignature;
             }
         }
-
-        bmp.Type = type;
     }
     //-------------------------------------------------------------------------
 
@@ -172,7 +170,7 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
     {
         PXFileReadI32UE(pxFile, &bmp.InfoHeader.HeaderSize, PXEndianLittle);
 
-        bmp.InfoHeaderType = ConvertToPXBitmapInfoHeaderType(bmp.InfoHeader.HeaderSize);
+        bmp.InfoHeaderType = PXBitmapInfoHeaderTypeFromID(bmp.InfoHeader.HeaderSize);
 
         switch(bmp.InfoHeaderType)
         {
@@ -290,12 +288,14 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
 
     PXBitmapConstruct(&bitMap);
 
-    //---<Header>-----
+    //-----------------------------------------------------
+    // Header - Write
+    //-----------------------------------------------------
     {
         {
             PXInt16UCluster byteCluster;
             
-            byteCluster.Value = ConvertFromPXBitmapType(PXBitmapWindows);
+            byteCluster.Value = PXBitmapTypeToID(PXBitmapWindows);
 
             PXFileWriteB(pxFile, byteCluster.Data, 2u);
         }
@@ -311,14 +311,17 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
             PXFileWriteI32UVE(pxFile, data, 3u, PXEndianLittle);
         }      
     }
-    //----------------
+    //-----------------------------------------------------
 
-    //---<DIP>
+
+    //-----------------------------------------------------
+    // DIP - Write
+    //-----------------------------------------------------
     {
         const PXBitmapInfoHeaderType bmpInfoHeaderType = PXBitmapHeaderBitMapInfoHeader;
 
         //---<Shared>----------------------------------------------------------
-        bitMap.InfoHeader.HeaderSize = ConvertFromPXBitmapInfoHeaderType(bmpInfoHeaderType);
+        bitMap.InfoHeader.HeaderSize = PXBitmapInfoHeaderTypeFromID(bmpInfoHeaderType);
         bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(image->Format);
         bitMap.InfoHeader.NumberOfColorPlanes = 1;
         bitMap.InfoHeader.Width = image->Width;
@@ -334,21 +337,28 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
                 bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution = 1u;
                 bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution = 1u;
 
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.Width, PXEndianLittle);
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.Height, PXEndianLittle);
-                PXFileWriteI16UE(pxFile, bitMap.InfoHeader.NumberOfColorPlanes, PXEndianLittle);
-                PXFileWriteI16UE(pxFile, bitMap.InfoHeader.NumberOfBitsPerPixel, PXEndianLittle);
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod, PXEndianLittle);
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize, PXEndianLittle);
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution, PXEndianLittle);
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution, PXEndianLittle);
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette, PXEndianLittle);
-                PXFileWriteI32SE(pxFile, bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed, PXEndianLittle);
+                const PXFileDataElementType pxDataStreamElementList[] =
+                {
+                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.Width},
+                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.Height},
+                    {PXDataTypeLEInt16U, &bitMap.InfoHeader.NumberOfColorPlanes},
+                    {PXDataTypeLEInt16U, &bitMap.InfoHeader.NumberOfBitsPerPixel},
+                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod},
+                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize},
+                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution},
+                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution},
+                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette},
+                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed},
+                };
+                const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
+
+                PXFileWriteMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+
                 break;
             }
         }
     }
-    //------------
+    //-----------------------------------------------------
 
     {
         PXBitmapImageDataLayout imageDataLayout;
@@ -380,7 +390,7 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
 
 void PXBitmapConstruct(PXBitmap* const bmp)
 {
-    PXMemoryClear(bmp, sizeof(PXBitmap));
+    PXClear(PXBitmap, bmp);
 }
 
 void PXBitmapDestruct(PXBitmap* const bmp)
@@ -397,7 +407,7 @@ void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDat
     bmpImageDataLayout->ImageSize = bmpImageDataLayout->RowImageDataSize * height;
     bmpImageDataLayout->RowFullSize = PXMathFloorD((width * bbp + 31u) / 32.0f) * 4u;
     const int paddingSUM = (int)bmpImageDataLayout->RowFullSize - (int)bmpImageDataLayout->RowImageDataSize;
-    bmpImageDataLayout->RowPaddingSize = PXMathAbsoluteI(paddingSUM);
+    bmpImageDataLayout->RowPaddingSize = PXMathAbsoluteI32(paddingSUM);
     bmpImageDataLayout->RowAmount = PXMathCeilingF(bmpImageDataLayout->ImageSize / (float)bmpImageDataLayout->RowFullSize);
 }
 

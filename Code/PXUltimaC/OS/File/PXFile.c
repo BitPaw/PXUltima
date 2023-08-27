@@ -2045,6 +2045,14 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 
 		switch (pxFileDataElementType->Type)
 		{
+			case PXDataTypeTextx2:
+				totalReadBytes += PXFileReadB(pxFile, pxFileDataElementType->Adress, 2u);
+				break;
+
+			case PXDataTypeTextx4:
+				totalReadBytes += PXFileReadB(pxFile, pxFileDataElementType->Adress, 4u);
+				break;
+
 			case PXDataTypeInt8S:
 				totalReadBytes += PXFileReadI8S(pxFile, (PXInt8S*)pxFileDataElementType->Adress);
 				break;
@@ -2628,6 +2636,10 @@ PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* co
 
 		switch (pxFileDataElementType->Type)
 		{
+			case PXDataTypeTextx4:
+				totalReadBytes += PXFileWriteB(pxFile, pxFileDataElementType->Adress, 4u);
+				break;
+
 			case PXDataTypeInt8S:
 				totalReadBytes += PXFileWriteI8S(pxFile, *(PXInt8S*)pxFileDataElementType->Adress);
 				break;

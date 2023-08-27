@@ -1,9 +1,7 @@
 #ifndef PXPDFINCLUDE
 #define PXPDFINCLUDE
 
-#include <OS/Error/PXActionResult.h>
-#include <Media/PXType.h>
-#include <OS/File/PXFile.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -10,11 +10,11 @@ extern "C"
 
 	typedef struct PXGIFImageDescriptor_
 	{
-		PXInt8U Separator;
 		PXInt16U LeftPosition;
 		PXInt16U TopPosition;
 		PXInt16U Width;
 		PXInt16U Height;
+		PXInt8U Separator;
 		PXInt8U LocalColorTableSize;
 		PXInt8U Reserved;
 		PXInt8U SortFlag;
@@ -28,13 +28,14 @@ extern "C"
 		PXInt16U Width;
 		PXInt16U Height;
 
-		PXInt8U GlobalColorTableSize;
-		PXBool IsSorted;
-		PXInt8U ColorResolution;
-		PXBool IsGlobalColorTablePresent;
-
 		PXInt8U BackgroundColorIndex;
 		PXInt8U PixelAspectRatio;
+
+		PXInt8U GlobalColorTableSize;
+		PXInt8U ColorResolution;
+	
+		PXBool IsGlobalColorTablePresent;
+		PXBool IsSorted;	
 	}
 	PXGIF;
 

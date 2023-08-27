@@ -3,13 +3,12 @@
 #include <Media/PXText.h>
 
 #define PXID3HeaderSignature {'I','D','3'}
-#define PXID3Debug 0
 
 #if PXID3Debug
 #include <cstdio>
 #endif
 
-PXID3v2xFrameTag PXID3v2xFrameTagFromID(const unsigned int id3v2xFrameTagID)
+PXID3v2xFrameTag PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID)
 {
     switch(id3v2xFrameTagID)
     {
@@ -94,7 +93,7 @@ PXID3v2xFrameTag PXID3v2xFrameTagFromID(const unsigned int id3v2xFrameTagID)
     }
 }
 
-PXActionResult PXID3Parse(PXID3* const id3, PXFile* const PXFile)
+PXActionResult PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 {
     PXID3Version version = PXID3VersionInvalid;
 
@@ -527,4 +526,19 @@ PXActionResult PXID3Parse(PXID3* const id3, PXFile* const PXFile)
     }
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXID3SaveToFile(const PXID3* const id3, PXFile* const pxFile)
+{
+    //-----------------------------------------------------
+    // ID3 - Header write 
+    //-----------------------------------------------------
+    {
+        const char signbature[3] = PXID3HeaderSignature;
+        const PXSize signbatureSize = sizeof(signbature);
+
+        PXFileWriteB(pxFile, signbature, signbatureSize);
+    }
+
+    return PXActionRefusedNotImplemented;
 }

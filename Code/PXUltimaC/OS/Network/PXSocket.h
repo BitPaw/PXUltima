@@ -117,49 +117,49 @@ extern "C"
 	}
 	PXSocketType;
 
-	typedef enum ProtocolMode_
+	typedef enum PXProtocolMode_
 	{
-		ProtocolModeInvalid,
-		ProtocolModeHOPOPTS,  // IPv6 Hop-by-Hop options
-		ProtocolModeICMP,
-		ProtocolModeIGMP,
-		ProtocolModeGGP,
-		ProtocolModeIPV4,
-		ProtocolModeST,
-		ProtocolModeTCP,
-		ProtocolModeCBT,
-		ProtocolModeEGP,
-		ProtocolModeIGP,
-		ProtocolModePUP,
-		ProtocolModeUDP,
-		ProtocolModeIDP,
-		ProtocolModeRDP,
-		ProtocolModeIPV6, // IPv6 header
-		ProtocolModeROUTING, // IPv6 Routing header
-		ProtocolModeFRAGMENT, // IPv6 fragmentation header
-		ProtocolModeESP, // encapsulating security payload
-		ProtocolModeAH, // authentication header
-		ProtocolModeICMPV6, // ICMPv6
-		ProtocolModeNONE, // IPv6 no next header
-		ProtocolModeDSTOPTS, // IPv6 Destination options
-		ProtocolModeND,
-		ProtocolModeICLFXBM,
-		ProtocolModePIM,
-		ProtocolModePGM,
-		ProtocolModeL2TP,
-		ProtocolModeSCTP,
-		ProtocolModeRAW,
-		ProtocolModeMAX,
+		PXProtocolModeInvalid,
+		PXProtocolModeHOPOPTS,  // IPv6 Hop-by-Hop options
+		PXProtocolModeICMP,
+		PXProtocolModeIGMP,
+		PXProtocolModeGGP,
+		PXProtocolModeIPV4,
+		PXProtocolModeST,
+		PXProtocolModeTCP,
+		PXProtocolModeCBT,
+		PXProtocolModeEGP,
+		PXProtocolModeIGP,
+		PXProtocolModePUP,
+		PXProtocolModeUDP,
+		PXProtocolModeIDP,
+		PXProtocolModeRDP,
+		PXProtocolModeIPV6, // IPv6 header
+		PXProtocolModeROUTING, // IPv6 Routing header
+		PXProtocolModeFRAGMENT, // IPv6 fragmentation header
+		PXProtocolModeESP, // encapsulating security payload
+		PXProtocolModeAH, // authentication header
+		PXProtocolModeICMPV6, // ICMPv6
+		PXProtocolModeNONE, // IPv6 no next header
+		PXProtocolModeDSTOPTS, // IPv6 Destination options
+		PXProtocolModeND,
+		PXProtocolModeICLFXBM,
+		PXProtocolModePIM,
+		PXProtocolModePGM,
+		PXProtocolModeL2TP,
+		PXProtocolModeSCTP,
+		PXProtocolModeRAW,
+		PXProtocolModeMAX,
 		//
 		//  These are reserved for private use by Windows.
 		//
-		ProtocolModeWindowsRAW,
-		ProtocolModeWindowsIPSEC,
-		ProtocolModeWindowsIPSECOFFLOAD,
-		ProtocolModeWindowsWNV,
-		ProtocolModeWindowsMAX
+		PXProtocolModeWindowsRAW,
+		PXProtocolModeWindowsIPSEC,
+		PXProtocolModeWindowsIPSECOFFLOAD,
+		PXProtocolModeWindowsWNV,
+		PXProtocolModeWindowsMAX
 	}
-	ProtocolMode;
+	PXProtocolMode;
 
 	typedef enum PXSocketState_
 	{
@@ -250,7 +250,7 @@ extern "C"
 
 		// Connection Info
 		PXSocketID ID;
-		ProtocolMode Protocol;
+		PXProtocolMode Protocol;
 		IPAdressFamily Family;
 		PXSocketType Type;
 		char IP[IPv6LengthMax];
@@ -280,19 +280,19 @@ extern "C"
 		PXInt16U Port; // -1 for no port
 		IPAdressFamily IPMode;
 		PXSocketType SocketType;
-		ProtocolMode ProtocolMode;
+		PXProtocolMode ProtocolMode;
 	}
 	PXSocketAdressSetupInfo;
 
 
-	PXPrivate ProtocolMode ConvertToProtocolMode(const unsigned int protocolMode);
-	PXPrivate unsigned int ConvertFromProtocolMode(const ProtocolMode protocolMode);
+	PXPrivate PXProtocolMode PXProtocolModeFromID(const PXInt8U protocolMode);
+	PXPrivate PXInt8U PXProtocolModeToID(const PXProtocolMode protocolMode);
 
-	PXPrivate PXSocketType ConvertToSocketType(const unsigned int socketType);
-	PXPrivate unsigned int ConvertFromSocketType(const PXSocketType socketType);
+	PXPrivate PXSocketType PXSocketTypeFromID(const PXInt8U socketType);
+	PXPrivate PXInt8U PXSocketTypeToID(const PXSocketType socketType);
 
-	PXPrivate IPAdressFamily ConvertToIPAdressFamily(const unsigned int ipMode);
-	PXPrivate unsigned int ConvertFromIPAdressFamily(const IPAdressFamily ipMode);
+	PXPrivate IPAdressFamily PXIPAdressFamilyFromID(const PXInt8U ipMode);
+	PXPrivate PXInt8U PXIPAdressFamilyToID(const IPAdressFamily ipMode);
 
 
 	PXPublic void PXSocketConstruct(PXSocket* const pxSocket);
@@ -303,7 +303,7 @@ extern "C"
 		PXSocket* const pxSocket,
 		const IPAdressFamily adressFamily,
 		const PXSocketType socketType,
-		const ProtocolMode protocolMode
+		const PXProtocolMode protocolMode
 	);
 
 	PXPublic PXActionResult PXSocketConnect(PXSocket* const pxSocket, PXSocket* const pxServer);

@@ -49,50 +49,50 @@ extern "C"
 	}
 	PXWindowCursorMode;
 
-	typedef enum MouseButton_
+	typedef enum PXMouseButton_
 	{
-		MouseButtonInvalid,
-		MouseButtonLeft,
-		MouseButtonMiddle,
-		MouseButtonRight,
-		MouseButtonSpecialA,
-		MouseButtonSpecialB,
-		MouseButtonSpecialC,
-		MouseButtonSpecialD,
-		MouseButtonSpecialE,
+		PXMouseButtonInvalid,
+		PXMouseButtonLeft,
+		PXMouseButtonMiddle,
+		PXMouseButtonRight,
+		PXMouseButtonSpecialA,
+		PXMouseButtonSpecialB,
+		PXMouseButtonSpecialC,
+		PXMouseButtonSpecialD,
+		PXMouseButtonSpecialE,
 	}
-	MouseButton;
+	PXMouseButton;
 
-	typedef enum MouseScrollDirection_
+	typedef enum PXMouseScrollDirection_
 	{
-		MouseScrollDirectionInvalid,
-		MouseScrollDirectionUp,
-		MouseScrollDirectionDown,
-		MouseScrollDirectionLeft,
-		MouseScrollDirectionRight
+		PXMouseScrollDirectionInvalid,
+		PXMouseScrollDirectionUp,
+		PXMouseScrollDirectionDown,
+		PXMouseScrollDirectionLeft,
+		PXMouseScrollDirectionRight
 	}
-	MouseScrollDirection;
+	PXMouseScrollDirection;
 
-	typedef enum CursorIcon_
+	typedef enum PXCursorIcon_
 	{
-		CursorIconInvalid,
-		CursorIconNormal,
-		CursorIconIBeam,
-		CursorIconWait,
-		CursorIconCross,
-		CursorIconUp,
-		CursorIconHand,
-		CursorIconNotAllowed,
-		CursorIconAppStarting,
-		CursorIconResizeHorizontal,
-		CursorIconResizeVertical,
-		CursorIconResizeClockwise,
-		CursorIconResizeClockwiseCounter,
-		CursorIconResizeAll,
+		PXCursorIconInvalid,
+		PXCursorIconNormal,
+		PXCursorIconIBeam,
+		PXCursorIconWait,
+		PXCursorIconCross,
+		PXCursorIconUp,
+		PXCursorIconHand,
+		PXCursorIconNotAllowed,
+		PXCursorIconAppStarting,
+		PXCursorIconResizeHorizontal,
+		PXCursorIconResizeVertical,
+		PXCursorIconResizeClockwise,
+		PXCursorIconResizeClockwiseCounter,
+		PXCursorIconResizeAll,
 	}
-	CursorIcon;
+	PXCursorIcon;
 
-	typedef struct KeyBoardKeyInfo_
+	typedef struct PXKeyBoardKeyInfo_
 	{
 		unsigned char KeyID;
 		PXVirtualKey Key;
@@ -104,20 +104,20 @@ extern "C"
 		unsigned short PreState; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
 		unsigned short GapState;
 	}
-	KeyBoardKeyInfo;
+	PXKeyBoardKeyInfo;
 
 	typedef struct PXWindow_ PXWindow;
 
 	// Mouse
-	typedef void (*MouseScrollEvent)(const void* const receiver, const PXWindow* sender, const MouseScrollDirection mouseScrollDirection);
-	typedef void (*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const MouseButton mouseButton, const PXKeyPressState buttonState);
-	typedef void (*MouseClickDoubleEvent)(const void* const receiver, const PXWindow* sender, const MouseButton mouseButton);
+	typedef void (*MouseScrollEvent)(const void* const receiver, const PXWindow* sender, const PXMouseScrollDirection mouseScrollDirection);
+	typedef void (*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
+	typedef void (*MouseClickDoubleEvent)(const void* const receiver, const PXWindow* sender, const PXMouseButton mouseButton);
 	typedef void (*MouseMoveEvent)(const void* const receiver, const PXWindow* sender, const PXMouse* mouse);
 	typedef void (*MouseEnterEvent)(const void* const receiver, const PXWindow* sender);
 	typedef void (*MouseLeaveEvent)(const void* const receiver, const PXWindow* sender);
 
 	// Keyboard
-	typedef void (*KeyBoardKeyEvent)(const void* const receiver, const PXWindow* sender, const KeyBoardKeyInfo* const keyBoardKeyInfo);
+	typedef void (*KeyBoardKeyEvent)(const void* const receiver, const PXWindow* sender, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
 
 	typedef void (*FocusEnterEvent)(const void* const receiver, const PXWindow* sender);
 	typedef void (*FocusLeaveEvent)(const void* const receiver, const PXWindow* sender);
@@ -256,14 +256,14 @@ extern "C"
 
 	// Event functions
 	PXPublic void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
-	PXPublic void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const MouseButton mouseButton, const PXKeyPressState buttonState);
-	PXPublic void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const MouseButton mouseButton);
+	PXPublic void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
+	PXPublic void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton);
 	PXPublic void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
 	PXPublic void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
 	PXPublic void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
 
 
-	PXPublic void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const KeyBoardKeyInfo* const keyBoardKeyInfo);
+	PXPublic void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
 
 	// Keyboard
 	//typedef void (*KeyBoardKeyEvent)(const KeyBoardKeyInfo keyBoardKeyInfo);
@@ -277,7 +277,7 @@ extern "C"
 	//typedef void (*WindowClosedEvent)();
 
 
-	PXPrivate PXInt32U PXWindowCursorIconToID(const CursorIcon cursorIcon);
+	PXPrivate PXInt32U PXWindowCursorIconToID(const PXCursorIcon cursorIcon);
 
 #ifdef __cplusplus
 }

@@ -1,84 +1,84 @@
 #include "PXTTF.h"
 
-PlatformID PXTTFPlatformFromID(const PXInt16U platformID)
+PXPlatformID PXTTFPlatformFromID(const PXInt16U platformID)
 {
 	switch (platformID)
 	{
-		case 0u: return PlatformUnicode;
-		case 1u: return PlatformMacintosh;
-		case 2u: return PlatformReserved;
-		case 3u: return PlatformWindows;
+		case 0u: return PXPlatformUnicode;
+		case 1u: return PXPlatformMacintosh;
+		case 2u: return PXPlatformReserved;
+		case 3u: return PXPlatformWindows;
 
 		default:
-			return PlatformInvalid;
+			return PXPlatformInvalid;
 	}
 }
 
-EncodingID PXTTFEncodingFromID(const PlatformID platformID, const PXInt16U encodingID)
+PXEncodingID PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID)
 {
 	switch(platformID)
 	{
-		case PlatformUnicode:
+		case PXPlatformUnicode:
 		{
 			switch(encodingID)
 			{
-				case 0: return EncodingUnicode10;
-				case 1:	return EncodingUnicode11;
-				case 2:	return EncodingISOIEC10646;
-				case 3:	return EncodingUnicode20BMPOnly;
-				case 4: return EncodingUnicode20FullRepertoire;
-				case 5: return EncodingUnicodeVariation;
-				case 6: return EncodingUnicodeFullRepertoire;
+				case 0: return PXEncodingUnicode10;
+				case 1:	return PXEncodingUnicode11;
+				case 2:	return PXEncodingISOIEC10646;
+				case 3:	return PXEncodingUnicode20BMPOnly;
+				case 4: return PXEncodingUnicode20FullRepertoire;
+				case 5: return PXEncodingUnicodeVariation;
+				case 6: return PXEncodingUnicodeFullRepertoire;
 			}
 
 			break;
 		}
-		case PlatformMacintosh:
+		case PXPlatformMacintosh:
 		{
 			// ???
 			break;
 		}
-		case PlatformISO:
+		case PXPlatformISO:
 		{
 			switch(encodingID)
 			{
-				case 0:	return EncodingSevenBitASCII;
-				case 1:	return EncodingISO10646;
-				case 2:	return EncodingISO8858;
+				case 0:	return PXEncodingSevenBitASCII;
+				case 1:	return PXEncodingISO10646;
+				case 2:	return PXEncodingISO8858;
 			}
 
 			break;
 		}
-		case PlatformWindows:
+		case PXPlatformWindows:
 		{
 			switch(encodingID)
 			{
-				case 0: return EncodingSymbol;
-				case 1: return EncodingUnicodeBMP;
-				case 2: return EncodingShiftJIS;
-				case 3: return EncodingPRC;
-				case 4: return EncodingBig5;
-				case 5: return EncodingWansung;
-				case 6: return EncodingJohab;
+				case 0: return PXEncodingSymbol;
+				case 1: return PXEncodingUnicodeBMP;
+				case 2: return PXEncodingShiftJIS;
+				case 3: return PXEncodingPRC;
+				case 4: return PXEncodingBig5;
+				case 5: return PXEncodingWansung;
+				case 6: return PXEncodingJohab;
 
 				case 7: // fall through
 				case 8: // fall through
 				case 9: // fall through
-					return EncodingReserved;
+					return PXEncodingReserved;
 
-				case 10: return EncodingUnicodeFullRepertoire;
+				case 10: return PXEncodingUnicodeFullRepertoire;
 			}
 
 			break;
 		}
-		case PlatformCustom:
-			return EncodingOTFWindowsNTCompatibilityMapping;
+		case PXPlatformCustom:
+			return PXEncodingOTFWindowsNTCompatibilityMapping;
 
-		case PlatformInvalid:
-			return EncodingInvalid;
+		case PXPlatformInvalid:
+			return PXEncodingInvalid;
 	}
 
-	return EncodingInvalid;
+	return PXEncodingInvalid;
 }
 
 
@@ -528,9 +528,9 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 			}
 			case PXTTFTableEntryGlyphOutline: // glyf
 			{
-				TableEntryGlyphOutlineEntry tableEntryGlyphOutlineEntry;
+				PXTableEntryGlyphOutlineEntry tableEntryGlyphOutlineEntry;
 
-				PXMemoryClear(&tableEntryGlyphOutlineEntry, sizeof(TableEntryGlyphOutlineEntry));
+				PXMemoryClear(&tableEntryGlyphOutlineEntry, sizeof(PXTableEntryGlyphOutlineEntry));
 
 				PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
 				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Minimum[0], PXEndianBig);
@@ -578,12 +578,12 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 				PXFileReadI16U(pxFile, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
 				PXFileReadI16U(pxFile, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
 
-				ttf->CharacterMapping.EncodingRecordListSize = sizeof(EncodingRecord) * ttf->CharacterMapping.NumberOfTables;
-				ttf->CharacterMapping.EncodingRecordList = PXMemoryAllocateTypeCleared(EncodingRecord, ttf->CharacterMapping.NumberOfTables);
+				ttf->CharacterMapping.EncodingRecordListSize = sizeof(PXEncodingRecord) * ttf->CharacterMapping.NumberOfTables;
+				ttf->CharacterMapping.EncodingRecordList = PXMemoryAllocateTypeCleared(PXEncodingRecord, ttf->CharacterMapping.NumberOfTables);
 
 				for (PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)
 				{
-					EncodingRecord* const encodingRecord = &ttf->CharacterMapping.EncodingRecordList[i];
+					PXEncodingRecord* const encodingRecord = &ttf->CharacterMapping.EncodingRecordList[i];
 
 					PXInt16U platformID = 0;
 					PXInt16U encodingID = 0;

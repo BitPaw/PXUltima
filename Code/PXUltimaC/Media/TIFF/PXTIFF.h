@@ -151,10 +151,10 @@ extern "C"
 	PXTIFFHeader;
 
 	typedef struct PXTIFFPage_
-	{
-		unsigned short NumberOfTags;
+	{	
 		void* TagData;
-		unsigned int OffsetToNextIFD;
+		PXInt32U OffsetToNextIFD;
+		PXInt16U NumberOfTags;
 	}
 	PXTIFFPage;
 
@@ -164,25 +164,28 @@ extern "C"
 
 	typedef struct PXTIFFTag_
 	{
-		unsigned short TypeID;
+		PXInt32U NumberOfValues;
+		PXInt32U DataOffset;
+
+		PXInt16U TypeID;
+		PXInt16U DataTypeID;
+
 		PXTIFFTagType Type;
-		unsigned short DataTypeID;
 		PXTIFFType DataType;
-		unsigned int NumberOfValues;
-		unsigned int DataOffset;
 	}
 	PXTIFFTag;
 
 	// Tag Image File Format
 	typedef struct PXTIFF_
 	{
-		unsigned int Width;
-		unsigned int Height;
+		PXInt32U Width;		
+		PXInt32U Height;
+
+		PXInt16U SamplesPerPixel;
+		PXInt16U BitsPerSample[4];
 
 		PXTIFFColorFormat PhotometricInterpretation;
 		PXTIFFCompression Compression;
-		unsigned short SamplesPerPixel;
-		unsigned short BitsPerSample[4];
 	}
 	PXTIFF;
 
@@ -197,8 +200,6 @@ extern "C"
 
 	PXPublic PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
 	PXPublic PXActionResult PXTIFFSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
-
-	PXPublic PXActionResult PXTIFFSerializeFromImage(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

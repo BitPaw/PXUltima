@@ -1,9 +1,9 @@
 #ifndef PXID3Include
 #define PXID3Include
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
+#include <Media/PXResource.h>
+
+#define PXID3Debug 0
 
 #define PXID3TitleSize 30
 #define PXID3ArtistSize 30
@@ -114,11 +114,11 @@ extern "C"
 	typedef struct PXID3_
 	{
 		// Version 1.0
-		wchar_t Title[PXID3TitleSize + 1];
-		wchar_t Artist[PXID3ArtistSize + 1];
-		wchar_t Album[PXID3AlbumSize + 1];
-		wchar_t Year[PXID3YearSize + 1];
-		wchar_t Comment[PXID3CommentSize + 1];
+		char Title[PXID3TitleSize + 1];
+		char Artist[PXID3ArtistSize + 1];
+		char Album[PXID3AlbumSize + 1];
+		char Year[PXID3YearSize + 1];
+		char Comment[PXID3CommentSize + 1];
 		unsigned char Genre;
 
 		// Version 1.1
@@ -126,13 +126,14 @@ extern "C"
 
 		// Version 2.x
 		unsigned int BeatsPerMinute;
-		wchar_t Composer[PXID3ArtistSize + 1];
+		char Composer[PXID3ArtistSize + 1];
 	}
 	PXID3;
 
-	PXPublic PXID3v2xFrameTag PXID3v2xFrameTagFromID(const unsigned int id3v2xFrameTagID);
+	PXPrivate inline PXID3v2xFrameTag PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID);
 
-	PXPublic PXActionResult PXID3Parse(PXID3* const id3, PXFile* const PXFile);
+	PXPublic PXActionResult PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile);
+	PXPublic PXActionResult PXID3SaveToFile(const PXID3* const id3, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

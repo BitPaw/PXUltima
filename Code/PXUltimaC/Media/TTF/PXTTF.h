@@ -144,70 +144,70 @@ extern "C"
 
 
     //-----<CMAP>--------------------------------------------------------------
-    typedef enum EncodingID_
+    typedef enum PXEncodingID_
     {
-        EncodingInvalid,
+        PXEncodingInvalid,
 
         // (platform ID = 0)
 
-        EncodingUnicode10,// semantics—deprecated,
-        EncodingUnicode11,// semantics—deprecated,
-        EncodingISOIEC10646,// semantics—deprecated,
-        EncodingUnicode20BMPOnly,
-        EncodingUnicode20FullRepertoire,
-        EncodingUnicodeVariation,// Sequences—for use with subtable format 14,
-        EncodingUnicodefull,// repertoire—for use with subtable format 13,
+        PXEncodingUnicode10,// semantics—deprecated,
+        PXEncodingUnicode11,// semantics—deprecated,
+        PXEncodingISOIEC10646,// semantics—deprecated,
+        PXEncodingUnicode20BMPOnly,
+        PXEncodingUnicode20FullRepertoire,
+        PXEncodingUnicodeVariation,// Sequences—for use with subtable format 14,
+        PXEncodingUnicodefull,// repertoire—for use with subtable format 13,
 
         // Macintosh platform (platform ID = 1)
 
         // (platform ID = 2)
 
-        EncodingSevenBitASCII,
-        EncodingISO10646,
-        EncodingISO8858,
+        PXEncodingSevenBitASCII,
+        PXEncodingISO10646,
+        PXEncodingISO8858,
 
         // Windows platform (platform ID = 3)
-        EncodingSymbol,
-        EncodingUnicodeBMP,
-        EncodingShiftJIS,
-        EncodingPRC,
-        EncodingBig5,
-        EncodingWansung,
-        EncodingJohab,
-        EncodingReserved,
-        EncodingUnicodeFullRepertoire,
+        PXEncodingSymbol,
+        PXEncodingUnicodeBMP,
+        PXEncodingShiftJIS,
+        PXEncodingPRC,
+        PXEncodingBig5,
+        PXEncodingWansung,
+        PXEncodingJohab,
+        PXEncodingReserved,
+        PXEncodingUnicodeFullRepertoire,
 
         // Custom platform (platform ID = 4) and OTF Windows NT compatibility mapping
-        EncodingOTFWindowsNTCompatibilityMapping
+        PXEncodingOTFWindowsNTCompatibilityMapping
     }
-    EncodingID;
+    PXEncodingID;
 
-    typedef enum PlatformID_
+    typedef enum PXPlatformID_
     {
-        PlatformInvalid,
-        PlatformUnicode,// Various
-        PlatformMacintosh,// Script manager code
-        PlatformISO,// ISO encoding[deprecated]
-        PlatformReserved,
-        PlatformWindows,// Windows encoding
-        PlatformCustom
+        PXPlatformInvalid,
+        PXPlatformUnicode,// Various
+        PXPlatformMacintosh,// Script manager code
+        PXPlatformISO,// ISO encoding[deprecated]
+        PXPlatformReserved,
+        PXPlatformWindows,// Windows encoding
+        PXPlatformCustom
     }
-    PlatformID;
+    PXPlatformID;
 
-    typedef struct EncodingRecord_
+    typedef struct PXEncodingRecord_
     {
-        PlatformID Platform;
-        EncodingID Encoding; // Platform specific.
+        PXPlatformID Platform;
+        PXEncodingID Encoding; // Platform specific.
         PXInt32U SubtableOffset;// 	Byte__ offset from beginning of table to the subtable for this encoding.
     }
-    EncodingRecord;    
+    PXEncodingRecord;    
     
     typedef struct PXTTFCharacterMapping_
     {
         PXInt16U Version; // Table version number(0).
         PXInt16U NumberOfTables; // Number of encoding tables that follow.
         PXSize EncodingRecordListSize;
-        EncodingRecord* EncodingRecordList;
+        PXEncodingRecord* EncodingRecordList;
     }
     PXTTFCharacterMapping;
     //-------------------------------------------------------------------------
@@ -637,7 +637,7 @@ extern "C"
 #define PXOutlineFlagShortVectorYB  0b000001000
 #define PXOutlineFlagReserved       0b000000111
 
-    typedef struct TableEntryGlyphOutlineEntry_
+    typedef struct PXTableEntryGlyphOutlineEntry_
     {
         PXInt16U* ContourList;
         PXInt16S ContourListSize;
@@ -656,7 +656,7 @@ extern "C"
         PXInt16U ComponentFlagList;
         PXInt16U GlyphIndex;
     }
-    TableEntryGlyphOutlineEntry;
+    PXTableEntryGlyphOutlineEntry;
 
 
 	// Tag Image File Format
@@ -680,8 +680,8 @@ extern "C"
 	}
 	PXTTF;
 
-    PXPrivate PlatformID PXTTFPlatformFromID(const PXInt16U platformID);
-    PXPrivate EncodingID PXTTFEncodingFromID(const PlatformID platformID, const PXInt16U encodingID);
+    PXPrivate PXPlatformID PXTTFPlatformFromID(const PXInt16U platformID);
+    PXPrivate PXEncodingID PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID);
 
     PXPrivate PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor);
     //PXPublic void PXTTFVersionTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType);

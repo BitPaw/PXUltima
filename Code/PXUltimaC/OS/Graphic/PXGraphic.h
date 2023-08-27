@@ -83,9 +83,9 @@ extern "C"
 
 	typedef struct PXGraphicConfig_
 	{
-		RefreshRateMode WindowRefreshRateMode;
-		unsigned int ScreenResolution[2];
-		unsigned char FullScreen;
+		PXRefreshRateMode WindowRefreshRateMode;
+		PXInt32S ScreenResolution[2];
+		PXBool FullScreen;
 	}
 	PXGraphicConfig;
 

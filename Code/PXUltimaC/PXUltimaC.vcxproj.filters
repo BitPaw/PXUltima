@@ -846,4 +846,9 @@
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="Media\Assembly\PXAssemblyX86.asm">
+      <Filter>Quelldateien</Filter>
+    </MASM>
+  </ItemGroup>
 </Project>

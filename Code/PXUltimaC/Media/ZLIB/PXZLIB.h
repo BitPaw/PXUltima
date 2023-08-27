@@ -62,11 +62,11 @@ extern "C"
 	}
 	PXZLIB;
 
-	PXPrivate PXZLIBCompressionLevel ConvertToCompressionLevel(const PXInt8U compressionLevel);
-	PXPrivate PXInt8U ConvertFromCompressionLevel(const PXZLIBCompressionLevel compressionLevel);
+	PXPrivate inline PXZLIBCompressionLevel PXZLIBCompressionLevelFromID(const PXInt8U compressionLevel);
+	PXPrivate inline PXInt8U PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel);
 
-	PXPrivate PXZLIBCompressionMethod ConvertToCompressionMethod(const PXInt8U compressionMethod);
-	PXPrivate PXInt8U ConvertFromCompressionMethod(const PXZLIBCompressionMethod compressionMethod);
+	PXPrivate inline PXZLIBCompressionMethod PXZLIBCompressionMethodFromID(const PXInt8U compressionMethod);
+	PXPrivate inline PXInt8U PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod);
 
 	PXPublic PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
 	PXPublic PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);

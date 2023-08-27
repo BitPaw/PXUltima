@@ -123,7 +123,7 @@ void TestSocketServerGeneral()
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientDisconnected;
 	//server.SocketEventListener.ConnectionTerminatedCallback = OnClientAcceptFailure;
 
-	const PXActionResult startResult = PXServerStart(&server, 25565, ProtocolModeTCP);
+	const PXActionResult startResult = PXServerStart(&server, 25565, PXProtocolModeTCP);
 
 
     PXDebug pxDebug;

@@ -7,7 +7,7 @@
 #include <OS/File/PXFile.h>
 #include <Media/PXColor.h>
 
-#define JPGDebug 1
+#define JPGDebug 0
 
 #if JPGDebug
 #include <stdio.h>
@@ -281,7 +281,7 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
     while(!PXFileIsAtEnd(pxFile))
     {
         PXJPEGMarker chunkMarker = PXJPEGMarkerInvalid;
-        unsigned short chunkLength = -1;
+        PXInt16U chunkLength = -1;
         PXSize expectedOffset = -1;
 
         // Parse info
@@ -382,12 +382,11 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 
                 while(remainingBytes)
                 {
-
-                    unsigned char precision = 0;
-                    unsigned char matixID = 0;
+                    PXInt8U precision = 0;
+                    PXInt8U matixID = 0;
 
                     {
-                        unsigned char cluster = 0;
+                        PXInt8U cluster = 0;
 
                         remainingBytes -= PXFileReadI8U(pxFile, &cluster);
 
@@ -395,9 +394,9 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
                         matixID = (cluster & 0b00001111);
                     }
 
-                    unsigned char* matrixAdress = jpeg->QuantizationTable[matixID];
+                    PXInt8U* const matrixAdress = &jpeg->QuantizationTable[matixID];
 
-                    remainingBytes -= PXFileReadB(pxFile, matrixAdress, 64u);
+                    remainingBytes -= PXFileReadB(pxFile, matrixAdress, sizeof(PXInt8U) * 64u);
 
 #if JPGDebug
                     printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
@@ -432,7 +431,7 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
                     PXJPEGHuffmanTable jpegHuffmanTable;
 
                     {
-                        unsigned char huffmanTableInfo;
+                        PXInt8U huffmanTableInfo;
 
                         remainingBytes -= PXFileReadI8U(pxFile, &huffmanTableInfo);
 
@@ -451,12 +450,12 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
                     );
 #endif
 
-                    PXSize symbolSum = 0;
+                    PXInt16U symbolSum = 0;
 
                     // 16 Bytes symbopls
-                    for(PXSize i = 0; i < 16u; ++i)
+                    for(PXInt8U i = 0; i < 16u; ++i)
                     {
-                        unsigned char symbol = 0;
+                        PXInt8U symbol = 0;
 
                         remainingBytes -= PXFileReadI8U(pxFile, &symbol);
 
@@ -481,9 +480,9 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 
 
                     // n bytes from that data
-                    for(PXSize i = 0; i < symbolSum; ++i)
+                    for(PXInt16U i = 0; i < symbolSum; ++i)
                     {
-                        unsigned char symbol = 0;
+                        PXInt8U symbol = 0;
 
                         remainingBytes -= PXFileReadI8U(pxFile, &symbol);
 
@@ -505,10 +504,10 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
             {
                 PXFileReadI8U(pxFile, &jpeg->ScanStart.ScanSelectorSize);
 
-                for(PXSize i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
+                for(PXInt8U i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
                 {
                     PXJPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
-                    unsigned char huffmanTableUsed = 0;
+                    PXInt8U huffmanTableUsed = 0;
 
                     PXFileReadI8U(pxFile, &scanSelector->ID);
                     PXFileReadI8U(pxFile, &huffmanTableUsed);
@@ -640,17 +639,7 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 
 
 
-
-
-
-
-// ////////////////////////////////////////
-// data types (for CPrivate use only)
-
-// one byte
-typedef unsigned char   uint8_t;
 // two bytes
-typedef unsigned short uint16_t;
 typedef          short  int16_t;
 // four bytes (or more)
 typedef          int    int32_t;
@@ -662,9 +651,9 @@ typedef          int    int32_t;
 typedef struct BitCode_
 {
     // BitCode() {}       // undefined state, must be initialized at a later time
-    // BitCode(uint16_t code_, uint8_t numBits_) : code(code_), numBits(numBits_) {}
-    uint16_t code;     // PXJPEG's Huffman codes are limited to 16 bits
-    uint8_t  numBits;  // actual number of bits
+    // BitCode(PXInt16U code_, PXInt8U numBits_) : code(code_), numBits(numBits_) {}
+    PXInt16U code;     // PXJPEG's Huffman codes are limited to 16 bits
+    PXInt8U  numBits;  // actual number of bits
 }BitCode;
 
 
@@ -675,7 +664,7 @@ typedef struct BitBuffer_
     // BitBuffer()        // actually, there will be only one instance of this object
      //    : bits(0), numBits(0) {}
     int32_t bits;      // actually only at most 24 bits are used
-    uint8_t numBits;   // number of valid bits (the right-most bits)
+    PXInt8U numBits;   // number of valid bits (the right-most bits)
 }BitBuffer;
 
 // ////////////////////////////////////////
@@ -706,7 +695,7 @@ const unsigned char DefaultQuantChrominance[8 * 8] =
 // 8x8 blocks are processed in zig-zag order
 // most encoders use a zig-zag table, I switched to its inverse for performance reasons
 // note: ZigZagInv[ZigZag[i]] = i
-const uint8_t ZigZagInv[8 * 8] =
+const PXInt8U ZigZagInv[8 * 8] =
 { 0, 1, 8,16, 9, 2, 3,10,   // ZigZag[] =  0, 1, 5, 6,14,15,27,28,
   17,24,32,25,18,11, 4, 5,   //             2, 4, 7,13,16,26,29,42,
   12,19,26,33,40,48,41,34,   //             3, 8,12,17,25,30,41,43,
@@ -732,10 +721,10 @@ const float AanScaleFactors[8] = { 1, 1.387039845f, SqrtHalfSqrt, 1.175875602f, 
 //   e.g. AcLuminanceValues => Huffman(0x01,0x02,0x03) will have 2 bits, Huffman(0x00) will have 3 bits, Huffman(0x04,0x11,0x05) will have 4 bits, ...
 
 // Huffman definitions for first DC/AC tables (luminance / Y channel)
-const uint8_t DcLuminanceCodesPerBitsize[16] = { 0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 };   // sum = 12
-const uint8_t DcLuminanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };         // => 12 codes
-const uint8_t AcLuminanceCodesPerBitsize[16] = { 0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,125 }; // sum = 162
-const uint8_t AcLuminanceValues[162] =                                        // => 162 codes
+const PXInt8U DcLuminanceCodesPerBitsize[16] = { 0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 };   // sum = 12
+const PXInt8U DcLuminanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };         // => 12 codes
+const PXInt8U AcLuminanceCodesPerBitsize[16] = { 0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,125 }; // sum = 162
+const PXInt8U AcLuminanceValues[162] =                                        // => 162 codes
 { 0x01,0x02,0x03,0x00,0x04,0x11,0x05,0x12,0x21,0x31,0x41,0x06,0x13,0x51,0x61,0x07,0x22,0x71,0x14,0x32,0x81,0x91,0xA1,0x08, // 16*10+2 because
   0x23,0x42,0xB1,0xC1,0x15,0x52,0xD1,0xF0,0x24,0x33,0x62,0x72,0x82,0x09,0x0A,0x16,0x17,0x18,0x19,0x1A,0x25,0x26,0x27,0x28, // upper 4 bits can be 0..F
   0x29,0x2A,0x34,0x35,0x36,0x37,0x38,0x39,0x3A,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x53,0x54,0x55,0x56,0x57,0x58,0x59, // while lower 4 bits can be 1..A
@@ -744,10 +733,10 @@ const uint8_t AcLuminanceValues[162] =                                        //
   0xB7,0xB8,0xB9,0xBA,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xC8,0xC9,0xCA,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xD8,0xD9,0xDA,0xE1,0xE2,
   0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,0xE9,0xEA,0xF1,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA };
 // Huffman definitions for second DC/AC tables (chrominance / Cb and Cr channels)
-const uint8_t DcChrominanceCodesPerBitsize[16] = { 0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 };   // sum = 12
-const uint8_t DcChrominanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };         // => 12 codes (identical to DcLuminanceValues)
-const uint8_t AcChrominanceCodesPerBitsize[16] = { 0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,119 }; // sum = 162
-const uint8_t AcChrominanceValues[162] =                                        // => 162 codes
+const PXInt8U DcChrominanceCodesPerBitsize[16] = { 0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 };   // sum = 12
+const PXInt8U DcChrominanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };         // => 12 codes (identical to DcLuminanceValues)
+const PXInt8U AcChrominanceCodesPerBitsize[16] = { 0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,119 }; // sum = 162
+const PXInt8U AcChrominanceValues[162] =                                        // => 162 codes
 { 0x00,0x01,0x02,0x03,0x11,0x04,0x05,0x21,0x31,0x06,0x12,0x41,0x51,0x07,0x61,0x71,0x13,0x22,0x32,0x81,0x08,0x14,0x42,0x91, // same number of symbol, just different order
   0xA1,0xB1,0xC1,0x09,0x23,0x33,0x52,0xF0,0x15,0x62,0x72,0xD1,0x0A,0x16,0x24,0x34,0xE1,0x25,0xF1,0x17,0x18,0x19,0x1A,0x26, // (which is more efficient for AC coding)
   0x27,0x28,0x29,0x2A,0x35,0x36,0x37,0x38,0x39,0x3A,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x53,0x54,0x55,0x56,0x57,0x58,
@@ -864,19 +853,19 @@ short PXJPEGEncodeBlock
     float* block64 = block;
 
     // DCT: rows
-    for(PXSize offset = 0; offset < 8; offset++)
+    for(PXInt8U offset = 0; offset < 8u; ++offset)
         DCT(1u, block64 + offset * 8);
     // DCT: columns
-    for(PXSize offset = 0; offset < 8; offset++)
+    for(PXInt8U offset = 0; offset < 8u; ++offset)
         DCT(8u, block64 + offset * 1);
 
     // scale
-    for(PXSize i = 0; i < 8 * 8; i++)
+    for(PXInt8U i = 0; i < 8 * 8; i++)
         block64[i] *= scaled[i];
 
     // encode DC (the first coefficient is the "average color" of the 8x8 block)
     // convert to an integer
-    short DC = (short)(block64[0] + (block64[0] >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
+    PXInt16S DC = (PXInt16S)(block64[0] + (block64[0] >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
     // same "average color" as previous block ?
     if(DC == lastDC)
         writeBits(PXFile, buffer, huffmanDC[0x00]); // yes, write a special short symbol
@@ -890,7 +879,7 @@ short PXJPEGEncodeBlock
 
     // quantize and zigzag the other 63 coefficients
     PXSize posNonZero = 0; // find last coefficient which is not zero (because trailing zeros are encoded very efficiently)
-    int16_t quantized[8 * 8];
+    PXInt16S quantized[8 * 8];
     for(PXSize i = 1; i < 8 * 8; i++) // start at 1 because block64[0]=DC was already processed
     {
         float value = block64[ZigZagInv[i]];
@@ -935,9 +924,9 @@ short PXJPEGEncodeBlock
 
 // Jon's code includes the pre-generated Huffman codes
 // I don't like these "magic constants" and compute them on my own :-)
-void generateHuffmanTable(const uint8_t numCodes[16], const uint8_t* values, BitCode result[256])
+void generateHuffmanTable(const PXInt8U numCodes[16], const PXInt8U* values, BitCode result[256])
 {
-    uint16_t huffmanCode = 0; // no PXJPEG Huffman code exceeds 16 bits
+    PXInt16U huffmanCode = 0; // no PXJPEG Huffman code exceeds 16 bits
     // process all bitsizes 1 thru 16
     for(PXInt8U numBits = 1; numBits <= 16; numBits++)
     {
@@ -998,12 +987,13 @@ PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFil
 
     // ////////////////////////////////////////
     // adjust quantization tables to desired quality
-    uint8_t quantLuminance[8 * 8];
-    uint8_t quantChrominance[8 * 8];
-    for(PXSize i = 0; i < 8 * 8; i++)
+    PXInt8U quantLuminance[8 * 8];
+    PXInt8U quantChrominance[8 * 8];
+
+    for(PXInt8U i = 0; i < 8 * 8; i++)
     {
-        const unsigned char luminance = (DefaultQuantLuminance[ZigZagInv[i]] * quality + 50u) / 100u;
-        const unsigned char chrominance = (DefaultQuantChrominance[ZigZagInv[i]] * quality + 50u) / 100u;
+        const PXInt8U luminance = (DefaultQuantLuminance[ZigZagInv[i]] * quality + 50u) / 100u;
+        const PXInt8U chrominance = (DefaultQuantChrominance[ZigZagInv[i]] * quality + 50u) / 100u;
 
         // clamp to 1..255
         quantLuminance[i] = (PXMathLimitCU(luminance, 1u, 255u));
@@ -1016,18 +1006,18 @@ PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFil
 
     // each table has 64 entries and is preceded by an ID byte
     PXFileWriteI8U(pxFile, 0u); // first  quantization table
-    PXFileWriteB(pxFile, quantLuminance, sizeof(unsigned char) * 64u);
+    PXFileWriteB(pxFile, quantLuminance, sizeof(PXInt8U) * 64u);
 
     if(isRGB)// chrominance is only relevant for color images
     {
         PXFileWriteI8U(pxFile, 1u);  // second quantization table
-        PXFileWriteB(pxFile, quantChrominance, sizeof(unsigned char) * 64u);
+        PXFileWriteB(pxFile, quantChrominance, sizeof(PXInt8U) * 64u);
     }
 
     // ////////////////////////////////////////
     // write image infos (SOF0 - start of frame)
     // length: 6 bytes general info + 3 per channel + 2 bytes for this length field
-    unsigned char numComponents = isRGB ? 3 : 1;
+    const PXInt8U numComponents = isRGB ? 3 : 1;
 
     PXFileWriteI16UE(pxFile, PXJPEGMarkerStartOfFrameHuffmanBaselineDCTID, EndianCurrentSystem);
     PXFileWriteI16UE(pxFile, 2 + 6 + 3 * numComponents, PXEndianBig);
@@ -1044,7 +1034,7 @@ PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFil
     PXFileWriteI8U(pxFile, numComponents);
 
 
-    for(PXSize id = 1; id <= numComponents; ++id)
+    for(PXInt8U id = 1; id <= numComponents; ++id)
     {
         PXFileWriteI8U(pxFile, id);                    // component ID (Y=1, Cb=2, Cr=3)
         // bitmasks for sampling: highest 4 bits: horizontal, lowest 4 bits: vertical
@@ -1117,7 +1107,7 @@ PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFil
     // assign Huffman tables to each component
     PXFileWriteI8U(pxFile, numComponents);
 
-    for(PXSize id = 1; id <= numComponents; ++id)
+    for(PXInt8U id = 1; id <= numComponents; ++id)
     {
         // component ID (Y=1, Cb=2, Cr=3)
         PXFileWriteI8U(pxFile, id);
@@ -1134,11 +1124,11 @@ PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFil
     float scaledLuminance[64u];
     float scaledChrominance[64u];
 
-    for(PXSize i = 0; i < 64u; ++i)
+    for(PXInt8U i = 0; i < 64u; ++i)
     {
         const PXInt8U row = ZigZagInv[i] / 8; // same as i >> 3
         const PXInt8U column = ZigZagInv[i] % 8; // same as i &  7
-        float factor = 1 / (AanScaleFactors[row] * AanScaleFactors[column] * 8);
+        const float factor = 1 / (AanScaleFactors[row] * AanScaleFactors[column] * 8);
         scaledLuminance[ZigZagInv[i]] = factor / quantLuminance[i];
         scaledChrominance[ZigZagInv[i]] = factor / quantChrominance[i];
         // if you really want PXJPEGs that are bitwise identical to Jon's code then you need slightly different formulas (note: sqrt(8) = 2.828427125f)
@@ -1167,7 +1157,7 @@ PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFil
     // only for downsampled: sum of four pixels' red, green, blue components
     float red[8][8];
     float green[8][8];
-    float blue[8][8]; // uint16_t works, too, but float is faster
+    float blue[8][8]; // PXInt16U works, too, but float is faster
 
     PXMemoryClear(red, sizeof(float) * 8 * 8);
     PXMemoryClear(green, sizeof(float) * 8 * 8);
@@ -1240,9 +1230,9 @@ PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFil
             // YCbCr420 / downsampled: convert summed RGB values to Cb and Cr
             if(downsample)
             {
-                for(PXSize y = 0; y < 8; y++)
+                for(PXInt8U y = 0; y < 8u; ++y)
                 {
-                    for(PXSize x = 0; x < 8; x++)
+                    for(PXInt8U x = 0; x < 8u; ++x)
                     {
                         // each number in the arrays "red", "green" and "blue" consists of the summed values of four pixels
                         // so I still have to divide them by 4 to get their average value

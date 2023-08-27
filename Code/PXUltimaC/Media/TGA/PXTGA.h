@@ -1,7 +1,7 @@
 #ifndef PXPXTGAINCLUDE
 #define PXPXTGAINCLUDE
 
-#include <Media/PXImage.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -45,15 +45,15 @@ extern "C"
 	typedef struct PXTGA_
 	{
 		//---[Header]----------------------	
-		unsigned char ColorPaletteType;
+		PXInt8U ColorPaletteType;
 		PXTGAImageDataType ImageDataType;
 
-		unsigned short OriginX;
-		unsigned short OriginY;
-		unsigned short Width;
-		unsigned short Height;
+		PXInt16U OriginX;
+		PXInt16U OriginY;
+		PXInt16U Width;
+		PXInt16U Height;
 		PXTGABitsPerPixel PixelDepth;
-		unsigned char ImageDescriptor;
+		PXInt8U ImageDescriptor;
 		//---------------------------------
 
 		//---[Image specification]---------
@@ -71,25 +71,25 @@ extern "C"
 		char AuthorName[41]; // Name of the author. If not used, bytes should be set to NULL (\0) or spaces 
 		char AuthorComment[324]; // A comment, organized as four lines, each consisting of 80 characters plus a NULL 
 
-		unsigned short DateTimeMonth;// Date and time at which the image was created 
-		unsigned short JobTimeDay;
-		unsigned short JobTimeYear;
-		unsigned short JobTimeHour;
-		unsigned short JobTimeMinute;
-		unsigned short JobTimeSecond;
+		PXInt16U DateTimeMonth;// Date and time at which the image was created 
+		PXInt16U JobTimeDay;
+		PXInt16U JobTimeYear;
+		PXInt16U JobTimeHour;
+		PXInt16U JobTimeMinute;
+		PXInt16U JobTimeSecond;
 
 		char JobID[41];
-		unsigned short JobTimeHours; // spent creating the file (for billing, etc.) 
-		unsigned short JobTimeMinutes;
-		unsigned short JobTimeSeconds;
+		PXInt16U JobTimeHours; // spent creating the file (for billing, etc.) 
+		PXInt16U JobTimeMinutes;
+		PXInt16U JobTimeSeconds;
 		char SoftwareName[41]; // The application that created the file. 
-		unsigned short VersionNumber;
+		PXInt16U VersionNumber;
 		char SoftwareVersion;
 		unsigned int BackGroundColor;
-		unsigned short PixelAspectRatioCounter;
-		unsigned short PixelAspectRatioDenominator;
-		unsigned short GammaCounter;
-		unsigned short GammaDenominator;
+		PXInt16U PixelAspectRatioCounter;
+		PXInt16U PixelAspectRatioDenominator;
+		PXInt16U GammaCounter;
+		PXInt16U GammaDenominator;
 
 		unsigned int ColorCorrectionOffset; // Number of bytes from the beginning of the file to the color correction table if present
 		unsigned int PostagestampOffset; // Number of bytes from the beginning of the file to the postage stamp image if present

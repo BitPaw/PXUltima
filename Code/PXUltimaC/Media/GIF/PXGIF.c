@@ -18,7 +18,7 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
     PXGIF gif;
 
-    PXMemoryClear(&gif, sizeof(PXGIF));
+    PXClear(PXGIF, &gif);
 
     // Check Header
     {
@@ -50,19 +50,26 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 
     // Logical Screen Descriptor.
     {
-        PXFileReadI16UE(pxFile, &gif.Width, PXEndianLittle);
-        PXFileReadI16UE(pxFile, &gif.Height, PXEndianLittle);
+        {
+            PXInt8U packedFields = 0;
 
-        unsigned char packedFields = 0;
+            const PXFileDataElementType pxDataStreamElementList[] =
+            {
+                {PXDataTypeLEInt16U, &gif.Width},
+                {PXDataTypeLEInt16U, &gif.Height},
+                {PXDataTypeInt8U, &packedFields},
+                {PXDataTypeInt8U, &gif.BackgroundColorIndex},
+                {PXDataTypeInt8U, &gif.PixelAspectRatio}
+            };
+            const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-        PXFileReadI8U(pxFile, &packedFields);
-        PXFileReadI8U(pxFile, &gif.BackgroundColorIndex);
-        PXFileReadI8U(pxFile, &gif.PixelAspectRatio);
+            PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
-        gif.GlobalColorTableSize = packedFields & 0b00000111;
-        gif.IsSorted = (packedFields & 0b00001000) >> 3;
-        gif.ColorResolution = (packedFields & 0b01110000) >> 4;
-        gif.IsGlobalColorTablePresent = (packedFields & 0b10000000) >> 7;
+            gif.GlobalColorTableSize = packedFields & 0b00000111;
+            gif.IsSorted = (packedFields & 0b00001000) >> 3;
+            gif.ColorResolution = (packedFields & 0b01110000) >> 4;
+            gif.IsGlobalColorTablePresent = (packedFields & 0b10000000) >> 7;
+        }  
 
         if (gif.IsGlobalColorTablePresent)
         {
@@ -73,20 +80,28 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 
             PXGIFImageDescriptor imageDescriptor;
 
-            unsigned char packedFields = 0;
+            {
+                unsigned char packedFields = 0;
 
-            PXFileReadI8U(pxFile, &imageDescriptor.Separator);
-            PXFileReadI16UE(pxFile, &imageDescriptor.LeftPosition, PXEndianLittle);
-            PXFileReadI16UE(pxFile, &imageDescriptor.TopPosition, PXEndianLittle);
-            PXFileReadI16UE(pxFile, &imageDescriptor.Width, PXEndianLittle);
-            PXFileReadI16UE(pxFile, &imageDescriptor.Height, PXEndianLittle);
-            PXFileReadI8U(pxFile, &packedFields);
+                const PXFileDataElementType pxDataStreamElementList[] =
+                {
+                    {PXDataTypeInt8U,       &imageDescriptor.Separator},
+                    {PXDataTypeLEInt16U,    &imageDescriptor.LeftPosition},
+                    {PXDataTypeLEInt16U,    &imageDescriptor.TopPosition},
+                    {PXDataTypeLEInt16U,    &imageDescriptor.Width},
+                    {PXDataTypeLEInt16U,    &imageDescriptor.Height},
+                    {PXDataTypeInt8U,       &packedFields}
+                };
+                const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-            imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
-            imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;
-            imageDescriptor.SortFlag = (packedFields & 0b00100000) >> 5;
-            imageDescriptor.InterlaceFlag = (packedFields & 0b01000000) >> 6;
-            imageDescriptor.LocalColorTableFlag = (packedFields & 0b10000000) >> 7;
+                PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+
+                imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
+                imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;
+                imageDescriptor.SortFlag = (packedFields & 0b00100000) >> 5;
+                imageDescriptor.InterlaceFlag = (packedFields & 0b01000000) >> 6;
+                imageDescriptor.LocalColorTableFlag = (packedFields & 0b10000000) >> 7;
+            }     
 
             if (imageDescriptor.LocalColorTableFlag)
             {

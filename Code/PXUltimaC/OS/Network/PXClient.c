@@ -59,7 +59,7 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
     {
         const PXSocketAdressSetupInfo pxSocketAdressSetupInfoList[1] =
         {
-              *ip, port, IPAdressFamilyUnspecified, PXSocketTypeStream, ProtocolModeTCP
+              *ip, port, IPAdressFamilyUnspecified, PXSocketTypeStream, PXProtocolModeTCP
         };
         const PXSize pxSocketAdressSetupInfoListSize = sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
 

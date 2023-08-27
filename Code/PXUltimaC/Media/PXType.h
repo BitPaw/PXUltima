@@ -147,6 +147,9 @@ extern "C"
 	{
 		PXDataTypeTypeInvalid,
 
+		PXDataTypeTextx2,
+		PXDataTypeTextx4,
+
 		PXDataTypeInt8S,
 		PXDataTypeInt8U,
 
