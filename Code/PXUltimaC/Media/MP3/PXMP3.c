@@ -791,7 +791,7 @@ PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 	
 	PXMP3* mp3 = &pxMP3;
 
-	PXMemoryClear(mp3, sizeof(PXMP3));
+	PXClear(PXMP3, mp3);
 
 	{
 
@@ -804,7 +804,7 @@ PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 	{
 		PXXingInfo xingInfo;
 
-		PXMemoryClear(&xingInfo, sizeof(PXXingInfo));
+		PXClear(PXXingInfo, &xingInfo);
 
 		PXSize cursorPositionPredict = 0;
 
@@ -1091,7 +1091,7 @@ PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 		{
 			PXLAME lame;
 
-			const PXActionResult actionResult = PXLAMEParse(&lame, pxFile);
+			const PXActionResult actionResult = PXLAMELoadFromFile(&lame, pxFile);
 
 			PXActionReturnOnError(actionResult);
 

@@ -426,6 +426,9 @@
     <ClCompile Include="Media\Matroska\PXMatroska.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\COFF\PXCOFF.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -840,6 +843,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\Matroska\PXMatroska.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\COFF\PXCOFF.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

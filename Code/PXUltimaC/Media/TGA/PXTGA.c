@@ -1,7 +1,6 @@
 #include "PXTGA.h"
 
-#define PXTGAFileIdentifier "TRUEVISION-XFILE."
-#define PXTGAFileIdentifierSize 18u
+const char PXTGAFileIdentifier[] = {'T','R','U','E','V','I','S','I','O','N',' ','-',' ','X','F','I','L','E','.'};
 
 PXTGABitsPerPixel ConvertToPixelDepth(const unsigned char pixelDepth)
 {
@@ -231,21 +230,9 @@ PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 
 	// Check end of pxFile if the pxFile is a Version 2.0 pxFile.
 	{
-		const unsigned int stringLengh = PXTGAFileIdentifierSize;
-		unsigned int compareLength = stringLengh;
-		const char lastCharacter = ((char*)pxFile->Data)[pxFile->DataSize - 1];
-		const char isLastCharacter = lastCharacter == '.';
-		char* string = (char*)pxFile->Data + (pxFile->DataSize - stringLengh);
-
-		if(isLastCharacter)
-		{
-			compareLength--;
-			string++;
-		}
-
 		footerEntryIndex = pxFile->DataSize - (26u - 1u);
 
-		const PXBool isPXTGAVersionTwo = PXMemoryCompare(PXTGAFileIdentifier, PXTGAFileIdentifierSize, string, compareLength - 1); // Is this string at this address?;
+		const PXBool isPXTGAVersionTwo = PXFileReadAndCompare(pxFile, PXTGAFileIdentifier, sizeof(PXTGAFileIdentifier)); // Is this string at this address?;
 
 		if(!isPXTGAVersionTwo) // Is this a PXTGA v.1.0 pxFile?
 		{
@@ -277,7 +264,7 @@ PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 		unsigned short extensionSize = 0;
 
 		pxFile->DataCursor = extensionOffset; // Jump to Extension Header
-		PXFileReadI16UE(&pxFile,extensionSize, PXEndianLittle);
+		PXFileReadI16UE(&pxFile, &extensionSize, PXEndianLittle);
 
 		const unsigned char isExtensionSizeAsExpected = extensionSize == 495u;
 
@@ -316,10 +303,10 @@ PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 		PXFileReadI16UE(&pxFile, &tga->PixelAspectRatioDenominator, PXEndianLittle);
 		PXFileReadI16UE(&pxFile, &tga->GammaCounter, PXEndianLittle);
 		PXFileReadI16UE(&pxFile, &tga->GammaDenominator, PXEndianLittle);
-		PXFileReadI32UE(&pxFile, tga->ColorCorrectionOffset, PXEndianLittle);
-		PXFileReadI32UE(&pxFile, tga->PostagestampOffset, PXEndianLittle);
-		PXFileReadI32UE(&pxFile, tga->ScanlineOffset, PXEndianLittle);
-		PXFileReadI8U(&pxFile,tga->AttributesType);
+		PXFileReadI32UE(&pxFile, &tga->ColorCorrectionOffset, PXEndianLittle);
+		PXFileReadI32UE(&pxFile, &tga->PostagestampOffset, PXEndianLittle);
+		PXFileReadI32UE(&pxFile, &tga->ScanlineOffset, PXEndianLittle);
+		PXFileReadI8U(&pxFile, &tga->AttributesType);
 
 		/*
 	if (ColorCorrectionOffset > 0)

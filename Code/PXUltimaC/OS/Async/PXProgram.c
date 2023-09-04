@@ -75,10 +75,10 @@ PXActionResult PXProgramExecuteAS(PXProgram* program, const char* programPath, c
     program->PXProgramExecutedCallBack = callback;
 
     program->ParameterListSize = 1;
-    program->ParameterList = (char**)PXMemoryAllocate(3 * sizeof(char*));
+    program->ParameterList = PXNewList(char*, 3);
 
-    program->ParameterList[0] = (char*)PXMemoryAllocate(260 * sizeof(char));
-    program->ParameterList[1] = (char*)PXMemoryAllocate(1024 * sizeof(char));
+    program->ParameterList[0] = PXNewList(char, 260);
+    program->ParameterList[1] = PXNewList(char, 1024);
     program->ParameterList[2] = 0;
 
     // Add ""
@@ -184,7 +184,7 @@ PXActionResult PXProgramAttach(PXProgram* const pxProgram)
     BOOL bInheritHandle = 0;
     DWORD dwProcessID = 0;
     pxProgram->Handle = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID); // Windows XP (+UWP), Kernel32.dll
-    const PXBool openSuccess = pxProgram->Handle != -1;
+    const PXBool openSuccess = pxProgram->Handle != PXNull;
 
     PXActionReturnOnError(!openSuccess);
 

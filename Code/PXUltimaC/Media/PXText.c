@@ -947,7 +947,7 @@ void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* synta
 				PXText pyText;
 				PXTextConstructFromAdressA(&pyText, buffer + offsetData, offsetLength);
 
-				const PXSize readBytes = PXTextToFloat(&buffer, number);
+				const PXSize readBytes = PXTextToFloat(buffer, number);
 
 #if PXTextAssertEnable
 				assert(readBytes);
@@ -1097,6 +1097,8 @@ PXSize PXTextReplace(PXText* const pxText, char target, char value)
 
 			break;
 		}
+		default:
+			return 0;
 	}
 }
 
@@ -1161,6 +1163,8 @@ PXSize PXTextFromInt(PXText* const pxText, int number)
 			 
 			return pxText->SizeUsed;
 		}
+		default:
+			return 0;
 	}
 }
 
@@ -1183,9 +1187,9 @@ PXSize PXTextFromBool(PXText* const pxText, const PXBool number)
 
 			return sizeof(wchar_t);
 		}
+		default:
+			return 0;
 	}
-
-	return 0;
 }
 
 PXSize PXTextFromFloat(PXText* const pxText, const float number)
@@ -1214,9 +1218,9 @@ PXSize PXTextFromFloat(PXText* const pxText, const float number)
 
 			return pxText->SizeUsed;
 		}
+		default:
+			return 0;
 	}
-
-	return 0;
 }
 
 PXSize PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize)

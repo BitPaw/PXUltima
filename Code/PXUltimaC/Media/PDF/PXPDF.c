@@ -1,11 +1,12 @@
 #include "PXPDF.h"
 
+const static char PXPDFSignature[5] = {'%', 'P', 'D', 'F', '-'};
+
 PXActionResult PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile)
 {
     // Check for header
     {
-        const char signature[5] = { '%', 'P', 'D', 'F', '-' };
-        const PXBool validSignature = PXFileReadAndCompare(pxFile, signature, sizeof(signature));
+        const PXBool validSignature = PXFileReadAndCompare(pxFile, PXPDFSignature, sizeof(PXPDFSignature));
 
         if (!validSignature)
         {
@@ -27,5 +28,7 @@ PXActionResult PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile)
 
 PXActionResult PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile)
 {
+    PXFileWriteB(pxFile, PXPDFSignature, sizeof(PXPDFSignature));
+
     return PXActionRefusedNotImplemented;
 }

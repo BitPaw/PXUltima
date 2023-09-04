@@ -85,16 +85,16 @@ extern "C"
 		char SoftwareName[41]; // The application that created the file. 
 		PXInt16U VersionNumber;
 		char SoftwareVersion;
-		unsigned int BackGroundColor;
+		PXInt32U BackGroundColor;
 		PXInt16U PixelAspectRatioCounter;
 		PXInt16U PixelAspectRatioDenominator;
 		PXInt16U GammaCounter;
 		PXInt16U GammaDenominator;
 
-		unsigned int ColorCorrectionOffset; // Number of bytes from the beginning of the file to the color correction table if present
-		unsigned int PostagestampOffset; // Number of bytes from the beginning of the file to the postage stamp image if present
-		unsigned int ScanlineOffset; // Number of bytes from the beginning of the file to the scan lines table if present 
-		unsigned char AttributesType; // Specifies the alpha channel
+		PXInt32U ColorCorrectionOffset; // Number of bytes from the beginning of the file to the color correction table if present
+		PXInt32U PostagestampOffset; // Number of bytes from the beginning of the file to the postage stamp image if present
+		PXInt32U ScanlineOffset; // Number of bytes from the beginning of the file to the scan lines table if present 
+		PXInt8U AttributesType; // Specifies the alpha channel
 		//-------------------------------
 	}
 	PXTGA;

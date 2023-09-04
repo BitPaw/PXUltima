@@ -6,33 +6,39 @@ PXInt8U PXDataTypeSize(const PXDataType pxDataType)
 {
 	switch (pxDataType)
 	{
+		case PXDataTypeAdress8Bit:
 		case PXDataTypeInt8S:
 		case PXDataTypeInt8U:
-			return sizeof(PXInt8U);
+			return 1u;
 
+		case PXDataTypeAdress16Bit:
 		case PXDataTypeLEInt16S:
 		case PXDataTypeLEInt16U:
 		case PXDataTypeBEInt16S:
 		case PXDataTypeBEInt16U:
-			return sizeof(PXInt16U);
+		case PXDataTypeTextx2:
+		case PXDataTypeInt16Flex:
+			return 2u;
 
+		case PXDataTypeAdress32Bit:
 		case PXDataTypeLEInt32S:
 		case PXDataTypeLEInt32U:
 		case PXDataTypeBEInt32S:
 		case PXDataTypeBEInt32U:
-			return sizeof(PXInt32U);
+		case PXDataTypeTextx4:
+		case PXDataTypeFloat:
+		case PXDataTypeInt32Flex:
+			return 4u;
 
+		case PXDataTypeAdress64Bit:
 		case PXDataTypeLEInt64S:
 		case PXDataTypeLEInt64U:
 		case PXDataTypeBEInt64S:
 		case PXDataTypeBEInt64U:
-			return sizeof(PXInt64U);
-
-		case PXDataTypeFloat:
-			return sizeof(float);
-
+		case PXDataTypeTextx8:
 		case PXDataTypeDouble:
-			return sizeof(double);
+		case PXDataTypeInt64Flex:
+			return 8u;
 
 		case PXDataTypeTypeInvalid:
 		default:

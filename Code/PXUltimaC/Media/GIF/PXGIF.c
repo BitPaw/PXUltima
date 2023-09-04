@@ -4,7 +4,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
-#define PXGIFHeader {'G','I','F'}
+const char PXGIFHeader[3] = { 'G','I','F' };
 #define PXGIFVersionA {'8','7','a'}
 #define PXGIFVersionB {'8','9','a'}
 #define PXGIFEOF 0x3B
@@ -23,9 +23,7 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
     // Check Header
     {
         {
-            const char headerTag[3] = PXGIFHeader;
-            const PXSize headerTagSize = sizeof(headerTag);
-            const PXBool validHeader = PXFileReadAndCompare(pxFile, headerTag, headerTagSize);
+            const PXBool validHeader = PXFileReadAndCompare(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
 
             if (!validHeader)
             {
@@ -123,5 +121,7 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 
 PXActionResult PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile)
 {
+    PXFileWriteB(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
+
     return PXActionRefusedNotImplemented;
 }

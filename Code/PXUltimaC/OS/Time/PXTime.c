@@ -59,7 +59,31 @@ void PXTimeNow(PXTime* const time)
 	time->Minute = systemTime.wMinute;
 	time->Second = systemTime.wSecond;
 	time->Milliseconds = systemTime.wMilliseconds;
+
+	time->ClockCycle = clock();
 #endif
+}
+
+PXSize PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult)
+{
+	timeResult->Day = (timeB->Day - timeA->Day);
+	timeResult->Hour = (timeB->Hour - timeA->Hour);
+	timeResult->Minute = (timeB->Minute - timeA->Minute);
+	timeResult->Second = (timeB->Second - timeA->Second);
+	timeResult->Milliseconds = (timeB->Milliseconds - timeA->Milliseconds);
+
+	timeResult->ClockCycleDelta = (timeB->ClockCycle - timeA->ClockCycle) / (double)CLOCKS_PER_SEC;
+}
+
+PXSize PXTimeMilliseconds(const PXTime* time)
+{
+	const PXSize dayDelta = (time->Day);
+	const PXSize hourDelta = (time->Hour) + (dayDelta * 24);
+	const PXSize minuteDelta = (time->Minute) + (hourDelta * 60);
+	const PXSize secondsDelta = (time->Second) + (minuteDelta * 60);
+	const PXSize millisecondsDelta = (time->Milliseconds) + (secondsDelta * 1000);
+
+	return millisecondsDelta;
 }
 
 PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
@@ -69,8 +93,8 @@ PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 //DayOfWeek = DayOfWeek::Invalid;;
 
 	const PXSize dayDelta = (timeB->Day - timeA->Day);
-	const PXSize hourDelta = (timeB->Hour - timeA->Hour) * (dayDelta * 24);
-	const PXSize minuteDelta = (timeB->Minute - timeA->Minute) * (hourDelta * 60);
+	const PXSize hourDelta = (timeB->Hour - timeA->Hour) + (dayDelta * 24);
+	const PXSize minuteDelta = (timeB->Minute - timeA->Minute) + (hourDelta * 60);
 	const PXSize secondsDelta = (timeB->Second - timeA->Second) + (minuteDelta * 60);
 	const PXSize millisecondsDelta = (timeB->Milliseconds - timeA->Milliseconds) + (secondsDelta * 1000);
 

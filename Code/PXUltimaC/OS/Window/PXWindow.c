@@ -2942,7 +2942,7 @@ void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mo
 
 }
 
-void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const PXMouseButton mouseButton, const PXKeyPressState buttonState)
+void PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState)
 {
     PXMouse* const mouse = &window->MouseCurrentInput;
 

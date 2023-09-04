@@ -138,7 +138,7 @@ PXBool PXMemoryScan(PXMemoryUsage* memoryUsage)
 
 void PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize)
 {
-	return PXMemorySet(bufferA, 0u, bufferASize);
+	PXMemorySet(bufferA, 0u, bufferASize);
 }
 
 void PXMemorySet(void* PXRestrict buffer, const PXByte value, const PXSize bufferSize)
@@ -302,15 +302,26 @@ PXSize PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void*
 
 void* PXMemoryStackAllocate(const PXSize size)
 { 
-	void* const stackAllocated  =
+	void* const stackAllocated =
 
 #if OSUnix
 		alloca(size);
 #elif OSWindows
-		_alloca(size); // _alloca() is deprecated (security reasons) but _malloca() is not an alternative
+		//_alloca(size); // _alloca() is deprecated (security reasons) but _malloca() is not an alternative
+
+		_malloca(size);
 #endif
 
 	return stackAllocated;
+}
+
+void* PXMemoryStackRelease(void* const adress)
+{
+#if OSUnix
+	
+#elif OSWindows
+	_freea(adress);
+#endif
 }
 
 #if MemoryDebugOutput

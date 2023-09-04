@@ -9,7 +9,7 @@
 
 void PXWavefrontElementConstruct(PXWavefrontElement* objElement)
 {
-    PXMemoryClear(objElement, sizeof(PXWavefrontElement));
+    PXClear(PXWavefrontElement, objElement);
 }
 
 void PXWavefrontElementDestruct(PXWavefrontElement* objElement)
@@ -19,7 +19,7 @@ void PXWavefrontElementDestruct(PXWavefrontElement* objElement)
 
 void PXWavefrontConstruct(PXWavefront* const obj)
 {
-    PXMemoryClear(obj, sizeof(PXWavefront));
+    PXClear(PXWavefront, obj);
 }
 
 void PXWavefrontDestruct(PXWavefront* const obj)

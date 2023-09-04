@@ -2,13 +2,14 @@
 
 #include <Media/PXText.h>
 
-PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const pxFile)
+const char PXLameSignatureID[] = { 'L', 'A', 'M', 'E' };
+
+PXActionResult PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
 {
 	// Check signature (4 Bytes)
-	{
-		const char signature[] = { 'L', 'A', 'M', 'E' };
-		const PXSize signatueSize = sizeof(signature);
-		const PXBool isValid = PXFileReadAndCompare(&pxFile, signature, signatueSize);
+	{		
+		const PXSize signatueSize = sizeof(PXLameSignatureID);
+		const PXBool isValid = PXFileReadAndCompare(&pxFile, PXLameSignatureID, sizeof(PXLameSignatureID));
 
 		if(!isValid)
 		{
@@ -98,4 +99,11 @@ PXActionResult PXLAMEParse(PXLAME* const lame, PXFile* const pxFile)
 	}
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXLAMESaveToFile(const PXLAME* const lame, PXFile* const pxFile)
+{
+	PXFileWriteB(pxFile, PXLameSignatureID, sizeof(PXLameSignatureID));
+
+	return PXActionRefusedNotImplemented;
 }

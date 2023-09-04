@@ -4,8 +4,8 @@
 #include <Media/RIFF/PXRIFF.h>
 #include <Math/PXMath.h>
 
-#define WAVSignatureLIST { 'L', 'I', 'S', 'T' }
-#define WAVSignatureData { 'd', 'a', 't', 'a' }
+const static char WAVSignatureLIST[4] = { 'L', 'I', 'S', 'T' };
+const static char WAVSignatureData[4] = { 'd', 'a', 't', 'a' };
 
 PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
@@ -56,9 +56,7 @@ PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 	//---------------------------------------
 	{
-		const char signature[] = WAVSignatureLIST;
-		const PXSize signatureSize = sizeof(signature);
-		const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxFile, signature, signatureSize);
+		const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxFile, WAVSignatureLIST, sizeof(WAVSignatureLIST));
 
 		if (isPXRIFFListChunk)
 		{
@@ -67,9 +65,7 @@ PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 	}
 	//---------------------------------------
 	{
-		const char signature[] = WAVSignatureData;
-		const PXSize signatureSize = sizeof(signature);
-		const PXBool validDataChunk = PXFileReadAndCompare(pxFile, signature, signatureSize);
+		const PXBool validDataChunk = PXFileReadAndCompare(pxFile, WAVSignatureData, sizeof(WAVSignatureData));
 
 		if (!validDataChunk)
 		{
@@ -80,7 +76,7 @@ PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 	PXFileReadI32UE(pxFile, &wav->SoundDataSize, riff.EndianFormat);
 
 	pxSound->DataSize = wav->SoundDataSize;
-	pxSound->Data = PXMemoryAllocateType(PXByte, wav->SoundDataSize);
+	pxSound->Data = PXNewList(PXByte, wav->SoundDataSize);
 
 	PXFileReadB(pxFile, pxSound->Data, pxSound->DataSize);
 
@@ -144,9 +140,7 @@ PXActionResult PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 
 	//Data chunk
 	{
-		const char data[] = WAVSignatureData;
-
-		PXFileWriteB(pxFile, data, 4u);
+		PXFileWriteB(pxFile, WAVSignatureData, sizeof(WAVSignatureData));
 		PXFileWriteI32U(pxFile, dataSize);
 	}
 

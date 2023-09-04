@@ -8,8 +8,7 @@ PXActionResult PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const P
 
 	// Check header signature
 	{
-		const PXSize size = sizeof(FMTSignature);
-		const PXBool valid = PXFileReadAndCompare(pxFile, FMTSignature, size);
+		const PXBool valid = PXFileReadAndCompare(pxFile, FMTSignature, sizeof(FMTSignature));
 
 		if(!valid)
 		{

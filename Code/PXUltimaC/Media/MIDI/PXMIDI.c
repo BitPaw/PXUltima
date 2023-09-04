@@ -56,7 +56,7 @@ PXActionResult PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 			}
 		}
 
-		PXFileReadI32UE(pxFile, chunkLength, PXEndianBig);
+		PXFileReadI32UE(pxFile, &chunkLength, PXEndianBig);
 
 		track->ID = i;
 		track->EventData = PXNewList(PXByte, chunkLength);

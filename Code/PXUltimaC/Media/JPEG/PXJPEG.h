@@ -1,10 +1,7 @@
 #ifndef PXJPEGInclude
 #define PXJPEGInclude
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
-#include <Media/PXImage.h>
+#include <Media/PXResource.h>
 
 #define PXJPEGQuantizationTableLuminanceIndex 0
 #define PXJPEGQuantizationTableChrominanceIndex 1

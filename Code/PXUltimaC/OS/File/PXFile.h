@@ -208,6 +208,9 @@ void PXDirectoryIsDotFolder(const char* s)
 		HANDLE MappingID;
 #endif
 
+		PXBitFormat BitFormatOfData;
+		PXEndian EndiannessOfData;
+
 		PXFileTypeInfo TypeInfo;
 
 		PXText FilePath;

@@ -256,7 +256,7 @@ extern "C"
 
 	// Event functions
 	PXPublic void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
-	PXPublic void PXWindowTriggerOnMouseClickEvent(const PXWindow* window, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
+	PXPublic void PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
 	PXPublic void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton);
 	PXPublic void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
 	PXPublic void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);

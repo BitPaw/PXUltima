@@ -575,11 +575,11 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 			// Windows 
 			case PXTTFTableEntryCharacterCodeMapping:
 			{
-				PXFileReadI16U(pxFile, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
-				PXFileReadI16U(pxFile, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
+				PXFileReadI16UE(pxFile, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
+				PXFileReadI16UE(pxFile, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
 
 				ttf->CharacterMapping.EncodingRecordListSize = sizeof(PXEncodingRecord) * ttf->CharacterMapping.NumberOfTables;
-				ttf->CharacterMapping.EncodingRecordList = PXMemoryAllocateTypeCleared(PXEncodingRecord, ttf->CharacterMapping.NumberOfTables);
+				ttf->CharacterMapping.EncodingRecordList = PXNewList(PXEncodingRecord, ttf->CharacterMapping.NumberOfTables);
 
 				for (PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)
 				{
@@ -588,9 +588,9 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 					PXInt16U platformID = 0;
 					PXInt16U encodingID = 0;
 
-					PXFileReadI16U(pxFile, &platformID, PXEndianBig);
-					PXFileReadI16U(pxFile, &encodingID, PXEndianBig);
-					PXFileReadI32U(pxFile, &encodingRecord->SubtableOffset, PXEndianBig);
+					PXFileReadI16UE(pxFile, &platformID, PXEndianBig);
+					PXFileReadI16UE(pxFile, &encodingID, PXEndianBig);
+					PXFileReadI32UE(pxFile, &encodingRecord->SubtableOffset, PXEndianBig);
 
 					encodingRecord->Platform = PXTTFPlatformFromID(platformID);
 					encodingRecord->Encoding = PXTTFEncodingFromID(encodingRecord->Platform, encodingID);

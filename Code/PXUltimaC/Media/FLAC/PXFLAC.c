@@ -2,10 +2,10 @@
 
 PXActionResult PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	return PXActionInvalid;
+	return PXActionRefusedNotImplemented;
 }

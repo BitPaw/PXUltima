@@ -11,11 +11,11 @@ extern "C"
 
 	typedef struct PXImage_
 	{
-		PXSize Width;
-		PXSize Height;
-
-		PXSize PixelDataSize;
 		void* PixelData;
+		PXSize PixelDataSize;
+
+		PXSize Width;
+		PXSize Height;	
 
 		PXColorFormat Format;
 	}

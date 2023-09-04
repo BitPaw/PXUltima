@@ -89,6 +89,7 @@ extern "C"
 
 
 		PXActionRefuedParameterNull, // Some needed Parameter is null
+		PXActionRefuedParameterInvalid,
 
 		PXActionRefuedTextFormatUnsupported,
 

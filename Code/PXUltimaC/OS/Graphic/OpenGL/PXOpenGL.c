@@ -1499,9 +1499,9 @@ PXBool PXOpenGLFunctionAdressFetch(const char* const functionName, void** functi
 {
     *functionAdress =
 #if OSUnix
-    (const void* const)glXGetProcAddress(functionName);
+    (void*)glXGetProcAddress(functionName);
 #elif OSWindows
-    (const void* const)wglGetProcAddress(functionName);
+    (void*)wglGetProcAddress(functionName);
 
     switch ((PXSize)functionAdress)
     {
@@ -1657,7 +1657,8 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     // Fetch functions
     switch (openGLContext->Version)
     {
-        default: return;
+        default: 
+            return PXActionNotSupportedByLibrary;
 
         case PXOpenGLVersion4x6x0:
         {
@@ -1928,11 +1929,11 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     // Extensions
     {
 #if OSUnix
-        PXOpenGLFunctionAdressFetch("glXSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
-        PXOpenGLFunctionAdressFetch("glxGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
+        PXOpenGLFunctionAdressFetch("glXSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLFunctionAdressFetch("glxGetSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalGetCallBack);
 #elif OSWindows
-        PXOpenGLFunctionAdressFetch("wglSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
-        PXOpenGLFunctionAdressFetch("wglGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
+        PXOpenGLFunctionAdressFetch("wglSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLFunctionAdressFetch("wglGetSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalGetCallBack);
 #endif
     }
 
@@ -2029,6 +2030,8 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     pxViewPort.ClippingMaximum = 1;
 
     PXOpenGLViewPortSet(openGLContext, &pxViewPort);
+
+    return PXActionSuccessful;
 }
 
 void PXOpenGLCreateWindowless(PXOpenGL* const openGLContext, const PXSize width, const PXSize height)
@@ -2217,7 +2220,7 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
 {
     if (pxVertexStructure->VertexBuffer.VertexDataRowSize == 0)
     {
-        return;
+        return PXActionRefuedParameterInvalid;
     }
 
     const PXBool canUseShader = pxVertexStructure->ShaderProgramReference && pxOpenGL->PXOpenGLShaderPXProgramUseCallBack;
@@ -3352,7 +3355,7 @@ PXActionResult PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXShaderP
     pxShaderProgram->VertexShader.ContentSize = 0;
     pxShaderProgram->VertexShader.Content = PXNull;
 
-
+    return PXActionSuccessful;
 }
 
 PXActionResult PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
@@ -3437,7 +3440,7 @@ PXActionResult PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderPro
 
     if (!isValidShader)
     {
-        PXOpenGLShaderProgramDelete(pxOpenGL, pxShaderProgram->ResourceID.OpenGLID);
+        PXOpenGLShaderProgramDelete(pxOpenGL, pxShaderProgram);
     }
 
     if (!isValidShader)
@@ -4178,6 +4181,8 @@ PXActionResult PXOpenGLTexture3DCreate(PXOpenGL* const pxOpenGL, PXTexture3D* co
     // Do stuff
 
     pxOpenGL->PXOpenGLTextureBindCallBack(GL_TEXTURE_3D, 0);
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube* const pxTextureCube)

@@ -20,8 +20,8 @@ extern "C"
 
 	typedef struct PXDeflateBlock_
 	{
-		PXBool IsLastBlock;
 		PXDeflateEncodingMethod EncodingMethod;
+		PXBool IsLastBlock;
 	}
 	PXDeflateBlock;
 

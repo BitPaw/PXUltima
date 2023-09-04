@@ -844,7 +844,7 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicCo
 PXActionResult PXGraphicUIRectangleCreate(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
 {
     PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y, &renderable->MatrixModel);
-    PXMatrix4x4FScaleSet(sidth, height, 1, &renderable->MatrixModel);
+   // PXMatrix4x4FScaleXYZSet(&renderable->MatrixModel, sidth, height, 1);
 
     // Register rectangle
     {
@@ -1019,7 +1019,7 @@ PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext
 
 
 
-            PXOpenGLFrameBufferLinkTexture2D(pxOpenGL, PXOpenGLRenderBufferAttachmentPointColor, PXGraphicTextureType2D, pxUIElement->FrameRenderTextureReference, 0);
+            PXOpenGLFrameBufferLinkTexture2D(pxOpenGL, PXOpenGLRenderBufferAttachmentPointColor, PXGraphicTextureType2D, pxUIElement->FrameRenderTextureReference->ResourceID.OpenGLID, 0);
 
             // Set the list of draw buffers.
            // GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
@@ -1508,7 +1508,7 @@ PXActionResult PXGraphicVertexStructureDraw(PXGraphicContext* const graphicConte
     {
         case PXGraphicSystemPXOpenGL:
         {
-            return PXOpenGLVertexStructureDraw(&graphicContext->OpenGLInstance, pxVertexStructure, pxCamera, &modelMatrix);
+            return PXOpenGLVertexStructureDraw(&graphicContext->OpenGLInstance, pxVertexStructure, pxCamera);
         }
         case PXGraphicSystemDirectX:
         {

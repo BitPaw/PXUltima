@@ -97,7 +97,7 @@ extern "C"
 	// The allocated space is automatically freed when the calling function exits
 	// (not when the allocation merely passes out of scope).
 	PXPublic void* PXMemoryStackAllocate(const PXSize size);
-	//PXPublic void* MemoryStackRelease(void* const adress);
+	PXPublic void* PXMemoryStackRelease(void* const adress);
 
 	PXPublic void* PXMemoryHeapAllocate(const PXSize size);
 

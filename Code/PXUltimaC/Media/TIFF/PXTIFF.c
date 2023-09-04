@@ -1,8 +1,5 @@
 #include "PXTIFF.h"
 
-#define PXTIFFormatA {'I','I'}
-#define PXTIFFormatB {'M','M'}
-
 PXTIFFType PXTIFFTypeFromID(const unsigned char tiffTypeID)
 {
     switch (tiffTypeID)

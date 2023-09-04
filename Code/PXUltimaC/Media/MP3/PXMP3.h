@@ -179,7 +179,7 @@ extern "C"
 	}
 	PXMP3MPEGVersion;
 
-	typedef struct MPEGAudioTag
+	typedef struct MPEGAudioTag_
 	{
 		// char[3] == TAG
 		char Title[30];
@@ -188,7 +188,8 @@ extern "C"
 		char Year[4];
 		char Comment[30];
 		PXMPEGGenre Genre;
-	};
+	}
+	MPEGAudioTag;
 
 	typedef struct PXMP3Header_
 	{

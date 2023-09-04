@@ -18,15 +18,12 @@ void PXStopWatchStart(PXStopWatch* const stopWatch)
 {
     PXStopWatchReset(stopWatch);
 
-    {
-        PXTime pxTime;
-
-        PXStopWatchTrigger(stopWatch, &pxTime);
-    } 
+    PXTimeNow(&stopWatch->TimeStartreference);
 }
 
 PXBool PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time)
 {
+    /*
     const PXBool canDo = stopWatch->TimeStampDataSizeAllocated > (stopWatch->TimeStampDataSizeUsed + 1);
    
     if (!canDo)
@@ -37,10 +34,12 @@ PXBool PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time)
     }
 
     PXTime* pxTimeCurrent = &stopWatch->TimeStampData[stopWatch->TimeStampDataSizeUsed++];
+    */
+    PXTime rightNow;
 
-    PXTimeNow(pxTimeCurrent);
+    PXTimeNow(&rightNow);
 
-    PXMemoryCopy(pxTimeCurrent, sizeof(PXTime), time, sizeof(PXTime));
+    PXTimeDelta(&stopWatch->TimeStartreference, &rightNow, time);
 
     return PXYes;
 }

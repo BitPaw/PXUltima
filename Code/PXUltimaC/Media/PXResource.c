@@ -34,6 +34,9 @@
 #include <Media/TIFF/PXTIFF.h>
 #include <Media/TGA/PXTGA.h>
 #include <Media/YAML/PXYAML.h>
+#include <Media/EXE/PXEXE.h>
+#include <Media/ELF/PXELF.h>
+#include <OS/Time/PXStopWatch.h>
 
 PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
@@ -138,8 +141,6 @@ PXFontPageCharacter* PXFontPageCharacterFetch(PXFontPage* const pxFontPage, cons
 
 PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
 {
-    printf("[PX] Resource load <%s>\n", filePath->TextA);
-
     PXFile pxFile;
 
     // Loading file
@@ -169,9 +170,18 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
             return PXActionRefusedNotImplemented;
         }
 
+        PXStopWatch pxStopwatch;
+        PXTime pxTime;
+        PXStopWatchConstruct(&pxStopwatch);
+        PXStopWatchStart(&pxStopwatch);
+
         const PXActionResult fileParsingResult = pxFile.TypeInfo.ResourceLoadFunction(resource, &pxFile);
 
-        PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try
+        PXStopWatchTrigger(&pxStopwatch, &pxTime);
+
+        printf("[PX] Resource load <%s> took %ims, cycles=%lf\n", filePath->TextA, PXTimeMilliseconds(&pxTime), pxTime.ClockCycleDelta);
+
+        PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
 
         return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
 
@@ -276,8 +286,8 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatLinuxExecutableAndLinkable:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXELFLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXELFSaveToFile;
             break;
 
         case PXFileFormatEML:
@@ -288,8 +298,8 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatWindowsExecutable:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXEXELoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXEXESaveToFile;
             break;
 
         case PXFileFormatFilmBox:

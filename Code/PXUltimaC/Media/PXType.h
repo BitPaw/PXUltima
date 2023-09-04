@@ -147,9 +147,38 @@ extern "C"
 	{
 		PXDataTypeTypeInvalid,
 
+		//-------------------------------------------------
+		// Emoty space
+		//-------------------------------------------------
+		PXDataTypePadding, // Use adress as offset value
+
+		//-------------------------------------------------
+		// Text - used to parse singatures
+		//-------------------------------------------------
 		PXDataTypeTextx2,
 		PXDataTypeTextx4,
+		PXDataTypeTextx8,
 
+		//-------------------------------------------------
+		// Adress, read as spesified but store it as (void*)
+		//-------------------------------------------------
+		PXDataTypeAdress8Bit,
+		PXDataTypeAdress16Bit,
+		PXDataTypeAdress32Bit,
+		PXDataTypeAdress64Bit,
+
+
+		//-------------------------------------------------
+		// Int - Flexible Modes
+		//-------------------------------------------------
+		PXDataTypeAdressFlex, // 32-Bit or 64-Bit
+		PXDataTypeInt16Flex, // Big or little endian
+		PXDataTypeInt32Flex,
+		PXDataTypeInt64Flex,
+
+		//-------------------------------------------------
+		// Int - Normal
+		//-------------------------------------------------
 		PXDataTypeInt8S,
 		PXDataTypeInt8U,
 
@@ -200,8 +229,10 @@ extern "C"
 
 #if OS32B
 	typedef PXInt32U PXSize;
+	typedef PXInt64U PXAdress64;
 #elif OS64B
 	typedef PXInt64U PXSize;
+	typedef void* PXAdress64;
 #else
 #error Invalid Bit Version
 #endif
@@ -572,6 +603,17 @@ d = SplittIntLED(i);
 
 
 		PXPublic PXInt8U PXDataTypeSize(const PXDataType pxDataType);
+
+
+		typedef enum PXBitFormat_
+		{
+			PXBitFormatInvalid,
+			PXBitFormat8,
+			PXBitFormat16,
+			PXBitFormat32,
+			PXBitFormat64
+		}
+		PXBitFormat;
 
 
 

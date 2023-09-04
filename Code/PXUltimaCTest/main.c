@@ -73,11 +73,25 @@ void PXTextMatchTest()
 	const PXBool c = PXTextMatchW(L"MyFile.*", 8, L"*.h", 3);
 	printf("");
 }*/
-
+#include <Media/EXE/PXEXE.h>
+#include <Media/ELF/PXELF.h>
 
 int main()
 {
 	printf("[i] Starting testing...\n");
+	
+	
+
+
+	PXELF pxELF;
+	PXResourceLoadA(&pxELF, "N:\\NAS\\Games\\PC\\Re-Volt_Linux\\rvgl.64.elf");
+
+
+	
+	PXEXE pxEXE;
+
+	PXResourceLoadA(&pxEXE, "C:\\Users\\BitPaw\\Downloads\\SteamSetup.exe");
+
 
 
 	// X86

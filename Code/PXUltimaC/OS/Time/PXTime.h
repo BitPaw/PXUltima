@@ -2,11 +2,13 @@
 #define PXTimeINCLUDE
 
 #include <Media/PXType.h>
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif	
+
 
 	typedef enum PXTimeDayOfWeek_
 	{
@@ -51,6 +53,13 @@ extern "C"
 		PXInt8U Day; // 0-31
 		PXInt8U DayOfWeek; // enum
 		PXInt8U Month; // 0-12	
+
+		union
+		{
+			clock_t ClockCycle;
+			double ClockCycleDelta;
+		};
+	
 	}
 	PXTime;
 
@@ -58,6 +67,10 @@ extern "C"
 	PXPublic PXTimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID);
 
 	PXPublic void PXTimeNow(PXTime* const time);
+
+	PXPublic PXSize PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult);
+
+	PXPublic PXSize PXTimeMilliseconds(const PXTime* time);
 	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
 
 	PXPublic PXInt64U PXTimeCounterStampGet();

@@ -11,6 +11,8 @@ extern "C"
 
 	typedef struct PXStopWatch_
 	{
+		PXTime TimeStartreference;
+
 		PXTime* TimeStampData;
 		PXSize TimeStampDataSizeUsed;
 		PXSize TimeStampDataSizeAllocated;

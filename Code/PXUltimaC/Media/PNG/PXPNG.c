@@ -8,7 +8,7 @@
 #include <Media/ADAM7/PXADAM7.h>
 #include <Media/CRC32/PXCRC32.h>
 
-#define PNGDebugInfo false
+#define PNGDebugInfo 0
 
 static const char PNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
 
@@ -1006,7 +1006,7 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
                 chunk.ChunkID.Data[1],
                 chunk.ChunkID.Data[2],
                 chunk.ChunkID.Data[3],
-                ChunkTypeToString(chunk.ChunkType),
+                "---",
                 chunk.IsEssential ? 'x' : '-',
                 chunk.IsRegisteredStandard ? 'x' : '-',
                 chunk.IsSafeToCopy ? 'x' : '-',
@@ -1383,7 +1383,7 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
             //---------------------------------------------------------------
 
 #if PNGDebugInfo
-            if (PXFile.DataCursor != predictedOffset)
+            if (pxFile->DataCursor != predictedOffset)
             {
                 printf("[i][PNG] Chunk did not handle all Bytes\n");
             }
@@ -1395,7 +1395,7 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
             //---<Check CRC>---
             // TODO: Yes
             //-----------------
-        }
+         }
     }
 
     //---<Allocate>------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 #include <Media/PXText.h>
 
-#define PXID3HeaderSignature {'I','D','3'}
+const char PXID3HeaderSignature[3] = { 'I','D','3' };
 
 #if PXID3Debug
 #include <cstdio>
@@ -100,9 +100,7 @@ PXActionResult PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
     //Check header
     {
         // Einen PXID3v2-Block erkennt man am Header, dessen erste fünf Bytes aus der Zeichenkette „PXID3“ und der PXID3v2-Version (z. B. $04 00 für PXID3v2.4) bestehen
-        const char signbature[3] = PXID3HeaderSignature;
-        const PXSize signbatureSize = sizeof(signbature);
-        const PXBool isValidHeader = PXFileReadAndCompare(PXFile, signbature, signbatureSize);
+        const PXBool isValidHeader = PXFileReadAndCompare(PXFile, PXID3HeaderSignature, sizeof(PXID3HeaderSignature));
 
         if(!isValidHeader)
         {
@@ -534,10 +532,7 @@ PXActionResult PXID3SaveToFile(const PXID3* const id3, PXFile* const pxFile)
     // ID3 - Header write 
     //-----------------------------------------------------
     {
-        const char signbature[3] = PXID3HeaderSignature;
-        const PXSize signbatureSize = sizeof(signbature);
-
-        PXFileWriteB(pxFile, signbature, signbatureSize);
+        PXFileWriteB(pxFile, PXID3HeaderSignature, sizeof(PXID3HeaderSignature));
     }
 
     return PXActionRefusedNotImplemented;
