@@ -1,7 +1,5 @@
 #include "PXOpenGL.h"
 
-#if PXOpenGLUSE
-
 // wingdi.h
 #include <stdio.h>
 
@@ -1286,7 +1284,7 @@ PXInt32U PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt32U* co
         //case PXOpenGLImageFormatColorIndex: return GL_COLOR_INDEX;
         //case PXOpenGLImageFormatStencilIndex: return GL_STENCIL_INDEX;
         //case PXOpenGLImageFormatDepthComponent: return GL_DEPTH_COMPONENT;
-        case PXColorFormatR8: 
+        case PXColorFormatR8:
             *imageFormat = GL_RED;
             *dataFormat = GL_UNSIGNED_BYTE;
             break;
@@ -1463,7 +1461,7 @@ void PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode pxBlend
     }
 
     glEnable(GL_BLEND);
-    glBlendFunc(sfactor, dfactor);  
+    glBlendFunc(sfactor, dfactor);
 }
 
 PXOpenGLVersion PXOpenGLVersionParse(const PXInt32U versionID)
@@ -1657,7 +1655,7 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     // Fetch functions
     switch (openGLContext->Version)
     {
-        default: 
+        default:
             return PXActionNotSupportedByLibrary;
 
         case PXOpenGLVersion4x6x0:
@@ -1674,7 +1672,7 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion4x3x0:
         {
-            PXOpenGLFunctionAdressFetch("glDebugMessageCallback", &(void*)openGLContext->PXOpenGLDebugMessageCallback);
+            PXOpenGLFunctionAdressFetch("glDebugMessageCallback", &openGLContext->PXOpenGLDebugMessageCallback);
 
             // Fall though1
         }
@@ -1684,7 +1682,7 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion4x1x0:
         {
-            PXOpenGLFunctionAdressFetch("glVertexAttribLPointer", &(void*)openGLContext->PXOpenGLVertexAttribLPointerCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribLPointer", &openGLContext->PXOpenGLVertexAttribLPointerCallBack);
 
             // Fall though1
         }
@@ -1694,7 +1692,7 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion3x3x0:
         {
-            PXOpenGLFunctionAdressFetch("glVertexAttribDivisor", &(void*)openGLContext->PXOpenGLVertexAttribDivisorCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribDivisor", &openGLContext->PXOpenGLVertexAttribDivisorCallBack);
 
             // Fall though1
         }
@@ -1704,29 +1702,29 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion3x1x0:
         {
-            PXOpenGLFunctionAdressFetch("glDrawArraysInstanced", &(void*)openGLContext->PXOpenGLDrawArraysInstancedCallBack);
+            PXOpenGLFunctionAdressFetch("glDrawArraysInstanced", &openGLContext->PXOpenGLDrawArraysInstancedCallBack);
 
             // Fall though1
         }
         case PXOpenGLVersion3x0x0:
         {
-            PXOpenGLFunctionAdressFetch("glGetStringi", &(void*)openGLContext->PXOpenGLStringICallBack);
+            PXOpenGLFunctionAdressFetch("glGetStringi", &openGLContext->PXOpenGLStringICallBack);
 
-            PXOpenGLFunctionAdressFetch("glGenFramebuffers", &(void*)openGLContext->PXOpenGLFrameBufferCreateCallBack);
-            PXOpenGLFunctionAdressFetch("glDeleteFramebuffers", &(void*)openGLContext->PXOpenGLFrameBufferDeleteCallBack);
-            PXOpenGLFunctionAdressFetch("glBindFramebuffer", &(void*)openGLContext->PXOpenGLFrameBufferBindCallBack);
+            PXOpenGLFunctionAdressFetch("glGenFramebuffers", &openGLContext->PXOpenGLFrameBufferCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteFramebuffers", &openGLContext->PXOpenGLFrameBufferDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glBindFramebuffer", &openGLContext->PXOpenGLFrameBufferBindCallBack);
 
-            PXOpenGLFunctionAdressFetch("glGenRenderbuffers", &(void*)openGLContext->PXOpenGLRenderBufferCreateCallBack);
-            PXOpenGLFunctionAdressFetch("glBindRenderbuffer", &(void*)openGLContext->PXOpenGLRenderBufferBindCallBack);
-            PXOpenGLFunctionAdressFetch("glDeleteRenderbuffers", &(void*)openGLContext->PXOpenGLRenderBufferDeleteCallBack);
-            PXOpenGLFunctionAdressFetch("glRenderbufferStorage", &(void*)openGLContext->PXOpenGLRenderBufferStorageCallBack);
+            PXOpenGLFunctionAdressFetch("glGenRenderbuffers", &openGLContext->PXOpenGLRenderBufferCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glBindRenderbuffer", &openGLContext->PXOpenGLRenderBufferBindCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteRenderbuffers", &openGLContext->PXOpenGLRenderBufferDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glRenderbufferStorage", &openGLContext->PXOpenGLRenderBufferStorageCallBack);
 
-            PXOpenGLFunctionAdressFetch("glFramebufferTexture2D", &(void*)openGLContext->PXOpenGLFrameBufferLinkTexture2DCallBack);
-            PXOpenGLFunctionAdressFetch("glFramebufferRenderbuffer", &(void*)openGLContext->PXOpenGLFrameBufferLinkRenderBufferCallBack);
+            PXOpenGLFunctionAdressFetch("glFramebufferTexture2D", &openGLContext->PXOpenGLFrameBufferLinkTexture2DCallBack);
+            PXOpenGLFunctionAdressFetch("glFramebufferRenderbuffer", &openGLContext->PXOpenGLFrameBufferLinkRenderBufferCallBack);
 
-            PXOpenGLFunctionAdressFetch("glGenVertexArrays", &(void*)openGLContext->PXOpenGLGenVertexArraysCallBack);
-            PXOpenGLFunctionAdressFetch("glBindVertexArray", &(void*)openGLContext->PXOpenGLBindVertexArrayCallBack);
-            PXOpenGLFunctionAdressFetch("glVertexAttribIPointer", &(void*)openGLContext->PXOpenGLVertexAttribIPointerCallBack);
+            PXOpenGLFunctionAdressFetch("glGenVertexArrays", &openGLContext->PXOpenGLGenVertexArraysCallBack);
+            PXOpenGLFunctionAdressFetch("glBindVertexArray", &openGLContext->PXOpenGLBindVertexArrayCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribIPointer", &openGLContext->PXOpenGLVertexAttribIPointerCallBack);
 
 
 
@@ -1741,52 +1739,52 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
         case PXOpenGLVersion2x0x0:
         {
-            PXOpenGLFunctionAdressFetch("glGenTextures", &(void*)openGLContext->PXOpenGLTextureCreateCallBack);
-            PXOpenGLFunctionAdressFetch("glBindTexture", &(void*)openGLContext->PXOpenGLTextureBindCallBack);
-            PXOpenGLFunctionAdressFetch("glDeleteTextures", &(void*)openGLContext->PXOpenGLTextureDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glGenTextures", &openGLContext->PXOpenGLTextureCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glBindTexture", &openGLContext->PXOpenGLTextureBindCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteTextures", &openGLContext->PXOpenGLTextureDeleteCallBack);
 
-            PXOpenGLFunctionAdressFetch("glCreateProgram", &(void*)openGLContext->PXOpenGLShaderPXProgramCreateCallBack);
-            PXOpenGLFunctionAdressFetch("glUseProgram", &(void*)openGLContext->PXOpenGLShaderPXProgramUseCallBack);
-            PXOpenGLFunctionAdressFetch("glDeleteProgram", &(void*)openGLContext->PXOpenGLShaderPXProgramDeleteCallBack);
-            PXOpenGLFunctionAdressFetch("glShaderSource", &(void*)openGLContext->PXOpenGLShaderSourceCallBack);
-            PXOpenGLFunctionAdressFetch("glCreateShader", &(void*)openGLContext->PXOpenGLShaderCreateCallBack);
-            PXOpenGLFunctionAdressFetch("glCompileShader", &(void*)openGLContext->PXOpenGLShaderCompileCallBack);
-            PXOpenGLFunctionAdressFetch("glGetShaderiv", &(void*)openGLContext->PXOpenGLShaderGetivCallBack);
-            PXOpenGLFunctionAdressFetch("glGetShaderInfoLog", &(void*)openGLContext->PXOpenGLShaderLogInfoGetCallBack);
-            PXOpenGLFunctionAdressFetch("glDeleteShader", &(void*)openGLContext->PXOpenGLShaderDeleteCallBack);
-            PXOpenGLFunctionAdressFetch("glAttachShader", &(void*)openGLContext->PXOpenGLAttachShaderCallBack);
-            PXOpenGLFunctionAdressFetch("glLinkProgram", &(void*)openGLContext->PXOpenGLLinkPXProgramCallBack);
-            PXOpenGLFunctionAdressFetch("glValidateProgram", &(void*)openGLContext->PXOpenGLValidatePXProgramCallBack);
-            PXOpenGLFunctionAdressFetch("glActiveTexture", &(void*)openGLContext->PXOpenGLActiveTextureCallBack);
-            PXOpenGLFunctionAdressFetch("glGenBuffers", &(void*)openGLContext->PXOpenGLGenBuffersCallBack);
-            PXOpenGLFunctionAdressFetch("glBindBuffer", &(void*)openGLContext->PXOpenGLBindBufferCallBack);
-            PXOpenGLFunctionAdressFetch("glBufferData", &(void*)openGLContext->PXOpenGLBufferDataCallBack);
-            PXOpenGLFunctionAdressFetch("glVertexAttribPointer", &(void*)openGLContext->PXOpenGLVertexAttribPointerCallBack);
+            PXOpenGLFunctionAdressFetch("glCreateProgram", &openGLContext->PXOpenGLShaderPXProgramCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glUseProgram", &openGLContext->PXOpenGLShaderPXProgramUseCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteProgram", &openGLContext->PXOpenGLShaderPXProgramDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glShaderSource", &openGLContext->PXOpenGLShaderSourceCallBack);
+            PXOpenGLFunctionAdressFetch("glCreateShader", &openGLContext->PXOpenGLShaderCreateCallBack);
+            PXOpenGLFunctionAdressFetch("glCompileShader", &openGLContext->PXOpenGLShaderCompileCallBack);
+            PXOpenGLFunctionAdressFetch("glGetShaderiv", &openGLContext->PXOpenGLShaderGetivCallBack);
+            PXOpenGLFunctionAdressFetch("glGetShaderInfoLog", &openGLContext->PXOpenGLShaderLogInfoGetCallBack);
+            PXOpenGLFunctionAdressFetch("glDeleteShader", &openGLContext->PXOpenGLShaderDeleteCallBack);
+            PXOpenGLFunctionAdressFetch("glAttachShader", &openGLContext->PXOpenGLAttachShaderCallBack);
+            PXOpenGLFunctionAdressFetch("glLinkProgram", &openGLContext->PXOpenGLLinkPXProgramCallBack);
+            PXOpenGLFunctionAdressFetch("glValidateProgram", &openGLContext->PXOpenGLValidatePXProgramCallBack);
+            PXOpenGLFunctionAdressFetch("glActiveTexture", &openGLContext->PXOpenGLActiveTextureCallBack);
+            PXOpenGLFunctionAdressFetch("glGenBuffers", &openGLContext->PXOpenGLGenBuffersCallBack);
+            PXOpenGLFunctionAdressFetch("glBindBuffer", &openGLContext->PXOpenGLBindBufferCallBack);
+            PXOpenGLFunctionAdressFetch("glBufferData", &openGLContext->PXOpenGLBufferDataCallBack);
+            PXOpenGLFunctionAdressFetch("glVertexAttribPointer", &openGLContext->PXOpenGLVertexAttribPointerCallBack);
 
-            PXOpenGLFunctionAdressFetch("glEnableVertexAttribArray", &(void*)openGLContext->PXOpenGLVertexAttribArrayEnableCallBack);
-            PXOpenGLFunctionAdressFetch("glDisableVertexAttribArray", &(void*)openGLContext->PXOpenGLVertexAttribArrayDisableCallBack);
+            PXOpenGLFunctionAdressFetch("glEnableVertexAttribArray", &openGLContext->PXOpenGLVertexAttribArrayEnableCallBack);
+            PXOpenGLFunctionAdressFetch("glDisableVertexAttribArray", &openGLContext->PXOpenGLVertexAttribArrayDisableCallBack);
 
-            PXOpenGLFunctionAdressFetch("glDisableVertexArrayAttrib", &(void*)openGLContext->PXOpenGLDisableVertexArrayAttribCallBack);
-            PXOpenGLFunctionAdressFetch("glGetUniformLocation", &(void*)openGLContext->PXOpenGLGetUniformLocation);
-            PXOpenGLFunctionAdressFetch("glUniform1f", &(void*)openGLContext->PXOpenGLUniform1fCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform1fv", &(void*)openGLContext->PXOpenGLUniform1fvCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform1i", &(void*)openGLContext->PXOpenGLUniform1iCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform1iv", &(void*)openGLContext->PXOpenGLUniform1ivCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform2f", &(void*)openGLContext->PXOpenGLUniform2fCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform2fv", &(void*)openGLContext->PXOpenGLUniform2fvCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform2i", &(void*)openGLContext->PXOpenGLUniform2iCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform2iv", &(void*)openGLContext->PXOpenGLUniform2ivCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform3f", &(void*)openGLContext->PXOpenGLUniform3fCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform3fv", &(void*)openGLContext->PXOpenGLUniform3fvCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform3i", &(void*)openGLContext->PXOpenGLUniform3iCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform3iv", &(void*)openGLContext->PXOpenGLUniform3ivCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform4f", &(void*)openGLContext->PXOpenGLUniform4fCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform4fv", &(void*)openGLContext->PXOpenGLUniform4fvCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform4i", &(void*)openGLContext->PXOpenGLUniform4iCallBack);
-            PXOpenGLFunctionAdressFetch("glUniform4iv", &(void*)openGLContext->PXOpenGLUniform4ivCallBack);
-            PXOpenGLFunctionAdressFetch("glUniformMatrix2fv", &(void*)openGLContext->PXOpenGLUniformMatrix2fvCallBack);
-            PXOpenGLFunctionAdressFetch("glUniformMatrix3fv", &(void*)openGLContext->PXOpenGLUniformMatrix3fvCallBack);
-            PXOpenGLFunctionAdressFetch("glUniformMatrix4fv", &(void*)openGLContext->PXOpenGLUniformMatrix4fvCallBack);
+            PXOpenGLFunctionAdressFetch("glDisableVertexArrayAttrib", &openGLContext->PXOpenGLDisableVertexArrayAttribCallBack);
+            PXOpenGLFunctionAdressFetch("glGetUniformLocation", &openGLContext->PXOpenGLGetUniformLocation);
+            PXOpenGLFunctionAdressFetch("glUniform1f", &openGLContext->PXOpenGLUniform1fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform1fv", &openGLContext->PXOpenGLUniform1fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform1i", &openGLContext->PXOpenGLUniform1iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform1iv", &openGLContext->PXOpenGLUniform1ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2f", &openGLContext->PXOpenGLUniform2fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2fv", &openGLContext->PXOpenGLUniform2fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2i", &openGLContext->PXOpenGLUniform2iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform2iv", &openGLContext->PXOpenGLUniform2ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3f", &openGLContext->PXOpenGLUniform3fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3fv", &openGLContext->PXOpenGLUniform3fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3i", &openGLContext->PXOpenGLUniform3iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform3iv", &openGLContext->PXOpenGLUniform3ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4f", &openGLContext->PXOpenGLUniform4fCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4fv", &openGLContext->PXOpenGLUniform4fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4i", &openGLContext->PXOpenGLUniform4iCallBack);
+            PXOpenGLFunctionAdressFetch("glUniform4iv", &openGLContext->PXOpenGLUniform4ivCallBack);
+            PXOpenGLFunctionAdressFetch("glUniformMatrix2fv", &openGLContext->PXOpenGLUniformMatrix2fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniformMatrix3fv", &openGLContext->PXOpenGLUniformMatrix3fvCallBack);
+            PXOpenGLFunctionAdressFetch("glUniformMatrix4fv", &openGLContext->PXOpenGLUniformMatrix4fvCallBack);
 
             // Fall though1
         }
@@ -1929,11 +1927,11 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     // Extensions
     {
 #if OSUnix
-        PXOpenGLFunctionAdressFetch("glXSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalSetCallBack);
-        PXOpenGLFunctionAdressFetch("glxGetSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalGetCallBack);
+        PXOpenGLFunctionAdressFetch("glXSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLFunctionAdressFetch("glxGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
 #elif OSWindows
-        PXOpenGLFunctionAdressFetch("wglSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalSetCallBack);
-        PXOpenGLFunctionAdressFetch("wglGetSwapIntervalEXT", &(void*)openGLContext->PXOpenGLSwapIntervalGetCallBack);
+        PXOpenGLFunctionAdressFetch("wglSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalSetCallBack);
+        PXOpenGLFunctionAdressFetch("wglGetSwapIntervalEXT", &openGLContext->PXOpenGLSwapIntervalGetCallBack);
 #endif
     }
 
@@ -2251,7 +2249,7 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
                 case PXVertexBufferFormatT2F_XYZ:
                 {
                     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                    //glEnableClientState(GL_VERTEX_ARRAY);             
+                    //glEnableClientState(GL_VERTEX_ARRAY);
                     glInterleavedArrays(GL_T2F_V3F, 0, pxVertexStructure->VertexBuffer.VertexData);
                     break;
                 }
@@ -2300,8 +2298,8 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
 
     if (pxVertexStructure->IgnoreViewRotation)
     {
-        PXMatrix4x4FIdentity(&modifiedViewMatrix);       
-       
+        PXMatrix4x4FIdentity(&modifiedViewMatrix);
+
         PXMatrix4x4FMoveXYZ(&modifiedModelMatrix, 0, 0, -0.5, &modifiedModelMatrix);
        // PXMatrix4x4FScaleByXY(&modifiedModelMatrix, 0.5, 0.5);
     }
@@ -2341,7 +2339,7 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
     // Draw
     //-----------------------------------------------------
 
-   
+
     // glDepthMask(GL_TRUE);
     //glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
@@ -2394,7 +2392,7 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
     {
         glColor4f(0, 1, 0, 1);
        //glDrawElements(GL_LINE_LOOP, pxVertexStructure->IndexBuffer.IndexDataAmount, indexBufferTypeID, indexData);
-    }   
+    }
     if (pxVertexStructure->IndexBuffer.DrawModeID & PXDrawModeIDPoint)
     {
         glColor4f(1, 1, 0, 1);
@@ -2402,7 +2400,7 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
     }
     //-----------------------------------------------------
 
- 
+
 
 
     //-----------------------------------------------------
@@ -2420,7 +2418,7 @@ PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStr
             pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
         }
         else
-        { 
+        {
             glDisableClientState(GL_VERTEX_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             glDisableClientState(GL_INDEX_ARRAY);
@@ -3344,7 +3342,7 @@ PXActionResult PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXShaderP
     }
 
     PXOpenGLShaderProgramCreate(pxOpenGL, pxShaderProgram);
-  
+
 
 
     PXFileDestruct(&vertexShaderFile);
@@ -3599,7 +3597,7 @@ PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2
 
     // Bind resource
     {
-        
+
         glBindTexture(GL_TEXTURE_2D, pxTexture2D->ResourceID.OpenGLID);
 
         const PXActionResult createResult = PXOpenGLErrorCurrent();
@@ -3769,7 +3767,7 @@ void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCa
         pxOpenGL->PXOpenGLBindVertexArrayCallBack(pxSkyBox->VertexStructure.ResourceID.OpenGLID);
     }
 
-  
+
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, pxSkyBox->VertexStructure.VertexBuffer.ResourceID.OpenGLID);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, pxSkyBox->VertexStructure.IndexBuffer.ResourceID.OpenGLID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, pxSkyBox->TextureCube.ResourceID.OpenGLID);
@@ -3797,7 +3795,7 @@ void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCa
     {
         glDrawElements(GL_TRIANGLES, pxSkyBox->VertexStructure.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
     }
- 
+
 
 
 
@@ -3810,9 +3808,9 @@ void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCa
 
 
    // PXOpenGLTextureUnbind(openGLContext, PXOpenGLTextureTypeCubeMap);
-    
+
     //PXOpenGLBufferUnbind(openGLContext, PXOpenGLBufferElementArray);
- 
+
 
     // PXOpenGLSettingChange(openGLContext, PXOpenGLCULL_FACE, PXTrue);
 
@@ -3926,7 +3924,7 @@ PXActionResult PXOpenGLShaderVariableIDFetch(PXOpenGL* const pxOpenGL, const PXS
         const PXActionResult createResult = PXOpenGLErrorCurrent();
 
         return createResult;
-    }   
+    }
 }
 
 void PXOpenGLShaderVariableFx1(PXOpenGL* const openGLContext, GLint location, GLfloat v0)
@@ -4046,7 +4044,7 @@ void PXOpenGLVertexArrayUnbind(PXOpenGL* const openGLContext)
 
 void PXOpenGLVertexArrayAttributeDefine
 (
-    PXOpenGL* const openGLContext, 
+    PXOpenGL* const openGLContext,
     const PXInt32U index,
     const PXInt32U size,
     const PXDataType datatype,
@@ -4145,7 +4143,7 @@ PXInt32U PXOpenGLTypeToID(const PXDataType pxDataType)
         case PXDataTypeBEInt32S:
             return GL_INT;
 
-        case PXDataTypeLEInt32U: 
+        case PXDataTypeLEInt32U:
         case PXDataTypeBEInt32U:
             return GL_UNSIGNED_INT;
 
@@ -4271,7 +4269,7 @@ PXActionResult PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const 
         const float vertexData[] =
         {
             0, 1, -1, -1, 0,// 01
-            1, 1,  1, -1, 0,// 00  
+            1, 1,  1, -1, 0,// 00
             1, 0,  1,  1, 0,// 10
             0, 0, -1,  1, 0,
         };
@@ -4404,7 +4402,7 @@ PXActionResult PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const 
 }
 
 PXActionResult PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, const PXSprite* const pxSprite, const PXCamera* const pxCamera)
-{    
+{
 
 
     PXOpenGLVertexStructureDraw(pxOpenGL, &pxSprite->VertexStructure, pxCamera); // &pxSprite->ModelMatrix
@@ -4421,7 +4419,7 @@ PXActionResult PXOpenGLDrawScriptCreate(PXOpenGL* const pxOpenGL, PXDrawScript* 
 {
     // Create one display list
     pxDrawScript->ResourceID.OpenGLID = glGenLists(1);
-    
+
     return PXActionSuccessful;
 }
 
@@ -4471,7 +4469,7 @@ PXActionResult PXOpenGLLightGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight
     glGetLightfv(index, GL_SPOT_CUTOFF, &pxLight->CutoffRange);
     glGetLightfv(index, GL_CONSTANT_ATTENUATION, &pxLight->AttenuationConstant);
     glGetLightfv(index, GL_LINEAR_ATTENUATION, &pxLight->AttenuationLinear);
-    glGetLightfv(index, GL_QUADRATIC_ATTENUATION, &pxLight->AttenuationQuadratic);    
+    glGetLightfv(index, GL_QUADRATIC_ATTENUATION, &pxLight->AttenuationQuadratic);
 
     return PXActionSuccessful;
 }
@@ -4516,9 +4514,9 @@ PXActionResult PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVerte
         PXMemoryCopy(indexData, pxVertexStructure->IndexBuffer.IndexDataSize, pxVertexStructure->IndexBuffer.IndexData, pxVertexStructure->IndexBuffer.IndexDataSize);
 
         return PXActionRefusedNotSupported;
-    } 
+    }
 
-   
+
 
 
     const PXBool hasIndexData = pxVertexStructure->IndexBuffer.IndexDataSize > 0;
@@ -4532,10 +4530,10 @@ PXActionResult PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVerte
         pxVertexStructure->VertexBuffer.ResourceID.OpenGLID = bufferIDs[0];
         pxVertexStructure->IndexBuffer.ResourceID.OpenGLID = bufferIDs[1];
 
-       
+
     }
 
-  
+
     pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, pxVertexStructure->VertexBuffer.ResourceID.OpenGLID);
     pxOpenGL->PXOpenGLBufferDataCallBack(GL_ARRAY_BUFFER, pxVertexStructure->VertexBuffer.VertexDataSize, pxVertexStructure->VertexBuffer.VertexData, GL_STATIC_DRAW);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
@@ -4655,7 +4653,7 @@ PXActionResult PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVerte
     */
 
 
- 
+
 
     pxOpenGL->PXOpenGLBindVertexArrayCallBack(0);
 
@@ -4668,5 +4666,3 @@ PXActionResult PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL, PXVer
 
     return PXActionRefusedNotImplemented;
 }
-
-#endif

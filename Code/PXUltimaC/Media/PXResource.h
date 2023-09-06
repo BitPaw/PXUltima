@@ -866,7 +866,11 @@ extern "C"
 
 
 
-
+    typedef struct PXMaterialContainer_
+    {
+        int __dummy__;
+    }
+    PXMaterialContainer;
 
 
 

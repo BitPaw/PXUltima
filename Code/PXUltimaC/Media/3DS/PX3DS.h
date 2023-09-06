@@ -1,7 +1,7 @@
 #ifndef PX3DSINCLUDE
 #define PX3DSINCLUDE
 
-#include <Media/PXModel.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXAutodesk3DS;
 
-	PXPublic PXActionResult PXAutodesk3DSLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
-	PXPublic PXActionResult PXAutodesk3DSSafeFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXAutodesk3DSLoadFromFile(PXVertexStructure * const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAutodesk3DSSafeFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

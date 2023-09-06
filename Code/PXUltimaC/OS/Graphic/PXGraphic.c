@@ -11,7 +11,9 @@
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/Vulcan/PXVulcan.h>
 
-#include <gl/GL.h>
+//#include <gl/GL.h> // Not found???
+#include <GL/gl.h>
+
 
 #include <Math/PXMath.h>
 
@@ -26,9 +28,9 @@ PXActionResult PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImag
         PXImage* pxImageFoundEntry = PXNull;
 
         const PXBool foundEntry = PXDictionaryFindEntry(&graphicContext->ResourceImageLookUp, &checkSum, &pxImageFoundEntry);
-    
+
         if (foundEntry) // image is already loaded
-        {          
+        {
             PXImageCopyAsIs(pxImage, pxImageFoundEntry);
 
             printf("[PXGraphic] Texture load <%s>... [REDUNDANT]\n", pxImageFilePath->TextA);
@@ -157,7 +159,7 @@ PXActionResult PXGraphicTexture2DLoadA(PXGraphicContext* const graphicContext, P
 PXActionResult PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXText* const filePath)
 {
     // Load texture
-    { 
+    {
         const PXActionResult loadResult = PXResourceLoad(pxFont, filePath);
 
         PXActionReturnOnError(loadResult);
@@ -287,7 +289,7 @@ PXActionResult PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, P
     pxSprite->PXID = PXGraphicGenerateUniqeID(graphicContext);
 
     PXDictionaryAdd(&graphicContext->SpritelLookUp, &pxSprite->PXID, pxSprite);
-    
+
     const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 1 || pxSprite->TextureScaleOffset.Y != 1;
 
     if (hasScaling)
@@ -369,7 +371,7 @@ PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, P
 
         #endif
     };
-   
+
 
     PXObjectClear(PXVertexStructure, &skyBox->VertexStructure);
     skyBox->VertexStructure.VertexBuffer.VertexData = vertexData;
@@ -387,7 +389,7 @@ PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, P
 #else
         PXDrawModeIDTriangle
 #endif
-        
+
         ;
 
     PXGraphicVertexStructureRegister(graphicContext, &skyBox->VertexStructure);
@@ -1013,7 +1015,7 @@ PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext
             PXOpenGLRenderBufferCreate(pxOpenGL, 1, &pxUIElement->FrameRenderID);
             PXOpenGLRenderBufferBind(pxOpenGL, pxUIElement->FrameRenderID);
             PXOpenGLRenderBufferStorage(pxOpenGL, PXOpenGLRenderBufferFormatDepthComponent, pxUIElement->FrameRenderWidth, pxUIElement->Height);
-           
+
             // Link buffer
             PXOpenGLFrameBufferLinkRenderBuffer(pxOpenGL, PXOpenGLRenderBufferAttachmentPointDepth, pxUIElement->FrameRenderID);
 
@@ -1073,7 +1075,7 @@ PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext
             model.DataVertexWidth = 3u;
             model.DataVertexSize = vertexDataSize;
             model.DataTextureWidth = 2u;
-            model.DataTextureSize = vertexDataSize;                       
+            model.DataTextureSize = vertexDataSize;
 
             {
                 const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIPanel->UIElement.Renderable, &model);
@@ -1261,14 +1263,14 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 #if PXWindowUSE
     PXWindow* const pxWindow = (PXWindow*)graphicContext->AttachedWindow;
 
-
-    PXDirectXContextCreate(&graphicContext->DirectXInstance, pxWindow->ID, PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
+// TODO: function does not exist in UNIX
+   // PXDirectXContextCreate(&graphicContext->DirectXInstance, pxWindow->ID, PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
 
 #if PXOpenGLUSE
     graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
 
     PXOpenGLCreateForWindow(&graphicContext->OpenGLInstance);
-   
+
     //glEnable(GL_DEPTH_TEST); // X-RAY
 
     // glEnable(GL_BLEND);
@@ -1293,7 +1295,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXGraphicViewPortSet(graphicContext, &pxViewPort);
 
 
-    
+
     //PXMatrix4x4FIdentity(&graphicContext->SpriteScaled.ModelMatrix);
    // PXMatrix4x4FIdentity(&graphicContext->SpriteUnScaled.ModelMatrix);
 }
@@ -1396,7 +1398,7 @@ PXActionResult PXGraphicSwapIntervalGet(PXGraphicContext* const graphicContext, 
 
 void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo)
 {
- 
+
 }
 
 void PXGraphicClear(PXGraphicContext* const graphicContext, const PXColorRGBAF* const backgroundColor)
@@ -1409,7 +1411,7 @@ void PXGraphicClear(PXGraphicContext* const graphicContext, const PXColorRGBAF* 
             break;
 
         case PXGraphicSystemDirectX:
-            PXDirectXClear(&graphicContext->DirectXInstance, 0, 0, D3DCLEAR_TARGET, backgroundColor, 1.0f, 0);
+//            PXDirectXClear(&graphicContext->DirectXInstance, 0, 0, D3DCLEAR_TARGET, backgroundColor, 1.0f, 0);
             break;
 
         default:
@@ -1729,7 +1731,7 @@ PXActionResult PXGraphicRectangleDraw(PXGraphicContext* const graphicContext, co
         }
         case PXGraphicSystemDirectX:
         {
-            
+
         }
         default:
             return PXActionNotSupportedByLibrary;
@@ -1771,7 +1773,7 @@ void PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlend
     {
         case PXGraphicSystemPXOpenGL:
         {
-           
+
             break;
         }
         case PXGraphicSystemDirectX:
@@ -1840,7 +1842,7 @@ PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const pxGraphicCon
     switch (pxGraphicContext->GraphicSystem)
     {
         case PXGraphicSystemPXOpenGL:
-        {           
+        {
             return PXOpenGLShaderProgramCreate(&pxGraphicContext->OpenGLInstance, pxShaderProgram);
         }
         case PXGraphicSystemDirectX:
@@ -2007,7 +2009,7 @@ void PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width
     camera->Near = nearPlane;
     camera->Far = farPlane;
 
-    PXMatrix4x4FOrthographic(&camera->MatrixProjection, left, right, bottom, top, nearPlane, farPlane);  
+    PXMatrix4x4FOrthographic(&camera->MatrixProjection, left, right, bottom, top, nearPlane, farPlane);
 }
 
 void PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOfView, const float aspectRatio, const float nearPlane, const float farPlane)

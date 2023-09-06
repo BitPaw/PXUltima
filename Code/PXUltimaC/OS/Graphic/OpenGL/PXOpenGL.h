@@ -3,11 +3,7 @@
 
 #include <OS/System/PXOSVersion.h>
 
-
 #define PXOpenGLForceLegacy 0
-
-#define PXOpenGLUSE PXOSWindowsDestop
-#if PXOpenGLUSE
 
 #if OSUnix
 
@@ -588,7 +584,7 @@ extern "C"
 
 		//---<PXOpenGL v.3.3.0>------------------------------------------------------
 		PXOpenGLVertexAttribDivisorFunction PXOpenGLVertexAttribDivisorCallBack;
-		//-------------------------------------------------------------------------		
+		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.4.0.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
@@ -675,7 +671,7 @@ extern "C"
 	(
 		PXOpenGL* const openGLContext,
 		const float xA,
-		const float yA, 
+		const float yA,
 		const float xB,
 		const float yB,
 		const float txA,
@@ -937,5 +933,4 @@ extern "C"
 }
 #endif
 
-#endif
 #endif

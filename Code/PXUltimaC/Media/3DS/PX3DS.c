@@ -1,11 +1,11 @@
 #include "PX3DS.h"
 
-PXActionResult PXAutodesk3DSLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXAutodesk3DSLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAutodesk3DSSafeFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXAutodesk3DSSafeFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

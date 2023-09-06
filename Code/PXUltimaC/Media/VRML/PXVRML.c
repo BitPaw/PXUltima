@@ -1,11 +1,11 @@
 #include "PXVRML.h"
 
-PXActionResult PXVRMLLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXVRMLLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXVRMLSaveToFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXVRMLSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

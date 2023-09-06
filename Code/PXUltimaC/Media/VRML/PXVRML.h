@@ -1,7 +1,7 @@
 #ifndef PXVRMLINCLUDE
 #define PXVRMLINCLUDE
 
-#include <Media/PXModel.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXVRML;
 
-	PXPublic PXActionResult PXVRMLLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
-	PXPublic PXActionResult PXVRMLSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXVRMLLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXVRMLSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

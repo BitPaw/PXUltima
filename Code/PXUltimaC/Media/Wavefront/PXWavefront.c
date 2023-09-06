@@ -324,7 +324,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                         {
                             PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful skip to 2nd integer
 
-                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value 
+                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value
 
                             PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Get 3rd integer
 
@@ -396,7 +396,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
                                         vertexData[2] = compilerSymbolEntry.DataI32U;
 
                                         PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                                    }                                   
+                                    }
 
                                     break;
                                 }
@@ -491,7 +491,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
 
             PXFilePathSwapFileName(&currentMTLFilePath, &currentMTLFilePath, &currentFilePath);
 
-            
+
             PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
             pxFileOpenFromPathInfo.Text = currentMTLFilePath;
             pxFileOpenFromPathInfo.FileSize = 0;
@@ -551,386 +551,6 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
     {
         return PXActionCompilingError;
     }
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const model)
-{
-    /*
-    PXModelConstruct(model);
-
-    inputStream->DataCursor = 0;
-
-    unsigned char numberOfMeshes = 0;
-    unsigned char renderMode[256];
-    unsigned int renderSize[256];
-
-    unsigned int vertexListSize = 0;
-    unsigned int normalListSize = 0;
-    unsigned int textureListSize = 0;
-    unsigned int parameterListSize = 0;
-    unsigned int indexListSize = 0;
-    unsigned int mtlInlclueesListSize = 0;
-    PXSize mtlEmbeddedDataOffset = 0;
-
-    PXFileReadI8U(inputStream, &numberOfMeshes);
-
-    PXMemoryClear(renderMode, sizeof(renderMode));
-    PXMemoryClear(renderSize, sizeof(renderSize));
-
-    for (PXSize i = 0; i < numberOfMeshes; ++i)
-    {
-        PXFileReadI8U(inputStream, &renderMode[i]);
-        PXFileReadI32U(inputStream, &renderSize[i]);
-    }
-
-    PXFileReadI32U(inputStream, &vertexListSize);
-    PXFileReadI32U(inputStream, &normalListSize);
-    PXFileReadI32U(inputStream, &textureListSize);
-    PXFileReadI32U(inputStream, &parameterListSize);
-    PXFileReadI32U(inputStream, &indexListSize);
-    PXFileReadI32U(inputStream, &mtlInlclueesListSize);
-    PXFileReadI64U(inputStream, &mtlEmbeddedDataOffset);
-
-    model->DataVertexListSize = sizeof(float) * (vertexListSize + normalListSize + textureListSize + parameterListSize);
-
-    PXSize expectedMaterialSize = (sizeof(PXMaterial) + 256u) * 100u;
-    PXSize infoHeaderSize = sizeof(unsigned char) + numberOfMeshes * (sizeof(unsigned char) + sizeof(unsigned int)) + expectedMaterialSize;
-    PXSize expectedSize = 40 * model->DataVertexListSize + infoHeaderSize;// +indexListSize;
-
-
-    model->Data = PXMemoryAllocate(expectedSize);
-    //---<End header>----------------------------------------------------------
-
-
-
-    //---<Lookup materials>----------------------------------------------------
-
-    {
-        PXFile modelHeaderStream;
-
-        PXFileBufferExternal(&modelHeaderStream, model->Data, infoHeaderSize);
-
-        PXFileWriteI8U(&modelHeaderStream, numberOfMeshes);
-
-        for (PXSize meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex)
-        {
-            PXFileWriteI8U(&modelHeaderStream, renderMode[meshIndex]); // Draw mode
-            PXFileWriteI32U(&modelHeaderStream, renderSize[meshIndex]); // Draw amount
-            PXFileWriteI32U(&modelHeaderStream,(unsigned int)-1); // Material ID, set later
-        }
-#if PXWavefrontDetectMaterial
-        //---<MTL to PXMaterial>-----------------------------------------------
-        mtlEmbeddedDataOffset += 1; // ???
-
-        void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
-        const PXSize size = inputStream->DataSize - mtlEmbeddedDataOffset;
-
-        PXFileWriteI32U(&modelHeaderStream, 0);
-
-        if (mtlInlclueesListSize > 0)
-        {
-            const PXSize amount = PXMTLFetchAmount(data, size);
-
-            model->MaterialList = PXFileCursorPosition(&modelHeaderStream);
-
-            PXFileWriteI32U(&modelHeaderStream, amount);
-
-            for (PXSize i = 0; i < amount; ++i)
-            {
-                PXMTLMaterial mtlMaterial;
-
-                const PXBool succ = PXMTLFetchMaterial(data, size, i, &mtlMaterial);
-
-                // Write PXMaterial format
-                {
-                    const PXSize positionSizeData = modelHeaderStream.DataCursor;
-
-                    PXFileWriteI16U(&modelHeaderStream, (unsigned short)-1); // Total size
-                    PXFileWriteI16U(&modelHeaderStream, mtlMaterial.NameSize); // Size of name
-                    PXFileWriteA(&modelHeaderStream, mtlMaterial.Name, mtlMaterial.NameSize); // Name
-
-                    PXFileWriteI16U(&modelHeaderStream, mtlMaterial.DiffuseTexturePathSize); // Size of filepath
-                    PXFileWriteA(&modelHeaderStream, mtlMaterial.DiffuseTexturePath, mtlMaterial.DiffuseTexturePathSize); // filepath
-
-                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Ambient, 3u);
-                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Diffuse, 3u);
-                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Specular, 3u);
-                    PXFileWriteFV(&modelHeaderStream, mtlMaterial.Emission, 3u);
-
-                    {
-                        const PXSize pxMaterialSize = modelHeaderStream.DataCursor - positionSizeData;
-
-                        PXFileWriteAtI16U(&modelHeaderStream, pxMaterialSize, positionSizeData);
-                    }
-                }
-            }
-        }
-#endif
-    }
-
-    //-------------------------------------------------------------------------
-
-
-
-
-
-    //---<Start parsing Data>-------------------------------------------------
-    PXFile materialIDLookupStream;
-    PXFile vertexArrayData;
-
-    inputStream->DataCursor = 1024;
-    model->DataVertexList = (PXAdress)model->Data + infoHeaderSize;
-
-    PXFileBufferExternal(&materialIDLookupStream, (PXAdress)model->Data+1, infoHeaderSize);
-    PXFileBufferExternal(&vertexArrayData, model->DataVertexList, expectedSize);
-
-
-    // Format: Ver Nor Tx Colo
-    //         XYZ XYZ XY RGBA
-    //          3   3  2  4     = 12
-
-    model->DataVertexWidth = 3u;
-    model->DataNormalWidth = 3u;
-    model->DataTextureWidth = 2u;
-    model->DataColorWidth = 0u;
-    model->DataIndexWidth = renderMode[0]; // TODO: is this right?
-
-    model->DataVertexSize = vertexListSize;
-    model->DataNormalSize = normalListSize;
-    model->DataTextureSize = textureListSize;
-    model->DataColorSize = 0;
-    model->DataIndexSize = indexListSize;
-
-
-
-
-
-
-
-
-    float* buffer = PXMemoryAllocateType(float, expectedSize);
-    //MemorySet(buffer, expectedSize, 0xFF);
-
-    float* vertexValueList = buffer;
-    PXSize vertexValueListOffset = 0;
-    //MemorySet(vertexValueList, vertexListSize * sizeof(float), 0xAA);
-
-    float* normalList = &vertexValueList[vertexListSize];
-    PXSize normalListOffset = 0;
-    //MemorySet(normalList, normalListSize * sizeof(float), 0xBB);
-
-    float* textureList = &normalList[normalListSize];
-    PXSize textureListOffset = 0;
-    //MemorySet(textureList, textureListSize * sizeof(float), 0xCC);
-
-    float* parameterList = &textureList[textureListSize];
-    PXSize parameterListOffset = 0;
-    //MemorySet(parameterList, 0 * sizeof(float), 0xDD);
-
-    while (!PXFileIsAtEnd(inputStream))
-    {
-        PXWavefrontLineType objLineType = PXWavefrontLineInvalid;
-
-        {
-            PXInt8U lineTypeID = 0;
-
-            PXFileReadI8U(inputStream, &lineTypeID); // Line Type
-
-            objLineType = (PXWavefrontLineType)lineTypeID;
-        }
-
-        switch (objLineType)
-        {
-            //case PXWavefrontEmbeddedMTL:
-            case PXWavefrontLineMaterialLibraryInclude:
-            case PXWavefrontLineMaterialLibraryUse:
-            case PXWavefrontLineObjectName:
-            case PXWavefrontLineSmoothShading:
-            case PXWavefrontLineObjectGroup:
-            {
-                PXCompilerSymbolLexer compilerSymbolLexer;
-
-                {
-                    PXInt8U compilerSymbolLexerID = 0;
-
-                    PXFileReadI8U(inputStream, &compilerSymbolLexerID); // following datatype
-
-                    compilerSymbolLexer = (PXCompilerSymbolLexer)compilerSymbolLexerID;
-                }
-
-                switch (compilerSymbolLexer)
-                {
-                    case PXCompilerSymbolLexerInteger:
-                    {
-                        unsigned int value = 0;
-                        PXFileReadI32U(inputStream, &value);
-                        break;
-                    }
-
-                    case PXCompilerSymbolLexerString:
-                    {
-                        unsigned short size = 0;
-                        char* name = (char*)model->Data;
-
-                        if (PXWavefrontLineMaterialLibraryUse == objLineType)
-                        {
-#if PXWavefrontDetectMaterial
-                            char materialNameBuffer[256];
-                            PXText materialName;
-                            materialName.Format = TextFormatASCII;
-                            materialName.SizeAllocated = 256;
-                            materialName.SizeUsed = 0;
-                            materialName.NumberOfCharacters = 0;
-                            materialName.TextA = materialNameBuffer;
-
-
-                            void* data = (PXAdress)inputStream->Data + mtlEmbeddedDataOffset;
-                            const PXSize sizeEE = inputStream->DataSize - mtlEmbeddedDataOffset;
-                            const PXSize amount = PXMTLFetchAmount(data, sizeEE);
-
-                            PXFileReadI16U(inputStream, &size);
-                            materialName.SizeUsed = size;
-                            PXFileReadTextA(inputStream, materialName.TextA, materialName.SizeUsed);
-
-                            PXFileCursorAdvance(&materialIDLookupStream, sizeof(unsigned char) + sizeof(unsigned int));
-
-                            // Lookup material
-                            for (PXSize i = 0; i < amount; ++i)
-                            {
-                                PXMaterial pxMaterial;
-
-                                PXModelMaterialGet(model, i, &pxMaterial);
-
-                                const PXBool isValid = PXTextCompare(&materialName, &pxMaterial.Name); // is found?
-
-                                if (isValid)
-                                {
-                                    PXFileWriteI32U(&materialIDLookupStream, i); // Material ID, set later
-                                    break;
-                                }
-
-                            }
-#else
-                            PXFileReadI16U(inputStream, &size);
-                            PXFileReadTextA(inputStream, name, size);
-#endif
-                        }
-                        else
-                        {
-                           // unsigned char tttt[260];
-
-                            PXFileReadI16U(inputStream, &size);
-                            PXFileCursorAdvance(inputStream, size);
-                            //PXFileReadTextA(inputStream, tttt, size);
-                        }
-
-                        break;
-                    }
-
-                    default:
-                        break;
-                }
-
-                break; // [OK]
-            }
-            case PXWavefrontLineVertexTexture:
-            case PXWavefrontLineVertexGeometric:
-            case PXWavefrontLineVertexNormal:
-            case PXWavefrontLineVertexParameter:
-            {
-                PXInt8U amountofValues;
-                float* adress;
-                PXSize* offset;
-
-                switch (objLineType)
-                {
-                    case PXWavefrontLineVertexTexture:
-                        adress = textureList;
-                        offset = &textureListOffset;
-                        //printf("text ");
-                        break;
-
-                    case PXWavefrontLineVertexGeometric:
-                        adress = vertexValueList;
-                        offset = &vertexValueListOffset;
-                        //printf("psotion ");
-                        break;
-
-                    case PXWavefrontLineVertexNormal:
-                        adress = normalList;
-                        offset = &normalListOffset;
-                      // printf("norm ");
-                        break;
-
-                    case PXWavefrontLineVertexParameter:
-                        adress = parameterList;
-                        offset = &parameterListOffset;
-                        break;
-
-                    default:
-                        adress = 0;
-                        offset = 0;
-                        break;
-                }
-
-                adress = &adress[*offset];
-
-                PXFileReadI8U(inputStream, &amountofValues);
-                PXFileReadFV(inputStream, adress, amountofValues);
-
-                *offset += amountofValues;
-
-                break;
-            }
-
-            case PXWavefrontLineFaceElement:
-            {
-                PXInt8U amountofValues = 0;
-
-                PXFileReadI8U(inputStream, &amountofValues);
-
-                for (PXSize nodeIndex = 0; nodeIndex < amountofValues; ++nodeIndex)
-                {
-                    PXInt32U indexList[3] = { -1, -1, -1 };
-
-                    PXFileReadI32UV(inputStream, indexList, 3u);
-
-                    const float* const vertexValueIndex = &vertexValueList[indexList[0] * (3u)];
-                    const float* const textureValueIndex = &textureList[indexList[1] * (2u)];
-                    const float* const normalValueIndex = &normalList[indexList[2] * (3u)];
-
-
-#if 0
-                    printf("[F] %i, %i, %i\n",indexList[0], indexList[1], indexList[2]);
-#endif
-
-
-#if 0
-                    printf
-                    (
-                        "[F] V:%i,%i,%i T:%i,%i N:%i,%i,%i\n", 
-                        vertexValueIndex[0],
-                        vertexValueIndex[1],
-                        vertexValueIndex[2],
-                        textureValueIndex[0],
-                        textureValueIndex[1],
-                        normalValueIndex[0],
-                        normalValueIndex[1],
-                        normalValueIndex[2]
-                    );
-#endif
-
-                    PXFileWriteFV(&vertexArrayData, vertexValueIndex, 3u);
-                    PXFileWriteFV(&vertexArrayData, normalValueIndex, 3u);
-                    PXFileWriteFV(&vertexArrayData, textureValueIndex, 2u);
-                }
-
-                break;
-            }
-        }
-    }*/
 
     return PXActionSuccessful;
 }
@@ -1105,7 +725,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
                         {
                             PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful skip to 2nd integer
 
-                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value 
+                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value
 
                             PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Get 3rd integer
 
@@ -1239,8 +859,8 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
         }
     }
 
-    // 
-    PXBool requireToCalculateNormals = PXFalse; 
+    //
+    PXBool requireToCalculateNormals = PXFalse;
 
     // Stage - 2 - Allocate space
     {
@@ -1258,7 +878,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
              memoryDataColorSize +
              memoryDataIndexSize;*/
 
-             // pxModel->Data = PXMemoryAllocate(pxModel->DataSize); 
+             // pxModel->Data = PXMemoryAllocate(pxModel->DataSize);
 
         if (counterVertex && memoryDataNormalSize && memoryDataTextureSize)
         {
@@ -1497,7 +1117,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
                         {
                             PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful skip to 2nd integer
 
-                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value 
+                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value
 
                             PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Get 3rd integer
 
@@ -1683,7 +1303,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
         float* const normalData = (float*)PXVertexBufferInsertionPoint(&pxVertexStructure->VertexBuffer, PXVertexBufferDataTypeVertex, i);
 
         PXVector3F normalVector;
-        PXVector3F positionVector = 
+        PXVector3F positionVector =
         {
             positionData[0],
             positionData[1],
@@ -1701,7 +1321,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
         {
             normalFactor = 0.0;
         }
-       
+
         normalData[0] = normalFactor;
         normalData[1] = normalFactor;
         normalData[2] = normalFactor;

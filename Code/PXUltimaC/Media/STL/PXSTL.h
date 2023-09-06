@@ -1,7 +1,7 @@
 #ifndef PXSTLINCLUDE
 #define PXSTLINCLUDE
 
-#include <Media/PXModel.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXSTL;
 
-	PXPublic PXActionResult PXSTLLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
-	PXPublic PXActionResult PXSTLSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXSTLLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXSTLSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

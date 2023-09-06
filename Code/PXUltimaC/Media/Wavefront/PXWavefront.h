@@ -65,7 +65,7 @@ extern "C"
 		float* VertexParameterList; // Parameter space vertices in ( u [,v] [,w] ) form; free form geometry statement.
 
 		PXSize FaceElementListSize;
-		unsigned int* FaceElementList; // Polygonal face element.	
+		unsigned int* FaceElementList; // Polygonal face element.
 	}
 	PXWavefrontElement;
 
@@ -92,10 +92,6 @@ extern "C"
 	PXPrivate PXWavefrontLineType PXWavefrontPeekLine(const void* line, const PXSize size);
 
 	PXPublic PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const outputStream);
-
-	PXPublic PXActionResult PXWavefrontParseToModel(PXFile* const inputStream, PXModel* const model);
-
-
 
 	PXPublic PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 	PXPublic PXActionResult PXWavefrontSaveFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);

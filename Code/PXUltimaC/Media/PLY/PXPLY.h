@@ -1,7 +1,7 @@
 #ifndef PXPLYINCLUDE
 #define PXPLYINCLUDE
 
-#include <Media/PXModel.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXPLY;
 
-	PXPublic PXActionResult PXPLYLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
-	PXPublic PXActionResult PXPLYSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXPLYLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXPLYSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

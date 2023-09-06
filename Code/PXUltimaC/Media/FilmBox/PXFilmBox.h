@@ -1,7 +1,7 @@
 #ifndef PXFBXINCLUDE
 #define PXFBXINCLUDE
 
-#include <Media/PXModel.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXFilmBox;
 
-	PXPublic PXActionResult PXFilmBoxLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
-	PXPublic PXActionResult PXFilmBoxSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXFilmBoxLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXFilmBoxSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

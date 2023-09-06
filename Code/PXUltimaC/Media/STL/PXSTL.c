@@ -1,11 +1,11 @@
 #include "PXSTL.h"
 
-PXActionResult PXSTLLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXSTLLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXSTLSaveToFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXSTLSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

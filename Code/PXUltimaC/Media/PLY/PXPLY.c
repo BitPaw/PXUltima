@@ -1,11 +1,11 @@
 #include "PXPLY.h"
 
-PXActionResult PXPLYLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXPLYLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXPLYSaveToFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXPLYSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

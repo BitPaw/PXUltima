@@ -1,11 +1,11 @@
 #include "PXFilmBox.h"
 
-PXActionResult PXFilmBoxLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXFilmBoxLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXFilmBoxSaveToFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXFilmBoxSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
