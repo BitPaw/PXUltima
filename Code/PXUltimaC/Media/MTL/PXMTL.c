@@ -125,20 +125,18 @@ PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputS
 			}
 			case MTLLineTexture:
 			{
-				char text[256];
+			    PXText pxText;
+			    PXTextConstructBufferA(&pxText, 260);
 
-				//char* dataPosition = PXFileCursorPosition(outputStream);
-				//const PXSize dataSize = PXFileRemainingSize(outputStream);
-				PXSize dataSizeWritten = 0;
-				const PXBool isText = PXCompilerParseStringUntilNewLine(&tokenSteam, text, 256, &dataSizeWritten);
+				const PXBool isText = PXCompilerParseStringUntilNewLine(&tokenSteam, &pxText);
 
 				if (!isText)
 				{
 					break; // Error
 				}
 
-				materialSizeDelta += PXFileWriteI8U(outputStream, dataSizeWritten);
-				materialSizeDelta += PXFileWriteA(outputStream, text, dataSizeWritten);
+				materialSizeDelta += PXFileWriteI8U(outputStream, pxText.SizeUsed);
+				materialSizeDelta += PXFileWriteA(outputStream, pxText.TextA, pxText.SizeUsed);
 
 				break;
 			}

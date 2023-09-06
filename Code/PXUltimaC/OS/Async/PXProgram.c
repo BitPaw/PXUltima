@@ -5,6 +5,7 @@
 #if OSUnix
 #include <spawn.h>
 #include <wait.h>
+#include <fcntl.h>
 #elif OSWindows
 #include <process.h>
 #endif
@@ -170,13 +171,13 @@ PXActionResult PXProgramAttach(PXProgram* const pxProgram)
 #if OSUnix
     char processFileName[64];
 
-    sprintf(processFileName, "/proc/%d/mem", pid); 
+    sprintf(processFileName, "/proc/%d/mem", pxProgram->Handle);
 
     pxProgram->MemoryFileHandle = open(processFileName, O_RDWR); // Linux, fcntl.h
     const PXBool openSuccess = pxProgram->MemoryFileHandle != -1;
 
     PXActionReturnOnError(!openSuccess);
-    
+
     return PXActionSuccessful;
 
 #elif OSWindows
@@ -227,7 +228,7 @@ PXActionResult PXProgramReadMemory(PXProgram* const pxProgram, const void* const
     return PXActionSuccessful;
 
 #elif PXOSWindowsDestop
-    const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h 
+    const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h
 
     return PXActionSuccessful;
 #else
@@ -245,7 +246,7 @@ PXActionResult PXProgramWriteMemory(PXProgram* const pxProgram, const void* cons
     return PXActionSuccessful;
 
 #elif PXOSWindowsDestop
-    const PXBool readResult = WriteProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h 
+    const PXBool readResult = WriteProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h
 
     return PXActionSuccessful;
 #else

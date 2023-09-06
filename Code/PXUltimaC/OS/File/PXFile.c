@@ -142,8 +142,8 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 			char extensionA[ExtensionMaxSize];
 
 			PXTextCopyWA(fullPath, PathMaxSize, fullPathA, PathMaxSize);
-			
-			/* ???? 
+
+			/* ????
 			PXFilePathSplitt
 			(
 				fullPathA, PathMaxSize,
@@ -242,7 +242,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
-				case PXInt16Make('K', 'O'): 
+				case PXInt16Make('K', 'O'):
 				case PXInt16Make('S', 'O'): return PXFileFormatBinaryLinux;
 			}
 
@@ -256,7 +256,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 			{
 				case PXInt24Make('B', 'I', 'N'):
 				case PXInt24Make('P', 'R', 'X'):
-				case PXInt24Make('M', 'O', 'D'): 
+				case PXInt24Make('M', 'O', 'D'):
 				case PXInt24Make('E', 'L', 'F'):
 				case PXInt24Make('O', 'U', 'T'): return PXFileFormatBinaryLinux;
 				case PXInt24Make('F', 'N', 'T'): return PXFileFormatSpriteFont;
@@ -1362,10 +1362,10 @@ PXActionResult PXFileOpenTemporal(PXFile* const pxFile, const PXSize expectedFil
 
 #if OSUnix
 #elif OSWindows
-	
+
 	PXText tempFileFullPath;
 	PXTextConstructNamedBufferW(&tempFileFullPath, tempFileFullPathBuffer, MAX_PATH);
-	
+
 	{
 		PXText tempPath;
 		PXTextConstructNamedBufferW(&tempPath, tempPathBuffer, MAX_PATH);
@@ -1376,30 +1376,30 @@ PXActionResult PXFileOpenTemporal(PXFile* const pxFile, const PXSize expectedFil
 		const PXBool successfulTempPathFetch = tempPath.SizeUsed > 0;
 
 
-		// Generates a temporary file name. 
+		// Generates a temporary file name.
 		tempFileFullPath.SizeUsed = GetTempFileNameW
 		(
 			tempPath.TextW, // directory for tmp files
-			L"PXUltima",     // temp file name prefix 
-			0,                // create unique name 
-			tempFileFullPath.TextW // buffer for name 
+			L"PXUltima",     // temp file name prefix
+			0,                // create unique name
+			tempFileFullPath.TextW // buffer for name
 		);
 
 
 
 		const PXBool successfulTempPathCreate = tempFileFullPath.SizeUsed > 0;
 	}
-	
+
 	pxFile->ID = CreateFileW  // Windows XP, Kernel32.dll, fileapi.h
 	(
-		tempFileFullPath.TextW, // file name 
-		GENERIC_ALL,			// open for write 
-		0,						// do not share 
-		NULL,					// default security 
+		tempFileFullPath.TextW, // file name
+		GENERIC_ALL,			// open for write
+		0,						// do not share
+		NULL,					// default security
 		CREATE_ALWAYS,			// overwrite existing
-		FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,// normal file 
-		NULL					// no template 
-	);              
+		FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,// normal file
+		NULL					// no template
+	);
 
 
 	pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
@@ -1865,7 +1865,7 @@ PXSize PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSiz
 }
 
 PXSize PXFileReadIXXVE(PXFile* const pxFile, void** const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian)
-{	
+{
 	PXSize writtenBytes = 0;
 
 	if (!valueList)
@@ -2049,7 +2049,7 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 {
 	PXFile pxStackFile;
 	PXSize totalReadBytes = 0;
-	PXSize totalSizeToRead = 0; 
+	PXSize totalSizeToRead = 0;
 
 	for (PXSize i = 0; i < pxFileElementListSize; ++i)
 	{
@@ -2165,7 +2165,7 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 			{
 				totalReadBytes += PXFileReadI32UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
 				break;
-			}	
+			}
 			case PXDataTypeInt64Flex:
 			{
 				totalReadBytes += PXFileReadI64UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
@@ -2758,7 +2758,11 @@ PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize 
 		case PXFileLocationModeDirectCached:
 		case PXFileLocationModeDirectUncached:
 		{
-			DWORD writtenBytes = 0;
+#if OSUnix
+// TODO: implement
+            return 0;
+#elif OSWindows
+            DWORD writtenBytes = 0;
 
 			const PXBool result = WriteFile(pxFile->ID, value, length, &writtenBytes, PXNull); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
@@ -2770,7 +2774,9 @@ PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize 
 			pxFile->DataCursor += writtenBytes;
 			pxFile->DataSize += writtenBytes;
 
-			return writtenBytes;
+            return writtenBytes;
+
+#endif
 		}
 
 		default:

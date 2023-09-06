@@ -98,22 +98,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Container/RingBuffer/PXRingBuffer.h" />
-		<Unit filename="DataBase/PXDataBase.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="DataBase/PXDataBase.h" />
-		<Unit filename="Graphic/PXCamera.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Graphic/PXCamera.h" />
-		<Unit filename="Graphic/PXGraphic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Graphic/PXGraphic.h" />
-		<Unit filename="Graphic/SoftwareRender/PXSoftwareRender.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Graphic/SoftwareRender/PXSoftwareRender.h" />
 		<Unit filename="Language/PXTranslator.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -130,10 +114,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Math/PXDiagram.h" />
-		<Unit filename="Math/PXGeometric.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Math/PXGeometric.h" />
 		<Unit filename="Math/PXMath.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -170,6 +150,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/AVI/PXAVI.h" />
+		<Unit filename="Media/BinaryLinux/PXBinaryLinux.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/BinaryLinux/PXBinaryLinux.h" />
+		<Unit filename="Media/BinaryWindows/PXBinaryWindows.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/BinaryWindows/PXBinaryWindows.h" />
 		<Unit filename="Media/Bitmap/PXBitmap.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -178,6 +166,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/C/PXC.h" />
+		<Unit filename="Media/COFF/PXCOFF.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/COFF/PXCOFF.h" />
 		<Unit filename="Media/CPP/PXCPP.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -198,18 +190,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/DEFLATE/PXDEFLATE.h" />
-		<Unit filename="Media/DLL/PXDLL.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/DLL/PXDLL.h" />
-		<Unit filename="Media/ELF/PXELF.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/ELF/PXELF.h" />
-		<Unit filename="Media/EXE/PXEXE.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/EXE/PXEXE.h" />
 		<Unit filename="Media/Email/PXEmail.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -306,6 +286,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/MTL/PXMTL.h" />
+		<Unit filename="Media/Matroska/PXMatroska.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/Matroska/PXMatroska.h" />
 		<Unit filename="Media/OGG/PXOGG.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -330,22 +314,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/PXColor.h" />
-		<Unit filename="Media/PXFont.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/PXFont.h" />
 		<Unit filename="Media/PXImage.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/PXImage.h" />
-		<Unit filename="Media/PXModel.c">
+		<Unit filename="Media/PXResource.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Media/PXModel.h" />
-		<Unit filename="Media/PXSound.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/PXSound.h" />
+		<Unit filename="Media/PXResource.h" />
 		<Unit filename="Media/PXText.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -410,10 +386,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/VRML/PXVRML.h" />
-		<Unit filename="Media/WAV/PXWAV.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/WAV/PXWAV.h" />
 		<Unit filename="Media/WEBM/PXWEBM.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -426,6 +398,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/WMA/PXWMA.h" />
+		<Unit filename="Media/Wave/PXWave.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/Wave/PXWave.h" />
 		<Unit filename="Media/Wavefront/PXWavefront.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -482,6 +458,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/ClipBoard/PXClipBoard.h" />
+		<Unit filename="OS/DataBase/PXDataBase.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/DataBase/PXDataBase.h" />
 		<Unit filename="OS/Debug/PXDebug.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -510,6 +490,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Graphic/OpenGL/PXOpenGL.h" />
+		<Unit filename="OS/Graphic/PXGraphic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/PXGraphic.h" />
+		<Unit filename="OS/Graphic/SoftwareRender/PXSoftwareRender.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/SoftwareRender/PXSoftwareRender.h" />
 		<Unit filename="OS/Graphic/Vulcan/PXVulcan.c">
 			<Option compilerVar="CC" />
 		</Unit>

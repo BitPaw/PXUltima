@@ -14,12 +14,6 @@
 
 //-------------------------------------
 
-
-#include <OS/System/PXOSVersion.h>
-
-#define PXDirectXUSE PXOSWindowsDestop
-#if PXDirectXUSE
-
 #include <Media/PXResource.h>
 
 #if OSUnix
@@ -84,7 +78,7 @@ extern "C"
 #endif
 
 #if PXDX11Use
-        // DirectX 11 - Windows 7, 8, 8.1 
+        // DirectX 11 - Windows 7, 8, 8.1
         PXDirectXVersion11Emulate1x0Core,
         PXDirectXVersion11Emulate9x1,
         PXDirectXVersion11Emulate9x2,
@@ -110,7 +104,7 @@ extern "C"
         PXDirectXVersion12Emulate11x1,
         PXDirectXVersion12Emulate12x0,
         PXDirectXVersion12Emulate12x1,
-        PXDirectXVersion12Emulate12x2,      
+        PXDirectXVersion12Emulate12x2,
 #endif
     }
     PXDirectXVersion;
@@ -122,33 +116,33 @@ extern "C"
         char DeviceName[32];
 
         PXDirectXVersion DirectXVersion;
-         
-#if PXDX10Atleast // Direct X - v.10+    
+
+#if OSWindows && PXDX10Atleast // Direct X - v.10+
         IDXGIAdapter VideoAdapter;
 #endif
 
-#if PXDX12Use   // Direct X - v.12
+#if OSWindows && PXDX12Use   // Direct X - v.12
         ID3D12Device* DX12;
 #endif
 
-#if PXDX11Use      // Direct X - v.11.0
+#if OSWindows && PXDX11Use      // Direct X - v.11.0
         ID3D11Device* DX11;
         ID3D11DeviceContext* DX11Context;
 #endif
 
-#if PXDX10x1Use   // Direct X - v.10.1
+#if OSWindows && PXDX10x1Use   // Direct X - v.10.1
         ID3D10Device1* DX10X1;
 #endif
 
-#if PXDX10Use   // Direct X - v.10.0
+#if OSWindows && PXDX10Use   // Direct X - v.10.0
         ID3D10Device* DX10;
 #endif
 
-#if PXDX9Use  // Direct X - v.9.x
+#if OSWindows && PXDX9Use  // Direct X - v.9.x
         D3DCAPS9 DeviceCapabilitiesCurrent;
         IDirect3D9* DX9Context;
         IDirect3DDevice9* DX9;
-#endif  
+#endif
 	}
 	PXDirectX;
 
@@ -166,13 +160,13 @@ extern "C"
     PXPublic PXActionResult PXDirectXSwapChainCreateAdditional(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DSwapChain9** pSwapChain);
     PXPublic PXActionResult PXDirectXSwapChainGet(PXDirectX* const pxDirectX, UINT iSwapChain, IDirect3DSwapChain9** pSwapChain);
     PXPublic PXActionResult PXDirectXSwapChainsAmontGet(PXDirectX* const pxDirectX);
-   
+
     PXPublic PXActionResult PXDirectXBackBufferGet(PXDirectX* const pxDirectX, UINT iSwapChain, UINT iBackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9** ppBackBuffer);
     PXPublic PXActionResult PXDirectXRasterStatusGet(PXDirectX* const pxDirectX, UINT iSwapChain, D3DRASTER_STATUS* pRasterStatus);
     PXPublic PXActionResult PXDirectXDialogBoxModeSet(PXDirectX* const pxDirectX, BOOL bEnableDialogs);
     PXPublic PXActionResult PXDirectXGammaRampSet(PXDirectX* const pxDirectX, UINT iSwapChain, DWORD Flags, const D3DGAMMARAMP* pRamp);
     PXPublic PXActionResult PXDirectXGammaRampGet(PXDirectX* const pxDirectX, UINT iSwapChain, D3DGAMMARAMP* pRamp);
-      
+
     PXPublic PXActionResult PXDirectXSurfaceUpdate(PXDirectX* const pxDirectX,IDirect3DSurface9* pSourceSurface, const RECT* pSourceRect, IDirect3DSurface9* pDestinationSurface, const POINT* pDestPoint);
     PXPublic PXActionResult PXDirectXTextureUpdate(PXDirectX* const pxDirectX,IDirect3DBaseTexture9* pSourceTexture, IDirect3DBaseTexture9* pDestinationTexture);
     PXPublic PXActionResult PXDirectXRenderTargetDataGet(PXDirectX* const pxDirectX,IDirect3DSurface9* pRenderTarget, IDirect3DSurface9* pDestSurface);
@@ -208,12 +202,12 @@ extern "C"
     PXPublic PXActionResult PXDirectXNPatchModeSet(PXDirectX* const pxDirectX,float nSegments);
     PXPublic PXActionResult PXDirectXNPatchModeGet(PXDirectX* const pxDirectX);
 
-   
 
- 
-  
 
-  
+
+
+
+
     PXPublic PXActionResult PXDirectXRectPatchDraw(PXDirectX* const pxDirectX,UINT Handle, const float* pNumSegs, const D3DRECTPATCH_INFO* pRectPatchInfo);
     PXPublic PXActionResult PXDirectXTriPatchDraw(PXDirectX* const pxDirectX,UINT Handle, const float* pNumSegs, const D3DTRIPATCH_INFO* pTriPatchInfo);
     PXPublic PXActionResult PXDirectXPatchDelete(PXDirectX* const pxDirectX,UINT Handle);
@@ -273,7 +267,7 @@ extern "C"
     PXPublic PXActionResult PXDirectXStreamSourceGet(PXDirectX* const pxDirectX, const PXInt32U StreamNumber, PXVertexBuffer** pxVertexBuffer, PXInt32U* pOffsetInBytes, PXInt32U* pStride);
     PXPublic PXActionResult PXDirectXStreamSourceFreqSet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT Setting);
     PXPublic PXActionResult PXDirectXStreamSourceFreqGet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT* pSetting);
-    
+
     PXPublic PXActionResult PXDirectXVertexStructureDraw(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
 
 

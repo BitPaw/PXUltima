@@ -6,8 +6,7 @@
 #define PXAudioUSE OSDeviceToUse == OSDeviceDestop
 #if PXAudioUSE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 
 #define PitchMaximum 2.9f
 #define PitchMinimum 0.2f
@@ -63,7 +62,7 @@ extern "C"
 	}
 	PXAudioConfig;
 
-	
+
 
 
 
@@ -120,7 +119,7 @@ extern "C"
 	PXPublic PXActionResult PXAudioDeviceLoad
 	(
 		PXAudio* const pxAudio,
-		PXAudioDevice* const pxAudioDevice, 
+		PXAudioDevice* const pxAudioDevice,
 		PXSound* const pxSound,
 		const PXAudioDeviceType pxAudioDeviceType,
 		const PXInt32U deviceID

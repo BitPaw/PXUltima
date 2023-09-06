@@ -39,13 +39,6 @@ extern "C"
 	}
 	PXPEHeader;
 
-	typedef struct PXEXEHeaderNT
-	{
-		PXInt32U Signature;
-		//_IMAGE_FILE_HEADER FileHeader;
-		//_IMAGE_OPTIONAL_HEADER OptionalHeader;
-	};
-
 	typedef struct PXBinaryWindows_
 	{
 		PXDOSHeader Header;
@@ -54,7 +47,7 @@ extern "C"
 	}
 	PXBinaryWindows;
 
-	PXPublic PXActionResult PXBinaryWindowsLoadFromFile(PXBinaryWindows const pxBinaryWindows, PXFile* const pxFile);
+	PXPublic PXActionResult PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile);
 	PXPublic PXActionResult PXBinaryWindowsSaveToFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile);
 
 #ifdef __cplusplus

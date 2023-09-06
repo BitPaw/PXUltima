@@ -211,7 +211,7 @@ extern "C"
 		PXVertexBufferFormatXYZ, // Normal spcace (x, y, z)
 		PXVertexBufferFormatXYZC, // Normal spcace (x, y, z, color-RGB as 32-int)
 
-		PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space. 
+		PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space.
 
 		PXVertexBufferFormatXYZHWC, // X, Y, Z, Tx, Ty, color-RGB as 32-int
 
@@ -254,7 +254,7 @@ extern "C"
 	typedef struct PXMargin_
 	{
 		float Left;
-		float Top;	
+		float Top;
 		float Right;
 		float Bottom;
 	}
@@ -267,7 +267,7 @@ extern "C"
 	(adress)->Bottom = b;
 
 
-	// Offset the space as the child container 
+	// Offset the space as the child container
 	// (Make object take more space)
 	typedef struct PXPadding_
 	{
@@ -437,7 +437,7 @@ extern "C"
 	{
 		void* DataPoint;
 		PXSize DataRange;
-				
+
 	}
 	PXIndexRange;
 
@@ -742,7 +742,7 @@ extern "C"
 		PXInt16U AudioFormat;
 		PXInt16U NumerOfChannels;
 		PXInt16U BlockAllign;
-		PXInt16U BitsPerSample;	
+		PXInt16U BitsPerSample;
 	}
 	PXSound;
 
@@ -758,8 +758,8 @@ extern "C"
 		PXAudioDeviceRoleDefaultMultimedia,
 		PXAudioDeviceRoleDefaultCommunications,
 		PXAudioDeviceRoleDefaultGame,
-		PXAudioDeviceRoleGlobalDefault		
-	} 
+		PXAudioDeviceRoleGlobalDefault
+	}
 	PXAudioDeviceRole;
 
 
@@ -819,8 +819,12 @@ extern "C"
 			PXInt16U wReserved;           // Zero if neither case above applies.
 		} Samples;
 		PXInt32U dwChannelMask;          // Positions of the audio channels
+
+
+		#if OSWindows
 		GUID SubFormat;               // Format identifier GUID
-	} 
+		#endif
+	}
 	PXAudioDevice;
 
 
@@ -864,7 +868,7 @@ extern "C"
 
 
 
-	
+
 
 
 

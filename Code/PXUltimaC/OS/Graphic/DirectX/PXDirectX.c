@@ -3,8 +3,6 @@
 #if OSUnix
 #elif OSWindows
 #include <windows.h>
-#endif
-
 
 #if PXDX9Use
 //#include <dxdiag.h>
@@ -20,9 +18,8 @@
 
 #endif
 
-
 #if PXDX10Use
-#include <d3d10shader.h> 
+#include <d3d10shader.h>
 #pragma comment(lib, "D3d10.lib")
 #endif
 
@@ -38,10 +35,10 @@
 #pragma comment(lib, "D3d12.lib")
 #endif
 
+#endif
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-
 
 void PXDirectXContextConstruct(PXDirectX* const pxDirectX)
 {
@@ -62,7 +59,7 @@ void PXDirectXContextDestruct(PXDirectX* const pxDirectX)
     if (pxDirectX->DX9Context)
     {
         pxDirectX->DX9Context->lpVtbl->Release(pxDirectX->DX9Context);
-    }  
+    }
 #endif
 #endif
 }
@@ -229,7 +226,7 @@ PXColorFormat PXDirectXColorFormatToID(const D3DFORMAT format)
             // case D3DFMT_CxV8U8: return xxxxxxxxxxxxxxxxxx;
 #if !defined(D3D_DISABLE_9EX)
             // case D3DFMT_A1: return xxxxxxxxxxxxxxxxxx;
-            // case D3DFMT_A2B10G10R10_XR_BIAS: return xxxxxxxxxxxxxxxxxx;     
+            // case D3DFMT_A2B10G10R10_XR_BIAS: return xxxxxxxxxxxxxxxxxx;
             // case D3DFMT_BINARYBUFFER: return xxxxxxxxxxxxxxxxxx;
 #endif
         // case D3DFMT_FORCE_DWORD: return xxxxxxxxxxxxxxxxxx;
@@ -308,7 +305,7 @@ PXActionResult PXDirectXRenderTargetCreate(PXDirectX* const pxDirectX, PXRenderT
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
 
-#elif PXOSWindowsDestop	
+#elif PXOSWindowsDestop
 
     return PXActionSuccessful;
 
@@ -320,12 +317,12 @@ PXActionResult PXDirectXRenderTargetCreate(PXDirectX* const pxDirectX, PXRenderT
 PXActionResult PXDirectXDepthStencilSurfaceCreate(PXDirectX* const pxDirectX, PXDepthStencilSurface* const pxDepthStencilSurface)
 {
     //    STDMETHOD(CreateDepthStencilSurface)(THIS_ UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle) PURE;
-   
+
 
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
 
-#elif PXOSWindowsDestop	
+#elif PXOSWindowsDestop
 
     return PXActionSuccessful;
 
@@ -341,15 +338,15 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
 
-#elif PXOSWindowsDestop	
-  
+#elif PXOSWindowsDestop
+
 
     HMODULE           dxSoftware = GetModuleHandle(PXNull); // Reserved
     UINT              Flags = 0;
 
 
 
-    
+
     switch (pxDirectXVersion)
     {
 #if PXDX12Use
@@ -395,7 +392,7 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 
             break;
         }
-#endif       
+#endif
 
 #if PXDX11Use
         case PXDirectXVersion11Emulate1x0Core:
@@ -542,7 +539,7 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
             pxDirectX->DirectXVersion = pxDirectXDriverType;
 
             break;
-        }   
+        }
 #endif
 
 #if PXDX9Use
@@ -562,7 +559,7 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
                     return PXActionFailedInitialization;
                 }
             }
-     
+
             const PXInt32U amountOfAdapters = pxDirectX->DX9Context->lpVtbl->GetAdapterCount(pxDirectX->DX9Context);
 
             for (PXInt32U i = 0; i < amountOfAdapters; ++i)
@@ -596,7 +593,7 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 
         default:
             return PXActionRefusedFormatNotSupported;
-    }   
+    }
 #endif
 
     return PXActionNotSupportedByOperatingSystem;
@@ -636,10 +633,10 @@ PXActionResult PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const 
         D3DXHANDLE Handle = pConstantTable->lpVtbl->GetConstant(pConstantTable, NULL, i);
         if (Handle == NULL) continue;
         pConstantTable->lpVtbl->GetConstantDesc(pConstantTable, Handle, pConstantDesc, &pConstantNum);
-      
+
 
         printf("\n");
-        
+
 #if 0
         for (UINT j = 0; j < pConstantNum; j++)
         {
@@ -676,7 +673,7 @@ PXActionResult PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const 
     UINT pConstantNum = 32;
 
     const HRESULT HRESULT = D3DXGetShaderConstantTable(bufferData, &pConstantTable);
-        
+
     //if (pConstantTable == NULL) goto grexit;
 
     D3DXCONSTANTTABLE_DESC pDesc;
@@ -716,7 +713,7 @@ PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexB
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
 
-#elif PXOSWindowsDestop	
+#elif PXOSWindowsDestop
 
     switch (pxDirectX->DirectXVersion)
     {
@@ -795,7 +792,7 @@ PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexB
         default:
             return PXActionNotSupportedByLibrary;
     }
-   
+
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -840,7 +837,7 @@ PXActionResult PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D*
             (
                 pxDirectX->DX11,
                 &textureDescription,
-                &pInitialData, 
+                &pInitialData,
                 &(ID3D11Texture2D*)pxTexture->ResourceID.DirectXInterface
             );
 
@@ -888,7 +885,7 @@ PXActionResult PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D*
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
 
-#elif PXOSWindowsDestop	
+#elif PXOSWindowsDestop
 
     switch (pxDirectX->DirectXVersion)
     {
@@ -901,7 +898,7 @@ PXActionResult PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D*
         case PXDirectXVersion11Emulate10x1:
         case PXDirectXVersion11Emulate11x0:
         case PXDirectXVersion11Emulate11x1:
-        {             
+        {
             D3D11_TEXTURE3D_DESC textureDescription;
             textureDescription.Width = pxTexture3D->Width;
             textureDescription.Height = pxTexture3D->Height;
@@ -970,7 +967,7 @@ PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureC
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
 
-#elif PXOSWindowsDestop	
+#elif PXOSWindowsDestop
 
 
     switch (pxDirectX->DirectXVersion)
@@ -984,7 +981,7 @@ PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureC
         case PXDirectXVersion11Emulate10x1:
         case PXDirectXVersion11Emulate11x0:
         case PXDirectXVersion11Emulate11x1:
-        { 
+        {
             return PXActionSuccessful;
         }
 #endif
@@ -1141,7 +1138,7 @@ PXActionResult PXDirectXLightSet(PXDirectX* const pxDirectX, PXLight* const pxLi
 #if PXDX9Use
         case PXDirectXVersion9:
         {
-            D3DLIGHT9 d3dLight9;           
+            D3DLIGHT9 d3dLight9;
             d3dLight9.Diffuse.r = pxLight->Diffuse[0];
             d3dLight9.Diffuse.g = pxLight->Diffuse[1];
             d3dLight9.Diffuse.b = pxLight->Diffuse[2];
@@ -1222,9 +1219,9 @@ PXActionResult PXDirectXLightGet(PXDirectX* const pxDirectX, PXLight* const pxLi
         case PXDirectXVersion9:
         {
             D3DLIGHT9 d3dLight9;
-            
-            const HRESULT result = pxDirectX->DX9->lpVtbl->GetLight(pxDirectX->DX9, index, &d3dLight9);   
-         
+
+            const HRESULT result = pxDirectX->DX9->lpVtbl->GetLight(pxDirectX->DX9, index, &d3dLight9);
+
             pxLight->Diffuse[0] = d3dLight9.Diffuse.r;
             pxLight->Diffuse[1] = d3dLight9.Diffuse.g;
             pxLight->Diffuse[2] = d3dLight9.Diffuse.b;
@@ -1398,7 +1395,7 @@ PXActionResult PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort
     }
 
 
-    return PXActionSuccessful;    
+    return PXActionSuccessful;
 }
 
 PXActionResult PXDirectXViewportGet(PXDirectX* const pxDirectX, PXViewPort* const pxViewPort)
@@ -1594,7 +1591,7 @@ PXActionResult PXDirectXSceneEnd(PXDirectX* const pxDirectX)
 }
 
 PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, const D3DRECT* pRects, const PXInt32U Flags, const PXColorRGBAF* const pxColorRGBAF, const float Z, const PXInt32U Stencil)
-{   
+{
     switch (pxDirectX->DirectXVersion)
     {
 #if PXDX11Use
@@ -2113,7 +2110,7 @@ PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const
         {
             switch (pxShader->Type)
             {
-                case PXShaderTypeVertex: 
+                case PXShaderTypeVertex:
                 {
                     const HRESULT result = pxDirectX->DX9->lpVtbl->CreateVertexShader
                     (
@@ -2145,7 +2142,7 @@ PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const
 
         default:
             return PXActionNotSupportedByLibrary;
-    }   
+    }
 
     return PXActionSuccessful;
 }

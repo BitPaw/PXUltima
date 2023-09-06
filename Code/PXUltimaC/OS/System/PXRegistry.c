@@ -67,7 +67,7 @@ PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText*
 	}
 
 	return PXActionSuccessful;
-#else 
+#else
 	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
@@ -93,6 +93,9 @@ PXActionResult PXRegistryClose(PXRegistry* const registry)
 
 PXActionResult PXRegistryKeyListAll(PXRegistry* const registry)
 {
+#if OSUnix
+	return PXActionNotSupportedByOperatingSystem;
+#elif PXOSWindowsDestop
 	PXBool repeat = 0;
 
 	PXText pxTextKeyName;
@@ -124,6 +127,9 @@ PXActionResult PXRegistryKeyListAll(PXRegistry* const registry)
 	}
 
 	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
 }
 
 PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName)
@@ -205,7 +211,7 @@ PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const
 	DWORD Flags = 0;
 
 	PXMemoryClear(&securityAttributes, sizeof(SECURITY_ATTRIBUTES));
-	
+
 	switch (pxTextKeyName->Format)
 	{
 		case TextFormatASCII:
@@ -275,7 +281,7 @@ PXActionResult PXRegistryKeySave(PXRegistry* const registry, const PXText* const
 			return PXActionRefuedTextFormatUnsupported;
 	}
 
-	return PXActionSuccessful;	
+	return PXActionSuccessful;
 
 #else
 	return PXActionNotSupportedByOperatingSystem;

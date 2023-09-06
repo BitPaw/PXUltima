@@ -202,7 +202,7 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 
 			//case ENOTSUP: // fall throu, same ID unser unix.
 		case ENOTSUP:
-			return NotSupported;
+			return PXActionNotSupportedByOperatingSystem;
 
 #elif OSWindows
 		case EAGAIN:
