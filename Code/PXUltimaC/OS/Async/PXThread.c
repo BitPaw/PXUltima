@@ -2,8 +2,6 @@
 
 // Note, TerminateThread() should not be used, it can lead to a memory leak in XP
 
-#include <stdio.h>
-
 void PXThreadConstruct(PXThread* const pxThread)
 {
 	pxThread->ThreadID = PXHandleNotSet;
@@ -17,13 +15,8 @@ void PXThreadDestruct(PXThread* const pxThread)
 		return;
 	}
 
-	printf("[C] Thread handle release %p : ", pxThread->ThreadID);
-
 	if (pxThread->ThreadID == PXHandleNotSet)
 	{
-	
-		printf("CANCLED\n");
-
 		return;
 	}
 
@@ -36,12 +29,8 @@ void PXThreadDestruct(PXThread* const pxThread)
 	
 	if (!success)
 	{
-		printf("FAILED\n");
-
 		return;
 	}
-
-	printf("OK\n");
 
 #endif
 

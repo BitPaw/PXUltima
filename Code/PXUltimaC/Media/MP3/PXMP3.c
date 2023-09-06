@@ -132,6 +132,8 @@
 #define MPEGGenreIDEuroHouse 124u
 #define MPEGGenreIDDanceHall 125u
 
+const char PXMP3ChunkTag[4] = { 'L', 'a', 'v', 'c' };
+
 PXMPEGGenre PXMPEGGenreFromID(const PXInt8U mpegGenre)
 {
 	switch(mpegGenre)
@@ -916,7 +918,7 @@ PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 					const PXInt16U bitRateKBps = bitRateKBpsLookup[yPos][xPos];
 
-					mp3->Header.BitRate = (unsigned int)bitRateKBps * 1000;
+					mp3->Header.BitRate = (PXInt32U)bitRateKBps * 1000u;
 				}
 
 				//For Layer II there are some combinations of bitrate and mode which are not allowed.
@@ -1068,9 +1070,7 @@ PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 		// LACA??
 		{
-			const char tag[] = { 'L','a', 'v', 'c' };
-			const PXSize tagSize = sizeof(tag);
-			const unsigned char isTag = PXFileReadAndCompare(pxFile, tag, tagSize);
+			const unsigned char isTag = PXFileReadAndCompare(pxFile, PXMP3ChunkTag, sizeof(PXMP3ChunkTag));
 
 			if (isTag)
 			{

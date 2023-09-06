@@ -134,12 +134,29 @@ extern "C"
 		PXELFSegmentTypePT_SHLIB,
 		PXELFSegmentTypeProgramHeaderTable,
 		PXELFSegmentTypeThreadLocalStorage,
-		PXELFSegmentTypePT_LOOS 	,
+		PXELFSegmentTypePT_LOOS,
 		PXELFSegmentTypePT_HIOS,
-		PXELFSegmentTypePT_LOPROC ,	
+		PXELFSegmentTypePT_LOPROC,
 		PXELFSegmentTypePT_HIPROC
 	}
 	PXELFSegmentType;
+
+	typedef struct PXELFProgramHeader_
+	{
+		PXAdress64 AdressOffsetRead;
+		PXAdress64 AdressTargetVirtual;
+		PXAdress64 AdressTargetPhysical;
+		PXAdress64 SizeOnFile;
+		PXAdress64 SizeInMemory;
+		PXAdress64 p_align;
+
+		PXBool IsSegmentExecutable;
+		PXBool IsSegmentWriteable;
+		PXBool IsSegmentReadable;
+
+		PXELFSegmentType Type;
+	}
+	PXELFProgramHeader;
 
 	typedef struct PXELFHeader_
 	{
@@ -173,8 +190,8 @@ extern "C"
 		PXInt32U sh_type;
 		PXInt64U sh_flags;
 		PXInt64U sh_addr;
-		PXInt64U sh_offset;
-		PXInt64U sh_size;
+		PXInt64U FileImageOffset;
+		PXInt64U FileImageSize;
 		PXInt32U sh_link;
 		PXInt32U sh_info;
 		PXInt64U sh_addralign;
@@ -182,20 +199,21 @@ extern "C"
 	}
 	PXSectionHeader;
 
-	typedef struct PXELF
+	typedef struct PXBinaryLinux_
 	{
 		PXELFHeader Header;
 	}
-	PXELF;
+	PXBinaryLinux;
 
 	PXPrivate inline PXEndian PXELFEndianessFromID(const PXInt8U value);
 	PXPrivate inline PXBitFormat PXELFBitFormatFromID(const PXInt8U value);
 	PXPrivate inline PXELFTargetOSAPI PXPXELFTargetOSAPIFromID(const PXInt8U value);
 	PXPrivate inline PXELFMachine PXELFMachineFromID(const PXInt8U value);
 	PXPrivate inline PXELFType PXELFTypeFromID(const PXInt8U value);
+	PXPrivate inline PXELFSegmentType PXELFSegmentTypeFromID(const PXInt32U value);
 
-	PXPublic PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile);
-	PXPublic PXActionResult PXELFSaveToFile(PXELF* const pxELF, PXFile* const pxFile);
+	PXPublic PXActionResult PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
+	PXPublic PXActionResult PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

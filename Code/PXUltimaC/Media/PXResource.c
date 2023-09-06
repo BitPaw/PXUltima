@@ -28,14 +28,14 @@
 #include <Media/PDF/PXPDF.h>
 #include <Media/TTF/PXTTF.h>
 #include <Media/VRML/PXVRML.h>
-#include <Media/WAV/PXWAV.h>
+#include <Media/Wave/PXWave.h>
 #include <Media/WMA/PXWMA.h>
 #include <Media/XML/PXXML.h>
 #include <Media/TIFF/PXTIFF.h>
 #include <Media/TGA/PXTGA.h>
 #include <Media/YAML/PXYAML.h>
-#include <Media/EXE/PXEXE.h>
-#include <Media/ELF/PXELF.h>
+#include <Media/BinaryWindows/PXBinaryWindows.h>
+#include <Media/BinaryLinux/PXBinaryLinux.h>
 #include <OS/Time/PXStopWatch.h>
 
 PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
@@ -278,28 +278,22 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
             break;
 
-        case PXFileFormatWindowsDynamicLinkedLibrary:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeLibrary;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+        case PXFileFormatBinaryWindows:
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeBinary;
+            pxFileTypeInfo->ResourceLoadFunction = PXBinaryWindowsLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXBinaryWindowsSaveToFile;
             break;
 
-        case PXFileFormatLinuxExecutableAndLinkable:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
-            pxFileTypeInfo->ResourceLoadFunction = PXELFLoadFromFile;
-            pxFileTypeInfo->ResourceSaveFunction = PXELFSaveToFile;
+        case PXFileFormatBinaryLinux:
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeBinary;
+            pxFileTypeInfo->ResourceLoadFunction = PXBinaryLinuxLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXBinaryLinuxSaveToFile;
             break;
 
         case PXFileFormatEML:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
             pxFileTypeInfo->ResourceLoadFunction = PXNull;
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
-            break;
-
-        case PXFileFormatWindowsExecutable:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
-            pxFileTypeInfo->ResourceLoadFunction = PXEXELoadFromFile;
-            pxFileTypeInfo->ResourceSaveFunction = PXEXESaveToFile;
             break;
 
         case PXFileFormatFilmBox:
@@ -345,13 +339,13 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             break;
 
         case PXFileFormatJSON:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
             pxFileTypeInfo->ResourceLoadFunction = PXJSONLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXJSONSaveToFile;
             break;
 
         case PXFileFormatM4A:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
             pxFileTypeInfo->ResourceLoadFunction = PXNull;
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
             break;
@@ -374,7 +368,7 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
 
         case PXFileFormatMSI:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeExecutable;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeInstaller;
             pxFileTypeInfo->ResourceLoadFunction = PXNull;
             pxFileTypeInfo->ResourceSaveFunction = PXNull;
 

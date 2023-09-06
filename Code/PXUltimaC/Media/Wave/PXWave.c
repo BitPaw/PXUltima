@@ -1,4 +1,4 @@
-#include "PXWAV.h"
+#include "PXWave.h"
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/RIFF/PXRIFF.h>
@@ -151,7 +151,7 @@ PXActionResult PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 			float sample = (frequences[section] > 0) * 0.5f * ((1 + PXMathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) + PXMathSinus(wave);
 			unsigned int correctedsample = sample * maxAmp;
 			PXFileWriteB(pxFile, &correctedsample, bitdepth / 8);
-			wave += 2 * 3.14159265358979323846 * frequences[section] * (100 / (((i >= ((44100 * 60) / bpm) * i) + 1))) / 44100;
+			wave += 2 * PXMathConstantPI * frequences[section] * (100 / (((i >= ((44100 * 60) / bpm) * i) + 1))) / 44100;
 		}
 	}
 

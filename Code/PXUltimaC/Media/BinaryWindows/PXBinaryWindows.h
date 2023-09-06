@@ -25,10 +25,10 @@ extern "C"
 		PXInt16U CodeSegmentInitial;
 		PXInt16U e_lfarlc;
 		PXInt16U e_ovno;
-		PXInt16U ReservedA[4];
+		char ReservedA[4];
 		PXInt16U e_oemid;
 		PXInt16U e_oeminfo;
-		PXInt16U ReservedB[10];
+		char ReservedB[10];
 		PXInt32U FileOffsetToHeader;
 	}
 	PXDOSHeader;
@@ -46,16 +46,16 @@ extern "C"
 		//_IMAGE_OPTIONAL_HEADER OptionalHeader;
 	};
 
-	typedef struct PXEXE_
+	typedef struct PXBinaryWindows_
 	{
 		PXDOSHeader Header;
 
 		PXCOFF COFFHeader;
 	}
-	PXEXE;
+	PXBinaryWindows;
 
-	PXPublic PXActionResult PXEXELoadFromFile(PXEXE* const pxEXE, PXFile* const pxFile);
-	PXPublic PXActionResult PXEXESaveToFile(PXEXE* const pxEXE, PXFile* const pxFile);
+	PXPublic PXActionResult PXBinaryWindowsLoadFromFile(PXBinaryWindows const pxBinaryWindows, PXFile* const pxFile);
+	PXPublic PXActionResult PXBinaryWindowsSaveToFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

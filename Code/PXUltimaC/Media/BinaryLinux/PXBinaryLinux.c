@@ -1,6 +1,21 @@
-#include "PXELF.h"
+#include "PXBinaryLinux.h"
+
+#define PXEFIDebug 0
 
 const char PXELFSignature[4] = { 0x7F, 'E', 'L' ,'F' };
+
+#define PT_NULL 0x00000000
+#define PT_LOAD 0x00000001
+#define PT_DYNAMIC 0x00000002
+#define PT_INTERP 0x00000003
+#define PT_NOTE 0x00000004
+#define PT_SHLIB 0x00000005
+#define PT_PHDR 0x00000006
+#define PT_TLS 0x00000007
+#define PT_LOOS 0x60000000
+#define PT_HIOS 0x6FFFFFFF
+#define PT_LOPROC 0x70000000
+#define PT_HIPROC 0x7FFFFFFF
 
 #define PXELFMachineInvalidID		 -1
 #define PXELFMachineNoSpecificInstructionSetID		 0x00
@@ -229,23 +244,37 @@ PXELFType PXELFTypeFromID(const PXInt8U value)
 	return PXELFTypeInvalid;
 }
 
-PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile)
+PXELFSegmentType PXELFSegmentTypeFromID(const PXInt32U value)
 {
-	PXClear(PXELF, pxELF);
+	switch (value)
+	{
+		case PT_NULL: return PXELFSegmentTypeUnused;
+		case PT_LOAD: return PXELFSegmentTypeLoadable;
+		case PT_DYNAMIC: return PXELFSegmentTypeDynamicLinkingInformation;
+		case PT_INTERP: return PXELFSegmentTypeInterpreterInformation;
+		case PT_NOTE: return PXELFSegmentTypeAuxiliaryInformation;
+		case PT_SHLIB: return PXELFSegmentTypePT_SHLIB;
+		case PT_PHDR: return PXELFSegmentTypeProgramHeaderTable;
+		case PT_TLS: return PXELFSegmentTypeThreadLocalStorage;
+		case PT_LOOS: return PXELFSegmentTypePT_LOOS;
+		case PT_HIOS: return PXELFSegmentTypePT_HIOS;
+		case PT_LOPROC: return PXELFSegmentTypePT_LOPROC;
+		case PT_HIPROC: return PXELFSegmentTypePT_HIPROC;
 
-    {
-        const PXBool isValidSignature = PXFileReadAndCompare(pxFile, PXELFSignature, sizeof(PXELFSignature));
+		default:
+			return PXELFSegmentTypeInvalid;
+	}
+}
 
-        if (!isValidSignature)
-        {
-            return PXActionRefusedInvalidHeaderSignature;
-        }
-    }
+PXActionResult PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
+{
+	PXClear(PXBinaryLinux, pxBinaryLinux);
 
 	// Read Header
 	{
 		// A
 		{
+			PXInt32UCluster signature;
 			PXInt8U classID;
 			PXInt8U dataID;
 			PXInt8U versionID; // Expect to be = 1
@@ -253,23 +282,33 @@ PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile)
 
 			const PXFileDataElementType pxDataStreamElementList[] =
 			{
+				{PXDataTypeTextx4, signature.Data},
 				{PXDataTypeInt8U, &classID},
 				{PXDataTypeInt8U, &dataID},
 				{PXDataTypeInt8U, &versionID},
 				{PXDataTypeInt8U, &osAPIID},
-				{PXDataTypeInt8U, &pxELF->Header.TargetOSAPIVersion},
+				{PXDataTypeInt8U, &pxBinaryLinux->Header.TargetOSAPIVersion},
 				{PXDataTypePadding, (void*)7u}
 			};
 			const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
 			PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
-			pxELF->Header.BitFormat = PXELFBitFormatFromID(classID);
-			pxELF->Header.Endian = PXELFEndianessFromID(dataID);
-			pxELF->Header.TargetOSAPI = PXPXELFTargetOSAPIFromID(osAPIID);
+			{
+				const PXBool isValidSignature = PXMemoryCompare(signature.Data, 4u, PXELFSignature, sizeof(PXELFSignature));
 
-			pxFile->BitFormatOfData = pxELF->Header.BitFormat;
-			pxFile->EndiannessOfData = pxELF->Header.Endian;
+				if (!isValidSignature)
+				{
+					return PXActionRefusedInvalidHeaderSignature;
+				}
+			}		
+
+			pxBinaryLinux->Header.BitFormat = PXELFBitFormatFromID(classID);
+			pxBinaryLinux->Header.Endian = PXELFEndianessFromID(dataID);
+			pxBinaryLinux->Header.TargetOSAPI = PXPXELFTargetOSAPIFromID(osAPIID);
+
+			pxFile->BitFormatOfData = pxBinaryLinux->Header.BitFormat;
+			pxFile->EndiannessOfData = pxBinaryLinux->Header.Endian;
 		}
 
 		// B
@@ -286,23 +325,23 @@ PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile)
 				{PXDataTypeInt16Flex, &typeID},
 				{PXDataTypeInt16Flex, &machineID},
 				{PXDataTypeInt32Flex, &versionID},
-				{PXDataTypeAdressFlex, &pxELF->Header.EntryPointOfCode},
-				{PXDataTypeAdressFlex, &pxELF->Header.ProgrammHeaderOffset},
-				{PXDataTypeAdressFlex, &pxELF->Header.SectionHeaderOffset},
+				{PXDataTypeAdressFlex, &pxBinaryLinux->Header.EntryPointOfCode},
+				{PXDataTypeAdressFlex, &pxBinaryLinux->Header.ProgrammHeaderOffset},
+				{PXDataTypeAdressFlex, &pxBinaryLinux->Header.SectionHeaderOffset},
 				{PXDataTypeInt32Flex, &e_flags},
 				{PXDataTypeInt16Flex, &sizeOfThisHeader},
-				{PXDataTypeInt16Flex, &pxELF->Header.ProgrammHeaderSize},
-				{PXDataTypeInt16Flex, &pxELF->Header.ProgrammHeaderAmount},
-				{PXDataTypeInt16Flex, &pxELF->Header.SectionHeaderSize},
-				{PXDataTypeInt16Flex, &pxELF->Header.SectionHeaderAmount},
+				{PXDataTypeInt16Flex, &pxBinaryLinux->Header.ProgrammHeaderSize},
+				{PXDataTypeInt16Flex, &pxBinaryLinux->Header.ProgrammHeaderAmount},
+				{PXDataTypeInt16Flex, &pxBinaryLinux->Header.SectionHeaderSize},
+				{PXDataTypeInt16Flex, &pxBinaryLinux->Header.SectionHeaderAmount},
 				{PXDataTypeInt16Flex, &shstrndx}
 			};
 			const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
 			PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
-			pxELF->Header.Machine = PXELFMachineFromID(machineID);
-			pxELF->Header.Type = PXELFTypeFromID(typeID);
+			pxBinaryLinux->Header.Machine = PXELFMachineFromID(machineID);
+			pxBinaryLinux->Header.Type = PXELFTypeFromID(typeID);
 		}
 	}
 
@@ -311,21 +350,47 @@ PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile)
 	// Program header - Read
 	//--------------------------------------------------------
 	{
-		PXFileCursorMoveTo(pxFile, pxELF->Header.ProgrammHeaderOffset);
+		PXFileCursorMoveTo(pxFile, pxBinaryLinux->Header.ProgrammHeaderOffset);
 
-		for (PXInt16U programHeaderID = 0; programHeaderID < pxELF->Header.ProgrammHeaderAmount; programHeaderID++)
+		for (PXInt16U programHeaderID = 0; programHeaderID < pxBinaryLinux->Header.ProgrammHeaderAmount; ++programHeaderID)
 		{
+			PXELFProgramHeader pxELFProgramHeader;
+			PXInt32U typeID;
+			PXInt32U flagsID;
 
-			// 4
+			const PXFileDataElementType pxDataStreamElementList[] =
+			{
+				{PXDataTypeInt32Flex, &typeID},
+				{PXDataTypeInt32Flex64ONLY, &flagsID},
+				{PXDataTypeAdressFlex, &pxELFProgramHeader.AdressOffsetRead},
+				{PXDataTypeAdressFlex, &pxELFProgramHeader.AdressTargetVirtual},
+				{PXDataTypeAdressFlex, &pxELFProgramHeader.AdressTargetPhysical},
+				{PXDataTypeAdressFlex, &pxELFProgramHeader.SizeOnFile},
+				{PXDataTypeAdressFlex, &pxELFProgramHeader.SizeInMemory},
+				{PXDataTypeInt32Flex32ONLY, &flagsID},
+				{PXDataTypeAdressFlex, &pxELFProgramHeader.p_align}
+			};
+			const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-			// 4 64Only
+			PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
-			// 5-sysInt
+			pxELFProgramHeader.IsSegmentExecutable = 0x01 & flagsID;
+			pxELFProgramHeader.IsSegmentWriteable = (0x02 & flagsID) >> 1;
+			pxELFProgramHeader.IsSegmentReadable = (0x04 & flagsID) >> 2;
+			pxELFProgramHeader.Type = PXELFSegmentTypeFromID(typeID);
 
-			// 4
-
-
-			// 1xSysint
+#if PXEFIDebug
+			printf
+			(
+				"| Program Header <%i/%i> | R:%c W:%c E:%c | Size: %15iB |\n",
+				programHeaderID+1,
+				pxELF->Header.ProgrammHeaderAmount,
+				pxELFProgramHeader.IsSegmentReadable ? 'x' : '_',
+				pxELFProgramHeader.IsSegmentWriteable ? 'x' : '_',
+				pxELFProgramHeader.IsSegmentExecutable ? 'x' : '_',
+				pxELFProgramHeader.SizeInMemory
+			);
+#endif
 		}
 	}
 
@@ -333,9 +398,9 @@ PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile)
 	// Section header
 	//--------------------------------------------------------
 	{
-		PXFileCursorMoveTo(pxFile, pxELF->Header.SectionHeaderOffset);
+		PXFileCursorMoveTo(pxFile, pxBinaryLinux->Header.SectionHeaderOffset);
 
-		for (PXInt16U i = 0; i < pxELF->Header.SectionHeaderAmount; i++)
+		for (PXInt16U i = 0; i < pxBinaryLinux->Header.SectionHeaderAmount; i++)
 		{
 			PXSectionHeader pxSectionHeader;
 
@@ -345,8 +410,8 @@ PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile)
 				{PXDataTypeInt32Flex, &pxSectionHeader.sh_type},
 				{PXDataTypeAdressFlex, &pxSectionHeader.sh_flags},
 				{PXDataTypeAdressFlex, &pxSectionHeader.sh_addr},
-				{PXDataTypeAdressFlex, &pxSectionHeader.sh_offset},
-				{PXDataTypeAdressFlex, &pxSectionHeader.sh_size},
+				{PXDataTypeAdressFlex, &pxSectionHeader.FileImageOffset},
+				{PXDataTypeAdressFlex, &pxSectionHeader.FileImageSize},
 				{PXDataTypeInt32Flex, &pxSectionHeader.sh_link},
 				{PXDataTypeInt32Flex, &pxSectionHeader.sh_info},
 				{PXDataTypeAdressFlex, &pxSectionHeader.sh_addralign},
@@ -362,7 +427,7 @@ PXActionResult PXELFLoadFromFile(PXELF* const pxELF, PXFile* const pxFile)
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXELFSaveToFile(PXELF* const pxELF, PXFile* const pxFile)
+PXActionResult PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
 {
 	PXFileWriteB(pxFile, PXELFSignature, sizeof(PXELFSignature));
 

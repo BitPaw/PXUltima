@@ -81,10 +81,9 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileFormatCSharp,
 		PXFileFormatCSS,
 		PXFileFormatCPP,
-		PXFileFormatWindowsDynamicLinkedLibrary,
-		PXFileFormatLinuxExecutableAndLinkable,
+		PXFileFormatBinaryWindows,
+		PXFileFormatBinaryLinux,
 		PXFileFormatEML,
-		PXFileFormatWindowsExecutable,
 		PXFileFormatFilmBox,
 		PXFileFormatFLAC,
 		PXFileFormatSpriteFont,
@@ -167,10 +166,10 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileResourceTypeVertexStructure,
 		PXFileResourceTypeRenderShader,
 		PXFileResourceTypeRenderMaterial,
-		PXFileResourceTypeExecutable,
-		PXFileResourceTypeLibrary,
+		PXFileResourceTypeBinary,
 		PXFileResourceTypeStructuredText,
-		PXFileResourceTypeCode
+		PXFileResourceTypeCode,
+		PXFileResourceTypeInstaller
 	}
 	PXFileResourceType;
 

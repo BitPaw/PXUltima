@@ -125,11 +125,7 @@ PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolde
 	}
 
 	PXText temporalCache;
-	temporalCache.SizeAllocated = -1;
-	temporalCache.SizeUsed = 0;
-	temporalCache.NumberOfCharacters = 0;
-	temporalCache.TextW = 0;
-	temporalCache.Format = TextFormatUNICODE;
+	PXTextConstructBufferW(&temporalCache, 260);
 
 	const HRESULT result = SHGetKnownFolderPath((KNOWNFOLDERID*)pathID, KF_FLAG_DEFAULT_PATH, PXNull, (PWSTR*)temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h
 	const PXBool success = S_OK == result;

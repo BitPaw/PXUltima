@@ -148,10 +148,17 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
     //---[ Parsing Header ]----------------------------------------------------
     {
         PXInt16UCluster byteCluster;
-        PXInt32U* valueList[3] = { &sizeOfFile, &reservedBlock, &dataOffset };
 
-        PXFileReadB(pxFile, byteCluster.Data, 2u);
-        PXFileReadI32UVE(pxFile, valueList, 3u, PXEndianLittle);
+        const PXFileDataElementType pxDataStreamElementList[] =
+        {
+            {PXDataTypeTextx2, byteCluster.Data},
+            {PXDataTypeLEInt32U, &sizeOfFile},
+            {PXDataTypeLEInt32U, &reservedBlock},
+            {PXDataTypeLEInt32U, &dataOffset}
+        };
+        const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
+
+        PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
         bmp.Type = PXBitmapTypeFromID(byteCluster.Value);
 
@@ -292,24 +299,23 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
     // Header - Write
     //-----------------------------------------------------
     {
-        {
-            PXInt16UCluster byteCluster;
-            
-            byteCluster.Value = PXBitmapTypeToID(PXBitmapWindows);
+        PXInt16UCluster byteCluster;
+        PXInt32U sizeOfFile = pxFile->DataSize;
+        PXInt32U reservedBlock = 0;
+        PXInt32U dataOffset = 54u;
 
-            PXFileWriteB(pxFile, byteCluster.Data, 2u);
-        }
-     
-        {
-            const PXInt32U data[3] =
-            {
-                pxFile->DataSize, // sizeOfFile
-                0, // reservedBlock
-                54u // dataOffset
-            };
+        byteCluster.Value = PXBitmapTypeToID(PXBitmapWindows);
 
-            PXFileWriteI32UVE(pxFile, data, 3u, PXEndianLittle);
-        }      
+        const PXFileDataElementType pxDataStreamElementList[] =
+        {
+            {PXDataTypeTextx2, byteCluster.Data},
+            {PXDataTypeLEInt32U, sizeOfFile},
+            {PXDataTypeLEInt32U, reservedBlock},
+            {PXDataTypeLEInt32U, dataOffset}
+        };
+        const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
+
+        PXFileWriteMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);  
     }
     //-----------------------------------------------------
 

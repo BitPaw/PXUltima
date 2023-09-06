@@ -221,7 +221,7 @@ PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStre
     {
         case PXCompilerSymbolLexerGenericElement: // We have a 'union' name
         {
-#if 1
+#if PXCDebugOutput
             char buffer[64];
             PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
@@ -258,6 +258,7 @@ PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStre
                 name,
                 buffer
             );
+
 #endif
 
             //---<Write name of structure>---
@@ -311,7 +312,7 @@ PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStre
         {
             PXFileWriteI8U(outputStream, 0); // Name size, we dont have one so its always 0
 
-#if 1
+#if PXCDebugOutput
             char buffer[64];
             PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
@@ -543,7 +544,9 @@ PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputSt
 
     if (!isTypeName)
     {
+#if PXCDebugOutput
         printf("type expected but got something else\n");
+#endif
     }
 
     // Try fetch type
@@ -612,7 +615,7 @@ PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputSt
             }
 
 
-#if 0
+#if PXCDebugOutput
             printf("| MemberField: %s Type, Name %-20s |\n", type, name);
             printf("| - %-17s : %-20s |\n", "Const", PXFlagIsSet(flagList, MemberFieldFlagIsConstType) ? "Yes" : "No");
             printf("| - %-17s : %-20s |\n", "Singed", PXFlagIsSet(flagList, MemberFieldFlagIsSigned) ? "Yes" : "No");
@@ -837,7 +840,9 @@ PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const ou
 
     if (!isFunction)
     {
+#if PXCDebugOutput
         printf("Expected funtion but didnt\n");
+#endif
     }
 
 
@@ -905,7 +910,9 @@ PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const ou
 
     if (!isComma)
     {
+#if PXCDebugOutput
         printf("Colon missing\n");
+#endif
 
     }
 
@@ -976,14 +983,16 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                             if (!isExpectedText)
                             {
+#if PXCDebugOutput
                                 printf("Makro define has invalid name\n");
+#endif
                             }
 
                             // Write define name
                             PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
                             PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 
-#if 1
+#if PXCDebugOutput
                             printf("[C] Makro define name : ");
                             PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
 #endif
@@ -1081,10 +1090,12 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                         if (!isExpectedText)
                         {
+#if PXCDebugOutput
                             printf("Makro 'if not defined' has invalid name\n");
+#endif
                         }
 
-#if 1
+#if PXCDebugOutput
 
                         printf("Is makro not defined? : ");
                         PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
@@ -1100,10 +1111,12 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                         if (!isExpectedText)
                         {
+#if PXCDebugOutput
                             printf("Makro 'if defined' has invalid name\n");
+#endif
                         }
 
-#if 1
+#if PXCDebugOutput
 
                         printf("Is makro if defined? : ");
                         PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
@@ -1159,7 +1172,7 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                                     if (isEnd)
                                     {
-#if 1
+#if PXCDebugOutput
                                         printf("\n");
 #endif // 0
                                         break;
@@ -1173,13 +1186,15 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                                         PXFileWriteB(outputStream, "/", 1u);
 
-#if 1
+#if PXCDebugOutput
                                         printf("/");
 #endif // 0
                                     }
                                     else
                                     {
+#if PXCDebugOutput
                                         printf("Failure, include wrong");
+#endif
                                         break;
                                     }
                                 }
@@ -1197,7 +1212,9 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                                 if (!isExpectedText)
                                 {
+#if PXCDebugOutput
                                     printf("Makro include has invalid name\n");
+#endif
                                 }
 
 
@@ -1232,10 +1249,12 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                         if (!isExpectedText)
                         {
+#if PXCDebugOutput
                             printf("Makro pragma has invalid name\n");
+#endif
                         }
 
-#if 1
+#if PXCDebugOutput
 
                         printf("Makro pragma : ");
                         PXLogPrintString(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
@@ -1245,7 +1264,9 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
                     }
                     case CKeyWordDefinitionEnd:
                     {
+#if PXCDebugOutput
                         printf("End definition\n");
+#endif
 
                         // OK?
                         break;
@@ -1300,7 +1321,9 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
 
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Consome '{'
 
+#if PXCDebugOutput
                                     printf("[C] Disable name mangeling in C++ for following block\n");
+#endif
                                 }
                                 else
                                 {
@@ -1350,7 +1373,9 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
             }
             default:
             {
+#if PXCDebugOutput
                 printf("[C] Invalid code on this posision\n");
+#endif
                 break;
             }
         }

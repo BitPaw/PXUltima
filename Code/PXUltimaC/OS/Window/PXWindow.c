@@ -1686,28 +1686,28 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
             break;
         case WindowEventCUT:
         {
-            printf("[#][Event] CUT\n");
+           // printf("[#][Event] CUT\n");
             break;
         }
 
         case WindowEventCOPY:
         {
-            printf("[#][Event] Copy\n");
+           // printf("[#][Event] Copy\n");
             break;
         }
         case WindowEventPASTE:
         {
-            printf("[#][Event] Paste\n");
+            //printf("[#][Event] Paste\n");
             break;
         }
         case WindowEventCLEAR:
         {
-            printf("[#][Event] Clear\n");
+            //printf("[#][Event] Clear\n");
             break;
         }
         case WindowEventUNDO:
         {
-            printf("[#][Event] Undo\n");
+            //printf("[#][Event] Undo\n");
             break;
         }
         case WindowEventRENDERFORMAT:
@@ -2261,7 +2261,10 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
         if (!result)
         {
-            printf("Err\n");
+            //printf("Err\n");
+
+            // TODO: Handle error
+
         }
 
         // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
@@ -2708,7 +2711,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
     {
         case PXWindowCursorShow:
         {
-            printf("[Cursor] Show\n");
+            //printf("[Cursor] Show\n");
 
             while(ShowCursor(1) < 0);
 
@@ -2719,7 +2722,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
         }
         case PXWindowCursorLock:
         {
-            printf("[Cursor] Lock\n");
+           // printf("[Cursor] Lock\n");
 
             // Capture cursor
             {
@@ -2734,7 +2737,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
         }
         case PXWindowCursorLockAndHide:
         {
-            printf("[Cursor] Lock and hide\n");
+            //printf("[Cursor] Lock and hide\n");
 
             while(ShowCursor(0) >= 0);
 
@@ -2949,6 +2952,7 @@ void PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButto
     const char* buttonStateText = 0;
     const char* mouseButtonText = 0;
 
+#if 0
     switch (buttonState)
     {
         case PXKeyPressStateDown:
@@ -3065,6 +3069,8 @@ void PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButto
 
     printf("[#][Event][Mouse] Button:%-10s State:%-10s\n", mouseButtonText, buttonStateText);
 
+#endif
+
     InvokeEvent(window->MouseClickCallBack, window->EventReceiver, window, mouseButton, buttonState);
 }
 
@@ -3140,7 +3146,7 @@ void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mou
 
 void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)
 {
-    printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
+    // printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
 
     PXKeyBoard* const keyBoard = &window->KeyBoardCurrentInput;
 

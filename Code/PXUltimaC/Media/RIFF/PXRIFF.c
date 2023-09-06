@@ -17,16 +17,20 @@
 #define PXRIFFSubTypeRMID PXInt32Make('R', 'M', 'I', 'D')
 #define PXRIFFSubTypeWAVE PXInt32Make('W', 'A', 'V', 'E')
 
-PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const PXFile)
+PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const pxFile)
 {
-	PXMemoryClear(riff, sizeof(PXRIFF));
-
 	PXInt32UCluster chunkID;
 	PXInt32UCluster formatID;
 
-	PXFileReadB(PXFile, chunkID.Data, 4u);
-	PXFileReadI32UE(PXFile, &riff->ChunkSize, PXEndianLittle);
-	PXFileReadB(PXFile, formatID.Data, 4u);
+	const PXFileDataElementType pxDataStreamElementList[] =
+	{
+		{PXDataTypeTextx4, chunkID.Data},
+		{PXDataTypeLEInt32U, &riff->ChunkSize},
+		{PXDataTypeTextx4, formatID.Data}
+	};
+	const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
+
+	PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
 	switch(chunkID.Value) // Detect Endiantype
 	{
@@ -83,7 +87,7 @@ PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const PXFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXRIFFSerialize(const PXRIFF* const riff, PXFile* const PXFile)
+PXActionResult PXRIFFSerialize(const PXRIFF* const riff, PXFile* const pxFile)
 {
 	unsigned int riffSignature = 0;
 	unsigned int riffType = 0;
@@ -127,10 +131,15 @@ PXActionResult PXRIFFSerialize(const PXRIFF* const riff, PXFile* const PXFile)
 			return PXActionInvalid;
 	}
 
+	const PXFileDataElementType pxDataStreamElementList[] =
+	{
+		{PXDataTypeLEInt32U, &riffSignature},
+		{PXDataTypeLEInt32U, &riff->ChunkSize},
+		{PXDataTypeLEInt32U, &riffType}
+	};
+	const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-	PXFileWriteI32UE(PXFile, riffSignature, PXEndianLittle);
-	PXFileWriteI32UE(PXFile, riff->ChunkSize, PXEndianLittle);
-	PXFileWriteI32UE(PXFile, riffType, PXEndianLittle);
+	PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
 	return PXActionSuccessful;
 }

@@ -1,6 +1,5 @@
 #include "PXCOFF.h"
 
-
 PXCOFFMachineType PXCOFFMachineFromID(const PXInt16U valueID)
 {
 	switch (valueID)

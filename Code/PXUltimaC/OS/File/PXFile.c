@@ -231,7 +231,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 		{
 			switch (*pxText.TextA)
 			{
-				case 'O': return PXFileFormatLinuxExecutableAndLinkable;
+				case 'O': return PXFileFormatBinaryLinux;
 			}
 
 			break;
@@ -243,7 +243,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 			switch (list)
 			{
 				case PXInt16Make('K', 'O'): 
-				case PXInt16Make('S', 'O'): return PXFileFormatLinuxExecutableAndLinkable;
+				case PXInt16Make('S', 'O'): return PXFileFormatBinaryLinux;
 			}
 
 			break;
@@ -258,7 +258,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('P', 'R', 'X'):
 				case PXInt24Make('M', 'O', 'D'): 
 				case PXInt24Make('E', 'L', 'F'):
-				case PXInt24Make('O', 'U', 'T'): return PXFileFormatLinuxExecutableAndLinkable;
+				case PXInt24Make('O', 'U', 'T'): return PXFileFormatBinaryLinux;
 				case PXInt24Make('F', 'N', 'T'): return PXFileFormatSpriteFont;
 				case PXInt24Make('G', 'I', 'F'): return PXFileFormatGIF;
 				case PXInt24Make('H', 'T', 'M'): return PXFileFormatHTML;
@@ -269,9 +269,11 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('A', 'V', 'I'): return PXFileFormatAVI;
 				case PXInt24Make('B', 'M', 'P'): return PXFileFormatBitMap;
 				case PXInt24Make('C', 'S', 'S'): return PXFileFormatCSS;
-				case PXInt24Make('D', 'L', 'L'): return PXFileFormatWindowsDynamicLinkedLibrary;
 				case PXInt24Make('E', 'M', 'L'): return PXFileFormatEML;
-				case PXInt24Make('E', 'X', 'E'): return PXFileFormatWindowsExecutable;
+				case PXInt24Make('S', 'Y', 'S'):
+				case PXInt24Make('C', 'O', 'M'):
+				case PXInt24Make('D', 'L', 'L'):
+				case PXInt24Make('E', 'X', 'E'): return PXFileFormatBinaryWindows;
 				case PXInt24Make('F', 'B', 'X'): return PXFileFormatFilmBox;
 				case PXInt24Make('M', 'P', '3'): return PXFileFormatMP3;
 				case PXInt24Make('M', 'P', '4'): return PXFileFormatMP4;
@@ -304,7 +306,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
-				case PXInt32Make('P', 'U', 'F', 'F'): return PXFileFormatLinuxExecutableAndLinkable;
+				case PXInt32Make('P', 'U', 'F', 'F'): return PXFileFormatBinaryLinux;
 				case PXInt32Make('F', 'L', 'A', 'C'): return PXFileFormatFLAC;
 				case PXInt32Make('M', 'I', 'D', 'I'): return PXFileFormatMIDI;
 				case PXInt32Make('S', 'T', 'E', 'P'): return PXFileFormatSTEP;
@@ -2063,9 +2065,7 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 			}
 			case PXDataTypeAdressFlex:
 			{
-				const PXBitFormat pxBitFormat = pxFile->BitFormatOfData;
-
-				switch (pxBitFormat)
+				switch (pxFile->BitFormatOfData)
 				{
 					case PXBitFormat32:
 						sizeOfType = 4u;
@@ -2074,6 +2074,22 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 					case PXBitFormat64:
 						sizeOfType = 8u;
 						break;
+				}
+
+				break;
+			}
+			case PXDataTypeInt32Flex64ONLY:
+			{
+				if (PXBitFormat64 == pxFile->BitFormatOfData)
+				{
+					sizeOfType = 4u;
+				}
+			}
+			case PXDataTypeInt32Flex32ONLY:
+			{
+				if (PXBitFormat32 == pxFile->BitFormatOfData)
+				{
+					sizeOfType = 4u;
 				}
 
 				break;
@@ -2127,11 +2143,29 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 				totalReadBytes += PXFileReadI16UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
 				break;
 			}
+			case PXDataTypeInt32Flex64ONLY:
+			{
+				if (PXBitFormat64 == pxFile->BitFormatOfData)
+				{
+					totalReadBytes += PXFileReadI32UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
+				}
+
+				break;
+			}
+			case PXDataTypeInt32Flex32ONLY:
+			{
+				if (PXBitFormat32 == pxFile->BitFormatOfData)
+				{
+					totalReadBytes += PXFileReadI32UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
+				}
+
+				break;
+			}
 			case PXDataTypeInt32Flex:
 			{
 				totalReadBytes += PXFileReadI32UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
 				break;
-			}
+			}	
 			case PXDataTypeInt64Flex:
 			{
 				totalReadBytes += PXFileReadI64UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);

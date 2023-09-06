@@ -5,8 +5,8 @@
 #include <Math/PXMath.h>
 
 const char PXGIFHeader[3] = { 'G','I','F' };
-#define PXGIFVersionA {'8','7','a'}
-#define PXGIFVersionB {'8','9','a'}
+const char PXGIFVersionA[3] = { '8','7','a' };
+const char PXGIFVersionB[3] = {'8','9','a'};
 #define PXGIFEOF 0x3B
 
 PXSize PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
@@ -32,10 +32,8 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
         }
 
         {
-            const char versionA[3] = PXGIFVersionA;
-            const char versionB[3] = PXGIFVersionB;
-            const char* const versionDataList[2] = { versionA, versionB };
-            const PXSize versionSizeList[2] = { sizeof(versionA),  sizeof(versionB) };
+            const char** const versionDataList[2] = { PXGIFVersionA, PXGIFVersionB };
+            const PXSize versionSizeList[2] = { sizeof(PXGIFVersionA),  sizeof(PXGIFVersionB) };
             const PXSize versionSizeListSize = sizeof(versionDataList) / sizeof(void*);
             const PXBool validVersion = PXFileReadAndCompareV(pxFile, versionDataList, versionSizeList, versionSizeListSize);
 

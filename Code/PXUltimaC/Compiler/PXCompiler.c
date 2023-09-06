@@ -1,12 +1,15 @@
 #include "PXCompiler.h"
 
-#include <stdio.h>
-
 #include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 
+#define PXCompilerDebug 0
 #define PXCompilerSanitise 1
+
+#if PXCompilerDebug
+#include <stdio.h>
+#endif
 
 void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings)
 {
@@ -24,7 +27,7 @@ void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry*
 	PXFileWriteB(pxFile, &compilerSymbolEntry->Source, sizeof(void*));
 
 
-#if 0
+#if PXCompilerDebug
 
 	PXSize idBufferSize = 10;
 	char idbuffer[15];
@@ -749,7 +752,8 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 				if (!isCompleate)
 				{
 					// Error, we have a multiline comment without an end.
-					printf("Errr\n");
+					// printf("Errr\n");
+					return PXActionInvalid;
 				}
 
 				compilerSymbolEntry.ID = PXCompilerSymbolLexerComment;

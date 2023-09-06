@@ -511,7 +511,9 @@ PXActionResult PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 
                         if(hasUnhandleChunkDetected)
                         {
-                            printf("Unhandle chunk detected!\n");
+                            // TODO: Handle error
+
+                            //printf("Unhandle chunk detected!\n");
 
                             PXFileCursorMoveTo(PXFile, expectedOffset);
                         }

@@ -9,6 +9,8 @@ const static char PXOGGHeaderSignature[4] = { 'O','g','g','S' };
 #define PXOGGHeaderTypeBeginningOfStream 0x02
 #define PXOGGHeaderTypeEndOfStream 0x04
 
+#define PXOPGGDebug 0
+
 PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	PXOGG* ogg = PXNull;
@@ -17,24 +19,15 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 	while(!PXFileIsAtEnd(pxFile))
 	{
+		// Header tag does exist multible times.
+		// You can refocus it when the file is corrupted.
 		PXOGGPage page;
 
-		//Check PXOGG Header
-		{
-			// Header tag does exist multible times.
-			// You can refocus it when the file is corrupted.
-			const PXSize headerSignatureSize = sizeof(PXOGGHeaderSignature);
-			const PXBool validHeaderSignature = PXFileReadAndCompare(pxFile, PXOGGHeaderSignature, headerSignatureSize);
-
-			if(!validHeaderSignature)
-			{
-				return PXActionRefusedInvalidHeaderSignature;
-			}
-		}
-
+		PXInt32UCluster signature;
 
 		const PXFileDataElementType pxDataStreamElementList[] =
-		{
+		{ 
+			{PXDataTypeTextx4, signature.Data},
 			{PXDataTypeInt8U, &page.Version},
 			{PXDataTypeInt8U, &page.HeaderType},
 			{PXDataTypeLEInt32U, &page.GranulePosition},
@@ -47,8 +40,18 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
 
+		const PXBool validHeaderSignature = PXMemoryCompare(signature.Data, 4u, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
+
+		if (!validHeaderSignature)
+		{
+			return PXActionRefusedInvalidHeaderSignature;
+		}
+
+
+
 		unsigned char segmentSizeList[0xFF];
 
+#if PXOPGGDebug
 		printf
 		(
 			"|         | %7s | %4s | %8s | %6s | %7s | %11s | %4s |\n"
@@ -70,11 +73,13 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 			page.CRC32CheckSum,
 			page.PageSegments
 		);
+#endif
 
 		for(PXSize i = 0; i < page.PageSegments; ++i)
 		{
 			PXFileReadI8U(pxFile, &segmentSizeList[i]);
 
+#if PXOPGGDebug
 			printf
 			(
 				"| Segment | %3i/%3i | %3i Bytes %-45s |\n",
@@ -83,6 +88,7 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 				segmentSizeList[i],
 				""
 			);
+#endif
 		}
 
 		for(PXSize i = 0; i < page.PageSegments; ++i)
@@ -95,15 +101,19 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 				char print = (*currentPos >= ' ' && *currentPos <= '~') ? *currentPos : '.';
 
+#if PXOPGGDebug
 				printf("%c", print);
 
 				if(((i + 1) % 64u) == 0)
 				{
 					printf("\n");
 				}
+#endif
 			}
 
+#if PXOPGGDebug
 			printf("\n");
+#endif
 
 			PXFileCursorAdvance(pxFile, x);
 		}

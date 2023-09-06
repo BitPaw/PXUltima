@@ -129,16 +129,13 @@
     <ClCompile Include="Media\DEFLATE\PXDEFLATE.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\DLL\PXDLL.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Media\ELF\PXELF.c">
+    <ClCompile Include="Media\BinaryLinux\PXBinaryLinux.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\Email\PXEmail.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\EXE\PXEXE.c">
+    <ClCompile Include="Media\BinaryWindows\PXBinaryWindows.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\FilmBox\PXFilmBox.c">
@@ -264,7 +261,7 @@
     <ClCompile Include="Media\VRML\PXVRML.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\WAV\PXWAV.c">
+    <ClCompile Include="Media\Wave\PXWave.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\Wavefront\PXWavefront.c">
@@ -545,16 +542,13 @@
     <ClInclude Include="Media\DEFLATE\PXDEFLATE.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\DLL\PXDLL.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Media\ELF\PXELF.h">
+    <ClInclude Include="Media\BinaryLinux\PXBinaryLinux.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\Email\PXEmail.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\EXE\PXEXE.h">
+    <ClInclude Include="Media\BinaryWindows\PXBinaryWindows.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\FilmBox\PXFilmBox.h">
@@ -680,7 +674,7 @@
     <ClInclude Include="Media\VRML\PXVRML.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\WAV\PXWAV.h">
+    <ClInclude Include="Media\Wave\PXWave.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\Wavefront\PXWavefront.h">
@@ -851,6 +845,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
+    <None Include="Media\COFF\README.md" />
+    <None Include="Media\BinaryWindows\README.md" />
+    <None Include="Media\BinaryLinux\README.md" />
+    <None Include="Media\Bitmap\README.md" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="Media\Assembly\PXAssemblyX86.asm">

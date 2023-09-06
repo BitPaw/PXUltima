@@ -1,5 +1,39 @@
 #include "PXFTP.h"
 
+const char PXFTPUser[4] = { 'U', 'S', 'E', 'R' };
+const char PXFTPPassword[4] = { 'P', 'A', 'S', 'S' };
+const char PXFTPAccount[4] = { 'A', 'C', 'C', 'T' };
+const char PXFTPCWD[4] = { 'C', 'W', 'D', '\0' };
+const char PXFTPCDUP[4] = { 'C', 'D', 'U', 'P' };
+const char PXFTPSMNT[4] = { 'S', 'M', 'N', 'T' };
+const char PXFTPQuit[4] = { 'Q', 'U', 'I', 'T' };
+const char PXFTPREIN[4] = { 'R', 'E', 'I', 'N' };
+const char PXFTPPORT[4] = { 'P', 'O', 'R', 'T' };
+const char PXFTPPASV[4] = { 'P', 'A', 'S', 'V' };
+const char PXFTPTYPE[4] = { 'T', 'Y', 'P', 'E' };
+const char PXFTPSTRU[4] = { 'S', 'T', 'R', 'U' };
+const char PXFTPMODE[4] = { 'M', 'O', 'D', 'E' };
+const char PXFTPRETR[4] = { 'R', 'E', 'T', 'R' };
+const char PXFTPSTOR[4] = { 'S', 'T', 'O', 'R' };
+const char PXFTPSTOU[4] = { 'S', 'T', 'O', 'U' };
+const char PXFTPAPPE[4] = { 'A', 'P', 'P', 'E' };
+const char PXFTPALLO[4] = { 'A', 'L', 'L', 'O' };
+const char PXFTPREST[4] = { 'R', 'E', 'S', 'T' };
+const char PXFTPRNFR[4] = { 'R', 'N', 'F', 'R' };
+const char PXFTPRNTO[4] = { 'R', 'N', 'T', 'O' };
+const char PXFTPABOR[4] = { 'A', 'B', 'O', 'R' };
+const char PXFTPDelete[4] = { 'D', 'E', 'L', 'E' };
+const char PXFTPRMD[4] = { 'R', 'M', 'D', '\0' };
+const char PXFTPMKD[4] = { 'M', 'K', 'D', '\0' };
+const char PXFTPPWD[4] = { 'P', 'W', 'D', '\0' };
+const char PXFTPList[4] = { 'L', 'I', 'S', 'T' };
+const char PXFTPNList[4] = { 'N', 'L', 'S', 'T' };
+const char PXFTPSite[4] = { 'S', 'I', 'T', 'E' };
+const char PXFTPSyst[4] = { 'S', 'Y', 'S', 'T' };
+const char PXFTPStat[4] = { 'S', 'T', 'A', 'T' };
+const char PXFTPHelp[4] = { 'H', 'E', 'L', 'P' };
+const char PXFTPNoOperation[4] = { 'N', 'O', 'O', 'P' };
+
 PXFTPResult PXFTPResultParse(const unsigned short resultID)
 {
 	switch (resultID)
@@ -99,8 +133,8 @@ PXFTPResult PXFTPResultParse(const unsigned short resultID)
 
 PXSize PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* const parameterA)
 {
-	const char syntaxDouble[] = "%s %s\r\n"; 
-	const char syntaxSingle[] = "%s \r\n";
+	const char syntaxDouble[] = "%.4s %s\r\n"; 
+	const char syntaxSingle[] = "%.4s \r\n";
 
 	switch (pxFTPCommand)
 	{
@@ -108,112 +142,112 @@ PXSize PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, 
 		{
 			if (parameterA == PXNull)
 			{
-				return PXTextPrint(pxText, syntaxDouble, "USER", "anonymous");
+				return PXTextPrint(pxText, syntaxDouble, PXFTPUser, "anonymous");
 			}
 			else
 			{
-				return PXTextPrint(pxText, syntaxDouble, "USER", parameterA);
+				return PXTextPrint(pxText, syntaxDouble, PXFTPUser, parameterA);
 			}
 		}
 
 		case PXFTPCommandPassword: // PASS
-			return PXTextPrint(pxText, syntaxDouble, "PASS", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPPassword, parameterA);
 
 		case PXFTPCommandAccount: // ACCT
-			return PXTextPrint(pxText, syntaxDouble, "ACCT", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPAccount, parameterA);
 			
 		case PXFTPCommandWorkingDirectoryChange: // CWD
-			return PXTextPrint(pxText, syntaxDouble, "CWD", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPCWD, parameterA);
 
 		case PXFTPCommandDirectoryGoToParent: // CDUP
-			return PXTextPrint(pxText, syntaxSingle, "CDUP");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPCDUP);
 
 		case PXFTPCommandSMNT: // SMNT
-			return PXTextPrint(pxText, syntaxDouble, "SMNT", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPSMNT, parameterA);
 
 		case PXFTPCommandQuit: // QUIT
-			return PXTextPrint(pxText, syntaxSingle, "QUIT");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPQuit);
 
 		case PXFTPCommandREIN: // REIN
-			return PXTextPrint(pxText, syntaxSingle, "REIN");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPREIN);
 
 		case PXFTPCommandPORT:
-			return PXTextPrint(pxText, syntaxDouble, "PORT", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPPORT, parameterA);
 
 		case PXFTPCommandPASV:
-			return PXTextPrint(pxText, syntaxSingle, "PASV");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPPASV);
 
 		case PXFTPCommandTYPE:
-			return PXTextPrint(pxText, syntaxDouble, "TYPE", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPTYPE, parameterA);
 
 		case PXFTPCommandSTRU:
-			return PXTextPrint(pxText, syntaxDouble, "STRU", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPSTRU, parameterA);
 
 		case PXFTPCommandMODE:
-			return PXTextPrint(pxText, syntaxDouble, "MODE", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPMODE, parameterA);
 
 		case PXFTPCommandRETR:
-			return PXTextPrint(pxText, syntaxDouble, "RETR", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPRETR, parameterA);
 
 		case PXFTPCommandSTOR:
-			return PXTextPrint(pxText, syntaxDouble, "STOR", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPSTOR, parameterA);
 
 		case PXFTPCommandStoreUnique:
-			return PXTextPrint(pxText, syntaxSingle, "STOU");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPSTOU);
 
 		case PXFTPCommandAPPE:
-			return PXTextPrint(pxText, syntaxDouble, "APPE", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPAPPE, parameterA);
 
 		case PXFTPCommandALLO:
-			return PXTextPrint(pxText, syntaxDouble, "ALLO", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPALLO, parameterA);
 
 		case PXFTPCommandREST:
-			return PXTextPrint(pxText, syntaxDouble, "REST", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPREST, parameterA);
 
 		case PXFTPCommandFileRenameFrom: // RNFR
-			return PXTextPrint(pxText, syntaxDouble, "RNFR", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPRNFR, parameterA);
 
 		case PXFTPCommandFileRenameTo: // RNTO
-			return PXTextPrint(pxText, syntaxDouble, "RNTO", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPRNTO, parameterA);
 
 		case PXFTPCommandAbort: // ABOR
-			return PXTextPrint(pxText, syntaxSingle, "ABOR");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPABOR);
 
 		case PXFTPCommandDelete: // DELE
-			return PXTextPrint(pxText, syntaxDouble, "DELE", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPDelete, parameterA);
 
 		case PXFTPCommandDirectoryRemove:
-			return PXTextPrint(pxText, syntaxDouble, "RMD", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPRMD, parameterA);
 
 		case PXFTPCommandMKD:
-			return PXTextPrint(pxText, syntaxDouble, "MKD", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPMKD, parameterA);
 
 		case PXFTPCommandDirectoryPrint:
-			return PXTextPrint(pxText, syntaxSingle, "PWD");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPPWD);
 
 		case PXFTPCommandList:
 
 			//return PXFTPCommandBuildBare("NLST", pxText);
 
-			return PXTextPrint(pxText, syntaxDouble, "LIST", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPList, parameterA);
 
 		case PXFTPCommandNLST:
-			return PXTextPrint(pxText, syntaxDouble, "NLST", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPNList, parameterA);
 
 		case PXFTPCommandSITE:
-			return PXTextPrint(pxText, syntaxDouble, "SITE", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPSite, parameterA);
 
 		case PXFTPCommandSYST:
-			return PXTextPrint(pxText, syntaxSingle, "SYST");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPSyst);
 
 		case PXFTPCommandSTAT:
-			return PXTextPrint(pxText, syntaxDouble, "STAT", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPStat, parameterA);
 
 		case PXFTPCommandHELP:
-			return PXTextPrint(pxText, syntaxDouble, "HELP", parameterA);
+			return PXTextPrint(pxText, syntaxDouble, PXFTPHelp, parameterA);
 
 		case PXFTPCommandNOOP:
-			return PXTextPrint(pxText, syntaxSingle, "NOOP");
+			return PXTextPrint(pxText, syntaxSingle, PXFTPNoOperation);
 
 		case PXFTPCommandInvalid:
 		default:

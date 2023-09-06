@@ -35,12 +35,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+    <EnableFuzzer>
+    </EnableFuzzer>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -51,6 +54,9 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+    <EnableFuzzer>
+    </EnableFuzzer>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -123,24 +129,38 @@
     <ClCompile>
       <WarningLevel>Level1</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_CONSOLE;WINVER=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>
+      </ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
+      <Optimization>MinSpace</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <BuildStlModules>false</BuildStlModules>
+      <StringPooling>true</StringPooling>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DiagnosticsFormat>
+      </DiagnosticsFormat>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -172,7 +192,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>
+      </ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
@@ -184,11 +205,22 @@
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <Optimization>MinSpace</Optimization>
+      <BuildStlModules>false</BuildStlModules>
+      <StringPooling>true</StringPooling>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DiagnosticsFormat>
+      </DiagnosticsFormat>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -232,10 +264,9 @@
     <ClCompile Include="Media\CS\PXCS.c" />
     <ClCompile Include="Media\C\PXC.c" />
     <ClCompile Include="Media\DEFLATE\PXDEFLATE.c" />
-    <ClCompile Include="Media\DLL\PXDLL.c" />
-    <ClCompile Include="Media\ELF\PXELF.c" />
+    <ClCompile Include="Media\BinaryLinux\PXBinaryLinux.c" />
     <ClCompile Include="Media\Email\PXEmail.c" />
-    <ClCompile Include="Media\EXE\PXEXE.c" />
+    <ClCompile Include="Media\BinaryWindows\PXBinaryWindows.c" />
     <ClCompile Include="Media\FilmBox\PXFilmBox.c" />
     <ClCompile Include="Media\FLAC\PXFLAC.c" />
     <ClCompile Include="Media\FMT\PXFMT.c" />
@@ -283,7 +314,7 @@
     <ClCompile Include="Media\UUID\PXUUID.c" />
     <ClCompile Include="Media\VRML\PXVRML.c" />
     <ClCompile Include="Media\Wavefront\PXWavefront.c" />
-    <ClCompile Include="Media\WAV\PXWAV.c" />
+    <ClCompile Include="Media\Wave\PXWave.c" />
     <ClCompile Include="Media\WEBM\PXWEBM.c" />
     <ClCompile Include="Media\WEBP\PXWEBP.c" />
     <ClCompile Include="Media\WMA\PXWMA.c" />
@@ -372,10 +403,9 @@
     <ClInclude Include="Media\CS\PXCS.h" />
     <ClInclude Include="Media\C\PXC.h" />
     <ClInclude Include="Media\DEFLATE\PXDEFLATE.h" />
-    <ClInclude Include="Media\DLL\PXDLL.h" />
-    <ClInclude Include="Media\ELF\PXELF.h" />
+    <ClInclude Include="Media\BinaryLinux\PXBinaryLinux.h" />
     <ClInclude Include="Media\Email\PXEmail.h" />
-    <ClInclude Include="Media\EXE\PXEXE.h" />
+    <ClInclude Include="Media\BinaryWindows\PXBinaryWindows.h" />
     <ClInclude Include="Media\FilmBox\PXFilmBox.h" />
     <ClInclude Include="Media\FLAC\PXFLAC.h" />
     <ClInclude Include="Media\FMT\PXFMT.h" />
@@ -423,7 +453,7 @@
     <ClInclude Include="Media\UUID\PXUUID.h" />
     <ClInclude Include="Media\VRML\PXVRML.h" />
     <ClInclude Include="Media\Wavefront\PXWavefront.h" />
-    <ClInclude Include="Media\WAV\PXWAV.h" />
+    <ClInclude Include="Media\Wave\PXWave.h" />
     <ClInclude Include="Media\WEBM\PXWEBM.h" />
     <ClInclude Include="Media\WEBP\PXWEBP.h" />
     <ClInclude Include="Media\WMA\PXWMA.h" />
@@ -480,6 +510,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </MASM>
+    <None Include="Media\BinaryLinux\README.md" />
+    <None Include="Media\Bitmap\README.md" />
+    <None Include="Media\COFF\README.md" />
+    <None Include="Media\BinaryWindows\README.md" />
     <None Include="Media\Matroska\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

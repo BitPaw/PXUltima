@@ -174,6 +174,8 @@ extern "C"
 		PXDataTypeAdressFlex, // 32-Bit or 64-Bit
 		PXDataTypeInt16Flex, // Big or little endian
 		PXDataTypeInt32Flex,
+		PXDataTypeInt32Flex32ONLY,
+		PXDataTypeInt32Flex64ONLY,
 		PXDataTypeInt64Flex,
 
 		//-------------------------------------------------

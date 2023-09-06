@@ -3,7 +3,7 @@
 
 #include <Media/ID3/PXID3.h>
 
-#define PXMP3Debug 1
+#define PXMP3Debug 0
 
 #ifdef __cplusplus
 extern "C"
