@@ -669,7 +669,7 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
 
             PXVirtualKey keyBoardKey = PXVirtualKeyFromID(keySym);
 
-            KeyBoardKeyInfo keyBoardKeyInfo;
+            PXKeyBoardKeyInfo keyBoardKeyInfo;
 
             keyBoardKeyInfo.Key = keyBoardKey;
             keyBoardKeyInfo.Mode = release ? PXKeyPressStateUp : PXKeyPressStateDown;
@@ -699,7 +699,7 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
             const XButtonEvent* buttonEvent = &event->xbutton;
             const unsigned int buttonID = buttonEvent->button;
             const PXKeyPressState buttonState = event->type == ButtonPress ? PXKeyPressStateDown : PXKeyPressStateUp;
-            MouseButton mouseButton = MouseButtonInvalid;
+            PXMouseButton mouseButton = PXMouseButtonInvalid;
 
             switch(buttonID)
             {
@@ -716,11 +716,11 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
                     break;
 
                 case MouseScrollUp:
-                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, MouseScrollDirectionUp);
+                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionUp);
                     break;
 
                 case MouseScrollDown:
-                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, MouseScrollDirectionDown);
+                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionDown);
                     break;
 
             }

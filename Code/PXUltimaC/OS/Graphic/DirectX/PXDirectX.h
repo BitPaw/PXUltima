@@ -1,40 +1,43 @@
 #ifndef PXDirectXINCLUDE
 #define PXDirectXINCLUDE
 
+#include <Media/PXResource.h>
+
 //-------------------------------------
 // DirectX - Settings
 //-------------------------------------
-#define PXDX9Use 1u
-#define PXDX10Use 0u
-#define PXDX10x1Use 0u
-#define PXDX11Use 0u
-#define PXDX12Use 0u
+#define PXDX9Enable OSWindows && 1u
+#define PXDX10Enable OSWindows && 0u
+#define PXDX10x1Enable OSWindows && 0u
+#define PXDX11Enable OSWindows && 0u
+#define PXDX12Enable OSWindows && 0u
 
-#define PXDX10Atleast PXDX10Use || PXDX10x1Use || PXDX11Use || PXDX12Use
+#define PXDX10Atleast PXDX10Enable || PXDX10x1Enable || PXDX11Enable || PXDX12Enable
 
 //-------------------------------------
-
-#include <Media/PXResource.h>
 
 #if OSUnix
 // UNIX has no DirectX support
 typedef unsigned int  IDirect3D9; // Dummy value
 #define MAX_DEVICE_IDENTIFIER_STRING 32
+
+typedef void* D3DMATERIAL9;
+
 #elif OSWindows
 
-#if PXDX12Use
+#if PXDX12Enable
 #include <d3d12.h>
 #endif
 
-#if PXDX11Use
+#if PXDX11Enable
 #include <d3d11.h>
 #endif
 
-#if PXDX10Use
+#if PXDX10Enable
 #include <d3d10.h>
 #endif
 
-#if PXDX9Use
+#if PXDX9Enable
 #include <d3d9.h>
 #endif
 
@@ -61,15 +64,15 @@ extern "C"
 
         PXDirectXVersionNewest,
 
-#if PXDX9Use
+#if PXDX9Enable
         PXDirectXVersion9, // Windows XP
 #endif
 
-#if PXDX10Use
+#if PXDX10Enable
         PXDirectXVersion10x0, // Windows Vista
 #endif
 
-#if PXDX10x1Use
+#if PXDX10x1Enable
         PXDirectXVersion10x1,  // Windows Vista
         PXDirectXVersion10x1Simulate9x1,
         PXDirectXVersion10x1Simulate9x2,
@@ -77,7 +80,7 @@ extern "C"
         PXDirectXVersion10x1Simulate10x0,
 #endif
 
-#if PXDX11Use
+#if PXDX11Enable
         // DirectX 11 - Windows 7, 8, 8.1
         PXDirectXVersion11Emulate1x0Core,
         PXDirectXVersion11Emulate9x1,
@@ -92,7 +95,7 @@ extern "C"
         //PXDirectXVersion11Emulate12x2,
 #endif
 
-#if PXDX12Use
+#if PXDX12Enable
         // DirectX 12 - Windows 10, 11
         PXDirectXVersion12Emulate1x0Core,
         PXDirectXVersion12Emulate9x1,
@@ -121,24 +124,24 @@ extern "C"
         IDXGIAdapter VideoAdapter;
 #endif
 
-#if OSWindows && PXDX12Use   // Direct X - v.12
+#if OSWindows && PXDX12Enable   // Direct X - v.12
         ID3D12Device* DX12;
 #endif
 
-#if OSWindows && PXDX11Use      // Direct X - v.11.0
+#if OSWindows && PXDX11Enable      // Direct X - v.11.0
         ID3D11Device* DX11;
         ID3D11DeviceContext* DX11Context;
 #endif
 
-#if OSWindows && PXDX10x1Use   // Direct X - v.10.1
+#if OSWindows && PXDX10x1Enable   // Direct X - v.10.1
         ID3D10Device1* DX10X1;
 #endif
 
-#if OSWindows && PXDX10Use   // Direct X - v.10.0
+#if OSWindows && PXDX10Enable   // Direct X - v.10.0
         ID3D10Device* DX10;
 #endif
 
-#if OSWindows && PXDX9Use  // Direct X - v.9.x
+#if OSWindows && PXDX9Enable  // Direct X - v.9.x
         D3DCAPS9 DeviceCapabilitiesCurrent;
         IDirect3D9* DX9Context;
         IDirect3DDevice9* DX9;
@@ -146,12 +149,12 @@ extern "C"
 	}
 	PXDirectX;
 
+#if OSWindows // TODO: Temp fix, cant compile
 
     PXPublic PXActionResult PXDirectCooperativeLevelTest(PXDirectX* const pxDirectX);
 
     PXPublic PXActionResult PXDirectXManagedResourcesEvict(PXDirectX* const pxDirectX);
-    PXPublic PXActionResult PXDirectXDirect3DGet(PXDirectX* const pxDirectX, IDirect3D9** ppD3D9);
-    PXPublic PXActionResult PXDirectXDeviceCapsGet(PXDirectX* const pxDirectX, D3DCAPS9* pCaps);
+
     PXPublic PXActionResult PXDirectXDisplayModeGet(PXDirectX* const pxDirectX, UINT iSwapChain, D3DDISPLAYMODE* pMode);
     PXPublic PXActionResult PXDirectXCreationParametersGet(PXDirectX* const pxDirectX, D3DDEVICE_CREATION_PARAMETERS* pParameters);
     PXPublic PXActionResult PXDirectXCursorPropertiesSet(PXDirectX* const pxDirectX, UINT XHotSpot, UINT YHotSpot, IDirect3DSurface9* pCursorBitmap);
@@ -373,17 +376,18 @@ extern "C"
     //-----------------------------------------------------
     // Direct X - Textures
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXAvailableTextureMemoryGet(PXDirectX* const pxDirectX, PXInt32U* const value);
-    PXPublic PXActionResult PXDirectXTextureGet(PXDirectX* const pxDirectX, DWORD Stage, IDirect3DBaseTexture9** ppTexture);
-    PXPublic PXActionResult PXDirectXTextureSet(PXDirectX* const pxDirectX, DWORD Stage, IDirect3DBaseTexture9* pTexture);
+    PXPublic PXActionResult PXDirectXTextureMemoryAvailable(PXDirectX* const pxDirectX, PXInt32U* const value);
+   // PXPublic PXActionResult PXDirectXTextureGet(PXDirectX* const pxDirectX, DWORD Stage, IDirect3DBaseTexture9** ppTexture);
+   // PXPublic PXActionResult PXDirectXTextureSet(PXDirectX* const pxDirectX, DWORD Stage, IDirect3DBaseTexture9* pTexture);
 	PXPublic PXActionResult PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D* const pxTexture2D);
 	PXPublic PXActionResult PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D* const pxTexture3D);
 	PXPublic PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureCube* const pxTextureCube);
+
+#endif
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
 #endif
