@@ -17,6 +17,56 @@
 #define PXRIFFSubTypeRMID PXInt32Make('R', 'M', 'I', 'D')
 #define PXRIFFSubTypeWAVE PXInt32Make('W', 'A', 'V', 'E')
 
+PXEndian PXRIFFEndianFromID(const PXInt32U value)
+{
+	switch (value)
+	{
+		case RIFXSignature:		return PXEndianBig;
+		case PXRIFFSignature:	return PXEndianLittle;
+		default:				return PXEndianInvalid;
+	}
+}
+
+PXInt32U PXRIFFEndianToID(const PXEndian value)
+{
+	switch (value)
+	{
+		case PXEndianBig:		return RIFXSignature;
+		case PXEndianLittle:	return PXRIFFSignature;
+		default:				return 0;
+	}
+}
+
+PXRIFFFormat PXRIFFFormatFromID(const PXInt32U value)
+{
+	switch (value)
+	{
+		case PXRIFFSubTypeAVI:	return PXRIFFAudioVideoInterleave;
+		case PXRIFFSubTypeAVIX: return PXRIFFAudioVideoInterleave; // Is this a different version?
+		case PXRIFFSubTypeRDIB:	return PXRIFFDeviceIndependentBitmap;
+		case PXRIFFSubTypePAL:	return PXRIFFPalette;
+		case PXRIFFSubTypeRMMP:	return PXRIFFMultimediaMovieFile;
+		case PXRIFFSubTypeRMID:	return PXRIFFPXMIDI;
+		case PXRIFFSubTypeWAVE:	return PXRIFFWaveformAudio;
+		default: return PXRIFFInvalid;
+	}
+}
+
+PXInt32U PXRIFFFormatToID(const PXRIFFFormat value)
+{
+	switch (value)
+	{
+		case PXRIFFAudioVideoInterleave: return PXRIFFSubTypeAVI;
+		//case PXRIFFAudioVideoInterleave: return PXRIFFSubTypeAVIX; // Is this a different version?
+		case PXRIFFDeviceIndependentBitmap:	return PXRIFFSubTypeRDIB;
+		case PXRIFFPalette:	return PXRIFFSubTypePAL;
+		case PXRIFFMultimediaMovieFile:	return PXRIFFSubTypeRMMP;
+		case PXRIFFPXMIDI:	return PXRIFFSubTypeRMID;
+		case PXRIFFWaveformAudio:	return PXRIFFSubTypeWAVE;
+		default: return 0;
+	}
+}
+
 PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const pxFile)
 {
 	PXInt32UCluster chunkID;
@@ -24,64 +74,15 @@ PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const pxFile)
 
 	const PXFileDataElementType pxDataStreamElementList[] =
 	{
-		{PXDataTypeTextx4, chunkID.Data},
-		{PXDataTypeLEInt32U, &riff->ChunkSize},
-		{PXDataTypeTextx4, formatID.Data}
+		{chunkID.Data, PXDataTypeDatax4},
+		{&riff->ChunkSize, PXDataTypeInt32ULE},
+		{formatID.Data, PXDataTypeDatax4}
 	};
-	const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-	PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+	PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-	switch(chunkID.Value) // Detect Endiantype
-	{
-		case RIFXSignature:
-			riff->EndianFormat = PXEndianBig;
-			break;
-
-		case PXRIFFSignature:
-			riff->EndianFormat = PXEndianLittle;
-			break;
-
-		default:
-			riff->EndianFormat = PXEndianInvalid;
-			break;
-	}
-
-	switch(formatID.Value)
-	{
-		case PXRIFFSubTypeAVI:
-			riff->Format = PXRIFFAudioVideoInterleave;
-			break;
-
-		case PXRIFFSubTypeAVIX:
-			riff->Format = PXRIFFAudioVideoInterleave; // Is this a different version?
-			break;
-
-		case PXRIFFSubTypeRDIB:
-			riff->Format = PXRIFFDeviceIndependentBitmap;
-			break;
-
-		case PXRIFFSubTypePAL:
-			riff->Format = PXRIFFPalette;
-			break;
-
-		case PXRIFFSubTypeRMMP:
-			riff->Format = PXRIFFMultimediaMovieFile;
-			break;
-
-		case PXRIFFSubTypeRMID:
-			riff->Format = PXRIFFPXMIDI;
-			break;
-
-		case PXRIFFSubTypeWAVE:
-			riff->Format = PXRIFFWaveformAudio;
-			break;
-
-		default:
-			riff->Format = PXRIFFInvalid;
-			break;
-	}
-
+	riff->Format = PXRIFFFormatFromID(chunkID.Value);
+	riff->EndianFormat = PXRIFFEndianFromID(formatID.Value);
 	riff->Valid = (riff->EndianFormat != PXEndianInvalid) && (riff->Format != PXRIFFInvalid);
 
 	return PXActionSuccessful;
@@ -89,57 +90,17 @@ PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const pxFile)
 
 PXActionResult PXRIFFSerialize(const PXRIFF* const riff, PXFile* const pxFile)
 {
-	unsigned int riffSignature = 0;
-	unsigned int riffType = 0;
-
-	switch (riff->EndianFormat) // Detect Endiantype
-	{
-		case PXEndianBig:
-			riffSignature = RIFXSignature;
-			break;
-
-		case PXEndianLittle:
-			riffSignature = PXRIFFSignature;
-			break;
-
-		default:
-			return PXActionInvalid;
-	}
-
-	switch (riff->Format)
-	{
-		case PXRIFFWaveformAudio:
-			riffType = PXRIFFSubTypeWAVE;
-			break;
-		case PXRIFFMultimediaMovieFile:
-			riffType = PXRIFFSubTypeRMMP;
-			break;
-		case PXRIFFPXMIDI:
-			riffType = PXRIFFSubTypeRMID;
-			break;
-		case PXRIFFDeviceIndependentBitmap:
-			riffType = 0;
-			break;
-		case PXRIFFPalette:
-			riffType = 0;
-			break;
-		case PXRIFFAudioVideoInterleave:
-			riffType = PXRIFFSubTypeAVI;
-			break;
-
-		default:
-			return PXActionInvalid;
-	}
+	const PXInt32U riffSignature = PXRIFFEndianToID(riff->EndianFormat);
+	const PXInt32U riffType = PXRIFFFormatToID(riff->Format);
 
 	const PXFileDataElementType pxDataStreamElementList[] =
 	{
-		{PXDataTypeLEInt32U, &riffSignature},
-		{PXDataTypeLEInt32U, &riff->ChunkSize},
-		{PXDataTypeLEInt32U, &riffType}
+		{&riffSignature, PXDataTypeInt32ULE},
+		{&riff->ChunkSize, PXDataTypeInt32ULE},
+		{&riffType, PXDataTypeInt32ULE}
 	};
-	const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-	PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+	PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 	return PXActionSuccessful;
 }

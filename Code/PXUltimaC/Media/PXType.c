@@ -2,53 +2,9 @@
 
 #include <OS/Memory/PXMemory.h>
 
-PXInt8U PXDataTypeSize(const PXDataType pxDataType)
-{
-	switch (pxDataType)
-	{
-		case PXDataTypeAdress8Bit:
-		case PXDataTypeInt8S:
-		case PXDataTypeInt8U:
-			return 1u;
-
-		case PXDataTypeAdress16Bit:
-		case PXDataTypeLEInt16S:
-		case PXDataTypeLEInt16U:
-		case PXDataTypeBEInt16S:
-		case PXDataTypeBEInt16U:
-		case PXDataTypeTextx2:
-		case PXDataTypeInt16Flex:
-			return 2u;
-
-		case PXDataTypeAdress32Bit:
-		case PXDataTypeLEInt32S:
-		case PXDataTypeLEInt32U:
-		case PXDataTypeBEInt32S:
-		case PXDataTypeBEInt32U:
-		case PXDataTypeTextx4:
-		case PXDataTypeFloat:
-		case PXDataTypeInt32Flex:
-			return 4u;
-
-		case PXDataTypeAdress64Bit:
-		case PXDataTypeLEInt64S:
-		case PXDataTypeLEInt64U:
-		case PXDataTypeBEInt64S:
-		case PXDataTypeBEInt64U:
-		case PXDataTypeTextx8:
-		case PXDataTypeDouble:
-		case PXDataTypeInt64Flex:
-			return 8u;
-
-		case PXDataTypeTypeInvalid:
-		default:
-			return 0u;
-	}
-}
-
 #define PX_X86_BSWAP_ALLOW OS32B 
 
-/*
+
 void PXEndianSwapI32U(PXInt32U* const value)
 {
 
@@ -75,7 +31,7 @@ void PXEndianSwapI32U(PXInt32U* const value)
 #else
 
 #endif // 0
-}*/
+}
 
 void PXEndianSwapI16U(PXInt16U* const value)
 {

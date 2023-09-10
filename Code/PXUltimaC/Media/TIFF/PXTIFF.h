@@ -191,10 +191,10 @@ extern "C"
 
 
 
-	PXPrivate PXTIFFType PXTIFFTypeFromID(const unsigned char tiffTypeID);
-	PXPrivate PXTIFFTagType PXTIFFTagTypeFromID(const unsigned short tiffTagTypeID);
-	PXPrivate PXTIFFCompression PXTIFFCompressionFromID(const unsigned short tiffCompressionID);
-	PXPrivate PXTIFFColorFormat PXTIFFColorFormatFromID(const unsigned short tiffColorFormatID);
+	PXPrivate inline PXTIFFType PXTIFFTypeFromID(const unsigned char tiffTypeID);
+	PXPrivate inline PXTIFFTagType PXTIFFTagTypeFromID(const unsigned short tiffTagTypeID);
+	PXPrivate inline PXTIFFCompression PXTIFFCompressionFromID(const unsigned short tiffCompressionID);
+	PXPrivate inline PXTIFFColorFormat PXTIFFColorFormatFromID(const unsigned short tiffColorFormatID);
 
 	PXPublic PXSize PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 

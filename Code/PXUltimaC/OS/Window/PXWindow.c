@@ -2384,6 +2384,13 @@ void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S
     {
         const PXActionResult actionResult = PXThreadRun(&window->MessageThread, PXWindowCreateThread, window);
         const PXBool sucessful = PXActionSuccessful == actionResult;
+
+        if (!sucessful)
+        {
+            return actionResult;       
+        }
+
+        PXAwaitChangeCU(&window->IsRunning);
     }
     else
     {

@@ -59,23 +59,85 @@ extern "C"
 	}
 	PXSectionType;
 
+
 	// 40 Bytes in file
 	typedef struct PXSectionTable_
 	{
 		PXInt64UCluster Name;
-		PXInt32U VirtualSize;
+		PXInt32U PhysicalAddress;
 		PXInt32U VirtualAddress;
-		PXInt32U SizeOfRawData;
+		PXInt32U SectionSizeInBytes;
 		PXInt32U PointerToRawData;
 		PXInt32U PointerToRelocations;
 		PXInt32U PointerToLinenumbers;
 		PXInt16U NumberOfRelocations;
 		PXInt16U NumberOfLinenumbers;
-		PXInt32U Characteristics;
+		PXInt32U CharacteristicFlags;
 
 		PXSectionType Type;
 	}
 	PXSectionTable;
+
+	typedef struct PXCOFFSymbolTableEntry_
+	{
+		union
+		{
+			char Name[8];
+
+			struct
+			{
+				PXInt32U DoesNotUseExternalString;
+				PXInt32U NameReferenceOffset;
+			};
+
+			// If the symbol name is greater than eight characters, this field is treated as two integers. The entire
+			//symbol name is stored in the string table.Bytes 0 - 3 contain 0, and bytes 4 - 7 are an offset into the
+			//	string table.
+		};
+
+		PXInt32U ValueOfSymbol;
+		PXInt16S SectionNumber;
+		PXInt16U TypeAndDerived;
+		PXInt8U StorageClass;
+		PXInt8U NumberOfAuxiliaryEntries;
+	}
+	PXCOFFSymbolTableEntry;
+
+	typedef struct PXRelocationInformation_
+	{
+		PXInt32U VirtualAddressOfReference;
+		PXInt32U SymbolTableIndex;
+		PXInt16U RelocationType;
+	}
+	PXRelocationInformation;
+
+	typedef struct PXLineNumberEntry_
+	{
+		union
+		{
+			PXInt32U SymbolIndex;
+			PXInt32U PhysicalAddress;
+		};
+		PXInt16U LineNumber;
+	}
+	PXLineNumberEntry;
+
+	typedef struct PXCOFFExportDirectoryTableEntry_
+	{
+		PXInt32U ExportFlags;
+		PXInt32U TimeDateStamp;
+		PXInt16U MajorVersion;
+		PXInt16U MinorVersion;
+		PXInt32U NameRVA;
+		PXInt32U OrdinalBase;
+		PXInt32U AddressTableEntries;
+		PXInt32U NumberOfNamePointers;
+		PXInt32U ExportAddressTableRVA;
+		PXInt32U NamePointerRVA;
+		PXInt32U OrdinalTableRVA;
+	}
+	PXCOFFExportDirectoryTableEntry;
+
 
 	// 20 Byte size
 	typedef struct PXCOFF_
@@ -115,7 +177,6 @@ extern "C"
 		PXInt16U MinorImageVersion;
 		PXInt16U MajorSubsystemVersion;
 		PXInt16U MinorSubsystemVersion;
-		char ReservedA[4];
 		PXInt32U SizeOfImage;
 		PXInt32U SizeOfHeaders;
 		PXInt32U CheckSum;
@@ -174,7 +235,6 @@ extern "C"
 		PXInt32U COMPlusRuntimeHeaderAdress;
 		PXInt32U COMPlusRuntimeHeaderSize;
 
-		PXByte ReservedB[8];
 
 
 		PXSectionTable* SectionTableList;

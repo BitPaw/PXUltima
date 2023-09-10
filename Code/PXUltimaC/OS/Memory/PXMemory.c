@@ -317,6 +317,11 @@ void* PXMemoryStackAllocate(const PXSize size)
 
 void* PXMemoryStackRelease(void* const adress)
 {
+	if (!adress)
+	{
+		return;
+	}
+
 #if OSUnix
 	
 #elif OSWindows

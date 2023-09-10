@@ -937,8 +937,7 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
 
         //---<Check PNG Header>------------------------------------------------
         {
-            const PXInt64U pngFileHeader = PNGHeaderSequenz;
-            const PXBool isValidHeader = PXFileReadAndCompareI64U(pxFile, pngFileHeader);
+            const PXBool isValidHeader = PXFileReadAndCompare(pxFile, PNGHeaderSequenz, sizeof(PNGHeaderSequenz));
 
             if (!isValidHeader)
             {
@@ -971,12 +970,11 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
             {
                 const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    {PXDataTypeBEInt32U, &chunk.Lengh},
-                    {PXDataTypeTextx4, chunk.ChunkID.Data}
+                    {&chunk.Lengh, PXDataTypeInt32UBE},
+                    {chunk.ChunkID.Data, PXDataTypeDatax4}
                 };
-                const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
             }
 
             // Check
@@ -1024,17 +1022,16 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
 
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeBEInt32U, &png.ImageHeader.Width},
-                        {PXDataTypeBEInt32U, &png.ImageHeader.Height},
-                        {PXDataTypeInt8U, &png.ImageHeader.BitDepth},
-                        {PXDataTypeInt8U, &colorTypeRaw},
-                        {PXDataTypeInt8U, &png.ImageHeader.CompressionMethod},
-                        {PXDataTypeInt8U, &png.ImageHeader.FilterMethod},
-                        {PXDataTypeInt8U, &interlaceMethodRaw}
+                        {&png.ImageHeader.Width, PXDataTypeInt32UBE},
+                        {&png.ImageHeader.Height, PXDataTypeInt32UBE},
+                        {&png.ImageHeader.BitDepth, PXDataTypeInt08U},
+                        {&colorTypeRaw, PXDataTypeInt08U},
+                        {&png.ImageHeader.CompressionMethod, PXDataTypeInt08U},
+                        {&png.ImageHeader.FilterMethod, PXDataTypeInt08U},
+                        {&interlaceMethodRaw, PXDataTypeInt08U}
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                     png.ImageHeader.ColorType = PXPNGColorTypeFromID(colorTypeRaw);
                     png.ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(interlaceMethodRaw);
@@ -1191,18 +1188,17 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.WhiteX},
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.WhiteY},
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.RedX},
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.RedY},
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.GreenX},
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.GreenY},
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.BlueX},
-                        {PXDataTypeBEInt32U, &png.PrimaryChromatics.BlueY}
+                        {&png.PrimaryChromatics.WhiteX, PXDataTypeInt32UBE},
+                        {&png.PrimaryChromatics.WhiteY, PXDataTypeInt32UBE},
+                        {&png.PrimaryChromatics.RedX, PXDataTypeInt32UBE},
+                        {&png.PrimaryChromatics.RedY, PXDataTypeInt32UBE},
+                        {&png.PrimaryChromatics.GreenX, PXDataTypeInt32UBE},
+                        {&png.PrimaryChromatics.GreenY, PXDataTypeInt32UBE},
+                        {&png.PrimaryChromatics.BlueX, PXDataTypeInt32UBE},
+                        {&png.PrimaryChromatics.BlueY, PXDataTypeInt32UBE}
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                     break;
                 }
@@ -1360,16 +1356,15 @@ PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeBEInt16U, &png.LastModificationTime.Year},
-                        {PXDataTypeInt8U,&png.LastModificationTime.Month},
-                        {PXDataTypeInt8U, &png.LastModificationTime.Day},
-                        {PXDataTypeInt8U, &png.LastModificationTime.Hour},
-                        {PXDataTypeInt8U,  &png.LastModificationTime.Minute},
-                        {PXDataTypeInt8U, &png.LastModificationTime.Second}
+                        {&png.LastModificationTime.Year,PXDataTypeInt16UBE},
+                        {&png.LastModificationTime.Month,PXDataTypeInt08U},
+                        {&png.LastModificationTime.Day,PXDataTypeInt08U},
+                        {&png.LastModificationTime.Hour,PXDataTypeInt08U},
+                        {&png.LastModificationTime.Minute,PXDataTypeInt08U},
+                        {&png.LastModificationTime.Second,PXDataTypeInt08U}
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                     break;
                 }

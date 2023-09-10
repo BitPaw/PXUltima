@@ -143,65 +143,151 @@ extern "C"
 
 
 
-	typedef enum PXDataType_
-	{
-		PXDataTypeTypeInvalid,
-
-		//-------------------------------------------------
-		// Emoty space
-		//-------------------------------------------------
-		PXDataTypePadding, // Use adress as offset value
-
-		//-------------------------------------------------
-		// Text - used to parse singatures
-		//-------------------------------------------------
-		PXDataTypeTextx2,
-		PXDataTypeTextx4,
-		PXDataTypeTextx8,
-
-		//-------------------------------------------------
-		// Adress, read as spesified but store it as (void*)
-		//-------------------------------------------------
-		PXDataTypeAdress8Bit,
-		PXDataTypeAdress16Bit,
-		PXDataTypeAdress32Bit,
-		PXDataTypeAdress64Bit,
+#define PXDataTypeAdressMask		0b01000000000000000000000000000000 // Used if the type is
+#define PXDataTypeEndianMask		0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
+#define PXDataTypeUseFileModeMask	0b00000000000000000000000000000000  
+#define PXDataTypeSignedMask		0b00001000000000000000000000000000 // Only useful in numeric values
+#define PXDataTypeIgnoreIFMask		0b00000110000000000000000000000000  
+#define PXDataTypeShallDoIO			0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
+#define PXDataTypeSizeMask			0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
 
 
-		//-------------------------------------------------
-		// Int - Flexible Modes
-		//-------------------------------------------------
-		PXDataTypeAdressFlex, // 32-Bit or 64-Bit
-		PXDataTypeInt16Flex, // Big or little endian
-		PXDataTypeInt32Flex,
-		PXDataTypeInt32Flex32ONLY,
-		PXDataTypeInt32Flex64ONLY,
-		PXDataTypeInt64Flex,
+#define PXDataTypeIgnoreIn32B 0b00000010000000000000000000000000
+#define PXDataTypeIgnoreIn64B 0b00000100000000000000000000000000
 
-		//-------------------------------------------------
-		// Int - Normal
-		//-------------------------------------------------
-		PXDataTypeInt8S,
-		PXDataTypeInt8U,
+#define PXDataTypeDirect		(0b00 << 28)
+#define PXDataTypeEndianBig		(0b01 << 28)
+#define PXDataTypeEndianLittle	(0b10 << 28)
 
-		PXDataTypeLEInt16S,
-		PXDataTypeLEInt16U,
-		PXDataTypeLEInt32S,
-		PXDataTypeLEInt32U,
-		PXDataTypeLEInt64S,
-		PXDataTypeLEInt64U,
+#define PXDataTypeSigned PXDataTypeSignedMask 	
+#define PXDataTypeUnsigned 0 	
 
-		PXDataTypeBEInt16S,
-		PXDataTypeBEInt16U,
-		PXDataTypeBEInt32S,
-		PXDataTypeBEInt32U,
-		PXDataTypeBEInt64S,
-		PXDataTypeBEInt64U,
+#define PXDataTypeSize00		0u
+#define PXDataTypeSize08		1u
+#define PXDataTypeSize16		2u
+#define PXDataTypeSize32		4u
+#define PXDataTypeSize64		8u
 
-		PXDataTypeFloat,
-		PXDataTypeDouble
-	}
-	PXDataType;
+
+//-------------------------------------------------
+// Adress, read as spesified but store it as (void*)
+//-------------------------------------------------
+#define PXDataTypeAdress08 PXDataTypeAdressMask | PXDataTypeSize08
+#define PXDataTypeAdress16 PXDataTypeAdressMask | PXDataTypeSize16
+#define PXDataTypeAdress32 PXDataTypeAdressMask | PXDataTypeSize32
+#define PXDataTypeAdress64 PXDataTypeAdressMask | PXDataTypeSize64
+#define PXDataTypeAdressFlex PXDataTypeAdressMask
+
+//-------------------------------------------------
+// Text - used to parse singatures
+//-------------------------------------------------
+#define PXDataTypeDatax2 PXDataTypeSize16
+#define PXDataTypeDatax4 PXDataTypeSize32
+#define PXDataTypeDatax8 PXDataTypeSize64
+
+//-------------------------------------------------
+// Emoty space
+//-------------------------------------------------
+#define PXDataTypePadding(size) size
+
+//-------------------------------------------------
+// Int - Normal
+//-------------------------------------------------
+#define PXDataTypeInt08S PXDataTypeSize08 | PXDataTypeSigned
+#define PXDataTypeInt08U PXDataTypeSize08 | PXDataTypeSigned
+
+#define PXDataTypeInt16SLE PXDataTypeSize16 | PXDataTypeEndianLittle| PXDataTypeSigned
+#define PXDataTypeInt16SBE PXDataTypeSize16 | PXDataTypeEndianBig | PXDataTypeSigned
+#define PXDataTypeInt16ULE PXDataTypeSize16 | PXDataTypeEndianLittle | PXDataTypeUnsigned
+#define PXDataTypeInt16UBE PXDataTypeSize16 | PXDataTypeEndianBig | PXDataTypeUnsigned
+#define PXDataTypeInt16UXE PXDataTypeSize16
+
+#define PXDataTypeInt32SLE PXDataTypeSize32 | PXDataTypeEndianLittle| PXDataTypeSigned
+#define PXDataTypeInt32SBE PXDataTypeSize32 | PXDataTypeEndianBig | PXDataTypeSigned
+#define PXDataTypeInt32ULE PXDataTypeSize32 | PXDataTypeEndianLittle | PXDataTypeUnsigned
+#define PXDataTypeInt32UBE PXDataTypeSize32 | PXDataTypeEndianBig | PXDataTypeUnsigned
+#define PXDataTypeInt32UXE PXDataTypeSize32
+
+#define PXDataTypeInt32ULEOnlyIf32B PXDataTypeInt32ULE | PXDataTypeIgnoreIn32B
+#define PXDataTypeInt32ULEOnlyIf64B PXDataTypeInt32ULE | PXDataTypeIgnoreIn64B
+
+#define PXDataTypeInt64SLE PXDataTypeSize64 | PXDataTypeEndianLittle | PXDataTypeSigned
+#define PXDataTypeInt64SBE PXDataTypeSize64 | PXDataTypeEndianBig | PXDataTypeSigned
+#define PXDataTypeInt64ULE PXDataTypeSize64 | PXDataTypeEndianLittle | PXDataTypeUnsigned
+#define PXDataTypeInt64UBE PXDataTypeSize64 | PXDataTypeEndianBig | PXDataTypeUnsigned
+#define PXDataTypeInt64UXE PXDataTypeSize64
+
+#define PXDataTypeIntFlexLE  
+#define PXDataTypeIntFlexBE
+
+#define PXDataTypeFloat PXDataTypeSize32
+#define PXDataTypeDouble PXDataTypeSize64
+
+
+
+
+typedef enum PXDataType_
+{
+	PXDataTypeTypeInvalid,
+
+	//-------------------------------------------------
+	// Emoty space
+	//-------------------------------------------------
+	PXDataTypePadding, // Use adress as offset value
+
+	//-------------------------------------------------
+	// Text - used to parse singatures
+	//-------------------------------------------------
+	PXDataTypeTextx2,
+	PXDataTypeTextx4,
+	PXDataTypeTextx8,
+
+	//-------------------------------------------------
+	// Adress, read as spesified but store it as (void*)
+	//-------------------------------------------------
+	PXDataTypeAdress8Bit,
+	PXDataTypeAdress16Bit,
+	PXDataTypeAdress32Bit,
+	PXDataTypeAdress64Bit,
+
+
+	//-------------------------------------------------
+	// Int - Flexible Modes
+	//-------------------------------------------------
+	PXDataTypeAdressFlexWWW, // 32-Bit or 64-Bit
+	PXDataTypeInt16Flex, // Big or little endian
+	PXDataTypeInt32Flex,
+	PXDataTypeInt32Flex32ONLY,
+	PXDataTypeInt32Flex64ONLY,
+	PXDataTypeInt64Flex,
+
+	//-------------------------------------------------
+	// Int - Normal
+	//-------------------------------------------------
+	PXDataTypeInt8S,
+	PXDataTypeInt8U,
+
+	PXDataTypeLEInt16S,
+	PXDataTypeLEInt16U,
+	PXDataTypeLEInt32S,
+	PXDataTypeLEInt32U,
+	PXDataTypeLEInt64S,
+	PXDataTypeLEInt64U,
+
+	PXDataTypeBEInt16S,
+	PXDataTypeBEInt16U,
+	PXDataTypeBEInt32S,
+	PXDataTypeBEInt32U,
+	PXDataTypeBEInt64S,
+	PXDataTypeBEInt64U,
+
+	PXDataTypeFloatWWW,
+	PXDataTypeDoubleWWW
+}
+PXDataType;
+
+
+
 
 
 	typedef unsigned char PXByte;
@@ -602,18 +688,16 @@ d = SplittIntLED(i);
 		PXInt64UCluster;
 
 
-
-
-		PXPublic PXInt8U PXDataTypeSize(const PXDataType pxDataType);
-
-
 		typedef enum PXBitFormat_
 		{
 			PXBitFormatInvalid,
 			PXBitFormat8,
 			PXBitFormat16,
 			PXBitFormat32,
-			PXBitFormat64
+			PXBitFormat64,
+			PXBitFormat128,
+			PXBitFormat256,
+			PXBitFormat512
 		}
 		PXBitFormat;
 
@@ -643,6 +727,8 @@ d = SplittIntLED(i);
 #elif OSEngianBig
 #define EndianCurrentSystem PXEndianBig
 #endif
+
+		typedef PXInt32U PXDataType;
 
 
 		PXPublic void PXEndianSwapI32U(PXInt32U* const value);

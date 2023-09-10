@@ -1,5 +1,24 @@
 #include "PXCOFF.h"
 
+#include <Math/PXMath.h>
+
+#include <assert.h>
+
+#define STYP_REG 0x0000;
+#define STYP_DSECT 0x0001
+#define STYP_NOLOAD 0x0002
+#define STYP_GROUP 0x0004
+#define STYP_PAD 0x0008
+#define STYP_COPY 0x010
+#define STYP_TEXT 0x0020
+#define STYP_DATA 0x0040
+#define STYP_BSS 0x0080
+#define STYP_BLOCK 0x1000
+#define STYP_PASS 0x2000
+#define STYP_CLINK 0x4000
+#define STYP_VECTOR 0x8000
+#define STYP_PADDED 0x00010000
+
 PXCOFFMachineType PXCOFFMachineFromID(const PXInt16U valueID)
 {
 	switch (valueID)
@@ -67,23 +86,24 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 {
 	PXClear(PXCOFF, pxCOFF);
 
+
+
 	// COFF File Header
 	{
 		PXInt16U machineTypeID = 0;
 
 		const PXFileDataElementType pxDataStreamElementList[] =
 		{
-			{PXDataTypeLEInt16U, &machineTypeID},
-			{PXDataTypeLEInt16U, &pxCOFF->NumberOfSections},
-			{PXDataTypeLEInt32U, &pxCOFF->TimeDateStamp},
-			{PXDataTypeLEInt32U, &pxCOFF->PointerToSymbolTable},
-			{PXDataTypeLEInt32U, &pxCOFF->NumberOfSymbols},
-			{PXDataTypeLEInt16U, &pxCOFF->SizeOfOptionalHeader},
-			{PXDataTypeLEInt16U, &pxCOFF->CharacteristicsFlagList}
+			{&machineTypeID, PXDataTypeInt16ULE},
+			{&pxCOFF->NumberOfSections,PXDataTypeInt16ULE},
+			{&pxCOFF->TimeDateStamp,PXDataTypeInt32ULE},
+			{&pxCOFF->PointerToSymbolTable,PXDataTypeInt32ULE},
+			{&pxCOFF->NumberOfSymbols,PXDataTypeInt32ULE},
+			{&pxCOFF->SizeOfOptionalHeader, PXDataTypeInt16ULE},
+			{&pxCOFF->CharacteristicsFlagList, PXDataTypeInt16ULE}
 		};
-		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 		pxCOFF->MachineType = PXCOFFMachineFromID(machineTypeID);
 	}
@@ -91,15 +111,28 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 	// Optional Header Standard Fields
 	{
 		const PXBool hasOptionalHeader = pxCOFF->SizeOfOptionalHeader > 0;
+		PXSize remainingOptionalHeaderOffset = pxCOFF->SizeOfOptionalHeader;
+		const PXSize syncPosition = pxFile->DataCursor + pxCOFF->SizeOfOptionalHeader;
 
 		if (hasOptionalHeader)
 		{
 			{
 				PXInt16U magicNumber = 0;
 
-				PXFileReadI16UE(pxFile, &magicNumber, PXEndianLittle);
+				remainingOptionalHeaderOffset -= PXFileReadI16UE(pxFile, &magicNumber, PXEndianLittle);
 
 				pxCOFF->Format = PXCOFFFormatFromID(magicNumber);
+
+				switch (pxCOFF->Format)
+				{
+					case PXCOFFFormatPE32:
+						pxFile->BitFormatOfData = PXBitFormat32;
+						break;
+
+					case PXCOFFFormatPE32Plus:
+						pxFile->BitFormatOfData = PXBitFormat64;
+						break;
+				}
 			}
 
 		
@@ -108,204 +141,157 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
 				const PXFileDataElementType pxDataStreamElementList[] =
 				{
-					{PXDataTypeLEInt16U, &magicNumber},
-					{PXDataTypeInt8U, &pxCOFF->MajorLinkerVersion},
-					{PXDataTypeInt8U, &pxCOFF->MinorLinkerVersion},
-					{PXDataTypeLEInt32U, &pxCOFF->SizeOfCode},
-					{PXDataTypeLEInt32U, &pxCOFF->SizeOfInitializedData},
-					{PXDataTypeLEInt32U, &pxCOFF->SizeOfUninitializedData},
-					{PXDataTypeLEInt32U, &pxCOFF->AddressOfEntryPoint},
-					{PXDataTypeLEInt32U, &pxCOFF->BaseOfCode},
-					{PXDataTypeLEInt32U, &pxCOFF->BaseOfData}
+					{&magicNumber, PXDataTypeInt16ULE},
+					{&pxCOFF->MajorLinkerVersion, PXDataTypeInt08U},
+					{&pxCOFF->MinorLinkerVersion, PXDataTypeInt08U},
+					{&pxCOFF->SizeOfCode, PXDataTypeInt32ULE},
+					{&pxCOFF->SizeOfInitializedData, PXDataTypeInt32ULE},
+					{&pxCOFF->SizeOfUninitializedData, PXDataTypeInt32ULE},
+					{&pxCOFF->AddressOfEntryPoint, PXDataTypeInt32ULE},
+					{&pxCOFF->BaseOfCode, PXDataTypeInt32ULE},
+					{&pxCOFF->BaseOfData, PXDataTypeInt32ULEOnlyIf32B}
 				};
-				const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-				if (PXCOFFFormatPE32 == pxCOFF->Format)
+				const PXSize batchSize = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+				remainingOptionalHeaderOffset -= batchSize;
+
+				switch (pxCOFF->Format)
 				{
-					PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
-				}
-				else
-				{
-					PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize - 1u);
+					case PXCOFFFormatPE32:
+						assert(batchSize == 28);
+						break;
+
+					case PXCOFFFormatPE32Plus:
+						assert(batchSize == 24);
+						break;
 				}
 			}
 
 			// Optional Header Windows NT - Specific Fields
 			{
-				// A
-				{
-					switch (pxCOFF->Format)
-					{
-						case PXCOFFFormatPE32:
-						{
-							PXInt32U value = 0;
-
-							PXFileReadI32U(pxFile, &value);
-
-							pxCOFF->ImageBase = value;
-
-							break;
-						}
-						case PXCOFFFormatPE32Plus:
-						{
-							PXFileReadI64U(pxFile, &pxCOFF->ImageBase);
-							break;
-						}
-					}
-				}		
-
 				// B
 				{
 					const PXFileDataElementType pxDataStreamElementList[] =
 					{
-						{PXDataTypeLEInt32U, &pxCOFF->SectionAlignment},
-						{PXDataTypeLEInt32U, &pxCOFF->FileAlignment},
-						{PXDataTypeLEInt16U, &pxCOFF->MajorOperatingSystemVersion},
-						{PXDataTypeLEInt16U, &pxCOFF->MinorOperatingSystemVersion},
-						{PXDataTypeLEInt16U, &pxCOFF->MajorImageVersion},
-						{PXDataTypeLEInt16U, &pxCOFF->MinorImageVersion},
-						{PXDataTypeLEInt16U, &pxCOFF->MajorSubsystemVersion},
-						{PXDataTypeLEInt16U, &pxCOFF->MinorSubsystemVersion},
-						{PXDataTypeTextx4, pxCOFF->ReservedA},
-						{PXDataTypeLEInt32U, &pxCOFF->SizeOfImage},
-						{PXDataTypeLEInt32U, &pxCOFF->SizeOfHeaders},
-						{PXDataTypeLEInt32U, &pxCOFF->CheckSum},
-						{PXDataTypeLEInt16U, &pxCOFF->Subsystem},
-						{PXDataTypeLEInt16U, &pxCOFF->DLLCharacteristics}
+						{&pxCOFF->ImageBase, PXDataTypeAdressFlex},
+						{&pxCOFF->SectionAlignment,PXDataTypeInt32ULE},
+						{&pxCOFF->FileAlignment,PXDataTypeInt32ULE}, 
+						{&pxCOFF->MajorOperatingSystemVersion,PXDataTypeInt16ULE},
+						{&pxCOFF->MinorOperatingSystemVersion,PXDataTypeInt16ULE},
+						{&pxCOFF->MajorImageVersion,PXDataTypeInt16ULE},
+						{&pxCOFF->MinorImageVersion,PXDataTypeInt16ULE},
+						{&pxCOFF->MajorSubsystemVersion,PXDataTypeInt16ULE},
+						{&pxCOFF->MinorSubsystemVersion,PXDataTypeInt16ULE},
+						{0, PXDataTypePadding(4)},
+						{&pxCOFF->SizeOfImage,PXDataTypeInt32ULE},
+						{&pxCOFF->SizeOfHeaders,PXDataTypeInt32ULE},
+						{&pxCOFF->CheckSum,PXDataTypeInt32ULE},
+						{&pxCOFF->Subsystem,PXDataTypeInt16ULE},
+						{&pxCOFF->DLLCharacteristics,PXDataTypeInt16ULE},
+						{&pxCOFF->SizeOfStackReserve,PXDataTypeAdressFlex},
+						{&pxCOFF->SizeOfStackCommit,PXDataTypeAdressFlex},
+						{&pxCOFF->SizeOfHeapReserve,PXDataTypeAdressFlex},
+						{&pxCOFF->SizeOfHeapCommit,PXDataTypeAdressFlex},
+						{&pxCOFF->LoaderFlags,PXDataTypeInt32ULE},
+						{&pxCOFF->NumberOfRvaAndSizes,PXDataTypeInt32ULE}
 					};
-					const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-					PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
-				}
+					const PXSize batchSize = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+				
+					remainingOptionalHeaderOffset -= batchSize;
 
-				// C
-				{
 					switch (pxCOFF->Format)
 					{
 						case PXCOFFFormatPE32:
-						{
-							const PXFileDataElementType pxDataStreamElementList[] =
-							{
-								{PXDataTypeAdress32Bit, &pxCOFF->SizeOfStackReserve},
-								{PXDataTypeAdress32Bit, &pxCOFF->SizeOfStackCommit},
-								{PXDataTypeAdress32Bit, &pxCOFF->SizeOfHeapReserve},
-								{PXDataTypeAdress32Bit, &pxCOFF->SizeOfHeapCommit}
-							};
-							const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
-
-							PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
-
+							assert(batchSize == 68u);
 							break;
-						}
+
 						case PXCOFFFormatPE32Plus:
-						{
-							const PXFileDataElementType pxDataStreamElementList[] =
-							{
-								{PXDataTypeAdress64Bit, &pxCOFF->SizeOfStackReserve},
-								{PXDataTypeAdress64Bit, &pxCOFF->SizeOfStackCommit},
-								{PXDataTypeAdress64Bit, &pxCOFF->SizeOfHeapReserve},
-								{PXDataTypeAdress64Bit, &pxCOFF->SizeOfHeapCommit}
-							};
-							const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
-
-							PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
-
+							assert(batchSize == 88u);
 							break;
-						}
 					}
-				}			
+				}
 
 				// D
 				{
-					const PXFileDataElementType pxDataStreamElementList[] =
-					{
-						{PXDataTypeLEInt32U, &pxCOFF->LoaderFlags},
-						{PXDataTypeLEInt32U, &pxCOFF->NumberOfRvaAndSizes}
-					};
-					const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
-
-					PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
-					
 					PXInt32U virtualAddress = 0;
 					PXInt32U size = 0;
 
+					/*
 					for (PXInt32U i = 0; i < pxCOFF->NumberOfRvaAndSizes; ++i)
 					{
 						PXFileReadI32U(pxFile, &virtualAddress);
 						PXFileReadI32U(pxFile, &size);
-					}
+					}*/
 				}
-
-
 			}
 
 			// Optional Header Data Directories
 			{
 				const PXFileDataElementType pxDataStreamElementList[] =
 				{
-					{PXDataTypeAdress32Bit, &pxCOFF->ExportTableAdress},
-					{PXDataTypeLEInt32U, &pxCOFF->ExportTableSize },
+					{ &pxCOFF->ExportTableAdress, PXDataTypeAdress32},
+					{ &pxCOFF->ExportTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->ImportTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->ImportTableSize },
+					{ &pxCOFF->ImportTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->ImportTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->ResourceTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->ResourceTableSize },
+					{ &pxCOFF->ResourceTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->ResourceTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->ExceptionTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->ExceptionTableSize },
+					{ &pxCOFF->ExceptionTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->ExceptionTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->CertificateTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->CertificateTableSize },
+					{ &pxCOFF->CertificateTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->CertificateTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->BaseRelocationTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->BaseRelocationTableSize },
+					{ &pxCOFF->BaseRelocationTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->BaseRelocationTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->DebugAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->DebugSize },
+					{ &pxCOFF->DebugAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->DebugSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->ArchitectureAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->ArchitectureSize },
+					{ &pxCOFF->ArchitectureAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->ArchitectureSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->GlobalPtrAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->GlobalPtrSize },
+					{ &pxCOFF->GlobalPtrAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->GlobalPtrSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->ThreadLocalStorageTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->ThreadLocalStorageTableSize },
+					{ &pxCOFF->ThreadLocalStorageTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->ThreadLocalStorageTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->LoadConfigTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->LoadConfigTableSize },
+					{ &pxCOFF->LoadConfigTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->LoadConfigTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->BoundImportAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->BoundImportSize },
+					{ &pxCOFF->BoundImportAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->BoundImportSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->ImportAddressTableAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->ImportAddressTableSize },
+					{ &pxCOFF->ImportAddressTableAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->ImportAddressTableSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->DelayImportDescriptorAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->DelayImportDescriptorSize },
+					{ &pxCOFF->DelayImportDescriptorAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->DelayImportDescriptorSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeAdress32Bit, &pxCOFF->COMPlusRuntimeHeaderAdress },
-					{ PXDataTypeLEInt32U, &pxCOFF->COMPlusRuntimeHeaderSize },
+					{ &pxCOFF->COMPlusRuntimeHeaderAdress, PXDataTypeAdress32 },
+					{ &pxCOFF->COMPlusRuntimeHeaderSize,PXDataTypeInt32ULE },
 
-					{ PXDataTypeTextx8, pxCOFF->ReservedB }
+					{ 0, PXDataTypePadding(8)}
 				};
-				const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-				PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+				const PXSize batchSize = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
+				remainingOptionalHeaderOffset -= batchSize;
+
+				assert(batchSize == 128u);
 			}
+
+			pxFile->DataCursor = syncPosition;
 		}
-
-
-
 	}
 
-	PXFileCursorRewind(pxFile, 2u);
-
-
-
 	// Parse SectionTable
+	
 
 	pxCOFF->SectionTableList = PXNewList(PXSectionTable, pxCOFF->NumberOfSections);
 
@@ -313,26 +299,167 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 	{
 		PXSectionTable* const pxSectionTableCurrent = &pxCOFF->SectionTableList[sectionID];
 
-		const PXFileDataElementType pxDataStreamElementList[] =
 		{
-			{PXDataTypeTextx8, pxSectionTableCurrent->Name.Data},
-			{PXDataTypeLEInt32U, &pxSectionTableCurrent->VirtualSize},
-			{PXDataTypeLEInt32U, &pxSectionTableCurrent->VirtualAddress},
-			{PXDataTypeLEInt32U, &pxSectionTableCurrent->SizeOfRawData},
-			{PXDataTypeLEInt32U, &pxSectionTableCurrent->PointerToRawData},
-			{PXDataTypeLEInt32U, &pxSectionTableCurrent->PointerToRelocations},
-			{PXDataTypeLEInt32U, &pxSectionTableCurrent->PointerToLinenumbers},
-			{PXDataTypeLEInt16U, &pxSectionTableCurrent->NumberOfRelocations},
-			{PXDataTypeLEInt16U, &pxSectionTableCurrent->NumberOfLinenumbers},
-			{PXDataTypeLEInt32U, &pxSectionTableCurrent->Characteristics},
-		};
-		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
+			const PXFileDataElementType pxDataStreamElementList[] =
+			{
+				{pxSectionTableCurrent->Name.Data, PXDataTypeDatax8},
+				{&pxSectionTableCurrent->PhysicalAddress,PXDataTypeInt32ULE},
+				{&pxSectionTableCurrent->VirtualAddress,PXDataTypeInt32ULE},
+				{&pxSectionTableCurrent->SectionSizeInBytes,PXDataTypeInt32ULE},
+				{&pxSectionTableCurrent->PointerToRawData,PXDataTypeInt32ULE},
+				{&pxSectionTableCurrent->PointerToRelocations,PXDataTypeInt32ULE},
+				{&pxSectionTableCurrent->PointerToLinenumbers,PXDataTypeInt32ULE},
+				{&pxSectionTableCurrent->NumberOfRelocations,PXDataTypeInt16ULE},
+				{&pxSectionTableCurrent->NumberOfLinenumbers,PXDataTypeInt16ULE},
+				{&pxSectionTableCurrent->CharacteristicFlags, PXDataTypeInt32ULE},
+			};
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+			const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-		pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
+			assert(readBytes == 40u);
 
-		printf("[Section %2i - %-8s] %6i Bytes\n", sectionID, pxSectionTableCurrent->Name.Data, pxSectionTableCurrent->VirtualSize);
+
+			pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
+
+			printf("[COFF][Section %2i/%2i - %-8s] %6i Bytes\n", sectionID+1, pxCOFF->NumberOfSections, pxSectionTableCurrent->Name.Data, pxSectionTableCurrent->SectionSizeInBytes);
+		}
+
+		const PXSize oldPosition = pxFile->DataCursor;
+
+		if (pxSectionTableCurrent->SectionSizeInBytes > 0)
+		{
+			PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->PointerToRawData);
+
+			char* adressD = PXFileCursorPosition(pxFile);
+
+			for (size_t i = 0; i < pxSectionTableCurrent->SectionSizeInBytes; i++)
+			{
+				const ww = (i + 1) % 64 == 0;
+
+				const char xxx = MakePrintable(adressD[i]);
+
+				printf("%c", xxx);
+
+
+				if (ww)
+				{
+					printf("\n");
+				}
+
+			}
+
+	
+		}
+
+		// Reallocations
+		if (pxSectionTableCurrent->NumberOfRelocations > 0)
+		{
+			PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->PointerToRelocations);
+
+			for (PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfRelocations; ++i)
+			{
+				PXRelocationInformation pxRelocationInformation;
+
+				const PXFileDataElementType pxDataStreamElementList[] =
+				{
+					{&pxRelocationInformation.VirtualAddressOfReference, PXDataTypeInt32ULE},
+					{&pxRelocationInformation.SymbolTableIndex,PXDataTypeInt32ULE},
+					{&pxRelocationInformation.RelocationType,PXDataTypeInt16ULE}
+				};
+
+				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+				printf
+				(
+					"[COFF][RelocationInformation] %6i,%6i,%6i\n",
+					pxRelocationInformation.VirtualAddressOfReference,
+					pxRelocationInformation.SymbolTableIndex,
+					pxRelocationInformation.RelocationType
+				);
+			}
+		}
+
+		// Lines
+		if (pxSectionTableCurrent->NumberOfLinenumbers > 0)
+		{
+			PXLineNumberEntry pxLineNumberEntryXX;
+
+			PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->PointerToLinenumbers);
+
+			for (PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfLinenumbers; ++i)
+			{
+				PXLineNumberEntry* pxLineNumberEntry = &pxLineNumberEntryXX;
+
+				const PXFileDataElementType pxDataStreamElementList[] =
+				{
+					{&pxLineNumberEntry->SymbolIndex, PXDataTypeInt32ULE},
+					{&pxLineNumberEntry->LineNumber,PXDataTypeInt16ULE}
+				};
+
+				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+
+				printf("[COFF][Section][LineEntry] %3i/%-3i - Line:%i Index:%i\n", i + 1, pxSectionTableCurrent->NumberOfLinenumbers, pxLineNumberEntry->LineNumber, pxLineNumberEntry->SymbolIndex);
+			}
+		}
+
+		PXFileCursorMoveTo(pxFile, oldPosition); // Restore position to further parse the section table		
+	}
+	 
+	// Parse actual symbols
+	{
+		if (pxCOFF->NumberOfSymbols > 0)
+		{
+			PXFileCursorMoveTo(pxFile, pxCOFF->PointerToSymbolTable);
+
+			PXCOFFSymbolTableEntry pxCOFFSymbolTableEntryXX;
+
+			printf("[COFF] Symbols deteced <%i>\n", pxCOFF->NumberOfSymbols);
+
+			for (PXInt32U i = 0; i < pxCOFF->NumberOfSymbols; i++)
+			{
+				PXCOFFSymbolTableEntry* pxCOFFSymbolTableEntry = &pxCOFFSymbolTableEntryXX;
+
+				const PXFileDataElementType pxDataStreamElementList[] =
+				{
+					{pxCOFFSymbolTableEntry->Name, PXDataTypeDatax8},
+					{&pxCOFFSymbolTableEntry->ValueOfSymbol,PXDataTypeInt32ULE},
+					{&pxCOFFSymbolTableEntry->SectionNumber,PXDataTypeInt16ULE},
+					{&pxCOFFSymbolTableEntry->TypeAndDerived,PXDataTypeInt16ULE},
+					{&pxCOFFSymbolTableEntry->StorageClass,PXDataTypeInt08U},
+					{&pxCOFFSymbolTableEntry->NumberOfAuxiliaryEntries,PXDataTypeInt08U}
+				};
+
+				const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+				assert(readBytes == 18u);
+
+
+				if (pxCOFFSymbolTableEntry->DoesNotUseExternalString && pxCOFFSymbolTableEntry->DoesNotUseExternalString != 0xCCCCCCCC)
+				{
+					printf("[COFF][Symbol] %8.8s\n", pxCOFFSymbolTableEntry->Name);
+				}
+				else
+				{
+					PXSize oolPos = pxFile->DataCursor;
+
+					PXFileCursorMoveTo(pxFile, pxCOFFSymbolTableEntry->NameReferenceOffset);
+
+					char* xxx = (char*)PXFileCursorPosition(pxFile);
+
+					printf("[COFF][Symbol] -------- -> %s\n", xxx);
+
+					PXFileCursorMoveTo(pxFile, oolPos);
+				}
+			}
+		}
+#if 1
+		else
+		{
+			printf("[COFF] No Symbols\n");
+		}
+#endif
+		
 	}
 
 	return PXActionSuccessful;

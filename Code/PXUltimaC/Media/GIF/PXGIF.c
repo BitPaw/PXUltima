@@ -51,15 +51,14 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 
             const PXFileDataElementType pxDataStreamElementList[] =
             {
-                {PXDataTypeLEInt16U, &gif.Width},
-                {PXDataTypeLEInt16U, &gif.Height},
-                {PXDataTypeInt8U, &packedFields},
-                {PXDataTypeInt8U, &gif.BackgroundColorIndex},
-                {PXDataTypeInt8U, &gif.PixelAspectRatio}
+                {&gif.Width,PXDataTypeInt16ULE},
+                {&gif.Height,PXDataTypeInt16ULE},
+                {&packedFields,PXDataTypeInt08U},
+                {&gif.BackgroundColorIndex, PXDataTypeInt08U},
+                {&gif.PixelAspectRatio, PXDataTypeInt08U}
             };
-            const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-            PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             gif.GlobalColorTableSize = packedFields & 0b00000111;
             gif.IsSorted = (packedFields & 0b00001000) >> 3;
@@ -77,20 +76,19 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
             PXGIFImageDescriptor imageDescriptor;
 
             {
-                unsigned char packedFields = 0;
+                PXInt8U packedFields = 0;
 
                 const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    {PXDataTypeInt8U,       &imageDescriptor.Separator},
-                    {PXDataTypeLEInt16U,    &imageDescriptor.LeftPosition},
-                    {PXDataTypeLEInt16U,    &imageDescriptor.TopPosition},
-                    {PXDataTypeLEInt16U,    &imageDescriptor.Width},
-                    {PXDataTypeLEInt16U,    &imageDescriptor.Height},
-                    {PXDataTypeInt8U,       &packedFields}
+                    {&imageDescriptor.Separator,PXDataTypeInt08U},
+                    {&imageDescriptor.LeftPosition,PXDataTypeInt16ULE},
+                    {&imageDescriptor.TopPosition,PXDataTypeInt16ULE},
+                    {&imageDescriptor.Width,PXDataTypeInt16ULE},
+                    {&imageDescriptor.Height,PXDataTypeInt16ULE},
+                    {&packedFields,PXDataTypeInt08U}
                 };
-                const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                 imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
                 imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;

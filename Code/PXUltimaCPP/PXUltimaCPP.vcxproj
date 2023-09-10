@@ -66,6 +66,7 @@
     <ClInclude Include="Media\PXColor.hpp" />
     <ClInclude Include="OS\Async\PXProcess.hpp" />
     <ClInclude Include="OS\Async\PXProgram.hpp" />
+    <ClInclude Include="Media\PXResource.hpp" />
     <ClInclude Include="Service\FTP\PXFTPServer.hpp" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.hpp" />
     <ClInclude Include="Service\FTP\PXFTPClient.hpp" />
@@ -77,7 +78,6 @@
     <ClInclude Include="Media\PNG\PXPNG.hpp" />
     <ClInclude Include="Media\PXFont.hpp" />
     <ClInclude Include="Media\PXImage.hpp" />
-    <ClInclude Include="Media\PXModel.hpp" />
     <ClInclude Include="Media\PXSound.hpp" />
     <ClInclude Include="Media\PXText.hpp" />
     <ClInclude Include="Media\QOI\PXQOI.hpp" />
@@ -177,6 +177,7 @@
     <ClCompile Include="Media\PXColor.cpp" />
     <ClCompile Include="OS\Async\PXProcess.cpp" />
     <ClCompile Include="OS\Async\PXProgram.cpp" />
+    <ClCompile Include="Media\PXResource.cpp" />
     <ClCompile Include="Service\FTP\PXFTPServer.cpp" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.cpp" />
     <ClCompile Include="Service\FTP\PXFTPClient.cpp" />
@@ -188,7 +189,6 @@
     <ClCompile Include="Media\PNG\PXPNG.cpp" />
     <ClCompile Include="Media\PXFont.cpp" />
     <ClCompile Include="Media\PXImage.cpp" />
-    <ClCompile Include="Media\PXModel.cpp" />
     <ClCompile Include="Media\PXSound.cpp" />
     <ClCompile Include="Media\PXText.cpp" />
     <ClCompile Include="Media\QOI\PXQOI.cpp" />

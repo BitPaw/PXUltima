@@ -331,14 +331,13 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeInt8U, &frame.Precision},
-                        {PXDataTypeBEInt16U, &frame.Height},
-                        {PXDataTypeBEInt16U, &frame.Width},
-                        {PXDataTypeInt8U, &frame.ComponentListSize}
+                        {&frame.Precision,PXDataTypeInt08U},
+                        {&frame.Height,PXDataTypeInt16UBE},
+                        {&frame.Width,PXDataTypeInt16UBE},
+                        {&frame.ComponentListSize,PXDataTypeInt08U}
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
                 }
 
                 for(PXSize i = 0; i < frame.ComponentListSize; ++i)
@@ -348,13 +347,12 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeInt8U, &frameComponent->ID},
-                        {PXDataTypeInt8U, &samplingFactor},
-                        {PXDataTypeInt8U, &frameComponent->QuantizationTableID}
+                        {&frameComponent->ID,PXDataTypeInt08U},
+                        {&samplingFactor,PXDataTypeInt08U},
+                        {&frameComponent->QuantizationTableID,PXDataTypeInt08U}
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                     frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
                     frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
@@ -556,17 +554,16 @@ PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeInt8U, &jpeg->FileInfo.VersionMajor},
-                        {PXDataTypeInt8U, &jpeg->FileInfo.VersionMinor},
-                        {PXDataTypeInt8U, &jpeg->FileInfo.DensityUnits},
-                        {PXDataTypeLEInt16U, &jpeg->FileInfo.DensityX},
-                        {PXDataTypeLEInt16U,  &jpeg->FileInfo.DensityY},
-                        {PXDataTypeInt8U, &jpeg->FileInfo.ThumbnailX},
-                        {PXDataTypeInt8U,  &jpeg->FileInfo.ThumbnailY},
+                        {&jpeg->FileInfo.VersionMajor, PXDataTypeInt08U},
+                        {&jpeg->FileInfo.VersionMinor, PXDataTypeInt08U},
+                        {&jpeg->FileInfo.DensityUnits, PXDataTypeInt08U},
+                        {&jpeg->FileInfo.DensityX,PXDataTypeInt16UBE},
+                        {&jpeg->FileInfo.DensityY,PXDataTypeInt16UBE},
+                        {&jpeg->FileInfo.ThumbnailX, PXDataTypeInt08U},
+                        {&jpeg->FileInfo.ThumbnailY, PXDataTypeInt08U},
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
                 }
 
 #if JPGDebug

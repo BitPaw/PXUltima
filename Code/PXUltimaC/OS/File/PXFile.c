@@ -755,6 +755,11 @@ PXBool PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const direct
 	return found;
 }
 
+PXBool PXFileCanDirectAccess(const PXFile* const pxFile)
+{
+	return pxFile->MappingID != PXHandleNotSet;
+}
+
 void PXFileConstruct(PXFile* const pxFile)
 {
 	PXMemoryClear(pxFile, sizeof(PXFile));
@@ -2045,244 +2050,213 @@ PXSize PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize 
 	return PXFileReadB(pxFile, valueList, sizeof(double) * valueListSize);
 }
 
-PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize)
+PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize)
 {
+	const PXSize pxDataStreamElementListSize = pxFileElementListFullSize / sizeof(PXFileDataElementType);
+
+	const PXBool needIntermediateCache = !PXFileCanDirectAccess(pxFile);
+
 	PXFile pxStackFile;
+	void* stackMemory = PXNull;
+	PXFile* pxFileRedirect = pxFile;
 	PXSize totalReadBytes = 0;
 	PXSize totalSizeToRead = 0;
 
-	for (PXSize i = 0; i < pxFileElementListSize; ++i)
+	if (needIntermediateCache)
 	{
-		const PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
-		PXSize sizeOfType = 0;
-
-		switch (pxFileDataElementType->Type)
+		for (PXSize i = 0; i < pxDataStreamElementListSize; ++i)
 		{
-			case PXDataTypePadding:
-			{
-				sizeOfType = (PXSize)pxFileDataElementType->Adress;
-				break;
-			}
-			case PXDataTypeAdressFlex:
-			{
-				switch (pxFile->BitFormatOfData)
-				{
-					case PXBitFormat32:
-						sizeOfType = 4u;
-						break;
+			const PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
+			const PXSize sizeOfType =
+				(!(pxFileDataElementType->Type & PXDataTypeAdressMask) * (pxFileDataElementType->Type & PXDataTypeSizeMask)) +
+				(((pxFileDataElementType->Type & PXDataTypeAdressMask) && !(pxFileDataElementType->Type & PXDataTypeIgnoreIn32B) && (pxFile->BitFormatOfData == PXBitFormat32)) * 4u) +
+				(((pxFileDataElementType->Type & PXDataTypeAdressMask) && !(pxFileDataElementType->Type & PXDataTypeIgnoreIn64B) && (pxFile->BitFormatOfData == PXBitFormat64)) * 8u);
 
-					case PXBitFormat64:
-						sizeOfType = 8u;
-						break;
-				}
+			PXMemoryClear(pxFileDataElementType->Adress, sizeOfType);
 
-				break;
-			}
-			case PXDataTypeInt32Flex64ONLY:
-			{
-				if (PXBitFormat64 == pxFile->BitFormatOfData)
-				{
-					sizeOfType = 4u;
-				}
-			}
-			case PXDataTypeInt32Flex32ONLY:
-			{
-				if (PXBitFormat32 == pxFile->BitFormatOfData)
-				{
-					sizeOfType = 4u;
-				}
+			assert(sizeOfType > 0);
 
-				break;
-			}
-			default:
-			{
-				sizeOfType = PXDataTypeSize(pxFileDataElementType->Type);
-
-				PXMemoryClear(pxFileDataElementType->Adress, sizeOfType);
-				break;
-			}
+			totalSizeToRead += sizeOfType;
 		}
 
-		totalSizeToRead += sizeOfType;
+		void* stackMemory = PXMemoryStackAllocate(totalSizeToRead);
+
+		PXFileBufferExternal(&pxStackFile, stackMemory, totalSizeToRead);
+
+		PXFileDataCopy(pxFile, &pxStackFile, totalSizeToRead); // Read actual data all at once
+		pxStackFile.DataCursor = 0;
+
+		pxFileRedirect = &pxStackFile;
+
+#if PXFileDebug
+		printf
+		(
+			"[File]\tCached batch read. (x%-2i, %2i B)\n",
+			pxDataStreamElementListSize,
+			totalSizeToRead
+		);
+#endif
 	}
+#if PXFileDebug
+	else
+	{
+		printf
+		(
+			"[File]\tDirect batch read. (x%-2i)\n",
+			pxDataStreamElementListSize
+		);
+	}
+#endif
 
-	void* stackMemory = PXMemoryStackAllocate(totalSizeToRead);
-
-	PXFileBufferExternal(&pxStackFile, stackMemory, totalSizeToRead);
-
-	PXFileDataCopy(pxFile, &pxStackFile, totalSizeToRead); // Read actual data all at once
-	pxStackFile.DataCursor = 0;
 
 
-	for (PXSize i = 0; i < pxFileElementListSize; ++i)
+	for (PXSize i = 0; i < pxDataStreamElementListSize; ++i)
 	{
 		const PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
+		const PXBool ignore =
+			((pxFileDataElementType->Type & PXDataTypeIgnoreIFMask) == PXDataTypeIgnoreIn32B) * (pxFile->BitFormatOfData != PXBitFormat32)
+			+
+			((pxFileDataElementType->Type & PXDataTypeIgnoreIFMask) == PXDataTypeIgnoreIn64B) * (pxFile->BitFormatOfData != PXBitFormat64);
+		const PXSize sizeOfType = 
+			((!(pxFileDataElementType->Type & PXDataTypeAdressMask) * (pxFileDataElementType->Type & PXDataTypeSizeMask)) +
+			(((pxFileDataElementType->Type & PXDataTypeAdressMask) && (pxFile->BitFormatOfData == PXBitFormat32)) * 4u) +
+			(((pxFileDataElementType->Type & PXDataTypeAdressMask) && (pxFile->BitFormatOfData == PXBitFormat64)) * 8u)) *
+			!ignore;
 
-		switch (pxFileDataElementType->Type)
+		totalReadBytes += PXFileReadB(pxFileRedirect, pxFileDataElementType->Adress, sizeOfType); // Get data directly
+
+#if PXFileDebug
+
+		char type[30];
+		char* endianText = 0;
+		char data[30];
+
+		PXMemoryClear(type, 30);
+		PXMemoryClear(data, 30);
+
+		switch (pxFileDataElementType->Type & PXDataTypeEndianMask)
 		{
-			case PXDataTypeAdressFlex:
+			case PXDataTypeEndianBig:
 			{
-				PXInt8U adressSize = 0;
-
-				switch (pxFile->BitFormatOfData)
+				endianText = "Big Endian";
+				switch (pxFileDataElementType->Type & PXDataTypeSizeMask)
 				{
-					case PXBitFormat32:
-						adressSize = 4u;
+					case 1:
+					{
+						PXInt32U number = *(PXInt8U*)pxFileDataElementType->Adress;
+
+						sprintf_s(data, 30, "%i", pxFileDataElementType->Adress);
 						break;
+					}
+					case 2:
+					{
+						PXInt32U number = *(PXInt16U*)pxFileDataElementType->Adress;
 
-					case PXBitFormat64:
-						adressSize = 8u;
+						sprintf_s(data, 30, "%i", number);
+						break;
+					}
+					case 4:
+					{
+						sprintf_s(data, 30, "%i", *(PXInt32U*)pxFileDataElementType->Adress);
+						break;
+					}
+					case 8:
+					{
+						break;
+					}
+
+					default:
 						break;
 				}
 
-				totalReadBytes += PXFileReadB(&pxStackFile, pxFileDataElementType->Adress, adressSize);
+				sprintf_s(type, 30, "%s %i", "Int", sizeOfType * 8);
 				break;
 			}
-			case PXDataTypeInt16Flex:
+			case PXDataTypeEndianLittle:
 			{
-				totalReadBytes += PXFileReadI16UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
-				break;
-			}
-			case PXDataTypeInt32Flex64ONLY:
-			{
-				if (PXBitFormat64 == pxFile->BitFormatOfData)
+				endianText = "Little Endian";
+
+				switch (pxFileDataElementType->Type & PXDataTypeSizeMask)
 				{
-					totalReadBytes += PXFileReadI32UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
+					case 1:
+					{
+						PXInt32U number = *(PXInt8U*)pxFileDataElementType->Adress;
+
+						sprintf_s(data, 30, "%i", pxFileDataElementType->Adress);
+						break;
+					}
+					case 2:
+					{
+						PXInt32U number = *(PXInt16U*)pxFileDataElementType->Adress;
+
+						sprintf_s(data, 30, "%i", number);
+						break;
+					}
+					case 4:
+					{
+						sprintf_s(data, 30, "%i", *(PXInt32U*)pxFileDataElementType->Adress);
+						break;
+					}
+					case 8:
+					{
+						break;
+					}
+
+					default:
+						break;
 				}
 
+				sprintf_s(type, 30, "%s %i", "Int", sizeOfType * 8);
 				break;
 			}
-			case PXDataTypeInt32Flex32ONLY:
-			{
-				if (PXBitFormat32 == pxFile->BitFormatOfData)
-				{
-					totalReadBytes += PXFileReadI32UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
-				}
 
-				break;
-			}
-			case PXDataTypeInt32Flex:
-			{
-				totalReadBytes += PXFileReadI32UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
-				break;
-			}
-			case PXDataTypeInt64Flex:
-			{
-				totalReadBytes += PXFileReadI64UE(&pxStackFile, pxFileDataElementType->Adress, pxFile->EndiannessOfData);
-				break;
-			}
-			case PXDataTypeTextx2:
-				totalReadBytes += PXFileReadB(&pxStackFile, pxFileDataElementType->Adress, 2u);
-				break;
-
-			case PXDataTypeTextx4:
-				totalReadBytes += PXFileReadB(&pxStackFile, pxFileDataElementType->Adress, 4u);
-				break;
-
-			case PXDataTypeTextx8:
-				totalReadBytes += PXFileReadB(&pxStackFile, pxFileDataElementType->Adress, 8u);
-				break;
-
-			case PXDataTypePadding:
-			{
-				PXFileCursorAdvance(&pxStackFile, (PXSize)pxFileDataElementType->Adress);
-				break;
-			}
-			case PXDataTypeAdress8Bit:
-			{
-				break;
-			}
-			case PXDataTypeAdress16Bit:
-			{
-				break;
-			}
-			case PXDataTypeAdress32Bit:
-			{
-				PXInt32U value;
-
-				totalReadBytes += PXFileReadB(&pxStackFile, &value, 4u);
-
-				*(void**)pxFileDataElementType->Adress = value;
-
-				break;
-			}
-			case PXDataTypeAdress64Bit:
-			{
-				PXInt64U value;
-
-				totalReadBytes += PXFileReadB(&pxStackFile, &value, 8u);
-
-				*(void**)pxFileDataElementType->Adress = value;
-
-				break;
-			}
-			case PXDataTypeInt8S:
-				totalReadBytes += PXFileReadI8S(&pxStackFile, (PXInt8S*)pxFileDataElementType->Adress);
-				break;
-
-			case PXDataTypeInt8U:
-				totalReadBytes += PXFileReadI8U(&pxStackFile, (PXInt8U*)pxFileDataElementType->Adress);
-				break;
-
-			case PXDataTypeLEInt16S:
-				totalReadBytes += PXFileReadI16SE(&pxStackFile, (PXInt16S*)pxFileDataElementType->Adress, PXEndianLittle);
-				break;
-
-			case PXDataTypeLEInt16U:
-				totalReadBytes += PXFileReadI16UE(&pxStackFile, (PXInt16U*)pxFileDataElementType->Adress, PXEndianLittle);
-				break;
-
-			case PXDataTypeLEInt32S:
-				totalReadBytes += PXFileReadI32SE(&pxStackFile, (PXInt32S*)pxFileDataElementType->Adress, PXEndianLittle);
-				break;
-
-			case PXDataTypeLEInt32U:
-				totalReadBytes += PXFileReadI32UE(&pxStackFile, (PXInt32U*)pxFileDataElementType->Adress, PXEndianLittle);
-				break;
-
-			case PXDataTypeLEInt64S:
-				totalReadBytes += PXFileReadI64SE(&pxStackFile, (PXInt64S*)pxFileDataElementType->Adress, PXEndianLittle);
-				break;
-
-			case PXDataTypeLEInt64U:
-				totalReadBytes += PXFileReadI64UE(&pxStackFile, (PXInt64U*)pxFileDataElementType->Adress, PXEndianLittle);
-				break;
-
-			case PXDataTypeBEInt16S:
-				totalReadBytes += PXFileReadI16SE(&pxStackFile, (PXInt16S*)pxFileDataElementType->Adress, PXEndianBig);
-				break;
-
-			case PXDataTypeBEInt16U:
-				totalReadBytes += PXFileReadI16UE(&pxStackFile, (PXInt16U*)pxFileDataElementType->Adress, PXEndianBig);
-				break;
-
-			case PXDataTypeBEInt32S:
-				totalReadBytes += PXFileReadI32SE(&pxStackFile, (PXInt32S*)pxFileDataElementType->Adress, PXEndianBig);
-				break;
-
-			case PXDataTypeBEInt32U:
-				totalReadBytes += PXFileReadI32UE(&pxStackFile, (PXInt32U*)pxFileDataElementType->Adress, PXEndianBig);
-				break;
-
-			case PXDataTypeBEInt64S:
-				totalReadBytes += PXFileReadI64SE(&pxStackFile, (PXInt64S*)pxFileDataElementType->Adress, PXEndianBig);
-				break;
-
-			case PXDataTypeBEInt64U:
-				totalReadBytes += PXFileReadI64UE(&pxStackFile, (PXInt64U*)pxFileDataElementType->Adress, PXEndianBig);
-				break;
-
-			case PXDataTypeFloat:
-				totalReadBytes += PXFileReadF(&pxStackFile, (float*)pxFileDataElementType->Adress);
-				break;
-
-			case PXDataTypeDouble:
-				totalReadBytes += PXFileReadD(&pxStackFile, (double*)pxFileDataElementType->Adress);
-				break;
-
-			case PXDataTypeTypeInvalid:
 			default:
+				endianText = "---";
+
+				if (!pxFileDataElementType->Adress)
+				{
+					sprintf_s(data, 30, "%i", sizeOfType);
+					sprintf_s(type, 30, "%s", "Padding");
+				}
+				else
+				{
+					for (size_t i = 0; i < sizeOfType; i++)
+					{
+						char byteCurrent = ((char*)pxFileDataElementType->Adress)[i];
+						PXBool Ischaracter = IsPrintable(byteCurrent);
+
+						byteCurrent = Ischaracter ? byteCurrent : '°';
+
+						sprintf_s(data + i, 30 - i, "%c", byteCurrent);
+					}
+
+					sprintf_s(type, 30, "Byte[%i]", sizeOfType);
+				}
+
+
 				break;
+		}
+
+		printf("\t| %2i | %3i / %-3i | %2i B | %-7s | %-13s | %-20s |\n", i + 1, pxFileRedirect->DataCursor - sizeOfType, pxFileRedirect->DataAllocated, sizeOfType, type, endianText, data);
+#endif
+
+		// Do we need an endian swap?
+		switch (pxFileDataElementType->Type & PXDataTypeEndianMask)
+		{
+			case PXDataTypeEndianBig:
+			{
+				PXEndianSwap(pxFileDataElementType->Adress, sizeOfType, PXEndianBig, EndianCurrentSystem);
+				break;
+			}
+			case PXDataTypeEndianLittle:
+			{
+				PXEndianSwap(pxFileDataElementType->Adress, sizeOfType, PXEndianLittle, EndianCurrentSystem);
+				break;
+			}
+			default:
+			{
+				continue; // Done, not a number
+			}		
 		}
 	}
 
@@ -2293,6 +2267,11 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 
 PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
 {
+	if (!value)
+	{
+		return PXFileCursorAdvance(pxFile, length);
+	}
+
 	switch (pxFile->LocationMode)
 	{
 		case PXFileLocationModeInternal:
@@ -2801,6 +2780,8 @@ PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* co
 {
 	PXSize totalReadBytes = 0;
 
+#if 0
+
 	for (PXSize i = 0; i < pxFileElementListSize; ++i)
 	{
 		PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
@@ -2880,6 +2861,7 @@ PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* co
 				break;
 		}
 	}
+#endif
 
 	return totalReadBytes;
 }

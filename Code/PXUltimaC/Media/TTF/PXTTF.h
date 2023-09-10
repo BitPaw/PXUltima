@@ -1,6 +1,8 @@
 #ifndef PXPXTTFINCLUDE
 #define PXPXTTFINCLUDE
 
+#define PXTTFDebug 0
+
 #include <OS/File/PXFile.h>
 #include <Media/PXResource.h>
 

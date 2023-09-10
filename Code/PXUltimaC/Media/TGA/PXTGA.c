@@ -170,9 +170,8 @@ PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 			{PXDataTypeInt8U, &pixelDepth},
 			{PXDataTypeInt8U, &tga->ImageDescriptor}
 		};
-		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 		tga->ImageInformationSize = imageIDLengh;
 

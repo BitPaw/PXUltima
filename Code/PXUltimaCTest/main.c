@@ -83,14 +83,14 @@ int main()
 	
 
 
-	PXBinaryLinux pxELF;
-	PXResourceLoadA(&pxELF, "N:\\NAS\\Games\\PC\\Re-Volt_Linux\\rvgl.64.elf");
+	//PXBinaryLinux pxELF;
+	//PXResourceLoadA(&pxELF, "N:\\NAS\\Games\\PC\\Re-Volt_Linux\\rvgl.64.elf");
 
 
 	
 	PXBinaryWindows pxEXE;
 
-	PXResourceLoadA(&pxEXE, "C:\\Users\\BitPaw\\Downloads\\SteamSetup.exe");
+	PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/32B-Windows-Debug/PXUltima.dll");
 
 
 
@@ -98,7 +98,7 @@ int main()
 	{
 		PXInt32U coolNumber = 0xAABBCCDD;
 
-		PXEndianSwapI32U(&coolNumber);
+		//PXEndianSwapI32U(&coolNumber);
 
 		PXBool result = coolNumber == 0xDDCCBBAA;
 

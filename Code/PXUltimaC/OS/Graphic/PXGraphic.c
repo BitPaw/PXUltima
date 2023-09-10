@@ -1260,13 +1260,12 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXDictionaryConstruct(&graphicContext->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
-#if PXWindowUSE
     PXWindow* const pxWindow = (PXWindow*)graphicContext->AttachedWindow;
 
 // TODO: function does not exist in UNIX
    // PXDirectXContextCreate(&graphicContext->DirectXInstance, pxWindow->ID, PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
 
-#if PXOpenGLUSE
+
     graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
 
     PXOpenGLCreateForWindow(&graphicContext->OpenGLInstance);
@@ -1281,8 +1280,6 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
         //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
     PXOpenGLDeselect(&graphicContext->OpenGLInstance);
-#endif
-#endif
 
     PXViewPort pxViewPort;
     pxViewPort.X = 0;
@@ -1293,7 +1290,6 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     pxViewPort.ClippingMaximum = 1;
 
     PXGraphicViewPortSet(graphicContext, &pxViewPort);
-
 
 
     //PXMatrix4x4FIdentity(&graphicContext->SpriteScaled.ModelMatrix);

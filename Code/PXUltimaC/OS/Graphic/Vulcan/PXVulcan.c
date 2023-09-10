@@ -59,7 +59,7 @@ PXActionResult PXVulcanInitialize(PXVulcan* const pxVulcan)
 
 	// Fetch all functions
 	{
-		PXLibraryGetSymbolA(&pxVulcan->LibraryID, &pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
+		PXLibraryGetSymbolA(&pxVulcan->LibraryID, (LibraryFunction*)&pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
 	}
 
 	return PXActionSuccessful;

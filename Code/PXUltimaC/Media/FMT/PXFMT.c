@@ -16,45 +16,43 @@ PXActionResult PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const P
 		}
 	}
 
-	const PXDataType x16 = endian == PXEndianLittle ? PXDataTypeLEInt16U : PXDataTypeBEInt16U;
-	const PXDataType x32 = endian == PXEndianLittle ? PXDataTypeLEInt32U : PXDataTypeBEInt32U;
+	const PXInt32U x16 = endian == PXEndianLittle ? PXDataTypeInt16ULE : PXDataTypeInt16UBE;
+	const PXInt32U x32 = endian == PXEndianLittle ? PXDataTypeInt32ULE : PXDataTypeInt32UBE;
 
 	const PXFileDataElementType pxDataStreamElementList[] =
 	{
-		{x32, &fmt->ChunkSize},
-		{x16, &fmt->AudioFormat},
-		{x16, &fmt->NumerOfChannels},
-		{x32, &fmt->SampleRate},
-		{x32, &fmt->ByteRate},
-		{x16, &fmt->BlockAllign},
-		{x16, &fmt->BitsPerSample}
+		{&fmt->ChunkSize,x32},
+		{&fmt->AudioFormat,x16},
+		{&fmt->NumerOfChannels,x16},
+		{&fmt->SampleRate,x32},
+		{&fmt->ByteRate,x32},
+		{&fmt->BlockAllign,x16},
+		{&fmt->BitsPerSample,x16}
 	};
-	const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-	PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+	PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 	return PXActionSuccessful;
 }
 
 PXActionResult PXFMTSaveToFile(const PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
 {
-	const PXDataType x16 = endian == PXEndianLittle ? PXDataTypeLEInt16U : PXDataTypeBEInt16U;
-	const PXDataType x32 = endian == PXEndianLittle ? PXDataTypeLEInt32U : PXDataTypeBEInt32U;
+	const PXInt32U x16 = endian == PXEndianLittle ? PXDataTypeInt16ULE : PXDataTypeInt16UBE;
+	const PXInt32U x32 = endian == PXEndianLittle ? PXDataTypeInt32ULE : PXDataTypeInt32UBE;
 
 	const PXFileDataElementType pxDataStreamElementList[] =
 	{
-		{PXDataTypeTextx4, FMTSignature},
-		{x32, &fmt->ChunkSize},
-		{x16, &fmt->AudioFormat},
-		{x16, &fmt->NumerOfChannels},
-		{x32, &fmt->SampleRate},
-		{x32, &fmt->ByteRate},
-		{x16, &fmt->BlockAllign},
-		{x16, &fmt->BitsPerSample}
+		{FMTSignature, PXDataTypeDatax4},
+		{&fmt->ChunkSize,x32},
+		{&fmt->AudioFormat,x16},
+		{&fmt->NumerOfChannels,x16},
+		{&fmt->SampleRate,x32},
+		{&fmt->ByteRate,x32},
+		{&fmt->BlockAllign,x16},
+		{&fmt->BitsPerSample,x16}
 	};
-	const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-	PXFileWriteMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+	PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 	return PXActionSuccessful;
 }

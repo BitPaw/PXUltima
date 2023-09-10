@@ -141,26 +141,23 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
 
     PXBitmapConstruct(&bmp);
 
-    PXInt32U sizeOfFile = 0;
-    PXInt32U reservedBlock = 0;
-    PXInt32U dataOffset = 0;
-
     //---[ Parsing Header ]----------------------------------------------------
     {
         PXInt16UCluster byteCluster;
 
         const PXFileDataElementType pxDataStreamElementList[] =
         {
-            {PXDataTypeTextx2, byteCluster.Data},
-            {PXDataTypeLEInt32U, &sizeOfFile},
-            {PXDataTypeLEInt32U, &reservedBlock},
-            {PXDataTypeLEInt32U, &dataOffset}
+            {byteCluster.Data, PXDataTypeDatax2},
+            {&bmp.SizeOfFile, PXDataTypeInt32ULE},
+            {&bmp.ReservedBlock, PXDataTypeInt32ULE},
+            {&bmp.DataOffset, PXDataTypeInt32ULE},
+            {&bmp.InfoHeader.HeaderSize, PXDataTypeInt32ULE}
         };
-        const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-        PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
         bmp.Type = PXBitmapTypeFromID(byteCluster.Value);
+        bmp.InfoHeaderType = PXBitmapInfoHeaderTypeFromID(bmp.InfoHeader.HeaderSize);
 
         {
             const PXBool isValidType = bmp.Type != PXBitmapInvalid;
@@ -174,31 +171,26 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
     //-------------------------------------------------------------------------
 
     //---[ DIP ]---------------------------------------------------------------
-    {
-        PXFileReadI32UE(pxFile, &bmp.InfoHeader.HeaderSize, PXEndianLittle);
-
-        bmp.InfoHeaderType = PXBitmapInfoHeaderTypeFromID(bmp.InfoHeader.HeaderSize);
-
+    {     
         switch(bmp.InfoHeaderType)
         {
             case PXBitmapHeaderBitMapInfoHeader:
             {
                 const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    {PXDataTypeLEInt32S, &bmp.InfoHeader.Width},
-                    {PXDataTypeLEInt32S, &bmp.InfoHeader.Height},
-                    {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfColorPlanes},
-                    {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfBitsPerPixel},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize},
-                    {PXDataTypeLEInt32S, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution},
-                    {PXDataTypeLEInt32S, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette},
-                    {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed},
+                    {&bmp.InfoHeader.Width,PXDataTypeInt32SLE},
+                    {&bmp.InfoHeader.Height,PXDataTypeInt32SLE},
+                    {&bmp.InfoHeader.NumberOfColorPlanes, PXDataTypeInt16ULE},
+                    {&bmp.InfoHeader.NumberOfBitsPerPixel, PXDataTypeInt16ULE},
+                    {&bmp.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod, PXDataTypeInt32ULE},
+                    {&bmp.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize, PXDataTypeInt32ULE},
+                    {&bmp.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution,PXDataTypeInt32SLE},
+                    {&bmp.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution,PXDataTypeInt32SLE},
+                    {&bmp.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette, PXDataTypeInt32ULE},
+                    {&bmp.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed,PXDataTypeInt32ULE},
                 };
-                const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                 break;
             }
@@ -211,14 +203,13 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
 
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeLEInt16U, &height},
-                        {PXDataTypeLEInt16U, &width},
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfColorPlanes},
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.NumberOfBitsPerPixel}
+                        {&height,PXDataTypeInt16ULE},
+                        {&width,PXDataTypeInt16ULE},
+                        {&bmp.InfoHeader.NumberOfColorPlanes,PXDataTypeInt16ULE},
+                        {&bmp.InfoHeader.NumberOfBitsPerPixel,PXDataTypeInt16ULE}
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
                 }
 
                 if(bmp.InfoHeaderType == PXBitmapHeaderOS22XBitMapHeader)
@@ -227,18 +218,17 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
 
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HorizontalandVerticalResolutions},
-                        {PXDataTypeLEInt16U, &paddingBytes},
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.DirectionOfBits},
-                        {PXDataTypeLEInt16U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.halftoningAlgorithm},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HalftoningParameterA},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HalftoningParameterB},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.ColorEncoding},
-                        {PXDataTypeLEInt32U, &bmp.InfoHeader.ExtendedInfo.OS22XBitMap.ApplicationDefinedByte}
+                        {&bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HorizontalandVerticalResolutions, PXDataTypeInt16ULE},
+                        {&paddingBytes, PXDataTypeInt16ULE},
+                        {&bmp.InfoHeader.ExtendedInfo.OS22XBitMap.DirectionOfBits, PXDataTypeInt16ULE},
+                        {&bmp.InfoHeader.ExtendedInfo.OS22XBitMap.halftoningAlgorithm, PXDataTypeInt16ULE},
+                        {&bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HalftoningParameterA, PXDataTypeInt32ULE},
+                        {&bmp.InfoHeader.ExtendedInfo.OS22XBitMap.HalftoningParameterB, PXDataTypeInt32ULE},
+                        {&bmp.InfoHeader.ExtendedInfo.OS22XBitMap.ColorEncoding, PXDataTypeInt32ULE},
+                        {&bmp.InfoHeader.ExtendedInfo.OS22XBitMap.ApplicationDefinedByte, PXDataTypeInt32ULE}
                     };
-                    const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                    PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
                 }
 
                 break;
@@ -313,9 +303,8 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
             {PXDataTypeLEInt32U, reservedBlock},
             {PXDataTypeLEInt32U, dataOffset}
         };
-        const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-        PXFileWriteMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);  
+        PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
     //-----------------------------------------------------
 
@@ -356,9 +345,8 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
                     {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette},
                     {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed},
                 };
-                const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-                PXFileWriteMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+                PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                 break;
             }

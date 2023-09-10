@@ -25,10 +25,8 @@ extern "C"
 		PXInt16U CodeSegmentInitial;
 		PXInt16U e_lfarlc;
 		PXInt16U e_ovno;
-		char ReservedA[4];
 		PXInt16U e_oemid;
 		PXInt16U e_oeminfo;
-		char ReservedB[10];
 		PXInt32U FileOffsetToHeader;
 	}
 	PXDOSHeader;

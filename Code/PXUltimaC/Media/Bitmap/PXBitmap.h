@@ -90,6 +90,10 @@ extern "C"
 
 		PXSize PixelDataSize;
 		void* PixelData;
+
+		PXInt32U SizeOfFile;
+		PXInt32U ReservedBlock;
+		PXInt32U DataOffset;
 	}
 	PXBitmap;
 

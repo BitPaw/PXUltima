@@ -903,11 +903,11 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
 
         pxVertexStructure->IndexBuffer.DrawModeID = PXDrawModeIDTriangle; // PXDrawModeIDPoint | PXDrawModeIDLineLoop;
         pxVertexStructure->IndexBuffer.DataType =
-            PXDataTypeInt8U * (counterVertexMaxID <= 0xFF) +
-            PXDataTypeLEInt16U * ((counterVertexMaxID > 0xFF) && (counterVertexMaxID <= 0xFFFF)) +
-            PXDataTypeLEInt32U * (counterVertexMaxID > 0xFFFF);
+            PXDataTypeInt08U * (counterVertexMaxID <= 0xFF) +
+            PXDataTypeInt16ULE * ((counterVertexMaxID > 0xFF) && (counterVertexMaxID <= 0xFFFF)) +
+            PXDataTypeInt32ULE * (counterVertexMaxID > 0xFFFF);
 
-        pxVertexStructure->IndexBuffer.IndexTypeSize = PXDataTypeSize(pxVertexStructure->IndexBuffer.DataType);
+        pxVertexStructure->IndexBuffer.IndexTypeSize = pxVertexStructure->IndexBuffer.DataType & PXDataTypeSizeMask;
         pxVertexStructure->IndexBuffer.IndexDataAmount = counterIndex;
         pxVertexStructure->IndexBuffer.IndexData = PXMemoryHeapAllocateCleared(pxVertexStructure->IndexBuffer.IndexTypeSize, counterIndex);
         pxVertexStructure->IndexBuffer.IndexDataSize = pxVertexStructure->IndexBuffer.IndexTypeSize * counterIndex;

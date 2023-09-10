@@ -12,6 +12,8 @@ extern "C"
 {
 #endif
 
+	
+
 	typedef enum PXGraphicSystem_
 	{
 		PXGraphicSystemInvalid,

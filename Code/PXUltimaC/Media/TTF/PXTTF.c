@@ -214,20 +214,20 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 
 		// Parse entry
 		{
-			const PXInt32U* const dataList[] =
+			const PXFileDataElementType pxDataStreamElementList[] =
 			{
-				&tableEntry.TypeID,
-				&tableEntry.CheckSum,
-				&tableEntry.Offset,
-				&tableEntry.Length
+				{&tableEntry.TypeID,	PXDataTypeInt32UBE},
+				{&tableEntry.CheckSum,	PXDataTypeInt32UBE},
+				{&tableEntry.Offset,	PXDataTypeInt32UBE},
+				{&tableEntry.Length,	PXDataTypeInt32UBE}
 			};
-			const PXInt8U dataListSize = sizeof(dataList) / sizeof(PXInt32U*);
 
-			PXFileReadI32UVE(pxFile, dataList, dataListSize, PXEndianBig);
+			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 			tableEntry.Type = PXTTFTableEntryTypeFromID(tableEntry.TypeID);
 		}
 
+#if PXTTFDebug
 		printf
 		(
 			"[TTF] Chunk:[%c%c%c%c], Known:%c, Offset:%6i, Length:%6i\n",
@@ -239,6 +239,7 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 			tableEntry.Offset,
 			tableEntry.Length
 		);
+#endif
 
 		sourcePosition = pxFile->DataCursor;
 		PXFileCursorMoveTo(pxFile, tableEntry.Offset);
@@ -248,27 +249,31 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 			//---<Essential>---------------------------------------------------		
 			case PXTTFTableEntryFontHeader:
 			{
-#if 0
-				PXFileReadI16U(pxFile, &ttf->Header.Version.Major, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->Header.Version.Minor, PXEndianLittle);
-				PXFileReadI16U(pxFile, &ttf->Header.Revision.Major, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->Header.Revision.Minor, PXEndianLittle);
-				PXFileReadI32U(pxFile, &ttf->Header.CheckSumAdjustment, PXEndianBig);
-				PXFileReadI32U(pxFile, &ttf->Header.MagicNumber, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->Header.Flags, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->Header.UnitsPerEM, PXEndianBig);
-				PXFileReadI64U(pxFile, &ttf->Header.Created, PXEndianBig);
-				PXFileReadI64U(pxFile, &ttf->Header.Modified, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->Header.Minimum[0], PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->Header.Minimum[1], PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->Header.Maximum[0], PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->Header.Maximum[1], PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->Header.MacStyle, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->Header.LowestRecPpem, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->Header.FontDirectionHint, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->Header.IndexToLocFormat, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->Header.GlyphDataFormat, PXEndianBig);
-#endif
+				const PXFileDataElementType pxDataStreamElementList[] =
+				{
+					{&ttf->Header.Version.Major,	PXDataTypeInt16UBE},
+					{&ttf->Header.Version.Minor,	PXDataTypeInt16ULE},
+					{&ttf->Header.Revision.Major,	PXDataTypeInt16UBE},
+					{&ttf->Header.Revision.Minor,	PXDataTypeInt16ULE},
+					{&ttf->Header.CheckSumAdjustment,	PXDataTypeInt32UBE},
+					{&ttf->Header.MagicNumber,	PXDataTypeInt32UBE},
+					{&ttf->Header.Flags,	PXDataTypeInt16UBE},
+					{&ttf->Header.UnitsPerEM,	PXDataTypeInt16UBE},
+					{&ttf->Header.Created,	PXDataTypeInt64UBE},
+					{&ttf->Header.Modified,	PXDataTypeInt64UBE},
+					{&ttf->Header.Minimum[0],	PXDataTypeInt16SBE},
+					{&ttf->Header.Minimum[1],	PXDataTypeInt16SBE},
+					{&ttf->Header.Maximum[0],	PXDataTypeInt16SBE},
+					{&ttf->Header.Maximum[1],	PXDataTypeInt16SBE},
+					{&ttf->Header.MacStyle,	PXDataTypeInt16UBE},
+					{&ttf->Header.LowestRecPpem,	PXDataTypeInt16UBE},
+					{&ttf->Header.FontDirectionHint,	PXDataTypeInt16SBE},
+					{&ttf->Header.IndexToLocFormat,	PXDataTypeInt16SBE},
+					{&ttf->Header.GlyphDataFormat,	PXDataTypeInt16SBE},
+				};
+
+				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
 				break;
 			}
 			case PXTTFTableEntryHorizontalHeader:

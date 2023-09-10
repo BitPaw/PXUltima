@@ -850,9 +850,4 @@
     <None Include="Media\BinaryLinux\README.md" />
     <None Include="Media\Bitmap\README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <MASM Include="Media\Assembly\PXAssemblyX86.asm">
-      <Filter>Quelldateien</Filter>
-    </MASM>
-  </ItemGroup>
 </Project>

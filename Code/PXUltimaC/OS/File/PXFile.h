@@ -2,6 +2,11 @@
 #define PXFileINCLUDE
 
 
+
+// Settings
+#define PXFileDebug 1
+
+
 #define PXFileUSE OSDeviceToUse == OSDeviceDestop
 #if PXFileUSE
 
@@ -145,8 +150,8 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	typedef struct PXFileDataElementType_
 	{
-		PXDataType Type;
 		void* Adress;
+		PXInt32U Type;
 	}
 	PXFileDataElementType;
 
@@ -290,7 +295,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 
 
-
+	PXPublic PXBool PXFileCanDirectAccess(const PXFile* const pxFile);
 
 	//---------------------------------------------------------------------
 	PXPublic void PXFileConstruct(PXFile* const pxFile);
@@ -395,8 +400,11 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileReadD(PXFile* const pxFile, double* const value);
 	PXPublic PXSize PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize valueListSize);
 
-	PXPublic PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListSize);
+	PXPublic PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize);
 
+
+	// Read x amounts of bytes and write into a buffer.
+	// If there is no output buffer given, the cursor will just skip forward.
 	PXPublic PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length);
 
 	// read Text

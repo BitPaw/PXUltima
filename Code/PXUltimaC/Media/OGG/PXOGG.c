@@ -27,18 +27,17 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 
 		const PXFileDataElementType pxDataStreamElementList[] =
 		{ 
-			{PXDataTypeTextx4, signature.Data},
-			{PXDataTypeInt8U, &page.Version},
-			{PXDataTypeInt8U, &page.HeaderType},
-			{PXDataTypeLEInt32U, &page.GranulePosition},
-			{PXDataTypeLEInt32U, &page.SerialNumber},
-			{PXDataTypeLEInt32U, &page.SequenceNumber},
-			{PXDataTypeLEInt32U, &page.CRC32CheckSum},
-			{PXDataTypeInt8U, &page.PageSegments}
+			{signature.Data,PXDataTypeDatax4},
+			{&page.Version, PXDataTypeInt08U},
+			{&page.HeaderType, PXDataTypeInt08U},
+			{&page.GranulePosition, PXDataTypeInt32UBE},
+			{&page.SerialNumber, PXDataTypeInt32UBE},
+			{&page.SequenceNumber, PXDataTypeInt32UBE},
+			{&page.CRC32CheckSum, PXDataTypeInt32UBE},
+			{&page.PageSegments, PXDataTypeInt08U}
 		};
-		const PXSize pxDataStreamElementListSize = sizeof(pxDataStreamElementList) / sizeof(PXFileDataElementType);
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, pxDataStreamElementListSize);
+		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 		const PXBool validHeaderSignature = PXMemoryCompare(signature.Data, 4u, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
