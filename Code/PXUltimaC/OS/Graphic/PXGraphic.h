@@ -258,6 +258,65 @@ extern "C"
 	}
 	PXUIElement;
 
+
+
+
+
+
+
+
+
+
+	//-------------------------------------------------------------------------
+	// Define generic graphic API, make happen that you can use whatever
+	//-------------------------------------------------------------------------
+	typedef void (*PXGraphicSelectFunction)(void* const pxGraphicAPI);
+	typedef void (*PXGraphicDeselectFunction)(void* const pxGraphicAPI);
+
+	typedef PXActionResult(*PXGraphicLoadFunction)(void* const pxGraphicAPI);
+	typedef PXActionResult(*PXGraphicUnloaddFunction)(void* const pxGraphicAPI);
+
+	typedef PXActionResult(*PXGraphicViewPortSetFunction)(void* const pxGraphicAPI, const PXViewPort* const pxViewPort);
+	typedef PXActionResult(*PXGraphicViewPortGetFunction)(void* const pxGraphicAPI, PXViewPort* const pxViewPort);
+
+	typedef PXActionResult(*PXGraphicShaderProgramCreateFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(*PXGraphicShaderProgramSelectFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(*PXGraphicShaderProgramDeleteFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
+
+	typedef void (*PXGraphicSceneBeginFunction)(void* const pxGraphicAPI);
+	typedef void (*PXGraphicSceneEndFunction)(void* const pxGraphicAPI);
+
+	typedef PXActionResult(*PXGraphicDrawScriptCreate)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
+	typedef PXActionResult(*PXGraphicDrawScriptBegin)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+	typedef PXActionResult(*PXGraphicDrawScriptEnd)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+	typedef PXActionResult(*PXGraphicDrawScriptDelete)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+	typedef PXActionResult(*PXGraphicDrawScriptExecute)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+
+	typedef PXActionResult(*PXGraphicTextureCubeRegisterFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
+	typedef PXActionResult(*PXGraphicTextureCubeRegisterUseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
+	typedef PXActionResult(*PXGraphicTextureCubeReleaseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
+
+
+	typedef PXActionResult(*PXGraphicVertexStructureRegisterFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
+	typedef PXActionResult(*PXGraphicVertexStructureDrawFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
+	typedef PXActionResult(*PXGraphicVertexStructureSelectFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
+	typedef PXActionResult(*PXGraphicVertexStructureReleaseFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
+
+	typedef PXActionResult(*PXGraphicLightSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
+	typedef PXActionResult(*PXGraphicLightGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
+	typedef PXActionResult(*PXGraphicLightEnableSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
+	typedef PXActionResult(*PXGraphicLightEnableGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
+
+
+	typedef PXActionResult(*PXGraphicTexture2DRegisterFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+	typedef PXActionResult(*PXGraphicTexture2DReleaseFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+	typedef PXActionResult(*PXGraphicTexture2DSelectFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+
+	typedef void (*PXGraphicClearFunction)(void* const pxGraphicAPI, const PXColorRGBAF* const backgroundColor);
+	typedef PXBool(*PXGraphicSceneDeployFunction)(void* const pxGraphicAPI);
+	//-------------------------------------------------------------------------
+
+
 	typedef struct PXGraphicContext_
 	{
 		PXDirectX DirectXInstance;
@@ -291,8 +350,50 @@ extern "C"
 		PXVertexStructure SpriteScaled;
 		PXVertexStructure SpriteUnScaled;
 
+	
+
+		//-------------------------------------------------
+		// API
+		//-------------------------------------------------
+		void* EventOwner;
+
+		PXGraphicSelectFunction Select;
+		PXGraphicDeselectFunction Deselect;
+		PXGraphicClearFunction Clear;
+		PXGraphicSceneDeployFunction SceneDeploy;
+		PXGraphicViewPortSetFunction ViewPortSet;
+		PXGraphicViewPortGetFunction ViewPortGet;
+		PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
+		PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
+		PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
+		PXGraphicSceneBeginFunction SceneBegin;
+		PXGraphicSceneEndFunction SceneEnd;
+		PXGraphicDrawScriptCreate DrawScriptCreate;
+		PXGraphicDrawScriptBegin DrawScriptBegin;
+		PXGraphicDrawScriptEnd DrawScriptEnd;
+		PXGraphicDrawScriptDelete DrawScriptDelete;
+		PXGraphicDrawScriptExecute DrawScriptExecute;
+		PXGraphicTextureCubeRegisterFunction TextureCubeRegister;
+		PXGraphicTextureCubeRegisterUseFunction TextureCubeRegisterUse;
+		PXGraphicTextureCubeReleaseFunction TextureCubeRelease;
+		PXGraphicVertexStructureRegisterFunction VertexStructureRegister;
+		PXGraphicVertexStructureDrawFunction VertexStructureDraw;
+		PXGraphicVertexStructureSelectFunction VertexStructureSelect;
+		PXGraphicVertexStructureReleaseFunction VertexStructureRelease;
+		PXGraphicLightSetFunction LightSet;
+		PXGraphicLightGetFunction LightGet;
+		PXGraphicLightEnableSetFunction LightEnableSet;
+		PXGraphicLightEnableGetFunction LightEnableGet;
+		PXGraphicTexture2DRegisterFunction Texture2DRegister;
+		PXGraphicTexture2DReleaseFunction Texture2DRelease;
+		PXGraphicTexture2DSelectFunction  Texture2DSelect;
+		//-------------------------------------------------
 	}
 	PXGraphicContext;
+
+
+
+
 
 
 	//-------------------------------------------------------------------------
@@ -315,29 +416,8 @@ extern "C"
 	PXPublic PXActionResult PXGraphicUIElementUnregister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
 	//-------------------------------------------------------------------------
 
-
-
-	PXPublic PXActionResult PXGraphicViewPortSet(PXGraphicContext* const graphicContext, const PXViewPort* const pxViewPort);
-	PXPublic PXActionResult PXGraphicViewPortGet(PXGraphicContext* const graphicContext, PXViewPort* const pxViewPort);
-
-
-	PXPublic void PXGraphicSelect(PXGraphicContext* const graphicContext);
-	PXPublic void PXGraphicDeselect(PXGraphicContext* const graphicContext);
-
 	PXPublic PXActionResult PXGraphicSwapIntervalSet(PXGraphicContext* const graphicContext, const PXInt32U interval);
 	PXPublic PXActionResult PXGraphicSwapIntervalGet(PXGraphicContext* const graphicContext, PXInt32U* const interval);
-
-
-
-
-	//-----------------------------------------------------
-	// Draw
-	//-----------------------------------------------------
-	PXPublic void PXGraphicClear(PXGraphicContext* const graphicContext, const PXColorRGBAF* const backgroundColor);
-	PXPublic PXBool PXGraphicSceneDeploy(PXGraphicContext* const graphicContext);
-
-	PXPublic void PXGraphicSceneBegin(PXGraphicContext* const graphicContext);
-	PXPublic void PXGraphicSceneEnd(PXGraphicContext* const graphicContext);
 
 
 	//-----------------------------------------------------
@@ -349,33 +429,12 @@ extern "C"
 	PXPublic PXActionResult PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
 	PXPublic PXActionResult PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
 
-	//-----------------------------------------------------
-	// Vertex buffer
-	//-----------------------------------------------------
-	PXPublic PXActionResult PXGraphicVertexStructureRegister(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure);
-	PXPublic PXActionResult PXGraphicVertexStructureDraw(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
-	PXPublic PXActionResult PXGraphicVertexStructureSelect(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure);
-	PXPublic PXActionResult PXGraphicVertexStructureRelease(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure);
-
-
-	//-----------------------------------------------------
-	// Scripting
-	//-----------------------------------------------------
-	PXPublic PXActionResult PXGraphicDrawScriptCreate(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
-	PXPublic PXActionResult PXGraphicDrawScriptBegin(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript);
-	PXPublic PXActionResult PXGraphicDrawScriptEnd(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript);
-	PXPublic PXActionResult PXGraphicDrawScriptDelete(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript);
-	PXPublic PXActionResult PXGraphicDrawScriptExecute(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript);
-
-
-	//-----------------------------------------------------
+		//-----------------------------------------------------
 	// Shader
 	//-----------------------------------------------------
 	PXPublic PXActionResult PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
 	PXPublic PXActionResult PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
-	PXPublic PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram);
-	PXPublic PXActionResult PXGraphicShaderProgramSelect(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram);
-	PXPublic PXActionResult PXGraphicShaderProgramDelete(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram);
+
 
 	PXPublic PXActionResult PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
 
@@ -396,19 +455,6 @@ extern "C"
 		const float tyB
 	);
 	PXPublic void PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlendingMode pxBlendingMode);
-
-
-
-
-	//-----------------------------------------------------
-	// Light
-	//-----------------------------------------------------
-	PXPublic PXActionResult PXGraphicLightSet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index);
-	PXPublic PXActionResult PXGraphicLightGet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index);
-	PXPublic PXActionResult PXGraphicLightEnableSet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
-	PXPublic PXActionResult PXGraphicLightEnableGet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
-
-
 
 
 
@@ -442,17 +488,6 @@ extern "C"
 
 	PXPublic PXActionResult PXGraphicTexture2DLoad(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const PXText* const filePath);
 	PXPublic PXActionResult PXGraphicTexture2DLoadA(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const char* const filePath);
-	PXPublic PXActionResult PXGraphicTexture2DRegister(PXGraphicContext* const graphicContext, PXTexture2D* const texture);
-	PXPublic PXActionResult PXGraphicTexture2DRelease(PXGraphicContext* const graphicContext, PXTexture2D* const texture);
-	PXPublic PXActionResult PXGraphicTexture2DUse(PXGraphicContext* const graphicContext, PXTexture2D* const texture);
-
-	PXPublic PXActionResult PXGraphicTextureCubeRegister(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
-	PXPublic PXActionResult PXGraphicTextureCubeRegisterUse(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
-	PXPublic PXActionResult PXGraphicTextureCubeRelease(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube);
-
-
-	PXPublic PXActionResult PXGraphicTexture2DSelect(PXGraphicContext* const graphicContext, PXTexture2D* const pxTexture2D);
-
 	//-------------------------------------------------------------------------
 
 
@@ -558,8 +593,6 @@ extern "C"
 	//-------------------------------------------------------------------------
 	PXPublic void PXCameraUpdate(PXCamera* const camera, const float deltaTime);
 	//-------------------------------------------------------------------------
-
-
 
 
 

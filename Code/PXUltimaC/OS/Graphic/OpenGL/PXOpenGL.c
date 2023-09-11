@@ -8,6 +8,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <OS/Window/PXWindow.h>
 #include <OS/Async/PXAwait.h>
+#include <assert.h>
 
 #if 0
 #include <GLEW/glew.h>
@@ -2057,6 +2058,8 @@ void PXOpenGLCreateWindowless(PXOpenGL* const openGLContext, const PXSize width,
 
 void PXOpenGLSelect(PXOpenGL* const openGLContext)
 {
+    assert(openGLContext);
+
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
 #if OSUnix
@@ -2157,14 +2160,15 @@ void PXOpenGLDrawMode(PXOpenGL* const openGLContext, const PXGraphicDrawFillMode
     glPolygonMode(GL_FRONT_AND_BACK, fillMode);
 }
 
-void PXOpenGLClearColor(PXOpenGL* const openGLContext, const PXColorRGBAF* const pxColorRGBAF)
+void PXOpenGLClear(PXOpenGL* const openGLContext, const PXColorRGBAF* const pxColorRGBAF)
 {
     glClearColor(pxColorRGBAF->Red, pxColorRGBAF->Green, pxColorRGBAF->Blue, pxColorRGBAF->Alpha);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void PXOpenGLClear(PXOpenGL* const openGLContext, const unsigned int clearID)
+PXBool PXOpenGLSceneDeploy(PXOpenGL* const openGLContext)
 {
-    glClear(clearID);
+    return PXWindowFrameBufferSwap(openGLContext->AttachedWindow);
 }
 
 void PXOpenGLDrawScaleF(PXOpenGL* const openGLContext, const float x, const float y, const float z)

@@ -254,10 +254,10 @@ extern "C"
     //-----------------------------------------------------
     // Direct X - Draw
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, const D3DRECT* pRects, const PXInt32U Flags, const PXColorRGBAF* const pxColorRGBAF, const float Z, const PXInt32U Stencil);
+    PXPublic PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXColorRGBAF* const pxColorRGBAF);
     PXPublic PXActionResult PXDirectXColorFill(PXDirectX* const pxDirectX, IDirect3DSurface9* pSurface, const RECT* pRect, D3DCOLOR color);
     PXPublic PXActionResult PXDirectXReset(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters);
-    PXPublic PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
+    PXPublic PXActionResult PXDirectXSceneDeploy(PXDirectX* const pxDirectX);
     PXPublic PXActionResult PXDirectXPrimitiveIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U BaseVertexIndex, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U startIndex, const PXInt32U primCount);
     PXPublic PXActionResult PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U startVertex, const PXInt32U primitiveCount);
     PXPublic PXActionResult PXDirectXPrimitiveUPDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U PrimitiveCount, const void* pVertexStreamZeroData, const PXInt32U VertexStreamZeroStride);

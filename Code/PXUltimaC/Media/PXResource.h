@@ -17,7 +17,7 @@ extern "C"
 	typedef enum PXGraphicSystem_
 	{
 		PXGraphicSystemInvalid,
-		PXGraphicSystemPXOpenGL,
+		PXGraphicSystemOpenGL,
 		PXGraphicSystemDirectX,
 		PXGraphicSystemVulcan
 	}

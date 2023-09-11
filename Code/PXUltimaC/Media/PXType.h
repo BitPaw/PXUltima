@@ -95,6 +95,8 @@ extern "C"
 
 
 //-- Reivented public / private. The keywords are reserved, so we need other names.
+#define PXAPI _cdecl
+
 #if OSUnix
 #define PXPrivate static
 #define PXPublic extern

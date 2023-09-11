@@ -67,29 +67,6 @@ PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext
 	return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicTexture2DUse(PXGraphicContext* const graphicContext, PXTexture2D* const texture)
-{
-    /*
-    const bool isValidTexture = textureID != -1 && imageType != ImageType::Invalid;
-
-#if 1 // Ignore
-    if (!isValidTexture)
-    {
-        return;
-    }
-#else
-    assert(isValidTexture);
-#endif
-
-    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-
-    const PXOpenGLID imageTypeID = ToImageType(imageType);
-
-    glBindTexture(imageTypeID, textureID);
-    */
-    return PXActionInvalid;
-}
-
 PXActionResult PXGraphicTexture2DLoad(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const PXText* filePath)
 {
     if (!graphicContext || !texture || !filePath)
@@ -112,7 +89,7 @@ PXActionResult PXGraphicTexture2DLoad(PXGraphicContext* const graphicContext, PX
 
     // Register as normal
     {
-        const PXActionResult registerResult = PXGraphicTexture2DRegister(graphicContext, texture);
+        const PXActionResult registerResult = graphicContext->Texture2DRegister(graphicContext, texture);
 
         PXActionReturnOnError(registerResult);
     }
@@ -182,13 +159,13 @@ PXActionResult PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXF
     //PXDictionaryAdd(&graphicContext->FontLookUp, &pxFont->ID, pxFont);
     PXLockRelease(&graphicContext->_resourceLock);
 
-    PXGraphicTexture2DRegister(graphicContext, &pxFont->MainPage.Texture);
+    graphicContext->Texture2DRegister(graphicContext, &pxFont->MainPage.Texture);
 
     for (PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)
     {
         PXFontPage* const pxFontPage = &pxFont->AdditionalPageList[i];
 
-        PXGraphicTexture2DRegister(graphicContext, &pxFontPage->Texture);
+        graphicContext->Texture2DRegister(graphicContext, &pxFontPage->Texture);
     }
 
     return PXActionSuccessful;
@@ -202,81 +179,6 @@ PXActionResult PXGraphicFontRelease(PXGraphicContext* const graphicContext, PXFo
 PXActionResult PXGraphicFontUse(PXGraphicContext* const graphicContext, PXFont* const pxFont)
 {
     return PXActionSuccessful;
-}
-
-PXActionResult PXGraphicTexture2DRegister(PXGraphicContext* const graphicContext, PXTexture2D* const texture)
-{
-    PXLockEngage(&graphicContext->_resourceLock);
-    texture->ResourceID.PXID = PXGraphicGenerateUniqeID(graphicContext);
-    PXDictionaryAdd(&graphicContext->TextureLookUp, &texture->ResourceID.PXID, texture);
-    PXLockRelease(&graphicContext->_resourceLock);
-
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLTexture2DCreate(&graphicContext->OpenGLInstance, texture);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXTexture2DCreate(&graphicContext->DirectXInstance, texture);
-        }
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicTexture2DRelease(PXGraphicContext* const graphicContext, PXTexture2D* const texture)
-{
-    return PXActionInvalid;
-}
-
-PXActionResult PXGraphicTextureCubeRegister(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLTextureCubeCreate(&graphicContext->OpenGLInstance, textureCube);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXTextureCubeCreate(&graphicContext->DirectXInstance, textureCube);
-        }
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicTextureCubeRegisterUse(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube)
-{
-    return PXActionInvalid;
-}
-
-PXActionResult PXGraphicTextureCubeRelease(PXGraphicContext* const graphicContext, PXTextureCube* const textureCube)
-{
-    return PXActionInvalid;
-}
-
-PXActionResult PXGraphicTexture2DSelect(PXGraphicContext* const graphicContext, PXTexture2D* const pxTexture2D)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            PXOpenGLTextureBind(&graphicContext->OpenGLInstance, PXGraphicTextureType2D, pxTexture2D);
-            break;
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXActionNotSupportedByLibrary;
-        }
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
 }
 
 PXActionResult PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y)
@@ -389,10 +291,9 @@ PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, P
 #else
         PXDrawModeIDTriangle
 #endif
-
         ;
 
-    PXGraphicVertexStructureRegister(graphicContext, &skyBox->VertexStructure);
+    graphicContext->VertexStructureRegister(graphicContext, &skyBox->VertexStructure);
 
     //OLD
     /*
@@ -427,7 +328,7 @@ PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, P
     }*/
 
     // Register Cube Texture
-    PXGraphicTextureCubeRegister(graphicContext, &skyBox->TextureCube);
+    graphicContext->TextureCubeRegister(graphicContext, &skyBox->TextureCube);
 
     graphicContext->_currentSkyBox = skyBox;
 
@@ -1248,7 +1149,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 {
     PXLockCreate(&graphicContext->_resourceLock, PXLockTypeGlobal);
 
-    graphicContext->GraphicSystem = PXGraphicSystemPXOpenGL;
+    graphicContext->GraphicSystem = PXGraphicSystemOpenGL;
 
     PXDictionaryConstruct(&graphicContext->ResourceImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
 
@@ -1281,6 +1182,107 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
 
     PXOpenGLDeselect(&graphicContext->OpenGLInstance);
 
+
+
+   // PXLockEngage(&graphicContext->_resourceLock);
+   // texture->ResourceID.PXID = PXGraphicGenerateUniqeID(graphicContext);
+   // PXDictionaryAdd(&graphicContext->TextureLookUp, &texture->ResourceID.PXID, texture);
+   // PXLockRelease(&graphicContext->_resourceLock);
+
+  
+
+
+    //-------------------------------------------------------------------------
+    // Setup references
+    //-------------------------------------------------------------------------
+    switch (graphicContext->GraphicSystem)
+    {
+        case PXGraphicSystemOpenGL:
+        {
+            graphicContext->EventOwner = &graphicContext->OpenGLInstance;
+
+            graphicContext->Select = PXOpenGLSelect;
+            graphicContext->Deselect = PXOpenGLDeselect;
+            graphicContext->Clear = PXOpenGLClear;
+            graphicContext->SceneDeploy = PXOpenGLSceneDeploy;
+            graphicContext->ViewPortGet = PXOpenGLViewPortGet;
+            graphicContext->ViewPortSet = PXOpenGLViewPortSet;
+            graphicContext->ShaderProgramCreate = PXOpenGLShaderProgramCreate;
+            graphicContext->ShaderProgramSelect = PXOpenGLShaderProgramSelect;
+            graphicContext->ShaderProgramDelete = PXOpenGLShaderProgramDelete;
+            graphicContext->SceneBegin = PXNull;
+            graphicContext->SceneEnd = PXNull;
+            graphicContext->DrawScriptCreate = PXOpenGLDrawScriptCreate;
+            graphicContext->DrawScriptBegin = PXOpenGLDrawScriptBegin;
+            graphicContext->DrawScriptEnd = PXOpenGLDrawScriptEnd;
+            graphicContext->DrawScriptDelete = PXOpenGLDrawScriptDelete;
+            graphicContext->DrawScriptExecute = PXOpenGLDrawScriptExecute;
+            graphicContext->TextureCubeRegister = PXOpenGLTextureCubeCreate;
+            graphicContext->TextureCubeRegisterUse = PXNull;
+            graphicContext->TextureCubeRelease = PXNull;
+            graphicContext->VertexStructureRegister = PXOpenGLVertexStructureRegister;
+            graphicContext->VertexStructureDraw = PXOpenGLVertexStructureDraw;
+            graphicContext->VertexStructureSelect = PXNull;
+            graphicContext->VertexStructureRelease = PXNull;
+            graphicContext->LightSet = PXOpenGLLightSet;
+            graphicContext->LightGet = PXOpenGLLightGet;
+            graphicContext->LightEnableSet = PXNull;
+            graphicContext->LightEnableGet = PXNull;
+            graphicContext->Texture2DRegister = PXOpenGLTexture2DCreate;
+            graphicContext->Texture2DRelease = PXNull;
+            graphicContext->Texture2DSelect = PXOpenGLTextureBind; // PXGraphicTextureType2D
+
+            break;
+        }
+        case PXGraphicSystemDirectX:
+        {
+            graphicContext->EventOwner = &graphicContext->DirectXInstance;
+
+            graphicContext->Select = PXNull;
+            graphicContext->Deselect = PXNull;
+            graphicContext->Clear = PXDirectXClear;
+            graphicContext->SceneDeploy = PXDirectXSceneDeploy;
+            graphicContext->ViewPortGet = PXDirectXViewportGet;
+            graphicContext->ViewPortSet = PXDirectXViewportSet;
+            graphicContext->ShaderProgramCreate = PXDirectXShaderProgramCreate;
+            graphicContext->ShaderProgramSelect = PXDirectXShaderProgramSelect;
+            graphicContext->ShaderProgramDelete = PXDirectXShaderProgramDelete;
+            graphicContext->SceneBegin = PXDirectXSceneBegin;
+            graphicContext->SceneEnd = PXDirectXSceneEnd;
+            graphicContext->DrawScriptCreate = PXDirectXDrawScriptCreate;
+            graphicContext->DrawScriptBegin = PXDirectXDrawScriptBegin;
+            graphicContext->DrawScriptEnd = PXDirectXDrawScriptEnd;
+            graphicContext->DrawScriptDelete = PXDirectXDrawScriptDelete;
+            graphicContext->DrawScriptExecute = PXDirectXDrawScriptExecute;
+            graphicContext->TextureCubeRegister = PXDirectXTextureCubeCreate;
+            graphicContext->TextureCubeRegisterUse = PXNull;
+            graphicContext->TextureCubeRelease = PXNull;
+            graphicContext->VertexStructureRegister = PXDirectXVertexStructureRegister;
+            graphicContext->VertexStructureDraw = PXDirectXVertexStructureDraw;
+            graphicContext->VertexStructureSelect = PXNull;
+            graphicContext->VertexStructureRelease = PXNull;
+            graphicContext->LightSet = PXDirectXLightSet;
+            graphicContext->LightGet = PXDirectXLightGet;
+            graphicContext->LightEnableSet = PXNull;
+            graphicContext->LightEnableGet = PXNull;
+            graphicContext->Texture2DRegister = PXDirectXTexture2DCreate;
+            graphicContext->Texture2DRelease = PXNull;
+            graphicContext->Texture2DSelect = PXNull;     
+            break;
+        }
+        case PXGraphicSystemVulcan:
+        {
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    //-------------------------------------------------------------------------
+
+
+
     PXViewPort pxViewPort;
     pxViewPort.X = 0;
     pxViewPort.Y = 0;
@@ -1289,85 +1291,18 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     pxViewPort.ClippingMinimum = 0;
     pxViewPort.ClippingMaximum = 1;
 
-    PXGraphicViewPortSet(graphicContext, &pxViewPort);
+    graphicContext->ViewPortSet(graphicContext->EventOwner, &pxViewPort);
 
 
     //PXMatrix4x4FIdentity(&graphicContext->SpriteScaled.ModelMatrix);
    // PXMatrix4x4FIdentity(&graphicContext->SpriteUnScaled.ModelMatrix);
 }
 
-
-PXActionResult PXGraphicViewPortSet(PXGraphicContext* const graphicContext, const PXViewPort* const pxViewPort)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-            PXOpenGLViewPortSet(&graphicContext->OpenGLInstance, pxViewPort);
-            break;
-
-        case PXGraphicSystemDirectX:
-            PXDirectXViewportSet(&graphicContext->DirectXInstance, pxViewPort);
-            break;
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicViewPortGet(PXGraphicContext* const graphicContext, PXViewPort* const pxViewPort)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-            PXOpenGLViewPortGet(&graphicContext->OpenGLInstance, pxViewPort);
-            break;
-
-        case PXGraphicSystemDirectX:
-            PXDirectXViewportGet(&graphicContext->DirectXInstance, pxViewPort);
-            break;
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-void PXGraphicSelect(PXGraphicContext* const graphicContext)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-            PXOpenGLSelect(&graphicContext->OpenGLInstance);
-            break;
-
-        case PXGraphicSystemDirectX:
-            break;
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-void PXGraphicDeselect(PXGraphicContext* const graphicContext)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-            PXOpenGLDeselect(&graphicContext->OpenGLInstance);
-            break;
-
-        case PXGraphicSystemDirectX:
-            break;
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
 PXActionResult PXGraphicSwapIntervalSet(PXGraphicContext* const graphicContext, const PXInt32U interval)
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
             return PXOpenGLSwapIntervalSet(&graphicContext->OpenGLInstance, interval);
 
         case PXGraphicSystemDirectX:
@@ -1381,7 +1316,7 @@ PXActionResult PXGraphicSwapIntervalGet(PXGraphicContext* const graphicContext, 
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
             return PXOpenGLSwapIntervalGet(&graphicContext->OpenGLInstance, interval);
 
         case PXGraphicSystemDirectX:
@@ -1395,126 +1330,6 @@ PXActionResult PXGraphicSwapIntervalGet(PXGraphicContext* const graphicContext, 
 void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo)
 {
 
-}
-
-void PXGraphicClear(PXGraphicContext* const graphicContext, const PXColorRGBAF* const backgroundColor)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-            PXOpenGLClearColor(&graphicContext->OpenGLInstance, backgroundColor);
-            PXOpenGLClear(&graphicContext->OpenGLInstance, 0);
-            break;
-
-        case PXGraphicSystemDirectX:
-//            PXDirectXClear(&graphicContext->DirectXInstance, 0, 0, D3DCLEAR_TARGET, backgroundColor, 1.0f, 0);
-            break;
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXBool PXGraphicSceneDeploy(PXGraphicContext* const graphicContext)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            PXWindow* window = (PXWindow*)graphicContext->AttachedWindow;
-
-            //window->MouseCurrentInput.Delta[0] = 0;
-            //window->MouseCurrentInput.Delta[1] = 0;
-            //window->MouseCurrentInput.DeltaNormalisized[0] = 0;
-            //window->MouseCurrentInput.DeltaNormalisized[1] = 0;
-
-            // PXOpenGLContextFlush(&graphicContext->OpenGLInstance);
-
-            return PXWindowFrameBufferSwap(window);
-        }
-
-        case PXGraphicSystemDirectX:
-        {
-            PXDirectXPresent(&graphicContext->DirectXInstance, 0, 0, 0, 0);
-            break;
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-
-void PXGraphicSceneBegin(PXGraphicContext* const graphicContext)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXActionNotSupportedByLibrary;
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXSceneBegin(&graphicContext->DirectXInstance);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-void PXGraphicSceneEnd(PXGraphicContext* const graphicContext)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXActionNotSupportedByLibrary;
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXSceneEnd(&graphicContext->DirectXInstance);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicVertexStructureRegister(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure)
-{
-   // PXMatrix4x4FIdentity(&pxVertexStructure->ModelMatrix);
-
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLVertexStructureRegister(&graphicContext->OpenGLInstance, pxVertexStructure);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXVertexStructureRegister(&graphicContext->DirectXInstance, pxVertexStructure);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicVertexStructureDraw(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera)
-{
-    PXMatrix4x4F modelMatrix;
-    PXMatrix4x4FIdentity(&modelMatrix);
-
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLVertexStructureDraw(&graphicContext->OpenGLInstance, pxVertexStructure, pxCamera);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXVertexStructureDraw(&graphicContext->DirectXInstance, pxVertexStructure, pxCamera);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
 }
 
 PXActionResult PXGraphicSpriteConstruct(PXGraphicContext* const graphicContext, PXSprite* const pxSprite)
@@ -1551,7 +1366,7 @@ PXActionResult PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
             return PXOpenGLSpriteDraw(&graphicContext->OpenGLInstance, pxSprite, pxCamera);
         }
@@ -1564,111 +1379,11 @@ PXActionResult PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const
     }
 }
 
-PXActionResult PXGraphicVertexStructureSelect(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicVertexStructureRelease(PXGraphicContext* const graphicContext, PXVertexStructure* const pxVertexStructure)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicDrawScriptCreate(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLDrawScriptCreate(&graphicContext->OpenGLInstance, pxDrawScript);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXDrawScriptCreate(&graphicContext->DirectXInstance, pxDrawScript, pxDrawScriptType);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-PXActionResult PXGraphicDrawScriptBegin(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLDrawScriptBegin(&graphicContext->OpenGLInstance, pxDrawScript);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXDrawScriptBegin(&graphicContext->DirectXInstance, pxDrawScript);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-
-}
-PXActionResult PXGraphicDrawScriptEnd(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLDrawScriptEnd(&graphicContext->OpenGLInstance, pxDrawScript);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXDrawScriptEnd(graphicContext, pxDrawScript);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-PXActionResult PXGraphicDrawScriptDelete(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLDrawScriptDelete(&graphicContext->OpenGLInstance, pxDrawScript);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXDrawScriptDelete(graphicContext, pxDrawScript);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
 PXActionResult PXGraphicDrawModeSet(PXGraphicContext* const graphicContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode)
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
             PXOpenGLDrawMode(&graphicContext->OpenGLInstance, pxGraphicDrawFillMode, 0);
             break;
@@ -1685,7 +1400,7 @@ void PXGraphicDrawColorRGBF(PXGraphicContext* const graphicContext, const float 
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
             PXOpenGLDrawColorRGBF(&graphicContext->OpenGLInstance, red, green, blue);
             break;
@@ -1703,7 +1418,7 @@ void PXGraphicDrawColorRGBAF(PXGraphicContext* const graphicContext, const float
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
             PXOpenGLDrawColorRGBAF(&graphicContext->OpenGLInstance, red, green, blue, alpha);
             break;
@@ -1720,7 +1435,7 @@ PXActionResult PXGraphicRectangleDraw(PXGraphicContext* const graphicContext, co
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
             PXOpenGLRectangleF(graphicContext, xA, yA, xB, yB);
             break;
@@ -1749,7 +1464,7 @@ PXActionResult PXGraphicRectangleDrawTx
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
             PXOpenGLRectangleTxF(&graphicContext->OpenGLInstance, xA, yA, xB, yB, txA, tyA, txB, tyB);
             break;
@@ -1767,7 +1482,7 @@ void PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlend
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
 
             break;
@@ -1781,28 +1496,12 @@ void PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlend
     }
 }
 
-PXActionResult PXGraphicDrawScriptExecute(PXGraphicContext* const graphicContext, PXDrawScript* const pxDrawScript)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLDrawScriptExecute(&graphicContext->OpenGLInstance, pxDrawScript);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXDrawScriptExecute(&graphicContext->DirectXInstance, pxDrawScript);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
 
 PXActionResult PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
 {
     switch (pxGraphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
         {
             return PXOpenGLShaderProgramCreateVF(&pxGraphicContext->OpenGLInstance, pxShaderProgram, vertexShaderFilePath, fragmentShaderFilePath);
         }
@@ -1826,108 +1525,6 @@ PXActionResult PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphic
     return PXGraphicShaderProgramCreateVP(pxGraphicContext, pxShaderProgram, &pxTextVertexShader, &pxTextPixelShader);
 }
 
-PXActionResult PXGraphicShaderProgramCreate(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram)
-{
-   // PXLockEngage(&graphicContext->_resourceLock);
-    //shaderPXProgram->ID = PXGraphicGenerateUniqeID(graphicContext);
-    //PXDictionaryAdd(&graphicContext->ShaderPXProgramLookup, &shaderPXProgram->ID, shaderPXProgram);
-   // PXLockRelease(&graphicContext->_resourceLock);
-
-    //printf("[PX] Shader program ID:%i\n", shaderPXProgram->ID);
-
-    switch (pxGraphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLShaderProgramCreate(&pxGraphicContext->OpenGLInstance, pxShaderProgram);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXShaderProgramCreate(&pxGraphicContext->DirectXInstance, pxShaderProgram);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicShaderProgramSelect(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram)
-{
-    switch (pxGraphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLShaderProgramSelect(&pxGraphicContext->OpenGLInstance, pxShaderProgram);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXShaderProgramSelect(&pxGraphicContext->DirectXInstance, pxShaderProgram);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicShaderProgramDelete(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram)
-{
-    switch (pxGraphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLShaderProgramDelete(&pxGraphicContext->OpenGLInstance, pxShaderProgram);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXShaderProgramDelete(&pxGraphicContext->DirectXInstance, pxShaderProgram);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicLightSet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLLightSet(&graphicContext->OpenGLInstance, pxLight, index);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXLightSet(&graphicContext->DirectXInstance, pxLight, index);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicLightGet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemPXOpenGL:
-        {
-            return PXOpenGLLightGet(&graphicContext->OpenGLInstance, pxLight, index);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXLightGet(&graphicContext->DirectXInstance, pxLight, index);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXGraphicLightEnableSet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index, const PXBool enable)
-{
-    return PXActionSuccessful;
-}
-
-PXActionResult PXGraphicLightEnableGet(PXGraphicContext* const graphicContext, PXLight* const pxLight, const PXInt32U index, PXBool* const enable)
-{
-    return PXActionSuccessful;
-}
-
 PXActionResult PXGraphicRender(PXGraphicContext* const graphicContext, PXGraphicDrawMode renderMode, PXSize start, PXSize amount)
 {
     return PXActionInvalid;
@@ -1944,7 +1541,7 @@ PXActionResult PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicCon
 {
     switch (graphicContext->GraphicSystem)
     {
-        case PXGraphicSystemPXOpenGL:
+        case PXGraphicSystemOpenGL:
             return PXOpenGLShaderVariableIDFetch(&graphicContext->OpenGLInstance, pxShader, shaderVariableID, name);
 
         case PXGraphicSystemDirectX:

@@ -658,8 +658,10 @@ extern "C"
 
 	PXPublic void PXOpenGLDrawMode(PXOpenGL* const openGLContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode, const int cullingMode);
 
-	PXPublic void PXOpenGLClearColor(PXOpenGL* const openGLContext, const PXColorRGBAF* const pxColorRGBAF);
-	PXPublic void PXOpenGLClear(PXOpenGL* const openGLContext, const unsigned int clearID);
+	PXPublic void PXOpenGLClear(PXOpenGL* const openGLContext, const PXColorRGBAF* const pxColorRGBAF);
+
+	PXPublic PXBool PXOpenGLSceneDeploy(PXOpenGL* const openGLContext);
+
 	PXPublic void PXOpenGLDrawScaleF(PXOpenGL* const openGLContext, const float x, const float y, const float z);
 	PXPublic void PXOpenGLDrawBegin(PXOpenGL* const openGLContext, const PXGraphicDrawMode openGLRenderMode);
 	PXPublic void PXOpenGLDrawVertexXYZF(PXOpenGL* const openGLContext, const float x, const float y, const float z);

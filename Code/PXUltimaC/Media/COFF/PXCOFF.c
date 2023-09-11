@@ -4,6 +4,8 @@
 
 #include <assert.h>
 
+#define PXCOFFDebug 1
+
 #define STYP_REG 0x0000;
 #define STYP_DSECT 0x0001
 #define STYP_NOLOAD 0x0002
@@ -369,6 +371,7 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
 				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
+#if PXCOFFDebug
 				printf
 				(
 					"[COFF][RelocationInformation] %6i,%6i,%6i\n",
@@ -376,6 +379,7 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 					pxRelocationInformation.SymbolTableIndex,
 					pxRelocationInformation.RelocationType
 				);
+#endif
 			}
 		}
 
@@ -398,8 +402,9 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
 				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-
+#if PXCOFFDebug
 				printf("[COFF][Section][LineEntry] %3i/%-3i - Line:%i Index:%i\n", i + 1, pxSectionTableCurrent->NumberOfLinenumbers, pxLineNumberEntry->LineNumber, pxLineNumberEntry->SymbolIndex);
+#endif
 			}
 		}
 
@@ -414,7 +419,9 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
 			PXCOFFSymbolTableEntry pxCOFFSymbolTableEntryXX;
 
+#if PXCOFFDebug
 			printf("[COFF] Symbols deteced <%i>\n", pxCOFF->NumberOfSymbols);
+#endif
 
 			for (PXInt32U i = 0; i < pxCOFF->NumberOfSymbols; i++)
 			{
@@ -453,7 +460,7 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 				}
 			}
 		}
-#if 1
+#if PXCOFFDebug
 		else
 		{
 			printf("[COFF] No Symbols\n");

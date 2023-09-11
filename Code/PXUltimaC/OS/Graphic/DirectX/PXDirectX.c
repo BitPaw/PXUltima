@@ -1636,7 +1636,7 @@ PXActionResult PXDirectXSceneEnd(PXDirectX* const pxDirectX)
     return PXActionSuccessful;
 }
 
-PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, const D3DRECT* pRects, const PXInt32U Flags, const PXColorRGBAF* const pxColorRGBAF, const float Z, const PXInt32U Stencil)
+PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXColorRGBAF* const pxColorRGBAF)
 {
     switch (pxDirectX->DirectXVersion)
     {
@@ -1676,12 +1676,12 @@ PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXInt32U Count, 
             const HRESULT result = pxDirectX->DX9->lpVtbl->Clear
             (
                 pxDirectX->DX9,
-                Count,
-                pRects,
-                Flags,
+                0,
+                0,
+                D3DCLEAR_TARGET,
                 colorI8,
-                Z,
-                Stencil
+                1.0f,
+                0
             );
 
             return PXActionSuccessful;
@@ -2004,7 +2004,7 @@ PXActionResult PXDirectXReset(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS*
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
+PXActionResult PXDirectXSceneDeploy(PXDirectX* const pxDirectX)
 {
     switch (pxDirectX->DirectXVersion)
     {
@@ -2028,10 +2028,10 @@ PXActionResult PXDirectXPresent(PXDirectX* const pxDirectX, const RECT* pSourceR
             const HRESULT result = pxDirectX->DX9->lpVtbl->Present
             (
                 pxDirectX->DX9,
-                pSourceRect,
-                pDestRect,
-                hDestWindowOverride,
-                pDirtyRegion
+                0,
+                0,
+                0,
+                0
             );
 
             return PXActionSuccessful;
