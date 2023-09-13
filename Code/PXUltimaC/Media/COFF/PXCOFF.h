@@ -64,10 +64,16 @@ extern "C"
 	typedef struct PXSectionTable_
 	{
 		PXInt64UCluster Name;
-		PXInt32U PhysicalAddress;
+
+		union
+		{
+			PXInt32U PhysicalAddress;
+			PXInt32U VirtualSize;
+		};
+	
 		PXInt32U VirtualAddress;
-		PXInt32U SectionSizeInBytes;
-		PXInt32U PointerToRawData;
+		PXInt32U SectionRawDataSize;
+		PXInt32U SectionRawDataAdress;
 		PXInt32U PointerToRelocations;
 		PXInt32U PointerToLinenumbers;
 		PXInt16U NumberOfRelocations;
@@ -122,7 +128,7 @@ extern "C"
 	}
 	PXLineNumberEntry;
 
-	typedef struct PXCOFFExportDirectoryTableEntry_
+	typedef struct PXCOFFExportDirectoryTable_
 	{
 		PXInt32U ExportFlags;
 		PXInt32U TimeDateStamp;
@@ -136,24 +142,64 @@ extern "C"
 		PXInt32U NamePointerRVA;
 		PXInt32U OrdinalTableRVA;
 	}
-	PXCOFFExportDirectoryTableEntry;
+	PXCOFFExportDirectoryTable;
+
+	typedef struct PXCOFFExportAddressTableEntry_
+	{
+		union
+		{
+			PXInt32U ExportSymbolOffset;
+			PXInt32U ForwarderOffset;
+		};
+	}
+	PXCOFFExportAddressTableEntry;
 
 
-	// 20 Byte size
-	typedef struct PXCOFF_
+	typedef struct PXCOFFImportDirectoryTable_
+	{
+		PXInt32U ImportLookupTableOffset;
+		PXInt32U TimeDateStamp;
+		PXInt32U FowarderChainOffset;
+		PXInt32U NameOffset;
+		PXInt32U ImportAddressTableOffset;
+	}
+	PXCOFFImportDirectoryTable;
+
+	typedef struct PXCOFFImportLookupTable_
+	{
+		union
+		{
+			union
+			{
+				PXInt64U OrdinalNumber64;
+				PXInt64U Name64;
+			};
+			union
+			{
+				PXInt32U OrdinalNumber32;
+				PXInt32U Name32;
+			};
+		};
+
+		PXBool IsOrdinal;
+	}
+	PXCOFFImportLookupTable;
+
+	typedef struct PXCOFFHeader_
 	{
 		PXInt32U TimeDateStamp;
 		PXInt32U PointerToSymbolTable;
-		PXInt32U NumberOfSymbols;	
+		PXInt32U NumberOfSymbols;
 		PXInt16U NumberOfSections;
 		PXInt16U SizeOfOptionalHeader;
 		PXInt16U CharacteristicsFlagList;
 		PXCOFFMachineType MachineType;
+	}
+	PXCOFFHeader;
 
-		// Optional Header 
 
-		PXCOFFFormat Format;
-
+	typedef struct PXCOFFOptionalHeaderStandardFields_
+	{
 		int StateType;
 
 		PXInt8U MajorLinkerVersion;
@@ -165,9 +211,11 @@ extern "C"
 		PXInt32U AddressOfEntryPoint;
 		PXInt32U BaseOfCode;
 		PXInt32U BaseOfData; // Only in PE32, not used in PE32+
+	}
+	PXCOFFOptionalHeaderStandardFields;
 
-
-		// Windows spesific
+	typedef struct PXCOFFOptionalHeaderWindowsNT_
+	{
 		PXInt64U ImageBase;
 		PXInt32U SectionAlignment;
 		PXInt32U FileAlignment;
@@ -188,54 +236,52 @@ extern "C"
 		PXInt64U SizeOfHeapCommit;
 		PXInt32U LoaderFlags;
 		PXInt32U NumberOfRvaAndSizes;
+	}
+	PXCOFFOptionalHeaderWindowsNT;
 
+	typedef struct PXCOFFOptionalHeaderDataDirectoriesEntry_
+	{
+		PXInt32U RelativeVirtualAddress;
+		PXInt32U Size;
+	}PXCOFFOptionalHeaderDataDirectoriesEntry;
 
-		PXInt32U ExportTableAdress;
-		PXInt32U ExportTableSize;
+	typedef struct PXCOFFOptionalHeaderDataDirectories_
+	{
+		PXCOFFOptionalHeaderDataDirectoriesEntry ExportTable;
+		PXCOFFOptionalHeaderDataDirectoriesEntry ImportTable;
+		PXCOFFOptionalHeaderDataDirectoriesEntry ResourceTable;
+		PXCOFFOptionalHeaderDataDirectoriesEntry ExceptionTable;	
+		PXCOFFOptionalHeaderDataDirectoriesEntry CertificateTable;	
+		PXCOFFOptionalHeaderDataDirectoriesEntry BaseRelocationTable;
+		PXCOFFOptionalHeaderDataDirectoriesEntry Debug;	
+		PXCOFFOptionalHeaderDataDirectoriesEntry Architecture;
+		PXCOFFOptionalHeaderDataDirectoriesEntry GlobalPtr;
+		PXCOFFOptionalHeaderDataDirectoriesEntry ThreadLocalStorageTable;	
+		PXCOFFOptionalHeaderDataDirectoriesEntry LoadConfigTable;	
+		PXCOFFOptionalHeaderDataDirectoriesEntry BoundImport;	
+		PXCOFFOptionalHeaderDataDirectoriesEntry ImportAddressTable;	
+		PXCOFFOptionalHeaderDataDirectoriesEntry DelayImportDescriptor;
+		PXCOFFOptionalHeaderDataDirectoriesEntry COMPlusRuntimeHeader;
+	}
+	PXCOFFOptionalHeaderDataDirectories;
 
-		PXInt32U ImportTableAdress;
-		PXInt32U ImportTableSize;
+	typedef struct PXCOFFOptionalHeader_
+	{
+		PXCOFFFormat Format;
+		PXCOFFOptionalHeaderStandardFields StandardFields;
+		PXCOFFOptionalHeaderWindowsNT WindowsNT;
+		PXCOFFOptionalHeaderDataDirectories DataDirectories;
+	}
+	PXCOFFOptionalHeader;
 
-		PXInt32U ResourceTableAdress;
-		PXInt32U ResourceTableSize;
+	// 20 Byte size
+	typedef struct PXCOFF_
+	{
+		PXCOFFHeader Header;
+		PXCOFFOptionalHeader OptionalHeader;
 
-		PXInt32U ExceptionTableAdress;
-		PXInt32U ExceptionTableSize;
-
-		PXInt32U CertificateTableAdress;
-		PXInt32U CertificateTableSize;
-		
-		PXInt32U BaseRelocationTableAdress;
-		PXInt32U BaseRelocationTableSize;
-
-		PXInt32U DebugAdress;
-		PXInt32U DebugSize;
-
-		PXInt32U ArchitectureAdress;
-		PXInt32U ArchitectureSize;
-
-		PXInt32U GlobalPtrAdress;
-		PXInt32U GlobalPtrSize;
-
-		PXInt32U ThreadLocalStorageTableAdress;
-		PXInt32U ThreadLocalStorageTableSize;
-
-		PXInt32U LoadConfigTableAdress;
-		PXInt32U LoadConfigTableSize;
-
-		PXInt32U BoundImportAdress;
-		PXInt32U BoundImportSize;
-
-		PXInt32U ImportAddressTableAdress;
-		PXInt32U ImportAddressTableSize;
-
-		PXInt32U DelayImportDescriptorAdress;
-		PXInt32U DelayImportDescriptorSize;
-
-		PXInt32U COMPlusRuntimeHeaderAdress;
-		PXInt32U COMPlusRuntimeHeaderSize;
-
-
+		PXCOFFExportDirectoryTable ExportDirectoryTable;
+		PXCOFFImportDirectoryTable ImportDirectoryTable;
 
 		PXSectionTable* SectionTableList;
 	}

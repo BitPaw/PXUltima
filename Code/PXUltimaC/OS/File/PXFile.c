@@ -2127,9 +2127,9 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 
 #if PXFileDebug
 
-		char type[30];
+		char type[45];
 		char* endianText = 0;
-		char data[30];
+		char data[45];
 
 		PXMemoryClear(type, 30);
 		PXMemoryClear(data, 30);
@@ -2220,17 +2220,27 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 				}
 				else
 				{
-					for (size_t i = 0; i < sizeOfType; i++)
+					if (pxFileDataElementType->Type & PXDataTypeAdressMask)
 					{
-						char byteCurrent = ((char*)pxFileDataElementType->Adress)[i];
-						PXBool Ischaracter = IsPrintable(byteCurrent);
+						sprintf_s(data, 45, "0x%p", pxFileDataElementType->Adress);
+						sprintf_s(type, 45, "ADR %i", sizeOfType*8);
+					}
+					else
+					{
+						for (size_t i = 0; i < sizeOfType; i++)
+						{
+							char byteCurrent = ((char*)pxFileDataElementType->Adress)[i];
+							PXBool Ischaracter = IsPrintable(byteCurrent);
 
-						byteCurrent = Ischaracter ? byteCurrent : '°';
+							byteCurrent = Ischaracter ? byteCurrent : '°';
 
-						sprintf_s(data + i, 30 - i, "%c", byteCurrent);
+							sprintf_s(data + i, 30 - i, "%c", byteCurrent);
+						}
+
+						sprintf_s(type, 30, "Byte[%i]", sizeOfType);
 					}
 
-					sprintf_s(type, 30, "Byte[%i]", sizeOfType);
+					
 				}
 
 

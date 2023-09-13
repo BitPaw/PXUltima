@@ -89,8 +89,8 @@ int main()
 
 	
 	PXBinaryWindows pxEXE;
-
-	PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/32B-Windows-Debug/PXUltima.dll");
+	//PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/32B-Windows-Debug/PXUltimaCTest.exe");
+	PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/64B-Windows-Debug/PXUltima.dll");
 
 
 

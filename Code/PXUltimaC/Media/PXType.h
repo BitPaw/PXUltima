@@ -319,9 +319,11 @@ PXDataType;
 
 #if OS32B
 	typedef PXInt32U PXSize;
+	typedef PXInt32S PXOffset;
 	typedef PXInt64U PXAdress64;
 #elif OS64B
 	typedef PXInt64U PXSize;
+	typedef PXInt64S PXOffset;
 	typedef void* PXAdress64;
 #else
 #error Invalid Bit Version
