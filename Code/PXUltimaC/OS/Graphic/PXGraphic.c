@@ -1145,7 +1145,7 @@ void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderabl
     pxRenderableMeshSegment->DoRendering = PXNo;
 }
 
-void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
+void PXGraphicInstantiate(PXGraphicContext* const graphicContext, const PXInt32S width, const PXInt32S height, PXWindow* const pxWindow)
 {
     PXLockCreate(&graphicContext->_resourceLock, PXLockTypeGlobal);
 
@@ -1161,36 +1161,8 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
     PXDictionaryConstruct(&graphicContext->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
-    PXWindow* const pxWindow = (PXWindow*)graphicContext->AttachedWindow;
-
-// TODO: function does not exist in UNIX
-   // PXDirectXContextCreate(&graphicContext->DirectXInstance, pxWindow->ID, PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
-
-
-    graphicContext->OpenGLInstance.AttachedWindow = pxWindow;
-
-    PXOpenGLCreateForWindow(&graphicContext->OpenGLInstance);
-
-    //glEnable(GL_DEPTH_TEST); // X-RAY
-
-    // glEnable(GL_BLEND);
-      // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-       // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_COLOR, GL_DST_COLOR);
-
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-
-    PXOpenGLDeselect(&graphicContext->OpenGLInstance);
-
-
-
-   // PXLockEngage(&graphicContext->_resourceLock);
-   // texture->ResourceID.PXID = PXGraphicGenerateUniqeID(graphicContext);
-   // PXDictionaryAdd(&graphicContext->TextureLookUp, &texture->ResourceID.PXID, texture);
-   // PXLockRelease(&graphicContext->_resourceLock);
-
-  
-
+    // TODO: function does not exist in UNIX
+    // PXDirectXContextCreate(&graphicContext->DirectXInstance, pxWindow->ID, PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
 
     //-------------------------------------------------------------------------
     // Setup references
@@ -1201,6 +1173,8 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
         {
             graphicContext->EventOwner = &graphicContext->OpenGLInstance;
 
+            graphicContext->Initialize = PXOpenGLInitialize;
+            graphicContext->Release = PXOpenGLRelease;
             graphicContext->Select = PXOpenGLSelect;
             graphicContext->Deselect = PXOpenGLDeselect;
             graphicContext->Clear = PXOpenGLClear;
@@ -1238,6 +1212,8 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
         {
             graphicContext->EventOwner = &graphicContext->DirectXInstance;
 
+            graphicContext->Initialize = PXDirectXInitialize;
+            graphicContext->Release = PXDirectXRelease;
             graphicContext->Select = PXNull;
             graphicContext->Deselect = PXNull;
             graphicContext->Clear = PXDirectXClear;
@@ -1279,6 +1255,7 @@ void PXGraphicInstantiate(PXGraphicContext* const graphicContext)
             break;
     }
 
+    graphicContext->Initialize(graphicContext->EventOwner, width, height, pxWindow);
     //-------------------------------------------------------------------------
 
 

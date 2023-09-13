@@ -17,8 +17,7 @@ namespace PXText
 
 
             PX.Window window = new PX.Window();
-
-            Window
+            window.Create(100,100, "fsdf");
 
             OpenGL openGL = new OpenGL();
             openGL.CreateWindowless(100,100);

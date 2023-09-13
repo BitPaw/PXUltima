@@ -627,22 +627,23 @@ extern "C"
 	PXPrivate PXInt32U PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType);
 	PXPrivate PXInt32U PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType);
 	PXPrivate PXInt32U PXOpenGLTypeToID(const PXDataType pxDataType);
+
+	PXPrivate PXActionResult PXOpenGLErrorCurrent();
 	//--------------------------------------------------------
 
 	//---<Utility>-------------------------------------------------------------
 	PXPublic void PXOpenGLConstruct(PXOpenGL* const openGLContext);
 	PXPublic void PXOpenGLDestruct(PXOpenGL* const openGLContext);
 
-	PXPrivate PXActionResult PXOpenGLErrorCurrent();
-
 	PXPublic void PXOpenGLSet(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
 	PXPublic void PXOpenGLCopy(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
 
-	PXPublic PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext);
-	PXPublic void PXOpenGLCreateWindowless(PXOpenGL* const openGLContext, const PXSize width, const PXSize height);
+	PXPublic PXActionResult PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXSize width, const PXSize height, PXWindow* const pxWindow);
+	PXPublic PXActionResult PXOpenGLRelease(PXOpenGL* const openGLContext);
+
 	PXPublic void PXOpenGLSelect(PXOpenGL* const openGLContext);
 	PXPublic PXBool PXOpenGLDeselect(PXOpenGL* const openGLContext);
-	PXPublic void PXOpenGLRelease(PXOpenGL* const openGLContext);
+
 
 	PXPublic void PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext);
 

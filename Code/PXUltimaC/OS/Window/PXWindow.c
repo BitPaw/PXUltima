@@ -2211,8 +2211,6 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     }
 #endif
 
-    PXGraphicInstantiate(&window->GraphicInstance);
-
     window->IsRunning = 1;
 
     InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);

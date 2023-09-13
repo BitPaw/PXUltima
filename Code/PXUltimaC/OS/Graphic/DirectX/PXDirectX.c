@@ -333,7 +333,7 @@ PXActionResult PXDirectXDepthStencilSurfaceCreate(PXDirectX* const pxDirectX, PX
 #endif
 }
 
-PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType)
+PXActionResult PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType)
 {
 	PXDirectXContextConstruct(pxDirectX);
 
@@ -599,6 +599,11 @@ PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxW
 #endif
 
     return PXActionNotSupportedByOperatingSystem;
+}
+
+PXActionResult PXDirectXRelease(PXDirectX* const pxDirectX)
+{
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name)

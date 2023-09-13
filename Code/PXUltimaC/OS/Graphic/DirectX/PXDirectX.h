@@ -234,7 +234,8 @@ extern "C"
     PXPublic void PXDirectXContextConstruct(PXDirectX* const pxDirectX);
     PXPublic void PXDirectXContextDestruct(PXDirectX* const pxDirectX);
 
-    PXPublic PXActionResult PXDirectXContextCreate(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType);
+    PXPublic PXActionResult PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType);
+    PXPublic PXActionResult PXDirectXRelease(PXDirectX* const pxDirectX);
 
     //-----------------------------------------------------
     // Direct X - Scene

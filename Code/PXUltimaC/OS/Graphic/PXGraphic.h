@@ -270,6 +270,9 @@ extern "C"
 	//-------------------------------------------------------------------------
 	// Define generic graphic API, make happen that you can use whatever
 	//-------------------------------------------------------------------------
+	typedef PXBool (*PXGraphicInitializeFunction)(void* const pxGraphicAPI, const PXSize width, const PXSize height, PXWindow* const pxWindow);
+	typedef PXBool(*PXGraphicReleaseFunction)(void* const pxGraphicAPI);
+
 	typedef void (*PXGraphicSelectFunction)(void* const pxGraphicAPI);
 	typedef void (*PXGraphicDeselectFunction)(void* const pxGraphicAPI);
 
@@ -357,6 +360,8 @@ extern "C"
 		//-------------------------------------------------
 		void* EventOwner;
 
+		PXGraphicInitializeFunction Initialize;
+		PXGraphicReleaseFunction Release;
 		PXGraphicSelectFunction Select;
 		PXGraphicDeselectFunction Deselect;
 		PXGraphicClearFunction Clear;
@@ -462,7 +467,7 @@ extern "C"
 
 
 	//-------------------------------------
-	PXPublic void PXGraphicInstantiate(PXGraphicContext* const graphicContext);
+	PXPublic void PXGraphicInstantiate(PXGraphicContext* const graphicContext, const PXInt32S width, const PXInt32S height, PXWindow* const pxWindow);
 
 	PXPublic void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo);
 	//-------------------------------------

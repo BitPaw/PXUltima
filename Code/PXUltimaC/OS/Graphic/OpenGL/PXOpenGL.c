@@ -1565,24 +1565,43 @@ void PXOpenGLCopy(PXOpenGL* const openGLContext, const PXOpenGL* const openGLCon
 
 }
 
-PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
+PXActionResult PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXSize width, const PXSize height, PXWindow* const pxWindow)
 {
-    if (!openGLContext)
+    // Safety
     {
-        return 0;
+        if (!openGLContext)
+        {
+            return PXActionRefuedParameterNull;
+        }
     }
 
-    PXWindow* const window = (PXWindow* const)openGLContext->AttachedWindow; // can be null, if no windows is supposed to be used
+    openGLContext->AttachedWindow = pxWindow; 
 
-    if (!window)
+    if (!pxWindow) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
     {
-        return 0;
+#if OSWindows
+        PXWindow* const window = PXNew(PXWindow);
+
+        openGLContext->AttachedWindow = window;
+
+        PXWindowConstruct(window);
+
+        PXWindowCreateHidden(window, width, height, 1u); // This will call this function again. Recursive
+
+        PXAwaitChangeCU(&window->IsRunning); // Wait
+
+        openGLContext->AttachedWindow = window;
+
+        PXOpenGLSet(openGLContext, &window->GraphicInstance.OpenGLInstance);
+#endif
+
+        return 0; // We should have all data here, stoping.
     }
 
 #if OSUnix
     const int attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 
-    const XVisualInfo* const visualInfo = glXChooseVisual(window->DisplayCurrent, 0, attributeList);
+    const XVisualInfo* const visualInfo = glXChooseVisual(pxWindow->DisplayCurrent, 0, attributeList);
 
     {
         const PXBool successful = visualInfo != 0;
@@ -1593,13 +1612,13 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
         }
     }
 
-    openGLContext->PXOpenGLConext = glXCreateContext(window->DisplayCurrent, visualInfo, NULL, GL_TRUE);
+    openGLContext->PXOpenGLConext = glXCreateContext(pxWindow->DisplayCurrent, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
 
     // Check if failed
     {
-        const HGLRC handle = wglCreateContext(window->HandleDeviceContext);
+        const HGLRC handle = wglCreateContext(pxWindow->HandleDeviceContext);
         const PXBool successful = handle != 0;
 
         PXActionOnErrorFetchAndReturn(!successful);
@@ -1610,7 +1629,6 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
 #endif
 
     PXOpenGLSelect(openGLContext);
-
 
     const char* vendor = PXOpenGLStringGet(PXOpenGLStringNameVendor); // Returns the company responsible for this GL implementation.This name does not change from release to release.
 
@@ -2023,37 +2041,16 @@ PXBool PXOpenGLCreateForWindow(PXOpenGL* const openGLContext)
     PXViewPort pxViewPort;
     pxViewPort.X = 0;
     pxViewPort.Y = 0;
-    pxViewPort.Width = window->Width;
-    pxViewPort.Height = window->Height;
+    pxViewPort.Width = pxWindow->Width;
+    pxViewPort.Height = pxWindow->Height;
     pxViewPort.ClippingMinimum = 0;
     pxViewPort.ClippingMaximum = 1;
 
     PXOpenGLViewPortSet(openGLContext, &pxViewPort);
 
+    PXOpenGLDeselect(openGLContext);
+
     return PXActionSuccessful;
-}
-
-void PXOpenGLCreateWindowless(PXOpenGL* const openGLContext, const PXSize width, const PXSize height)
-{
-#if OSWindows
-
-    if (!openGLContext->AttachedWindow) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
-    {
-        PXWindow* const window = PXNew(PXWindow);
-
-        PXWindowConstruct(window);
-
-        PXWindowCreateHidden(window, width, height, 1u); // This will call this function again. Recursive
-
-        PXAwaitChangeCU(&window->IsRunning); // Wait
-
-        openGLContext->AttachedWindow = window;
-
-        PXOpenGLSet(openGLContext, &window->GraphicInstance.OpenGLInstance);
-
-        return; // We should have all data here, stoping.
-    }
-#endif
 }
 
 void PXOpenGLSelect(PXOpenGL* const openGLContext)
@@ -2083,7 +2080,7 @@ PXBool PXOpenGLDeselect(PXOpenGL* const openGLContext)
     return successful;
 }
 
-void PXOpenGLRelease(PXOpenGL* const openGLContext)
+PXActionResult PXOpenGLRelease(PXOpenGL* const openGLContext)
 {
     const PXWindow* const window = (const PXWindow* const)openGLContext->AttachedWindow;
 
@@ -2093,6 +2090,8 @@ void PXOpenGLRelease(PXOpenGL* const openGLContext)
 #elif OSWindows
 
 #endif
+
+    return PXActionRefusedNotImplemented;
 }
 
 void PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext)
