@@ -30,14 +30,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <EnableASAN>false</EnableASAN>
     <EnableFuzzer>
     </EnableFuzzer>
@@ -46,14 +46,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <EnableASAN>false</EnableASAN>
     <EnableFuzzer>
     </EnableFuzzer>
@@ -141,7 +141,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <Optimization>MinSpace</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -201,7 +201,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <Optimization>MinSpace</Optimization>
@@ -241,7 +241,6 @@
     <ClCompile Include="OS\Hardware\PXController.c" />
     <ClCompile Include="OS\Hardware\PXKeyBoard.c" />
     <ClCompile Include="OS\Hardware\PXMouse.c" />
-    <ClCompile Include="OS\Async\PXEvent.c" />
     <ClCompile Include="OS\Graphic\PXGraphic.c" />
     <ClCompile Include="OS\Graphic\SoftwareRender\PXSoftwareRender.c" />
     <ClCompile Include="Language\PXTranslator.c" />
@@ -380,7 +379,6 @@
     <ClInclude Include="OS\Hardware\PXController.h" />
     <ClInclude Include="OS\Hardware\PXKeyBoard.h" />
     <ClInclude Include="OS\Hardware\PXMouse.h" />
-    <ClInclude Include="OS\Async\PXEvent.h" />
     <ClInclude Include="OS\Graphic\PXGraphic.h" />
     <ClInclude Include="OS\Graphic\SoftwareRender\PXSoftwareRender.h" />
     <ClInclude Include="Language\PXTranslator.h" />
@@ -508,6 +506,7 @@
     <None Include="Media\COFF\README.md" />
     <None Include="Media\BinaryWindows\README.md" />
     <None Include="Media\Matroska\README.md" />
+    <None Include="OS\Graphic\Vulcan\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

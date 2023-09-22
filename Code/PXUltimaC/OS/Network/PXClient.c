@@ -3,7 +3,6 @@
 #if PXSocketUSE
 
 #include <OS/Memory/PXMemory.h>
-#include <OS/Async/PXEvent.h>
 
 void PXClientConstruct(PXClient* const pxClient)
 {
@@ -104,7 +103,7 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
         PXSocket* const pxSocketClient = &client->SocketClient;
         PXMemoryCopy(pxSocketTemp, sizeof(PXSocket), pxSocketClient, sizeof(PXSocket));
 
-        InvokeEvent(pxSocketClient->EventList.SocketConnectedCallBack, client->Owner, &client->SocketClient, &client->SocketServer);
+        PXFunctionInvoke(pxSocketClient->EventList.SocketConnectedCallBack, client->Owner, &client->SocketClient, &client->SocketServer);
 
         lastError = PXThreadRun(&pxSocketClient->CommunicationThread, (ThreadFunction)PXClientCommunicationThread, pxSocketClient);
 

@@ -12,11 +12,9 @@
 #include <ShlObj_core.h>
 #endif // 0
 
-
-
 #endif
 
-PXActionResult PXUserNameGet(PXText* const name)
+PXActionResult PXAPI PXUserNameGet(PXText* const name)
 {
 	switch (name->Format)
 	{
@@ -70,7 +68,7 @@ PXActionResult PXUserNameGet(PXText* const name)
 	return PXActionRefusedFormatNotSupported;
 }
 
-PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)
+PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)
 {
 #if OSUnix
 

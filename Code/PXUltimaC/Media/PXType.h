@@ -95,7 +95,7 @@ extern "C"
 
 
 //-- Reivented public / private. The keywords are reserved, so we need other names.
-#define PXAPI _cdecl
+#define PXAPI _stdcall
 
 #if OSUnix
 #define PXPrivate static
@@ -108,6 +108,8 @@ extern "C"
 #define PXMSHandle HANDLE
 #endif
 //-----------------------------------------------------------------------------
+
+#define PXFunctionInvoke(FunctionPoniter, ...) if(FunctionPoniter) FunctionPoniter(__VA_ARGS__)
 
 
 #if PXLanguageCPP

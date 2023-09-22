@@ -6,7 +6,6 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <OS/Hardware/PXMonitor.h>
-#include <OS/Async/PXEvent.h>
 #include <OS/Async/PXAwait.h>
 #include <Media/PXText.h>
 #include <OS/Graphic/PXGraphic.h>
@@ -640,19 +639,6 @@ PXWindowEventType ToWindowEventType(const unsigned int windowEventID)
 
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #if OSUnix
 void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
 {
@@ -680,7 +666,7 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
             keyBoardKeyInfo.PreState = 0;
             keyBoardKeyInfo.GapState = 0;
 
-            InvokeEvent(pxWindow->KeyBoardKeyCallBack, pxWindow->EventReceiver, pxWindow, &keyBoardKeyInfo);
+            PXFunctionInvoke(pxWindow->KeyBoardKeyCallBack, pxWindow->EventReceiver, pxWindow, &keyBoardKeyInfo);
 
             if(release)
             {
@@ -704,23 +690,23 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
             switch(buttonID)
             {
                 case MouseButtonLeft:
-                    InvokeEvent(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonLeft, buttonState);
+                    PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonLeft, buttonState);
                     break;
 
                 case MouseButtonMiddle:
-                    InvokeEvent(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonMiddle, buttonState);
+                    PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonMiddle, buttonState);
                     break;
 
                 case MouseButtonRight:
-                    InvokeEvent(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonRight, buttonState);
+                    PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonRight, buttonState);
                     break;
 
                 case MouseScrollUp:
-                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionUp);
+                    PXFunctionInvoke(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionUp);
                     break;
 
                 case MouseScrollDown:
-                    InvokeEvent(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionDown);
+                    PXFunctionInvoke(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionDown);
                     break;
 
             }
@@ -733,22 +719,22 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
         }
         case EnterNotify:
         {
-            InvokeEvent(pxWindow->MouseEnterCallBack, pxWindow->EventReceiver, pxWindow);
+            PXFunctionInvoke(pxWindow->MouseEnterCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case LeaveNotify:
         {
-            InvokeEvent(pxWindow->MouseLeaveCallBack, pxWindow->EventReceiver, pxWindow);
+            PXFunctionInvoke(pxWindow->MouseLeaveCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case FocusIn:
         {
-            InvokeEvent(pxWindow->FocusEnterCallBack, pxWindow->EventReceiver, pxWindow);
+            PXFunctionInvoke(pxWindow->FocusEnterCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case FocusOut:
         {
-            InvokeEvent(pxWindow->FocusLeaveCallBack, pxWindow->EventReceiver, pxWindow);
+            PXFunctionInvoke(pxWindow->FocusLeaveCallBack, pxWindow->EventReceiver, pxWindow);
             break;
         }
         case KeymapNotify:
@@ -864,7 +850,7 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
 
             // glViewport(0,0, width, height);
 
-            InvokeEvent(pxWindow->WindowSizeChangedCallBack, pxWindow->EventReceiver, pxWindow);
+            PXFunctionInvoke(pxWindow->WindowSizeChangedCallBack, pxWindow->EventReceiver, pxWindow);
 
             break;
         }
@@ -966,11 +952,11 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
 
                             printf("[Event] RawMotion %5.4lf %5.4lf\n", xpos, ypos);
 
-                            InvokeEvent(pxWindow->MouseMoveCallBack, pxWindow->EventReceiver, pxWindow, mouse);
+                            PXFunctionInvoke(pxWindow->MouseMoveCallBack, pxWindow->EventReceiver, pxWindow, mouse);
 
                             //printf("[Event] RawMotion %5.4lf %5.4lf\n", window.MouseDeltaX, window.MouseDeltaY);
 
-                            //InvokeEvent(window.MouseMoveCallBack, window.MousePositionX, window.MousePositionY, window.MouseDeltaX, window.MouseDeltaY);
+                            //PXFunctionInvoke(window.MouseMoveCallBack, window.MousePositionX, window.MousePositionY, window.MouseDeltaX, window.MouseDeltaY);
                         }
                     }
                 }
@@ -1028,7 +1014,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
 
             window->HasSizeChanged = PXYes;
 
-            InvokeEvent(window->WindowSizeChangedCallBack, window->EventReceiver, window);
+            PXFunctionInvoke(window->WindowSizeChangedCallBack, window->EventReceiver, window);
 #endif
 
             break;
@@ -1057,11 +1043,11 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         {
             PXBool closeWindow = 0;
 
-            InvokeEvent(window->WindowClosingCallBack, window->EventReceiver, window, &closeWindow);
+            PXFunctionInvoke(window->WindowClosingCallBack, window->EventReceiver, window, &closeWindow);
 
             if(closeWindow)
             {
-                InvokeEvent(window->WindowClosedCallBack, window->EventReceiver, window);
+                PXFunctionInvoke(window->WindowClosedCallBack, window->EventReceiver, window);
 
                 const LRESULT result = DefWindowProc(windowsID, WM_CLOSE, wParam, lParam);
 
@@ -2037,7 +2023,6 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
                 windowClassName = (char*)classID;
             }
 
-
             windowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
             (
                 windowStyle,
@@ -2112,70 +2097,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
             return PXThreadActionFailed;
         }
 
-
-
-
         window->ID = windowID;
-        window->GraphicInstance.AttachedWindow = window;
-
-
-    }
-
-
-    // PixelDraw system
-    {
-        const HDC windowHandleToDeviceContext = GetDC(windowID);
-
-        const WORD  nSize = sizeof(PIXELFORMATDESCRIPTOR);
-        const WORD  nVersion = 1;
-        const DWORD dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SUPPORT_DIRECTDRAW | PFD_DIRECT3D_ACCELERATED | PFD_DOUBLEBUFFER;
-        const BYTE  iPixelType = PFD_TYPE_RGBA; // The kind of framebuffer. RGBA or palette.
-        const BYTE  cColorBits = 32;   // Colordepth of the framebuffer.
-        const BYTE  cRedBits = 0;
-        const BYTE  cRedShift = 0;
-        const BYTE  cGreenBits = 0;
-        const BYTE  cGreenShift = 0;
-        const BYTE  cBlueBits = 0;
-        const BYTE  cBlueShift = 0;
-        const BYTE  cAlphaBits = 0;
-        const BYTE  cAlphaShift = 0;
-        const BYTE  cAccumBits = 0;
-        const BYTE  cAccumRedBits = 0;
-        const BYTE  cAccumGreenBits = 0;
-        const BYTE  cAccumBlueBits = 0;
-        const BYTE  cAccumAlphaBits = 0;
-        const BYTE  cDepthBits = 24; // Number of bits for the depthbuffer
-        const BYTE  cStencilBits = 8;  // Number of bits for the stencilbuffer
-        const BYTE  cAuxBuffers = 0;  // Number of Aux buffers in the framebuffer.
-        const BYTE  iLayerType = PFD_MAIN_PLANE;
-        const BYTE  bReserved = 0;
-        const DWORD dwLayerMask = 0;
-        const DWORD dwVisibleMask = 0;
-        const DWORD dwDamageMask = 0;
-        const PIXELFORMATDESCRIPTOR pfd =
-        {
-            nSize,
-            nVersion,
-            dwFlags,
-            iPixelType,
-            cColorBits,
-            cRedBits,cRedShift,
-            cGreenBits, cGreenShift,
-            cBlueBits, cBlueShift,
-            cAlphaBits, cAlphaShift,
-            cAccumBits,
-            cAccumRedBits, cAccumGreenBits, cAccumBlueBits, cAccumAlphaBits,
-            cDepthBits,
-            cStencilBits,
-            cAuxBuffers,
-            iLayerType,
-            bReserved,
-            dwLayerMask, dwVisibleMask, dwDamageMask
-        };
-        const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(windowHandleToDeviceContext, &pfd);
-        const PXBool sucessul = SetPixelFormat(windowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
-
-        window->HandleDeviceContext = windowHandleToDeviceContext;
     }
 #else
 
@@ -2213,7 +2135,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
     window->IsRunning = 1;
 
-    InvokeEvent(window->WindowCreatedCallBack, window->EventReceiver, window);
+    PXFunctionInvoke(window->WindowCreatedCallBack, window->EventReceiver, window);
       
 
 #if OSUnix
@@ -2333,7 +2255,71 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     return PXThreadSucessful;
 }
 
-void PXWindowConstruct(PXWindow* const window)
+void PXAPI PXWindowPixelSystemSet(PXWindow* const window)
+{
+#if OSUnix
+
+#elif OSWindows
+
+    if (!window->HandleDeviceContext) // If we dont have a prefered GPU
+    {
+        window->HandleDeviceContext = GetDC(window->ID); // Get the "default" device
+    }
+
+    const WORD  nVersion = 1;
+    const DWORD dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SUPPORT_DIRECTDRAW | PFD_DIRECT3D_ACCELERATED | PFD_DOUBLEBUFFER;
+    const BYTE  iPixelType = PFD_TYPE_RGBA; // The kind of framebuffer. RGBA or palette.
+    const BYTE  cColorBits = 32;   // Colordepth of the framebuffer.
+    const BYTE  cRedBits = 0;
+    const BYTE  cRedShift = 0;
+    const BYTE  cGreenBits = 0;
+    const BYTE  cGreenShift = 0;
+    const BYTE  cBlueBits = 0;
+    const BYTE  cBlueShift = 0;
+    const BYTE  cAlphaBits = 0;
+    const BYTE  cAlphaShift = 0;
+    const BYTE  cAccumBits = 0;
+    const BYTE  cAccumRedBits = 0;
+    const BYTE  cAccumGreenBits = 0;
+    const BYTE  cAccumBlueBits = 0;
+    const BYTE  cAccumAlphaBits = 0;
+    const BYTE  cDepthBits = 24; // Number of bits for the depthbuffer
+    const BYTE  cStencilBits = 8;  // Number of bits for the stencilbuffer
+    const BYTE  cAuxBuffers = 0;  // Number of Aux buffers in the framebuffer.
+    const BYTE  iLayerType = PFD_MAIN_PLANE;
+    const BYTE  bReserved = 0;
+    const DWORD dwLayerMask = 0;
+    const DWORD dwVisibleMask = 0;
+    const DWORD dwDamageMask = 0;
+    const PIXELFORMATDESCRIPTOR pfd =
+    {
+        sizeof(PIXELFORMATDESCRIPTOR),
+        nVersion,
+        dwFlags,
+        iPixelType,
+        cColorBits,
+        cRedBits,cRedShift,
+        cGreenBits, cGreenShift,
+        cBlueBits, cBlueShift,
+        cAlphaBits, cAlphaShift,
+        cAccumBits,
+        cAccumRedBits, cAccumGreenBits, cAccumBlueBits, cAccumAlphaBits,
+        cDepthBits,
+        cStencilBits,
+        cAuxBuffers,
+        iLayerType,
+        bReserved,
+        dwLayerMask, dwVisibleMask, dwDamageMask
+    };
+    const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(window->HandleDeviceContext, &pfd);
+    const PXBool sucessul = SetPixelFormat(window->HandleDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
+#endif
+
+
+    return PXActionSuccessful;
+}
+
+void PXAPI PXWindowConstruct(PXWindow* const window)
 {
     PXMemoryClear(window, sizeof(PXWindow));
     window->Title.SizeAllocated = 256;
@@ -2341,23 +2327,25 @@ void PXWindowConstruct(PXWindow* const window)
     window->Mode = PXWindowModeNormal;
 }
 
-float PXWindowScreenRatio(const PXWindow* const window)
+float PXAPI PXWindowScreenRatio(const PXWindow* const window)
 {
     return (float)window->Width / (float)window->Height;
 }
 
-void PXWindowCreateA(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* const title, const PXBool async)
+void PXAPI PXWindowCreateA(PXWindow* const window, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const char* const title, const PXBool async)
 {
     PXText pxText;
     PXTextConstructFromAdressA(&pxText, title, PXTextUnkownLength);
 
-    PXWindowCreate(window, width, height, &pxText, async);
+    PXWindowCreate(window, x, y, width, height, &pxText, async);
 }
 
-void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async)
+void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async)
 {
     PXTextCopy(title, &window->Title);
 
+    window->X = x;
+    window->Y = y;
     window->Width = width;
     window->Height = height;
 
@@ -2396,14 +2384,14 @@ void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S
     }
 }
 
-void PXWindowCreateHidden(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async)
+void PXAPI PXWindowCreateHidden(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async)
 {
     window->Mode = PXWindowModeHidden;
 
-    PXWindowCreate(window, width, height, 0, async);
+    PXWindowCreate(window, 0, 0, width, height, 0, async);
 }
 
-void PXWindowDestruct(PXWindow* const window)
+void PXAPI PXWindowDestruct(PXWindow* const window)
 {
 #if OSUnix
     glXMakeCurrent(window->DisplayCurrent, None, NULL);
@@ -2428,7 +2416,7 @@ void PXWindowDestruct(PXWindow* const window)
 #endif
 }
 
-PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
+PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID)
 {
 #if OSUnix
     return -1;
@@ -2439,7 +2427,7 @@ PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID)
 #endif
 }
 
-PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
+PXBool PXAPI PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 {
     PXTextCopy(title, &window->Title);
 
@@ -2480,7 +2468,7 @@ PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title)
     return PXNull;
 }
 
-PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
+PXSize PXAPI PXWindowTitleGet(const PXWindow* const window, PXText* const title)
 {
     switch (title->Format)
     {
@@ -2531,7 +2519,7 @@ PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title)
     return PXNull;
 }
 
-PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle)
+PXWindowID PXAPI PXWindowFindViaTitle(const PXText* const windowTitle)
 {
     switch (windowTitle->Format)
     {
@@ -2561,30 +2549,30 @@ PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle)
     return PXNull;
 }
 
-void PXWindowIconCorner()
+void PXAPI PXWindowIconCorner()
 {
 }
 
-void PXWindowIconTaskBar()
+void PXAPI PXWindowIconTaskBar()
 {
 }
 
-void PXWindowLookupAdd(const PXWindow* window)
+void PXAPI PXWindowLookupAdd(const PXWindow* window)
 {
     currentWindow = window;
 }
 
-PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID)
+PXWindow* PXAPI PXWindowLookupFind(const PXWindowID PXWindowID)
 {
     return currentWindow;
 }
 
-void PXWindowLookupRemove(const PXWindow* window)
+void PXAPI PXWindowLookupRemove(const PXWindow* window)
 {
     currentWindow = 0;
 }
 
-PXActionResult PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
+PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
 {
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
@@ -2604,7 +2592,7 @@ PXActionResult PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
 #endif
 }
 
-void PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height)
+void PXAPI PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -2622,7 +2610,7 @@ void PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* c
 #endif
 }
 
-void PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height)
+void PXAPI PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -2645,7 +2633,7 @@ void PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt3
 #endif
 }
 
-PXActionResult PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
+PXActionResult PXAPI PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -2674,7 +2662,7 @@ PXActionResult PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
 #endif
 }
 
-PXActionResult PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y)
+PXActionResult PXAPI PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -2690,19 +2678,19 @@ PXActionResult PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PX
 #endif
 }
 
-void PXWindowPositonCenterScreen(PXWindow* window)
+void PXAPI PXWindowPositonCenterScreen(PXWindow* window)
 {
 }
 
-void PXWindowCursor(PXWindow* window)
+void PXAPI PXWindowCursor(PXWindow* window)
 {
 }
 
-void PXWindowCursorTexture()
+void PXAPI PXWindowCursorTexture()
 {
 }
 
-void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursorMode)
+void PXAPI PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursorMode)
 {
     unsigned int horizontal = 0;
     unsigned int vertical = 0;
@@ -2784,7 +2772,7 @@ void PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursor
 #endif
 }
 
-PXBool PXWindowFrameBufferSwap(const PXWindow* const window)
+PXBool PXAPI PXWindowFrameBufferSwap(const PXWindow* const window)
 {
 #if OSUnix
     glXSwapBuffers(window->DisplayCurrent, window->ID);
@@ -2801,7 +2789,7 @@ PXBool PXWindowFrameBufferSwap(const PXWindow* const window)
 #endif
 }
 
-PXBool PXWindowInteractable(PXWindow* window)
+PXBool PXAPI PXWindowInteractable(PXWindow* window)
 {
     switch (window->CursorModeCurrent)
     {
@@ -2817,7 +2805,7 @@ PXBool PXWindowInteractable(PXWindow* window)
     }
 }
 
-PXBool PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
 {
     PXInt32S xPos = 0;
     PXInt32S yPos = 0;
@@ -2848,7 +2836,7 @@ PXBool PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const
 #endif
 }
 
-PXBool PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
 {
 #if OSUnix
     return PXFalse;
@@ -2933,7 +2921,7 @@ PXBool PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const
 #endif
 }
 
-PXBool PXWindowIsInFocus(const PXWindow* const window)
+PXBool PXAPI PXWindowIsInFocus(const PXWindow* const window)
 {
 #if OSUnix
     return PXFalse;
@@ -2945,12 +2933,12 @@ PXBool PXWindowIsInFocus(const PXWindow* const window)
 #endif
 }
 
-void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse)
+void PXAPI PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse)
 {
 
 }
 
-void PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState)
+void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState)
 {
     PXMouse* const mouse = &window->MouseCurrentInput;
 
@@ -3076,17 +3064,17 @@ void PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButto
 
 #endif
 
-    InvokeEvent(window->MouseClickCallBack, window->EventReceiver, window, mouseButton, buttonState);
+    PXFunctionInvoke(window->MouseClickCallBack, window->EventReceiver, window, mouseButton, buttonState);
 }
 
-void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton)
+void PXAPI PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton)
 {
-    InvokeEvent(window->MouseClickDoubleCallBack, window->EventReceiver, window, mouseButton);
+    PXFunctionInvoke(window->MouseClickDoubleCallBack, window->EventReceiver, window, mouseButton);
 }
 
 #define UseOSDelta 0
 
-void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY)
+void PXAPI PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY)
 {
     PXMouse* const mouse = &window->MouseCurrentInput;
 
@@ -3138,18 +3126,18 @@ void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S posi
         mouse->Delta[1] = 0;
     }
 
-    InvokeEvent(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
+    PXFunctionInvoke(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
 }
 
-void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse)
+void PXAPI PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse)
 {
 }
 
-void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse)
+void PXAPI PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse)
 {
 }
 
-void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)
+void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)
 {
     // printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
 
@@ -3435,10 +3423,10 @@ void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardK
         }
     }
 
-    InvokeEvent(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
+    PXFunctionInvoke(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
 }
 
-PXInt32U PXWindowCursorIconToID(const PXCursorIcon cursorIcon)
+PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon)
 {
     switch (cursorIcon)
     {

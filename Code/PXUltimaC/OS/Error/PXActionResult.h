@@ -306,7 +306,7 @@ extern "C"
 
 
 		// POSIX Error codes, these are pre-defined
-		UnkownError, // OTHER
+		PXActionFailedUnkownError, // OTHER
 
 		PermissionDenied, // ACCES
 		AddressInUse, // ADDRINUSE
@@ -317,9 +317,6 @@ extern "C"
 		ArgumentListTooLong, // 2BIG
 		BadFileDescriptor, // BADF
 		BadMessage, // BADMSG
-
-
-
 		PXActionRefusedResourceBusy, // BUSY
 		OperationCanceled,// CANCELED
 		NoChildProcesses, // CHILD

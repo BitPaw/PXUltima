@@ -1,25 +1,32 @@
-﻿
-using System;
+﻿using System;
 
 namespace PXText
 {
-    internal class BingBong
-    {
-        public int x;
-        public float y;
-    }
-
     internal class Program
     {
         public static int Main()
         {
-            Console.WriteLine("Welcome " + PX.User.Name);
-
-
             PX.Window window = new PX.Window();
-            window.Create(100,100, "fsdf");
+            window.Create(200, 200, 500, 500, PX.User.Name);
+        
+            PX.Graphic graphic = new PX.Graphic();
+            graphic.Initialize(window);
 
-            OpenGL openGL = new OpenGL();
+            graphic.Select();
+
+            while (true)
+            {
+                graphic.Clear(0.2f, 0.2f, 0.5f, 1);
+                graphic.RectangleDraw(-0.5f, -0.8f, 0.5f, 0.2f);
+                graphic.SceneDeploy();
+            }
+
+
+
+
+
+
+            /*           OpenGL openGL = new OpenGL();
             openGL.CreateWindowless(100,100);
 
 
@@ -39,11 +46,9 @@ namespace PXText
            // Test.TestSBP.TestConnect();
 
             while (true) { Test.TestSocket.ConnectAndSend(); }
+            */
 
-         
-
-
-            return 0;
+                return 0;
         }
     }
 }

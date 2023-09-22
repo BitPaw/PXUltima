@@ -27,7 +27,7 @@ typedef HGLRC PXOpenGLConextID;
 #include <GL/glx.h>
 #define PXOpenGLAPICallType
 #elif OSWindows
-#define PXOpenGLAPICallType APIENTRY
+#define PXOpenGLAPI APIENTRY
 #endif
 //---------------------------
 
@@ -90,7 +90,7 @@ extern "C"
 	}
 	PXOpenGLRenderBufferAttachmentPoint;
 
-	PXPrivate unsigned int PXOpenGLRenderBufferAttachmentPointToID(const PXOpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint);
+	PXPrivate unsigned int PXAPI PXOpenGLRenderBufferAttachmentPointToID(const PXOpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint);
 
 
 	typedef enum PXOpenGLPolygonRenderOrderMode_
@@ -101,7 +101,7 @@ extern "C"
 	}
 	PXOpenGLPolygonRenderOrderMode;
 
-	PXPrivate GLenum PXOpenGLPolygonRenderOrderModeToID(const PXOpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode);
+	PXPrivate GLenum PXAPI PXOpenGLPolygonRenderOrderModeToID(const PXOpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode);
 
 	typedef enum PXOpenGLRenderBufferFormat_
 	{
@@ -111,7 +111,7 @@ extern "C"
 	}
 	PXOpenGLRenderBufferFormat;
 
-	PXPrivate int PXOpenGLRenderBufferFormatToID(const PXOpenGLRenderBufferFormat dataType);
+	PXPrivate int PXAPI PXOpenGLRenderBufferFormatToID(const PXOpenGLRenderBufferFormat dataType);
 
 
 	typedef enum PXOpenGLTextureParameterMode_
@@ -139,7 +139,7 @@ extern "C"
 	}
 	PXOpenGLTextureParameterMode;
 
-	PXPrivate GLenum PXOpenGLTextureParameterModeToID(const PXOpenGLTextureParameterMode textureParameterMode);
+	PXPrivate GLenum PXAPI PXOpenGLTextureParameterModeToID(const PXOpenGLTextureParameterMode textureParameterMode);
 
 
 
@@ -165,7 +165,7 @@ extern "C"
 	}
 	PXOpenGLBufferType;
 
-	PXPrivate int PXOpenGLBufferTypeToID(const PXOpenGLBufferType openGLBufferType);
+	PXPrivate int PXAPI PXOpenGLBufferTypeToID(const PXOpenGLBufferType openGLBufferType);
 
 	typedef enum PXOpenGLTextureParameterValue_
 	{
@@ -184,7 +184,7 @@ extern "C"
 	}
 	PXOpenGLTextureParameterValue;
 
-	PXPrivate GLint PXOpenGLTextureParameterValueToID(const PXOpenGLTextureParameterValue openGLTextureParameterValue);
+	PXPrivate GLint PXAPI PXOpenGLTextureParameterValueToID(const PXOpenGLTextureParameterValue openGLTextureParameterValue);
 
 
 	typedef enum PXOpenGLStoreMode_
@@ -202,7 +202,7 @@ extern "C"
 	}
 	PXOpenGLStoreMode;
 
-	PXPrivate int PXOpenGLStoreModeToID(const PXOpenGLStoreMode openGLStoreMode);
+	PXPrivate int PXAPI PXOpenGLStoreModeToID(const PXOpenGLStoreMode openGLStoreMode);
 
 
 	typedef enum PXOpenGLDrawOrderMode_
@@ -214,7 +214,7 @@ extern "C"
 	PXOpenGLDrawOrderMode;
 
 
-	PXPrivate GLenum PXOpenGLDrawOrderToID(const PXOpenGLDrawOrderMode openGLDrawOrderMode);
+	PXPrivate GLenum PXAPI PXOpenGLDrawOrderToID(const PXOpenGLDrawOrderMode openGLDrawOrderMode);
 
 
 	typedef enum PXOpenGLToggle_
@@ -293,7 +293,7 @@ extern "C"
 	}
 	PXOpenGLToggle;
 
-	PXPrivate int PXOpenGLToggleToID(const PXOpenGLToggle openGLToggle);
+	PXPrivate int PXAPI PXOpenGLToggleToID(const PXOpenGLToggle openGLToggle);
 
 
 	typedef enum PXOpenGLStringName_
@@ -309,10 +309,33 @@ extern "C"
 
 	typedef const GLubyte* (*PXOpenGLStringFunction)(GLenum name); // glGetString
 
-	PXPrivate unsigned int PXOpenGLStringNameToID(const PXOpenGLStringName stringName);
+	PXPrivate unsigned int PXAPI PXOpenGLStringNameToID(const PXOpenGLStringName stringName);
 
-	PXPublic const char* PXOpenGLStringGet(const PXOpenGLStringName stringName);
+	PXPublic const char* PXAPI PXOpenGLStringGet(const PXOpenGLStringName stringName);
 
+
+
+
+#if 0
+	DECLARE_HANDLE(HGPUNV);
+
+	typedef struct _GPU_DEVICE
+	{
+		DWORD  cb;
+		CHAR   DeviceName[32];
+		CHAR   DeviceString[128];
+		DWORD  Flags;
+		RECT   rcVirtualScreen;
+	} 
+	GPU_DEVICE, 
+	* PGPU_DEVICE;
+
+	typedef BOOL(PXOpenGLAPI* wglEnumGpusNVFunction)(UINT iGpuIndex,		HGPUNV* phGpu);
+	typedef BOOL(PXOpenGLAPI* wglEnumGpuDevicesNVFunction)(HGPUNV hGpu,		UINT iDeviceIndex,		PGPU_DEVICE lpGpuDevice);
+	typedef HDC(PXOpenGLAPI* wglCreateAffinityDCNVFunction)(const HGPUNV* phGpuList);
+	typedef BOOL(PXOpenGLAPI* wglEnumGpusFromAffinityDCNVFunction)(HDC hAffinityDC,		UINT iGpuIndex,		HGPUNV* hGpu);
+	typedef BOOL(PXOpenGLAPI* wglDeleteDCNVFunction)(HDC hdc);
+#endif
 
 
 
@@ -335,86 +358,86 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.2.0.0>-----------------------------------------------------
-	typedef unsigned int (PXOpenGLAPICallType* PXOpenGLShaderPXProgramCreateFunction)();
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderPXProgramUseFunction)(unsigned int program);
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderPXProgramDeleteFunction)(GLuint program); // glDeletePXProgram
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderSourceFunction)(unsigned int shader, int count, const char** string, const int* length);
-	typedef GLuint(PXOpenGLAPICallType* PXOpenGLShaderCreateFunction)(GLenum shaderType); // glCreateShader
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderCompileFunction)(GLuint shader);
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderGetivFunction)(GLuint shader, GLenum pname, GLint* params);
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
-	typedef void (PXOpenGLAPICallType* PXOpenGLShaderDeleteFunction)(GLuint shader);
-	typedef void (PXOpenGLAPICallType* PXOpenGLAttachShaderFunction)(GLuint program, GLuint shader); // glAttachShader
-	typedef void (PXOpenGLAPICallType* PXOpenGLLinkPXProgramFunction)(GLuint program); // glLinkPXProgram
-	typedef void (PXOpenGLAPICallType* PXOpenGLValidatePXProgramFunction)(GLuint program); // glValidatePXProgram
-	typedef void (PXOpenGLAPICallType* PXOpenGLActiveTextureFunction)(GLenum texture); // glActiveTexture
-	typedef void (PXOpenGLAPICallType* PXOpenGLGenBuffersFunction)(GLsizei n, GLuint* buffers); // glGenBuffers
-	typedef void (PXOpenGLAPICallType* PXOpenGLBindBufferFunction)(GLenum target, GLuint buffer);
-	typedef void (PXOpenGLAPICallType* PXOpenGLBufferDataFunction)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);
+	typedef unsigned int (PXOpenGLAPI* PXOpenGLShaderPXProgramCreateFunction)();
+	typedef void (PXOpenGLAPI* PXOpenGLShaderPXProgramUseFunction)(unsigned int program);
+	typedef void (PXOpenGLAPI* PXOpenGLShaderPXProgramDeleteFunction)(GLuint program); // glDeletePXProgram
+	typedef void (PXOpenGLAPI* PXOpenGLShaderSourceFunction)(unsigned int shader, int count, const char** string, const int* length);
+	typedef GLuint(PXOpenGLAPI* PXOpenGLShaderCreateFunction)(GLenum shaderType); // glCreateShader
+	typedef void (PXOpenGLAPI* PXOpenGLShaderCompileFunction)(GLuint shader);
+	typedef void (PXOpenGLAPI* PXOpenGLShaderGetivFunction)(GLuint shader, GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
+	typedef void (PXOpenGLAPI* PXOpenGLShaderDeleteFunction)(GLuint shader);
+	typedef void (PXOpenGLAPI* PXOpenGLAttachShaderFunction)(GLuint program, GLuint shader); // glAttachShader
+	typedef void (PXOpenGLAPI* PXOpenGLLinkPXProgramFunction)(GLuint program); // glLinkPXProgram
+	typedef void (PXOpenGLAPI* PXOpenGLValidatePXProgramFunction)(GLuint program); // glValidatePXProgram
+	typedef void (PXOpenGLAPI* PXOpenGLActiveTextureFunction)(GLenum texture); // glActiveTexture
+	typedef void (PXOpenGLAPI* PXOpenGLGenBuffersFunction)(GLsizei n, GLuint* buffers); // glGenBuffers
+	typedef void (PXOpenGLAPI* PXOpenGLBindBufferFunction)(GLenum target, GLuint buffer);
+	typedef void (PXOpenGLAPI* PXOpenGLBufferDataFunction)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);
 
-	typedef void (PXOpenGLAPICallType* PXOpenGLVertexAttribPointerFunction)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
-	typedef void (PXOpenGLAPICallType* PXOpenGLVertexAttribArrayEnableFunction)(GLuint index); // glEnableVertexAttribArray
-	typedef void (PXOpenGLAPICallType* PXOpenGLVertexAttribArrayDisableFunction)(GLuint index); // glDisableVertexAttribArray
+	typedef void (PXOpenGLAPI* PXOpenGLVertexAttribPointerFunction)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+	typedef void (PXOpenGLAPI* PXOpenGLVertexAttribArrayEnableFunction)(GLuint index); // glEnableVertexAttribArray
+	typedef void (PXOpenGLAPI* PXOpenGLVertexAttribArrayDisableFunction)(GLuint index); // glDisableVertexAttribArray
 
-	typedef void (PXOpenGLAPICallType* PXOpenGLDisableVertexArrayAttribFunction)(GLuint vaobj, GLuint index);
-	typedef GLint(PXOpenGLAPICallType* PXOpenGLGetUniformLocation)(GLuint program, const char* name);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform1fFunction)(GLint location, GLfloat v0);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform1fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform1iFunction)(GLint location, GLint v0);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform1ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform2fFunction)(GLint location, GLfloat v0, GLfloat v1);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform2fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform2iFunction)(GLint location, GLint v0, GLint v1);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform2ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform3fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform3fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform3iFunction)(GLint location, GLint v0, GLint v1, GLint v2);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform3ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform4fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform4fvFunction)(GLint location, GLsizei count, const GLfloat* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform4iFunction)(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniform4ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniformMatrix2fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	typedef void (PXOpenGLAPICallType* PXOpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLDisableVertexArrayAttribFunction)(GLuint vaobj, GLuint index);
+	typedef GLint(PXOpenGLAPI* PXOpenGLGetUniformLocation)(GLuint program, const char* name);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform1fFunction)(GLint location, GLfloat v0);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform1fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform1iFunction)(GLint location, GLint v0);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform1ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform2fFunction)(GLint location, GLfloat v0, GLfloat v1);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform2fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform2iFunction)(GLint location, GLint v0, GLint v1);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform2ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform3fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform3fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform3iFunction)(GLint location, GLint v0, GLint v1, GLint v2);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform3ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform4fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform4fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform4iFunction)(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform4ivFunction)(GLint location, GLsizei count, const GLint* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix2fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 
-	typedef void (PXOpenGLAPICallType* PXOpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
-	typedef void (PXOpenGLAPICallType* PXOpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
-	typedef void (PXOpenGLAPICallType* PXOpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
+	typedef void (PXOpenGLAPI* PXOpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
+	typedef void (PXOpenGLAPI* PXOpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
+	typedef void (PXOpenGLAPI* PXOpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.2.1.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.3.0.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferCreateFunction)(GLsizei n, GLuint* ids); // glGenFramebuffers
-	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferDeleteFunction)(GLsizei n, GLuint* framebuffers); // glDeleteFramebuffers
-	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferBindFunction)(GLenum target, GLuint framebuffer); // glBindFramebuffer
+	typedef void (PXOpenGLAPI* PXOpenGLFrameBufferCreateFunction)(GLsizei n, GLuint* ids); // glGenFramebuffers
+	typedef void (PXOpenGLAPI* PXOpenGLFrameBufferDeleteFunction)(GLsizei n, GLuint* framebuffers); // glDeleteFramebuffers
+	typedef void (PXOpenGLAPI* PXOpenGLFrameBufferBindFunction)(GLenum target, GLuint framebuffer); // glBindFramebuffer
 
-	typedef void (PXOpenGLAPICallType* PXOpenGLRenderBufferCreateFunction)(GLsizei n, GLuint* renderbuffers); // glGenRenderbuffers
-	typedef void (PXOpenGLAPICallType* PXOpenGLRenderBufferBindFunction)(GLenum target, GLuint renderbuffer); // glBindRenderbuffer
-	typedef void (PXOpenGLAPICallType* PXOpenGLRenderBufferDeleteFunction)(GLsizei n, GLuint* renderbuffers); // glDeleteRenderbuffers
-	typedef void (PXOpenGLAPICallType* PXOpenGLRenderBufferStorageFunction)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height); // glRenderbufferStorage
+	typedef void (PXOpenGLAPI* PXOpenGLRenderBufferCreateFunction)(GLsizei n, GLuint* renderbuffers); // glGenRenderbuffers
+	typedef void (PXOpenGLAPI* PXOpenGLRenderBufferBindFunction)(GLenum target, GLuint renderbuffer); // glBindRenderbuffer
+	typedef void (PXOpenGLAPI* PXOpenGLRenderBufferDeleteFunction)(GLsizei n, GLuint* renderbuffers); // glDeleteRenderbuffers
+	typedef void (PXOpenGLAPI* PXOpenGLRenderBufferStorageFunction)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height); // glRenderbufferStorage
 
-	typedef void (PXOpenGLAPICallType* PXOpenGLFrameBufferLinkTexture2DFunction)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-	typedef GLuint(PXOpenGLAPICallType* PXOpenGLFrameBufferLinkRenderBufferFunction)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+	typedef void (PXOpenGLAPI* PXOpenGLFrameBufferLinkTexture2DFunction)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	typedef GLuint(PXOpenGLAPI* PXOpenGLFrameBufferLinkRenderBufferFunction)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 
-	typedef void (PXOpenGLAPICallType* PXOpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
-	typedef void (PXOpenGLAPICallType* PXOpenGLBindVertexArrayFunction)(GLuint arrayID);
-	typedef void (PXOpenGLAPICallType* PXOpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
-	typedef const GLubyte* (PXOpenGLAPICallType* PXOpenGLStringIFunction)(GLenum name, GLuint index); // glGetStringi
+	typedef void (PXOpenGLAPI* PXOpenGLGenVertexArraysFunction)(GLsizei n, GLuint* arrays);
+	typedef void (PXOpenGLAPI* PXOpenGLBindVertexArrayFunction)(GLuint arrayID);
+	typedef void (PXOpenGLAPI* PXOpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
+	typedef const GLubyte* (PXOpenGLAPI* PXOpenGLStringIFunction)(GLenum name, GLuint index); // glGetStringi
 
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.3.1.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType* PXOpenGLDrawArraysInstancedFunction)(GLenum mode, GLint first, GLsizei count, GLsizei instancecount); // glDrawArraysInstanced
+	typedef void (PXOpenGLAPI* PXOpenGLDrawArraysInstancedFunction)(GLenum mode, GLint first, GLsizei count, GLsizei instancecount); // glDrawArraysInstanced
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.3.2.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.3.3.0>------------------------------------------------------
-	typedef void  (PXOpenGLAPICallType* PXOpenGLVertexAttribDivisorFunction)(GLuint index, GLuint divisor); // glVertexAttribDivisor
+	typedef void  (PXOpenGLAPI* PXOpenGLVertexAttribDivisorFunction)(GLuint index, GLuint divisor); // glVertexAttribDivisor
 	//-------------------------------------------------------------------------
 
 
@@ -423,24 +446,24 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.1.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType* PXOpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
+	typedef void (PXOpenGLAPI* PXOpenGLVertexAttribLPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.2.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.3.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
-	typedef void (PXOpenGLAPICallType* PXOpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
+	typedef void (PXOpenGLAPI* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+	typedef void (PXOpenGLAPI* PXOpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.4.0>------------------------------------------------------
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.5.0>------------------------------------------------------
-	typedef void (PXOpenGLAPICallType* PXOpenGLNamedBufferData)(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
-	typedef void (PXOpenGLAPICallType* PXOpenGLEnableVertexAttribArray)(GLuint index);
-	typedef void (PXOpenGLAPICallType* PXOpenGLEnableVertexArrayAttrib)(GLuint vaobj, GLuint index);
+	typedef void (PXOpenGLAPI* PXOpenGLNamedBufferData)(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
+	typedef void (PXOpenGLAPI* PXOpenGLEnableVertexAttribArray)(GLuint index);
+	typedef void (PXOpenGLAPI* PXOpenGLEnableVertexArrayAttrib)(GLuint vaobj, GLuint index);
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.4.6.0>------------------------------------------------------
@@ -451,43 +474,767 @@ extern "C"
 
 
 
-	typedef void (PXOpenGLAPICallType* PXOpenGLSwapIntervalSetFunction)(GLint interval); // wglSwapIntervalEXT, glXSwapIntervalEXT
-	typedef GLint(PXOpenGLAPICallType* PXOpenGLSwapIntervalGetFunction)(); // wglGetSwapIntervalEXT, glxGetSwapIntervalEXT
+	typedef void (PXOpenGLAPI* PXOpenGLSwapIntervalSetFunction)(GLint interval); // wglSwapIntervalEXT, glXSwapIntervalEXT
+	typedef GLint(PXOpenGLAPI* PXOpenGLSwapIntervalGetFunction)(); // wglGetSwapIntervalEXT, glxGetSwapIntervalEXT
 
 #if OSUnix
-
+	typedef const char* (PXOpenGLAPI* PXOpenGLStringGetExtensionsARB)(void* hdc); // wglGetExtensionsStringARB
 #elif OSWindows
-	typedef const char* (PXOpenGLAPICallType* PXOpenGLStringGetExtensionsARB)(HDC hdc); // wglGetExtensionsStringARB
+	typedef const char* (PXOpenGLAPI* PXOpenGLStringGetExtensionsARB)(HDC hdc); // wglGetExtensionsStringARB
+#endif
+
+	typedef PXInt64U GLint64;
+
+
+	typedef void (PXOpenGLAPI * PXOpenGLAccumFunction)(GLenum op, GLfloat value);
+	typedef void (PXOpenGLAPI * PXOpenGLAlphaFuncFunction)(GLenum func, GLclampf ref);
+	typedef GLboolean (PXOpenGLAPI * PXOpenGLAreTexturesResidentFunction)(GLsizei n, const GLuint* textures, GLboolean* residences);
+	typedef void (PXOpenGLAPI * PXOpenGLArrayElementFunction)(GLint i);
+	typedef void (PXOpenGLAPI * PXOpenGLBeginFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLBindTextureFunction)(GLenum target, GLuint texture);
+	typedef void (PXOpenGLAPI * PXOpenGLBitmapFunction)(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte* bitmap);
+	typedef void (PXOpenGLAPI * PXOpenGLBlendFuncFunction)(GLenum sfactor, GLenum dfactor);
+	typedef void (PXOpenGLAPI * PXOpenGLCallListFunction)(GLuint list);
+	typedef void (PXOpenGLAPI * PXOpenGLCallListsFunction)(GLsizei n, GLenum type, const GLvoid* lists);
+	typedef void (PXOpenGLAPI * PXOpenGLClearFunction)(GLbitfield mask);
+	typedef void (PXOpenGLAPI * PXOpenGLClearAccumFunction)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLClearColorFunction)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLClearDepthFunction)(GLclampd depth);
+	typedef void (PXOpenGLAPI * PXOpenGLClearIndexFunction)(GLfloat c);
+	typedef void (PXOpenGLAPI * PXOpenGLClearStencilFunction)(GLint s);
+	typedef void (PXOpenGLAPI * PXOpenGLClipPlaneFunction)(GLenum plane, const GLdouble* equation);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3bFunction)(GLbyte red, GLbyte green, GLbyte blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3bvFunction)(const GLbyte* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3dFunction)(GLdouble red, GLdouble green, GLdouble blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3fFunction)(GLfloat red, GLfloat green, GLfloat blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3iFunction)(GLint red, GLint green, GLint blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3sFunction)(GLshort red, GLshort green, GLshort blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3ubFunction)(GLubyte red, GLubyte green, GLubyte blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3ubvFunction)(const GLubyte* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3uiFunction)(GLuint red, GLuint green, GLuint blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3uivFunction)(const GLuint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3usFunction)(GLushort red, GLushort green, GLushort blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3usvFunction)(const GLushort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4bFunction)(GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4bvFunction)(const GLbyte* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4dFunction)(GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4fFunction)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4iFunction)(GLint red, GLint green, GLint blue, GLint alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4sFunction)(GLshort red, GLshort green, GLshort blue, GLshort alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4ubFunction)(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4ubvFunction)(const GLubyte* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4uiFunction)(GLuint red, GLuint green, GLuint blue, GLuint alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4uivFunction)(const GLuint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4usFunction)(GLushort red, GLushort green, GLushort blue, GLushort alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4usvFunction)(const GLushort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColorMaskFunction)(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColorMaterialFunction)(GLenum face, GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLColorPointerFunction)(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer);
+	typedef void (PXOpenGLAPI * PXOpenGLCopyPixelsFunction)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum type);
+	typedef void (PXOpenGLAPI * PXOpenGLCopyTexImage1DFunction)(GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border);
+	typedef void (PXOpenGLAPI * PXOpenGLCopyTexImage2DFunction)(GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
+	typedef void (PXOpenGLAPI * PXOpenGLCopyTexSubImage1DFunction)(GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width);
+	typedef void (PXOpenGLAPI * PXOpenGLCopyTexSubImage2DFunction)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+	typedef void (PXOpenGLAPI * PXOpenGLCullFaceFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLDeleteListsFunction)(GLuint list, GLsizei range);
+	typedef void (PXOpenGLAPI * PXOpenGLDeleteTexturesFunction)(GLsizei n, const GLuint* textures);
+	typedef void (PXOpenGLAPI * PXOpenGLDepthFuncFunction)(GLenum func);
+	typedef void (PXOpenGLAPI * PXOpenGLDepthMaskFunction)(GLboolean flag);
+	typedef void (PXOpenGLAPI * PXOpenGLDepthRangeFunction)(GLclampd zNear, GLclampd zFar);
+	typedef void (PXOpenGLAPI * PXOpenGLDisableFunction)(GLenum cap);
+	typedef void (PXOpenGLAPI * PXOpenGLDisableClientStateFunction)(GLenum array);
+	typedef void (PXOpenGLAPI * PXOpenGLDrawArraysFunction)(GLenum mode, GLint first, GLsizei count);
+	typedef void (PXOpenGLAPI * PXOpenGLDrawBufferFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLDrawElementsFunction)(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
+	typedef void (PXOpenGLAPI * PXOpenGLDrawPixelsFunction)(GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels);
+	typedef void (PXOpenGLAPI * PXOpenGLEdgeFlagFunction)(GLboolean flag);
+	typedef void (PXOpenGLAPI * PXOpenGLEdgeFlagPointerFunction)(GLsizei stride, const GLvoid* pointer);
+	typedef void (PXOpenGLAPI * PXOpenGLEdgeFlagvFunction)(const GLboolean* flag);
+	typedef void (PXOpenGLAPI * PXOpenGLEnableFunction)(GLenum cap);
+	typedef void (PXOpenGLAPI * PXOpenGLEnableClientStateFunction)(GLenum array);
+	typedef void (PXOpenGLAPI * PXOpenGLEndFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLEndListFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1dFunction)(GLdouble u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1dvFunction)(const GLdouble* u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1fFunction)(GLfloat u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1fvFunction)(const GLfloat* u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2dFunction)(GLdouble u, GLdouble v);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2dvFunction)(const GLdouble* u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2fFunction)(GLfloat u, GLfloat v);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2fvFunction)(const GLfloat* u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalMesh1Function)(GLenum mode, GLint i1, GLint i2);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalMesh2Function)(GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalPoint1Function)(GLint i);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalPoint2Function)(GLint i, GLint j);
+	typedef void (PXOpenGLAPI * PXOpenGLFeedbackBufferFunction)(GLsizei size, GLenum type, GLfloat* buffer);
+	typedef void (PXOpenGLAPI * PXOpenGLFinishFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLFlushFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLFogfFunction)(GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLFogfvFunction)(GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLFogiFunction)(GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLFogivFunction)(GLenum pname, const GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLFrontFaceFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLFrustumFunction)(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
+	typedef GLuint (PXOpenGLAPI * PXOpenGLGenListsFunction)(GLsizei range);
+	typedef void (PXOpenGLAPI * PXOpenGLGenTexturesFunction)(GLsizei n, GLuint* textures);
+	typedef void (PXOpenGLAPI * PXOpenGLGetBooleanvFunction)(GLenum pname, GLboolean* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetClipPlaneFunction)(GLenum plane, GLdouble* equation);
+	typedef void (PXOpenGLAPI * PXOpenGLGetDoublevFunction)(GLenum pname, GLdouble* params);
+	typedef GLenum (PXOpenGLAPI * PXOpenGLGetErrorFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLGetFloatvFunction)(GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetIntegervFunction)(GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetLightfvFunction)(GLenum light, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetLightivFunction)(GLenum light, GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetMapdvFunction)(GLenum target, GLenum query, GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLGetMapfvFunction)(GLenum target, GLenum query, GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLGetMapivFunction)(GLenum target, GLenum query, GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLGetMaterialfvFunction)(GLenum face, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetMaterialivFunction)(GLenum face, GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetPixelMapfvFunction)(GLenum map, GLfloat* values);
+	typedef void (PXOpenGLAPI * PXOpenGLGetPixelMapuivFunction)(GLenum map, GLuint* values);
+	typedef void (PXOpenGLAPI * PXOpenGLGetPixelMapusvFunction)(GLenum map, GLushort* values);
+	typedef void (PXOpenGLAPI * PXOpenGLGetPointervFunction)(GLenum pname, GLvoid** params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetPolygonStippleFunction)(GLubyte* mask);
+	typedef const GLubyte* (PXOpenGLAPI * PXOpenGLGetStringFunction)(GLenum name);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexEnvfvFunction)(GLenum target, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexEnvivFunction)(GLenum target, GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexGendvFunction)(GLenum coord, GLenum pname, GLdouble* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexGenfvFunction)(GLenum coord, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexGenivFunction)(GLenum coord, GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexImageFunction)(GLenum target, GLint level, GLenum format, GLenum type, GLvoid* pixels);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexLevelParameterfvFunction)(GLenum target, GLint level, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexLevelParameterivFunction)(GLenum target, GLint level, GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexParameterfvFunction)(GLenum target, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexParameterivFunction)(GLenum target, GLenum pname, GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLHintFunction)(GLenum target, GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexMaskFunction)(GLuint mask);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexPointerFunction)(GLenum type, GLsizei stride, const GLvoid* pointer);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexdFunction)(GLdouble c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexdvFunction)(const GLdouble* c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexfFunction)(GLfloat c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexfvFunction)(const GLfloat* c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexiFunction)(GLint c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexivFunction)(const GLint* c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexsFunction)(GLshort c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexsvFunction)(const GLshort* c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexubFunction)(GLubyte c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexubvFunction)(const GLubyte* c);
+	typedef void (PXOpenGLAPI * PXOpenGLInitNamesFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLInterleavedArraysFunction)(GLenum format, GLsizei stride, const GLvoid* pointer);
+	typedef GLboolean (PXOpenGLAPI * PXOpenGLIsEnabledFunction)(GLenum cap);
+	typedef GLboolean (PXOpenGLAPI * PXOpenGLIsListFunction)(GLuint list);
+	typedef GLboolean (PXOpenGLAPI * PXOpenGLIsTextureFunction)(GLuint texture);
+	typedef void (PXOpenGLAPI * PXOpenGLLightModelfFunction)(GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLLightModelfvFunction)(GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLLightModeliFunction)(GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLLightModelivFunction)(GLenum pname, const GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLLightfFunction)(GLenum light, GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLLightfvFunction)(GLenum light, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLLightiFunction)(GLenum light, GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLLightivFunction)(GLenum light, GLenum pname, const GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLLineStippleFunction)(GLint factor, GLushort pattern);
+	typedef void (PXOpenGLAPI * PXOpenGLLineWidthFunction)(GLfloat width);
+	typedef void (PXOpenGLAPI * PXOpenGLListBaseFunction)(GLuint base);
+	typedef void (PXOpenGLAPI * PXOpenGLLoadIdentityFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLLoadMatrixdFunction)(const GLdouble* m);
+	typedef void (PXOpenGLAPI * PXOpenGLLoadMatrixfFunction)(const GLfloat* m);
+	typedef void (PXOpenGLAPI * PXOpenGLLoadNameFunction)(GLuint name);
+	typedef void (PXOpenGLAPI * PXOpenGLLogicOpFunction)(GLenum opcode);
+	typedef void (PXOpenGLAPI * PXOpenGLMap1dFunction)(GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLint order, const GLdouble* points);
+	typedef void (PXOpenGLAPI * PXOpenGLMap1fFunction)(GLenum target, GLfloat u1, GLfloat u2, GLint stride, GLint order, const GLfloat* points);
+	typedef void (PXOpenGLAPI * PXOpenGLMap2dFunction)(GLenum target, GLdouble u1, GLdouble u2, GLint ustride, GLint uorder, GLdouble v1, GLdouble v2, GLint vstride, GLint vorder, const GLdouble* points);
+	typedef void (PXOpenGLAPI * PXOpenGLMap2fFunction)(GLenum target, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder, const GLfloat* points);
+	typedef void (PXOpenGLAPI * PXOpenGLMapGrid1dFunction)(GLint un, GLdouble u1, GLdouble u2);
+	typedef void (PXOpenGLAPI * PXOpenGLMapGrid1fFunction)(GLint un, GLfloat u1, GLfloat u2);
+	typedef void (PXOpenGLAPI * PXOpenGLMapGrid2dFunction)(GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble v1, GLdouble v2);
+	typedef void (PXOpenGLAPI * PXOpenGLMapGrid2fFunction)(GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat v2);
+	typedef void (PXOpenGLAPI * PXOpenGLMaterialfFunction)(GLenum face, GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLMaterialfvFunction)(GLenum face, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLMaterialiFunction)(GLenum face, GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLMaterialivFunction)(GLenum face, GLenum pname, const GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLMatrixModeFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLMultMatrixdFunction)(const GLdouble* m);
+	typedef void (PXOpenGLAPI * PXOpenGLMultMatrixfFunction)(const GLfloat* m);
+	typedef void (PXOpenGLAPI * PXOpenGLNewListFunction)(GLuint list, GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3bFunction)(GLbyte nx, GLbyte ny, GLbyte nz);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3bvFunction)(const GLbyte* v);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3dFunction)(GLdouble nx, GLdouble ny, GLdouble nz);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3fFunction)(GLfloat nx, GLfloat ny, GLfloat nz);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3iFunction)(GLint nx, GLint ny, GLint nz);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3sFunction)(GLshort nx, GLshort ny, GLshort nz);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLNormalPointerFunction)(GLenum type, GLsizei stride, const GLvoid* pointer);
+	typedef void (PXOpenGLAPI * PXOpenGLOrthoFunction)(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
+	typedef void (PXOpenGLAPI * PXOpenGLPassThroughFunction)(GLfloat token);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelMapfvFunction)(GLenum map, GLsizei mapsize, const GLfloat* values);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelMapuivFunction)(GLenum map, GLsizei mapsize, const GLuint* values);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelMapusvFunction)(GLenum map, GLsizei mapsize, const GLushort* values);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelStorefFunction)(GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelStoreiFunction)(GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelTransferfFunction)(GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelTransferiFunction)(GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelZoomFunction)(GLfloat xfactor, GLfloat yfactor);
+	typedef void (PXOpenGLAPI * PXOpenGLPointSizeFunction)(GLfloat size);
+	typedef void (PXOpenGLAPI * PXOpenGLPolygonModeFunction)(GLenum face, GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLPolygonOffsetFunction)(GLfloat factor, GLfloat units);
+	typedef void (PXOpenGLAPI * PXOpenGLPolygonStippleFunction)(const GLubyte* mask);
+	typedef void (PXOpenGLAPI * PXOpenGLPopAttribFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLPopClientAttribFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLPopMatrixFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLPopNameFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLPrioritizeTexturesFunction)(GLsizei n, const GLuint* textures, const GLclampf* priorities);
+	typedef void (PXOpenGLAPI * PXOpenGLPushAttribFunction)(GLbitfield mask);
+	typedef void (PXOpenGLAPI * PXOpenGLPushClientAttribFunction)(GLbitfield mask);
+	typedef void (PXOpenGLAPI * PXOpenGLPushMatrixFunction)(void);
+	typedef void (PXOpenGLAPI * PXOpenGLPushNameFunction)(GLuint name);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2dFunction)(GLdouble x, GLdouble y);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2fFunction)(GLfloat x, GLfloat y);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2iFunction)(GLint x, GLint y);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2sFunction)(GLshort x, GLshort y);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3dFunction)(GLdouble x, GLdouble y, GLdouble z);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3fFunction)(GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3iFunction)(GLint x, GLint y, GLint z);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3sFunction)(GLshort x, GLshort y, GLshort z);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4dFunction)(GLdouble x, GLdouble y, GLdouble z, GLdouble w);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4fFunction)(GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4iFunction)(GLint x, GLint y, GLint z, GLint w);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4sFunction)(GLshort x, GLshort y, GLshort z, GLshort w);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLReadBufferFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLReadPixelsFunction)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
+	typedef void (PXOpenGLAPI * PXOpenGLRectdFunction)(GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectdvFunction)(const GLdouble* v1, const GLdouble* v2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectfFunction)(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectfvFunction)(const GLfloat* v1, const GLfloat* v2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectiFunction)(GLint x1, GLint y1, GLint x2, GLint y2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectivFunction)(const GLint* v1, const GLint* v2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectsFunction)(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectsvFunction)(const GLshort* v1, const GLshort* v2);
+	typedef GLint (PXOpenGLAPI * PXOpenGLRenderModeFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLRotatedFunction)(GLdouble angle, GLdouble x, GLdouble y, GLdouble z);
+	typedef void (PXOpenGLAPI * PXOpenGLRotatefFunction)(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLScaledFunction)(GLdouble x, GLdouble y, GLdouble z);
+	typedef void (PXOpenGLAPI * PXOpenGLScalefFunction)(GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLScissorFunction)(GLint x, GLint y, GLsizei width, GLsizei height);
+	typedef void (PXOpenGLAPI * PXOpenGLSelectBufferFunction)(GLsizei size, GLuint* buffer);
+	typedef void (PXOpenGLAPI * PXOpenGLShadeModelFunction)(GLenum mode);
+	typedef void (PXOpenGLAPI * PXOpenGLStencilFuncFunction)(GLenum func, GLint ref, GLuint mask);
+	typedef void (PXOpenGLAPI * PXOpenGLStencilMaskFunction)(GLuint mask);
+	typedef void (PXOpenGLAPI * PXOpenGLStencilOpFunction)(GLenum fail, GLenum zfail, GLenum zpass);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1dFunction)(GLdouble s);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1fFunction)(GLfloat s);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1iFunction)(GLint s);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1sFunction)(GLshort s);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2dFunction)(GLdouble s, GLdouble t);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2fFunction)(GLfloat s, GLfloat t);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2iFunction)(GLint s, GLint t);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2sFunction)(GLshort s, GLshort t);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3dFunction)(GLdouble s, GLdouble t, GLdouble r);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3fFunction)(GLfloat s, GLfloat t, GLfloat r);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3iFunction)(GLint s, GLint t, GLint r);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3sFunction)(GLshort s, GLshort t, GLshort r);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4dFunction)(GLdouble s, GLdouble t, GLdouble r, GLdouble q);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4fFunction)(GLfloat s, GLfloat t, GLfloat r, GLfloat q);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4iFunction)(GLint s, GLint t, GLint r, GLint q);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4sFunction)(GLshort s, GLshort t, GLshort r, GLshort q);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoordPointerFunction)(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer);
+	typedef void (PXOpenGLAPI * PXOpenGLTexEnvfFunction)(GLenum target, GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexEnvfvFunction)(GLenum target, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexEnviFunction)(GLenum target, GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexEnvivFunction)(GLenum target, GLenum pname, const GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGendFunction)(GLenum coord, GLenum pname, GLdouble param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGendvFunction)(GLenum coord, GLenum pname, const GLdouble* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGenfFunction)(GLenum coord, GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGenfvFunction)(GLenum coord, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGeniFunction)(GLenum coord, GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGenivFunction)(GLenum coord, GLenum pname, const GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexImage1DFunction)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
+	typedef void (PXOpenGLAPI * PXOpenGLTexImage2DFunction)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
+	typedef void (PXOpenGLAPI * PXOpenGLTexParameterfFunction)(GLenum target, GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexParameterfvFunction)(GLenum target, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexParameteriFunction)(GLenum target, GLenum pname, GLint param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexParameterivFunction)(GLenum target, GLenum pname, const GLint* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexSubImage1DFunction)(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const GLvoid* pixels);
+	typedef void (PXOpenGLAPI * PXOpenGLTexSubImage2DFunction)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels);
+	typedef void (PXOpenGLAPI * PXOpenGLTranslatedFunction)(GLdouble x, GLdouble y, GLdouble z);
+	typedef void (PXOpenGLAPI * PXOpenGLTranslatefFunction)(GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2dFunction)(GLdouble x, GLdouble y);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2fFunction)(GLfloat x, GLfloat y);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2iFunction)(GLint x, GLint y);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2sFunction)(GLshort x, GLshort y);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3dFunction)(GLdouble x, GLdouble y, GLdouble z);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3fFunction)(GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3iFunction)(GLint x, GLint y, GLint z);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3sFunction)(GLshort x, GLshort y, GLshort z);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4dFunction)(GLdouble x, GLdouble y, GLdouble z, GLdouble w);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4dvFunction)(const GLdouble* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4fFunction)(GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4iFunction)(GLint x, GLint y, GLint z, GLint w);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4ivFunction)(const GLint* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4sFunction)(GLshort x, GLshort y, GLshort z, GLshort w);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4svFunction)(const GLshort* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertexPointerFunction)(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer);
+	typedef void (PXOpenGLAPI * PXOpenGLViewportFunction)(GLint x, GLint y, GLsizei width, GLsizei height);
+
+
+	typedef void (PXOpenGLAPI* glGetBooleanvFunction)(GLenum pname, GLboolean* data);
+	typedef void (PXOpenGLAPI* glGetDoublevFunction)(GLenum pname, GLdouble* data);
+	typedef void (PXOpenGLAPI* glGetFloatvFunction)(GLenum pname, GLfloat* data);
+	typedef void (PXOpenGLAPI* glGetIntegervFunction)(GLenum pname, GLint* data);
+	typedef void (PXOpenGLAPI* glGetInteger64vFunction)(GLenum pname, GLint64* data);
+	typedef void (PXOpenGLAPI* glGetBooleani_vFunction)(GLenum target, GLuint index, GLboolean* data);
+	typedef void (PXOpenGLAPI* glGetIntegeri_vFunction)(GLenum target, GLuint index, GLint* data);
+	typedef void (PXOpenGLAPI* glGetFloati_vFunction)(GLenum target, GLuint index, GLfloat* data);
+	typedef void (PXOpenGLAPI* glGetDoublei_vFunction)(GLenum target, GLuint index, GLdouble* data);
+	typedef void (PXOpenGLAPI* glGetInteger64i_vFunction)(GLenum target, GLuint index, GLint64* data);
+
+
+
+
+	typedef void* (PXOpenGLAPI*PXOpenGLFunctionPointerGetFunction)(const char* functionName);
+
+	typedef struct PXWindow_ PXWindow;
+	typedef struct PXGraphicDevicePhysical_	PXGraphicDevicePhysical;
+
+
+
+#if OSWindows
+	//----------------------------------------------
+	// WGL_ARB_create_context
+	//----------------------------------------------
+	typedef HGLRC(PXOpenGLAPI* PXOpenGLContextCreateAttributes)(HDC hDC, HGLRC hshareContext, const int* attribList); // wglCreateContextAttribsARB
+
+	//----------------------------------------------
+	// NV_multigpu_context
+	//----------------------------------------------
+#define WGL_CONTEXT_MULTIGPU_ATTRIB_NV                         0x20AA
+#define WGL_CONTEXT_MULTIGPU_ATTRIB_SINGLE_NV                  0x20AB
+#define WGL_CONTEXT_MULTIGPU_ATTRIB_AFR_NV                     0x20AC
+#define WGL_CONTEXT_MULTIGPU_ATTRIB_MULTICAST_NV               0x20AD
+#define WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV 0x20AE
+
+
+
+
+	// OUTDATED ??
+
+	DECLARE_HANDLE(HGPUNV);
+
+	typedef struct _GPU_DEVICE
+	{
+		DWORD  cb;
+		CHAR   DeviceName[32];
+		CHAR   DeviceString[128];
+		DWORD  Flags;
+		RECT   rcVirtualScreen;
+	} GPU_DEVICE, * PGPU_DEVICE;
+
+	typedef BOOL(PXOpenGLAPI* PXOpenGLDevicePhysicalList)(UINT iGpuIndex,	HGPUNV* phGpu); // wglEnumGpusNV
+	typedef BOOL(PXOpenGLAPI* PXOpenGLDevicePhysicalListB)(HGPUNV hGpu,		UINT iDeviceIndex,		PGPU_DEVICE lpGpuDevice); // wglEnumGpuDevicesNV
+	typedef HDC(PXOpenGLAPI* PXOpenGLDeviceAffinityCreate)(const HGPUNV* phGpuList); // wglCreateAffinityDCNV
+	typedef BOOL(PXOpenGLAPI* PXOpenGLDeviceAffinityList)(HDC hAffinityDC,		UINT iGpuIndex,		HGPUNV* hGpu); // wglEnumGpusFromAffinityDCNV
+	typedef BOOL(PXOpenGLAPI* PXOpenGLDeviceAffinityDelete)(HDC hdc); // wglDeleteDCNV
 #endif
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-	typedef struct PXWindow_ PXWindow;
-
 	typedef struct PXOpenGL_
 	{
+		char ALLIGNMENTTEST[8];
+
 		PXOpenGLConextID PXOpenGLConext;
 
-		char Vendor[64];
-		char Renderer[64];
-		char VersionText[64];
-		char GLSLVersionText[64];
 		PXOpenGLVersion Version;
 
 		PXWindow* AttachedWindow;
 
 		PXBool IsTexture2DEnabled;
+
+		PXOpenGLFunctionPointerGetFunction FunctionPointerGet;
+
+		PXOpenGLAccumFunction	Accum;
+		PXOpenGLAlphaFuncFunction	AlphaFunc;
+		PXOpenGLAreTexturesResidentFunction   	AreTexturesResident;
+		PXOpenGLArrayElementFunction	ArrayElement;
+		PXOpenGLBeginFunction   	Begin;
+		PXOpenGLBindTextureFunction   	BindTexture;
+		PXOpenGLBitmapFunction  	Bitmap;
+		PXOpenGLBlendFuncFunction  	BlendFunc;
+		PXOpenGLCallListFunction	CallList;
+		PXOpenGLCallListsFunction	CallLists;
+		PXOpenGLClearFunction	Clear;
+		PXOpenGLClearAccumFunction	ClearAccum;
+		PXOpenGLClearColorFunction	ClearColor;
+		PXOpenGLClearDepthFunction	ClearDepth;
+		PXOpenGLClearIndexFunction	ClearIndex;
+		PXOpenGLClearStencilFunction	ClearStencil;
+		PXOpenGLClipPlaneFunction	ClipPlane;
+		PXOpenGLColor3bFunction	Color3b;
+		PXOpenGLColor3bvFunction	Color3bv;
+		PXOpenGLColor3dFunction	Color3d;
+		PXOpenGLColor3dvFunction	Color3dv;
+		PXOpenGLColor3fFunction	Color3f;
+		PXOpenGLColor3fvFunction	Color3fv;
+		PXOpenGLColor3iFunction	Color3i;
+		PXOpenGLColor3ivFunction	Color3iv;
+		PXOpenGLColor3sFunction	Color3s;
+		PXOpenGLColor3svFunction	Color3sv;
+		PXOpenGLColor3ubFunction	Color3ub;
+		PXOpenGLColor3ubvFunction	Color3ubv;
+		PXOpenGLColor3uiFunction	Color3ui;
+		PXOpenGLColor3uivFunction	Color3uiv;
+		PXOpenGLColor3usFunction	Color3us;
+		PXOpenGLColor3usvFunction	Color3usv;
+		PXOpenGLColor4bFunction	Color4b;
+		PXOpenGLColor4bvFunction	Color4bv;
+		PXOpenGLColor4dFunction	Color4d;
+		PXOpenGLColor4dvFunction	Color4dv;
+		PXOpenGLColor4fFunction	Color4f;
+		PXOpenGLColor4fvFunction	Color4fv;
+		PXOpenGLColor4iFunction	Color4i;
+		PXOpenGLColor4ivFunction	Color4iv;
+		PXOpenGLColor4sFunction	Color4s;
+		PXOpenGLColor4svFunction	Color4sv;
+		PXOpenGLColor4ubFunction	Color4ub;
+		PXOpenGLColor4ubvFunction	Color4ubv;
+		PXOpenGLColor4uiFunction	Color4ui;
+		PXOpenGLColor4uivFunction	Color4uiv;
+		PXOpenGLColor4usFunction	Color4us;
+		PXOpenGLColor4usvFunction	Color4usv;
+		PXOpenGLColorMaskFunction	ColorMask;
+		PXOpenGLColorMaterialFunction	ColorMaterial;
+		PXOpenGLColorPointerFunction	ColorPointer;
+		PXOpenGLCopyPixelsFunction	CopyPixels;
+		PXOpenGLCopyTexImage1DFunction	CopyTexImage1D;
+		PXOpenGLCopyTexImage2DFunction	CopyTexImage2D;
+		PXOpenGLCopyTexSubImage1DFunction	CopyTexSubImage1D;
+		PXOpenGLCopyTexSubImage2DFunction	CopyTexSubImage2D;
+		PXOpenGLCullFaceFunction	CullFace;
+		PXOpenGLDeleteListsFunction	DeleteLists;
+		PXOpenGLDeleteTexturesFunction	DeleteTextures;
+		PXOpenGLDepthFuncFunction	DepthFunc;
+		PXOpenGLDepthMaskFunction	DepthMask;
+		PXOpenGLDepthRangeFunction	DepthRange;
+		PXOpenGLDisableFunction	Disable;
+		PXOpenGLDisableClientStateFunction	DisableClientState;
+		PXOpenGLDrawArraysFunction	DrawArrays;
+		PXOpenGLDrawBufferFunction	DrawBuffer;
+		PXOpenGLDrawElementsFunction	DrawElements;
+		PXOpenGLDrawPixelsFunction	DrawPixels;
+		PXOpenGLEdgeFlagFunction	EdgeFlag;
+		PXOpenGLEdgeFlagPointerFunction	EdgeFlagPointer;
+		PXOpenGLEdgeFlagvFunction	EdgeFlagv;
+		PXOpenGLEnableFunction	Enable;
+		PXOpenGLEnableClientStateFunction	EnableClientState;
+		PXOpenGLEndFunction	End;
+		PXOpenGLEndListFunction	EndList;
+		PXOpenGLEvalCoord1dFunction	EvalCoord1d;
+		PXOpenGLEvalCoord1dvFunction	EvalCoord1dv;
+		PXOpenGLEvalCoord1fFunction	EvalCoord1f;
+		PXOpenGLEvalCoord1fvFunction	EvalCoord1fv;
+		PXOpenGLEvalCoord2dFunction	EvalCoord2d;
+		PXOpenGLEvalCoord2dvFunction	EvalCoord2dv;
+		PXOpenGLEvalCoord2fFunction	EvalCoord2f;
+		PXOpenGLEvalCoord2fvFunction	EvalCoord2fv;
+		PXOpenGLEvalMesh1Function	EvalMesh1;
+		PXOpenGLEvalMesh2Function	EvalMesh2;
+		PXOpenGLEvalPoint1Function	EvalPoint1;
+		PXOpenGLEvalPoint2Function	EvalPoint2;
+		PXOpenGLFeedbackBufferFunction	FeedbackBuffer;
+		PXOpenGLFinishFunction	Finish;
+		PXOpenGLFlushFunction	Flush;
+		PXOpenGLFogfFunction	Fogf;
+		PXOpenGLFogfvFunction	Fogfv;
+		PXOpenGLFogiFunction	Fogi;
+		PXOpenGLFogivFunction	Fogiv;
+		PXOpenGLFrontFaceFunction	FrontFace;
+		PXOpenGLFrustumFunction	Frustum;
+		 PXOpenGLGenListsFunction	 GenLists;
+		PXOpenGLGenTexturesFunction	GenTextures;
+		PXOpenGLGetBooleanvFunction	GetBooleanv;
+		PXOpenGLGetClipPlaneFunction	GetClipPlane;
+		PXOpenGLGetDoublevFunction	GetDoublev;
+		PXOpenGLGetErrorFunction	GetError;
+		PXOpenGLGetFloatvFunction	GetFloatv;
+		PXOpenGLGetIntegervFunction	GetIntegerv;
+		PXOpenGLGetLightfvFunction	GetLightfv;
+		PXOpenGLGetLightivFunction	GetLightiv;
+		PXOpenGLGetMapdvFunction	GetMapdv;
+		PXOpenGLGetMapfvFunction	GetMapfv;
+		PXOpenGLGetMapivFunction	GetMapiv;
+		PXOpenGLGetMaterialfvFunction	GetMaterialfv;
+		PXOpenGLGetMaterialivFunction	GetMaterialiv;
+		PXOpenGLGetPixelMapfvFunction	GetPixelMapfv;
+		PXOpenGLGetPixelMapuivFunction	GetPixelMapuiv;
+		PXOpenGLGetPixelMapusvFunction	GetPixelMapusv;
+		PXOpenGLGetPointervFunction	GetPointerv;
+		PXOpenGLGetPolygonStippleFunction	GetPolygonStipple;
+		PXOpenGLGetStringFunction	GetString;
+		PXOpenGLGetTexEnvfvFunction	GetTexEnvfv;
+		PXOpenGLGetTexEnvivFunction	GetTexEnviv;
+		PXOpenGLGetTexGendvFunction	GetTexGendv;
+		PXOpenGLGetTexGenfvFunction	GetTexGenfv;
+		PXOpenGLGetTexGenivFunction	GetTexGeniv;
+		PXOpenGLGetTexImageFunction	GetTexImage;
+		PXOpenGLGetTexLevelParameterfvFunction	GetTexLevelParameterfv;
+		PXOpenGLGetTexLevelParameterivFunction	GetTexLevelParameteriv;
+		PXOpenGLGetTexParameterfvFunction	GetTexParameterfv;
+		PXOpenGLGetTexParameterivFunction	GetTexParameteriv;
+		PXOpenGLHintFunction	Hint;
+		PXOpenGLIndexMaskFunction	IndexMask;
+		PXOpenGLIndexPointerFunction	IndexPointer;
+		PXOpenGLIndexdFunction	Indexd;
+		PXOpenGLIndexdvFunction	Indexdv;
+		PXOpenGLIndexfFunction	Indexf;
+		PXOpenGLIndexfvFunction	Indexfv;
+		PXOpenGLIndexiFunction	Indexi;
+		PXOpenGLIndexivFunction	Indexiv;
+		PXOpenGLIndexsFunction	Indexs;
+		PXOpenGLIndexsvFunction	Indexsv;
+		PXOpenGLIndexubFunction	Indexub;
+		PXOpenGLIndexubvFunction	Indexubv;
+		PXOpenGLInitNamesFunction	InitNames;
+		PXOpenGLInterleavedArraysFunction	InterleavedArrays;
+		 PXOpenGLIsEnabledFunction	 PXOpenGLIsEnabled;
+		 PXOpenGLIsListFunction	IsList;
+	 PXOpenGLIsTextureFunction	IsTexture;
+		PXOpenGLLightModelfFunction	LightModelf;
+		PXOpenGLLightModelfvFunction	LightModelfv;
+		PXOpenGLLightModeliFunction	LightModeli;
+		PXOpenGLLightModelivFunction	LightModeliv;
+		PXOpenGLLightfFunction	Lightf;
+		PXOpenGLLightfvFunction	Lightfv;
+		PXOpenGLLightiFunction	Lighti;
+		PXOpenGLLightivFunction	Lightiv;
+		PXOpenGLLineStippleFunction	LineStipple;
+		PXOpenGLLineWidthFunction	LineWidth;
+		PXOpenGLListBaseFunction	ListBase;
+		PXOpenGLLoadIdentityFunction	LoadIdentity;
+		PXOpenGLLoadMatrixdFunction	LoadMatrixd;
+		PXOpenGLLoadMatrixfFunction	LoadMatrixf;
+		PXOpenGLLoadNameFunction	LoadName;
+		PXOpenGLLogicOpFunction	LogicOp;
+		PXOpenGLMap1dFunction	Map1d;
+		PXOpenGLMap1fFunction	Map1f;
+		PXOpenGLMap2dFunction	Map2d;
+		PXOpenGLMap2fFunction	Map2f;
+		PXOpenGLMapGrid1dFunction	MapGrid1d;
+		PXOpenGLMapGrid1fFunction	MapGrid1f;
+		PXOpenGLMapGrid2dFunction	MapGrid2d;
+		PXOpenGLMapGrid2fFunction	MapGrid2f;
+		PXOpenGLMaterialfFunction	Materialf;
+		PXOpenGLMaterialfvFunction	Materialfv;
+		PXOpenGLMaterialiFunction	Materiali;
+		PXOpenGLMaterialivFunction	Materialiv;
+		PXOpenGLMatrixModeFunction	MatrixMode;
+		PXOpenGLMultMatrixdFunction	MultMatrixd;
+		PXOpenGLMultMatrixfFunction	MultMatrixf;
+		PXOpenGLNewListFunction	NewList;
+		PXOpenGLNormal3bFunction	Normal3b;
+		PXOpenGLNormal3bvFunction	Normal3bv;
+		PXOpenGLNormal3dFunction	Normal3d;
+		PXOpenGLNormal3dvFunction	Normal3dv;
+		PXOpenGLNormal3fFunction	Normal3f;
+		PXOpenGLNormal3fvFunction	Normal3fv;
+		PXOpenGLNormal3iFunction	Normal3i;
+		PXOpenGLNormal3ivFunction	Normal3iv;
+		PXOpenGLNormal3sFunction	Normal3s;
+		PXOpenGLNormal3svFunction	Normal3sv;
+		PXOpenGLNormalPointerFunction	NormalPointer;
+		PXOpenGLOrthoFunction	Ortho;
+		PXOpenGLPassThroughFunction	PassThrough;
+		PXOpenGLPixelMapfvFunction	PixelMapfv;
+		PXOpenGLPixelMapuivFunction	PixelMapuiv;
+		PXOpenGLPixelMapusvFunction	PixelMapusv;
+		PXOpenGLPixelStorefFunction	PixelStoref;
+		PXOpenGLPixelStoreiFunction	PixelStorei;
+		PXOpenGLPixelTransferfFunction	PixelTransferf;
+		PXOpenGLPixelTransferiFunction	PixelTransferi;
+		PXOpenGLPixelZoomFunction	PixelZoom;
+		PXOpenGLPointSizeFunction	PointSize;
+		PXOpenGLPolygonModeFunction	PolygonMode;
+		PXOpenGLPolygonOffsetFunction	PolygonOffset;
+		PXOpenGLPolygonStippleFunction	PolygonStipple;
+		PXOpenGLPopAttribFunction	PopAttrib;
+		PXOpenGLPopClientAttribFunction	PopClientAttrib;
+		PXOpenGLPopMatrixFunction	PopMatrix;
+		PXOpenGLPopNameFunction	PopName;
+		PXOpenGLPrioritizeTexturesFunction	PrioritizeTextures;
+		PXOpenGLPushAttribFunction	PushAttrib;
+		PXOpenGLPushClientAttribFunction	PushClientAttrib;
+		PXOpenGLPushMatrixFunction	PushMatrix;
+		PXOpenGLPushNameFunction	PushName;
+		PXOpenGLRasterPos2dFunction	RasterPos2d;
+		PXOpenGLRasterPos2dvFunction	RasterPos2dv;
+		PXOpenGLRasterPos2fFunction	RasterPos2f;
+		PXOpenGLRasterPos2fvFunction	RasterPos2fv;
+		PXOpenGLRasterPos2iFunction	RasterPos2i;
+		PXOpenGLRasterPos2ivFunction	RasterPos2iv;
+		PXOpenGLRasterPos2sFunction	RasterPos2s;
+		PXOpenGLRasterPos2svFunction	RasterPos2sv;
+		PXOpenGLRasterPos3dFunction	RasterPos3d;
+		PXOpenGLRasterPos3dvFunction	RasterPos3dv;
+		PXOpenGLRasterPos3fFunction	RasterPos3f;
+		PXOpenGLRasterPos3fvFunction	RasterPos3fv;
+		PXOpenGLRasterPos3iFunction	RasterPos3i;
+		PXOpenGLRasterPos3ivFunction	RasterPos3iv;
+		PXOpenGLRasterPos3sFunction	RasterPos3s;
+		PXOpenGLRasterPos3svFunction	RasterPos3sv;
+		PXOpenGLRasterPos4dFunction	RasterPos4d;
+		PXOpenGLRasterPos4dvFunction	RasterPos4dv;
+		PXOpenGLRasterPos4fFunction	RasterPos4f;
+		PXOpenGLRasterPos4fvFunction	RasterPos4fv;
+		PXOpenGLRasterPos4iFunction	RasterPos4i;
+		PXOpenGLRasterPos4ivFunction	RasterPos4iv;
+		PXOpenGLRasterPos4sFunction	RasterPos4s;
+		PXOpenGLRasterPos4svFunction	RasterPos4sv;
+		PXOpenGLReadBufferFunction	ReadBuffer;
+		PXOpenGLReadPixelsFunction	ReadPixels;
+		PXOpenGLRectdFunction	Rectd;
+		PXOpenGLRectdvFunction	Rectdv;
+		PXOpenGLRectfFunction	Rectf;
+		PXOpenGLRectfvFunction	Rectfv;
+		PXOpenGLRectiFunction	Recti;
+		PXOpenGLRectivFunction	Rectiv;
+		PXOpenGLRectsFunction	Rects;
+		PXOpenGLRectsvFunction	Rectsv;
+		PXOpenGLRenderModeFunction RenderMode;
+		PXOpenGLRotatedFunction	Rotated;
+		PXOpenGLRotatefFunction	Rotatef;
+		PXOpenGLScaledFunction	Scaled;
+		PXOpenGLScalefFunction	Scalef;
+		PXOpenGLScissorFunction	Scissor;
+		PXOpenGLSelectBufferFunction	SelectBuffer;
+		PXOpenGLShadeModelFunction	ShadeModel;
+		PXOpenGLStencilFuncFunction	StencilFunc;
+		PXOpenGLStencilMaskFunction	StencilMask;
+		PXOpenGLStencilOpFunction	StencilOp;
+		PXOpenGLTexCoord1dFunction	TexCoord1d;
+		PXOpenGLTexCoord1dvFunction	TexCoord1dv;
+		PXOpenGLTexCoord1fFunction	TexCoord1f;
+		PXOpenGLTexCoord1fvFunction	TexCoord1fv;
+		PXOpenGLTexCoord1iFunction	TexCoord1i;
+		PXOpenGLTexCoord1ivFunction	TexCoord1iv;
+		PXOpenGLTexCoord1sFunction	TexCoord1s;
+		PXOpenGLTexCoord1svFunction	TexCoord1sv;
+		PXOpenGLTexCoord2dFunction	TexCoord2d;
+		PXOpenGLTexCoord2dvFunction	TexCoord2dv;
+		PXOpenGLTexCoord2fFunction	TexCoord2f;
+		PXOpenGLTexCoord2fvFunction	TexCoord2fv;
+		PXOpenGLTexCoord2iFunction	TexCoord2i;
+		PXOpenGLTexCoord2ivFunction	TexCoord2iv;
+		PXOpenGLTexCoord2sFunction	TexCoord2s;
+		PXOpenGLTexCoord2svFunction	TexCoord2sv;
+		PXOpenGLTexCoord3dFunction	TexCoord3d;
+		PXOpenGLTexCoord3dvFunction	TexCoord3dv;
+		PXOpenGLTexCoord3fFunction	TexCoord3f;
+		PXOpenGLTexCoord3fvFunction	TexCoord3fv;
+		PXOpenGLTexCoord3iFunction	TexCoord3i;
+		PXOpenGLTexCoord3ivFunction	TexCoord3iv;
+		PXOpenGLTexCoord3sFunction	TexCoord3s;
+		PXOpenGLTexCoord3svFunction	TexCoord3sv;
+		PXOpenGLTexCoord4dFunction	TexCoord4d;
+		PXOpenGLTexCoord4dvFunction	TexCoord4dv;
+		PXOpenGLTexCoord4fFunction	TexCoord4f;
+		PXOpenGLTexCoord4fvFunction	TexCoord4fv;
+		PXOpenGLTexCoord4iFunction	TexCoord4i;
+		PXOpenGLTexCoord4ivFunction	TexCoord4iv;
+		PXOpenGLTexCoord4sFunction	TexCoord4s;
+		PXOpenGLTexCoord4svFunction	TexCoord4sv;
+		PXOpenGLTexCoordPointerFunction	TexCoordPointer;
+		PXOpenGLTexEnvfFunction	TexEnvf;
+		PXOpenGLTexEnvfvFunction	TexEnvfv;
+		PXOpenGLTexEnviFunction	TexEnvi;
+		PXOpenGLTexEnvivFunction	TexEnviv;
+		PXOpenGLTexGendFunction	TexGend;
+		PXOpenGLTexGendvFunction	TexGendv;
+		PXOpenGLTexGenfFunction	TexGenf;
+		PXOpenGLTexGenfvFunction	TexGenfv;
+		PXOpenGLTexGeniFunction	TexGeni;
+		PXOpenGLTexGenivFunction	TexGeniv;
+		PXOpenGLTexImage1DFunction	TexImage1D;
+		PXOpenGLTexImage2DFunction	TexImage2D;
+		PXOpenGLTexParameterfFunction	TexParameterf;
+		PXOpenGLTexParameterfvFunction	TexParameterfv;
+		PXOpenGLTexParameteriFunction	TexParameteri;
+		PXOpenGLTexParameterivFunction	TexParameteriv;
+		PXOpenGLTexSubImage1DFunction	TexSubImage1D;
+		PXOpenGLTexSubImage2DFunction	TexSubImage2D;
+		PXOpenGLTranslatedFunction	Translated;
+		PXOpenGLTranslatefFunction	Translatef;
+		PXOpenGLVertex2dFunction	Vertex2d;
+		PXOpenGLVertex2dvFunction	Vertex2dv;
+		PXOpenGLVertex2fFunction	Vertex2f;
+		PXOpenGLVertex2fvFunction	Vertex2fv;
+		PXOpenGLVertex2iFunction	Vertex2i;
+		PXOpenGLVertex2ivFunction	Vertex2iv;
+		PXOpenGLVertex2sFunction	Vertex2s;
+		PXOpenGLVertex2svFunction	Vertex2sv;
+		PXOpenGLVertex3dFunction	Vertex3d;
+		PXOpenGLVertex3dvFunction	Vertex3dv;
+		PXOpenGLVertex3fFunction	Vertex3f;
+		PXOpenGLVertex3fvFunction	Vertex3fv;
+		PXOpenGLVertex3iFunction	Vertex3i;
+		PXOpenGLVertex3ivFunction	Vertex3iv;
+		PXOpenGLVertex3sFunction	Vertex3s;
+		PXOpenGLVertex3svFunction	Vertex3sv;
+		PXOpenGLVertex4dFunction	Vertex4d;
+		PXOpenGLVertex4dvFunction	Vertex4dv;
+		PXOpenGLVertex4fFunction	Vertex4f;
+		PXOpenGLVertex4fvFunction	Vertex4fv;
+		PXOpenGLVertex4iFunction   	Vertex4i;
+		PXOpenGLVertex4ivFunction 	Vertex4iv;
+		PXOpenGLVertex4sFunction    	Vertex4s;
+		PXOpenGLVertex4svFunction 	Vertex4sv;
+		PXOpenGLVertexPointerFunction   	VertexPointer;
+		PXOpenGLViewportFunction   	Viewport;
 
 #if !PXOpenGLForceLegacy
 
@@ -507,97 +1254,97 @@ extern "C"
 //-------------------------------------------------------------------------
 
 //---<PXOpenGL v.2.0.0>------------------------------------------------------
-		PXOpenGLShaderPXProgramCreateFunction	PXOpenGLShaderPXProgramCreateCallBack;
-		PXOpenGLShaderPXProgramUseFunction	PXOpenGLShaderPXProgramUseCallBack;
-		PXOpenGLShaderPXProgramDeleteFunction PXOpenGLShaderPXProgramDeleteCallBack;
-		PXOpenGLShaderCreateFunction PXOpenGLShaderCreateCallBack;
-		PXOpenGLShaderSourceFunction	PXOpenGLShaderSourceCallBack;
-		PXOpenGLShaderCompileFunction	PXOpenGLShaderCompileCallBack;
-		PXOpenGLShaderGetivFunction	PXOpenGLShaderGetivCallBack;
-		PXOpenGLShaderLogInfoGetFunction	PXOpenGLShaderLogInfoGetCallBack;
-		PXOpenGLShaderDeleteFunction	PXOpenGLShaderDeleteCallBack;
-		PXOpenGLAttachShaderFunction	PXOpenGLAttachShaderCallBack;
-		PXOpenGLLinkPXProgramFunction	PXOpenGLLinkPXProgramCallBack;
-		PXOpenGLValidatePXProgramFunction	PXOpenGLValidatePXProgramCallBack;
-		PXOpenGLActiveTextureFunction	PXOpenGLActiveTextureCallBack;
-		PXOpenGLGenBuffersFunction	PXOpenGLGenBuffersCallBack;
-		PXOpenGLBindBufferFunction	PXOpenGLBindBufferCallBack;
-		PXOpenGLBufferDataFunction	PXOpenGLBufferDataCallBack;
-		PXOpenGLVertexAttribPointerFunction PXOpenGLVertexAttribPointerCallBack;
-		PXOpenGLVertexAttribArrayEnableFunction PXOpenGLVertexAttribArrayEnableCallBack;
-		PXOpenGLVertexAttribArrayDisableFunction PXOpenGLVertexAttribArrayDisableCallBack;
-		PXOpenGLDisableVertexArrayAttribFunction	PXOpenGLDisableVertexArrayAttribCallBack;
-		PXOpenGLGetUniformLocation	PXOpenGLGetUniformLocation;
-		PXOpenGLUniform1fFunction	PXOpenGLUniform1fCallBack;
-		PXOpenGLUniform1fvFunction	PXOpenGLUniform1fvCallBack;
-		PXOpenGLUniform1iFunction	PXOpenGLUniform1iCallBack;
-		PXOpenGLUniform1ivFunction	PXOpenGLUniform1ivCallBack;
-		PXOpenGLUniform2fFunction	PXOpenGLUniform2fCallBack;
-		PXOpenGLUniform2fvFunction	PXOpenGLUniform2fvCallBack;
-		PXOpenGLUniform2iFunction	PXOpenGLUniform2iCallBack;
-		PXOpenGLUniform2ivFunction	PXOpenGLUniform2ivCallBack;
-		PXOpenGLUniform3fFunction	PXOpenGLUniform3fCallBack;
-		PXOpenGLUniform3fvFunction	PXOpenGLUniform3fvCallBack;
-		PXOpenGLUniform3iFunction	PXOpenGLUniform3iCallBack;
-		PXOpenGLUniform3ivFunction	PXOpenGLUniform3ivCallBack;
-		PXOpenGLUniform4fFunction	PXOpenGLUniform4fCallBack;
-		PXOpenGLUniform4fvFunction	PXOpenGLUniform4fvCallBack;
-		PXOpenGLUniform4iFunction	PXOpenGLUniform4iCallBack;
-		PXOpenGLUniform4ivFunction	PXOpenGLUniform4ivCallBack;
-		PXOpenGLUniformMatrix2fvFunction	PXOpenGLUniformMatrix2fvCallBack;
-		PXOpenGLUniformMatrix3fvFunction	PXOpenGLUniformMatrix3fvCallBack;
-		PXOpenGLUniformMatrix4fvFunction PXOpenGLUniformMatrix4fvCallBack;
+		PXOpenGLShaderPXProgramCreateFunction	ShaderProgramCreate;
+		PXOpenGLShaderPXProgramUseFunction	ShaderProgramUse;
+		PXOpenGLShaderPXProgramDeleteFunction ShaderProgramDelete;
+		PXOpenGLShaderCreateFunction ShaderCreate;
+		PXOpenGLShaderSourceFunction	ShaderSource;
+		PXOpenGLShaderCompileFunction	ShaderCompile;
+		PXOpenGLShaderGetivFunction	ShaderGetiv;
+		PXOpenGLShaderLogInfoGetFunction	ShaderLogInfoGet;
+		PXOpenGLShaderDeleteFunction	ShaderDelete;
+		PXOpenGLAttachShaderFunction	ShaderAttach;
+		PXOpenGLLinkPXProgramFunction	ShaderProgramLink;
+		PXOpenGLValidatePXProgramFunction	ShaderProgramValidate;
+		PXOpenGLActiveTextureFunction	TextureSlotActive;
+		PXOpenGLGenBuffersFunction	BufferGenerate;
+		PXOpenGLBindBufferFunction	BufferBind;
+		PXOpenGLBufferDataFunction	BufferData;
+		PXOpenGLVertexAttribPointerFunction VertexAttribPointer;
+		PXOpenGLVertexAttribArrayEnableFunction VertexAttribArrayEnable;
+		PXOpenGLVertexAttribArrayDisableFunction VertexAttribArrayDisable;
+		PXOpenGLDisableVertexArrayAttribFunction	DisableVertexArrayAttrib;
+		PXOpenGLGetUniformLocation	GetUniformLocation;
+		PXOpenGLUniform1fFunction	Uniform1f;
+		PXOpenGLUniform1fvFunction	Uniform1fv;
+		PXOpenGLUniform1iFunction	Uniform1i;
+		PXOpenGLUniform1ivFunction	Uniform1iv;
+		PXOpenGLUniform2fFunction	Uniform2f;
+		PXOpenGLUniform2fvFunction	Uniform2fv;
+		PXOpenGLUniform2iFunction	Uniform2i;
+		PXOpenGLUniform2ivFunction	Uniform2iv;
+		PXOpenGLUniform3fFunction	Uniform3f;
+		PXOpenGLUniform3fvFunction	Uniform3fv;
+		PXOpenGLUniform3iFunction	Uniform3i;
+		PXOpenGLUniform3ivFunction	Uniform3iv;
+		PXOpenGLUniform4fFunction	Uniform4f;
+		PXOpenGLUniform4fvFunction	Uniform4fv;
+		PXOpenGLUniform4iFunction	Uniform4i;
+		PXOpenGLUniform4ivFunction	Uniform4iv;
+		PXOpenGLUniformMatrix2fvFunction	UniformMatrix2fv;
+		PXOpenGLUniformMatrix3fvFunction	UniformMatrix3fv;
+		PXOpenGLUniformMatrix4fvFunction UniformMatrix4fv;
 
-		PXOpenGLTextureCreateFunction PXOpenGLTextureCreateCallBack;
-		PXOpenGLTextureBindFunction PXOpenGLTextureBindCallBack;
-		PXOpenGLTextureDeleteFunction PXOpenGLTextureDeleteCallBack;
+		PXOpenGLTextureCreateFunction TextureCreate;
+		PXOpenGLTextureBindFunction TextureBind;
+		PXOpenGLTextureDeleteFunction TextureDelete;
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.2.1.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.3.0.0>------------------------------------------------------
-		PXOpenGLFrameBufferCreateFunction PXOpenGLFrameBufferCreateCallBack;
-		PXOpenGLFrameBufferDeleteFunction PXOpenGLFrameBufferDeleteCallBack;
-		PXOpenGLFrameBufferBindFunction PXOpenGLFrameBufferBindCallBack;
+		PXOpenGLFrameBufferCreateFunction FrameBufferCreate;
+		PXOpenGLFrameBufferDeleteFunction FrameBufferDelete;
+		PXOpenGLFrameBufferBindFunction FrameBufferBind;
 
-		PXOpenGLRenderBufferCreateFunction PXOpenGLRenderBufferCreateCallBack;
-		PXOpenGLRenderBufferBindFunction  PXOpenGLRenderBufferBindCallBack;
-		PXOpenGLRenderBufferDeleteFunction PXOpenGLRenderBufferDeleteCallBack;
-		PXOpenGLRenderBufferStorageFunction PXOpenGLRenderBufferStorageCallBack;
-		PXOpenGLFrameBufferLinkTexture2DFunction PXOpenGLFrameBufferLinkTexture2DCallBack;
-		PXOpenGLFrameBufferLinkRenderBufferFunction PXOpenGLFrameBufferLinkRenderBufferCallBack;
+		PXOpenGLRenderBufferCreateFunction RenderBufferCreate;
+		PXOpenGLRenderBufferBindFunction  RenderBufferBind;
+		PXOpenGLRenderBufferDeleteFunction RenderBufferDelete;
+		PXOpenGLRenderBufferStorageFunction RenderBufferStorage;
+		PXOpenGLFrameBufferLinkTexture2DFunction FrameBufferLinkTexture2D;
+		PXOpenGLFrameBufferLinkRenderBufferFunction FrameBufferLinkRenderBuffer;
 
-		PXOpenGLGenVertexArraysFunction PXOpenGLGenVertexArraysCallBack;
-		PXOpenGLBindVertexArrayFunction PXOpenGLBindVertexArrayCallBack;
-		PXOpenGLVertexAttribIPointerFunction PXOpenGLVertexAttribIPointerCallBack;
+		PXOpenGLGenVertexArraysFunction VertexArraysGenerate;
+		PXOpenGLBindVertexArrayFunction VertexArrayBind;
+		PXOpenGLVertexAttribIPointerFunction VertexAttribIPointer;
 
-		PXOpenGLStringIFunction PXOpenGLStringICallBack;
+		PXOpenGLStringIFunction StringI;
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.3.1.0>------------------------------------------------------
-		PXOpenGLDrawArraysInstancedFunction PXOpenGLDrawArraysInstancedCallBack;
+		PXOpenGLDrawArraysInstancedFunction DrawArraysInstanced;
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.3.2.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.3.3.0>------------------------------------------------------
-		PXOpenGLVertexAttribDivisorFunction PXOpenGLVertexAttribDivisorCallBack;
+		PXOpenGLVertexAttribDivisorFunction VertexAttribDivisor;
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.4.0.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.4.1.0>------------------------------------------------------
-		PXOpenGLVertexAttribLPointerFunction	PXOpenGLVertexAttribLPointerCallBack;
+		PXOpenGLVertexAttribLPointerFunction	VertexAttribLPointer;
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.4.2.0>------------------------------------------------------
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.4.3.0>------------------------------------------------------
-		PXOpenGLDebugMessageFunction PXOpenGLDebugMessageCallback;
+		PXOpenGLDebugMessageFunction DebugMessage;
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.4.4.0>------------------------------------------------------
@@ -611,9 +1358,34 @@ extern "C"
 		//-------------------------------------------------------------------------
 
 		//---<Extensions>------------------------------------------------------------
-		PXOpenGLSwapIntervalSetFunction PXOpenGLSwapIntervalSetCallBack;
-		PXOpenGLSwapIntervalGetFunction PXOpenGLSwapIntervalGetCallBack;
+		PXOpenGLSwapIntervalSetFunction SwapIntervalSet;
+		PXOpenGLSwapIntervalGetFunction SwapIntervalGet;
 		//---------------------------------------------------------------------------
+
+
+		glGetBooleanvFunction glGetBooleanv;
+		glGetDoublevFunction glGetDoublev;
+		glGetFloatvFunction glGetFloatv;
+		glGetIntegervFunction glGetIntegerv;
+		glGetInteger64vFunction glGetInteger64v;
+		glGetBooleani_vFunction glGetBooleani_v;
+		glGetIntegeri_vFunction glGetIntegeri_v;
+		glGetFloati_vFunction glGetFloati_v;
+		glGetDoublei_vFunction glGetDoublei_v;
+		glGetInteger64i_vFunction glGetInteger64i_v;
+
+		PXOpenGLStringGetExtensionsARB StringGetExtensions;
+
+#if OSWindows
+		PXOpenGLContextCreateAttributes ContextCreateAttributes;
+
+		PXOpenGLDevicePhysicalList DevicePhysicalList;
+		PXOpenGLDevicePhysicalListB DevicePhysicalListB;
+		PXOpenGLDeviceAffinityCreate DeviceAffinityCreate;
+		PXOpenGLDeviceAffinityList DeviceAffinityList;
+		PXOpenGLDeviceAffinityDelete DeviceAffinityDelete;
+#endif
+
 #endif
 	}
 	PXOpenGL;
@@ -622,144 +1394,139 @@ extern "C"
 	//--------------------------------------------------------
 	// Internal conversion
 	//--------------------------------------------------------
-	PXPrivate PXInt32U PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt32U* const imageFormat, PXInt32U* const dataFormat);
-	PXPrivate PXInt32U PXOpenGLRenderModeToID(const PXGraphicDrawMode pxGraphicDrawMode);
-	PXPrivate PXInt32U PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType);
-	PXPrivate PXInt32U PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType);
-	PXPrivate PXInt32U PXOpenGLTypeToID(const PXDataType pxDataType);
+	PXPrivate PXInt32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt32U* const imageFormat, PXInt32U* const dataFormat);
+	PXPrivate PXInt32U PXAPI PXOpenGLRenderModeToID(const PXGraphicDrawMode pxGraphicDrawMode);
+	PXPrivate PXInt32U PXAPI PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType);
+	PXPrivate PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType);
+	PXPrivate PXInt32U PXAPI PXOpenGLTypeToID(const PXDataType pxDataType);
 
-	PXPrivate PXActionResult PXOpenGLErrorCurrent();
+	PXPrivate PXActionResult PXAPI PXOpenGLErrorCurrent();
 	//--------------------------------------------------------
 
 	//---<Utility>-------------------------------------------------------------
-	PXPublic void PXOpenGLConstruct(PXOpenGL* const openGLContext);
-	PXPublic void PXOpenGLDestruct(PXOpenGL* const openGLContext);
+	PXPublic void PXAPI PXOpenGLConstruct(PXOpenGL* const openGLContext);
+	PXPublic void PXAPI PXOpenGLDestruct(PXOpenGL* const openGLContext);
 
-	PXPublic void PXOpenGLSet(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
-	PXPublic void PXOpenGLCopy(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
+	PXPublic void PXAPI PXOpenGLSet(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
+	PXPublic void PXAPI PXOpenGLCopy(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
 
-	PXPublic PXActionResult PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXSize width, const PXSize height, PXWindow* const pxWindow);
-	PXPublic PXActionResult PXOpenGLRelease(PXOpenGL* const openGLContext);
+	PXPublic PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXSize width, const PXSize height, PXWindow* const pxWindow);
+	PXPublic PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const openGLContext);
 
-	PXPublic void PXOpenGLSelect(PXOpenGL* const openGLContext);
-	PXPublic PXBool PXOpenGLDeselect(PXOpenGL* const openGLContext);
-
-
-	PXPublic void PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext);
-
-	PXPublic void PXOpenGLFlush(PXOpenGL* const openGLContext);
-	PXPublic void PXOpenGLViewPortSet(PXOpenGL* const openGLContext, const PXViewPort* const pxViewPort);
-	PXPublic void PXOpenGLViewPortGet(PXOpenGL* const openGLContext, PXViewPort* const pxViewPort);
-
-	PXPublic void PXOpenGLPolygonRenderOrder(const PXOpenGL* const openGLContext, const PXOpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode);
-
-	PXPublic void PXOpenGLSettingChange(PXOpenGL* const openGLContext, const PXOpenGLToggle toggle, const PXBool state);
-
-	PXPublic void PXOpenGLDrawOrder(PXOpenGL* const openGLContext, const PXOpenGLDrawOrderMode openGLDrawOrderMode);
-
-	PXPublic void PXOpenGLDrawMode(PXOpenGL* const openGLContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode, const int cullingMode);
-
-	PXPublic void PXOpenGLClear(PXOpenGL* const openGLContext, const PXColorRGBAF* const pxColorRGBAF);
-
-	PXPublic PXBool PXOpenGLSceneDeploy(PXOpenGL* const openGLContext);
-
-	PXPublic void PXOpenGLDrawScaleF(PXOpenGL* const openGLContext, const float x, const float y, const float z);
-	PXPublic void PXOpenGLDrawBegin(PXOpenGL* const openGLContext, const PXGraphicDrawMode openGLRenderMode);
-	PXPublic void PXOpenGLDrawVertexXYZF(PXOpenGL* const openGLContext, const float x, const float y, const float z);
-	PXPublic void PXOpenGLDrawColorRGBF(PXOpenGL* const openGLContext, const float red, const float green, const float blue);
-	PXPublic void PXOpenGLDrawColorRGBAF(PXOpenGL* const openGLContext, const float red, const float green, const float blue, const float alpha);
-	PXPublic void PXOpenGLDrawEnd(PXOpenGL* const openGLContext);
-	PXPublic void PXOpenGLRectangleF(PXOpenGL* const openGLContext, const float xA, const float yA, const float xB, const float yB);
-	PXPublic void PXOpenGLRectangleTxF
-	(
-		PXOpenGL* const openGLContext,
-		const float xA,
-		const float yA,
-		const float xB,
-		const float yB,
-		const float txA,
-		const float tyA,
-		const float txB,
-		const float tyB
-	);
-
-	PXPublic PXActionResult PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
+	PXPublic void PXAPI PXOpenGLSelect(PXOpenGL* const openGLContext);
+	PXPublic PXBool PXAPI PXOpenGLDeselect(PXOpenGL* const openGLContext);
 
 
-	PXPublic void PXOpenGLTextureParameter(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue);
-	PXPublic void PXOpenGLTextureParameterI(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const int param);
-	PXPublic void PXOpenGLTextureParameterF(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const float param);
+	PXPublic PXInt64U PXAPI PXOpenGLIntergetGet(PXOpenGL* const openGLContext, const GLenum enumID);
+
+	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount);
+	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
 
 
-	PXPublic void PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode pxBlendingMode);
 
-	PXPrivate PXOpenGLVersion PXOpenGLVersionParse(const PXInt32U versionID);
-	PXPrivate PXBool PXOpenGLFunctionAdressFetch(const char* const functionName, void** functionAdress);
 
-	PXPublic void PXOpenGLAPICallType PXOpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+	PXPublic void PXAPI PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext);
+
+	PXPublic void PXAPI PXOpenGLFlush(PXOpenGL* const openGLContext);
+	PXPublic void PXAPI PXOpenGLViewPortSet(PXOpenGL* const openGLContext, const PXViewPort* const pxViewPort);
+	PXPublic void PXAPI PXOpenGLViewPortGet(PXOpenGL* const openGLContext, PXViewPort* const pxViewPort);
+
+	PXPublic void PXAPI PXOpenGLPolygonRenderOrder(const PXOpenGL* const openGLContext, const PXOpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode);
+
+	PXPublic void PXAPI PXOpenGLSettingChange(PXOpenGL* const openGLContext, const PXOpenGLToggle toggle, const PXBool state);
+
+	PXPublic void PXAPI PXOpenGLDrawOrder(PXOpenGL* const openGLContext, const PXOpenGLDrawOrderMode openGLDrawOrderMode);
+
+	PXPublic void PXAPI PXOpenGLDrawMode(PXOpenGL* const openGLContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode, const int cullingMode);
+
+	PXPublic void PXAPI PXOpenGLClear(PXOpenGL* const openGLContext, const PXColorRGBAF* const pxColorRGBAF);
+
+	PXPublic PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL* const openGLContext);
+	  
+	PXPublic void PXAPI PXOpenGLDrawScaleF(PXOpenGL* const openGLContext, const float x, const float y, const float z);
+	PXPublic void PXAPI PXOpenGLDrawBegin(PXOpenGL* const openGLContext, const PXGraphicDrawMode openGLRenderMode);
+	PXPublic void PXAPI PXOpenGLDrawVertexXYZF(PXOpenGL* const openGLContext, const float x, const float y, const float z);
+	PXPublic void PXAPI PXOpenGLDrawColorRGBF(PXOpenGL* const openGLContext, const float red, const float green, const float blue);
+	PXPublic void PXAPI PXOpenGLDrawColorRGBAF(PXOpenGL* const openGLContext, const float red, const float green, const float blue, const float alpha);
+	PXPublic void PXAPI PXOpenGLDrawEnd(PXOpenGL* const openGLContext);
+
+
+	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
+
+
+	PXPublic void PXAPI PXOpenGLTextureParameter(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue);
+	PXPublic void PXAPI PXOpenGLTextureParameterI(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const int param);
+	PXPublic void PXAPI PXOpenGLTextureParameterF(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const float param);
+
+
+	PXPublic void PXAPI PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode pxBlendingMode);
+
+	PXPrivate PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID);
+
+	PXPublic void PXOpenGLAPI PXOpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 	//-------------------------------------------------------------------------
 
 	// render
 
-	PXPublic void PXOpenGLDrawArrays(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize offset, const PXSize amount);
-	PXPublic void PXOpenGLDrawElements(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize amount, const PXDataType pxDataType, const void* const indexList);
+	PXPublic void PXAPI PXOpenGLDrawArrays(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize offset, const PXSize amount);
+	PXPublic void PXAPI PXOpenGLDrawElements(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize amount, const PXDataType pxDataType, const void* const indexList);
 
 
 
-	PXPublic void PXOpenGLDrawArraysInstanced(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount);
+	PXPublic void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount);
 
 	//-----------------------------------------------------
 	// OpenGL - Texture
 	//-----------------------------------------------------
-	PXPublic void PXOpenGLTextureActivate(PXOpenGL* const openGLContext, const unsigned int index);
-	PXPublic PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D); // glGenTextures
-	PXPublic PXActionResult PXOpenGLTexture2DCreateV(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2DList, const PXSize amount); // glGenTextures
-	PXPublic void PXOpenGLTextureBind(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, PXTexture2D* const pxTexture2D); // glBindTexture
-	PXPublic void PXOpenGLTextureUnbind(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType);
-	PXPublic void PXOpenGLTextureDelete(PXOpenGL* const openGLContext, const PXInt32S amount, const PXInt32U* const textureIDList); // glDeleteTextures
-	PXPublic void PXOpenGLTexture2DDataWrite(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D);
+	PXPublic void PXAPI PXOpenGLTextureActivate(PXOpenGL* const openGLContext, const unsigned int index);
+	PXPublic PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D); // glGenTextures
+	PXPublic PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2DList, const PXSize amount); // glGenTextures
+	PXPublic void PXAPI PXOpenGLTexture2DBind(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D);
+	PXPublic void PXAPI PXOpenGLTextureUnbind(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType);
+	PXPublic void PXAPI PXOpenGLTextureDelete(PXOpenGL* const openGLContext, const PXInt32S amount, const PXInt32U* const textureIDList); // glDeleteTextures
+	PXPublic void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D);
 	//-------------------------------------------------------------------------
 
 
-	PXPublic void PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCamera* const pxCamera);
+	PXPublic void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCamera* const pxCamera);
 
 
 	//-----------------------------------------------------
 	// OpenGL - Shader
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
-	PXPublic PXActionResult PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
-	PXPublic PXActionResult PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
-	PXPublic PXActionResult PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 
-	PXPublic PXActionResult PXOpenGLShaderVariableIDFetch(PXOpenGL* const pxOpenGL, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderVariableIDFetch(PXOpenGL* const pxOpenGL, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
 
-	PXPublic void PXOpenGLShaderVariableFx1(PXOpenGL* const openGLContext, GLint location, GLfloat v0);
-	PXPublic void PXOpenGLShaderVariableFx1xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	PXPublic void PXOpenGLShaderVariableIx1(PXOpenGL* const openGLContext, GLint location, GLint v0);
-	PXPublic void PXOpenGLShaderVariableIx1xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXOpenGLShaderVariableFx2(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1);
-	PXPublic void PXOpenGLShaderVariableFx2xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	PXPublic void PXOpenGLShaderVariableIx2(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1);
-	PXPublic void PXOpenGLShaderVariableIx2xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXOpenGLShaderVariableFx3(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-	PXPublic void PXOpenGLShaderVariableFx3xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	PXPublic void PXOpenGLShaderVariableIx3(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2);
-	PXPublic void PXOpenGLShaderVariableIx3xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXOpenGLShaderVariableFx4(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-	PXPublic void PXOpenGLShaderVariableFx4xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
-	PXPublic void PXOpenGLShaderVariableIx4(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-	PXPublic void PXOpenGLShaderVariableIx4xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXOpenGLShaderVariableMatrix2fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	PXPublic void PXOpenGLShaderVariableMatrix3fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	PXPublic void PXOpenGLShaderVariableMatrix4fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx1(PXOpenGL* const openGLContext, GLint location, GLfloat v0);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx1xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx1(PXOpenGL* const openGLContext, GLint location, GLint v0);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx1xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx2(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx2xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx2(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx2xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx3(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx3xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx3(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx3xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx4(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx4xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx4(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+	PXPublic void PXAPI PXOpenGLShaderVariableIx4xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableMatrix2fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableMatrix3fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableMatrix4fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 	//-------------------------------------------------------------------------
 
 	//---<Buffers>-------------------------------------------------------------
-	PXPublic void PXOpenGLVertexArrayGenerate(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const vaoList);
-	PXPublic void PXOpenGLVertexArrayBind(PXOpenGL* const openGLContext, const unsigned int vaoID);
-	PXPublic void PXOpenGLVertexArrayUnbind(PXOpenGL* const openGLContext);
-	PXPublic void PXOpenGLVertexArrayAttributeDefine
+	PXPublic void PXAPI PXOpenGLVertexArrayGenerate(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const vaoList);
+	PXPublic void PXAPI PXOpenGLVertexArrayBind(PXOpenGL* const openGLContext, const unsigned int vaoID);
+	PXPublic void PXAPI PXOpenGLVertexArrayUnbind(PXOpenGL* const openGLContext);
+	PXPublic void PXAPI PXOpenGLVertexArrayAttributeDefine
 	(
 		PXOpenGL* const openGLContext,
 		const PXInt32U index,
@@ -769,35 +1536,35 @@ extern "C"
 		const PXInt32U stride,
 		const PXSize offset
 	);
-	PXPublic void PXOpenGLVertexAttributeDivisor(PXOpenGL* const openGLContext, const PXSize index, const PXSize divisor);
-	PXPublic void PXOpenGLVertexArrayEnable(PXOpenGL* const openGLContext, const unsigned int vertexArrayAtributeID);
-	PXPublic void PXOpenGLVertexArrayDisable(PXOpenGL* const openGLContext, const unsigned int vertexArrayAtributeID);
+	PXPublic void PXAPI PXOpenGLVertexAttributeDivisor(PXOpenGL* const openGLContext, const PXSize index, const PXSize divisor);
+	PXPublic void PXAPI PXOpenGLVertexArrayEnable(PXOpenGL* const openGLContext, const unsigned int vertexArrayAtributeID);
+	PXPublic void PXAPI PXOpenGLVertexArrayDisable(PXOpenGL* const openGLContext, const unsigned int vertexArrayAtributeID);
 
-	PXPublic void PXOpenGLBufferGenerate(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const bufferIDList);
-	PXPublic void PXOpenGLBufferBind(PXOpenGL* const openGLContext, const PXOpenGLBufferType bufferType, const unsigned int bufferID);
-	PXPublic void PXOpenGLBufferData(PXOpenGL* const openGLContext, const PXOpenGLBufferType bufferType, const unsigned int size, const void* const data, const PXOpenGLStoreMode openGLStoreMode);
-	PXPublic void PXOpenGLBufferUnbind(PXOpenGL* const openGLContext, const PXOpenGLBufferType bufferType);
+	PXPublic void PXAPI PXOpenGLBufferGenerate(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const bufferIDList);
+	PXPublic void PXAPI PXOpenGLBufferBind(PXOpenGL* const openGLContext, const PXOpenGLBufferType bufferType, const unsigned int bufferID);
+	PXPublic void PXAPI PXOpenGLBufferData(PXOpenGL* const openGLContext, const PXOpenGLBufferType bufferType, const unsigned int size, const void* const data, const PXOpenGLStoreMode openGLStoreMode);
+	PXPublic void PXAPI PXOpenGLBufferUnbind(PXOpenGL* const openGLContext, const PXOpenGLBufferType bufferType);
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
-	PXPublic void PXOpenGLFrameBufferCreate(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
-	PXPublic void PXOpenGLRenderBufferStorage(PXOpenGL* const openGLContext, const PXOpenGLRenderBufferFormat internalformat, const int width, const int height);
+	PXPublic void PXAPI PXOpenGLFrameBufferCreate(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
+	PXPublic void PXAPI PXOpenGLRenderBufferStorage(PXOpenGL* const openGLContext, const PXOpenGLRenderBufferFormat internalformat, const int width, const int height);
 
 	// If we bind to 0, we select the "main window"
-	PXPublic void PXOpenGLFrameBufferBind(PXOpenGL* const openGLContext, const PXOpenGLFrameBufferMode target, const unsigned int framebufferID);
+	PXPublic void PXAPI PXOpenGLFrameBufferBind(PXOpenGL* const openGLContext, const PXOpenGLFrameBufferMode target, const unsigned int framebufferID);
 
-	PXPublic void PXOpenGLFrameBufferDestroy(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
+	PXPublic void PXAPI PXOpenGLFrameBufferDestroy(PXOpenGL* const openGLContext, const unsigned int amount, unsigned int* const framebufferIDList);
 
-	PXPublic void PXOpenGLRenderBufferCreate(PXOpenGL* const openGLContext, GLsizei n, GLuint* renderbuffers);
-
-
-	PXPublic void PXOpenGLRenderBufferBind(PXOpenGL* const openGLContext, const unsigned int renderbuffer);
-
-	PXPublic void PXOpenGLRenderBufferDelete(PXOpenGL* const openGLContext, GLsizei n, GLuint* renderbuffers);
+	PXPublic void PXAPI PXOpenGLRenderBufferCreate(PXOpenGL* const openGLContext, GLsizei n, GLuint* renderbuffers);
 
 
-	PXPublic void PXOpenGLFrameBufferLinkTexture2D(PXOpenGL* const openGLContext, const PXOpenGLRenderBufferAttachmentPoint attachment, const PXGraphicTextureType textarget, const unsigned int textureID, const int level);
-	PXPublic GLuint PXOpenGLFrameBufferLinkRenderBuffer(PXOpenGL* const openGLContext, const PXOpenGLRenderBufferAttachmentPoint attachment, const unsigned int renderbuffer);
+	PXPublic void PXAPI PXOpenGLRenderBufferBind(PXOpenGL* const openGLContext, const unsigned int renderbuffer);
+
+	PXPublic void PXAPI PXOpenGLRenderBufferDelete(PXOpenGL* const openGLContext, GLsizei n, GLuint* renderbuffers);
+
+
+	PXPublic void PXAPI PXOpenGLFrameBufferLinkTexture2D(PXOpenGL* const openGLContext, const PXOpenGLRenderBufferAttachmentPoint attachment, const PXGraphicTextureType textarget, const unsigned int textureID, const int level);
+	PXPublic GLuint PXAPI PXOpenGLFrameBufferLinkRenderBuffer(PXOpenGL* const openGLContext, const PXOpenGLRenderBufferAttachmentPoint attachment, const unsigned int renderbuffer);
 	//-------------------------------------------------------------------------
 
 
@@ -805,8 +1572,8 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.1.1.0>------------------------------------------------------
-	PXPublic void PXOpenGLTexture2DDataRead(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D);
-	PXPublic void PXOpenGLTexture2DDataReadFrom(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D, const PXInt32U x, const PXInt32U y, const PXInt32U width, const PXInt32U height);
+	PXPublic void PXAPI PXOpenGLTexture2DDataRead(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D);
+	PXPublic void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D, const PXInt32U x, const PXInt32U y, const PXInt32U width, const PXInt32U height);
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.1.2.0>------------------------------------------------------
@@ -832,7 +1599,7 @@ extern "C"
 //-------------------------------------------------------------------------
 
 //---<PXOpenGL v.3.0.0>------------------------------------------------------
-	PXPublic const char* PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStringName stringName, const unsigned int index);
+	PXPublic const char* PXAPI PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStringName stringName, const unsigned int index);
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.3.1.0>------------------------------------------------------
@@ -868,69 +1635,55 @@ extern "C"
 
 
 	//---<Extensions>----------------------------------------------------------
-	PXPublic PXActionResult PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval);
-	PXPublic PXActionResult PXOpenGLSwapIntervalGet(PXOpenGL* const openGLContext, PXInt32U* const interval);
+	PXPublic PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval);
+	PXPublic PXActionResult PXAPI PXOpenGLSwapIntervalGet(PXOpenGL* const openGLContext, PXInt32U* const interval);
 	//-------------------------------------------------------------------------
 
 
 
 
 
-	PXPublic PXActionResult PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture2D* const texture);
-	PXPublic PXActionResult PXOpenGLTexture3DCreate(PXOpenGL* const pxOpenGL, PXTexture3D* const texture);
-	PXPublic PXActionResult PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube* const pxTextureCube);
+	PXPublic PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture2D* const texture);
+	PXPublic PXActionResult PXAPI PXOpenGLTexture3DCreate(PXOpenGL* const pxOpenGL, PXTexture3D* const texture);
+	PXPublic PXActionResult PXAPI PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextureCube* const pxTextureCube);
 
 
-	PXPublic PXActionResult PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite);
-	PXPublic PXActionResult PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
+	PXPublic PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXAPI PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
 
 	//-----------------------------------------------------
 	// Fixed Scripting
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXOpenGLDrawScriptCreate(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
-	PXPublic PXActionResult PXOpenGLDrawScriptBegin(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
-	PXPublic PXActionResult PXOpenGLDrawScriptEnd(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
-	PXPublic PXActionResult PXOpenGLDrawScriptDelete(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
-	PXPublic PXActionResult PXOpenGLDrawScriptExecute(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
+	PXPublic PXActionResult PXAPI PXOpenGLDrawScriptCreate(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
+	PXPublic PXActionResult PXAPI PXOpenGLDrawScriptBegin(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
+	PXPublic PXActionResult PXAPI PXOpenGLDrawScriptEnd(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
+	PXPublic PXActionResult PXAPI PXOpenGLDrawScriptDelete(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
+	PXPublic PXActionResult PXAPI PXOpenGLDrawScriptExecute(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript);
 
 	//-----------------------------------------------------
 	// Light
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXOpenGLLightSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index);
-	PXPublic PXActionResult PXOpenGLLightGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index);
-	PXPublic PXActionResult PXOpenGLLightEnableSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
-	PXPublic PXActionResult PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
+	PXPublic PXActionResult PXAPI PXOpenGLLightSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index);
+	PXPublic PXActionResult PXAPI PXOpenGLLightGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index);
+	PXPublic PXActionResult PXAPI PXOpenGLLightEnableSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
+	PXPublic PXActionResult PXAPI PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
 
 
 
 
-	PXPublic PXActionResult PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
-	PXPublic PXActionResult PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
-
-		/*
-		CPublic PXOpenGLID PXOpenGLToRenderMode(const PXGraphicDrawMode renderMode);
-		CPublic PXOpenGLID PXOpenGLToShaderType(const ShaderType shaderType);
-		CPublic PXOpenGLID PXOpenGLToImageFormat(const ImageDataFormat imageFormat);
-		CPublic PXOpenGLID PXOpenGLToImageType(const PXGraphicTextureType imageType);
-		CPublic PXOpenGLID PXOpenGLToImageWrap(const PXGraphicImageWrap imageWrap);
-		CPublic PXOpenGLID PXOpenGLToImageLayout(const PXGraphicImageLayout layout);
+	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
+	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
 
 
 
+	PXPublic PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB);
+	PXPublic PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB);
 
 
+	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListAmountFunction(PXOpenGL* const pxOpenGL, PXInt32U* const amount);
+	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListFetchFunction(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
 
 
-
-
-
-		CPublic void PXOpenGLVertexAttributeArrayDefine(PXOpenGL* const openGL, const PXSize sizeOfElement, const PXSize listSize, const unsigned int* list);
-
-		CPublic void VertexArrayDefine(unsigned int* vertexArrayID);
-		CPublic void VertexDataDefine(unsigned int* vertexID, int size, void* data);
-		CPublic void IndexDataDefine(unsigned int* indexID, int size, void* data);
-		CPublic void VertexArrayUpdate(int vertexArrayID, int size, void* data);
-		*/
 
 #ifdef __cplusplus
 }

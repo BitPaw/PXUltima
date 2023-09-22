@@ -1,6 +1,6 @@
 ﻿namespace PX
 {
-    public class Graphic
+    public class Camera
     {
 
     }

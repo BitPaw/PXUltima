@@ -3,22 +3,24 @@ using System.Runtime.InteropServices;
 
 namespace PX
 {
+    //   [MarshalAs(UnmanagedType.ByValArray)]
+    //[StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Size = 2100)]
+    internal unsafe struct PXWindow
+    {
+        public byte IsRunning;
+        public void* ID;
+
+        public int X;
+        public int Y;
+        public int Width;
+        public int Height;
+    };
+
+
     public class Window : IDisposable
     {
-        //   [MarshalAs(UnmanagedType.ByValArray)]
-        //[StructLayout(LayoutKind.Sequential)]
-        [StructLayout(LayoutKind.Sequential, Size = 2100)]
-        private unsafe struct PXWindow
-        {
-            public byte IsRunning;
-            public void* ID;
-
-            public int X;
-            public int Y;
-            public int Width;
-            public int Height;
-        };
-
+   
         [DllImport("PXUltima.dll")] private static extern void PXWindowConstruct(ref PXWindow window);
         [DllImport("PXUltima.dll")] private static extern void PXWindowDestruct(ref PXWindow window);
 
@@ -26,7 +28,7 @@ namespace PX
 
         // Create a window based on the OS implementation.
         // if a NULL pointer is used as a title, the window will be hidden.
-        [DllImport("PXUltima.dll")] private static extern void PXWindowCreate(ref PXWindow window, int width, int height, ref PXText title, bool async);
+        [DllImport("PXUltima.dll")] private static extern void PXWindowCreate(ref PXWindow window, int x, int y, int width, int height, ref PXText title, bool async);
         [DllImport("PXUltima.dll")] private static extern void PXWindowCreateHidden(ref PXWindow window, int width, int height, bool async);
 
         [DllImport("PXUltima.dll")] private static extern bool PXWindowTitleSet(ref PXWindow window, ref PXText title);
@@ -59,7 +61,7 @@ namespace PX
 
 
 
-        private PXWindow _pxWindow = new PXWindow();
+        internal PXWindow _pxWindow = new PXWindow();
 
         public unsafe Window()
         {
@@ -110,16 +112,16 @@ namespace PX
             {
                 PXText pXText = PXText.MakeFromStringW(charBuffer, title.Length);
 
-                PXWindowCreate(ref _pxWindow, -1, -1, ref pXText, true);
+                PXWindowCreate(ref _pxWindow, 0, 0, -1, -1, ref pXText, true);
             }
         }
-        public unsafe void Create(int width, int height, string title)
-        {
+        public unsafe void Create(int x, int y, int width, int height, string title)
+        {            
             fixed (char* charBuffer = title.ToCharArray())
             {
                 PXText pXText = PXText.MakeFromStringW(charBuffer, title.Length);
 
-                PXWindowCreate(ref _pxWindow, width, height, ref pXText, true);
+                PXWindowCreate(ref _pxWindow, x, y, width, height, ref pXText, true);
             }
         }
 

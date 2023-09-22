@@ -83,7 +83,7 @@ extern "C"
 
 
 
-    typedef void (*PXSymbolDetectedEvent)(const PXSymbol* const pxSymbol);
+    typedef void (PXAPI*PXSymbolDetectedEvent)(const PXSymbol* const pxSymbol);
 
 
 
@@ -101,13 +101,13 @@ extern "C"
     }
     PXLibrary;
 
-    PXPublic PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic PXBool PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
+    PXPublic PXBool PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic PXBool PXAPI PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
 
-    PXPublic PXBool PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName);
-    PXPublic PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
+    PXPublic PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName);
+    PXPublic PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
 
-    PXPublic PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName);
+    PXPublic PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName);
 
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -116,7 +116,7 @@ extern "C"
    // PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PCSTR SymbolName, DWORD64 SymbolAddress, ULONG SymbolSize, PVOID UserContext);
 #endif
 
-    PXPublic PXActionResult PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent);
+    PXPublic PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent);
 
     // void SymbolVector(); // PXProgramming interface to dynamic linking loader.
 

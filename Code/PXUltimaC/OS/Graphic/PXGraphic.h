@@ -18,6 +18,7 @@
 #include <Media/PXResource.h>
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
+#include <OS/Graphic/Vulcan/PXVulcan.h>
 
 
 #define PXShaderNotRegisterd (unsigned int)-1
@@ -49,26 +50,6 @@ extern "C"
 
 
 
-
-
-
-
-
-
-
-
-	PXPublic void PXShaderConstruct(PXShader* const shader);
-
-	PXPublic void PXShaderDataSet(PXShader* const shader, const PXGraphicShaderType type, const char* data, const PXSize size);
-
-
-
-
-
-	
-
-	PXPublic void PXTextureConstruct(PXTexture2D* const texture);
-	PXPublic void PXTextureDestruct(PXTexture2D* const texture);
 
 
 	
@@ -118,10 +99,6 @@ extern "C"
 		PXBool DoRendering;
 	}
 	PXRenderable;
-
-	PXPublic void PXRenderableConstruct(PXRenderable* const pxRenderable);
-
-
 
 
 	//---<UI Elements>---------------------------------------------------------
@@ -199,6 +176,13 @@ extern "C"
 	typedef void (*PXUIOnMouseEnter)(PXUIElement* const pxUIElement);
 	typedef void (*PXUIOnMouseLeave)(PXUIElement* const pxUIElement);
 
+	typedef struct PXSpriteRectangle_
+	{
+		PXRectangleF Position;
+		PXRectangleF Texture;
+		PXColorRGBAF Color;
+	}
+	PXSpriteRectangle;
 
 	typedef struct PXUITextInfo_
 	{
@@ -260,8 +244,29 @@ extern "C"
 
 
 
+#define PXDeviceIDSize 32
+#define PXDeviceNameSize 64
 
+	typedef struct PXGraphicDevicePhysical_
+	{
+		char DeviceDisplay[PXDeviceIDSize];
+		char DeviceName[PXDeviceNameSize];
+		char DeviceID[128];
+		char DeviceKey[128];
 
+		char Vendor[64];
+		char Renderer[64];
+
+		PXInt64U VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
+		PXInt64U VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
+		PXInt64U VideoMemoryTotal; // current available dedicated video memory (in kb), currently unused GPU memory
+
+		PXInt64U VideoMemoryEvictionCount; // How many times memory got displaced to Main-RAM
+		PXInt64U VideoMemoryEvictionSize; // size of total video memory evicted (in kb)
+
+		PXBool IsConnectedToMonitor;
+	}
+	PXGraphicDevicePhysical;
 
 
 
@@ -270,95 +275,83 @@ extern "C"
 	//-------------------------------------------------------------------------
 	// Define generic graphic API, make happen that you can use whatever
 	//-------------------------------------------------------------------------
-	typedef PXBool (*PXGraphicInitializeFunction)(void* const pxGraphicAPI, const PXSize width, const PXSize height, PXWindow* const pxWindow);
-	typedef PXBool(*PXGraphicReleaseFunction)(void* const pxGraphicAPI);
+	typedef PXBool (PXAPI*PXGraphicInitializeFunction)(void* const pxGraphicAPI, const PXSize width, const PXSize height, PXWindow* const pxWindow);
+	typedef PXBool(PXAPI*PXGraphicReleaseFunction)(void* const pxGraphicAPI);
 
-	typedef void (*PXGraphicSelectFunction)(void* const pxGraphicAPI);
-	typedef void (*PXGraphicDeselectFunction)(void* const pxGraphicAPI);
+	typedef void (PXAPI*PXGraphicSelectFunction)(void* const pxGraphicAPI);
+	typedef void (PXAPI*PXGraphicDeselectFunction)(void* const pxGraphicAPI);
 
-	typedef PXActionResult(*PXGraphicLoadFunction)(void* const pxGraphicAPI);
-	typedef PXActionResult(*PXGraphicUnloaddFunction)(void* const pxGraphicAPI);
+	typedef PXActionResult(PXAPI*PXGraphicLoadFunction)(void* const pxGraphicAPI);
+	typedef PXActionResult(PXAPI*PXGraphicUnloaddFunction)(void* const pxGraphicAPI);
 
-	typedef PXActionResult(*PXGraphicViewPortSetFunction)(void* const pxGraphicAPI, const PXViewPort* const pxViewPort);
-	typedef PXActionResult(*PXGraphicViewPortGetFunction)(void* const pxGraphicAPI, PXViewPort* const pxViewPort);
+	typedef PXActionResult(PXAPI*PXGraphicViewPortSetFunction)(void* const pxGraphicAPI, const PXViewPort* const pxViewPort);
+	typedef PXActionResult(PXAPI*PXGraphicViewPortGetFunction)(void* const pxGraphicAPI, PXViewPort* const pxViewPort);
 
-	typedef PXActionResult(*PXGraphicShaderProgramCreateFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
-	typedef PXActionResult(*PXGraphicShaderProgramSelectFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
-	typedef PXActionResult(*PXGraphicShaderProgramDeleteFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(PXAPI*PXGraphicShaderProgramCreateFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(PXAPI*PXGraphicShaderProgramSelectFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(PXAPI*PXGraphicShaderProgramDeleteFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
 
-	typedef void (*PXGraphicSceneBeginFunction)(void* const pxGraphicAPI);
-	typedef void (*PXGraphicSceneEndFunction)(void* const pxGraphicAPI);
+	typedef void (PXAPI*PXGraphicSceneBeginFunction)(void* const pxGraphicAPI);
+	typedef void (PXAPI*PXGraphicSceneEndFunction)(void* const pxGraphicAPI);
 
-	typedef PXActionResult(*PXGraphicDrawScriptCreate)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
-	typedef PXActionResult(*PXGraphicDrawScriptBegin)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
-	typedef PXActionResult(*PXGraphicDrawScriptEnd)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
-	typedef PXActionResult(*PXGraphicDrawScriptDelete)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
-	typedef PXActionResult(*PXGraphicDrawScriptExecute)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+	typedef PXActionResult(PXAPI*PXGraphicDrawScriptCreate)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
+	typedef PXActionResult(PXAPI*PXGraphicDrawScriptBegin)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+	typedef PXActionResult(PXAPI*PXGraphicDrawScriptEnd)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+	typedef PXActionResult(PXAPI*PXGraphicDrawScriptDelete)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
+	typedef PXActionResult(PXAPI*PXGraphicDrawScriptExecute)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
 
-	typedef PXActionResult(*PXGraphicTextureCubeRegisterFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
-	typedef PXActionResult(*PXGraphicTextureCubeRegisterUseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
-	typedef PXActionResult(*PXGraphicTextureCubeReleaseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
-
-
-	typedef PXActionResult(*PXGraphicVertexStructureRegisterFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
-	typedef PXActionResult(*PXGraphicVertexStructureDrawFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
-	typedef PXActionResult(*PXGraphicVertexStructureSelectFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
-	typedef PXActionResult(*PXGraphicVertexStructureReleaseFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
-
-	typedef PXActionResult(*PXGraphicLightSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
-	typedef PXActionResult(*PXGraphicLightGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
-	typedef PXActionResult(*PXGraphicLightEnableSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
-	typedef PXActionResult(*PXGraphicLightEnableGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
+	typedef PXActionResult(PXAPI*PXGraphicTextureCubeRegisterFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
+	typedef PXActionResult(PXAPI*PXGraphicTextureCubeRegisterUseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
+	typedef PXActionResult(PXAPI*PXGraphicTextureCubeReleaseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
 
 
-	typedef PXActionResult(*PXGraphicTexture2DRegisterFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
-	typedef PXActionResult(*PXGraphicTexture2DReleaseFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
-	typedef PXActionResult(*PXGraphicTexture2DSelectFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+	typedef PXActionResult(PXAPI*PXGraphicVertexStructureRegisterFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
+	typedef PXActionResult(PXAPI*PXGraphicVertexStructureDrawFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
+	typedef PXActionResult(PXAPI*PXGraphicVertexStructureSelectFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
+	typedef PXActionResult(PXAPI*PXGraphicVertexStructureReleaseFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
 
-	typedef void (*PXGraphicClearFunction)(void* const pxGraphicAPI, const PXColorRGBAF* const backgroundColor);
-	typedef PXBool(*PXGraphicSceneDeployFunction)(void* const pxGraphicAPI);
+	typedef PXActionResult(PXAPI*PXGraphicLightSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
+	typedef PXActionResult(PXAPI*PXGraphicLightGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
+	typedef PXActionResult(PXAPI*PXGraphicLightEnableSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
+	typedef PXActionResult(PXAPI*PXGraphicLightEnableGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
+
+
+	typedef PXActionResult(PXAPI*PXGraphicTexture2DRegisterFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+	typedef PXActionResult(PXAPI*PXGraphicTexture2DReleaseFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+	typedef PXActionResult(PXAPI*PXGraphicTexture2DSelectFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+
+	typedef void (PXAPI*PXGraphicClearFunction)(void* const pxGraphicAPI, const PXColorRGBAF* const backgroundColor);
+	typedef PXBool(PXAPI*PXGraphicSceneDeployFunction)(void* const pxGraphicAPI);
+
+	typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListAmountFunction)(void* const graphicAPI, PXInt32U* const amount);
+	typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListFetchFunction)(void* const graphicAPI, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
+
+	typedef PXActionResult (PXAPI* PXGraphicSwapIntervalSet)(void* const graphicAPI, const PXInt32U interval);
+	typedef PXActionResult (PXAPI* PXGraphicSwapIntervalGet)(void* const graphicAPI, PXInt32U* const interval);
+
+
+	typedef PXActionResult(PXAPI* PXGraphicRectangleDrawFunction)(void* const graphicAPI, const float xA, const float yA, const float xB, const float yB);
+	typedef PXActionResult(PXAPI* PXGraphicRectangleDrawTxFunction)(void* const graphicAPI, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB);
+
+
+	typedef PXActionResult(PXAPI* PXGraphicDrawColorRGBFFunction)(void* const graphicAPI, const float red, const float green, const float blue, const float alpha);
+
+
 	//-------------------------------------------------------------------------
 
 
 	typedef struct PXGraphicContext_
 	{
-		PXDirectX DirectXInstance;
-		PXOpenGL OpenGLInstance;
-
+		//-------------------
+		// References
+		//-------------------
 		void* AttachedWindow;
-
-		PXLock _resourceLock;
-
-		PXSkyBox* _currentSkyBox;
-
-		//---<Registered Objects>---
-		PXInt32U UniqeIDGeneratorCounter;
-
-		PXLinkedListFixed _renderList; // PXRenderable
-	
-		PXDictionary ResourceImageLookUp;
-
-		PXDictionary UIElementLookUp;
-		PXDictionary TextureLookUp;
-		PXDictionary SpritelLookUp;
-		PXDictionary ModelLookUp;
-		PXDictionary FontLookUp;
-		PXDictionary SoundLookup;
-		PXDictionary ShaderPXProgramLookup;
-		//--------------------------
-
-		PXGraphicSystem GraphicSystem;
-
-		// Cached most-common objects
-		PXVertexStructure SpriteScaled;
-		PXVertexStructure SpriteUnScaled;
-
-	
-
-		//-------------------------------------------------
-		// API
-		//-------------------------------------------------
 		void* EventOwner;
+		//-------------------
+
+		//-------------------
+		// Functions
+		//-------------------
 
 		PXGraphicInitializeFunction Initialize;
 		PXGraphicReleaseFunction Release;
@@ -392,121 +385,156 @@ extern "C"
 		PXGraphicTexture2DRegisterFunction Texture2DRegister;
 		PXGraphicTexture2DReleaseFunction Texture2DRelease;
 		PXGraphicTexture2DSelectFunction  Texture2DSelect;
-		//-------------------------------------------------
+		PXGraphicSwapIntervalSet SwapIntervalSet;
+		PXGraphicSwapIntervalGet SwapIntervalGet;
+		PXGraphicRectangleDrawFunction RectangleDraw;
+		PXGraphicRectangleDrawTxFunction RectangleDrawTx;
+		PXGraphicDevicePhysicalListAmountFunction DevicePhysicalListAmount;
+		PXGraphicDevicePhysicalListFetchFunction DevicePhysicalListFetch;
+
+		PXGraphicDrawColorRGBFFunction DrawColorRGBAF;
+
+		//-------------------
+
+		PXGraphicSystem GraphicSystem;
+
+		union
+		{
+			PXDirectX DirectXInstance;
+			PXOpenGL OpenGLInstance;
+			PXVulcan VulcanInstance;
+		};
+
+
+		PXLock _resourceLock;
+
+		PXSkyBox* _currentSkyBox;
+
+		//---<Registered Objects>---
+		PXInt32U UniqeIDGeneratorCounter;
+
+		PXLinkedListFixed _renderList; // PXRenderable
+	
+		PXDictionary ResourceImageLookUp;
+
+		PXDictionary UIElementLookUp;
+		PXDictionary TextureLookUp;
+		PXDictionary SpritelLookUp;
+		PXDictionary ModelLookUp;
+		PXDictionary FontLookUp;
+		PXDictionary SoundLookup;
+		PXDictionary ShaderPXProgramLookup;
+		//--------------------------
+
+
+
+		// Cached most-common objects
+		PXVertexStructure SpriteScaled;
+		PXVertexStructure SpriteUnScaled;
+
 	}
 	PXGraphicContext;
 
+#if 0
+	const PXSize size = sizeof(PXGraphicContext);
+#endif 
 
 
 
 
 
 	//-------------------------------------------------------------------------
-	PXPublic void PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
-	PXPublic void PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
-	PXPublic void PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
+	PXPublic void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable);
 
-	PXPublic void PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
-	PXPublic void PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
-	PXPublic void PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
-	PXPublic void PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont);
-	PXPublic void PXUIElementHoverable(PXUIElement* const pxUIElement, const PXBool isHoverable);
-	PXPublic void PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
-	PXPublic void PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
+	PXPublic void PXAPI PXShaderConstruct(PXShader* const shader);
 
-	PXPrivate PXInt32U PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext);
+	PXPublic void PXAPI PXShaderDataSet(PXShader* const shader, const PXGraphicShaderType type, const char* data, const PXSize size);
+	PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
+	PXPublic void PXAPI PXTextureDestruct(PXTexture2D* const texture);
 
-	PXPublic PXActionResult PXGraphicUIElementRegister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
-	PXPublic PXActionResult PXGraphicUIElementUpdate(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
-	PXPublic PXActionResult PXGraphicUIElementUnregister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
+	PXPublic void PXAPI PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
+	PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
+	PXPublic void PXAPI PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
+
+	PXPublic void PXAPI PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
+	PXPublic void PXAPI PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
+	PXPublic void PXAPI PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
+	PXPublic void PXAPI PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont);
+	PXPublic void PXAPI PXUIElementHoverable(PXUIElement* const pxUIElement, const PXBool isHoverable);
+	PXPublic void PXAPI PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
+	PXPublic void PXAPI PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
+
+	PXPrivate PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext);
+
+	PXPublic PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementUpdate(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementUnregister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
 	//-------------------------------------------------------------------------
-
-	PXPublic PXActionResult PXGraphicSwapIntervalSet(PXGraphicContext* const graphicContext, const PXInt32U interval);
-	PXPublic PXActionResult PXGraphicSwapIntervalGet(PXGraphicContext* const graphicContext, PXInt32U* const interval);
-
 
 	//-----------------------------------------------------
 	// Sprite
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXGraphicSpriteConstruct(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
-	PXPublic PXActionResult PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
-	PXPublic PXActionResult PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath);
-	PXPublic PXActionResult PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
-	PXPublic PXActionResult PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
 
-		//-----------------------------------------------------
+	//-----------------------------------------------------
 	// Shader
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
-	PXPublic PXActionResult PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 
 
-	PXPublic PXActionResult PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
+	PXPublic PXActionResult PXAPI PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
 
-	PXPublic PXActionResult PXGraphicDrawModeSet(PXGraphicContext* const graphicContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
-	PXPublic void PXGraphicDrawColorRGBF(PXGraphicContext* const graphicContext, const float red, const float green, const float blue);
-	PXPublic void PXGraphicDrawColorRGBAF(PXGraphicContext* const graphicContext, const float red, const float green, const float blue, const float alpha);
-	PXPublic PXActionResult PXGraphicRectangleDraw(PXGraphicContext* const graphicContext, const float xA, const float yA, const float xB, const float yB);
-	PXPublic PXActionResult PXGraphicRectangleDrawTx
-	(
-		PXGraphicContext* const graphicContext, 
-		const float xA, 
-		const float yA,
-		const float xB, 
-		const float yB,
-		const float txA,
-		const float tyA,
-		const float txB,
-		const float tyB
-	);
-	PXPublic void PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlendingMode pxBlendingMode);
+	PXPublic PXActionResult PXAPI PXGraphicDrawModeSet(PXGraphicContext* const graphicContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
+
+	PXPublic void PXAPI PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlendingMode pxBlendingMode);
 
 
 
-	PXPublic void PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
+	PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
 
 
 	//-------------------------------------
-	PXPublic void PXGraphicInstantiate(PXGraphicContext* const graphicContext, const PXInt32S width, const PXInt32S height, PXWindow* const pxWindow);
+	PXPublic PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext, const PXInt32S width, const PXInt32S height, PXWindow* const pxWindow);
 
-	PXPublic void PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo);
+	PXPublic void PXAPI PXGraphicHotSwap(PXGraphicContext* const graphicContext, const PXGraphicSystem pxGraphicSystem);
+
+	PXPublic void PXAPI PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo);
 	//-------------------------------------
 
 	//---<Shader>-----------------------------------------------------------------
 
-	PXPublic void PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
+	PXPublic void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
 
-	//-------------------------------------------------------------------------
-
-	//---<Rendering>-----------------------------------------------------------
-
-	PXPublic PXActionResult PXGraphicRenderElement(PXGraphicContext* const graphicContext, PXGraphicDrawMode renderMode, PXSize start, PXSize amount);
-	PXPublic PXActionResult PXGraphicRenderList(PXGraphicContext* const graphicContext, PXGraphicDrawMode renderMode, PXSize start, PXSize amount);
 	//-------------------------------------------------------------------------
 
 	// Load image resource and register it to prevent multible loads of the same file
-	PXPublic PXActionResult PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImage* const pxImage, const PXText* const pxImageFilePath);
+	PXPublic PXActionResult PXAPI PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImage* const pxImage, const PXText* const pxImageFilePath);
 
 
 	//---<Texture>----------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, PXImage* const pxImage);
+	PXPublic PXActionResult PXAPI PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, PXImage* const pxImage);
 
-	PXPublic PXActionResult PXGraphicTexture2DLoad(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const PXText* const filePath);
-	PXPublic PXActionResult PXGraphicTexture2DLoadA(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const char* const filePath);
+	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const char* const filePath);
 	//-------------------------------------------------------------------------
 
 
 	//---<Font>----------------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXText* const filePath);
-	PXPublic PXActionResult PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXFont* const pxFont);
-	PXPublic PXActionResult PXGraphicFontRelease(PXGraphicContext* const graphicContext, PXFont* const pxFont);
-	PXPublic PXActionResult PXGraphicFontUse(PXGraphicContext* const graphicContext, PXFont* const pxFont);
+	PXPublic PXActionResult PXAPI PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXFont* const pxFont);
+	PXPublic PXActionResult PXAPI PXGraphicFontRelease(PXGraphicContext* const graphicContext, PXFont* const pxFont);
+	PXPublic PXActionResult PXAPI PXGraphicFontUse(PXGraphicContext* const graphicContext, PXFont* const pxFont);
 	//-------------------------------------------------------------------------
 
 
 	//---<Model>---------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
-	PXPublic PXActionResult PXGraphicSkyboxRegisterD
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegisterD
 	(
 		PXGraphicContext* const graphicContext,
 		PXSkyBox* const skyBox,
@@ -519,7 +547,7 @@ extern "C"
 		const PXText* const textureBack,
 		const PXText* const textureFront
 	);
-	PXPublic PXActionResult PXGraphicSkyboxRegisterA
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegisterA
 	(
 		PXGraphicContext* const graphicContext,
 		PXSkyBox* const skyBox,
@@ -532,22 +560,22 @@ extern "C"
 		const char* const textureBack,
 		const char* const textureFront
 	);
-	PXPublic PXActionResult PXGraphicSkyboxUse(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
-	PXPublic PXActionResult PXGraphicSkyboxRelease(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxUse(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxRelease(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
 
 	//PXPublic PXSize PXGraphicModelListSize(const PXGraphicContext* const graphicContext);
 	//PXPublic PXBool PXGraphicModelListGetFromIndex(const PXGraphicContext* const graphicContext, PXModel** pxModel, const PXSize index);
 
-	PXPublic PXSize PXGraphicRenderableListSize(const PXGraphicContext* const graphicContext);
-	PXPublic PXBool PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const graphicContext, PXRenderable** pxRenderable, const PXSize index);
+	PXPublic PXSize PXAPI PXGraphicRenderableListSize(const PXGraphicContext* const graphicContext);
+	PXPublic PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const graphicContext, PXRenderable** pxRenderable, const PXSize index);
 
 	//PXPublic PXActionResult PXGraphicModelCreate(PXGraphicContext* const graphicContext, PXModel** const pxModel);
 	//PXPublic PXBool PXGraphicModelRegister(PXGraphicContext* const graphicContext, PXModel* const pxModel);
-	PXPublic PXActionResult PXGraphicRenderableCreate(PXGraphicContext* const graphicContext, PXRenderable** const pxRenderable);
-	PXPublic PXBool PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRenderable* const pxRenderable);
+	PXPublic PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphicContext* const graphicContext, PXRenderable** const pxRenderable);
+	PXPublic PXBool PXAPI PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRenderable* const pxRenderable);
 
 
-	PXPublic void PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);
+	PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);
 	//PXPublic PXActionResult PXGraphicModelGenerate(PXGraphicContext* const graphicContext, PXRenderable** const renderable, const PXTextASCII filePath);
 	//PXPublic PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXText* const filePath);
 	//PXPublic PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);
@@ -572,31 +600,31 @@ extern "C"
 
 
 
-	PXPublic void PXCameraConstruct(PXCamera* const camera);
-	PXPublic void PXCameraDestruct(PXCamera* const camera);
+	PXPublic void PXAPI PXCameraConstruct(PXCamera* const camera);
+	PXPublic void PXAPI PXCameraDestruct(PXCamera* const camera);
 
 
 	//-----------
-	PXPublic float PXCameraAspectRatio(const PXCamera* const camera);
-	PXPublic void PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height);
+	PXPublic float PXAPI PXCameraAspectRatio(const PXCamera* const camera);
+	PXPublic void PXAPI PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height);
 
-	PXPublic void PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective cameraPerspective);
-	PXPublic void PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane);
-	PXPublic void PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOfView, const float aspectRatio, const float nearPlane, const float farPlane);
+	PXPublic void PXAPI PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective cameraPerspective);
+	PXPublic void PXAPI PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane);
+	PXPublic void PXAPI PXCameraViewChangeToPerspective(PXCamera* const camera, const float fieldOfView, const float aspectRatio, const float nearPlane, const float farPlane);
 	//-----------
 
 	//---<Transform>-----------------------------------------------------------
-	PXPublic void PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F);
-	PXPublic void PXCameraRotateXYZ(PXCamera* const camera, const float x, const float y, const float z);
+	PXPublic void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F);
+	PXPublic void PXAPI PXCameraRotateXYZ(PXCamera* const camera, const float x, const float y, const float z);
 
-	PXPublic void PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F);
-	PXPublic void PXCameraMoveXYZ(PXCamera* const camera, const float x, const float y, const float z);
+	PXPublic void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F);
+	PXPublic void PXAPI PXCameraMoveXYZ(PXCamera* const camera, const float x, const float y, const float z);
 
-	PXPublic void PXCameraFollow(PXCamera* const camera, const float deltaTime);
+	PXPublic void PXAPI PXCameraFollow(PXCamera* const camera, const float deltaTime);
 	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
-	PXPublic void PXCameraUpdate(PXCamera* const camera, const float deltaTime);
+	PXPublic void PXAPI PXCameraUpdate(PXCamera* const camera, const float deltaTime);
 	//-------------------------------------------------------------------------
 
 

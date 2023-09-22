@@ -4,7 +4,6 @@
 
 #include <OS/Error/PXActionResult.h>
 #include <OS/Memory/PXMemory.h>
-#include <OS/Async/PXEvent.h>
 
 #if OSUnix
 
@@ -83,7 +82,7 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 
 
 
-PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
+PXBool PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 {
 	switch (filePath->Format)
 	{
@@ -117,7 +116,7 @@ PXBool PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 	return PXFalse;
 }
 
-PXBool PXLibraryClose(PXLibrary* const pxLibrary)
+PXBool PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 {
 	const PXBool result =
 #if OSUnix
@@ -131,7 +130,7 @@ PXBool PXLibraryClose(PXLibrary* const pxLibrary)
 	return result;
 }
 
-PXBool PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName)
+PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName)
 {
 #if OSUnix
 	*libraryFunction = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName);
@@ -148,12 +147,12 @@ PXBool PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const li
 	return PXTrue;
 }
 
-PXBool PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName)
+PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName)
 {
 	return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA);
 }
 
-PXActionResult PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName)
+PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName)
 {
 	PXMemoryClear(libraryName->TextA, libraryName->SizeAllocated);
 
@@ -208,7 +207,7 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
 	//pxSymbol.Name;
 	PXTextConstructFromAdressA(&pxSymbol.Name, pSymInfo->Name, pSymInfo->NameLen);
 
-	InvokeEvent(((PXSymbolDetectedEvent)UserContext), &pxSymbol);
+	PXFunctionInvoke(((PXSymbolDetectedEvent)UserContext), &pxSymbol);
 
 	return PXTrue;
 }
@@ -221,7 +220,7 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
 	return PXTrue;
 }*/
 
-PXActionResult PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent)
+PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent)
 {
 #if OSUnix
 	return PXFalse;

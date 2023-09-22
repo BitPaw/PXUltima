@@ -2,7 +2,6 @@
 
 #if PXSocketUSE
 
-#include <OS/Async/PXEvent.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 

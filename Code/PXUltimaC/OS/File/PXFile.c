@@ -1586,6 +1586,15 @@ PXBool PXFileIsAtEnd(const PXFile* const pxFile)
 	return pxFile->DataCursor >= pxFile->DataSize;
 }
 
+PXSize PXFileFindEndOfText(PXFile* const pxFile)
+{
+	const void* const startIndex = PXFileCursorPosition(pxFile);
+	const void* const targetAdress = PXMemoryLocate(pxFile->Data, '\0', pxFile->DataSize);
+	const PXSize offset = (PXSize)targetAdress - (PXSize)startIndex;
+
+	return offset;
+}
+
 void* PXFileCursorPosition(PXFile* const pxFile)
 {
 	switch (pxFile->LocationMode)

@@ -60,9 +60,6 @@
     <ClCompile Include="OS\Hardware\PXMouse.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Async\PXEvent.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="OS\Graphic\SoftwareRender\PXSoftwareRender.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -473,9 +470,6 @@
     <ClInclude Include="OS\Hardware\PXMouse.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Async\PXEvent.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="OS\Graphic\SoftwareRender\PXSoftwareRender.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -849,5 +843,6 @@
     <None Include="Media\BinaryWindows\README.md" />
     <None Include="Media\BinaryLinux\README.md" />
     <None Include="Media\Bitmap\README.md" />
+    <None Include="OS\Graphic\Vulcan\README.md" />
   </ItemGroup>
 </Project>

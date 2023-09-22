@@ -3,7 +3,6 @@
 #if PXSocketUSE
 
 #include <Media/PXText.h>
-#include <OS/Async/PXEvent.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 #include <stdio.h>
@@ -923,7 +922,7 @@ void PXSocketClose(PXSocket* const pxSocket)
     closesocket(pxSocket->ID);
 #endif
 
-    InvokeEvent(pxSocket->EventList.SocketClosedCallBack, pxSocket->Owner, pxSocket);
+    PXFunctionInvoke(pxSocket->EventList.SocketClosedCallBack, pxSocket->Owner, pxSocket);
 
 #if SocketDebug
     printf("[PXSocket] <%i> Terminated\n", (int)pxSocket->ID);
@@ -939,7 +938,7 @@ void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketSta
 
     pxSocket->State = socketState;
 
-    InvokeEvent(pxSocket->EventList.SocketStateChangedCallBack, pxSocket->Owner, pxSocket, oldState, socketState);
+    PXFunctionInvoke(pxSocket->EventList.SocketStateChangedCallBack, pxSocket->Owner, pxSocket, oldState, socketState);
 }
 
 PXActionResult PXSocketEventPull(PXSocket* const pxSocket)
@@ -1353,7 +1352,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxS
             pxSocketDataSendEventData.Data = dataAdress;
             pxSocketDataSendEventData.DataSize = writtenBytes;
 
-            InvokeEvent(pxSocketSender->EventList.SocketDataSendCallBack, pxSocketSender->Owner, &pxSocketDataSendEventData);
+            PXFunctionInvoke(pxSocketSender->EventList.SocketDataSendCallBack, pxSocketSender->Owner, &pxSocketDataSendEventData);
         }
 
         pxSocketSender->BufferOutput.SizeCurrent += writtenBytes;
@@ -1440,7 +1439,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketI
                 pxSocketDataReceivedEventData.Data = data;
                 pxSocketDataReceivedEventData.DataSize = sizeRead;
 
-                InvokeEvent(pxSocketReceiver->EventList.SocketDataReceiveCallBack, pxSocketReceiver->Owner, &pxSocketDataReceivedEventData);
+                PXFunctionInvoke(pxSocketReceiver->EventList.SocketDataReceiveCallBack, pxSocketReceiver->Owner, &pxSocketDataReceivedEventData);
             }
         }
     }

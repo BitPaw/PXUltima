@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 
-	PXPublic PXActionResult PXUserNameGet(PXText* const name);
+	PXPublic PXActionResult PXAPI PXUserNameGet(PXText* const name);
 
 	typedef enum PXUserEnviromentFolderID_
 	{
@@ -27,7 +27,7 @@ extern "C"
 	}
 	PXUserEnviromentFolderID;
 
-	PXPublic PXBool PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
+	PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
 
 #ifdef __cplusplus
 }

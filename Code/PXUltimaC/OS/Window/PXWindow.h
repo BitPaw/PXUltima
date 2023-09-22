@@ -109,23 +109,23 @@ extern "C"
 	typedef struct PXWindow_ PXWindow;
 
 	// Mouse
-	typedef void (*MouseScrollEvent)(const void* const receiver, const PXWindow* sender, const PXMouseScrollDirection mouseScrollDirection);
-	typedef void (*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
-	typedef void (*MouseClickDoubleEvent)(const void* const receiver, const PXWindow* sender, const PXMouseButton mouseButton);
-	typedef void (*MouseMoveEvent)(const void* const receiver, const PXWindow* sender, const PXMouse* mouse);
-	typedef void (*MouseEnterEvent)(const void* const receiver, const PXWindow* sender);
-	typedef void (*MouseLeaveEvent)(const void* const receiver, const PXWindow* sender);
+	typedef void (PXAPI*MouseScrollEvent)(const void* const receiver, const PXWindow* sender, const PXMouseScrollDirection mouseScrollDirection);
+	typedef void (PXAPI*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
+	typedef void (PXAPI*MouseClickDoubleEvent)(const void* const receiver, const PXWindow* sender, const PXMouseButton mouseButton);
+	typedef void (PXAPI*MouseMoveEvent)(const void* const receiver, const PXWindow* sender, const PXMouse* mouse);
+	typedef void (PXAPI*MouseEnterEvent)(const void* const receiver, const PXWindow* sender);
+	typedef void (PXAPI*MouseLeaveEvent)(const void* const receiver, const PXWindow* sender);
 
 	// Keyboard
-	typedef void (*KeyBoardKeyEvent)(const void* const receiver, const PXWindow* sender, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
+	typedef void (PXAPI*KeyBoardKeyEvent)(const void* const receiver, const PXWindow* sender, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
 
-	typedef void (*FocusEnterEvent)(const void* const receiver, const PXWindow* sender);
-	typedef void (*FocusLeaveEvent)(const void* const receiver, const PXWindow* sender);
+	typedef void (PXAPI*FocusEnterEvent)(const void* const receiver, const PXWindow* sender);
+	typedef void (PXAPI*FocusLeaveEvent)(const void* const receiver, const PXWindow* sender);
 
-	typedef void (*WindowCreatedEvent)(const void* const receiver, const PXWindow* sender);
-	typedef void (*WindowSizeChangedEvent)(const void* const receiver, const PXWindow* sender);
-	typedef void (*WindowClosingEvent)(const void* const receiver, const PXWindow* sender, PXBool* const allowClosing);
-	typedef void (*WindowClosedEvent)(const void* const receiver, const PXWindow* sender);
+	typedef void (PXAPI*WindowCreatedEvent)(const void* const receiver, const PXWindow* sender);
+	typedef void (PXAPI*WindowSizeChangedEvent)(const void* const receiver, const PXWindow* sender);
+	typedef void (PXAPI*WindowClosingEvent)(const void* const receiver, const PXWindow* sender, PXBool* const allowClosing);
+	typedef void (PXAPI*WindowClosedEvent)(const void* const receiver, const PXWindow* sender);
 
 	// 	static PXDictionary<PXWindowID, PXWindow*> _windowLookup;
 
@@ -157,11 +157,6 @@ extern "C"
 
 		PXKeyBoard KeyBoardCurrentInput;
 		PXMouse MouseCurrentInput;
-
-		PXGraphicContext GraphicInstance;
-
-
-
 
 #if OSUnix
 		Display* DisplayCurrent;
@@ -202,68 +197,72 @@ extern "C"
 
 	PXPrivate PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const PXWindowAdress);
 
-	PXPublic void PXWindowConstruct(PXWindow* const window);
-	PXPublic void PXWindowDestruct(PXWindow* const window);
 
-	PXPublic float PXWindowScreenRatio(const PXWindow* const window);
+	PXPublic void PXAPI PXWindowPixelSystemSet(PXWindow* const window);
 
-	PXPublic void PXWindowCreateA(PXWindow* const window, const PXInt32S width, const PXInt32S height, const char* const title, const PXBool async);
+
+	PXPublic void PXAPI PXWindowConstruct(PXWindow* const window);
+	PXPublic void PXAPI PXWindowDestruct(PXWindow* const window);
+
+	PXPublic float PXAPI PXWindowScreenRatio(const PXWindow* const window);
+
+	PXPublic void PXAPI PXWindowCreateA(PXWindow* const window, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const char* const title, const PXBool async);
 
 	// Create a window based on the OS implementation.
 	// if a NULL pointer is used as a title, the window will be hidden.
-	PXPublic void PXWindowCreate(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async);
-	PXPublic void PXWindowCreateHidden(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async);
+	PXPublic void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async);
+	PXPublic void PXAPI PXWindowCreateHidden(PXWindow* const window, const PXInt32S width, const PXInt32S height, const PXBool async);
 
 
-	PXPublic PXProcessThreadID PXWindowThreadProcessID(const PXWindowID windowID);
+	PXPublic PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID);
 
-	PXPublic PXBool PXWindowTitleSet(PXWindow* const window, const PXText* const title);
-	PXPublic PXSize PXWindowTitleGet(const PXWindow* const window, PXText* const title);
+	PXPublic PXBool PXAPI PXWindowTitleSet(PXWindow* const window, const PXText* const title);
+	PXPublic PXSize PXAPI PXWindowTitleGet(const PXWindow* const window, PXText* const title);
 
-	PXPublic PXWindowID PXWindowFindViaTitle(const PXText* const windowTitle);
+	PXPublic PXWindowID PXAPI PXWindowFindViaTitle(const PXText* const windowTitle);
 
-	PXPublic void PXWindowIconCorner();
-	PXPublic void PXWindowIconTaskBar();
+	PXPublic void PXAPI PXWindowIconCorner();
+	PXPublic void PXAPI PXWindowIconTaskBar();
 
-	PXPublic void PXWindowLookupAdd(const PXWindow* PXWindow);
-	PXPublic PXWindow* PXWindowLookupFind(const PXWindowID PXWindowID);
-	PXPublic void PXWindowLookupRemove(const PXWindow* PXWindow);
+	PXPublic void PXAPI PXWindowLookupAdd(const PXWindow* PXWindow);
+	PXPublic PXWindow* PXAPI PXWindowLookupFind(const PXWindowID PXWindowID);
+	PXPublic void PXAPI PXWindowLookupRemove(const PXWindow* PXWindow);
 
-	PXPublic PXActionResult PXWindowTitleBarColorSet(const PXWindow* const pxWindow);
+	PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindow* const pxWindow);
 
-	PXPublic void PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height);
-	PXPublic void PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height);
-	PXPublic PXActionResult PXWindowPosition(PXWindow* const pxWindow, PXInt32S* x, PXInt32S* y);
-	PXPublic PXActionResult PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y);
-	PXPublic void PXWindowPositonCenterScreen(PXWindow* const pxWindow);
-	PXPublic void PXWindowCursor(PXWindow* const pxWindow);
+	PXPublic void PXAPI PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height);
+	PXPublic void PXAPI PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height);
+	PXPublic PXActionResult PXAPI PXWindowPosition(PXWindow* const pxWindow, PXInt32S* x, PXInt32S* y);
+	PXPublic PXActionResult PXAPI PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y);
+	PXPublic void PXAPI PXWindowPositonCenterScreen(PXWindow* const pxWindow);
+	PXPublic void PXAPI PXWindowCursor(PXWindow* const pxWindow);
 	//voidPXWindowCursor(const CursorIcon cursorIcon);
-	PXPublic void PXWindowCursorTexture();
-	PXPublic void PXWindowCursorCaptureMode(PXWindow* const pxWindow, const PXWindowCursorMode cursorMode);
+	PXPublic void PXAPI PXWindowCursorTexture();
+	PXPublic void PXAPI PXWindowCursorCaptureMode(PXWindow* const pxWindow, const PXWindowCursorMode cursorMode);
 	//voidPXWindowScreenShotTake(Image image);
 
-	PXPublic PXBool PXWindowFrameBufferSwap(const PXWindow* const pxWindow);
+	PXPublic PXBool PXAPI PXWindowFrameBufferSwap(const PXWindow* const pxWindow);
 
-	PXPublic PXBool PXWindowInteractable(PXWindow* const pxWindow);
+	PXPublic PXBool PXAPI PXWindowInteractable(PXWindow* const pxWindow);
 
-	PXPublic PXBool PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
-	PXPublic PXBool PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
+	PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
+	PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
 
 
 	// Checks if the current window is the one in focus.
-	PXPublic PXBool PXWindowIsInFocus(const PXWindow* const window);
+	PXPublic PXBool PXAPI PXWindowIsInFocus(const PXWindow* const window);
 
 
 	// Event functions
-	PXPublic void PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
-	PXPublic void PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
-	PXPublic void PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton);
-	PXPublic void PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
-	PXPublic void PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
-	PXPublic void PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
+	PXPublic void PXAPI PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
+	PXPublic void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
+	PXPublic void PXAPI PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton);
+	PXPublic void PXAPI PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
+	PXPublic void PXAPI PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
+	PXPublic void PXAPI PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
 
 
-	PXPublic void PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
+	PXPublic void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
 
 	// Keyboard
 	//typedef void (*KeyBoardKeyEvent)(const KeyBoardKeyInfo keyBoardKeyInfo);
@@ -277,7 +276,7 @@ extern "C"
 	//typedef void (*WindowClosedEvent)();
 
 
-	PXPrivate PXInt32U PXWindowCursorIconToID(const PXCursorIcon cursorIcon);
+	PXPrivate PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon);
 
 #ifdef __cplusplus
 }

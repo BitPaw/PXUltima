@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="PXUltima.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="C:\Data\WorkSpace\[GIT]\PXUltima\Code\[Export]\PXUltimaC\64B-Windows-Debug\PXUltima.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

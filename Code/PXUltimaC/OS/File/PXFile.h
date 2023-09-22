@@ -330,6 +330,10 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileRemainingSizeRelativeFromAddress(const PXFile* const pxFile, const void* const adress);
 	PXPublic PXBool PXFileIsAtEnd(const PXFile* const pxFile);
 
+	// Seeks over the file, does not change the cursor.
+	// Returns offset of end.
+	PXPublic PXSize PXFileFindEndOfText(PXFile* const pxFile);
+
 	PXPublic void* PXFileCursorPosition(PXFile* const pxFile);
 	PXPublic void PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position);
 	PXPublic void PXFileCursorToBeginning(PXFile* const pxFile);

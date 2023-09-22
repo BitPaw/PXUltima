@@ -6,7 +6,6 @@
 #include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/User/PXUser.h>
-#include <OS/Async/PXEvent.h>
 
 void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
 {
@@ -226,7 +225,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
 
         PXSBPMessageConstructFlat(&pxSBPMessage, pxSocketDataReceivedEventData->Data, pxSocketDataReceivedEventData->DataSize, pxSBPReceiver->EventList.Owner);
 
-        InvokeEvent(pxSBPReceiver->EventList.OnMessageReceivedCallBack, &pxSBPMessage);
+        PXFunctionInvoke(pxSBPReceiver->EventList.OnMessageReceivedCallBack, &pxSBPMessage);
         return;
     }
 
@@ -256,7 +255,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
                 if (!success)
                 {
                     // Invalid header detected
-                   // InvokeEvent(pxSBPReceiver->OnMessageInvalidCallBack, receiveSocket, clientSocketID);
+                   // PXFunctionInvoke(pxSBPReceiver->OnMessageInvalidCallBack, receiveSocket, clientSocketID);
                     break;
                 }
             }
@@ -285,7 +284,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
 
                     PXSBPReceiverStateChanged(pxSBPReceiver, PXSBPRecieverStateAwaitingDataEnd);
 
-                    InvokeEvent(pxSBPReceiver->EventList.OnChunkSegmentUpdatedCallBack, &pxSBPReceiver->MessageChunkCurrent);
+                    PXFunctionInvoke(pxSBPReceiver->EventList.OnChunkSegmentUpdatedCallBack, &pxSBPReceiver->MessageChunkCurrent);
                     break;
                 }
             }
@@ -353,7 +352,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
             if (!isComplete)
             {
                 // Wait for additional extrended data
-                InvokeEvent(pxSBPReceiver->EventList.OnChunkSegmentUpdatedCallBack, &pxSBPReceiver->MessageChunkCurrent);
+                PXFunctionInvoke(pxSBPReceiver->EventList.OnChunkSegmentUpdatedCallBack, &pxSBPReceiver->MessageChunkCurrent);
                 break;
             }
 
@@ -424,14 +423,14 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
             if (pxSBPMessage->DataSizeExpected == pxSBPMessage->DataSizeCurrent)
             {
                 // We are done
-                InvokeEvent(pxSBPReceiver->EventList.OnChunkReceivedCallBack, pxSBPChunk);
+                PXFunctionInvoke(pxSBPReceiver->EventList.OnChunkReceivedCallBack, pxSBPChunk);
 
                 PXDictionaryRemove(&pxSBPReceiver->MessageStreamLookup, &pxSBPChunk->ChannelID);
 
                 return;
             }
 
-            InvokeEvent(pxSBPReceiver->EventList.OnChunkSegmentUpdatedCallBack, pxSBPChunk);
+            PXFunctionInvoke(pxSBPReceiver->EventList.OnChunkSegmentUpdatedCallBack, pxSBPChunk);
         }
     }
 
@@ -509,7 +508,7 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
         if (isConsumableRightNow)
         {
             pxSBPMessage.StorageType = PXSBPMessageStorageTypeDirect;
-            InvokeEvent(pxSBPReceiver->EventList.OnMessageReceivedCallBack, &pxSBPMessage);
+            PXFunctionInvoke(pxSBPReceiver->EventList.OnMessageReceivedCallBack, &pxSBPMessage);
             return;
         }
 
@@ -517,7 +516,7 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
         PXDictionaryAdd(&pxSBPReceiver->MessageStreamLookup, &pxSBPChunk->ChannelID, &pxSBPMessage);
 
-        InvokeEvent(pxSBPReceiver->EventList.OnMessageUpdatedCallBack, &pxSBPMessage);
+        PXFunctionInvoke(pxSBPReceiver->EventList.OnMessageUpdatedCallBack, &pxSBPMessage);
     }
 }
 

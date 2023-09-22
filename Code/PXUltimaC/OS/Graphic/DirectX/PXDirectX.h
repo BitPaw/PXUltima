@@ -211,140 +211,140 @@ extern "C"
 
 
 
-    PXPublic PXActionResult PXDirectXRectPatchDraw(PXDirectX* const pxDirectX,UINT Handle, const float* pNumSegs, const D3DRECTPATCH_INFO* pRectPatchInfo);
-    PXPublic PXActionResult PXDirectXTriPatchDraw(PXDirectX* const pxDirectX,UINT Handle, const float* pNumSegs, const D3DTRIPATCH_INFO* pTriPatchInfo);
-    PXPublic PXActionResult PXDirectXPatchDelete(PXDirectX* const pxDirectX,UINT Handle);
-    PXPublic PXActionResult PXDirectXQueryCreate(PXDirectX* const pxDirectX,D3DQUERYTYPE Type, IDirect3DQuery9** ppQuery);
+    PXPublic PXActionResult PXAPI PXDirectXRectPatchDraw(PXDirectX* const pxDirectX,UINT Handle, const float* pNumSegs, const D3DRECTPATCH_INFO* pRectPatchInfo);
+    PXPublic PXActionResult PXAPI PXDirectXTriPatchDraw(PXDirectX* const pxDirectX,UINT Handle, const float* pNumSegs, const D3DTRIPATCH_INFO* pTriPatchInfo);
+    PXPublic PXActionResult PXAPI PXDirectXPatchDelete(PXDirectX* const pxDirectX,UINT Handle);
+    PXPublic PXActionResult PXAPI PXDirectXQueryCreate(PXDirectX* const pxDirectX,D3DQUERYTYPE Type, IDirect3DQuery9** ppQuery);
 
 
 
     //-----------------------------------------------------
     // Direct X - Magic number conversion
     //-----------------------------------------------------
-    PXPrivate PXColorFormat PXDirectXColorFormatToID(const D3DFORMAT format);
-    PXPrivate D3DFORMAT PXDirectXColorFormatFromID(const PXColorFormat pxColorFormat);
-    PXPrivate void PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3DMATERIAL9* const d3dMaterial);
-    PXPrivate void PXDirectXMaterialFromPXMaterial(D3DMATERIAL9* const d3dMaterial, const PXMaterial* const pxMaterial);
-    PXPrivate D3DPRIMITIVETYPE PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphicDrawMode);
-    PXPrivate PXInt32U PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat);
+    PXPrivate PXColorFormat PXAPI PXDirectXColorFormatToID(const D3DFORMAT format);
+    PXPrivate D3DFORMAT PXAPI PXDirectXColorFormatFromID(const PXColorFormat pxColorFormat);
+    PXPrivate void PXAPI PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3DMATERIAL9* const d3dMaterial);
+    PXPrivate void PXAPI PXDirectXMaterialFromPXMaterial(D3DMATERIAL9* const d3dMaterial, const PXMaterial* const pxMaterial);
+    PXPrivate D3DPRIMITIVETYPE PXAPI PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphicDrawMode);
+    PXPrivate PXInt32U PXAPI PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat);
 
     //-----------------------------------------------------
     // Direct X - Utility
     //-----------------------------------------------------
-    PXPublic void PXDirectXContextConstruct(PXDirectX* const pxDirectX);
-    PXPublic void PXDirectXContextDestruct(PXDirectX* const pxDirectX);
+    PXPublic void PXAPI PXDirectXContextConstruct(PXDirectX* const pxDirectX);
+    PXPublic void PXAPI PXDirectXContextDestruct(PXDirectX* const pxDirectX);
 
-    PXPublic PXActionResult PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType);
-    PXPublic PXActionResult PXDirectXRelease(PXDirectX* const pxDirectX);
+    PXPublic PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType);
+    PXPublic PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX);
 
     //-----------------------------------------------------
     // Direct X - Scene
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXSceneBegin(PXDirectX* const pxDirectX);
-    PXPublic PXActionResult PXDirectXSceneEnd(PXDirectX* const pxDirectX);
+    PXPublic PXActionResult PXAPI PXDirectXSceneBegin(PXDirectX* const pxDirectX);
+    PXPublic PXActionResult PXAPI PXDirectXSceneEnd(PXDirectX* const pxDirectX);
 
     //-----------------------------------------------------
     // Direct X - Fixed Scripting
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXDrawScriptCreate(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
-    PXPublic PXActionResult PXDirectXDrawScriptBegin(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
-    PXPublic PXActionResult PXDirectXDrawScriptEnd(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
-    PXPublic PXActionResult PXDirectXDrawScriptDelete(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
-    PXPublic PXActionResult PXDirectXDrawScriptExecute(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
+    PXPublic PXActionResult PXAPI PXDirectXDrawScriptCreate(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
+    PXPublic PXActionResult PXAPI PXDirectXDrawScriptBegin(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
+    PXPublic PXActionResult PXAPI PXDirectXDrawScriptEnd(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
+    PXPublic PXActionResult PXAPI PXDirectXDrawScriptDelete(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
+    PXPublic PXActionResult PXAPI PXDirectXDrawScriptExecute(PXDirectX* const pxDirectX, PXDrawScript* const pxDrawScript);
 
     //-----------------------------------------------------
     // Direct X - Draw
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXClear(PXDirectX* const pxDirectX, const PXColorRGBAF* const pxColorRGBAF);
-    PXPublic PXActionResult PXDirectXColorFill(PXDirectX* const pxDirectX, IDirect3DSurface9* pSurface, const RECT* pRect, D3DCOLOR color);
-    PXPublic PXActionResult PXDirectXReset(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters);
-    PXPublic PXActionResult PXDirectXSceneDeploy(PXDirectX* const pxDirectX);
-    PXPublic PXActionResult PXDirectXPrimitiveIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U BaseVertexIndex, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U startIndex, const PXInt32U primCount);
-    PXPublic PXActionResult PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U startVertex, const PXInt32U primitiveCount);
-    PXPublic PXActionResult PXDirectXPrimitiveUPDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U PrimitiveCount, const void* pVertexStreamZeroData, const PXInt32U VertexStreamZeroStride);
-    PXPublic PXActionResult PXDirectXPrimitiveUPIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U PrimitiveCount, const void* pIndexData, D3DFORMAT IndexDataFormat, const void* pVertexStreamZeroData, const PXInt32U VertexStreamZeroStride);
+    PXPublic PXActionResult PXAPI PXDirectXClear(PXDirectX* const pxDirectX, const PXColorRGBAF* const pxColorRGBAF);
+    PXPublic PXActionResult PXAPI PXDirectXColorFill(PXDirectX* const pxDirectX, IDirect3DSurface9* pSurface, const RECT* pRect, D3DCOLOR color);
+    PXPublic PXActionResult PXAPI PXDirectXReset(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters);
+    PXPublic PXActionResult PXAPI PXDirectXSceneDeploy(PXDirectX* const pxDirectX);
+    PXPublic PXActionResult PXAPI PXDirectXPrimitiveIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U BaseVertexIndex, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U startIndex, const PXInt32U primCount);
+    PXPublic PXActionResult PXAPI PXDirectXPrimitiveDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U startVertex, const PXInt32U primitiveCount);
+    PXPublic PXActionResult PXAPI PXDirectXPrimitiveUPDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U PrimitiveCount, const void* pVertexStreamZeroData, const PXInt32U VertexStreamZeroStride);
+    PXPublic PXActionResult PXAPI PXDirectXPrimitiveUPIndexedDraw(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U PrimitiveCount, const void* pIndexData, D3DFORMAT IndexDataFormat, const void* pVertexStreamZeroData, const PXInt32U VertexStreamZeroStride);
 
 
-    PXPublic PXActionResult PXDirectXVertexFixedFunctionSet(PXDirectX* const pxDirectX, const PXVertexBufferFormat pxVertexBufferFormat);
-    PXPublic PXActionResult PXDirectXVertexFixedFunctionGet(PXDirectX* const pxDirectX, PXVertexBufferFormat* const pxVertexBufferFormat);
-    PXPublic PXActionResult PXDirectXStreamSourceSet(PXDirectX* const pxDirectX, const PXInt32U StreamNumber, PXVertexBuffer* pxVertexBuffer, const PXInt32U OffsetInBytes, const PXInt32U Stride);
-    PXPublic PXActionResult PXDirectXStreamSourceGet(PXDirectX* const pxDirectX, const PXInt32U StreamNumber, PXVertexBuffer** pxVertexBuffer, PXInt32U* pOffsetInBytes, PXInt32U* pStride);
-    PXPublic PXActionResult PXDirectXStreamSourceFreqSet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT Setting);
-    PXPublic PXActionResult PXDirectXStreamSourceFreqGet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT* pSetting);
+    PXPublic PXActionResult PXAPI PXDirectXVertexFixedFunctionSet(PXDirectX* const pxDirectX, const PXVertexBufferFormat pxVertexBufferFormat);
+    PXPublic PXActionResult PXAPI PXDirectXVertexFixedFunctionGet(PXDirectX* const pxDirectX, PXVertexBufferFormat* const pxVertexBufferFormat);
+    PXPublic PXActionResult PXAPI PXDirectXStreamSourceSet(PXDirectX* const pxDirectX, const PXInt32U StreamNumber, PXVertexBuffer* pxVertexBuffer, const PXInt32U OffsetInBytes, const PXInt32U Stride);
+    PXPublic PXActionResult PXAPI PXDirectXStreamSourceGet(PXDirectX* const pxDirectX, const PXInt32U StreamNumber, PXVertexBuffer** pxVertexBuffer, PXInt32U* pOffsetInBytes, PXInt32U* pStride);
+    PXPublic PXActionResult PXAPI PXDirectXStreamSourceFreqSet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT Setting);
+    PXPublic PXActionResult PXAPI PXDirectXStreamSourceFreqGet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT* pSetting);
 
-    PXPublic PXActionResult PXDirectXVertexStructureDraw(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
+    PXPublic PXActionResult PXAPI PXDirectXVertexStructureDraw(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
 
 
     //-----------------------------------------------------
     // Direct X - Light
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXLightSet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index); // D3DLIGHT9
-    PXPublic PXActionResult PXDirectXLightGet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index);
-    PXPublic PXActionResult PXDirectXLightEnableSet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
-    PXPublic PXActionResult PXDirectXLightEnableGet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
+    PXPublic PXActionResult PXAPI PXDirectXLightSet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index); // D3DLIGHT9
+    PXPublic PXActionResult PXAPI PXDirectXLightGet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index);
+    PXPublic PXActionResult PXAPI PXDirectXLightEnableSet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
+    PXPublic PXActionResult PXAPI PXDirectXLightEnableGet(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
 
 
     //-----------------------------------------------------
     // Direct X - Transform
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXTransformSet(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE State, const D3DMATRIX* pMatrix);
-    PXPublic PXActionResult PXDirectXTransformGet(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE State, D3DMATRIX* pMatrix);
-    PXPublic PXActionResult PXDirectXTransformMultiply(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE, const D3DMATRIX*);
+    PXPublic PXActionResult PXAPI PXDirectXTransformSet(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE State, const D3DMATRIX* pMatrix);
+    PXPublic PXActionResult PXAPI PXDirectXTransformGet(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE State, D3DMATRIX* pMatrix);
+    PXPublic PXActionResult PXAPI PXDirectXTransformMultiply(PXDirectX* const pxDirectX, D3DTRANSFORMSTATETYPE, const D3DMATRIX*);
 
 
     //-----------------------------------------------------
     // Direct X - Viewport
     //-----------------------------------------------------PXViewPort D3DVIEWPORT9
-    PXPublic PXActionResult PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort* const pxViewPort);
-    PXPublic PXActionResult PXDirectXViewportGet(PXDirectX* const pxDirectX, PXViewPort* const pxViewPort);
+    PXPublic PXActionResult PXAPI PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort* const pxViewPort);
+    PXPublic PXActionResult PXAPI PXDirectXViewportGet(PXDirectX* const pxDirectX, PXViewPort* const pxViewPort);
 
 
     //-----------------------------------------------------
     // Direct X - Material
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXMaterialSet(PXDirectX* const pxDirectX, const PXMaterial* const pxMaterial);
-    PXPublic PXActionResult PXDirectXMaterialGet(PXDirectX* const pxDirectX, PXMaterial* const pxMaterial);
+    PXPublic PXActionResult PXAPI PXDirectXMaterialSet(PXDirectX* const pxDirectX, const PXMaterial* const pxMaterial);
+    PXPublic PXActionResult PXAPI PXDirectXMaterialGet(PXDirectX* const pxDirectX, PXMaterial* const pxMaterial);
 
 
     //-----------------------------------------------------
     // Direct X - Shader
     //-----------------------------------------------------
 
-    PXPublic PXActionResult PXDirectXShaderProgramCreateVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader);
-    PXPublic PXActionResult PXDirectXShaderProgramCreateVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader);
-    PXPublic PXActionResult PXDirectXShaderProgramCreateVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader);
 
-    PXPublic PXActionResult PXDirectXShaderProgramCreate(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);
-    PXPublic PXActionResult PXDirectXShaderProgramSelect(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);
-    PXPublic PXActionResult PXDirectXShaderProgramDelete(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);
-
-
-    PXPublic PXActionResult PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const pxShader);
-    PXPublic PXActionResult PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader* const pxShader);
-    PXPublic PXActionResult PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* const pxShader, const PXText* const shaderFilePath);
-
-    PXPublic PXActionResult PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreate(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramSelect(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramDelete(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);
 
 
-    PXPublic PXActionResult PXDirectXVertexShaderCreate(PXDirectX* const pxDirectX, const DWORD* pFunction, IDirect3DVertexShader9** ppShader);
-    PXPublic PXActionResult PXDirectXVertexShaderSet(PXDirectX* const pxDirectX, IDirect3DVertexShader9* pShader);
-    PXPublic PXActionResult PXDirectXVertexShaderGet(PXDirectX* const pxDirectX, IDirect3DVertexShader9** ppShader);
-    PXPublic PXActionResult PXDirectXVertexShaderConstantFSet(PXDirectX* const pxDirectX, UINT StartRegister, const float* pConstantData, UINT Vector4fCount);
-    PXPublic PXActionResult PXDirectXVertexShaderConstantFGet(PXDirectX* const pxDirectX, UINT StartRegister, float* pConstantData, UINT Vector4fCount);
-    PXPublic PXActionResult PXDirectXVertexShaderConstantISet(PXDirectX* const pxDirectX, UINT StartRegister, const int* pConstantData, UINT Vector4iCount);
-    PXPublic PXActionResult PXDirectXVertexShaderConstantIGet(PXDirectX* const pxDirectX, UINT StartRegister, int* pConstantData, UINT Vector4iCount);
-    PXPublic PXActionResult PXDirectXVertexShaderConstantBSet(PXDirectX* const pxDirectX, UINT StartRegister, const BOOL* pConstantData, UINT  BoolCount);
-    PXPublic PXActionResult PXDirectXVertexShaderConstantBGet(PXDirectX* const pxDirectX, UINT StartRegister, BOOL* pConstantData, UINT BoolCount);
+    PXPublic PXActionResult PXAPI PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const pxShader);
+    PXPublic PXActionResult PXAPI PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader* const pxShader);
+    PXPublic PXActionResult PXAPI PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* const pxShader, const PXText* const shaderFilePath);
 
-    PXPublic PXActionResult PXDirectXPixelShaderCreate(PXDirectX* const pxDirectX, const DWORD* pFunction, IDirect3DPixelShader9** ppShader);
-    PXPublic PXActionResult PXDirectXPixelShaderSet(PXDirectX* const pxDirectX, IDirect3DPixelShader9* pShader);
-    PXPublic PXActionResult PXDirectXPixelShaderGet(PXDirectX* const pxDirectX, IDirect3DPixelShader9** ppShader);
-    PXPublic PXActionResult PXDirectXPixelShaderConstantFSet(PXDirectX* const pxDirectX, UINT StartRegister, const float* pConstantData, UINT Vector4fCount);
-    PXPublic PXActionResult PXDirectXPixelShaderConstantFGet(PXDirectX* const pxDirectX, UINT StartRegister, float* pConstantData, UINT Vector4fCount);
-    PXPublic PXActionResult PXDirectXPixelShaderConstantISet(PXDirectX* const pxDirectX, UINT StartRegister, const int* pConstantData, UINT Vector4iCount);
-    PXPublic PXActionResult PXDirectXPixelShaderConstantIGet(PXDirectX* const pxDirectX, UINT StartRegister, int* pConstantData, UINT Vector4iCount);
-    PXPublic PXActionResult PXDirectXPixelShaderConstantBSet(PXDirectX* const pxDirectX, UINT StartRegister, const BOOL* pConstantData, UINT  BoolCount);
-    PXPublic PXActionResult PXDirectXPixelShaderConstantBGet(PXDirectX* const pxDirectX, UINT StartRegister, BOOL* pConstantData, UINT BoolCount);
+    PXPublic PXActionResult PXAPI PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
+
+
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderCreate(PXDirectX* const pxDirectX, const DWORD* pFunction, IDirect3DVertexShader9** ppShader);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderSet(PXDirectX* const pxDirectX, IDirect3DVertexShader9* pShader);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderGet(PXDirectX* const pxDirectX, IDirect3DVertexShader9** ppShader);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderConstantFSet(PXDirectX* const pxDirectX, UINT StartRegister, const float* pConstantData, UINT Vector4fCount);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderConstantFGet(PXDirectX* const pxDirectX, UINT StartRegister, float* pConstantData, UINT Vector4fCount);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderConstantISet(PXDirectX* const pxDirectX, UINT StartRegister, const int* pConstantData, UINT Vector4iCount);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderConstantIGet(PXDirectX* const pxDirectX, UINT StartRegister, int* pConstantData, UINT Vector4iCount);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderConstantBSet(PXDirectX* const pxDirectX, UINT StartRegister, const BOOL* pConstantData, UINT  BoolCount);
+    PXPublic PXActionResult PXAPI PXDirectXVertexShaderConstantBGet(PXDirectX* const pxDirectX, UINT StartRegister, BOOL* pConstantData, UINT BoolCount);
+
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderCreate(PXDirectX* const pxDirectX, const DWORD* pFunction, IDirect3DPixelShader9** ppShader);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderSet(PXDirectX* const pxDirectX, IDirect3DPixelShader9* pShader);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderGet(PXDirectX* const pxDirectX, IDirect3DPixelShader9** ppShader);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderConstantFSet(PXDirectX* const pxDirectX, UINT StartRegister, const float* pConstantData, UINT Vector4fCount);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderConstantFGet(PXDirectX* const pxDirectX, UINT StartRegister, float* pConstantData, UINT Vector4fCount);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderConstantISet(PXDirectX* const pxDirectX, UINT StartRegister, const int* pConstantData, UINT Vector4iCount);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderConstantIGet(PXDirectX* const pxDirectX, UINT StartRegister, int* pConstantData, UINT Vector4iCount);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderConstantBSet(PXDirectX* const pxDirectX, UINT StartRegister, const BOOL* pConstantData, UINT  BoolCount);
+    PXPublic PXActionResult PXAPI PXDirectXPixelShaderConstantBGet(PXDirectX* const pxDirectX, UINT StartRegister, BOOL* pConstantData, UINT BoolCount);
 
 
 
@@ -352,37 +352,37 @@ extern "C"
     //-----------------------------------------------------
     // Direct X - Buffers
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexBuffer* const pxVertexBuffer);
-    PXPublic PXActionResult PXDirectXVerticesProcess(PXDirectX* const pxDirectX, UINT SrcStartIndex, UINT DestIndex, UINT VertexCount, IDirect3DVertexBuffer9* pDestBuffer, IDirect3DVertexDeclaration9* pVertexDecl, DWORD Flags);
-    PXPublic PXActionResult PXDirectXVertexDeclarationCreate(PXDirectX* const pxDirectX, const D3DVERTEXELEMENT9* pVertexElements, IDirect3DVertexDeclaration9** ppDecl);
-    PXPublic PXActionResult PXDirectXVertexDeclarationSet(PXDirectX* const pxDirectX, IDirect3DVertexDeclaration9* pDecl);
-    PXPublic PXActionResult PXDirectXVertexDeclarationGet(PXDirectX* const pxDirectX, IDirect3DVertexDeclaration9** ppDecl);
+    PXPublic PXActionResult PXAPI PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXVertexBuffer* const pxVertexBuffer);
+    PXPublic PXActionResult PXAPI PXDirectXVerticesProcess(PXDirectX* const pxDirectX, UINT SrcStartIndex, UINT DestIndex, UINT VertexCount, IDirect3DVertexBuffer9* pDestBuffer, IDirect3DVertexDeclaration9* pVertexDecl, DWORD Flags);
+    PXPublic PXActionResult PXAPI PXDirectXVertexDeclarationCreate(PXDirectX* const pxDirectX, const D3DVERTEXELEMENT9* pVertexElements, IDirect3DVertexDeclaration9** ppDecl);
+    PXPublic PXActionResult PXAPI PXDirectXVertexDeclarationSet(PXDirectX* const pxDirectX, IDirect3DVertexDeclaration9* pDecl);
+    PXPublic PXActionResult PXAPI PXDirectXVertexDeclarationGet(PXDirectX* const pxDirectX, IDirect3DVertexDeclaration9** ppDecl);
 
-    PXPublic PXActionResult PXDirectXIndexBufferCreate(PXDirectX* const pxDirectX, PXIndexBuffer* const pxIndexBuffer);
-    PXPublic PXActionResult PXDirectXIndicesSet(PXDirectX* const pxDirectX, PXIndexBuffer* const pxIndexBuffer);
-    PXPublic PXActionResult PXDirectXIndicesGet(PXDirectX* const pxDirectX, PXIndexBuffer** pxIndexBuffer);
+    PXPublic PXActionResult PXAPI PXDirectXIndexBufferCreate(PXDirectX* const pxDirectX, PXIndexBuffer* const pxIndexBuffer);
+    PXPublic PXActionResult PXAPI PXDirectXIndicesSet(PXDirectX* const pxDirectX, PXIndexBuffer* const pxIndexBuffer);
+    PXPublic PXActionResult PXAPI PXDirectXIndicesGet(PXDirectX* const pxDirectX, PXIndexBuffer** pxIndexBuffer);
 
-    PXPublic PXActionResult PXDirectXRenderTargetCreate(PXDirectX* const pxDirectX, PXRenderTarget* const pxRenderTarget);
-    PXPublic PXActionResult PXDirectXRenderTargetSet(PXDirectX* const pxDirectX, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
-    PXPublic PXActionResult PXDirectXRenderTargetGet(PXDirectX* const pxDirectX, DWORD RenderTargetIndex, IDirect3DSurface9** ppRenderTarget);
+    PXPublic PXActionResult PXAPI PXDirectXRenderTargetCreate(PXDirectX* const pxDirectX, PXRenderTarget* const pxRenderTarget);
+    PXPublic PXActionResult PXAPI PXDirectXRenderTargetSet(PXDirectX* const pxDirectX, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
+    PXPublic PXActionResult PXAPI PXDirectXRenderTargetGet(PXDirectX* const pxDirectX, DWORD RenderTargetIndex, IDirect3DSurface9** ppRenderTarget);
 
-    PXPublic PXActionResult PXDirectXDepthStencilSurfaceCreate(PXDirectX* const pxDirectX, PXDepthStencilSurface* const pxDepthStencilSurface);
-    PXPublic PXActionResult PXDirectXDepthStencilSurfaceSet(PXDirectX* const pxDirectX, IDirect3DSurface9* pNewZStencil);
-    PXPublic PXActionResult PXDirectXDepthStencilSurfaceGet(PXDirectX* const pxDirectX, IDirect3DSurface9** ppZStencilSurface);
+    PXPublic PXActionResult PXAPI PXDirectXDepthStencilSurfaceCreate(PXDirectX* const pxDirectX, PXDepthStencilSurface* const pxDepthStencilSurface);
+    PXPublic PXActionResult PXAPI PXDirectXDepthStencilSurfaceSet(PXDirectX* const pxDirectX, IDirect3DSurface9* pNewZStencil);
+    PXPublic PXActionResult PXAPI PXDirectXDepthStencilSurfaceGet(PXDirectX* const pxDirectX, IDirect3DSurface9** ppZStencilSurface);
 
-    PXPublic PXActionResult PXDirectXOffscreenPlainSurfaceCreate(PXDirectX* const pxDirectX, UINT Width, UINT Height, D3DFORMAT Format, D3DPOOL Pool, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle);
+    PXPublic PXActionResult PXAPI PXDirectXOffscreenPlainSurfaceCreate(PXDirectX* const pxDirectX, UINT Width, UINT Height, D3DFORMAT Format, D3DPOOL Pool, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle);
 
-    PXPublic PXActionResult PXDirectXVertexStructureRegister(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure);
+    PXPublic PXActionResult PXAPI PXDirectXVertexStructureRegister(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure);
 
     //-----------------------------------------------------
     // Direct X - Textures
     //-----------------------------------------------------
-    PXPublic PXActionResult PXDirectXTextureMemoryAvailable(PXDirectX* const pxDirectX, PXInt32U* const value);
+    PXPublic PXActionResult PXAPI PXDirectXTextureMemoryAvailable(PXDirectX* const pxDirectX, PXInt32U* const value);
    // PXPublic PXActionResult PXDirectXTextureGet(PXDirectX* const pxDirectX, DWORD Stage, IDirect3DBaseTexture9** ppTexture);
    // PXPublic PXActionResult PXDirectXTextureSet(PXDirectX* const pxDirectX, DWORD Stage, IDirect3DBaseTexture9* pTexture);
-	PXPublic PXActionResult PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D* const pxTexture2D);
-	PXPublic PXActionResult PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D* const pxTexture3D);
-	PXPublic PXActionResult PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureCube* const pxTextureCube);
+	PXPublic PXActionResult PXAPI PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D* const pxTexture2D);
+	PXPublic PXActionResult PXAPI PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D* const pxTexture3D);
+	PXPublic PXActionResult PXAPI PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureCube* const pxTextureCube);
 
 #endif
 

@@ -10,7 +10,6 @@
 #endif
 
 #include <OS/Memory/PXMemory.h>
-#include <OS/Async/PXEvent.h>
 
 void PXProcessConstruct(PXProcess* const pxProcess)
 {
@@ -191,7 +190,7 @@ PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 
 		PXTextConstructFromAdressW(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, executableFilePathSize);
 
-		InvokeEvent(pxProcessDetectedEvent, &pxProcess);
+		PXFunctionInvoke(pxProcessDetectedEvent, &pxProcess);
 
 		successfulFetch = Process32Next(snapshotHandle, &processEntryW);
 	}
