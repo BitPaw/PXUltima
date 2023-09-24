@@ -1272,6 +1272,35 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
         {
             graphicContext->EventOwner = &graphicContext->OpenGLInstance;
 
+            graphicContext->ShaderProgramCreateFromFileVF = PXOpenGLShaderProgramCreateFromFileVF;
+            graphicContext->ShaderProgramCreateFromStringVF = PXOpenGLShaderProgramCreateFromStringVF;
+            graphicContext->ShaderProgramCreate = PXOpenGLShaderProgramCreate;
+            graphicContext->ShaderProgramSelect = PXOpenGLShaderProgramSelect;
+            graphicContext->ShaderProgramDelete = PXOpenGLShaderProgramDelete;
+
+            graphicContext->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
+
+            graphicContext->ShaderVariableFx1 = PXOpenGLShaderVariableFx1;
+            graphicContext->ShaderVariableFx1xN = PXOpenGLShaderVariableFx1xN;
+            graphicContext->ShaderVariableIx1 = PXOpenGLShaderVariableIx1;
+            graphicContext->ShaderVariableIx1xN = PXOpenGLShaderVariableIx1xN;
+            graphicContext->ShaderVariableFx2 = PXOpenGLShaderVariableFx2;
+            graphicContext->ShaderVariableFx2xN = PXOpenGLShaderVariableFx2xN;
+            graphicContext->ShaderVariableIx2 = PXOpenGLShaderVariableIx2;
+            graphicContext->ShaderVariableIx2xN = PXOpenGLShaderVariableIx2xN;
+            graphicContext->ShaderVariableFx3 = PXOpenGLShaderVariableFx3;
+            graphicContext->ShaderVariableFx3xN = PXOpenGLShaderVariableFx3xN;
+            graphicContext->ShaderVariableIx3 = PXOpenGLShaderVariableIx3;
+            graphicContext->ShaderVariableIx3xN = PXOpenGLShaderVariableIx3xN;
+            graphicContext->ShaderVariableFx4 = PXOpenGLShaderVariableFx4;
+            graphicContext->ShaderVariableFx4xN = PXOpenGLShaderVariableFx4xN;
+            graphicContext->ShaderVariableIx4 = PXOpenGLShaderVariableIx4;
+            graphicContext->ShaderVariableIx4xN = PXOpenGLShaderVariableIx4xN;
+            graphicContext->ShaderVariableMatrix2fv = PXOpenGLShaderVariableMatrix2fv;
+            graphicContext->ShaderVariableMatrix3fv = PXOpenGLShaderVariableMatrix3fv;
+            graphicContext->ShaderVariableMatrix4fv = PXOpenGLShaderVariableMatrix4fv;
+
+
             graphicContext->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
             graphicContext->DrawModeSet = PXOpenGLDrawMode;
 
@@ -1484,23 +1513,6 @@ PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphicContext* const graphicContext,
             return PXActionNotSupportedByLibrary;
     }
 }
-void PXAPI PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlendingMode pxBlendingMode)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemOpenGL:
-        {
-
-            break;
-        }
-        case PXGraphicSystemDirectX:
-        {
-
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
 
 PXActionResult PXAPI PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
 {
@@ -1508,7 +1520,7 @@ PXActionResult PXAPI PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGr
     {
         case PXGraphicSystemOpenGL:
         {
-            return PXOpenGLShaderProgramCreateVF(&pxGraphicContext->OpenGLInstance, pxShaderProgram, vertexShaderFilePath, fragmentShaderFilePath);
+            return PXOpenGLShaderProgramCreateFromFileVF(&pxGraphicContext->OpenGLInstance, pxShaderProgram, vertexShaderFilePath, fragmentShaderFilePath);
         }
         case PXGraphicSystemDirectX:
         {

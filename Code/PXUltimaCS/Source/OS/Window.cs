@@ -64,8 +64,7 @@ namespace PX
         internal PXWindow _pxWindow = new PXWindow();
 
         public unsafe Window()
-        {
-            
+        {            
             PXWindowConstruct(ref _pxWindow);
         }
 

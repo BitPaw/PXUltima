@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace PX
 {
@@ -247,7 +248,7 @@ namespace PX
 
 
 
-    struct PXTexture2D
+    internal struct PXTexture2D
     {
         PXResourceID ResourceID; // IDirect3DTexture9
 
@@ -260,7 +261,13 @@ namespace PX
         PXImage Image;
     }
 
-    struct PXTexture3D
+    public class Texture2D
+    {
+        internal PXTexture2D _texture2D;
+    }
+
+
+    internal struct PXTexture3D
     {
         PXResourceID ResourceID; // IDirect3DVolumeTexture9
 
@@ -271,8 +278,14 @@ namespace PX
         PXColorFormat Format;
     }
 
+    public class Texture3D
+    {
+        internal PXTexture3D _pxTexture3D;
+    }
+
+
     // A Texture for a cube. 6 Sides, used for actual boxes like a skybox.
-    struct PXTextureCube
+    internal struct PXTextureCube
     {
         PXResourceID ResourceID; // IDirect3DCubeTexture9
 
@@ -281,12 +294,16 @@ namespace PX
        // PXImage ImageList[6];
     }
 
+    public class TextureCube
+    {
+        internal PXTextureCube _pxTextureCube;
+    }
 
 
 
 
 
-    unsafe struct PXShader
+    internal unsafe struct PXShader
     {
         PXResourceID ResourceID; // IDirect3DVertexShader9, IDirect3DPixelShader9
 
@@ -294,6 +311,11 @@ namespace PX
 
         ulong ContentSize;
         char* Content;
+    }
+
+    public class Shader
+    {
+        internal PXShader _pxShader;
     }
 
 
@@ -308,15 +330,12 @@ namespace PX
 
     public class ShaderProgram
     {
-        PXResourceID ResourceID;
-
-        PXShader VertexShader;
-        PXShader PixelShader;
+        internal PXShaderProgram _pxShaderProgram;
     }
 
 
 
-    enum PXDrawScriptType
+    public enum PXDrawScriptType
     {
         PXDrawScriptTypeInvalid,
         PXDrawScriptTypeAll,
@@ -327,11 +346,16 @@ namespace PX
     // This is a precursor of a shader, so it's use is discurraged for
     // modern applications and hardware that support shaders, not only
     // for performance reasons but for versitility too.
-    struct PXDrawScript
+    internal struct PXDrawScript
     {
         PXResourceID ResourceID;
 
         PXDrawScriptType Type;
+    }
+
+    public class DrawScript
+    {
+        internal PXDrawScript _pxDrawScript;
     }
 
     //-----------------------------------------------------
@@ -419,6 +443,12 @@ namespace PX
         //-----------------------------
     };
 
+    public class VertexStructure
+    {
+        internal PXVertexStructure _pxVertexStructure;
+    };
+
+
 
 
     /*
@@ -448,15 +478,28 @@ namespace PX
     };
 
 
-    struct PXViewPort
+    internal struct PXViewPort
     {
-        int X;
-        int Y;
-        int Width;
-        int Height;
-        float ClippingMinimum;
-        float ClippingMaximum;
+        public int X;
+        public int Y;
+        public int Width;
+        public int Height;
+        public float ClippingMinimum;
+        public float ClippingMaximum;
     };
+
+    public class ViewPort
+    {
+        internal PXViewPort _pxViewPort;
+
+        public int X {get => _pxViewPort.X; set => _pxViewPort.X = value; }
+        public int Y { get => _pxViewPort.Y; set => _pxViewPort.Y = value; }
+        public int Width { get => _pxViewPort.Width; set => _pxViewPort.Width = value; }
+        public int Height { get => _pxViewPort.Height; set => _pxViewPort.Height = value; }
+        public float ClippingMinimum { get => _pxViewPort.ClippingMinimum; set => _pxViewPort.ClippingMinimum = value; }
+        public float ClippingMaximum { get => _pxViewPort.ClippingMaximum; set => _pxViewPort.ClippingMaximum = value; }
+    };
+
 
 
     struct PXRenderTarget
@@ -482,7 +525,7 @@ namespace PX
         PXLightTypeDirectional
     };
 
-    unsafe struct PXLight
+    internal unsafe struct PXLight
     {
         PXResourceID ResourceID; // D3DLIGHT9
 
@@ -503,10 +546,15 @@ namespace PX
         float Phi;              /* Outer angle of spotlight cone */
     };
 
+    public class Light
+    {
+        internal PXLight _pxLight;
+    }
 
 
 
-    unsafe struct PXFontPageCharacter
+
+        unsafe struct PXFontPageCharacter
     {
         uint ID;
         fixed float Position[2]; // Position of the character image in the texture.
@@ -565,17 +613,42 @@ namespace PX
     };
 
 
+    [StructLayout(LayoutKind.Sequential,CharSet = CharSet.Ansi, Size = 1000)]
+    internal unsafe struct PXGraphicDevicePhysical
+    {
+        fixed char DeviceDisplay[32];
+        fixed char DeviceName[32];
+        fixed char DeviceID[32];
+        fixed char DeviceKey[32];
+        fixed char Vendor[32];
+        fixed char Renderer[32];
+        fixed char Shader[32];
+
+        UIntPtr VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
+        UIntPtr VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
+        UIntPtr VideoMemoryTotal; // current available dedicated video memory (in kb), currently unused GPU memory
+
+        UIntPtr VideoMemoryEvictionCount; // How many times memory got displaced to Main-RAM
+        UIntPtr VideoMemoryEvictionSize; // size of total video memory evicted (in kb)
+
+        byte IsConnectedToMonitor;
+    }
+
+    public class GraphicDevicePhysical
+    {
+        internal PXGraphicDevicePhysical _pxGraphicDevicePhysical;
+    }
 
 
     // Camera
-    enum PXCameraPerspective
+    public enum PXCameraPerspective
     {
         PXCameraPerspectiveInvalid,
         PXCameraPerspective2D,
         PXCameraPerspective3D // Perspective
     }
    
-    struct PXCamera
+    internal struct PXCamera
     {
         PXMatrix4x4F MatrixModel;
         PXMatrix4x4F MatrixView;
@@ -602,6 +675,13 @@ namespace PX
        float Far;
        */
     }
+
+
+    public class Camera
+    {
+        internal PXCamera _pxCamera;
+    }
+
 
 
 

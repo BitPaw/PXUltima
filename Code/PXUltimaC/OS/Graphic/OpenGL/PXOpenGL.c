@@ -2780,7 +2780,19 @@ void PXAPI PXOpenGLClear(PXOpenGL* const openGLContext, const PXColorRGBAF* cons
 
 PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL* const openGLContext)
 {
-    return PXWindowFrameBufferSwap(openGLContext->AttachedWindow);
+    PXWindow* const pxWindow = openGLContext->AttachedWindow;
+
+    if (pxWindow->HasSizeChanged) // Check if view has changed.
+    {
+        openGLContext->Viewport(0,0, pxWindow->Width, pxWindow->Height); // Map view to full screen
+        pxWindow->HasSizeChanged = PXFalse; // No change needed after this change
+    }    
+
+    // NOTE: Possible improvement? Using 'wglSwapLayerBuffers()'
+
+    const PXBool success = PXWindowFrameBufferSwap(pxWindow);
+
+    return success;
 }
 
 void PXAPI PXOpenGLDrawScaleF(PXOpenGL* const openGLContext, const float x, const float y, const float z)
@@ -3913,7 +3925,7 @@ void BF::PXOpenGL::ShaderSetUniformVector4(int vector3UniformID, float x, float 
 
 */
 
-PXActionResult PXAPI PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
+PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
 {
     PXObjectClear(PXShaderProgram, pxShaderProgram);
 
@@ -3955,6 +3967,11 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXS
     pxShaderProgram->VertexShader.Content = PXNull;
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
+{
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)

@@ -294,10 +294,6 @@ extern "C"
 	typedef PXActionResult(PXAPI*PXGraphicViewPortSetFunction)(void* const pxGraphicAPI, const PXViewPort* const pxViewPort);
 	typedef PXActionResult(PXAPI*PXGraphicViewPortGetFunction)(void* const pxGraphicAPI, PXViewPort* const pxViewPort);
 
-	typedef PXActionResult(PXAPI*PXGraphicShaderProgramCreateFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
-	typedef PXActionResult(PXAPI*PXGraphicShaderProgramSelectFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
-	typedef PXActionResult(PXAPI*PXGraphicShaderProgramDeleteFunction)(void* const pxGraphicAPI, PXShaderProgram* const pxShaderProgram);
-
 	typedef void (PXAPI*PXGraphicSceneBeginFunction)(void* const pxGraphicAPI);
 	typedef void (PXAPI*PXGraphicSceneEndFunction)(void* const pxGraphicAPI);
 
@@ -333,8 +329,8 @@ extern "C"
 	typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListAmountFunction)(void* const graphicAPI, PXInt32U* const amount);
 	typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListFetchFunction)(void* const graphicAPI, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
 
-	typedef PXActionResult (PXAPI* PXGraphicSwapIntervalSet)(void* const graphicAPI, const PXInt32U interval);
-	typedef PXActionResult (PXAPI* PXGraphicSwapIntervalGet)(void* const graphicAPI, PXInt32U* const interval);
+	typedef PXActionResult (PXAPI* PXGraphicSwapIntervalSetFunction)(void* const graphicAPI, const PXInt32U interval);
+	typedef PXActionResult (PXAPI* PXGraphicSwapIntervalGetFunction)(void* const graphicAPI, PXInt32U* const interval);
 
 
 	typedef PXActionResult(PXAPI* PXGraphicRectangleDrawFunction)(void* const graphicAPI, const float xA, const float yA, const float xB, const float yB);
@@ -343,11 +339,38 @@ extern "C"
 
 	typedef PXActionResult(PXAPI* PXGraphicDrawColorRGBFFunction)(void* const graphicAPI, const float red, const float green, const float blue, const float alpha);
 
+	typedef PXActionResult (PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
+
+
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVFFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVFFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramSelectFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramDeleteFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
+
 
 	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIDFetchFunction)(void* const graphicAPI, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
 
-
-	typedef PXActionResult (PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx1Function)(void* const graphicAPI, const PXInt32U location, const float v0);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx1xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx1Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx1xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx2Function)(void* const graphicAPI, const PXInt32U location, const float v0, const float v1);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx2xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx2Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0, const PXInt32U v1);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx2xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx3Function)(void* const graphicAPI, const PXInt32U location, const float v0, const float v1, const float v2);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx3xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx3Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0, const PXInt32U v1, const PXInt32U v2);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx3xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx4Function)(void* const graphicAPI, const PXInt32U location, const float v0, const float v1, const float v2, const float v3);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx4xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx4Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0, const PXInt32U v1, const PXInt32U v2, const PXInt32U v3);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx4xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableMatrix2fvFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXBool transpose, const float* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableMatrix3fvFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXBool transpose, const float* const value);
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableMatrix4fvFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXBool transpose, const float* const value);
+	//-------------------------------------------------------------------------
 
 	//-------------------------------------------------------------------------
 
@@ -365,50 +388,115 @@ extern "C"
 		// Functions
 		//-------------------
 
+
+		//-------------------------------------------------
+		// Core
+		//-------------------------------------------------
 		PXGraphicInitializeFunction Initialize;
 		PXGraphicReleaseFunction Release;
 		PXGraphicSelectFunction Select;
 		PXGraphicDeselectFunction Deselect;
 		PXGraphicClearFunction Clear;
+
+		//-------------------------------------------------
+		// Info & Settings
+		//-------------------------------------------------
+		PXGraphicSwapIntervalSetFunction SwapIntervalSet;
+		PXGraphicSwapIntervalGetFunction SwapIntervalGet;
+		PXGraphicDevicePhysicalListAmountFunction DevicePhysicalListAmount;
+		PXGraphicDevicePhysicalListFetchFunction DevicePhysicalListFetch;
+
+		//-------------------------------------------------
+		// Scene
+		//-------------------------------------------------
+		PXGraphicSceneBeginFunction SceneBegin;
 		PXGraphicSceneDeployFunction SceneDeploy;
+		PXGraphicSceneEndFunction SceneEnd;
+
+		//-------------------------------------------------
+		// View
+		//-------------------------------------------------
 		PXGraphicViewPortSetFunction ViewPortSet;
 		PXGraphicViewPortGetFunction ViewPortGet;
-		PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
-		PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
-		PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
-		PXGraphicSceneBeginFunction SceneBegin;
-		PXGraphicSceneEndFunction SceneEnd;
+
+		//-------------------------------------------------
+		// Scripting
+		//-------------------------------------------------
 		PXGraphicDrawScriptCreate DrawScriptCreate;
 		PXGraphicDrawScriptBegin DrawScriptBegin;
 		PXGraphicDrawScriptEnd DrawScriptEnd;
 		PXGraphicDrawScriptDelete DrawScriptDelete;
 		PXGraphicDrawScriptExecute DrawScriptExecute;
+
+		//-------------------------------------------------
+		// Textures
+		//-------------------------------------------------
+		PXGraphicTexture2DRegisterFunction Texture2DRegister;
+		PXGraphicTexture2DReleaseFunction Texture2DRelease;
+		PXGraphicTexture2DSelectFunction  Texture2DSelect;
+
 		PXGraphicTextureCubeRegisterFunction TextureCubeRegister;
 		PXGraphicTextureCubeRegisterUseFunction TextureCubeRegisterUse;
 		PXGraphicTextureCubeReleaseFunction TextureCubeRelease;
+
+
+		//-------------------------------------------------
+		// Model
+		//-------------------------------------------------
 		PXGraphicVertexStructureRegisterFunction VertexStructureRegister;
 		PXGraphicVertexStructureDrawFunction VertexStructureDraw;
 		PXGraphicVertexStructureSelectFunction VertexStructureSelect;
 		PXGraphicVertexStructureReleaseFunction VertexStructureRelease;
+
+		//-------------------------------------------------
+		// Light
+		//-------------------------------------------------
 		PXGraphicLightSetFunction LightSet;
 		PXGraphicLightGetFunction LightGet;
 		PXGraphicLightEnableSetFunction LightEnableSet;
 		PXGraphicLightEnableGetFunction LightEnableGet;
-		PXGraphicTexture2DRegisterFunction Texture2DRegister;
-		PXGraphicTexture2DReleaseFunction Texture2DRelease;
-		PXGraphicTexture2DSelectFunction  Texture2DSelect;
-		PXGraphicSwapIntervalSet SwapIntervalSet;
-		PXGraphicSwapIntervalGet SwapIntervalGet;
-		PXGraphicRectangleDrawFunction RectangleDraw;
-		PXGraphicRectangleDrawTxFunction RectangleDrawTx;
-		PXGraphicDevicePhysicalListAmountFunction DevicePhysicalListAmount;
-		PXGraphicDevicePhysicalListFetchFunction DevicePhysicalListFetch;
 
-		PXGraphicDrawColorRGBFFunction DrawColorRGBAF;
-		PXGraphicShaderVariableIDFetchFunction ShaderVariableIDFetch;
+		//-------------------------------------------------
+		// Shader
+		//-------------------------------------------------
+		PXGraphicShaderProgramCreateFromFileVFFunction ShaderProgramCreateFromFileVF;
+		PXGraphicShaderProgramCreateFromStringVFFunction ShaderProgramCreateFromStringVF;
+		PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
+		PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
+		PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
+		PXGraphicShaderVariableIDFetchFunction  ShaderVariableIDFetch;
+		PXGraphicShaderVariableFx1Function  ShaderVariableFx1;
+		PXGraphicShaderVariableFx1xNFunction  ShaderVariableFx1xN;
+		PXGraphicShaderVariableIx1Function  ShaderVariableIx1;
+		PXGraphicShaderVariableIx1xNFunction  ShaderVariableIx1xN;
+		PXGraphicShaderVariableFx2Function  ShaderVariableFx2;
+		PXGraphicShaderVariableFx2xNFunction  ShaderVariableFx2xN;
+		PXGraphicShaderVariableIx2Function  ShaderVariableIx2;
+		PXGraphicShaderVariableIx2xNFunction ShaderVariableIx2xN;
+		PXGraphicShaderVariableFx3Function  ShaderVariableFx3;
+		PXGraphicShaderVariableFx3xNFunction  ShaderVariableFx3xN;
+		PXGraphicShaderVariableIx3Function  ShaderVariableIx3;
+		PXGraphicShaderVariableIx3xNFunction  ShaderVariableIx3xN;
+		PXGraphicShaderVariableFx4Function  ShaderVariableFx4;
+		PXGraphicShaderVariableFx4xNFunction  ShaderVariableFx4xN;
+		PXGraphicShaderVariableIx4Function  ShaderVariableIx4;
+		PXGraphicShaderVariableIx4xNFunction  ShaderVariableIx4xN;
+		PXGraphicShaderVariableMatrix2fvFunction  ShaderVariableMatrix2fv;
+		PXGraphicShaderVariableMatrix3fvFunction  ShaderVariableMatrix3fv;
+		PXGraphicShaderVariableMatrix4fvFunction  ShaderVariableMatrix4fv;
+
+
+
+		//-------------------------------------------------
+		// Draw
+		//-------------------------------------------------
 		PXGraphicDrawModeSetFunction DrawModeSet;
+		PXGraphicDrawColorRGBFFunction DrawColorRGBAF;
+		PXGraphicRectangleDrawFunction RectangleDraw;
+		PXGraphicRectangleDrawTxFunction RectangleDrawTx;	
+		//-------------------------------------------------
 
-		//-------------------
+
 
 		PXGraphicSystem GraphicSystem;
 
@@ -499,10 +587,6 @@ extern "C"
 	//-----------------------------------------------------
 	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
 	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
-
-
-	PXPublic void PXAPI PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlendingMode pxBlendingMode);
-
 
 
 	PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);

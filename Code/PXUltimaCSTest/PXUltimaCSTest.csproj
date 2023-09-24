@@ -7,6 +7,7 @@
     <BaseOutputPath>$(SolutionDir)[Export]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseOutputPath>
     <BaseIntermediateOutputPath>$(SolutionDir)[Temp]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseIntermediateOutputPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>

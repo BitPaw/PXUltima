@@ -1401,6 +1401,7 @@ extern "C"
 	PXPrivate PXInt32U PXAPI PXOpenGLTypeToID(const PXDataType pxDataType);
 
 	PXPrivate PXActionResult PXAPI PXOpenGLErrorCurrent();
+	PXPrivate PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID);
 	//--------------------------------------------------------
 
 	//---<Utility>-------------------------------------------------------------
@@ -1461,7 +1462,7 @@ extern "C"
 
 	PXPublic void PXAPI PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode pxBlendingMode);
 
-	PXPrivate PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID);
+
 
 	PXPublic void PXOpenGLAPI PXOpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 	//-------------------------------------------------------------------------
@@ -1494,7 +1495,8 @@ extern "C"
 	//-----------------------------------------------------
 	// OpenGL - Shader
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
@@ -1670,7 +1672,9 @@ extern "C"
 
 
 
-
+	//-----------------------------------------------------
+	// PX-Extrended
+	//-----------------------------------------------------
 	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
 	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
 

@@ -8,7 +8,6 @@
 //#include <dxdiag.h>
 //#include <dsetup.h> // unsupported legacy lib, not updated
 // #include <d3d9.h> // Already included
-#include <d3dx9.h>
 #include <d3dcompiler.h>
 #include <d3d9caps.h>
 //#include <d3dx9shader.h>
