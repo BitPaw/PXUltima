@@ -2522,24 +2522,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
         PXGraphicDevicePhysical pxGraphicDevicePhysical;
         PXMemoryClear(&pxGraphicDevicePhysical, sizeof(PXGraphicDevicePhysical));
 
-        PXInt32U devices = 0;
+        PXInt32U devices = 0;        
 
-        PXOpenGLDevicePhysicalListAmountFunction(openGLContext, &devices);
+        PXOpenGLDevicePhysicalListAmount(openGLContext, &devices);
 
-        PXOpenGLDevicePhysicalListFetchFunction(openGLContext, devices, &pxGraphicDevicePhysical);
-
-        char DeviceDisplay[PXDeviceIDSize];
-        char DeviceName[PXDeviceNameSize];
-
-        char Vendor[64];
-        char Renderer[64];
-
-        PXInt64U VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
-        PXInt64U VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
-        PXInt64U VideoMemoryTotal; // current available dedicated video memory (in kb), currently unused GPU memory
-
-        PXInt64U VideoMemoryEvictionCount; // How many times memory got displaced to Main-RAM
-        PXInt64U VideoMemoryEvictionSize; // size of total video memory evicted (in kb)
+        PXOpenGLDevicePhysicalListFetch(openGLContext, devices, &pxGraphicDevicePhysical);
 
         printf
         (
@@ -2618,12 +2605,92 @@ PXInt64U PXAPI PXOpenGLIntergetGet(PXOpenGL* const openGLContext, const GLenum e
 
 PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount)
 {
-    return PXActionRefusedNotImplemented;
+#if OSUnix
+    return PXActionRefusedNotSupported;
+
+#elif OSWindows
+
+#if 0
+    HGPUNV listOfHandles[64];
+
+    if (!pxOpenGL->DevicePhysicalList)
+    {
+        return PXActionRefusedNotSupported;
+    }
+
+    for (PXSize gpuID = 0; pxOpenGL->DevicePhysicalList(gpuID, &listOfHandles[gpuID]); ++gpuID)
+    {
+        printf("[OpenGL] GPU <%i>\n", gpuID);
+
+        GPU_DEVICE gpuDEVICE;
+        PXClear(GPU_DEVICE, &gpuDEVICE);
+        gpuDEVICE.cb = sizeof(GPU_DEVICE);
+
+        for (PXSize displayID = 0; displayID < pxOpenGL->DevicePhysicalListB(listOfHandles[gpuID], displayID, &gpuDEVICE); ++displayID)
+        {
+            printf
+            (
+                "[OpenGL] DeviceName : %s, %s (%i, %i)\n", gpuDEVICE.DeviceName, gpuDEVICE.DeviceString, gpuDEVICE.rcVirtualScreen.left, gpuDEVICE.rcVirtualScreen.bottom
+            );
+        }
+    }
+#endif
+
+    * amount = 1;
+
+    return PXActionSuccessful;
+#endif
 }
 
 PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList)
 {
-    return PXActionRefusedNotImplemented;
+    // Returns the company responsible for this GL implementation.
+     // This name does not change from release to release.
+    const char* vendor = pxOpenGL->GetString(GL_VENDOR);
+
+    PXTextCopyA(vendor, PXTextUnkownLength, pxGraphicDevicePhysicalList->Vendor, PXDeviceOpenGLVendorSize);
+
+    // Returns the name of the renderer.
+    // This name is typically specific to a particular configuration of a hardware platform.It does not change from release to release.
+    const char* renderer = pxOpenGL->GetString(GL_RENDERER);
+
+    PXTextCopyA(renderer, PXTextUnkownLength, pxGraphicDevicePhysicalList->Renderer, PXDeviceOpenGLRendererSize);
+
+    const char* glslVersion = pxOpenGL->GetString(GL_SHADING_LANGUAGE_VERSION); //    Returns a version or release number.
+
+    PXTextCopyA(glslVersion, PXTextUnkownLength, pxGraphicDevicePhysicalList->Shader, PXDeviceOpenGLShaderSize);
+
+    // Parse version, Returns a version or release number.
+    {
+        const char* version = pxOpenGL->GetString(GL_VERSION);
+
+        int versionMajor = 0;
+        int versionMinor = 0;
+        int versionPatch = 0;
+
+        PXText pxTextVersion;
+        PXTextConstructFromAdressA(&pxTextVersion, version, 64);
+
+        PXSize offset = 0;
+
+        offset = PXTextToInt(&pxTextVersion, &versionMajor);
+        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
+        offset = PXTextToInt(&pxTextVersion, &versionMinor);
+        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
+        PXTextToInt(&pxTextVersion, &versionPatch);
+
+        const PXInt32U id = PXInt24Make(versionMajor, versionMinor, versionPatch);
+
+        pxOpenGL->Version = PXOpenGLVersionParse(id);
+    }
+
+    pxGraphicDevicePhysicalList->VideoMemoryDedicated = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX);
+    pxGraphicDevicePhysicalList->VideoMemoryCurrent = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX);
+    pxGraphicDevicePhysicalList->VideoMemoryTotal = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX);
+    pxGraphicDevicePhysicalList->VideoMemoryEvictionCount = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTION_COUNT_NVX);
+    pxGraphicDevicePhysicalList->VideoMemoryEvictionSize = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTED_MEMORY_NVX);
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const openGLContext)
@@ -5220,96 +5287,6 @@ PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const flo
     glTexCoord2f(txB, tyA); glVertex2f(xB, yB);// 00
     glTexCoord2f(txA, tyA); glVertex2f(xA, yB);// 01
     glEnd();
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXOpenGLDevicePhysicalListAmountFunction(PXOpenGL* const pxOpenGL, PXInt32U* const amount)
-{
-#if OSUnix
-    return PXActionRefusedNotSupported;
-
-#elif OSWindows
-    
-#if 0
-    HGPUNV listOfHandles[64];
-
-    if (!pxOpenGL->DevicePhysicalList)
-    {
-        return PXActionRefusedNotSupported;
-    }
-
-    for (PXSize gpuID = 0; pxOpenGL->DevicePhysicalList(gpuID, &listOfHandles[gpuID]); ++gpuID)
-    {
-        printf("[OpenGL] GPU <%i>\n", gpuID);
-
-        GPU_DEVICE gpuDEVICE; 
-        PXClear(GPU_DEVICE, &gpuDEVICE);
-        gpuDEVICE.cb = sizeof(GPU_DEVICE);
-
-        for (PXSize displayID = 0; displayID < pxOpenGL->DevicePhysicalListB(listOfHandles[gpuID], displayID, &gpuDEVICE); ++displayID)
-        {
-            printf
-            (
-                "[OpenGL] DeviceName : %s, %s (%i, %i)\n", gpuDEVICE.DeviceName, gpuDEVICE.DeviceString, gpuDEVICE.rcVirtualScreen.left, gpuDEVICE.rcVirtualScreen.bottom
-            );
-        }
-    }
-#endif
-
-    *amount = 1;
-
-    return PXActionSuccessful;
-#endif
-}
-
-PXActionResult PXAPI PXOpenGLDevicePhysicalListFetchFunction(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList)
-{
-    // Returns the company responsible for this GL implementation.
-    // This name does not change from release to release.
-    const char* vendor = pxOpenGL->GetString(GL_VENDOR);
-
-    PXTextCopyA(vendor, PXTextUnkownLength, pxGraphicDevicePhysicalList->Vendor, 64);
-
-    // Returns the name of the renderer.
-    // This name is typically specific to a particular configuration of a hardware platform.It does not change from release to release.
-    const char* renderer = pxOpenGL->GetString(GL_RENDERER); 
-
-    PXTextCopyA(renderer, PXTextUnkownLength, pxGraphicDevicePhysicalList->Renderer, 64);
-
-    const char* glslVersion = pxOpenGL->GetString(GL_SHADING_LANGUAGE_VERSION); //    Returns a version or release number.
-
-    //PXTextCopyA(glslVersion, PXTextUnkownLength, pxOpenGL->GLSLVersionText, 64);
-
-    // Parse version, Returns a version or release number.
-    {     
-        const char* version = pxOpenGL->GetString(GL_VERSION);
-
-        int versionMajor = 0;
-        int versionMinor = 0;
-        int versionPatch = 0;
-
-        PXText pxTextVersion;
-        PXTextConstructFromAdressA(&pxTextVersion, version, 64);
-
-        PXSize offset = 0;
-
-        offset = PXTextToInt(&pxTextVersion, &versionMajor);
-        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
-        offset = PXTextToInt(&pxTextVersion, &versionMinor);
-        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
-        PXTextToInt(&pxTextVersion, &versionPatch);
-
-        const PXInt32U id = PXInt24Make(versionMajor, versionMinor, versionPatch);
-
-        pxOpenGL->Version = PXOpenGLVersionParse(id);
-    }
- 
-    pxGraphicDevicePhysicalList->VideoMemoryDedicated = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryCurrent = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryTotal = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryEvictionCount = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTION_COUNT_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryEvictionSize = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTED_MEMORY_NVX);
 
     return PXActionSuccessful;
 }

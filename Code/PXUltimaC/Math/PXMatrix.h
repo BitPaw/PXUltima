@@ -39,8 +39,7 @@ extern "C"
 {
 #endif
 
-	typedef struct PXMargin_ PXMargin;
-
+	typedef struct PXRectangleOffset_ PXRectangleOffset;
 
 	/*
 		+----+----+----+----+
@@ -102,7 +101,7 @@ extern "C"
 
 	PXPublic void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, PXMatrix4x4F* const matrixResult);
 
-	PXPublic void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXMargin* const pxMargin);
+	PXPublic void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXRectangleOffset* const pxMargin);
 	PXPublic void PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y);
 
 	PXPublic void PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F);

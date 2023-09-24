@@ -198,11 +198,11 @@ void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, 
 	matrixResult->Data[ScaleZ] = matrixA->Data[ScaleZ] + scalar;
 }
 
-void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXMargin* const pxMargin)
+void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXRectangleOffset* const pxMargin)
 {
 #if 1
 
-	const PXMargin offset = 
+	const PXRectangleOffset offset = 
 	{
 		1 - pxMargin->Left,
 		1 - pxMargin->Top,

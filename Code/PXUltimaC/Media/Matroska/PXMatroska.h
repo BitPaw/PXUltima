@@ -1,9 +1,6 @@
 #ifndef PXMatroskaInclude
 #define PXMatroskaInclude
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
 #include <Media/PXResource.h>
 
 #ifdef __cplusplus

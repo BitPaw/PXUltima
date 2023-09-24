@@ -819,12 +819,15 @@ void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red
     pxUIElement->BackGroundColor.Alpha = alpha;
 }
 
-void PXAPI PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode)
+void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode)
 {
-    pxUIElement->X = x;
-    pxUIElement->Y = y;
-    pxUIElement->Width = width;
-    pxUIElement->Height = height;
+    //pxUIElement->X = x;
+    //pxUIElement->Y = y;
+    // pxUIElement->Width = width;
+   // pxUIElement->Height = height;
+
+    PXRectangleOffsetSet(&pxUIElement->Margin, x, y, width, height);
+
     pxUIElement->PositionMode = pxUIElementPositionMode;
 }
 
@@ -904,7 +907,7 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
             PXOpenGL* const pxOpenGL = &graphicContext->OpenGLInstance;
 
             // Texture
-            PXTexture2DSet(pxUIElement->FrameRenderTextureReference, PXColorFormatRGBI8, pxUIElement->FrameRenderWidth, pxUIElement->Height);
+           // PXTexture2DSet(pxUIElement->FrameRenderTextureReference, PXColorFormatRGBI8, pxUIElement->FrameRenderWidth, pxUIElement->Height);
             PXOpenGLTexture2DCreate(pxOpenGL, pxUIElement->FrameRenderTextureReference);
 
 
@@ -915,7 +918,7 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
             // Renderbuffer as depthbuffer
             PXOpenGLRenderBufferCreate(pxOpenGL, 1, &pxUIElement->FrameRenderID);
             PXOpenGLRenderBufferBind(pxOpenGL, pxUIElement->FrameRenderID);
-            PXOpenGLRenderBufferStorage(pxOpenGL, PXOpenGLRenderBufferFormatDepthComponent, pxUIElement->FrameRenderWidth, pxUIElement->Height);
+            PXOpenGLRenderBufferStorage(pxOpenGL, PXOpenGLRenderBufferFormatDepthComponent, pxUIElement->FrameRenderWidth, pxUIElement->FrameRenderHeight);
 
             // Link buffer
             PXOpenGLFrameBufferLinkRenderBuffer(pxOpenGL, PXOpenGLRenderBufferAttachmentPointDepth, pxUIElement->FrameRenderID);
@@ -1166,10 +1169,10 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
     {
         PXGraphicDevicePhysical* const currentDevice = &graphicDevicePhysical[deviceID];
 
-        PXTextCopyA(displayDevice.DeviceName, 32, currentDevice->DeviceDisplay, PXDeviceIDSize);
-        PXTextCopyA(displayDevice.DeviceString, 128, currentDevice->DeviceName, PXDeviceIDSize);    
-        PXTextCopyA(displayDevice.DeviceID, 128, currentDevice->DeviceID, 128);
-        PXTextCopyA(displayDevice.DeviceKey, 128, currentDevice->DeviceKey, 128);
+        PXTextCopyA(displayDevice.DeviceName, 32, currentDevice->DeviceDisplay, PXDeviceDisplaySize);
+        PXTextCopyA(displayDevice.DeviceString, 128, currentDevice->DeviceName, PXDeviceNameSize);
+        PXTextCopyA(displayDevice.DeviceID, 128, currentDevice->DeviceID, PXDeviceIDSize);
+        PXTextCopyA(displayDevice.DeviceKey, 128, currentDevice->DeviceKey, PXDeviceKeySize);
 
         graphicDevicePhysical->IsConnectedToMonitor = displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
 
@@ -1269,6 +1272,9 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
         {
             graphicContext->EventOwner = &graphicContext->OpenGLInstance;
 
+            graphicContext->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
+            graphicContext->DrawModeSet = PXOpenGLDrawMode;
+
             graphicContext->DrawColorRGBAF = PXOpenGLDrawColorRGBAF;
 
             graphicContext->RectangleDraw = PXOpenGLRectangleDraw;
@@ -1319,6 +1325,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
         {
             graphicContext->EventOwner = &graphicContext->DirectXInstance;
 
+            graphicContext->ShaderVariableIDFetch = PXDirectXShaderVariableIDFetch;
+            graphicContext->DrawModeSet = PXNull;
             graphicContext->DrawColorRGBAF = PXNull;
 
             graphicContext->RectangleDraw = PXNull;
@@ -1381,6 +1389,26 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
     graphicContext->Initialize(graphicContext->EventOwner, width, height, pxWindow);
     //-------------------------------------------------------------------------
 
+    graphicContext->Select(graphicContext->EventOwner);
+    graphicContext->DevicePhysicalListFetch(graphicContext->EventOwner, 1, &graphicDevicePhysical[0]);
+    graphicContext->Deselect(graphicContext->EventOwner);
+
+    printf
+    (
+        "+---------------------------------------------------------+\n"
+        "| Graphics Card - Information                             |\n"
+        "+---------------------------------------------------------+\n"
+        "| Model         : %-43s |\n"
+        "| Vendor        : %-43s |\n"
+        "| Renderer      : %-43s |\n"
+        "| Shader-OpenGL : %-43s |\n"
+        "+---------------------------------------------------------+\n\n",
+        graphicDevicePhysical[0].DeviceName,
+        graphicDevicePhysical[0].Vendor,
+        graphicDevicePhysical[0].Renderer,
+        graphicDevicePhysical[0].Shader
+    );
+
 
 
     PXViewPort pxViewPort;
@@ -1422,7 +1450,7 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphicContext* const graphicCon
 
     PXVector2FSetXY(&pxSprite->TextureScaleOffset, 1, 1);
 
-  //  PXMarginSet(&pxSprite->Margin, 1, 1, 1, 1);
+  //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
 
 PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath)
@@ -1456,25 +1484,6 @@ PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphicContext* const graphicContext,
             return PXActionNotSupportedByLibrary;
     }
 }
-
-PXActionResult PXAPI PXGraphicDrawModeSet(PXGraphicContext* const graphicContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemOpenGL:
-        {
-            PXOpenGLDrawMode(&graphicContext->OpenGLInstance, pxGraphicDrawFillMode, 0);
-            break;
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXActionNotSupportedByLibrary;
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
 void PXAPI PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlendingMode pxBlendingMode)
 {
     switch (graphicContext->GraphicSystem)
@@ -1521,31 +1530,11 @@ PXActionResult PXAPI PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxG
     return PXGraphicShaderProgramCreateVP(pxGraphicContext, pxShaderProgram, &pxTextVertexShader, &pxTextPixelShader);
 }
 
-PXActionResult PXAPI PXGraphicRender(PXGraphicContext* const graphicContext, PXGraphicDrawMode renderMode, PXSize start, PXSize amount)
-{
-    return PXActionInvalid;
-}
-
 void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4)
 {
 #if PXOpenGLUSE
     PXOpenGLShaderVariableMatrix4fv(&graphicContext->OpenGLInstance, locationID, 1, 0, matrix4x4);
 #endif
-}
-
-PXActionResult PXAPI PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name)
-{
-    switch (graphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemOpenGL:
-            return PXOpenGLShaderVariableIDFetch(&graphicContext->OpenGLInstance, pxShader, shaderVariableID, name);
-
-        case PXGraphicSystemDirectX:
-            return PXDirectXShaderVariableIDFetch(&graphicContext->DirectXInstance, pxShader, shaderVariableID, name);
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
 }
 #endif
 

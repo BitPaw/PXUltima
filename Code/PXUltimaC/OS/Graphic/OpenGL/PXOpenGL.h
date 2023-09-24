@@ -1679,12 +1679,6 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB);
 	PXPublic PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB);
 
-
-	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListAmountFunction(PXOpenGL* const pxOpenGL, PXInt32U* const amount);
-	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListFetchFunction(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
-
-
-
 #ifdef __cplusplus
 }
 #endif

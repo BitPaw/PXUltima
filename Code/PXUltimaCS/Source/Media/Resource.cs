@@ -226,7 +226,7 @@ namespace PX
 
     // Offset the whole child-Container
     // (Make empty space)
-    struct PXMargin
+    struct PXRectangleOffset
     {
         float Left;
         float Top;
@@ -415,7 +415,7 @@ namespace PX
         //-----------------------------
         byte IgnoreViewPosition; // Removes positiondata from the view matrix
         byte IgnoreViewRotation; // remove rotationdata from the view matrix
-        PXMargin Margin;
+        PXRectangleOffset Margin;
         //-----------------------------
     };
 

@@ -109,7 +109,7 @@ void PXVertexStructureConstruct(PXVertexStructure* const pxVertexStructure)
 
     PXMatrix4x4FIdentity(&pxVertexStructure->ModelMatrix);
     
-    PXMarginSet(&pxVertexStructure->Margin, 1, 1, 1, 1);
+    PXRectangleOffsetSet(&pxVertexStructure->Margin, 1, 1, 1, 1);
 }
 
 void PXVertexStructureDestruct(PXVertexStructure* const pxVertexStructure)

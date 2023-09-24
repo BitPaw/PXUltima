@@ -250,35 +250,24 @@ extern "C"
 #define PXResourceIDMarkAsUnused(pxPesourceID) (pxPesourceID)->DirectXInterface = (void*)-1
 
 
-
-	// Offset the whole child-Container
-	// (Make empty space)
-	typedef struct PXMargin_
+	// PXPadding;: Offset the space as the child container (Make object take more space)
+	// PXMargin;  Offset the whole child-Container (Make empty space)
+	typedef struct PXRectangleOffset_
 	{
 		float Left;
 		float Top;
 		float Right;
 		float Bottom;
 	}
-	PXMargin;
+	PXRectangleOffset;
 
-#define PXMarginSet(adress, l, t, r, b) \
+#define PXRectangleOffsetSet(adress, l, t, r, b) \
 	(adress)->Left = l; \
 	(adress)->Top = t; \
 	(adress)->Right = r; \
 	(adress)->Bottom = b;
 
 
-	// Offset the space as the child container
-	// (Make object take more space)
-	typedef struct PXPadding_
-	{
-		float LeftTop;
-		float Top;
-		float Right;
-		float Bottom;
-	}
-	PXPadding;
 
 
 
@@ -495,7 +484,7 @@ extern "C"
 		//-----------------------------
 		PXBool IgnoreViewPosition; // Removes positiondata from the view matrix
 		PXBool IgnoreViewRotation; // remove rotationdata from the view matrix
-		PXMargin Margin;
+		PXRectangleOffset Margin;
 		//-----------------------------
 	}
 	PXVertexStructure;

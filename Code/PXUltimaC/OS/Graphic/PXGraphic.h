@@ -214,11 +214,11 @@ extern "C"
 		PXUIElementType Type;
 		PXUIElementPositionMode PositionMode;
 		char Name[32];
+
 		float NameTextScale;
-		float X;
-		float Y;
-		float Width;
-		float Height;
+
+		PXRectangleOffset Margin;
+		PXRectangleOffset Padding;
 		//---------------------------------------
 
 		//---<Hiracy>----------------------------
@@ -244,18 +244,25 @@ extern "C"
 
 
 
+#define PXDeviceDisplaySize 32
+#define PXDeviceNameSize 32
 #define PXDeviceIDSize 32
-#define PXDeviceNameSize 64
+#define PXDeviceKeySize 32
+
+#define PXDeviceOpenGLVendorSize 32
+#define PXDeviceOpenGLRendererSize 32
+#define PXDeviceOpenGLShaderSize 32
 
 	typedef struct PXGraphicDevicePhysical_
 	{
-		char DeviceDisplay[PXDeviceIDSize];
+		char DeviceDisplay[PXDeviceDisplaySize];
 		char DeviceName[PXDeviceNameSize];
-		char DeviceID[128];
-		char DeviceKey[128];
+		char DeviceID[PXDeviceIDSize];
+		char DeviceKey[PXDeviceKeySize];
 
-		char Vendor[64];
-		char Renderer[64];
+		char Vendor[PXDeviceOpenGLVendorSize];
+		char Renderer[PXDeviceOpenGLRendererSize];
+		char Shader[PXDeviceOpenGLShaderSize];
 
 		PXInt64U VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
 		PXInt64U VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
@@ -337,6 +344,11 @@ extern "C"
 	typedef PXActionResult(PXAPI* PXGraphicDrawColorRGBFFunction)(void* const graphicAPI, const float red, const float green, const float blue, const float alpha);
 
 
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIDFetchFunction)(void* const graphicAPI, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
+
+
+	typedef PXActionResult (PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
+
 	//-------------------------------------------------------------------------
 
 
@@ -393,6 +405,8 @@ extern "C"
 		PXGraphicDevicePhysicalListFetchFunction DevicePhysicalListFetch;
 
 		PXGraphicDrawColorRGBFFunction DrawColorRGBAF;
+		PXGraphicShaderVariableIDFetchFunction ShaderVariableIDFetch;
+		PXGraphicDrawModeSetFunction DrawModeSet;
 
 		//-------------------
 
@@ -454,7 +468,7 @@ extern "C"
 
 	PXPublic void PXAPI PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
 	PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
-	PXPublic void PXAPI PXUIElementPositionSetXYWH(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
+	PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
 
 	PXPublic void PXAPI PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
 	PXPublic void PXAPI PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
@@ -486,10 +500,6 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
 	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 
-
-	PXPublic PXActionResult PXAPI PXGraphicShaderVariableIDFetch(PXGraphicContext* const graphicContext, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
-
-	PXPublic PXActionResult PXAPI PXGraphicDrawModeSet(PXGraphicContext* const graphicContext, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
 
 	PXPublic void PXAPI PXGraphicBlendingMode(PXGraphicContext* const graphicContext, const PXBlendingMode pxBlendingMode);
 
