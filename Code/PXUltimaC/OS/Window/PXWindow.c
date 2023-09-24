@@ -37,6 +37,8 @@
 
 #include <dwmapi.h> // Set tilebar color
 
+#define Windows10DarkModeID 20 // DWMWA_USE_IMMERSIVE_DARK_MODE
+
 
 #pragma comment(lib, "dwmapi.lib")
 
@@ -2579,7 +2581,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
 #elif WindowsAtleast10
 
     const BOOL useDarkMode = PXTrue;
-    const BOOL setAttributeSuccess = SUCCEEDED(DwmSetWindowAttribute(pxWindow->ID, DWMWA_USE_IMMERSIVE_DARK_MODE, &useDarkMode, sizeof(BOOL))); // Windows Vista, Dwmapi.dll;Uxtheme.dll, dwmapi.h
+    const BOOL setAttributeSuccess = SUCCEEDED(DwmSetWindowAttribute(pxWindow->ID, Windows10DarkModeID, &useDarkMode, sizeof(BOOL))); // Windows Vista, Dwmapi.dll;Uxtheme.dll, dwmapi.h
 
     if (!setAttributeSuccess)
     {

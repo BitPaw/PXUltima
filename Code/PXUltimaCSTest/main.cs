@@ -8,7 +8,9 @@ namespace PXText
         {
             PX.Window window = new PX.Window();
             window.Create(200, 200, 500, 500, PX.User.Name);
-        
+            
+
+
             PX.Graphic graphic = new PX.Graphic();
             graphic.Initialize(window);
 
