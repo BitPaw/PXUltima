@@ -375,7 +375,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterD
     {
         PXShaderProgram* shaderPXProgram = malloc(sizeof(PXShaderProgram));
 
-        const PXActionResult shaderResult = PXGraphicShaderProgramCreateVP(graphicContext, shaderPXProgram, shaderVertex, shaderFragment);
+        const PXActionResult shaderResult = graphicContext->ShaderProgramCreateFromFileVP(graphicContext, shaderPXProgram, shaderVertex, shaderFragment);
 
         skyBox->ShaderProgramReference = shaderPXProgram;
     }
@@ -1257,8 +1257,10 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
         {
             graphicContext->EventOwner = &graphicContext->OpenGLInstance;
 
-            graphicContext->ShaderProgramCreateFromFileVF = PXOpenGLShaderProgramCreateFromFileVF;
-            graphicContext->ShaderProgramCreateFromStringVF = PXOpenGLShaderProgramCreateFromStringVF;
+            graphicContext->ShaderProgramCreateFromFileVP = PXOpenGLShaderProgramCreateFromFileVF;
+            graphicContext->ShaderProgramCreateFromFileVPA = PXOpenGLShaderProgramCreateFromFileVFA;
+            graphicContext->ShaderProgramCreateFromStringVP = PXOpenGLShaderProgramCreateFromStringVF;
+            graphicContext->ShaderProgramCreateFromStringVPA = PXOpenGLShaderProgramCreateFromStringVFA;
 
             graphicContext->ShaderVariableFx1 = PXOpenGLShaderVariableFx1;
             graphicContext->ShaderVariableFx1xN = PXOpenGLShaderVariableFx1xN;
@@ -1334,8 +1336,10 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
         {
             graphicContext->EventOwner = &graphicContext->DirectXInstance;
 
-            graphicContext->ShaderProgramCreateFromFileVF = PXNull;
-            graphicContext->ShaderProgramCreateFromStringVF = PXNull;
+            graphicContext->ShaderProgramCreateFromFileVP = PXDirectXShaderProgramCreateFromFileVF;
+            graphicContext->ShaderProgramCreateFromFileVPA = PXDirectXShaderProgramCreateFromFileVFA;
+            graphicContext->ShaderProgramCreateFromStringVP = PXDirectXShaderProgramCreateFromStringVF;
+            graphicContext->ShaderProgramCreateFromStringVPA = PXDirectXShaderProgramCreateFromStringVFA;
 
             graphicContext->ShaderVariableIDFetch = PXNull;
 
@@ -1536,34 +1540,6 @@ PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphicContext* const graphicContext,
         default:
             return PXActionNotSupportedByLibrary;
     }
-}
-
-PXActionResult PXAPI PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
-{
-    switch (pxGraphicContext->GraphicSystem)
-    {
-        case PXGraphicSystemOpenGL:
-        {
-            return PXOpenGLShaderProgramCreateFromFileVF(&pxGraphicContext->OpenGLInstance, pxShaderProgram, vertexShaderFilePath, fragmentShaderFilePath);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXDirectXShaderProgramCreateVP(&pxGraphicContext->DirectXInstance, pxShaderProgram, vertexShaderFilePath, fragmentShaderFilePath);
-        }
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXAPI PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath)
-{
-    PXText pxTextVertexShader;
-    PXText pxTextPixelShader;
-
-    PXTextConstructFromAdressA(&pxTextVertexShader, vertexShaderFilePath, PXTextUnkownLength);
-    PXTextConstructFromAdressA(&pxTextPixelShader, fragmentShaderFilePath, PXTextUnkownLength);
-
-    return PXGraphicShaderProgramCreateVP(pxGraphicContext, pxShaderProgram, &pxTextVertexShader, &pxTextPixelShader);
 }
 
 void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4)

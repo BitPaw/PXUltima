@@ -1,6 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 
 namespace PX
 {
@@ -66,14 +67,16 @@ namespace PX
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicDrawColorRGBFFunction(UIntPtr graphicAPI, float red, float green, float blue, float alpha);
 
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicDrawModeSetFunction(UIntPtr graphicAPI, PXGraphicDrawFillMode pxGraphicDrawFillMode);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicDrawModeSetFunction(UIntPtr graphicAPI, GraphicDrawFillMode pxGraphicDrawFillMode);
 
 
 
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderProgramCreateFromFileVFFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, ref PXText vertexShaderFilePath, ref PXText fragmentShaderFilePath);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderProgramCreateFromStringVFFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, ref PXText vertexShaderFilePath, ref PXText fragmentShaderFilePath);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderProgramCreateFromFileVPFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, ref PXText vertexShaderFilePath, ref PXText fragmentShaderFilePath);
+	 [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderProgramCreateFromFileVPAFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, char* vertexShaderFilePath, char* fragmentShaderFilePath);
+	 [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderProgramCreateFromStringVPFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, ref PXText vertexShaderFilePath, ref PXText fragmentShaderFilePath);
+	 [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderProgramCreateFromStringVPAFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, char* vertexShaderFilePath, char* fragmentShaderFilePath);
 
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderVariableIDFetchFunction(UIntPtr graphicAPI, ref PXShader pxShader, ref uint shaderVariableID, ref byte name);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderVariableIDFetchFunction(UIntPtr graphicAPI, ref PXShader pxShader, ref uint shaderVariableID, byte* name);
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderVariableFx1Function(UIntPtr graphicAPI, uint location, float v0);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderVariableFx1xNFunction(UIntPtr graphicAPI, uint location, UIntPtr count, ref float[] value);
@@ -182,8 +185,10 @@ namespace PX
             //-------------------------------------------------
             // Shader
             //-------------------------------------------------
-            public PXGraphicShaderProgramCreateFromFileVFFunction ShaderProgramCreateFromFileVF;
-            public PXGraphicShaderProgramCreateFromStringVFFunction ShaderProgramCreateFromStringVF;
+            public PXGraphicShaderProgramCreateFromFileVPFunction ShaderProgramCreateFromFileVP;
+            public PXGraphicShaderProgramCreateFromFileVPAFunction ShaderProgramCreateFromFileVPA;
+            public PXGraphicShaderProgramCreateFromStringVPFunction ShaderProgramCreateFromStringVP;
+            public PXGraphicShaderProgramCreateFromStringVPAFunction ShaderProgramCreateFromStringVPA;
             public PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
             public PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
             public PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
@@ -207,8 +212,6 @@ namespace PX
             public PXGraphicShaderVariableMatrix2fvFunction ShaderVariableMatrix2fv;
             public PXGraphicShaderVariableMatrix3fvFunction ShaderVariableMatrix3fv;
             public PXGraphicShaderVariableMatrix4fvFunction ShaderVariableMatrix4fv;
-
-
 
             //-------------------------------------------------
             // Draw
@@ -410,7 +413,6 @@ namespace PX
             return PX.ActionResult.NotImplemented;
         }
 
-
         public PX.ActionResult LightSet(Light pxLight, uint index)
         {
             return PX.ActionResult.NotImplemented;
@@ -466,6 +468,10 @@ namespace PX
             return _pxGraphic.SceneDeploy(_pxGraphic.EventOwner);
         }
 
+        public PX.ActionResult DrawMode(GraphicDrawFillMode graphicDrawFillMode)
+        {
+            return _pxGraphic.DrawModeSet(_pxGraphic.EventOwner, graphicDrawFillMode);
+        }
 
         public PX.ActionResult DrawColor(float red, float green, float blue)
         {
@@ -524,7 +530,7 @@ namespace PX
                 {
                     PXText fragmentShaderText = PXText.MakeFromStringW(fragmentShaderAdress, fragmentShaderFilePath.Length);
 
-                    return _pxGraphic.ShaderProgramCreateFromFileVF(_pxGraphic.EventOwner, ref shaderProgram._pxShaderProgram, ref vertexShaderText, ref fragmentShaderText);
+                    return _pxGraphic.ShaderProgramCreateFromFileVP(_pxGraphic.EventOwner, ref shaderProgram._pxShaderProgram, ref vertexShaderText, ref fragmentShaderText);
                 }
             }
         }
@@ -538,7 +544,7 @@ namespace PX
                 {
                     PXText fragmentShaderText = PXText.MakeFromStringW(fragmentShaderAdress, fragmentShader.Length);
 
-                    return _pxGraphic.ShaderProgramCreateFromFileVF(_pxGraphic.EventOwner, ref shaderProgram._pxShaderProgram, ref vertexShaderText, ref fragmentShaderText);
+                    return _pxGraphic.ShaderProgramCreateFromFileVP(_pxGraphic.EventOwner, ref shaderProgram._pxShaderProgram, ref vertexShaderText, ref fragmentShaderText);
                 }
             }
         }
@@ -554,13 +560,21 @@ namespace PX
         {
             return _pxGraphic.ShaderProgramDelete(_pxGraphic.EventOwner, ref shaderProgram._pxShaderProgram);
         }
-        public PX.ActionResult ShaderVariableIDFetch(Shader shader, ref uint shaderVariableID, string name)
+        public unsafe PX.ActionResult ShaderVariableIDFetch(Shader shader, ref uint shaderVariableID, string name)
         {
-            return ActionResult.NotImplemented;
+            int size = name.Length;
+            byte* bytes = stackalloc byte[260];
+
+            for (int i = 0; i < size; i++) //             byte[] bytes = Encoding.ASCII.GetBytes(inputString);
+            {
+                bytes[i] = (byte)(name[i] > 0xFF ? '?' : name[i]);
+            }
+
+            return _pxGraphic.ShaderVariableIDFetch(_pxGraphic.EventOwner, ref shader._pxShader, ref shaderVariableID, bytes);
         }
         public PX.ActionResult ShaderVariable(uint location, float v0)
         {
-            return ActionResult.NotImplemented;
+            return _pxGraphic.ShaderVariableFx1(_pxGraphic.EventOwner, location, v0);
         }
         public PX.ActionResult ShaderVariable(uint location, UIntPtr count, float[] value)
         {
@@ -568,7 +582,7 @@ namespace PX
         }
         public PX.ActionResult ShaderVariable(uint location, uint v0)
         {
-            return ActionResult.NotImplemented;
+            return _pxGraphic.ShaderVariableIx1(_pxGraphic.EventOwner, location, v0);
         }
         public PX.ActionResult ShaderVariable(uint location, UIntPtr count, uint[] value)
         {
@@ -576,23 +590,23 @@ namespace PX
         }
         public PX.ActionResult ShaderVariable(uint location, float v0, float v1)
         {
-            return ActionResult.NotImplemented;
+            return _pxGraphic.ShaderVariableFx2(_pxGraphic.EventOwner, location, v0, v1);
         }
         public PX.ActionResult ShaderVariable(uint location, uint v0, uint v1)
         {
-            return ActionResult.NotImplemented;
+            return _pxGraphic.ShaderVariableIx2(_pxGraphic.EventOwner, location, v0, v1);
         }
         public PX.ActionResult ShaderVariable(uint location, float v0, float v1, float v2)
         {
-            return ActionResult.NotImplemented;
+            return _pxGraphic.ShaderVariableFx3(_pxGraphic.EventOwner, location, v0, v1, v2);
         }
         public PX.ActionResult ShaderVariable(uint location, uint v0, uint v1, uint v2)
         {
-            return ActionResult.NotImplemented;
+            return _pxGraphic.ShaderVariableIx3(_pxGraphic.EventOwner, location, v0, v1, v2);
         }
         public PX.ActionResult ShaderVariable(uint location, float v0, float v1, float v2, float v3)
         {
-            return ActionResult.NotImplemented;
+            return _pxGraphic.ShaderVariableFx4(_pxGraphic.EventOwner, location, v0, v1, v2, v3);
         }
         public PX.ActionResult ShaderVariable(uint location, uint UIntPtr, uint v1, uint v2, uint v3)
         {

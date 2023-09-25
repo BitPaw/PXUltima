@@ -165,12 +165,12 @@ namespace PX
     }
 
 
-    public enum PXGraphicDrawFillMode
+    public enum GraphicDrawFillMode
     {
-        PXGraphicDrawFillModeInvalid,
-        PXGraphicDrawFillModePoints,
-        PXGraphicDrawFillModeLines,
-        PXGraphicDrawFillModeFill
+        Invalid,
+        Points,
+        Lines,
+        Fill
     }
 
 

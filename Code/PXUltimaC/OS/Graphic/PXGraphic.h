@@ -359,8 +359,12 @@ extern "C"
 	typedef PXActionResult (PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
 
 
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVFFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVFFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVPAFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVPAFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
+
+
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramSelectFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramDeleteFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
@@ -476,8 +480,11 @@ extern "C"
 		//-------------------------------------------------
 		// Shader
 		//-------------------------------------------------
-		PXGraphicShaderProgramCreateFromFileVFFunction ShaderProgramCreateFromFileVF;
-		PXGraphicShaderProgramCreateFromStringVFFunction ShaderProgramCreateFromStringVF;
+		PXGraphicShaderProgramCreateFromFileVPFunction ShaderProgramCreateFromFileVP;
+		PXGraphicShaderProgramCreateFromFileVPAFunction ShaderProgramCreateFromFileVPA;
+		PXGraphicShaderProgramCreateFromStringVPFunction ShaderProgramCreateFromStringVP;
+		PXGraphicShaderProgramCreateFromStringVPAFunction ShaderProgramCreateFromStringVPA;
+
 		PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
 		PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
 		PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
@@ -602,12 +609,6 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
-
-	//-----------------------------------------------------
-	// Shader
-	//-----------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVP(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
-	PXPublic PXActionResult PXAPI PXGraphicShaderProgramCreateVPA(PXGraphicContext* const pxGraphicContext, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 
 
 	PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);

@@ -2243,40 +2243,85 @@ PXActionResult PXAPI PXDirectXPrimitiveIndexedDraw(PXDirectX* const pxDirectX, c
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectXShaderProgramCreateVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader)
+PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
 {
-    PXDirectXShaderCompile(pxDirectX, &pxShaderProgram->VertexShader, vertexShader);
-    PXDirectXShaderCreate(pxDirectX, &pxShaderProgram->VertexShader);
+    PXFile vertexShaderFile;
+    PXFile fragmentShaderFile;
 
-    PXDirectXShaderCompile(pxDirectX, &pxShaderProgram->PixelShader, pixelShader);
-    PXDirectXShaderCreate(pxDirectX, &pxShaderProgram->PixelShader);
+    {
+        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+        pxFileOpenFromPathInfo.Text = *vertexShaderFilePath;
+        pxFileOpenFromPathInfo.FileSize = 0;
+        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+        pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+        PXFileOpenFromPath(&vertexShaderFile, &pxFileOpenFromPathInfo);
+
+        pxFileOpenFromPathInfo.Text = *fragmentShaderFilePath;
+
+        PXFileOpenFromPath(&fragmentShaderFile, &pxFileOpenFromPathInfo);
+
+        {
+            PXText veretxShaderText;
+            PXText pixelShaderText;
+
+            PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFile.Data, vertexShaderFile.DataSize);
+            PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFile.Data, fragmentShaderFile.DataSize);
+
+            PXActionResult shaderResult = PXDirectXShaderProgramCreateFromStringVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
+        }
+    }
+
+    PXFileDestruct(&vertexShaderFile);
+    PXFileDestruct(&fragmentShaderFile);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectXShaderProgramCreateVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader)
+PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath)
 {
-    PXText pxTextVertexShaderW;
-    PXText pxTextPixelShaderW;
+    PXText veretxShaderText;
+    PXText pixelShaderText;
 
-    PXTextConstructNamedBufferW(&pxTextVertexShaderW, pxTextVertexShaderBuffer, 260);
-    PXTextConstructNamedBufferW(&pxTextPixelShaderW, pxTextPixelShaderBuffer, 260);
+    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength);
 
-    PXTextCopyAW(vertexShader, PXTextUnkownLength, pxTextVertexShaderW.TextW, pxTextPixelShaderW.SizeAllocated);
-    PXTextCopyAW(pixelShader, PXTextUnkownLength, pxTextPixelShaderW.TextW, pxTextPixelShaderW.SizeAllocated);
+    return PXDirectXShaderProgramCreateFromFileVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
 
-    return PXDirectXShaderProgramCreateVP(pxDirectX, pxShaderProgram, &pxTextVertexShaderW, &pxTextPixelShaderW);
-}
-
-PXActionResult PXAPI PXDirectXShaderProgramCreateVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader)
-{
-    PXText pxTextVertexShaderW;
+    /*
+        PXText pxTextVertexShaderW;
     PXText pxTextPixelShaderW;
 
     PXTextConstructFromAdressW(&pxTextVertexShaderW, vertexShader, PXTextUnkownLength);
     PXTextConstructFromAdressW(&pxTextPixelShaderW, pixelShader, PXTextUnkownLength);
 
     return PXDirectXShaderProgramCreateVP(pxDirectX, pxShaderProgram, &pxTextVertexShaderW, &pxTextPixelShaderW);
+    */
+}
+
+PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
+{
+    PXDirectXShaderCompile(pxDirectX, &pxShaderProgram->VertexShader, vertexShaderFilePath);
+    PXDirectXShaderCreate(pxDirectX, &pxShaderProgram->VertexShader);
+
+    PXDirectXShaderCompile(pxDirectX, &pxShaderProgram->PixelShader, fragmentShaderFilePath);
+    PXDirectXShaderCreate(pxDirectX, &pxShaderProgram->PixelShader);
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath)
+{
+    PXText veretxShaderText;
+    PXText pixelShaderText;
+
+    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength);
+
+    return PXDirectXShaderProgramCreateFromStringVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
 }
 
 PXActionResult PXAPI PXDirectXShaderProgramCreate(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram)

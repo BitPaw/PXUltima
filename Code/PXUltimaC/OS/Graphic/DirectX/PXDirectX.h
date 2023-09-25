@@ -67,23 +67,16 @@ extern "C"
 
         PXDirectXVersionNewest,
 
-#if PXDX9Enable
         PXDirectXVersion9, // Windows XP
-#endif
 
-#if PXDX10Enable
         PXDirectXVersion10x0, // Windows Vista
-#endif
 
-#if PXDX10x1Enable
         PXDirectXVersion10x1,  // Windows Vista
         PXDirectXVersion10x1Simulate9x1,
         PXDirectXVersion10x1Simulate9x2,
         PXDirectXVersion10x1Simulate9x3,
         PXDirectXVersion10x1Simulate10x0,
-#endif
 
-#if PXDX11Enable
         // DirectX 11 - Windows 7, 8, 8.1
         PXDirectXVersion11Emulate1x0Core,
         PXDirectXVersion11Emulate9x1,
@@ -96,9 +89,7 @@ extern "C"
         //PXDirectXVersion11Emulate12x0,
         //PXDirectXVersion11Emulate12x1,
         //PXDirectXVersion11Emulate12x2,
-#endif
-
-#if PXDX12Enable
+        // 
         // DirectX 12 - Windows 10, 11
         PXDirectXVersion12Emulate1x0Core,
         PXDirectXVersion12Emulate9x1,
@@ -111,7 +102,6 @@ extern "C"
         PXDirectXVersion12Emulate12x0,
         PXDirectXVersion12Emulate12x1,
         PXDirectXVersion12Emulate12x2,
-#endif
     }
     PXDirectXVersion;
 
@@ -312,6 +302,12 @@ extern "C"
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader);
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader);
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader);
+
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
+
 
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreate(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramSelect(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram);

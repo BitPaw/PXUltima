@@ -1256,38 +1256,6 @@ int PXAPI PXOpenGLToggleToID(const PXOpenGLToggle openGLToggle)
     }
 }
 
-unsigned int PXAPI PXOpenGLStringNameToID(const PXOpenGLStringName stringName)
-{
-    switch (stringName)
-    {
-        case PXOpenGLStringNameVendor:
-            return GL_VENDOR;
-
-        case PXOpenGLStringNameRenderer:
-            return GL_RENDERER;
-
-        case PXOpenGLStringNameVersion:
-            return GL_VERSION;
-
-        case PXOpenGLStringNameShadingLanguage:
-            return GL_SHADING_LANGUAGE_VERSION;
-
-        case PXOpenGLStringNameExtensions:
-            return GL_EXTENSIONS;
-
-        case PXOpenGLStringNameInvalid:
-        default:
-            return -1;
-    }
-}
-
-const char* PXAPI PXOpenGLStringGet(const PXOpenGLStringName stringName)
-{
-    const unsigned int stringNameID = PXOpenGLStringNameToID(stringName);
-
-    return (const char*)glGetString(stringNameID);
-}
-
 PXInt32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt32U* const imageFormat, PXInt32U* const dataFormat)
 {
     switch (pxColorFormat)
@@ -1383,13 +1351,6 @@ PXInt32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt3
     }
 
     return PXTrue;
-}
-
-const char* PXAPI PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStringName stringName, const unsigned int index)
-{
-    const unsigned int stringNameID = PXOpenGLStringNameToID(stringName);
-
-    return (const char*)openGLContext->StringI(stringNameID, index);
 }
 
 PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval)
@@ -3924,8 +3885,6 @@ void BF::PXOpenGL::ShaderSetUniformVector4(int vector3UniformID, float x, float 
 
 PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
 {
-    PXObjectClear(PXShaderProgram, pxShaderProgram);
-
     PXFile vertexShaderFile;
     PXFile fragmentShaderFile;
 
@@ -3945,30 +3904,62 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVF(PXOpenGL* const pxOpe
 
         PXFileOpenFromPath(&fragmentShaderFile, &pxFileOpenFromPathInfo);
 
-        pxShaderProgram->PixelShader.ContentSize = fragmentShaderFile.DataSize;
-        pxShaderProgram->PixelShader.Content = fragmentShaderFile.Data;
-        pxShaderProgram->VertexShader.ContentSize = vertexShaderFile.DataSize;
-        pxShaderProgram->VertexShader.Content = vertexShaderFile.Data;
+        {
+            PXText veretxShaderText;
+            PXText pixelShaderText;
+
+            PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFile.Data, vertexShaderFile.DataSize);
+            PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFile.Data, fragmentShaderFile.DataSize);
+
+            PXActionResult shaderResult = PXOpenGLShaderProgramCreateFromStringVF(pxOpenGL, pxShaderProgram, &veretxShaderText, &pixelShaderText);
+        }
     }
-
-    PXOpenGLShaderProgramCreate(pxOpenGL, pxShaderProgram);
-
-
 
     PXFileDestruct(&vertexShaderFile);
     PXFileDestruct(&fragmentShaderFile);
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVFA(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath)
+{
+    PXText veretxShaderText;
+    PXText pixelShaderText;
+
+    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength);
+
+    return PXOpenGLShaderProgramCreateFromFileVF(pxOpenGL, pxShaderProgram, &veretxShaderText, &pixelShaderText);
+}
+
+PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
+{
+    PXObjectClear(PXShaderProgram, pxShaderProgram);
+
+    pxShaderProgram->PixelShader.ContentSize = fragmentShaderFilePath->SizeUsed;
+    pxShaderProgram->PixelShader.Content = fragmentShaderFilePath->TextA;
+    pxShaderProgram->VertexShader.ContentSize = vertexShaderFilePath->SizeUsed;
+    pxShaderProgram->VertexShader.Content = vertexShaderFilePath->TextA;;
+
+    PXOpenGLShaderProgramCreate(pxOpenGL, pxShaderProgram);
 
     pxShaderProgram->PixelShader.ContentSize = 0;
     pxShaderProgram->PixelShader.Content = PXNull;
     pxShaderProgram->VertexShader.ContentSize = 0;
     pxShaderProgram->VertexShader.Content = PXNull;
 
-    return PXActionSuccessful;
+    return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
+PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVFA(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath)
 {
-    return PXActionRefusedNotImplemented;
+    PXText veretxShaderText;
+    PXText pixelShaderText;
+
+    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength);
+
+    return PXOpenGLShaderProgramCreateFromStringVF(pxOpenGL, pxShaderProgram, &veretxShaderText, &pixelShaderText);
 }
 
 PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)

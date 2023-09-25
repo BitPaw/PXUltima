@@ -16,6 +16,9 @@ namespace PXText
 
             graphic.Select();
 
+            //PX.ShaderProgram shader = new PX.ShaderProgram();
+            //graphic.ShaderProgramCreateFromString(shader, "", "");
+
             while (true)
             {
 

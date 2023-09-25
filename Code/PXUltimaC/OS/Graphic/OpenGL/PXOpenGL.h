@@ -300,24 +300,6 @@ extern "C"
 	PXPrivate int PXAPI PXOpenGLToggleToID(const PXOpenGLToggle openGLToggle);
 
 
-	typedef enum PXOpenGLStringName_
-	{
-		PXOpenGLStringNameInvalid,
-		PXOpenGLStringNameVendor,
-		PXOpenGLStringNameRenderer,
-		PXOpenGLStringNameVersion,
-		PXOpenGLStringNameShadingLanguage,
-		PXOpenGLStringNameExtensions
-	}
-	PXOpenGLStringName;
-
-	typedef const GLubyte* (*PXOpenGLStringFunction)(GLenum name); // glGetString
-
-	PXPrivate unsigned int PXAPI PXOpenGLStringNameToID(const PXOpenGLStringName stringName);
-
-	PXPublic const char* PXAPI PXOpenGLStringGet(const PXOpenGLStringName stringName);
-
-
 
 
 #if 0
@@ -1500,7 +1482,9 @@ extern "C"
 	// OpenGL - Shader
 	//-----------------------------------------------------
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVFA(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVFA(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
@@ -1605,7 +1589,7 @@ extern "C"
 //-------------------------------------------------------------------------
 
 //---<PXOpenGL v.3.0.0>------------------------------------------------------
-	PXPublic const char* PXAPI PXOpenGLStringGetI(PXOpenGL* const openGLContext, const PXOpenGLStringName stringName, const unsigned int index);
+
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.3.1.0>------------------------------------------------------
