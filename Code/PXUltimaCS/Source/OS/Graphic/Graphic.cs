@@ -53,7 +53,7 @@ namespace PX
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicSwapIntervalGetFunction(UIntPtr graphicAPI, ref uint interval);
 
 
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicRectangleDrawFunction(UIntPtr graphicAPI, float xA, float yA, float xB, float yB);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicRectangleDrawFunction(UIntPtr graphicAPI, float xA, float yA, float xB, float yB, byte mode);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicRectangleDrawTxFunction(UIntPtr graphicAPI, float xA, float yA, float xB, float yB, float txA, float tyA, float txB, float tyB);
 
 
@@ -479,19 +479,35 @@ namespace PX
 
         public unsafe PX.ActionResult RectangleDraw(float xA, float yA, float xB, float yB)
         {
-            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB);
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB, 0x01);
         }
         public unsafe PX.ActionResult RectangleDraw(float xA, float yA, float xB, float yB, float red, float green, float blue)
         {
             DrawColor(red, green, blue);
 
-            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB);
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB, 0x01);
         }
         public unsafe PX.ActionResult RectangleDraw(float xA, float yA, float xB, float yB, float red, float green, float blue, float alpha)
         {
             DrawColor(red, green, blue, alpha);
 
-            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB);
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB, 0x01);
+        }
+        public unsafe PX.ActionResult RectangleDrawOffset(float left, float bottom, float right, float top)
+        {
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, left, bottom, right, top, 0x02);
+        }
+        public unsafe PX.ActionResult RectangleDrawOffset(float left, float bottom, float right, float top, float red, float green, float blue)
+        {
+            DrawColor(red, green, blue);
+
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, left, bottom, right, top, 0x02);
+        }
+        public unsafe PX.ActionResult RectangleDrawOffset(float left, float bottom, float right, float top, float red, float green, float blue, float alpha)
+        {
+            DrawColor(red, green, blue, alpha);
+
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, left, bottom, right, top, 0x02);
         }
         public PX.ActionResult RectangleDrawTx(float xA, float yA, float xB, float yB, float txA, float tyA, float txB, float tyB)
         {

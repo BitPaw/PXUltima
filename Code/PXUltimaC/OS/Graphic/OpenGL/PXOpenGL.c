@@ -5284,16 +5284,28 @@ PXActionResult PXAPI PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL,
     return PXActionRefusedNotImplemented;
 }
 
-
-
-PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB)
+PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB, const PXInt8U mode)
 {
-    // pxOpenGL->Rectf(xA, yA, xB, yB);
+    switch (mode)
+    {
+        case 1:
+        {
+            pxOpenGL->Rectf(xA, yA, xB, yB);
+            
+            break;
+        }
+        case 2:
+        {
+            // OpenGL works in a normalizes space. Ranging from -1 to +1.
+            // [0,0] is middle of the screen, [-1,-1] lower left, [+1,+1] upper right    
 
-    // OpenGL works in a normalizes space. Ranging from -1 to +1.
-    // [0,0] is middle of the screen, [-1,-1] lower left, [+1,+1] upper right    
+            pxOpenGL->Rectf(-1 + xA, -1 + yA, 1 - xB, 1 - yB);
 
-    pxOpenGL->Rectf(-1 + xA, -1 + yA, 1 - xB, 1 - yB);
+            break;
+        }
+        default:
+            return PXActionRefusedNotSupported;
+    }
 
     return PXActionSuccessful;
 }
