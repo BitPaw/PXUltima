@@ -1,4 +1,5 @@
 ﻿using System;
+using PXUltimaCSTest;
 
 namespace PXText
 {
@@ -7,8 +8,7 @@ namespace PXText
         public static int Main()
         {
             PX.Window window = new PX.Window();
-            window.Create(200, 200, 500, 500, PX.User.Name);
-            
+            window.Create(900, 200, UIUtility.GetWindowWidthPixels(), UIUtility.GetWindowHeightPixels(), PX.User.Name);
 
 
             PX.Graphic graphic = new PX.Graphic();
@@ -16,17 +16,29 @@ namespace PXText
 
             graphic.Select();
 
-            //PX.ShaderProgram shader = new PX.ShaderProgram();
-            //graphic.ShaderProgramCreateFromString(shader, "", "");
+            Rect red = Rect.RectWithPixelSize(-.5f, -0.5f, 100, UIUtility.GetWindowHeightPixels());
+
+            Rect green = Rect.RectWithPixelPositionAndSize(UIUtility.GetWindowWidthPixels() - 100, UIUtility.GetWindowHeightPixels(), 100, 100);
+
+            green.SetMarginRight(10);
+
+            red.SetPositionByPixelCoords(new Vector2(0, UIUtility.GetWindowHeightPixels()));
+            red.SetMarginBottom(10);
+            red.SetMarginLeft(10);
+            red.SetMarginTop(10);
+            //red.SetMarginRight(10);
+
 
             while (true)
             {
-
-                
                 graphic.Clear(0.2f, 0.2f, 0.5f, 1);
-                graphic.DrawColor(1,0,0);
-                //   graphic.RectangleDraw(-0.5f, -0.8f, 0.5f, 0.2f);
-                graphic.RectangleDrawOffset(00, 0, 0, 0f);
+                graphic.DrawColor(1, 0, 0);
+                red.Draw(graphic);
+
+                graphic.DrawColor(0, 1, 0);
+                green.Draw(graphic);
+
+
                 graphic.SceneDeploy();
             }
 
@@ -57,7 +69,7 @@ namespace PXText
             while (true) { Test.TestSocket.ConnectAndSend(); }
             */
 
-                return 0;
+            return 0;
         }
     }
 }
