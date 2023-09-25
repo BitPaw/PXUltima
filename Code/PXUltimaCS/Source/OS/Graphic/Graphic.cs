@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace PX
@@ -99,7 +100,7 @@ namespace PX
 
     public class Graphic : IDisposable
     {
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicInstantiate(ref PXGraphic pxGraphic, int width, int height, ref PXWindow pxWindow);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicInstantiate(ref PXGraphic pxGraphic, ref PXGraphicInitializeInfo pxGraphicInitializeInfo);
 
         [StructLayout(LayoutKind.Sequential, Size = 9000)]
         internal unsafe struct PXGraphic
@@ -292,12 +293,23 @@ namespace PX
             Release();
         }
 
-        public PX.ActionResult Initialize(PX.Window pxWindow)
+        public unsafe PX.ActionResult Initialize(PX.Window pxWindow, GraphicSystem pxGraphicSystem)
         {
-            return PXGraphicInstantiate(ref _pxGraphic, int.MaxValue, int.MaxValue, ref pxWindow._pxWindow);
+            fixed (PXWindow* ptr = &pxWindow._pxWindow)
+            {
+                PXGraphicInitializeInfo* pXGraphicInitializeInfo = stackalloc PXGraphicInitializeInfo[1];
+                pXGraphicInitializeInfo->WindowReference = ptr;
+                pXGraphicInitializeInfo->Width = (UIntPtr)ulong.MaxValue;
+                pXGraphicInitializeInfo->Height = (UIntPtr)ulong.MaxValue;
+                pXGraphicInitializeInfo->DirectXVersion = DirectXVersion.DX9;
+                pXGraphicInitializeInfo->DirectXDriverType = DirectXDriverType.HardwareDevice;
+                pXGraphicInitializeInfo->GraphicSystem = pxGraphicSystem;
+
+                return PXGraphicInstantiate(ref _pxGraphic, ref *pXGraphicInitializeInfo);
+            }     
         }
 
-        public PX.ActionResult Initialize(ulong width, ulong height)
+        public PX.ActionResult Initialize(ulong width, ulong height, GraphicSystem pxGraphicSystem)
         {
             return 0;// _pxGraphic.Initialize(ref _pxGraphic, width, height, );
         }
@@ -307,10 +319,20 @@ namespace PX
         }
         public void Select()
         {
+            if (_pxGraphic.Select == null)
+            {
+                return;            
+            }
+
             _pxGraphic.Select(_pxGraphic.EventOwner);
         }
         public void Deselect()
         {
+            if ( _pxGraphic.Deselect == null )
+            {
+                return;             
+            }
+
             _pxGraphic.Deselect(_pxGraphic.EventOwner);
         }
 
@@ -444,8 +466,31 @@ namespace PX
             return _pxGraphic.SceneDeploy(_pxGraphic.EventOwner);
         }
 
+
+        public PX.ActionResult DrawColor(float red, float green, float blue)
+        {
+            return DrawColor(red, green, blue, 1);
+        }
+
+        public PX.ActionResult DrawColor(float red, float green, float blue, float alpha)
+        {
+            return _pxGraphic.DrawColorRGBAF(_pxGraphic.EventOwner, red, green, blue, alpha);
+        }
+
         public unsafe PX.ActionResult RectangleDraw(float xA, float yA, float xB, float yB)
         {
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB);
+        }
+        public unsafe PX.ActionResult RectangleDraw(float xA, float yA, float xB, float yB, float red, float green, float blue)
+        {
+            DrawColor(red, green, blue);
+
+            return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB);
+        }
+        public unsafe PX.ActionResult RectangleDraw(float xA, float yA, float xB, float yB, float red, float green, float blue, float alpha)
+        {
+            DrawColor(red, green, blue, alpha);
+
             return _pxGraphic.RectangleDraw(_pxGraphic.EventOwner, xA, yA, xB, yB);
         }
         public PX.ActionResult RectangleDrawTx(float xA, float yA, float xB, float yB, float txA, float tyA, float txB, float tyB)

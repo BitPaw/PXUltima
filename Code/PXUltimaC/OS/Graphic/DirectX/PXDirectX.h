@@ -49,6 +49,9 @@ extern "C"
 {
 #endif
 
+    typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
+    typedef struct PXGraphicDevicePhysical_	PXGraphicDevicePhysical;
+
     typedef enum PXDirectXDriverType_
     {
         PXDirectXDriverTypeHardwareDevice,
@@ -114,10 +117,6 @@ extern "C"
 
 	typedef struct PXDirectX
 	{
-        char Driver[MAX_DEVICE_IDENTIFIER_STRING];
-        char Description[MAX_DEVICE_IDENTIFIER_STRING];
-        char DeviceName[32];
-
         PXDirectXVersion DirectXVersion;
 
 #if OSWindows && PXDX10Atleast // Direct X - v.10+
@@ -234,7 +233,7 @@ extern "C"
     PXPublic void PXAPI PXDirectXContextConstruct(PXDirectX* const pxDirectX);
     PXPublic void PXAPI PXDirectXContextDestruct(PXDirectX* const pxDirectX);
 
-    PXPublic PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType);
+    PXPublic PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
     PXPublic PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX);
 
     //-----------------------------------------------------
@@ -294,7 +293,7 @@ extern "C"
 
     //-----------------------------------------------------
     // Direct X - Viewport
-    //-----------------------------------------------------PXViewPort D3DVIEWPORT9
+    //-----------------------------------------------------
     PXPublic PXActionResult PXAPI PXDirectXViewportSet(PXDirectX* const pxDirectX, const PXViewPort* const pxViewPort);
     PXPublic PXActionResult PXAPI PXDirectXViewportGet(PXDirectX* const pxDirectX, PXViewPort* const pxViewPort);
 
@@ -383,6 +382,12 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXTexture2D* const pxTexture2D);
 	PXPublic PXActionResult PXAPI PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXTexture3D* const pxTexture3D);
 	PXPublic PXActionResult PXAPI PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTextureCube* const pxTextureCube);
+
+
+
+    PXPublic PXActionResult PXAPI PXDirectXDevicePhysicalListAmountFunction(PXDirectX* const pxDirectX, PXInt32U* const amountOfAdapters);
+    PXPublic PXActionResult PXAPI PXDirectXDevicePhysicalListFetchFunction(PXDirectX* const pxDirectX, const PXInt32U pxGraphicDevicePhysicalListSize, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
+
 
 #endif
 

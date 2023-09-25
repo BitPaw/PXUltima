@@ -16,6 +16,7 @@
 
 
 #include <Math/PXMath.h>
+#include <OS/Window/PXWindow.h>
 
 PXActionResult PXAPI PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImage* const pxImage, const PXText* const pxImageFilePath)
 {
@@ -1148,8 +1149,11 @@ void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRen
     pxRenderableMeshSegment->DoRendering = PXNo;
 }
 
-PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext, const PXInt32S width, const PXInt32S height, PXWindow* const pxWindow)
+PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+    graphicContext->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
+    graphicContext->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
+    pxGraphicInitializeInfo->Graphic = graphicContext;
 
     
     /*
@@ -1158,34 +1162,33 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
 
     }*/
 
-    PXSize deviceID;
-    PXGraphicDevicePhysical graphicDevicePhysical[20];
-    PXClearList(PXGraphicDevicePhysical, graphicDevicePhysical, 20);
-    
-    DISPLAY_DEVICEA displayDevice;
-    displayDevice.cb = sizeof(DISPLAY_DEVICEA);
+    // EnumDisplayDevicesA
 
-    for (deviceID = 0; EnumDisplayDevicesA(NULL, deviceID, &displayDevice, 0); ++deviceID)
+    // Fetch all graphical devices 
     {
-        PXGraphicDevicePhysical* const currentDevice = &graphicDevicePhysical[deviceID];
+        DISPLAY_DEVICEA displayDevice;
+        displayDevice.cb = sizeof(DISPLAY_DEVICEA);
 
-        PXTextCopyA(displayDevice.DeviceName, 32, currentDevice->DeviceDisplay, PXDeviceDisplaySize);
-        PXTextCopyA(displayDevice.DeviceString, 128, currentDevice->DeviceName, PXDeviceNameSize);
-        PXTextCopyA(displayDevice.DeviceID, 128, currentDevice->DeviceID, PXDeviceIDSize);
-        PXTextCopyA(displayDevice.DeviceKey, 128, currentDevice->DeviceKey, PXDeviceKeySize);
+        // Count how many devices we have.
+        for (graphicContext->DevicePhysicalListSize = 0; EnumDisplayDevicesA(NULL, graphicContext->DevicePhysicalListSize, &displayDevice, 0); ++(graphicContext->DevicePhysicalListSize));
 
-        graphicDevicePhysical->IsConnectedToMonitor = displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
+        // Allocate space for needed devices
+        graphicContext->DevicePhysicalList = PXNewList(PXGraphicDevicePhysical, graphicContext->DevicePhysicalListSize);
 
-        const char isYes = graphicDevicePhysical->IsConnectedToMonitor ? 'Y' : 'N';
-
-        printf("[PXGra] %c : %s, %s\n", isYes, displayDevice.DeviceName, displayDevice.DeviceString);
-
-        for (size_t monitroID = 0; EnumDisplayDevicesA(displayDevice.DeviceName, monitroID, &displayDevice, 0); ++monitroID)
+        // Loop over all devices and store space
+        for (PXSize deviceID = 0; EnumDisplayDevicesA(NULL, deviceID, &displayDevice, 0); ++deviceID)
         {
-            printf("[PXMon] %s, %s\n", displayDevice.DeviceName, displayDevice.DeviceString);
+            PXGraphicDevicePhysical* const currentDevice = &graphicContext->DevicePhysicalList[deviceID];
 
+            PXTextCopyA(displayDevice.DeviceName, 32, currentDevice->DeviceDisplay, PXDeviceDisplaySize);
+            PXTextCopyA(displayDevice.DeviceString, 128, currentDevice->DeviceName, PXDeviceNameSize);
+            PXTextCopyA(displayDevice.DeviceID, 128, currentDevice->DeviceID, PXDeviceIDSize);
+            PXTextCopyA(displayDevice.DeviceKey, 128, currentDevice->DeviceKey, PXDeviceKeySize);
+
+            currentDevice->IsConnectedToMonitor = displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
         }
-    }
+    }  
+ 
 
 #if 0
     // Create GPU affinity
@@ -1197,7 +1200,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
     pxWindow->HandleDeviceContext = dc;
 #endif
 
-    PXWindowPixelSystemSet(pxWindow);
+    PXWindowPixelSystemSet(pxGraphicInitializeInfo->WindowReference);
 
 
 
@@ -1233,24 +1236,6 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
   //  }
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    graphicContext->AttachedWindow = pxWindow;
-    graphicContext->GraphicSystem = PXGraphicSystemOpenGL;
-
     PXLockCreate(&graphicContext->_resourceLock, PXLockTypeGlobal);
 
     PXDictionaryConstruct(&graphicContext->ResourceImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
@@ -1274,11 +1259,6 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
 
             graphicContext->ShaderProgramCreateFromFileVF = PXOpenGLShaderProgramCreateFromFileVF;
             graphicContext->ShaderProgramCreateFromStringVF = PXOpenGLShaderProgramCreateFromStringVF;
-            graphicContext->ShaderProgramCreate = PXOpenGLShaderProgramCreate;
-            graphicContext->ShaderProgramSelect = PXOpenGLShaderProgramSelect;
-            graphicContext->ShaderProgramDelete = PXOpenGLShaderProgramDelete;
-
-            graphicContext->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
 
             graphicContext->ShaderVariableFx1 = PXOpenGLShaderVariableFx1;
             graphicContext->ShaderVariableFx1xN = PXOpenGLShaderVariableFx1xN;
@@ -1354,7 +1334,31 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
         {
             graphicContext->EventOwner = &graphicContext->DirectXInstance;
 
-            graphicContext->ShaderVariableIDFetch = PXDirectXShaderVariableIDFetch;
+            graphicContext->ShaderProgramCreateFromFileVF = PXNull;
+            graphicContext->ShaderProgramCreateFromStringVF = PXNull;
+
+            graphicContext->ShaderVariableIDFetch = PXNull;
+
+            graphicContext->ShaderVariableFx1 = PXNull;
+            graphicContext->ShaderVariableFx1xN = PXNull;
+            graphicContext->ShaderVariableIx1 = PXNull;
+            graphicContext->ShaderVariableIx1xN = PXNull;
+            graphicContext->ShaderVariableFx2 = PXNull;
+            graphicContext->ShaderVariableFx2xN = PXNull;
+            graphicContext->ShaderVariableIx2 = PXNull;
+            graphicContext->ShaderVariableIx2xN = PXNull;
+            graphicContext->ShaderVariableFx3 = PXNull;
+            graphicContext->ShaderVariableFx3xN = PXNull;
+            graphicContext->ShaderVariableIx3 = PXNull;
+            graphicContext->ShaderVariableIx3xN = PXNull;
+            graphicContext->ShaderVariableFx4 = PXNull;
+            graphicContext->ShaderVariableFx4xN = PXNull;
+            graphicContext->ShaderVariableIx4 = PXNull;
+            graphicContext->ShaderVariableIx4xN = PXNull;
+            graphicContext->ShaderVariableMatrix2fv = PXNull;
+            graphicContext->ShaderVariableMatrix3fv = PXNull;
+            graphicContext->ShaderVariableMatrix4fv = PXNull;
+
             graphicContext->DrawModeSet = PXNull;
             graphicContext->DrawColorRGBAF = PXNull;
 
@@ -1415,36 +1419,56 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
             break;
     }
 
-    graphicContext->Initialize(graphicContext->EventOwner, width, height, pxWindow);
+    graphicContext->Initialize(graphicContext->EventOwner, pxGraphicInitializeInfo);
     //-------------------------------------------------------------------------
 
-    graphicContext->Select(graphicContext->EventOwner);
-    graphicContext->DevicePhysicalListFetch(graphicContext->EventOwner, 1, &graphicDevicePhysical[0]);
-    graphicContext->Deselect(graphicContext->EventOwner);
+    for (size_t i = 0; i < graphicContext->DevicePhysicalListSize; i++)
+    {
+        PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &graphicContext->DevicePhysicalList[i];
 
-    printf
-    (
-        "+---------------------------------------------------------+\n"
-        "| Graphics Card - Information                             |\n"
-        "+---------------------------------------------------------+\n"
-        "| Model         : %-43s |\n"
-        "| Vendor        : %-43s |\n"
-        "| Renderer      : %-43s |\n"
-        "| Shader-OpenGL : %-43s |\n"
-        "+---------------------------------------------------------+\n\n",
-        graphicDevicePhysical[0].DeviceName,
-        graphicDevicePhysical[0].Vendor,
-        graphicDevicePhysical[0].Renderer,
-        graphicDevicePhysical[0].Shader
-    );
+        char targetBuffer[64];
+
+        if (pxGraphicDevicePhysical->Driver[0] != '\0')
+        {
+            sprintf_s(targetBuffer, 64, "%s, %s (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->Driver, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
+        }
+        else
+        {
+            sprintf_s(targetBuffer, 64, "%s, (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
+        }
+
+      
+
+        printf
+        (
+            "+---------------------------------------------------------+\n"
+            "| Graphics Card (%2i/%-2i) - Information                     |\n"
+            "+---------------------------------------------------------+\n"
+            "| Model         : %-39s |\n"
+            "| Target        : %-39s |\n"
+            "| Vendor        : %-39s |\n"
+            "| Renderer      : %-39s |\n"
+            "| Shader-OpenGL : %-39s |\n"
+            "+---------------------------------------------------------+\n\n",
+            i+1,
+            graphicContext->DevicePhysicalListSize,
+            pxGraphicDevicePhysical->DeviceName,          
+            targetBuffer,
+            pxGraphicDevicePhysical->Vendor,
+            pxGraphicDevicePhysical->Renderer,
+            pxGraphicDevicePhysical->Shader
+        );
+    }
+
+
 
 
 
     PXViewPort pxViewPort;
     pxViewPort.X = 0;
     pxViewPort.Y = 0;
-    pxViewPort.Width = pxWindow->Width;
-    pxViewPort.Height = pxWindow->Height;
+    pxViewPort.Width = graphicContext->AttachedWindow->Width;
+    pxViewPort.Height = graphicContext->AttachedWindow->Height;
     pxViewPort.ClippingMinimum = 0;
     pxViewPort.ClippingMaximum = 1;
 

@@ -1553,7 +1553,7 @@ void PXAPI PXOpenGLCopy(PXOpenGL* const openGLContext, const PXOpenGL* const ope
 
 }
 
-PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXSize width, const PXSize height, PXWindow* const pxWindow)
+PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
     // Safety
     {
@@ -1563,9 +1563,9 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
         }
     }
 
-    openGLContext->AttachedWindow = pxWindow; 
+    openGLContext->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
 
-    if (!pxWindow) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
+    if (!pxGraphicInitializeInfo->WindowReference) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
     {
 #if OSWindows
         PXWindow* const window = PXNew(PXWindow);
@@ -1574,7 +1574,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
 
         PXWindowConstruct(window);
 
-        PXWindowCreateHidden(window, width, height, 1u); // This will call this function again. Recursive
+        PXWindowCreateHidden(window, pxGraphicInitializeInfo->Width, pxGraphicInitializeInfo->Height, 1u); // This will call this function again. Recursive
 
         PXAwaitChangeCU(&window->IsRunning); // Wait
 
@@ -1606,7 +1606,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
     
     // Check if failed
     {
-        const HGLRC handle = wglCreateContext(pxWindow->HandleDeviceContext);
+        const HGLRC handle = wglCreateContext(openGLContext->AttachedWindow->HandleDeviceContext);
         const PXBool successful = handle != 0;
 
         PXActionOnErrorFetchAndReturn(!successful);
@@ -1983,7 +1983,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
 
         HGLRC bufferTHH = openGLContext->ContextCreateAttributes
         (
-            pxWindow->HandleDeviceContext, 
+            openGLContext->AttachedWindow->HandleDeviceContext,
             openGLContext->PXOpenGLConext,
             attributeList
         );
@@ -2433,10 +2433,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
             openGLContext->DevicePhysicalListB = openGLContext->FunctionPointerGet("wglEnumGpuDevicesNV");
             openGLContext->DeviceAffinityCreate = openGLContext->FunctionPointerGet("wglCreateAffinityDCNV");
             openGLContext->DeviceAffinityList = openGLContext->FunctionPointerGet("wglEnumGpusFromAffinityDCNV");
-            openGLContext->DeviceAffinityDelete = openGLContext->FunctionPointerGet("wglDeleteDCNV");
-
-
-        
+            openGLContext->DeviceAffinityDelete = openGLContext->FunctionPointerGet("wglDeleteDCNV");        
 #endif
         }
     }
@@ -2449,7 +2446,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
     {
         if (openGLContext->StringGetExtensions)
         {
-            char* teeext = openGLContext->StringGetExtensions(pxWindow->HandleDeviceContext);
+            char* teeext = openGLContext->StringGetExtensions(openGLContext->AttachedWindow->HandleDeviceContext);
             PXInt32U wglExtenionAmount = 0;
 
             {
@@ -2510,8 +2507,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXS
     PXViewPort pxViewPort;
     pxViewPort.X = 0;
     pxViewPort.Y = 0;
-    pxViewPort.Width = pxWindow->Width;
-    pxViewPort.Height = pxWindow->Height;
+    pxViewPort.Width = openGLContext->AttachedWindow->Width;
+    pxViewPort.Height = openGLContext->AttachedWindow->Height;
     pxViewPort.ClippingMinimum = 0;
     pxViewPort.ClippingMaximum = 1;
 
@@ -5291,7 +5288,12 @@ PXActionResult PXAPI PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL,
 
 PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB)
 {
-    pxOpenGL->Rectf(xA, yA, xB, yB);
+    // pxOpenGL->Rectf(xA, yA, xB, yB);
+
+    // OpenGL works in a normalizes space. Ranging from -1 to +1.
+    // [0,0] is middle of the screen, [-1,-1] lower left, [+1,+1] upper right    
+
+    pxOpenGL->Rectf(-1 + xA, -1 + yA, 1 - xB, 1 - yB);
 
     return PXActionSuccessful;
 }

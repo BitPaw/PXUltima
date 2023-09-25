@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace PX
 {
-    public enum PXGraphicSystem
+    public enum GraphicSystem
     {
-        PXGraphicSystemInvalid,
-        PXGraphicSystemOpenGL,
-        PXGraphicSystemDirectX,
-        PXGraphicSystemVulcan
+        Invalid,
+        OpenGL,
+        DirectX,
+        Vulcan
     }
 
-    public enum PXRefreshRateMode
+    public enum RefreshRateMode
     {
-        PXRefreshRateUnlimited,
-        PXRefreshRateVSync,
-        PXRefreshRateCustomSync
+        Unlimited,
+        VSync,
+        CustomSync
     }
 
 
@@ -407,6 +408,76 @@ namespace PX
 
         PXTexture2D* Texture2D;
     };
+
+
+    public enum DirectXDriverType
+    {
+        HardwareDevice,
+        ReferencDevice,
+        ReferencDeviceWithoutRender,
+        Software,
+    }
+
+    public enum DirectXVersion
+    {
+        DXInvalid,
+
+        DXNewest,
+
+        DX9, // Windows XP
+
+        DX10x0, // Windows Vista
+
+        DX10x1,  // Windows Vista
+        DX10x1Simulate9x1,
+        DX10x1Simulate9x2,
+        DX10x1Simulate9x3,
+        DX10x1Simulate10x0,
+
+        // DirectX 11 - Windows 7, 8, 8.1
+        DX11Emulate1x0Core,
+        DX11Emulate9x1,
+        DX11Emulate9x2,
+        DX11Emulate9x3,
+        DX11Emulate10x0,
+        DX11Emulate10x1,
+        DX11Emulate11x0,
+        DX11Emulate11x1,
+        //DX11Emulate12x0,
+        //DX11Emulate12x1,
+        //DX11Emulate12x2,
+
+        // DirectX 12 - Windows 10, 11
+        DX12Emulate1x0Core,
+        DX12Emulate9x1,
+        DX12Emulate9x2,
+        DX12Emulate9x3,
+        DX12Emulate10x0,
+        DX12Emulate10x1,
+        DX12Emulate11x0,
+        DX12Emulate11x1,
+        DX12Emulate12x0,
+        DX12Emulate12x1,
+        DX12Emulate12x2,
+
+    }
+
+
+    internal unsafe struct PXGraphicInitializeInfo
+    {
+        public PXWindow* WindowReference;
+
+        public UIntPtr Width;
+        public UIntPtr Height;
+
+        public DirectXVersion DirectXVersion;
+        public DirectXDriverType DirectXDriverType;
+
+        public GraphicSystem GraphicSystem;
+
+        fixed byte Buffer[7000];
+    }
+	
 
 
     unsafe struct PXVertexStructure

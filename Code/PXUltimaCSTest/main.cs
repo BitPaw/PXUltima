@@ -12,14 +12,18 @@ namespace PXText
 
 
             PX.Graphic graphic = new PX.Graphic();
-            graphic.Initialize(window);
+            graphic.Initialize(window, PX.GraphicSystem.OpenGL);
 
             graphic.Select();
 
             while (true)
             {
+
+                
                 graphic.Clear(0.2f, 0.2f, 0.5f, 1);
-                graphic.RectangleDraw(-0.5f, -0.8f, 0.5f, 0.2f);
+                graphic.DrawColor(1,0,0);
+                //   graphic.RectangleDraw(-0.5f, -0.8f, 0.5f, 0.2f);
+                graphic.RectangleDraw(-0.5f, -0.5f, 0.5f, 0.5f);
                 graphic.SceneDeploy();
             }
 

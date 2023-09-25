@@ -42,6 +42,10 @@ extern "C"
 {
 #endif
 
+
+	typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
+
+
 	//-------------------------------------------------------------------------
 	typedef enum PXOpenGLVersion_
 	{
@@ -1411,7 +1415,7 @@ extern "C"
 	PXPublic void PXAPI PXOpenGLSet(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
 	PXPublic void PXAPI PXOpenGLCopy(PXOpenGL* const openGLContext, const PXOpenGL* const openGLContextSoure);
 
-	PXPublic PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, const PXSize width, const PXSize height, PXWindow* const pxWindow);
+	PXPublic PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
 	PXPublic PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const openGLContext);
 
 	PXPublic void PXAPI PXOpenGLSelect(PXOpenGL* const openGLContext);

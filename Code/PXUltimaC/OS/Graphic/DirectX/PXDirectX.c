@@ -39,6 +39,8 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
+#include <OS/Graphic/PXGraphic.h>
+#include <OS/Window/PXWindow.h>
 
 
 #if OSWindows // TODO: Temp fix
@@ -334,7 +336,7 @@ PXActionResult PXAPI PXDirectXDepthStencilSurfaceCreate(PXDirectX* const pxDirec
 #endif
 }
 
-PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND pxWindowID, const PXDirectXVersion pxDirectXVersion, const PXDirectXDriverType pxDirectXDriverType)
+PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
 	PXDirectXContextConstruct(pxDirectX);
 
@@ -347,10 +349,9 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND 
     HMODULE           dxSoftware = GetModuleHandle(PXNull); // Reserved
     UINT              Flags = 0;
 
+    pxDirectX->DirectXVersion = pxGraphicInitializeInfo->DirectXVersion;
 
-
-
-    switch (pxDirectXVersion)
+    switch (pxDirectX->DirectXVersion)
     {
 #if PXDX12Enable
         case PXDirectXVersionNewest:
@@ -563,20 +564,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND 
                 }
             }
 
-            const PXInt32U amountOfAdapters = pxDirectX->DX9Context->lpVtbl->GetAdapterCount(pxDirectX->DX9Context);
-
-            for (PXInt32U i = 0; i < amountOfAdapters; ++i)
-            {
-                D3DADAPTER_IDENTIFIER9 adapterIdentifier;
-
-                PXMemoryClear(&adapterIdentifier, sizeof(D3DADAPTER_IDENTIFIER9));
-
-                pxDirectX->DX9Context->lpVtbl->GetAdapterIdentifier(pxDirectX->DX9Context, i, 0, &adapterIdentifier);
-
-                PXTextCopyA(adapterIdentifier.Driver, MAX_DEVICE_IDENTIFIER_STRING, pxDirectX->Driver, MAX_DEVICE_IDENTIFIER_STRING);
-                PXTextCopyA(adapterIdentifier.Description, MAX_DEVICE_IDENTIFIER_STRING, pxDirectX->Description, MAX_DEVICE_IDENTIFIER_STRING);
-                PXTextCopyA(adapterIdentifier.DeviceName, 32, pxDirectX->DeviceName, 32);
-            }
+            PXDirectXDevicePhysicalListFetchFunction(pxDirectX, pxGraphicInitializeInfo->Graphic->DevicePhysicalListSize, pxGraphicInitializeInfo->Graphic->DevicePhysicalList);
 
             D3DPRESENT_PARAMETERS presentParameters;
             PXObjectClear(D3DPRESENT_PARAMETERS, &presentParameters);
@@ -586,7 +574,16 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, const HWND 
 
             const HRESULT deviceCapaResult = pxDirectX->DX9Context->lpVtbl->GetDeviceCaps(pxDirectX->DX9Context, D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &pxDirectX->DeviceCapabilitiesCurrent);
 
-            const HRESULT createResult = pxDirectX->DX9Context->lpVtbl->CreateDevice(pxDirectX->DX9Context, D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, pxWindowID, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &presentParameters, &pxDirectX->DX9);
+            const HRESULT createResult = pxDirectX->DX9Context->lpVtbl->CreateDevice
+            (
+                pxDirectX->DX9Context, 
+                D3DADAPTER_DEFAULT, 
+                D3DDEVTYPE_HAL, 
+                pxGraphicInitializeInfo->WindowReference->ID, 
+                D3DCREATE_SOFTWARE_VERTEXPROCESSING, 
+                &presentParameters, 
+                &pxDirectX->DX9
+            );
 
             pxDirectX->DirectXVersion = PXDirectXVersion9;
 
@@ -1072,6 +1069,198 @@ PXActionResult PXAPI PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTe
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
+}
+
+PXActionResult PXAPI PXDirectXDevicePhysicalListAmountFunction(PXDirectX* const pxDirectX, PXInt32U* const amountOfAdapters)
+{
+#if OSUnix
+    return PXActionNotSupportedByOperatingSystem;
+
+#elif PXOSWindowsDestop
+
+    switch (pxDirectX->DirectXVersion)
+    {
+#if PXDX12Enable
+        case PXDirectXVersionNewest:
+        case PXDirectXVersion12Emulate1x0Core:
+        case PXDirectXVersion12Emulate9x1:
+        case PXDirectXVersion12Emulate9x2:
+        case PXDirectXVersion12Emulate9x3:
+        case PXDirectXVersion12Emulate10x0:
+        case PXDirectXVersion12Emulate10x1:
+        case PXDirectXVersion12Emulate11x0:
+        case PXDirectXVersion12Emulate11x1:
+        case PXDirectXVersion12Emulate12x0:
+        case PXDirectXVersion12Emulate12x1:
+        case PXDirectXVersion12Emulate12x2:
+        {
+            D3D_FEATURE_LEVEL featureLevel;
+
+            switch (pxDirectXVersion)
+            {
+                case PXDirectXVersion12Emulate1x0Core: featureLevel = D3D_FEATURE_LEVEL_1_0_CORE; break;
+                case PXDirectXVersion12Emulate9x1:featureLevel = D3D_FEATURE_LEVEL_9_1; break;
+                case PXDirectXVersion12Emulate9x2:featureLevel = D3D_FEATURE_LEVEL_9_2; break;
+                case PXDirectXVersion12Emulate9x3:featureLevel = D3D_FEATURE_LEVEL_9_3; break;
+                case PXDirectXVersion12Emulate10x0:featureLevel = D3D_FEATURE_LEVEL_10_0; break;
+                case PXDirectXVersion12Emulate10x1:featureLevel = D3D_FEATURE_LEVEL_10_1; break;
+                case PXDirectXVersion12Emulate11x0:featureLevel = D3D_FEATURE_LEVEL_11_0; break;
+                case PXDirectXVersion12Emulate11x1:featureLevel = D3D_FEATURE_LEVEL_11_1; break;
+                case PXDirectXVersion12Emulate12x0:featureLevel = D3D_FEATURE_LEVEL_12_0; break;
+                case PXDirectXVersion12Emulate12x1:featureLevel = D3D_FEATURE_LEVEL_12_1; break;
+                case PXDirectXVersion12Emulate12x2:featureLevel = D3D_FEATURE_LEVEL_12_2; break;
+            }
+
+            void* adpater = 0;
+
+            const HRESULT result = D3D12CreateDevice
+            (
+                adpater,
+                featureLevel,
+                0,
+                0
+            );
+
+            break;
+        }
+#endif
+
+#if PXDX11Enable
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+            UINT amount = 1;
+            D3D_FEATURE_LEVEL pFeatureLevels = 0;
+            D3D_FEATURE_LEVEL pFeatureLevelResult = 0;
+            D3D_DRIVER_TYPE dxDriverType = 0;
+
+            switch (pxDirectXVersion)
+            {
+                case PXDirectXVersion11Emulate1x0Core: pFeatureLevels = D3D_FEATURE_LEVEL_1_0_CORE; break;
+                case PXDirectXVersion11Emulate9x1:pFeatureLevels = D3D_FEATURE_LEVEL_9_1; break;
+                case PXDirectXVersion11Emulate9x2:pFeatureLevels = D3D_FEATURE_LEVEL_9_2; break;
+                case PXDirectXVersion11Emulate9x3:pFeatureLevels = D3D_FEATURE_LEVEL_9_3; break;
+                case PXDirectXVersion11Emulate10x0:pFeatureLevels = D3D_FEATURE_LEVEL_10_0; break;
+                case PXDirectXVersion11Emulate10x1:pFeatureLevels = D3D_FEATURE_LEVEL_10_1; break;
+                case PXDirectXVersion11Emulate11x0:pFeatureLevels = D3D_FEATURE_LEVEL_11_0; break;
+                case PXDirectXVersion11Emulate11x1:pFeatureLevels = D3D_FEATURE_LEVEL_11_1; break;
+            }
+
+            switch (pxDirectXDriverType)
+            {
+                case PXDirectXDriverTypeHardwareDevice: dxDriverType = D3D_DRIVER_TYPE_HARDWARE; break;
+                case PXDirectXDriverTypeReferencDevice:dxDriverType = D3D_DRIVER_TYPE_REFERENCE; break;
+                case PXDirectXDriverTypeReferencDeviceWithoutRender:dxDriverType = D3D_DRIVER_TYPE_NULL; break;
+                case PXDirectXDriverTypeSoftware:dxDriverType = D3D_DRIVER_TYPE_WARP; break;
+
+                default:
+                    return PXActionRefuedInputInvalid;
+            }
+
+
+            D3D_FEATURE_LEVEL featureLevels[] =
+            {
+                D3D_FEATURE_LEVEL_11_0,
+                D3D_FEATURE_LEVEL_10_1,
+                D3D_FEATURE_LEVEL_10_0,
+                D3D_FEATURE_LEVEL_9_3,
+                D3D_FEATURE_LEVEL_9_2,
+                D3D_FEATURE_LEVEL_9_1
+            };
+            const UINT numFeatureLevels = ARRAYSIZE(featureLevels);
+
+
+            const HRESULT result = D3D11CreateDevice
+            (
+                PXNull, // &pxDirectX->VideoAdapter,
+                dxDriverType,
+                PXNull,
+                Flags,
+                featureLevels,
+                numFeatureLevels,
+                D3D11_SDK_VERSION,
+                &pxDirectX->DX11,
+                PXNull,
+                &pxDirectX->DX11Context
+            );
+
+            break;
+        }
+#endif
+
+#if PXDX10x1Enable
+
+        case PXDirectXVersion10x1Simulate10x0:
+        case PXDirectXVersion10x1Simulate9x1:
+        case PXDirectXVersion10x1Simulate9x2:
+        case PXDirectXVersion10x1Simulate9x3:
+        case PXDirectXVersion10x1:
+        {
+            
+            break;
+        }
+#endif
+
+#if PXDX10Enable
+
+        case PXDirectXVersion10x0:
+        {
+           
+
+            break;
+        }
+#endif
+
+#if PXDX9Enable
+        case PXDirectXVersion9:
+        {
+           *amountOfAdapters = pxDirectX->DX9Context->lpVtbl->GetAdapterCount(pxDirectX->DX9Context);
+
+           return PXActionSuccessful;;
+        }
+#endif
+
+        default:
+            return PXActionRefusedFormatNotSupported;
+    }
+#endif
+
+    return PXActionNotSupportedByOperatingSystem;
+}
+
+PXActionResult PXAPI PXDirectXDevicePhysicalListFetchFunction(PXDirectX* const pxDirectX, const PXInt32U pxGraphicDevicePhysicalListSize, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList)
+{
+    PXInt32U amountOfDXDevices = 0;
+    
+    PXDirectXDevicePhysicalListAmountFunction(pxDirectX, &amountOfDXDevices);
+
+    for (PXInt32U i = 0; i < amountOfDXDevices; i++)
+    { 
+        D3DADAPTER_IDENTIFIER9 adapterIdentifier;
+
+        PXMemoryClear(&adapterIdentifier, sizeof(D3DADAPTER_IDENTIFIER9));
+
+        pxDirectX->DX9Context->lpVtbl->GetAdapterIdentifier(pxDirectX->DX9Context, i, 0, &adapterIdentifier);
+
+        for (PXInt32U deviceIndex = 0; deviceIndex < pxGraphicDevicePhysicalListSize; deviceIndex++)
+        {
+            PXGraphicDevicePhysical* pxGraphicDevicePhysicalCurrent = &pxGraphicDevicePhysicalList[i];
+
+            PXBool found = PXTextCompareA(adapterIdentifier.DeviceName, 32, pxGraphicDevicePhysicalCurrent->DeviceDisplay, PXDeviceDisplaySize);
+
+            if (found)
+            {
+                PXTextCopyA(adapterIdentifier.Driver, MAX_DEVICE_IDENTIFIER_STRING, pxGraphicDevicePhysicalCurrent->Driver, MAX_DEVICE_IDENTIFIER_STRING);
+                break;
+            }
+        }    
+    }
 }
 
 PXActionResult PXAPI PXDirectXVertexStructureRegister(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure)
