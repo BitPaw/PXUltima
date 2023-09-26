@@ -17,27 +17,31 @@ namespace PXText
             graphic.Select();
 
             Rect red = Rect.RectWithPixelSize(-.5f, -0.5f, 100, UIUtility.GetWindowHeightPixels());
-
             Rect green = Rect.RectWithPixelPositionAndSize(UIUtility.GetWindowWidthPixels() - 100, UIUtility.GetWindowHeightPixels(), 100, 100);
 
             green.SetMarginRight(10);
-
             red.SetPositionByPixelCoords(new Vector2(0, UIUtility.GetWindowHeightPixels()));
+
+            red.SetColor(new Vector4(9, 100, 255, 255));
+            red.SetBorderColor(new Vector4(255, 0, 0, 255));
+            red.SetBorder(new RectProperties(1, 1, 1, 1));
+            red.SetPadding(new RectProperties(5, 35, 5, 35));
+
             red.SetMarginBottom(10);
             red.SetMarginLeft(10);
             red.SetMarginTop(10);
+
+            green.SetBorder(new RectProperties(1, 1, 1, 1));
+            green.SetBorderColor(new Vector4(255, 0, 255, 255));
             //red.SetMarginRight(10);
 
 
             while (true)
             {
                 graphic.Clear(0.2f, 0.2f, 0.5f, 1);
-                graphic.DrawColor(1, 0, 0);
+
                 red.Draw(graphic);
-
-                graphic.DrawColor(0, 1, 0);
                 green.Draw(graphic);
-
 
                 graphic.SceneDeploy();
             }
