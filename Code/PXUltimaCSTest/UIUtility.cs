@@ -6,7 +6,6 @@ namespace PXUltimaCSTest
     struct Vector2
     {
         public static Vector2 Zero = new Vector2(0, 0);
-
         public float x;
         public float y;
         public Vector2(int x, int y)
@@ -26,6 +25,35 @@ namespace PXUltimaCSTest
         {
             return ("x: " + x.ToString() + " y: " + y.ToString());
         }
+    }
+
+    struct Vector4
+    {
+        public static Vector4 Black = new Vector4(0, 0, 0, 1);
+        public float x;
+        public float y;
+        public float z;
+        public float w;
+        public float r => x;
+        public float g => y;
+        public float b => z;
+        public float a => w;
+        public Vector4(int x, int y, int z, int w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+        public Vector4(float x, float y, float z, float w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+
+
     }
 
     struct RectProperties
@@ -229,6 +257,9 @@ namespace PXUltimaCSTest
         /// <param name="graphic"></param>
         public void Draw(PX.Graphic graphic)
         {
+            //bool hasBorder = Border.Left > 0 || Border.Right > 0 || Border.Top > 0 || Border.Bottom > 0;
+
+ //           Console.WriteLine(hasBorder);
 
             float left = Offset.Left;
             float bottom = Offset.Bottom;
@@ -376,13 +407,13 @@ namespace PXUltimaCSTest
         {
             throw new NotImplementedException();
         }
-        
+
         // <summary>
         /// TODO
         /// </summary>
         public void ApplyBorder(OffsetType OffsetType)
         {
-            throw new NotImplementedException();
+           throw new NotImplementedException();
         }
         public void SetMargin(RectProperties Margin)
         {
@@ -485,7 +516,6 @@ namespace PXUltimaCSTest
             Padding.Top = top;
             ApplyPadding(OffsetType.TOP);
         }
-
 
         /// <summary>
         /// </summary>
