@@ -1,3 +1,5 @@
+using System;
+
 namespace PXUltimaCSTest
 {
     enum OffsetType { LEFT, BOTTOM, RIGHT, TOP, ALL };
@@ -29,16 +31,16 @@ namespace PXUltimaCSTest
     struct RectProperties
     {
         public static RectProperties Zero = new RectProperties(0, 0, 0, 0);
-        public float left;
-        public float bottom;
-        public float right;
-        public float top;
+        public float Left;
+        public float Bottom;
+        public float Right;
+        public float Top;
         public RectProperties(float left, float bottom, float right, float top)
         {
-            this.left = left;
-            this.bottom = bottom;
-            this.right = right;
-            this.top = top;
+            Left = left;
+            Bottom = bottom;
+            Right = right;
+            Top = top;
         }
     }
 
@@ -78,17 +80,17 @@ namespace PXUltimaCSTest
             float normalizedY = 1 - (2 * pixelCoord.y / GetWindowHeightPixels());
             return new Vector2(normalizedX, normalizedY);
         }
-   
+
     }
 
     struct Rect
     {
-        public RectProperties offset;
-        public RectProperties margin;
-        public RectProperties padding;
+        public RectProperties Offset;
+        public RectProperties Margin;
+        public RectProperties Padding;
 
         /// <summary>
-        /// Default constructor with normalized offsets.
+        /// Default constructor with normalized Offsets.
         /// </summary>
         /// <param name="left"></param>
         /// <param name="bottom"></param>
@@ -96,13 +98,13 @@ namespace PXUltimaCSTest
         /// <param name="top"></param>
         public Rect(float left, float bottom, float right, float top)
         {
-            offset.left = left;
-            offset.bottom = bottom;
-            offset.right = right;
-            offset.top = top;
+            Offset.Left = left;
+            Offset.Bottom = bottom;
+            Offset.Right = right;
+            Offset.Top = top;
 
-            margin = RectProperties.Zero;
-            padding = RectProperties.Zero;
+            Margin = RectProperties.Zero;
+            Padding = RectProperties.Zero;
         }
 
         /// <summary>
@@ -115,8 +117,8 @@ namespace PXUltimaCSTest
         public static Rect RectWithPixelSize(float left, float bottom, float width, float height)
         {
             RectProperties rectOffset = RectProperties.Zero;
-            rectOffset.left = left;
-            rectOffset.bottom = bottom;
+            rectOffset.Left = left;
+            rectOffset.Bottom = bottom;
 
             Vector2 anchorLB = new Vector2(left, bottom);
             Vector2 anchorRT = anchorLB;
@@ -126,10 +128,10 @@ namespace PXUltimaCSTest
 
             Vector2 anchorRTinNormalizedSpace = UIUtility.PixelSpaceCoordToNormalizedCoord(anchorRTinPixelSpace);
 
-            rectOffset.right = anchorRTinNormalizedSpace.x;
-            rectOffset.top = anchorRTinNormalizedSpace.y;
+            rectOffset.Right = anchorRTinNormalizedSpace.x;
+            rectOffset.Top = anchorRTinNormalizedSpace.y;
 
-            return new Rect(left, bottom, rectOffset.right, rectOffset.top);
+            return new Rect(left, bottom, rectOffset.Right, rectOffset.Top);
         }
 
         /// <summary>
@@ -145,8 +147,8 @@ namespace PXUltimaCSTest
 
             Vector2 anchorLBinPixelSpace = new Vector2(x, y);
             Vector2 anchorLBinNormalizedSpace = UIUtility.PixelSpaceCoordToNormalizedCoord(anchorLBinPixelSpace);
-            rectOffset.left = anchorLBinNormalizedSpace.x;
-            rectOffset.bottom = anchorLBinNormalizedSpace.y;
+            rectOffset.Left = anchorLBinNormalizedSpace.x;
+            rectOffset.Bottom = anchorLBinNormalizedSpace.y;
 
             Vector2 anchorRTinPixelSpace = anchorLBinPixelSpace;
             anchorRTinPixelSpace.x += width;
@@ -154,22 +156,22 @@ namespace PXUltimaCSTest
 
             Vector2 anchorRTinNormalizedSpace = UIUtility.PixelSpaceCoordToNormalizedCoord(anchorRTinPixelSpace);
 
-            rectOffset.right = anchorRTinNormalizedSpace.x;
-            rectOffset.top = anchorRTinNormalizedSpace.y;
+            rectOffset.Right = anchorRTinNormalizedSpace.x;
+            rectOffset.Top = anchorRTinNormalizedSpace.y;
 
-            return new Rect(rectOffset.left, rectOffset.bottom, rectOffset.right, rectOffset.top);
+            return new Rect(rectOffset.Left, rectOffset.Bottom, rectOffset.Right, rectOffset.Top);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns>Normalized left bottom coords.</returns>
-        public Vector2 GetAnchorLeftBottom() => new Vector2(offset.left, offset.bottom);
+        public Vector2 GetAnchorLeftBottom() => new Vector2(Offset.Left, Offset.Bottom);
         /// <summary>
         /// 
         /// </summary>
         /// <returns>Normalized right top coords.</returns>
-        public Vector2 GetAnchorRightTop() => new Vector2(offset.right, offset.top);
+        public Vector2 GetAnchorRightTop() => new Vector2(Offset.Right, Offset.Top);
 
         /// <summary>
         /// 
@@ -187,7 +189,7 @@ namespace PXUltimaCSTest
         /// <returns>Absolute normalized width of rect.</returns>
         public float GetWidthNormalized()
         {
-            float val = offset.right - offset.left;
+            float val = Offset.Right - Offset.Left;
             return val < 0 ? -val : val;
         }
 
@@ -196,7 +198,7 @@ namespace PXUltimaCSTest
         /// <returns>Absolute normalized height of rect.</returns>
         public float GetHeightNormalized()
         {
-            float val = offset.top - offset.bottom;
+            float val = Offset.Top - Offset.Bottom;
             return val < 0 ? -val : val;
         }
 
@@ -228,10 +230,10 @@ namespace PXUltimaCSTest
             Vector2 anchorRT = GetAnchorRightTop();
             anchorLB += normalized;
             anchorRT += normalized;
-            offset.left = anchorLB.x;
-            offset.bottom = anchorLB.y;
-            offset.right = anchorRT.x;
-            offset.top = anchorRT.y;
+            Offset.Left = anchorLB.x;
+            Offset.Bottom = anchorLB.y;
+            Offset.Right = anchorRT.x;
+            Offset.Top = anchorRT.y;
         }
 
         /// <summary>
@@ -263,12 +265,12 @@ namespace PXUltimaCSTest
         {
             Vector2 anchorLB = GetAnchorLeftBottom();
             Vector2 anchorRT = GetAnchorRightTop();
-            Vector2 offsetInPixels = UIUtility.NormalizedSpaceCoordToPixelCoord(anchorRT) - UIUtility.NormalizedSpaceCoordToPixelCoord(anchorLB);
+            Vector2 OffsetInPixels = UIUtility.NormalizedSpaceCoordToPixelCoord(anchorRT) - UIUtility.NormalizedSpaceCoordToPixelCoord(anchorLB);
 
             //Directly update LB anchor since we use it for positioning
             Vector2 anchorLBinPixels = pixels;
-            //Apply offset to RT anchor to avoid weird scaling of the rect
-            Vector2 anchorRTinPixels = anchorLBinPixels + offsetInPixels;
+            //Apply Offset to RT anchor to avoid weird scaling of the rect
+            Vector2 anchorRTinPixels = anchorLBinPixels + OffsetInPixels;
 
             Vector2 normalizedAnchorLB = UIUtility.PixelSpaceCoordToNormalizedCoord(anchorLBinPixels);
             Vector2 normalizedAnchorRT = UIUtility.PixelSpaceCoordToNormalizedCoord(anchorRTinPixels);
@@ -283,28 +285,28 @@ namespace PXUltimaCSTest
         /// <param name="anchorRT">Normalized vector.</param>
         public void SetPositionNormalized(Vector2 anchorLB, Vector2 anchorRT)
         {
-            offset.left = anchorLB.x;
-            offset.bottom = anchorLB.y;
-            offset.right = anchorRT.x;
-            offset.top = anchorRT.y;
+            Offset.Left = anchorLB.x;
+            Offset.Bottom = anchorLB.y;
+            Offset.Right = anchorRT.x;
+            Offset.Top = anchorRT.y;
         }
 
         /// <summary>
         /// Set rect position in normalized space.
         /// </summary>
-        /// <param name="left">Normalized offset from left side.</param>
-        /// <param name="bottom">Normalized offset from bottom side.</param>
-        /// <param name="right">Normalized offset from right side.</param>
-        /// <param name="top"><Normalized offset from top side.</param>
+        /// <param name="left">Normalized Offset from left side.</param>
+        /// <param name="bottom">Normalized Offset from bottom side.</param>
+        /// <param name="right">Normalized Offset from right side.</param>
+        /// <param name="top"><Normalized Offset from top side.</param>
         public void SetPositionNormalized(float left, float bottom, float right, float top)
         {
-            offset.left = left;
-            offset.bottom = bottom;
-            offset.right = right;
-            offset.top = top;
+            Offset.Left = left;
+            Offset.Bottom = bottom;
+            Offset.Right = right;
+            Offset.Top = top;
         }
 
-        public void ApplyMargin(OffsetType offsetType)
+        public void ApplyMargin(OffsetType OffsetType)
         {
             Vector2 anchorLBinPixels = GetAnchorLeftBottomPixelSpace();
             Vector2 anchorRTinPixels = GetAnchorRightTopPixelSpace();
@@ -314,25 +316,25 @@ namespace PXUltimaCSTest
             float right = anchorRTinPixels.x;
             float top = anchorRTinPixels.y;
 
-            switch (offsetType)
+            switch (OffsetType)
             {
                 case OffsetType.LEFT:
-                    left += margin.left;
+                    left += Margin.Left;
                     break;
                 case OffsetType.BOTTOM:
-                    bottom -= margin.bottom;
+                    bottom -= Margin.Bottom;
                     break;
                 case OffsetType.RIGHT:
-                    right -= margin.right;
+                    right -= Margin.Right;
                     break;
                 case OffsetType.TOP:
-                    top += margin.top;
+                    top += Margin.Top;
                     break;
                 case OffsetType.ALL:
-                    left += margin.left;
-                    bottom -= margin.bottom;
-                    right -= margin.right;
-                    top += margin.top;
+                    left += Margin.Left;
+                    bottom -= Margin.Bottom;
+                    right -= Margin.Right;
+                    top += Margin.Top;
                     break;
             }
 
@@ -344,23 +346,23 @@ namespace PXUltimaCSTest
         /// <summary>
         /// TODO
         /// </summary>
-        public void ApplyPadding(OffsetType offsetType)
+        public void ApplyPadding(OffsetType OffsetType)
         {
             throw new NotImplementedException();
         }
 
-        public void SetMargin(RectProperties margin)
+        public void SetMargin(RectProperties Margin)
         {
-            this.margin = margin;
+            this.Margin = Margin;
             ApplyMargin(OffsetType.ALL);
         }
 
         public void SetMargin(float left, float bottom, float right, float top)
         {
-            margin.left = left;
-            margin.bottom = bottom;
-            margin.right = right;
-            margin.top = top;
+            Margin.Left = left;
+            Margin.Bottom = bottom;
+            Margin.Right = right;
+            Margin.Top = top;
             ApplyMargin(OffsetType.ALL);
         }
 
@@ -369,7 +371,7 @@ namespace PXUltimaCSTest
         /// <param name="left">Top offset in pixels.</param>
         public void SetMarginLeft(float left)
         {
-            margin.left = left;
+            Margin.Left = left;
             ApplyMargin(OffsetType.LEFT);
         }
 
@@ -378,7 +380,7 @@ namespace PXUltimaCSTest
         /// <param name="bot">Top offset in pixels.</param>
         public void SetMarginBottom(float bot)
         {
-            margin.bottom = bot;
+            Margin.Bottom = bot;
             ApplyMargin(OffsetType.BOTTOM);
         }
 
@@ -387,7 +389,7 @@ namespace PXUltimaCSTest
         /// <param name="right">Top offset in pixels.</param>
         public void SetMarginRight(float right)
         {
-            margin.right = right;
+            Margin.Right = right;
             ApplyMargin(OffsetType.RIGHT);
         }
 
@@ -396,22 +398,22 @@ namespace PXUltimaCSTest
         /// <param name="top">Top offset in pixels.</param>
         public void SetMarginTop(float top)
         {
-            margin.top = top;
+            Margin.Top = top;
             ApplyMargin(OffsetType.TOP);
         }
 
-        public void SetPadding(RectProperties padding)
+        public void SetPadding(RectProperties Padding)
         {
-            this.padding = padding;
+            this.Padding = Padding;
             ApplyPadding(OffsetType.ALL);
         }
 
         public void SetPadding(float left, float bottom, float right, float top)
         {
-            padding.left = left;
-            padding.bottom = bottom;
-            padding.right = right;
-            padding.top = top;
+            Padding.Left = left;
+            Padding.Bottom = bottom;
+            Padding.Right = right;
+            Padding.Top = top;
             ApplyPadding(OffsetType.ALL);
         }
 
@@ -420,7 +422,7 @@ namespace PXUltimaCSTest
         /// <param name="left">Left offset in pixels.</param>
         public void SetPaddingLeft(float left)
         {
-            padding.left = left;
+            Padding.Left = left;
             ApplyPadding(OffsetType.LEFT);
         }
 
@@ -429,7 +431,7 @@ namespace PXUltimaCSTest
         /// <param name="bot">Bottom offset in pixels.</param>
         public void SetPaddingBottom(float bot)
         {
-            padding.bottom = bot;
+            Padding.Bottom = bot;
             ApplyPadding(OffsetType.BOTTOM);
         }
 
@@ -438,7 +440,7 @@ namespace PXUltimaCSTest
         /// <param name="right">Right offset in pixels.</param>
         public void SetPaddingRight(float right)
         {
-            padding.right = right;
+            Padding.Right = right;
             ApplyPadding(OffsetType.RIGHT);
         }
 
@@ -447,7 +449,7 @@ namespace PXUltimaCSTest
         /// <param name="top">Top offset in pixels.</param>
         public void SetPaddingTop(float top)
         {
-            padding.top = top;
+            Padding.Top = top;
             ApplyPadding(OffsetType.TOP);
         }
 
@@ -458,10 +460,10 @@ namespace PXUltimaCSTest
         public void Draw(PX.Graphic graphic)
         {
 
-            float left = offset.left;
-            float bottom = offset.bottom;
-            float right = offset.right;
-            float top = offset.top;
+            float left = Offset.Left;
+            float bottom = Offset.Bottom;
+            float right = Offset.Right;
+            float top = Offset.Top;
 
             graphic.RectangleDraw(left, bottom, right, top);
         }
