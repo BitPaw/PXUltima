@@ -27,7 +27,7 @@ namespace PXUltimaCSTest
 
     struct Vector4
     {
-        public static Vector4 Black = new Vector4(0, 0, 0, 1);
+        public static Vector4 Zero = new Vector4(0, 0, 0, 0);
         public float x;
         public float y;
         public float z;
@@ -49,6 +49,10 @@ namespace PXUltimaCSTest
             this.y = y;
             this.z = z;
             this.w = w;
+        }
+        public override string ToString()
+        {
+            return ("x: " + x.ToString() + " y: " + y.ToString() + " z: " + z.ToString() + " w: " + w.ToString());
         }
     }
 
@@ -105,6 +109,23 @@ namespace PXUltimaCSTest
             return new Vector2(normalizedX, normalizedY);
         }
 
+        public static Vector4 NormalizedColorToRGBA(Vector4 normalizedColor)
+        {
+            normalizedColor.x *= 255f;
+            normalizedColor.y *= 255f;
+            normalizedColor.z *= 255f;
+            normalizedColor.w *= 255f;
+            return normalizedColor;
+        }
+
+        public static Vector4 RGBAtoNormalizedColor(Vector4 color)
+        {
+            color.x /= 255f;
+            color.y /= 255f;
+            color.z /= 255f;
+            color.w /= 255f;
+            return color;
+        }
     }
 
 }

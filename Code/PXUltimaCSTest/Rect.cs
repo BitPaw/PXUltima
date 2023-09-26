@@ -9,6 +9,9 @@ namespace PXUltimaCSTest
         public RectProperties Padding;
         public RectProperties Border;
 
+        public Vector4 Color;
+        public Vector4 BorderColor;
+
         /// <summary>
         /// Default constructor with normalized Offsets.
         /// </summary>
@@ -26,6 +29,9 @@ namespace PXUltimaCSTest
             Margin = RectProperties.Zero;
             Padding = RectProperties.Zero;
             Border = RectProperties.Zero;
+
+            Color = Vector4.Zero;
+            BorderColor = Vector4.Zero;
         }
 
         /// <summary>
@@ -148,15 +154,46 @@ namespace PXUltimaCSTest
         /// <param name="graphic"></param>
         public void Draw(PX.Graphic graphic)
         {
-            //bool hasBorder = Border.Left > 0 || Border.Right > 0 || Border.Top > 0 || Border.Bottom > 0;
-
-            //           Console.WriteLine(hasBorder);
 
             float left = Offset.Left;
             float bottom = Offset.Bottom;
             float right = Offset.Right;
             float top = Offset.Top;
 
+            bool hasBorder = Border.Left > 0 || Border.Right > 0 || Border.Top > 0 || Border.Bottom > 0;
+            bool hasVisibleBorder = BorderColor.a > 0;
+
+            Vector4 rectColor = UIUtility.RGBAtoNormalizedColor(Color);
+
+            if (hasBorder && hasVisibleBorder)
+            {
+                Vector4 borderColor = UIUtility.RGBAtoNormalizedColor(BorderColor);
+                Vector2 anchorLBinPixelSpace = GetAnchorLeftBottomPixelSpace();
+                Vector2 anchorRTinPixelSpace = GetAnchorRightTopPixelSpace();
+
+                float borderLeft = anchorLBinPixelSpace.x - Border.Left;
+                float borderBottom = anchorLBinPixelSpace.y + Border.Bottom;
+                float borderRight = anchorRTinPixelSpace.x + Border.Right;
+                float borderTop = anchorRTinPixelSpace.y - Border.Top;
+
+                Vector2 anchorLBinNormalizedSpace = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(borderLeft, borderBottom));
+                Vector2 anchorRTinNormalizedSpace = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(borderRight, borderTop));
+
+                bool hasBorderColor = BorderColor.r > 0 || BorderColor.g > 0 || BorderColor.b > 0;
+
+                if (hasBorderColor)
+                {
+                    graphic.DrawColor(borderColor.r, borderColor.g, borderColor.b, borderColor.a);
+                }
+                else
+                {
+                    graphic.DrawColor(Color.r, Color.g, Color.b, Color.a);
+                }
+
+                graphic.RectangleDraw(anchorLBinNormalizedSpace.x, anchorLBinNormalizedSpace.y, anchorRTinNormalizedSpace.x, anchorRTinNormalizedSpace.y);
+
+            }
+            graphic.DrawColor(rectColor.r, rectColor.g, rectColor.b, rectColor.a);
             graphic.RectangleDraw(left, bottom, right, top);
         }
 
@@ -253,7 +290,10 @@ namespace PXUltimaCSTest
             Offset.Right = right;
             Offset.Top = top;
         }
-
+       
+        /// <summary>
+        /// When border changes, the size and position of the rect has to be adjusted as well
+        /// </summary>
         public void ApplyMargin(OffsetType OffsetType)
         {
             Vector2 anchorLBinPixels = GetAnchorLeftBottomPixelSpace();
@@ -285,7 +325,6 @@ namespace PXUltimaCSTest
                     top += Margin.Top;
                     break;
             }
-
             Vector2 normalizedAnchorLB = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(left, bottom));
             Vector2 normalizedAnchorRT = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(right, top));
             SetPositionNormalized(normalizedAnchorLB, normalizedAnchorRT);
@@ -299,12 +338,44 @@ namespace PXUltimaCSTest
             throw new NotImplementedException();
         }
 
-        // <summary>
-        /// TODO
+        /// <summary>
+        /// When border changes, the size and position of the rect has to be adjusted as well
         /// </summary>
         public void ApplyBorder(OffsetType OffsetType)
         {
-            throw new NotImplementedException();
+
+            Vector2 anchorLBinPixels = GetAnchorLeftBottomPixelSpace();
+            Vector2 anchorRTinPixels = GetAnchorRightTopPixelSpace();
+
+            float left = anchorLBinPixels.x;
+            float bottom = anchorLBinPixels.y;
+            float right = anchorRTinPixels.x;
+            float top = anchorRTinPixels.y;
+
+            switch (OffsetType)
+            {
+                case OffsetType.LEFT:
+                    left += Border.Left;
+                    break;
+                case OffsetType.BOTTOM:
+                    bottom -= Border.Bottom;
+                    break;
+                case OffsetType.RIGHT:
+                    right -= Border.Right;
+                    break;
+                case OffsetType.TOP:
+                    top += Border.Top;
+                    break;
+                case OffsetType.ALL:
+                    left += Border.Left;
+                    bottom -= Border.Bottom;
+                    right -= Border.Right;
+                    top += Border.Top;
+                    break;
+            }
+            Vector2 normalizedAnchorLB = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(left, bottom));
+            Vector2 normalizedAnchorRT = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(right, top));
+            SetPositionNormalized(normalizedAnchorLB, normalizedAnchorRT);
         }
         public void SetMargin(RectProperties Margin)
         {
@@ -462,6 +533,23 @@ namespace PXUltimaCSTest
             ApplyBorder(OffsetType.TOP);
         }
 
+        /// <summary>
+        /// Set rect color with RGBA values from 0 - 255
+        /// </summary>
+        /// <param name="color">RGBA parameters from 0 - 255</param>
+        public void SetColor(Vector4 color)
+        {
+            Color = color;
+        }
+
+        /// <summary>
+        /// Set border color with RGBA values from 0 - 255
+        /// </summary>
+        /// <param name="color">RGBA parameters from 0 - 255</param>
+        public void SetBorderColor(Vector4 color)
+        {
+            BorderColor = color;
+        }
 
         public override string ToString()
         {
