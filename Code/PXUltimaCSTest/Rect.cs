@@ -160,11 +160,13 @@ namespace PXUltimaCSTest
             float right = Offset.Right;
             float top = Offset.Top;
 
+            bool hasPadding = Padding.Left > 0 || Padding.Right > 0 || Padding.Top > 0 || Padding.Bottom > 0;
             bool hasBorder = Border.Left > 0 || Border.Right > 0 || Border.Top > 0 || Border.Bottom > 0;
             bool hasVisibleBorder = BorderColor.a > 0;
 
             Vector4 rectColor = UIUtility.RGBAtoNormalizedColor(Color);
 
+            //Border not influenced by padding
             if (hasBorder && hasVisibleBorder)
             {
                 Vector4 borderColor = UIUtility.RGBAtoNormalizedColor(BorderColor);
@@ -189,9 +191,25 @@ namespace PXUltimaCSTest
                 {
                     graphic.DrawColor(Color.r, Color.g, Color.b, Color.a);
                 }
-
                 graphic.RectangleDraw(anchorLBinNormalizedSpace.x, anchorLBinNormalizedSpace.y, anchorRTinNormalizedSpace.x, anchorRTinNormalizedSpace.y);
+            }
 
+            if (hasPadding)
+            {
+                Vector2 anchorLBinPixelSpace = GetAnchorLeftBottomPixelSpace();
+                Vector2 anchorRTinPixelSpace = GetAnchorRightTopPixelSpace();
+
+                float paddingLeft = anchorLBinPixelSpace.x + Padding.Left;
+                float paddingBottom = anchorLBinPixelSpace.y - Padding.Bottom;
+                float paddingRight = anchorRTinPixelSpace.x - Padding.Right;
+                float paddingTop = anchorRTinPixelSpace.y + Padding.Top;
+
+                Vector2 anchorLBinNormalizedSpace = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(paddingLeft, paddingBottom));
+                Vector2 anchorRTinNormalizedSpace = UIUtility.PixelSpaceCoordToNormalizedCoord(new Vector2(paddingRight, paddingTop));
+
+                graphic.DrawColor(rectColor.r, rectColor.g, rectColor.b, rectColor.a);
+                graphic.RectangleDraw(anchorLBinNormalizedSpace.x, anchorLBinNormalizedSpace.y, anchorRTinNormalizedSpace.x, anchorRTinNormalizedSpace.y);
+                return;
             }
             graphic.DrawColor(rectColor.r, rectColor.g, rectColor.b, rectColor.a);
             graphic.RectangleDraw(left, bottom, right, top);
@@ -290,7 +308,7 @@ namespace PXUltimaCSTest
             Offset.Right = right;
             Offset.Top = top;
         }
-       
+
         /// <summary>
         /// When border changes, the size and position of the rect has to be adjusted as well
         /// </summary>
@@ -335,7 +353,7 @@ namespace PXUltimaCSTest
         /// </summary>
         public void ApplyPadding(OffsetType OffsetType)
         {
-            throw new NotImplementedException();
+            //Nothing really to do here yet...
         }
 
         /// <summary>
