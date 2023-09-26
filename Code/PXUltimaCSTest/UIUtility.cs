@@ -88,6 +88,7 @@ namespace PXUltimaCSTest
         public RectProperties Offset;
         public RectProperties Margin;
         public RectProperties Padding;
+        public RectProperties Border;
 
         /// <summary>
         /// Default constructor with normalized Offsets.
@@ -105,6 +106,7 @@ namespace PXUltimaCSTest
 
             Margin = RectProperties.Zero;
             Padding = RectProperties.Zero;
+            Border = RectProperties.Zero;
         }
 
         /// <summary>
@@ -218,6 +220,30 @@ namespace PXUltimaCSTest
         {
             float val = GetAnchorLeftBottomPixelSpace().y - GetAnchorRightTopPixelSpace().y;
             return val < 0 ? -val : val;
+        }
+
+
+        /// <summary>
+        /// Draws the rectangle. Expects screen space to range from -1 to 1.
+        /// </summary>
+        /// <param name="graphic"></param>
+        public void Draw(PX.Graphic graphic)
+        {
+
+            float left = Offset.Left;
+            float bottom = Offset.Bottom;
+            float right = Offset.Right;
+            float top = Offset.Top;
+
+            graphic.RectangleDraw(left, bottom, right, top);
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public void DrawOffset(PX.Graphic graphic)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -350,7 +376,14 @@ namespace PXUltimaCSTest
         {
             throw new NotImplementedException();
         }
-
+        
+        // <summary>
+        /// TODO
+        /// </summary>
+        public void ApplyBorder(OffsetType OffsetType)
+        {
+            throw new NotImplementedException();
+        }
         public void SetMargin(RectProperties Margin)
         {
             this.Margin = Margin;
@@ -453,28 +486,61 @@ namespace PXUltimaCSTest
             ApplyPadding(OffsetType.TOP);
         }
 
+
         /// <summary>
-        /// Draws the rectangle. Expects screen space to range from -1 to 1.
         /// </summary>
-        /// <param name="graphic"></param>
-        public void Draw(PX.Graphic graphic)
+        /// <param name="top">Border in pixels.</param>
+        public void SetBorder(RectProperties Border)
         {
+            this.Border = Border;
+            ApplyBorder(OffsetType.ALL);
+        }
 
-            float left = Offset.Left;
-            float bottom = Offset.Bottom;
-            float right = Offset.Right;
-            float top = Offset.Top;
-
-            graphic.RectangleDraw(left, bottom, right, top);
+        public void SetBorder(float left, float bottom, float right, float top)
+        {
+            Border.Left = left;
+            Border.Bottom = bottom;
+            Border.Right = right;
+            Border.Top = top;
+            ApplyBorder(OffsetType.ALL);
         }
 
         /// <summary>
-        /// TODO
         /// </summary>
-        public void DrawOffset(PX.Graphic graphic)
+        /// <param name="left">Left border in pixels.</param>
+        public void SetBorderLeft(float left)
         {
-            throw new NotImplementedException();
+            Border.Left = left;
+            ApplyBorder(OffsetType.LEFT);
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="bot">Bottom border in pixels.</param>
+        public void SetBorderBottom(float bot)
+        {
+            Border.Bottom = bot;
+            ApplyBorder(OffsetType.BOTTOM);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="right">Right border in pixels.</param>
+        public void SetBorderRight(float right)
+        {
+            Border.Right = right;
+            ApplyBorder(OffsetType.RIGHT);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="top">Top border in pixels.</param>
+        public void SetBorderTop(float top)
+        {
+            Border.Top = top;
+            ApplyBorder(OffsetType.TOP);
+        }
+
 
         public override string ToString()
         {
