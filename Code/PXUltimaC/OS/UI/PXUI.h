@@ -1,7 +1,7 @@
 #ifndef PXUIInclude
 #define PXUIInclude
 
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 #include <OS/Window/PXWindow.h>
 
 #if OSUnix
@@ -12,10 +12,40 @@ typedef HWND UIElementID;
 #endif
 
 
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #if PXOSWindowsDestop
 	PXPublic void PXOSUIElementTextGet(const UIElementID uiElementID, const wchar_t* buffer, const PXSize bufferSize, PXSize* bufferRead);

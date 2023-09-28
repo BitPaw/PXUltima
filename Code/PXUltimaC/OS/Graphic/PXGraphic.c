@@ -18,7 +18,7 @@
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
 
-PXActionResult PXAPI PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImage* const pxImage, const PXText* const pxImageFilePath)
+PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* const pxImage, const PXText* const pxImageFilePath)
 {
     // Create checksum
     const PXInt32U checkSum = PXAdler32Create(1, pxImageFilePath->TextA, pxImageFilePath->SizeUsed);
@@ -28,7 +28,7 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphicContext* const graphicContext, 
     {
         PXImage* pxImageFoundEntry = PXNull;
 
-        const PXBool foundEntry = PXDictionaryFindEntry(&graphicContext->ResourceImageLookUp, &checkSum, &pxImageFoundEntry);
+        const PXBool foundEntry = PXDictionaryFindEntry(&pxGraphic->ResourceImageLookUp, &checkSum, &pxImageFoundEntry);
 
         if (foundEntry) // image is already loaded
         {
@@ -55,22 +55,22 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphicContext* const graphicContext, 
 
         printf("[OK]\n");
 
-        PXDictionaryAdd(&graphicContext->ResourceImageLookUp, &checkSum, pxImage);
+        PXDictionaryAdd(&pxGraphic->ResourceImageLookUp, &checkSum, pxImage);
     }
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, PXImage* const image)
+PXActionResult PXAPI PXGraphicTextureScreenShot(PXGraphic* const pxGraphic, PXImage* const image)
 {
-  //  PXOpenGLPixelDataRead(graphicContext, 0, 0, image->Width, image->Height, PXOpenGLImageFormatRGB, PXOpenGLTypeByteUnsigned, image->PixelData);
+  //  PXOpenGLPixelDataRead(pxGraphic, 0, 0, image->Width, image->Height, PXOpenGLImageFormatRGB, PXOpenGLTypeByteUnsigned, image->PixelData);
 
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const PXText* filePath)
+PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTexture2D* const texture, const PXText* filePath)
 {
-    if (!graphicContext || !texture || !filePath)
+    if (!pxGraphic || !texture || !filePath)
     {
         return PXActionRefuedParameterNull;
     }
@@ -83,14 +83,14 @@ PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphicContext* const graphicConte
 
     // Load texture..
     {
-        const PXActionResult registerResult = PXGraphicLoadImage(graphicContext, &texture->Image, filePath);
+        const PXActionResult registerResult = PXGraphicLoadImage(pxGraphic, &texture->Image, filePath);
 
         PXActionReturnOnError(registerResult);
     }
 
     // Register as normal
     {
-        const PXActionResult registerResult = graphicContext->Texture2DRegister(graphicContext, texture);
+        const PXActionResult registerResult = pxGraphic->Texture2DRegister(pxGraphic, texture);
 
         PXActionReturnOnError(registerResult);
     }
@@ -126,15 +126,15 @@ PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphicContext* const graphicConte
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const char* const filePath)
+PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTexture2D* const texture, const char* const filePath)
 {
     PXText pxText;
     PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown);
 
-    return PXGraphicTexture2DLoad(graphicContext, texture, &pxText);
+    return PXGraphicTexture2DLoad(pxGraphic, texture, &pxText);
 }
 
-PXActionResult PXAPI PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXText* const filePath)
+PXActionResult PXAPI PXGraphicFontLoad(PXGraphic* const pxGraphic, PXFont* const pxFont, const PXText* const filePath)
 {
     // Load texture
     {
@@ -145,7 +145,7 @@ PXActionResult PXAPI PXGraphicFontLoad(PXGraphicContext* const graphicContext, P
 
     // Register as normal
     {
-        const PXActionResult registerResult = PXGraphicFontRegister(graphicContext, pxFont);
+        const PXActionResult registerResult = PXGraphicFontRegister(pxGraphic, pxFont);
 
         PXActionReturnOnError(registerResult);
     }
@@ -153,31 +153,31 @@ PXActionResult PXAPI PXGraphicFontLoad(PXGraphicContext* const graphicContext, P
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXFont* const pxFont)
+PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* const pxFont)
 {
-    PXLockEngage(&graphicContext->_resourceLock);
-    //pxFont->ID = PXGraphicGenerateUniqeID(graphicContext);
-    //PXDictionaryAdd(&graphicContext->FontLookUp, &pxFont->ID, pxFont);
-    PXLockRelease(&graphicContext->_resourceLock);
+    PXLockEngage(&pxGraphic->_resourceLock);
+    //pxFont->ID = PXGraphicGenerateUniqeID(pxGraphic);
+    //PXDictionaryAdd(&pxGraphic->FontLookUp, &pxFont->ID, pxFont);
+    PXLockRelease(&pxGraphic->_resourceLock);
 
-    graphicContext->Texture2DRegister(graphicContext, &pxFont->MainPage.Texture);
+    pxGraphic->Texture2DRegister(pxGraphic, &pxFont->MainPage.Texture);
 
     for (PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)
     {
         PXFontPage* const pxFontPage = &pxFont->AdditionalPageList[i];
 
-        graphicContext->Texture2DRegister(graphicContext, &pxFontPage->Texture);
+        pxGraphic->Texture2DRegister(pxGraphic, &pxFontPage->Texture);
     }
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGraphicFontRelease(PXGraphicContext* const graphicContext, PXFont* const pxFont)
+PXActionResult PXAPI PXGraphicFontRelease(PXGraphic* const pxGraphic, PXFont* const pxFont)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGraphicFontUse(PXGraphicContext* const graphicContext, PXFont* const pxFont)
+PXActionResult PXAPI PXGraphicFontUse(PXGraphic* const pxGraphic, PXFont* const pxFont)
 {
     return PXActionSuccessful;
 }
@@ -187,34 +187,34 @@ PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite,
     PXVector2FSetXY(&pxSprite->TextureScaleOffset, x, y);
 }
 
-PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite)
+PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprite* const pxSprite)
 {
-    pxSprite->PXID = PXGraphicGenerateUniqeID(graphicContext);
+    pxSprite->PXID = PXGraphicGenerateUniqeID(pxGraphic);
 
-    PXDictionaryAdd(&graphicContext->SpritelLookUp, &pxSprite->PXID, pxSprite);
+    PXDictionaryAdd(&pxGraphic->SpritelLookUp, &pxSprite->PXID, pxSprite);
 
     const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 1 || pxSprite->TextureScaleOffset.Y != 1;
 
     if (hasScaling)
     {
-        if (graphicContext->SpriteScaled.ResourceID.OpenGLID == 0)
+        if (pxGraphic->SpriteScaled.ResourceID.OpenGLID == 0)
         {
-            PXOpenGLSpriteRegister(&graphicContext->OpenGLInstance, pxSprite);
+            PXOpenGLSpriteRegister(&pxGraphic->OpenGLInstance, pxSprite);
         }
         else
         {
-            pxSprite->VertexStructure.StructureOverride = &graphicContext->SpriteScaled;
+            pxSprite->VertexStructure.StructureOverride = &pxGraphic->SpriteScaled;
         }
     }
     else
     {
-        if (graphicContext->SpriteUnScaled.ResourceID.OpenGLID == 0)
+        if (pxGraphic->SpriteUnScaled.ResourceID.OpenGLID == 0)
         {
-            PXOpenGLSpriteRegister(&graphicContext->OpenGLInstance, pxSprite);
+            PXOpenGLSpriteRegister(&pxGraphic->OpenGLInstance, pxSprite);
         }
         else
         {
-            pxSprite->VertexStructure.StructureOverride = &graphicContext->SpriteUnScaled;
+            pxSprite->VertexStructure.StructureOverride = &pxGraphic->SpriteUnScaled;
         }
     }
 
@@ -223,7 +223,7 @@ PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphicContext* const graphicCont
 
 #define QuadSkybox 0
 
-PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox)
+PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBox* const skyBox)
 {
     const float vertexData[] =
     {
@@ -294,7 +294,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphicContext* const graphicCont
 #endif
         ;
 
-    graphicContext->VertexStructureRegister(graphicContext, &skyBox->VertexStructure);
+    pxGraphic->VertexStructureRegister(pxGraphic, &skyBox->VertexStructure);
 
     //OLD
     /*
@@ -325,20 +325,20 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphicContext* const graphicCont
         pxModel.DataIndexWidth = 4u;
         pxModel.DataIndexSize = indexListSize;
 
-        PXGraphicModelRegisterFromModel(graphicContext, &skyBox->Renderable, &pxModel);
+        PXGraphicModelRegisterFromModel(pxGraphic, &skyBox->Renderable, &pxModel);
     }*/
 
     // Register Cube Texture
-    graphicContext->TextureCubeRegister(graphicContext, &skyBox->TextureCube);
+    pxGraphic->TextureCubeRegister(pxGraphic, &skyBox->TextureCube);
 
-    graphicContext->_currentSkyBox = skyBox;
+    pxGraphic->_currentSkyBox = skyBox;
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXGraphicSkyboxRegisterD
 (
-    PXGraphicContext* const graphicContext,
+    PXGraphic* const pxGraphic,
     PXSkyBox* const skyBox,
     const PXText* const shaderVertex,
     const PXText* const shaderFragment,
@@ -359,7 +359,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterD
         {
             PXImage* const image = &skyBox->TextureCube.ImageList[i];
             const PXText* const filePath = filePathList[i];
-            const PXActionResult textureRightResult = PXGraphicLoadImage(graphicContext, image, filePath);
+            const PXActionResult textureRightResult = PXGraphicLoadImage(pxGraphic, image, filePath);
 
             resultList[i] = textureRightResult;
         }
@@ -367,7 +367,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterD
 
     // Register skybox
     {
-        const PXActionResult registerResult = PXGraphicSkyboxRegister(graphicContext, skyBox);
+        const PXActionResult registerResult = PXGraphicSkyboxRegister(pxGraphic, skyBox);
 
     }
 
@@ -375,7 +375,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterD
     {
         PXShaderProgram* shaderPXProgram = malloc(sizeof(PXShaderProgram));
 
-        const PXActionResult shaderResult = graphicContext->ShaderProgramCreateFromFileVP(graphicContext, shaderPXProgram, shaderVertex, shaderFragment);
+        const PXActionResult shaderResult = pxGraphic->ShaderProgramCreateFromFileVP(pxGraphic, shaderPXProgram, shaderVertex, shaderFragment);
 
         skyBox->ShaderProgramReference = shaderPXProgram;
     }
@@ -385,7 +385,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterD
 
 PXActionResult PXAPI PXGraphicSkyboxRegisterA
 (
-    PXGraphicContext* const graphicContext,
+    PXGraphic* const pxGraphic,
     PXSkyBox* const skyBox,
     const char* const shaderVertex,
     const char* const shaderFragment,
@@ -417,7 +417,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterA
 
     return PXGraphicSkyboxRegisterD
     (
-        graphicContext,
+        pxGraphic,
         skyBox,
         &pxTextShaderVertex,
         &pxTextShaderFragment,
@@ -430,7 +430,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterA
     );
 }
 
-PXActionResult PXAPI PXGraphicSkyboxUse(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox)
+PXActionResult PXAPI PXGraphicSkyboxUse(PXGraphic* const pxGraphic, PXSkyBox* const skyBox)
 {
     /*
     // TODO:TEST REMOVAL !!!    PXOpenGL::VertexArrayBind(skyBox.RenderInfo.VAO);
@@ -449,17 +449,17 @@ PXActionResult PXAPI PXGraphicSkyboxUse(PXGraphicContext* const graphicContext, 
     return PXActionInvalid;
 }
 
-PXSize PXAPI PXGraphicRenderableListSize(const PXGraphicContext* const graphicContext)
+PXSize PXAPI PXGraphicRenderableListSize(const PXGraphic* const pxGraphic)
 {
-    return graphicContext->_renderList.NodeListSizeCurrent;
+    return pxGraphic->_renderList.NodeListSizeCurrent;
 }
 
-PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const graphicContext, PXRenderable** pxRenderable, const PXSize index)
+PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphic* const pxGraphic, PXRenderable** pxRenderable, const PXSize index)
 {
 #if 1 //
     PXLinkedListNodeFixed currentModel;
 
-    const PXBool successful = PXLinkedListFixedNodeAt(&graphicContext->_renderList, &currentModel, index);
+    const PXBool successful = PXLinkedListFixedNodeAt(&pxGraphic->_renderList, &currentModel, index);
 
     if (!successful)
     {
@@ -478,7 +478,7 @@ PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const g
 
     PXLinkedListNodeFixed currentModel;
 
-    PXLinkedListFixedNodeAt(&graphicContext->_renderList, &currentModel, 0);
+    PXLinkedListFixedNodeAt(&pxGraphic->_renderList, &currentModel, 0);
 
     *pxRenderable = 0;
 
@@ -495,13 +495,13 @@ PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const g
         }
 
     }
-    while (PXLinkedListFixedNodeNext(&graphicContext->_renderList, &currentModel));
+    while (PXLinkedListFixedNodeNext(&pxGraphic->_renderList, &currentModel));
 
     return PXNo;
 #endif
 }
 
-PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphicContext* const graphicContext, PXRenderable** const pxRenderable)
+PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphic* const pxGraphic, PXRenderable** const pxRenderable)
 {
     PXRenderable* const renderable = PXMemoryAllocateType(PXRenderable, 1u);
 
@@ -512,23 +512,23 @@ PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphicContext* const graphicCo
 
     PXMemoryClear(renderable, sizeof(PXRenderable));
 
-    PXGraphicRenderableRegister(graphicContext, *pxRenderable);
+    PXGraphicRenderableRegister(pxGraphic, *pxRenderable);
 
     *pxRenderable = renderable; // TODO: Is this right?
 
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRenderable* const pxRenderable)
+PXBool PXAPI PXGraphicRenderableRegister(PXGraphic* const pxGraphic, PXRenderable* const pxRenderable)
 {
-    PXLockEngage(&graphicContext->_resourceLock);
-    PXLinkedListFixedNodeAdd(&graphicContext->_renderList, pxRenderable);
-    PXLockRelease(&graphicContext->_resourceLock);
+    PXLockEngage(&pxGraphic->_resourceLock);
+    PXLinkedListFixedNodeAdd(&pxGraphic->_renderList, pxRenderable);
+    PXLockRelease(&pxGraphic->_resourceLock);
 
     return PXTrue;
 }
 
-void PXAPI PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram)
+void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram)
 {
     for (PXSize i = 0; i < renderable->MeshSegmentListSize; ++i)
     {
@@ -539,22 +539,22 @@ void PXAPI PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRen
 }
 
 /*
-PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXText* const filePath)
+PXActionResult PXGraphicModelLoad(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXText* const filePath)
 {
     PXModel* model = 0;
 
     // Create model
     {
-        const PXActionResult createResult = PXGraphicModelCreate(graphicContext, &model);
+        const PXActionResult createResult = PXGraphicModelCreate(pxGraphic, &model);
 
         PXActionReturnOnError(createResult);
     }
 
     // create PXRenderable
     {
-        PXLockEngage(&graphicContext->_resourceLock);
-        PXLinkedListFixedNodeAdd(&graphicContext->_renderList, renderable);
-        PXLockRelease(&graphicContext->_resourceLock);
+        PXLockEngage(&pxGraphic->_resourceLock);
+        PXLinkedListFixedNodeAdd(&pxGraphic->_renderList, renderable);
+        PXLockRelease(&pxGraphic->_resourceLock);
 
         /*
 
@@ -566,7 +566,7 @@ PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRend
         }
         else // No model, make one
         {
-            const PXActionResult createResult = PXGraphicRenderableCreate(graphicContext, &pxRenderable);
+            const PXActionResult createResult = PXGraphicRenderableCreate(pxGraphic, &pxRenderable);
 
             PXActionExitOnError(createResult);
 
@@ -584,7 +584,7 @@ PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRend
 
     // Register model into renderable
     {
-        const PXActionResult loadResult = PXGraphicModelRegisterFromModel(graphicContext, renderable, model);
+        const PXActionResult loadResult = PXGraphicModelRegisterFromModel(pxGraphic, renderable, model);
 
         PXActionReturnOnError(loadResult);
     }
@@ -592,10 +592,10 @@ PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRend
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model)
+PXActionResult PXGraphicModelRegisterFromModel(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXModel* const model)
 {
 #if PXOpenGLUSE
-    PXOpenGL* const openGLContext = &graphicContext->OpenGLInstance;
+    PXOpenGL* const openGLContext = &pxGraphic->OpenGLInstance;
 
     PXRenderableConstruct(renderable);
 
@@ -728,7 +728,7 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicCo
             pxTexture.WrapHeight = PXGraphicImageWrapRepeat;
             pxTexture.WrapWidth = PXGraphicImageWrapRepeat;
 
-            //PXGraphicTextureLoad(graphicContext, &pxTexture, &material.DiffuseTextureFilePath);
+            //PXGraphicTextureLoad(pxGraphic, &pxTexture, &material.DiffuseTextureFilePath);
 
             pxRenderableMeshSegment->TextureID = pxTexture.ResourceID.OpenGLID;
         }
@@ -745,7 +745,7 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicCo
 }*/
 
 
-PXActionResult PXAPI PXGraphicUIRectangleCreate(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
+PXActionResult PXAPI PXGraphicUIRectangleCreate(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
 {
     PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y, &renderable->MatrixModel);
    // PXMatrix4x4FScaleXYZSet(&renderable->MatrixModel, sidth, height, 1);
@@ -754,7 +754,7 @@ PXActionResult PXAPI PXGraphicUIRectangleCreate(PXGraphicContext* const graphicC
     {
         //float
 
-        //GraphicModelRegisterFromData(graphicContext, renderable, , );
+        //GraphicModelRegisterFromData(pxGraphic, renderable, , );
 
     }
 
@@ -786,6 +786,139 @@ void PXAPI PXTextureDestruct(PXTexture2D* const texture)
 
 }
 
+PXActionResult PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent)
+{
+    //PXClear(PXUIElement, *pxUIElement);
+
+    (*pxUIElement) = PXNew(PXUIElement);
+
+    (*pxUIElement)->ID = ++(pxGraphic->UIElementIDCounter);
+    
+    //*pxUIElement->Type = pxUIElementType;
+    //*pxUIElement->TextureReference = PXNull;
+    //*pxUIElement->ShaderReference = PXNull;
+
+    //*pxUIElement->NameTextScale = 1;
+
+    PXUIElementColorSet4F(*pxUIElement, 1, 1, 1, 1);
+
+   // PXTextCopyA("[N/A]", 5, pxUIElement->Name, 32);
+
+    if (pxUIElementParrent)
+    {
+        // Impossible if already has child
+
+        (*pxUIElement)->Parent = pxUIElementParrent;
+        pxUIElementParrent->Child = (*pxUIElement);
+    }
+    else
+    { 
+        if (pxGraphic->UIElementBase.Child) // if Has child, everyone will be sibling from child
+        {
+            PXUIElement* insertionNode = pxGraphic->UIElementBase.Child;
+
+            while (insertionNode->Sibling != PXNull)
+            {
+                insertionNode = insertionNode->Sibling;
+            }
+
+            insertionNode->Sibling = (*pxUIElement); // I am your sibbling
+        }
+        else
+        {
+            (*pxUIElement)->Parent = &pxGraphic->UIElementBase; // You are my parent now
+            pxGraphic->UIElementBase.Child = (*pxUIElement); // As I am your child
+        }
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement)
+{
+    return PXActionSuccessful;
+}
+
+PXActionResult PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType)
+{
+    pxUIElement->Type = pxUIElementType;
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement, int depth, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
+{
+    char* nothing = "---";
+    char* offset = "    ";
+
+    PXFunctionInvoke(preFound, sender, pxUIElement);
+
+    for (size_t i = 0; i < depth; i++) printf(offset);
+    printf("+--------------------+\n");
+
+    for (size_t i = 0; i < depth; i++) printf(offset);
+
+    printf("| Node: <%i> |\n", pxUIElement->ID);  
+
+    for (size_t i = 0; i < depth; i++) printf(offset);
+
+    if (pxUIElement->Parent)
+    {
+        printf("| %-10s : <%i>\n", "Parent", pxUIElement->Parent->ID);
+    }
+    else
+    {
+        printf("| %-10s : %s\n", "Parent", nothing);
+    }  
+
+    for (size_t i = 0; i < depth; i++) printf(offset);
+
+    if (pxUIElement->Child)
+    {
+        printf("| %-10s : <%i>\n", "Child", pxUIElement->Child->ID);
+
+        PXGraphicUIElementPrintfNode(pxUIElement->Child, depth+1, sender, preFound, postFound);
+    }
+    else
+    {
+        printf("| %-10s : %s\n", "Child", nothing);
+    }
+
+    for (size_t i = 0; i < depth; i++) printf(offset);
+
+    if (pxUIElement->Sibling)
+    {
+        printf("| %-10s : %s\n", "Siblings", "-->");
+        for (size_t i = 0; i < depth; i++) printf(offset);
+        printf("+--------------------+\n");
+
+        PXGraphicUIElementPrintfNode(pxUIElement->Sibling, depth, sender, preFound, postFound);
+    }
+    else
+    {
+        printf("| %-10s : %s\n", "Siblings", nothing);
+
+        for (size_t i = 0; i < depth; i++) printf(offset);
+        printf("+--------------------+\n");
+    }
+
+    PXFunctionInvoke(postFound, sender, pxUIElement);
+}
+
+PXActionResult PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
+{
+    PXGraphicUIElementPrintfNode(&pxGraphic->UIElementBase, 0, sender, preFound, postFound);
+}
+
+PXActionResult PXGraphicUIElementPrint(PXGraphic* const pxGraphic)
+{
+    printf("+---------------------------------------------------------+\n");
+
+    PXGraphicUIElementIterator(pxGraphic, 0, 0, 0);
+
+    printf("+---------------------------------------------------------+\n");
+}
+
 void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
 {
     PXMemoryClear(pxRenderable, sizeof(PXRenderable));
@@ -797,27 +930,12 @@ void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
     pxRenderable->IBO = -1;
 }
 
-void PXAPI PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType)
-{
-    PXMemoryClear(pxUIElement, sizeof(PXUIElement));
-
-    pxUIElement->ID = -1;
-    pxUIElement->TextureReference = PXNull;
-    pxUIElement->ShaderReference = PXNull;
-    pxUIElement->Type = pxUIElementType;
-    pxUIElement->NameTextScale = 1;
-
-    PXUIElementColorSet4F(pxUIElement, 1, 1, 1, 1);
-
-    PXTextCopyA("[N/A]", 5, pxUIElement->Name, 32);
-}
-
 void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha)
 {
-    pxUIElement->BackGroundColor.Red = red;
-    pxUIElement->BackGroundColor.Green = green;
-    pxUIElement->BackGroundColor.Blue = blue;
-    pxUIElement->BackGroundColor.Alpha = alpha;
+    pxUIElement->ColorTint.Red = red;
+    pxUIElement->ColorTint.Green = green;
+    pxUIElement->ColorTint.Blue = blue;
+    pxUIElement->ColorTint.Alpha = alpha;
 }
 
 void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode)
@@ -829,20 +947,20 @@ void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, con
 
     PXRectangleOffsetSet(&pxUIElement->Margin, x, y, width, height);
 
-    pxUIElement->PositionMode = pxUIElementPositionMode;
+   // pxUIElement->PositionMode = pxUIElementPositionMode;
 }
 
 void PXAPI PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText)
 {
-    PXText nameBuffer;
-    PXTextConstructFromAdressA(&nameBuffer, pxUIElement->Name, 32);
+   // PXText nameBuffer;
+   // PXTextConstructFromAdressA(&nameBuffer, pxUIElement->Name, 32);
 
-    PXTextCopy(pxText, &nameBuffer);
+   // PXTextCopy(pxText, &nameBuffer);
 }
 
 void PXAPI PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text)
 {
-    PXTextCopyA(text, -1, pxUIElement->Name, 32);
+    //PXTextCopyA(text, -1, pxUIElement->Name, 32);
 }
 
 void PXAPI PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...)
@@ -857,12 +975,12 @@ void PXAPI PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* cons
 
 void PXAPI PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont)
 {
-    pxUIElement->FontID = pxFont;
+    //pxUIElement->FontID = pxFont;
 }
 
-void PXAPI PXUIElementHoverable(PXUIElement* const pxUIElement, const PXBool isHoverable)
+void PXAPI PXUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList)
 {
-    pxUIElement->IsHoverable = isHoverable;
+    pxUIElement->FlagsList = flagList;
 }
 
 void PXAPI PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
@@ -877,12 +995,12 @@ void PXAPI PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* cons
     pxUIElement->Child = pxUIElementParent;
 }
 
-PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext)
+PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphic* const pxGraphic)
 {
-    return ++graphicContext->UniqeIDGeneratorCounter;
+    return ++pxGraphic->UniqeIDGeneratorCounter;
 }
 
-PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement)
+PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement)
 {
     // Is Registerd
     {
@@ -894,9 +1012,9 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
         }
 
         // Create
-        pxUIElement->ID = PXGraphicGenerateUniqeID(graphicContext);
+        pxUIElement->ID = PXGraphicGenerateUniqeID(pxGraphic);
 
-        PXDictionaryAdd(&graphicContext->UIElementLookUp, &pxUIElement->ID, pxUIElement);
+        PXDictionaryAdd(&pxGraphic->UIElementLookUp, &pxUIElement->ID, pxUIElement);
     }
 
 
@@ -905,8 +1023,9 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
     {
         case PXUIElementTypeRenderFrame:
         {
-            PXOpenGL* const pxOpenGL = &graphicContext->OpenGLInstance;
+            PXOpenGL* const pxOpenGL = &pxGraphic->OpenGLInstance;
 
+#if 0
             // Texture
            // PXTexture2DSet(pxUIElement->FrameRenderTextureReference, PXColorFormatRGBI8, pxUIElement->FrameRenderWidth, pxUIElement->Height);
             PXOpenGLTexture2DCreate(pxOpenGL, pxUIElement->FrameRenderTextureReference);
@@ -939,7 +1058,7 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
 
             PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, 0);
             PXOpenGLRenderBufferBind(pxOpenGL, 0);
-
+#endif
             break;
         }
 
@@ -983,12 +1102,12 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
             model.DataTextureSize = vertexDataSize;
 
             {
-                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxUIPanel->UIElement.Renderable, &model);
+                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxUIPanel->UIElement.Renderable, &model);
 
                 PXActionExitOnError(actionResult);
             }
 
-            PXGraphicRenderableRegister(graphicContext, &pxUIPanel->UIElement.Renderable);
+            PXGraphicRenderableRegister(pxGraphic, &pxUIPanel->UIElement.Renderable);
 
             break;
         }
@@ -1078,12 +1197,12 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
             model.DataTextureSize = vertexDataSize;
 
             {
-                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(graphicContext, &pxGraphicUIText->UIElement.Renderable, &model);
+                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxGraphicUIText->UIElement.Renderable, &model);
 
                 PXActionExitOnError(actionResult);
             }
 
-            PXGraphicRenderableRegister(graphicContext, &pxGraphicUIText->UIElement.Renderable);
+            PXGraphicRenderableRegister(pxGraphic, &pxGraphicUIText->UIElement.Renderable);
 
 
 
@@ -1100,7 +1219,7 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
             pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
             pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
 
-            PXGraphicTextureRegister(graphicContext, &pxTexture);
+            PXGraphicTextureRegister(pxGraphic, &pxTexture);
 
             pxGraphicUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
 
@@ -1111,15 +1230,15 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
             PXRenderable* renderable = &pxButton->UIElement.Renderable;
 
             pxButton->TextFont = pxFont;
-            PXGraphicUITextRegister(graphicContext, renderable, 0, 0, 1, 1, text);
-            PXGraphicModelShaderSet(graphicContext, renderable, shader);
+            PXGraphicUITextRegister(pxGraphic, renderable, 0, 0, 1, 1, text);
+            PXGraphicModelShaderSet(pxGraphic, renderable, shader);
             PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
             PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
             renderable->MeshSegmentList[0].RenderMode = PXGraphicDrawModeSquare;
 
-            PXLockEngage(&graphicContext->_pxUIElements);
-            PXLinkedListFixedNodeAdd(&graphicContext->_pxUIElements, &pxButton->UIElement);
-            PXLockRelease(&graphicContext->_pxUIElements);
+            PXLockEngage(&pxGraphic->_pxUIElements);
+            PXLinkedListFixedNodeAdd(&pxGraphic->_pxUIElements, &pxButton->UIElement);
+            PXLockRelease(&pxGraphic->_pxUIElements);
 
             break;
         }
@@ -1131,11 +1250,11 @@ PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicC
             break;
     }*/
 }
-PXActionResult PXAPI PXGraphicUIElementUpdate(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement)
+PXActionResult PXAPI PXGraphicUIElementUpdate(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement)
 {
 
 }
-PXActionResult PXAPI PXGraphicUIElementUnregister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement)
+PXActionResult PXAPI PXGraphicUIElementUnregister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement)
 {
 
 }
@@ -1149,11 +1268,13 @@ void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRen
     pxRenderableMeshSegment->DoRendering = PXNo;
 }
 
-PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
-    graphicContext->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
-    graphicContext->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
-    pxGraphicInitializeInfo->Graphic = graphicContext;
+    pxGraphic->UIElementIDCounter = 0;
+
+    pxGraphic->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
+    pxGraphic->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
+    pxGraphicInitializeInfo->Graphic = pxGraphic;
 
     
     /*
@@ -1170,15 +1291,15 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
         displayDevice.cb = sizeof(DISPLAY_DEVICEA);
 
         // Count how many devices we have.
-        for (graphicContext->DevicePhysicalListSize = 0; EnumDisplayDevicesA(NULL, graphicContext->DevicePhysicalListSize, &displayDevice, 0); ++(graphicContext->DevicePhysicalListSize));
+        for (pxGraphic->DevicePhysicalListSize = 0; EnumDisplayDevicesA(NULL, pxGraphic->DevicePhysicalListSize, &displayDevice, 0); ++(pxGraphic->DevicePhysicalListSize));
 
         // Allocate space for needed devices
-        graphicContext->DevicePhysicalList = PXNewList(PXGraphicDevicePhysical, graphicContext->DevicePhysicalListSize);
+        pxGraphic->DevicePhysicalList = PXNewList(PXGraphicDevicePhysical, pxGraphic->DevicePhysicalListSize);
 
         // Loop over all devices and store space
         for (PXSize deviceID = 0; EnumDisplayDevicesA(NULL, deviceID, &displayDevice, 0); ++deviceID)
         {
-            PXGraphicDevicePhysical* const currentDevice = &graphicContext->DevicePhysicalList[deviceID];
+            PXGraphicDevicePhysical* const currentDevice = &pxGraphic->DevicePhysicalList[deviceID];
 
             PXTextCopyA(displayDevice.DeviceName, 32, currentDevice->DeviceDisplay, PXDeviceDisplaySize);
             PXTextCopyA(displayDevice.DeviceString, 128, currentDevice->DeviceName, PXDeviceNameSize);
@@ -1236,185 +1357,185 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
   //  }
 #endif
 
-    PXLockCreate(&graphicContext->_resourceLock, PXLockTypeGlobal);
+    PXLockCreate(&pxGraphic->_resourceLock, PXLockTypeGlobal);
 
-    PXDictionaryConstruct(&graphicContext->ResourceImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->ResourceImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
 
-    PXDictionaryConstruct(&graphicContext->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->TextureLookUp, sizeof(PXInt32U), sizeof(PXTexture2D), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->ModelLookUp, sizeof(PXInt32U), sizeof(PXVertexStructure), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&graphicContext->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->TextureLookUp, sizeof(PXInt32U), sizeof(PXTexture2D), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->ModelLookUp, sizeof(PXInt32U), sizeof(PXVertexStructure), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
     //-------------------------------------------------------------------------
     // Setup references
     //-------------------------------------------------------------------------
-    switch (graphicContext->GraphicSystem)
+    switch (pxGraphic->GraphicSystem)
     {
         case PXGraphicSystemOpenGL:
         {
-            graphicContext->EventOwner = &graphicContext->OpenGLInstance;
+            pxGraphic->EventOwner = &pxGraphic->OpenGLInstance;
 
-            graphicContext->ShaderProgramCreateFromFileVP = PXOpenGLShaderProgramCreateFromFileVF;
-            graphicContext->ShaderProgramCreateFromFileVPA = PXOpenGLShaderProgramCreateFromFileVFA;
-            graphicContext->ShaderProgramCreateFromStringVP = PXOpenGLShaderProgramCreateFromStringVF;
-            graphicContext->ShaderProgramCreateFromStringVPA = PXOpenGLShaderProgramCreateFromStringVFA;
+            pxGraphic->ShaderProgramCreateFromFileVP = PXOpenGLShaderProgramCreateFromFileVF;
+            pxGraphic->ShaderProgramCreateFromFileVPA = PXOpenGLShaderProgramCreateFromFileVFA;
+            pxGraphic->ShaderProgramCreateFromStringVP = PXOpenGLShaderProgramCreateFromStringVF;
+            pxGraphic->ShaderProgramCreateFromStringVPA = PXOpenGLShaderProgramCreateFromStringVFA;
 
-            graphicContext->ShaderVariableFx1 = PXOpenGLShaderVariableFx1;
-            graphicContext->ShaderVariableFx1xN = PXOpenGLShaderVariableFx1xN;
-            graphicContext->ShaderVariableIx1 = PXOpenGLShaderVariableIx1;
-            graphicContext->ShaderVariableIx1xN = PXOpenGLShaderVariableIx1xN;
-            graphicContext->ShaderVariableFx2 = PXOpenGLShaderVariableFx2;
-            graphicContext->ShaderVariableFx2xN = PXOpenGLShaderVariableFx2xN;
-            graphicContext->ShaderVariableIx2 = PXOpenGLShaderVariableIx2;
-            graphicContext->ShaderVariableIx2xN = PXOpenGLShaderVariableIx2xN;
-            graphicContext->ShaderVariableFx3 = PXOpenGLShaderVariableFx3;
-            graphicContext->ShaderVariableFx3xN = PXOpenGLShaderVariableFx3xN;
-            graphicContext->ShaderVariableIx3 = PXOpenGLShaderVariableIx3;
-            graphicContext->ShaderVariableIx3xN = PXOpenGLShaderVariableIx3xN;
-            graphicContext->ShaderVariableFx4 = PXOpenGLShaderVariableFx4;
-            graphicContext->ShaderVariableFx4xN = PXOpenGLShaderVariableFx4xN;
-            graphicContext->ShaderVariableIx4 = PXOpenGLShaderVariableIx4;
-            graphicContext->ShaderVariableIx4xN = PXOpenGLShaderVariableIx4xN;
-            graphicContext->ShaderVariableMatrix2fv = PXOpenGLShaderVariableMatrix2fv;
-            graphicContext->ShaderVariableMatrix3fv = PXOpenGLShaderVariableMatrix3fv;
-            graphicContext->ShaderVariableMatrix4fv = PXOpenGLShaderVariableMatrix4fv;
+            pxGraphic->ShaderVariableFx1 = PXOpenGLShaderVariableFx1;
+            pxGraphic->ShaderVariableFx1xN = PXOpenGLShaderVariableFx1xN;
+            pxGraphic->ShaderVariableIx1 = PXOpenGLShaderVariableIx1;
+            pxGraphic->ShaderVariableIx1xN = PXOpenGLShaderVariableIx1xN;
+            pxGraphic->ShaderVariableFx2 = PXOpenGLShaderVariableFx2;
+            pxGraphic->ShaderVariableFx2xN = PXOpenGLShaderVariableFx2xN;
+            pxGraphic->ShaderVariableIx2 = PXOpenGLShaderVariableIx2;
+            pxGraphic->ShaderVariableIx2xN = PXOpenGLShaderVariableIx2xN;
+            pxGraphic->ShaderVariableFx3 = PXOpenGLShaderVariableFx3;
+            pxGraphic->ShaderVariableFx3xN = PXOpenGLShaderVariableFx3xN;
+            pxGraphic->ShaderVariableIx3 = PXOpenGLShaderVariableIx3;
+            pxGraphic->ShaderVariableIx3xN = PXOpenGLShaderVariableIx3xN;
+            pxGraphic->ShaderVariableFx4 = PXOpenGLShaderVariableFx4;
+            pxGraphic->ShaderVariableFx4xN = PXOpenGLShaderVariableFx4xN;
+            pxGraphic->ShaderVariableIx4 = PXOpenGLShaderVariableIx4;
+            pxGraphic->ShaderVariableIx4xN = PXOpenGLShaderVariableIx4xN;
+            pxGraphic->ShaderVariableMatrix2fv = PXOpenGLShaderVariableMatrix2fv;
+            pxGraphic->ShaderVariableMatrix3fv = PXOpenGLShaderVariableMatrix3fv;
+            pxGraphic->ShaderVariableMatrix4fv = PXOpenGLShaderVariableMatrix4fv;
 
 
-            graphicContext->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
-            graphicContext->DrawModeSet = PXOpenGLDrawMode;
+            pxGraphic->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
+            pxGraphic->DrawModeSet = PXOpenGLDrawMode;
 
-            graphicContext->DrawColorRGBAF = PXOpenGLDrawColorRGBAF;
+            pxGraphic->DrawColorRGBAF = PXOpenGLDrawColorRGBAF;
 
-            graphicContext->RectangleDraw = PXOpenGLRectangleDraw;
-            graphicContext->RectangleDrawTx = PXOpenGLRectangleDrawTx;
+            pxGraphic->RectangleDraw = PXOpenGLRectangleDraw;
+            pxGraphic->RectangleDrawTx = PXOpenGLRectangleDrawTx;
 
-            graphicContext->SwapIntervalSet = PXOpenGLSwapIntervalSet;
-            graphicContext->SwapIntervalGet = PXOpenGLSwapIntervalGet;
+            pxGraphic->SwapIntervalSet = PXOpenGLSwapIntervalSet;
+            pxGraphic->SwapIntervalGet = PXOpenGLSwapIntervalGet;
 
-            graphicContext->DevicePhysicalListAmount = PXOpenGLDevicePhysicalListAmount;
-            graphicContext->DevicePhysicalListFetch = PXOpenGLDevicePhysicalListFetch;
+            pxGraphic->DevicePhysicalListAmount = PXOpenGLDevicePhysicalListAmount;
+            pxGraphic->DevicePhysicalListFetch = PXOpenGLDevicePhysicalListFetch;
 
-            graphicContext->Initialize = PXOpenGLInitialize;
-            graphicContext->Release = PXOpenGLRelease;
-            graphicContext->Select = PXOpenGLSelect;
-            graphicContext->Deselect = PXOpenGLDeselect;
-            graphicContext->Clear = PXOpenGLClear;
-            graphicContext->SceneDeploy = PXOpenGLSceneDeploy;
-            graphicContext->ViewPortGet = PXOpenGLViewPortGet;
-            graphicContext->ViewPortSet = PXOpenGLViewPortSet;
-            graphicContext->ShaderProgramCreate = PXOpenGLShaderProgramCreate;
-            graphicContext->ShaderProgramSelect = PXOpenGLShaderProgramSelect;
-            graphicContext->ShaderProgramDelete = PXOpenGLShaderProgramDelete;
-            graphicContext->SceneBegin = PXNull;
-            graphicContext->SceneEnd = PXNull;
-            graphicContext->DrawScriptCreate = PXOpenGLDrawScriptCreate;
-            graphicContext->DrawScriptBegin = PXOpenGLDrawScriptBegin;
-            graphicContext->DrawScriptEnd = PXOpenGLDrawScriptEnd;
-            graphicContext->DrawScriptDelete = PXOpenGLDrawScriptDelete;
-            graphicContext->DrawScriptExecute = PXOpenGLDrawScriptExecute;
-            graphicContext->TextureCubeRegister = PXOpenGLTextureCubeCreate;
-            graphicContext->TextureCubeRegisterUse = PXNull;
-            graphicContext->TextureCubeRelease = PXNull;
-            graphicContext->VertexStructureRegister = PXOpenGLVertexStructureRegister;
-            graphicContext->VertexStructureDraw = PXOpenGLVertexStructureDraw;
-            graphicContext->VertexStructureSelect = PXNull;
-            graphicContext->VertexStructureRelease = PXNull;
-            graphicContext->LightSet = PXOpenGLLightSet;
-            graphicContext->LightGet = PXOpenGLLightGet;
-            graphicContext->LightEnableSet = PXNull;
-            graphicContext->LightEnableGet = PXNull;
-            graphicContext->Texture2DRegister = PXOpenGLTexture2DCreate;
-            graphicContext->Texture2DRelease = PXNull;
-            graphicContext->Texture2DSelect = PXOpenGLTexture2DBind;
+            pxGraphic->Initialize = PXOpenGLInitialize;
+            pxGraphic->Release = PXOpenGLRelease;
+            pxGraphic->Select = PXOpenGLSelect;
+            pxGraphic->Deselect = PXOpenGLDeselect;
+            pxGraphic->Clear = PXOpenGLClear;
+            pxGraphic->SceneDeploy = PXOpenGLSceneDeploy;
+            pxGraphic->ViewPortGet = PXOpenGLViewPortGet;
+            pxGraphic->ViewPortSet = PXOpenGLViewPortSet;
+            pxGraphic->ShaderProgramCreate = PXOpenGLShaderProgramCreate;
+            pxGraphic->ShaderProgramSelect = PXOpenGLShaderProgramSelect;
+            pxGraphic->ShaderProgramDelete = PXOpenGLShaderProgramDelete;
+            pxGraphic->SceneBegin = PXNull;
+            pxGraphic->SceneEnd = PXNull;
+            pxGraphic->DrawScriptCreate = PXOpenGLDrawScriptCreate;
+            pxGraphic->DrawScriptBegin = PXOpenGLDrawScriptBegin;
+            pxGraphic->DrawScriptEnd = PXOpenGLDrawScriptEnd;
+            pxGraphic->DrawScriptDelete = PXOpenGLDrawScriptDelete;
+            pxGraphic->DrawScriptExecute = PXOpenGLDrawScriptExecute;
+            pxGraphic->TextureCubeRegister = PXOpenGLTextureCubeCreate;
+            pxGraphic->TextureCubeRegisterUse = PXNull;
+            pxGraphic->TextureCubeRelease = PXNull;
+            pxGraphic->VertexStructureRegister = PXOpenGLVertexStructureRegister;
+            pxGraphic->VertexStructureDraw = PXOpenGLVertexStructureDraw;
+            pxGraphic->VertexStructureSelect = PXNull;
+            pxGraphic->VertexStructureRelease = PXNull;
+            pxGraphic->LightSet = PXOpenGLLightSet;
+            pxGraphic->LightGet = PXOpenGLLightGet;
+            pxGraphic->LightEnableSet = PXNull;
+            pxGraphic->LightEnableGet = PXNull;
+            pxGraphic->Texture2DRegister = PXOpenGLTexture2DCreate;
+            pxGraphic->Texture2DRelease = PXNull;
+            pxGraphic->Texture2DSelect = PXOpenGLTexture2DBind;
 
             break;
         }
         case PXGraphicSystemDirectX:
         {
-            graphicContext->EventOwner = &graphicContext->DirectXInstance;
+            pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
 
-            graphicContext->ShaderProgramCreateFromFileVP = PXDirectXShaderProgramCreateFromFileVF;
-            graphicContext->ShaderProgramCreateFromFileVPA = PXDirectXShaderProgramCreateFromFileVFA;
-            graphicContext->ShaderProgramCreateFromStringVP = PXDirectXShaderProgramCreateFromStringVF;
-            graphicContext->ShaderProgramCreateFromStringVPA = PXDirectXShaderProgramCreateFromStringVFA;
+            pxGraphic->ShaderProgramCreateFromFileVP = PXDirectXShaderProgramCreateFromFileVF;
+            pxGraphic->ShaderProgramCreateFromFileVPA = PXDirectXShaderProgramCreateFromFileVFA;
+            pxGraphic->ShaderProgramCreateFromStringVP = PXDirectXShaderProgramCreateFromStringVF;
+            pxGraphic->ShaderProgramCreateFromStringVPA = PXDirectXShaderProgramCreateFromStringVFA;
 
-            graphicContext->ShaderVariableIDFetch = PXNull;
+            pxGraphic->ShaderVariableIDFetch = PXNull;
 
-            graphicContext->ShaderVariableFx1 = PXNull;
-            graphicContext->ShaderVariableFx1xN = PXNull;
-            graphicContext->ShaderVariableIx1 = PXNull;
-            graphicContext->ShaderVariableIx1xN = PXNull;
-            graphicContext->ShaderVariableFx2 = PXNull;
-            graphicContext->ShaderVariableFx2xN = PXNull;
-            graphicContext->ShaderVariableIx2 = PXNull;
-            graphicContext->ShaderVariableIx2xN = PXNull;
-            graphicContext->ShaderVariableFx3 = PXNull;
-            graphicContext->ShaderVariableFx3xN = PXNull;
-            graphicContext->ShaderVariableIx3 = PXNull;
-            graphicContext->ShaderVariableIx3xN = PXNull;
-            graphicContext->ShaderVariableFx4 = PXNull;
-            graphicContext->ShaderVariableFx4xN = PXNull;
-            graphicContext->ShaderVariableIx4 = PXNull;
-            graphicContext->ShaderVariableIx4xN = PXNull;
-            graphicContext->ShaderVariableMatrix2fv = PXNull;
-            graphicContext->ShaderVariableMatrix3fv = PXNull;
-            graphicContext->ShaderVariableMatrix4fv = PXNull;
+            pxGraphic->ShaderVariableFx1 = PXNull;
+            pxGraphic->ShaderVariableFx1xN = PXNull;
+            pxGraphic->ShaderVariableIx1 = PXNull;
+            pxGraphic->ShaderVariableIx1xN = PXNull;
+            pxGraphic->ShaderVariableFx2 = PXNull;
+            pxGraphic->ShaderVariableFx2xN = PXNull;
+            pxGraphic->ShaderVariableIx2 = PXNull;
+            pxGraphic->ShaderVariableIx2xN = PXNull;
+            pxGraphic->ShaderVariableFx3 = PXNull;
+            pxGraphic->ShaderVariableFx3xN = PXNull;
+            pxGraphic->ShaderVariableIx3 = PXNull;
+            pxGraphic->ShaderVariableIx3xN = PXNull;
+            pxGraphic->ShaderVariableFx4 = PXNull;
+            pxGraphic->ShaderVariableFx4xN = PXNull;
+            pxGraphic->ShaderVariableIx4 = PXNull;
+            pxGraphic->ShaderVariableIx4xN = PXNull;
+            pxGraphic->ShaderVariableMatrix2fv = PXNull;
+            pxGraphic->ShaderVariableMatrix3fv = PXNull;
+            pxGraphic->ShaderVariableMatrix4fv = PXNull;
 
-            graphicContext->DrawModeSet = PXNull;
-            graphicContext->DrawColorRGBAF = PXNull;
+            pxGraphic->DrawModeSet = PXNull;
+            pxGraphic->DrawColorRGBAF = PXNull;
 
-            graphicContext->RectangleDraw = PXNull;
-            graphicContext->RectangleDrawTx = PXNull;
+            pxGraphic->RectangleDraw = PXNull;
+            pxGraphic->RectangleDrawTx = PXNull;
 
-            graphicContext->SwapIntervalSet = PXNull;
-            graphicContext->SwapIntervalGet = PXNull;
+            pxGraphic->SwapIntervalSet = PXNull;
+            pxGraphic->SwapIntervalGet = PXNull;
 
-            graphicContext->DevicePhysicalListAmount = PXNull;
-            graphicContext->DevicePhysicalListFetch = PXNull;
+            pxGraphic->DevicePhysicalListAmount = PXNull;
+            pxGraphic->DevicePhysicalListFetch = PXNull;
 
-            graphicContext->Initialize = PXDirectXInitialize; // PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
-            graphicContext->Release = PXDirectXRelease;
-            graphicContext->Select = PXNull;
-            graphicContext->Deselect = PXNull;
-            graphicContext->Clear = PXDirectXClear;
-            graphicContext->SceneDeploy = PXDirectXSceneDeploy;
-            graphicContext->ViewPortGet = PXDirectXViewportGet;
-            graphicContext->ViewPortSet = PXDirectXViewportSet;
-            graphicContext->ShaderProgramCreate = PXDirectXShaderProgramCreate;
-            graphicContext->ShaderProgramSelect = PXDirectXShaderProgramSelect;
-            graphicContext->ShaderProgramDelete = PXDirectXShaderProgramDelete;
-            graphicContext->SceneBegin = PXDirectXSceneBegin;
-            graphicContext->SceneEnd = PXDirectXSceneEnd;
-            graphicContext->DrawScriptCreate = PXDirectXDrawScriptCreate;
-            graphicContext->DrawScriptBegin = PXDirectXDrawScriptBegin;
-            graphicContext->DrawScriptEnd = PXDirectXDrawScriptEnd;
-            graphicContext->DrawScriptDelete = PXDirectXDrawScriptDelete;
-            graphicContext->DrawScriptExecute = PXDirectXDrawScriptExecute;
-            graphicContext->TextureCubeRegister = PXDirectXTextureCubeCreate;
-            graphicContext->TextureCubeRegisterUse = PXNull;
-            graphicContext->TextureCubeRelease = PXNull;
-            graphicContext->VertexStructureRegister = PXDirectXVertexStructureRegister;
-            graphicContext->VertexStructureDraw = PXDirectXVertexStructureDraw;
-            graphicContext->VertexStructureSelect = PXNull;
-            graphicContext->VertexStructureRelease = PXNull;
-            graphicContext->LightSet = PXDirectXLightSet;
-            graphicContext->LightGet = PXDirectXLightGet;
-            graphicContext->LightEnableSet = PXNull;
-            graphicContext->LightEnableGet = PXNull;
-            graphicContext->Texture2DRegister = PXDirectXTexture2DCreate;
-            graphicContext->Texture2DRelease = PXNull;
-            graphicContext->Texture2DSelect = PXNull;     
+            pxGraphic->Initialize = PXDirectXInitialize; // PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
+            pxGraphic->Release = PXDirectXRelease;
+            pxGraphic->Select = PXNull;
+            pxGraphic->Deselect = PXNull;
+            pxGraphic->Clear = PXDirectXClear;
+            pxGraphic->SceneDeploy = PXDirectXSceneDeploy;
+            pxGraphic->ViewPortGet = PXDirectXViewportGet;
+            pxGraphic->ViewPortSet = PXDirectXViewportSet;
+            pxGraphic->ShaderProgramCreate = PXDirectXShaderProgramCreate;
+            pxGraphic->ShaderProgramSelect = PXDirectXShaderProgramSelect;
+            pxGraphic->ShaderProgramDelete = PXDirectXShaderProgramDelete;
+            pxGraphic->SceneBegin = PXDirectXSceneBegin;
+            pxGraphic->SceneEnd = PXDirectXSceneEnd;
+            pxGraphic->DrawScriptCreate = PXDirectXDrawScriptCreate;
+            pxGraphic->DrawScriptBegin = PXDirectXDrawScriptBegin;
+            pxGraphic->DrawScriptEnd = PXDirectXDrawScriptEnd;
+            pxGraphic->DrawScriptDelete = PXDirectXDrawScriptDelete;
+            pxGraphic->DrawScriptExecute = PXDirectXDrawScriptExecute;
+            pxGraphic->TextureCubeRegister = PXDirectXTextureCubeCreate;
+            pxGraphic->TextureCubeRegisterUse = PXNull;
+            pxGraphic->TextureCubeRelease = PXNull;
+            pxGraphic->VertexStructureRegister = PXDirectXVertexStructureRegister;
+            pxGraphic->VertexStructureDraw = PXDirectXVertexStructureDraw;
+            pxGraphic->VertexStructureSelect = PXNull;
+            pxGraphic->VertexStructureRelease = PXNull;
+            pxGraphic->LightSet = PXDirectXLightSet;
+            pxGraphic->LightGet = PXDirectXLightGet;
+            pxGraphic->LightEnableSet = PXNull;
+            pxGraphic->LightEnableGet = PXNull;
+            pxGraphic->Texture2DRegister = PXDirectXTexture2DCreate;
+            pxGraphic->Texture2DRelease = PXNull;
+            pxGraphic->Texture2DSelect = PXNull;     
             break;
         }
         case PXGraphicSystemVulcan:
         {
-            graphicContext->EventOwner = &graphicContext->VulcanInstance;
+            pxGraphic->EventOwner = &pxGraphic->VulcanInstance;
 
-            graphicContext->Initialize = PXVulcanInitialize;
-            graphicContext->Release = PXVulcanRelease;
+            pxGraphic->Initialize = PXVulcanInitialize;
+            pxGraphic->Release = PXVulcanRelease;
 
             break;
         }
@@ -1423,12 +1544,12 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
             break;
     }
 
-    graphicContext->Initialize(graphicContext->EventOwner, pxGraphicInitializeInfo);
+    pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
     //-------------------------------------------------------------------------
 
-    for (size_t i = 0; i < graphicContext->DevicePhysicalListSize; i++)
+    for (size_t i = 0; i < pxGraphic->DevicePhysicalListSize; i++)
     {
-        PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &graphicContext->DevicePhysicalList[i];
+        PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &pxGraphic->DevicePhysicalList[i];
 
         char targetBuffer[64];
 
@@ -1455,7 +1576,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
             "| Shader-OpenGL : %-39s |\n"
             "+---------------------------------------------------------+\n\n",
             i+1,
-            graphicContext->DevicePhysicalListSize,
+            pxGraphic->DevicePhysicalListSize,
             pxGraphicDevicePhysical->DeviceName,          
             targetBuffer,
             pxGraphicDevicePhysical->Vendor,
@@ -1471,31 +1592,31 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext
     PXViewPort pxViewPort;
     pxViewPort.X = 0;
     pxViewPort.Y = 0;
-    pxViewPort.Width = graphicContext->AttachedWindow->Width;
-    pxViewPort.Height = graphicContext->AttachedWindow->Height;
+    pxViewPort.Width = pxGraphic->AttachedWindow->Width;
+    pxViewPort.Height = pxGraphic->AttachedWindow->Height;
     pxViewPort.ClippingMinimum = 0;
     pxViewPort.ClippingMaximum = 1;
 
-    graphicContext->ViewPortSet(graphicContext->EventOwner, &pxViewPort);
+    pxGraphic->ViewPortSet(pxGraphic->EventOwner, &pxViewPort);
 
 
-    //PXMatrix4x4FIdentity(&graphicContext->SpriteScaled.ModelMatrix);
-   // PXMatrix4x4FIdentity(&graphicContext->SpriteUnScaled.ModelMatrix);
+    //PXMatrix4x4FIdentity(&pxGraphic->SpriteScaled.ModelMatrix);
+   // PXMatrix4x4FIdentity(&pxGraphic->SpriteUnScaled.ModelMatrix);
 
     return PXActionSuccessful;
 }
 
-void PXAPI PXGraphicHotSwap(PXGraphicContext* const graphicContext, const PXGraphicSystem pxGraphicSystem)
+void PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem)
 {
-    //graphicContext->Release();
+    //pxGraphic->Release();
 }
 
-void PXAPI PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo)
+void PXAPI PXGraphicResourceRegister(PXGraphic* const pxGraphic, PXGraphicResourceInfo* const pxGraphicResourceInfo)
 {
 
 }
 
-PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphicContext* const graphicContext, PXSprite* const pxSprite)
+PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite)
 {
     PXObjectClear(PXSprite, pxSprite);
 
@@ -1510,11 +1631,11 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphicContext* const graphicCon
   //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
 
-PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath)
+PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphic* const pxGraphic, PXSprite* const pxSprite, const char* textureFilePath)
 {
     PXTexture2D* pxTexture = PXNew(PXTexture2D);
 
-    PXActionResult loadTextureResult = PXGraphicTexture2DLoadA(graphicContext, pxTexture, textureFilePath);
+    PXActionResult loadTextureResult = PXGraphicTexture2DLoadA(pxGraphic, pxTexture, textureFilePath);
 
     float aspectRationX = pxTexture->Image.Width / pxTexture->Image.Height;
 
@@ -1525,13 +1646,13 @@ PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphic
     return loadTextureResult;
 }
 
-PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const PXSprite* const pxSprite, const PXCamera* const pxCamera)
+PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSprite* const pxSprite, const PXCamera* const pxCamera)
 {
-    switch (graphicContext->GraphicSystem)
+    switch (pxGraphic->GraphicSystem)
     {
         case PXGraphicSystemOpenGL:
         {
-            return PXOpenGLSpriteDraw(&graphicContext->OpenGLInstance, pxSprite, pxCamera);
+            return PXOpenGLSpriteDraw(&pxGraphic->OpenGLInstance, pxSprite, pxCamera);
         }
         case PXGraphicSystemDirectX:
         {
@@ -1542,10 +1663,10 @@ PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphicContext* const graphicContext,
     }
 }
 
-void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4)
+void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphic* const pxGraphic, const unsigned int locationID, const float* const matrix4x4)
 {
 #if PXOpenGLUSE
-    PXOpenGLShaderVariableMatrix4fv(&graphicContext->OpenGLInstance, locationID, 1, 0, matrix4x4);
+    PXOpenGLShaderVariableMatrix4fv(&pxGraphic->OpenGLInstance, locationID, 1, 0, matrix4x4);
 #endif
 }
 #endif
@@ -1715,14 +1836,14 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const float deltaTime)
         return;
     }
 
-    PXMatrix4x4FPosition(&camera->MatrixModel, &cameraPositionCurrent); // Get current camera pos
-    PXMatrix4x4FPosition(camera->Target, &desiredPosition); // get current target pos
+    PXMatrix4x4FPositionGet(&camera->MatrixModel, &cameraPositionCurrent); // Get current camera pos
+    PXMatrix4x4FPositionGet(camera->Target, &desiredPosition); // get current target pos
 
     PXVector3FAdd(&desiredPosition, &camera->Offset, &desiredPosition); // add offset to target pos
 
     PXVector3FInterpolate(&cameraPositionCurrent, &desiredPosition, camera->FollowSpeed * deltaTime, &desiredPosition); // calculate delta movement
 
-    PXMatrix4x4FMoveTo(&camera->MatrixModel, &desiredPosition, &camera->MatrixModel); // Set delte movement
+    PXMatrix4x4FPositionSet(&camera->MatrixModel, &desiredPosition, &camera->MatrixModel); // Set delte movement
 }
 
 void PXAPI PXCameraUpdate(PXCamera* const camera, const float deltaTime)
@@ -1733,7 +1854,7 @@ void PXAPI PXCameraUpdate(PXCamera* const camera, const float deltaTime)
     PXVector3F currentPosition;
     PXVector3F centerPosition;
 
-    PXMatrix4x4FPosition(&camera->MatrixModel, &currentPosition);
+    PXMatrix4x4FPositionGet(&camera->MatrixModel, &currentPosition);
     PXVector3FAdd(&currentPosition, &camera->LookAtPosition, &centerPosition);
 
     PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up, &camera->MatrixView);

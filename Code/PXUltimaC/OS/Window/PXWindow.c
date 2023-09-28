@@ -2121,7 +2121,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     {
 #if 0 // Use animation
 
-        const BOOL animationResult = AnimateWindow(windowID, 100, AW_ACTIVATE | AW_CENTER);
+        const BOOL animationResult = AnimateWindow(windowID, 10000, AW_ACTIVATE | AW_HOR_POSITIVE);
 
         if (!animationResult)
         {

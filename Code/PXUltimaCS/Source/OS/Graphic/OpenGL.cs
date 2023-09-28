@@ -947,18 +947,6 @@ namespace PX
         {
 
         }*/
-        public void ShaderVariable(uint location, uint count, bool transpose, Matrix2x2<float> value)
-        {
-
-        }
-        public void ShaderVariable(uint location, uint count, bool transpose, Matrix3x3<float> value)
-        {
-
-        }
-        public void ShaderVariable(uint location, uint count, bool transpose, Matrix4x4<float> value)
-        {
-
-        }
         //-------------------------------------------------------------------------
 
         //---<Buffers>-------------------------------------------------------------

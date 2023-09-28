@@ -1,3 +1,5 @@
+using System;
+
 namespace PXUltimaCSTest
 {
     enum OffsetType { LEFT, BOTTOM, RIGHT, TOP, ALL };

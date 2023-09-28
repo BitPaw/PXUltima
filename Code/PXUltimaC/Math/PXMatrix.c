@@ -31,20 +31,18 @@ void PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F)
 	matrix4x4F->Data[15] = 1;
 }
 
-void PXMatrix4x4FPosition(const PXMatrix4x4F* const matrix, PXVector3F* const position)
+void PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F* const position)
 {
 	position->X = matrix->Data[TransformX];
 	position->Y = matrix->Data[TransformY];
 	position->Z = matrix->Data[TransformZ];
 }
 
-void PXMatrix4x4FMoveTo(PXMatrix4x4F* const matrixInput, const PXVector3F* const position, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position)
 {
-    PXMemoryCopy(matrixInput, sizeof(PXMatrix4x4F), matrixResult, sizeof(PXMatrix4x4F));
-
-	matrixResult->Data[TransformX] = position->X;
-	matrixResult->Data[TransformY] = position->Y;
-	matrixResult->Data[TransformZ] = position->Z;
+	matrix4x4F->Data[TransformX] = position->X;
+	matrix4x4F->Data[TransformY] = position->Y;
+	matrix4x4F->Data[TransformZ] = position->Z;
 }
 
 void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult)
@@ -104,7 +102,7 @@ void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matri
 	matrixResult->Data[15] = m * D + n * H + o * L + p * P;
 }
 
-void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FRotate(const PXMatrix4x4F* matrix4x4F, const float x, const float y, const float z)
 {
 	PXMatrix4x4F xRotation;
 	PXMatrix4x4F yRotation;
@@ -155,7 +153,7 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrixA, const float x, const float 
 		PXMatrix4x4FIdentity(&tempRotation);
 
 		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
-		PXMatrix4x4FMultiply(&tempRotation, &xRotation, matrixResult);
+		PXMatrix4x4FMultiply(&tempRotation, &xRotation, matrix4x4F);
 	}
 }
 
@@ -303,29 +301,29 @@ void PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, const float fielfOf
 	matrix4x4F->Data[TransformZ] = -((2) * farPlane * nearPlane) / difference;
 }
 
-PXBool PXMatrix4x4FInverse(const PXMatrix4x4F* const matrix4x4FInput, PXMatrix4x4F* const matrix4x4FResult)
+PXBool PXMatrix4x4FInverse(PXMatrix4x4F* const matrix4x4F)
 {
 	PXMatrix4x4F temp;
 	double det = 0;
 
-	temp.Data[0] = matrix4x4FInput->Data[5] * matrix4x4FInput->Data[10] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[5] * matrix4x4FInput->Data[11] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[9] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[9] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[13] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[11] - matrix4x4FInput->Data[13] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[10];
-	temp.Data[4] = -matrix4x4FInput->Data[4] * matrix4x4FInput->Data[10] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[11] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[11] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[10];
-	temp.Data[8] = matrix4x4FInput->Data[4] * matrix4x4FInput->Data[9] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[4] * matrix4x4FInput->Data[11] * matrix4x4FInput->Data[13] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[13] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[11] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[9];
-	temp.Data[12] = -matrix4x4FInput->Data[4] * matrix4x4FInput->Data[9] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[10] * matrix4x4FInput->Data[13] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[13] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[10] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[9];
-	temp.Data[1] = -matrix4x4FInput->Data[1] * matrix4x4FInput->Data[10] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[1] * matrix4x4FInput->Data[11] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[9] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[9] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[13] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[11] + matrix4x4FInput->Data[13] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[10];
-	temp.Data[5] = matrix4x4FInput->Data[0] * matrix4x4FInput->Data[10] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[0] * matrix4x4FInput->Data[11] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[11] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[10];
-	temp.Data[9] = -matrix4x4FInput->Data[0] * matrix4x4FInput->Data[9] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[0] * matrix4x4FInput->Data[11] * matrix4x4FInput->Data[13] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[13] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[11] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[9];
-	temp.Data[13] = matrix4x4FInput->Data[0] * matrix4x4FInput->Data[9] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[0] * matrix4x4FInput->Data[10] * matrix4x4FInput->Data[13] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[13] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[10] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[9];
-	temp.Data[2] = matrix4x4FInput->Data[1] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[1] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[5] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[5] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[13] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[7] - matrix4x4FInput->Data[13] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[6];
-	temp.Data[6] = -matrix4x4FInput->Data[0] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[0] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[4] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[7] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[6];
-	temp.Data[10] = matrix4x4FInput->Data[0] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[15] - matrix4x4FInput->Data[0] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[13] - matrix4x4FInput->Data[4] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[15] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[13] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[7] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[5];
-	temp.Data[14] = -matrix4x4FInput->Data[0] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[14] + matrix4x4FInput->Data[0] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[13] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[14] - matrix4x4FInput->Data[4] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[13] - matrix4x4FInput->Data[12] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[6] + matrix4x4FInput->Data[12] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[5];
-	temp.Data[3] = -matrix4x4FInput->Data[1] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[11] + matrix4x4FInput->Data[1] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[10] + matrix4x4FInput->Data[5] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[11] - matrix4x4FInput->Data[5] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[10] - matrix4x4FInput->Data[9] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[7] + matrix4x4FInput->Data[9] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[6];
-	temp.Data[7] = matrix4x4FInput->Data[0] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[11] - matrix4x4FInput->Data[0] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[10] - matrix4x4FInput->Data[4] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[11] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[10] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[7] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[6];
-	temp.Data[11] = -matrix4x4FInput->Data[0] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[11] + matrix4x4FInput->Data[0] * matrix4x4FInput->Data[7] * matrix4x4FInput->Data[9] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[11] - matrix4x4FInput->Data[4] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[9] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[7] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[3] * matrix4x4FInput->Data[5];
-	temp.Data[15] = matrix4x4FInput->Data[0] * matrix4x4FInput->Data[5] * matrix4x4FInput->Data[10] - matrix4x4FInput->Data[0] * matrix4x4FInput->Data[6] * matrix4x4FInput->Data[9] - matrix4x4FInput->Data[4] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[10] + matrix4x4FInput->Data[4] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[9] + matrix4x4FInput->Data[8] * matrix4x4FInput->Data[1] * matrix4x4FInput->Data[6] - matrix4x4FInput->Data[8] * matrix4x4FInput->Data[2] * matrix4x4FInput->Data[5];
+	temp.Data[0] = matrix4x4F->Data[5] * matrix4x4F->Data[10] * matrix4x4F->Data[15] - matrix4x4F->Data[5] * matrix4x4F->Data[11] * matrix4x4F->Data[14] - matrix4x4F->Data[9] * matrix4x4F->Data[6] * matrix4x4F->Data[15] + matrix4x4F->Data[9] * matrix4x4F->Data[7] * matrix4x4F->Data[14] + matrix4x4F->Data[13] * matrix4x4F->Data[6] * matrix4x4F->Data[11] - matrix4x4F->Data[13] * matrix4x4F->Data[7] * matrix4x4F->Data[10];
+	temp.Data[4] = -matrix4x4F->Data[4] * matrix4x4F->Data[10] * matrix4x4F->Data[15] + matrix4x4F->Data[4] * matrix4x4F->Data[11] * matrix4x4F->Data[14] + matrix4x4F->Data[8] * matrix4x4F->Data[6] * matrix4x4F->Data[15] - matrix4x4F->Data[8] * matrix4x4F->Data[7] * matrix4x4F->Data[14] - matrix4x4F->Data[12] * matrix4x4F->Data[6] * matrix4x4F->Data[11] + matrix4x4F->Data[12] * matrix4x4F->Data[7] * matrix4x4F->Data[10];
+	temp.Data[8] = matrix4x4F->Data[4] * matrix4x4F->Data[9] * matrix4x4F->Data[15] - matrix4x4F->Data[4] * matrix4x4F->Data[11] * matrix4x4F->Data[13] - matrix4x4F->Data[8] * matrix4x4F->Data[5] * matrix4x4F->Data[15] + matrix4x4F->Data[8] * matrix4x4F->Data[7] * matrix4x4F->Data[13] + matrix4x4F->Data[12] * matrix4x4F->Data[5] * matrix4x4F->Data[11] - matrix4x4F->Data[12] * matrix4x4F->Data[7] * matrix4x4F->Data[9];
+	temp.Data[12] = -matrix4x4F->Data[4] * matrix4x4F->Data[9] * matrix4x4F->Data[14] + matrix4x4F->Data[4] * matrix4x4F->Data[10] * matrix4x4F->Data[13] + matrix4x4F->Data[8] * matrix4x4F->Data[5] * matrix4x4F->Data[14] - matrix4x4F->Data[8] * matrix4x4F->Data[6] * matrix4x4F->Data[13] - matrix4x4F->Data[12] * matrix4x4F->Data[5] * matrix4x4F->Data[10] + matrix4x4F->Data[12] * matrix4x4F->Data[6] * matrix4x4F->Data[9];
+	temp.Data[1] = -matrix4x4F->Data[1] * matrix4x4F->Data[10] * matrix4x4F->Data[15] + matrix4x4F->Data[1] * matrix4x4F->Data[11] * matrix4x4F->Data[14] + matrix4x4F->Data[9] * matrix4x4F->Data[2] * matrix4x4F->Data[15] - matrix4x4F->Data[9] * matrix4x4F->Data[3] * matrix4x4F->Data[14] - matrix4x4F->Data[13] * matrix4x4F->Data[2] * matrix4x4F->Data[11] + matrix4x4F->Data[13] * matrix4x4F->Data[3] * matrix4x4F->Data[10];
+	temp.Data[5] = matrix4x4F->Data[0] * matrix4x4F->Data[10] * matrix4x4F->Data[15] - matrix4x4F->Data[0] * matrix4x4F->Data[11] * matrix4x4F->Data[14] - matrix4x4F->Data[8] * matrix4x4F->Data[2] * matrix4x4F->Data[15] + matrix4x4F->Data[8] * matrix4x4F->Data[3] * matrix4x4F->Data[14] + matrix4x4F->Data[12] * matrix4x4F->Data[2] * matrix4x4F->Data[11] - matrix4x4F->Data[12] * matrix4x4F->Data[3] * matrix4x4F->Data[10];
+	temp.Data[9] = -matrix4x4F->Data[0] * matrix4x4F->Data[9] * matrix4x4F->Data[15] + matrix4x4F->Data[0] * matrix4x4F->Data[11] * matrix4x4F->Data[13] + matrix4x4F->Data[8] * matrix4x4F->Data[1] * matrix4x4F->Data[15] - matrix4x4F->Data[8] * matrix4x4F->Data[3] * matrix4x4F->Data[13] - matrix4x4F->Data[12] * matrix4x4F->Data[1] * matrix4x4F->Data[11] + matrix4x4F->Data[12] * matrix4x4F->Data[3] * matrix4x4F->Data[9];
+	temp.Data[13] = matrix4x4F->Data[0] * matrix4x4F->Data[9] * matrix4x4F->Data[14] - matrix4x4F->Data[0] * matrix4x4F->Data[10] * matrix4x4F->Data[13] - matrix4x4F->Data[8] * matrix4x4F->Data[1] * matrix4x4F->Data[14] + matrix4x4F->Data[8] * matrix4x4F->Data[2] * matrix4x4F->Data[13] + matrix4x4F->Data[12] * matrix4x4F->Data[1] * matrix4x4F->Data[10] - matrix4x4F->Data[12] * matrix4x4F->Data[2] * matrix4x4F->Data[9];
+	temp.Data[2] = matrix4x4F->Data[1] * matrix4x4F->Data[6] * matrix4x4F->Data[15] - matrix4x4F->Data[1] * matrix4x4F->Data[7] * matrix4x4F->Data[14] - matrix4x4F->Data[5] * matrix4x4F->Data[2] * matrix4x4F->Data[15] + matrix4x4F->Data[5] * matrix4x4F->Data[3] * matrix4x4F->Data[14] + matrix4x4F->Data[13] * matrix4x4F->Data[2] * matrix4x4F->Data[7] - matrix4x4F->Data[13] * matrix4x4F->Data[3] * matrix4x4F->Data[6];
+	temp.Data[6] = -matrix4x4F->Data[0] * matrix4x4F->Data[6] * matrix4x4F->Data[15] + matrix4x4F->Data[0] * matrix4x4F->Data[7] * matrix4x4F->Data[14] + matrix4x4F->Data[4] * matrix4x4F->Data[2] * matrix4x4F->Data[15] - matrix4x4F->Data[4] * matrix4x4F->Data[3] * matrix4x4F->Data[14] - matrix4x4F->Data[12] * matrix4x4F->Data[2] * matrix4x4F->Data[7] + matrix4x4F->Data[12] * matrix4x4F->Data[3] * matrix4x4F->Data[6];
+	temp.Data[10] = matrix4x4F->Data[0] * matrix4x4F->Data[5] * matrix4x4F->Data[15] - matrix4x4F->Data[0] * matrix4x4F->Data[7] * matrix4x4F->Data[13] - matrix4x4F->Data[4] * matrix4x4F->Data[1] * matrix4x4F->Data[15] + matrix4x4F->Data[4] * matrix4x4F->Data[3] * matrix4x4F->Data[13] + matrix4x4F->Data[12] * matrix4x4F->Data[1] * matrix4x4F->Data[7] - matrix4x4F->Data[12] * matrix4x4F->Data[3] * matrix4x4F->Data[5];
+	temp.Data[14] = -matrix4x4F->Data[0] * matrix4x4F->Data[5] * matrix4x4F->Data[14] + matrix4x4F->Data[0] * matrix4x4F->Data[6] * matrix4x4F->Data[13] + matrix4x4F->Data[4] * matrix4x4F->Data[1] * matrix4x4F->Data[14] - matrix4x4F->Data[4] * matrix4x4F->Data[2] * matrix4x4F->Data[13] - matrix4x4F->Data[12] * matrix4x4F->Data[1] * matrix4x4F->Data[6] + matrix4x4F->Data[12] * matrix4x4F->Data[2] * matrix4x4F->Data[5];
+	temp.Data[3] = -matrix4x4F->Data[1] * matrix4x4F->Data[6] * matrix4x4F->Data[11] + matrix4x4F->Data[1] * matrix4x4F->Data[7] * matrix4x4F->Data[10] + matrix4x4F->Data[5] * matrix4x4F->Data[2] * matrix4x4F->Data[11] - matrix4x4F->Data[5] * matrix4x4F->Data[3] * matrix4x4F->Data[10] - matrix4x4F->Data[9] * matrix4x4F->Data[2] * matrix4x4F->Data[7] + matrix4x4F->Data[9] * matrix4x4F->Data[3] * matrix4x4F->Data[6];
+	temp.Data[7] = matrix4x4F->Data[0] * matrix4x4F->Data[6] * matrix4x4F->Data[11] - matrix4x4F->Data[0] * matrix4x4F->Data[7] * matrix4x4F->Data[10] - matrix4x4F->Data[4] * matrix4x4F->Data[2] * matrix4x4F->Data[11] + matrix4x4F->Data[4] * matrix4x4F->Data[3] * matrix4x4F->Data[10] + matrix4x4F->Data[8] * matrix4x4F->Data[2] * matrix4x4F->Data[7] - matrix4x4F->Data[8] * matrix4x4F->Data[3] * matrix4x4F->Data[6];
+	temp.Data[11] = -matrix4x4F->Data[0] * matrix4x4F->Data[5] * matrix4x4F->Data[11] + matrix4x4F->Data[0] * matrix4x4F->Data[7] * matrix4x4F->Data[9] + matrix4x4F->Data[4] * matrix4x4F->Data[1] * matrix4x4F->Data[11] - matrix4x4F->Data[4] * matrix4x4F->Data[3] * matrix4x4F->Data[9] - matrix4x4F->Data[8] * matrix4x4F->Data[1] * matrix4x4F->Data[7] + matrix4x4F->Data[8] * matrix4x4F->Data[3] * matrix4x4F->Data[5];
+	temp.Data[15] = matrix4x4F->Data[0] * matrix4x4F->Data[5] * matrix4x4F->Data[10] - matrix4x4F->Data[0] * matrix4x4F->Data[6] * matrix4x4F->Data[9] - matrix4x4F->Data[4] * matrix4x4F->Data[1] * matrix4x4F->Data[10] + matrix4x4F->Data[4] * matrix4x4F->Data[2] * matrix4x4F->Data[9] + matrix4x4F->Data[8] * matrix4x4F->Data[1] * matrix4x4F->Data[6] - matrix4x4F->Data[8] * matrix4x4F->Data[2] * matrix4x4F->Data[5];
 
-	det = matrix4x4FInput->Data[0] * temp.Data[0] + matrix4x4FInput->Data[1] * temp.Data[4] + matrix4x4FInput->Data[2] * temp.Data[8] + matrix4x4FInput->Data[3] * temp.Data[12];
+	det = matrix4x4F->Data[0] * temp.Data[0] + matrix4x4F->Data[1] * temp.Data[4] + matrix4x4F->Data[2] * temp.Data[8] + matrix4x4F->Data[3] * temp.Data[12];
 
 	if (det == 0)
 		return PXNo;
@@ -334,56 +332,56 @@ PXBool PXMatrix4x4FInverse(const PXMatrix4x4F* const matrix4x4FInput, PXMatrix4x
 
 	for (PXSize i = 0; i < 16u; ++i)
 	{
-		matrix4x4FResult->Data[i] = temp.Data[i] * det;
+		matrix4x4F->Data[i] = temp.Data[i] * det;
 	}
 
 	return PXYes;
 }
 
-void PXMatrix4x4FTranpose(const PXMatrix4x4F* const matrix4x4FInput, PXMatrix4x4F* const matrix4x4FResult)
+void PXMatrix4x4FTranpose(PXMatrix4x4F* const matrix4x4F)
 {
 	//NumberType a = this->Data[0];
-	const float b = matrix4x4FInput->Data[1];
-	const float c = matrix4x4FInput->Data[2];
-	const float d = matrix4x4FInput->Data[3];
+	const float b = matrix4x4F->Data[1];
+	const float c = matrix4x4F->Data[2];
+	const float d = matrix4x4F->Data[3];
 
-	const float e = matrix4x4FInput->Data[4];
+	const float e = matrix4x4F->Data[4];
 	//NumberType f = this->Data[5];
-	const float g = matrix4x4FInput->Data[6];
-	const float h = matrix4x4FInput->Data[7];
+	const float g = matrix4x4F->Data[6];
+	const float h = matrix4x4F->Data[7];
 
-	const float i = matrix4x4FInput->Data[8];
-	const float j = matrix4x4FInput->Data[9];
+	const float i = matrix4x4F->Data[8];
+	const float j = matrix4x4F->Data[9];
 	//NumberType k = this->Data[10];
-	const float l = matrix4x4FInput->Data[11];
+	const float l = matrix4x4F->Data[11];
 
-	const float m = matrix4x4FInput->Data[12];
-	const float n = matrix4x4FInput->Data[13];
-	const float o = matrix4x4FInput->Data[14];
+	const float m = matrix4x4F->Data[12];
+	const float n = matrix4x4F->Data[13];
+	const float o = matrix4x4F->Data[14];
 	//NumberType p = this->Data[15];
 
 	//this->Data[0] = a;
-	matrix4x4FResult->Data[1] = e;
-	matrix4x4FResult->Data[2] = i;
-	matrix4x4FResult->Data[3] = m;
+	matrix4x4F->Data[1] = e;
+	matrix4x4F->Data[2] = i;
+	matrix4x4F->Data[3] = m;
 
-	matrix4x4FResult->Data[4] = b;
+	matrix4x4F->Data[4] = b;
 	//this->Data[5] = f;
-	matrix4x4FResult->Data[6] = j;
-	matrix4x4FResult->Data[7] = n;
+	matrix4x4F->Data[6] = j;
+	matrix4x4F->Data[7] = n;
 
-	matrix4x4FResult->Data[8] = c;
-	matrix4x4FResult->Data[9] = g;
+	matrix4x4F->Data[8] = c;
+	matrix4x4F->Data[9] = g;
 	//this->Data[10] = k;
-	matrix4x4FResult->Data[11] = o;
+	matrix4x4F->Data[11] = o;
 
-	matrix4x4FResult->Data[12] = d;
-	matrix4x4FResult->Data[13] = h;
-	matrix4x4FResult->Data[14] = l;
+	matrix4x4F->Data[12] = d;
+	matrix4x4F->Data[13] = h;
+	matrix4x4F->Data[14] = l;
 	//this->Data[15] = p;
 }
 
-void PXMatrix4x4FLookAt(const PXMatrix4x4F* const matrix4x4FInput, const PXVector3F* const eye, const PXVector3F* const center, const PXVector3F* const up, PXMatrix4x4F* const matrix4x4FResult)
+void PXMatrix4x4FLookAt(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const eye, const PXVector3F* const center, const PXVector3F* const up)
 {
 	PXVector3F centereye;
 	PXVector3F f;
@@ -398,21 +396,21 @@ void PXMatrix4x4FLookAt(const PXMatrix4x4F* const matrix4x4FInput, const PXVecto
 	PXVector3FNormalize(&frontUpCross, &s);
 	PXVector3FCrossProduct(&s, &f, &u);
 
-	matrix4x4FResult->Data[XAxisX] = s.X;
-	matrix4x4FResult->Data[XAxisY] = s.Y;
-	matrix4x4FResult->Data[XAxisZ] = s.Z;
+	matrix4x4F->Data[XAxisX] = s.X;
+	matrix4x4F->Data[XAxisY] = s.Y;
+	matrix4x4F->Data[XAxisZ] = s.Z;
 
-	matrix4x4FResult->Data[YAxisX] = u.X;
-	matrix4x4FResult->Data[YAxisY] = u.Y;
-	matrix4x4FResult->Data[YAxisZ] = u.Z;
+	matrix4x4F->Data[YAxisX] = u.X;
+	matrix4x4F->Data[YAxisY] = u.Y;
+	matrix4x4F->Data[YAxisZ] = u.Z;
 
-	matrix4x4FResult->Data[ZAxisX] = -f.X;
-	matrix4x4FResult->Data[ZAxisY] = -f.Y;
-	matrix4x4FResult->Data[ZAxisZ] = -f.Z;
+	matrix4x4F->Data[ZAxisX] = -f.X;
+	matrix4x4F->Data[ZAxisY] = -f.Y;
+	matrix4x4F->Data[ZAxisZ] = -f.Z;
 
-	matrix4x4FResult->Data[TransformX] = -PXVector3FDotProduct(&s, eye);
-	matrix4x4FResult->Data[TransformY] = -PXVector3FDotProduct(&u, eye);
-	matrix4x4FResult->Data[TransformZ] = PXVector3FDotProduct(&f, eye);
+	matrix4x4F->Data[TransformX] = -PXVector3FDotProduct(&s, eye);
+	matrix4x4F->Data[TransformY] = -PXVector3FDotProduct(&u, eye);
+	matrix4x4F->Data[TransformZ] = PXVector3FDotProduct(&f, eye);
 }
 
 /*

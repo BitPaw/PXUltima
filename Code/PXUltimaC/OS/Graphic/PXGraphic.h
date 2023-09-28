@@ -86,7 +86,7 @@ extern "C"
 
 
 
-	typedef struct PXGraphicContext_ PXGraphicContext;
+	typedef struct PXGraphic_ PXGraphic;
 
 	typedef struct PXGraphicInitializeInfo_
 	{
@@ -100,7 +100,7 @@ extern "C"
 
 		PXGraphicSystem GraphicSystem;
 
-		PXGraphicContext* Graphic;
+		PXGraphic* Graphic;
 	}
 	PXGraphicInitializeInfo;
 	
@@ -223,75 +223,95 @@ extern "C"
 
 	typedef struct PXUIElement_ PXUIElement;
 
-	typedef void (*PXUIOnClick)(PXUIElement* const pxUIElement);
-	typedef void (*PXUIOnMouseEnter)(PXUIElement* const pxUIElement);
-	typedef void (*PXUIOnMouseLeave)(PXUIElement* const pxUIElement);
+	typedef void (PXAPI*PXUIOnClick)(PXUIElement* const pxUIElement);
+	typedef void (PXAPI*PXUIOnMouseEnter)(PXUIElement* const pxUIElement);
+	typedef void (PXAPI*PXUIOnMouseLeave)(PXUIElement* const pxUIElement);
 
-	typedef struct PXSpriteRectangle_
+
+	typedef struct PXUIElementFrameBufferInfo_
 	{
-		PXRectangleF Position;
-		PXRectangleF Texture;
-		PXColorRGBAF Color;
+		PXTexture2D* TextureReference;
+
+		PXInt32U Width;
+		PXInt32U Height;
+		PXInt32U BufferID;
+		PXInt32U RenderID;
 	}
-	PXSpriteRectangle;
+	PXUIElementFrameBufferInfo;
+
+	typedef struct PXUIElementImageInfo_
+	{
+		PXTexture2D* TextureReference;
+	}
+	PXUIElementImageInfo;
 
 	typedef struct PXUITextInfo_
 	{
-		PXTextUTF8 Text;
-		PXInt32U FontID;
-		PXInt32U TextShaderID;
+		char Content[32];
+		PXFont* FontID;
+		float Scale;
 	}
 	PXUITextInfo;
 
+#define PXUIElementIsEnabled 1 << 0
+#define PXUIElementIsActive 1 << 1
+#define PXUIElementIsHoverable 1 << 2
+
+#define PXUIElementNormal PXUIElementIsEnabled & PXUIElementIsActive
+
+	// Atomic UI-Element
+	// Only Text can be text
+	// Only image can be image
 	typedef struct PXUIElement_
 	{
-		//---<Render Settings>-------------------
-		PXRenderable Renderable;
-		PXColorRGBAF BackGroundColor;
-		PXFont* FontID;
-		PXTexture2D* TextureReference;
-		PXShaderProgram* ShaderReference;
-		//---------------------------------------
+		//------------------------------
+		// References 
+		//------------------------------
+		PXUIElement* Parent;
+		PXUIElement* Sibling;
+		PXUIElement* Child;
+
+
+		//------------------------------
+		// Events
+		//------------------------------
+		PXUIOnClick OnClickCallback;
+		PXUIOnMouseEnter OnMouseEnterCallback;
+		PXUIOnMouseLeave OnMouseLeaveCallback;
+
+
+		//------------------------------
+		// Position
+		//------------------------------
+		PXRectangleOffset Margin;
+		PXRectangleOffset Padding;
+
 
 		//---<State-Info>------------------------
-		PXBool IsEnabled;
-		//PXBool Active;
-		PXBool IsHoverable;
 		PXUIHoverState Hover;
+		PXColorRGBAF ColorTint;
+		PXInt32U FlagsList; 
 		//---------------------------------------
 
 		//---<Property>--------------------------
 		PXInt16U ID;
 		PXUIElementType Type;
-		PXUIElementPositionMode PositionMode;
-		char Name[32];
+		//PXUIElementPositionMode PositionMode;
 
-		float NameTextScale;
-
-		PXRectangleOffset Margin;
-		PXRectangleOffset Padding;
-		//---------------------------------------
-
-		//---<Hiracy>----------------------------
-		PXUIElement* Parent;
-		PXUIElement* Sibling;
-		PXUIElement* Child;
-		//---------------------------------------
-
-		PXInt32U FrameRenderWidth;
-		PXInt32U FrameRenderHeight;
-		PXInt32U FrameBufferID;
-		PXInt32U FrameRenderID;
-		PXTexture2D* FrameRenderTextureReference;
-
-
-		//---<Events>----------------------------
-		PXUIOnClick OnClickCallback;
-		PXUIOnMouseEnter OnMouseEnterCallback;
-		PXUIOnMouseLeave OnMouseLeaveCallback;
-		//---------------------------------------
+		union
+		{
+			PXUIElementFrameBufferInfo FrameBufferInfo;
+			PXUIElementImageInfo ImageInfo;
+			PXUITextInfo TextInfo;
+		};	
 	}
 	PXUIElement;
+
+	//const PXSize element = sizeof(PXUIElement);
+	//const PXSize possibleElements = 4096 / sizeof(PXUIElement);
+
+
+
 
 
 
@@ -396,7 +416,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 
 
-	typedef struct PXGraphicContext_
+	typedef struct PXGraphic_
 	{
 		//-------------------
 		// References
@@ -562,15 +582,30 @@ extern "C"
 		PXSize DevicePhysicalListSize;
 		PXGraphicDevicePhysical* DevicePhysicalList;
 
+
+
+		PXInt32U UIElementIDCounter;
+		PXUIElement UIElementBase;
+
 	}
-	PXGraphicContext;
+	PXGraphic;
 
 #if 0
-	const PXSize size = sizeof(PXGraphicContext);
+	const PXSize size = sizeof(PXGraphic);
 #endif 
 
+	typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXUIElement* const pxUIElement);
 
 
+	//-------------------------------------------------------------------------
+	PXPublic PXActionResult PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent);
+	PXPublic PXActionResult PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement);
+
+	PXPublic PXActionResult PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
+
+	PXPublic PXActionResult PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound);
+	PXPublic PXActionResult PXGraphicUIElementPrint(PXGraphic* const pxGraphic);
+	//-------------------------------------------------------------------------
 
 
 	//-------------------------------------------------------------------------
@@ -582,7 +617,6 @@ extern "C"
 	PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
 	PXPublic void PXAPI PXTextureDestruct(PXTexture2D* const texture);
 
-	PXPublic void PXAPI PXUIElementConstruct(PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
 	PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
 	PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
 
@@ -590,69 +624,69 @@ extern "C"
 	PXPublic void PXAPI PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
 	PXPublic void PXAPI PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
 	PXPublic void PXAPI PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont);
-	PXPublic void PXAPI PXUIElementHoverable(PXUIElement* const pxUIElement, const PXBool isHoverable);
+	PXPublic void PXAPI PXUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList);
 	PXPublic void PXAPI PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
 	PXPublic void PXAPI PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
 
-	PXPrivate PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphicContext* const graphicContext);
+	PXPrivate PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphic* const pxGraphic);
 
-	PXPublic PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
-	PXPublic PXActionResult PXAPI PXGraphicUIElementUpdate(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
-	PXPublic PXActionResult PXAPI PXGraphicUIElementUnregister(PXGraphicContext* const graphicContext, PXUIElement* const pxUIElement);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementUpdate(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementUnregister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement);
 	//-------------------------------------------------------------------------
 
 	//-----------------------------------------------------
 	// Sprite
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
-	PXPublic PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphicContext* const graphicContext, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
-	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphicContext* const graphicContext, PXSprite* const pxSprite, const char* textureFilePath);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphic* const pxGraphic, PXSprite* const pxSprite, const char* textureFilePath);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
-	PXPublic PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphicContext* const graphicContext, PXSprite* const pxSprite);
+	PXPublic PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
 
 
 	PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
 
 
 	//-------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicInstantiate(PXGraphicContext* const graphicContext, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
+	PXPublic PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
 
-	PXPublic void PXAPI PXGraphicHotSwap(PXGraphicContext* const graphicContext, const PXGraphicSystem pxGraphicSystem);
+	PXPublic void PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem);
 
-	PXPublic void PXAPI PXGraphicResourceRegister(PXGraphicContext* const graphicContext, PXGraphicResourceInfo* const pxGraphicResourceInfo);
+	PXPublic void PXAPI PXGraphicResourceRegister(PXGraphic* const pxGraphic, PXGraphicResourceInfo* const pxGraphicResourceInfo);
 	//-------------------------------------
 
 	//---<Shader>-----------------------------------------------------------------
 
-	PXPublic void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphicContext* const graphicContext, const unsigned int locationID, const float* const matrix4x4);
+	PXPublic void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphic* const pxGraphic, const unsigned int locationID, const float* const matrix4x4);
 
 	//-------------------------------------------------------------------------
 
 	// Load image resource and register it to prevent multible loads of the same file
-	PXPublic PXActionResult PXAPI PXGraphicLoadImage(PXGraphicContext* const graphicContext, PXImage* const pxImage, const PXText* const pxImageFilePath);
+	PXPublic PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* const pxImage, const PXText* const pxImageFilePath);
 
 
 	//---<Texture>----------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicTextureScreenShot(PXGraphicContext* const graphicContext, PXImage* const pxImage);
+	PXPublic PXActionResult PXAPI PXGraphicTextureScreenShot(PXGraphic* const pxGraphic, PXImage* const pxImage);
 
-	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const PXText* const filePath);
-	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphicContext* const graphicContext, PXTexture2D* const texture, const char* const filePath);
+	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTexture2D* const texture, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTexture2D* const texture, const char* const filePath);
 	//-------------------------------------------------------------------------
 
 
 	//---<Font>----------------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicFontLoad(PXGraphicContext* const graphicContext, PXFont* const pxFont, const PXText* const filePath);
-	PXPublic PXActionResult PXAPI PXGraphicFontRegister(PXGraphicContext* const graphicContext, PXFont* const pxFont);
-	PXPublic PXActionResult PXAPI PXGraphicFontRelease(PXGraphicContext* const graphicContext, PXFont* const pxFont);
-	PXPublic PXActionResult PXAPI PXGraphicFontUse(PXGraphicContext* const graphicContext, PXFont* const pxFont);
+	PXPublic PXActionResult PXAPI PXGraphicFontLoad(PXGraphic* const pxGraphic, PXFont* const pxFont, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* const pxFont);
+	PXPublic PXActionResult PXAPI PXGraphicFontRelease(PXGraphic* const pxGraphic, PXFont* const pxFont);
+	PXPublic PXActionResult PXAPI PXGraphicFontUse(PXGraphic* const pxGraphic, PXFont* const pxFont);
 	//-------------------------------------------------------------------------
 
 
 	//---<Model>---------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBox* const skyBox);
 	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegisterD
 	(
-		PXGraphicContext* const graphicContext,
+		PXGraphic* const pxGraphic,
 		PXSkyBox* const skyBox,
 		const PXText* const shaderVertex,
 		const PXText* const shaderFragment,
@@ -665,7 +699,7 @@ extern "C"
 	);
 	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegisterA
 	(
-		PXGraphicContext* const graphicContext,
+		PXGraphic* const pxGraphic,
 		PXSkyBox* const skyBox,
 		const char* const shaderVertex,
 		const char* const shaderFragment,
@@ -676,25 +710,25 @@ extern "C"
 		const char* const textureBack,
 		const char* const textureFront
 	);
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxUse(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxRelease(PXGraphicContext* const graphicContext, PXSkyBox* const skyBox);
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxUse(PXGraphic* const pxGraphic, PXSkyBox* const skyBox);
+	PXPublic PXActionResult PXAPI PXGraphicSkyboxRelease(PXGraphic* const pxGraphic, PXSkyBox* const skyBox);
 
-	//PXPublic PXSize PXGraphicModelListSize(const PXGraphicContext* const graphicContext);
-	//PXPublic PXBool PXGraphicModelListGetFromIndex(const PXGraphicContext* const graphicContext, PXModel** pxModel, const PXSize index);
+	//PXPublic PXSize PXGraphicModelListSize(const PXGraphic* const pxGraphic);
+	//PXPublic PXBool PXGraphicModelListGetFromIndex(const PXGraphic* const pxGraphic, PXModel** pxModel, const PXSize index);
 
-	PXPublic PXSize PXAPI PXGraphicRenderableListSize(const PXGraphicContext* const graphicContext);
-	PXPublic PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphicContext* const graphicContext, PXRenderable** pxRenderable, const PXSize index);
+	PXPublic PXSize PXAPI PXGraphicRenderableListSize(const PXGraphic* const pxGraphic);
+	PXPublic PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphic* const pxGraphic, PXRenderable** pxRenderable, const PXSize index);
 
-	//PXPublic PXActionResult PXGraphicModelCreate(PXGraphicContext* const graphicContext, PXModel** const pxModel);
-	//PXPublic PXBool PXGraphicModelRegister(PXGraphicContext* const graphicContext, PXModel* const pxModel);
-	PXPublic PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphicContext* const graphicContext, PXRenderable** const pxRenderable);
-	PXPublic PXBool PXAPI PXGraphicRenderableRegister(PXGraphicContext* const graphicContext, PXRenderable* const pxRenderable);
+	//PXPublic PXActionResult PXGraphicModelCreate(PXGraphic* const pxGraphic, PXModel** const pxModel);
+	//PXPublic PXBool PXGraphicModelRegister(PXGraphic* const pxGraphic, PXModel* const pxModel);
+	PXPublic PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphic* const pxGraphic, PXRenderable** const pxRenderable);
+	PXPublic PXBool PXAPI PXGraphicRenderableRegister(PXGraphic* const pxGraphic, PXRenderable* const pxRenderable);
 
 
-	PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);
-	//PXPublic PXActionResult PXGraphicModelGenerate(PXGraphicContext* const graphicContext, PXRenderable** const renderable, const PXTextASCII filePath);
-	//PXPublic PXActionResult PXGraphicModelLoad(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXText* const filePath);
-	//PXPublic PXActionResult PXGraphicModelRegisterFromModel(PXGraphicContext* const graphicContext, PXRenderable* const renderable, const PXModel* const model);
+	PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);
+	//PXPublic PXActionResult PXGraphicModelGenerate(PXGraphic* const pxGraphic, PXRenderable** const renderable, const PXTextASCII filePath);
+	//PXPublic PXActionResult PXGraphicModelLoad(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXText* const filePath);
+	//PXPublic PXActionResult PXGraphicModelRegisterFromModel(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXModel* const model);
 	//-------------------------------------------------------------------------
 
 

@@ -56,72 +56,61 @@ extern "C"
 	}
 	PXVector4F;
 
+
+	//-----------------------------------------------------
+	// Vector2
+	//-----------------------------------------------------
 	PXPublic void PXVector2FConstruct(PXVector2F* const vector2F);
-	PXPublic void PXVector3FConstruct(PXVector3F* const vector3F);
-	PXPublic void PXVector4FConstruct(PXVector4F* const vector4F);
 
 	PXPublic void PXVector2FSet(PXVector2F* const vector, const PXVector2F* const vectorSet);
 	PXPublic void PXVector2FSetXY(PXVector2F* const vector, const float x, const float y);
-	PXPublic void PXVector3FSetXYZ(PXVector3F* const vector, const float x, const float y, const float z);
-	PXPublic void PXVector4FSetXYZW(PXVector4F* const vector, const float x, const float y, const float z, const float w);
 
-	PXPublic void PXVector2FAddXY(const PXVector2F* const vector, const float x, const float y, PXVector2F* const vectorResult);
-	PXPublic void PXVector3FAdd(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FAddXYZ(const PXVector3F* const vector, const float x, const float y, const float z, PXVector3F* const vectorResult);
-	PXPublic void PXVector4FAddXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult);
+	PXPublic void PXVector2FAdd( PXVector2F* const vector, const PXVector2F* const pxVectorData);
+	PXPublic void PXVector2FAddXY(PXVector2F* const vector, const float x, const float y);
 
-	PXPublic void PXVector2FSubstractxY(const float x, const float y);
-	PXPublic void PXVector3FSubstract(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FSubstractXYZ(const float x, const float y, const float z);
-	PXPublic void PXVector4FSubstractXYZW(const float x, const float y, const float z, const float w);
-
-	PXPublic void PXVector2FMultiplyXY(const PXVector2F* const vector, const float x, const float y, PXVector2F* const vectorResult);
-	PXPublic void PXVector3FMultiply(const PXVector3F* const vector, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FMultiplyXYZ(const PXVector3F* const vector, const float x, const float y, const float z, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FMultiplyS(const PXVector3F* const vector, const float scalar, PXVector3F* const vectorResult);
-	PXPublic void PXVector4FMultiplyXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult);
-
-	PXPublic void PXVector2FDivideXY(const float x, const float y);
-	PXPublic void PXVector3FDivide(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FDivideS(const PXVector3F* const vectorA, const float scalar, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FDivideXYZ(const float x, const float y, const float z);
-	PXPublic void PXVector4FDivideXYZW(const float x, const float y, const float z, const float w);
-
-	PXPublic void PXVector2FNormalizeXY(const float x, const float y);
-	PXPublic void PXVector3FNormalize(const PXVector3F* const vector, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FNormalizeXYZ(const float x, const float y, const float z);
-	PXPublic void PXVector4FNormalizeXYZW(const float x, const float y, const float z, const float w);
-
-
+	PXPublic void PXVector2FMultiply(PXVector2F* const vector, const PXVector2F* const pxVectorData);
+	PXPublic void PXVector2FMultiplyXY(PXVector2F* const vector, const float x, const float y);
 
 	PXPublic float PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB);
+	PXPublic float PXVector2FDotProduct(const PXVector2F* const vectorA, const PXVector2F* const vectorB);
 
 
+
+	//-----------------------------------------------------
+	// Vector3
+	//-----------------------------------------------------
+	PXPublic void PXVector3FConstruct(PXVector3F* const pxVector3F);
+	PXPublic void PXVector3FSetXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
+
+	PXPublic void PXVector3FAdd(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
+	PXPublic void PXVector3FAddXYZ( PXVector3F* const pxVector3F, const float x, const float y, const float z);
+
+	PXPublic void PXVector3FSubstract(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
+
+	PXPublic void PXVector3FMultiply(PXVector3F* const pxVector3F, PXVector3F* const vectorResult);
+	PXPublic void PXVector3FMultiplyXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
+	PXPublic void PXVector3FMultiplyS(PXVector3F* const pxVector3F, const float scalar);
+
+
+	PXPublic void PXVector3FDivide(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
+	PXPublic void PXVector3FDivideS(PXVector3F* const pxVector3F, const float scalar);
+
+	PXPublic void PXVector3FNormalize(PXVector3F* const pxVector3F);
 	PXPublic float PXVector3FLength(const PXVector3F* const vector);
 
-
-	PXPublic void PXVector2FCrossProductXY(const float x, const float y);
-	PXPublic void PXVector3FCrossProductXYZ(const float x, const float y, const float z);
 	PXPublic void PXVector3FCrossProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
-	PXPublic void PXVector4FCrossProductXYZW(const float x, const float y, const float z, const float w);
-
-
-	// The point between pojnt a and b.
-	PXPublic float PXVector2FDotProduct(const PXVector2F* const vectorA, const PXVector2F* const vectorB);
-	PXPublic float PXVector2FDotProductXY(const float x, const float y);
 	PXPublic float PXVector3FDotProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB);
-	PXPublic float PXVector3FDotProductXYZ(const float x, const float y, const float z);
-	PXPublic float PXVector4FDotProductXYZW(const float x, const float y, const float z, const float w);
-
-
-	PXPublic void PXVector2FRotateXY(const float x, const float y);
-	PXPublic void PXVector3FRotateXYZ(const float x, const float y, const float z);
-	PXPublic void PXVector4FRotateXYZW(const float x, const float y, const float z, const float w);
-
-	PXPublic void PXVector2FInterpolateXY(const float x, const float y);
 	PXPublic void PXVector3FInterpolate(const PXVector3F* const vectorA, const PXVector3F* const vectorB, const float speed, PXVector3F* const vectorResult);
-	PXPublic void PXVector3FInterpolateXYZ(const float x, const float y, const float z);
-	PXPublic void PXVector4FInterpolateXYZW(const float x, const float y, const float z, const float w);
+
+
+	//-----------------------------------------------------
+	// Vector4
+	//-----------------------------------------------------
+	PXPublic void PXVector4FConstruct(PXVector4F* const vector4F);
+	PXPublic void PXVector4FSetXYZW(PXVector4F* const vector, const float x, const float y, const float z, const float w);
+
+	PXPublic void PXVector4FAddXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult);
+	PXPublic void PXVector4FMultiplyXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult);
 
 #ifdef __cplusplus
 }

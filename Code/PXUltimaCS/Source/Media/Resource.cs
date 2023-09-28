@@ -477,7 +477,18 @@ namespace PX
 
         fixed byte Buffer[7000];
     }
-	
+
+    internal struct PXUIElement
+    {
+        
+    }
+
+
+    public class UIElement
+    {
+
+    }
+
 
 
     unsafe struct PXVertexStructure

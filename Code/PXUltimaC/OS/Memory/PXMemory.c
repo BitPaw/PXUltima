@@ -382,7 +382,7 @@ void* PXMemoryHeapAllocateCleared(const PXSize objectSize, const PXSize amount)
 		return PXNull;
 	}
 
-	void* const adress = calloc(objectSize, amount);
+	void* const adress = calloc(amount, objectSize);
 
 #if MemoryDebugOutput
 	printf("[#][Memory] 0x%p (%10zi B) Allocate on heap cleared\n", adress, requestedSizeInBytes);

@@ -8,8 +8,7 @@ namespace PXText
         public static int Main()
         {
             PX.Window window = new PX.Window();
-            window.Create(900, 200, UIUtility.GetWindowWidthPixels(), UIUtility.GetWindowHeightPixels(), PX.User.Name);
-
+            window.Create(900, 200, UIUtility.GetWindowWidthPixels(), UIUtility.GetWindowHeightPixels(), PX.User.Name); // window.Width..?
 
             PX.Graphic graphic = new PX.Graphic();
             graphic.Initialize(window, PX.GraphicSystem.OpenGL);
@@ -28,6 +27,7 @@ namespace PXText
             red.SetPadding(new RectProperties(5, 35, 5, 35));
 
             red.SetMarginBottom(10);
+
             red.SetMarginLeft(10);
             red.SetMarginTop(10);
 
