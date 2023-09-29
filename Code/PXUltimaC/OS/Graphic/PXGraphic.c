@@ -786,7 +786,7 @@ void PXAPI PXTextureDestruct(PXTexture2D* const texture)
 
 }
 
-PXActionResult PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent)
+PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent)
 {
     //PXClear(PXUIElement, *pxUIElement);
 
@@ -834,19 +834,19 @@ PXActionResult PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement*
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement)
+PXActionResult PXAPI PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType)
+PXActionResult PXAPI PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType)
 {
     pxUIElement->Type = pxUIElementType;
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement, int depth, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
+PXActionResult PXAPI PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement, int depth, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
 {
     char* nothing = "---";
     char* offset = "    ";
@@ -905,12 +905,12 @@ PXActionResult PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement, int 
     PXFunctionInvoke(postFound, sender, pxUIElement);
 }
 
-PXActionResult PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
+PXActionResult PXAPI PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
 {
     PXGraphicUIElementPrintfNode(&pxGraphic->UIElementBase, 0, sender, preFound, postFound);
 }
 
-PXActionResult PXGraphicUIElementPrint(PXGraphic* const pxGraphic)
+PXActionResult PXAPI PXGraphicUIElementPrint(PXGraphic* const pxGraphic)
 {
     printf("+---------------------------------------------------------+\n");
 
@@ -950,7 +950,7 @@ void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, con
    // pxUIElement->PositionMode = pxUIElementPositionMode;
 }
 
-void PXAPI PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText)
+void PXAPI PXGraphicPXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText)
 {
    // PXText nameBuffer;
    // PXTextConstructFromAdressA(&nameBuffer, pxUIElement->Name, 32);
@@ -958,12 +958,12 @@ void PXAPI PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxTe
    // PXTextCopy(pxText, &nameBuffer);
 }
 
-void PXAPI PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text)
+void PXAPI PXGraphicPXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text)
 {
     //PXTextCopyA(text, -1, pxUIElement->Name, 32);
 }
 
-void PXAPI PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...)
+void PXAPI PXGraphicPXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -973,24 +973,24 @@ void PXAPI PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* cons
     va_end(args);
 }
 
-void PXAPI PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont)
+void PXAPI PXGraphicPXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont)
 {
     //pxUIElement->FontID = pxFont;
 }
 
-void PXAPI PXUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList)
+void PXAPI PXGraphicUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList)
 {
     pxUIElement->FlagsList = flagList;
 }
 
-void PXAPI PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
+void PXAPI PXGraphicPXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
 {
     pxUIElement->Parent = pxUIElementParent;
 
-    PXUIElementChildSet(pxUIElementParent, pxUIElement);
+    PXGraphicPXUIElementChildSet(pxUIElementParent, pxUIElement);
 }
 
-void PXAPI PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
+void PXAPI PXGraphicPXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
 {
     pxUIElement->Child = pxUIElementParent;
 }

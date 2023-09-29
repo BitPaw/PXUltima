@@ -598,13 +598,23 @@ extern "C"
 
 
 	//-------------------------------------------------------------------------
-	PXPublic PXActionResult PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent);
-	PXPublic PXActionResult PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement);
 
-	PXPublic PXActionResult PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
+	PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
+	PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
 
-	PXPublic PXActionResult PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound);
-	PXPublic PXActionResult PXGraphicUIElementPrint(PXGraphic* const pxGraphic);
+	PXPublic void PXAPI PXGraphicPXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
+	PXPublic void PXAPI PXGraphicPXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
+	PXPublic void PXAPI PXGraphicPXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
+	PXPublic void PXAPI PXGraphicPXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont);
+	PXPublic void PXAPI PXGraphicUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList);
+	PXPublic void PXAPI PXGraphicPXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
+	PXPublic void PXAPI PXGraphicPXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
+
+	PXPublic PXActionResult PXAPI PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound);
+	PXPublic PXActionResult PXAPI PXGraphicUIElementPrint(PXGraphic* const pxGraphic);
 	//-------------------------------------------------------------------------
 
 
@@ -616,17 +626,6 @@ extern "C"
 	PXPublic void PXAPI PXShaderDataSet(PXShader* const shader, const PXGraphicShaderType type, const char* data, const PXSize size);
 	PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
 	PXPublic void PXAPI PXTextureDestruct(PXTexture2D* const texture);
-
-	PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
-	PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
-
-	PXPublic void PXAPI PXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
-	PXPublic void PXAPI PXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
-	PXPublic void PXAPI PXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
-	PXPublic void PXAPI PXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont);
-	PXPublic void PXAPI PXUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList);
-	PXPublic void PXAPI PXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
-	PXPublic void PXAPI PXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
 
 	PXPrivate PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphic* const pxGraphic);
 

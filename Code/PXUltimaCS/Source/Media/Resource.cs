@@ -478,15 +478,35 @@ namespace PX
         fixed byte Buffer[7000];
     }
 
-    internal struct PXUIElement
+
+    public enum UIElementType
     {
-        
+       Invalid,
+       Panel,
+       Text,
+       Button,
+       Image,
+       DropDown,
+       Toggle,
+       CheckBox,
+       ColorPicker,
+       Slider,
+       RadioButton,
+       ToolTip,
+       RenderFrame,
+       Custom
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 160)]
+    internal unsafe struct PXUIElement
+    {
+        fixed char Buffer[160];
     }
 
 
     public class UIElement
     {
-
+        internal PXUIElement _pxUIElement;
     }
 
 
@@ -652,13 +672,19 @@ namespace PX
         PXTexture2D Texture;
     };
 
-    unsafe struct PXFont
+    internal unsafe struct PXFont
     {
         PXFontPage MainPage;
 
         PXFontPage* AdditionalPageList;
         UIntPtr AdditionalPageListSize;
     };
+
+    public class Font
+    {
+        internal PXFont _pxFont;
+    };
+
 
 
 
