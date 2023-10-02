@@ -5301,14 +5301,32 @@ PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB)
+PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB, const PXInt8U mode)
 {
-    glBegin(GL_QUADS);
-    glTexCoord2f(txA, tyB); glVertex2f(xA, yA);// 11
-    glTexCoord2f(txB, tyB); glVertex2f(xB, yA);// 10
-    glTexCoord2f(txB, tyA); glVertex2f(xB, yB);// 00
-    glTexCoord2f(txA, tyA); glVertex2f(xA, yB);// 01
-    glEnd();
+    switch (mode)
+    {
+        case 1:
+        {
+            glBegin(GL_QUADS);
+            glTexCoord2f(txA, tyB); glVertex2f(xA, yA);// 11
+            glTexCoord2f(txB, tyB); glVertex2f(xB, yA);// 10
+            glTexCoord2f(txB, tyA); glVertex2f(xB, yB);// 00
+            glTexCoord2f(txA, tyA); glVertex2f(xA, yB);// 01
+            glEnd();
+            break;
+        }
+        case 2:
+        {
+            glBegin(GL_QUADS);
+            glTexCoord2f(txA, tyB); glVertex2f(-1 + xA, -1 + yA);// 11
+            glTexCoord2f(txB, tyB); glVertex2f(+1 - xB, -1 + yA);// 10
+            glTexCoord2f(txB, tyA); glVertex2f(+1 - xB, +1 - yB);// 00
+            glTexCoord2f(txA, tyA); glVertex2f(-1 + xA, +1 - yB);// 01
+            glEnd();
+        }
+        default:
+            return PXActionRefusedNotSupported;
+    }
 
     return PXActionSuccessful;
 }

@@ -107,20 +107,20 @@ namespace PX
 
     public class Graphic : IDisposable
     {
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicUIElementCreate(ref PXGraphic  pxGraphic, ref PXUIElement pxUIElement,  UIntPtr amount, ref PXUIElement pxUIElementParrent);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static unsafe extern PX.ActionResult PXGraphicUIElementCreate(ref PXGraphic  pxGraphic, ref PXUIElement pxUIElement,  UIntPtr amount, UIntPtr pxUIElementParrent);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicUIElementDelete(ref PXGraphic pxGraphic, ref PXUIElement  pxUIElement);
 
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicUIElementTypeSet(ref PXGraphic pxGraphic, ref PXUIElement pxUIElement, UIElementType pxUIElementType);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXUIElementColorSet4F(ref PXUIElement pxUIElement,  float red,  float green,  float blue,  float alpha);
-       // [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXUIElementSizeSet(ref PXUIElement pxUIElement,  float x,  float y,  float width,  float height,  UIElementPositionMode pxUIElementPositionMode);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXUIElementSizeSet(ref PXUIElement pxUIElement,  float x,  float y,  float width,  float height,  uint pxUIElementPositionMode);
 
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXGraphicPXUIElementTextSet(ref PXUIElement pxUIElement, ref PXText pxText);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXGraphicPXUIElementTextSetA(ref PXUIElement pxUIElement,  char  text);
         //[DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXGraphicPXUIElementTextSetAV(ref PXUIElement pxUIElement,  char  format, ...);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXGraphicPXUIElementFontSet(ref PXUIElement pxUIElement,  ref PXFont  pxFont);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXGraphicUIElementFlagSet(ref PXUIElement pxUIElement,  uint flagList);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXGraphicPXUIElementParentSet(ref PXUIElement pxUIElement, ref PXUIElement  pxUIElementParent);
-        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXGraphicPXUIElementChildSet(ref PXUIElement pxUIElement, ref PXUIElement  pxUIElementParent);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static unsafe extern void PXGraphicPXUIElementParentSet(ref PXUIElement pxUIElement, PXUIElement*  pxUIElementParent);
+        [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static unsafe extern void PXGraphicPXUIElementChildSet(ref PXUIElement pxUIElement, PXUIElement*  pxUIElementParent);
 
         //[DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicUIElementIterator(ref PXGraphic pxGraphic, void sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound);
         [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicUIElementPrint(ref PXGraphic pxGraphic);
@@ -660,9 +660,19 @@ namespace PX
             return UIElementCreate(uiElement, 1, uiElementParrent);
         }
 
-        public PX.ActionResult UIElementCreate(UIElement uiElement, uint amount, UIElement pxUIElementParrent)
+        public unsafe PX.ActionResult UIElementCreate(UIElement uiElement, uint amount, UIElement pxUIElementParrent)
         {
-            return PXGraphicUIElementCreate(ref _pxGraphic, ref uiElement._pxUIElement, (UIntPtr)amount, ref pxUIElementParrent._pxUIElement);
+            if (pxUIElementParrent == null)
+            {
+                return PXGraphicUIElementCreate(ref _pxGraphic, ref uiElement._pxUIElement, (UIntPtr)amount, UIntPtr.Zero);
+            }
+            else
+            {
+                fixed(PXUIElement* pxUIElementParrentAdress = &pxUIElementParrent._pxUIElement)
+                {
+                    return PXGraphicUIElementCreate(ref _pxGraphic, ref uiElement._pxUIElement, (UIntPtr)amount, (UIntPtr)pxUIElementParrentAdress);
+                }  
+            }         
         }
 
         public PX.ActionResult UIElementDelete(UIElement uiElement)
@@ -682,7 +692,10 @@ namespace PX
         {
             PXUIElementColorSet4F(ref uiElement._pxUIElement, red, green, blue, alpha);
         }
-        // [DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern void PXUIElementSizeSet(ref PXUIElement pxUIElement,  float x,  float y,  float width,  float height,  UIElementPositionMode pxUIElementPositionMode);
+        public void UIElementSizeSet(UIElement uiElement,  float x,  float y,  float width,  float height)
+        {
+            PXUIElementSizeSet(ref uiElement._pxUIElement, x, y, width, height, 0);
+        }
 
         public unsafe void UIElementTextSet(UIElement uiElement, string text)
         {
@@ -702,13 +715,19 @@ namespace PX
         {
             PXGraphicUIElementFlagSet(ref uiElement._pxUIElement, flagList);
         }
-        public void UIElementParentSet(UIElement uiElement, UIElement pxUIElementParent)
+        public unsafe void UIElementParentSet(UIElement uiElement, UIElement pxUIElementParent)
         {
-            PXGraphicPXUIElementParentSet(ref uiElement._pxUIElement, ref pxUIElementParent._pxUIElement);
+            fixed(PXUIElement* PXUIElementAdress = &pxUIElementParent._pxUIElement)
+            {
+                PXGraphicPXUIElementParentSet(ref uiElement._pxUIElement, PXUIElementAdress);
+            }   
         }
-        public void UIElementChildSet(UIElement uiElement, UIElement pxUIElementParent)
+        public unsafe void UIElementChildSet(UIElement uiElement, UIElement pxUIElementParent)
         {
-            PXGraphicPXUIElementChildSet(ref uiElement._pxUIElement, ref pxUIElementParent._pxUIElement);
+            fixed (PXUIElement* PXUIElementAdress = &pxUIElementParent._pxUIElement)
+            {
+                PXGraphicPXUIElementChildSet(ref uiElement._pxUIElement, PXUIElementAdress);
+            }
         }
 
         //[DllImport("PXUltima.dll", CallingConvention = CallingConvention.StdCall)] internal static extern PX.ActionResult PXGraphicUIElementIterator(, void sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound);

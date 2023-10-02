@@ -8,12 +8,19 @@ namespace PXText
         public static int Main()
         {
             PX.Window window = new PX.Window();
-            window.Create(900, 200, UIUtility.GetWindowWidthPixels(), UIUtility.GetWindowHeightPixels(), PX.User.Name); // window.Width..?
+            //  window.Create(900, 200, UIUtility.GetWindowWidthPixels(), UIUtility.GetWindowHeightPixels(), PX.User.Name); // window.Width..?
+            window.Create(PX.User.Name);
 
             PX.Graphic graphic = new PX.Graphic();
             graphic.Initialize(window, PX.GraphicSystem.OpenGL);
 
             graphic.Select();
+
+            PX.UIElement element = new PX.UIElement();
+            graphic.UIElementCreate(element);
+            graphic.UIElementTypeSet(element, PX.UIElementType.Panel);
+            graphic.UIElementSizeSet(element, 0, 0, 0, 0);
+
 
             Rect red = Rect.RectWithPixelSize(-.5f, -0.5f, 100, UIUtility.GetWindowHeightPixels());
             Rect green = Rect.RectWithPixelPositionAndSize(UIUtility.GetWindowWidthPixels() - 100, UIUtility.GetWindowHeightPixels(), 100, 100);

@@ -792,8 +792,9 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIEl
 
     (*pxUIElement) = PXNew(PXUIElement);
 
-    (*pxUIElement)->ID = ++(pxGraphic->UIElementIDCounter);
-    
+    (*pxUIElement)->ID = ++(pxGraphic->UIElementIDCounter);   
+
+
     //*pxUIElement->Type = pxUIElementType;
     //*pxUIElement->TextureReference = PXNull;
     //*pxUIElement->ShaderReference = PXNull;
@@ -808,8 +809,28 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIEl
     {
         // Impossible if already has child
 
-        (*pxUIElement)->Parent = pxUIElementParrent;
-        pxUIElementParrent->Child = (*pxUIElement);
+        (*pxUIElement)->Parent = pxUIElementParrent; // "It's alway my parent"
+
+        const PXBool alreadyHasAFirstBorn = pxUIElementParrent->Child != PXNull;
+
+        if (alreadyHasAFirstBorn)
+        {
+            // Add as sibling for firstborn
+            PXUIElement* targetSibling = (*pxUIElement)->Parent->Child;
+
+            // Search for last sibling to be
+            while (targetSibling->Sibling != PXNull)
+            {
+                targetSibling = targetSibling->Sibling;
+            }
+
+            targetSibling->Sibling = (*pxUIElement); // Add sibling
+        }
+        else
+        {
+            // Add as child
+            pxUIElementParrent->Child = (*pxUIElement);
+        }    
     }
     else
     { 
@@ -932,10 +953,14 @@ void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
 
 void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha)
 {
-    pxUIElement->ColorTint.Red = red;
-    pxUIElement->ColorTint.Green = green;
-    pxUIElement->ColorTint.Blue = blue;
-    pxUIElement->ColorTint.Alpha = alpha;
+    PXColorRGBAF* color = PXNew(PXColorRGBAF);
+
+    color->Red = red;
+    color->Green = green;
+    color->Blue = blue;
+    color->Alpha = alpha;
+
+    pxUIElement->ColorTintReference = color;
 }
 
 void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode)
@@ -960,7 +985,9 @@ void PXAPI PXGraphicPXUIElementTextSet(PXUIElement* const pxUIElement, PXText* c
 
 void PXAPI PXGraphicPXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text)
 {
-    //PXTextCopyA(text, -1, pxUIElement->Name, 32);
+    PXTextCopyA(text, -1, pxUIElement->TextInfo.Content, 32);
+
+    pxUIElement->TextInfo.Scale = 0.5;
 }
 
 void PXAPI PXGraphicPXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...)

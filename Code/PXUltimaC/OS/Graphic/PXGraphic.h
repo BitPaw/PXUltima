@@ -253,11 +253,11 @@ extern "C"
 	}
 	PXUITextInfo;
 
-#define PXUIElementIsEnabled 1 << 0
-#define PXUIElementIsActive 1 << 1
-#define PXUIElementIsHoverable 1 << 2
+#define PXUIElementIsEnabled (1 << 0)
+#define PXUIElementIsActive (1 << 1)
+#define PXUIElementIsHoverable (1 << 2)
 
-#define PXUIElementNormal PXUIElementIsEnabled & PXUIElementIsActive
+#define PXUIElementNormal PXUIElementIsEnabled | PXUIElementIsActive
 
 	// Atomic UI-Element
 	// Only Text can be text
@@ -288,8 +288,8 @@ extern "C"
 
 
 		//---<State-Info>------------------------
+		PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
 		PXUIHoverState Hover;
-		PXColorRGBAF ColorTint;
 		PXInt32U FlagsList; 
 		//---------------------------------------
 
