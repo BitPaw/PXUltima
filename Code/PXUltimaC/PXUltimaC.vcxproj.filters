@@ -423,6 +423,9 @@
     <ClCompile Include="Media\COFF\PXCOFF.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\CanonRaw3\PXCanonRaw3.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -836,6 +839,9 @@
     <ClInclude Include="Media\COFF\PXCOFF.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\CanonRaw3\PXCanonRaw3.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -844,5 +850,6 @@
     <None Include="Media\BinaryLinux\README.md" />
     <None Include="Media\Bitmap\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
+    <None Include="Media\CanonRaw3\README.md" />
   </ItemGroup>
 </Project>

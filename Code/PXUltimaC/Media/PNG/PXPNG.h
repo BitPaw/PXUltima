@@ -382,27 +382,27 @@ enough memory.*/
 	//----------------------------------------------------
 
 
-	PXPrivate inline PXPNGChunkType PXPNGChunkTypeFromID(const PXInt32U pngchunkType);
-	PXPrivate inline PXInt32U PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType);
+	PXPrivate inline PXPNGChunkType PXAPI PXPNGChunkTypeFromID(const PXInt32U pngchunkType);
+	PXPrivate inline PXInt32U PXAPI PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType);
 
-	PXPrivate inline PXPNGColorType PXPNGColorTypeFromID(const PXInt8U colorType);
-	PXPrivate inline PXInt8U PXPNGColorTypeToID(const PXPNGColorType colorType);
+	PXPrivate inline PXPNGColorType PXAPI PXPNGColorTypeFromID(const PXInt8U colorType);
+	PXPrivate inline PXInt8U PXAPI PXPNGColorTypeToID(const PXPNGColorType colorType);
 
-	PXPrivate inline PXPNGInterlaceMethod PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod);
-	PXPrivate inline PXInt8U PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod);
+	PXPrivate inline PXPNGInterlaceMethod PXAPI PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod);
+	PXPrivate inline PXInt8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod);
 
-	PXPrivate inline PXInt8U PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
+	PXPrivate inline PXInt8U PXAPI PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
 
 
-	PXPublic void PXPNGConstruct(PXPNG* const png);
-	PXPublic void PXPNGDestruct(PXPNG* const png);
+	PXPublic void PXAPI PXPNGConstruct(PXPNG* const png);
+	PXPublic void PXAPI PXPNGDestruct(PXPNG* const png);
 
-	PXPublic PXInt8U PXPNGBitsPerPixel(const PXPNG* const png);
+	PXPublic PXInt8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png);
 
-	PXPublic PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
+	PXPublic PXSize PXAPI PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile);
-	PXPublic PXActionResult PXPNGSaveToFile(const PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

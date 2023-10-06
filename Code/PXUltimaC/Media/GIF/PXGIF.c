@@ -9,12 +9,12 @@ const char PXGIFVersionA[3] = { '8','7','a' };
 const char PXGIFVersionB[3] = {'8','9','a'};
 #define PXGIFEOF 0x3B
 
-PXSize PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
+PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
     return 0;
 }
 
-PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
     PXGIF gif;
 
@@ -115,7 +115,7 @@ PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile)
 {
     PXFileWriteB(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
 

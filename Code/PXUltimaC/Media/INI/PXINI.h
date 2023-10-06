@@ -8,8 +8,8 @@ extern "C"
 {
 #endif
 
-	PXPublic PXActionResult PXINILoadFromFile(void* const data, PXFile* const pxFile);
-	PXPublic PXActionResult PXINISaveToFile(void* const data, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXINILoadFromFile(void* const data, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXINISaveToFile(void* const data, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

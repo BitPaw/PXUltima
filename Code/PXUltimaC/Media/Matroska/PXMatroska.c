@@ -1,11 +1,11 @@
 #include "PXMatroska.h"
 
-PXActionResult PXMatroskaLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXMatroskaLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXMatroskaSaveToFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXMatroskaSaveToFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

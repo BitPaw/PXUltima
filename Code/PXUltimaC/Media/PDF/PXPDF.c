@@ -2,7 +2,7 @@
 
 const static char PXPDFSignature[5] = {'%', 'P', 'D', 'F', '-'};
 
-PXActionResult PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile)
+PXActionResult PXAPI PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile)
 {
     // Check for header
     {
@@ -26,7 +26,7 @@ PXActionResult PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile)
+PXActionResult PXAPI PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile)
 {
     PXFileWriteB(pxFile, PXPDFSignature, sizeof(PXPDFSignature));
 

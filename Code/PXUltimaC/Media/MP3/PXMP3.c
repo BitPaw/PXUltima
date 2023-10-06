@@ -134,7 +134,7 @@
 
 const char PXMP3ChunkTag[4] = { 'L', 'a', 'v', 'c' };
 
-PXMPEGGenre PXMPEGGenreFromID(const PXInt8U mpegGenre)
+PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXInt8U mpegGenre)
 {
 	switch(mpegGenre)
 	{
@@ -524,7 +524,7 @@ PXMPEGGenre PXMPEGGenreFromID(const PXInt8U mpegGenre)
 	}
 }
 
-PXInt8U PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
+PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
 {
 	switch(mpegGenre)
 	{
@@ -787,7 +787,7 @@ PXInt8U PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
 	return -1; // MPEGGenreUnknown
 }
 
-PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	PXMP3 pxMP3;
 	
@@ -1140,7 +1140,7 @@ PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

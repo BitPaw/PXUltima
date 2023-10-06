@@ -28,10 +28,10 @@ extern "C"
 	}
 	PXXMLSymbol;
 
-	PXPublic PXXMLSymbol PXXMLPeekLine(const char* const text, const PXSize textSize);
+	PXPublic PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize);
 
-	PXPublic PXActionResult PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream);
-	PXPublic PXActionResult PXXMLSaveToFile(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXAPI PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXAPI PXXMLSaveToFile(PXFile* const inputStream, PXFile* const outputStream);
 
 #ifdef __cplusplus
 }

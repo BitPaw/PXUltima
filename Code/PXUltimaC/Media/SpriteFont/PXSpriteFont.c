@@ -8,17 +8,17 @@
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
 
-void PXSpriteFontConstruct(PXSpriteFont* const pxPXSpriteFont)
+void PXAPI PXSpriteFontConstruct(PXSpriteFont* const pxPXSpriteFont)
 {
 	PXMemoryClear(pxPXSpriteFont, sizeof(PXSpriteFont));
 }
 
-void PXSpriteFontDestruct(PXSpriteFont* const pxPXSpriteFont)
+void PXAPI PXSpriteFontDestruct(PXSpriteFont* const pxPXSpriteFont)
 {
 
 }
 
-PXActionResult PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 {
 	PXSpriteFont pxSpriteFontEE;
 	PXSpriteFont* pxSpriteFont = &pxSpriteFontEE;
@@ -764,12 +764,12 @@ PXActionResult PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFi
 	return PXActionSuccessful;
 }
 
-PXActionResult PXSpriteFontSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXAPI PXSpriteFontSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSize)
+PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileDataSize)
 {
 	if (!line || !fileDataSize)
 	{
@@ -915,7 +915,7 @@ PXSpriteFontLineType PeekSymbol(const char* const line, const PXSize fileDataSiz
 	}
 }
 
-void PXSpriteFontPrtinf(const PXSpriteFont* pxSpriteFont)
+void PXAPI PXSpriteFontPrtinf(const PXSpriteFont* pxSpriteFont)
 {
 #if 0
 	printf(" +-------------------------------------------------------------------------+\n");

@@ -682,20 +682,20 @@ extern "C"
 	}
 	PXTTF;
 
-    PXPrivate PXPlatformID PXTTFPlatformFromID(const PXInt16U platformID);
-    PXPrivate PXEncodingID PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID);
+    PXPrivate PXPlatformID PXAPI PXTTFPlatformFromID(const PXInt16U platformID);
+    PXPrivate PXEncodingID PXAPI PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID);
 
-    PXPrivate PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor);
+    PXPrivate PXTTFVersionType PXAPI PXTTFVersionTypeFromID(unsigned short major, unsigned short minor);
     //PXPublic void PXTTFVersionTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType);
 
-    PXPrivate PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType);
+    PXPrivate PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType);
     //PXPublic PXInt32U PXTTFTableEntryTypeFromID(const PXTTFTableEntryType tableEntryType);
 
-    PXPublic void PXTTFConstruct(PXTTF* const ttf);
-    PXPublic void PXTTFDestruct(PXTTF* const ttf);
+    PXPublic void PXAPI PXTTFConstruct(PXTTF* const ttf);
+    PXPublic void PXAPI PXTTFDestruct(PXTTF* const ttf);
 
-	PXPublic PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile);
-    PXPublic PXActionResult PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile);
+    PXPublic PXActionResult PXAPI PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

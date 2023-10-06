@@ -2,7 +2,7 @@
 
 #include <Media/RIFF/PXRIFF.h>
 
-PXActionResult PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
     PXRIFF riff;
 
@@ -26,7 +26,7 @@ PXActionResult PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAVISaveToFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXAVISaveToFile(PXVideo* const pxVideo, PXFile* const pxFile)
 {
     return PXActionRefusedNotImplemented;
 }

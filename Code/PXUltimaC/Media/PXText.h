@@ -10,7 +10,7 @@
 
 
 #define MakeLetterCaseLower(character) (character | 0b00100000)
-#define MakeLetterCaseUpper(character) (character & 0b11011111)
+#define MakeLetterCaseUpper(c) (('a' <= c && c <= 'z') ? c & 0b11011111 : c)
 #define CompareLetterCaseIgnore(a, b) (MakeLetterCaseLower(a) == b) || (MakeLetterCaseUpper(a) == b)
 #define UnicodeToASCII(wc) (wc <= 0xFF ? (char)wc : '?')
 #define IsEndOfString(c) (c == '\0')

@@ -11,7 +11,7 @@ const static char PXOGGHeaderSignature[4] = { 'O','g','g','S' };
 
 #define PXOPGGDebug 0
 
-PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	PXOGG* ogg = PXNull;
 
@@ -121,7 +121,7 @@ PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {	
 	PXFileWriteB(pxFile, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 

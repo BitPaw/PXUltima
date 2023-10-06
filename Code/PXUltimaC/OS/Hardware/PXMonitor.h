@@ -33,7 +33,7 @@ extern "C"
 
 	PXPublic void PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize);
 
-	PXPublic void PXMonitorGetSize(unsigned int* width, unsigned int* height);
+	PXPublic void PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height);
 
 #ifdef __cplusplus
 }

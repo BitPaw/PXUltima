@@ -1,11 +1,11 @@
 #include "PXWMA.h"
 
-PXActionResult PXWMALoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXWMALoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXWMASaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXWMASaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

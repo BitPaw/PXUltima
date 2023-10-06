@@ -17,8 +17,8 @@ extern "C"
 	}
 	PXFLAC;
 
-	PXPublic PXActionResult PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
-	PXPublic PXActionResult PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

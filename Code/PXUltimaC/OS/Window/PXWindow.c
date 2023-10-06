@@ -2193,65 +2193,12 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     }
 #endif
 
-    while(window->IsRunning)
+    if (window->MessageThread.ThreadID != 0)
     {
-#if OSUnix
-        XEvent windowEvent;
-
-        /*
-            Window root_return, child_return;
-            int root_x_return, root_y_return;
-            int win_x_return, win_y_return;
-            unsigned int mask_return;
-            /*
-             * We need:
-             *     child_return - the active window under the cursor
-             *     win_{x,y}_return - pointer coordinate with respect to root window
-             * /
-            int retval = XQueryPointer
-            (
-                display,
-                root_window,
-                &root_return,
-                &child_return,
-                &root_x_return,
-                &root_y_return,
-                &win_x_return,
-                &win_y_return,
-                &mask_return
-            );*/
-
-
-
-
-        XLockDisplay(window->DisplayCurrent);
-
-        XNextEvent(window->DisplayCurrent, &windowEvent);
-
-        XUnlockDisplay(window->DisplayCurrent);
-
-        PXWindowEventHandler(window, &windowEvent);
-
-#elif PXOSWindowsDestop
-        MSG message;
-
-        const PXBool peekResult = PeekMessageW(&message, 0, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
-
-        if(peekResult)
+        while (window->IsRunning)
         {
-            const PXBool messageResult = GetMessageW(&message, 0, 0, 0); // Windows 2000, User32.dll, winuser.h
-
-            if(messageResult)
-            {
-                TranslateMessage(&message); // Windows 2000, User32.dll, winuser.h
-                DispatchMessage(&message); // Windows 2000, User32.dll, winuser.h
-            }
-            else
-            {
-                break; // Unexpected error?
-            }
+            PXWindowUpdate(window);
         }
-#endif
     }
 
     return PXThreadSucessful;
@@ -2321,9 +2268,75 @@ void PXAPI PXWindowPixelSystemSet(PXWindow* const window)
     return PXActionSuccessful;
 }
 
+void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
+{
+#if OSUnix
+    XEvent windowEvent;
+
+    /*
+        Window root_return, child_return;
+        int root_x_return, root_y_return;
+        int win_x_return, win_y_return;
+        unsigned int mask_return;
+        /*
+         * We need:
+         *     child_return - the active window under the cursor
+         *     win_{x,y}_return - pointer coordinate with respect to root window
+         * /
+        int retval = XQueryPointer
+        (
+            display,
+            root_window,
+            &root_return,
+            &child_return,
+            &root_x_return,
+            &root_y_return,
+            &win_x_return,
+            &win_y_return,
+            &mask_return
+        );*/
+
+
+
+
+    XLockDisplay(window->DisplayCurrent);
+
+    XNextEvent(window->DisplayCurrent, &windowEvent);
+
+    XUnlockDisplay(window->DisplayCurrent);
+
+    PXWindowEventHandler(window, &windowEvent);
+
+#elif PXOSWindowsDestop     
+  
+    while (1)
+    {
+        MSG message;
+
+        const PXBool peekResult = PeekMessage(&message, pxWindow->ID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
+
+        if (!peekResult)
+        {
+            break; // Stop, no more messages
+        }
+
+        const PXBool messageResult = GetMessage(&message, pxWindow->ID, 0, 0); // Windows 2000, User32.dll, winuser.h
+
+        if (!messageResult)
+        {
+            continue; // Skip, message fetch failed
+        }
+
+        const BOOL translateResult = TranslateMessage(&message); // Windows 2000, User32.dll, winuser.h
+        const LRESULT dispatchResult = DispatchMessage(&message); // Windows 2000, User32.dll, winuser.h
+    }
+
+#endif
+}
+
 void PXAPI PXWindowConstruct(PXWindow* const window)
 {
-    PXMemoryClear(window, sizeof(PXWindow));
+    PXClear(PXWindow, window);
     window->Title.SizeAllocated = 256;
     window->Title.TextA = window->TitleBuffer;
     window->Mode = PXWindowModeNormal;
@@ -2356,8 +2369,8 @@ void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt3
 
         if (isDefaultSize)
         {
-            unsigned int screenWidth = 0;
-            unsigned int screenHeight = 0;
+            PXInt32S screenWidth = 0;
+            PXInt32S screenHeight = 0;
 
             PXMonitorGetSize(&screenWidth, &screenHeight);
 

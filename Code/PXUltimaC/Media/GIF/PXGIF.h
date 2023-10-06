@@ -39,10 +39,10 @@ extern "C"
 	}
 	PXGIF;
 
-	PXPublic PXSize PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
+	PXPublic PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
-	PXPublic PXActionResult PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

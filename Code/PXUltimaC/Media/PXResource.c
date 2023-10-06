@@ -37,6 +37,7 @@
 #include <Media/BinaryWindows/PXBinaryWindows.h>
 #include <Media/BinaryLinux/PXBinaryLinux.h>
 #include <OS/Time/PXStopWatch.h>
+#include <Media/CanonRaw3/PXCanonRaw3.h>
 
 PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
@@ -252,6 +253,12 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
             pxFileTypeInfo->ResourceLoadFunction = PXBitmapLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXBitmapSaveToFile;
+            break;
+
+        case PXFileFormatCanonRaw3:
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
+            pxFileTypeInfo->ResourceLoadFunction = PXCanonRaw3LoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXCanonRaw3SaveToFile;
             break;
 
         case PXFileFormatC:
@@ -476,14 +483,14 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatWEBM:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXWEBPParse;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXWEBPLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXWEBPLoadSaveToFile;
             break;
 
         case PXFileFormatWEBP:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXWEBPParse;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
+            pxFileTypeInfo->ResourceLoadFunction = PXWEBPLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXWEBPLoadSaveToFile;
             break;
 
         case PXFileFormatWMA:

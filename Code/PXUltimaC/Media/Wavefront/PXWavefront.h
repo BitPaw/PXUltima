@@ -69,8 +69,8 @@ extern "C"
 	}
 	PXWavefrontElement;
 
-	PXPublic void PXWavefrontElementConstruct(PXWavefrontElement* objElement);
-	PXPublic void PXWavefrontElementDestruct(PXWavefrontElement* objElement);
+	PXPublic void PXAPI PXWavefrontElementConstruct(PXWavefrontElement* objElement);
+	PXPublic void PXAPI PXWavefrontElementDestruct(PXWavefrontElement* objElement);
 
 	// [.PXWavefront] Wavefront - 3D model format
 	typedef struct PXWavefront_
@@ -86,15 +86,15 @@ extern "C"
 	}
 	PXWavefront;
 
-	PXPublic void PXWavefrontConstruct(PXWavefront* const PXWavefront);
-	PXPublic void PXWavefrontDestruct(PXWavefront* const PXWavefront);
+	PXPublic void PXAPI PXWavefrontConstruct(PXWavefront* const PXWavefront);
+	PXPublic void PXAPI PXWavefrontDestruct(PXWavefront* const PXWavefront);
 
-	PXPrivate PXWavefrontLineType PXWavefrontPeekLine(const void* line, const PXSize size);
+	PXPrivate PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize size);
 
-	PXPublic PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXAPI PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const outputStream);
 
-	PXPublic PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
-	PXPublic PXActionResult PXWavefrontSaveFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWavefrontSaveFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

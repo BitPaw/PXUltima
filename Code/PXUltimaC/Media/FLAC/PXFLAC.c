@@ -1,11 +1,11 @@
 #include "PXFLAC.h"
 
-PXActionResult PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

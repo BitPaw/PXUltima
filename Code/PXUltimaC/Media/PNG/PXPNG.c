@@ -751,7 +751,7 @@ unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bit
     return result;
 }
 
-PXPNGChunkType PXPNGChunkTypeFromID(const PXInt32U pngchunkType)
+PXPNGChunkType PXAPI PXPNGChunkTypeFromID(const PXInt32U pngchunkType)
 {
     switch (pngchunkType)
     {
@@ -778,12 +778,12 @@ PXPNGChunkType PXPNGChunkTypeFromID(const PXInt32U pngchunkType)
     }
 }
 
-PXInt32U PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType)
+PXInt32U PXAPI PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType)
 {
     return 0;
 }
 
-PXPNGColorType PXPNGColorTypeFromID(const PXInt8U colorType)
+PXPNGColorType PXAPI PXPNGColorTypeFromID(const PXInt8U colorType)
 {
     switch (colorType)
     {
@@ -807,7 +807,7 @@ PXPNGColorType PXPNGColorTypeFromID(const PXInt8U colorType)
     }
 }
 
-PXInt8U PXPNGColorTypeToID(const PXPNGColorType colorType)
+PXInt8U PXAPI PXPNGColorTypeToID(const PXPNGColorType colorType)
 {
     switch (colorType)
     {
@@ -832,7 +832,7 @@ PXInt8U PXPNGColorTypeToID(const PXPNGColorType colorType)
     }
 }
 
-PXPNGInterlaceMethod PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod)
+PXPNGInterlaceMethod PXAPI PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod)
 {
     switch (interlaceMethod)
     {
@@ -847,7 +847,7 @@ PXPNGInterlaceMethod PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod)
     }
 }
 
-PXInt8U PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod)
+PXInt8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod)
 {
     switch (interlaceMethod)
     {
@@ -863,12 +863,12 @@ PXInt8U PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod)
     }
 }
 
-void PXPNGConstruct(PXPNG* const png)
+void PXAPI PXPNGConstruct(PXPNG* const png)
 {
     PXClear(PXPNG, png);
 }
 
-void PXPNGDestruct(PXPNG* const png)
+void PXAPI PXPNGDestruct(PXPNG* const png)
 {
     PXMemoryRelease(png->PixelData, png->PixelDataSize);
 
@@ -876,7 +876,7 @@ void PXPNGDestruct(PXPNG* const png)
     png->PixelData = 0;
 }
 
-PXInt8U PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType)
+PXInt8U PXAPI PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType)
 {
     switch (pngColorType)
     {
@@ -899,14 +899,14 @@ PXInt8U PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType)
     }
 }
 
-PXInt8U PXPNGBitsPerPixel(const PXPNG* const png)
+PXInt8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png)
 {
     const PXInt8U numberOfColorChannels = PXPNGColorTypeNumberOfChannels(png->ImageHeader.ColorType);
 
     return png->ImageHeader.BitDepth * numberOfColorChannels;
 }
 
-PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
+PXSize PXAPI PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
     const PXSize signature = 8;
     const PXSize header = 25;
@@ -919,7 +919,7 @@ PXSize PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSiz
     return sum;
 }
 
-PXActionResult PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
+PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFile)
 {
     PXPNG png;
     PXPNGConstruct(&png);
@@ -2064,7 +2064,7 @@ PXSize preProcessScanlines
     return error;
 }
 
-PXActionResult PXPNGSaveToFile(const PXImage* const image, PXFile* const pxExportStream)
+PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const pxExportStream)
 {
     //---<Signature>--- 8 Bytes
     {

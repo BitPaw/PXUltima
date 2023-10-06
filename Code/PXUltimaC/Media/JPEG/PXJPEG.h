@@ -172,16 +172,16 @@ extern "C"
 	PXJPEG;
 
 
-	PXPrivate inline PXJPEGMarker PXJPEGMarkerFromID(const PXInt16U jpegMarker);
-	PXPrivate inline PXInt16U PXJPEGMarkerToID(const PXJPEGMarker jpegMarker);
+	PXPrivate inline PXJPEGMarker PXAPI PXJPEGMarkerFromID(const PXInt16U jpegMarker);
+	PXPrivate inline PXInt16U PXAPI PXJPEGMarkerToID(const PXJPEGMarker jpegMarker);
 
-	PXPublic void PXJPEGConstruct(PXJPEG* const jpeg);
-	PXPublic void PXJPEGDestruct(PXJPEG* const jpeg);
+	PXPublic void PXAPI PXJPEGConstruct(PXJPEG* const jpeg);
+	PXPublic void PXAPI PXJPEGDestruct(PXJPEG* const jpeg);
 
-	PXPublic PXSize PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
+	PXPublic PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 	
-	PXPublic PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile);
-	PXPublic PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

@@ -5,12 +5,12 @@
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
 
-void PXMTLConstruct(PXMTL* const mtl)
+void PXAPI PXMTLConstruct(PXMTL* const mtl)
 {
 	PXMemoryClear(mtl, sizeof(PXMTL));
 }
 
-void PXMTLDestruct(PXMTL* const mtl)
+void PXAPI PXMTLDestruct(PXMTL* const mtl)
 {
 	// Loop through MaterialListSize
 
@@ -20,7 +20,7 @@ void PXMTLDestruct(PXMTL* const mtl)
 	mtl->MaterialList = 0;
 }
 
-PXMaterialIlluminationMode PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
+PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
 {
 	switch (illuminationModeID)
 	{
@@ -41,7 +41,7 @@ PXMaterialIlluminationMode PXMTLIlluminationModeFromID(const unsigned int illumi
 	}
 }
 
-PXMTLLineType PXMTLPeekLine(const char* const line, const PXSize lineSize)
+PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
 {
 	const unsigned short tagID = PXInt16Make(line[0], line[1]);
 
@@ -62,7 +62,7 @@ PXMTLLineType PXMTLPeekLine(const char* const line, const PXSize lineSize)
 	}
 }
 
-PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputStream)
 {
 	PXFile tokenSteam;
 	PXFile headerStream;
@@ -234,7 +234,7 @@ PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputS
 	return PXActionSuccessful;
 }
 
-PXActionResult PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
+PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
 {
 	/*
 	PXFile
@@ -264,7 +264,7 @@ PXActionResult PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFi
 	}*/
 }
 
-PXActionResult PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
+PXActionResult PXAPI PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
@@ -504,7 +504,7 @@ void BF::MTL::PrintContent()
 	printf("================\n");
 }*/
 
-PXSize PXMTLFetchAmount(const void* const data, const PXSize dataSize)
+PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize)
 {
 	PXFile mtlStream;
 
@@ -522,7 +522,7 @@ PXSize PXMTLFetchAmount(const void* const data, const PXSize dataSize)
 	return materialListSize;
 }
 
-PXBool PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial)
+PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial)
 {
 	const PXSize amount = PXMTLFetchAmount(data, dataSize);
 

@@ -96,7 +96,7 @@ void PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSiz
 #endif
 }
 
-void PXMonitorGetSize(unsigned int* width, unsigned int* height)
+void PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height)
 {
 #if OSUnix
     *width = 1200;

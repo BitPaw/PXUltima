@@ -43,7 +43,7 @@ extern "C"
 
 	PXPublic PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data);
 
-	PXPrivate PXActionResult PXProgramExecute(PXProgram* const program); 
+	PXPrivate PXActionResult PXAPI PXProgramExecute(PXProgram* const program);
 
 	// Execute function Asyncroinusly in another Thread.
 	PXPublic PXActionResult PXAPI PXProgramExecuteAS(PXProgram* const program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback);

@@ -26,10 +26,10 @@ extern "C"
 	}
 	PXYAMLLineType;
 
-	PXPrivate PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size);
+	PXPrivate PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size);
 
-	PXPublic PXActionResult PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const pxFile);
-	PXPublic PXActionResult PXYAMLSaveToFile(PXFile* const inputStream, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXYAMLSaveToFile(PXFile* const inputStream, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

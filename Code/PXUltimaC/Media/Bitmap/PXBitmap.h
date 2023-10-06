@@ -116,18 +116,18 @@ extern "C"
 	//----------------------------------------------------------------------------
 
 	//---<Public Functions--------------------------------------------------------
-	PXPublic void PXBitmapConstruct(PXBitmap* const bmp);
-	PXPublic void PXBitmapDestruct(PXBitmap* const bmp);
+	PXPublic void PXAPI PXBitmapConstruct(PXBitmap* const bmp);
+	PXPublic void PXAPI PXBitmapDestruct(PXBitmap* const bmp);
 
 	// Calculate information about the layout how the raw image data is stored.
 	// There will be "amount of vertical rows", and "pixeldata" + "padding" .
 	PXPrivate void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
 
 	//----------------------------------------------------------------------------
-	PXPublic PXSize PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
+	PXPublic PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-	PXPublic PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile);
-	PXPublic PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFile);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

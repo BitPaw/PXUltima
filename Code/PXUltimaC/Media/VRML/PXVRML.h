@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXVRML;
 
-	PXPublic PXActionResult PXVRMLLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
-	PXPublic PXActionResult PXVRMLSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXVRMLLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXVRMLSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

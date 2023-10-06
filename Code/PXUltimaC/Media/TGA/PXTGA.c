@@ -2,7 +2,7 @@
 
 const char PXTGAFileIdentifier[] = {'T','R','U','E','V','I','S','I','O','N',' ','-',' ','X','F','I','L','E','.'};
 
-PXTGABitsPerPixel ConvertToPixelDepth(const unsigned char pixelDepth)
+PXTGABitsPerPixel PXAPI ConvertToPixelDepth(const unsigned char pixelDepth)
 {
 	switch(pixelDepth)
 	{
@@ -29,7 +29,7 @@ PXTGABitsPerPixel ConvertToPixelDepth(const unsigned char pixelDepth)
 	}
 }
 
-unsigned char ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
+unsigned char PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
 {
 	switch(bitsPerPixel)
 	{
@@ -57,7 +57,7 @@ unsigned char ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
 	}
 }
 
-PXTGAImageDataType ConvertToImageDataType(const unsigned char id)
+PXTGAImageDataType PXAPI ConvertToImageDataType(const unsigned char id)
 {
 	switch(id)
 	{
@@ -87,7 +87,7 @@ PXTGAImageDataType ConvertToImageDataType(const unsigned char id)
 	}
 }
 
-unsigned char ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
+unsigned char PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
 {
 	switch(imageDataType)
 	{
@@ -118,22 +118,22 @@ unsigned char ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
 	}
 }
 
-PXSize PXTGAFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
+PXSize PXAPI PXTGAFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
 	return 0;
 }
 
-void PXTGAConstruct(PXTGA* const tga)
+void PXAPI PXTGAConstruct(PXTGA* const tga)
 {
 	PXClear(PXTGA, tga);
 }
 
-void PXTGADestruct(PXTGA* const tga)
+void PXAPI PXTGADestruct(PXTGA* const tga)
 {
 
 }
 
-PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
 	PXTGA tgaOBJ;
 	PXTGA* tga = &tgaOBJ;
@@ -157,18 +157,18 @@ PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 
 		const PXFileDataElementType pxDataStreamElementList[] =
 		{
-			{PXDataTypeInt8U, &imageIDLengh},
-			{PXDataTypeInt8U, &tga->ColorPaletteType},
-			{PXDataTypeInt8U, &imageTypeValue},
-			{PXDataTypeLEInt16U, &colorPaletteChunkEntryIndex},
-			{PXDataTypeLEInt16U, &colorPaletteChunkSize},
-			{PXDataTypeInt8U, &colorPaletteEntrySizeInBits},
-			{PXDataTypeLEInt16U, &tga->OriginX},
-			{PXDataTypeLEInt16U, &tga->OriginY},
-			{PXDataTypeLEInt16U, &tga->Width},
-			{PXDataTypeLEInt16U, &tga->Height},
-			{PXDataTypeInt8U, &pixelDepth},
-			{PXDataTypeInt8U, &tga->ImageDescriptor}
+			{&imageIDLengh, PXDataTypeInt08U},
+			{&tga->ColorPaletteType, PXDataTypeInt08U},
+			{&imageTypeValue, PXDataTypeInt08U},
+			{&colorPaletteChunkEntryIndex, PXDataTypeInt16ULE},
+			{&colorPaletteChunkSize, PXDataTypeInt16ULE},
+			{&colorPaletteEntrySizeInBits, PXDataTypeInt08U},
+			{&tga->OriginX, PXDataTypeInt16ULE},
+			{&tga->OriginY, PXDataTypeInt16ULE},
+			{&tga->Width, PXDataTypeInt16ULE},
+			{&tga->Height, PXDataTypeInt16ULE},
+			{&pixelDepth, PXDataTypeInt08U},
+			{&tga->ImageDescriptor, PXDataTypeInt08U}
 		};
 
 		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -328,7 +328,7 @@ PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXTGASaveToFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXTGASaveToFile(PXImage* const pxImage, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

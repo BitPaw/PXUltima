@@ -7,29 +7,29 @@
 
 #define PXWavefrontDetectMaterial 0
 
-void PXWavefrontElementConstruct(PXWavefrontElement* objElement)
+void PXAPI PXWavefrontElementConstruct(PXWavefrontElement* objElement)
 {
     PXClear(PXWavefrontElement, objElement);
 }
 
-void PXWavefrontElementDestruct(PXWavefrontElement* objElement)
+void PXAPI PXWavefrontElementDestruct(PXWavefrontElement* objElement)
 {
     //TODO: clear memeory
 }
 
-void PXWavefrontConstruct(PXWavefront* const obj)
+void PXAPI PXWavefrontConstruct(PXWavefront* const obj)
 {
     PXClear(PXWavefront, obj);
 }
 
-void PXWavefrontDestruct(PXWavefront* const obj)
+void PXAPI PXWavefrontDestruct(PXWavefront* const obj)
 {
     PXMemoryRelease(obj->ElementList, obj->ElementListSize);
 
     PXMemoryRelease(obj->MaterialFileList, obj->MaterialFileListSize);
 }
 
-PXWavefrontLineType PXWavefrontPeekLine(const void* line, const PXSize size)
+PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize size)
 {
     if (!line || size == 0)
     {
@@ -96,7 +96,7 @@ PXWavefrontLineType PXWavefrontPeekLine(const void* line, const PXSize size)
     return PXWavefrontLineInvalid;
 }
 
-void PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int expectedID)
+void PXAPI PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int expectedID)
 {
     char textBuffer[32];
 
@@ -112,7 +112,7 @@ void PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, u
     );
 }
 
-PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -555,7 +555,7 @@ PXActionResult PXWavefrontFileCompile(PXFile* const inputStream, PXFile* const o
     return PXActionSuccessful;
 }
 
-PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
+PXActionResult PXAPI PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
     PXFile tokenSteam;
     PXSize errorCounter = 0;
@@ -1332,7 +1332,7 @@ PXActionResult PXWavefrontLoadFromFile(PXVertexStructure* const pxVertexStructur
     return PXActionSuccessful;
 }
 
-PXActionResult PXWavefrontSaveFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
+PXActionResult PXAPI PXWavefrontSaveFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile)
 {
     return PXActionRefusedNotImplemented;
 }

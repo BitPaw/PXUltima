@@ -75,14 +75,16 @@ void PXTextMatchTest()
 }*/
 #include <Media/BinaryLinux/PXBinaryLinux.h>
 #include <Media/BinaryWindows/PXBinaryWindows.h>
+#include <Media/CanonRaw3/PXCanonRaw3.h>
 
 int main()
 {
 	printf("[i] Starting testing...\n");
 	
 	
+	PXImage pxImage;
 
-
+	PXResourceLoadA(&pxImage, "N:\\IMG_0147.CR3");
 
 
 

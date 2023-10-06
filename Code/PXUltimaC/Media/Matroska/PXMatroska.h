@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXMatroska;
 
-	PXPublic PXActionResult PXMatroskaLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
-	PXPublic PXActionResult PXMatroskaSaveToFile(PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMatroskaLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMatroskaSaveToFile(PXVideo* const pxVideo, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

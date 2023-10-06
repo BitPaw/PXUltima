@@ -220,11 +220,11 @@ extern "C"
 	}
 	PXMP3;
 
-	PXPrivate inline PXInt8U PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
-	PXPrivate inline PXMPEGGenre PXMPEGGenreFromID(const PXInt8U mpegGenre);
+	PXPrivate inline PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
+	PXPrivate inline PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXInt8U mpegGenre);
 
-	PXPublic PXActionResult PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
-	PXPublic PXActionResult PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

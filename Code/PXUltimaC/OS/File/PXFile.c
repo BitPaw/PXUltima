@@ -254,6 +254,7 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
+				case PXInt24Make('C', 'R', '3'): return PXFileFormatCanonRaw3;
 				case PXInt24Make('B', 'I', 'N'):
 				case PXInt24Make('P', 'R', 'X'):
 				case PXInt24Make('M', 'O', 'D'):

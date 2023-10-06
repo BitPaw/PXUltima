@@ -88,7 +88,7 @@ const char PXELFSignature[4] = { 0x7F, 'E', 'L' ,'F' };
 #define PXELFMachineBerkeleyPacketFilterID				0xF7
 #define PXELFMachineWDC65C816ID					0x101
 
-PXEndian PXELFEndianessFromID(const PXInt8U value)
+PXEndian PXAPI PXELFEndianessFromID(const PXInt8U value)
 {
 	switch (value)
 	{
@@ -100,7 +100,7 @@ PXEndian PXELFEndianessFromID(const PXInt8U value)
 	}
 }
 
-PXBitFormat PXELFBitFormatFromID(const PXInt8U value)
+PXBitFormat PXAPI PXELFBitFormatFromID(const PXInt8U value)
 {
 	switch (value)
 	{
@@ -112,7 +112,7 @@ PXBitFormat PXELFBitFormatFromID(const PXInt8U value)
 	}
 }
 
-PXELFTargetOSAPI PXPXELFTargetOSAPIFromID(const PXInt8U value)
+PXELFTargetOSAPI PXAPI PXPXELFTargetOSAPIFromID(const PXInt8U value)
 {
 	switch (value)
 	{
@@ -140,7 +140,7 @@ PXELFTargetOSAPI PXPXELFTargetOSAPIFromID(const PXInt8U value)
 	}
 }
 
-PXELFMachine PXELFMachineFromID(const PXInt8U value)
+PXELFMachine PXAPI PXELFMachineFromID(const PXInt8U value)
 {
 	switch (value)
 	{
@@ -239,12 +239,12 @@ PXELFMachine PXELFMachineFromID(const PXInt8U value)
 	}
 }
 
-PXELFType PXELFTypeFromID(const PXInt8U value)
+PXELFType PXAPI PXELFTypeFromID(const PXInt8U value)
 {
 	return PXELFTypeInvalid;
 }
 
-PXELFSegmentType PXELFSegmentTypeFromID(const PXInt32U value)
+PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value)
 {
 	switch (value)
 	{
@@ -266,7 +266,7 @@ PXELFSegmentType PXELFSegmentTypeFromID(const PXInt32U value)
 	}
 }
 
-PXActionResult PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
 {
 	PXClear(PXBinaryLinux, pxBinaryLinux);
 
@@ -422,7 +422,7 @@ PXActionResult PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXF
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
 {
 	PXFileWriteB(pxFile, PXELFSignature, sizeof(PXELFSignature));
 

@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXFilmBox;
 
-	PXPublic PXActionResult PXFilmBoxLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
-	PXPublic PXActionResult PXFilmBoxSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXFilmBoxLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXFilmBoxSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

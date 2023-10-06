@@ -15,8 +15,8 @@ extern "C"
 	}
 	PXPDF;
 
-	PXPublic PXActionResult PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile);
-	PXPublic PXActionResult PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

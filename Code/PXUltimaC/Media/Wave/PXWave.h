@@ -21,8 +21,8 @@ extern "C"
 	}
 	PXWave;
 
-	PXPublic PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
-	PXPublic PXActionResult PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

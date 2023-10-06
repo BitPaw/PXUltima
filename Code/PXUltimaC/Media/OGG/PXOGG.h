@@ -35,8 +35,8 @@ extern "C"
 	}
 	PXOGG;
 
-	PXPublic PXActionResult PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
-	PXPublic PXActionResult PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

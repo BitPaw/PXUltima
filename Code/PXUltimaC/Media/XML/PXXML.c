@@ -3,7 +3,7 @@
 #include <Compiler/PXCompiler.h>
 #include <Media/PXText.h>
 
-PXXMLSymbol PXXMLPeekLine(const char* const text, const PXSize textSize)
+PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
 {
     const PXBool isOpenTag = text[0] == '<';
     const PXBool isSlashTag = text[1] == '/';
@@ -44,9 +44,7 @@ PXXMLSymbol PXXMLPeekLine(const char* const text, const PXSize textSize)
     return PXXMLSymbolUnkown;
 }
 
-
-
-PXActionResult PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -377,7 +375,7 @@ PXActionResult PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const output
     return PXActionSuccessful;
 }
 
-PXActionResult PXXMLSaveToFile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXXMLSaveToFile(PXFile* const inputStream, PXFile* const outputStream)
 {
     return PXActionRefusedNotImplemented;
 }

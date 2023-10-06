@@ -99,24 +99,24 @@ extern "C"
 	}
 	PXTGA;
 
-	PXPrivate PXTGABitsPerPixel ConvertToPixelDepth(const unsigned char pixelDepth);
-	PXPrivate unsigned char ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel);
+	PXPrivate PXTGABitsPerPixel PXAPI ConvertToPixelDepth(const unsigned char pixelDepth);
+	PXPrivate unsigned char PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel);
 
-	PXPrivate PXTGAImageDataType ConvertToImageDataType(const unsigned char id);
-	PXPrivate unsigned char ConvertFromImageDataType(const PXTGAImageDataType imageDataType);
-
-
-	PXPublic PXSize PXTGAFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
+	PXPrivate PXTGAImageDataType PXAPI ConvertToImageDataType(const unsigned char id);
+	PXPrivate unsigned char PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType);
 
 
-	PXPublic void PXTGAConstruct(PXTGA* const tga); 
-	PXPublic void PXTGADestruct(PXTGA* const tga);
+	PXPublic PXSize PXAPI PXTGAFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
 
-	PXPublic PXActionResult PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
-	PXPublic PXActionResult PXTGASaveToFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic void PXAPI PXTGAConstruct(PXTGA* const tga);
+	PXPublic void PXAPI PXTGADestruct(PXTGA* const tga);
 
-	PXPublic PXActionResult PXTGASerializeFromImage(const PXImage* const image, PXFile* const pxFile);
+
+	PXPublic PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXTGASaveToFile(PXImage* const pxImage, PXFile* const pxFile);
+
+	PXPublic PXActionResult PXAPI PXTGASerializeFromImage(const PXImage* const image, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

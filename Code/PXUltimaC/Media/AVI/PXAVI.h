@@ -36,8 +36,8 @@ extern "C"
 	}
 	PXAVI;
 
-	PXPublic PXActionResult PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
-	PXPublic PXActionResult PXAVISaveToFile(PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXAVISaveToFile(PXVideo* const pxVideo, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

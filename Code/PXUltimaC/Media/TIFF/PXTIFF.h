@@ -141,31 +141,28 @@ extern "C"
 	}
 	PXTIFFCompression;
 
-
-	typedef struct PXTIFFHeader_
-	{
-		PXEndian Endianness;
-		unsigned short Version;
-		unsigned int OffsetToIFD;
-	}
-	PXTIFFHeader;
-
 	typedef struct PXTIFFPage_
 	{	
 		void* TagData;
-		PXInt32U OffsetToNextIFD;
+		PXInt32U OffsetToNextImageFileDirectory;
 		PXInt16U NumberOfTags;
+
+		PXSize PredictedEndPosition;
 	}
 	PXTIFFPage;
 
-
-
-
+	typedef enum PXTIFFPlanarConfiguration_
+	{
+		PXTIFFPlanarConfigurationInvalid,
+		PXTIFFPlanarConfigurationChunky,
+		PXTIFFPlanarConfigurationPlanar
+	}
+	PXTIFFPlanarConfiguration;
 
 	typedef struct PXTIFFTag_
 	{
 		PXInt32U NumberOfValues;
-		PXInt32U DataOffset;
+		PXInt32U ImageFileDataOffset;
 
 		PXInt16U TypeID;
 		PXInt16U DataTypeID;
@@ -178,8 +175,22 @@ extern "C"
 	// Tag Image File Format
 	typedef struct PXTIFF_
 	{
+		PXEndian Endianness;
+		PXInt16U Version;
+		PXInt32U OffsetToIFD;
+
+		char CopyRight[32];
+		char DateTimeStamp[32];
+		char Software[32];
+
+		PXInt16U MaxSampleValue;
+		PXInt16U MinSampleValue;
+
 		PXInt32U Width;		
 		PXInt32U Height;
+
+		PXInt32U RowsPerStrip;
+		PXTIFFPlanarConfiguration PlanarConfiguration;
 
 		PXInt16U SamplesPerPixel;
 		PXInt16U BitsPerSample[4];
@@ -189,17 +200,18 @@ extern "C"
 	}
 	PXTIFF;
 
+	// StripsPerImage = floor ((ImageLength + RowsPerStrip - 1) / RowsPerStrip).
 
 
-	PXPrivate inline PXTIFFType PXTIFFTypeFromID(const unsigned char tiffTypeID);
-	PXPrivate inline PXTIFFTagType PXTIFFTagTypeFromID(const unsigned short tiffTagTypeID);
-	PXPrivate inline PXTIFFCompression PXTIFFCompressionFromID(const unsigned short tiffCompressionID);
-	PXPrivate inline PXTIFFColorFormat PXTIFFColorFormatFromID(const unsigned short tiffColorFormatID);
+	PXPrivate inline PXTIFFType PXAPI PXTIFFTypeFromID(const unsigned char tiffTypeID);
+	PXPrivate inline PXTIFFTagType PXAPI PXTIFFTagTypeFromID(const unsigned short tiffTagTypeID);
+	PXPrivate inline PXTIFFCompression PXAPI PXTIFFCompressionFromID(const unsigned short tiffCompressionID);
+	PXPrivate inline PXTIFFColorFormat PXAPI PXTIFFColorFormatFromID(const unsigned short tiffColorFormatID);
 
-	PXPublic PXSize PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
+	PXPublic PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
-	PXPublic PXActionResult PXTIFFSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXTIFFSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

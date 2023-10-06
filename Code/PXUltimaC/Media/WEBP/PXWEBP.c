@@ -1,6 +1,11 @@
 #include "PXWEBP.h"
 
-PXActionResult PXWEBPParse(PXWEBP* webp, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PXAPI PXWEBPLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
-    return PXActionInvalid;
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWEBPLoadSaveToFile(PXImage* const pxImage, PXFile* const pxFile)
+{
+    return PXActionRefusedNotImplemented;
 }

@@ -7,7 +7,7 @@
 const static char WAVSignatureLIST[4] = { 'L', 'I', 'S', 'T' };
 const static char WAVSignatureData[4] = { 'd', 'a', 't', 'a' };
 
-PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	PXWave* wav = PXNew(PXWave);
 	PXMemoryClear(wav, sizeof(PXWave));
@@ -83,7 +83,7 @@ PXActionResult PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
 {
 	unsigned int bitdepth = 16, bpm = 120;
 	float wave = 0, duration = 12;

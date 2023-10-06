@@ -78,20 +78,20 @@ extern "C"
 	}
 	PXMTL;
 
-	PXPublic void PXMTLConstruct(PXMTL* const mtl);
-	PXPublic void PXMTLDestruct(PXMTL* const mtl);
+	PXPublic void PXAPI PXMTLConstruct(PXMTL* const mtl);
+	PXPublic void PXAPI PXMTLDestruct(PXMTL* const mtl);
 
-	PXPrivate PXMaterialIlluminationMode PXMTLIlluminationModeFromID(const unsigned int illuminationModeID);
+	PXPrivate PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID);
 
-	PXPrivate PXMTLLineType PXMTLPeekLine(const char* const line, const PXSize lineSize);
+	PXPrivate PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize);
 
-	PXPublic PXSize PXMTLFetchAmount(const void* const data, const PXSize dataSize);
-	PXPublic PXBool PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial);
+	PXPublic PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize);
+	PXPublic PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial);
 
-	PXPublic PXActionResult PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
+	PXPublic PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
 
-	PXPublic PXActionResult PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile);
-	PXPublic PXActionResult PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

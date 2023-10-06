@@ -205,15 +205,15 @@ extern "C"
 	}
 	PXBinaryLinux;
 
-	PXPrivate inline PXEndian PXELFEndianessFromID(const PXInt8U value);
-	PXPrivate inline PXBitFormat PXELFBitFormatFromID(const PXInt8U value);
-	PXPrivate inline PXELFTargetOSAPI PXPXELFTargetOSAPIFromID(const PXInt8U value);
-	PXPrivate inline PXELFMachine PXELFMachineFromID(const PXInt8U value);
-	PXPrivate inline PXELFType PXELFTypeFromID(const PXInt8U value);
-	PXPrivate inline PXELFSegmentType PXELFSegmentTypeFromID(const PXInt32U value);
+	PXPrivate inline PXEndian PXAPI PXELFEndianessFromID(const PXInt8U value);
+	PXPrivate inline PXBitFormat PXAPI PXELFBitFormatFromID(const PXInt8U value);
+	PXPrivate inline PXELFTargetOSAPI PXAPI PXPXELFTargetOSAPIFromID(const PXInt8U value);
+	PXPrivate inline PXELFMachine PXAPI PXELFMachineFromID(const PXInt8U value);
+	PXPrivate inline PXELFType PXAPI PXELFTypeFromID(const PXInt8U value);
+	PXPrivate inline PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value);
 
-	PXPublic PXActionResult PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
-	PXPublic PXActionResult PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

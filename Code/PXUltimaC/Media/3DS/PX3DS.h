@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXAutodesk3DS;
 
-	PXPublic PXActionResult PXAutodesk3DSLoadFromFile(PXVertexStructure * const pxVertexStructure, PXFile* const pxFile);
-	PXPublic PXActionResult PXAutodesk3DSSafeFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXVertexStructure * const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

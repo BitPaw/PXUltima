@@ -80,7 +80,7 @@
 #define PXJPEGMarkerTemporaryID PXInt16Make(0xFF, 0x01)
 #define PXJPEGMarkerReservedID PXInt16Make(0xFF, 0x02)
 
-PXJPEGMarker PXJPEGMarkerFromID(const PXInt16U jpegMarker)
+PXJPEGMarker PXAPI PXJPEGMarkerFromID(const PXInt16U jpegMarker)
 {
     switch(jpegMarker)
     {
@@ -155,7 +155,7 @@ PXJPEGMarker PXJPEGMarkerFromID(const PXInt16U jpegMarker)
     }
 }
 
-PXInt16U PXJPEGMarkerToID(const PXJPEGMarker jpegMarker)
+PXInt16U PXAPI PXJPEGMarkerToID(const PXJPEGMarker jpegMarker)
 {
     switch(jpegMarker)
     {
@@ -231,7 +231,7 @@ PXInt16U PXJPEGMarkerToID(const PXJPEGMarker jpegMarker)
     }
 }
 
-PXSize PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
+PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
     const PXSize beginning = 2;
     const PXSize end = 2;
@@ -242,17 +242,17 @@ PXSize PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSi
     return sum;
 }
 
-void PXJPEGConstruct(PXJPEG* const jpeg)
+void PXAPI PXJPEGConstruct(PXJPEG* const jpeg)
 {
     PXMemoryClear(jpeg, sizeof(PXJPEG));
 }
 
-void PXJPEGDestruct(PXJPEG* const jpeg)
+void PXAPI PXJPEGDestruct(PXJPEG* const jpeg)
 {
 
 }
 
-PXActionResult PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
+PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile)
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
@@ -941,7 +941,7 @@ void generateHuffmanTable(const PXInt8U numCodes[16], const PXInt8U* values, Bit
 
 
 
-PXActionResult PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFile)
+PXActionResult PXAPI PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFile)
 {
     unsigned char isRGB = 1u;
     unsigned char quality = 100u;

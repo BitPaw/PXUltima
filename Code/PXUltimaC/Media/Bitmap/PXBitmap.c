@@ -135,7 +135,7 @@ PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
     }
 }
 
-PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
+PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
 {
     PXBitmap bmp;
 
@@ -274,12 +274,7 @@ PXActionResult PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXBitmapSerialize(const PXBitmap* const bmp, PXFile* const pxFile)
-{
-    return PXActionSuccessful;
-}
-
-PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFile)
+PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFile)
 {
     PXBitmap bitMap;
 
@@ -382,12 +377,12 @@ PXActionResult PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFi
     return PXActionSuccessful;
 }
 
-void PXBitmapConstruct(PXBitmap* const bmp)
+void PXAPI PXBitmapConstruct(PXBitmap* const bmp)
 {
     PXClear(PXBitmap, bmp);
 }
 
-void PXBitmapDestruct(PXBitmap* const bmp)
+void PXAPI PXBitmapDestruct(PXBitmap* const bmp)
 {
     PXMemoryRelease(bmp->PixelData, bmp->PixelDataSize);
 
@@ -405,7 +400,7 @@ void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDat
     bmpImageDataLayout->RowAmount = PXMathCeilingF(bmpImageDataLayout->ImageSize / (float)bmpImageDataLayout->RowFullSize);
 }
 
-PXSize PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)
+PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)
 {
     const PXSize sizePXBitmapHeader = 14u;
     const PXSize sizePXBitmapDIP = 40u;

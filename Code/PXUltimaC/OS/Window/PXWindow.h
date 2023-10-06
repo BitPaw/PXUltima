@@ -200,6 +200,7 @@ extern "C"
 
 	PXPublic void PXAPI PXWindowPixelSystemSet(PXWindow* const window);
 
+	PXPublic void PXAPI PXWindowUpdate(PXWindow* const pxWindow);
 
 	PXPublic void PXAPI PXWindowConstruct(PXWindow* const window);
 	PXPublic void PXAPI PXWindowDestruct(PXWindow* const window);

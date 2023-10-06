@@ -1,6 +1,8 @@
 #include "PXTIFF.h"
 
-PXTIFFType PXTIFFTypeFromID(const unsigned char tiffTypeID)
+#define PXTIFFDebug 1
+
+PXTIFFType PXAPI PXTIFFTypeFromID(const unsigned char tiffTypeID)
 {
     switch (tiffTypeID)
     {
@@ -22,7 +24,7 @@ PXTIFFType PXTIFFTypeFromID(const unsigned char tiffTypeID)
     }
 }
 
-PXTIFFTagType PXTIFFTagTypeFromID(const unsigned short tiffTagTypeID)
+PXTIFFTagType PXAPI PXTIFFTagTypeFromID(const unsigned short tiffTagTypeID)
 {
     switch (tiffTagTypeID)
     {
@@ -106,21 +108,17 @@ PXTIFFTagType PXTIFFTagTypeFromID(const unsigned short tiffTagTypeID)
     }
 }
 
-PXSize PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
+PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
 {
     return 0;
 }
 
-PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
     PXTIFF pxTIFFOBject;
     PXTIFF* tiff = &pxTIFFOBject;
 
     PXClear(PXTIFF, tiff);
-
-
-    PXTIFFHeader tIFFHeader;
-
 
     // Check Header
     {
@@ -133,23 +131,34 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
             switch (headerTag.Value)
             {
                 case PXInt16Make('M', 'M'):
-                    tIFFHeader.Endianness = PXEndianBig;
+                    tiff->Endianness = PXEndianBig;
                     break;
 
                 case PXInt16Make('I', 'I'):
-                    tIFFHeader.Endianness = PXEndianLittle;
+                    tiff->Endianness = PXEndianLittle;
                     break;
 
                 default:
                     return PXActionRefusedInvalidHeaderSignature;
             }
+
+            pxFile->EndiannessOfData = tiff->Endianness;
         }
 
-        PXFileReadI16UE(pxFile, &tIFFHeader.Version, tIFFHeader.Endianness); // Version, expect this to be "42"
-        PXFileReadI32UE(pxFile, &tIFFHeader.OffsetToIFD, tIFFHeader.Endianness);
+        {
+            const PXFileDataElementType pxDataStreamElementList[] =
+            {
+                {&tiff->Version, PXDataTypeInt16UXE},// Version, expect this to be "42"
+                {&tiff->OffsetToIFD, PXDataTypeInt32UXE}
+            };
 
-        // Jump to adress
-        pxFile->DataCursor = tIFFHeader.OffsetToIFD;
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        }
+
+        PXFileCursorMoveTo(pxFile, tiff->OffsetToIFD); // Jump to adress
+
+        // PredictSize
+      
 
         // Now we are at IFD page 0
         while (!PXFileIsAtEnd(pxFile))
@@ -158,16 +167,25 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 
             PXClear(PXTIFFPage, &tiffPage);
 
-            PXFileReadI16UE(pxFile, &tiffPage.NumberOfTags, tIFFHeader.Endianness); // 2-Bytes
+            PXFileReadI16UE(pxFile, &tiffPage.NumberOfTags, tiff->Endianness); // 2-Bytes
+
+            tiffPage.PredictedEndPosition = pxFile->DataCursor + 12u * tiffPage.NumberOfTags;
 
             for (PXInt16U i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
                 PXTIFFTag tiffTag;
 
-                PXFileReadI16UE(pxFile, &tiffTag.TypeID, tIFFHeader.Endianness); // 2-Bytes
-                PXFileReadI16UE(pxFile, &tiffTag.DataTypeID, tIFFHeader.Endianness); // 2-Bytes
-                PXFileReadI32UE(pxFile, &tiffTag.NumberOfValues, tIFFHeader.Endianness); // 4-Bytes
-                PXFileReadI32UE(pxFile, &tiffTag.DataOffset, tIFFHeader.Endianness); // 4-Bytes
+                {
+                    const PXFileDataElementType pxDataStreamElementList[] =
+                    {
+                        {&tiffTag.TypeID, PXDataTypeInt16UXE},// Version, expect this to be "42"
+                        {&tiffTag.DataTypeID, PXDataTypeInt16UXE},
+                        {&tiffTag.NumberOfValues, PXDataTypeInt32UXE},
+                        {&tiffTag.ImageFileDataOffset, PXDataTypeInt32UXE},
+                    };
+
+                    PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                }
 
                 tiffTag.Type = PXTIFFTagTypeFromID(tiffTag.TypeID);
                 tiffTag.DataType = PXTIFFTypeFromID(tiffTag.DataTypeID);
@@ -177,32 +195,42 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
                     case PXTIFFTagNewSubFileType:
                     case PXTIFFTagSubfileType:
                     case PXTIFFTagImageWidth:
-                    {
-                        tiff->Width = tiffTag.DataOffset;
+                    {                   
+                        tiff->Width = tiffTag.ImageFileDataOffset;
+
+#if PXTIFFDebug
+                        printf("[TIFF] Width <%i>\n", tiff->Width);
+#endif
+
                         break;
                     }
                     case PXTIFFTagImageLength:
                     {
-                        tiff->Height = tiffTag.DataOffset;
+                        tiff->Height = tiffTag.ImageFileDataOffset;
+
+#if PXTIFFDebug
+                        printf("[TIFF] Height <%i>\n", tiff->Height);
+#endif
+
                         break;
                     }
                     case PXTIFFTagBitsPerSample:
                     {
                         for (PXSize i = 0; i < tiffTag.NumberOfValues; ++i)
                         {
-                            tiff->BitsPerSample[i] = tiffTag.DataOffset; // Is this correct?
+                            tiff->BitsPerSample[i] = tiffTag.ImageFileDataOffset; // Is this correct?
                         }
 
                         break;
                     }
                     case PXTIFFTagCompression:
                     {
-                        tiff->Compression = PXTIFFCompressionFromID(tiffTag.DataOffset);
+                        tiff->Compression = PXTIFFCompressionFromID(tiffTag.ImageFileDataOffset);
                         break;
                     }
                     case PXTIFFTagPhotometricInterpretation:
                     {
-                        tiff->PhotometricInterpretation = PXTIFFColorFormatFromID(tiffTag.DataOffset);
+                        tiff->PhotometricInterpretation = PXTIFFColorFormatFromID(tiffTag.ImageFileDataOffset);
                         break;
                     }
                     case PXTIFFTagThreshholding:
@@ -215,18 +243,56 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
                     case PXTIFFTagModel:
                     case PXTIFFTagStripOffsets:
                     case PXTIFFTagOrientation:
+                        break;
                     case PXTIFFTagSamplesPerPixel:
                     {
-                        tiff->SamplesPerPixel = tiffTag.DataOffset;
+                        tiff->SamplesPerPixel = tiffTag.ImageFileDataOffset;
                         break;
                     }
                     case PXTIFFTagRowsPerStrip:
+                    {
+                        tiff->RowsPerStrip = tiffTag.ImageFileDataOffset;
+                        break;
+                    }
                     case PXTIFFTagStripByteCounts:
+                    {
+                        const PXInt32U amount = tiffTag.ImageFileDataOffset;
+
+                        break;
+                    }
                     case PXTIFFTagMinSampleValue:
+                        tiff->MinSampleValue = tiffTag.ImageFileDataOffset;
+                        break;
+
                     case PXTIFFTagMaxSampleValue:
+                        tiff->MaxSampleValue = tiffTag.ImageFileDataOffset;
+                        break;
+
                     case PXTIFFTagXResolution:
+                        tiff->MaxSampleValue = tiffTag.ImageFileDataOffset;
+                        break;
+
                     case PXTIFFTagYResolution:
+                        tiff->MaxSampleValue = tiffTag.ImageFileDataOffset;
+                        break;
+
                     case PXTIFFTagPlanarConfiguration:
+                    {
+                        switch (tiffTag.ImageFileDataOffset)
+                        {
+                            case 1u:
+                                tiff->PlanarConfiguration = PXTIFFPlanarConfigurationChunky;
+                                break;
+                            case 2u:
+                                tiff->PlanarConfiguration = PXTIFFPlanarConfigurationPlanar;
+                                break;
+                            default:
+                                tiff->PlanarConfiguration = PXTIFFPlanarConfigurationInvalid;
+                                break;
+                        }
+
+                        break;
+                    }
                     case PXTIFFTagPageName:
                     case PXTIFFTagXPosition:
                     case PXTIFFTagYPosition:
@@ -239,8 +305,28 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
                     case PXTIFFTagResolutionUnit:
                     case PXTIFFTagPageNumber:
                     case PXTIFFTagTransferFunction:
+                        break;
+
                     case PXTIFFTagSoftware:
+                    {
+                        const PXSize oldPosition = pxFile->DataCursor;
+
+                        PXFileCursorMoveTo(pxFile, tiffTag.ImageFileDataOffset);
+                        PXFileReadB(pxFile, tiff->Software, tiffTag.NumberOfValues);
+                        PXFileCursorMoveTo(pxFile, oldPosition);
+
+                        break;
+                    }
                     case PXTIFFTagDateTime:
+                    {
+                        const PXSize oldPosition = pxFile->DataCursor;
+
+                        PXFileCursorMoveTo(pxFile, tiffTag.ImageFileDataOffset);
+                        PXFileReadB(pxFile, tiff->DateTimeStamp, tiffTag.NumberOfValues);
+                        PXFileCursorMoveTo(pxFile, oldPosition);
+
+                        break;
+                    }
                     case PXTIFFTagArtist:
                     case PXTIFFTagHostComputer:
                     case PXTIFFTagPredictor:
@@ -275,14 +361,34 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
                     case PXTIFFTagYCbCrSubSampling:
                     case PXTIFFTagYCbCrPositioning:
                     case PXTIFFTagReferenceBlackWhite:
+                        break;
                     case PXTIFFTagCopyright:
+                    {
+                        if (tiffTag.ImageFileDataOffset != 0)
+                        {
+                            const PXSize oldPosition = pxFile->DataCursor;
+
+                            PXFileCursorMoveTo(pxFile, tiffTag.ImageFileDataOffset);
+                            PXFileReadB(pxFile, tiff->CopyRight, tiffTag.NumberOfValues);
+                            PXFileCursorMoveTo(pxFile, oldPosition);
+                        }
+                        else
+                        {
+                            printf("[TIFF] Error: offset is invalid\n");
+                        }
+
+                        break;
+                    }
 
                     default:
                         break;
                 }
             }
 
-            PXFileReadI32UE(pxFile, &tiffPage.OffsetToNextIFD, tIFFHeader.Endianness); // 4-Bytes
+            PXFileCursorMoveTo(pxFile, tiffPage.PredictedEndPosition);
+
+            PXFileReadI32UE(pxFile, &tiffPage.OffsetToNextImageFileDirectory, tiff->Endianness); // 4-Bytes
+            PXFileCursorMoveTo(pxFile, tiffPage.OffsetToNextImageFileDirectory);
         }
 
 
@@ -300,12 +406,12 @@ PXActionResult PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXTIFFSaveToFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXTIFFSaveToFile(PXImage* const pxImage, PXFile* const pxFile)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXTIFFCompression PXTIFFCompressionFromID(const unsigned short tiffCompressionID)
+PXTIFFCompression PXAPI PXTIFFCompressionFromID(const unsigned short tiffCompressionID)
 {
     switch (tiffCompressionID)
     {
@@ -323,7 +429,7 @@ PXTIFFCompression PXTIFFCompressionFromID(const unsigned short tiffCompressionID
     }
 }
 
-PXTIFFColorFormat PXTIFFColorFormatFromID(const unsigned short tiffColorFormatID)
+PXTIFFColorFormat PXAPI PXTIFFColorFormatFromID(const unsigned short tiffColorFormatID)
 {
     switch (tiffColorFormatID)
     {

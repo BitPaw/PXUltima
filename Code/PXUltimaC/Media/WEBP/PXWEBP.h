@@ -1,9 +1,7 @@
 #ifndef PXWEBPINCLUDE
 #define PXWEBPINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -16,7 +14,8 @@ extern "C"
 	}
 	PXWEBP;
 
-	PXPublic PXActionResult PXWEBPParse(PXWEBP* webp, const void* data, const PXSize dataSize, PXSize* dataRead);
+	PXPublic PXActionResult PXAPI PXWEBPLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWEBPLoadSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

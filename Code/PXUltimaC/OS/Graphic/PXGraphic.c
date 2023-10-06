@@ -873,7 +873,7 @@ PXActionResult PXAPI PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement
     char* offset = "    ";
 
     PXFunctionInvoke(preFound, sender, pxUIElement);
-
+#if 0
     for (size_t i = 0; i < depth; i++) printf(offset);
     printf("+--------------------+\n");
 
@@ -893,35 +893,43 @@ PXActionResult PXAPI PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement
     }  
 
     for (size_t i = 0; i < depth; i++) printf(offset);
+#endif
 
     if (pxUIElement->Child)
     {
+#if 0
         printf("| %-10s : <%i>\n", "Child", pxUIElement->Child->ID);
-
+#endif
         PXGraphicUIElementPrintfNode(pxUIElement->Child, depth+1, sender, preFound, postFound);
     }
+#if 0
     else
     {
         printf("| %-10s : %s\n", "Child", nothing);
     }
 
     for (size_t i = 0; i < depth; i++) printf(offset);
+#endif
 
     if (pxUIElement->Sibling)
     {
+#if 0
         printf("| %-10s : %s\n", "Siblings", "-->");
         for (size_t i = 0; i < depth; i++) printf(offset);
         printf("+--------------------+\n");
+#endif
 
         PXGraphicUIElementPrintfNode(pxUIElement->Sibling, depth, sender, preFound, postFound);
     }
+#if 0
     else
     {
         printf("| %-10s : %s\n", "Siblings", nothing);
 
-        for (size_t i = 0; i < depth; i++) printf(offset);
+       for (size_t i = 0; i < depth; i++) printf(offset);
         printf("+--------------------+\n");
     }
+#endif
 
     PXFunctionInvoke(postFound, sender, pxUIElement);
 }
@@ -933,11 +941,11 @@ PXActionResult PXAPI PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void
 
 PXActionResult PXAPI PXGraphicUIElementPrint(PXGraphic* const pxGraphic)
 {
-    printf("+---------------------------------------------------------+\n");
+   // printf("+---------------------------------------------------------+\n");
 
     PXGraphicUIElementIterator(pxGraphic, 0, 0, 0);
 
-    printf("+---------------------------------------------------------+\n");
+   // printf("+---------------------------------------------------------+\n");
 }
 
 void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)

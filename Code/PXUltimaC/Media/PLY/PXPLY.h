@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXPLY;
 
-	PXPublic PXActionResult PXPLYLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
-	PXPublic PXActionResult PXPLYSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPLYLoadFromFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPLYSaveToFile(PXVertexStructure* const pxVertexStructure, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

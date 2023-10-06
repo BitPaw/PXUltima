@@ -2,7 +2,7 @@
 
 #include <Compiler/PXCompiler.h>
 
-PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size)
+PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
 {
     if (!(line && size))
     {
@@ -57,7 +57,7 @@ PXYAMLLineType PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXActionResult PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -322,7 +322,7 @@ PXActionResult PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const outpu
     return PXActionSuccessful;
 }
 
-PXActionResult PXYAMLSaveToFile(PXFile* const inputStream, PXFile* const pxFile)
+PXActionResult PXAPI PXYAMLSaveToFile(PXFile* const inputStream, PXFile* const pxFile)
 {
     return PXActionRefusedNotImplemented;
 }

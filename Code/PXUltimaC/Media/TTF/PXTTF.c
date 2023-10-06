@@ -1,6 +1,6 @@
 #include "PXTTF.h"
 
-PXPlatformID PXTTFPlatformFromID(const PXInt16U platformID)
+PXPlatformID PXAPI PXTTFPlatformFromID(const PXInt16U platformID)
 {
 	switch (platformID)
 	{
@@ -14,7 +14,7 @@ PXPlatformID PXTTFPlatformFromID(const PXInt16U platformID)
 	}
 }
 
-PXEncodingID PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID)
+PXEncodingID PXAPI PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID)
 {
 	switch(platformID)
 	{
@@ -81,8 +81,7 @@ PXEncodingID PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U e
 	return PXEncodingInvalid;
 }
 
-
-PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short minor)
+PXTTFVersionType PXAPI PXTTFVersionTypeFromID(unsigned short major, unsigned short minor)
 {
 	switch(minor)
 	{
@@ -111,12 +110,12 @@ PXTTFVersionType PXTTFVersionTypeFromID(unsigned short major, unsigned short min
 	return PXTTFVersionInvalid;
 }
 
-void PXTTFTableEntryTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType)
+void PXAPI PXTTFTableEntryTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType)
 {
 
 }
 
-PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType)
+PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType)
 {
 	switch(tableEntryType)
 	{
@@ -173,17 +172,17 @@ PXTTFTableEntryType PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType)
 	}
 }
 
-void PXTTFConstruct(PXTTF* const ttf)
+void PXAPI PXTTFConstruct(PXTTF* const ttf)
 {
 	PXMemoryClear(ttf, sizeof(PXTTF));
 }
 
-void PXTTFDestruct(PXTTF* const ttf)
+void PXAPI PXTTFDestruct(PXTTF* const ttf)
 {
 	// TODO
 }
 
-PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 {
 	PXTTF* ttf = PXNull;
 
@@ -669,7 +668,7 @@ PXActionResult PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXAPI PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

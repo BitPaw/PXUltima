@@ -86,6 +86,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileFormatCSharp,
 		PXFileFormatCSS,
 		PXFileFormatCPP,
+		PXFileFormatCanonRaw3,
 		PXFileFormatBinaryWindows,
 		PXFileFormatBinaryLinux,
 		PXFileFormatEML,
@@ -157,7 +158,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	typedef struct PXFile_ PXFile;
 
-	typedef PXActionResult (*PXResourceTranslateFunction)(void* const pxResource, PXFile* const pxFile);
+	typedef PXActionResult (PXAPI*PXResourceTranslateFunction)(void* const pxResource, PXFile* const pxFile);
 
 	typedef enum PXFileResourceType_
 	{

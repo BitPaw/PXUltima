@@ -3,7 +3,7 @@
 const char PXDOSHeaderSignatore[2] = { 'M', 'Z' };
 const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
 
-PXActionResult PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile)
 {
 	// Read header
 	{
@@ -58,7 +58,7 @@ PXActionResult PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinaryWindow
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXBinaryWindowsSaveToFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }
