@@ -108,7 +108,6 @@ extern "C"
         short MaximalExtendX;
         short CaretSlopeRise;
         short CaretSlopeRun;
-        unsigned char Reserved[10];
         short MetricDataFormat;
         unsigned short NumberOfHorizontalMetrics;
     }

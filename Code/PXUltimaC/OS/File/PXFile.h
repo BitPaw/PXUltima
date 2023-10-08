@@ -219,6 +219,11 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileTypeInfo TypeInfo;
 
 		PXText FilePath;
+
+
+		// Statistic
+		PXSize CounterOperationsRead;
+		PXSize CounterOperationsWrite;
 	}
 	PXFile;
 

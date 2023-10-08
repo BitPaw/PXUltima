@@ -1586,7 +1586,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
         openGLContext->AreTexturesResident = glAreTexturesResident;
         openGLContext->ArrayElement = glArrayElement;
         openGLContext->Begin = glBegin;
-        openGLContext->BindTexture = glBindTexture;
+        openGLContext->TextureBind = glBindTexture;
         openGLContext->Bitmap = glBitmap;
         openGLContext->BlendFunc = glBlendFunc;
         openGLContext->CallList = glCallList;
@@ -1640,7 +1640,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
         openGLContext->CopyTexSubImage2D = glCopyTexSubImage2D;
         openGLContext->CullFace = glCullFace;
         openGLContext->DeleteLists = glDeleteLists;
-        openGLContext->DeleteTextures = glDeleteTextures;
+        openGLContext->TextureDelete = glDeleteTextures;
         openGLContext->DepthFunc = glDepthFunc;
         openGLContext->DepthMask = glDepthMask;
         openGLContext->DepthRange = glDepthRange;
@@ -1679,7 +1679,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
         openGLContext->FrontFace = glFrontFace;
         openGLContext->Frustum = glFrustum;
         openGLContext->GenLists = glGenLists;
-        openGLContext->GenTextures = glGenTextures;
+        openGLContext->TextureCreate = glGenTextures;
         openGLContext->GetBooleanv = glGetBooleanv;
         openGLContext->GetClipPlane = glGetClipPlane;
         openGLContext->GetDoublev = glGetDoublev;
@@ -1932,28 +1932,31 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
 #endif 
             ;
 
-        // extensions
-        openGLContext->ContextCreateAttributes = openGLContext->FunctionPointerGet("wglCreateContextAttribsARB");
-
-
-        const int attributeList[] =
+       
+        // Make multi GOU context
         {
-                 WGL_CONTEXT_MULTIGPU_ATTRIB_NV, WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV,
-                0, 0
-        };
+            openGLContext->ContextCreateAttributes = openGLContext->FunctionPointerGet("wglCreateContextAttribsARB");
 
-        HGLRC bufferTHH = openGLContext->ContextCreateAttributes
-        (
-            openGLContext->AttachedWindow->HandleDeviceContext,
-            openGLContext->PXOpenGLConext,
-            attributeList
-        );
+            if (openGLContext->ContextCreateAttributes)
+            {
+                const int attributeList[] =
+                {
+                    WGL_CONTEXT_MULTIGPU_ATTRIB_NV, WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV,
+                    0, 0
+                };
 
-        const PXActionResult xx = PXOpenGLErrorCurrent();
+                HGLRC bufferTHH = openGLContext->ContextCreateAttributes
+                (
+                    openGLContext->AttachedWindow->HandleDeviceContext,
+                    openGLContext->PXOpenGLConext,
+                    attributeList
+                );
 
+                const PXActionResult xx = PXOpenGLErrorCurrent();
+            }
+        }    
 
-
-
+        // extensions
 #define PXOverrideIfResultNotNull(target, source) {void* xx = source; if(xx){target = xx;}};
 
         PXOverrideIfResultNotNull(openGLContext->Accum, openGLContext->FunctionPointerGet("glAccum"));
@@ -1961,7 +1964,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
         PXOverrideIfResultNotNull(openGLContext->AreTexturesResident, openGLContext->FunctionPointerGet("glAreTexturesResident"));
         PXOverrideIfResultNotNull(openGLContext->ArrayElement, openGLContext->FunctionPointerGet("glArrayElement"));
         PXOverrideIfResultNotNull(openGLContext->Begin, openGLContext->FunctionPointerGet("glBegin"));
-        PXOverrideIfResultNotNull(openGLContext->BindTexture, openGLContext->FunctionPointerGet("glBindTexture"));
+        PXOverrideIfResultNotNull(openGLContext->TextureBind, openGLContext->FunctionPointerGet("glBindTexture"));
         PXOverrideIfResultNotNull(openGLContext->Bitmap, openGLContext->FunctionPointerGet("glBitmap"));
         PXOverrideIfResultNotNull(openGLContext->BlendFunc, openGLContext->FunctionPointerGet("glBlendFunc"));
         PXOverrideIfResultNotNull(openGLContext->CallList, openGLContext->FunctionPointerGet("glCallList"));
@@ -2015,7 +2018,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
         PXOverrideIfResultNotNull(openGLContext->CopyTexSubImage2D, openGLContext->FunctionPointerGet("glCopyTexSubImage2D"));
         PXOverrideIfResultNotNull(openGLContext->CullFace, openGLContext->FunctionPointerGet("glCullFace"));
         PXOverrideIfResultNotNull(openGLContext->DeleteLists, openGLContext->FunctionPointerGet("glDeleteLists"));
-        PXOverrideIfResultNotNull(openGLContext->DeleteTextures, openGLContext->FunctionPointerGet("glDeleteTextures"));
+        PXOverrideIfResultNotNull(openGLContext->TextureDelete, openGLContext->FunctionPointerGet("glDeleteTextures"));
         PXOverrideIfResultNotNull(openGLContext->DepthFunc, openGLContext->FunctionPointerGet("glDepthFunc"));
         PXOverrideIfResultNotNull(openGLContext->DepthMask, openGLContext->FunctionPointerGet("glDepthMask"));
         PXOverrideIfResultNotNull(openGLContext->DepthRange, openGLContext->FunctionPointerGet("glDepthRange"));
@@ -2054,7 +2057,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
         PXOverrideIfResultNotNull(openGLContext->FrontFace, openGLContext->FunctionPointerGet("glFrontFace"));
         PXOverrideIfResultNotNull(openGLContext->Frustum, openGLContext->FunctionPointerGet("glFrustum"));
         PXOverrideIfResultNotNull(openGLContext->GenLists, openGLContext->FunctionPointerGet("glGenLists"));
-        PXOverrideIfResultNotNull(openGLContext->GenTextures, openGLContext->FunctionPointerGet("glGenTextures"));
+        PXOverrideIfResultNotNull(openGLContext->TextureCreate, openGLContext->FunctionPointerGet("glGenTextures"));
         PXOverrideIfResultNotNull(openGLContext->GetBooleanv, openGLContext->FunctionPointerGet("glGetBooleanv"));
         PXOverrideIfResultNotNull(openGLContext->GetClipPlane, openGLContext->FunctionPointerGet("glGetClipPlane"));
         PXOverrideIfResultNotNull(openGLContext->GetDoublev, openGLContext->FunctionPointerGet("glGetDoublev"));
@@ -2330,11 +2333,6 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
         openGLContext->VertexArrayBind = openGLContext->FunctionPointerGet("glBindVertexArray");
         openGLContext->VertexAttribIPointer = openGLContext->FunctionPointerGet("glVertexAttribIPointer");
 
-
-        openGLContext->TextureCreate = openGLContext->FunctionPointerGet("glGenTextures");
-        openGLContext->TextureBind = openGLContext->FunctionPointerGet("glBindTexture");
-        openGLContext->TextureDelete = openGLContext->FunctionPointerGet("glDeleteTextures");
-
         openGLContext->ShaderProgramCreate = openGLContext->FunctionPointerGet("glCreateProgram");
         openGLContext->ShaderProgramUse = openGLContext->FunctionPointerGet("glUseProgram");
         openGLContext->ShaderProgramDelete = openGLContext->FunctionPointerGet("glDeleteProgram");
@@ -2502,9 +2500,6 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const openGLContext, PXGraphic
             pxGraphicDevicePhysical.VideoMemoryEvictionSize
         );
     }
-
-
-
 
     PXOpenGLDeselect(openGLContext);
 

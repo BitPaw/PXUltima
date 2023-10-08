@@ -319,7 +319,7 @@ extern "C"
 	//-------------------------------------------------------------------------
 	// Define generic graphic API, make happen that you can use whatever
 	//-------------------------------------------------------------------------
-	typedef PXBool (PXAPI*PXGraphicInitializeFunction)(void* const pxGraphicAPI, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
+	typedef PXActionResult(PXAPI*PXGraphicInitializeFunction)(void* const pxGraphicAPI, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
 	typedef PXBool(PXAPI*PXGraphicReleaseFunction)(void* const pxGraphicAPI);
 
 	typedef void (PXAPI*PXGraphicSelectFunction)(void* const pxGraphicAPI);
@@ -649,6 +649,7 @@ extern "C"
 
 	//-------------------------------------
 	PXPublic PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
+	PXPublic PXActionResult PXAPI PXGraphicRelease(PXGraphic* const pxGraphic);
 
 	PXPublic void PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem);
 

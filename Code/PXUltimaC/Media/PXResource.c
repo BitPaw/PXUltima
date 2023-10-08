@@ -180,7 +180,7 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
 
         PXStopWatchTrigger(&pxStopwatch, &pxTime);
 
-        printf("[PX] Resource load <%s> took %ims, cycles=%lf\n", filePath->TextA, PXTimeMilliseconds(&pxTime), pxTime.ClockCycleDelta);
+        printf("[PX][File] Resource load <%s> took %ims, cycles=%lf, IOPs=%i\n", filePath->TextA, PXTimeMilliseconds(&pxTime), pxTime.ClockCycleDelta, pxFile.CounterOperationsRead);
 
         PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
 

@@ -540,7 +540,7 @@ void PXProcessorFetchInfo(PXProcessor* const processor)
 
 
 
-
+    
     {
 
 
@@ -636,7 +636,7 @@ unsigned int PXProcessorTimeReal()
         return 0;
     }
 
-    const double x = (double)time.QuadPart / (double)freq.QuadPart;
+    const double x = ((double)time.QuadPart / (double)freq.QuadPart) * 10000000;
 
     return x;
 #endif

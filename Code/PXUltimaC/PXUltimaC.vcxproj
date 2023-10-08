@@ -359,6 +359,7 @@
     <ClCompile Include="Container\Buffer\PXBuffer.c" />
     <ClCompile Include="Media\COFF\PXCOFF.c" />
     <ClCompile Include="Media\CanonRaw3\PXCanonRaw3.c" />
+    <ClCompile Include="Engine\PXEngine.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -499,6 +500,7 @@
     <ClInclude Include="Container\Buffer\PXBuffer.h" />
     <ClInclude Include="Media\COFF\PXCOFF.h" />
     <ClInclude Include="Media\CanonRaw3\PXCanonRaw3.h" />
+    <ClInclude Include="Engine\PXEngine.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />

@@ -1,8 +1,7 @@
 #ifndef OSSignalINCLUDE
 #define OSSignalINCLUDE
 
-#include <OS/System/PXOSVersion.h>
-#include <Media/PXType.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -17,7 +16,21 @@ extern "C"
     //void __CRTDECL OSSystemSignalCallBack(const int signalID);
 #endif*/
 
-    PXPublic PXBool PXSignalCallBackRegister();
+    typedef enum PXSignalToken_
+    {
+        PXSignalTokenInvalid,
+        PXSignalTokenAbort, // Abnormal termination
+        PXSignalTokenFloatMathError, // Floating-point errorc
+        PXSignalTokenIllegalInstruction, // Illegal instruction
+        PXSignalTokenINT, // CTRL+C signal
+        PXSignalTokenMemoryViolation, // Illegal storage access
+        PXSignalTokenTerminationRequest // Termination request
+    }
+    PXSignalToken;
+
+    typedef void (_cdecl* PXSignalCallBack)(const int signalID);
+
+    PXPublic PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack);
 
 #ifdef __cplusplus
 }

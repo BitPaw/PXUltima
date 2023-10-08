@@ -184,7 +184,8 @@ void PXAPI PXTTFDestruct(PXTTF* const ttf)
 
 PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
 {
-	PXTTF* ttf = PXNull;
+	PXTTF ttfdata;
+	PXTTF* ttf = &ttfdata;
 
 	PXTTFOffsetTable offsetTable;
 
@@ -277,22 +278,26 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 			}
 			case PXTTFTableEntryHorizontalHeader:
 			{
-#if 0
-				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.Version.Major, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.Version.Minor, PXEndianLittle);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.Ascender, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.Descender, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.LineGap, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.AdvanceWidthMaximum, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MinimumLeftSideBearing, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MinimumRightSideBearing, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MaximalExtendX, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.CaretSlopeRun, PXEndianBig);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.CaretSlopeRise, PXEndianBig);
-				PXFileReadB(pxFile, &ttf->HorizontalHeader.Reserved, 10u);
-				PXFileReadI16S(pxFile, &ttf->HorizontalHeader.MetricDataFormat, PXEndianBig);
-				PXFileReadI16U(pxFile, &ttf->HorizontalHeader.NumberOfHorizontalMetrics, PXEndianBig);
-#endif
+				const PXFileDataElementType pxDataStreamElementList[] =
+				{
+					{ &ttf->HorizontalHeader.Version.Major, PXDataTypeInt16UBE },
+					{ &ttf->HorizontalHeader.Version.Minor, PXDataTypeInt16ULE },
+					{ &ttf->HorizontalHeader.Ascender, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.Descender, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.LineGap, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.AdvanceWidthMaximum, PXDataTypeInt16UBE },
+					{ &ttf->HorizontalHeader.MinimumLeftSideBearing, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.MinimumRightSideBearing, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.MaximalExtendX, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.CaretSlopeRun, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.CaretSlopeRise, PXDataTypeInt16SBE	},
+					{ PXNull, 10u },
+					{ &ttf->HorizontalHeader.MetricDataFormat, PXDataTypeInt16SBE },
+					{ &ttf->HorizontalHeader.NumberOfHorizontalMetrics, PXDataTypeInt16UBE }
+				};
+
+				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
 				break;
 			}
 			case PXTTFTableEntryMaximumProfile:
@@ -572,6 +577,30 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 			}
 			case PXTTFTableEntryFontPXProgram: // fpgm
 			{
+				break;
+			}
+			case PXTTFTableEntryName:
+			{
+				typedef struct PXTTFNameTableFormat_
+				{
+					PXInt16U Format;
+					PXInt16U Count;
+					PXInt16U StringOffset;
+				}
+				PXTTFNameTableFormat;
+
+#if 0
+				const PXFileDataElementType pxDataStreamElementList[] =
+				{
+					{&ttf->Header.Version.Major,	PXDataTypeInt16UBE},
+					{&ttf->Header.Version.Minor,	PXDataTypeInt16ULE},
+					{&ttf->Header.Revision.Major,	PXDataTypeInt16UBE},
+					{&ttf->Header.Revision.Minor,	PXDataTypeInt16ULE},
+					{&ttf->Header.CheckSumAdjustment,	PXDataTypeInt32UBE}
+				};
+
+				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+#endif
 				break;
 			}
 			//-----------------------------------------------------------------

@@ -2087,6 +2087,49 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
             break;
         }
+        default:
+        {
+            char* windowClassName = 0;
+
+            // Registering of class
+            {
+                WNDCLASS wndclass;
+
+                PXMemoryClear(&wndclass, sizeof(WNDCLASS));
+
+                wndclass.style = style;
+                wndclass.lpfnWndProc = lpfnWndProc;
+                wndclass.cbClsExtra = cbClsExtra;
+                wndclass.cbWndExtra = cbWndExtra;
+                wndclass.hInstance = hInstance;
+                wndclass.hIcon = hIcon;
+                wndclass.hCursor = hCursor;
+                wndclass.hbrBackground = hbrBackground;
+                wndclass.lpszMenuName = 0;
+                wndclass.lpszClassName = "PXUltima_WindowCreate";
+
+                const WORD classID = RegisterClass(&wndclass);
+
+                windowClassName = (char*)classID;
+            }
+
+            windowID = CreateWindowEx // Windows 2000, User32.dll, winuser.h
+            (
+                windowStyle,
+                windowClassName,
+                PXNull,
+                dwStyle,
+                window->X,
+                window->Y,
+                window->Width,
+                window->Height,
+                hWndParent,
+                hMenu,
+                hInstance,
+                lpParam
+            );
+            break;
+        }
     }
 
     {

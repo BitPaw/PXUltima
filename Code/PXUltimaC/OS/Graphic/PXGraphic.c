@@ -1579,7 +1579,13 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             break;
     }
 
-    pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
+    // Graphic initialize
+    {
+        const PXActionResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
+
+        PXActionReturnOnError(pxActionResult);
+    }
+
     //-------------------------------------------------------------------------
 
     for (size_t i = 0; i < pxGraphic->DevicePhysicalListSize; i++)
@@ -1639,6 +1645,11 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
    // PXMatrix4x4FIdentity(&pxGraphic->SpriteUnScaled.ModelMatrix);
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXGraphicRelease(PXGraphic* const pxGraphic)
+{
+    return PXActionRefusedNotImplemented;
 }
 
 void PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem)

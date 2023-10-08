@@ -2331,6 +2331,8 @@ PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
 				return 0;
 			}
 
+			++(pxFile->CounterOperationsRead);
+
 			pxFile->DataCursor += writtenBytes;
 
 			return writtenBytes;
@@ -2770,6 +2772,7 @@ PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize 
 				return 0;
 			}
 
+			++(pxFile->CounterOperationsWrite);
 			pxFile->DataCursor += writtenBytes;
 			pxFile->DataSize += writtenBytes;
 

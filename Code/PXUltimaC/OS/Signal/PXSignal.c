@@ -1,13 +1,51 @@
 #include "PXSignal.h"
 
-#include <signal.h>
+#include <signal.h> // [POSIX] Exists on Linux and Windows
 
-PXBool PXSignalCallBackRegister()
-{	
-	//const _crt_signal_t functionPointer = signal(SIGABRT, OnSystemSignl);
-	//const PXBool validLinkage = functionPointer != SIG_ERR;
+PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)
+{
+#if OSUnix
+	return PXActionRefusedNotImplemented;
 
-	//return validLinkage;
+#elif OSWindows
+	int signalID;
 
-	return 1+150;
+	switch (pxSignalToken)
+	{
+		case PXSignalTokenAbort:
+			signalID = SIGABRT;
+			break;
+		case PXSignalTokenFloatMathError:
+			signalID = SIGFPE;
+			break;
+		case PXSignalTokenIllegalInstruction:
+			signalID = SIGILL;
+			break;
+		case PXSignalTokenINT:
+			signalID = SIGBREAK;
+			break;
+		case PXSignalTokenMemoryViolation:
+			signalID = SIGSEGV;
+			break;
+		case PXSignalTokenTerminationRequest:
+			signalID = SIGTERM;
+			break;
+
+		default:
+			return PXFalse;
+	}
+
+
+	const _crt_signal_t functionPointer = signal(signalID, pxSignalCallBack);
+	const PXBool validLinkage = functionPointer != SIG_ERR;
+
+	if (!validLinkage)
+	{
+		return PXActionRefuedParameterInvalid;
+	}
+
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
+#endif
 }

@@ -426,6 +426,9 @@
     <ClCompile Include="Media\CanonRaw3\PXCanonRaw3.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\PXEngine.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -840,6 +843,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\CanonRaw3\PXCanonRaw3.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PXEngine.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

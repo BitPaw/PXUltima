@@ -387,9 +387,9 @@ extern "C"
 	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 
-	typedef void (PXOpenGLAPI* PXOpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
-	typedef void (PXOpenGLAPI* PXOpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
-	typedef void (PXOpenGLAPI* PXOpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
+	//typedef void (PXOpenGLAPI* PXOpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
+	//typedef void (PXOpenGLAPI* PXOpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
+	//typedef void (PXOpenGLAPI* PXOpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
 	//-------------------------------------------------------------------------
 
 	//---<PXOpenGL v.2.1.0>------------------------------------------------------
@@ -890,7 +890,7 @@ extern "C"
 		PXOpenGLAreTexturesResidentFunction   	AreTexturesResident;
 		PXOpenGLArrayElementFunction	ArrayElement;
 		PXOpenGLBeginFunction   	Begin;
-		PXOpenGLBindTextureFunction   	BindTexture;
+		PXOpenGLBindTextureFunction   	TextureBind;
 		PXOpenGLBitmapFunction  	Bitmap;
 		PXOpenGLBlendFuncFunction  	BlendFunc;
 		PXOpenGLCallListFunction	CallList;
@@ -944,7 +944,7 @@ extern "C"
 		PXOpenGLCopyTexSubImage2DFunction	CopyTexSubImage2D;
 		PXOpenGLCullFaceFunction	CullFace;
 		PXOpenGLDeleteListsFunction	DeleteLists;
-		PXOpenGLDeleteTexturesFunction	DeleteTextures;
+		PXOpenGLDeleteTexturesFunction	TextureDelete;
 		PXOpenGLDepthFuncFunction	DepthFunc;
 		PXOpenGLDepthMaskFunction	DepthMask;
 		PXOpenGLDepthRangeFunction	DepthRange;
@@ -983,7 +983,7 @@ extern "C"
 		PXOpenGLFrontFaceFunction	FrontFace;
 		PXOpenGLFrustumFunction	Frustum;
 		 PXOpenGLGenListsFunction	 GenLists;
-		PXOpenGLGenTexturesFunction	GenTextures;
+		PXOpenGLGenTexturesFunction	TextureCreate;
 		PXOpenGLGetBooleanvFunction	GetBooleanv;
 		PXOpenGLGetClipPlaneFunction	GetClipPlane;
 		PXOpenGLGetDoublevFunction	GetDoublev;
@@ -1280,10 +1280,6 @@ extern "C"
 		PXOpenGLUniformMatrix2fvFunction	UniformMatrix2fv;
 		PXOpenGLUniformMatrix3fvFunction	UniformMatrix3fv;
 		PXOpenGLUniformMatrix4fvFunction UniformMatrix4fv;
-
-		PXOpenGLTextureCreateFunction TextureCreate;
-		PXOpenGLTextureBindFunction TextureBind;
-		PXOpenGLTextureDeleteFunction TextureDelete;
 		//-------------------------------------------------------------------------
 
 		//---<PXOpenGL v.2.1.0>------------------------------------------------------

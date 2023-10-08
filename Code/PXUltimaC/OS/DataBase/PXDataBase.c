@@ -1,12 +1,10 @@
 #include "PXDataBase.h"
 
-#if PXDataBaseUSE
-
 #include <OS/Memory/PXMemory.h>
 
 #include <stdio.h>
 
-const PXSQLType PXSQLTypeFromID(const PXInt32U sqlTypeID)
+const PXSQLType PXAPI PXSQLTypeFromID(const PXInt32U sqlTypeID)
 {
 #if OSUnix
     return PXSQLTypeInvalid;
@@ -49,19 +47,19 @@ const PXSQLType PXSQLTypeFromID(const PXInt32U sqlTypeID)
 #endif
 }
 
-void PXDataBaseConnectionConstruct(PXSQLDataBaseConnection* const dataBaseConnection)
+void PXAPI PXDataBaseConstruct(PXDataBase* const dataBaseConnection)
 {
-    PXMemoryClear(dataBaseConnection, sizeof(PXSQLDataBaseConnection));
+    PXMemoryClear(dataBaseConnection, sizeof(PXDataBase));
 }
 
-void PXDataBaseConnectionDestruct(PXSQLDataBaseConnection* const dataBaseConnection)
+void PXAPI PXDataBaseDestruct(PXDataBase* const dataBaseConnection)
 {
-    PXDataBaseConnectionCleanup(dataBaseConnection);
+    PXDataBaseCleanup(dataBaseConnection);
 }
 
-PXActionResult PXDataBaseConnectionConnect
+PXActionResult PXAPI PXDataBaseConnect
 (
-    PXSQLDataBaseConnection* const dataBaseConnection,
+    PXDataBase* const dataBaseConnection,
     const PXText* const source,
     const PXText* const database,
     const PXText* const user,
@@ -118,7 +116,7 @@ PXActionResult PXDataBaseConnectionConnect
 
     printf("+---[ODBC Drivers]-------------------------------------------+--------------+\n");
 
-    PXDataBaseConnectionScanForDrivers(dataBaseConnection);
+    PXDataBaseScanForDrivers(dataBaseConnection);
 
     printf("+------------------------------------------------------------+--------------+\n");
 
@@ -261,7 +259,7 @@ PXActionResult PXDataBaseConnectionConnect
 #endif
 }
 
-void PXDataBaseConnectionDisconnect(PXSQLDataBaseConnection* const dataBaseConnection)
+void PXAPI PXDataBaseDisconnect(PXDataBase* const dataBaseConnection)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -275,9 +273,9 @@ void PXDataBaseConnectionDisconnect(PXSQLDataBaseConnection* const dataBaseConne
 #endif
 }
 
-void PXDataBaseConnectionCleanup(PXSQLDataBaseConnection* const dataBaseConnection)
+void PXAPI PXDataBaseCleanup(PXDataBase* const dataBaseConnection)
 {
-    PXDataBaseConnectionDisconnect(dataBaseConnection);
+    PXDataBaseDisconnect(dataBaseConnection);
 
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -290,7 +288,7 @@ void PXDataBaseConnectionCleanup(PXSQLDataBaseConnection* const dataBaseConnecti
 #endif
 }
 
-void PXDataBaseConnectionScanForDrivers(PXSQLDataBaseConnection* const dataBaseConnection)
+void PXAPI PXDataBaseScanForDrivers(PXDataBase* const dataBaseConnection)
 {
 
 #if OSUnix
@@ -345,7 +343,7 @@ void PXDataBaseConnectionScanForDrivers(PXSQLDataBaseConnection* const dataBaseC
 #endif
 }
 
-PXActionResult PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBaseConnection, const PXText* const pxTextSQLStatement)
+PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const dataBaseConnection, const PXText* const pxTextSQLStatement)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -540,4 +538,7 @@ PXActionResult PXDataBaseConnectionExecute(PXSQLDataBaseConnection* const dataBa
 #endif
 }
 
-#endif
+PXActionResult PXAPI PXDataBaseCommandCancel(PXDataBase* const dataBaseConnection)
+{
+    return PXActionRefusedNotImplemented; //     SQLRETURN  SQL_API SQLCancel(SQLHSTMT StatementHandle);
+}
