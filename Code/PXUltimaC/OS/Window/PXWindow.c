@@ -1974,7 +1974,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     HMENU hMenu = 0;
     void* lpParam = 0;
 
-    UINT        style = CS_OWNDC; //  CS_HREDRAW | CS_VREDRAW;
+    UINT        style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
     WNDPROC     lpfnWndProc = PXWindowEventHandler;
     int         cbClsExtra = 0; // The number of extra bytes to allocate following the window-class structure.
     int         cbWndExtra = 0;
@@ -2247,9 +2247,10 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     return PXThreadSucessful;
 }
 
-void PXAPI PXWindowPixelSystemSet(PXWindow* const window)
+PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)
 {
 #if OSUnix
+    return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 
@@ -2259,7 +2260,13 @@ void PXAPI PXWindowPixelSystemSet(PXWindow* const window)
     }
 
     const WORD  nVersion = 1;
-    const DWORD dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SUPPORT_DIRECTDRAW | PFD_DIRECT3D_ACCELERATED | PFD_DOUBLEBUFFER;
+    const DWORD dwFlags = 
+        //PFD_DRAW_TO_WINDOW |
+        PFD_SUPPORT_OPENGL |
+        //PFD_SUPPORT_DIRECTDRAW | 
+        //PFD_DIRECT3D_ACCELERATED | 
+        PFD_DOUBLEBUFFER | 
+        0;
     const BYTE  iPixelType = PFD_TYPE_RGBA; // The kind of framebuffer. RGBA or palette.
     const BYTE  cColorBits = 32;   // Colordepth of the framebuffer.
     const BYTE  cRedBits = 0;
@@ -2305,10 +2312,14 @@ void PXAPI PXWindowPixelSystemSet(PXWindow* const window)
     };
     const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(window->HandleDeviceContext, &pfd);
     const PXBool sucessul = SetPixelFormat(window->HandleDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
-#endif
 
-
+    PXActionOnErrorFetchAndReturn(!sucessul);
+       
     return PXActionSuccessful;
+
+#else
+    return PXActionRefusedNotSupported;
+#endif  
 }
 
 void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
@@ -2379,7 +2390,7 @@ void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
 
 void PXAPI PXWindowConstruct(PXWindow* const window)
 {
-    PXClear(PXWindow, window);
+   // PXClear(PXWindow, window);
     window->Title.SizeAllocated = 256;
     window->Title.TextA = window->TitleBuffer;
     window->Mode = PXWindowModeNormal;
@@ -2431,7 +2442,7 @@ void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt3
 
         if (!sucessful)
         {
-            return actionResult;       
+            return; // TODO: return something?
         }
 
         PXAwaitChangeCU(&window->IsRunning);
@@ -2487,7 +2498,7 @@ PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID)
 
 PXBool PXAPI PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 {
-    PXTextCopy(title, &window->Title);
+    // PXTextCopy(title, &window->Title); Useless?
 
     switch (title->Format)
     {
@@ -2615,7 +2626,7 @@ void PXAPI PXWindowIconTaskBar()
 {
 }
 
-void PXAPI PXWindowLookupAdd(const PXWindow* window)
+void PXAPI PXWindowLookupAdd(PXWindow* const window)
 {
     currentWindow = window;
 }
@@ -2750,8 +2761,8 @@ void PXAPI PXWindowCursorTexture()
 
 void PXAPI PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursorMode)
 {
-    unsigned int horizontal = 0;
-    unsigned int vertical = 0;
+    PXInt32S horizontal = 0;
+    PXInt32S vertical = 0;
 
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -3132,7 +3143,7 @@ void PXAPI PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const 
 
 #define UseOSDelta 0
 
-void PXAPI PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY)
+void PXAPI PXWindowTriggerOnMouseMoveEvent(PXWindow* const window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY)
 {
     PXMouse* const mouse = &window->MouseCurrentInput;
 
@@ -3195,7 +3206,7 @@ void PXAPI PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMous
 {
 }
 
-void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)
+void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(PXWindow* const window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)
 {
     // printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
 

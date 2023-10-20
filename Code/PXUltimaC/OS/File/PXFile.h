@@ -169,7 +169,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileResourceTypeVideo,
 		PXFileResourceTypeFont,
 		PXFileResourceTypeDocument,
-		PXFileResourceTypeVertexStructure,
+		PXFileResourceTypeModel,
 		PXFileResourceTypeRenderShader,
 		PXFileResourceTypeRenderMaterial,
 		PXFileResourceTypeBinary,
@@ -242,7 +242,14 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXFileOpenFromPathInfo;
 
 
-
+#define PXFileOpenFromPathInfoMakeLoadOneshot(adress, path) \
+	(adress)->Text = path; \
+	(adress)->FileSize = 0; \
+	(adress)->AccessMode = PXMemoryAccessModeReadOnly; \
+	(adress)->MemoryCachingMode = PXMemoryCachingModeSequential; \
+	(adress)->AllowMapping = PXTrue; \
+	(adress)->CreateIfNotExist = PXFalse; \
+	(adress)->AllowOverrideOnCreate = PXFalse;
 
 
 
@@ -266,6 +273,9 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	//PXPublic void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
 
+
+
+	PXPublic void PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, const PXText* const resultPath);
 
 
 	PXPublic void PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);

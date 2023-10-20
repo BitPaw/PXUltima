@@ -511,7 +511,7 @@ namespace PX
 
 
 
-    unsafe struct PXVertexStructure
+    unsafe struct PXModel
     {
         PXResourceID ResourceID;
 
@@ -529,10 +529,10 @@ namespace PX
         PXVertexBuffer VertexBuffer;
         PXIndexBuffer IndexBuffer;
 
-        PXVertexStructure* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
-        PXVertexStructure* StructureParent; // Structural parent of structure
-        PXVertexStructure* StructureSibling; // Stuctual sibling, works like a linked list.
-        PXVertexStructure* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
+        PXModel* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
+        PXModel* StructureParent; // Structural parent of structure
+        PXModel* StructureSibling; // Stuctual sibling, works like a linked list.
+        PXModel* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
                                            //-----------------------------
 
 
@@ -545,9 +545,9 @@ namespace PX
         //-----------------------------
     };
 
-    public class VertexStructure
+    public class Model
     {
-        internal PXVertexStructure _pxVertexStructure;
+        internal PXModel _pxModel;
     };
 
 
@@ -717,7 +717,7 @@ namespace PX
 
         //PXVector2F TextureScaleOffset;
 
-        PXVertexStructure VertexStructure;
+        PXModel Model;
     };
 
 
@@ -795,7 +795,7 @@ namespace PX
 
     unsafe struct PXSkyBox
     {
-        PXVertexStructure VertexStructure;
+        PXModel Model;
 
         PXTextureCube TextureCube;
 

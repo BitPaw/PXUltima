@@ -198,7 +198,7 @@ extern "C"
 	PXPrivate PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const PXWindowAdress);
 
 
-	PXPublic void PXAPI PXWindowPixelSystemSet(PXWindow* const window);
+	PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window);
 
 	PXPublic void PXAPI PXWindowUpdate(PXWindow* const pxWindow);
 
@@ -225,7 +225,7 @@ extern "C"
 	PXPublic void PXAPI PXWindowIconCorner();
 	PXPublic void PXAPI PXWindowIconTaskBar();
 
-	PXPublic void PXAPI PXWindowLookupAdd(const PXWindow* PXWindow);
+	PXPublic void PXAPI PXWindowLookupAdd(PXWindow* const PXWindow);
 	PXPublic PXWindow* PXAPI PXWindowLookupFind(const PXWindowID PXWindowID);
 	PXPublic void PXAPI PXWindowLookupRemove(const PXWindow* PXWindow);
 
@@ -258,12 +258,12 @@ extern "C"
 	PXPublic void PXAPI PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse);
 	PXPublic void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
 	PXPublic void PXAPI PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton);
-	PXPublic void PXAPI PXWindowTriggerOnMouseMoveEvent(const PXWindow* window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
+	PXPublic void PXAPI PXWindowTriggerOnMouseMoveEvent(PXWindow* const window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
 	PXPublic void PXAPI PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
 	PXPublic void PXAPI PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
 
 
-	PXPublic void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(const PXWindow* window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
+	PXPublic void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(PXWindow* const window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
 
 	// Keyboard
 	//typedef void (*KeyBoardKeyEvent)(const KeyBoardKeyInfo keyBoardKeyInfo);

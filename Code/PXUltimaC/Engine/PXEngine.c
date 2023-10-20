@@ -41,25 +41,27 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
     pxEngine->CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->CounterTimeCPU;
 
-    if ((timeNow - pxEngine->CounterTimeRenderLast) > 0)
+    if ((timeNow - pxEngine->CounterTimeRenderLast) > 0.02)
     {
         pxEngine->CounterTimeRenderLast = timeNow;
 
+        const PXColorRGBAF color = {0.01,0.01,0.01,1};
+
+        pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
         pxEngine->CounterTimeGPU = PXTimeCounterStampGet();
         PXFunctionInvoke(pxEngine->OnRenderUpdate, pxEngine->Owner, pxEngine);
         pxEngine->CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->CounterTimeGPU;
+        pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
     }
-
-
-    pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);  
-
-    PXConsoleGoToXY(0, 0);
 
     ++(pxEngine->CounterTimeWindow);
     ++(pxEngine->CounterTimeUser);
     ++(pxEngine->CounterTimeNetwork);
     ++(pxEngine->CounterTimeCPU);
     ++(pxEngine->CounterTimeGPU);
+
+#if 0
+    PXConsoleGoToXY(0, 0);
 
     printf("%15s : Hz %-20i\n", "FPS", pxEngine->FramesPerSecound);
     printf("%15s : us %-20i\n", "Frame-Time", pxEngine->FrameTime);
@@ -69,6 +71,11 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     printf("%15s : us %-20i %3i%%\n", "Gamelogic", pxEngine->CounterTimeCPU, (int)((pxEngine->CounterTimeCPU / (float)pxEngine->CounterTimeDelta) * 100));
     printf("%15s : us %-20i %3i%%\n", "Render", pxEngine->CounterTimeGPU, (int)((pxEngine->CounterTimeGPU / (float)pxEngine->CounterTimeDelta) * 100));
     printf("%15s : us %-20i\n", "Full rotation", pxEngine->CounterTimeDelta);
+
+    printf("\n");
+    
+    PXKeyBoardInputPrint(&pxEngine->Window.KeyBoardCurrentInput);
+#endif
 }
 
 PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)

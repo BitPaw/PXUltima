@@ -189,11 +189,11 @@ void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const
 	matrixResult->Data[TransformZ] = matrixA->Data[TransformZ] + z;
 }
 
-void PXMatrix4x4FScaleBy(const PXMatrix4x4F* const matrixA, const float scalar, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FScaleBy(PXMatrix4x4F* const pxMatrix4x4F, const float scalar)
 {
-	matrixResult->Data[ScaleX] = matrixA->Data[ScaleX] + scalar;
-	matrixResult->Data[ScaleY] = matrixA->Data[ScaleY] + scalar;
-	matrixResult->Data[ScaleZ] = matrixA->Data[ScaleZ] + scalar;
+	pxMatrix4x4F->Data[ScaleX] *= scalar;
+	pxMatrix4x4F->Data[ScaleY] *= scalar;
+	pxMatrix4x4F->Data[ScaleZ] *= scalar;
 }
 
 void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXRectangleOffset* const pxMargin)
@@ -383,34 +383,41 @@ void PXMatrix4x4FTranpose(PXMatrix4x4F* const matrix4x4F)
 
 void PXMatrix4x4FLookAt(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const eye, const PXVector3F* const center, const PXVector3F* const up)
 {
-	PXVector3F centereye;
-	PXVector3F f;
+	PXVector3F centereye = *center;
 	PXVector3F frontUpCross;
-	PXVector3F s;
 	PXVector3F u;
 
-	PXVector3FSubstract(center, eye, &centereye);
-	PXVector3FNormalize(&centereye, &f);
-	PXVector3FCrossProduct(&f, up, &frontUpCross);
+	PXVector3FSubstract(&centereye, eye);
+	PXVector3FNormalize(&centereye);
+	PXVector3FCrossProduct(&centereye, up, &frontUpCross);
 
-	PXVector3FNormalize(&frontUpCross, &s);
-	PXVector3FCrossProduct(&s, &f, &u);
+	PXVector3FNormalize(&frontUpCross);
+	PXVector3FCrossProduct(&frontUpCross, &centereye, &u);
 
-	matrix4x4F->Data[XAxisX] = s.X;
-	matrix4x4F->Data[XAxisY] = s.Y;
-	matrix4x4F->Data[XAxisZ] = s.Z;
+	matrix4x4F->Data[XAxisX] = frontUpCross.X;
+	matrix4x4F->Data[XAxisY] = frontUpCross.Y;
+	matrix4x4F->Data[XAxisZ] = frontUpCross.Z;
+	matrix4x4F->Data[XAxisW] = 0;
 
 	matrix4x4F->Data[YAxisX] = u.X;
 	matrix4x4F->Data[YAxisY] = u.Y;
 	matrix4x4F->Data[YAxisZ] = u.Z;
+	matrix4x4F->Data[YAxisW] = 0;
 
-	matrix4x4F->Data[ZAxisX] = -f.X;
-	matrix4x4F->Data[ZAxisY] = -f.Y;
-	matrix4x4F->Data[ZAxisZ] = -f.Z;
+	matrix4x4F->Data[ZAxisX] = -centereye.X;
+	matrix4x4F->Data[ZAxisY] = -centereye.Y;
+	matrix4x4F->Data[ZAxisZ] = -centereye.Z;
+	matrix4x4F->Data[ZAxisW] = 0;
 
-	matrix4x4F->Data[TransformX] = -PXVector3FDotProduct(&s, eye);
+	matrix4x4F->Data[WAxisX] = 0;
+	matrix4x4F->Data[WAxisY] = 0;
+	matrix4x4F->Data[WAxisZ] = 0;
+	matrix4x4F->Data[WAxisW] = 0;
+
+	matrix4x4F->Data[TransformX] = -PXVector3FDotProduct(&frontUpCross, eye);
 	matrix4x4F->Data[TransformY] = -PXVector3FDotProduct(&u, eye);
-	matrix4x4F->Data[TransformZ] = PXVector3FDotProduct(&f, eye);
+	matrix4x4F->Data[TransformZ] = PXVector3FDotProduct(&centereye, eye);
+	matrix4x4F->Data[TransformW] = 1;
 }
 
 /*

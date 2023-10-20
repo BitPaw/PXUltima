@@ -10,6 +10,7 @@
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/Vulcan/PXVulcan.h>
+#include <Log/PXLog.h>
 
 //#include <gl/GL.h> // Not found???
 #include <GL/gl.h>
@@ -34,7 +35,13 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
         {
             PXImageCopyAsIs(pxImage, pxImageFoundEntry);
 
-            printf("[PXGraphic] Texture load <%s>... [REDUNDANT]\n", pxImageFilePath->TextA);
+            PXLogPrint
+            (
+                PXLoggingWarning,
+                "Graphic",
+                "Texture load skipped <%s> (Redundant)",
+                pxImageFilePath->TextA
+            );
 
             return PXActionSuccessful;
         }
@@ -42,18 +49,28 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
 
     // Load texture
     {
-        printf("[PXGraphic] Texture load <%s>... ", pxImageFilePath->TextA);
-
         const PXActionResult loadResult = PXResourceLoad(pxImage, pxImageFilePath);
 
         if (PXActionSuccessful != loadResult)
         {
-            printf("[FAILED]\n");
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Graphic",
+                "Texture load failed <%s>!",
+                pxImageFilePath->TextA
+            );
         }
 
         PXActionReturnOnError(loadResult);
 
-        printf("[OK]\n");
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Graphic",
+            "Texture load successful <%s>.",
+            pxImageFilePath->TextA
+        );
 
         PXDictionaryAdd(&pxGraphic->ResourceImageLookUp, &checkSum, pxImage);
     }
@@ -136,6 +153,14 @@ PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTextu
 
 PXActionResult PXAPI PXGraphicFontLoad(PXGraphic* const pxGraphic, PXFont* const pxFont, const PXText* const filePath)
 {
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Graphic",
+        "Font load <%s>.",
+        filePath->TextA
+    );
+
     // Load texture
     {
         const PXActionResult loadResult = PXResourceLoad(pxFont, filePath);
@@ -148,19 +173,26 @@ PXActionResult PXAPI PXGraphicFontLoad(PXGraphic* const pxGraphic, PXFont* const
         const PXActionResult registerResult = PXGraphicFontRegister(pxGraphic, pxFont);
 
         PXActionReturnOnError(registerResult);
-    }
+    } 
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* const pxFont)
 {
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Graphic",
+        "Font Registering..."
+    );
+
     PXLockEngage(&pxGraphic->_resourceLock);
     //pxFont->ID = PXGraphicGenerateUniqeID(pxGraphic);
     //PXDictionaryAdd(&pxGraphic->FontLookUp, &pxFont->ID, pxFont);
     PXLockRelease(&pxGraphic->_resourceLock);
 
-    pxGraphic->Texture2DRegister(pxGraphic, &pxFont->MainPage.Texture);
+    pxGraphic->Texture2DRegister(pxGraphic->EventOwner, &pxFont->MainPage.Texture);
 
     for (PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)
     {
@@ -168,6 +200,14 @@ PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* c
 
         pxGraphic->Texture2DRegister(pxGraphic, &pxFontPage->Texture);
     }
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Graphic",
+        "Font registerd",
+        PXNull
+    );
 
     return PXActionSuccessful;
 }
@@ -203,7 +243,7 @@ PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprit
         }
         else
         {
-            pxSprite->VertexStructure.StructureOverride = &pxGraphic->SpriteScaled;
+            pxSprite->Model.StructureOverride = &pxGraphic->SpriteScaled;
         }
     }
     else
@@ -214,7 +254,7 @@ PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprit
         }
         else
         {
-            pxSprite->VertexStructure.StructureOverride = &pxGraphic->SpriteUnScaled;
+            pxSprite->Model.StructureOverride = &pxGraphic->SpriteUnScaled;
         }
     }
 
@@ -276,17 +316,17 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBo
     };
 
 
-    PXObjectClear(PXVertexStructure, &skyBox->VertexStructure);
-    skyBox->VertexStructure.VertexBuffer.VertexData = vertexData;
-    skyBox->VertexStructure.VertexBuffer.VertexDataSize = sizeof(vertexData);
-    skyBox->VertexStructure.VertexBuffer.VertexDataRowSize = 3;
-    skyBox->VertexStructure.VertexBuffer.Format = PXVertexBufferFormatXYZ; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
+    PXObjectClear(PXModel, &skyBox->Model);
+    skyBox->Model.VertexBuffer.VertexData = vertexData;
+    skyBox->Model.VertexBuffer.VertexDataSize = sizeof(vertexData);
+    skyBox->Model.VertexBuffer.VertexDataRowSize = 3;
+    skyBox->Model.VertexBuffer.Format = PXVertexBufferFormatXYZ; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
-    skyBox->VertexStructure.IndexBuffer.DataType = PXDataTypeInt8U;
-    skyBox->VertexStructure.IndexBuffer.IndexData = indexList;
-    skyBox->VertexStructure.IndexBuffer.IndexDataSize = sizeof(indexList);
-    skyBox->VertexStructure.IndexBuffer.IndexDataAmount = sizeof(indexList) / sizeof(PXInt8U);
-    skyBox->VertexStructure.IndexBuffer.DrawModeID = PXDrawModeIDPoint | PXDrawModeIDLineLoop |
+    skyBox->Model.IndexBuffer.DataType = PXDataTypeInt8U;
+    skyBox->Model.IndexBuffer.IndexData = indexList;
+    skyBox->Model.IndexBuffer.IndexDataSize = sizeof(indexList);
+    skyBox->Model.IndexBuffer.IndexDataAmount = sizeof(indexList) / sizeof(PXInt8U);
+    skyBox->Model.IndexBuffer.DrawModeID = 0 |// PXDrawModeIDPoint | PXDrawModeIDLineLoop |
 #if QuadSkybox
         PXDrawModeIDSquare
 #else
@@ -294,7 +334,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBo
 #endif
         ;
 
-    pxGraphic->VertexStructureRegister(pxGraphic, &skyBox->VertexStructure);
+    pxGraphic->ModelRegister(pxGraphic->EventOwner, &skyBox->Model);
 
     //OLD
     /*
@@ -329,9 +369,17 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBo
     }*/
 
     // Register Cube Texture
-    pxGraphic->TextureCubeRegister(pxGraphic, &skyBox->TextureCube);
+    pxGraphic->TextureCubeRegister(pxGraphic->EventOwner, &skyBox->TextureCube);
 
     pxGraphic->_currentSkyBox = skyBox;
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Graphic",
+        "Skybox register",
+        PXNull
+    );
 
     return PXActionSuccessful;
 }
@@ -352,7 +400,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterD
 {
     // Load Textures
     {
-        const PXText** const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
+        const PXText* const filePathList[6] = { textureRight, textureLeft, textureTop, textureBottom, textureBack, textureFront };
         PXActionResult resultList[6];
 
         for (PXSize i = 0; i < 6u; ++i)
@@ -373,9 +421,9 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterD
 
     // Register Shaders
     {
-        PXShaderProgram* shaderPXProgram = malloc(sizeof(PXShaderProgram));
+        PXShaderProgram* shaderPXProgram = PXNew(PXShaderProgram);
 
-        const PXActionResult shaderResult = pxGraphic->ShaderProgramCreateFromFileVP(pxGraphic, shaderPXProgram, shaderVertex, shaderFragment);
+        const PXActionResult shaderResult = pxGraphic->ShaderProgramCreateFromFileVP(pxGraphic->EventOwner, shaderPXProgram, shaderVertex, shaderFragment);
 
         skyBox->ShaderProgramReference = shaderPXProgram;
     }
@@ -869,11 +917,11 @@ PXActionResult PXAPI PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIE
 
 PXActionResult PXAPI PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement, int depth, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
 {
-    char* nothing = "---";
-    char* offset = "    ";
-
     PXFunctionInvoke(preFound, sender, pxUIElement);
 #if 0
+    const char* nothing = "---";
+    const char* offset = "    ";
+
     for (size_t i = 0; i < depth; i++) printf(offset);
     printf("+--------------------+\n");
 
@@ -1003,7 +1051,7 @@ void PXAPI PXGraphicPXUIElementTextSetAV(PXUIElement* const pxUIElement, const c
     va_list args;
     va_start(args, format);
 
-    PXTextPrint(pxUIElement, format, args);
+    sprintf_s(pxUIElement->TextInfo.Content, 32, format, args);
 
     va_end(args);
 }
@@ -1399,7 +1447,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     PXDictionaryConstruct(&pxGraphic->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxGraphic->TextureLookUp, sizeof(PXInt32U), sizeof(PXTexture2D), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxGraphic->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxGraphic->ModelLookUp, sizeof(PXInt32U), sizeof(PXVertexStructure), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxGraphic->ModelLookUp, sizeof(PXInt32U), sizeof(PXModel), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxGraphic->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxGraphic->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxGraphic->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
@@ -1474,10 +1522,10 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             pxGraphic->TextureCubeRegister = PXOpenGLTextureCubeCreate;
             pxGraphic->TextureCubeRegisterUse = PXNull;
             pxGraphic->TextureCubeRelease = PXNull;
-            pxGraphic->VertexStructureRegister = PXOpenGLVertexStructureRegister;
-            pxGraphic->VertexStructureDraw = PXOpenGLVertexStructureDraw;
-            pxGraphic->VertexStructureSelect = PXNull;
-            pxGraphic->VertexStructureRelease = PXNull;
+            pxGraphic->ModelRegister = PXOpenGLModelRegister;
+            pxGraphic->ModelDraw = PXOpenGLModelDraw;
+            pxGraphic->ModelSelect = PXNull;
+            pxGraphic->ModelRelease = PXNull;
             pxGraphic->LightSet = PXOpenGLLightSet;
             pxGraphic->LightGet = PXOpenGLLightGet;
             pxGraphic->LightEnableSet = PXNull;
@@ -1552,10 +1600,10 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             pxGraphic->TextureCubeRegister = PXDirectXTextureCubeCreate;
             pxGraphic->TextureCubeRegisterUse = PXNull;
             pxGraphic->TextureCubeRelease = PXNull;
-            pxGraphic->VertexStructureRegister = PXDirectXVertexStructureRegister;
-            pxGraphic->VertexStructureDraw = PXDirectXVertexStructureDraw;
-            pxGraphic->VertexStructureSelect = PXNull;
-            pxGraphic->VertexStructureRelease = PXNull;
+            pxGraphic->ModelRegister = PXDirectXModelRegister;
+            pxGraphic->ModelDraw = PXDirectXModelDraw;
+            pxGraphic->ModelSelect = PXNull;
+            pxGraphic->ModelRelease = PXNull;
             pxGraphic->LightSet = PXDirectXLightSet;
             pxGraphic->LightGet = PXDirectXLightGet;
             pxGraphic->LightEnableSet = PXNull;
@@ -1629,7 +1677,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
 
 
-
+#if 0
     PXViewPort pxViewPort;
     pxViewPort.X = 0;
     pxViewPort.Y = 0;
@@ -1639,7 +1687,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     pxViewPort.ClippingMaximum = 1;
 
     pxGraphic->ViewPortSet(pxGraphic->EventOwner, &pxViewPort);
-
+#endif
 
     //PXMatrix4x4FIdentity(&pxGraphic->SpriteScaled.ModelMatrix);
    // PXMatrix4x4FIdentity(&pxGraphic->SpriteUnScaled.ModelMatrix);
@@ -1666,7 +1714,7 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSpri
 {
     PXObjectClear(PXSprite, pxSprite);
 
-    PXVertexStructureConstruct(&pxSprite->VertexStructure);
+    PXModelConstruct(&pxSprite->Model);
 
 
     //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
@@ -1685,9 +1733,9 @@ PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphic* const pxGraphic, PXS
 
     float aspectRationX = pxTexture->Image.Width / pxTexture->Image.Height;
 
-    PXMatrix4x4FScaleSetXY(&pxSprite->VertexStructure.ModelMatrix, aspectRationX, 1);
+    PXMatrix4x4FScaleSetXY(&pxSprite->Model.ModelMatrix, aspectRationX, 1);
 
-    pxSprite->VertexStructure.IndexBuffer.Texture2D = pxTexture;
+    //pxSprite->Model.IndexBuffer.Texture2D = pxTexture;
 
     return loadTextureResult;
 }
@@ -1721,10 +1769,10 @@ void PXAPI PXCameraConstruct(PXCamera* const camera)
 {
     PXMemoryClear(camera, sizeof(PXCamera));
 
-    camera->WalkSpeed = 2;
+    camera->WalkSpeed = 0.2;
     camera->ViewSpeed = 0.4;
     camera->FollowSpeed = 0.98f;
-    camera->FieldOfView = 45;
+    camera->FieldOfView = 90;
     camera->Height = 1;
     camera->Width = 1;
     camera->Near = -0.001;
@@ -1771,6 +1819,7 @@ void PXAPI PXCameraViewChangeToPerspective(PXCamera* const camera, const float f
 
 void PXAPI PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height)
 {
+
     camera->Width = width;
     camera->Height = height;
 
@@ -1822,7 +1871,7 @@ void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector
     const float rz = PXMathCosinus(pitchRAD) * PXMathSinus(yawRAD);
 
     PXVector3FSetXYZ(&camera->LookAtPosition, rx, ry, rz);
-    PXVector3FNormalize(&camera->LookAtPosition, &camera->LookAtPosition);
+    PXVector3FNormalize(&camera->LookAtPosition);
 }
 
 void PXAPI PXCameraRotateXYZ(PXCamera* const camera, const float x, const float y, const float z)
@@ -1851,22 +1900,22 @@ void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F
         const PXVector3F lookAtPosition = { camera->LookAtPosition.X, camera->LookAtPosition.Y, camera->LookAtPosition.Z };
 
         PXVector3FCrossProduct(&lookAtPosition, &up, &xAxis);
-        PXVector3FNormalize(&xAxis, &xAxis);
-        PXVector3FMultiplyXYZ(&xAxis, vector3F->X, 0, vector3F->X, &xAxis);
+        PXVector3FNormalize(&xAxis);
+        PXVector3FMultiplyXYZ(&xAxis, vector3F->X, 0, vector3F->X);
 
         zAxis = lookAtPosition;
 
-        PXVector3FNormalize(&zAxis, &zAxis);
-        PXVector3FMultiplyXYZ(&zAxis, vector3F->Z, 0, vector3F->Z, &zAxis);
+        PXVector3FNormalize(&zAxis);
+        PXVector3FMultiplyXYZ(&zAxis, vector3F->Z, 0, vector3F->Z);
     }
 
     {
         PXVector3F targetedMovement = { 0,0,0 };
 
-        PXVector3FAdd(&targetedMovement, &xAxis, &targetedMovement);
-        PXVector3FAdd(&targetedMovement, &yAxis, &targetedMovement);
-        PXVector3FAdd(&targetedMovement, &zAxis, &targetedMovement);
-        PXVector3FMultiplyS(&targetedMovement, camera->WalkSpeed, &targetedMovement);
+        PXVector3FAdd(&targetedMovement, &xAxis);
+        PXVector3FAdd(&targetedMovement, &yAxis);
+        PXVector3FAdd(&targetedMovement, &zAxis);
+        PXVector3FMultiplyS(&targetedMovement, camera->WalkSpeed);
 
         PXMatrix4x4FMove3F(&camera->MatrixModel, &targetedMovement, &camera->MatrixModel);
     }
@@ -1885,11 +1934,11 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const float deltaTime)
     PXMatrix4x4FPositionGet(&camera->MatrixModel, &cameraPositionCurrent); // Get current camera pos
     PXMatrix4x4FPositionGet(camera->Target, &desiredPosition); // get current target pos
 
-    PXVector3FAdd(&desiredPosition, &camera->Offset, &desiredPosition); // add offset to target pos
+    PXVector3FAdd(&desiredPosition, &camera->Offset); // add offset to target pos
 
     PXVector3FInterpolate(&cameraPositionCurrent, &desiredPosition, camera->FollowSpeed * deltaTime, &desiredPosition); // calculate delta movement
 
-    PXMatrix4x4FPositionSet(&camera->MatrixModel, &desiredPosition, &camera->MatrixModel); // Set delte movement
+    PXMatrix4x4FPositionSet(&camera->MatrixModel, &desiredPosition); // Set delte movement
 }
 
 void PXAPI PXCameraUpdate(PXCamera* const camera, const float deltaTime)
@@ -1901,7 +1950,8 @@ void PXAPI PXCameraUpdate(PXCamera* const camera, const float deltaTime)
     PXVector3F centerPosition;
 
     PXMatrix4x4FPositionGet(&camera->MatrixModel, &currentPosition);
-    PXVector3FAdd(&currentPosition, &camera->LookAtPosition, &centerPosition);
+    centerPosition = currentPosition;
+    PXVector3FAdd(&centerPosition, &camera->LookAtPosition);
 
-    PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up, &camera->MatrixView);
+    PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up);
 }

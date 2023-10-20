@@ -39,10 +39,10 @@ namespace PX
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicTextureCubeReleaseFunction(UIntPtr graphicAPI, ref PXTextureCube textureCube);
 
 
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicVertexStructureRegisterFunction(UIntPtr graphicAPI, ref PXVertexStructure pxVertexStructure);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicVertexStructureDrawFunction(UIntPtr graphicAPI, ref PXVertexStructure pxVertexStructure, ref PXCamera pxCamera);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicVertexStructureSelectFunction(UIntPtr graphicAPI, ref PXVertexStructure pxVertexStructure);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicVertexStructureReleaseFunction(UIntPtr graphicAPI, ref PXVertexStructure pxVertexStructure);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicModelRegisterFunction(UIntPtr graphicAPI, ref PXModel pxModel);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicModelDrawFunction(UIntPtr graphicAPI, ref PXModel pxModel, ref PXCamera pxCamera);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicModelSelectFunction(UIntPtr graphicAPI, ref PXModel pxModel);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicModelReleaseFunction(UIntPtr graphicAPI, ref PXModel pxModel);
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicLightSetFunction(UIntPtr graphicAPI, ref PXLight pxLight, uint index);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicLightGetFunction(UIntPtr graphicAPI, ref PXLight pxLight, uint index);
@@ -193,10 +193,10 @@ namespace PX
             //-------------------------------------------------
             // Model
             //-------------------------------------------------
-            public PXGraphicVertexStructureRegisterFunction VertexStructureRegister;
-            public PXGraphicVertexStructureDrawFunction VertexStructureDraw;
-            public PXGraphicVertexStructureSelectFunction VertexStructureSelect;
-            public PXGraphicVertexStructureReleaseFunction VertexStructureRelease;
+            public PXGraphicModelRegisterFunction ModelRegister;
+            public PXGraphicModelDrawFunction ModelDraw;
+            public PXGraphicModelSelectFunction ModelSelect;
+            public PXGraphicModelReleaseFunction ModelRelease;
 
             //-------------------------------------------------
             // Light
@@ -417,22 +417,22 @@ namespace PX
             return _pxGraphic.TextureCubeRelease(_pxGraphic.EventOwner, ref textureCube._pxTextureCube);
         }
 
-        public PX.ActionResult VertexStructureRegister(VertexStructure vertexStructure)
+        public PX.ActionResult ModelRegister(Model vertexStructure)
         {
             return PX.ActionResult.NotImplemented;
         }
 
-        public PX.ActionResult VertexStructureDraw(VertexStructure vertexStructure, Camera camera)
+        public PX.ActionResult ModelDraw(Model vertexStructure, Camera camera)
         {
             return PX.ActionResult.NotImplemented;
         }
 
-        public PX.ActionResult VertexStructureSelect(VertexStructure vertexStructure)
+        public PX.ActionResult ModelSelect(Model vertexStructure)
         {
             return PX.ActionResult.NotImplemented;
         }
 
-        public PX.ActionResult VertexStructureRelease(VertexStructure vertexStructure)
+        public PX.ActionResult ModelRelease(Model vertexStructure)
         {
             return PX.ActionResult.NotImplemented;
         }

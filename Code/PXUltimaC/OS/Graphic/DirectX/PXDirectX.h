@@ -13,7 +13,7 @@
 #define PXDX12Enable OSWindows && 0u
 
 #define PXDX10Atleast PXDX10Enable || PXDX10x1Enable || PXDX11Enable || PXDX12Enable
-
+#define PXDirectXDebug 1
 //-------------------------------------
 
 #if OSUnix
@@ -261,7 +261,7 @@ extern "C"
     PXPublic PXActionResult PXAPI PXDirectXStreamSourceFreqSet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT Setting);
     PXPublic PXActionResult PXAPI PXDirectXStreamSourceFreqGet(PXDirectX* const pxDirectX, UINT StreamNumber, UINT* pSetting);
 
-    PXPublic PXActionResult PXAPI PXDirectXVertexStructureDraw(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
+    PXPublic PXActionResult PXAPI PXDirectXModelDraw(PXDirectX* const pxDirectX, PXModel* const pxModel, const PXCamera* const pxCamera);
 
 
     //-----------------------------------------------------
@@ -298,11 +298,6 @@ extern "C"
     //-----------------------------------------------------
     // Direct X - Shader
     //-----------------------------------------------------
-
-    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVP(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShader, const PXText* const pixelShader);
-    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVPA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShader, const char* const pixelShader);
-    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateVPW(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const wchar_t* const vertexShader, const wchar_t* const pixelShader);
-
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
     PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
@@ -367,7 +362,7 @@ extern "C"
 
     PXPublic PXActionResult PXAPI PXDirectXOffscreenPlainSurfaceCreate(PXDirectX* const pxDirectX, UINT Width, UINT Height, D3DFORMAT Format, D3DPOOL Pool, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle);
 
-    PXPublic PXActionResult PXAPI PXDirectXVertexStructureRegister(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure);
+    PXPublic PXActionResult PXAPI PXDirectXModelRegister(PXDirectX* const pxDirectX, PXModel* const pxModel);
 
     //-----------------------------------------------------
     // Direct X - Textures

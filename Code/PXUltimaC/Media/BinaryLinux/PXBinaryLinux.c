@@ -321,19 +321,19 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 
 			const PXFileDataElementType pxDataStreamElementList[] =
 			{
-				{&typeID, PXDataTypeInt16UXE},
-				{&machineID, PXDataTypeInt16UXE},
-				{&versionID,PXDataTypeInt32UXE},
+				{&typeID, PXDataTypeInt16U},
+				{&machineID, PXDataTypeInt16U},
+				{&versionID,PXDataTypeInt32U},
 				{&pxBinaryLinux->Header.EntryPointOfCode,PXDataTypeAdressFlex},
 				{&pxBinaryLinux->Header.ProgrammHeaderOffset,PXDataTypeAdressFlex},
 				{&pxBinaryLinux->Header.SectionHeaderOffset,PXDataTypeAdressFlex},
-				{&e_flags,PXDataTypeInt32UXE},
-				{&sizeOfThisHeader, PXDataTypeInt16UXE},
-				{&pxBinaryLinux->Header.ProgrammHeaderSize, PXDataTypeInt16UXE},
-				{&pxBinaryLinux->Header.ProgrammHeaderAmount, PXDataTypeInt16UXE},
-				{&pxBinaryLinux->Header.SectionHeaderSize, PXDataTypeInt16UXE},
-				{&pxBinaryLinux->Header.SectionHeaderAmount, PXDataTypeInt16UXE},
-				{&shstrndx, PXDataTypeInt16UXE}
+				{&e_flags,PXDataTypeInt32U},
+				{&sizeOfThisHeader, PXDataTypeInt16U},
+				{&pxBinaryLinux->Header.ProgrammHeaderSize, PXDataTypeInt16U},
+				{&pxBinaryLinux->Header.ProgrammHeaderAmount, PXDataTypeInt16U},
+				{&pxBinaryLinux->Header.SectionHeaderSize, PXDataTypeInt16U},
+				{&pxBinaryLinux->Header.SectionHeaderAmount, PXDataTypeInt16U},
+				{&shstrndx, PXDataTypeInt16U}
 			};
 
 			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -358,7 +358,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 
 			const PXFileDataElementType pxDataStreamElementList[] =
 			{
-				{&typeID,PXDataTypeInt32UXE},
+				{&typeID,PXDataTypeInt32U},
 				{&flagsID, PXDataTypeInt32ULEOnlyIf64B},
 				{&pxELFProgramHeader.AdressOffsetRead,PXDataTypeAdressFlex},
 				{&pxELFProgramHeader.AdressTargetVirtual,PXDataTypeAdressFlex},
@@ -403,14 +403,14 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 
 			const PXFileDataElementType pxDataStreamElementList[] =
 			{
-				{&pxSectionHeader.sh_nameOffset,PXDataTypeInt32UXE},
-				{&pxSectionHeader.sh_type,PXDataTypeInt32UXE},
+				{&pxSectionHeader.sh_nameOffset,PXDataTypeInt32U},
+				{&pxSectionHeader.sh_type,PXDataTypeInt32U},
 				{&pxSectionHeader.sh_flags,PXDataTypeAdressFlex},
 				{&pxSectionHeader.sh_addr,PXDataTypeAdressFlex},
 				{&pxSectionHeader.FileImageOffset,PXDataTypeAdressFlex},
 				{&pxSectionHeader.FileImageSize,PXDataTypeAdressFlex},
-				{&pxSectionHeader.sh_link,PXDataTypeInt32UXE},
-				{&pxSectionHeader.sh_info,PXDataTypeInt32UXE},
+				{&pxSectionHeader.sh_link,PXDataTypeInt32U},
+				{&pxSectionHeader.sh_info,PXDataTypeInt32U},
 				{&pxSectionHeader.sh_addralign,PXDataTypeAdressFlex},
 				{&pxSectionHeader.sh_entsize,PXDataTypeAdressFlex}
 			};

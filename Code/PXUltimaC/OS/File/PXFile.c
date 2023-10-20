@@ -6,6 +6,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 #include <Media/PXResource.h>
+#include <Log/PXLog.h>
 
 #include <stdarg.h>
 #include <fcntl.h>
@@ -557,6 +558,18 @@ void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const w
 	}
 }*/
 
+void PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, const PXText* const resultPath)
+{
+	//---<Get current path>----------------
+	PXText currentObjectFilePath;
+	PXTextConstructNamedBufferA(&currentObjectFilePath, currentFilePathBuffer, PathMaxSize);
+
+	const PXBool success = PXFilePathGet(pxFile, &currentObjectFilePath); // Work PXWavefront file path
+	//-------------------------------
+
+	PXFilePathSwapFileName(&currentObjectFilePath, resultPath, targetPath);
+}
+
 void PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName)
 {
 	switch (inputPath->Format)
@@ -883,6 +896,13 @@ PXActionResult PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPath
 
 		if (!doesFileExists)
 		{
+			PXLogPrint
+			(
+				PXLoggingError,
+				"File",
+				"File open refused : File does not exist\n"
+			);
+
 			return PXActionFailedFileNotFound;
 		}
 	}
@@ -2099,9 +2119,11 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 		pxFileRedirect = &pxStackFile;
 
 #if PXFileDebug
-		printf
+		PXLogPrint
 		(
-			"[File]\tCached batch read. (x%-2i, %2i B)\n",
+			PXLoggingInfo,
+			"File",
+			"Cached batch read. (x%-2i, %2i B)",
 			pxDataStreamElementListSize,
 			totalSizeToRead
 		);
@@ -2110,9 +2132,11 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 #if PXFileDebug
 	else
 	{
-		printf
+		PXLogPrint
 		(
-			"[File]\tDirect batch read. (x%-2i)\n",
+			PXLoggingInfo,
+			"File",
+			"Direct batch read. (x%-2i)",
 			pxDataStreamElementListSize
 		);
 	}
@@ -2257,7 +2281,19 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 				break;
 		}
 
-		printf("\t| %2i | %3i / %-3i | %2i B | %-7s | %-13s | %-20s |\n", i + 1, pxFileRedirect->DataCursor - sizeOfType, pxFileRedirect->DataAllocated, sizeOfType, type, endianText, data);
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"File",
+			"| %2i | %3i / %-3i | %2i B | %-7s | %-13s | %-20s |",
+			i + 1,
+			pxFileRedirect->DataCursor - sizeOfType,
+			pxFileRedirect->DataAllocated,
+			sizeOfType, 
+			type,
+			endianText,
+			data
+		);
 #endif
 
 		// Do we need an endian swap?
@@ -2330,6 +2366,14 @@ PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
 
 				return 0;
 			}
+
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"File",
+				"Read : %i B",
+				writtenBytes
+			);
 
 			++(pxFile->CounterOperationsRead);
 

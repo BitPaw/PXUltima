@@ -148,8 +148,8 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const px
         {
             const PXFileDataElementType pxDataStreamElementList[] =
             {
-                {&tiff->Version, PXDataTypeInt16UXE},// Version, expect this to be "42"
-                {&tiff->OffsetToIFD, PXDataTypeInt32UXE}
+                {&tiff->Version, PXDataTypeInt16U},// Version, expect this to be "42"
+                {&tiff->OffsetToIFD, PXDataTypeInt32U}
             };
 
             PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -178,14 +178,14 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXImage* const pxImage, PXFile* const px
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {&tiffTag.TypeID, PXDataTypeInt16UXE},// Version, expect this to be "42"
-                        {&tiffTag.DataTypeID, PXDataTypeInt16UXE},
-                        {&tiffTag.NumberOfValues, PXDataTypeInt32UXE},
-                        {&tiffTag.ImageFileDataOffset, PXDataTypeInt32UXE},
+                        {&tiffTag.TypeID, PXDataTypeInt16U},// Version, expect this to be "42"
+                        {&tiffTag.DataTypeID, PXDataTypeInt16U},
+                        {&tiffTag.NumberOfValues, PXDataTypeInt32U},
+                        {&tiffTag.ImageFileDataOffset, PXDataTypeInt32U},
                     };
 
                     PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                }
+                }         
 
                 tiffTag.Type = PXTIFFTagTypeFromID(tiffTag.TypeID);
                 tiffTag.DataType = PXTIFFTypeFromID(tiffTag.DataTypeID);

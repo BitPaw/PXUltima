@@ -279,7 +279,7 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const 
     {
         PXInt8U depth = 0;
         PXInt8U modeID = 0;
-        PXXMLSymbol mode = 0;
+        PXXMLSymbol mode = PXXMLSymbolInvalid;
 
         PXMemoryClear(textBuffer, 512);
         PXFileReadI8U(outputStream, &depth);

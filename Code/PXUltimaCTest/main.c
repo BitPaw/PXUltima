@@ -222,14 +222,14 @@ int main()
 	PXGraphicSelect(&pxWindow.GraphicInstance);
 
 
-	PXVertexStructure pxVertexStructure;
-	PXObjectClear(PXVertexStructure, &pxVertexStructure);
-	pxVertexStructure.VertexBuffer.VertexData = vertices;
-	pxVertexStructure.VertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
-	pxVertexStructure.VertexBuffer.VertexDataRowSize = sizeof(vertices) / 3;
-	pxVertexStructure.VertexBuffer.Format = PXVertexBufferFormatXYZC; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
+	PXModel pxModel;
+	PXObjectClear(PXModel, &pxModel);
+	pxModel.VertexBuffer.VertexData = vertices;
+	pxModel.VertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
+	pxModel.VertexBuffer.VertexDataRowSize = sizeof(vertices) / 3;
+	pxModel.VertexBuffer.Format = PXVertexBufferFormatXYZC; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
-	PXGraphicVertexStructureRegister(&pxWindow.GraphicInstance, &pxVertexStructure);
+	PXGraphicModelRegister(&pxWindow.GraphicInstance, &pxModel);
 
 	while (1)
 	{
@@ -239,7 +239,7 @@ int main()
 
 		PXGraphicSceneBegin(&pxWindow.GraphicInstance);
 
-		PXGraphicVertexStructureDraw(&pxWindow.GraphicInstance, &pxVertexStructure);
+		PXGraphicModelDraw(&pxWindow.GraphicInstance, &pxModel);
 
 		PXGraphicSceneEnd(&pxWindow.GraphicInstance);
 		PXGraphicSceneDeploy(&pxWindow.GraphicInstance);

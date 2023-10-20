@@ -53,11 +53,6 @@ extern "C"
 	}
 	PXEngine;
 
-
-
-	typedef void(_cdecl* PXSignalCallBack)(const int signalID);
-
-
 	PXPrivate void _cdecl PXEngineOnIllegalInstruction(const int signalID);
 	PXPrivate void _cdecl PXEngineOnMemoryViolation(const int signalID);
 

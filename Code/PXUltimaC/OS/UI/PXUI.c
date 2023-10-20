@@ -91,8 +91,8 @@ void PXOSUIElementConstruct(const PXWindowID window, UIElementID* ID, UILayout* 
 #if OSUnix
 #elif PXOSWindowsDestop
     DWORD dwExStyle = 0;
-    wchar_t* lpClassName = className;// Predefined class; Unicode assumed ;
-    wchar_t* lpWindowName = name;
+    const wchar_t* lpClassName = className;// Predefined class; Unicode assumed ;
+    const wchar_t* lpWindowName = name;
     HWND hWndParent = window;
     HMENU hMenu = 0; // No menu.
     HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(window, GWLP_HINSTANCE);

@@ -5,21 +5,6 @@
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
 
-void PXAPI PXMTLConstruct(PXMTL* const mtl)
-{
-	PXMemoryClear(mtl, sizeof(PXMTL));
-}
-
-void PXAPI PXMTLDestruct(PXMTL* const mtl)
-{
-	// Loop through MaterialListSize
-
-	PXMemoryRelease(mtl->MaterialList, mtl->MaterialListSize);
-
-	mtl->MaterialListSize = 0;
-	mtl->MaterialList = 0;
-}
-
 PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
 {
 	switch (illuminationModeID)
@@ -43,6 +28,11 @@ PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int 
 
 PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
 {
+	if (!line || !lineSize)
+	{
+		return MTLLineInvalid;
+	}
+
 	const unsigned short tagID = PXInt16Make(line[0], line[1]);
 
 	switch(tagID)
@@ -62,21 +52,14 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
 	}
 }
 
-PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
 {
-	PXFile tokenSteam;
-	PXFile headerStream;
+	PXFile compiledSteam;
 
-	const PXSize startoffset = outputStream->DataCursor;
+	PXFileOpenTemporal(&compiledSteam, pxFile->DataAllocated * 6u);
 
-	// temo
-	unsigned int materialAmount = 0;
-	unsigned int materialSizeDelta = 0;
-
-	const PXSize headerOffset = 1024;
-
-
-	PXFileBufferExternal(&headerStream, (PXAdress)outputStream->Data + startoffset, headerOffset);
+	PXInt32U materialAmount = 0;
+	PXMaterial* pxMaterialCurrent = PXNull;
 
 	// Lexer - Level I
 	{
@@ -88,55 +71,98 @@ PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const o
 		compilerSettings.CommentSingleLineSize = 1u;
 		compilerSettings.CommentSingleLine = "#";
 
-		outputStream->DataCursor += headerOffset;
-
-		PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
-
-		PXFileBufferExternal(&tokenSteam, (PXAdress)outputStream->Data + startoffset + headerOffset, outputStream->DataCursor - (startoffset + headerOffset));
-
-		outputStream->DataCursor = startoffset;
+		PXCompilerLexicalAnalysis(pxFile, &compiledSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens
 	}
 
-	PXMemoryClear(headerStream.Data, headerOffset);
-	PXFileCursorAdvance(&headerStream, sizeof(unsigned int)); // Keep the number of materials free
-	PXFileCursorAdvance(outputStream, headerOffset); // Write 0'ed data to later jump back to to change.
+	// Analyse -
+	{
 
-	while (!PXFileIsAtEnd(&tokenSteam))
+		while (!PXFileIsAtEnd(&compiledSteam))
+		{
+			PXCompilerSymbolEntry compilerSymbolEntry;
+
+			PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);	
+
+			if (PXCompilerSymbolLexerGenericElement == compilerSymbolEntry.ID)
+			{
+				const PXMTLLineType mtlLineType = PXMTLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+				switch (mtlLineType)
+				{
+					case MTLLineName:
+					{
+						++materialAmount;
+						break;
+					}
+					default:
+						break;
+				}
+			}			
+		}
+
+		PXFileCursorToBeginning(&compiledSteam);
+	}
+
+
+
+	// Allcoate
+	{		
+		pxMaterialList->MaterialListSize = materialAmount;
+		pxMaterialList->MaterialList = PXNewList(PXMaterial, materialAmount);
+
+		materialAmount = 0;
+	}
+
+
+	while (!PXFileIsAtEnd(&compiledSteam))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
 
-		PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+		PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);
 
 		const PXMTLLineType mtlLineType = PXMTLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-		PXFileWriteI8U(outputStream, mtlLineType); // Write typeID
 
 		switch (mtlLineType)
 		{
 			case MTLLineName:
 			{
+				pxMaterialCurrent = &pxMaterialList->MaterialList[materialAmount];
 				++materialAmount;
 
-				// write how big the last material was, it will be 0 the first time.
-				// At the end, convert the delte size to actual size.
-				PXFileWriteI32U(&headerStream, materialSizeDelta);
 
-				// [No break] Fall through.
-			}
-			case MTLLineTexture:
-			{
-			    PXText pxText;
-			    PXTextConstructBufferA(&pxText, 260);
+				PXText pxText;
+				PXTextConstructFromAdressA(&pxText, pxMaterialCurrent->Name, 32);
 
-				const PXBool isText = PXCompilerParseStringUntilNewLine(&tokenSteam, &pxText);
+				const PXBool isText = PXCompilerParseStringUntilNewLine(&compiledSteam, &pxText);
 
 				if (!isText)
 				{
 					break; // Error
 				}
 
-				materialSizeDelta += PXFileWriteI8U(outputStream, pxText.SizeUsed);
-				materialSizeDelta += PXFileWriteA(outputStream, pxText.TextA, pxText.SizeUsed);
+				break;
+			}
+			case MTLLineTexture:
+			{
+				PXText fullTexturePath;
+				PXTextConstructNamedBufferA(&fullTexturePath, fullTexturePathBuffer, PathMaxSize);
+
+				PXText nameTexturePath;
+				PXTextConstructNamedBufferA(&nameTexturePath, nameTexturePathBuffer, PathMaxSize);
+
+				const PXBool isText = PXCompilerParseStringUntilNewLine(&compiledSteam, &nameTexturePath);
+
+				if (!isText)
+				{
+					break; // Error
+				}
+
+				PXFilePathRelativeFromFile(pxFile, &nameTexturePath, &fullTexturePath);
+
+				pxMaterialCurrent->DiffuseTexture = PXNew(PXTexture2D);
+				PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
+
+				PXResourceLoad(&pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
 
 				break;
 			}
@@ -144,7 +170,7 @@ PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const o
 			case MTLLineDissolved:
 			case MTLLineDensity:
 			{
-				PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+				PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);
 
 				const PXBool isFloat = compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
 
@@ -154,7 +180,20 @@ PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const o
 					break;
 				}
 
-				materialSizeDelta += PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
+				switch (mtlLineType)
+				{
+					case MTLLineWeight:
+						pxMaterialCurrent->Weight =  compilerSymbolEntry.DataF;
+						break;
+
+					case MTLLineDissolved:
+						pxMaterialCurrent->Dissolved =  compilerSymbolEntry.DataF;
+						break;
+
+					case MTLLineDensity:
+						pxMaterialCurrent->Density = compilerSymbolEntry.DataF;
+						break;
+				}
 
 				break;
 			}
@@ -165,9 +204,28 @@ PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const o
 			{
 				PXSize valuesDetected = 0;
 				const PXSize colorVectorSize = 3u;
-				float colorVector[3] = { -1, -1, -1 };
+				float* colorVector;
 
-				const PXBool listParsed = PXCompilerParseFloatList(&tokenSteam, colorVector, colorVectorSize, &valuesDetected);
+				switch (mtlLineType)
+				{
+					case MTLLineColorAmbient:
+						colorVector = pxMaterialCurrent->Ambient;
+						break;
+					case MTLLineColorDiffuse:
+						colorVector = pxMaterialCurrent->Diffuse;
+						break;
+					case MTLLineColorSpecular:
+						colorVector = pxMaterialCurrent->Specular;
+						break;
+					case MTLLineColorEmission:
+						colorVector = pxMaterialCurrent->Emission;
+						break;
+					default:
+						colorVector = PXNull;
+						break;
+				}
+
+				const PXBool listParsed = PXCompilerParseFloatList(&compiledSteam, colorVector, colorVectorSize, &valuesDetected);
 
 				if (!listParsed)
 				{
@@ -175,13 +233,11 @@ PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const o
 					break;
 				}
 
-				materialSizeDelta += PXFileWriteFV(outputStream, colorVector, colorVectorSize);
-
 				break;
 			}
 			case MTLLineIllumination:
 			{
-				PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+				PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);
 
 				const PXBool isInt = compilerSymbolEntry.ID == PXCompilerSymbolLexerInteger;
 
@@ -191,9 +247,7 @@ PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const o
 					break;
 				}
 
-				const PXMaterialIlluminationMode illuminationMode = PXMTLIlluminationModeFromID(compilerSymbolEntry.DataI32U);
-
-				materialSizeDelta += PXFileWriteI8U(outputStream, illuminationMode);
+				pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(compilerSymbolEntry.DataI32U);
 
 				break;
 			}
@@ -202,66 +256,7 @@ PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const o
 		}
 	}
 
-	// Write header
-	{
-		headerStream.DataCursor = 0;
-
-		PXFileWriteI32U(&headerStream, materialAmount);
-
-
-		unsigned int sizeA = 0;
-		unsigned int sizeB = 0;
-
-		for (PXSize i = 0; i < materialAmount - 1; ++i)
-		{
-			PXFileReadI32U(&headerStream, &sizeA);
-			PXFileReadI32U(&headerStream, &sizeB);
-
-			headerStream.DataCursor -= sizeof(unsigned int) * 2u;
-
-			PXFileWriteI32U(&headerStream, sizeB - sizeA);
-		}
-
-		const PXSize positionA = headerStream.DataCursor;
-
-		PXFileReadI32U(&headerStream, &sizeA);
-
-		PXFileWriteAtI32U(&headerStream, materialSizeDelta - sizeA, positionA);
-	}
-
-	//outputStream->DataCursor = startoffset + tokenSteam.DataCursor; // Only save the actuan size
-
 	return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
-{
-	/*
-	PXFile
-
-	MemorySet(pxMaterialList, sizeof(PXMaterialList), 0);
-
-	unsigned int amountOfMaterials = 0;
-
-	PXFileRead(inputStream, &amountOfMaterials, PXEndianLittle);
-
-	PXFileWriteIU();
-
-
-	while (PXFileIsAtEnd(&inputStream))
-	{
-		MTLLineType mtlLineType;
-
-		{
-			unsigned char lineTypeID = 0;
-
-			PXFileReadI8U(inputStream, &lineTypeID); // Line Type
-
-			mtlLineType = lineTypeID;
-		}
-
-
-	}*/
 }
 
 PXActionResult PXAPI PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)

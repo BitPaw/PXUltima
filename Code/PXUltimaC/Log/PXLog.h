@@ -1,31 +1,33 @@
-#ifndef PXLibraryINCLUDE
-#define PXLibraryINCLUDE
+#ifndef PXLogINCLUDE
+#define PXLogINCLUDE
 
-#include <Media/PXType.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef enum LoggingType_
+	typedef enum PXLoggingType_
 	{
-		LoggingTypeInvalid,
-		LoggingInfo,
-		LoggingWarning,
-		LoggingQuestion,
-		LoggingError,
-		LoggingFailure,
-		LoggingAllocation,
-		LoggingReallocation,
-		LoggingDeallocation
+		PXLoggingTypeInvalid,
+		PXLoggingInfo,
+		PXLoggingWarning,
+		PXLoggingQuestion,
+		PXLoggingError,
+		PXLoggingFailure,
+		PXLoggingAllocation,
+		PXLoggingReallocation,
+		PXLoggingDeallocation
 	}
-	LoggingType;
+	PXLoggingType;
 
-	PXPublic void PXLogPrintf(const LoggingType loggingType, const char* const source, const char* const input, ...);
+	PXPublic void (PXAPI*PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
 
-	PXPublic void PXLogPrintString(const char* const source, PXSize length);
-	PXPublic void PXLogPrintStringLine(const char* const source, PXSize length);
+	PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const format, ...);
+
+	PXPublic void PXAPI PXLogPrintString(const char* const source, PXSize length);
+	PXPublic void PXAPI PXLogPrintStringLine(const char* const source, PXSize length);
 
 #ifdef __cplusplus
 }

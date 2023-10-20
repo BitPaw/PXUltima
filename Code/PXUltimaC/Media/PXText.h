@@ -202,7 +202,7 @@ extern "C"
 
 	PXPublic PXBool PXTextCompare(const PXText* const textA, const PXText* const textB);
 
-	PXPublic PXBool PXTextCompareA(const char* a, const PXSize aSize, const char* b, const PXSize bSize);
+	PXPublic PXBool PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize);
 	PXPublic PXBool PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
 	PXPublic PXBool PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
 	PXPublic PXBool PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);

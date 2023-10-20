@@ -15,8 +15,10 @@ PXSize PXAdler32Check(const void* const data, const PXSize length)
     return (b << 16) | a;
 }
 
-PXSize PXAdler32Create(const PXSize adler, const unsigned char* data, PXSize length)
+PXSize PXAdler32Create(const PXSize adler, const void* const data, PXSize length)
 {
+    char* dataCursor = (char*)data;
+
     PXSize s1 = adler & 0xffffu;
     PXSize s2 = (adler >> 16u) & 0xffffu;
 
@@ -29,7 +31,7 @@ PXSize PXAdler32Create(const PXSize adler, const unsigned char* data, PXSize len
 
         for (PXSize i = 0; i != amount; ++i)
         {
-            s1 += (*data++);
+            s1 += (*dataCursor++);
             s2 += s1;
         }
 

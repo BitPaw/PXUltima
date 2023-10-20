@@ -4,66 +4,66 @@
 //#include <stdio.h>
 //#include <stdarg.h>
 
-void PXLogPrintf(const LoggingType loggingType, const char* const source, const char* const input,  ...)
+void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const format, ...)
 {
 	char loggingTypeSymbol;
 
 	switch (loggingType)
 	{
-		case LoggingInfo:
+		case PXLoggingInfo:
 			loggingTypeSymbol = 'i';
 			break;
 
-		case LoggingWarning:
+		case PXLoggingWarning:
 			loggingTypeSymbol = '!';
 			break;
 
-		case LoggingQuestion:
+		case PXLoggingQuestion:
 			loggingTypeSymbol = '?';
 			break;
 
-		case LoggingError:
+		case PXLoggingError:
 			loggingTypeSymbol = 'E';
 			break;
 
-		case LoggingFailure:
+		case PXLoggingFailure:
 			loggingTypeSymbol = 'x';
 			break;
 
-		case LoggingAllocation:
+		case PXLoggingAllocation:
 			loggingTypeSymbol = 'A';
 			break;
 
-		case LoggingReallocation:
+		case PXLoggingReallocation:
 			loggingTypeSymbol = 'R';
 			break;
 
-		case LoggingDeallocation:
+		case PXLoggingDeallocation:
 			loggingTypeSymbol = 'D';
 			break;
 
-		case LoggingTypeInvalid:
+		case PXLoggingTypeInvalid:
 		default:
 			loggingTypeSymbol = '°';
 			break;
 	}
 
 
-	//char buffer[256];
+	char buffer[256];
 
-	//sprintf(buffer, "[%c][%s] %s", loggingTypeSymbol, source, input);
+	sprintf_s(buffer, 256, "[%c][%s] %s\n", loggingTypeSymbol, source, format);
 
 	{
-		//va_list args;
-		//va_start(args, input);
+		va_list args;
+		va_start(args, format);
 
-		//vfprintf(stdout, source, args);
+		vfprintf(stdout, buffer, args);
 
-		//va_end(args);
+		va_end(args);
 	}
 }
 
-void PXLogPrintString(const char* const source, PXSize length)
+void PXAPI PXLogPrintString(const char* const source, PXSize length)
 {
 	for (PXSize i = 0; i < length; ++i)
 	{
@@ -73,7 +73,7 @@ void PXLogPrintString(const char* const source, PXSize length)
 	}
 }
 
-void PXLogPrintStringLine(const char* const source, PXSize length)
+void PXAPI PXLogPrintStringLine(const char* const source, PXSize length)
 {
 	PXLogPrintString(source, length);
 

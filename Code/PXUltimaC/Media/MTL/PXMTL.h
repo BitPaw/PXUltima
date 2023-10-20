@@ -27,22 +27,7 @@ extern "C"
 	}
 	PXMTLLineType;
 
-	typedef enum PXMaterialIlluminationMode_
-	{
-		IlluminationNone,
-		IlluminationColorAndAmbientDisable ,		// [0] Color on and Ambient off
-		IlluminationColorAndAmbientEnable,		// [1] Color on and Ambient on
-		IlluminationHighlightEnable ,	// [2] Highlight on
-		IlluminationReflectionOnRayTraceEnable,	// [3] Reflection on and Ray trace on
-		IlluminationReflectionOnRayTraceTransparency, 	// [4] Transparency: Glass on, Reflection : Ray trace on
-		IlluminationReflectionOnRayTraceFresnel, 	// [5] Reflection : Fresnel on and Ray trace on
-		IlluminationReflectionOnRayTraceTransparencyFresnel, 	// [6] Transparency : Refraction on, Reflection : Fresnel offand Ray trace on
-		IlluminationReflectionOnRayTraceFullEnable,	// [7] Transparency : Refraction on, Reflection : Fresnel onand Ray trace on
-		IlluminationReflectionEnable, 	// [8] Reflection on and Ray trace off
-		IlluminationTransparencyEnable, 	// [9] Transparency : Glass on, Reflection : Ray trace off
-		IlluminationShadowsEnable  	// [10] Casts shadows onto invisible surfaces
-	}
-	PXMaterialIlluminationMode;
+
 
 
 	typedef struct MTLMaterial_
@@ -70,17 +55,6 @@ extern "C"
 	}
 	PXMTLMaterial;
 
-
-	typedef struct PXMTL_
-	{
-		PXSize MaterialListSize;
-		PXMTLMaterial* MaterialList;
-	}
-	PXMTL;
-
-	PXPublic void PXAPI PXMTLConstruct(PXMTL* const mtl);
-	PXPublic void PXAPI PXMTLDestruct(PXMTL* const mtl);
-
 	PXPrivate PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID);
 
 	PXPrivate PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize);
@@ -88,10 +62,8 @@ extern "C"
 	PXPublic PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize);
 	PXPublic PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial);
 
-	PXPublic PXActionResult PXAPI PXMTLFileCompile(PXFile* const inputStream, PXFile* const outputStream);
-
-	PXPublic PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialContainer, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMTLSaveToFile(PXMaterialContainer* const pxMaterialContainer, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

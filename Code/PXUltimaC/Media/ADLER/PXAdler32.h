@@ -9,7 +9,7 @@ extern "C"
 #endif
 
 	PXPublic PXSize PXAdler32Check(const void* const data, const PXSize length);
-	PXPublic PXSize PXAdler32Create(const PXSize adler, const unsigned char* data, PXSize length);
+	PXPublic PXSize PXAdler32Create(const PXSize adler, const void* const data, PXSize length);
 
 #ifdef __cplusplus
 }

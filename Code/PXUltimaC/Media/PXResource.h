@@ -323,8 +323,53 @@ extern "C"
 	PXTextureCube;
 
 
+	typedef enum PXMaterialIlluminationMode_
+	{
+		IlluminationNone,
+		IlluminationColorAndAmbientDisable,		// [0] Color on and Ambient off
+		IlluminationColorAndAmbientEnable,		// [1] Color on and Ambient on
+		IlluminationHighlightEnable,	// [2] Highlight on
+		IlluminationReflectionOnRayTraceEnable,	// [3] Reflection on and Ray trace on
+		IlluminationReflectionOnRayTraceTransparency, 	// [4] Transparency: Glass on, Reflection : Ray trace on
+		IlluminationReflectionOnRayTraceFresnel, 	// [5] Reflection : Fresnel on and Ray trace on
+		IlluminationReflectionOnRayTraceTransparencyFresnel, 	// [6] Transparency : Refraction on, Reflection : Fresnel offand Ray trace on
+		IlluminationReflectionOnRayTraceFullEnable,	// [7] Transparency : Refraction on, Reflection : Fresnel onand Ray trace on
+		IlluminationReflectionEnable, 	// [8] Reflection on and Ray trace off
+		IlluminationTransparencyEnable, 	// [9] Transparency : Glass on, Reflection : Ray trace off
+		IlluminationShadowsEnable  	// [10] Casts shadows onto invisible surfaces
+	}
+	PXMaterialIlluminationMode;
+
+	// Material for a surface to render on
+	typedef struct PXMaterial_
+	{
+		char Name[32];
+		PXTexture2D* DiffuseTexture;
+
+		float Diffuse[4];
+		float Ambient[4];
+		float Specular[4];	// shininess
+		float Emission[4];
+		float Power;        // Sharpness if specular highlight
+
+		float Weight; 		// Ranges between 0 and 1000
+		float Dissolved;
+		float Density; // range from 0.001 to 10. A value of 1.0 means that light does not bend as it passes through an object.
+
+		PXMaterialIlluminationMode IlluminationMode;
+	}
+	PXMaterial;
+
+	// Container to save a list of materials.
+	typedef struct PXMaterialContainer_
+	{
+		PXSize MaterialListSize;
+		PXMaterial* MaterialList;
+	}
+	PXMaterialContainer;
 
 
+	PXPublic PXMaterial* PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName);
 
 
 	typedef struct PXShader_
@@ -424,13 +469,12 @@ extern "C"
 
 
 
-	typedef struct PXIndexRange_
+	typedef struct PXIndexSegment_
 	{
-		void* DataPoint;
+		PXMaterial* Material;
 		PXSize DataRange;
-
 	}
-	PXIndexRange;
+	PXIndexSegment;
 
 	// Index buffer, used to store the vertex render order.
 	// Additionally contains info about how to actually render, like modes.
@@ -444,17 +488,18 @@ extern "C"
 		PXInt32U IndexDataSize;
 		PXInt32U IndexDataAmount;
 
-		PXDataType DataType;
+		PXInt32U DataType;
 		PXInt32U DrawModeID;
 
-		PXTexture2D* Texture2D;
+		PXSize SegmentListSize;
+		PXIndexSegment* SegmentList;
 	}
 	PXIndexBuffer;
 
 
-	typedef struct PXVertexStructure_ PXVertexStructure;
+	typedef struct PXModel_ PXModel;
 
-	typedef struct PXVertexStructure_
+	typedef struct PXModel_
 	{
 		PXResourceID ResourceID;
 
@@ -472,26 +517,29 @@ extern "C"
 		PXVertexBuffer VertexBuffer;
 		PXIndexBuffer IndexBuffer;
 
-		PXVertexStructure* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
-		PXVertexStructure* StructureParent; // Structural parent of structure
-		PXVertexStructure* StructureSibling; // Stuctual sibling, works like a linked list.
-		PXVertexStructure* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
+		PXModel* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
+		PXModel* StructureParent; // Structural parent of structure
+		PXModel* StructureSibling; // Stuctual sibling, works like a linked list.
+		PXModel* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
 		//-----------------------------
 
+		PXSize MaterialContaierListSize;
+		PXMaterialContainer* MaterialContaierList;
 
 		//-----------------------------
 		// Settings
 		//-----------------------------
 		PXBool IgnoreViewPosition; // Removes positiondata from the view matrix
 		PXBool IgnoreViewRotation; // remove rotationdata from the view matrix
+		PXBool RenderBothSides;
 		PXRectangleOffset Margin;
 		//-----------------------------
 	}
-	PXVertexStructure;
+	PXModel;
 
 
-	PXPublic void PXVertexStructureConstruct(PXVertexStructure* const pxVertexStructure);
-	PXPublic void PXVertexStructureDestruct(PXVertexStructure* const pxVertexStructure);
+	PXPublic void PXModelConstruct(PXModel* const pxModel);
+	PXPublic void PXModelDestruct(PXModel* const pxModel);
 
 
 
@@ -514,17 +562,10 @@ extern "C"
 	PXDepthStencilSurface;
 
 
-	typedef struct PXMaterial_
-	{
-		float Diffuse[4];
-		float Ambient[4];
-		float Specular[4];	// shininess
-		float Emissive[4];
-		float Power;        // Sharpness if specular highlight
-	}
-	PXMaterial;
 
 
+
+	// The rectangle of the view you can render in.
 	typedef struct PXViewPort_
 	{
 		PXInt32S X;
@@ -663,7 +704,7 @@ extern "C"
 
 		PXVector2F TextureScaleOffset;
 
-		PXVertexStructure VertexStructure;
+		PXModel Model;
 	}
 	PXSprite;
 
@@ -709,7 +750,7 @@ extern "C"
 
 	typedef	struct PXSkyBox_
 	{
-		PXVertexStructure VertexStructure;
+		PXModel Model;
 
 		PXTextureCube TextureCube;
 
@@ -853,18 +894,6 @@ extern "C"
 		int __Dummy__;
 	}
 	PXVideo;
-
-
-
-
-    typedef struct PXMaterialContainer_
-    {
-        int __dummy__;
-    }
-    PXMaterialContainer;
-
-
-
 
 
 	PXPublic PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);

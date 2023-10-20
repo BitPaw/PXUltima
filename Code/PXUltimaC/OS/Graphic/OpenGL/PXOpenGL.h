@@ -1185,11 +1185,11 @@ extern "C"
 		PXOpenGLTexGenfvFunction	TexGenfv;
 		PXOpenGLTexGeniFunction	TexGeni;
 		PXOpenGLTexGenivFunction	TexGeniv;
-		PXOpenGLTexImage1DFunction	TexImage1D;
-		PXOpenGLTexImage2DFunction	TexImage2D;
+		PXOpenGLTexImage1DFunction	TextureData1D;
+		PXOpenGLTexImage2DFunction	TextureData2D;
 		PXOpenGLTexParameterfFunction	TexParameterf;
-		PXOpenGLTexParameterfvFunction	TexParameterfv;
-		PXOpenGLTexParameteriFunction	TexParameteri;
+		PXOpenGLTexParameterfvFunction	TextureParameterFV;
+		PXOpenGLTexParameteriFunction	TextureParameterI;
 		PXOpenGLTexParameterivFunction	TexParameteriv;
 		PXOpenGLTexSubImage1DFunction	TexSubImage1D;
 		PXOpenGLTexSubImage2DFunction	TexSubImage2D;
@@ -1434,7 +1434,6 @@ extern "C"
 	PXPublic void PXAPI PXOpenGLDrawEnd(PXOpenGL* const openGLContext);
 
 
-	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureDraw(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
 
 
 	PXPublic void PXAPI PXOpenGLTextureParameter(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue);
@@ -1446,7 +1445,7 @@ extern "C"
 
 
 
-	PXPublic void PXOpenGLAPI PXOpenGLErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+	PXPublic void PXOpenGLAPI PXOpenGLErrorMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const char* const message, void* const userParam);
 	//-------------------------------------------------------------------------
 
 	// render
@@ -1659,8 +1658,9 @@ extern "C"
 	//-----------------------------------------------------
 	// PX-Extrended
 	//-----------------------------------------------------
-	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureRegister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
-	PXPublic PXActionResult PXAPI PXOpenGLVertexStructureDeregister(PXOpenGL* const pxOpenGL, PXVertexStructure* const pxVertexStructure);
+	PXPublic PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* const pxModel);
+	PXPublic PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* const pxModel, const PXCamera* const pxCamera);
+	PXPublic PXActionResult PXAPI PXOpenGLModelDeregister(PXOpenGL* const pxOpenGL, PXModel* const pxModel);
 
 
 

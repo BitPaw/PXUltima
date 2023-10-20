@@ -1,5 +1,7 @@
 #include "PXResource.h"
 
+#include <Log/PXLog.h>
+
 #include <Media/3DS/PX3DS.h>
 #include <Media/AAC/PXAAC.h>
 #include <Media/AVI/PXAVI.h>
@@ -52,8 +54,32 @@ PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBuffer
     }
 }
 
+PXMaterial* PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName)
+{
+    //for (PXSize materialContainerID = 0; materialContainerID < pxMaterialContainer->MaterialContaierListSize; ++materialContainerID)
+    //{
+       // const PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[materialContainerID];
+
+        for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListSize; ++materialID)
+        {
+            const PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
+
+            const PXBool isMatch = PXTextCompareA(pxMaterialName->TextA, pxMaterialName->SizeUsed, pxMaterial->Name, PXTextUnkownLength);
+
+            if (isMatch)
+            {
+                return pxMaterial;
+            }
+        }
+   // }
+
+    return PXNull;
+}
+
 void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index)
 {
+    const PXSize rowEntiry = pxVertexBuffer->VertexDataRowSize * index;
+
     switch (pxVertexBuffer->Format)
     {
         case PXVertexBufferFormatT2F_XYZ: 
@@ -61,10 +87,10 @@ void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, c
             switch (pxVertexBufferDataType)
             {
                 case PXVertexBufferDataTypeVertex:
-                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 2);
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 2];
 
                 case PXVertexBufferDataTypeTexture:
-                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 0);
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 0];
 
                 default:
                     return PXNull;
@@ -75,13 +101,13 @@ void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, c
             switch (pxVertexBufferDataType)
             {
                 case PXVertexBufferDataTypeVertex:
-                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 5);
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 2 + 3];
 
                 case PXVertexBufferDataTypeTexture:
-                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 0);
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 0];
 
                 case PXVertexBufferDataTypeNormal:
-                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 2);
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 2];
 
                 default:
                     return PXNull;
@@ -92,7 +118,7 @@ void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, c
             switch (pxVertexBufferDataType)
             {
                 case PXVertexBufferDataTypeVertex:
-                    return (PXByte*)pxVertexBuffer->VertexData + pxVertexBuffer->VertexDataRowSize * index * sizeof(float) + (sizeof(float) * 0);
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 0];
 
                 default:
                     return PXNull;
@@ -104,16 +130,16 @@ void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, c
     }   
 }
 
-void PXVertexStructureConstruct(PXVertexStructure* const pxVertexStructure)
+void PXModelConstruct(PXModel* const pxModel)
 {
-    PXObjectClear(PXVertexStructure, pxVertexStructure);
+    PXObjectClear(PXModel, pxModel);
 
-    PXMatrix4x4FIdentity(&pxVertexStructure->ModelMatrix);
+    PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
     
-    PXRectangleOffsetSet(&pxVertexStructure->Margin, 1, 1, 1, 1);
+    PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
 }
 
-void PXVertexStructureDestruct(PXVertexStructure* const pxVertexStructure)
+void PXModelDestruct(PXModel* const pxModel)
 {
     
 }
@@ -163,11 +189,25 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
     {
         if (pxFile.TypeInfo.FormatExpected == PXFileFormatUnkown)
         {
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Resource",
+                "Resource load refused : Format not detected"
+            );
+
             return PXActionRefusedNotSupported;
         }
 
         if (pxFile.TypeInfo.ResourceLoadFunction == PXNull)
         {
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Resource",
+                "Resource load refused : Not implemented"
+            );
+
             return PXActionRefusedNotImplemented;
         }
 
@@ -180,7 +220,16 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
 
         PXStopWatchTrigger(&pxStopwatch, &pxTime);
 
-        printf("[PX][File] Resource load <%s> took %ims, cycles=%lf, IOPs=%i\n", filePath->TextA, PXTimeMilliseconds(&pxTime), pxTime.ClockCycleDelta, pxFile.CounterOperationsRead);
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "Resource load <%s> took %ims, cycles=%lf, IOPs=%i",
+            filePath->TextA,
+            PXTimeMilliseconds(&pxTime),
+            pxTime.ClockCycleDelta,
+            pxFile.CounterOperationsRead        
+        );
 
         PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
 
@@ -217,7 +266,9 @@ PXActionResult PXResourceLoadA(void* resource, const char* const filePath)
 
     PXTextConstructFromAdressA(&pxText, filePath, PXTextUnkownLength);
 
-    return PXResourceLoad(resource, &pxText);
+    const PXActionResult loadResult = PXResourceLoad(resource, &pxText);
+
+    return loadResult;
 }
 
 
@@ -232,7 +283,7 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
     switch (pxFileTypeInfo->FormatExpected)
     {
         case PXFileFormatA3DS:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeModel;
             pxFileTypeInfo->ResourceLoadFunction = PXAutodesk3DSLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXAutodesk3DSSafeFromFile;
             break;
@@ -304,7 +355,7 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             break;
 
         case PXFileFormatFilmBox:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeModel;
             pxFileTypeInfo->ResourceLoadFunction = PXFilmBoxLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXFilmBoxSaveToFile;
             break;
@@ -386,7 +437,7 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             break;
 
         case PXFileFormatWavefront:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeModel;
             pxFileTypeInfo->ResourceLoadFunction = PXWavefrontLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXWavefrontSaveFromFile;
             break;
@@ -416,7 +467,7 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             break;
 
         case PXFileFormatPLY:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeModel;
             pxFileTypeInfo->ResourceLoadFunction = PXPLYLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXPLYSaveToFile;
             break;
@@ -434,13 +485,13 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             break;
 
         case PXFileFormatSTEP:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeModel;
             pxFileTypeInfo->ResourceLoadFunction = PXSTEPLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXSTEPSaveToFile;
             break;
 
         case PXFileFormatSTL:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeModel;
             pxFileTypeInfo->ResourceLoadFunction = PXSTLLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXSTLSaveToFile;
             break;
@@ -470,7 +521,7 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             break;
 
         case PXFileFormatVRML:
-            pxFileTypeInfo->ResourceType = PXFileResourceTypeVertexStructure;
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeModel;
             pxFileTypeInfo->ResourceLoadFunction = PXVRMLLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXVRMLSaveToFile;
             break;

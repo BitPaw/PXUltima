@@ -4,6 +4,42 @@
 
 #define PX_X86_BSWAP_ALLOW OS32B 
 
+#define PXDataTypeInt08ULimit 255 // 0xFF
+#define PXDataTypeInt16ULimit 65535 // 0xFFFF
+#define PXDataTypeInt32ULimit 4294967295 // 0xFFFFFFFF
+#define PXDataTypeInt64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
+
+PXInt32U PXDataTypeIntFitting(const PXSize expectedSize)
+{
+	{
+		const PXBool fitIn08Bit = expectedSize <= (PXSize)PXDataTypeInt08ULimit;
+
+		if (fitIn08Bit)
+		{
+			return PXDataTypeInt08U;
+		}
+	}
+
+	{
+		const PXBool fitIn16Bit = expectedSize <= (PXSize)PXDataTypeInt16ULimit;
+
+		if (fitIn16Bit)
+		{
+			return PXDataTypeInt16U;
+		}
+	}
+
+	{
+		const PXBool fitIn32Bit = expectedSize <= (PXSize)PXDataTypeInt32ULimit;
+
+		if (fitIn32Bit)
+		{
+			return PXDataTypeInt32U;
+		}
+	}
+
+	return PXDataTypeInt64U;
+}
 
 void PXEndianSwapI32U(PXInt32U* const value)
 {

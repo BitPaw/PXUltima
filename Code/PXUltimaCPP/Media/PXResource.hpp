@@ -6,6 +6,11 @@
 
 namespace PX
 {
+	class SkyBox : public PXSkyBox
+	{
+
+	};
+
 	class Resource
 	{
 		public:

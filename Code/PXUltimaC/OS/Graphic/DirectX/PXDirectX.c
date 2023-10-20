@@ -41,6 +41,7 @@
 #include <Media/PXText.h>
 #include <OS/Graphic/PXGraphic.h>
 #include <OS/Window/PXWindow.h>
+#include <Log/PXLog.h>
 
 
 #if OSWindows // TODO: Temp fix
@@ -98,10 +99,10 @@ void PXAPI PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3D
     pxMaterial->Specular[2] = d3dMaterial->Specular.b;
     pxMaterial->Specular[3] = d3dMaterial->Specular.a;
 
-    pxMaterial->Emissive[0] = d3dMaterial->Emissive.r;
-    pxMaterial->Emissive[1] = d3dMaterial->Emissive.g;
-    pxMaterial->Emissive[2] = d3dMaterial->Emissive.b;
-    pxMaterial->Emissive[3] = d3dMaterial->Emissive.a;
+    pxMaterial->Emission[0] = d3dMaterial->Emissive.r;
+    pxMaterial->Emission[1] = d3dMaterial->Emissive.g;
+    pxMaterial->Emission[2] = d3dMaterial->Emissive.b;
+    pxMaterial->Emission[3] = d3dMaterial->Emissive.a;
 
     pxMaterial->Power = d3dMaterial->Power;
 }
@@ -137,10 +138,10 @@ void PXAPI PXDirectXMaterialFromPXMaterial(D3DMATERIAL9* const d3dMaterial, cons
     d3dMaterial->Specular.b = pxMaterial->Specular[2];
     d3dMaterial->Specular.a = pxMaterial->Specular[3];
 
-    d3dMaterial->Emissive.r = pxMaterial->Emissive[0];
-    d3dMaterial->Emissive.g = pxMaterial->Emissive[1];
-    d3dMaterial->Emissive.b = pxMaterial->Emissive[2];
-    d3dMaterial->Emissive.a = pxMaterial->Emissive[3];
+    d3dMaterial->Emissive.r = pxMaterial->Emission[0];
+    d3dMaterial->Emissive.g = pxMaterial->Emission[1];
+    d3dMaterial->Emissive.b = pxMaterial->Emission[2];
+    d3dMaterial->Emissive.a = pxMaterial->Emission[3];
 
     d3dMaterial->Power = pxMaterial->Power;
 }
@@ -560,9 +561,29 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
                 if (!success)
                 {
+#if PXDirectXDebug
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "DirectX9",
+                        "Instance creation failed",
+                        pxDirectX->DX9Context
+                    );
+#endif
+
                     return PXActionFailedInitialization;
                 }
             }
+
+#if PXDirectXDebug
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "DirectX9",
+                "Instance created 0x%p",
+                pxDirectX->DX9Context
+            );
+#endif
 
             PXDirectXDevicePhysicalListFetchFunction(pxDirectX, pxGraphicInitializeInfo->Graphic->DevicePhysicalListSize, pxGraphicInitializeInfo->Graphic->DevicePhysicalList);
 
@@ -781,6 +802,16 @@ PXActionResult PXAPI PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXV
                 return PXActionInvalid;
             }
 
+#if PXDirectXDebug
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "DirectX9",
+                "Vertex buffer created 0x%p",
+                pxVertexBuffer->ResourceID.DirectXInterface
+            );
+#endif
+
             IDirect3DVertexBuffer9* const vertexBuffer = (IDirect3DVertexBuffer9*)pxVertexBuffer->ResourceID.DirectXInterface;
             void* targetAdress = PXNull;
 
@@ -916,6 +947,18 @@ PXActionResult PXAPI PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXText
                 &sharedHandle
             );
 
+#if PXDirectXDebug
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "DirectX9",
+                "Texture2D created (%ix%i) 0x%p",
+                pxTexture->Image.Width,
+                pxTexture->Image.Height,
+                pxTexture->ResourceID.DirectXInterface
+            );
+#endif
+
             return PXActionSuccessful;
         }
 #endif
@@ -999,6 +1042,19 @@ PXActionResult PXAPI PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXText
                 &sharedHandle
             );
 
+#if PXDirectXDebug
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "DirectX9",
+                "Texture3D created (%ix%ix%i) 0x%p",
+                pxTexture3D->Width,
+                pxTexture3D->Height,
+                pxTexture3D->Depth,
+                pxTexture3D->ResourceID.DirectXInterface
+            );
+#endif
+
             return PXActionSuccessful;
         }
 #endif
@@ -1057,6 +1113,16 @@ PXActionResult PXAPI PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTe
                 &(IDirect3DCubeTexture9*)pxTextureCube->ResourceID.DirectXInterface,
                 &sharedHandle
             );
+
+#if PXDirectXDebug
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "DirectX9",
+                "TextureCube created 0x%p",
+                pxTextureCube->ResourceID.DirectXInterface
+            );
+#endif
 
             return PXActionSuccessful;
         }
@@ -1263,10 +1329,10 @@ PXActionResult PXAPI PXDirectXDevicePhysicalListFetchFunction(PXDirectX* const p
     }
 }
 
-PXActionResult PXAPI PXDirectXVertexStructureRegister(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure)
+PXActionResult PXAPI PXDirectXModelRegister(PXDirectX* const pxDirectX, PXModel* const pxModel)
 {
-    PXDirectXVertexBufferCreate(pxDirectX, &pxVertexStructure->VertexBuffer);
-    PXDirectXIndexBufferCreate(pxDirectX, &pxVertexStructure->IndexBuffer);
+    PXDirectXVertexBufferCreate(pxDirectX, &pxModel->VertexBuffer);
+    PXDirectXIndexBufferCreate(pxDirectX, &pxModel->IndexBuffer);
 
     return PXActionSuccessful;
 }
@@ -2405,6 +2471,16 @@ PXActionResult PXAPI PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader*
                         &(IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
                     );
 
+#if PXDirectXDebug
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "DirectX9",
+                        "Shader:Vertex created 0x%p",
+                        pxShader->ResourceID.DirectXInterface
+                    );
+#endif
+
                     break;
                 }
                 case PXShaderTypeFragment:
@@ -2415,6 +2491,16 @@ PXActionResult PXAPI PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader*
                         0,
                         &(IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
                     );
+
+#if PXDirectXDebug
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "DirectX9",
+                        "Shader:Pixel created 0x%p",
+                        pxShader->ResourceID.DirectXInterface
+                    );
+#endif
 
                     break;
                 }
@@ -2464,6 +2550,16 @@ PXActionResult PXAPI PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader*
                         (IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
                     );
 
+#if PXDirectXDebug
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "DirectX9",
+                        "Shader:Vertex select 0x%p",
+                        pxShader->ResourceID.DirectXInterface
+                    );
+#endif
+
                     break;
                 }
                 case PXShaderTypeFragment:
@@ -2473,6 +2569,16 @@ PXActionResult PXAPI PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader*
                         pxDirectX->DX9,
                         (IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
                     );
+
+#if PXDirectXDebug
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "DirectX9",
+                        "Shader:Pixel select 0x%p",
+                        pxShader->ResourceID.DirectXInterface
+                    );
+#endif
 
                     break;
                 }
@@ -2544,10 +2650,10 @@ PXActionResult PXAPI PXDirectXTransformSet(PXDirectX* const pxDirectX, D3DTRANSF
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectXVertexStructureDraw(PXDirectX* const pxDirectX, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera)
+PXActionResult PXAPI PXDirectXModelDraw(PXDirectX* const pxDirectX, PXModel* const pxModel, const PXCamera* const pxCamera)
 {
-    PXDirectXStreamSourceSet(pxDirectX, 0, &pxVertexStructure->VertexBuffer, 0, pxVertexStructure->VertexBuffer.VertexDataRowSize);
-    PXDirectXVertexFixedFunctionSet(pxDirectX, pxVertexStructure->VertexBuffer.Format);
+    PXDirectXStreamSourceSet(pxDirectX, 0, &pxModel->VertexBuffer, 0, pxModel->VertexBuffer.VertexDataRowSize);
+    PXDirectXVertexFixedFunctionSet(pxDirectX, pxModel->VertexBuffer.Format);
     PXDirectXPrimitiveDraw(pxDirectX, PXGraphicDrawModeTriangle, 0, 1);
 
     return PXActionSuccessful;

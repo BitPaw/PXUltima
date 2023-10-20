@@ -2,6 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <OS/Window/PXWindow.h>
+#include <Log/PXLog.h>
 
 #include <stdio.h>
 
@@ -87,6 +88,15 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 {
 	PXClear(PXVulcan, pxVulcan);
 
+#if PXVulcanDebug
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Vulcan",
+		"Starting initializing library..."
+	);
+#endif
+
 	// Load library
 	{
 		PXText vulcanLibraryName;
@@ -119,10 +129,29 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 
 			if (!libraryReloadResult)
 			{
+#if PXVulcanDebug
+				PXLogPrint
+				(
+					PXLoggingError,
+					"Vulcan",
+					"initializing failed: Library not found"
+				);
+#endif
+
 				return PXActionLibraryNotFound;
 			}
 		}
 	}
+
+#if PXVulcanDebug
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Vulcan",
+		"Library detected 0x%p",
+		pxVulcan->LibraryID.ID
+	);
+#endif
 
 
 	PXVulcanAllocationCallbacks pxVulcanAllocationCallbacks;
@@ -136,6 +165,15 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 
 	// Fetch all functions
 	{
+#if PXVulcanDebug
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"Vulcan",
+			"Fetching functions..."
+		);
+#endif
+
 		PXLibraryGetSymbolA(&pxVulcan->LibraryID, (LibraryFunction*)&pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
 
 		pxVulcan->InstanceCreate = pxVulcan->InstanceProcAddrGetCallBack(PXNull, "vkCreateInstance");
@@ -175,9 +213,17 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 				&pxVulcan->Instance
 			);
 
+
 #if PXVulcanDebug
-			printf("[PXVulcan] Instance create...\n");
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"Vulcan",
+				"Instance created 0x%p",
+				pxVulcan->Instance
+			);
 #endif
+
 		}
 
 		pxVulcan->DeviceCreate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkCreateDevice");
@@ -208,13 +254,30 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 
 		const VkResult fetchB = pxVulcan->ExtensionInstancePropertiesEnumerate(PXNull, &amountOfExtenions, VkExtensionPropertieList);
 
-		printf("Vulcan Extensions deteced: %i\n", amountOfExtenions);
+#if PXVulcanDebug
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"Vulcan",
+			"Extensions detected. Amount:%i",
+			amountOfExtenions
+		);
+#endif
 
 		for (PXInt32U i = 0; i < amountOfExtenions; i++)
 		{
 			VkExtensionProperties* const extensionPropertie = &VkExtensionPropertieList[i];
 
-			printf("- %2i %s \n", extensionPropertie->specVersion, extensionPropertie->extensionName);
+#if PXVulcanDebug
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"Vulcan",
+				"- %2i %s ",
+				extensionPropertie->specVersion,
+				extensionPropertie->extensionName
+			);
+#endif
 		}
 	}
 
@@ -248,19 +311,33 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 
 
 #if PXVulcanDebug
-		printf("[PXVulcan] Deteced %i physical devices\n", numberOfDevices);
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"Vulcan",
+			"Deteced %i physical devices",
+			numberOfDevices
+		);
 #endif
 
 		for (PXInt32U i = 0; i < numberOfDevices; ++i)
 		{
-			PXVulkanDevicePhysical* const vulkanDevicePhysical = pxVulkanDevicePhysicalList[i];
+			PXVulkanDevicePhysical* const vulkanDevicePhysical = &pxVulkanDevicePhysicalList[i];
 
 			PXVulkanDevicePhysicalProperties pxVulkanDevicePhysicalProperties;
 
 			pxVulcan->DevicePhysicalPropertiesGet(vulkanDevicePhysical, &pxVulkanDevicePhysicalProperties);
 
 #if PXVulcanDebug
-			printf("[PXVulcan][Device %i/%i] %s\n", i + 1, numberOfDevices, pxVulkanDevicePhysicalProperties.deviceName);
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"Vulcan",
+				"[Device %i/%i] %s",
+				i + 1,
+				numberOfDevices, 
+				pxVulkanDevicePhysicalProperties.deviceName
+			);
 #endif
 		}
 		pxVulcan->DevicePhysical = pxVulkanDevicePhysicalList[1];
@@ -290,7 +367,12 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		);
 
 #if PXVulcanDebug
-		printf("[PXVulcan] DeviceCreate\n");
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"Vulcan",
+			"Creating device..."
+		);
 #endif
 	}
 
@@ -302,7 +384,13 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		const VkResult fetchNumberResult = pxVulcan->DevicePhysicalDisplayPropertiesGet(pxVulcan->DevicePhysical, &amountOfDisplays, PXNull);
 
 #if PXVulcanDebug
-		printf("[PXVulcan] Deteced %i displays\n", amountOfDisplays);
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"Vulcan",
+			"Deteced %i displays",
+			amountOfDisplays
+		);
 #endif
 
 		VkDisplayPropertiesKHR VkDisplayPropertieList[20];
@@ -313,9 +401,11 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		for (PXInt32U i = 0; i < amountOfDisplays; i++)
 		{
 #if PXVulcanDebug
-			printf
+			PXLogPrint
 			(
-				"[PXVulcan][Device %i/%i] (%8ix%-8i) %s\n",
+				PXLoggingInfo,
+				"Vulcan",
+				"[Device %i/%i] (%8ix%-8i) %s\n",
 				i + 1,
 				amountOfDisplays,
 				VkDisplayPropertieList->physicalResolution.width,

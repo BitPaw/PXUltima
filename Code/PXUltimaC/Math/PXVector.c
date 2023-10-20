@@ -109,11 +109,11 @@ void PXVector4FSetXYZW(PXVector4F* const vector, const float x, const float y, c
 	vector->W = w;
 }
 
-void PXVector3FSubstract(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult)
+void PXVector3FSubstract(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FInput)
 {
-	vectorResult->X = vectorA->X - vectorB->X;
-	vectorResult->Y = vectorA->Y - vectorB->Y;
-	vectorResult->Z = vectorA->Z - vectorB->Z;
+	pxVector3F->X -= pxVector3FInput->X;
+	pxVector3F->Y -= pxVector3FInput->Y;
+	pxVector3F->Z -= pxVector3FInput->Z;
 }
 
 void PXVector3FMultiply(PXVector3F* const vector, PXVector3F* const vectorResult)
@@ -123,11 +123,11 @@ void PXVector3FMultiply(PXVector3F* const vector, PXVector3F* const vectorResult
 	vectorResult->Z *= vector->Z;
 }
 
-void PXVector3FMultiplyXYZ(PXVector3F* const vector, const float x, const float y, const float z)
+void PXVector3FMultiplyXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z)
 {
-	vector->X *= x;
-	vector->Y *= y;
-	vector->Z *= z;
+	pxVector3F->X *= x;
+	pxVector3F->Y *= y;
+	pxVector3F->Z *= z;
 }
 
 void PXVector3FMultiplyS(PXVector3F* const vector, const float scalar)
@@ -178,11 +178,11 @@ void PXVector3FAdd(PXVector3F* const pxVector3F, const PXVector3F* const vectorB
 	pxVector3F->Z += vectorB->Z;
 }
 
-void PXVector3FAddXYZ(const PXVector3F* const vector, const float x, const float y, const float z, PXVector3F* const vectorResult)
+void PXVector3FAddXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z)
 {
-	vectorResult->X = vector->X + x;
-	vectorResult->Y = vector->Y + y;
-	vectorResult->Z = vector->Z + z;
+	pxVector3F->X += x;
+	pxVector3F->Y += y;
+	pxVector3F->Z += z;
 }
 
 void PXVector4FAddXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult)

@@ -345,10 +345,10 @@ extern "C"
 	typedef PXActionResult(PXAPI*PXGraphicTextureCubeReleaseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
 
 
-	typedef PXActionResult(PXAPI*PXGraphicVertexStructureRegisterFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
-	typedef PXActionResult(PXAPI*PXGraphicVertexStructureDrawFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure, const PXCamera* const pxCamera);
-	typedef PXActionResult(PXAPI*PXGraphicVertexStructureSelectFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
-	typedef PXActionResult(PXAPI*PXGraphicVertexStructureReleaseFunction)(void* const pxGraphicAPI, PXVertexStructure* const pxVertexStructure);
+	typedef PXActionResult(PXAPI*PXGraphicModelRegisterFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
+	typedef PXActionResult(PXAPI*PXGraphicModelDrawFunction)(void* const pxGraphicAPI, PXModel* const pxModel, const PXCamera* const pxCamera);
+	typedef PXActionResult(PXAPI*PXGraphicModelSelectFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
+	typedef PXActionResult(PXAPI*PXGraphicModelReleaseFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
 
 	typedef PXActionResult(PXAPI*PXGraphicLightSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
 	typedef PXActionResult(PXAPI*PXGraphicLightGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
@@ -379,9 +379,9 @@ extern "C"
 	typedef PXActionResult (PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
 
 
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVPAFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVPAFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
 
 
@@ -484,10 +484,10 @@ extern "C"
 		//-------------------------------------------------
 		// Model
 		//-------------------------------------------------
-		PXGraphicVertexStructureRegisterFunction VertexStructureRegister;
-		PXGraphicVertexStructureDrawFunction VertexStructureDraw;
-		PXGraphicVertexStructureSelectFunction VertexStructureSelect;
-		PXGraphicVertexStructureReleaseFunction VertexStructureRelease;
+		PXGraphicModelRegisterFunction ModelRegister;
+		PXGraphicModelDrawFunction ModelDraw;
+		PXGraphicModelSelectFunction ModelSelect;
+		PXGraphicModelReleaseFunction ModelRelease;
 
 		//-------------------------------------------------
 		// Light
@@ -575,8 +575,8 @@ extern "C"
 
 
 		// Cached most-common objects
-		PXVertexStructure SpriteScaled;
-		PXVertexStructure SpriteUnScaled;
+		PXModel SpriteScaled;
+		PXModel SpriteUnScaled;
 
 
 		PXSize DevicePhysicalListSize;

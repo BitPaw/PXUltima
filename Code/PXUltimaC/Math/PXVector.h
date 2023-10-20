@@ -83,9 +83,9 @@ extern "C"
 	PXPublic void PXVector3FSetXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
 
 	PXPublic void PXVector3FAdd(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
-	PXPublic void PXVector3FAddXYZ( PXVector3F* const pxVector3F, const float x, const float y, const float z);
+	PXPublic void PXVector3FAddXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
 
-	PXPublic void PXVector3FSubstract(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
+	PXPublic void PXVector3FSubstract(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FInput);
 
 	PXPublic void PXVector3FMultiply(PXVector3F* const pxVector3F, PXVector3F* const vectorResult);
 	PXPublic void PXVector3FMultiplyXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);

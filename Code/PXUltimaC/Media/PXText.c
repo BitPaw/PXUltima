@@ -538,8 +538,23 @@ PXBool PXTextCompare(const PXText* const textA, const PXText* const textB)
 	return PXTrue;
 }
 
-PXBool PXTextCompareA(const char* a, const PXSize aSize, const char* b, const PXSize bSize)
+PXBool PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize)
 {
+	if (PXTextUnkownLength == aSize)
+	{
+		aSize = PXTextLengthA(a, PXTextUnkownLength);
+	}
+
+	if (PXTextUnkownLength == bSize)
+	{
+		bSize = PXTextLengthA(b, PXTextUnkownLength);
+	}
+
+	if (aSize != bSize) // Should be correct but can make errors?
+	{
+		return PXFalse;
+	}
+
 	const PXSize textSize = PXMathMinimumIU(aSize, bSize);
 
 	PXSize index = 0;
