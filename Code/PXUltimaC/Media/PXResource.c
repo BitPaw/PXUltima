@@ -56,6 +56,11 @@ PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBuffer
 
 PXMaterial* PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName)
 {
+    if (!pxMaterialContainer)
+    {
+        return;
+    }
+
     //for (PXSize materialContainerID = 0; materialContainerID < pxMaterialContainer->MaterialContaierListSize; ++materialContainerID)
     //{
        // const PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[materialContainerID];

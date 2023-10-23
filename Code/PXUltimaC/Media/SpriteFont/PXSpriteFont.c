@@ -303,9 +303,9 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 									// Loading Image
 									{
 										PXText fontFilePath;
-										PXTextConstructNamedBufferA(&fontFilePath, fontFilePathBuffer, PathMaxSize);
+										PXTextConstructNamedBufferA(&fontFilePath, fontFilePathBuffer, PXPathSizeMax);
 										PXText resultFullPath;
-										PXTextConstructNamedBufferA(&resultFullPath, resultFullPathBuffer, PathMaxSize);
+										PXTextConstructNamedBufferA(&resultFullPath, resultFullPathBuffer, PXPathSizeMax);
 		
 										PXFilePathGet(pxFile, &fontFilePath);
 
@@ -630,9 +630,9 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 				// Loading Image
 				{
 					PXText fontFilePath;
-					PXTextConstructWithBufferNamedA(&fontFilePath, fontFilePathBuffer, PathMaxSize);
+					PXTextConstructWithBufferNamedA(&fontFilePath, fontFilePathBuffer, PXPathSizeMax);
 					PXText resultFullPath;
-					PXTextConstructWithBufferNamedA(&resultFullPath, resultFullPathBuffer, PathMaxSize);
+					PXTextConstructWithBufferNamedA(&resultFullPath, resultFullPathBuffer, PXPathSizeMax);
 					PXText pageFileName;
 					PXTextConstructWithBufferNamedA(&pageFileName, pageFileNameBuffer, PXSpriteFontPageFileNameSize);
 

@@ -232,8 +232,8 @@ namespace PX
 		//-------------------------------------------------------------------------
 
 
-		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileFilePathGetA(ref PXFile pxFile, char*  filePath,  UIntPtr filePathMaxSize);
-		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileFilePathGetW(ref PXFile pxFile, char*  filePath,  UIntPtr filePathMaxSize);
+		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileFilePathGetA(ref PXFile pxFile, char*  filePath,  UIntPtr filePXPathSizeMax);
+		[DllImport("PXUltima.dll")] private static extern unsafe UIntPtr PXFileFilePathGetW(ref PXFile pxFile, char*  filePath,  UIntPtr filePXPathSizeMax);
 
 
 

@@ -7,6 +7,7 @@
 #include <Media/PXType.h>
 #include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
+#include <OS/File/PXFile.h>
 
 #define PXDirectorySearchForDirectorys (1 << 0)
 #define PXDirectorySearchForFiles (1 << 1)
@@ -49,8 +50,9 @@ extern "C"
 
 		PXInt8U Depth;
 
-		char* FullPath;
+		char FullPath[PXPathSizeMax];
 		PXSize FullPathSize;
+		PXSize FullPathOffset;
 
 		char* Name;
 		PXSize NameSize;
@@ -74,12 +76,13 @@ extern "C"
 #endif
 
 		PXInt8U EntryDepthCurrent;
+		PXInt8U Recursive;
+
 
 		PXFileElementInfo EntryCurrent;
 	}
 	PXDirectoryIterator;
 
-	PXPublic void PXDirectoryUpdateEntry(PXDirectoryIterator* const pxDirectoryIterator);
 
 	PXPublic PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName);
 	PXPublic PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator);

@@ -81,7 +81,7 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 #if OSUnix
 
 #if 0
-			char directoryNameCache[PathMaxSize];
+			char directoryNameCache[PXPathSizeMax];
 			char baseNameCache[FileNameMaxSize];
 
 			PXTextCopyA(fullPath, FileNameMaxSize, directoryNameCache, FileNameMaxSize);
@@ -136,18 +136,18 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 		case TextFormatUNICODE:
 		{
 #if OSUnix
-			char fullPathA[PathMaxSize];
+			char fullPathA[PXPathSizeMax];
 			char driveA[DriveMaxSize];
 			char directoryA[DirectoryMaxSize];
 			char fileNameA[FileNameMaxSize];
 			char extensionA[ExtensionMaxSize];
 
-			PXTextCopyWA(fullPath, PathMaxSize, fullPathA, PathMaxSize);
+			PXTextCopyWA(fullPath, PXPathSizeMax, fullPathA, PXPathSizeMax);
 
 			/* ????
 			PXFilePathSplitt
 			(
-				fullPathA, PathMaxSize,
+				fullPathA, PXPathSizeMax,
 				driveA, DriveMaxSize,
 				directoryA, DirectoryMaxSize,
 				fileNameA, FileNameMaxSize,
@@ -188,7 +188,7 @@ void PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText*
 	}
 }
 
-void PXFilePathSplittPositionW(const wchar_t* fullPath, PXSize fullPathMaxSize, PXSize* drivePos, PXSize driveSize, PXSize* directory, PXSize directorySize, PXSize* fileName, PXSize fileNameSize, PXSize* extension, PXSize extensionSize)
+void PXFilePathSplittPositionW(const wchar_t* fullPath, PXSize fullPXPathSizeMax, PXSize* drivePos, PXSize driveSize, PXSize* directory, PXSize directorySize, PXSize* fileName, PXSize fileNameSize, PXSize* extension, PXSize extensionSize)
 {
 }
 
@@ -546,13 +546,13 @@ PXActionResult PXFileCopy(const PXText* const sourceFilePath, const PXText* cons
 /*
 void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName)
 {
-	const PXSize index = PXTextFindLastW(currnetPath, PathMaxSize, '/');
+	const PXSize index = PXTextFindLastW(currnetPath, PXPathSizeMax, '/');
 	const PXBool found = index != -1;
 
 	if(found)
 	{
 		const PXSize copyedBytes = PXTextCopyW(currnetPath, index + 1, targetPath, index + 1);
-		const PXSize toCopy = PathMaxSize - copyedBytes;
+		const PXSize toCopy = PXPathSizeMax - copyedBytes;
 
 		PXTextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
 	}
@@ -562,7 +562,7 @@ void PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const 
 {
 	//---<Get current path>----------------
 	PXText currentObjectFilePath;
-	PXTextConstructNamedBufferA(&currentObjectFilePath, currentFilePathBuffer, PathMaxSize);
+	PXTextConstructNamedBufferA(&currentObjectFilePath, currentFilePathBuffer, PXPathSizeMax);
 
 	const PXBool success = PXFilePathGet(pxFile, &currentObjectFilePath); // Work PXWavefront file path
 	//-------------------------------
@@ -599,7 +599,7 @@ void PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportP
 				exportPath->SizeUsed += PXTextCopyA(directory.TextA, directory.SizeAllocated, exportPath->TextA + exportPath->SizeUsed, exportPath->SizeAllocated - exportPath->SizeUsed);
 				exportPath->SizeUsed += PXTextCopyA(fileName->TextA, fileName->SizeAllocated, exportPath->TextA + exportPath->SizeUsed, exportPath->SizeAllocated - exportPath->SizeUsed);
 
-				//PXTextCopyA(fileName->TextA, offset, exportPath, PathMaxSize);
+				//PXTextCopyA(fileName->TextA, offset, exportPath, PXPathSizeMax);
 			}
 
 			break;
@@ -608,7 +608,7 @@ void PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportP
 		case TextFormatUNICODE:
 		{
 			/*
-			wchar_t finalPath[PathMaxSize];
+			wchar_t finalPath[PXPathSizeMax];
 
 			wchar_t driveW[DriveMaxSize];
 			wchar_t directoryW[DirectoryMaxSize];
@@ -619,7 +619,7 @@ void PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportP
 
 				PXFilePathSplittW
 				(
-					inputPath, PathMaxSize,
+					inputPath, PXPathSizeMax,
 					driveW, DriveMaxSize,
 					directoryW, DirectoryMaxSize,
 					fileNameW, FileNameMaxSize,
@@ -630,11 +630,11 @@ void PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportP
 			{
 				PXSize offset = 0;
 
-				offset += PXTextCopyW(driveW, DriveMaxSize, finalPath, PathMaxSize - offset);
-				offset += PXTextCopyW(directoryW, DirectoryMaxSize, finalPath + offset, PathMaxSize - offset);
-				offset += PXTextCopyW(fileName, PathMaxSize, finalPath + offset, PathMaxSize - offset);
+				offset += PXTextCopyW(driveW, DriveMaxSize, finalPath, PXPathSizeMax - offset);
+				offset += PXTextCopyW(directoryW, DirectoryMaxSize, finalPath + offset, PXPathSizeMax - offset);
+				offset += PXTextCopyW(fileName, PXPathSizeMax, finalPath + offset, PXPathSizeMax - offset);
 
-				PXTextCopyW(finalPath, offset, exportPath, PathMaxSize);
+				PXTextCopyW(finalPath, offset, exportPath, PXPathSizeMax);
 			}*/
 
 			break;
@@ -664,16 +664,16 @@ void PXFilePathSwapExtension(const PXText* const inputPath, PXText* const export
 		case TextFormatUTF8:
 		case TextFormatASCII:
 		{
-			const PXSize written = PXTextCopyA(inputPath->TextA, index, exportPath->TextA, PathMaxSize); // Copy filePath without extension
-			const PXSize writtenFull = PXTextCopyA(pxResult.TextA, PathMaxSize, &exportPath->TextA[written], PathMaxSize); // Copy extension on top
+			const PXSize written = PXTextCopyA(inputPath->TextA, index, exportPath->TextA, PXPathSizeMax); // Copy filePath without extension
+			const PXSize writtenFull = PXTextCopyA(pxResult.TextA, PXPathSizeMax, &exportPath->TextA[written], PXPathSizeMax); // Copy extension on top
 
 			break;
 		}
 
 		case TextFormatUNICODE:
 		{
-			const PXSize written = PXTextCopyW(inputPath->TextW, index + 1, exportPath->TextW, PathMaxSize); // Copy filePath without extension
-			const PXSize writtenFull = PXTextCopyW(pxResult.TextW, PathMaxSize, &exportPath->TextW[written], PathMaxSize); // Copy extension on top
+			const PXSize written = PXTextCopyW(inputPath->TextW, index + 1, exportPath->TextW, PXPathSizeMax); // Copy filePath without extension
+			const PXSize writtenFull = PXTextCopyW(pxResult.TextW, PXPathSizeMax, &exportPath->TextW[written], PXPathSizeMax); // Copy extension on top
 
 			break;
 		}
@@ -3165,18 +3165,40 @@ PXActionResult PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 	filePath->Format = TextFormatUNICODE;
 	filePath->SizeUsed = length;
 
-	wchar_t buffer[PathMaxSize];
+	wchar_t buffer[PXPathSizeMax];
 
 	if (filePath->TextW[0] == '\\')
 	{
-		PXTextCopyW(filePath + 4, length - 4, buffer, PathMaxSize);
-		PXTextCopyW(buffer, PathMaxSize, filePath, length - 4);
+		PXTextCopyW(filePath + 4, length - 4, buffer, PXPathSizeMax);
+		PXTextCopyW(buffer, PXPathSizeMax, filePath, length - 4);
 	}
 
 	return PXActionSuccessful;
 #endif
 
 #endif // 0
+}
+
+PXActionResult PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput)
+{
+#if OSUnix
+	return PXActionRefusedNotSupported;
+
+#elif OSWindows
+
+	pxTextOutput->SizeUsed = GetFullPathNameA
+	(
+		pxTextInput->TextA,
+		pxTextInput->SizeUsed,
+		pxTextOutput->TextA,
+		pxTextOutput->SizeAllocated
+	);
+
+	return PXActionSuccessful;
+
+#else
+	return PXActionRefusedNotSupported;
+#endif
 }
 
 
@@ -3638,13 +3660,13 @@ PXActionResult FileReadFromDisk(unsigned char** outPutBuffer, PXSize& outPutBuff
 
 void FilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName)
 {
-	const PXSize index = PXTextFindLastW(currnetPath, PathMaxSize, '/');
+	const PXSize index = PXTextFindLastW(currnetPath, PXPathSizeMax, '/');
 	const bool found = index != -1;
 
 	if (found)
 	{
 		const PXSize copyedBytes = PXTextCopyW(currnetPath, index + 1, targetPath, index + 1);
-		const PXSize toCopy = PathMaxSize - copyedBytes;
+		const PXSize toCopy = PXPathSizeMax - copyedBytes;
 
 		PXTextCopyW(newFileName, toCopy, targetPath + copyedBytes, toCopy);
 	}
@@ -3692,8 +3714,8 @@ void FileFilesInFolder(const char* folderPath, wchar_t*** list, PXSize& listSize
 		closedir(directory);
 	}
 #elif OSWindows
-	wchar_t folderPathW[PathMaxSize];
-	PXSize writtenBytes = PXTextCopyAW(folderPath, PathMaxSize, folderPathW, PathMaxSize);
+	wchar_t folderPathW[PXPathSizeMax];
+	PXSize writtenBytes = PXTextCopyAW(folderPath, PXPathSizeMax, folderPathW, PXPathSizeMax);
 
 	WIN32_FIND_DATA dataCursour{0};
 	HANDLE hFind = 0;
@@ -3765,9 +3787,9 @@ unsigned char FileDoesExistA(const char* filePath)
 unsigned char FileDoesExistW(const wchar_t* filePath)
 {
 #if OSUnix
-	char filePathA[PathMaxSize];
+	char filePathA[PXPathSizeMax];
 
-	Text::Copy(filePath, PathMaxSize, filePathA, PathMaxSize);
+	Text::Copy(filePath, PXPathSizeMax, filePathA, PXPathSizeMax);
 
 	return DoesFileExist(filePathA);
 

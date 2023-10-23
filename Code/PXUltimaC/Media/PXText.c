@@ -185,6 +185,14 @@ PXSize PXTextPrint(PXText* const pxText, const char* style, ...)
 	return pxText->SizeUsed;
 }
 
+PXSize PXTextPrintA(char* const text, const PXSize size, const char* style, ...)
+{
+	PXText pxText;
+	PXTextConstructFromAdressA(&pxText, text, size);
+
+	return PXTextPrint(&pxText, style, &style[1]);
+}
+
 PXSize PXTextClear(PXText* const pxText)
 {
 	PXMemoryClear(pxText->TextA, pxText->SizeAllocated);

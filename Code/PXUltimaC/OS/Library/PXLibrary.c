@@ -6,7 +6,7 @@
 #include <OS/Memory/PXMemory.h>
 
 #if OSUnix
-
+#include <dlfcn.h>
 #elif OSWindows
 //#include <dbghelp.h> // MISSING
 #include <stdio.h>
@@ -82,7 +82,7 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 
 
 
-PXBool PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
+PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 {
 	switch (filePath->Format)
 	{
@@ -90,14 +90,26 @@ PXBool PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const fileP
 		case TextFormatASCII:
 		{
 #if OSUnix
+			dlerror(); // Clear any existing error
+
 			const int mode = RTLD_NOW;
-			pxLibrary->ID = dlopen(filePath, mode);
+			pxLibrary->ID = dlopen(filePath->TextA, mode);
+
+			PXActionOnErrorFetchAndReturn(pxLibrary->ID != PXNull);
+
+			return PXActionSuccessful;
 
 #elif PXOSWindowsDestop
-			pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
-#endif
+			SetLastError(0);
 
-			return pxLibrary->ID != PXNull;
+			pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
+
+			PXActionOnErrorFetchAndReturn(pxLibrary->ID == PXNull);
+
+			return PXActionSuccessful;
+#else 
+			return PXActionRefusedNotSupported;
+#endif	
 		}
 
 		case TextFormatUNICODE:
@@ -108,15 +120,19 @@ PXBool PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const fileP
 #elif PXOSWindowsDestop
 			pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
 
-			return pxLibrary->ID != PXNull;
-#endif
+			PXActionOnErrorFetchAndReturn(pxLibrary->ID == PXNull);
+
+			return PXActionSuccessful;
+#else 
+			return PXActionRefusedNotSupported;
+#endif	
 		}
 	}
 
-	return PXFalse;
+	return PXActionRefusedNotSupported;
 }
 
-PXBool PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
+PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 {
 	const PXBool result =
 #if OSUnix
@@ -125,9 +141,11 @@ PXBool PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 		FreeLibrary(pxLibrary->ID); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
 #endif
 
+	PXActionOnErrorFetchAndReturn(!result);
+
 	pxLibrary->ID = PXNull;
 
-	return result;
+	return PXActionSuccessful;
 }
 
 PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName)

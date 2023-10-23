@@ -528,7 +528,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
             case PXWavefrontLineObjectGroup:
             {
                 PXText materialFileName;
-                PXTextConstructNamedBufferA(&materialFileName, materialFileNameBuffer, PathMaxSize);
+                PXTextConstructNamedBufferA(&materialFileName, materialFileNameBuffer, PXPathSizeMax);
 
                 const PXBool isString = PXCompilerParseStringUntilNewLine(&tokenSteam, &materialFileName);
 
@@ -550,7 +550,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
                         {
                             //-------------------------------
                             PXText materialFilePathFull;
-                            PXTextConstructNamedBufferA(&materialFilePathFull, materialFilePathFullBuffer, PathMaxSize);
+                            PXTextConstructNamedBufferA(&materialFilePathFull, materialFilePathFullBuffer, PXPathSizeMax);
 
                             PXFilePathRelativeFromFile(pxFile, &materialFileName, &materialFilePathFull);
      
@@ -803,13 +803,23 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
                     float* vertexNormalDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeNormal, counterIndex);
                     float* vertexPositionDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeVertex, counterIndex);
 
-                    float* vertexTextureDataSource = &vertexTextureDataCache[vertexData[1] * 2u];
-                    float* vertexNormalDataSource = &vertexNormalDataCache[vertexData[2] * 3u];
-                    float* vertexPositionDataSource = &vertexPositionDataCache[vertexData[0] * 3u];
-            
-                    PXCopyList(float, 2, vertexTextureDataSource, vertexTextureDataTarget);
-                    PXCopyList(float, 3, vertexNormalDataSource, vertexNormalDataTarget);
-                    PXCopyList(float, 3, vertexPositionDataSource, vertexPositionDataTarget);
+                    if (vertexData[1] != -1)
+                    {
+                        float* vertexTextureDataSource = &vertexTextureDataCache[vertexData[1] * 2u];
+                        PXCopyList(float, 2, vertexTextureDataSource, vertexTextureDataTarget);
+                    }
+
+                    if (vertexData[2] != -1)
+                    {
+                        float* vertexNormalDataSource = &vertexNormalDataCache[vertexData[2] * 3u];
+                        PXCopyList(float, 3, vertexNormalDataSource, vertexNormalDataTarget);
+                    }
+
+                    if (vertexData[0] != -1)
+                    {
+                        float* vertexPositionDataSource = &vertexPositionDataCache[vertexData[0] * 3u];
+                        PXCopyList(float, 3, vertexPositionDataSource, vertexPositionDataTarget);
+                    }           
                     //-------------------------------------
 
 

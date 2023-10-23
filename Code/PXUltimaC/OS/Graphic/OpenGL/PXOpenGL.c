@@ -2434,7 +2434,6 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
                     printf("| %3i | %-40s |\n", wglExtenionAmount, wurst);
                 }
-
             }
         }
         else

@@ -145,10 +145,10 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 			case MTLLineTexture:
 			{
 				PXText fullTexturePath;
-				PXTextConstructNamedBufferA(&fullTexturePath, fullTexturePathBuffer, PathMaxSize);
+				PXTextConstructNamedBufferA(&fullTexturePath, fullTexturePathBuffer, PXPathSizeMax);
 
 				PXText nameTexturePath;
-				PXTextConstructNamedBufferA(&nameTexturePath, nameTexturePathBuffer, PathMaxSize);
+				PXTextConstructNamedBufferA(&nameTexturePath, nameTexturePathBuffer, PXPathSizeMax);
 
 				const PXBool isText = PXCompilerParseStringUntilNewLine(&compiledSteam, &nameTexturePath);
 

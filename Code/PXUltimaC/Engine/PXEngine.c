@@ -88,6 +88,12 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 	PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
 	PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
 
+    // Load all mods now, not fully tho, they may need very early checks before anything happens
+    PXText pxText;
+    PXTextMakeFixedA(&pxText, "Mod\\");
+
+    PXModLoaderScan(&pxEngine->ModLoader, &pxText);
+
 	// Create window
     {
         PXWindowConstruct(&pxEngine->Window);

@@ -4,12 +4,12 @@
 #include <Media/PXResource.h>
 #include <OS/Signal/PXSignal.h>
 #include <OS/Window/PXWindow.h>
+#include <Engine/PXMod.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 
 	typedef struct PXEngine_ PXEngine;
 
@@ -25,6 +25,7 @@ extern "C"
 	{
 		PXGraphic Graphic;
 		PXWindow Window;
+		PXModLoader ModLoader;
 
 		void* Owner;
 

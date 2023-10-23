@@ -101,8 +101,8 @@ extern "C"
     }
     PXLibrary;
 
-    PXPublic PXBool PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath); //  gain access to an executable object file. RTLD_LAZY
-    PXPublic PXBool PXAPI PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
+    PXPublic PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath); //  gain access to an executable object file. RTLD_LAZY
+    PXPublic PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
 
     PXPublic PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName);
     PXPublic PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object

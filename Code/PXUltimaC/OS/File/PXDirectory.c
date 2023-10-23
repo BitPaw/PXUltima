@@ -22,26 +22,202 @@
 #define OSWorkingDirectoryChangeA _chdir
 #define OSWorkingDirectoryChangeW _wchdir
 
-#endif
-
-void PXDirectoryUpdateEntry(PXDirectoryIterator* const pxDirectoryIterator)
+void PXFileElementInfoCOnvertFrom(PXFileElementInfo* const pxFileElementInfo, WIN32_FIND_DATA* const findData, PXInt8U depth)
 {
+	pxFileElementInfo->Name = findData->cFileName;
+	pxFileElementInfo->NameSize = PXTextLengthA(findData->cFileName, PXTextUnkownLength);
 
+	if (PXDirectoryIsRootFolder(findData->cFileName))
+	{
+		pxFileElementInfo->Type = PXFileElementInfoTypeDictionaryRoot;
+	}
+	else if(PXDirectoryIsRootFolder(findData->cFileName))
+	{
+		pxFileElementInfo->Type = PXFileElementInfoTypeDictionaryParent;
+	}
+	else
+	{
+		pxFileElementInfo->Type =
+			((findData->dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) != 0) * PXFileElementInfoTypeFile +
+			((findData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) * PXFileElementInfoTypeDictionary;
+	}
+
+
+	pxFileElementInfo->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
+	pxFileElementInfo->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
+
+	// Make full path
+	{
+		PXTextCopyA(findData->cFileName, PXTextUnkownLength, pxFileElementInfo->FullPath + pxFileElementInfo->FullPathOffset, pxFileElementInfo->FullPathSize - pxFileElementInfo->FullPathOffset);
+	}
 }
+
+#endif
 
 PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName)
 {
-	return PXActionInvalid;
+	PXClear(PXDirectoryIterator, pxDirectoryIterator);
+
+#if OSUnix
+
+	struct dirent* directoryEntry;
+	auto directory = opendir(directory);
+	PXBool sucess = directory != PXNull;
+
+#elif OSWindows
+
+	char seachDirectoryKey[PXPathSizeMax];
+	char* address = seachDirectoryKey;
+
+	address += PXTextCopyA(directoryName->TextA, directoryName->SizeUsed, address, PXPathSizeMax);
+	address += PXTextCopyA("*", 1u, address, PXPathSizeMax); // Get all directory and files
+
+	pxDirectoryIterator->ID = FindFirstFileA(seachDirectoryKey, &pxDirectoryIterator->DirectoryEntryCurrent); // FindFirstFileExW() has literally no additional functionality (for now)
+
+	{
+		const PXBool failed = INVALID_HANDLE_VALUE == pxDirectoryIterator->ID;
+
+		PXActionOnErrorFetchAndReturn(failed);
+	}
+
+
+
+	
+
+
+	pxDirectoryIterator->EntryCurrent.FullPathOffset = PXTextCopyA
+	(
+		directoryName->TextA, 
+		directoryName->SizeUsed,
+		pxDirectoryIterator->EntryCurrent.FullPath,
+		PXPathSizeMax
+	);
+
+	PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->DirectoryEntryCurrent, 1);
+
+
+	PXText pxTextInput;
+	PXTextConstructFromAdressA(&pxTextInput, pxDirectoryIterator->EntryCurrent.FullPath, pxDirectoryIterator->EntryCurrent.FullPathSize);
+
+	PXText pxTextOutInput;
+	PXTextConstructNamedBufferA(&pxTextOutInput, pxTextInputBuffer, PXPathSizeMax);
+
+	//pxDirectoryIterator->EntryCurrent.FullPathOffset = PXFIlePathGetLong(&pxTextInput, &pxTextOutInput);
+
+	return PXActionSuccessful;
+
+#else
+	return PXActionRefusedNotSupported;
+#endif
 }
 
 PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
 {
-	return PXActionInvalid;
+#if OSUnix
+
+	while ((directoryEntry = readdir(directory)) != PXNull)
+	{
+		const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->);
+		const unsigned int directoryLength = strlen(directory);
+		const unsigned int FileNameLength = strlen(directoryEntry->d_name);
+	}
+#elif OSWindows
+
+	const PXBool fetchSuccessful = FindNextFile(pxDirectoryIterator->ID, &pxDirectoryIterator->DirectoryEntryCurrent);
+	
+	if (!fetchSuccessful)
+	{
+		PXClear(PXFileElementInfo, &pxDirectoryIterator->EntryCurrent);
+
+		return PXFalse;
+	}
+	
+	PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->DirectoryEntryCurrent, 1);
+
+	switch (pxDirectoryIterator->EntryCurrent.Type)
+	{
+		case PXFileElementInfoTypeDictionaryRoot:
+		case PXFileElementInfoTypeDictionaryParent:
+		{
+			return PXTrue; // Root folder, as we go top->down, this is not needed
+		}
+		case PXFileElementInfoTypeFile:
+		{
+#if 0
+			const PXBool match = PXTextMatchW(pxDirectoryIterator->.Name, 230, extendedSearchFilter, extendedWriien);
+
+
+			if (pxDirectorySearchInfo->Flags & 0x01 && match)
+			{
+				wchar_t seachDirectoryKey[PXPathSizeMax];
+				wchar_t* address = seachDirectoryKey;
+
+				address += PXTextCopyW(buffer, wriien, address, PXPathSizeMax);
+				address += PXTextCopyW(findFileData.cFileName, 512, address, 512);
+
+				fileElementInfoCurrent.FullPath = seachDirectoryKey;
+
+				pxDirectorySearchInfo->Callback(&fileElementInfoCurrent);
+			}
+#endif
+
+			break;
+		}
+		case PXFileElementInfoTypeDictionary:
+		{
+#if 0
+			wchar_t seachDirectoryKey[300];
+			wchar_t* address = seachDirectoryKey;
+
+			address += PXTextCopyW(buffer, wriien, address, 300);
+			address += PXTextCopyW(findFileData.cFileName, 512, address, 512);
+			address += PXTextCopyW(L"/", 1, address, 512);
+			address += PXTextCopyW(extendedSearchFilter, extendedWriien, address, 512);
+
+			if (pxDirectorySearchInfo->Flags & 0x02)
+			{
+				pxDirectorySearchInfo->Callback(&fileElementInfoCurrent);
+			}
+
+			if (pxDirectorySearchInfo->Recursion)
+			{
+				PXDirectorySearchInfo recusiveCallInfo;
+				recusiveCallInfo.Callback = pxDirectorySearchInfo->Callback;
+				recusiveCallInfo.FolderPath = seachDirectoryKey;
+				recusiveCallInfo.FolderPathSize = 0;
+				recusiveCallInfo.FileFilter = pxDirectorySearchInfo->FileFilter;
+				recusiveCallInfo.FileFilterSize = pxDirectorySearchInfo->FileFilterSize;
+				recusiveCallInfo.Flags = pxDirectorySearchInfo->Flags;
+				recusiveCallInfo.DepthCounter = fileElementInfoCurrent.Depth + 1;
+				recusiveCallInfo.Recursion = PXYes;
+
+				PXDirectoryFilesInFolderW(&recusiveCallInfo);
+			}
+#endif
+
+			break;
+		}
+	}
+	
+
+	return PXTrue;
+
+#endif
 }
 
 PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
 {
-	return PXActionInvalid;
+#if OSUnix
+	const int returnCode = closedir(pxDirectoryIterator->ID);
+	const PXBool success = -1 != returnCode;
+
+	PXActionOnErrorFetchAndReturn(!success);
+
+#elif OSWindows
+	const PXBool success = FindClose(pxDirectoryIterator->ID);
+
+	PXActionOnErrorFetchAndReturn(!success);
+#endif
 }
 
 PXActionResult PXDirectoryCreate(const PXText* const directoryName)
@@ -95,20 +271,20 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 	}
 
 	/*
-	wchar_t directoryNameSegment[PathMaxSize];
+	wchar_t directoryNameSegment[PXPathSizeMax];
 	PXSize starPos = 0;
 	PXSize successful = 0;
 
 	do
 	{
-		PXSize offset = PXTextFindFirstW(directoryName + starPos, PathMaxSize - starPos, '/');
+		PXSize offset = PXTextFindFirstW(directoryName + starPos, PXPathSizeMax - starPos, '/');
 
 		if (offset == -1)
 		{
 			break;
 		}
 
-		PXTextCopyW(directoryName + starPos, offset - 1, directoryNameSegment, PathMaxSize);
+		PXTextCopyW(directoryName + starPos, offset - 1, directoryNameSegment, PXPathSizeMax);
 
 		const int creationResult = OSFileDirectoryCreateW(directoryNameSegment);
 		const PXBool wasSuccesful = creationResult == 0;

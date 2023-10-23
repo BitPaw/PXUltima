@@ -429,6 +429,12 @@
     <ClCompile Include="Engine\PXEngine.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\PXLobby.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PXMod.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -846,6 +852,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Engine\PXEngine.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PXLobby.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PXMod.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

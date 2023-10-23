@@ -172,7 +172,7 @@ extern "C"
 	PXPublic PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
 	PXPublic PXSize PXTextPrint(PXText* const pxText, const char* style, ...);
-
+	PXPublic PXSize PXTextPrintA(char* const text, const PXSize size, const char* style, ...);
 
 	PXPublic PXSize PXTextClear(PXText* const pxText);
 

@@ -42,13 +42,13 @@
 #define FileLineBufferSize 2048
 
 #if OSUnix
-#define PathMaxSize 260
+#define PXPathSizeMax 260
 #define DriveMaxSize 3
 #define DirectoryMaxSize 256
 #define FileNameMaxSize 256
 #define ExtensionMaxSize 256
 #elif OSWindows
-#define PathMaxSize 260 // _MAX_PATH
+#define PXPathSizeMax 260 // _MAX_PATH
 #define DriveMaxSize 3 //_MAX_DRIVE
 #define DirectoryMaxSize 256//_MAX_DIR
 #define FileNameMaxSize 256 //_MAX_FNAME
@@ -61,8 +61,9 @@ extern "C"
 #endif
 
 #if 1
-
-#define PXDirectoryIsDotFolder(s) (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')))
+#define PXDirectoryIsRootFolder(s) ((s[0] == '.') && (s[1] == '\0'))
+#define PXDirectoryIsCurrentFolder(s) (s[0] == '.') && (s[1] == '.') && (s[2] == '\0'))
+#define PXDirectoryIsDotFolder(s) (PXDirectoryIsRootFolder(s) || (PXDirectoryIsCurrentFolder(s))
 #else
 
 void PXDirectoryIsDotFolder(const char* s)
@@ -256,7 +257,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	/*
 	typedef struct FilePath_
 	{
-		wchar_t Path[PathMaxSize];
+		wchar_t Path[PXPathSizeMax];
 		wchar_t Drive[DriveMaxSize];
 		wchar_t Directory[DirectoryMaxSize];
 		wchar_t FileName[FileNameMaxSize];
@@ -299,7 +300,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	PXPublic void PXFilePathSplittPositionW
 	(
-		const wchar_t* fullPath, PXSize fullPathMaxSize,
+		const wchar_t* fullPath, PXSize fullPXPathSizeMax,
 		PXSize* drivePos, PXSize driveSize,
 		PXSize* directory, PXSize directorySize,
 		PXSize* fileName, PXSize fileNameSize,
@@ -525,6 +526,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 
 	PXPublic PXActionResult PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
+	PXPublic PXActionResult PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
 
 
 #ifdef __cplusplus
