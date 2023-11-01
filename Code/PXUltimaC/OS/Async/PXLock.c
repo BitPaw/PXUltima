@@ -57,7 +57,7 @@ PXActionResult PXLockCreate(PXLock* const lock, const PXLockType type)
 #endif
 		}
 		default:
-			return InvalidParameter;
+			return PXActionRefusedArgumentInvalid;
 	}
 
 #endif

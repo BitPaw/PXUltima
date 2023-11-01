@@ -169,6 +169,8 @@ extern "C"
 	PXPublic PXSize PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
 	PXPublic PXSize PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
 		 
+	PXPublic PXSize PXTextAppend(PXText* const currentString, const PXText* const appendingString);
+	PXPublic PXSize PXTextAppendA(char* const dataString, const PXSize dataStringSize, const char* const appaendString, const char appaendStringSize);
 	PXPublic PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
 	PXPublic PXSize PXTextPrint(PXText* const pxText, const char* style, ...);

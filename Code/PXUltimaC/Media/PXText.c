@@ -134,6 +134,28 @@ PXSize PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextT
 	return pxTextTarget->SizeUsed;
 }
 
+PXSize PXTextAppend(PXText* const currentString, const PXText* const appendingString)
+{
+	const PXSize freeSpace = currentString->SizeAllocated - currentString->SizeUsed;
+	const PXBool isEnoughSpace = freeSpace > appendingString->SizeUsed;
+
+	if (!isEnoughSpace)
+	{
+		return 0;
+	}
+
+	char* data = currentString->TextA[currentString->SizeUsed];
+
+	currentString->SizeUsed += PXTextCopyA(appendingString->TextA, appendingString->SizeUsed, data, freeSpace);
+
+	return currentString->SizeUsed;
+}
+
+PXSize PXTextAppendA(char* const dataString, const PXSize dataStringSize, const char* const appaendString, const char appaendStringSize)
+{
+	return 0;
+}
+
 PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize)
 {
 	const PXSize length = PXTextLengthW(dataString, dataStringSize);

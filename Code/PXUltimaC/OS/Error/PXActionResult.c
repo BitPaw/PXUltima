@@ -14,24 +14,23 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 {
 	switch(errorCode)
 	{
-		default:
-	//	case EOTHER:
-	//		return UnkownError;
+		case EOTHER:
+			return PXActionFailedUnkownError;
 
 		case EACCES:
-			return PermissionDenied;
+			return PXActionDeniedNoPermission;
 
-	//	case EADDRINUSE:
-	//		return AddressInUse;
+		case EADDRINUSE:
+			return AddressInUse;
 
-	//	case EADDRNOTAVAIL:
-	//		return AddressNotAvailable;
+		case EADDRNOTAVAIL:
+			return AddressNotAvailable;
 
-//		case EAFNOSUPPORT:
-	//		return AddressFamilyNotSupported;
+		case EAFNOSUPPORT:
+			return AddressFamilyNotSupported;
 
-	//	case EALREADY:
-	//		return ConnectionAlreadyInProgress;
+		case EALREADY:
+			return ConnectionAlreadyInProgress;
 
 		case E2BIG:
 			return ArgumentListTooLong;
@@ -39,104 +38,104 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 		case EBADF:
 			return BadFileDescriptor;
 
-	//	case EBADMSG:
-	//		return BadMessage;
+		case EBADMSG:
+			return BadMessage;
 
 		case EBUSY:
 			return PXActionRefusedResourceBusy;
 
-	//	case ECANCELED:
-	//		return OperationCanceled;
+		case ECANCELED:
+			return OperationCanceled;
 
 		case ECHILD:
 			return NoChildProcesses;
 
-	//	case ECONNABORTED:
-	//		return ConnectionAborted;
+		case ECONNABORTED:
+			return ConnectionAborted;
 
-	//	case ECONNREFUSED:
-	//		return ConnectionRefused;
+		case ECONNREFUSED:
+			return ConnectionRefused;
 
-	//	case ECONNRESET:
-	//		return ConnectionReset;
+		case ECONNRESET:
+			return ConnectionReset;
 
 		case EDEADLK:
 			return ResourceDeadlockWouldOccur;
 
-	//	case EDESTADDRREQ:
-	//		return DestinationAddressRequired;
+		case EDESTADDRREQ:
+			return DestinationAddressRequired;
 
 		case EDOM:
 			return PXMathematicsArgumentOutOfDomainOfFunction;
 
 		case EEXIST:
-			return FileExists;
+			return PXActionRefusedFileAlreadyExists;
 
 		case EFAULT:
 			return BadAddress;
 
 		case EFBIG:
-			return FileTooLarge;
+			return PXActionFailedFileTooLarge;
 
-	//	case EHOSTUNREACH:
-	//		return HostIsUnreachable;
+		case EHOSTUNREACH:
+			return HostIsUnreachable;
 
-	//	case EIDRM:
-	//		return IdentifierRemoved;
+		case EIDRM:
+			return IdentifierRemoved;
 
 		case EILSEQ:
 			return IllegalByteSequence;
 
-	//	case EINPROGRESS:
-	//		return OperationInProgress;
+		case EINPROGRESS:
+			return OperationInProgress;
 
 		case EINTR:
 			return InterruptedFunction;
 
 		case EINVAL:
-			return InvalidArgument;
+			return PXActionRefusedArgumentInvalid;
 
 		case EIO:
 			return IOFailure;
 
-	//	case EISCONN:
-	//		return SocketIsConnected;
+		case EISCONN:
+			return PXActionRefusedAlreadyConnected;
 
 		case EISDIR:
-			return IsADirectory;
+			return PXActionRefusedTargetIsDirectory;
 
-	//	case ELOOP:
-	//		return TooManyLevelsOfSymbolicLinks;
+		case ELOOP:
+			return PXActionCanceledLoopDeteced;
 
 		case EMFILE:
-			return FileDescriptorValueTooLarge;
+			return PXActionFailedFileDescriptorValueTooLarge;
 
 		case EMLINK:
-			return TooManyLinks;
+			return PXActionFailedTooManyLinks;
 
-	//	case EMSGSIZE:
-	//		return MessageTooLarge;
+		case EMSGSIZE:
+			return MessageTooLarge;
 
 		case ENAMETOOLONG:
-			return FilenameTooLong;
+			return PXActionFailedFileNameTooLong;
 
-	//	case ENETDOWN:
-	//		return NetworkIsDown;
+		case ENETDOWN:
+			return PXActionRefusedNetworkIsDown;
 
-	//	case ENETRESET:
-	//		return ConnectionAbortedByNetwork;
+		case ENETRESET:
+			return PXActionFailedConnectionAbortedByNetwork;
 
-	//	case ENETUNREACH:
-	//		return NetworkUnreachable;
+		case ENETUNREACH:
+			return PXActionFailedNetworkUnreachable;
 
 		case ENFILE:
-			return TooManyFilesOpenInSystem;
+			return PXActionFailedTooManyFilesOpenInSystem;
 
-	//	case ENOBUFS:
-	//		return NoBufferSpaceAvailable;
+		case ENOBUFS:
+			return NoBufferSpaceAvailable;
 
-	//	case ENODATA:
-	//		return NoMessageIsAvailableOnTheStreamHeadReadQueue;
+		case ENODATA:
+			return NoMessageIsAvailableOnTheStreamHeadReadQueue;
 
 		case ENODEV:
 			return NoSuchDevice;
@@ -150,44 +149,44 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 		case ENOLCK:
 			return NoLocksAvailable;
 
-	//	case ENOLINK:
-	//		return LinkHasBeenSevered;
+		case ENOLINK:
+			return LinkHasBeenSevered;
 
 		case ENOMEM:
 			return PXActionFailedMemoryAllocation;
 
-	//	case ENOMSG:
-	//		return NoMessageOfTheDesiredType;
+		case ENOMSG:
+			return NoMessageOfTheDesiredType;
 
-	//	case ENOPROTOOPT:
-	//		return ProtocolNotAvailable;
+		case ENOPROTOOPT:
+			return ProtocolNotAvailable;
 
 		case ENOSPC:
 			return NoSpaceLeftOnDevice;
 
-	//	case ENOSR:
-	//		return NoStreamResources;
+		case ENOSR:
+			return NoStreamResources;
 
-	//	case ENOSTR:
-	//		return NotAStream;
+		case ENOSTR:
+			return NotAStream;
 
 		case ENOSYS:
 			return FunctionNotSupported;
 
-	//	case ENOTCONN:
-	//		return TheSocketIsNotConnected;
+		case ENOTCONN:
+			return PXActionFailedNotConnected;
 
 		case ENOTDIR:
-			return NotADirectory;
+			return PXActionRefusedNotADirectory;
 
 		case ENOTEMPTY:
-			return DirectoryNotEmpty;
+			return PXActionRefusedDirectoryNotEmpty;
 
-	//	case ENOTRECOVERABLE:
-	//		return StateNotRecoverable;
+		case ENOTRECOVERABLE:
+			return StateNotRecoverable;
 
-	//	case ENOTSOCK:
-	//		return NotASocket;
+		case ENOTSOCK:
+			return PXActionRefusedNotASocket;
 
 		case ENOTTY:
 			return InappropriateIOControlOperation;
@@ -195,34 +194,23 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 		case ENXIO:
 			return NoSuchDeviceOrAddress;
 
-#if OSUnix
-			//case EAGAIN:
 		case EWOULDBLOCK:
 			return OperationWouldBlock;
 
-			//case ENOTSUP: // fall throu, same ID unser unix.
 		case ENOTSUP:
 			return PXActionNotSupportedByOperatingSystem;
 
-#elif OSWindows
 		case EAGAIN:
 			return ResourceUnavailableTryAgain;
 
-	//	case EWOULDBLOCK:
-	//		return OperationWouldBlock;
+		case EOPNOTSUPP:
+			return OperationNotSupportedOnSocket;
 
-	//	case ENOTSUP:
-	//		return NotSupported;
+		case EOVERFLOW:
+			return ValueTooLargeToBeStoredInDataType;
 
-	//	case EOPNOTSUPP:
-	//		return OperationNotSupportedOnSocket;
-#endif
-
-	//	case EOVERFLOW:
-	//		return ValueTooLargeToBeStoredInDataType;
-
-	//	case EOWNERDEAD:
-	//		return PreviousOwnerDied;
+		case EOWNERDEAD:
+			return PreviousOwnerDied;
 
 		case EPERM:
 			return OperationNotPermitted;
@@ -230,14 +218,14 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 		case EPIPE:
 			return BrokenPipe;
 
-	//	case EPROTO:
-	//		return ProtocolError;
+		case EPROTO:
+			return ProtocolError;
 
-	//	case EPROTONOSUPPORT:
-	//		return ProtocolNotSupported;
+		case EPROTONOSUPPORT:
+			return ProtocolNotSupported;
 
-	//	case EPROTOTYPE:
-	//		return ProtocolWrongTypeForSocket;
+		case EPROTOTYPE:
+			return ProtocolWrongTypeForSocket;
 
 		case ERANGE:
 			return ResultTooLarge;
@@ -246,22 +234,25 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 			return ReadOnlyFileSystem;
 
 		case ESPIPE:
-			return InvalidSeek;
+			return PXActionRefusedInvalidSeek;
 
 		case ESRCH:
 			return NoSuchProcess;
 
-	//	case ETIME:
-	//		return StreamTimeout;
+		case ETIME:
+			return StreamTimeout;
 
-	//	case ETIMEDOUT:
-	//		return ConnectionTimedOut;
+		case ETIMEDOUT:
+			return PXActionFailedConnectionTimedOut;
 
-	//	case ETXTBSY:
-	//		return TextFileBusy;
+		case ETXTBSY:
+			return TextFileBusy;
 
 		case EXDEV:
 			return CrossDeviceLink;
+
+		default:
+			return PXActionInvalid;
 	}
 }
 

@@ -167,7 +167,7 @@ PXActionResult PXAPI PXProgramWaitForFinish(PXProgram* const program, PXInt32U* 
     {        
         case WAIT_TIMEOUT:
         {
-            return ConnectionTimedOut;
+            return PXActionFailedConnectionTimedOut;
         }
         case WAIT_FAILED:
         {

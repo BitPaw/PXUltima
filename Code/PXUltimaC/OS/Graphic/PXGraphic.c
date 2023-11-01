@@ -316,7 +316,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBo
     };
 
 
-    PXObjectClear(PXModel, &skyBox->Model);
+    PXClear(PXModel, &skyBox->Model);
     skyBox->Model.VertexBuffer.VertexData = vertexData;
     skyBox->Model.VertexBuffer.VertexDataSize = sizeof(vertexData);
     skyBox->Model.VertexBuffer.VertexDataRowSize = 3;
@@ -1712,7 +1712,7 @@ void PXAPI PXGraphicResourceRegister(PXGraphic* const pxGraphic, PXGraphicResour
 
 PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite)
 {
-    PXObjectClear(PXSprite, pxSprite);
+    PXClear(PXSprite, pxSprite);
 
     PXModelConstruct(&pxSprite->Model);
 
@@ -1783,6 +1783,9 @@ void PXAPI PXCameraConstruct(PXCamera* const camera)
     PXMatrix4x4FIdentity(&camera->MatrixProjection);
 
     PXCameraViewChange(camera, PXCameraPerspective3D);
+
+    const PXVector3F position = {0,0,0};
+    PXCameraRotate(camera, &position);
 }
 
 void PXAPI PXCameraDestruct(PXCamera* const camera)

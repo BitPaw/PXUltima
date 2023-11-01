@@ -137,9 +137,6 @@ extern "C"
 }
 #endif
 
-
-#define PXObjectClear(objectType, adressofObject) PXMemoryClear(adressofObject, sizeof(objectType))
-
 #if 1 // Use default allocator
 
 #if MemoryDebugOutput

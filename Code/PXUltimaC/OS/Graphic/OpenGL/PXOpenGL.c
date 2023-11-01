@@ -4007,7 +4007,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreateFromFileVFA(PXOpenGL* const pxOp
 
 PXActionResult PXAPI PXOpenGLShaderProgramCreateFromStringVF(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
 {
-    PXObjectClear(PXShaderProgram, pxShaderProgram);
+    PXClear(PXShaderProgram, pxShaderProgram);
 
     pxShaderProgram->PixelShader.Type = PXShaderTypeFragment;
     pxShaderProgram->PixelShader.ContentSize = fragmentShaderFilePath->SizeUsed;

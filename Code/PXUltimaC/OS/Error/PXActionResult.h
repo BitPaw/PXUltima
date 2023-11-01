@@ -15,27 +15,114 @@ extern "C"
 	{
 		//---<General>-----------------------
 		PXActionInvalid, // Default iniitlialisation value, do not use.
-		PXActionSuccessful, // PXAction finished successful
+		PXActionSuccessful, // Action finished successful
+		PXActionSuccessWithSubstitution,
 		PXActionDidNothing, // if the function did nothing
-		PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
-		PXActionFailedMemoryRelease,
-		PXActionDeniedNoPermission,
+		PXActionFailedUnkownError, // [OTHER] Undefined error
 		//-----------------------------------
 
-		PXActionRefusedNotImplemented,
-		PXActionNotSupportedByLibrary,
+		PXActionCanceledLoopDeteced, // LOOP
+
+		//-------------------------------------------------------
+		// Memory 
+		//-------------------------------------------------------
+		PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
+		PXActionFailedMemoryRelease,
+		
+		PXActionFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord 
+		PXActionRefuedBufferSizeTooSmal,
+
+		PXActionRefuedInputBufferNull, // is NULL
+		PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
+		PXActionRefuedInputBufferTooSmal, // cant 
+		PXActionRefuedInputBufferTooBig,
+
+		PXActionRefuedOutputBufferNull, // is NULL 
+		PXActionRefuedOutputBufferTooSmal, // 
+
+		//-------------------------------------------------------
+		// Object
+		//-------------------------------------------------------
+		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
+		PXActionRefuedObjectIDInvalid, // Use if you have an invalid ID or HANDLE
+		PXActionRefuedObjectStateDoesNotAllowAction,
+		PXActionRefuedObjectInterfaceNotAvailable,
+		PXActionRefuedObjectNotInizialized,
+		PXActionRefuedObjectAlreadyInizialized,
+		PXActionRefuedObjectAlreadyExists,
+		PXActionRefuedObjectTypeInvalid,
+		PXActionRefuedObjectTypeNotSupported,
+		PXActionRefuedObjectAggregationNotSupported,
+		PXActionRefuedObjectPropertyNotAvailable,
+
+		//-------------------------------------------------------
+		// Permission
+		//-------------------------------------------------------
+		PXActionDeniedNoPermission, // [ACCES] You do not have permission to use this command.
+		PXActionDeniedPriorityTooLow,
+		PXActionYieldToOtherProcessWithHigherPriority,
+		//PXActionDenied
+
+		//-------------------------------------------------------
+		// File I/O 
+		//-------------------------------------------------------
+		PXActionFailedFileNameTooLong, // NAMETOOLONG
+		PXActionRefusedTargetIsDirectory, // ISDIR
+		PXActionFailedFileDescriptorValueTooLarge, // MFILE
+		PXActionFailedTooManyLinks, // MLINK
+		PXActionRefusedFileAlreadyExists, // EXIST
+		PXActionFailedFileTooLarge, // FBIG
+		PXActionRefusedInvalidSeek, // SPIPE
+		PXActionFailedTooManyFilesOpenInSystem, // NFILE
+		PXActionRefusedNotADirectory, // NOTDIR
+		PXActionRefusedDirectoryNotEmpty, // NOTEMPTY
+
+		//-------------------------------------------------------
+		// Network 
+		//-------------------------------------------------------
+		PXActionRefusedAlreadyConnected, // [ISCONN]
+		PXActionRefusedNetworkIsDown, // [NETDOWN]
+		PXActionFailedConnectionAbortedByNetwork, // [NETRESET]
+		PXActionFailedNetworkUnreachable, // [NETUNREACH]
+		PXActionRefusedNotASocket, // [NOTSOCK]
+		PXActionFailedConnectionTimedOut, // [TIMEDOUT]
+		PXActionFailedNotConnected, // [NOTCONN]
+
+		//-------------------------------------------------------
+		// Audio/Video
+		//-------------------------------------------------------
+		PXActionRefusedEffectNotAvailable,
+
+
+		//-------------------------------------------------------
+		// Functions
+		//-------------------------------------------------------
+		PXActionRefusedArgumentInvalid, // [INVAL]	
+
+		//-------------------------------------------------------
+		// Library
+		//-------------------------------------------------------
+		PXActionRefusedNotSupported, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
+		PXActionRefusedNotImplemented, // Function that exists but does not contain any code
+		PXActionNotSupportedByLibrary, // 
 		PXActionLibraryNotFound,
 		PXActionNotSupportedByOperatingSystem,
 
-		PXActionRefusedMissingCallBack,
+		PXActionRefusedLibraryRequiredUpgrade,
 
-		PXActionFailedInitialization,
+
+		PXActionRefusedMissingCallBack, // Callback is required but missing
+
+		PXActionFailedInitialization, // Re
+		PXActionRedundantAlreadyInitialized,
 		PXActionFailedCleanup,
 		PXActionFailedModuleLoad,
 		PXActionFailedDataFetch,
 
 		PXActionInterruptedByEvent,
 		PXActionInterruptedByFunctionCall,
+
+
 
 		PXActionRefuedPermissionDenied,
 		PXActionFailedResourcedNotEnough,
@@ -71,18 +158,10 @@ extern "C"
 
 
 
-		PXActionRefuedObjectTypeInvalid,
-		PXActionRefuedObjectTypeNotSupported,
 
 		PXActionRefuedOperationNotSupported,
 
 		PXActionCancelled,
-
-		//---<Object>------------
-		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
-		PXActionRefuedObjectIDInvalid, // Use if you have an invalid ID or HANDLE
-		//-----------------------
-
 
 		//---<Function input>---
 		PXActionRefuedAdressInvalid, // System detected an invalid pointer
@@ -96,13 +175,7 @@ extern "C"
 
 		PXActionRefuedInputInvalid,
 
-		PXActionRefuedInputBufferNull, // is NULL
-		PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
-		PXActionRefuedInputBufferTooSmal, // cant 
-		PXActionRefuedInputBufferTooBig,
 
-		PXActionRefuedOutputBufferNull, // is NULL 
-		PXActionRefuedOutputBufferTooSmal, // 
 
 
 		PXActionInvalidStateImpossible, // Is an object is used and has data that should not be possible
@@ -116,12 +189,12 @@ extern "C"
 
 
 
+		PXActionRefuedDriverInvalid,
+		PXActionRefuedDriverMissing,
 
 
-
-
-
-
+			PXActionRefuedFormatIllegal,
+		PXActionRefuedFormatNotSupported,
 
 
 
@@ -219,7 +292,6 @@ extern "C"
 		VersionNotSupported,
 		BlockedByOtherOperation,
 		LimitReached,
-		InvalidParameter,
 		SubSystemNotInitialised,
 		SubSystemNetworkFailed,
 		SocketIsBlocking,
@@ -306,9 +378,9 @@ extern "C"
 
 
 		// POSIX Error codes, these are pre-defined
-		PXActionFailedUnkownError, // OTHER
 
-		PermissionDenied, // ACCES
+
+	
 		AddressInUse, // ADDRINUSE
 		AddressNotAvailable, // ADDRNOTAVAIL
 		AddressFamilyNotSupported, // AFNOSUPPORT
@@ -326,27 +398,29 @@ extern "C"
 		ResourceDeadlockWouldOccur, // DEADLK
 		DestinationAddressRequired, // DESTADDRREQ
 		PXMathematicsArgumentOutOfDomainOfFunction, // DOM
-		FileExists, // EXIST
+	
+
 		BadAddress, // FAULT
-		FileTooLarge, // FBIG
+
 		HostIsUnreachable, // HOSTUNREACH
 		IdentifierRemoved, // IDRM
 		IllegalByteSequence, // ILSEQ
 		OperationInProgress, // INPROGRESS
 		InterruptedFunction, // INTR
-		InvalidArgument, // INVAL
+	
 		IOFailure, // IO
-		PXActionRefusedAlreadyConnected, // ISCONN
-		IsADirectory, // ISDIR
-		TooManyLevelsOfSymbolicLinks, // LOOP
-		FileDescriptorValueTooLarge, // MFILE
-		TooManyLinks, // MLINK
+
+
+
+
+
+	
+
+
 		MessageTooLarge, // MSGSIZE
-		FilenameTooLong, // NAMETOOLONG
-		NetworkIsDown, // NETDOWN
-		ConnectionAbortedByNetwork, // NETRESET
-		NetworkUnreachable, // NETUNREACH
-		TooManyFilesOpenInSystem, // NFILE
+
+	
+
 		NoBufferSpaceAvailable, // NOBUFS
 		NoMessageIsAvailableOnTheStreamHeadReadQueue, // NODATA
 		NoSuchDevice, // NODEV
@@ -360,12 +434,13 @@ extern "C"
 		NoStreamResources, // NOSR
 		NotAStream, // NOSTR
 		FunctionNotSupported, // NOSYS
-		PXActionFailedNotConnected, // NOTCONN
-		NotADirectory, // NOTDIR
-		DirectoryNotEmpty, // NOTEMPTY
+
+
 		StateNotRecoverable, // NOTRECOVERABLE
-		NotASocket, // NOTSOCK
-		PXActionRefusedNotSupported, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
+
+
+
+
 		InappropriateIOControlOperation, // NOTTY
 		NoSuchDeviceOrAddress, // NXIO
 		OperationNotSupportedOnSocket, // OPNOTSUPP
@@ -378,10 +453,10 @@ extern "C"
 		ProtocolWrongTypeForSocket, // PROTOTYPE
 		ResultTooLarge, // RANGE,
 		ReadOnlyFileSystem, //ROFS
-		InvalidSeek, // SPIPE
+
 		NoSuchProcess, // SRCH
 		StreamTimeout, // TIME -> ioctl()
-		ConnectionTimedOut, // TIMEDOUT
+
 		TextFileBusy, // TXTBSY
 		OperationWouldBlock, // WOULDBLOCK
 		CrossDeviceLink // XDEV
@@ -395,6 +470,7 @@ extern "C"
 
 	PXPublic PXActionResult PXErrorCodeFromID(const int errorCode);
 	PXPublic PXActionResult PXErrorCurrent();
+
 
 #ifdef __cplusplus
 }

@@ -3011,10 +3011,6 @@ void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMous
 {
     PXMouse* const mouse = &window->MouseCurrentInput;
 
-    const char* buttonStateText = 0;
-    const char* mouseButtonText = 0;
-
-#if 0
     switch (buttonState)
     {
         case PXKeyPressStateDown:
@@ -3034,6 +3030,16 @@ void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMous
                 case PXMouseButtonRight:
                 {
                     mouse->Buttons |= ButtonRight;
+                    break;
+                }
+                case PXMouseButtonSpecialA:
+                {
+                    mouse->Buttons |= ButtonCustomA;
+                    break;
+                }
+                case PXMouseButtonSpecialB:
+                {
+                    mouse->Buttons |= ButtonCustomB;
                     break;
                 }
             }
@@ -3058,6 +3064,16 @@ void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMous
                     mouse->Buttons &= ~ButtonRight;
                     break;
                 }
+                case PXMouseButtonSpecialA:
+                {
+                    mouse->Buttons &= ~ButtonCustomA;
+                    break;
+                }
+                case PXMouseButtonSpecialB:
+                {
+                    mouse->Buttons &= ~ButtonCustomB;
+                    break;
+                }
             }
             break;
         }
@@ -3066,10 +3082,9 @@ void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMous
             break;
     }
 
-
-
-
-
+#if 0
+    const char* buttonStateText = 0;
+    const char* mouseButtonText = 0;
 
     switch(buttonState)
     {

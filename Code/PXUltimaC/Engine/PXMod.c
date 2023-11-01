@@ -90,7 +90,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
 
 PXActionResult PXAPI PXModLoaderAdd(PXModLoader* const pxModLoader, PXMod* const pxMod)
 {
-	pxMod->Load(PXNull, &pxMod, 0);
+	pxMod->Load(PXNull, pxMod, 0);
 
 	PXLogPrint
 	(

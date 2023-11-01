@@ -60,7 +60,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     ++(pxEngine->CounterTimeCPU);
     ++(pxEngine->CounterTimeGPU);
 
-#if 0
+#if 1
     PXConsoleGoToXY(0, 0);
 
     printf("%15s : Hz %-20i\n", "FPS", pxEngine->FramesPerSecound);
@@ -73,8 +73,10 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     printf("%15s : us %-20i\n", "Full rotation", pxEngine->CounterTimeDelta);
 
     printf("\n");
-    
+
     PXKeyBoardInputPrint(&pxEngine->Window.KeyBoardCurrentInput);
+
+    PXMouseInputPrint(&pxEngine->Window.MouseCurrentInput);
 #endif
 }
 

@@ -20,6 +20,7 @@
 #include <Media/STEP/PXSTEP.h>
 #include <Media/STL/PXSTL.h>
 #include <Media/SVG/PXSVG.h>
+#include <Media/HEIF/PXHEIF.h>
 #include <Media/HTML/PXHTML.h>
 #include <Media/JSON/PXJSON.h>
 #include <Media/INI/PXINI.h>
@@ -137,7 +138,7 @@ void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, c
 
 void PXModelConstruct(PXModel* const pxModel)
 {
-    PXObjectClear(PXModel, pxModel);
+    PXClear(PXModel, pxModel);
 
     PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
     
@@ -383,10 +384,16 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
             pxFileTypeInfo->ResourceSaveFunction = PXGIFSaveToFile;
             break;
 
+        case PXFileFormatHighEfficiencyImageFile:
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
+            pxFileTypeInfo->ResourceLoadFunction = PXHEIFLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXHEIFSaveToFile;
+            break;
+
         case PXFileFormatHTML:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXHTMLLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXHTMLSaveToFile;
             break;
 
         case PXFileFormatINI:

@@ -239,6 +239,7 @@
     <ClCompile Include="Container\QuadTree\PXQuadTree.c" />
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
+    <ClCompile Include="Media\HEIF\PXHEIF.c" />
     <ClCompile Include="Media\Matroska\PXMatroska.c" />
     <ClCompile Include="OS\DataBase\PXDataBase.c" />
     <ClCompile Include="Media\PXResource.c" />
@@ -381,6 +382,7 @@
     <ClInclude Include="Container\QuadTree\PXQuadTree.h" />
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
+    <ClInclude Include="Media\HEIF\PXHEIF.h" />
     <ClInclude Include="Media\Matroska\PXMatroska.h" />
     <ClInclude Include="OS\DataBase\PXDataBase.h" />
     <ClInclude Include="Media\PXResource.h" />

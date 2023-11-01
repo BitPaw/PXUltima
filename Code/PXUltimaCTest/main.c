@@ -132,7 +132,7 @@ int main()
 
 	PXAudio pxAudio;
 	PXAudioDevice pxAudioDevice;
-	PXObjectClear(PXAudioDevice, &pxAudioDevice);
+	PXClear(PXAudioDevice, &pxAudioDevice);
 
 	PXActionResult init = PXAudioInitialize(&pxAudio, PXAudioSystemWindowsMultiMedia);
 

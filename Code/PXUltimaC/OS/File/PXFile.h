@@ -95,6 +95,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileFormatFLAC,
 		PXFileFormatSpriteFont,
 		PXFileFormatGIF,
+		PXFileFormatHighEfficiencyImageFile,
 		PXFileFormatHTML,
 		PXFileFormatINI,
 		PXFileFormatJPEG,

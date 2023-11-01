@@ -308,6 +308,8 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
+				case PXInt32Make('H', 'E', 'I', 'C'): // Fall though
+				case PXInt32Make('H', 'E', 'I', 'F'): return PXFileFormatHighEfficiencyImageFile;
 				case PXInt32Make('P', 'U', 'F', 'F'): return PXFileFormatBinaryLinux;
 				case PXInt32Make('F', 'L', 'A', 'C'): return PXFileFormatFLAC;
 				case PXInt32Make('M', 'I', 'D', 'I'): return PXFileFormatMIDI;

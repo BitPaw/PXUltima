@@ -31,8 +31,6 @@ typedef void* PXAudioDeviceInputHandle;
 
 #endif
 
-#define PXAudioSystemWindowsXAudioEnable 0u
-#define PXAudioSystemWindowsMultimediaEnable 1u
 
 
 
@@ -65,15 +63,19 @@ extern "C"
 
 
 
-
+#define PXAudioSystemWindowsMultimediaEnabled 1u
+#define PXAudioSystemWindowsKernalMixerEnabled 1u
+#define PXAudioSystemWindowsDirectSoundEnable 1u
+#define PXAudioSystemWindowsXAudioEnable 1u
 
 
 	typedef enum PXAudioSystem_
 	{
 		PXAudioSystemInvalid,
-		PXAudioSystemWindowsMultiMedia,
-		PXAudioSystemWindowsKernalMixer,
-		PXAudioSystemWindowsXAudio
+		PXAudioSystemWindowsMultiMedia, // Windows 2000 
+		PXAudioSystemWindowsKernalMixer, // Windows 98
+		PXAudioSystemWindowsDirectSound, // Windows XP
+		PXAudioSystemWindowsXAudio // Windows 8 (successor to DirectSound)
 	}
 	PXAudioSystem;
 
@@ -83,6 +85,8 @@ extern "C"
 #if OSUnix
 
 #elif OSWindows
+		void* DirectSoundInterface;
+
 		void* XAudioInterface;
 		void* XAudioMasterVoice;
 #endif
@@ -97,7 +101,11 @@ extern "C"
 	PXAudio;
 
 #if PXOSWindowsDestop
-	PXPrivate PXActionResult PXAudioConvertMMResult(const unsigned int mmResultID);
+	PXPrivate PXActionResult PXAudioConvertMMResult(const PXInt32U mmResultID);
+	PXPrivate PXActionResult PXAudioConvertFromHandleResultID(const HRESULT handleResult);
+
+	PXPrivate BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount);
+	PXPrivate BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDevice* const pxAudioDevice);
 #endif
 
 	//--------------------------------------------------------
@@ -113,6 +121,7 @@ extern "C"
 	//--------------------------------------------------------
 	PXPublic PXActionResult PXAudioDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount);
 	PXPublic PXActionResult PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice);
+	PXPublic PXActionResult PXAudioDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount);
 
 	PXPublic PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID);
 	PXPublic PXActionResult PXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
@@ -124,6 +133,16 @@ extern "C"
 		const PXAudioDeviceType pxAudioDeviceType,
 		const PXInt32U deviceID
 	);
+
+	//--------------------------------------------------------
+	// Device - Input
+	//--------------------------------------------------------
+
+
+	//--------------------------------------------------------
+	// Device - Output
+	//--------------------------------------------------------
+
 
 	//--------------------------------------------------------
 	// Device - Pitch

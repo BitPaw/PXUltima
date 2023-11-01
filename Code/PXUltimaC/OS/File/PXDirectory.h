@@ -23,6 +23,26 @@ extern "C"
 {
 #endif
 
+	typedef enum PXDirectioySpecialFolder_
+	{
+		PXDirectioySpecialFolder_ADMINTOOLS,
+		PXDirectioySpecialFolderAPPDATA,
+		PXDirectioySpecialFolderCOMMON_ADMINTOOLS,
+		PXDirectioySpecialFolderCOMMON_APPDATA,
+		PXDirectioySpecialFolderCOMMON_DOCUMENTS,
+		PXDirectioySpecialFolderCOOKIES,
+		PXDirectioySpecialFolderHISTORY,
+		PXDirectioySpecialFolderINTERNET_CACHE,
+		PXDirectioySpecialFolderLOCAL_APPDATA,
+		PXDirectioySpecialFolderPictures,
+		PXDirectioySpecialFolderPERSONAL,
+		PXDirectioySpecialFolderPROGRAM_FILES,
+		PXDirectioySpecialFolderPROGRAM_FILES_COMMON,
+		PXDirectioySpecialFolderSystem,
+		PXDirectioySpecialFolderWinfows
+
+	}PXDirectioySpecialFolder;
+
 
 	typedef enum PXFileElementInfoType_
 	{
@@ -117,6 +137,9 @@ extern "C"
 
 	PXPublic PXActionResult PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
 	PXPublic PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo);
+
+
+	PXPublic PXActionResult PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create);
 
 
 #ifdef __cplusplus

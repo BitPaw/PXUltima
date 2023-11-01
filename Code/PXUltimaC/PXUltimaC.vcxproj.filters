@@ -435,6 +435,9 @@
     <ClCompile Include="Engine\PXMod.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\HEIF\PXHEIF.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -858,6 +861,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Engine\PXMod.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\HEIF\PXHEIF.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

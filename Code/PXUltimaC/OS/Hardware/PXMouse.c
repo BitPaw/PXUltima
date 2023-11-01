@@ -6,7 +6,9 @@
 
 void PXMouseInputReset(PXMouse* const mouse)
 {
-	PXMemoryClear(mouse, sizeof(PXMouse));
+	//PXMemoryClear(mouse, sizeof(PXMouse));
+	mouse->Delta[0] = 0;
+	mouse->Delta[1] = 0;
 }
 
 void PXMouseInputPrint(const PXMouse* const mouse)
@@ -14,14 +16,14 @@ void PXMouseInputPrint(const PXMouse* const mouse)
 	const PXSize buttonTextSize = 2 + 4 * 8+1;
 	char buttons[34+1];
 	
-	PXTextFromBinaryDataA(&mouse->Buttons, sizeof(unsigned int), buttons, buttonTextSize);
+	PXTextFromBinaryDataA(&mouse->Buttons, sizeof(PXInt8U), buttons, buttonTextSize);
 
 	printf
 	(
 		"+-----------+---------------|\n"
-		"| Position  | %-5i / %-5i |\n"
+		"| Position  | %4i / %-4i |\n"
 		"| InputAxis | %-3.2f / %-3.2f |\n"
-		"| Buttons   | %s |\n"
+		"| Buttons   | %11s |\n"
 		"+-----------+---------------|\n",
 		mouse->Position[0],
 		mouse->Position[1],

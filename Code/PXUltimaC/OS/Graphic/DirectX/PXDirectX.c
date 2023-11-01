@@ -43,7 +43,6 @@
 #include <OS/Window/PXWindow.h>
 #include <Log/PXLog.h>
 
-
 #if OSWindows // TODO: Temp fix
 
 void PXAPI PXDirectXContextConstruct(PXDirectX* const pxDirectX)
@@ -549,8 +548,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
 #if PXDX9Enable
         case PXDirectXVersion9:
-        {
-
+        {            
             // Get context
             //Direct3DCreate9Ex();
 
@@ -588,7 +586,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
             PXDirectXDevicePhysicalListFetchFunction(pxDirectX, pxGraphicInitializeInfo->Graphic->DevicePhysicalListSize, pxGraphicInitializeInfo->Graphic->DevicePhysicalList);
 
             D3DPRESENT_PARAMETERS presentParameters;
-            PXObjectClear(D3DPRESENT_PARAMETERS, &presentParameters);
+            PXClear(D3DPRESENT_PARAMETERS, &presentParameters);
             presentParameters.Windowed = TRUE;
             presentParameters.BackBufferFormat = D3DFMT_UNKNOWN;
             presentParameters.SwapEffect = D3DSWAPEFFECT_COPY; // D3DSWAPEFFECT_DISCARD

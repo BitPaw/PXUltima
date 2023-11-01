@@ -7,12 +7,12 @@
 #include <Math/PXMatrix.h>
 #include <Media/PXImage.h>
 
+#include <Shlobj.h>
+
 #ifdef __cplusplus
 extern "C"
 {
-#endif
-
-	
+#endif	
 
 	typedef enum PXGraphicSystem_
 	{
@@ -805,11 +805,7 @@ extern "C"
 
 	typedef struct PXAudioDevice_
 	{
-		struct
-		{
-			int HandleID;
-		}
-		Handle;
+		PXResourceID ResourceID;
 
 		PXInt32U DeviceID;
 
@@ -836,12 +832,12 @@ extern "C"
 		PXInt32U SupportFlags;
 		PXInt32U FormatSupportFlags;
 
-		PXInt16U        FormatTag;         /* format type */
-		PXInt16U        Channels;          /* number of channels (i.e. mono, stereo...) */
-		PXInt32U       SamplesPerSecound;     /* sample rate */
-		PXInt32U       AverageBytesPerSecound;    /* for buffer estimation */
-		PXInt16U        BlockAlignSize;        /* block size of data */
-		PXInt16U        BitsPerSample;     /* number of bits per sample of mono data */
+		PXInt16U FormatTag;         /* format type */
+		PXInt16U Channels;          /* number of channels (i.e. mono, stereo...) */
+		PXInt32U SamplesPerSecound;     /* sample rate */
+		PXInt32U AverageBytesPerSecound;    /* for buffer estimation */
+		PXInt16U BlockAlignSize;        /* block size of data */
+		PXInt16U BitsPerSample;     /* number of bits per sample of mono data */
 
 		union
 		{

@@ -660,7 +660,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	while (!PXFileIsAtEnd(inputStream))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
-		PXObjectClear(PXCompilerSymbolEntry, &compilerSymbolEntry);
+		PXClear(PXCompilerSymbolEntry, &compilerSymbolEntry);
 
 		compilerSymbolEntry.Size = PXFileRemainingSize(inputStream);
 		compilerSymbolEntry.Source = (char*)PXFileCursorPosition(inputStream);

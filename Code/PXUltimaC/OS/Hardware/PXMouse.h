@@ -32,7 +32,7 @@ extern "C"
 		PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)
 		float DeltaNormalisized[2];
 		float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
-		unsigned char Buttons;
+		PXInt8U Buttons;
 	}
 	PXMouse;
 

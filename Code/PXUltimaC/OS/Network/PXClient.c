@@ -6,7 +6,7 @@
 
 void PXClientConstruct(PXClient* const pxClient)
 {
-    PXObjectClear(PXClient, pxClient);
+    PXClear(PXClient, pxClient);
 
     PXSocketConstruct(&pxClient->SocketServer);
     PXSocketConstruct(&pxClient->SocketClient);

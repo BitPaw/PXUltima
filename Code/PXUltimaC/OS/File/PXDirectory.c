@@ -18,6 +18,7 @@
 
 #elif OSWindows
 #include <io.h>
+#include <Shlobj.h>
 
 #define OSWorkingDirectoryChangeA _chdir
 #define OSWorkingDirectoryChangeW _wchdir
@@ -545,5 +546,68 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 #endif // 0
 
 	return PXActionSuccessful;
+}
+
+PXActionResult PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create)
+{
+#if OSUnix
+#elif OSWindows
+	int folderID;
+
+	//CSIDL_FLAG_DONT_VERIFY
+
+	switch (pxDirectioySpecialFolder)
+	{
+		case PXDirectioySpecialFolder_ADMINTOOLS: folderID = CSIDL_ADMINTOOLS;
+		case PXDirectioySpecialFolderAPPDATA: folderID = CSIDL_APPDATA ;
+		case PXDirectioySpecialFolderCOMMON_ADMINTOOLS: folderID = CSIDL_COMMON_ADMINTOOLS;
+		case PXDirectioySpecialFolderCOMMON_APPDATA: folderID = CSIDL_COMMON_APPDATA;
+		case PXDirectioySpecialFolderCOMMON_DOCUMENTS: folderID = CSIDL_COMMON_DOCUMENTS;
+		case PXDirectioySpecialFolderCOOKIES: folderID = CSIDL_COOKIES;
+		case PXDirectioySpecialFolderHISTORY: folderID = CSIDL_HISTORY;
+		case PXDirectioySpecialFolderINTERNET_CACHE: folderID = CSIDL_INTERNET_CACHE;
+		case PXDirectioySpecialFolderLOCAL_APPDATA: folderID = CSIDL_LOCAL_APPDATA;
+		case PXDirectioySpecialFolderPictures: folderID = CSIDL_MYPICTURES;
+		case PXDirectioySpecialFolderPERSONAL: folderID = CSIDL_PERSONAL;
+		case PXDirectioySpecialFolderPROGRAM_FILES: folderID = CSIDL_PROGRAM_FILES;
+		case PXDirectioySpecialFolderPROGRAM_FILES_COMMON: folderID = CSIDL_PROGRAM_FILES_COMMON;
+		case PXDirectioySpecialFolderSystem: folderID = CSIDL_SYSTEM;
+		case PXDirectioySpecialFolderWinfows: folderID = CSIDL_WINDOWS;
+
+		default:
+			folderID = 0;
+			break;
+	}
+
+	if (create)
+	{
+		folderID |= CSIDL_FLAG_CREATE;
+	}
+
+	const HRESULT resultErrorCodeID = SHGetFolderPathA(PXNull, folderID, 0, 0, pxTextSpecialFolder->TextA); // Windows 2000, Shell32.lib, Shlobj.h (SHGetSpecialFolderPathA might not be supported?)
+
+	if (resultErrorCodeID != S_OK)
+	{
+		return PXActionInvalid;
+	}
+
+	pxTextSpecialFolder->SizeUsed = PXTextLengthA(pxTextSpecialFolder->TextA, PXPathSizeMax);
+
+	if (!pxTextFileName)
+	{
+		return PXActionSuccessful;
+	}
+
+	const PXSize fullSize = PXTextAppend(pxTextSpecialFolder, pxTextFileName);
+
+	if (fullSize == 0)
+	{
+		return PXActionInvalid;
+	}
+
+	return PXActionSuccessful;
+#elif
+	return PXActionRefusedNotSupported;
+#endif
 }
 #endif

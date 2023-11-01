@@ -9,7 +9,7 @@
 
 void PXLDAPClientConstruct(PXLDAPClient* const pxLDAPClient)
 {
-	PXObjectClear(PXLDAPClient, pxLDAPClient);
+	PXClear(PXLDAPClient, pxLDAPClient);
 }
 
 void PXLDAPClientDestruct(PXLDAPClient* const pxLDAPClient)

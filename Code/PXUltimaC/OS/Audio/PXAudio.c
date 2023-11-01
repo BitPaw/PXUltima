@@ -3,36 +3,42 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 
+#define PXAudioSystemWindowsMultimediaCanUse OSWindows && PXAudioSystemWindowsMultimediaEnabled
+#define PXAudioSystemWindowsKernalMixerCanUse OSWindows && PXAudioSystemWindowsKernalMixerEnabled
+#define PXAudioSystemWindowsDirectSoundCanUse OSWindows && PXAudioSystemWindowsDirectSoundEnable
+#define PXAudioSystemWindowsXAudioCanUse WindowsAtleast8 && PXAudioSystemWindowsXAudioEnable
+
 #if OSUnix
 // include audio lib
 #elif PXOSWindowsDestop
 
-
-
-
-#if WindowsAtleast8 && PXAudioSystemWindowsXAudioEnable
+#if PXAudioSystemWindowsXAudioCanUse
+#include <initguid.h>
 #include <xaudio2.h> // minimum windows 8?
-
-
-#pragma comment(lib, "XAUDIO2_9.LIB") 
+//#pragma comment(lib, "XAUDIO2_9.LIB") 
 //#pragma comment(lib, "XAUDIO2_10.LIB") 
 #pragma comment(lib, "Xaudio2.lib") // Library: Windows XAudio
+#pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "SetupApi.lib")
-
 #endif
 
+#if PXAudioSystemWindowsDirectSoundCanUse
+#include <dsound.h> // Windows Direct Sound
+#pragma comment(lib, "dsound.lib") 
+#endif
 
+#if PXAudioSystemWindowsMultimediaCanUse
 #if WindowsAtleastVista
 #include <mmeapi.h> // Header should be found under XP build but it is not.
 #else 
 #include <MMSystem.h> // alternavive header of MMEAPI.h?
 #endif
-
 #pragma comment(lib, "winmm.lib") // Library: Windows Multimedia 
 #endif
+#endif
 
-#if PXOSWindowsDestop
-PXActionResult PXAudioConvertMMResult(const unsigned int mmResultID)
+#if PXAudioSystemWindowsMultimediaCanUse
+PXActionResult PXAudioConvertMMResult(const PXInt32U mmResultID)
 {
 	switch (mmResultID)
 	{
@@ -70,9 +76,153 @@ PXActionResult PXAudioConvertMMResult(const unsigned int mmResultID)
 }
 #endif
 
+#if OSWindows
+PXActionResult PXAudioConvertFromHandleResultID(const HRESULT handleResult)
+{
+	switch (handleResult)
+	{
+		case S_OK:
+			return PXActionSuccessful;
+			
+		case S_FALSE:
+			return PXActionSuccessful;
+
+		case RPC_E_CHANGED_MODE:
+			return PXActionRedundantAlreadyInitialized;
+
+			// The call succeeded, but we had to substitute the 3D algorithm
+		case DS_NO_VIRTUALIZATION:
+			return PXActionSuccessWithSubstitution;
+
+			// The call failed because resources (such as a priority level) were already being used by another caller
+		case DSERR_ALLOCATED:
+			return PXActionRefuedObjectAlreadyExists;
+
+			// The control (vol, pan, etc.) requested by the caller is not available
+		case DSERR_CONTROLUNAVAIL:
+			return PXActionRefuedObjectPropertyNotAvailable;
+
+			// An invalid parameter was passed to the returning function
+		case DSERR_INVALIDPARAM:
+			return PXActionRefuedParameterInvalid;
+
+			// This call is not valid for the current state of this object
+		case DSERR_INVALIDCALL:
+			return PXActionRefuedObjectStateDoesNotAllowAction;
+
+			// An undetermined error occurred inside the DirectSound subsystem
+		case DSERR_GENERIC:
+			return PXActionFailedUnkownError;
+
+			// The caller does not have the priority level required for the function to succeed
+		case DSERR_PRIOLEVELNEEDED:
+			return PXActionDeniedPriorityTooLow;
+
+			// Not enough free memory is available to complete the operation
+		case DSERR_OUTOFMEMORY:
+			return PXActionFailedMemoryAllocation;
+
+			// The specified WAVE format is not supported
+		case DSERR_BADFORMAT:
+			return PXActionRefuedFormatIllegal;
+
+			// The function called is not supported at this time
+		case DSERR_UNSUPPORTED:
+			return PXActionRefuedFormatNotSupported;
+
+			// No sound driver is available for use
+		case DSERR_NODRIVER:
+			return PXActionRefuedDriverMissing;
+
+			// This object is already initialized
+		case DSERR_ALREADYINITIALIZED:
+			return PXActionRefuedObjectAlreadyInizialized;
+
+			// This object does not support aggregation
+		case DSERR_NOAGGREGATION:
+			return PXActionRefuedObjectAggregationNotSupported;
+
+			// The buffer memory has been lost, and must be restored
+		case DSERR_BUFFERLOST:
+			return PXActionFailedBufferRefernceLost;
+
+			// Another app has a higher priority level, preventing this call from succeeding
+		case DSERR_OTHERAPPHASPRIO:
+			return PXActionYieldToOtherProcessWithHigherPriority;
+
+			// This object has not been initialized
+		case DSERR_UNINITIALIZED:
+			return PXActionRefuedObjectNotInizialized;
+
+			// The requested COM interface is not available
+		case DSERR_NOINTERFACE:
+			return PXActionRefuedObjectInterfaceNotAvailable;
+
+			// Access is denied
+		case DSERR_ACCESSDENIED:
+			return PXActionDeniedNoPermission;
+
+			// Tried to create a DSBCAPS_CTRLFX buffer shorter than DSBSIZE_FX_MIN milliseconds
+		case DSERR_BUFFERTOOSMALL:
+			return PXActionRefuedBufferSizeTooSmal;
+
+			// Attempt to use DirectSound 8 functionality on an older DirectSound object
+		case DSERR_DS8_REQUIRED:
+			return PXActionRefusedLibraryRequiredUpgrade;
+
+			// A circular loop of send effects was detected
+		case DSERR_SENDLOOP:
+			return PXActionCanceledLoopDeteced;
+
+			// The GUID specified in an audiopath file does not match a valid MIXIN buffer
+		case DSERR_BADSENDBUFFERGUID:
+			return PXActionRefuedObjectIDInvalid;
+
+			// The object requested was not found (numerically equal to DMUS_E_NOT_FOUND)
+		case DSERR_OBJECTNOTFOUND:
+			return PXActionRefuedObjectIDInvalid;
+
+			// The effects requested could not be found on the system, or they were found
+			// but in the wrong order, or in the wrong hardware/software locations.
+		case DSERR_FXUNAVAILABLE:
+			return PXActionRefusedEffectNotAvailable;
+
+		default:
+			return PXActionInvalid;
+	}
+}
+
+BOOL PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount)
+{
+	if (!guid)
+	{
+		return PXTrue;
+	}
+
+	++(*amount);
+
+	return PXTrue;
+}
+
+BOOL PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDevice* const pxAudioDevice)
+{
+	if (!guid) // First device gets listed twice for no reason. GUID is NULL for first element.
+	{
+		return PXTrue;
+	}
+
+	PXClear(PXAudioDevice, pxAudioDevice);
+
+	PXTextCopyA(cstrDescription, PXTextUnkownLength, pxAudioDevice->DeviceName, 256);
+	PXTextCopyA(cstrDescription, PXTextUnkownLength, pxAudioDevice->DisplayName, 256);
+
+	return PXTrue;
+}
+#endif
+
 void PXAudioConstruct(PXAudio* const pxAudio)
 {
-	PXObjectClear(PXAudio, pxAudio);
+	PXClear(PXAudio, pxAudio);
 }
 
 void PXAudioDestruct(PXAudio* const pxAudio)
@@ -82,124 +232,210 @@ void PXAudioDestruct(PXAudio* const pxAudio)
 
 PXActionResult PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem)
 {
-	PXObjectClear(PXAudio, pxAudio);
+	PXClear(PXAudio, pxAudio);
 
 	pxAudio->System = pxAudioSystem;
 
-
-#if PXAudioSystemWindowsXAudioEnable
-	IXAudio2* xAudio = (IXAudio2*)pxAudio->XAudioInterface;
-
-	// Setup COM pbject
+	switch (pxAudioSystem)
 	{
-		const HRESULT hr = CoInitializeEx(PXNull, COINIT_MULTITHREADED);
-		const PXBool success = FAILED(hr);
-
-		if (!success)
-			return PXActionInvalid;
-	}
-
-	// Create API interface 
-	{
-		const HRESULT hr = XAudio2Create(&xAudio, 0, XAUDIO2_DEFAULT_PROCESSOR);
-		const PXBool success = FAILED(hr);
-
-		if (!success)
-			return PXActionInvalid;
-	}
-
-	// Output
-	{
-		const HRESULT getCountResult = xAudio->lpVtbl->GetDeviceCount(xAudio, &pxAudio->DeviceOutputAmount);
-		const HRESULT getCountResult = xAudio->lpVtbl->GetDeviceCount(xAudio, &pxAudio->DeviceInputAmount);
-
-
-		pxAudio->DeviceOutputList = PXMemoryAllocateTypeCleared(PXAudioDevice, pxAudio->DeviceOutputAmount);
-
-		for (PXInt32U i = 0; i < pxAudio->DeviceOutputAmount; ++i)
+		case PXAudioSystemWindowsMultiMedia:
 		{
-			XAUDIO2_DEVICE_DETAILS xAudioDeviceDetails;
-			PXAudioDevice* const pxAudioDeviceCurrent = &pxAudio->DeviceOutputList[i];
-
-			const HRESULT getDataResult = xAudio->lpVtbl->GetDeviceDetails(xAudio, i, &xAudioDeviceDetails);
-
-			PXTextCopyWU(xAudioDeviceDetails.DeviceID, 256, pxAudioDeviceCurrent->DeviceID, 256);
-			PXTextCopyWU(xAudioDeviceDetails.DisplayName, 256, pxAudioDeviceCurrent->DisplayName, 256);
-			
-			pxAudioDeviceCurrent->Role = xAudioDeviceDetails.Role;
-
-			pxAudioDeviceCurrent->FormatTag = xAudioDeviceDetails.OutputFormat.Format.wFormatTag;
-			pxAudioDeviceCurrent->Channels = xAudioDeviceDetails.OutputFormat.Format.nChannels;
-			pxAudioDeviceCurrent->SamplesPerSec = xAudioDeviceDetails.OutputFormat.Format.nSamplesPerSec;
-			pxAudioDeviceCurrent->AvgBytesPerSec = xAudioDeviceDetails.OutputFormat.Format.nAvgBytesPerSec;
-			pxAudioDeviceCurrent->BlockAlign = xAudioDeviceDetails.OutputFormat.Format.nBlockAlign;
-			pxAudioDeviceCurrent->BitsPerSample = xAudioDeviceDetails.OutputFormat.Format.wBitsPerSample;
+			// No initializing needed
+			break;
 		}
-	}
+		case PXAudioSystemWindowsKernalMixer:
+		{
+			break;
+		}
+#if PXAudioSystemWindowsDirectSoundCanUse
+		case PXAudioSystemWindowsDirectSound:
+		{
+			IDirectSound* directSound = PXNull;
 
-	{
-		const HRESULT hr = xAudio->lpVtbl->CreateMasteringVoice
-		(
-			xAudio,
-			&(IXAudio2MasteringVoice*)pxAudio->XAudioMasterVoice,
-			XAUDIO2_DEFAULT_CHANNELS,
-			XAUDIO2_DEFAULT_SAMPLERATE,
-			0,
-			0,
-			0,
-			0
-		);
-	}
+			{
+				const HRESULT crateResultID = DirectSoundCreate(PXNull, (LPDIRECTSOUND*)&pxAudio->DirectSoundInterface, PXNull); // [Deprecated] dsound.h
+				const PXActionResult crateResult = PXAudioConvertFromHandleResultID(crateResultID);
+
+				PXActionReturnOnError(crateResult);
+
+				directSound = (LPDIRECTSOUND)pxAudio->DirectSoundInterface;
+			}
+
+			{
+				const HRESULT initResultID = directSound->lpVtbl->Initialize(directSound, PXNull);
+				const PXActionResult initResult = PXAudioConvertFromHandleResultID(initResultID);
+
+				PXActionReturnOnError(initResult);
+			}
+
+			/// Capability
+			{
+				DSCAPS capability;
+
+				const HRESULT capResultID = directSound->lpVtbl->GetCaps(directSound, &capability);
+				const PXActionResult initResult = PXAudioConvertFromHandleResultID(capResultID);
+
+				PXActionReturnOnError(initResult);
+			}
+
+			//DirectSoundCaptureCreate();
+
+			break;
+		}
 #endif
+
+#if PXAudioSystemWindowsXAudioCanUse
+		case PXAudioSystemWindowsXAudio:
+		{
+			IXAudio2* const xAudio = (IXAudio2*)pxAudio->XAudioInterface;
+
+			// Setup COM pbject
+			{
+				const HRESULT initializeResultID = CoInitializeEx(PXNull, COINIT_MULTITHREADED);
+				const PXActionResult initializeResult = PXAudioConvertFromHandleResultID(initializeResultID);
+
+				PXActionReturnOnError(initializeResult);
+			}
+
+			// Create API interface 
+			{
+				const HRESULT createResultID = XAudio2Create(&xAudio, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
+				const PXActionResult createResult = PXAudioConvertFromHandleResultID(createResultID);
+
+				PXActionReturnOnError(createResult);
+			}
+
+			// Output
+			{
+				const HRESULT getCountResult = xAudio->lpVtbl->GetDeviceCount(xAudio, &pxAudio->DeviceOutputAmount);
+				//const HRESULT getCountResult = xAudio->lpVtbl->GetDeviceCount(xAudio, &pxAudio->DeviceInputAmount);
+
+				pxAudio->DeviceOutputList = PXNewList(PXAudioDevice, pxAudio->DeviceOutputAmount);
+
+				for (PXInt32U i = 0; i < pxAudio->DeviceOutputAmount; ++i)
+				{
+					XAUDIO2_DEVICE_DETAILS xAudioDeviceDetails;
+					PXAudioDevice* const pxAudioDeviceCurrent = &pxAudio->DeviceOutputList[i];
+
+					const HRESULT getDataResult = xAudio->lpVtbl->GetDeviceDetails(xAudio, i, &xAudioDeviceDetails);
+
+					PXTextCopyWU(xAudioDeviceDetails.DeviceID, 256, pxAudioDeviceCurrent->DeviceID, 256);
+					PXTextCopyWU(xAudioDeviceDetails.DisplayName, 256, pxAudioDeviceCurrent->DisplayName, 256);
+
+					pxAudioDeviceCurrent->Role = xAudioDeviceDetails.Role;
+
+					pxAudioDeviceCurrent->FormatTag = xAudioDeviceDetails.OutputFormat.Format.wFormatTag;
+					pxAudioDeviceCurrent->Channels = xAudioDeviceDetails.OutputFormat.Format.nChannels;
+					pxAudioDeviceCurrent->SamplesPerSecound = xAudioDeviceDetails.OutputFormat.Format.nSamplesPerSec;
+					pxAudioDeviceCurrent->AverageBytesPerSecound= xAudioDeviceDetails.OutputFormat.Format.nAvgBytesPerSec;
+					pxAudioDeviceCurrent->BlockAlignSize = xAudioDeviceDetails.OutputFormat.Format.nBlockAlign;
+					pxAudioDeviceCurrent->BitsPerSample = xAudioDeviceDetails.OutputFormat.Format.wBitsPerSample;
+				}
+			}
+
+			{
+				const HRESULT hr = xAudio->lpVtbl->CreateMasteringVoice
+				(
+					xAudio,
+					&(IXAudio2MasteringVoice*)pxAudio->XAudioMasterVoice,
+					XAUDIO2_DEFAULT_CHANNELS,
+					XAUDIO2_DEFAULT_SAMPLERATE,
+					0,
+					0,
+					0,
+					0
+				);
+			}
+
+			break;
+		}
+#endif
+		default:
+			break;
+	}
 
 	return PXActionSuccessful;
 }
 
 PXActionResult PXAudioDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount)
 {
+	switch (pxAudioDeviceType)
+	{
+		case AudioDeviceTypeInput:
+		{
+
 #if OSUnix
-	return PXActionRefusedNotSupported;
+			return PXActionRefusedNotSupported;
 #elif OSWindows
 
-	switch (pxAudio->System)
-	{
-#if PXAudioSystemWindowsXAudioEnable
-		case PXAudioSystemWindowsXAudio:
-		{
-			break;
-		}
+			switch (pxAudio->System)
+			{
+#if PXAudioSystemWindowsXAudioCanUse
+				case PXAudioSystemWindowsXAudio:
+				{
+					const HRESULT enumResultID = DirectSoundCaptureEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
+					const PXActionResult enumResult = PXAudioConvertFromHandleResultID(enumResultID);
+
+					PXActionReturnOnError(enumResult);
+
+					return PXActionSuccessful;
+				}
 #endif
 
-#if PXAudioSystemWindowsMultimediaEnable
-		case PXAudioSystemWindowsMultiMedia:
-		{
-
-			switch (pxAudioDeviceType)
-			{
-				case AudioDeviceTypeInput:
+#if PXAudioSystemWindowsMultimediaCanUse
+				case PXAudioSystemWindowsMultiMedia:
 				{
 					*amount = waveInGetNumDevs();
-					break;
+
+					return PXActionSuccessful;
 				}
-				case AudioDeviceTypeOutput:
+#endif
+				default:
+					return PXActionRefusedNotSupported;
+			}
+#else
+			return PXActionRefusedNotSupported;
+#endif
+		}
+		case AudioDeviceTypeOutput:
+		{
+#if OSUnix
+			return PXActionRefusedNotSupported;
+#elif OSWindows
+
+			switch (pxAudio->System)
+			{
+#if PXAudioSystemWindowsXAudioCanUse
+				case PXAudioSystemWindowsXAudio:
+				{
+					const HRESULT enumResultID = DirectSoundEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
+					const PXActionResult enumResult = PXAudioConvertFromHandleResultID(enumResultID);
+
+					PXActionReturnOnError(enumResult);
+
+					return PXActionSuccessful;
+				}
+#endif
+
+#if PXAudioSystemWindowsMultimediaCanUse
+				case PXAudioSystemWindowsMultiMedia:
 				{
 					*amount = waveOutGetNumDevs();
-					break;
-				}
 
+					return PXActionSuccessful;
+				}
+#endif
 				default:
-					return InvalidParameter;
+					return PXActionRefusedNotSupported;
 			}
-	
-			return PXActionSuccessful;
-		}
-#endif
-		default:
-			return PXActionRefusedNotSupported;
-	}	
 #else
-	return PXActionRefusedNotSupported;
+			return PXActionRefusedNotSupported;
 #endif
+		}
+
+		default:
+			return PXActionRefusedArgumentInvalid;
+	}
 }
 
 PXActionResult PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
@@ -210,14 +446,14 @@ PXActionResult PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceTyp
 
 	switch (pxAudio->System)
 	{
-#if PXAudioSystemWindowsXAudioEnable
+#if PXAudioSystemWindowsXAudioCanUse
 		case PXAudioSystemWindowsXAudio:
 		{
 			break;
 		}
 #endif
 
-#if PXAudioSystemWindowsMultimediaEnable
+#if PXAudioSystemWindowsMultimediaCanUse
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			MMRESULT result;
@@ -228,44 +464,44 @@ PXActionResult PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceTyp
 			{
 				case AudioDeviceTypeInput:
 				{
-					const UINT size = sizeof(WAVEINCAPSW);
-					WAVEINCAPSW waveInCapsW;
+					const UINT size = sizeof(WAVEINCAPS);
+					WAVEINCAPS waveInCapsA;
 
 					pxAudioDevice->Type = AudioDeviceTypeInput;
 
-					result = waveInGetDevCapsW(deviceID, &waveInCapsW, size);
+					result = waveInGetDevCapsA(deviceID, &waveInCapsA, size);
 
-					pxAudioDevice->ManufacturerID = waveInCapsW.wMid;
-					pxAudioDevice->ProductID = waveInCapsW.wPid;
-					pxAudioDevice->DriverVersionMajor = HIBYTE(waveInCapsW.vDriverVersion);
-					pxAudioDevice->DriverVersionMinor = LOBYTE(waveInCapsW.vDriverVersion);
-					pxAudioDevice->Channels = waveInCapsW.wChannels;
+					pxAudioDevice->ManufacturerID = waveInCapsA.wMid;
+					pxAudioDevice->ProductID = waveInCapsA.wPid;
+					pxAudioDevice->DriverVersionMajor = HIBYTE(waveInCapsA.vDriverVersion);
+					pxAudioDevice->DriverVersionMinor = LOBYTE(waveInCapsA.vDriverVersion);
+					pxAudioDevice->Channels = waveInCapsA.wChannels;
 
-					PXTextCopyWU(waveInCapsW.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, SoundDeviceProductName);
+					PXTextCopyA(waveInCapsA.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, SoundDeviceProductName);
 
 					break;
 				}
 				case AudioDeviceTypeOutput:
 				{
-					const UINT size = sizeof(WAVEOUTCAPSW);
-					WAVEOUTCAPSW waveOutCap;
+					const UINT size = sizeof(WAVEOUTCAPS);
+					WAVEOUTCAPS waveOutCapA;
 
 					pxAudioDevice->Type = AudioDeviceTypeOutput;
 
-					result = waveOutGetDevCapsW(deviceID, &waveOutCap, size);
+					result = waveOutGetDevCapsW(deviceID, &waveOutCapA, size);
 
-					pxAudioDevice->ManufacturerID = waveOutCap.wMid;
-					pxAudioDevice->ProductID = waveOutCap.wPid;
-					pxAudioDevice->DriverVersionMajor = HIBYTE(waveOutCap.vDriverVersion);
-					pxAudioDevice->DriverVersionMinor = LOBYTE(waveOutCap.vDriverVersion);
-					pxAudioDevice->Channels = waveOutCap.wChannels;
+					pxAudioDevice->ManufacturerID = waveOutCapA.wMid;
+					pxAudioDevice->ProductID = waveOutCapA.wPid;
+					pxAudioDevice->DriverVersionMajor = HIBYTE(waveOutCapA.vDriverVersion);
+					pxAudioDevice->DriverVersionMinor = LOBYTE(waveOutCapA.vDriverVersion);
+					pxAudioDevice->Channels = waveOutCapA.wChannels;
 
-					PXTextCopyWU(waveOutCap.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, SoundDeviceProductName);
+					PXTextCopyA(waveOutCapA.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, SoundDeviceProductName);
 					break;
 				}
 
 				default:
-					return InvalidParameter;
+					return PXActionRefusedArgumentInvalid;
 			}
 
 			{
@@ -285,88 +521,16 @@ PXActionResult PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceTyp
 #endif
 }
 
-PXActionResult PXAudioDeviceInputAmount(PXAudio* const pxAudio, PXInt32U* const amount)
+PXActionResult PXAudioDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
 {
-#if OSUnix
-	return PXActionRefusedNotSupported;
-#elif OSWindows
-
-	switch (pxAudio->System)
+	for (PXSize i = 0; i < amount; ++i)
 	{
-#if PXAudioSystemWindowsXAudioEnable
-		case PXAudioSystemWindowsXAudio:
-		{
-			break;
-		}
-#endif
+		const PXActionResult fetchResult = PXAudioDeviceFetch(pxAudio, pxAudioDeviceType, i, &pxAudioDevice[i]);
 
-#if PXAudioSystemWindowsMultimediaEnable
-		case PXAudioSystemWindowsMultiMedia:
-		{
-			*amount = waveInGetNumDevs();
-			break;
-		}
-#endif
-		default:
-			return PXActionRefusedNotSupported;
+		PXActionReturnOnError(fetchResult);
 	}
 
 	return PXActionSuccessful;
-
-#else
-	return PXActionRefusedNotSupported;
-#endif
-}
-
-PXActionResult PXAudioDeviceInputFetch(PXAudio* const pxAudio, PXInt32U* const deviceID, PXAudioDevice* const pxAudioDevice)
-{
-#if OSUnix
-	return PXActionRefusedNotSupported;
-#elif OSWindows
-
-	switch (pxAudio->System)
-	{
-#if PXAudioSystemWindowsXAudioEnable
-		case PXAudioSystemWindowsXAudio:
-		{
-			break;
-		}
-#endif
-
-#if PXAudioSystemWindowsMultimediaEnable
-		case PXAudioSystemWindowsMultiMedia:
-		{
-			const UINT size = sizeof(WAVEINCAPSW);
-			WAVEINCAPSW wAVEOUTCAPSW;
-
-			PXObjectClear(PXAudioDevice, pxAudioDevice);
-
-			{
-				const MMRESULT result = waveInGetDevCapsW(deviceID, &wAVEOUTCAPSW, size);
-				const PXActionResult audioResult = PXAudioConvertMMResult(result);
-
-				PXActionReturnOnError(audioResult);
-			}
-
-			pxAudioDevice->DeviceID = deviceID;
-			pxAudioDevice->Type = AudioDeviceTypeOutput;
-			pxAudioDevice->ManufacturerID = wAVEOUTCAPSW.wMid;
-			pxAudioDevice->ProductID = wAVEOUTCAPSW.wPid;
-			pxAudioDevice->DriverVersionMajor = HIBYTE(wAVEOUTCAPSW.vDriverVersion);
-			pxAudioDevice->DriverVersionMinor = LOBYTE(wAVEOUTCAPSW.vDriverVersion);
-			pxAudioDevice->Channels = wAVEOUTCAPSW.wChannels;
-
-			PXTextCopyWU(wAVEOUTCAPSW.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, SoundDeviceProductName);
-
-			return PXActionSuccessful;
-		}
-#endif
-		default:
-			return PXActionRefusedNotSupported;
-}
-#else
-	return PXActionRefusedNotSupported;
-#endif
 }
 
 PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioSource, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
@@ -411,13 +575,13 @@ PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const px
 
 	switch (pxAudio->System)
 	{
-#if PXAudioSystemWindowsXAudioEnable
+#if PXAudioSystemWindowsXAudioCanUse
 		case PXAudioSystemWindowsXAudio:
 		{
 			const HRESULT result = ((IXAudio2*)pxAudio->XAudioInterface)->lpVtbl->CreateSourceVoice
 			(
 				(IXAudio2*)pxAudio->XAudioInterface,
-				&(IXAudio2SourceVoice*)pxAudioSource->Xinterface,
+				&(IXAudio2SourceVoice*)pxAudioSource->ResourceID.DirectXInterface,
 				&waveFormat,
 				0,
 				XAUDIO2_MAX_FREQ_RATIO,
@@ -429,7 +593,7 @@ PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const px
 		}
 #endif
 
-#if PXAudioSystemWindowsMultimediaEnable
+#if PXAudioSystemWindowsMultimediaCanUse
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			MMRESULT result;
@@ -440,7 +604,7 @@ PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const px
 				{
 					result = waveInOpen
 					(
-						&pxAudioSource->Handle,
+						&pxAudioSource->ResourceID.DirectXInterface,
 						pxAudioSource->DeviceID,
 						&waveFormat,
 						dwCallback,
@@ -454,7 +618,7 @@ PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const px
 				{
 					result = waveOutOpen
 					(
-						&pxAudioSource->Handle,
+						&pxAudioSource->ResourceID.DirectXInterface,
 						pxAudioSource->DeviceID,
 						&waveFormat,
 						dwCallback,
@@ -466,19 +630,19 @@ PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const px
 				}
 
 				default:
-					return InvalidParameter;
+					return PXActionRefusedArgumentInvalid;
 			}		
 
 			const PXActionResult audioResult = PXAudioConvertMMResult(result);
 
 			return audioResult;
 		}
+#endif
 		default:
 		{
-			return InvalidParameter;
+			return PXActionRefusedArgumentInvalid;
 		}
 	}
-#endif
 
 #else
 	return PXActionNotSupportedByOperatingSystem;
@@ -494,18 +658,20 @@ PXActionResult PXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const p
 
 	switch (pxAudio->System)
 	{
-#if PXAudioSystemWindowsXAudioEnable
+#if PXAudioSystemWindowsXAudioCanUse
 		case PXAudioSystemWindowsXAudio:
 		{
-			((IXAudio2SourceVoice*)pxAudioSource->Xinterface)->lpVtbl->DestroyVoice((IXAudio2SourceVoice*)pxAudioSource->Xinterface);
+			IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
-			pxAudioSource->Xinterface = PXNull;
+			audio2SourceVoice->lpVtbl->DestroyVoice(audio2SourceVoice);
+
+			pxAudioDevice->ResourceID.DirectXInterface = PXNull;
 
 			break;
 		}
 #endif
 
-#if PXAudioSystemWindowsMultimediaEnable
+#if PXAudioSystemWindowsMultimediaCanUse
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			MMRESULT result;
@@ -514,31 +680,32 @@ PXActionResult PXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const p
 			{
 				case AudioDeviceTypeInput:
 				{
-					result = waveInClose(*(HWAVEOUT*)&pxAudioDevice->Handle);
+					result = waveInClose((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface);
 					break;
 				}
 				case AudioDeviceTypeOutput:
 				{
-					result = waveOutClose(*(HWAVEOUT*)&pxAudioDevice->Handle);
+					result = waveOutClose((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface);
 					break;
 				}
 
 				default:
-					return InvalidParameter;
+					return PXActionRefusedArgumentInvalid;
 			}
 		
 			const PXActionResult audioResult = PXAudioConvertMMResult(result);
 
-			pxAudioDevice->Handle.HandleID = PXNull;
+			pxAudioDevice->ResourceID.DirectXInterface = PXNull;
 
 			return audioResult;
 		}
+#endif
 		default:
 		{
-			return InvalidParameter;
+			return PXActionRefusedArgumentInvalid;
 		}
 	}
-#endif
+
 
 #else
 	return PXActionNotSupportedByOperatingSystem;
@@ -563,15 +730,17 @@ PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const px
 
 	switch (pxAudio->System)
 	{
-#if PXAudioSystemWindowsXAudioEnable
+#if PXAudioSystemWindowsXAudioCanUse
 		case PXAudioSystemWindowsXAudio:
 		{
+			IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
+
 			XAUDIO2_BUFFER xAudioBuffer;
 			XAUDIO2_BUFFER_WMA xAudioBufferWMA;
 
-			const HRESULT result = ((IXAudio2SourceVoice*)pxAudioSource->Xinterface)->lpVtbl->SubmitSourceBuffer
+			const HRESULT result = audio2SourceVoice->lpVtbl->SubmitSourceBuffer
 			(
-				(IXAudio2SourceVoice*)pxAudioSource->Xinterface,
+				audio2SourceVoice,
 				&xAudioBuffer,
 				&xAudioBufferWMA
 			);
@@ -580,7 +749,7 @@ PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const px
 		}
 #endif
 
-#if PXAudioSystemWindowsMultimediaEnable
+#if PXAudioSystemWindowsMultimediaCanUse
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			MMRESULT result;
@@ -602,7 +771,7 @@ PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const px
 				{
 					// Prepare
 					{
-						const MMRESULT prepareResultID = waveInPrepareHeader(*(HWAVEOUT*)&pxAudioDevice->Handle, &waveHeader, waveHeaderSize);
+						const MMRESULT prepareResultID = waveInPrepareHeader((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface, &waveHeader, waveHeaderSize);
 						const PXActionResult prepareResult = PXAudioConvertMMResult(prepareResultID);
 
 						PXActionReturnOnError(prepareResult);
@@ -619,7 +788,7 @@ PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const px
 				{
 					// Prepare
 					{
-						const MMRESULT prepareResultID = waveOutPrepareHeader(*(HWAVEOUT*)&pxAudioDevice->Handle, &waveHeader, waveHeaderSize);
+						const MMRESULT prepareResultID = waveOutPrepareHeader((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface, &waveHeader, waveHeaderSize);
 						const PXActionResult prepareResult = PXAudioConvertMMResult(prepareResultID);
 
 						PXActionReturnOnError(prepareResult);
@@ -627,7 +796,7 @@ PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const px
 
 					// Write Data
 					{
-						const MMRESULT writeResultID = waveOutWrite(*(HWAVEOUT*)&pxAudioDevice->Handle, &waveHeader, waveHeaderSize);
+						const MMRESULT writeResultID = waveOutWrite((HWAVEOUT*)pxAudioDevice->ResourceID.DirectXInterface, &waveHeader, waveHeaderSize);
 						const PXActionResult writeResult = PXAudioConvertMMResult(writeResultID);
 
 						PXActionReturnOnError(writeResult);
@@ -636,14 +805,14 @@ PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const px
 				}
 
 				default:
-					return InvalidParameter;
+					return PXActionRefusedArgumentInvalid;
 			}
 
 			return PXActionSuccessful;
 		}
 		default:
 		{
-			return InvalidParameter;
+			return PXActionRefusedArgumentInvalid;
 		}
 	}
 #endif
@@ -662,16 +831,18 @@ PXActionResult PXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const p
 
 	switch (pxAudio->System)
 	{
-#if PXAudioSystemWindowsXAudioEnable
+#if PXAudioSystemWindowsXAudioCanUse
 		case PXAudioSystemWindowsXAudio:
 		{
-			const HRESULT result = ((IXAudio2SourceVoice*)pxAudioSource->Xinterface)->lpVtbl->Start((IXAudio2SourceVoice*)pxAudioSource->Xinterface, 0, 0);
+			IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
+
+			const HRESULT result = audio2SourceVoice->lpVtbl->Start(audio2SourceVoice, 0, 0);
 
 			break;
 		}
 #endif
 
-#if PXAudioSystemWindowsMultimediaEnable
+#if PXAudioSystemWindowsMultimediaCanUse
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			MMRESULT result;
@@ -680,26 +851,28 @@ PXActionResult PXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const p
 			{
 				case AudioDeviceTypeInput:
 				{
-					result = waveInStart(*(HWAVEOUT*)&pxAudioDevice->Handle);
+					result = waveInStart((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface);
 					break;
 				}
 				case AudioDeviceTypeOutput:
 				{
-					result = waveOutRestart(*(HWAVEOUT*)&pxAudioDevice->Handle);
+					result = waveOutRestart((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface);
 					break;
 				}
 				default:
-					return InvalidParameter;
+					return PXActionRefusedArgumentInvalid;
 			}
 
-			return PXActionSuccessful;
+			const PXActionResult audioResult = PXAudioConvertMMResult(result);
+
+			return audioResult;
 		}
+#endif
 		default:
 		{
-			return InvalidParameter;
+			return PXActionRefusedArgumentInvalid;
 		}
 	}
-#endif
 
 #else
 	return PXActionNotSupportedByOperatingSystem;
@@ -718,13 +891,15 @@ PXActionResult PXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const px
 #if PXAudioSystemWindowsXAudioEnable
 		case PXAudioSystemWindowsXAudio:
 		{
-			const HRESULT result = ((IXAudio2SourceVoice*)pxAudioSource->Xinterface)->lpVtbl->Stop((IXAudio2SourceVoice*)pxAudioSource->Xinterface, 0, 0);
+			IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
+
+			const HRESULT result = audio2SourceVoice->lpVtbl->Stop(audio2SourceVoice, 0, 0);
 
 			break;
 		}
 #endif
 
-#if PXAudioSystemWindowsMultimediaEnable
+#if PXAudioSystemWindowsMultimediaCanUse
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			MMRESULT result;
@@ -733,27 +908,29 @@ PXActionResult PXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const px
 			{
 				case AudioDeviceTypeInput:
 				{
-					result = waveInStop(*(HWAVEOUT*)&pxAudioDevice->Handle);
+					result = waveInStop((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface);
 					break;
 				}
 				case AudioDeviceTypeOutput:
 				{
-					result = waveOutPause(*(HWAVEOUT*)&pxAudioDevice->Handle);				
+					result = waveOutPause((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface);
 					break;
 				}
 
 				default:
-					return InvalidParameter;
+					return PXActionRefusedArgumentInvalid;
 			}
 
-			return PXActionSuccessful;
+			const PXActionResult audioResult = PXAudioConvertMMResult(result);
+
+			return audioResult;
 		}
+#endif
 		default:
 		{
-			return InvalidParameter;
+			return PXActionRefusedArgumentInvalid;
 		}
 	}
-#endif
 
 #else
 	return PXActionNotSupportedByOperatingSystem;
@@ -792,7 +969,7 @@ PXActionResult PXAudioDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* con
 #elif PXOSWindowsDestop
 	DWORD volumeDW = 0;
 
-	const MMRESULT volumeResultID = waveOutGetVolume(*(HWAVEOUT*)&pxAudioDevice->Handle, &volumeDW);
+	const MMRESULT volumeResultID = waveOutGetVolume((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface, &volumeDW);
 	const PXActionResult audioResult = PXAudioConvertMMResult(volumeResultID);
 	const PXBool successful = PXActionSuccessful == audioResult;
 
@@ -816,7 +993,7 @@ PXActionResult PXAudioDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice
 	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
-	const MMRESULT volumeResultID = waveOutSetVolume(*(HWAVEOUT*)&pxAudioDevice->Handle, volume);
+	const MMRESULT volumeResultID = waveOutSetVolume((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface, volume);
 	const PXActionResult audioResult = PXAudioConvertMMResult(volumeResultID);
 
 	return audioResult;
@@ -852,7 +1029,7 @@ PXActionResult PXAudioDevicePitchSet(PXAudio* const pxAudio, PXAudioDevice* cons
 	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
-	const MMRESULT pitchResultID = waveOutSetPitch(*(HWAVEOUT*)&pxAudioDevice->Handle, pitch);
+	const MMRESULT pitchResultID = waveOutSetPitch((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface, pitch);
 	const PXActionResult pitchResult = PXAudioConvertMMResult(pitchResultID);
 
 	return pitchResult;
@@ -867,7 +1044,7 @@ PXActionResult PXAudioDevicePlaybackRateSet(PXAudio* const pxAudio, PXAudioDevic
 	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
-	const MMRESULT playbackRateResultID = waveOutSetPlaybackRate(*(HWAVEOUT*)&pxAudioDevice->Handle, pitch);
+	const MMRESULT playbackRateResultID = waveOutSetPlaybackRate((HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface, pitch);
 	const PXActionResult playbackRateResult = PXAudioConvertMMResult(playbackRateResultID);
 
 	return playbackRateResult;

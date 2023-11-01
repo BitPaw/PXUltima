@@ -210,12 +210,14 @@ extern "C"
     //-----------------------------------------------------
     // Direct X - Magic number conversion
     //-----------------------------------------------------
+#if OSWindows
     PXPrivate PXColorFormat PXAPI PXDirectXColorFormatToID(const D3DFORMAT format);
     PXPrivate D3DFORMAT PXAPI PXDirectXColorFormatFromID(const PXColorFormat pxColorFormat);
     PXPrivate void PXAPI PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3DMATERIAL9* const d3dMaterial);
     PXPrivate void PXAPI PXDirectXMaterialFromPXMaterial(D3DMATERIAL9* const d3dMaterial, const PXMaterial* const pxMaterial);
     PXPrivate D3DPRIMITIVETYPE PXAPI PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphicDrawMode);
     PXPrivate PXInt32U PXAPI PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat);
+#endif
 
     //-----------------------------------------------------
     // Direct X - Utility
