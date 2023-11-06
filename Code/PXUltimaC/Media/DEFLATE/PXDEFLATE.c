@@ -434,14 +434,13 @@ typedef struct Hash
 
 unsigned hash_init(Hash* hash, unsigned windowsize)
 {
-    PXSize i;
-    hash->head = (int*)PXMemoryAllocate(sizeof(int) * HASH_NUM_VALUES);
-    hash->val = (int*)PXMemoryAllocate(sizeof(int) * windowsize);
-    hash->chain = (unsigned short*)PXMemoryAllocate(sizeof(unsigned short) * windowsize);
+    hash->head = PXNewList(int, HASH_NUM_VALUES);
+    hash->val = PXNewList(int, windowsize);
+    hash->chain = PXNewList(unsigned short, windowsize);
 
-    hash->zeros = (unsigned short*)PXMemoryAllocate(sizeof(unsigned short) * windowsize);
-    hash->headz = (int*)PXMemoryAllocate(sizeof(int) * (MAX_SUPPORTED_DEFLATE_LENGTH + 1));
-    hash->chainz = (unsigned short*)PXMemoryAllocate(sizeof(unsigned short) * windowsize);
+    hash->zeros = PXNewList(unsigned short, windowsize);
+    hash->headz = PXNewList(int, (MAX_SUPPORTED_DEFLATE_LENGTH + 1));
+    hash->chainz = PXNewList(unsigned short, windowsize);
 
     if(!hash->head || !hash->chain || !hash->val || !hash->headz || !hash->chainz || !hash->zeros)
     {
@@ -449,12 +448,12 @@ unsigned hash_init(Hash* hash, unsigned windowsize)
     }
 
     /*initialize hash table*/
-    for(i = 0; i != HASH_NUM_VALUES; ++i) hash->head[i] = -1;
-    for(i = 0; i != windowsize; ++i) hash->val[i] = -1;
-    for(i = 0; i != windowsize; ++i) hash->chain[i] = i; /*same value as index indicates uninitialized*/
+    for(PXSize i = 0; i != HASH_NUM_VALUES; ++i) hash->head[i] = -1;
+    for(PXSize i = 0; i != windowsize; ++i) hash->val[i] = -1;
+    for(PXSize i = 0; i != windowsize; ++i) hash->chain[i] = i; /*same value as index indicates uninitialized*/
 
-    for(i = 0; i <= MAX_SUPPORTED_DEFLATE_LENGTH; ++i) hash->headz[i] = -1;
-    for(i = 0; i != windowsize; ++i) hash->chainz[i] = i; /*same value as index indicates uninitialized*/
+    for(PXSize i = 0; i <= MAX_SUPPORTED_DEFLATE_LENGTH; ++i) hash->headz[i] = -1;
+    for(PXSize i = 0; i != windowsize; ++i) hash->chainz[i] = i; /*same value as index indicates uninitialized*/
 
     return 0;
 }
@@ -823,7 +822,7 @@ BPMNode* bpmnode_create(BPMLists* lists, int weight, unsigned index, BPMNode* ta
 /*sort the leaves with stable mergesort*/
 void bpmnode_sort(BPMNode* leaves, PXSize num)
 {
-    BPMNode* mem = (BPMNode*)PXMemoryAllocate(sizeof(*leaves) * num);
+    BPMNode* mem = PXNewList(BPMNode, num);
     PXSize width, counter = 0;
     for(width = 1; width < num; width *= 2)
     {
@@ -845,7 +844,7 @@ void bpmnode_sort(BPMNode* leaves, PXSize num)
     }
     if(counter & 1) memcpy(leaves, mem, sizeof(*leaves) * num);
 
-    free(mem);
+    PXDeleteList(BPMNode, mem, num);
 }
 
 /*Boundary Package Merge step, numpresent is the amount of leaves, and c is the current chain.*/
@@ -886,7 +885,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
     static const unsigned headsize = 1u << FIRSTBITS; /*size of the first table*/
     static const unsigned mask = (1u << FIRSTBITS) /*headsize*/ - 1u;
     PXSize i, numpresent, pointer, size; /*total table size*/
-    unsigned* maxlens = (unsigned*)PXMemoryAllocate(headsize * sizeof(unsigned));
+    PXInt32U* maxlens = PXNewList(PXInt32U, headsize);
     if(!maxlens) return 83; /*alloc fail*/
 
     /* compute maxlens: max total bit length of symbols sharing prefix in the first table*/
@@ -908,11 +907,11 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
         unsigned int l = maxlens[i];
         if(l > FIRSTBITS) size += (1u << (l - FIRSTBITS));
     }
-    tree->table_len = (unsigned char*)PXMemoryAllocate(size * sizeof(*tree->table_len));
-    tree->table_value = (unsigned short*)PXMemoryAllocate(size * sizeof(*tree->table_value));
+    tree->table_len = PXNewList(PXInt8U, size);
+    tree->table_value = PXNewList(PXInt16U, size);
     if(!tree->table_len || !tree->table_value)
     {
-        free(maxlens);
+        PXDeleteList(PXInt32U, maxlens, headsize);
         /* freeing tree->table values is done at a higher scope */
         return 83; /*alloc fail*/
     }
@@ -1018,13 +1017,11 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
 
 static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree* tree)
 {
-    unsigned int* blcount;
-    unsigned int* nextcode;
     PXSize error = 0;
 
-    tree->codes = (unsigned int*)PXMemoryAllocate(tree->numcodes * sizeof(unsigned int));
-    blcount = (unsigned int*)PXMemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned int));
-    nextcode = (unsigned int*)PXMemoryAllocate((tree->maxbitlen + 1) * sizeof(unsigned int));
+    tree->codes = PXNewList(PXInt32U, tree->numcodes);
+    PXInt32U* blcount = PXNewList(PXInt32U, (tree->maxbitlen + 1));
+    PXInt32U* nextcode = PXNewList(PXInt32U, (tree->maxbitlen + 1));
     if(!tree->codes || !blcount || !nextcode) error = 83; /*alloc fail*/
 
     if(!error)
@@ -1049,8 +1046,8 @@ static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree* tree)
         }
     }
 
-    free(blcount);
-    free(nextcode);
+    PXDeleteList(PXInt32U, blcount, (tree->maxbitlen + 1));
+    PXDeleteList(PXInt32U, nextcode, (tree->maxbitlen + 1));
 
     if(!error) error = HuffmanTree_makeTable(tree);
     return error;
@@ -1067,7 +1064,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
     if(numcodes == 0) return 80; /*error: a tree of 0 symbols is not supposed to be made*/
     if((1u << maxbitlen) < (unsigned)numcodes) return 80; /*error: represent all symbols*/
 
-    leaves = (BPMNode*)PXMemoryAllocate(numcodes * sizeof(*leaves));
+    leaves = PXNewList(BPMNode, numcodes);
     if(!leaves) return 83; /*alloc fail*/
 
     for(i = 0; i != numcodes; ++i)
@@ -1107,10 +1104,10 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
         lists.memsize = 2 * maxbitlen * (maxbitlen + 1);
         lists.nextfree = 0;
         lists.numfree = lists.memsize;
-        lists.memory = (BPMNode*)PXMemoryAllocate(lists.memsize * sizeof(*lists.memory));
-        lists.freelist = (BPMNode**)PXMemoryAllocate(lists.memsize * sizeof(BPMNode*));
-        lists.chains0 = (BPMNode**)PXMemoryAllocate(lists.listsize * sizeof(BPMNode*));
-        lists.chains1 = (BPMNode**)PXMemoryAllocate(lists.listsize * sizeof(BPMNode*));
+        lists.memory = PXNewList(BPMNode, lists.memsize);
+        lists.freelist = PXNewList(BPMNode*, lists.memsize);
+        lists.chains0 = PXNewList(BPMNode*, lists.listsize);
+        lists.chains1 = PXNewList(BPMNode*, lists.listsize);
         if(!lists.memory || !lists.freelist || !lists.chains0 || !lists.chains1) error = 83; /*alloc fail*/
 
         if(!error)
@@ -1145,15 +1142,14 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
     return error;
 }
 
-unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* frequencies,
-                                                PXSize mincodes, PXSize numcodes, unsigned maxbitlen)
+unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* frequencies, PXSize mincodes, PXSize numcodes, unsigned maxbitlen)
 {
     unsigned error = 0;
     while(!frequencies[numcodes - 1] && numcodes > mincodes) --numcodes; /*trim zeroes*/
-    tree->lengths = (unsigned*)PXMemoryAllocate(numcodes * sizeof(unsigned));
+    tree->lengths = PXNewList(PXInt32U, numcodes);
     if(!tree->lengths) return 83; /*alloc fail*/
     tree->maxbitlen = maxbitlen;
-    tree->numcodes = (unsigned)numcodes; /*number of symbols*/
+    tree->numcodes = numcodes; /*number of symbols*/
 
     error = lodepng_huffman_code_lengths(tree->lengths, frequencies, numcodes, maxbitlen);
     if(!error) error = HuffmanTree_makeFromLengths2(tree);
@@ -1216,11 +1212,11 @@ unsigned deflateDynamic
     PXHuffmanTree tree_ll; /*tree for lit,len values*/
     PXHuffmanTree tree_d; /*tree for distance codes*/
     PXHuffmanTree tree_cl; /*tree for encoding the code lengths representing tree_ll and tree_d*/
-    unsigned* frequencies_ll = 0; /*frequency of lit,len codes*/
-    unsigned* frequencies_d = 0; /*frequency of dist codes*/
-    unsigned* frequencies_cl = 0; /*frequency of code length codes*/
-    unsigned* bitlen_lld = 0; /*lit,len,dist code lengths (int bits), literally (without repeat codes).*/
-    unsigned* bitlen_lld_e = 0; /*bitlen_lld encoded with repeat codes (this is a rudimentary run length compression)*/
+    PXInt32U frequencies_ll[286]; /*frequency of lit,len codes*/
+    PXInt32U frequencies_d[30]; /*frequency of dist codes*/
+    PXInt32U frequencies_cl[NUM_CODE_LENGTH_CODES]; /*frequency of code length codes*/
+    PXInt32U* bitlen_lld = 0; /*lit,len,dist code lengths (int bits), literally (without repeat codes).*/
+    PXInt32U* bitlen_lld_e = 0; /*bitlen_lld encoded with repeat codes (this is a rudimentary run length compression)*/
     PXSize datasize = dataend - datapos;
 
     /*
@@ -1234,26 +1230,21 @@ unsigned deflateDynamic
 
     PXSize i;
     PXSize numcodes_ll, numcodes_d, numcodes_lld, numcodes_lld_e, numcodes_cl;
-    unsigned HLIT, HDIST, HCLEN;
+    PXSize HLIT, HDIST, HCLEN;
 
 
     PXHuffmanTreeConstruct(&tree_ll);
     PXHuffmanTreeConstruct(&tree_d);
     PXHuffmanTreeConstruct(&tree_cl);
     /* could fit on stack, but >1KB is on the larger side so allocate instead */
-    frequencies_ll = (unsigned*)PXMemoryAllocate(286 * sizeof(*frequencies_ll));
-    frequencies_d = (unsigned*)PXMemoryAllocate(30 * sizeof(*frequencies_d));
-    frequencies_cl = (unsigned*)PXMemoryAllocate(NUM_CODE_LENGTH_CODES * sizeof(*frequencies_cl));
-
-    if(!frequencies_ll || !frequencies_d || !frequencies_cl) error = 83; /*alloc fail*/
 
     /*This while loop never loops due to a break at the end, it is here to
     allow breaking out of it to the cleanup phase on error conditions.*/
     while(!error)
     {
-        PXMemoryClear(frequencies_ll, 286 * sizeof(*frequencies_ll));
-        PXMemoryClear(frequencies_d, 30 * sizeof(*frequencies_d));
-        PXMemoryClear(frequencies_cl, NUM_CODE_LENGTH_CODES * sizeof(*frequencies_cl));
+        PXClearList(PXInt32U, frequencies_ll, 286);
+        PXClearList(PXInt32U, frequencies_d, 30);
+        PXClearList(PXInt32U, frequencies_cl, NUM_CODE_LENGTH_CODES);
 
         if(settings->use_lz77)
         {
@@ -1319,9 +1310,9 @@ unsigned deflateDynamic
         numcodes_d = PXMathMinimumIU(tree_d.numcodes, 30);
         /*store the code lengths of both generated trees in bitlen_lld*/
         numcodes_lld = numcodes_ll + numcodes_d;
-        bitlen_lld = (unsigned*)PXMemoryAllocate(numcodes_lld * sizeof(*bitlen_lld));
+        bitlen_lld = PXNewList(PXInt32U, numcodes_lld);
         /*numcodes_lld_e never needs more size than bitlen_lld*/
-        bitlen_lld_e = (unsigned*)PXMemoryAllocate(numcodes_lld * sizeof(*bitlen_lld_e));
+        bitlen_lld_e = PXNewList(PXInt32U, numcodes_lld);
         if(!bitlen_lld || !bitlen_lld_e) ERROR_BREAK(83); /*alloc fail*/
         numcodes_lld_e = 0;
 
@@ -1456,9 +1447,6 @@ unsigned deflateDynamic
     PXHuffmanTreeDestruct(&tree_ll);
     PXHuffmanTreeDestruct(&tree_d);
     PXHuffmanTreeDestruct(&tree_cl);
-    free(frequencies_ll);
-    free(frequencies_d);
-    free(frequencies_cl);
     free(bitlen_lld);
     free(bitlen_lld_e);
 

@@ -77,7 +77,7 @@ PXActionResult PXAudioConvertMMResult(const PXInt32U mmResultID)
 #endif
 
 #if OSWindows
-PXActionResult PXAudioConvertFromHandleResultID(const HRESULT handleResult)
+PXActionResult PXAPI PXAudioConvertFromHandleResultID(const HRESULT handleResult)
 {
 	switch (handleResult)
 	{
@@ -192,7 +192,7 @@ PXActionResult PXAudioConvertFromHandleResultID(const HRESULT handleResult)
 	}
 }
 
-BOOL PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount)
+BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount)
 {
 	if (!guid)
 	{
@@ -204,7 +204,7 @@ BOOL PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCS
 	return PXTrue;
 }
 
-BOOL PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDevice* const pxAudioDevice)
+BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDevice* const pxAudioDevice)
 {
 	if (!guid) // First device gets listed twice for no reason. GUID is NULL for first element.
 	{
@@ -220,17 +220,17 @@ BOOL PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCS
 }
 #endif
 
-void PXAudioConstruct(PXAudio* const pxAudio)
+void PXAPI PXAudioConstruct(PXAudio* const pxAudio)
 {
 	PXClear(PXAudio, pxAudio);
 }
 
-void PXAudioDestruct(PXAudio* const pxAudio)
+void PXAPI PXAudioDestruct(PXAudio* const pxAudio)
 {
 
 }
 
-PXActionResult PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem)
+PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem)
 {
 	PXClear(PXAudio, pxAudio);
 
@@ -357,7 +357,7 @@ PXActionResult PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxA
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAudioDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount)
+PXActionResult PXAPI PXAudioDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount)
 {
 	switch (pxAudioDeviceType)
 	{
@@ -438,7 +438,7 @@ PXActionResult PXAudioDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceTy
 	}
 }
 
-PXActionResult PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
 	return PXActionRefusedNotSupported;
@@ -521,7 +521,7 @@ PXActionResult PXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceTyp
 #endif
 }
 
-PXActionResult PXAudioDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
+PXActionResult PXAPI PXAudioDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
 {
 	for (PXSize i = 0; i < amount; ++i)
 	{
@@ -533,7 +533,7 @@ PXActionResult PXAudioDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDevice
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioSource, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXActionResult PXAPI PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioSource, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
 
 
@@ -649,7 +649,7 @@ PXActionResult PXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const px
 #endif
 }
 
-PXActionResult PXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -712,7 +712,7 @@ PXActionResult PXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const p
 #endif
 }
 
-PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXActionResult PXAPI PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
 	//pxAudioDevice->FormatTag = pxSound->mod
 	pxAudioDevice->Channels = pxSound->NumerOfChannels;
@@ -822,7 +822,7 @@ PXActionResult PXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const px
 #endif
 }
 
-PXActionResult PXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -879,7 +879,7 @@ PXActionResult PXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const p
 #endif
 }
 
-PXActionResult PXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -937,7 +937,7 @@ PXActionResult PXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const px
 #endif
 }
 
-PXActionResult PXAudioDevicePitchIncrease(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
+PXActionResult PXAPI PXAudioDevicePitchIncrease(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
 {
 	//assert(amount > 0.0f);
 
@@ -949,7 +949,7 @@ PXActionResult PXAudioDevicePitchIncrease(PXAudio* const pxAudio, PXAudioDevice*
 	}
 }
 
-PXActionResult PXAudioDevicePitchReduce(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
+PXActionResult PXAPI PXAudioDevicePitchReduce(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
 {
 	//assert(amount > 0.0f);
 
@@ -961,7 +961,7 @@ PXActionResult PXAudioDevicePitchReduce(PXAudio* const pxAudio, PXAudioDevice* c
 	}
 }
 
-PXActionResult PXAudioDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
+PXActionResult PXAPI PXAudioDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -987,7 +987,7 @@ PXActionResult PXAudioDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* con
 #endif
 }
 
-PXActionResult PXAudioDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
+PXActionResult PXAPI PXAudioDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -1002,7 +1002,7 @@ PXActionResult PXAudioDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice
 #endif
 }
 
-PXActionResult PXAudioDeviceVolumeSetIndividual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
+PXActionResult PXAPI PXAudioDeviceVolumeSetIndividual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -1018,12 +1018,12 @@ PXActionResult PXAudioDeviceVolumeSetIndividual(PXAudio* const pxAudio, PXAudioD
 #endif
 }
 
-PXActionResult PXAudioDevicePause(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXAudioDevicePause(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAudioDevicePitchSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
+PXActionResult PXAPI PXAudioDevicePitchSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -1038,7 +1038,7 @@ PXActionResult PXAudioDevicePitchSet(PXAudio* const pxAudio, PXAudioDevice* cons
 #endif
 }
 
-PXActionResult PXAudioDevicePlaybackRateSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
+PXActionResult PXAPI PXAudioDevicePlaybackRateSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;

@@ -13,7 +13,7 @@ void PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize,
 
 void PXDictionaryDestruct(PXDictionary* const dictionary)
 {
-	PXMemoryRelease(dictionary->Data, dictionary->DataSize);
+	PXDeleteList(PXByte, dictionary->Data, dictionary->DataSize);
 }
 
 PXSize PXDictionaryValueSize(const PXDictionary* const dictionary)
@@ -37,9 +37,12 @@ void PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys)
 	const PXSize oldPositionOffset = dictionary->EntryAmountMaximal * (dictionary->KeyTypeSize + dictionary->ValueTypeSize);
 	const PXSize dataBlockSize = PXDictionaryValueSize(dictionary);
 
-	dictionary->EntryAmountMaximal = entrys;
-	dictionary->DataSize = dictionary->EntryAmountMaximal * (dictionary->KeyTypeSize + dataBlockSize);
-	dictionary->Data = PXMemoryReallocate(dictionary->Data, dictionary->DataSize);
+	const PXBool resizeSucessful = PXResizeList(PXByte, &dictionary->Data, &dictionary->DataSize, entrys);
+
+	if (resizeSucessful)
+	{
+		dictionary->EntryAmountMaximal = entrys;
+	}
 
 	const PXSize newPositionOffset = dictionary->DataSize;
 	const PXSize difference = newPositionOffset - oldPositionOffset;

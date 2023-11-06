@@ -5254,11 +5254,11 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         void* indexData = pxModel->IndexBuffer.IndexData;
 
         // Copy vertex data
-        pxModel->VertexBuffer.VertexData = PXMemoryAllocate(pxModel->VertexBuffer.VertexDataSize);
+        pxModel->VertexBuffer.VertexData = PXNewList(PXByte, pxModel->VertexBuffer.VertexDataSize);
         PXMemoryCopy(vertexData, pxModel->VertexBuffer.VertexDataSize, pxModel->VertexBuffer.VertexData, pxModel->VertexBuffer.VertexDataSize);
 
         // Copy index data
-        pxModel->IndexBuffer.IndexData = PXMemoryAllocate(pxModel->IndexBuffer.IndexDataSize);
+        pxModel->IndexBuffer.IndexData = PXNewList(PXByte, pxModel->IndexBuffer.IndexDataSize);
         PXMemoryCopy(indexData, pxModel->IndexBuffer.IndexDataSize, pxModel->IndexBuffer.IndexData, pxModel->IndexBuffer.IndexDataSize);
 
         PXLogPrint

@@ -238,7 +238,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 									if (amountOfPages > 1)
 									{
 										pxFont->AdditionalPageListSize = amountOfPages - 1u;
-										pxFont->AdditionalPageList = PXMemoryAllocateTypeCleared(PXFontPage, amountOfPages);
+										pxFont->AdditionalPageList = PXNewList(PXFontPage, amountOfPages);
 									}
 								
 									break;
@@ -368,7 +368,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 									PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
 									pxFontPage->CharacteListSize = compilerSymbolEntry.DataI32U;
-									pxFontPage->CharacteList = PXMemoryAllocateTypeCleared(PXFontPageCharacter, compilerSymbolEntry.DataI32U);
+									pxFontPage->CharacteList = PXNewList(PXFontPageCharacter, compilerSymbolEntry.DataI32U);
 									break;
 								}	
 							}
@@ -383,7 +383,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 						const PXSize targetLine = compilerSymbolEntry.Line;
 						PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
-						const PXBool resizeSuccess = PXMemoryResizeArray(PXFontPageCharacter, &pxFontPage->CharacteList, &pxFontPage->CharacteListSize, currentCharacterIndex + 2);
+						const PXBool resizeSuccess = PXGuaranteeSize(PXFontPageCharacter, &pxFontPage->CharacteList, &pxFontPage->CharacteListSize, currentCharacterIndex + 2);
 							
 						PXFontPageCharacter* const pxFontPageCharacter = &pxFontPage->CharacteList[currentCharacterIndex++];
 

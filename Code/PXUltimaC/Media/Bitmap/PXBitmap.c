@@ -384,7 +384,7 @@ void PXAPI PXBitmapConstruct(PXBitmap* const bmp)
 
 void PXAPI PXBitmapDestruct(PXBitmap* const bmp)
 {
-    PXMemoryRelease(bmp->PixelData, bmp->PixelDataSize);
+    PXDeleteList(PXByte, bmp->PixelData, bmp->PixelDataSize);
 
     bmp->PixelData = 0;
     bmp->PixelDataSize = 0;

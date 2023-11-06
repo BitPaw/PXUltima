@@ -103,12 +103,12 @@ PXActionResult PXAPI PXProgramExecuteAL(PXProgram* const program, const char* pr
     program->PXProgramExecutedCallBack = callback;
 
     program->ParameterListSize = parameterListSize + 1;
-    program->ParameterList = (char**)PXMemoryAllocate(sizeof(char*) * program->ParameterListSize + 1);
+    program->ParameterList = PXNewList(char*,program->ParameterListSize + 1);
     //memset(programExecuteInfo->ParameterList, '#', programExecuteInfo->ParameterListSize + 1);
 
     for(PXSize i = 0; i < parameterListSize; ++i)
     {
-        char* newData = (char*)PXMemoryAllocate(sizeof(char) * 1024);
+        char* newData = PXNewList(PXByte, 1024);
 
         program->ParameterList[i] = newData;
     }

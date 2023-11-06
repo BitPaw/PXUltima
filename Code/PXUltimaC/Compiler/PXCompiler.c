@@ -18,14 +18,28 @@ void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings)
 
 void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	const unsigned char symbolID = compilerSymbolEntry->ID;
+	const PXInt8U symbolID = compilerSymbolEntry->ID;
 
+	const PXFileDataElementType pxFileDataElementType[] =
+	{
+		&symbolID, PXDataTypeInt08U,
+		&compilerSymbolEntry->Coloum, PXDataTypeInt32U,
+		&compilerSymbolEntry->Line, PXDataTypeInt32U,
+		&compilerSymbolEntry->Size, PXDataTypeInt32U,
+		&compilerSymbolEntry->Source, PXDataTypeAdress
+	};
+
+	PXSize written = PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
+
+
+
+#if 0
 	PXFileWriteI8U(pxFile, symbolID);
 	PXFileWriteI32U(pxFile, compilerSymbolEntry->Coloum);
 	PXFileWriteI32U(pxFile, compilerSymbolEntry->Line);
 	PXFileWriteI32U(pxFile, compilerSymbolEntry->Size);
 	PXFileWriteB(pxFile, &compilerSymbolEntry->Source, sizeof(void*));
-
+#endif
 
 #if PXCompilerDebug
 
@@ -262,14 +276,17 @@ void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry*
 
 PXSize PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	PXSize readBytes = 0;
 	PXInt8U symbolID = 0;
 
-	readBytes += PXFileReadI8U(pxFile, &symbolID);
-	readBytes += PXFileReadI32U(pxFile, &compilerSymbolEntry->Coloum);
-	readBytes += PXFileReadI32U(pxFile, &compilerSymbolEntry->Line);
-	readBytes += PXFileReadI32U(pxFile, &compilerSymbolEntry->Size);
-	readBytes += PXFileReadB(pxFile, &compilerSymbolEntry->Source, sizeof(void*));
+	const PXFileDataElementType pxFileDataElementType[] =
+	{
+		&symbolID, PXDataTypeInt08U,
+		&compilerSymbolEntry->Coloum, PXDataTypeInt32U,
+		&compilerSymbolEntry->Line, PXDataTypeInt32U,
+		&compilerSymbolEntry->Size, PXDataTypeInt32U,
+		&compilerSymbolEntry->Source, PXDataTypeAdress
+	};
+	const PXSize readBytes = PXFileReadMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
 
 	compilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
 

@@ -183,6 +183,7 @@ extern "C"
 #define PXDataTypeAdress32 PXDataTypeAdressMask | PXDataTypeSize32
 #define PXDataTypeAdress64 PXDataTypeAdressMask | PXDataTypeSize64
 #define PXDataTypeAdressFlex PXDataTypeAdressMask
+#define PXDataTypeAdress PXDataTypeAdressMask | sizeof(void*)
 
 //-------------------------------------------------
 // Text - used to parse singatures

@@ -212,15 +212,6 @@ extern "C"
 	UIContainerRoot;
 
 
-	typedef enum PXUIElementPositionMode_
-	{
-		PXUIElementPositionInvalid,
-		PXUIElementPositionGlobally,
-		PXUIElementPositionRelative
-	}
-	PXUIElementPositionMode;
-
-
 	typedef struct PXUIElement_ PXUIElement;
 
 	typedef void (PXAPI*PXUIOnClick)(PXUIElement* const pxUIElement);
@@ -253,11 +244,31 @@ extern "C"
 	}
 	PXUITextInfo;
 
-#define PXUIElementIsEnabled (1 << 0)
+#define PXUIElementDoRendering (1 << 0) 
 #define PXUIElementIsActive (1 << 1)
 #define PXUIElementIsHoverable (1 << 2)
 
-#define PXUIElementNormal PXUIElementIsEnabled | PXUIElementIsActive
+#define PXUIElementNormal PXUIElementDoRendering | PXUIElementIsActive | PXUIElementIsHoverable
+#define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive
+
+
+#define PXUIElementAncerParent  0b11110000
+
+#define PXUIElementAncerParentLeft 0b10000000
+#define PXUIElementAncerParentTop 0b01000000
+#define PXUIElementAncerParentRight 0b00100000
+#define PXUIElementAncerParentBottom 0b00010000
+
+#define PXUIElementAncerSibling 0b00001111
+
+#define PXUIElementAncerSiblingLeft 0b00001000
+#define PXUIElementAncerSiblingTop 0b00000100
+#define PXUIElementAncerSiblingRight 0b00000010
+#define PXUIElementAncerSiblingBottom 0b00000001
+
+#define PXUIElementPositionGlobal 0
+#define PXUIElementPositionRelative PXUIElementAncerParent
+
 
 	// Atomic UI-Element
 	// Only Text can be text
@@ -270,7 +281,6 @@ extern "C"
 		PXUIElement* Parent;
 		PXUIElement* Sibling;
 		PXUIElement* Child;
-
 
 		//------------------------------
 		// Events
@@ -285,6 +295,7 @@ extern "C"
 		//------------------------------
 		PXRectangleOffset Margin;
 		PXRectangleOffset Padding;
+		PXInt8U AncerFlagList;
 
 
 		//---<State-Info>------------------------
@@ -603,7 +614,7 @@ extern "C"
 
 	PXPublic PXActionResult PXAPI PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
 	PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
-	PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode);
+	PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXInt32U pxUIElementPositionMode);
 
 	PXPublic void PXAPI PXGraphicPXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
 	PXPublic void PXAPI PXGraphicPXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);

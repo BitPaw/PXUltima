@@ -51,14 +51,14 @@ extern "C"
 
 	typedef struct PXHuffmanTree_
 	{
-		unsigned int* codes; /*the huffman codes (bit patterns representing the symbols)*/
-		unsigned int* lengths; /*the lengths of the huffman codes*/
-		unsigned int maxbitlen; /*maximum number of bits a single code can get*/
-		unsigned int numcodes; /*number of symbols in the alphabet = number of codes*/
+		PXInt32U* codes; /*the huffman codes (bit patterns representing the symbols)*/
+		PXInt32U* lengths; /*the lengths of the huffman codes*/
+		PXInt32U maxbitlen; /*maximum number of bits a single code can get*/
+		PXInt32U numcodes; /*number of symbols in the alphabet = number of codes*/
 
 		/* for reading only */
-		unsigned char* table_len; /*length of symbol from lookup table, or max length if secondary lookup needed*/
-		unsigned short* table_value; /*value of symbol from lookup table, or pointer to secondary table if needed*/
+		PXInt8U* table_len; /*length of symbol from lookup table, or max length if secondary lookup needed*/
+		PXInt16U* table_value; /*value of symbol from lookup table, or pointer to secondary table if needed*/
 	}
 	PXHuffmanTree;
 

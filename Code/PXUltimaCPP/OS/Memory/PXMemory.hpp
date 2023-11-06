@@ -79,13 +79,13 @@ namespace PX
 
 		PXDLLExport static void* HeapAllocate(const PXSize size);
 
-#if MemoryDebugOutput
+#if PXMemoryDebug
 		PXDLLExport static void* HeapAllocateDetailed(const PXSize size, const char* file, const char* function, const PXSize line);
 #endif
 
 		PXDLLExport static void* HeapReallocate(void* sourceAddress, const PXSize size);
 
-#if MemoryDebugOutput
+#if PXMemoryDebug
 		PXDLLExport static void* PXMemoryHeapReallocateDetailed(void* sourceAddress, const PXSize size, const char* file, const char* function, const PXSize line);
 #endif
 		PXDLLExport static void* PXMemoryHeapReallocateClear(const void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);

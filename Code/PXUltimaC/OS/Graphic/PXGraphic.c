@@ -551,7 +551,7 @@ PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphic* const pxGraphi
 
 PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphic* const pxGraphic, PXRenderable** const pxRenderable)
 {
-    PXRenderable* const renderable = PXMemoryAllocateType(PXRenderable, 1u);
+    PXRenderable* const renderable = PXNew(PXRenderable);
 
     if (!renderable)
     {
@@ -1019,12 +1019,14 @@ void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red
     pxUIElement->ColorTintReference = color;
 }
 
-void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXUIElementPositionMode pxUIElementPositionMode)
+void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXInt32U  pxUIElementPositionMode)
 {
     //pxUIElement->X = x;
     //pxUIElement->Y = y;
     // pxUIElement->Width = width;
    // pxUIElement->Height = height;
+
+    pxUIElement->AncerFlagList = pxUIElementPositionMode;
 
     PXRectangleOffsetSet(&pxUIElement->Margin, x, y, width, height);
 

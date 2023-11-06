@@ -15,7 +15,7 @@ void PXBufferDestruct(PXBuffer* const pxBuffer)
 {
 	if (pxBuffer->Type == PXBufferTypeHeap)
 	{
-		PXMemoryRelease(pxBuffer->Data, pxBuffer->SizeMaximum);
+		PXDeleteList(PXByte, pxBuffer->Data, pxBuffer->SizeMaximum);
 	}
 
 	pxBuffer->Data = 0;

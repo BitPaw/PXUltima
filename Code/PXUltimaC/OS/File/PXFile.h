@@ -2,15 +2,19 @@
 #define PXFileINCLUDE
 
 
-
+//---------------------------------------------------------
 // Settings
-#define PXFileDebug 1
+//---------------------------------------------------------
+#define FileLineBufferSize 2048
+#define PXFileDebugOutput 0
+//---------------------------------------------------------
 
 
 #define PXFileUSE OSDeviceToUse == OSDeviceDestop
 #if PXFileUSE
 
 #define PXFileCursorPositionInvalid (void*)-1
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,7 +43,6 @@
 
 #endif
 
-#define FileLineBufferSize 2048
 
 #if OSUnix
 #define PXPathSizeMax 260
@@ -424,6 +427,9 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	PXPublic PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize);
 
+	typedef PXSize (PXAPI* PXFileIOMultibleFunction)(PXFile* const pxFile, void* const value, const PXSize length);
+
+	PXPublic PXSize PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction);
 
 	// Read x amounts of bytes and write into a buffer.
 	// If there is no output buffer given, the cursor will just skip forward.
@@ -498,7 +504,7 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length);
 	PXPublic PXSize PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize dataSize, const PXSize index);
 
-	PXPublic PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const PXFileElementList, const PXSize PXFileElementListSize);
+	PXPublic PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileDataElementTypeList, const PXSize pxFileElementListFullSize);
 
 	PXPublic PXSize PXFileWriteFill(PXFile* const pxFile, const unsigned char value, const PXSize length);
 

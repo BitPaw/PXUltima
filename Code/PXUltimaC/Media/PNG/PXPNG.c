@@ -19,7 +19,7 @@ unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g
         int i = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
         if (!tree->children[i])
         {
-            tree->children[i] = PXMemoryAllocate(sizeof(PNGColorTree) * 1);
+            tree->children[i] = PXNew(PNGColorTree);
 
             if (!tree->children[i]) return 83; /*alloc fail*/
         }
@@ -870,7 +870,7 @@ void PXAPI PXPNGConstruct(PXPNG* const png)
 
 void PXAPI PXPNGDestruct(PXPNG* const png)
 {
-    PXMemoryRelease(png->PixelData, png->PixelDataSize);
+    PXDeleteList(PXByte, png->PixelData, png->PixelDataSize);
 
     png->PixelDataSize = 0;
     png->PixelData = 0;
@@ -1750,7 +1750,7 @@ the scanlines with 1 extra byte per scanline
 
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = (unsigned char*)PXMemoryAllocate(linebytes);
+            attempt[type] = PXNewList(PXByte, linebytes);
             if (!attempt[type]) error = 83; /*alloc fail*/
         }
 
@@ -1797,7 +1797,7 @@ the scanlines with 1 extra byte per scanline
             }
         }
 
-        for (type = 0; type != 5; ++type) PXMemoryReallocate(attempt[type], -1);
+        //for (type = 0; type != 5; ++type) PXResizeList(PXByte, attempt[type], -1);
     }
     else if (strategy == LFS_ENTROPY)
     {
@@ -1808,7 +1808,7 @@ the scanlines with 1 extra byte per scanline
 
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = (unsigned char*)PXMemoryAllocate(linebytes);
+            attempt[type] = PXNewList(PXByte, linebytes);
             if (!attempt[type]) error = 83; /*alloc fail*/
         }
 
@@ -1844,7 +1844,7 @@ the scanlines with 1 extra byte per scanline
             }
         }
 
-        for (type = 0; type != 5; ++type) PXMemoryRelease(attempt[type], -1);
+        for (type = 0; type != 5; ++type) PXDeleteList(PXByte, attempt[type], -1);
     }
     else if (strategy == LFS_PREDEFINED)
     {
@@ -1881,7 +1881,7 @@ the scanlines with 1 extra byte per scanline
         PXZLIBsettings.custom_deflate = 0;
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = (unsigned char*)PXMemoryAllocate(linebytes);
+            attempt[type] = PXNewList(PXByte, linebytes);
             if (!attempt[type]) error = 83; /*alloc fail*/
         }
         if (!error)
@@ -1898,14 +1898,14 @@ the scanlines with 1 extra byte per scanline
                     dummy = 0;
 
                     const PXSize sizeAA = 0xFFFF * 2;
-                    dummy = (unsigned char*)PXMemoryAllocate(sizeAA);
+                    dummy = PXNewList(PXByte, sizeAA);
 
                     PXSize written = 0;
 
                     // fix this: PXZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
                     // PXZLIB_compress( , &PXZLIBsettings);
 
-                    PXMemoryRelease(dummy, -1);
+                    PXDeleteList(PXByte, dummy, sizeAA);
                     /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
                     if (type == 0 || size[type] < smallest)
                     {
@@ -1918,7 +1918,7 @@ the scanlines with 1 extra byte per scanline
                 for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
-        for (type = 0; type != 5; ++type) PXMemoryRelease(attempt[type], -1);
+        for (type = 0; type != 5; ++type) PXDeleteList(PXByte, attempt[type], -1);
     }
     else return 88; // unknown filter strategy
 
@@ -1994,7 +1994,7 @@ PXSize preProcessScanlines
             if (paddingBitsNeeded)
             {
                 const PXSize size = height * ((width * bpp + 7u) / 8u);
-                unsigned char* padded = (unsigned char*)PXMemoryAllocate(sizeof(unsigned char) * size);
+                PXByte* padded = PXNewList(PXByte, size);
                 if (!padded) error = 83; /*alloc fail*/
                 if (!error)
                 {
@@ -2002,7 +2002,7 @@ PXSize preProcessScanlines
                     error = filter(pxScanlineStream->Data, padded, width, height, bpp, LFS_MINSUM);
                 }
 
-                PXMemoryRelease(padded, size);
+                PXDeleteList(PXByte, padded, size);
             }
             else
             {
@@ -2024,7 +2024,7 @@ PXSize preProcessScanlines
 
             PXActionReturnOnError(allocationResult);
 
-            unsigned char* adam7 = (unsigned char*)PXMemoryAllocate(passstart[7]);
+            PXByte* adam7 = PXNewList(PXByte, passstart[7]);
 
             if (!adam7 && passstart[7]) error = 83; //alloc fail
 
@@ -2035,11 +2035,13 @@ PXSize preProcessScanlines
                 {
                     if (bpp < 8)
                     {
-                        unsigned char* padded = (unsigned char*)PXMemoryAllocate(padded_passstart[i + 1] - padded_passstart[i]);
+                        const PXSize newSize = padded_passstart[i + 1] - padded_passstart[i];
+                        PXByte* padded = PXNewList(PXByte, newSize);
                         //  if(!padded) ERROR_BREAK(83); //alloc fail
                         addPaddingBits(padded, &adam7[passstart[i]], ((passw[i] * bpp + 7u) / 8u) * 8u, passw[i] * bpp, passh[i]);
                         //  error = filter(&(*out)[filter_passstart[i]], padded, passw[i], passh[i], &info_png->color, settings);
-                        PXMemoryReallocate(padded, -1);
+                                                
+                        PXDeleteList(PXByte, padded, newSize);
                     }
                     else
                     {
@@ -2050,7 +2052,7 @@ PXSize preProcessScanlines
                 }
             }
 
-            PXMemoryReallocate(adam7, passstart[7]);
+            PXDeleteList(PXByte, adam7, passstart[7]);
 
             break;
         }

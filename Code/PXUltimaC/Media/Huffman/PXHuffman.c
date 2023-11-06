@@ -16,7 +16,7 @@ which is possible in case of only 0 or 1 present symbols. */
 int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen, PXSize numcodes, PXSize maxbitlen)
 {
 	// HuffmanTree_makeFromLengths()
-	huffmanTree->lengths = PXMemoryAllocate(sizeof(unsigned int) * numcodes);
+	huffmanTree->lengths = PXNewList(unsigned int, numcodes);
 	huffmanTree->numcodes = NUM_DEFLATE_CODE_SYMBOLS;
 	huffmanTree->maxbitlen = 15;
 
@@ -24,11 +24,11 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 	//-----------
 
 	//------------------------------------ HuffmanTree_makeFromLengths2()
-	unsigned int* blcount = PXMemoryAllocate(sizeof(unsigned int) * (maxbitlen + 1));
-	unsigned int* nextcode = PXMemoryAllocate(sizeof(unsigned int) * (maxbitlen + 1));
+	unsigned int* blcount = PXNewList(unsigned int, maxbitlen + 1);
+	unsigned int* nextcode = PXNewList(unsigned int, maxbitlen + 1);
 	unsigned error = 0;
 
-	huffmanTree->codes = PXMemoryAllocate(sizeof(unsigned int) * numcodes);
+	huffmanTree->codes = PXNewList(unsigned int, numcodes);
 
 
 	if (!huffmanTree->codes || !blcount || !nextcode) error = 83; /*alloc fail*/
@@ -55,8 +55,8 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 		}
 	} 
 
-	PXMemoryRelease(blcount, -1);
-	PXMemoryRelease(nextcode, -1);
+	PXDeleteList(unsigned int, blcount, -1);
+	PXDeleteList(unsigned int, nextcode, -1);
 	//-------------------------------------------------
 
 
@@ -66,7 +66,7 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 	PXSize numpresent, pointer, size; /*total table size*/
 
 	const PXSize maxlensSize = sizeof(unsigned int) * headsize;
-	unsigned int* maxlens = PXMemoryAllocate(maxlensSize);
+	unsigned int* maxlens = PXNewList(unsigned int, headsize);
 
 
 
@@ -97,11 +97,11 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 			size += (1u << (l - FIRSTBITS));
 		}
 	}
-	huffmanTree->table_len = PXMemoryAllocate(size * sizeof(*huffmanTree->table_len)); // unsigned char*
-	huffmanTree->table_value = PXMemoryAllocate(size * sizeof(*huffmanTree->table_value)); // unsigned short
+	huffmanTree->table_len = PXNewList(PXInt8U, size); // unsigned char*
+	huffmanTree->table_value = PXNewList(PXInt16U, size); // unsigned short
 	if (!huffmanTree->table_len || !huffmanTree->table_value)
 	{
-		PXMemoryRelease(maxlens, maxlensSize);
+		PXDeleteList(PXInt32U, maxlens, maxlensSize);
 		/* freeing tree->table values is done at a higher scope */
 		return 83; /*alloc fail*/
 	}
@@ -122,7 +122,7 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 		pointer += (1u << (l - FIRSTBITS));
 	}
 
-	PXMemoryRelease(maxlens, maxlensSize);
+	PXDeleteList(unsigned int, maxlens, maxlensSize);
 
 	/*fill in the first table for short symbols, or secondary table for long symbols*/
 	numpresent = 0;
@@ -213,22 +213,26 @@ unsigned int PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffma
 
 	/*the order in which "code length alphabet code lengths" are stored as specified by deflate, out of this the huffman
 tree of the dynamic huffman tree lengths is generated*/
-	const unsigned char CLCL_ORDER[NUM_CODE_LENGTH_CODES]= { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
+	const PXInt8U CLCL_ORDER[NUM_CODE_LENGTH_CODES]= { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 
 	/*make sure that length values that aren't filled in will be 0, or a wrong tree will be generated*/
 	unsigned error = 0;
 	unsigned n, HLIT, HDIST, HCLEN;
 
 	/*see comments in deflateDynamic for explanation of the context and these variables, it is analogous*/
-	unsigned* bitlen_ll = 0; /*lit,len code lengths*/
-	unsigned* bitlen_d = 0; /*dist code lengths*/
+	PXInt32U bitlen_ll[NUM_DEFLATE_CODE_SYMBOLS]; /*lit,len code lengths*/
+	PXInt32U bitlen_d[NUM_DISTANCE_SYMBOLS]; /*dist code lengths*/
 	/*code length code lengths ("clcl"), the bit lengths of the huffman tree used to compress bitlen_ll and bitlen_d*/
-	unsigned* bitlen_cl = 0;
+	PXInt32U bitlen_cl[NUM_CODE_LENGTH_CODES];
 	PXHuffmanTree tree_cl; /*the code tree for code length codes (the huffman tree for compressed huffman trees)*/
 
 	//if (!ensureBits17(reader, 14)) return 49; //error: the bit pointer is or will go past the memory BBBB
 
 	PXHuffmanTreeConstruct(&tree_cl);
+	PXClearList(PXInt32U, bitlen_ll, NUM_DEFLATE_CODE_SYMBOLS);
+	PXClearList(PXInt32U, bitlen_d, NUM_DISTANCE_SYMBOLS);
+	PXClearList(PXInt32U, bitlen_cl, NUM_CODE_LENGTH_CODES);
+
 
 	PXHuffmanNumberCode huffmanNumberCode;
 	huffmanNumberCode.NumberOfLiteralCodes = PXFileReadBits(pxFile, 5u) + 257u;
@@ -246,8 +250,6 @@ tree of the dynamic huffman tree lengths is generated*/
 	/*number of code length codes. Unlike the spec, the value 4 is added to it here already*/
 	//HCLEN = readBits(reader, 4) + 4;
 
-	bitlen_cl = PXMemoryAllocateType(unsigned int, NUM_CODE_LENGTH_CODES);
-	if (!bitlen_cl) return 83 /*alloc fail*/;
 
 	//HuffmanTree_init(&tree_cl);
 
@@ -258,12 +260,12 @@ tree of the dynamic huffman tree lengths is generated*/
 		{
 			// throw(50); // error: the bit pointer is or will go past the memory* AAAA/
 		}*/
-		for (PXSize index = 0; index != HCLEN; ++index)
+		for (PXInt8U index = 0; index != HCLEN; ++index)
 		{
 			//ensureBits9(reader, 3); /*out of bounds already checked above */
 			bitlen_cl[CLCL_ORDER[index]] = PXFileReadBits(pxFile, 3u);
 		}
-		for (PXSize index = HCLEN; index != NUM_CODE_LENGTH_CODES; ++index)
+		for (PXInt8U index = HCLEN; index != NUM_CODE_LENGTH_CODES; ++index)
 		{
 			bitlen_cl[CLCL_ORDER[index]] = 0;
 		}
@@ -271,13 +273,9 @@ tree of the dynamic huffman tree lengths is generated*/
 		error = PXGenerateFromLengths(&tree_cl, bitlen_cl, NUM_CODE_LENGTH_CODES, 7);
 		if (error) break;
 
-		/*now we can use this tree to read the lengths for the tree that this function will return*/
-		bitlen_ll = (unsigned int*)PXMemoryAllocate(sizeof(unsigned int) * NUM_DEFLATE_CODE_SYMBOLS);
-		bitlen_d = (unsigned int*)PXMemoryAllocate(sizeof(unsigned int) * NUM_DISTANCE_SYMBOLS);
-		if(!bitlen_ll || !bitlen_d) return 83;// /*alloc fail*/);
+		// now we can use this tree to read the lengths for the tree that this function will return
 
-		PXMemoryClear(bitlen_ll, NUM_DEFLATE_CODE_SYMBOLS * sizeof(*bitlen_ll));
-		PXMemoryClear(bitlen_d, NUM_DISTANCE_SYMBOLS * sizeof(*bitlen_d));
+	
 
 		/*i is the current symbol we're reading in the part that contains the code lengths of lit/len and dist codes*/
 
@@ -368,10 +366,6 @@ tree of the dynamic huffman tree lengths is generated*/
 		break; /*end of error-while*/
 	}
 
-	PXMemoryRelease(bitlen_cl, -1);
-	PXMemoryRelease(bitlen_ll, -1);
-	PXMemoryRelease(bitlen_d, -1);
-
 	return error;
 }
 
@@ -432,13 +426,13 @@ void PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(PXHuffmanTree* huffmanT
 	//------------------------------------------- generateFixedLitLenTree()
 	const unsigned int maxbitlen = 15;
 	const PXSize numcodes = NUM_DEFLATE_CODE_SYMBOLS;
-	unsigned int bitlen[NUM_DEFLATE_CODE_SYMBOLS];
+	PXInt32U bitlen[NUM_DEFLATE_CODE_SYMBOLS];
 
 	/*288 possible codes: 0-255=literals, 256=endcode, 257-285=lengthcodes, 286-287=unused*/
-	for (PXSize i = 0; i <= 143; ++i) bitlen[i] = 8;
-	for (PXSize i = 144; i <= 255; ++i) bitlen[i] = 9;
-	for (PXSize i = 256; i <= 279; ++i) bitlen[i] = 7;
-	for (PXSize i = 280; i <= 287; ++i) bitlen[i] = 8;
+	for (PXSize i = 0u; i <= 143u; ++i) bitlen[i] = 8u;
+	for (PXSize i = 144u; i <= 255u; ++i) bitlen[i] = 9u;
+	for (PXSize i = 256u; i <= 279u; ++i) bitlen[i] = 7u;
+	for (PXSize i = 280u; i <= 287u; ++i) bitlen[i] = 8u;
 	//---------------------------------------------------------------------------
 
 	PXGenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);
@@ -463,15 +457,15 @@ void PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const huffmanTree)
 
 void PXHuffmanTreeConstruct(PXHuffmanTree* const huffmanTree)
 {	
-	PXMemoryClear(huffmanTree, sizeof(PXHuffmanTree));
+	PXClear(PXHuffmanTree, huffmanTree);
 }
 
 void PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
 {
-	free(huffmanTree->codes);
-	free(huffmanTree->lengths);
-	free(huffmanTree->table_len);
-	free(huffmanTree->table_value);
+	PXDeleteList(PXInt32U, huffmanTree->codes, -1);
+	PXDeleteList(PXInt32U, huffmanTree->lengths, -1);
+	PXDeleteList(PXInt8U, huffmanTree->table_len, -1);
+	PXDeleteList(PXInt16U, huffmanTree->table_value, -1);
 }
 
 PXHuffmanCodeType PXHuffmanCodeTypeFromCode(const unsigned short code)

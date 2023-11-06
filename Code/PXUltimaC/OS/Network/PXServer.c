@@ -50,7 +50,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
 
         server->ServerSocketListSize = pxSocketAdressSetupInfoListSize;
         server->ServerSocketListSizeAllocated = pxSocketAdressSetupInfoListSize;
-        server->ServerSocketList = PXMemoryAllocateType(PXSocket, pxSocketAdressSetupInfoListSize);
+        server->ServerSocketList = PXNewList(PXSocket, pxSocketAdressSetupInfoListSize);
 
         for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
         {

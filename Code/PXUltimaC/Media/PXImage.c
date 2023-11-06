@@ -19,7 +19,7 @@ void PXImageConstruct(PXImage* const image)
 
 void PXImageDestruct(PXImage* const image)
 {
-    PXMemoryRelease(image->PixelData, image->PixelDataSize);
+    PXDeleteList(PXByte, image->PixelData, image->PixelDataSize);
 
     PXImageConstruct(image);
 }
@@ -52,7 +52,7 @@ PXBool PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const
 
     // reallocate
     {
-        const void* newadress = PXMemoryReallocate(image->PixelData, sizeof(PXByte) * newSize);
+        const void* newadress = PXResizeList(PXByte, &image->PixelData, &image->PixelDataSize, newSize);
 
         if (!newadress)
         {
@@ -62,8 +62,6 @@ PXBool PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const
         image->Format = dataFormat;
         image->Width = width;
         image->Height = height;
-        image->PixelData = newadress;
-        image->PixelDataSize = newSize;
     }
 
     return PXTrue;
@@ -99,7 +97,7 @@ void PXImageFlipVertical(PXImage* image)
     const PXSize bbp = PXColorFormatBytePerPixel(image->Format);;
     const PXSize scanLineWidthSize = image->Width * bbp;
     const PXSize scanLinesToSwap = image->Height / 2u;
-    PXByte* copyBufferRow = PXMemoryAllocateType(PXByte, scanLineWidthSize);
+    PXByte* copyBufferRow = PXNewList(PXByte, scanLineWidthSize);
 
     if(!copyBufferRow)
     {
@@ -116,7 +114,7 @@ void PXImageFlipVertical(PXImage* image)
         PXMemoryCopy(copyBufferRow, scanLineWidthSize, bufferA, scanLineWidthSize); // Buffer -> B 'Move SaveCopy (A) to B'
     }
 
-    PXMemoryRelease(copyBufferRow, scanLineWidthSize);
+    PXDeleteList(PXByte, copyBufferRow, scanLineWidthSize);
 }
 
 void PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, unsigned char blue)
