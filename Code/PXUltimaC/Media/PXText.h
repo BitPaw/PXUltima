@@ -148,95 +148,95 @@ extern "C"
 		(pxText)->TextA = text;
 
 
-	PXPublic PXSize PXTextFromInt(PXText* const pxText, int number);
-	PXPublic PXSize PXTextFromBool(PXText* const pxText, const PXBool number);
-	PXPublic PXSize PXTextFromFloat(PXText* const pxText, const float number);
+	PXPublic PXSize PXAPI PXTextFromInt(PXText* const pxText, int number);
+	PXPublic PXSize PXAPI PXTextFromBool(PXText* const pxText, const PXBool number);
+	PXPublic PXSize PXAPI PXTextFromFloat(PXText* const pxText, const float number);
 	
-	PXPublic PXSize PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
+	PXPublic PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
 
-	PXPublic PXSize PXTextToInt(const PXText* const pxText, int* const number);
-	PXPublic PXSize PXTextToBool(const PXText* const pxText, PXBool* const number);
-	PXPublic PXSize PXTextToFloat(const PXText* const pxText, float* const number);
+	PXPublic PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number);
+	PXPublic PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number);
+	PXPublic PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number);
 
 
 
-	PXPublic PXSize PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
-	PXPublic PXSize PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
-	PXPublic PXSize PXTextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXInt32U number);
-	PXPublic PXSize PXTextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXInt64U number);
-	PXPublic PXSize PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXInt64U number, const unsigned char numberOfDigits);
+	PXPublic PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
+	PXPublic PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
+	PXPublic PXSize PXAPI PXTextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXInt32U number);
+	PXPublic PXSize PXAPI PXTextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXInt64U number);
+	PXPublic PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXInt64U number, const unsigned char numberOfDigits);
 
-	PXPublic PXSize PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
-	PXPublic PXSize PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
+	PXPublic PXSize PXAPI PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
+	PXPublic PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
 		 
-	PXPublic PXSize PXTextAppend(PXText* const currentString, const PXText* const appendingString);
-	PXPublic PXSize PXTextAppendA(char* const dataString, const PXSize dataStringSize, const char* const appaendString, const char appaendStringSize);
-	PXPublic PXSize PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
+	PXPublic PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appendingString);
+	PXPublic PXSize PXAPI PXTextAppendA(char* const dataString, const PXSize dataStringSize, const char* const appaendString, const char appaendStringSize);
+	PXPublic PXSize PXAPI PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
-	PXPublic PXSize PXTextPrint(PXText* const pxText, const char* style, ...);
-	PXPublic PXSize PXTextPrintA(char* const text, const PXSize size, const char* style, ...);
+	PXPublic PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...);
+	PXPublic PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style, ...);
 
-	PXPublic PXSize PXTextClear(PXText* const pxText);
+	PXPublic PXSize PXAPI PXTextClear(PXText* const pxText);
 
-	PXPublic void PXTextAdvance(PXText* const pxText, const PXSize advanceBy);
+	PXPublic void PXAPI PXTextAdvance(PXText* const pxText, const PXSize advanceBy);
 
-	PXPublic PXSize PXTextLengthA(const char* string, const PXSize stringSize);
-	PXPublic PXSize PXTextLengthW(const wchar_t* string, const PXSize stringSize);
+	PXPublic PXSize PXAPI PXTextLengthA(const char* string, const PXSize stringSize);
+	PXPublic PXSize PXAPI PXTextLengthW(const wchar_t* string, const PXSize stringSize);
 
-	PXPublic PXSize PXTextLengthUntilA(const char* string, const PXSize stringSize, const char character);
-	PXPublic PXSize PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const wchar_t character);
+	PXPublic PXSize PXAPI PXTextLengthUntilA(const char* string, const PXSize stringSize, const char character);
+	PXPublic PXSize PXAPI PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const wchar_t character);
 
-	PXPublic PXSize PXTextCopy(const PXText* const source, PXText* const destination);
+	PXPublic PXSize PXAPI PXTextCopy(const PXText* const source, PXText* const destination);
 
-	PXPublic PXSize PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
-	PXPublic PXSize PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
-	PXPublic PXSize PXTextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
-	PXPublic PXSize PXTextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
+	PXPublic PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
+	PXPublic PXSize PXAPI PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
+	PXPublic PXSize PXAPI PXTextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
+	PXPublic PXSize PXAPI PXTextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
 
-	PXPublic PXSize PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
-	PXPublic PXSize PXTextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
+	PXPublic PXSize PXAPI PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
+	PXPublic PXSize PXAPI PXTextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
 
-	PXPublic PXSize PXTextCountA(const char* PXText, const PXSize PXTextSize, const char target);
-	PXPublic PXSize PXTextCountW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target);
+	PXPublic PXSize PXAPI PXTextCountA(const char* PXText, const PXSize PXTextSize, const char target);
+	PXPublic PXSize PXAPI PXTextCountW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target);
 
-	PXPublic PXSize PXTextCountUntilA(const char* PXText, const PXSize PXTextSize, const char target, const char stopAt);
-	PXPublic PXSize PXTextCountUntilW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target, const wchar_t stopAt);
+	PXPublic PXSize PXAPI PXTextCountUntilA(const char* PXText, const PXSize PXTextSize, const char target, const char stopAt);
+	PXPublic PXSize PXAPI PXTextCountUntilW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target, const wchar_t stopAt);
 
-	PXPublic PXBool PXTextCompare(const PXText* const textA, const PXText* const textB);
+	PXPublic PXBool PXAPI PXTextCompare(const PXText* const textA, const PXText* const textB);
 
-	PXPublic PXBool PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize);
-	PXPublic PXBool PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
-	PXPublic PXBool PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
-	PXPublic PXBool PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
+	PXPublic PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize);
+	PXPublic PXBool PXAPI PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic PXBool PXAPI PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic PXBool PXAPI PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
 
-	PXPublic char PXTextCompareIgnoreCaseA(const char* a, const PXSize aSize, const char* b, const PXSize bSize);
-	PXPublic char PXTextCompareIgnoreCaseW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
-	PXPublic char PXTextCompareIgnoreCaseAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
-	PXPublic char PXTextCompareIgnoreCaseWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
+	PXPublic char PXAPI PXTextCompareIgnoreCaseA(const char* a, const PXSize aSize, const char* b, const PXSize bSize);
+	PXPublic char PXAPI PXTextCompareIgnoreCaseW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic char PXAPI PXTextCompareIgnoreCaseAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
+	PXPublic char PXAPI PXTextCompareIgnoreCaseWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
 
-	PXPublic char* PXTextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize);
+	PXPublic char* PXAPI PXTextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize);
 
-	PXPublic PXSize PXTextFindFirstCharacterA(const char* PXRestrict const string, const PXSize dataSize, const char character);
-	PXPublic PXSize PXTextFindFirstCharacterBeforeA(const char* PXRestrict const string, const PXSize dataSize, const char target, const char barrier);
-	PXPublic PXSize PXTextFindFirstCharacterOfListA(const char* PXRestrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize);
+	PXPublic PXSize PXAPI PXTextFindFirstCharacterA(const char* PXRestrict const string, const PXSize dataSize, const char character);
+	PXPublic PXSize PXAPI PXTextFindFirstCharacterBeforeA(const char* PXRestrict const string, const PXSize dataSize, const char target, const char barrier);
+	PXPublic PXSize PXAPI PXTextFindFirstCharacterOfListA(const char* PXRestrict const string, const PXSize dataSize, const char* characterList, const PXSize characterListSize);
 
-	PXPublic PXSize PXTextFindFirstStringA(const char* __restrict string, const PXSize dataSize, const char* PXRestrict const targetString, const PXSize targetStringSize);
-	PXPublic PXSize PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
+	PXPublic PXSize PXAPI PXTextFindFirstStringA(const char* __restrict string, const PXSize dataSize, const char* PXRestrict const targetString, const PXSize targetStringSize);
+	PXPublic PXSize PXAPI PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
 	
-	PXPublic PXBool PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult);
+	PXPublic PXBool PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult);
 	
-	PXPublic void PXTextMoveByOffset(PXText* const pxText, const PXSize offset);
+	PXPublic void PXAPI PXTextMoveByOffset(PXText* const pxText, const PXSize offset);
 
-	PXPublic void PXTextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const char character);
+	PXPublic void PXAPI PXTextTerminateBeginFromFirstA(char* string, const PXSize dataSize, const char character);
 
-	PXPublic void PXTextParseA(const char* buffer, const PXSize bufferSize, const char* syntax, ...);
+	PXPublic void PXAPI PXTextParseA(const char* buffer, const PXSize bufferSize, const char* syntax, ...);
 
-	PXPublic void PXTextParseFindAllA(const char* string, const PXSize stringSize, const ParsingTokenA* parsingTokenList, const PXSize parsingTokenListSize);
+	PXPublic void PXAPI PXTextParseFindAllA(const char* string, const PXSize stringSize, const ParsingTokenA* parsingTokenList, const PXSize parsingTokenListSize);
 
-	PXPublic PXBool PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t* pattern, const PXSize patternSize);
+	PXPublic PXBool PXAPI PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t* pattern, const PXSize patternSize);
 
 
-	PXPublic PXSize PXTextReplace(PXText* const pxText, char target, char value);
+	PXPublic PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value);
 
 
 #ifdef __cplusplus

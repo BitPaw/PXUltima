@@ -27,13 +27,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -43,13 +43,13 @@
     </EnableFuzzer>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -142,7 +142,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>StdCall</CallingConvention>
+      <CallingConvention>Cdecl</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <Optimization>MinSpace</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -178,7 +178,8 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CallingConvention>Cdecl</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
@@ -204,7 +205,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>StdCall</CallingConvention>
+      <CallingConvention>Cdecl</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <Optimization>MinSpace</Optimization>
@@ -241,6 +242,11 @@
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="Media\HEIF\PXHEIF.c" />
     <ClCompile Include="Media\Matroska\PXMatroska.c" />
+    <ClCompile Include="OS\Audio\PXALSA\PXALSA.c" />
+    <ClCompile Include="OS\Audio\PXDirectSound\PXDirectSound.c" />
+    <ClCompile Include="OS\Audio\PXMidi\PXMIDI.c" />
+    <ClCompile Include="OS\Audio\PXMultiMedia\PXMultiMedia.c" />
+    <ClCompile Include="OS\Audio\PXXAudio\PXXAudio.c" />
     <ClCompile Include="OS\DataBase\PXDataBase.c" />
     <ClCompile Include="Media\PXResource.c" />
     <ClCompile Include="OS\Hardware\PXController.c" />
@@ -348,6 +354,7 @@
     <ClCompile Include="OS\Async\PXProcess.c" />
     <ClCompile Include="OS\Async\PXProgram.c" />
     <ClCompile Include="OS\Signal\PXSignal.c" />
+    <ClCompile Include="OS\System\PXOSVersion.c" />
     <ClCompile Include="OS\System\PXRegistry.c" />
     <ClCompile Include="OS\Async\PXAwait.c" />
     <ClCompile Include="OS\Async\PXLock.c" />
@@ -384,6 +391,11 @@
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="Media\HEIF\PXHEIF.h" />
     <ClInclude Include="Media\Matroska\PXMatroska.h" />
+    <ClInclude Include="OS\Audio\PXALSA\PXALSA.h" />
+    <ClInclude Include="OS\Audio\PXDirectSound\PXDirectSound.h" />
+    <ClInclude Include="OS\Audio\PXMidi\PXMIDI.h" />
+    <ClInclude Include="OS\Audio\PXMultiMedia\PXMultiMedia.h" />
+    <ClInclude Include="OS\Audio\PXXAudio\PXXAudio.h" />
     <ClInclude Include="OS\DataBase\PXDataBase.h" />
     <ClInclude Include="Media\PXResource.h" />
     <ClInclude Include="OS\Hardware\PXController.h" />

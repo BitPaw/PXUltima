@@ -1522,7 +1522,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     {
         if (!pxOpenGL)
         {
-            return PXActionRefuedParameterNull;
+            return PXActionRefusedArgumentNull;
         }
     }
 
@@ -2780,7 +2780,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
 {
     if (pxModel->VertexBuffer.VertexDataRowSize == 0)
     {
-        return PXActionRefuedParameterInvalid;
+        return PXActionRefusedArgumentInvalid;
     }
 
     const PXBool canUseShader = pxModel->ShaderProgramReference && pxOpenGL->ShaderProgramUse;

@@ -24,11 +24,13 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 	//-----------
 
 	//------------------------------------ HuffmanTree_makeFromLengths2()
-	unsigned int* blcount = PXNewList(unsigned int, maxbitlen + 1);
-	unsigned int* nextcode = PXNewList(unsigned int, maxbitlen + 1);
+	const PXInt32U  maxBitLenghAA = maxbitlen + 1;
+
+	PXInt32U* blcount = PXNewList(PXInt32U, maxBitLenghAA);
+	PXInt32U* nextcode = PXNewList(PXInt32U, maxBitLenghAA);
 	unsigned error = 0;
 
-	huffmanTree->codes = PXNewList(unsigned int, numcodes);
+	huffmanTree->codes = PXNewList(PXInt32U, numcodes);
 
 
 	if (!huffmanTree->codes || !blcount || !nextcode) error = 83; /*alloc fail*/
@@ -55,8 +57,8 @@ int PXGenerateFromLengths(PXHuffmanTree* huffmanTree, const unsigned int* bitlen
 		}
 	} 
 
-	PXDeleteList(unsigned int, blcount, -1);
-	PXDeleteList(unsigned int, nextcode, -1);
+	PXDeleteList(PXInt32U, blcount, maxBitLenghAA);
+	PXDeleteList(PXInt32U, nextcode, maxBitLenghAA);
 	//-------------------------------------------------
 
 

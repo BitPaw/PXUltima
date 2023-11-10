@@ -155,6 +155,8 @@ defined(__WIN32__)
     #define Version_Windows_8 0x0602
     #define Version_Windows_8_1 0x0603
     #define Version_Windows_10 0x0A00
+    #define Version_Windows_11 0x0A01
+    #define Version_Windows_12 0x0A02
 
     #if Version_Windows >= Version_Windows_NT
         #define WindowsAtleastNT 1u
@@ -198,6 +200,19 @@ defined(__WIN32__)
         #define WindowsAtleast10 0u
     #endif
 
+    #if Version_Windows >= Version_Windows_11
+        #define WindowsAtleast11 1u
+    #else
+        #define WindowsAtleast11 0u
+    #endif
+
+    #if Version_Windows >= Version_Windows_12
+        #define WindowsAtleast12 1u
+    #else
+        #define WindowsAtleast12 0u
+    #endif
+
+
     #if Version_Windows == Version_Windows_XP
         #define OSWindowsXP 1u
         typedef struct IUnknown IUnknown;
@@ -216,6 +231,19 @@ defined(__WIN32__)
     #else
         #define OSWindows10 0u
     #endif
+
+    #if Version_Windows == Version_Windows_11
+        #define OSWindows11 1u
+    #else
+        #define OSWindows11 0u
+    #endif
+
+    #if Version_Windows == Version_Windows_12
+        #define OSWindows12 1u
+    #else
+        #define OSWindows12 0u
+    #endif
+
 //-----------------------------------------------------------------------------
 #endif
 
@@ -253,5 +281,9 @@ defined(__WIN32__)
 #define PXOSAPIInternal
 #endif
 //---------------------------------------------------------
+
+void PXOSVersionGet(); 
+
+
 
 #endif

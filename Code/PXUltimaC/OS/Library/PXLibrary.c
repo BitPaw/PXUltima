@@ -155,7 +155,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* co
 	const char* errorString = dlerror();
 	const PXBool successful = errorString;
 #elif OSWindows
-	*libraryFunction = GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+	*libraryFunction = (LibraryFunction)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 	const PXBool successful = *libraryFunction != PXNull;
 
 	PXActionOnErrorFetchAndReturn(!successful);

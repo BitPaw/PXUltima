@@ -199,7 +199,7 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
             (
                 PXLoggingError,
                 "Resource",
-                "Resource load refused : Format not detected"
+                "Load refused : Format not detected"
             );
 
             return PXActionRefusedNotSupported;
@@ -211,7 +211,7 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
             (
                 PXLoggingError,
                 "Resource",
-                "Resource load refused : Not implemented"
+                "Load refused : Not implemented"
             );
 
             return PXActionRefusedNotImplemented;
@@ -230,7 +230,7 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
         (
             PXLoggingInfo,
             "Resource",
-            "Resource load <%s> took %ims, cycles=%lf, IOPs=%i",
+            "Load <%s> took %ims, cycles=%lf, IOPs=%i",
             filePath->TextA,
             PXTimeMilliseconds(&pxTime),
             pxTime.ClockCycleDelta,

@@ -97,6 +97,7 @@ extern "C"
 		//-------------------------------------------------------
 		// Functions
 		//-------------------------------------------------------
+		PXActionRefusedArgumentNull, // Some needed Parameter is null
 		PXActionRefusedArgumentInvalid, // [INVAL]	
 
 		//-------------------------------------------------------
@@ -167,8 +168,8 @@ extern "C"
 		PXActionRefuedAdressInvalid, // System detected an invalid pointer
 
 
-		PXActionRefuedParameterNull, // Some needed Parameter is null
-		PXActionRefuedParameterInvalid,
+	
+
 
 		PXActionRefuedTextFormatUnsupported,
 
@@ -333,7 +334,6 @@ extern "C"
 
 
 		AudioResultFlagInvalid,
-		AudioResultParameterInvalid,
 
 		AudioResultDeviceHandleBusy,
 
@@ -470,6 +470,10 @@ extern "C"
 
 	PXPublic PXActionResult PXErrorCodeFromID(const int errorCode);
 	PXPublic PXActionResult PXErrorCurrent();
+
+#if PXOSWindowsDestop
+	PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);
+#endif
 
 
 #ifdef __cplusplus

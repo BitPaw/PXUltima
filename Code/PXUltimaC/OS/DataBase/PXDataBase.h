@@ -48,7 +48,7 @@ extern "C"
     }
     PXSQLType;
 
-    const PXSQLType PXSQLTypeFromID(const PXInt32U sqlTypeID);
+    const PXSQLType PXAPI PXSQLTypeFromID(const PXInt32U sqlTypeID);
 
     typedef void (*ConnectedEvent)
         (

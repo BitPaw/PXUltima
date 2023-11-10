@@ -438,6 +438,24 @@
     <ClCompile Include="Media\HEIF\PXHEIF.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\System\PXOSVersion.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Audio\PXXAudio\PXXAudio.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Audio\PXDirectSound\PXDirectSound.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Audio\PXMultiMedia\PXMultiMedia.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Audio\PXMidi\PXMIDI.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Audio\PXALSA\PXALSA.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -864,6 +882,21 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\HEIF\PXHEIF.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Audio\PXXAudio\PXXAudio.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Audio\PXDirectSound\PXDirectSound.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Audio\PXMultiMedia\PXMultiMedia.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Audio\PXMidi\PXMIDI.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Audio\PXALSA\PXALSA.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

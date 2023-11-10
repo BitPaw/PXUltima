@@ -1968,7 +1968,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 #elif PXOSWindowsDestop
 
     PXWindowID windowID = 0;
-    DWORD windowStyle = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
+    const DWORD windowStyle = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
     DWORD dwStyle = 0;
     HWND hWndParent = 0;
     HMENU hMenu = 0;
@@ -1992,6 +1992,8 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
         if (window->Mode == PXWindowModeNormal)
         {
+            const int xx = WS_OVERLAPPEDWINDOW;
+
             dwStyle |= WS_OVERLAPPEDWINDOW;// | WS_VISIBLE;
         }
     }

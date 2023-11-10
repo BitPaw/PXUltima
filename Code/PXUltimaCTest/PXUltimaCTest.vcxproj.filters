@@ -30,6 +30,9 @@
     <ClCompile Include="OS\TestSystemInfo.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Sound\TestSound.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OS\TestSocket.h">
@@ -42,6 +45,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\TestSystemInfo.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\TestSound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

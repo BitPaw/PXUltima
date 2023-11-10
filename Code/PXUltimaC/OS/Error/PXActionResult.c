@@ -5,9 +5,11 @@
 #include <errno.h> // POSIX
 
 #if OSUnix
-
 #define EOTHER -1
 #elif OSWindows
+#include <Windows.h>
+#include <mmeapi.h>
+#include <dsound.h> // Only used for error codes
 #endif
 
 PXActionResult PXErrorCodeFromID(const int errorCode)
@@ -270,3 +272,121 @@ PXActionResult PXErrorCurrent()
 
 	return actionResult;
 }
+
+
+#if OSWindows
+PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
+{
+	switch (handleResult)
+	{
+		case S_OK:
+			return PXActionSuccessful;
+
+		case S_FALSE:
+			return PXActionSuccessful;
+
+		case RPC_E_CHANGED_MODE:
+			return PXActionRedundantAlreadyInitialized;
+
+			// The call succeeded, but we had to substitute the 3D algorithm
+		case DS_NO_VIRTUALIZATION:
+			return PXActionSuccessWithSubstitution;
+
+			// The call failed because resources (such as a priority level) were already being used by another caller
+		case DSERR_ALLOCATED:
+			return PXActionRefuedObjectAlreadyExists;
+
+			// The control (vol, pan, etc.) requested by the caller is not available
+		case DSERR_CONTROLUNAVAIL:
+			return PXActionRefuedObjectPropertyNotAvailable;
+
+			// An invalid parameter was passed to the returning function
+		case DSERR_INVALIDPARAM:
+			return PXActionRefusedArgumentInvalid;
+
+			// This call is not valid for the current state of this object
+		case DSERR_INVALIDCALL:
+			return PXActionRefuedObjectStateDoesNotAllowAction;
+
+			// An undetermined error occurred inside the DirectSound subsystem
+		case DSERR_GENERIC:
+			return PXActionFailedUnkownError;
+
+			// The caller does not have the priority level required for the function to succeed
+		case DSERR_PRIOLEVELNEEDED:
+			return PXActionDeniedPriorityTooLow;
+
+			// Not enough free memory is available to complete the operation
+		case DSERR_OUTOFMEMORY:
+			return PXActionFailedMemoryAllocation;
+
+			// The specified WAVE format is not supported
+		case DSERR_BADFORMAT:
+			return PXActionRefuedFormatIllegal;
+
+			// The function called is not supported at this time
+		case DSERR_UNSUPPORTED:
+			return PXActionRefuedFormatNotSupported;
+
+			// No sound driver is available for use
+		case DSERR_NODRIVER:
+			return PXActionRefuedDriverMissing;
+
+			// This object is already initialized
+		case DSERR_ALREADYINITIALIZED:
+			return PXActionRefuedObjectAlreadyInizialized;
+
+			// This object does not support aggregation
+		case DSERR_NOAGGREGATION:
+			return PXActionRefuedObjectAggregationNotSupported;
+
+			// The buffer memory has been lost, and must be restored
+		case DSERR_BUFFERLOST:
+			return PXActionFailedBufferRefernceLost;
+
+			// Another app has a higher priority level, preventing this call from succeeding
+		case DSERR_OTHERAPPHASPRIO:
+			return PXActionYieldToOtherProcessWithHigherPriority;
+
+			// This object has not been initialized
+		case DSERR_UNINITIALIZED:
+			return PXActionRefuedObjectNotInizialized;
+
+			// The requested COM interface is not available
+		case DSERR_NOINTERFACE:
+			return PXActionRefuedObjectInterfaceNotAvailable;
+
+			// Access is denied
+		case DSERR_ACCESSDENIED:
+			return PXActionDeniedNoPermission;
+
+			// Tried to create a DSBCAPS_CTRLFX buffer shorter than DSBSIZE_FX_MIN milliseconds
+		case DSERR_BUFFERTOOSMALL:
+			return PXActionRefuedBufferSizeTooSmal;
+
+			// Attempt to use DirectSound 8 functionality on an older DirectSound object
+		case DSERR_DS8_REQUIRED:
+			return PXActionRefusedLibraryRequiredUpgrade;
+
+			// A circular loop of send effects was detected
+		case DSERR_SENDLOOP:
+			return PXActionCanceledLoopDeteced;
+
+			// The GUID specified in an audiopath file does not match a valid MIXIN buffer
+		case DSERR_BADSENDBUFFERGUID:
+			return PXActionRefuedObjectIDInvalid;
+
+			// The object requested was not found (numerically equal to DMUS_E_NOT_FOUND)
+		case DSERR_OBJECTNOTFOUND:
+			return PXActionRefuedObjectIDInvalid;
+
+			// The effects requested could not be found on the system, or they were found
+			// but in the wrong order, or in the wrong hardware/software locations.
+		case DSERR_FXUNAVAILABLE:
+			return PXActionRefusedEffectNotAvailable;
+
+		default:
+			return PXActionInvalid;
+	}
+}
+#endif

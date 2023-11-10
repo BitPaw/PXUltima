@@ -145,7 +145,7 @@ extern "C"
 	PXPublic void PXMemoryRelease(void* adress, const PXSize size);
 
 #define PXDelete(type, adress) PXMemoryRelease(adress, sizeof(type))
-#define PXDeleteList(type, adress, amount) PXMemoryRelease(adress, sizeof(type) * amount)
+#define PXDeleteList(type, adress, amount) PXMemoryRelease(adress, sizeof(type) * (PXInt32U)amount)
 #endif
 //---------------------------------------------------------
 

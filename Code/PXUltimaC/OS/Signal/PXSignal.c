@@ -41,7 +41,7 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 
 	if (!validLinkage)
 	{
-		return PXActionRefuedParameterInvalid;
+		return PXActionRefusedArgumentInvalid;
 	}
 
 	return PXActionSuccessful;

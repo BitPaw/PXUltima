@@ -797,21 +797,29 @@ extern "C"
 
 	typedef enum PXAudioDeviceType_
 	{
-		AudioDeviceTypeInvalid,
-		AudioDeviceTypeInput,
-		AudioDeviceTypeOutput
+		PXAudioDeviceTypeInvalid,
+		PXAudioDeviceTypeInput,
+		PXAudioDeviceTypeOutput
 	}
 	PXAudioDeviceType;
+
+#define PXAudioDeviceNameSize 64
 
 	typedef struct PXAudioDevice_
 	{
 		PXResourceID ResourceID;
 
-		PXInt32U DeviceID;
+#if OSWindows
+		union
+		{
+			UINT DeviceID; // Windows MultiMedia
+			GUID DeviceGUID; // DirectSound Device Identifier GUID
+		};		
+#endif
 
-		char DeviceName[256];
-		char DisplayName[256];
+		char DeviceName[PXAudioDeviceNameSize];
 		PXAudioDeviceRole Role;
+		PXAudioDeviceType Type;
 
 
 		float Pitch; // [0.5 - 2.0]
@@ -821,8 +829,8 @@ extern "C"
 		PXBool Looping;
 
 
-
-		PXAudioDeviceType Type;
+		PXBool Use3DSpace;
+	
 
 		PXInt16U ManufacturerID;
 		PXInt16U ProductID;
@@ -849,9 +857,10 @@ extern "C"
 		PXInt32U dwChannelMask;          // Positions of the audio channels
 
 
-		#if OSWindows
-		GUID SubFormat;               // Format identifier GUID
-		#endif
+		void* SoundBuffer;
+
+		void* Buffer3DInterface;
+		void* Listen3DInterface;
 	}
 	PXAudioDevice;
 

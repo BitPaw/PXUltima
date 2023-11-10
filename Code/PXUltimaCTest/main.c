@@ -81,11 +81,16 @@ int main()
 {
 	printf("[i] Starting testing...\n");
 	
+
+	TestSoundAll();
+
+
+#if 0
 	
 	PXImage pxImage;
 
 	PXResourceLoadA(&pxImage, "N:\\IMG_0147.CR3");
-
+#endif
 
 
 
@@ -107,12 +112,12 @@ int main()
 	//PXBinaryLinux pxELF;
 	//PXResourceLoadA(&pxELF, "N:\\NAS\\Games\\PC\\Re-Volt_Linux\\rvgl.64.elf");
 
-
+#if 0
 	
 	PXBinaryWindows pxEXE;
 	//PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/32B-Windows-Debug/PXUltimaCTest.exe");
 	PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/64B-Windows-Debug/PXUltima.dll");
-
+#endif
 
 
 	// X86
@@ -130,67 +135,7 @@ int main()
 
 
 
-	PXAudio pxAudio;
-	PXAudioDevice pxAudioDevice;
-	PXClear(PXAudioDevice, &pxAudioDevice);
-
-	PXActionResult init = PXAudioInitialize(&pxAudio, PXAudioSystemWindowsMultiMedia);
-
-	{
-		PXAudioDevice pxAudioDevice;
-
-		PXInt32U amount = 0;
-		PXAudioDeviceAmount(&pxAudio, AudioDeviceTypeInput, &amount);
-
-		printf("--- Input Devices ---\n");
-
-		for (size_t i = 0; i < amount; i++)
-		{
-			PXAudioDeviceFetch(&pxAudio, AudioDeviceTypeInput, i, &pxAudioDevice);
-
-			printf("[%i] %s, %s\n", i, pxAudioDevice.DeviceName, pxAudioDevice.DisplayName);
-		}
-
-		PXAudioDeviceAmount(&pxAudio, AudioDeviceTypeOutput, &amount);
-
-		printf("--- Output Devices ---\n");
-
-		for (size_t i = 0; i < amount; i++)
-		{
-			PXAudioDeviceFetch(&pxAudio, AudioDeviceTypeOutput, i, &pxAudioDevice);
-
-			printf("[%i] %s, %s\n", i, pxAudioDevice.DeviceName, pxAudioDevice.DisplayName);
-		}
-	}
-
-	PXSound pxSound;
-
-	PXResourceLoadA(&pxSound, "H:\\[Cache]\\chip.wav");
-
-
-
-	//PXActionResult open = PXAudioDeviceOpen(&pxAudio, &pxAudioDevice, AudioDeviceTypeOutput, 0);
-
-
-
-	PXAudioDeviceLoad(&pxAudio, &pxAudioDevice, &pxSound, AudioDeviceTypeOutput, 0);
-
-	//PXAudioDeviceStart(&pxAudio, &pxAudioDevice);
-
-	//PXAudioDevicePitchSet(&pxAudio, &pxAudioDevice, 0x00011000);
-	//PXAudioDeviceVolumeSetEqual(&pxAudio, &pxAudioDevice, 0xFFFF);
-
-	while (1)
-	{
-		//PXAudioDeviceStop(&pxAudio, &pxAudioDevice);
-		printf(".");
-		PXThreadSleep(0, 1);
-		//PXAudioDeviceStart(&pxAudio, &pxAudioDevice);
-		PXThreadSleep(0, 1);
-	}
-
-
-	PXActionResult close = PXAudioDeviceClose(&pxAudio, &pxAudioDevice);
+	
 
 
 

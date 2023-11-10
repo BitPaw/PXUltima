@@ -8,8 +8,8 @@ extern "C"
 {
 #endif
 
-	PXPublic PXActionResult PXHTMLLoadFromFile(void* const st, PXFile* const pxFile);
-	PXPublic PXActionResult PXHTMLSaveToFile(void* const st, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXHTMLLoadFromFile(void* const st, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXHTMLSaveToFile(void* const st, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

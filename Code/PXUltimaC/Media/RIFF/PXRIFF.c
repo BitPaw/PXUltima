@@ -81,8 +81,8 @@ PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const pxFile)
 
 	PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-	riff->Format = PXRIFFFormatFromID(chunkID.Value);
-	riff->EndianFormat = PXRIFFEndianFromID(formatID.Value);
+	riff->EndianFormat = PXRIFFEndianFromID(chunkID.Value);
+	riff->Format = PXRIFFFormatFromID(formatID.Value);
 	riff->Valid = (riff->EndianFormat != PXEndianInvalid) && (riff->Format != PXRIFFInvalid);
 
 	return PXActionSuccessful;

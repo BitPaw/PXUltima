@@ -6,6 +6,8 @@
 #define PXLibraryUSE OSDeviceToUse == OSDeviceDestop
 #if PXLibraryUSE
 
+#include <Media/PXResource.h>
+
 #if OSUnix
 #include <sys/types.h>
 #include <dlfcn.h>
@@ -17,7 +19,10 @@ typedef void* LibraryDirectoryID;
 #include <windows.h>
 #include <DbgHelp.h>
 
-typedef FARPROC LibraryFunction;
+//typedef FARPROC LibraryFunction;
+
+typedef int (PXAPI* LibraryFunction)() ;
+
 //typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 #endif
 

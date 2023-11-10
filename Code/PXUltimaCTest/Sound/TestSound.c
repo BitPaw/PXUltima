@@ -1,28 +1,115 @@
 #include "TestSound.h"
 
 #include <OS/File/PXFile.h>
-#include <Media/PXSound.h>
-#include <Media/WAV/PXWAV.h>
+#include <OS/Audio/PXAudio.h>
+#include <Media/Wave/PXWave.h>
 #include <Media/MP3/PXMP3.h>
+
+#include <math.h>
 
 void TestSoundAll()
 {
 #if 1
+	TestSoundPlaySong();
+#endif 
+
+#if 0
 	TestSoundWAVWrite();
 #endif // 1
 
-#if 1
+#if 0
 	TestSoundWAV();
 #endif // 0
 
-#if 1
+#if 0
 	TestSoundMP3();
 #endif // 0
 }
 
+void TestSoundPlaySong()
+{
+	PXAudio pxAudio;
+	PXAudioDevice pxAudioDevice;
+	PXClear(PXAudioDevice, &pxAudioDevice);
+
+	PXActionResult init = PXAudioInitialize(&pxAudio, PXAudioSystemWindowsDirectSound);
+
+	{
+		PXAudioDevice pxAudioDevice;
+
+		PXInt32U amount = 0;
+		pxAudio.DeviceAmount(&pxAudio, PXAudioDeviceTypeInput, &amount);
+
+		printf("--- Input Devices ---\n");
+
+		for (size_t i = 0; i < amount; i++)
+		{
+			pxAudio.DeviceFetch(&pxAudio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
+
+			printf("[%i] %s\n", i, pxAudioDevice.DeviceName);
+		}
+
+		pxAudio.DeviceAmount(&pxAudio, PXAudioDeviceTypeOutput, &amount);
+
+		printf("--- Output Devices ---\n");
+
+		for (size_t i = 0; i < amount; i++)
+		{
+			pxAudio.DeviceFetch(&pxAudio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
+
+			printf("[%i] %s\n", i, pxAudioDevice.DeviceName);
+		}
+	}
+
+	PXSound pxSound;
+
+//	PXResourceLoadA(&pxSound, "H:\\[Cache]\\chip.wav");
+	 PXResourceLoadA(&pxSound, "H:\\[Cache]\\chipMONO.wav");
+
+
+	//PXActionResult open = PXAudioDeviceOpen(&pxAudio, &pxAudioDevice, AudioDeviceTypeOutput, 0);
+	pxAudio.DeviceOpen(&pxAudio, &pxAudioDevice, PXAudioDeviceTypeOutput, 0);
+
+	pxAudio.DeviceLoad(&pxAudio, &pxAudioDevice, &pxSound);
+
+	pxAudio.DeviceStart(&pxAudio, &pxAudioDevice);
+
+	//PXAudioDeviceStart(&pxAudio, &pxAudioDevice);
+
+	//PXAudioDevicePitchSet(&pxAudio, &pxAudioDevice, 0x00011000);
+	//PXAudioDeviceVolumeSetEqual(&pxAudio, &pxAudioDevice, 0xFFFF);
+
+
+	pxAudio.DeferredSettingsCommit(&pxAudio, &pxAudioDevice);
+
+	float x = 0;
+
+	while (1)
+	{
+		float xPos = sin(x) * 3;
+
+		pxAudio.PlaySpeedSet(&pxAudio, &pxAudioDevice, (xPos +1)* 50000);	
+
+		pxAudio.PositionSet(&pxAudio, &pxAudioDevice, xPos, 0, 0);
+
+		x += 0.01;
+
+		printf("| AudioPosition: %9.4f |\n", xPos);
+
+		//PXAudioDeviceStop(&pxAudio, &pxAudioDevice);
+		//printf(".");
+		PXThreadSleep(0, 1);
+		//PXAudioDeviceStart(&pxAudio, &pxAudioDevice);
+		//PXThreadSleep(0, 1);
+	}
+
+
+	PXActionResult close = pxAudio.DeviceClose(&pxAudio, &pxAudioDevice);
+}
+
 void TestSoundWAVWrite()
 {
-	PXWAV wav;
+	PXWave wav;
 
 	PXFile waveStream;
 
@@ -38,7 +125,7 @@ void TestSoundWAVWrite()
 	PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, "A:/TestWav.wav");
 
 	const PXActionResult mappingResult = PXFileOpenFromPath(&waveStream, &pxFileOpenFromPathInfo);
-	const PXActionResult pxActionResult = PXWAVSerialize(&wav, &waveStream);
+	const PXActionResult pxActionResult = PXWaveSaveToFile(&wav, &waveStream);
 
 	PXFileDestruct(&waveStream);
 
@@ -47,13 +134,13 @@ void TestSoundWAVWrite()
 
 void TestSoundWAV()
 {
-	PXWAV wav;
+	PXWave wav;
 
 	PXFile dataStream;
 
 	//PXFileMapToMemoryA(&dataStream, "A:/W.wav", 0, PXMemoryAccessModeReadOnly);
 	
-	PXWAVParse(&wav, &dataStream);
+	PXWaveLoadFromFile(&wav, &dataStream);
 
 	PXFileDestruct(&dataStream);
 }
@@ -66,7 +153,7 @@ void TestSoundMP3()
 
 	//PXFileMapToMemoryA(&dataStream, "A:/S.mp3", 0, PXMemoryAccessModeReadOnly);
 
-	PXMP3Parse(&mp3, &dataStream);
+	PXMP3LoadFromFile(&mp3, &dataStream);
 
 	PXFileDestruct(&dataStream);
 }

@@ -89,7 +89,7 @@ PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTextur
 {
     if (!pxGraphic || !texture || !filePath)
     {
-        return PXActionRefuedParameterNull;
+        return PXActionRefusedArgumentNull;
     }
 
     texture->Filter = PXGraphicRenderFilterNoFilter;

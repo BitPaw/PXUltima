@@ -2089,7 +2089,7 @@ PXSize PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* con
 	return PXFileIOMultible(pxFile, pxFileElementList, pxFileElementListFullSize, PXFileReadB);
 }
 
-PXSize PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction)
+PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction)
 {
 	const PXSize pxDataStreamElementListSize = pxFileElementListFullSize / sizeof(PXFileDataElementType);
 
@@ -2330,7 +2330,7 @@ PXSize PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType* const
 	return totalReadBytes;
 }
 
-PXSize PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
+PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
 {
 	if (!value)
 	{
@@ -2854,7 +2854,7 @@ PXSize PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize
 	return writtenBytes;
 }
 
-PXSize PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileDataElementTypeList, const PXSize pxFileElementListFullSize)
+PXSize PXAPI PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileDataElementTypeList, const PXSize pxFileElementListFullSize)
 {
 	return PXFileIOMultible(pxFile, pxFileDataElementTypeList, pxFileElementListFullSize, PXFileWriteB);
 }
