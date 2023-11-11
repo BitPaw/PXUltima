@@ -197,16 +197,17 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 			return NoSuchDeviceOrAddress;
 
 		case EWOULDBLOCK:
-			return OperationWouldBlock;
+			return OperationWouldBlock;	
 
-		case ENOTSUP:
-			return PXActionNotSupportedByOperatingSystem;
-
-		case EAGAIN:
+		case ENOTSUP: // Same as 'EOPNOTSUPP' in linux
+			return PXActionNotSupportedByOperatingSystem;		
+#if OSWindows
+		case EAGAIN: // Same as 'EWOULDBLOCK' in linux
 			return ResourceUnavailableTryAgain;
 
 		case EOPNOTSUPP:
 			return OperationNotSupportedOnSocket;
+#endif
 
 		case EOVERFLOW:
 			return ValueTooLargeToBeStoredInDataType;
@@ -384,6 +385,43 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 			// but in the wrong order, or in the wrong hardware/software locations.
 		case DSERR_FXUNAVAILABLE:
 			return PXActionRefusedEffectNotAvailable;
+
+		default:
+			return PXActionInvalid;
+	}
+}
+
+PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID)
+{
+	switch (mmResultID)
+	{
+		case MMSYSERR_NOERROR:  return PXActionSuccessful;
+		case MMSYSERR_ERROR:return AudioResultErrorUnspecified;
+		case MMSYSERR_BADDEVICEID:  return AudioResultDeviceIDInvalid;
+		case MMSYSERR_NOTENABLED:   return AudioResultDriverNotEnabled;
+		case MMSYSERR_ALLOCATED: return AudioResultDeviceAlreadyAllocated;
+		case MMSYSERR_INVALHANDLE:  return AudioResultDeviceHandleInvalid;
+		case MMSYSERR_NODRIVER:   return AudioResultDeviceNoDriver;
+		case MMSYSERR_NOMEM:return PXActionFailedMemoryAllocation;
+		case MMSYSERR_NOTSUPPORTED: return PXActionRefusedNotSupported;
+		case MMSYSERR_BADERRNUM:  return AudioResultErrorValueInvalid;
+		case MMSYSERR_INVALFLAG: return AudioResultFlagInvalid;
+		case MMSYSERR_INVALPARAM: return PXActionRefusedArgumentInvalid;
+		case MMSYSERR_HANDLEBUSY:return AudioResultDeviceHandleBusy;
+		case MMSYSERR_INVALIDALIAS:return AudioResultAliasNotFound;
+		case MMSYSERR_BADDB: return AudioResultPXRegistryDatabaseInvalid;
+		case MMSYSERR_KEYNOTFOUND: return AudioResultPXRegistryKeyNotFound;
+		case MMSYSERR_READERROR:  return AudioResultPXRegistryReadError;
+		case MMSYSERR_WRITEERROR: return AudioResultPXRegistryWriteError;
+		case MMSYSERR_DELETEERROR:   return AudioResultPXRegistryDeleteError;
+		case MMSYSERR_VALNOTFOUND: return AudioResultPXRegistryValueNotFound;
+		case MMSYSERR_NODRIVERCB:  return AudioResultDriverNoCallback;
+			//case MMSYSERR_MOREDATA:   return AudioResultMoreData;
+
+		case WAVERR_BADFORMAT: return PXActionRefusedFormatNotSupported;
+		case WAVERR_STILLPLAYING: return AudioResultDeviceIsStillPlaying;
+		case WAVERR_UNPREPARED: return AudioResultReaderIsNotPrepared;
+		case WAVERR_SYNC: return AudioResultDeviceIsSynchronous;
 
 		default:
 			return PXActionInvalid;

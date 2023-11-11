@@ -133,8 +133,6 @@ extern "C"
 		PXActionAlreadyInProgress,
 
 
-		PXActionRefusedInvalidEnumValue,
-		PXActionRefusedInvalidVariable,
 		PXActionRefusedInvalidOperationSpecified,
 		PXActionFailedStackOverflow,
 		PXActionFailedStackUnderflow,
@@ -473,6 +471,7 @@ extern "C"
 
 #if PXOSWindowsDestop
 	PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);
+	PXPublic PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID);
 #endif
 
 

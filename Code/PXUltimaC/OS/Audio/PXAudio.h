@@ -36,6 +36,7 @@ extern "C"
 	{
 		PXAudioSystemInvalid,
 		PXAudioSystemWindowsMultiMedia, // Windows 2000 
+		PXAudioSystemWindowsMIDI,
 		PXAudioSystemWindowsKernalMixer, // Windows 98
 		PXAudioSystemWindowsDirectSound, // Windows XP
 		PXAudioSystemWindowsXAudio // Windows 8 (successor to DirectSound)
@@ -80,53 +81,53 @@ extern "C"
 	//--------------------------------------------------------
 	// Device - Output
 	//--------------------------------------------------------
-	typedef PXActionResult (PXAPI* PXDirectSoundDevicePlayCursorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXSize offset);
-	typedef PXActionResult (PXAPI* PXDirectSoundDevicePlayCursorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSize* const offset);
+	typedef PXActionResult (PXAPI* PXAudioDevicePlayCursorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXSize offset);
+	typedef PXActionResult (PXAPI* PXAudioDevicePlayCursorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSize* const offset);
 
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDevicePlaySpeedSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U frequency);
-	typedef PXActionResult (PXAPI* PXDirectSoundDevicePlaySpeedGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const frequency);
+	typedef PXActionResult (PXAPI* PXAudioDevicePlaySpeedSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U frequency);
+	typedef PXActionResult (PXAPI* PXAudioDevicePlaySpeedGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const frequency);
 
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDevicePositionSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z);
-	typedef PXActionResult (PXAPI* PXDirectSoundDevicePositionGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const  y, float* const  z);
+	typedef PXActionResult (PXAPI* PXAudioDevicePositionSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z);
+	typedef PXActionResult (PXAPI* PXAudioDevicePositionGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const  y, float* const  z);
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceConeAnglesSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U dwInsideConeAngle, const PXInt32U dwOutsideConeAngle);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceConeAnglesGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwInsideConeAngle, PXInt32U* const pdwOutsideConeAngle);
+	typedef PXActionResult (PXAPI* PXAudioDeviceConeAnglesSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U dwInsideConeAngle, const PXInt32U dwOutsideConeAngle);
+	typedef PXActionResult (PXAPI* PXAudioDeviceConeAnglesGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwInsideConeAngle, PXInt32U* const pdwOutsideConeAngle);
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceConeOrientationGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const  y, float* const  z);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceConeOrientationSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z);
+	typedef PXActionResult (PXAPI* PXAudioDeviceConeOrientationGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const  y, float* const  z);
+	typedef PXActionResult (PXAPI* PXAudioDeviceConeOrientationSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z);
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceConeOutsideVolumeGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const plConeOutsideVolume);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceConeOutsideVolumeSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U lConeOutsideVolume);
-
-
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDistanceMaxGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const pflMaxDistance);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDistanceMaxSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float flMaxDistance);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDistanceMinGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const pflMinDistance);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDistanceMinSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float flMinDistance);
-
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceModeGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwMode);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceModeSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U dwMode);
-
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceVelocityGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceVelocitySetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z);
+	typedef PXActionResult (PXAPI* PXAudioDeviceConeOutsideVolumeGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const plConeOutsideVolume);
+	typedef PXActionResult (PXAPI* PXAudioDeviceConeOutsideVolumeSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U lConeOutsideVolume);
 
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDistanceFactorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDistanceFactor);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDistanceFactorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDistanceFactor);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDistanceMaxGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const pflMaxDistance);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDistanceMaxSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float flMaxDistance);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDistanceMinGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const pflMinDistance);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDistanceMinSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float flMinDistance);
+
+	typedef PXActionResult (PXAPI* PXAudioDeviceModeGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwMode);
+	typedef PXActionResult (PXAPI* PXAudioDeviceModeSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U dwMode);
+
+	typedef PXActionResult (PXAPI* PXAudioDeviceVelocityGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z);
+	typedef PXActionResult (PXAPI* PXAudioDeviceVelocitySetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z);
 
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDopplerFactorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDopplerFactor);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDopplerFactorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDopplerFactor);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDistanceFactorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDistanceFactor);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDistanceFactorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDistanceFactor);
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceOrientationGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pvOrientFront, PXInt32U* const pvOrientTop);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceOrientationSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U xFront, const PXInt32U yFront, const PXInt32U zFront, const PXInt32U xTop, const PXInt32U yTop, const PXInt32U zTop);
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceRolloffFactorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflRolloffFactor);
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceRolloffFactorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flRolloffFactor);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDopplerFactorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDopplerFactor);
+	typedef PXActionResult (PXAPI* PXAudioDeviceDopplerFactorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDopplerFactor);
 
-	typedef PXActionResult (PXAPI* PXDirectSoundDeviceDeferredSettingsCommitFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
+	typedef PXActionResult (PXAPI* PXAudioDeviceOrientationGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pvOrientFront, PXInt32U* const pvOrientTop);
+	typedef PXActionResult (PXAPI* PXAudioDeviceOrientationSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U xFront, const PXInt32U yFront, const PXInt32U zFront, const PXInt32U xTop, const PXInt32U yTop, const PXInt32U zTop);
+
+	typedef PXActionResult (PXAPI* PXAudioDeviceRolloffFactorGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflRolloffFactor);
+	typedef PXActionResult (PXAPI* PXAudioDeviceRolloffFactorSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flRolloffFactor);
+
+	typedef PXActionResult (PXAPI* PXAudioDeviceDeferredSettingsCommitFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
 
 
 
@@ -199,35 +200,35 @@ extern "C"
 		PXAudioDevicePauseFunction DevicePause;
 		PXAudioDeviceRestartFunction DeviceRestart;
 		PXAudioDeviceResetFunction DeviceReset;
-		PXDirectSoundDevicePlayCursorSetFunction	PlayCursorSet;
-		PXDirectSoundDevicePlayCursorGetFunction	PlayCursorGet;
-		PXDirectSoundDevicePlaySpeedSetFunction	PlaySpeedSet;
-		PXDirectSoundDevicePlaySpeedGetFunction	PlaySpeedGet;
-		PXDirectSoundDevicePositionSetFunction	PositionSet;
-		PXDirectSoundDevicePositionGetFunction	PositionGet;
-		PXDirectSoundDeviceConeAnglesSetFunction	ConeAnglesSet;
-		PXDirectSoundDeviceConeAnglesGetFunction	ConeAnglesGet;
-		PXDirectSoundDeviceConeOrientationGetFunction	ConeOrientationGet;
-		PXDirectSoundDeviceConeOrientationSetFunction	ConeOrientationSet;
-		PXDirectSoundDeviceConeOutsideVolumeGetFunction	ConeOutsideVolumeGet;
-		PXDirectSoundDeviceConeOutsideVolumeSetFunction	ConeOutsideVolumeSet;
-		PXDirectSoundDeviceDistanceMaxGetFunction	DistanceMaxGet;
-		PXDirectSoundDeviceDistanceMaxSetFunction	DistanceMaxSet;
-		PXDirectSoundDeviceDistanceMinGetFunction	DistanceMinGet;
-		PXDirectSoundDeviceDistanceMinSetFunction	DistanceMinSet;
-		PXDirectSoundDeviceModeGetFunction	ModeGet;
-		PXDirectSoundDeviceModeSetFunction	ModeSet;
-		PXDirectSoundDeviceVelocityGetFunction	VelocityGet;
-		PXDirectSoundDeviceVelocitySetFunction	VelocitySet;
-		PXDirectSoundDeviceDistanceFactorGetFunction	DistanceFactorGet;
-		PXDirectSoundDeviceDistanceFactorSetFunction	DistanceFactorSet;
-		PXDirectSoundDeviceDopplerFactorGetFunction	DopplerFactorGet;
-		PXDirectSoundDeviceDopplerFactorSetFunction	DopplerFactorSet;
-		PXDirectSoundDeviceOrientationGetFunction	OrientationGet;
-		PXDirectSoundDeviceOrientationSetFunction	OrientationSet;
-		PXDirectSoundDeviceRolloffFactorGetFunction	RolloffFactorGet;
-		PXDirectSoundDeviceRolloffFactorSetFunction	RolloffFactorSet;
-		PXDirectSoundDeviceDeferredSettingsCommitFunction	DeferredSettingsCommit;
+		PXAudioDevicePlayCursorSetFunction	PlayCursorSet;
+		PXAudioDevicePlayCursorGetFunction	PlayCursorGet;
+		PXAudioDevicePlaySpeedSetFunction	PlaySpeedSet;
+		PXAudioDevicePlaySpeedGetFunction	PlaySpeedGet;
+		PXAudioDevicePositionSetFunction	PositionSet;
+		PXAudioDevicePositionGetFunction	PositionGet;
+		PXAudioDeviceConeAnglesSetFunction	ConeAnglesSet;
+		PXAudioDeviceConeAnglesGetFunction	ConeAnglesGet;
+		PXAudioDeviceConeOrientationGetFunction	ConeOrientationGet;
+		PXAudioDeviceConeOrientationSetFunction	ConeOrientationSet;
+		PXAudioDeviceConeOutsideVolumeGetFunction	ConeOutsideVolumeGet;
+		PXAudioDeviceConeOutsideVolumeSetFunction	ConeOutsideVolumeSet;
+		PXAudioDeviceDistanceMaxGetFunction	DistanceMaxGet;
+		PXAudioDeviceDistanceMaxSetFunction	DistanceMaxSet;
+		PXAudioDeviceDistanceMinGetFunction	DistanceMinGet;
+		PXAudioDeviceDistanceMinSetFunction	DistanceMinSet;
+		PXAudioDeviceModeGetFunction	ModeGet;
+		PXAudioDeviceModeSetFunction	ModeSet;
+		PXAudioDeviceVelocityGetFunction	VelocityGet;
+		PXAudioDeviceVelocitySetFunction	VelocitySet;
+		PXAudioDeviceDistanceFactorGetFunction	DistanceFactorGet;
+		PXAudioDeviceDistanceFactorSetFunction	DistanceFactorSet;
+		PXAudioDeviceDopplerFactorGetFunction	DopplerFactorGet;
+		PXAudioDeviceDopplerFactorSetFunction	DopplerFactorSet;
+		PXAudioDeviceOrientationGetFunction	OrientationGet;
+		PXAudioDeviceOrientationSetFunction	OrientationSet;
+		PXAudioDeviceRolloffFactorGetFunction	RolloffFactorGet;
+		PXAudioDeviceRolloffFactorSetFunction	RolloffFactorSet;
+		PXAudioDeviceDeferredSettingsCommitFunction	DeferredSettingsCommit;
 	}
 	PXAudio;
 

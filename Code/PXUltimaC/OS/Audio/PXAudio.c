@@ -6,6 +6,7 @@
 #include "PXDirectSound/PXDirectSound.h"
 #include "PXMultiMedia/PXMultiMedia.h"
 #include "PXXAudio/PXXAudio.h"
+#include "PXAudioMIDI/PXAudioMIDI.h"
 
 PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem)
 {
@@ -15,6 +16,59 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 
 	switch (pxAudioSystem)
 	{
+#if OSWindows
+		case PXAudioSystemWindowsMIDI:
+		{
+			pxAudio->Initialize = PXMIDIInitialize;
+			pxAudio->DeviceAmount = PXMIDIDeviceAmount;
+			pxAudio->DeviceFetch = PXMIDIDeviceFetch;
+			pxAudio->DeviceFetchAll = PXMIDIDeviceFetchAll;
+			pxAudio->DeviceOpen = PXMIDIDeviceOpen;
+			pxAudio->DeviceClose = PXMIDIDeviceClose;
+			pxAudio->DeviceLoad = PXMIDIDeviceLoad;
+			pxAudio->DevicePitchIncrease = PXMIDIDevicePitchIncrease;
+			pxAudio->DevicePitchSet = PXMIDIDevicePitchSet;
+			pxAudio->DevicePitchReduce = PXMIDIDevicePitchReduce;
+			pxAudio->DeviceVolumeGet = PXMIDIDeviceVolumeGet;
+			pxAudio->DeviceVolumeSetEqual = PXMIDIDeviceVolumeSetEqual;
+			pxAudio->DeviceVolumeSetIndividual = PXMIDIDeviceVolumeSetIndividual;
+			pxAudio->DeviceStart = PXMIDIDeviceStart;
+			pxAudio->DeviceStop = PXMIDIDeviceStop;
+			pxAudio->DevicePause = PXMIDIDevicePause;
+			pxAudio->PlayCursorSet = PXMIDIDevicePlayCursorSet;
+			pxAudio->PlayCursorGet = PXMIDIDevicePlayCursorGet;
+			pxAudio->PlaySpeedSet = PXMIDIDevicePlaySpeedSet;
+			pxAudio->PlaySpeedGet = PXMIDIDevicePlaySpeedGet;
+			pxAudio->PositionSet = PXMIDIDevicePositionSet;
+			pxAudio->PositionGet = PXMIDIDevicePositionGet;
+			pxAudio->ConeAnglesSet = PXMIDIDeviceConeAnglesSet;
+			pxAudio->ConeAnglesGet = PXMIDIDeviceConeAnglesGet;
+			pxAudio->ConeOrientationGet = PXMIDIDeviceConeOrientationGet;
+			pxAudio->ConeOrientationSet = PXMIDIDeviceConeOrientationSet;
+			pxAudio->ConeOutsideVolumeGet = PXMIDIDeviceConeOutsideVolumeGet;
+			pxAudio->ConeOutsideVolumeSet = PXMIDIDeviceConeOutsideVolumeSet;
+			pxAudio->DistanceMaxGet = PXMIDIDeviceDistanceMaxGet;
+			pxAudio->DistanceMaxSet = PXMIDIDeviceDistanceMaxSet;
+			pxAudio->DistanceMinGet = PXMIDIDeviceDistanceMinGet;
+			pxAudio->DistanceMinSet = PXMIDIDeviceDistanceMinSet;
+			pxAudio->ModeGet = PXMIDIDeviceModeGet;
+			pxAudio->ModeSet = PXMIDIDeviceModeSet;
+			pxAudio->VelocityGet = PXMIDIDeviceVelocityGet;
+			pxAudio->VelocitySet = PXMIDIDeviceVelocitySet;
+			pxAudio->DistanceFactorGet = PXMIDIDeviceDistanceFactorGet;
+			pxAudio->DistanceFactorSet = PXMIDIDeviceDistanceFactorSet;
+			pxAudio->DopplerFactorGet = PXMIDIDeviceDopplerFactorGet;
+			pxAudio->DopplerFactorSet = PXMIDIDeviceDopplerFactorSet;
+			pxAudio->OrientationGet = PXMIDIDeviceOrientationGet;
+			pxAudio->OrientationSet = PXMIDIDeviceOrientationSet;
+			pxAudio->RolloffFactorGet = PXMIDIDeviceRolloffFactorGet;
+			pxAudio->RolloffFactorSet = PXMIDIDeviceRolloffFactorSet;
+			pxAudio->DeferredSettingsCommit = PXMIDIDeviceDeferredSettingsCommit;
+
+			break;
+		}
+#endif
+
 #if PXAudioSystemWindowsMultimediaEnabled
 		case PXAudioSystemWindowsMultiMedia:
 		{

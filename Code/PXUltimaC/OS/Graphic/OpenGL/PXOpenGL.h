@@ -25,7 +25,7 @@ typedef HGLRC PXOpenGLConextID;
 
 #if OSUnix
 #include <GL/glx.h>
-#define PXOpenGLAPICallType
+#define PXOpenGLAPI GLAPIENTRY
 #elif OSWindows
 #define PXOpenGLAPI APIENTRY
 #endif

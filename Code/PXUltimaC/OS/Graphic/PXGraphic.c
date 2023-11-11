@@ -18,6 +18,7 @@
 
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
+#include <OS/Hardware/PXMonitor.h>
 
 PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* const pxImage, const PXText* const pxImageFilePath)
 {
@@ -1372,27 +1373,12 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
     // Fetch all graphical devices 
     {
-        DISPLAY_DEVICEA displayDevice;
-        displayDevice.cb = sizeof(DISPLAY_DEVICEA);
-
-        // Count how many devices we have.
-        for (pxGraphic->DevicePhysicalListSize = 0; EnumDisplayDevicesA(NULL, pxGraphic->DevicePhysicalListSize, &displayDevice, 0); ++(pxGraphic->DevicePhysicalListSize));
-
+        PXMonitorDeviceAmount(&pxGraphic->DevicePhysicalListSize);
+      
         // Allocate space for needed devices
         pxGraphic->DevicePhysicalList = PXNewList(PXGraphicDevicePhysical, pxGraphic->DevicePhysicalListSize);
 
-        // Loop over all devices and store space
-        for (PXSize deviceID = 0; EnumDisplayDevicesA(NULL, deviceID, &displayDevice, 0); ++deviceID)
-        {
-            PXGraphicDevicePhysical* const currentDevice = &pxGraphic->DevicePhysicalList[deviceID];
-
-            PXTextCopyA(displayDevice.DeviceName, 32, currentDevice->DeviceDisplay, PXDeviceDisplaySize);
-            PXTextCopyA(displayDevice.DeviceString, 128, currentDevice->DeviceName, PXDeviceNameSize);
-            PXTextCopyA(displayDevice.DeviceID, 128, currentDevice->DeviceID, PXDeviceIDSize);
-            PXTextCopyA(displayDevice.DeviceKey, 128, currentDevice->DeviceKey, PXDeviceKeySize);
-
-            currentDevice->IsConnectedToMonitor = displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
-        }
+        PXPhysicalDeviceFetchAll(pxGraphic->DevicePhysicalList, pxGraphic->DevicePhysicalListSize);
     }  
  
 
@@ -1538,6 +1524,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
             break;
         }
+#if OSWindows
         case PXGraphicSystemDirectX:
         {
             pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
@@ -1615,6 +1602,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             pxGraphic->Texture2DSelect = PXNull;     
             break;
         }
+#endif
         case PXGraphicSystemVulcan:
         {
             pxGraphic->EventOwner = &pxGraphic->VulcanInstance;

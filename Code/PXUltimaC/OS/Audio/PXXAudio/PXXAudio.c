@@ -11,11 +11,9 @@
 #pragma comment(lib, "SetupApi.lib")
 
 
-
-
 PXActionResult PXAPI PXXAudioInitialize(PXAudio* const pxAudio)
 {
-	IXAudio2* const xAudio = (IXAudio2*)pxAudio->XAudioInterface;
+	IXAudio2* xAudio = PXNull;
 
 	// Setup COM pbject
 	{
@@ -27,10 +25,12 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudio* const pxAudio)
 
 	// Create API interface 
 	{
-		const HRESULT createResultID = XAudio2Create(&xAudio, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
+		const HRESULT createResultID = XAudio2Create((IXAudio2**)&pxAudio->XAudioInterface, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
 		const PXActionResult createResult = PXWindowsHandleErrorFromID(createResultID);
 
 		PXActionReturnOnError(createResult);
+
+		xAudio = (IXAudio2*)pxAudio->XAudioInterface;
 	}
 
 	// Output

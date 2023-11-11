@@ -1486,8 +1486,8 @@ PXActionResult PXAPI PXOpenGLErrorCurrent()
     switch (openGLErrorID)
     {
         case GL_NO_ERROR: return PXActionSuccessful;
-        case GL_INVALID_ENUM:    return PXActionRefusedInvalidEnumValue;
-        case GL_INVALID_VALUE:    return PXActionRefusedInvalidVariable;
+        case GL_INVALID_ENUM:    return PXActionRefusedArgumentInvalid;
+        case GL_INVALID_VALUE:    return PXActionRefusedArgumentInvalid;
         case GL_INVALID_OPERATION:    return PXActionRefusedInvalidOperationSpecified;
         case GL_STACK_OVERFLOW:    return PXActionFailedStackOverflow;
         case GL_STACK_UNDERFLOW:    return PXActionFailedStackUnderflow;

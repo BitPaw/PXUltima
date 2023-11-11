@@ -7,8 +7,6 @@
 #include <Math/PXMatrix.h>
 #include <Media/PXImage.h>
 
-#include <Shlobj.h>
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -804,6 +802,21 @@ extern "C"
 	PXAudioDeviceType;
 
 #define PXAudioDeviceNameSize 64
+#define PXAudioFX3DPositionEnable	(1 <<  0) 
+#define PXAudioFXPlaySpeedEnable	(1 <<  1)
+#define PXAudioFXVolumeMONOEnable	(1 <<  2)
+#define PXAudioFXVolumeSTEREOEnable	(1 <<  3)
+#define PXAudioFXEnable				(1 <<  4)
+#define PXAudioFXGargle				(1 <<  5) // modulates the amplitude of the signal
+#define PXAudioFXChorus				(1 <<  6) // Mixing of similar pitches
+#define PXAudioFXFlanger			(1 <<  7) // Delay with smal distortion over time, simpar effect as "Chorus"
+#define PXAudioFXEcho				(1 <<  8) // Delay and Repeat
+#define PXAudioFXDistortion			(1 <<  9)
+#define PXAudioFXCompressor			(1 << 10)
+#define PXAudioFXParamEq			(1 << 11)
+#define PXAudioFXWavesReverb		(1 << 12)
+#define PXAudioFXI3DL2Reverb		(1 << 13)
+
 
 	typedef struct PXAudioDevice_
 	{
@@ -817,7 +830,7 @@ extern "C"
 		};		
 #endif
 
-		char DeviceName[PXAudioDeviceNameSize];
+	
 		PXAudioDeviceRole Role;
 		PXAudioDeviceType Type;
 
@@ -829,23 +842,37 @@ extern "C"
 		PXBool Looping;
 
 
-		PXBool Use3DSpace;
+		PXInt32U FXSettingFlagList;
 	
-
+		//-------------------------------------------------
+		// General Shared Info
+		//-------------------------------------------------
+		char DeviceName[PXAudioDeviceNameSize];
 		PXInt16U ManufacturerID;
 		PXInt16U ProductID;
-		PXInt16U DriverVersionMajor;
-		PXInt16U DriverVersionMinor;
-
+		PXInt8U DriverVersionMajor;
+		PXInt8U DriverVersionMinor;
 		PXInt32U SupportFlags;
+		//-------------------------------------------------
+
+	
 		PXInt32U FormatSupportFlags;
 
-		PXInt16U FormatTag;         /* format type */
-		PXInt16U Channels;          /* number of channels (i.e. mono, stereo...) */
-		PXInt32U SamplesPerSecound;     /* sample rate */
-		PXInt32U AverageBytesPerSecound;    /* for buffer estimation */
-		PXInt16U BlockAlignSize;        /* block size of data */
-		PXInt16U BitsPerSample;     /* number of bits per sample of mono data */
+		PXInt16U FormatTag;         // format type 
+		PXInt16U Channels;          // number of channels (i.e. mono, stereo...)
+		PXInt32U SamplesPerSecound;     // sample rate
+		PXInt32U AverageBytesPerSecound;    // for buffer estimation 
+		PXInt16U BlockAlignSize;        // block size of data 
+		PXInt16U BitsPerSample;     // number of bits per sample of mono data
+
+		//-------------------------------------------------
+		// Used By MIDI
+		//-------------------------------------------------
+		PXInt16U Technology;           // type of device 
+		PXInt16U Voices;               // # of voices (internal synth only) 
+		PXInt16U Notes;                // max # of notes (internal synth only)
+		PXInt16U ChannelMask;          // channels used (internal synth only)
+		//-------------------------------------------------
 
 		union
 		{
@@ -858,9 +885,17 @@ extern "C"
 
 
 		void* SoundBuffer;
-
 		void* Buffer3DInterface;
 		void* Listen3DInterface;
+		void* FXGargle;
+		void* FXChorus;
+		void* FXFlanger;
+		void* FXEcho;
+		void* FXDistortion;
+		void* FXCompressor8;
+		void* FXParamEq;
+		void* FXWavesReverb;
+		void* FXI3DL2Reverb;
 	}
 	PXAudioDevice;
 
@@ -889,6 +924,58 @@ extern "C"
 
 	}
 	PXAudioSource;*/
+
+
+
+
+#define PXDeviceDisplaySize 32
+#define PXDeviceNameSize 32
+#define PXDeviceIDSize 64
+#define PXDeviceKeySize 128
+
+#define PXDeviceOpenGLDriverSize 32
+#define PXDeviceOpenGLVendorSize 32
+#define PXDeviceOpenGLRendererSize 32
+#define PXDeviceOpenGLShaderSize 32
+
+#define MonitorNameLength 32
+
+	typedef struct PXMonitor_
+	{
+		PXByte Name[MonitorNameLength];
+		PXByte Driver[MonitorNameLength];
+		PXInt16U X;
+		PXInt16U Y;
+		PXInt16U Width;
+		PXInt16U Height;
+	}
+	PXMonitor;
+
+	typedef struct PXGraphicDevicePhysical_
+	{
+		char DeviceDisplay[PXDeviceDisplaySize]; // \\.\DISPLAY6
+		char DeviceName[PXDeviceNameSize]; // NVIDIA GeForce GTX 1080
+		char DeviceID[PXDeviceIDSize]; // Windows DeviceID, "PCI\VEN_10DE&DEV_1B80&SUBSYS_336..."
+		char DeviceKey[PXDeviceKeySize]; // Windows Regestry "\Registry\Machine\System\Current..."
+
+		char Driver[PXDeviceOpenGLDriverSize]; // xxxxx.DLL
+
+		char Vendor[PXDeviceOpenGLVendorSize];
+		char Renderer[PXDeviceOpenGLRendererSize];
+		char Shader[PXDeviceOpenGLShaderSize];
+
+		PXInt64U VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
+		PXInt64U VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
+		PXInt64U VideoMemoryTotal; // current available dedicated video memory (in kb), currently unused GPU memory
+
+		PXInt64U VideoMemoryEvictionCount; // How many times memory got displaced to Main-RAM
+		PXInt64U VideoMemoryEvictionSize; // size of total video memory evicted (in kb)
+
+		PXBool IsConnectedToMonitor;
+
+		PXMonitor AttachedMonitor;
+	}
+	PXGraphicDevicePhysical;
 
 
 

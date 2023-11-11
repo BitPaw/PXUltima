@@ -1,8 +1,7 @@
 #ifndef PXMonitorINCLUDE
 #define PXMonitorINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/System/PXOSVersion.h>
+#include <Media/PXResource.h>
 
 #if OSUnix
 #elif OSWindows
@@ -14,26 +13,21 @@ extern "C"
 {
 #endif
 
-#define MonitorNameLength 32
-
-	typedef struct PXMonitor_
-	{
-		unsigned short X;
-		unsigned short Y;
-		unsigned short Width;
-		unsigned short Height;
-		PXByte Name[MonitorNameLength];
-	}
-	PXMonitor;
 
 #if OSUnix
 #elif PXOSWindowsDestop
 	PXPrivate BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data);
 #endif
 
-	PXPublic void PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize);
+	PXPublic PXActionResult PXAPI PXMonitorDeviceAmount(PXSize* const amount);
+
+	PXPublic void PXAPI PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize);
 
 	PXPublic void PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height);
+
+	// QueryDisplayConfig 
+
+	PXPublic void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevicePhysical, const PXSize amount);
 
 #ifdef __cplusplus
 }

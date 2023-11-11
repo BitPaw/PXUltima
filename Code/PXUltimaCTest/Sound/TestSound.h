@@ -12,6 +12,7 @@ extern "C"
     extern void TestSoundAll();
 
     extern void TestSoundPlaySong();
+    extern void TestSoundPlayMIDIDevice();
 
     extern void TestSoundWAVWrite();
 

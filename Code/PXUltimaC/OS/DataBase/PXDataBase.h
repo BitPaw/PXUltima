@@ -1,7 +1,7 @@
 #ifndef PXDataBaseINLCUDE
 #define PXDataBaseINLCUDE
 
-#include <OS/System/PXOSVersion.h>
+#include <Media/PXResource.h>
 
 #if OSUnix
 #elif OSWindows
@@ -9,9 +9,6 @@
 #include <sqlext.h>
 #include <sqltypes.h>
 #endif
-
-#include <Media/PXText.h>
-#include <OS/Error/PXActionResult.h>
 
 #ifdef __cplusplus
 extern "C"

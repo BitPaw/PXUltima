@@ -27,13 +27,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -43,13 +43,13 @@
     </EnableFuzzer>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -244,7 +244,7 @@
     <ClCompile Include="Media\Matroska\PXMatroska.c" />
     <ClCompile Include="OS\Audio\PXALSA\PXALSA.c" />
     <ClCompile Include="OS\Audio\PXDirectSound\PXDirectSound.c" />
-    <ClCompile Include="OS\Audio\PXMidi\PXMIDI.c" />
+    <ClCompile Include="OS\Audio\PXAudioMIDI\PXAudioMIDI.c" />
     <ClCompile Include="OS\Audio\PXMultiMedia\PXMultiMedia.c" />
     <ClCompile Include="OS\Audio\PXXAudio\PXXAudio.c" />
     <ClCompile Include="OS\DataBase\PXDataBase.c" />
@@ -393,7 +393,7 @@
     <ClInclude Include="Media\Matroska\PXMatroska.h" />
     <ClInclude Include="OS\Audio\PXALSA\PXALSA.h" />
     <ClInclude Include="OS\Audio\PXDirectSound\PXDirectSound.h" />
-    <ClInclude Include="OS\Audio\PXMidi\PXMIDI.h" />
+    <ClInclude Include="OS\Audio\PXAudioMIDI\PXAudioMIDI.h" />
     <ClInclude Include="OS\Audio\PXMultiMedia\PXMultiMedia.h" />
     <ClInclude Include="OS\Audio\PXXAudio\PXXAudio.h" />
     <ClInclude Include="OS\DataBase\PXDataBase.h" />

@@ -1204,7 +1204,11 @@ extern "C"
 
 
 
+#if OSUnix
+#define VKAPI_PTR 
+#elif OSWindows
 #define VKAPI_PTR __stdcall
+#endif
 
 
 

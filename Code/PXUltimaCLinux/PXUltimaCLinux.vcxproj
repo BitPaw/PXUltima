@@ -47,6 +47,9 @@
     <ClInclude Include="..\PXUltimaC\Container\QuadTree\PXQuadTree.h" />
     <ClInclude Include="..\PXUltimaC\Container\Queue\PXQueue.h" />
     <ClInclude Include="..\PXUltimaC\Container\RingBuffer\PXRingBuffer.h" />
+    <ClInclude Include="..\PXUltimaC\Engine\PXEngine.h" />
+    <ClInclude Include="..\PXUltimaC\Engine\PXLobby.h" />
+    <ClInclude Include="..\PXUltimaC\Engine\PXMod.h" />
     <ClInclude Include="..\PXUltimaC\Language\PXTranslator.h" />
     <ClInclude Include="..\PXUltimaC\Log\PXLog.h" />
     <ClInclude Include="..\PXUltimaC\Math\PXCollision.h" />
@@ -63,6 +66,7 @@
     <ClInclude Include="..\PXUltimaC\Media\BinaryLinux\PXBinaryLinux.h" />
     <ClInclude Include="..\PXUltimaC\Media\BinaryWindows\PXBinaryWindows.h" />
     <ClInclude Include="..\PXUltimaC\Media\Bitmap\PXBitmap.h" />
+    <ClInclude Include="..\PXUltimaC\Media\CanonRaw3\PXCanonRaw3.h" />
     <ClInclude Include="..\PXUltimaC\Media\COFF\PXCOFF.h" />
     <ClInclude Include="..\PXUltimaC\Media\CPP\PXCPP.h" />
     <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h" />
@@ -76,6 +80,7 @@
     <ClInclude Include="..\PXUltimaC\Media\FMT\PXFMT.h" />
     <ClInclude Include="..\PXUltimaC\Media\FTP\PXFTP.h" />
     <ClInclude Include="..\PXUltimaC\Media\GIF\PXGIF.h" />
+    <ClInclude Include="..\PXUltimaC\Media\HEIF\PXHEIF.h" />
     <ClInclude Include="..\PXUltimaC\Media\HTML\PXHTML.h" />
     <ClInclude Include="..\PXUltimaC\Media\HTTP\PXHTTP.h" />
     <ClInclude Include="..\PXUltimaC\Media\Huffman\PXHuffman.h" />
@@ -129,12 +134,16 @@
     <ClInclude Include="..\PXUltimaC\Media\YAML\PXYAML.h" />
     <ClInclude Include="..\PXUltimaC\Media\ZLIB\PXZLIB.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXAwait.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Async\PXEvent.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXLock.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXProcess.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXProgram.h" />
     <ClInclude Include="..\PXUltimaC\OS\Async\PXThread.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXALSA\PXALSA.h" />
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudio.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudioMIDI\PXAudioMIDI.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXDirectSound\PXDirectSound.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXMultiMedia\PXMultiMedia.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXXAudio\PXXAudio.h" />
     <ClInclude Include="..\PXUltimaC\OS\Bash\PXBash.h" />
     <ClInclude Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.h" />
     <ClInclude Include="..\PXUltimaC\OS\DataBase\PXDataBase.h" />
@@ -187,6 +196,9 @@
     <ClCompile Include="..\PXUltimaC\Container\QuadTree\PXQuadTree.c" />
     <ClCompile Include="..\PXUltimaC\Container\Queue\PXQueue.c" />
     <ClCompile Include="..\PXUltimaC\Container\RingBuffer\PXRingBuffer.c" />
+    <ClCompile Include="..\PXUltimaC\Engine\PXEngine.c" />
+    <ClCompile Include="..\PXUltimaC\Engine\PXLobby.c" />
+    <ClCompile Include="..\PXUltimaC\Engine\PXMod.c" />
     <ClCompile Include="..\PXUltimaC\Language\PXTranslator.c" />
     <ClCompile Include="..\PXUltimaC\Log\PXLog.c" />
     <ClCompile Include="..\PXUltimaC\Math\PXCollision.c" />
@@ -203,6 +215,7 @@
     <ClCompile Include="..\PXUltimaC\Media\BinaryLinux\PXBinaryLinux.c" />
     <ClCompile Include="..\PXUltimaC\Media\BinaryWindows\PXBinaryWindows.c" />
     <ClCompile Include="..\PXUltimaC\Media\Bitmap\PXBitmap.c" />
+    <ClCompile Include="..\PXUltimaC\Media\CanonRaw3\PXCanonRaw3.c" />
     <ClCompile Include="..\PXUltimaC\Media\COFF\PXCOFF.c" />
     <ClCompile Include="..\PXUltimaC\Media\CPP\PXCPP.c" />
     <ClCompile Include="..\PXUltimaC\Media\CRC32\PXCRC32.c" />
@@ -216,6 +229,7 @@
     <ClCompile Include="..\PXUltimaC\Media\FMT\PXFMT.c" />
     <ClCompile Include="..\PXUltimaC\Media\FTP\PXFTP.c" />
     <ClCompile Include="..\PXUltimaC\Media\GIF\PXGIF.c" />
+    <ClCompile Include="..\PXUltimaC\Media\HEIF\PXHEIF.c" />
     <ClCompile Include="..\PXUltimaC\Media\HTML\PXHTML.c" />
     <ClCompile Include="..\PXUltimaC\Media\HTTP\PXHTTP.c" />
     <ClCompile Include="..\PXUltimaC\Media\Huffman\PXHuffman.c" />
@@ -269,12 +283,16 @@
     <ClCompile Include="..\PXUltimaC\Media\YAML\PXYAML.c" />
     <ClCompile Include="..\PXUltimaC\Media\ZLIB\PXZLIB.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXAwait.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Async\PXEvent.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXLock.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXProcess.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXProgram.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXThread.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Audio\PXALSA\PXALSA.c" />
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXAudio.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Audio\PXAudioMIDI\PXAudioMIDI.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Audio\PXDirectSound\PXDirectSound.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Audio\PXMultiMedia\PXMultiMedia.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Audio\PXXAudio\PXXAudio.c" />
     <ClCompile Include="..\PXUltimaC\OS\Bash\PXBash.c" />
     <ClCompile Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.c" />
     <ClCompile Include="..\PXUltimaC\OS\DataBase\PXDataBase.c" />
@@ -300,6 +318,7 @@
     <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c" />
     <ClCompile Include="..\PXUltimaC\OS\Network\PXSocket.c" />
     <ClCompile Include="..\PXUltimaC\OS\Signal\PXSignal.c" />
+    <ClCompile Include="..\PXUltimaC\OS\System\PXOSVersion.c" />
     <ClCompile Include="..\PXUltimaC\OS\System\PXRegistry.c" />
     <ClCompile Include="..\PXUltimaC\OS\Time\PXStopWatch.c" />
     <ClCompile Include="..\PXUltimaC\OS\Time\PXTime.c" />
@@ -315,6 +334,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PXUltimaC\PXUltimaC.cbp" />
+    <None Include="..\PXUltimaC\PXUltimaC.cscope_file_list" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8acbdd82-ca82-4c40-bc22-a1c484282400}</ProjectGuid>
@@ -366,67 +386,99 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

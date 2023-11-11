@@ -450,7 +450,7 @@
     <ClCompile Include="OS\Audio\PXMultiMedia\PXMultiMedia.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Audio\PXMidi\PXMIDI.c">
+    <ClCompile Include="OS\Audio\PXAudioMIDI\PXAudioMIDI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Audio\PXALSA\PXALSA.c">
@@ -893,7 +893,7 @@
     <ClInclude Include="OS\Audio\PXMultiMedia\PXMultiMedia.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Audio\PXMidi\PXMIDI.h">
+    <ClInclude Include="OS\Audio\PXAudioMIDI\PXAudioMIDI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Audio\PXALSA\PXALSA.h">

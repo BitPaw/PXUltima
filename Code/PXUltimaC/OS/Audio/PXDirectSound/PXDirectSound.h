@@ -93,7 +93,7 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXDirectSoundDeviceDistanceFactorGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDistanceFactor);
 	PXPublic PXActionResult PXAPI PXDirectSoundDeviceDistanceFactorSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDistanceFactor);
 
-	
+	//  DS3D_MINDOPPLERFACTOR to DS3D_MAXDOPPLERFACTOR
 	PXPublic PXActionResult PXAPI PXDirectSoundDeviceDopplerFactorGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDopplerFactor);
 	PXPublic PXActionResult PXAPI PXDirectSoundDeviceDopplerFactorSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDopplerFactor);
 	

@@ -50,40 +50,6 @@ extern "C"
 
 
 
-#define PXDeviceDisplaySize 32
-#define PXDeviceNameSize 32
-#define PXDeviceIDSize 64
-#define PXDeviceKeySize 128
-	
-#define PXDeviceOpenGLDriverSize 32
-#define PXDeviceOpenGLVendorSize 32
-#define PXDeviceOpenGLRendererSize 32
-#define PXDeviceOpenGLShaderSize 32
-
-	typedef struct PXGraphicDevicePhysical_
-	{
-		char DeviceDisplay[PXDeviceDisplaySize]; // \\.\DISPLAY6
-		char DeviceName[PXDeviceNameSize]; // NVIDIA GeForce GTX 1080
-		char DeviceID[PXDeviceIDSize]; // Windows DeviceID, "PCI\VEN_10DE&DEV_1B80&SUBSYS_336..."
-		char DeviceKey[PXDeviceKeySize]; // Windows Regestry "\Registry\Machine\System\Current..."
-
-		char Driver[PXDeviceOpenGLDriverSize]; // xxxxx.DLL
-
-		char Vendor[PXDeviceOpenGLVendorSize];
-		char Renderer[PXDeviceOpenGLRendererSize];
-		char Shader[PXDeviceOpenGLShaderSize];
-
-		PXInt64U VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
-		PXInt64U VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
-		PXInt64U VideoMemoryTotal; // current available dedicated video memory (in kb), currently unused GPU memory
-
-		PXInt64U VideoMemoryEvictionCount; // How many times memory got displaced to Main-RAM
-		PXInt64U VideoMemoryEvictionSize; // size of total video memory evicted (in kb)
-
-		PXBool IsConnectedToMonitor;
-	}
-	PXGraphicDevicePhysical;
-
 
 
 	typedef struct PXGraphic_ PXGraphic;

@@ -243,17 +243,21 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudio* const pxAudio, PXAudioDevi
 		waveFormat.wBitsPerSample = pxSound->BitsPerSample;
 		waveFormat.cbSize = sizeof(WAVEFORMATEX);
 
+		//CoInitialize(PXNull);
+
 
 		DSBUFFERDESC pcDSBufferDesc;
 		pcDSBufferDesc.dwSize = sizeof(DSBUFFERDESC);
-		pcDSBufferDesc.dwFlags = 
+		pcDSBufferDesc.dwFlags =
 			//DSBCAPS_PRIMARYBUFFER |
-			DSBCAPS_STATIC |
+			//DSBCAPS_STATIC |
+			DSBCAPS_CTRLFX | // Does not work with "DSBCAPS_STATIC"
 			//DSBCAPS_CTRLPAN |
-			//DSBCAPS_CTRLVOLUME |
+			DSBCAPS_CTRLVOLUME |
 			DSBCAPS_CTRLFREQUENCY |
-			//DSBCAPS_CTRLPOSITIONNOTIFY |
+			DSBCAPS_CTRLPOSITIONNOTIFY |
 			DSBCAPS_GLOBALFOCUS; // Prevent the music from stopping if you TAB out;
+			
 
 		if (canUse3DStuff)
 		{
@@ -322,6 +326,8 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudio* const pxAudio, PXAudioDevi
 		PXActionReturnOnError(lockResult);
 	}
 
+
+
 	//{
 		IDirectSound3DListener8* listener;
 
@@ -340,6 +346,115 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudio* const pxAudio, PXAudioDevi
 			const HRESULT bufferResultID = soundBuffer->lpVtbl->QueryInterface(soundBuffer, &IID_IDirectSound3DBuffer, &pxAudioDevice->Buffer3DInterface);
 			const PXActionResult bufferResult = PXWindowsHandleErrorFromID(bufferResultID);
 		}
+
+
+
+		
+
+		typedef struct PXListEntryEE_
+		{
+			GUID* ElementFilterID;
+			GUID* ElementID;
+			void** AdressReference;
+			PXBool Enabled;
+		}
+		PXListEntryEE;
+
+
+		const PXListEntryEE pxListEntryEEE[] =
+		{
+			{ &GUID_DSFX_STANDARD_GARGLE,		&IID_IDirectSoundFXGargle,		&pxAudioDevice->FXGargle,		(pxAudioDevice->FXSettingFlagList & PXAudioFXGargle) > 0},
+			{ &GUID_DSFX_STANDARD_CHORUS,		&IID_IDirectSoundFXChorus,		&pxAudioDevice->FXChorus,		(pxAudioDevice->FXSettingFlagList & PXAudioFXChorus) > 0},
+			{ &GUID_DSFX_STANDARD_FLANGER,		&IID_IDirectSoundFXFlanger,		&pxAudioDevice->FXFlanger,		(pxAudioDevice->FXSettingFlagList & PXAudioFXFlanger) > 0},
+			{ &GUID_DSFX_STANDARD_ECHO,			&IID_IDirectSoundFXEcho,		&pxAudioDevice->FXEcho,			(pxAudioDevice->FXSettingFlagList & PXAudioFXEcho) > 0},
+			{ &GUID_DSFX_STANDARD_DISTORTION,	&IID_IDirectSoundFXDistortion,	&pxAudioDevice->FXDistortion,	(pxAudioDevice->FXSettingFlagList & PXAudioFXDistortion) > 0},
+			{ &GUID_DSFX_STANDARD_COMPRESSOR,	&IID_IDirectSoundFXCompressor,	&pxAudioDevice->FXCompressor8,	(pxAudioDevice->FXSettingFlagList & PXAudioFXCompressor) > 0},
+			{ &GUID_DSFX_STANDARD_PARAMEQ,		&IID_IDirectSoundFXParamEq,		&pxAudioDevice->FXParamEq,		(pxAudioDevice->FXSettingFlagList & PXAudioFXParamEq) > 0},
+			{ &GUID_DSFX_WAVES_REVERB,			&IID_IDirectSoundFXWavesReverb,	&pxAudioDevice->FXWavesReverb,	(pxAudioDevice->FXSettingFlagList & PXAudioFXWavesReverb) > 0},
+			{ &GUID_DSFX_STANDARD_I3DL2REVERB,	&IID_IDirectSoundFXI3DL2Reverb,	&pxAudioDevice->FXWavesReverb,	(pxAudioDevice->FXSettingFlagList & PXAudioFXI3DL2Reverb) > 0},
+		};
+		const PXSize amount = sizeof(pxListEntryEEE) / sizeof(PXListEntryEE);
+
+		PXSize amountCounter = 0;
+
+		DSEFFECTDESC dsEffectList[9];
+		DWORD dwResults[9]; 
+		PXClearList(DSEFFECTDESC, dsEffectList, 9);
+
+		for (PXSize i = 0; i < amount; ++i)
+		{
+			const PXListEntryEE* const pxListEntry = &pxListEntryEEE[i];
+
+			if (!pxListEntry->Enabled)
+			{			
+				continue;
+			}
+
+			DSEFFECTDESC* const effectDESC = &dsEffectList[amountCounter++];
+
+			effectDESC->dwSize = sizeof(DSEFFECTDESC);
+			effectDESC->dwFlags = 0;
+			effectDESC->guidDSFXClass = *pxListEntry->ElementFilterID;
+		}
+
+		const HRESULT effectSetResultID = soundBuffer->lpVtbl->SetFX(soundBuffer, amountCounter, &dsEffectList, dwResults);
+		const PXActionResult effectSetResult = PXWindowsHandleErrorFromID(effectSetResultID);
+
+		for (PXSize i = 0; i < amount; ++i)
+		{
+			const PXListEntryEE* const pxListEntry = &pxListEntryEEE[i];
+
+			if (!pxListEntry->Enabled)
+			{
+				continue;
+			}
+
+			soundBuffer->lpVtbl->GetObjectInPath(soundBuffer, pxListEntry->ElementFilterID, 0, pxListEntry->ElementID, pxListEntry->AdressReference);
+		}
+		
+
+		if (0 && pxAudioDevice->FXWavesReverb)
+		{
+			IDirectSoundFXWavesReverb8* const directSoundFXWave = (IDirectSoundFXWavesReverb8*)pxAudioDevice->FXWavesReverb;
+
+			DSFXWavesReverb wavesReverb;
+
+			directSoundFXWave->lpVtbl->GetAllParameters(directSoundFXWave, &wavesReverb);
+			
+
+			//fxEcho.fWetDryMix;
+			//fxEcho.fFeedback;
+			//fxEcho.fLeftDelay;
+			//fxEcho.fRightDelay += 2;
+			//fxEcho.lPanDelay;
+
+			directSoundFXWave->lpVtbl->SetAllParameters(directSoundFXWave, &wavesReverb);
+		}
+
+
+		if (0)
+		{
+
+			IDirectSoundFXEcho8* const directSoundFXEcho = (IDirectSoundFXEcho8*)pxAudioDevice->FXEcho;
+
+			DSFXEcho fxEcho;
+
+			directSoundFXEcho->lpVtbl->GetAllParameters(directSoundFXEcho, &fxEcho);
+
+
+			//fxEcho.fWetDryMix;
+			//fxEcho.fFeedback;
+			//fxEcho.fLeftDelay;
+			//fxEcho.fRightDelay += 2;
+			//fxEcho.lPanDelay;
+
+			directSoundFXEcho->lpVtbl->SetAllParameters(directSoundFXEcho, &fxEcho);
+
+		}
+
+
+
+
 
 
 
