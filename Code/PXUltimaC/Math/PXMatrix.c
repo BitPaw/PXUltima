@@ -102,7 +102,7 @@ void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matri
 	matrixResult->Data[15] = m * D + n * H + o * L + p * P;
 }
 
-void PXMatrix4x4FRotate(const PXMatrix4x4F* matrix4x4F, const float x, const float y, const float z)
+void PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const float y, const float z)
 {
 	PXMatrix4x4F xRotation;
 	PXMatrix4x4F yRotation;
@@ -153,6 +153,7 @@ void PXMatrix4x4FRotate(const PXMatrix4x4F* matrix4x4F, const float x, const flo
 		PXMatrix4x4FIdentity(&tempRotation);
 
 		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
+		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
 		PXMatrix4x4FMultiply(&tempRotation, &xRotation, matrix4x4F);
 	}
 }
@@ -164,29 +165,29 @@ void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const mat
 	PXMemoryCopy(matrixA, sizeOfMatrix, matrixResult, sizeOfMatrix);
 }
 
-void PXMatrix4x4FMove3F(const PXMatrix4x4F* const matrixA, const PXVector3F* const vector3F, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FMove3F(PXMatrix4x4F* const matrixData, const PXVector3F* const vector3F)
 {
-	matrixResult->Data[TransformX] = matrixA->Data[TransformX] + vector3F->X;
-	matrixResult->Data[TransformY] = matrixA->Data[TransformY] + vector3F->Y;
-	matrixResult->Data[TransformZ] = matrixA->Data[TransformZ] + vector3F->Z;
+	matrixData->Data[TransformX] += vector3F->X;
+	matrixData->Data[TransformY] += vector3F->Y;
+	matrixData->Data[TransformZ] += vector3F->Z;
 }
 
-void PXMatrix4x4FMoveXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FMoveXY(PXMatrix4x4F* const matrixData, const float x, const float y)
 {
-	matrixResult->Data[TransformX] = matrixA->Data[TransformX] + x;
-	matrixResult->Data[TransformY] = matrixA->Data[TransformY] + y;
+	matrixData->Data[TransformX] += x;
+	matrixData->Data[TransformY] += y;
 }
 
-void PXMatrix4x4FMoveToScaleXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FMoveToScaleXY(PXMatrix4x4F* const matrixData, const float x, const float y)
 {
-	PXMatrix4x4FMoveXY(matrixA, x * (1-matrixA->Data[ScaleX]), y * (1 - matrixA->Data[ScaleY]), matrixResult);
+	PXMatrix4x4FMoveXY(matrixData, x * (1- matrixData->Data[ScaleX]), y * (1 - matrixData->Data[ScaleY]));
 }
 
-void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult)
+void PXMatrix4x4FMoveXYZ(PXMatrix4x4F* const matrixData, const float x, const float y, const float z)
 {
-	matrixResult->Data[TransformX] = matrixA->Data[TransformX] + x;
-	matrixResult->Data[TransformY] = matrixA->Data[TransformY] + y;
-	matrixResult->Data[TransformZ] = matrixA->Data[TransformZ] + z;
+	matrixData->Data[TransformX] += x;
+	matrixData->Data[TransformY] += y;
+	matrixData->Data[TransformZ] += z;
 }
 
 void PXMatrix4x4FScaleBy(PXMatrix4x4F* const pxMatrix4x4F, const float scalar)
@@ -196,7 +197,7 @@ void PXMatrix4x4FScaleBy(PXMatrix4x4F* const pxMatrix4x4F, const float scalar)
 	pxMatrix4x4F->Data[ScaleZ] *= scalar;
 }
 
-void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXRectangleOffset* const pxMargin)
+void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin)
 {
 #if 1
 

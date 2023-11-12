@@ -1,9 +1,7 @@
 #ifndef PXLZ77INCLUDE
 #define PXLZ77INCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

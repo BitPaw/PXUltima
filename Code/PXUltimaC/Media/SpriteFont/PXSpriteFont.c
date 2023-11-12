@@ -298,7 +298,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 								case PXSpriteFontSymbolFilePath:
 								{
 									PXText fileName;
-									PXTextConstructFromAdressA(&fileName, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+									PXTextConstructFromAdressA(&fileName, compilerSymbolEntry.Source, compilerSymbolEntry.Size, compilerSymbolEntry.Size);
 
 									// Loading Image
 									{

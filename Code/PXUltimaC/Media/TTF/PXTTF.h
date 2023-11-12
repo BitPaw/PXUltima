@@ -3,8 +3,7 @@
 
 #define PXTTFDebug 0
 
-#include <OS/File/PXFile.h>
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

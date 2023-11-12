@@ -1,4 +1,4 @@
-#include "PX3DS.h"
+#include "PXAutodesk3DS.h"
 
 PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
 {

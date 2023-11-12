@@ -2,7 +2,6 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
-#include <Media/PXImage.h>
 
 #define PXQuickSwap(a, b) \
 a = a + b; \
@@ -293,10 +292,10 @@ PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* cons
 
         const PXFileDataElementType pxDataStreamElementList[] =
         {
-            {PXDataTypeTextx2, byteCluster.Data},
-            {PXDataTypeLEInt32U, sizeOfFile},
-            {PXDataTypeLEInt32U, reservedBlock},
-            {PXDataTypeLEInt32U, dataOffset}
+            {byteCluster.Data, PXDataTypeDatax2},
+            {sizeOfFile, PXDataTypeInt32ULE},
+            {reservedBlock, PXDataTypeInt32ULE},
+            {dataOffset, PXDataTypeInt32ULE}
         };
 
         PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -329,16 +328,16 @@ PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* cons
 
                 const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.Width},
-                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.Height},
-                    {PXDataTypeLEInt16U, &bitMap.InfoHeader.NumberOfColorPlanes},
-                    {PXDataTypeLEInt16U, &bitMap.InfoHeader.NumberOfBitsPerPixel},
-                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod},
-                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize},
-                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution},
-                    {PXDataTypeLEInt32S, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution},
-                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette},
-                    {PXDataTypeLEInt32U, &bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed},
+                    {&bitMap.InfoHeader.Width, PXDataTypeInt32SLE},
+                    {&bitMap.InfoHeader.Height, PXDataTypeInt32SLE},
+                    {&bitMap.InfoHeader.NumberOfColorPlanes, PXDataTypeInt16ULE},
+                    {&bitMap.InfoHeader.NumberOfBitsPerPixel, PXDataTypeInt16ULE},
+                    {&bitMap.InfoHeader.ExtendedInfo.BitMapInfo.CompressionMethod, PXDataTypeInt32ULE},
+                    {&bitMap.InfoHeader.ExtendedInfo.BitMapInfo.ImageSize, PXDataTypeInt32ULE},
+                    {&bitMap.InfoHeader.ExtendedInfo.BitMapInfo.HorizontalResolution, PXDataTypeInt32SLE},
+                    {&bitMap.InfoHeader.ExtendedInfo.BitMapInfo.VerticalResolution, PXDataTypeInt32SLE},
+                    {&bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfColorsInTheColorPalette, PXDataTypeInt32ULE},
+                    {&bitMap.InfoHeader.ExtendedInfo.BitMapInfo.NumberOfImportantColorsUsed, PXDataTypeInt32ULE},
                 };
 
                 PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -386,7 +385,7 @@ void PXAPI PXBitmapDestruct(PXBitmap* const bmp)
 {
     PXDeleteList(PXByte, bmp->PixelData, bmp->PixelDataSize);
 
-    bmp->PixelData = 0;
+    bmp->PixelData = PXNull;
     bmp->PixelDataSize = 0;
 }
 

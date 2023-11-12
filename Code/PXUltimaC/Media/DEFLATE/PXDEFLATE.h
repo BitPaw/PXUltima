@@ -1,7 +1,7 @@
 #ifndef PXDeflateINCLUDE
 #define PXDeflateINCLUDE
 
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

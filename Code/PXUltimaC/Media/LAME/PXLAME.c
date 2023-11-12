@@ -9,7 +9,7 @@ PXActionResult PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
 	// Check signature (4 Bytes)
 	{		
 		const PXSize signatueSize = sizeof(PXLameSignatureID);
-		const PXBool isValid = PXFileReadAndCompare(&pxFile, PXLameSignatureID, sizeof(PXLameSignatureID));
+		const PXBool isValid = PXFileReadAndCompare(pxFile, PXLameSignatureID, sizeof(PXLameSignatureID));
 
 		if(!isValid)
 		{
@@ -19,10 +19,10 @@ PXActionResult PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
 
 	// Fetch version (5 Bytes)
 	{
-		PXFileReadTextIU8(&pxFile, &lame->MajorVersion); // 1 character
-		const char isDot = PXFileReadAndCompare(&pxFile, '.', sizeof(unsigned char));
-		PXFileReadTextIU8(&pxFile, lame->MinorVersion); // 2 character
-		PXFileReadI8U(&pxFile, &lame->ReleaseVersion); // letter
+		PXFileReadTextIU8(pxFile, &lame->MajorVersion); // 1 character
+		const PXBool isDot = PXFileReadAndCompare(pxFile, '.', sizeof(unsigned char));
+		PXFileReadTextIU8(pxFile, &lame->MinorVersion); // 2 character
+		PXFileReadI8U(pxFile, &lame->ReleaseVersion); // letter
 	}
 
 	{
@@ -59,7 +59,7 @@ PXActionResult PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
 	{
 		unsigned char sourcefrequencyID = 0;
 
-		PXFileReadI8U(&pxFile, &sourcefrequencyID);
+		PXFileReadI8U(pxFile, &sourcefrequencyID);
 
 		switch(sourcefrequencyID)
 		{

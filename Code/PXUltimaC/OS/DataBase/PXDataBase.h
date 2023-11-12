@@ -334,10 +334,10 @@ extern "C"
     SQLRETURN  SQL_API SQLTransact(SQLHENV EnvironmentHandle, SQLHDBC ConnectionHandle, SQLUSMALLINT CompletionType);
 #endif
 
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
 #endif

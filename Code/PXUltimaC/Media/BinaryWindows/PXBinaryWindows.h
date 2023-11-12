@@ -1,7 +1,7 @@
 #ifndef PXEXEINCLUDE
 #define PXEXEINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 #include <Media/COFF/PXCOFF.h>
 
 #ifdef __cplusplus

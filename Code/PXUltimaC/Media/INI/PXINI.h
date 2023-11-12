@@ -1,7 +1,7 @@
 #ifndef PXINIInclude
 #define PXINIInclude
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

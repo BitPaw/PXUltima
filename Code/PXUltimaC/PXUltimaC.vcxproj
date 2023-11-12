@@ -116,10 +116,11 @@
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,8 +134,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>
-      </ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
@@ -142,7 +142,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <Optimization>MinSpace</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -155,9 +155,11 @@
       <DiagnosticsFormat>
       </DiagnosticsFormat>
       <SupportJustMyCode>true</SupportJustMyCode>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>false</ExceptionHandling>
       <ControlFlowGuard>false</ControlFlowGuard>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -176,13 +178,14 @@
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <EnableEnhancedInstructionSet>
       </EnableEnhancedInstructionSet>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -196,16 +199,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>
-      </ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <Optimization>MinSpace</Optimization>
@@ -218,9 +220,11 @@
       <DiagnosticsFormat>
       </DiagnosticsFormat>
       <SupportJustMyCode>true</SupportJustMyCode>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>false</ExceptionHandling>
       <ControlFlowGuard>false</ControlFlowGuard>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -262,7 +266,7 @@
     <ClCompile Include="Math\PXMatrix.c" />
     <ClCompile Include="Math\PXPhysic.c" />
     <ClCompile Include="Math\PXVector.c" />
-    <ClCompile Include="Media\3DS\PX3DS.c" />
+    <ClCompile Include="Media\Autodesk3DS\PXAutodesk3DS.c" />
     <ClCompile Include="Media\AAC\PXAAC.c" />
     <ClCompile Include="Media\ADAM7\PXADAM7.c" />
     <ClCompile Include="Media\ADLER\PXAdler32.c" />
@@ -370,6 +374,7 @@
     <ClCompile Include="Engine\PXEngine.c" />
     <ClCompile Include="Engine\PXLobby.c" />
     <ClCompile Include="Engine\PXMod.c" />
+    <ClCompile Include="OS\Audio\PXIAudio\PXIAudio.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -411,7 +416,7 @@
     <ClInclude Include="Math\PXMatrix.h" />
     <ClInclude Include="Math\PXPhysic.h" />
     <ClInclude Include="Math\PXVector.h" />
-    <ClInclude Include="Media\3DS\PX3DS.h" />
+    <ClInclude Include="Media\Autodesk3DS\PXAutodesk3DS.h" />
     <ClInclude Include="Media\AAC\PXAAC.h" />
     <ClInclude Include="Media\ADAM7\PXADAM7.h" />
     <ClInclude Include="Media\ADLER\PXAdler32.h" />
@@ -519,6 +524,7 @@
     <ClInclude Include="Engine\PXEngine.h" />
     <ClInclude Include="Engine\PXLobby.h" />
     <ClInclude Include="Engine\PXMod.h" />
+    <ClInclude Include="OS\Audio\PXIAudio\PXIAudio.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />

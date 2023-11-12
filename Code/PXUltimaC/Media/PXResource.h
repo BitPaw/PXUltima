@@ -2,10 +2,10 @@
 #define PXResourceINCLUDE
 
 #include <OS/File/PXFile.h>
-#include <Media/PXColor.h>
 #include <Math/PXVector.h>
 #include <Math/PXMatrix.h>
-#include <Media/PXImage.h>
+#include "PXImage.h"
+#include "PXColor.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -544,10 +544,10 @@ extern "C"
 
 	typedef struct PXVertexElement_
 	{
-		PXDataType Type;
+		PXInt32U Type;
 		PXSize Length;
 		PXSize Stride;
-		void* StartAdress;
+		PXSize StartAdress;
 	}
 	PXVertexElement;
 
@@ -942,8 +942,8 @@ extern "C"
 
 	typedef struct PXMonitor_
 	{
-		PXByte Name[MonitorNameLength];
-		PXByte Driver[MonitorNameLength];
+		char Name[MonitorNameLength];
+		char Driver[MonitorNameLength];
 		PXInt16U X;
 		PXInt16U Y;
 		PXInt16U Width;

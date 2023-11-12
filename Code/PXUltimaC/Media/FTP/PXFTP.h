@@ -1,7 +1,7 @@
 #ifndef PXFTPINCLUDE
 #define PXFTPINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #define FTPDefaultPort 21
 

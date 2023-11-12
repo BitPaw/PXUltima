@@ -58,10 +58,10 @@
     <ClInclude Include="..\PXUltimaC\Math\PXMatrix.h" />
     <ClInclude Include="..\PXUltimaC\Math\PXPhysic.h" />
     <ClInclude Include="..\PXUltimaC\Math\PXVector.h" />
-    <ClInclude Include="..\PXUltimaC\Media\3DS\PX3DS.h" />
     <ClInclude Include="..\PXUltimaC\Media\AAC\PXAAC.h" />
     <ClInclude Include="..\PXUltimaC\Media\ADAM7\PXADAM7.h" />
     <ClInclude Include="..\PXUltimaC\Media\ADLER\PXAdler32.h" />
+    <ClInclude Include="..\PXUltimaC\Media\Autodesk3DS\PXAutodesk3DS.h" />
     <ClInclude Include="..\PXUltimaC\Media\AVI\PXAVI.h" />
     <ClInclude Include="..\PXUltimaC\Media\BinaryLinux\PXBinaryLinux.h" />
     <ClInclude Include="..\PXUltimaC\Media\BinaryWindows\PXBinaryWindows.h" />
@@ -142,6 +142,7 @@
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudio.h" />
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXAudioMIDI\PXAudioMIDI.h" />
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXDirectSound\PXDirectSound.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Audio\PXIAudio\PXIAudio.h" />
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXMultiMedia\PXMultiMedia.h" />
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXXAudio\PXXAudio.h" />
     <ClInclude Include="..\PXUltimaC\OS\Bash\PXBash.h" />
@@ -207,10 +208,10 @@
     <ClCompile Include="..\PXUltimaC\Math\PXMatrix.c" />
     <ClCompile Include="..\PXUltimaC\Math\PXPhysic.c" />
     <ClCompile Include="..\PXUltimaC\Math\PXVector.c" />
-    <ClCompile Include="..\PXUltimaC\Media\3DS\PX3DS.c" />
     <ClCompile Include="..\PXUltimaC\Media\AAC\PXAAC.c" />
     <ClCompile Include="..\PXUltimaC\Media\ADAM7\PXADAM7.c" />
     <ClCompile Include="..\PXUltimaC\Media\ADLER\PXAdler32.c" />
+    <ClCompile Include="..\PXUltimaC\Media\Autodesk3DS\PXAutodesk3DS.c" />
     <ClCompile Include="..\PXUltimaC\Media\AVI\PXAVI.c" />
     <ClCompile Include="..\PXUltimaC\Media\BinaryLinux\PXBinaryLinux.c" />
     <ClCompile Include="..\PXUltimaC\Media\BinaryWindows\PXBinaryWindows.c" />
@@ -291,6 +292,7 @@
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXAudio.c" />
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXAudioMIDI\PXAudioMIDI.c" />
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXDirectSound\PXDirectSound.c" />
+    <ClCompile Include="..\PXUltimaC\OS\Audio\PXIAudio\PXIAudio.c" />
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXMultiMedia\PXMultiMedia.c" />
     <ClCompile Include="..\PXUltimaC\OS\Audio\PXXAudio\PXXAudio.c" />
     <ClCompile Include="..\PXUltimaC\OS\Bash\PXBash.c" />
@@ -387,34 +389,58 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
     <MultiProcNumber>4</MultiProcNumber>
+    <TargetName>PXUltima</TargetName>
+    <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
@@ -422,6 +448,7 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -430,6 +457,9 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MinSize</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -438,6 +468,7 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -446,6 +477,9 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MinSize</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -454,6 +488,7 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -462,6 +497,9 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MinSize</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -470,6 +508,7 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -478,6 +517,9 @@
     </Link>
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MinSize</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

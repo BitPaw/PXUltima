@@ -1,46 +1,46 @@
 #include "PXResource.h"
 
 #include <Log/PXLog.h>
-
-#include <Media/3DS/PX3DS.h>
-#include <Media/AAC/PXAAC.h>
-#include <Media/AVI/PXAVI.h>
-#include <Media/Bitmap/PXBitmap.h>
-#include <Media/FilmBox/PXFilmBox.h>
-#include <Media/FLAC/PXFLAC.h>
-#include <Media/GIF/PXGIF.h>
-#include <Media/JPEG/PXJPEG.h>
-#include <Media/MIDI/PXMIDI.h>
-#include <Media/MP3/PXMP3.h>
-#include <Media/MP4/PXMP4.h>
-#include <Media/OGG/PXOGG.h>
-#include <Media/PLY/PXPLY.h>
-#include <Media/PNG/PXPNG.h>
-#include <Media/SpriteFont/PXSpriteFont.h>
-#include <Media/STEP/PXSTEP.h>
-#include <Media/STL/PXSTL.h>
-#include <Media/SVG/PXSVG.h>
-#include <Media/HEIF/PXHEIF.h>
-#include <Media/HTML/PXHTML.h>
-#include <Media/JSON/PXJSON.h>
-#include <Media/INI/PXINI.h>
-#include <Media/WEBM/PXWEBM.h>
-#include <Media/WEBP/PXWEBP.h>
-#include <Media/Wavefront/PXWavefront.h>
-#include <Media/Matroska/PXMatroska.h>
-#include <Media/PDF/PXPDF.h>
-#include <Media/TTF/PXTTF.h>
-#include <Media/VRML/PXVRML.h>
-#include <Media/Wave/PXWave.h>
-#include <Media/WMA/PXWMA.h>
-#include <Media/XML/PXXML.h>
-#include <Media/TIFF/PXTIFF.h>
-#include <Media/TGA/PXTGA.h>
-#include <Media/YAML/PXYAML.h>
-#include <Media/BinaryWindows/PXBinaryWindows.h>
-#include <Media/BinaryLinux/PXBinaryLinux.h>
 #include <OS/Time/PXStopWatch.h>
-#include <Media/CanonRaw3/PXCanonRaw3.h>
+
+#include "Autodesk3DS/PXAutodesk3DS.h"
+#include "AAC/PXAAC.h"
+#include "AVI/PXAVI.h"
+#include "Bitmap/PXBitmap.h"
+#include "FilmBox/PXFilmBox.h"
+#include "FLAC/PXFLAC.h"
+#include "GIF/PXGIF.h"
+#include "JPEG/PXJPEG.h"
+#include "MIDI/PXMIDI.h"
+#include "MP3/PXMP3.h"
+#include "MP4/PXMP4.h"
+#include "OGG/PXOGG.h"
+#include "PLY/PXPLY.h"
+#include "PNG/PXPNG.h"
+#include "SpriteFont/PXSpriteFont.h"
+#include "STEP/PXSTEP.h"
+#include "STL/PXSTL.h"
+#include "SVG/PXSVG.h"
+#include "HEIF/PXHEIF.h"
+#include "HTML/PXHTML.h"
+#include "JSON/PXJSON.h"
+#include "INI/PXINI.h"
+#include "WEBM/PXWEBM.h"
+#include "WEBP/PXWEBP.h"
+#include "Wavefront/PXWavefront.h"
+#include "Matroska/PXMatroska.h"
+#include "PDF/PXPDF.h"
+#include "TTF/PXTTF.h"
+#include "VRML/PXVRML.h"
+#include "Wave/PXWave.h"
+#include "WMA/PXWMA.h"
+#include "XML/PXXML.h"
+#include "TIFF/PXTIFF.h"
+#include "TGA/PXTGA.h"
+#include "YAML/PXYAML.h"
+#include "BinaryWindows/PXBinaryWindows.h"
+#include "BinaryLinux/PXBinaryLinux.h"
+#include "CanonRaw3/PXCanonRaw3.h"
 
 PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
@@ -270,7 +270,7 @@ PXActionResult PXResourceLoadA(void* resource, const char* const filePath)
 {
     PXText pxText;
 
-    PXTextConstructFromAdressA(&pxText, filePath, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextUnkownLength);
 
     const PXActionResult loadResult = PXResourceLoad(resource, &pxText);
 

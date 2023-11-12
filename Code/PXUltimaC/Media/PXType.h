@@ -98,10 +98,10 @@ extern "C"
 //-- Reivented public / private. The keywords are reserved, so we need other names.
 #if OSUnix
 
-#define PXAPICDECL  
-#define PXAPISTDCALL 
-#define PXAPISYSCALL
-#define PXAPIFASTCALL 
+#define PXCDECL  
+#define PXSTDCALL 
+#define PXSYSCALL
+#define PXFASTCALL 
 
 #elif OSWindows
 
@@ -112,7 +112,7 @@ extern "C"
 
 #endif
 
-#define PXAPI
+#define PXAPI PXSTDCALL
 
 #if OSUnix
 #define PXPrivate static
@@ -757,7 +757,7 @@ d = SplittIntLED(i);
 #define EndianCurrentSystem PXEndianBig
 #endif
 
-		typedef PXInt32U PXDataType;
+		//typedef PXInt32U PXDataType;
 
 		PXPublic PXInt32U PXDataTypeIntFitting(const PXSize expectedSize);
 

@@ -1,10 +1,7 @@
 #ifndef PXSVGINCLUDE
 #define PXSVGINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

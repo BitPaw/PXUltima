@@ -73,6 +73,8 @@ PXSize PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime*
 	timeResult->Milliseconds = (timeB->Milliseconds - timeA->Milliseconds);
 
 	timeResult->ClockCycleDelta = (timeB->ClockCycle - timeA->ClockCycle) / (double)CLOCKS_PER_SEC;
+
+	return 0;
 }
 
 PXSize PXTimeMilliseconds(const PXTime* time)

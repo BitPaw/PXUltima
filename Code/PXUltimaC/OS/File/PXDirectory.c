@@ -98,7 +98,7 @@ PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, c
 
 
 	PXText pxTextInput;
-	PXTextConstructFromAdressA(&pxTextInput, pxDirectoryIterator->EntryCurrent.FullPath, pxDirectoryIterator->EntryCurrent.FullPathSize);
+	PXTextConstructFromAdressA(&pxTextInput, pxDirectoryIterator->EntryCurrent.FullPath, pxDirectoryIterator->EntryCurrent.FullPathSize, pxDirectoryIterator->EntryCurrent.FullPathSize);
 
 	PXText pxTextOutInput;
 	PXTextConstructNamedBufferA(&pxTextOutInput, pxTextInputBuffer, PXPathSizeMax);
@@ -115,12 +115,13 @@ PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, c
 PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
 {
 #if OSUnix
+	struct dirent* directoryEntry;
 
-	while ((directoryEntry = readdir(directory)) != PXNull)
+	while ((directoryEntry = readdir(pxDirectoryIterator->ID)) != PXNull)
 	{
-		const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->);
-		const unsigned int directoryLength = strlen(directory);
-		const unsigned int FileNameLength = strlen(directoryEntry->d_name);
+		const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->d_name);
+		//const PXInt32U directoryLength = PXTextLength(directory);
+		//const PXInt32U FileNameLength = strlen(directoryEntry->d_name);
 	}
 #elif OSWindows
 

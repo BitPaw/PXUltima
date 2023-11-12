@@ -22,7 +22,7 @@ extern "C"
 	}
 	PXLoggingType;
 
-	PXPublic void (PXAPI*PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
+	typedef void (PXAPI*PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
 
 	PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const format, ...);
 

@@ -1,9 +1,8 @@
 #ifndef PXADAM7Include
 #define PXADAM7Include
 
-#include <Media/PXType.h>
+#include "../PXResource.h"
 
-#include <OS/Error/PXActionResult.h>
 #include <Media/PNG/PXPNG.h>
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 #ifndef PXWEBPINCLUDE
 #define PXWEBPINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

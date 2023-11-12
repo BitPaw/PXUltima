@@ -1,11 +1,7 @@
 #ifndef PXAVIINCLUDE
 #define PXAVIINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
-
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

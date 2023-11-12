@@ -1,7 +1,7 @@
 #ifndef PXSHAINCLUDE
 #define PXSHAINCLUDE
 
-#include <stddef.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

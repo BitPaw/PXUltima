@@ -1,7 +1,7 @@
 #ifndef PXJSONINCLUDE
 #define PXJSONINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

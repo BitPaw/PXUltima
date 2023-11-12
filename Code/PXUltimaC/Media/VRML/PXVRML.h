@@ -1,7 +1,7 @@
 #ifndef PXVRMLINCLUDE
 #define PXVRMLINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

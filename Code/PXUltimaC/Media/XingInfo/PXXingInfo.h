@@ -1,7 +1,7 @@
 #ifndef PXXingInfoINCLUDE
 #define PXXingInfoINCLUDE
 
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
 
 #define PXXingInfoTOCBufferSize 100u
 

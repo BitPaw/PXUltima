@@ -1,6 +1,8 @@
 #ifndef PXEmailINCLUDE
 #define PXEmailINCLUDE
 
+#include "../PXResource.h"
+
 #ifdef __cplusplus
 extern "C"
 {

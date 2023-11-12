@@ -54,8 +54,8 @@ extern "C"
 	}
 	PXEngine;
 
-	PXPrivate void _cdecl PXEngineOnIllegalInstruction(const int signalID);
-	PXPrivate void _cdecl PXEngineOnMemoryViolation(const int signalID);
+	PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
+	PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
 
 	PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
 	

@@ -244,8 +244,8 @@ PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxF
 	//---[ Parse Footer ]--------------------------------------------------------
 	pxFile->DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the PXTGA-Footer.
 
-	PXFileReadI32UE(&pxFile, &extensionOffset, PXEndianLittle);
-	PXFileReadI32UE(&pxFile, &developerAreaOffset, PXEndianLittle);
+	PXFileReadI32UE(pxFile, &extensionOffset, PXEndianLittle);
+	PXFileReadI32UE(pxFile, &developerAreaOffset, PXEndianLittle);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
@@ -260,70 +260,56 @@ PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxF
 	//---[ Extension Area ]--------------------------------------------------------
 	if(extensionOffset > 0)
 	{
-		unsigned short extensionSize = 0;
+		PXInt16U extensionSize = 0;
 
 		pxFile->DataCursor = extensionOffset; // Jump to Extension Header
-		PXFileReadI16UE(&pxFile, &extensionSize, PXEndianLittle);
+		PXFileReadI16UE(pxFile, &extensionSize, PXEndianLittle);
 
-		const unsigned char isExtensionSizeAsExpected = extensionSize == 495u;
+		const PXBool isExtensionSizeAsExpected = extensionSize == 495u;
 
 		if(!isExtensionSizeAsExpected)
 		{
 			return PXActionFailedFormatNotAsExpected;
 		}
 
-		PXFileReadB(&pxFile, tga->AuthorName, 41u);
-		PXFileReadB(&pxFile, tga->AuthorComment, 324u);
+		const PXFileDataElementType pxDataStreamElementList[] =
+		{
+			{tga->AuthorName, 41u},
+			{tga->AuthorComment, 324u},
+		
+			// 12 Bytes
+			{&tga->DateTimeMonth, PXDataTypeInt16ULE},
+			{&tga->JobTimeDay, PXDataTypeInt16ULE},
+			{&tga->JobTimeYear, PXDataTypeInt16ULE},
+			{&tga->JobTimeHour, PXDataTypeInt16ULE},
+			{&tga->JobTimeMinute, PXDataTypeInt16ULE},
+			{&tga->JobTimeSecond, PXDataTypeInt16ULE},
+			{tga->JobID, 41u},
 
-		// 12 Bytes
-		PXFileReadI16UE(&pxFile, &tga->DateTimeMonth, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->JobTimeDay, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->JobTimeYear, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->JobTimeHour, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->JobTimeMinute, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->JobTimeSecond, PXEndianLittle);
+			// 6 Bytes
+			{&tga->JobTimeHours, PXDataTypeInt16ULE},
+			{&tga->JobTimeMinutes, PXDataTypeInt16ULE},
+			{&tga->JobTimeSeconds, PXDataTypeInt16ULE},
 
-		PXFileReadB(&pxFile, tga->JobID, 41u);
+			{PXNull, PXDataTypePadding(12u)},
 
-		// 6 Bytes
-		PXFileReadI16UE(&pxFile, &tga->JobTimeHours, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->JobTimeMinutes, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->JobTimeSeconds, PXEndianLittle);
+			{tga->SoftwareName, 41u},
+			{&tga->VersionNumber, PXDataTypeInt16ULE},
+			{&tga->SoftwareVersion, PXDataTypeInt08U},
 
-		pxFile->DataCursor += 12u;
+			{&tga->BackGroundColor, PXDataTypeInt32ULE},
+			{&tga->PixelAspectRatioCounter, PXDataTypeInt16ULE},
+			{&tga->PixelAspectRatioDenominator, PXDataTypeInt16ULE},
+			{&tga->GammaCounter, PXDataTypeInt16ULE},
+			{&tga->GammaDenominator, PXDataTypeInt16ULE},
+			{&tga->ColorCorrectionOffset, PXDataTypeInt32ULE},
+			{&tga->PostagestampOffset, PXDataTypeInt32ULE},
+			{&tga->ScanlineOffset, PXDataTypeInt32ULE},
+			{&tga->AttributesType, PXDataTypeInt08U},
+		};
 
-		PXFileReadB(&pxFile, tga->SoftwareName, 41u);
-
-		PXFileReadI16UE(&pxFile, &tga->VersionNumber, PXEndianLittle);
-		PXFileReadI8U(&pxFile, &tga->SoftwareVersion);
-
-		PXFileReadI32UE(&pxFile, &tga->BackGroundColor, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->PixelAspectRatioCounter, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->PixelAspectRatioDenominator, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->GammaCounter, PXEndianLittle);
-		PXFileReadI16UE(&pxFile, &tga->GammaDenominator, PXEndianLittle);
-		PXFileReadI32UE(&pxFile, &tga->ColorCorrectionOffset, PXEndianLittle);
-		PXFileReadI32UE(&pxFile, &tga->PostagestampOffset, PXEndianLittle);
-		PXFileReadI32UE(&pxFile, &tga->ScanlineOffset, PXEndianLittle);
-		PXFileReadI8U(&pxFile, &tga->AttributesType);
-
-		/*
-	if (ColorCorrectionOffset > 0)
-	{
-		byteSteam.CurrentPosition += ColorCorrectionOffset;
+		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 	}
-
-	if (PostagestampOffset > 0)
-	{
-		byteSteam.CurrentPosition += PostagestampOffset;
-	}
-
-	if (ScanlineOffset > 0)
-	{
-		byteSteam.CurrentPosition += ScanlineOffset;
-	}*/
-	}
-	//-----------------------------------------------------------
 
 	return PXActionSuccessful;
 }

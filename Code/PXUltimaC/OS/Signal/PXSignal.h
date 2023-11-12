@@ -28,7 +28,7 @@ extern "C"
     }
     PXSignalToken;
 
-    typedef void (_cdecl* PXSignalCallBack)(const int signalID);
+    typedef void (PXCDECL* PXSignalCallBack)(const int signalID);
 
     PXPublic PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack);
 

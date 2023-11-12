@@ -1,7 +1,7 @@
 #ifndef PXMTLINCLUDE
 #define PXMTLINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #define MTLNameSize 32u
 #define MTLFilePath 60u

@@ -1,7 +1,7 @@
 #ifndef PXUUIDINCLUDE
 #define PXUUIDINCLUDE
 
-#include <Media/PXType.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

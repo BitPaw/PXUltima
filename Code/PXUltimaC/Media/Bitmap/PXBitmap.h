@@ -1,7 +1,7 @@
 #ifndef PXBitmapINCLUDE
 #define PXBitmapINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

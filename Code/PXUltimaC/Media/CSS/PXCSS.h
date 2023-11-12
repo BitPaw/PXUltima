@@ -1,7 +1,7 @@
 #ifndef PXCSSINCLUDE
 #define PXCSSINCLUDE
 
-#include <stddef.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

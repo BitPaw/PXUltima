@@ -1,12 +1,9 @@
 #ifndef PXWavefrontINCLUDE
 #define PXWavefrontINCLUDE
 
-#include <OS/Error/PXActionResult.h>
-#include <Media/PXType.h>
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
 
 #include <Media/MTL/PXMTL.h>
-#include <Media/PXResource.h>
 
 #define PXWavefrontNameSize 64u
 #define PXWavefrontElementNameLength 50u

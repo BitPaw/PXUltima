@@ -11,19 +11,20 @@ void PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVe
 
 	//---<Gravity>----------------------------
 	{
-		PXVector3F gravityMovement;
+		PXVector3F gravityMovement = { 0,0,0 };
 
-		PXVector3FMultiplyS(gravityDircetion, gravityForce, &gravityMovement); // gravity diection + gravity power
-		PXVector3FAdd(&physicProperties->Force, &gravityMovement, &physicProperties->Force); // add that to applyed force
+		PXVector3FAdd(&gravityMovement, gravityDircetion);
+		PXVector3FMultiplyS(&gravityMovement, gravityForce); // gravity diection + gravity power
+		PXVector3FAdd(&gravityMovement, &physicProperties->Force); // add that to applyed force
 	}
 
 	//---<Acceleration>-----------------------
 	{
-		PXVector3F acceleration;
+		PXVector3F acceleration = { 0,0,0 };
 
-		PXVector3FDivideS(&physicProperties->Force, physicProperties->Mass, &acceleration); // Acceleration = Force / Mass
-
-		PXVector3FAdd(&physicProperties->Velocity, &acceleration, &physicProperties->Velocity);
+		PXVector3FAdd(&acceleration, &physicProperties->Force);
+		PXVector3FDivideS(&acceleration, physicProperties->Mass); // Acceleration = Force / Mass
+		PXVector3FAdd(&acceleration, &acceleration);
 
 		PXVector3FSetXYZ(&physicProperties->Force, 0, 0, 0);
 	}
@@ -35,14 +36,14 @@ void PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVe
 	float frictionFactor = -1 * friction * normalForce;
 	PXVector3F frictionDirection;
 
-	PXVector3FNormalize(&physicProperties->Velocity, &frictionDirection);
-	PXVector3FMultiplyS(&frictionDirection, frictionFactor, &frictionDirection);
-	PXVector3FMultiplyS(&frictionDirection, normalForce, &frictionDirection);
+	PXVector3FAdd(&frictionDirection, &physicProperties->Velocity);
+	PXVector3FNormalize(&frictionDirection);
+	PXVector3FMultiplyS(&frictionDirection, frictionFactor * normalForce);
 
 	//Velocity -= FrictionDirection;
 
 	// Fake friction
-	PXVector3FMultiplyS(&physicProperties->Velocity, 0.75f, &physicProperties->Velocity);
+	PXVector3FMultiplyS(&physicProperties->Velocity, 0.75f);
 
-	PXMatrix4x4FMove3F(&physicProperties->MatrixModel, &physicProperties->Velocity, &physicProperties->MatrixModel);
+	PXMatrix4x4FMove3F(&physicProperties->MatrixModel, &physicProperties->Velocity);
 }

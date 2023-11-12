@@ -107,6 +107,8 @@ void PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height)
 
 void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList, const PXSize amount)
 {
+#if OSUnix
+#elif OSWindows
 	DISPLAY_DEVICEA displayDevice;
 	DWORD            dwFlags = 0;
 	displayDevice.cb = sizeof(displayDevice);
@@ -184,4 +186,5 @@ void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevi
 
 		);	
 	}	
+#endif
 }

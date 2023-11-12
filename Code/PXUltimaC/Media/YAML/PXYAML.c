@@ -237,7 +237,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const
                 char textB[256];
 
                 PXText pxTextBuffer;
-                PXTextConstructFromAdressA(&pxTextBuffer, textB, 256);
+                PXTextConstructFromAdressA(&pxTextBuffer, textB, 0, 256);
 
                 char emotySpace[25];
 

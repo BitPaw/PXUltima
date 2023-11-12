@@ -4,7 +4,7 @@
 #include <Media/PXResource.h>
 #include <OS/Audio/PXAudio.h>
 
-#define PXAudioSystemWindowsXAudioEnable 1u
+#define PXAudioSystemWindowsXAudioEnable OSWindows && 1u
 
 #ifdef __cplusplus
 extern "C"

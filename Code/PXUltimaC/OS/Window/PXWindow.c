@@ -1775,10 +1775,10 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
 }
 #endif
 
-PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
+PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
 {
-    window->IsRunning = 0;
-    window->CursorModeCurrent = PXWindowCursorShow;
+    pxWindow->IsRunning = 0;
+    pxWindow->CursorModeCurrent = PXWindowCursorShow;
 
 #if OSUnix
 
@@ -1797,21 +1797,21 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
             return PXThreadSucessful; // printf("\n\tcannot connect to X server\n\n");
         }
 
-        window->DisplayCurrent = display;
+        pxWindow->DisplayCurrent = display;
     }
 
     // Get root window
     {
-        const XID windowRoot = DefaultRootWindow(window->DisplayCurrent); // Make windows root
+        const XID windowRoot = DefaultRootWindow(pxWindow->DisplayCurrent); // Make windows root
         const PXBool successful = windowRoot != 0;
 
-        window->WindowRoot = successful ? windowRoot : 0;
+        pxWindow->WindowRoot = successful ? windowRoot : 0;
     }
 
 
     const int attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 
-    const XVisualInfo* const visualInfo = glXChooseVisual(window->DisplayCurrent, 0, attributeList);
+    const XVisualInfo* const visualInfo = glXChooseVisual(pxWindow->DisplayCurrent, 0, attributeList);
 
     {
         const PXBool successful = visualInfo != 0;
@@ -1825,8 +1825,8 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     // Create colormapping
     Colormap colormap = XCreateColormap
     (
-        window->DisplayCurrent,
-        window->WindowRoot,
+        pxWindow->DisplayCurrent,
+        pxWindow->WindowRoot,
         visualInfo->visual,
         AllocNone
     );
@@ -1869,16 +1869,14 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     {
         int borderWidth = 0;
 
-        PXWindow cccc = *window;
-
         const XID PXWindowID = XCreateWindow
         (
-            window->DisplayCurrent,
-            window->WindowRoot,
-            window->X,
-            window->Y,
-            window->Width,
-            window->Height,
+            pxWindow->DisplayCurrent,
+            pxWindow->WindowRoot,
+            pxWindow->X,
+            pxWindow->Y,
+            pxWindow->Width,
+            pxWindow->Height,
             borderWidth,
             visualInfo->depth,
             InputOutput,
@@ -1888,24 +1886,21 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
         );
         const PXBool sucessful = PXWindowID;
 
-        printf("[i][Window] Create <%i x %i> \n", window->Width, window->Height);
+        printf("[i][Window] Create <%i x %i> \n", pxWindow->Width, pxWindow->Height);
 
-        window->ID = sucessful ? PXWindowID : 0;
+        pxWindow->ID = sucessful ? PXWindowID : 0;
     }
-
-    // Giving the graphic system window context
-    window->GraphicInstance.AttachedWindow = window;
 
     // Set Title
     {
-        XMapWindow(window->DisplayCurrent, window->ID);
+        XMapWindow(pxWindow->DisplayCurrent, pxWindow->ID);
 
-        switch(window->Title.Format)
+        switch(pxWindow->Title.Format)
         {
             case TextFormatASCII:
             case TextFormatUTF8:
             {
-                 XStoreName(window->DisplayCurrent, window->ID, window->Title.TextA);
+                 XStoreName(pxWindow->DisplayCurrent, pxWindow->ID, pxWindow->Title.TextA);
 
                 break;
             }
@@ -1915,7 +1910,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 
                 //PXTextCopyWA(window->Title, 256, windowTitleA, 256);
 
-                XStoreName(window->DisplayCurrent, window->ID, window->Title.TextW);
+                XStoreName(pxWindow->DisplayCurrent, pxWindow->ID, pxWindow->Title.TextW);
 
                 break;
             }
@@ -1950,7 +1945,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     unsigned char mask[maskLength];
 
     PXMemoryClear(mask, sizeof(mask));
-    PXMemoryClear(&eventmask, sizeof(XIEventMask));
+    PXClear(XIEventMask, &eventmask);
 
     XISetMask(mask, XI_RawMotion);
     //XISetMask(mask, XI_RawButtonPress);
@@ -1961,8 +1956,8 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     eventmask.mask = mask;
 
 
-    XISelectEvents(window->DisplayCurrent, window->WindowRoot, &eventmask, 1u);
-    XFlush(window->DisplayCurrent);
+    XISelectEvents(pxWindow->DisplayCurrent, pxWindow->WindowRoot, &eventmask, 1u);
+    XFlush(pxWindow->DisplayCurrent);
 
 
 #elif PXOSWindowsDestop
@@ -1980,7 +1975,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     int         cbWndExtra = 0;
     HINSTANCE hInstance = GetModuleHandle(NULL);
     HICON       hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    HCURSOR     hCursor = window->CursorID;
+    HCURSOR     hCursor = pxWindow->CursorID;
    // HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
     
     HBRUSH hbrBackground = CreateSolidBrush(RGB(38, 38, 38));
@@ -1988,9 +1983,9 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     // Cursor setup
     {
         const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
-        window->CursorID = cursorID;
+        pxWindow->CursorID = cursorID;
 
-        if (window->Mode == PXWindowModeNormal)
+        if (pxWindow->Mode == PXWindowModeNormal)
         {
             const int xx = WS_OVERLAPPEDWINDOW;
 
@@ -1998,7 +1993,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
         }
     }
 
-    switch (window->Title.Format)
+    switch (pxWindow->Title.Format)
     {
         case TextFormatASCII:
         case TextFormatUTF8:
@@ -2031,12 +2026,12 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
             (
                 windowStyle,
                 windowClassName,
-                window->Title.TextA,
+                pxWindow->Title.TextA,
                 dwStyle,
-                window->X,
-                window->Y,
-                window->Width,
-                window->Height,
+                pxWindow->X,
+                pxWindow->Y,
+                pxWindow->Width,
+                pxWindow->Height,
                 hWndParent,
                 hMenu,
                 hInstance,
@@ -2075,12 +2070,12 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
             (
                 windowStyle,
                 windowClassName,
-                window->Title.TextW,
+                pxWindow->Title.TextW,
                 dwStyle,
-                window->X,
-                window->Y,
-                window->Width,
-                window->Height,
+                pxWindow->X,
+                pxWindow->Y,
+                pxWindow->Width,
+                pxWindow->Height,
                 hWndParent,
                 hMenu,
                 hInstance,
@@ -2121,10 +2116,10 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
                 windowClassName,
                 PXNull,
                 dwStyle,
-                window->X,
-                window->Y,
-                window->Width,
-                window->Height,
+                pxWindow->X,
+                pxWindow->Y,
+                pxWindow->Width,
+                pxWindow->Height,
                 hWndParent,
                 hMenu,
                 hInstance,
@@ -2144,7 +2139,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
             return PXThreadActionFailed;
         }
 
-        window->ID = windowID;
+        pxWindow->ID = windowID;
     }
 #else
 
@@ -2153,16 +2148,16 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
 #endif
 
     //---<POST-Update>----------------
-    PXWindowPosition(window, PXNull, PXNull);
-    PXWindowCursorPositionInWindowGet(window, &window->MouseCurrentInput.Position[0], &window->MouseCurrentInput.Position[1]);
-    PXWindowTitleBarColorSet(window);
-    PXWindowLookupAdd(window);
+    PXWindowPosition(pxWindow, PXNull, PXNull);
+    PXWindowCursorPositionInWindowGet(pxWindow, &pxWindow->MouseCurrentInput.Position[0], &pxWindow->MouseCurrentInput.Position[1]);
+    PXWindowTitleBarColorSet(pxWindow);
+    PXWindowLookupAdd(pxWindow);
     //--------------------------
 
 #if PXOSWindowsDestop
     UpdateWindow(windowID);
 
-    if (window->Mode == PXWindowModeNormal)
+    if (pxWindow->Mode == PXWindowModeNormal)
     {
 #if 0 // Use animation
 
@@ -2180,9 +2175,9 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     }
 #endif
 
-    window->IsRunning = 1;
+    pxWindow->IsRunning = 1;
 
-    PXFunctionInvoke(window->WindowCreatedCallBack, window->EventReceiver, window);
+    PXFunctionInvoke(pxWindow->WindowCreatedCallBack, pxWindow->EventReceiver, pxWindow);
       
 
 #if OSUnix
@@ -2238,11 +2233,11 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const window)
     }
 #endif
 
-    if (window->MessageThread.ThreadID != 0)
+    if (pxWindow->MessageThread.ThreadID != 0)
     {
-        while (window->IsRunning)
+        while (pxWindow->IsRunning)
         {
-            PXWindowUpdate(window);
+            PXWindowUpdate(pxWindow);
         }
     }
 
@@ -2355,13 +2350,13 @@ void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
 
 
 
-    XLockDisplay(window->DisplayCurrent);
+    XLockDisplay(pxWindow->DisplayCurrent);
 
-    XNextEvent(window->DisplayCurrent, &windowEvent);
+    XNextEvent(pxWindow->DisplayCurrent, &windowEvent);
 
-    XUnlockDisplay(window->DisplayCurrent);
+    XUnlockDisplay(pxWindow->DisplayCurrent);
 
-    PXWindowEventHandler(window, &windowEvent);
+    PXWindowEventHandler(pxWindow, &windowEvent);
 
 #elif PXOSWindowsDestop     
   
@@ -2406,7 +2401,7 @@ float PXAPI PXWindowScreenRatio(const PXWindow* const window)
 void PXAPI PXWindowCreateA(PXWindow* const window, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const char* const title, const PXBool async)
 {
     PXText pxText;
-    PXTextConstructFromAdressA(&pxText, title, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pxText, title, PXTextUnkownLength, PXTextUnkownLength);
 
     PXWindowCreate(window, x, y, width, height, &pxText, async);
 }
@@ -2876,11 +2871,11 @@ PXBool PXAPI PXWindowInteractable(PXWindow* window)
     }
 }
 
-PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y)
 {
     PXInt32S xPos = 0;
     PXInt32S yPos = 0;
-    const PXBool sucessfulA = PXWindowCursorPositionInDestopGet(window, &xPos, &yPos);
+    const PXBool sucessfulA = PXWindowCursorPositionInDestopGet(pxWindow, &xPos, &yPos);
 
 #if OSUnix
     return PXFalse;
@@ -2890,7 +2885,7 @@ PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S*
     point.x = xPos;
     point.y = yPos;
 
-    const PXBool sucessful = ScreenToClient(window->ID, &point);  // are now relative to hwnd's client area
+    const PXBool sucessful = ScreenToClient(pxWindow->ID, &point);  // are now relative to hwnd's client area
 
     if(sucessful)
     {
@@ -2907,7 +2902,7 @@ PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S*
 #endif
 }
 
-PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y)
 {
 #if OSUnix
     return PXFalse;
@@ -2992,26 +2987,26 @@ PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S*
 #endif
 }
 
-PXBool PXAPI PXWindowIsInFocus(const PXWindow* const window)
+PXBool PXAPI PXWindowIsInFocus(const PXWindow* const pxWindow)
 {
 #if OSUnix
     return PXFalse;
 #elif PXOSWindowsDestop
     const HWND windowIDInFocus = GetForegroundWindow(); // Windows 2000, User32.dll,
-    const PXBool isInFocus = window->ID == windowIDInFocus;
+    const PXBool isInFocus = pxWindow->ID == windowIDInFocus;
 
     return isInFocus;
 #endif
 }
 
-void PXAPI PXWindowTriggerOnMouseScrollEvent(const PXWindow* window, const PXMouse* mouse)
+void PXAPI PXWindowTriggerOnMouseScrollEvent(const PXWindow* pxWindow, const PXMouse* mouse)
 {
 
 }
 
-void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMouseButton mouseButton, const PXKeyPressState buttonState)
+void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const pxWindow, const PXMouseButton mouseButton, const PXKeyPressState buttonState)
 {
-    PXMouse* const mouse = &window->MouseCurrentInput;
+    PXMouse* const mouse = &pxWindow->MouseCurrentInput;
 
     switch (buttonState)
     {
@@ -3150,7 +3145,7 @@ void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const window, const PXMous
 
 #endif
 
-    PXFunctionInvoke(window->MouseClickCallBack, window->EventReceiver, window, mouseButton, buttonState);
+    PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, mouseButton, buttonState);
 }
 
 void PXAPI PXWindowTriggerOnMouseClickDoubleEvent(const PXWindow* window, const PXMouseButton mouseButton)

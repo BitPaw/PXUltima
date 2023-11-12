@@ -1,10 +1,8 @@
 #ifndef PXZLIBINCLUDE
 #define PXZLIBINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
+#include "../PXResource.h"
 #include <Media/PNG/PXPNG.h>
-#include <OS/File/PXFile.h>
 
 #ifdef __cplusplus
 extern "C"

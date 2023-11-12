@@ -18,6 +18,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 
@@ -716,15 +717,24 @@ PXInt32U PXProcessorTemperature()
 
 void PXProcessorSwapByteOrderI16U(PXInt16U* const value)
 {
+#if OSUnix
+#elif OSWindows
     *value = _byteswap_ushort(*value);
+#endif
 }
 
 void PXProcessorSwapByteOrderI32U(PXInt32U* const value)
 {
+#if OSUnix
+#elif OSWindows
     *value = _byteswap_ulong(*value);
+#endif
 }
 
 void PXProcessorSwapByteOrderI64U(PXInt64U* const value)
 {
+#if OSUnix
+#elif OSWindows
     *value = _byteswap_uint64(*value);
+#endif
 }

@@ -1,7 +1,7 @@
 #ifndef PXCanonRaw3Include
 #define PXCanonRaw3Include
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #define PXCanonRaw3UUIDSize 16u
 

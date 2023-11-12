@@ -8,6 +8,7 @@
 #include <Media/PXResource.h>
 #include <Log/PXLog.h>
 
+#include <stdio.h>
 #include <stdarg.h>
 #include <fcntl.h>
 #include <assert.h>
@@ -1696,7 +1697,10 @@ void PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position)
 
 void PXFileCursorToBeginning(PXFile* const pxFile)
 {
-	FlushFileBuffers(pxFile->ID);
+#if OSUnix
+#elif OSWindows
+	const BOOL flushSuccessful = FlushFileBuffers(pxFile->ID); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+#endif
 
 	PXFileCursorMoveTo(pxFile, 0);
 }
@@ -2902,7 +2906,7 @@ PXSize PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE const text, PXSize
 
 PXSize PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
 {
-	const void* currentPosition = PXFileCursorPosition(pxFile);
+	void* const currentPosition = PXFileCursorPosition(pxFile);
 
 	va_list args;
 	va_start(args, format);
@@ -3055,7 +3059,7 @@ PXActionResult PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 
 	if (!successful)
 	{
-		return PXFalse;
+		return PXActionRefusedArgumentInvalid;
 	}
 
 	filePath->SizeUsed = length - 4;
@@ -3112,12 +3116,12 @@ PXActionResult PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxText
 
 #elif OSWindows
 
-	pxTextOutput->SizeUsed = GetFullPathNameA
+	pxTextOutput->SizeUsed = GetFullPathNameA // Windows XP (+UWP), Kernel32.dll, fileapi.h 
 	(
 		pxTextInput->TextA,
 		pxTextInput->SizeUsed,
 		pxTextOutput->TextA,
-		pxTextOutput->SizeAllocated
+		PXNull
 	);
 
 	return PXActionSuccessful;

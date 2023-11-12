@@ -1,7 +1,7 @@
 #ifndef PXPXTGAINCLUDE
 #define PXPXTGAINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

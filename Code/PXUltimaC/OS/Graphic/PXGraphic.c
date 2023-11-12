@@ -19,6 +19,7 @@
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
 #include <OS/Hardware/PXMonitor.h>
+#include <stdarg.h>
 
 PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* const pxImage, const PXText* const pxImageFilePath)
 {
@@ -147,7 +148,7 @@ PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTextur
 PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTexture2D* const texture, const char* const filePath)
 {
     PXText pxText;
-    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextLengthUnkown);
 
     return PXGraphicTexture2DLoad(pxGraphic, texture, &pxText);
 }
@@ -318,13 +319,13 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBo
 
 
     PXClear(PXModel, &skyBox->Model);
-    skyBox->Model.VertexBuffer.VertexData = vertexData;
+    skyBox->Model.VertexBuffer.VertexData = (void*)vertexData;
     skyBox->Model.VertexBuffer.VertexDataSize = sizeof(vertexData);
     skyBox->Model.VertexBuffer.VertexDataRowSize = 3;
     skyBox->Model.VertexBuffer.Format = PXVertexBufferFormatXYZ; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
     skyBox->Model.IndexBuffer.DataType = PXDataTypeInt8U;
-    skyBox->Model.IndexBuffer.IndexData = indexList;
+    skyBox->Model.IndexBuffer.IndexData = (void*)indexList;
     skyBox->Model.IndexBuffer.IndexDataSize = sizeof(indexList);
     skyBox->Model.IndexBuffer.IndexDataAmount = sizeof(indexList) / sizeof(PXInt8U);
     skyBox->Model.IndexBuffer.DrawModeID = 0 |// PXDrawModeIDPoint | PXDrawModeIDLineLoop |
@@ -455,14 +456,14 @@ PXActionResult PXAPI PXGraphicSkyboxRegisterA
     PXText pxTextTextureBack;
     PXText pxTextTextureFront;
 
-    PXTextConstructFromAdressA(&pxTextShaderVertex, shaderVertex, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextShaderFragment, shaderFragment, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextTextureRight, textureRight, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextTextureLeft, textureLeft, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextTextureTop, textureTop, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextTextureBottom, textureBottom, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextTextureBack, textureBack, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextTextureFront, textureFront, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextShaderVertex, shaderVertex, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextShaderFragment, shaderFragment, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextTextureRight, textureRight, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextTextureLeft, textureLeft, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextTextureTop, textureTop, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextTextureBottom, textureBottom, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextTextureBack, textureBack, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextTextureFront, textureFront, PXTextLengthUnkown, PXTextLengthUnkown);
 
     return PXGraphicSkyboxRegisterD
     (
@@ -796,7 +797,7 @@ PXActionResult PXGraphicModelRegisterFromModel(PXGraphic* const pxGraphic, PXRen
 
 PXActionResult PXAPI PXGraphicUIRectangleCreate(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
 {
-    PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y, &renderable->MatrixModel);
+    PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y);
    // PXMatrix4x4FScaleXYZSet(&renderable->MatrixModel, sidth, height, 1);
 
     // Register rectangle
@@ -1054,7 +1055,7 @@ void PXAPI PXGraphicPXUIElementTextSetAV(PXUIElement* const pxUIElement, const c
     va_list args;
     va_start(args, format);
 
-    sprintf_s(pxUIElement->TextInfo.Content, 32, format, args);
+    PXTextPrintA(pxUIElement->TextInfo.Content, 32, format, args);
 
     va_end(args);
 }
@@ -1634,11 +1635,11 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
         if (pxGraphicDevicePhysical->Driver[0] != '\0')
         {
-            sprintf_s(targetBuffer, 64, "%s, %s (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->Driver, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
+            PXTextPrintA(targetBuffer, 64, "%s, %s (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->Driver, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
         }
         else
         {
-            sprintf_s(targetBuffer, 64, "%s, (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
+            PXTextPrintA(targetBuffer, 64, "%s, (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
         }
 
       
@@ -1910,7 +1911,7 @@ void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F
         PXVector3FAdd(&targetedMovement, &zAxis);
         PXVector3FMultiplyS(&targetedMovement, camera->WalkSpeed);
 
-        PXMatrix4x4FMove3F(&camera->MatrixModel, &targetedMovement, &camera->MatrixModel);
+        PXMatrix4x4FMove3F(&camera->MatrixModel, &targetedMovement);
     }
 }
 

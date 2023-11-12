@@ -2,12 +2,12 @@
 
 #include <Math/PXMath.h>
 
-void _cdecl PXEngineOnIllegalInstruction(const int signalID)
+void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
 	printf("[PX][FATAL] CPU tryed to exectue illegal instruction!\n");
 }
 
-void _cdecl PXEngineOnMemoryViolation(const int signalID)
+void PXCDECL PXEngineOnMemoryViolation(const int signalID)
 {
 	printf("[PX][FATAL] CPU accessed memory illegally!\n");
 }

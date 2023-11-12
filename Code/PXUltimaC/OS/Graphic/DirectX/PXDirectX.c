@@ -1485,8 +1485,7 @@ PXActionResult PXAPI PXDirectXLightSet(PXDirectX* const pxDirectX, PXLight* cons
                     break;
 
                 default:
-                    d3dLight9.Type = 0;
-                    break;
+                    return PXActionRefusedArgumentInvalid;
             }
 
             const HRESULT result = pxDirectX->DX9->lpVtbl->SetLight(pxDirectX->DX9, index, &d3dLight9);
@@ -2113,7 +2112,7 @@ PXActionResult PXAPI PXDirectXDrawScriptCreate(PXDirectX* const pxDirectX, PXDra
 #if PXDX9Enable
         case PXDirectXVersion9:
         {
-            D3DSTATEBLOCKTYPE stateBlcokType = 0;
+            D3DSTATEBLOCKTYPE stateBlcokType = D3DSBT_FORCE_DWORD;
 
             switch (pxDrawScriptType)
             {
@@ -2332,8 +2331,8 @@ PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVF(PXDirectX* const pxD
             PXText veretxShaderText;
             PXText pixelShaderText;
 
-            PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFile.Data, vertexShaderFile.DataSize);
-            PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFile.Data, fragmentShaderFile.DataSize);
+            PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFile.Data, vertexShaderFile.DataSize, vertexShaderFile.DataSize);
+            PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFile.Data, vertexShaderFile.DataSize, fragmentShaderFile.DataSize);
 
             PXActionResult shaderResult = PXDirectXShaderProgramCreateFromStringVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
         }
@@ -2350,8 +2349,8 @@ PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVFA(PXDirectX* const px
     PXText veretxShaderText;
     PXText pixelShaderText;
 
-    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength);
-    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
 
     return PXDirectXShaderProgramCreateFromFileVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
 
@@ -2382,8 +2381,8 @@ PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVFA(PXDirectX* const 
     PXText veretxShaderText;
     PXText pixelShaderText;
 
-    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength);
-    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
+    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
 
     return PXDirectXShaderProgramCreateFromStringVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
 }

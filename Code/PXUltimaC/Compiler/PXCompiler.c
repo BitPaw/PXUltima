@@ -580,7 +580,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			}
 
 			PXText numberText;
-			PXTextConstructFromAdressA(&numberText, text, textSize);
+			PXTextConstructFromAdressA(&numberText, text, textSize, textSize);
 
 			if (probablyFloat && isValidFloatSyntax)
 			{
@@ -877,7 +877,7 @@ PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* cons
 PXBool PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
 {
 	PXText pxText;
-	PXTextConstructFromAdressA(&pxText, text, textMaxSize);
+	PXTextConstructFromAdressA(&pxText, text, 0, textMaxSize);
 	const PXBool result = PXCompilerParseStringUntilNewLine(inputStream, &pxText);
 
 	*textSize = pxText.SizeUsed;

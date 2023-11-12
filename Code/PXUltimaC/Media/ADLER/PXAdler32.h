@@ -1,7 +1,7 @@
 #ifndef PXAdler32INCLUDE
 #define PXAdler32INCLUDE
 
-#include <Media/PXType.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

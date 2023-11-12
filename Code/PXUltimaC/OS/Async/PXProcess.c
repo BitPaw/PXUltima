@@ -188,7 +188,7 @@ PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 
 		const PXSize executableFilePathSize = PXTextLengthW(processEntryW.szExeFile, MAX_PATH);
 
-		PXTextConstructFromAdressW(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, executableFilePathSize);
+		PXTextConstructFromAdressW(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, executableFilePathSize, executableFilePathSize);
 
 		PXFunctionInvoke(pxProcessDetectedEvent, &pxProcess);
 

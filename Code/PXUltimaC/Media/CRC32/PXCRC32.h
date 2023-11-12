@@ -1,7 +1,7 @@
 #ifndef PXCRC32INCLUDE
 #define PXCRC32INCLUDE
 
-#include <Media/PXType.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

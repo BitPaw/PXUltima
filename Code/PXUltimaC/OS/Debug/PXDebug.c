@@ -28,9 +28,9 @@
 
 void PXDebugConstruct(PXDebug* const pxDebug)
 {
-	PXMemoryClear(pxDebug, sizeof(PXDebug));
+	PXClear(PXDebug, pxDebug);
 
-	PXTextConstructFromAdressA(&pxDebug->ApplicatioName, pxDebug->ApplicatioNameBuffer, sizeof(pxDebug->ApplicatioNameBuffer));
+	PXTextConstructFromAdressA(&pxDebug->ApplicatioName, pxDebug->ApplicatioNameBuffer, 0, sizeof(pxDebug->ApplicatioNameBuffer));
 }
 
 void PXDebugDestruct(PXDebug* const pxDebug)
@@ -574,7 +574,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 	// Resume executing the thread that reported the debugging event.
 	const BOOL succ = ContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, dwContinueStatus);
 
-	PXActionReturnOnError(!succ);
+	PXActionOnErrorFetchAndReturn(!succ);
 
 	return PXActionSuccessful;
 

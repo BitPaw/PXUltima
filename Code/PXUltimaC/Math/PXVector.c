@@ -200,7 +200,12 @@ void PXVector3FInterpolate(const PXVector3F* const vectorA, const PXVector3F* co
 	PXVector3F deltaA;
 	PXVector3F deltaB;
 
-	PXVector3FMultiplyS(vectorA, 1 - speed, &deltaA);
-	PXVector3FMultiplyS(vectorA, speed, &deltaB);
-	PXVector3FAdd(&deltaA, &deltaB, vectorResult);
+	PXVector3FAdd(&deltaA, vectorA);
+	PXVector3FAdd(&deltaB, vectorB);
+	PXVector3FMultiplyS(&deltaA, 1 - speed);
+	PXVector3FMultiplyS(&deltaB, speed);
+
+	PXVector3FSetXYZ(vectorResult, 0, 0, 0);
+	PXVector3FAdd(vectorResult, &deltaA);
+	PXVector3FAdd(vectorResult, &deltaB);
 }

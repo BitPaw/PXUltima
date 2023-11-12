@@ -246,8 +246,8 @@ extern "C"
 
 	PXPublic PXBool PXAPI PXWindowInteractable(PXWindow* const pxWindow);
 
-	PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
-	PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const window, PXInt32S* const x, PXInt32S* const y);
+	PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y);
+	PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y);
 
 
 	// Checks if the current window is the one in focus.

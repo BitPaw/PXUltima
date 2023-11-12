@@ -747,8 +747,8 @@ PXActionResult PXSocketSetupAdress
 
                 PXMemoryClear(&addressInfoHint, sizeof(struct addrinfo));
                 addressInfoHint.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
-                addressInfoHint.ai_family = ConvertFromIPAdressFamily(pxSocketAdressSetupInfo->IPMode);
-                addressInfoHint.ai_socktype = ConvertFromSocketType(pxSocketAdressSetupInfo->SocketType); // Datagram socket
+                addressInfoHint.ai_family = PXIPAdressFamilyToID(pxSocketAdressSetupInfo->IPMode);
+                addressInfoHint.ai_socktype = PXSocketTypeToID(pxSocketAdressSetupInfo->SocketType); // Datagram socket
                 addressInfoHint.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
 
                 const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHint, &addressInfoResult);

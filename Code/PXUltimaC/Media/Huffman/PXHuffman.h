@@ -1,11 +1,7 @@
 #ifndef PXHuffmanTreeINCLUDE
 #define PXHuffmanTreeINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
-
+#include "../PXResource.h"
 
 /* amount of bits for first huffman table lookup (aka root bits), see HuffmanTree_makeTable and huffmanDecodeSymbol.*/
 /* values 8u and 9u work the fastest */

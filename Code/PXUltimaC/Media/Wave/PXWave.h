@@ -1,10 +1,9 @@
 #ifndef PXWAVINCLUDE
 #define PXWAVINCLUDE
 
-#include <OS/File/PXFile.h>
-#include <Media/FMT/PXFMT.h>
+#include "../PXResource.h"
 
-#include <Media/PXResource.h>
+#include <Media/FMT/PXFMT.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -5,11 +5,7 @@
 #define PXSpriteFontCharSetNameSize 30u
 #define PXSpriteFontPageFileNameSize 128
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
-#include <Media/PXImage.h>
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

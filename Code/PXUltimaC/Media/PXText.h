@@ -2,6 +2,7 @@
 #define PXTextINLCUDE
 
 #include <Media/PXType.h>
+#include <stdarg.h>
 
 //---<Makros>------------------------------------------------------------------
 
@@ -93,24 +94,26 @@ extern "C"
 
 
 
-#define PXTextConstructFromAdress(pxText, address, size, format)\
-		if((PXSize)size == (PXSize)PXTextLengthUnkown)\
-		{\
-			(pxText)->SizeAllocated = PXTextLengthA(address, (PXSize)PXTextLengthUnkown);\
-		}\
-		else\
-		{\
-			(pxText)->SizeAllocated = size; \
-		}\
-		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
-		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
-		(pxText)->Format = format;\
+#define PXTextConstructFromAdress(pxText, address, sizeUsed, sizeAllocated, format) \
+		if((PXSize)sizeAllocated == (PXSize)PXTextLengthUnkown) \
+		{ \
+			(pxText)->SizeAllocated = PXTextLengthA(address, (PXSize)PXTextLengthUnkown); \
+			(pxText)->SizeUsed = (pxText)->SizeAllocated; \
+			(pxText)->NumberOfCharacters = (pxText)->SizeAllocated; \
+		} \
+		else \
+		{ \
+			(pxText)->SizeAllocated = sizeAllocated; \
+			(pxText)->SizeUsed = sizeUsed; \
+			(pxText)->NumberOfCharacters = sizeUsed; \
+		} \
+		(pxText)->Format = format; \
 		(pxText)->TextA = (char*)(address);
 
 #define PXTextLengthUnkown -1
 
-#define PXTextConstructFromAdressA(pxText, address, size) PXTextConstructFromAdress(pxText, (char*)address, size, TextFormatASCII)
-#define PXTextConstructFromAdressW(pxText, address, size) PXTextConstructFromAdress(pxText, (char*)address, size, TextFormatUNICODE)
+#define PXTextConstructFromAdressA(pxText, address, sizeUsed, sizeAllocated) PXTextConstructFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatASCII)
+#define PXTextConstructFromAdressW(pxText, address, sizeUsed, sizeAllocated) PXTextConstructFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatUNICODE)
 
 #define PXTextMakeFixedC(pxText, c)\
 		char character = c; \
@@ -175,6 +178,7 @@ extern "C"
 
 	PXPublic PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...);
 	PXPublic PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style, ...);
+	PXPublic PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list parameter);
 
 	PXPublic PXSize PXAPI PXTextClear(PXText* const pxText);
 

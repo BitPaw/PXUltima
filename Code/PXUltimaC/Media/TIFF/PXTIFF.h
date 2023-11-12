@@ -1,7 +1,7 @@
 #ifndef PXPXTIFFINCLUDE
 #define PXPXTIFFINCLUDE
 
-#include <Media/PXImage.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

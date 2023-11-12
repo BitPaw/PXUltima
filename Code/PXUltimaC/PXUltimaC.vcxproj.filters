@@ -90,7 +90,7 @@
     <ClCompile Include="Math\PXVector.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\3DS\PX3DS.c">
+    <ClCompile Include="Media\Autodesk3DS\PXAutodesk3DS.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\AAC\PXAAC.c">
@@ -456,6 +456,9 @@
     <ClCompile Include="OS\Audio\PXALSA\PXALSA.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\Audio\PXIAudio\PXIAudio.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -533,7 +536,7 @@
     <ClInclude Include="Math\PXVector.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\3DS\PX3DS.h">
+    <ClInclude Include="Media\Autodesk3DS\PXAutodesk3DS.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\AAC\PXAAC.h">
@@ -897,6 +900,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Audio\PXALSA\PXALSA.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Audio\PXIAudio\PXIAudio.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

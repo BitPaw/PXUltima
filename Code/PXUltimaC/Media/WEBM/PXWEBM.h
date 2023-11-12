@@ -1,9 +1,7 @@
 #ifndef PXWEBMINCLUDE
 #define PXWEBMINCLUDE
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

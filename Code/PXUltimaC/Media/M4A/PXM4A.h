@@ -1,9 +1,7 @@
 #ifndef M4AInclude
 #define M4AInclude
 
-#include <Media/PXType.h>
-
-#include <OS/Error/PXActionResult.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

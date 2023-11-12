@@ -1,7 +1,7 @@
 #ifndef PXSTEPINCLUDE
 #define PXSTEPINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

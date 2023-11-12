@@ -1,7 +1,7 @@
 #ifndef PXFMTINCLUDE
 #define PXFMTINCLUDE
 
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

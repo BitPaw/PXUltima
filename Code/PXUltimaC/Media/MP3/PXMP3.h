@@ -1,6 +1,7 @@
 #ifndef PXMP3INCLUDE
 #define PXMP3INCLUDE
 
+#include "../PXResource.h"
 #include <Media/ID3/PXID3.h>
 
 #define PXMP3Debug 0

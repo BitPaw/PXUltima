@@ -286,6 +286,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 
 	}
 
+#if OSWindows
 	// Create rendering surface
 	{
 		VkWin32SurfaceCreateInfoKHR vkWin32SurfaceCreateInfoKHR;
@@ -297,6 +298,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 
 		const VkResult createSurface = pxVulcan->SurfaceCreate(pxVulcan->Instance, &vkWin32SurfaceCreateInfoKHR, PXNull, &pxVulcan->SurfaceMainRendering);
 	}
+#endif
 
 	// List and select physical device
 	{

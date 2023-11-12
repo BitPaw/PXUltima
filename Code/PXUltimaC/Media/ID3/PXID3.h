@@ -1,7 +1,7 @@
 #ifndef PXID3Include
 #define PXID3Include
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #define PXID3Debug 0
 

@@ -1,10 +1,7 @@
 #ifndef PXPNGINCLUDE
 #define PXPNGINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <Media/PXImage.h>
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

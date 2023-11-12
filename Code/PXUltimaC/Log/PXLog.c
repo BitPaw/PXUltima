@@ -1,8 +1,10 @@
 #include "PXLog.h"
 
 #include <Media/PXText.h>
+#include <stdarg.h>
 //#include <stdio.h>
 //#include <stdarg.h>
+
 
 void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const format, ...)
 {
@@ -51,7 +53,8 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
 	char buffer[256];
 
-	sprintf_s(buffer, 256, "[%c][%s] %s\n", loggingTypeSymbol, source, format);
+		// sprintf_s
+	PXTextPrintA(buffer, 256, "[%c][%s] %s\n", loggingTypeSymbol, source, format);
 
 	{
 		va_list args;

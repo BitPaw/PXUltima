@@ -2124,7 +2124,7 @@ extern "C"
 
 
 #if OSUnix
-	
+	typedef VkResult(VKAPI_PTR* PXVulkanSurfaceCreate)(VkInstance instance, const void* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);
 #elif OSWindows
 	// Provided by VK_KHR_win32_surface
 	typedef struct VkWin32SurfaceCreateInfoKHR

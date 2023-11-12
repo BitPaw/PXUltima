@@ -90,18 +90,18 @@ extern "C"
 
 
 	PXPublic void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult);
-	PXPublic void PXMatrix4x4FRotate(const PXMatrix4x4F* matrix4x4F, const float x, const float y, const float z);
+	PXPublic void PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const float y, const float z);
 
 	PXPublic void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult);
 
-	PXPublic void PXMatrix4x4FMove3F(const PXMatrix4x4F* const matrixA, const PXVector3F* const vector3F, PXMatrix4x4F* const matrixResult);
-	PXPublic void PXMatrix4x4FMoveXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult);
-	PXPublic void PXMatrix4x4FMoveToScaleXY(const PXMatrix4x4F* const matrixA, const float x, const float y, PXMatrix4x4F* const matrixResult);
-	PXPublic void PXMatrix4x4FMoveXYZ(const PXMatrix4x4F* const matrixA, const float x, const float y, const float z, PXMatrix4x4F* const matrixResult);
+	PXPublic void PXMatrix4x4FMove3F(PXMatrix4x4F* const matrixData, const PXVector3F* const vector3F);
+	PXPublic void PXMatrix4x4FMoveXY(PXMatrix4x4F* const matrixData, const float x, const float y);
+	PXPublic void PXMatrix4x4FMoveToScaleXY(PXMatrix4x4F* const matrixData, const float x, const float y);
+	PXPublic void PXMatrix4x4FMoveXYZ(PXMatrix4x4F* const matrixData, const float x, const float y, const float z);
 
 	PXPublic void PXMatrix4x4FScaleBy(PXMatrix4x4F* const matrixA, const float scalar);
 
-	PXPublic void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, PXRectangleOffset* const pxMargin);
+	PXPublic void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin);
 	PXPublic void PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y);
 
 	PXPublic void PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F);

@@ -1,8 +1,7 @@
 #ifndef PXHTTPINCLUDE
 #define PXHTTPINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

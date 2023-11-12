@@ -1,9 +1,8 @@
 #ifndef PXCINCLUDE
 #define PXCINCLUDE
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
+#include "../PXResource.h"
+
 #include <Compiler/PXCompiler.h>
 
 #ifdef __cplusplus

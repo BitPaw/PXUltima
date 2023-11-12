@@ -469,7 +469,7 @@ PXBool PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAddress,
 
 PXBool PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize)
 {
-	const PXBool needToRealocate = currentSize < requestedSize;
+	const PXBool needToRealocate = *currentSize < requestedSize;
 
 	if (!needToRealocate)
 	{

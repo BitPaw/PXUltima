@@ -131,7 +131,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 
 
 				PXText pxText;
-				PXTextConstructFromAdressA(&pxText, pxMaterialCurrent->Name, 32);
+				PXTextConstructFromAdressA(&pxText, pxMaterialCurrent->Name, 0, 32);
 
 				const PXBool isText = PXCompilerParseStringUntilNewLine(&compiledSteam, &pxText);
 

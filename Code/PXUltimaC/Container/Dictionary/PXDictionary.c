@@ -109,8 +109,8 @@ void PXDictionaryRemove(PXDictionary* const dictionary, const void* key)
 
 PXBool PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value)
 {
-	PXMemorySet(key, 0xFF, dictionary->KeyTypeSize);
-	PXMemorySet(value, 0xFF, dictionary->ValueTypeSize);
+	PXMemorySet((void*)key, 0xFF, dictionary->KeyTypeSize);
+	PXMemorySet((void*)value, 0xFF, dictionary->ValueTypeSize);
 
 	--dictionary->EntryAmountCurrent;
 }
@@ -159,8 +159,8 @@ void PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index,
 	const PXSize blockSize = dictionary->KeyTypeSize + dataBlockSize;
 	const PXByte* blockStart = ((PXByte*)dictionary->Data) + blockSize * index;
 
-	pxDictionaryEntry->Key = blockStart;
-	pxDictionaryEntry->Value = blockStart + dictionary->KeyTypeSize;
+	pxDictionaryEntry->Key = (void*)blockStart;
+	pxDictionaryEntry->Value = (void*)(blockStart + dictionary->KeyTypeSize);
 }
 
 PXBool PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void** const resultKey)

@@ -37,9 +37,9 @@ extern "C"
 		PXAudioSystemInvalid,
 		PXAudioSystemWindowsMultiMedia, // Windows 2000 
 		PXAudioSystemWindowsMIDI,
-		PXAudioSystemWindowsKernalMixer, // Windows 98
-		PXAudioSystemWindowsDirectSound, // Windows XP
-		PXAudioSystemWindowsXAudio // Windows 8 (successor to DirectSound)
+		PXAudioSystemWindowsDirectSound, // Windows XP (successor to WINMM)
+		PXAudioSystemWindowsIAudio, // Windows Vista (successor to DirectSound)
+		PXAudioSystemWindowsXAudio // Windows 8 (successor to IAudio)
 	}
 	PXAudioSystem;
 
@@ -132,7 +132,6 @@ extern "C"
 
 
 	typedef PXActionResult(PXAPI* PXAudioDeviceBreakLoopFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
-	typedef PXActionResult(PXAPI* PXAudioDevicePositionGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
 	typedef PXActionResult(PXAPI* PXAudioDevicePlaybackRateGetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const playbackRate);
 	typedef PXActionResult(PXAPI* PXAudioDevicePlaybackRateSetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U playbackRate);
 

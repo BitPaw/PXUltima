@@ -1,19 +1,16 @@
 #ifndef PXOpenGLINCLUDE
 #define PXOpenGLINCLUDE
 
-#include <OS/System/PXOSVersion.h>
+#include <Media/PXResource.h>
 
 #define PXOpenGLForceLegacy 0
 
 #if OSUnix
-
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
-
 typedef XID PXWindowID;// XID is PXWindow
 typedef GLXContext PXOpenGLConextID;
-
 #elif OSWindows
 #include <Windows.h>
 typedef HWND PXWindowID;
@@ -31,8 +28,6 @@ typedef HGLRC PXOpenGLConextID;
 #endif
 //---------------------------
 
-#include <Media/PXType.h>
-#include <Media/PXResource.h>
 
 typedef ptrdiff_t GLintptr;
 typedef ptrdiff_t GLsizeiptr;
@@ -367,25 +362,25 @@ extern "C"
 
 	typedef void (PXOpenGLAPI* PXOpenGLDisableVertexArrayAttribFunction)(GLuint vaobj, GLuint index);
 	typedef GLint(PXOpenGLAPI* PXOpenGLGetUniformLocation)(GLuint program, const char* name);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform1fFunction)(GLint location, GLfloat v0);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform1fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform1fFunction)(GLint location, float v0);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform1fvFunction)(GLint location, GLsizei count, const float* value);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform1iFunction)(GLint location, GLint v0);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform1ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform2fFunction)(GLint location, GLfloat v0, GLfloat v1);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform2fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform2fFunction)(GLint location, float v0, float v1);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform2fvFunction)(GLint location, GLsizei count, const float* value);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform2iFunction)(GLint location, GLint v0, GLint v1);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform2ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform3fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform3fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform3fFunction)(GLint location, float v0, float v1, float v2);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform3fvFunction)(GLint location, GLsizei count, const float* value);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform3iFunction)(GLint location, GLint v0, GLint v1, GLint v2);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform3ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform4fFunction)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-	typedef void (PXOpenGLAPI* PXOpenGLUniform4fvFunction)(GLint location, GLsizei count, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform4fFunction)(GLint location, float v0, float v1, float v2, float v3);
+	typedef void (PXOpenGLAPI* PXOpenGLUniform4fvFunction)(GLint location, GLsizei count, const float* value);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform4iFunction)(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
 	typedef void (PXOpenGLAPI* PXOpenGLUniform4ivFunction)(GLint location, GLsizei count, const GLint* value);
-	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix2fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix2fvFunction)(GLint location, GLsizei count, GLboolean transpose, const float* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const float* value);
+	typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const float* value);
 
 	//typedef void (PXOpenGLAPI* PXOpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
 	//typedef void (PXOpenGLAPI* PXOpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
@@ -469,32 +464,30 @@ extern "C"
 	typedef const char* (PXOpenGLAPI* PXOpenGLStringGetExtensionsARB)(HDC hdc); // wglGetExtensionsStringARB
 #endif
 
-	typedef PXInt64U GLint64;
 
-
-	typedef void (PXOpenGLAPI * PXOpenGLAccumFunction)(GLenum op, GLfloat value);
+	typedef void (PXOpenGLAPI * PXOpenGLAccumFunction)(GLenum op, float value);
 	typedef void (PXOpenGLAPI * PXOpenGLAlphaFuncFunction)(GLenum func, GLclampf ref);
 	typedef GLboolean (PXOpenGLAPI * PXOpenGLAreTexturesResidentFunction)(GLsizei n, const GLuint* textures, GLboolean* residences);
 	typedef void (PXOpenGLAPI * PXOpenGLArrayElementFunction)(GLint i);
 	typedef void (PXOpenGLAPI * PXOpenGLBeginFunction)(GLenum mode);
 	typedef void (PXOpenGLAPI * PXOpenGLBindTextureFunction)(GLenum target, GLuint texture);
-	typedef void (PXOpenGLAPI * PXOpenGLBitmapFunction)(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte* bitmap);
+	typedef void (PXOpenGLAPI * PXOpenGLBitmapFunction)(GLsizei width, GLsizei height, float xorig, float yorig, float xmove, float ymove, const GLubyte* bitmap);
 	typedef void (PXOpenGLAPI * PXOpenGLBlendFuncFunction)(GLenum sfactor, GLenum dfactor);
 	typedef void (PXOpenGLAPI * PXOpenGLCallListFunction)(GLuint list);
 	typedef void (PXOpenGLAPI * PXOpenGLCallListsFunction)(GLsizei n, GLenum type, const GLvoid* lists);
 	typedef void (PXOpenGLAPI * PXOpenGLClearFunction)(GLbitfield mask);
-	typedef void (PXOpenGLAPI * PXOpenGLClearAccumFunction)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLClearAccumFunction)(float red, float green, float blue, float alpha);
 	typedef void (PXOpenGLAPI * PXOpenGLClearColorFunction)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
 	typedef void (PXOpenGLAPI * PXOpenGLClearDepthFunction)(GLclampd depth);
-	typedef void (PXOpenGLAPI * PXOpenGLClearIndexFunction)(GLfloat c);
+	typedef void (PXOpenGLAPI * PXOpenGLClearIndexFunction)(float c);
 	typedef void (PXOpenGLAPI * PXOpenGLClearStencilFunction)(GLint s);
 	typedef void (PXOpenGLAPI * PXOpenGLClipPlaneFunction)(GLenum plane, const GLdouble* equation);
 	typedef void (PXOpenGLAPI * PXOpenGLColor3bFunction)(GLbyte red, GLbyte green, GLbyte blue);
 	typedef void (PXOpenGLAPI * PXOpenGLColor3bvFunction)(const GLbyte* v);
 	typedef void (PXOpenGLAPI * PXOpenGLColor3dFunction)(GLdouble red, GLdouble green, GLdouble blue);
 	typedef void (PXOpenGLAPI * PXOpenGLColor3dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLColor3fFunction)(GLfloat red, GLfloat green, GLfloat blue);
-	typedef void (PXOpenGLAPI * PXOpenGLColor3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3fFunction)(float red, float green, float blue);
+	typedef void (PXOpenGLAPI * PXOpenGLColor3fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLColor3iFunction)(GLint red, GLint green, GLint blue);
 	typedef void (PXOpenGLAPI * PXOpenGLColor3ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLColor3sFunction)(GLshort red, GLshort green, GLshort blue);
@@ -509,8 +502,8 @@ extern "C"
 	typedef void (PXOpenGLAPI * PXOpenGLColor4bvFunction)(const GLbyte* v);
 	typedef void (PXOpenGLAPI * PXOpenGLColor4dFunction)(GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha);
 	typedef void (PXOpenGLAPI * PXOpenGLColor4dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLColor4fFunction)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-	typedef void (PXOpenGLAPI * PXOpenGLColor4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4fFunction)(float red, float green, float blue, float alpha);
+	typedef void (PXOpenGLAPI * PXOpenGLColor4fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLColor4iFunction)(GLint red, GLint green, GLint blue, GLint alpha);
 	typedef void (PXOpenGLAPI * PXOpenGLColor4ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLColor4sFunction)(GLshort red, GLshort green, GLshort blue, GLshort alpha);
@@ -550,21 +543,21 @@ extern "C"
 	typedef void (PXOpenGLAPI * PXOpenGLEndListFunction)(void);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1dFunction)(GLdouble u);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1dvFunction)(const GLdouble* u);
-	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1fFunction)(GLfloat u);
-	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1fvFunction)(const GLfloat* u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1fFunction)(float u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord1fvFunction)(const float* u);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2dFunction)(GLdouble u, GLdouble v);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2dvFunction)(const GLdouble* u);
-	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2fFunction)(GLfloat u, GLfloat v);
-	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2fvFunction)(const GLfloat* u);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2fFunction)(float u, float v);
+	typedef void (PXOpenGLAPI * PXOpenGLEvalCoord2fvFunction)(const float* u);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalMesh1Function)(GLenum mode, GLint i1, GLint i2);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalMesh2Function)(GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalPoint1Function)(GLint i);
 	typedef void (PXOpenGLAPI * PXOpenGLEvalPoint2Function)(GLint i, GLint j);
-	typedef void (PXOpenGLAPI * PXOpenGLFeedbackBufferFunction)(GLsizei size, GLenum type, GLfloat* buffer);
+	typedef void (PXOpenGLAPI * PXOpenGLFeedbackBufferFunction)(GLsizei size, GLenum type, float* buffer);
 	typedef void (PXOpenGLAPI * PXOpenGLFinishFunction)(void);
 	typedef void (PXOpenGLAPI * PXOpenGLFlushFunction)(void);
-	typedef void (PXOpenGLAPI * PXOpenGLFogfFunction)(GLenum pname, GLfloat param);
-	typedef void (PXOpenGLAPI * PXOpenGLFogfvFunction)(GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLFogfFunction)(GLenum pname, float param);
+	typedef void (PXOpenGLAPI * PXOpenGLFogfvFunction)(GLenum pname, const float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLFogiFunction)(GLenum pname, GLint param);
 	typedef void (PXOpenGLAPI * PXOpenGLFogivFunction)(GLenum pname, const GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLFrontFaceFunction)(GLenum mode);
@@ -575,38 +568,38 @@ extern "C"
 	typedef void (PXOpenGLAPI * PXOpenGLGetClipPlaneFunction)(GLenum plane, GLdouble* equation);
 	typedef void (PXOpenGLAPI * PXOpenGLGetDoublevFunction)(GLenum pname, GLdouble* params);
 	typedef GLenum (PXOpenGLAPI * PXOpenGLGetErrorFunction)(void);
-	typedef void (PXOpenGLAPI * PXOpenGLGetFloatvFunction)(GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetFloatvFunction)(GLenum pname, float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetIntegervFunction)(GLenum pname, GLint* params);
-	typedef void (PXOpenGLAPI * PXOpenGLGetLightfvFunction)(GLenum light, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetLightfvFunction)(GLenum light, GLenum pname, float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetLightivFunction)(GLenum light, GLenum pname, GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetMapdvFunction)(GLenum target, GLenum query, GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLGetMapfvFunction)(GLenum target, GLenum query, GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLGetMapfvFunction)(GLenum target, GLenum query, float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLGetMapivFunction)(GLenum target, GLenum query, GLint* v);
-	typedef void (PXOpenGLAPI * PXOpenGLGetMaterialfvFunction)(GLenum face, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetMaterialfvFunction)(GLenum face, GLenum pname, float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetMaterialivFunction)(GLenum face, GLenum pname, GLint* params);
-	typedef void (PXOpenGLAPI * PXOpenGLGetPixelMapfvFunction)(GLenum map, GLfloat* values);
+	typedef void (PXOpenGLAPI * PXOpenGLGetPixelMapfvFunction)(GLenum map, float* values);
 	typedef void (PXOpenGLAPI * PXOpenGLGetPixelMapuivFunction)(GLenum map, GLuint* values);
 	typedef void (PXOpenGLAPI * PXOpenGLGetPixelMapusvFunction)(GLenum map, GLushort* values);
 	typedef void (PXOpenGLAPI * PXOpenGLGetPointervFunction)(GLenum pname, GLvoid** params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetPolygonStippleFunction)(GLubyte* mask);
-	typedef const GLubyte* (PXOpenGLAPI * PXOpenGLGetStringFunction)(GLenum name);
-	typedef void (PXOpenGLAPI * PXOpenGLGetTexEnvfvFunction)(GLenum target, GLenum pname, GLfloat* params);
+	typedef const char* (PXOpenGLAPI * PXOpenGLGetStringFunction)(GLenum name);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexEnvfvFunction)(GLenum target, GLenum pname, float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetTexEnvivFunction)(GLenum target, GLenum pname, GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetTexGendvFunction)(GLenum coord, GLenum pname, GLdouble* params);
-	typedef void (PXOpenGLAPI * PXOpenGLGetTexGenfvFunction)(GLenum coord, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexGenfvFunction)(GLenum coord, GLenum pname, float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetTexGenivFunction)(GLenum coord, GLenum pname, GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetTexImageFunction)(GLenum target, GLint level, GLenum format, GLenum type, GLvoid* pixels);
-	typedef void (PXOpenGLAPI * PXOpenGLGetTexLevelParameterfvFunction)(GLenum target, GLint level, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexLevelParameterfvFunction)(GLenum target, GLint level, GLenum pname, float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetTexLevelParameterivFunction)(GLenum target, GLint level, GLenum pname, GLint* params);
-	typedef void (PXOpenGLAPI * PXOpenGLGetTexParameterfvFunction)(GLenum target, GLenum pname, GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLGetTexParameterfvFunction)(GLenum target, GLenum pname, float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLGetTexParameterivFunction)(GLenum target, GLenum pname, GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLHintFunction)(GLenum target, GLenum mode);
 	typedef void (PXOpenGLAPI * PXOpenGLIndexMaskFunction)(GLuint mask);
 	typedef void (PXOpenGLAPI * PXOpenGLIndexPointerFunction)(GLenum type, GLsizei stride, const GLvoid* pointer);
 	typedef void (PXOpenGLAPI * PXOpenGLIndexdFunction)(GLdouble c);
 	typedef void (PXOpenGLAPI * PXOpenGLIndexdvFunction)(const GLdouble* c);
-	typedef void (PXOpenGLAPI * PXOpenGLIndexfFunction)(GLfloat c);
-	typedef void (PXOpenGLAPI * PXOpenGLIndexfvFunction)(const GLfloat* c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexfFunction)(float c);
+	typedef void (PXOpenGLAPI * PXOpenGLIndexfvFunction)(const float* c);
 	typedef void (PXOpenGLAPI * PXOpenGLIndexiFunction)(GLint c);
 	typedef void (PXOpenGLAPI * PXOpenGLIndexivFunction)(const GLint* c);
 	typedef void (PXOpenGLAPI * PXOpenGLIndexsFunction)(GLshort c);
@@ -618,62 +611,62 @@ extern "C"
 	typedef GLboolean (PXOpenGLAPI * PXOpenGLIsEnabledFunction)(GLenum cap);
 	typedef GLboolean (PXOpenGLAPI * PXOpenGLIsListFunction)(GLuint list);
 	typedef GLboolean (PXOpenGLAPI * PXOpenGLIsTextureFunction)(GLuint texture);
-	typedef void (PXOpenGLAPI * PXOpenGLLightModelfFunction)(GLenum pname, GLfloat param);
-	typedef void (PXOpenGLAPI * PXOpenGLLightModelfvFunction)(GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLLightModelfFunction)(GLenum pname, float param);
+	typedef void (PXOpenGLAPI * PXOpenGLLightModelfvFunction)(GLenum pname, const float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLLightModeliFunction)(GLenum pname, GLint param);
 	typedef void (PXOpenGLAPI * PXOpenGLLightModelivFunction)(GLenum pname, const GLint* params);
-	typedef void (PXOpenGLAPI * PXOpenGLLightfFunction)(GLenum light, GLenum pname, GLfloat param);
-	typedef void (PXOpenGLAPI * PXOpenGLLightfvFunction)(GLenum light, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLLightfFunction)(GLenum light, GLenum pname, float param);
+	typedef void (PXOpenGLAPI * PXOpenGLLightfvFunction)(GLenum light, GLenum pname, const float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLLightiFunction)(GLenum light, GLenum pname, GLint param);
 	typedef void (PXOpenGLAPI * PXOpenGLLightivFunction)(GLenum light, GLenum pname, const GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLLineStippleFunction)(GLint factor, GLushort pattern);
-	typedef void (PXOpenGLAPI * PXOpenGLLineWidthFunction)(GLfloat width);
+	typedef void (PXOpenGLAPI * PXOpenGLLineWidthFunction)(float width);
 	typedef void (PXOpenGLAPI * PXOpenGLListBaseFunction)(GLuint base);
 	typedef void (PXOpenGLAPI * PXOpenGLLoadIdentityFunction)(void);
 	typedef void (PXOpenGLAPI * PXOpenGLLoadMatrixdFunction)(const GLdouble* m);
-	typedef void (PXOpenGLAPI * PXOpenGLLoadMatrixfFunction)(const GLfloat* m);
+	typedef void (PXOpenGLAPI * PXOpenGLLoadMatrixfFunction)(const float* m);
 	typedef void (PXOpenGLAPI * PXOpenGLLoadNameFunction)(GLuint name);
 	typedef void (PXOpenGLAPI * PXOpenGLLogicOpFunction)(GLenum opcode);
 	typedef void (PXOpenGLAPI * PXOpenGLMap1dFunction)(GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLint order, const GLdouble* points);
-	typedef void (PXOpenGLAPI * PXOpenGLMap1fFunction)(GLenum target, GLfloat u1, GLfloat u2, GLint stride, GLint order, const GLfloat* points);
+	typedef void (PXOpenGLAPI * PXOpenGLMap1fFunction)(GLenum target, float u1, float u2, GLint stride, GLint order, const float* points);
 	typedef void (PXOpenGLAPI * PXOpenGLMap2dFunction)(GLenum target, GLdouble u1, GLdouble u2, GLint ustride, GLint uorder, GLdouble v1, GLdouble v2, GLint vstride, GLint vorder, const GLdouble* points);
-	typedef void (PXOpenGLAPI * PXOpenGLMap2fFunction)(GLenum target, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder, const GLfloat* points);
+	typedef void (PXOpenGLAPI * PXOpenGLMap2fFunction)(GLenum target, float u1, float u2, GLint ustride, GLint uorder, float v1, float v2, GLint vstride, GLint vorder, const float* points);
 	typedef void (PXOpenGLAPI * PXOpenGLMapGrid1dFunction)(GLint un, GLdouble u1, GLdouble u2);
-	typedef void (PXOpenGLAPI * PXOpenGLMapGrid1fFunction)(GLint un, GLfloat u1, GLfloat u2);
+	typedef void (PXOpenGLAPI * PXOpenGLMapGrid1fFunction)(GLint un, float u1, float u2);
 	typedef void (PXOpenGLAPI * PXOpenGLMapGrid2dFunction)(GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble v1, GLdouble v2);
-	typedef void (PXOpenGLAPI * PXOpenGLMapGrid2fFunction)(GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat v2);
-	typedef void (PXOpenGLAPI * PXOpenGLMaterialfFunction)(GLenum face, GLenum pname, GLfloat param);
-	typedef void (PXOpenGLAPI * PXOpenGLMaterialfvFunction)(GLenum face, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLMapGrid2fFunction)(GLint un, float u1, float u2, GLint vn, float v1, float v2);
+	typedef void (PXOpenGLAPI * PXOpenGLMaterialfFunction)(GLenum face, GLenum pname, float param);
+	typedef void (PXOpenGLAPI * PXOpenGLMaterialfvFunction)(GLenum face, GLenum pname, const float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLMaterialiFunction)(GLenum face, GLenum pname, GLint param);
 	typedef void (PXOpenGLAPI * PXOpenGLMaterialivFunction)(GLenum face, GLenum pname, const GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLMatrixModeFunction)(GLenum mode);
 	typedef void (PXOpenGLAPI * PXOpenGLMultMatrixdFunction)(const GLdouble* m);
-	typedef void (PXOpenGLAPI * PXOpenGLMultMatrixfFunction)(const GLfloat* m);
+	typedef void (PXOpenGLAPI * PXOpenGLMultMatrixfFunction)(const float* m);
 	typedef void (PXOpenGLAPI * PXOpenGLNewListFunction)(GLuint list, GLenum mode);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3bFunction)(GLbyte nx, GLbyte ny, GLbyte nz);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3bvFunction)(const GLbyte* v);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3dFunction)(GLdouble nx, GLdouble ny, GLdouble nz);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLNormal3fFunction)(GLfloat nx, GLfloat ny, GLfloat nz);
-	typedef void (PXOpenGLAPI * PXOpenGLNormal3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3fFunction)(float nx, float ny, float nz);
+	typedef void (PXOpenGLAPI * PXOpenGLNormal3fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3iFunction)(GLint nx, GLint ny, GLint nz);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3sFunction)(GLshort nx, GLshort ny, GLshort nz);
 	typedef void (PXOpenGLAPI * PXOpenGLNormal3svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLNormalPointerFunction)(GLenum type, GLsizei stride, const GLvoid* pointer);
 	typedef void (PXOpenGLAPI * PXOpenGLOrthoFunction)(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
-	typedef void (PXOpenGLAPI * PXOpenGLPassThroughFunction)(GLfloat token);
-	typedef void (PXOpenGLAPI * PXOpenGLPixelMapfvFunction)(GLenum map, GLsizei mapsize, const GLfloat* values);
+	typedef void (PXOpenGLAPI * PXOpenGLPassThroughFunction)(float token);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelMapfvFunction)(GLenum map, GLsizei mapsize, const float* values);
 	typedef void (PXOpenGLAPI * PXOpenGLPixelMapuivFunction)(GLenum map, GLsizei mapsize, const GLuint* values);
 	typedef void (PXOpenGLAPI * PXOpenGLPixelMapusvFunction)(GLenum map, GLsizei mapsize, const GLushort* values);
-	typedef void (PXOpenGLAPI * PXOpenGLPixelStorefFunction)(GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelStorefFunction)(GLenum pname, float param);
 	typedef void (PXOpenGLAPI * PXOpenGLPixelStoreiFunction)(GLenum pname, GLint param);
-	typedef void (PXOpenGLAPI * PXOpenGLPixelTransferfFunction)(GLenum pname, GLfloat param);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelTransferfFunction)(GLenum pname, float param);
 	typedef void (PXOpenGLAPI * PXOpenGLPixelTransferiFunction)(GLenum pname, GLint param);
-	typedef void (PXOpenGLAPI * PXOpenGLPixelZoomFunction)(GLfloat xfactor, GLfloat yfactor);
-	typedef void (PXOpenGLAPI * PXOpenGLPointSizeFunction)(GLfloat size);
+	typedef void (PXOpenGLAPI * PXOpenGLPixelZoomFunction)(float xfactor, float yfactor);
+	typedef void (PXOpenGLAPI * PXOpenGLPointSizeFunction)(float size);
 	typedef void (PXOpenGLAPI * PXOpenGLPolygonModeFunction)(GLenum face, GLenum mode);
-	typedef void (PXOpenGLAPI * PXOpenGLPolygonOffsetFunction)(GLfloat factor, GLfloat units);
+	typedef void (PXOpenGLAPI * PXOpenGLPolygonOffsetFunction)(float factor, float units);
 	typedef void (PXOpenGLAPI * PXOpenGLPolygonStippleFunction)(const GLubyte* mask);
 	typedef void (PXOpenGLAPI * PXOpenGLPopAttribFunction)(void);
 	typedef void (PXOpenGLAPI * PXOpenGLPopClientAttribFunction)(void);
@@ -686,24 +679,24 @@ extern "C"
 	typedef void (PXOpenGLAPI * PXOpenGLPushNameFunction)(GLuint name);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2dFunction)(GLdouble x, GLdouble y);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2fFunction)(GLfloat x, GLfloat y);
-	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2fFunction)(float x, float y);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2iFunction)(GLint x, GLint y);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2sFunction)(GLshort x, GLshort y);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos2svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3dFunction)(GLdouble x, GLdouble y, GLdouble z);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3fFunction)(GLfloat x, GLfloat y, GLfloat z);
-	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3fFunction)(float x, float y, float z);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3iFunction)(GLint x, GLint y, GLint z);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3sFunction)(GLshort x, GLshort y, GLshort z);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos3svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4dFunction)(GLdouble x, GLdouble y, GLdouble z, GLdouble w);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4fFunction)(GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4fFunction)(float x, float y, float z, float w);
+	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4iFunction)(GLint x, GLint y, GLint z, GLint w);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLRasterPos4sFunction)(GLshort x, GLshort y, GLshort z, GLshort w);
@@ -712,17 +705,17 @@ extern "C"
 	typedef void (PXOpenGLAPI * PXOpenGLReadPixelsFunction)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
 	typedef void (PXOpenGLAPI * PXOpenGLRectdFunction)(GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2);
 	typedef void (PXOpenGLAPI * PXOpenGLRectdvFunction)(const GLdouble* v1, const GLdouble* v2);
-	typedef void (PXOpenGLAPI * PXOpenGLRectfFunction)(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
-	typedef void (PXOpenGLAPI * PXOpenGLRectfvFunction)(const GLfloat* v1, const GLfloat* v2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectfFunction)(float x1, float y1, float x2, float y2);
+	typedef void (PXOpenGLAPI * PXOpenGLRectfvFunction)(const float* v1, const float* v2);
 	typedef void (PXOpenGLAPI * PXOpenGLRectiFunction)(GLint x1, GLint y1, GLint x2, GLint y2);
 	typedef void (PXOpenGLAPI * PXOpenGLRectivFunction)(const GLint* v1, const GLint* v2);
 	typedef void (PXOpenGLAPI * PXOpenGLRectsFunction)(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
 	typedef void (PXOpenGLAPI * PXOpenGLRectsvFunction)(const GLshort* v1, const GLshort* v2);
 	typedef GLint (PXOpenGLAPI * PXOpenGLRenderModeFunction)(GLenum mode);
 	typedef void (PXOpenGLAPI * PXOpenGLRotatedFunction)(GLdouble angle, GLdouble x, GLdouble y, GLdouble z);
-	typedef void (PXOpenGLAPI * PXOpenGLRotatefFunction)(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLRotatefFunction)(float angle, float x, float y, float z);
 	typedef void (PXOpenGLAPI * PXOpenGLScaledFunction)(GLdouble x, GLdouble y, GLdouble z);
-	typedef void (PXOpenGLAPI * PXOpenGLScalefFunction)(GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLScalefFunction)(float x, float y, float z);
 	typedef void (PXOpenGLAPI * PXOpenGLScissorFunction)(GLint x, GLint y, GLsizei width, GLsizei height);
 	typedef void (PXOpenGLAPI * PXOpenGLSelectBufferFunction)(GLsizei size, GLuint* buffer);
 	typedef void (PXOpenGLAPI * PXOpenGLShadeModelFunction)(GLenum mode);
@@ -731,77 +724,77 @@ extern "C"
 	typedef void (PXOpenGLAPI * PXOpenGLStencilOpFunction)(GLenum fail, GLenum zfail, GLenum zpass);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1dFunction)(GLdouble s);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1fFunction)(GLfloat s);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1fFunction)(float s);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1iFunction)(GLint s);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1sFunction)(GLshort s);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord1svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2dFunction)(GLdouble s, GLdouble t);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2fFunction)(GLfloat s, GLfloat t);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2fFunction)(float s, float t);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2iFunction)(GLint s, GLint t);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2sFunction)(GLshort s, GLshort t);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord2svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3dFunction)(GLdouble s, GLdouble t, GLdouble r);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3fFunction)(GLfloat s, GLfloat t, GLfloat r);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3fFunction)(float s, float t, float r);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3iFunction)(GLint s, GLint t, GLint r);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3sFunction)(GLshort s, GLshort t, GLshort r);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord3svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4dFunction)(GLdouble s, GLdouble t, GLdouble r, GLdouble q);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4fFunction)(GLfloat s, GLfloat t, GLfloat r, GLfloat q);
-	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4fFunction)(float s, float t, float r, float q);
+	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4iFunction)(GLint s, GLint t, GLint r, GLint q);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4sFunction)(GLshort s, GLshort t, GLshort r, GLshort q);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoord4svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLTexCoordPointerFunction)(GLint size, GLenum type, GLsizei stride, const GLvoid* pointer);
-	typedef void (PXOpenGLAPI * PXOpenGLTexEnvfFunction)(GLenum target, GLenum pname, GLfloat param);
-	typedef void (PXOpenGLAPI * PXOpenGLTexEnvfvFunction)(GLenum target, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexEnvfFunction)(GLenum target, GLenum pname, float param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexEnvfvFunction)(GLenum target, GLenum pname, const float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLTexEnviFunction)(GLenum target, GLenum pname, GLint param);
 	typedef void (PXOpenGLAPI * PXOpenGLTexEnvivFunction)(GLenum target, GLenum pname, const GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLTexGendFunction)(GLenum coord, GLenum pname, GLdouble param);
 	typedef void (PXOpenGLAPI * PXOpenGLTexGendvFunction)(GLenum coord, GLenum pname, const GLdouble* params);
-	typedef void (PXOpenGLAPI * PXOpenGLTexGenfFunction)(GLenum coord, GLenum pname, GLfloat param);
-	typedef void (PXOpenGLAPI * PXOpenGLTexGenfvFunction)(GLenum coord, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGenfFunction)(GLenum coord, GLenum pname, float param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexGenfvFunction)(GLenum coord, GLenum pname, const float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLTexGeniFunction)(GLenum coord, GLenum pname, GLint param);
 	typedef void (PXOpenGLAPI * PXOpenGLTexGenivFunction)(GLenum coord, GLenum pname, const GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLTexImage1DFunction)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
 	typedef void (PXOpenGLAPI * PXOpenGLTexImage2DFunction)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
-	typedef void (PXOpenGLAPI * PXOpenGLTexParameterfFunction)(GLenum target, GLenum pname, GLfloat param);
-	typedef void (PXOpenGLAPI * PXOpenGLTexParameterfvFunction)(GLenum target, GLenum pname, const GLfloat* params);
+	typedef void (PXOpenGLAPI * PXOpenGLTexParameterfFunction)(GLenum target, GLenum pname, float param);
+	typedef void (PXOpenGLAPI * PXOpenGLTexParameterfvFunction)(GLenum target, GLenum pname, const float* params);
 	typedef void (PXOpenGLAPI * PXOpenGLTexParameteriFunction)(GLenum target, GLenum pname, GLint param);
 	typedef void (PXOpenGLAPI * PXOpenGLTexParameterivFunction)(GLenum target, GLenum pname, const GLint* params);
 	typedef void (PXOpenGLAPI * PXOpenGLTexSubImage1DFunction)(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const GLvoid* pixels);
 	typedef void (PXOpenGLAPI * PXOpenGLTexSubImage2DFunction)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels);
 	typedef void (PXOpenGLAPI * PXOpenGLTranslatedFunction)(GLdouble x, GLdouble y, GLdouble z);
-	typedef void (PXOpenGLAPI * PXOpenGLTranslatefFunction)(GLfloat x, GLfloat y, GLfloat z);
+	typedef void (PXOpenGLAPI * PXOpenGLTranslatefFunction)(float x, float y, float z);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex2dFunction)(GLdouble x, GLdouble y);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex2dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLVertex2fFunction)(GLfloat x, GLfloat y);
-	typedef void (PXOpenGLAPI * PXOpenGLVertex2fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2fFunction)(float x, float y);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex2fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex2iFunction)(GLint x, GLint y);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex2ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex2sFunction)(GLshort x, GLshort y);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex2svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex3dFunction)(GLdouble x, GLdouble y, GLdouble z);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex3dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLVertex3fFunction)(GLfloat x, GLfloat y, GLfloat z);
-	typedef void (PXOpenGLAPI * PXOpenGLVertex3fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3fFunction)(float x, float y, float z);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex3fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex3iFunction)(GLint x, GLint y, GLint z);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex3ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex3sFunction)(GLshort x, GLshort y, GLshort z);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex3svFunction)(const GLshort* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex4dFunction)(GLdouble x, GLdouble y, GLdouble z, GLdouble w);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex4dvFunction)(const GLdouble* v);
-	typedef void (PXOpenGLAPI * PXOpenGLVertex4fFunction)(GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-	typedef void (PXOpenGLAPI * PXOpenGLVertex4fvFunction)(const GLfloat* v);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4fFunction)(float x, float y, float z, float w);
+	typedef void (PXOpenGLAPI * PXOpenGLVertex4fvFunction)(const float* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex4iFunction)(GLint x, GLint y, GLint z, GLint w);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex4ivFunction)(const GLint* v);
 	typedef void (PXOpenGLAPI * PXOpenGLVertex4sFunction)(GLshort x, GLshort y, GLshort z, GLshort w);
@@ -812,14 +805,14 @@ extern "C"
 
 	typedef void (PXOpenGLAPI* glGetBooleanvFunction)(GLenum pname, GLboolean* data);
 	typedef void (PXOpenGLAPI* glGetDoublevFunction)(GLenum pname, GLdouble* data);
-	typedef void (PXOpenGLAPI* glGetFloatvFunction)(GLenum pname, GLfloat* data);
+	typedef void (PXOpenGLAPI* glGetFloatvFunction)(GLenum pname, float* data);
 	typedef void (PXOpenGLAPI* glGetIntegervFunction)(GLenum pname, GLint* data);
-	typedef void (PXOpenGLAPI* glGetInteger64vFunction)(GLenum pname, GLint64* data);
+	typedef void (PXOpenGLAPI* glGetInteger64vFunction)(GLenum pname, PXInt64S* data);
 	typedef void (PXOpenGLAPI* glGetBooleani_vFunction)(GLenum target, GLuint index, GLboolean* data);
 	typedef void (PXOpenGLAPI* glGetIntegeri_vFunction)(GLenum target, GLuint index, GLint* data);
-	typedef void (PXOpenGLAPI* glGetFloati_vFunction)(GLenum target, GLuint index, GLfloat* data);
+	typedef void (PXOpenGLAPI* glGetFloati_vFunction)(GLenum target, GLuint index, float* data);
 	typedef void (PXOpenGLAPI* glGetDoublei_vFunction)(GLenum target, GLuint index, GLdouble* data);
-	typedef void (PXOpenGLAPI* glGetInteger64i_vFunction)(GLenum target, GLuint index, GLint64* data);
+	typedef void (PXOpenGLAPI* glGetInteger64i_vFunction)(GLenum target, GLuint index, PXInt64U* data);
 
 
 
@@ -1380,7 +1373,7 @@ extern "C"
 	PXPrivate PXInt32U PXAPI PXOpenGLRenderModeToID(const PXGraphicDrawMode pxGraphicDrawMode);
 	PXPrivate PXInt32U PXAPI PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType);
 	PXPrivate PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType);
-	PXPrivate PXInt32U PXAPI PXOpenGLTypeToID(const PXDataType pxDataType);
+	PXPrivate PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType);
 
 	PXPrivate PXActionResult PXAPI PXOpenGLErrorCurrent();
 	PXPrivate PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID);
@@ -1400,7 +1393,7 @@ extern "C"
 	PXPublic PXBool PXAPI PXOpenGLDeselect(PXOpenGL* const openGLContext);
 
 
-	PXPublic PXInt64U PXAPI PXOpenGLIntergetGet(PXOpenGL* const openGLContext, const GLenum enumID);
+	PXPublic PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const openGLContext, const GLenum enumID);
 
 	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount);
 	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
@@ -1484,27 +1477,27 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 
-	PXPublic PXActionResult PXAPI PXOpenGLShaderVariableIDFetch(PXOpenGL* const pxOpenGL, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderVariableIDFetch(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXInt32U* const shaderVariableID, const char* const name);
 
-	PXPublic void PXAPI PXOpenGLShaderVariableFx1(PXOpenGL* const openGLContext, GLint location, GLfloat v0);
-	PXPublic void PXAPI PXOpenGLShaderVariableFx1xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx1(PXOpenGL* const openGLContext, GLint location, float v0);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx1xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const float* value);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx1(PXOpenGL* const openGLContext, GLint location, GLint v0);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx1xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXAPI PXOpenGLShaderVariableFx2(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1);
-	PXPublic void PXAPI PXOpenGLShaderVariableFx2xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx2(PXOpenGL* const openGLContext, GLint location, float v0, float v1);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx2xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const float* value);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx2(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx2xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXAPI PXOpenGLShaderVariableFx3(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-	PXPublic void PXAPI PXOpenGLShaderVariableFx3xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx3(PXOpenGL* const openGLContext, GLint location, float v0, float v1, float v2);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx3xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const float* value);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx3(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx3xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXAPI PXOpenGLShaderVariableFx4(PXOpenGL* const openGLContext, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-	PXPublic void PXAPI PXOpenGLShaderVariableFx4xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx4(PXOpenGL* const openGLContext, GLint location, float v0, float v1, float v2, float v3);
+	PXPublic void PXAPI PXOpenGLShaderVariableFx4xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const float* value);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx4(PXOpenGL* const openGLContext, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
 	PXPublic void PXAPI PXOpenGLShaderVariableIx4xN(PXOpenGL* const openGLContext, GLint location, GLsizei count, const GLint* value);
-	PXPublic void PXAPI PXOpenGLShaderVariableMatrix2fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	PXPublic void PXAPI PXOpenGLShaderVariableMatrix3fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	PXPublic void PXAPI PXOpenGLShaderVariableMatrix4fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableMatrix2fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const float* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableMatrix3fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const float* value);
+	PXPublic void PXAPI PXOpenGLShaderVariableMatrix4fv(PXOpenGL* const openGLContext, GLint location, GLsizei count, GLboolean transpose, const float* value);
 	//-------------------------------------------------------------------------
 
 	//---<Buffers>-------------------------------------------------------------

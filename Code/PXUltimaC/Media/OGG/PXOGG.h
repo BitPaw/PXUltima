@@ -1,7 +1,7 @@
 #ifndef PXOGGINCLUDE
 #define PXOGGINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

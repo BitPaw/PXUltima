@@ -223,7 +223,7 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
 	pxSymbol.Scope = pSymInfo->Scope;
 	pxSymbol.Type = (PXSymbolType)pSymInfo->Tag;
 	//pxSymbol.Name;
-	PXTextConstructFromAdressA(&pxSymbol.Name, pSymInfo->Name, pSymInfo->NameLen);
+	PXTextConstructFromAdressA(&pxSymbol.Name, pSymInfo->Name, pSymInfo->NameLen, pSymInfo->NameLen);
 
 	PXFunctionInvoke(((PXSymbolDetectedEvent)UserContext), &pxSymbol);
 

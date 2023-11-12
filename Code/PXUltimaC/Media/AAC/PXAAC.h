@@ -1,7 +1,7 @@
 #ifndef PXAACINCLUDE
 #define PXAACINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"

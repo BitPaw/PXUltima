@@ -1,7 +1,7 @@
 #ifndef PX3DSINCLUDE
 #define PX3DSINCLUDE
 
-#include <Media/PXResource.h>
+#include "../PXResource.h"
 
 #ifdef __cplusplus
 extern "C"
