@@ -348,7 +348,7 @@ extern "C"
 
 
 	typedef PXActionResult(PXAPI* PXGraphicRectangleDrawFunction)(void* const graphicAPI, const float xA, const float yA, const float xB, const float yB, const char mode);
-	typedef PXActionResult(PXAPI* PXGraphicRectangleDrawTxFunction)(void* const graphicAPI, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB);
+	typedef PXActionResult(PXAPI* PXGraphicRectangleDrawTxFunction)(void* const graphicAPI, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB, const char mode);
 
 
 	typedef PXActionResult(PXAPI* PXGraphicDrawColorRGBFFunction)(void* const graphicAPI, const float red, const float green, const float blue, const float alpha);
