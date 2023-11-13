@@ -98,6 +98,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Container/RingBuffer/PXRingBuffer.h" />
+		<Unit filename="Engine/PXEngine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Engine/PXEngine.h" />
+		<Unit filename="Engine/PXLobby.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Engine/PXLobby.h" />
+		<Unit filename="Engine/PXMod.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Engine/PXMod.h" />
 		<Unit filename="Language/PXTranslator.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -130,10 +142,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Math/PXVector.h" />
-		<Unit filename="Media/3DS/PX3DS.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/3DS/PX3DS.h" />
 		<Unit filename="Media/AAC/PXAAC.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -150,6 +158,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/AVI/PXAVI.h" />
+		<Unit filename="Media/Autodesk3DS/PXAutodesk3DS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/Autodesk3DS/PXAutodesk3DS.h" />
 		<Unit filename="Media/BinaryLinux/PXBinaryLinux.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -186,6 +198,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/CSS/PXCSS.h" />
+		<Unit filename="Media/CanonRaw3/PXCanonRaw3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/CanonRaw3/PXCanonRaw3.h" />
 		<Unit filename="Media/DEFLATE/PXDEFLATE.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -214,6 +230,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/GIF/PXGIF.h" />
+		<Unit filename="Media/HEIF/PXHEIF.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/HEIF/PXHEIF.h" />
 		<Unit filename="Media/HTML/PXHTML.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -426,10 +446,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Async/PXAwait.h" />
-		<Unit filename="OS/Async/PXEvent.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="OS/Async/PXEvent.h" />
 		<Unit filename="OS/Async/PXLock.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -446,10 +462,34 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Async/PXThread.h" />
+		<Unit filename="OS/Audio/PXALSA/PXALSA.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Audio/PXALSA/PXALSA.h" />
 		<Unit filename="OS/Audio/PXAudio.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Audio/PXAudio.h" />
+		<Unit filename="OS/Audio/PXAudioMIDI/PXAudioMIDI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Audio/PXAudioMIDI/PXAudioMIDI.h" />
+		<Unit filename="OS/Audio/PXDirectSound/PXDirectSound.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Audio/PXDirectSound/PXDirectSound.h" />
+		<Unit filename="OS/Audio/PXIAudio/PXIAudio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Audio/PXIAudio/PXIAudio.h" />
+		<Unit filename="OS/Audio/PXMultiMedia/PXMultiMedia.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Audio/PXMultiMedia/PXMultiMedia.h" />
+		<Unit filename="OS/Audio/PXXAudio/PXXAudio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Audio/PXXAudio/PXXAudio.h" />
 		<Unit filename="OS/Bash/PXBash.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -550,6 +590,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Signal/PXSignal.h" />
+		<Unit filename="OS/System/PXOSVersion.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="OS/System/PXOSVersion.h" />
 		<Unit filename="OS/System/PXRegistry.c">
 			<Option compilerVar="CC" />

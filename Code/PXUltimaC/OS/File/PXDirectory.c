@@ -61,9 +61,11 @@ PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, c
 
 #if OSUnix
 
-	struct dirent* directoryEntry;
-	auto directory = opendir(directory);
-	PXBool sucess = directory != PXNull;
+	pxDirectoryIterator->ID = opendir(directoryName->TextA); // dirent.h
+
+	const PXBool success = pxDirectoryIterator->ID != PXNull;
+
+	PXActionOnErrorFetchAndReturn(!success);
 
 #elif OSWindows
 
@@ -83,12 +85,12 @@ PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, c
 
 
 
-	
+
 
 
 	pxDirectoryIterator->EntryCurrent.FullPathOffset = PXTextCopyA
 	(
-		directoryName->TextA, 
+		directoryName->TextA,
 		directoryName->SizeUsed,
 		pxDirectoryIterator->EntryCurrent.FullPath,
 		PXPathSizeMax
@@ -126,14 +128,14 @@ PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
 #elif OSWindows
 
 	const PXBool fetchSuccessful = FindNextFile(pxDirectoryIterator->ID, &pxDirectoryIterator->DirectoryEntryCurrent);
-	
+
 	if (!fetchSuccessful)
 	{
 		PXClear(PXFileElementInfo, &pxDirectoryIterator->EntryCurrent);
 
 		return PXFalse;
 	}
-	
+
 	PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->DirectoryEntryCurrent, 1);
 
 	switch (pxDirectoryIterator->EntryCurrent.Type)
@@ -200,7 +202,7 @@ PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
 			break;
 		}
 	}
-	
+
 
 	return PXTrue;
 

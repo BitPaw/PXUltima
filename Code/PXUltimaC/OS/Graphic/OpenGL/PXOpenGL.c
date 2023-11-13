@@ -1566,7 +1566,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     pxOpenGL->PXOpenGLConext = glXCreateContext(pxOpenGL->AttachedWindow->DisplayCurrent, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
-    
+
     // Check if failed
     {
         const HGLRC handle = wglCreateContext(pxOpenGL->AttachedWindow->HandleDeviceContext);
@@ -1929,9 +1929,9 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             glXGetProcAddress
 #elif OSWindows
             wglGetProcAddress
-#else 
+#else
             PXNull
-#endif 
+#endif
             ;
 
 #if OSWindows
@@ -1956,11 +1956,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
                 const PXActionResult xx = PXOpenGLErrorCurrent();
             }
-        }  
+        }
 #endif
 
         // extensions
-#define PXOverrideIfResultNotNull(target, source) { void* sF = (void*)source; if(sF) *(void**)target = sF; };
+#define PXOverrideIfResultNotNull(target, source) { void* sF = (void*)source; if(sF) *(void**)&target = sF; };
 
         PXOverrideIfResultNotNull(pxOpenGL->Accum, pxOpenGL->FunctionPointerGet("glAccum"));
         PXOverrideIfResultNotNull(pxOpenGL->AlphaFunc, pxOpenGL->FunctionPointerGet("glAlphaFunc"));
@@ -2395,7 +2395,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             pxOpenGL->DevicePhysicalListB = pxOpenGL->FunctionPointerGet("wglEnumGpuDevicesNV");
             pxOpenGL->DeviceAffinityCreate = pxOpenGL->FunctionPointerGet("wglCreateAffinityDCNV");
             pxOpenGL->DeviceAffinityList = pxOpenGL->FunctionPointerGet("wglEnumGpusFromAffinityDCNV");
-            pxOpenGL->DeviceAffinityDelete = pxOpenGL->FunctionPointerGet("wglDeleteDCNV");        
+            pxOpenGL->DeviceAffinityDelete = pxOpenGL->FunctionPointerGet("wglDeleteDCNV");
 #endif
         }
     }
@@ -2403,7 +2403,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 #if OSWindows // print extensions
 
     //-----------------------------------------------------
-    // WGL-Extensions (Wiggle OpenGL) 
+    // WGL-Extensions (Wiggle OpenGL)
     //-----------------------------------------------------
     {
         if (pxOpenGL->StringGetExtensions)
@@ -2444,7 +2444,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     }
 
     //-----------------------------------------------------
-    // General GL-Extensions 
+    // General GL-Extensions
     //-----------------------------------------------------
     {
         // extensions
@@ -2475,7 +2475,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         PXGraphicDevicePhysical pxGraphicDevicePhysical;
         PXMemoryClear(&pxGraphicDevicePhysical, sizeof(PXGraphicDevicePhysical));
 
-        PXInt32U devices = 0;        
+        PXInt32U devices = 0;
 
         PXOpenGLDevicePhysicalListAmount(pxOpenGL, &devices);
 
@@ -2736,7 +2736,7 @@ PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL* const pxOpenGL)
     {
        // pxOpenGL->Viewport(0, 0, pxWindow->Width, pxWindow->Height); // Map view to full screen
       //  pxWindow->HasSizeChanged = PXFalse; // No change needed after this change
-    }    
+    }
 
     // NOTE: Possible improvement? Using 'wglSwapLayerBuffers()'
 
@@ -2971,7 +2971,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
                 else
                 {
                     pxOpenGL->TextureBind(GL_TEXTURE_2D, PXNull);
-                    pxOpenGL->Disable(GL_TEXTURE_2D);           
+                    pxOpenGL->Disable(GL_TEXTURE_2D);
                 }
 
                 if (pxModel->IndexBuffer.ResourceID.OpenGLID == -1)
@@ -3204,8 +3204,8 @@ void APIENTRY PXOpenGLErrorMessageCallback(const GLenum source, const GLenum typ
 
     PXLogPrint
     (
-        pxLoggingType, 
-        "OpenGL", 
+        pxLoggingType,
+        "OpenGL",
         "(%s.%s)\n%s",
         sourceText,
         typeText,
@@ -4281,7 +4281,7 @@ PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture
 
     // Create image resource on GPU side
     {
-        const PXInt32U amount = 1u;        
+        const PXInt32U amount = 1u;
 
         pxOpenGL->TextureCreate(amount, &pxTexture2D->ResourceID.OpenGLID);
 
@@ -4368,10 +4368,10 @@ void PXAPI PXOpenGLTexture2DBind(PXOpenGL* const pxOpenGL, PXTexture2D* const px
     {
         pxOpenGL->TextureBind(GL_TEXTURE_2D, 0);
         pxOpenGL->IsTexture2DEnabled = PXFalse;
-        pxOpenGL->Disable(GL_TEXTURE_2D);    
+        pxOpenGL->Disable(GL_TEXTURE_2D);
         return;
     }
-    
+
     pxOpenGL->Enable(GL_TEXTURE_2D);
     pxOpenGL->IsTexture2DEnabled = PXTrue;
     pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture2D->ResourceID.OpenGLID);
@@ -4503,7 +4503,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
         pxOpenGL->DrawArrays(GL_POINTS, 0, pxSkyBox->Model.IndexBuffer.IndexDataAmount);
     }
     if (pxSkyBox->Model.IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
-    {       
+    {
         pxOpenGL->DrawElements(GL_LINE_LOOP, pxSkyBox->Model.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
@@ -4562,7 +4562,7 @@ void PXAPI PXOpenGLFrameBufferCreate(PXOpenGL* const pxOpenGL, const unsigned in
         "OpenGL",
         "Framebuffer <%i> created"
         -1
-    );  
+    );
 }
 
 void PXAPI PXOpenGLRenderBufferStorage(PXOpenGL* const pxOpenGL, const PXOpenGLRenderBufferFormat internalformat, const int width, const int height)
@@ -5292,7 +5292,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXLoggingInfo,
             "OpenGL",
             "Create VBO:<%i>, IBO:<%i>",
-            bufferIDs[0], 
+            bufferIDs[0],
             bufferIDs[1]
         );
     }
@@ -5469,13 +5469,13 @@ PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float
         case 1:
         {
             pxOpenGL->Rectf(xA, yA, xB, yB);
-            
+
             break;
         }
         case 2:
         {
             // OpenGL works in a normalizes space. Ranging from -1 to +1.
-            // [0,0] is middle of the screen, [-1,-1] lower left, [+1,+1] upper right    
+            // [0,0] is middle of the screen, [-1,-1] lower left, [+1,+1] upper right
 
             pxOpenGL->Rectf(-1 + xA, -1 + yA, 1 - xB, 1 - yB);
 

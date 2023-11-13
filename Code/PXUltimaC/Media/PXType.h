@@ -98,14 +98,14 @@ extern "C"
 //-- Reivented public / private. The keywords are reserved, so we need other names.
 #if OSUnix
 
-#define PXCDECL  
-#define PXSTDCALL 
+#define PXCDECL
+#define PXSTDCALL
 #define PXSYSCALL
-#define PXFASTCALL 
+#define PXFASTCALL
 
 #elif OSWindows
 
-#define PXCDECL _cdecl 
+#define PXCDECL _cdecl
 #define PXSTDCALL _stdcall
 #define PXSYSCALL
 #define PXAPIFASTCALL _fastcall
@@ -116,7 +116,7 @@ extern "C"
 
 #if OSUnix
 #define PXPrivate static
-#define PXPublic 
+#define PXPublic extern
 #define PXMSHandle void*
 #elif OSWindows
 #define PXDLLExport __declspec(dllexport)
@@ -166,9 +166,9 @@ extern "C"
 
 #define PXDataTypeAdressMask		0b01000000000000000000000000000000 // Used if the type is
 #define PXDataTypeEndianMask		0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
-#define PXDataTypeUseFileModeMask	0b00000000000000000000000000000000  
+#define PXDataTypeUseFileModeMask	0b00000000000000000000000000000000
 #define PXDataTypeSignedMask		0b00001000000000000000000000000000 // Only useful in numeric values
-#define PXDataTypeIgnoreIFMask		0b00000110000000000000000000000000  
+#define PXDataTypeIgnoreIFMask		0b00000110000000000000000000000000
 #define PXDataTypeShallDoIO			0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
 #define PXDataTypeBaseNumeric		0b00000000100000000000000000000000
 #define PXDataTypeBaseDecimal		0b00000000010000000000000000000000
@@ -182,8 +182,8 @@ extern "C"
 #define PXDataTypeEndianBig		(0b01 << 28)
 #define PXDataTypeEndianLittle	(0b10 << 28)
 
-#define PXDataTypeSigned PXDataTypeSignedMask 	
-#define PXDataTypeUnsigned 0 	
+#define PXDataTypeSigned PXDataTypeSignedMask
+#define PXDataTypeUnsigned 0
 
 #define PXDataTypeSize00		0
 #define PXDataTypeSize08		1
@@ -224,14 +224,14 @@ extern "C"
 #define PXDataTypeInt08U PXDataTypeSize08 | PXDataTypeIntU
 
 #define PXDataTypeInt16U PXDataTypeSize16 | PXDataTypeIntS
-#define PXDataTypeInt16SLE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianLittle 
+#define PXDataTypeInt16SLE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianLittle
 #define PXDataTypeInt16SBE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianBig
 #define PXDataTypeInt16S PXDataTypeSize16 | PXDataTypeIntU
 #define PXDataTypeInt16ULE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianLittle
 #define PXDataTypeInt16UBE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianBig
 
 #define PXDataTypeInt32U PXDataTypeSize32 | PXDataTypeIntS
-#define PXDataTypeInt32SLE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianLittle 
+#define PXDataTypeInt32SLE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianLittle
 #define PXDataTypeInt32SBE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianBig
 #define PXDataTypeInt32S PXDataTypeSize32 | PXDataTypeIntU
 #define PXDataTypeInt32ULE PXDataTypeSize32 | PXDataTypeIntU | PXDataTypeEndianLittle
@@ -383,7 +383,7 @@ PXDataType;
 #elif 0 // System is big endian
 #define OSEngianLittle 0
 #define OSEngianBig 1
-#else // 
+#else //
 #error [PXUltima] System has no defined endian state, neither little or big.
 #endif
 //-----------------------------------------------------------------------------
