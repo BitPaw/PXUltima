@@ -69,7 +69,7 @@
     <ClCompile Include="Language\PXTranslator.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Log\PXLog.c">
+    <ClCompile Include="OS\Console\PXConsole.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Math\PXCollision.c">
@@ -459,6 +459,12 @@
     <ClCompile Include="OS\Audio\PXIAudio\PXIAudio.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Container\BTree\PXBTree.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Algorithm\BubbleSort\PXBubbleSort.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -515,7 +521,7 @@
     <ClInclude Include="Language\PXTranslator.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Log\PXLog.h">
+    <ClInclude Include="OS\Console\PXConsole.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Math\PXCollision.h">
@@ -903,6 +909,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Audio\PXIAudio\PXIAudio.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Container\BTree\PXBTree.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\BubbleSort\PXBubbleSort.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,4 @@
-#ifndef PXCPPThreadInclude
-#define PXCPPThreadInclude
+#pragma once
 
 #include <OS/Async/PXThread.h>
 #include <OS/Error/PXActionResult.hpp>
@@ -21,5 +20,3 @@ namespace PX
 		void WaitForFinish();
 	};
 }
-
-#endif

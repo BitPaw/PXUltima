@@ -1,7 +1,7 @@
 #include "PXMod.h"
 
 #include <OS/File/PXDirectory.h>
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 #include <OS/Library/PXLibrary.h>
 
 PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory)

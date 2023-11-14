@@ -41,7 +41,7 @@
 #include <Media/PXText.h>
 #include <OS/Graphic/PXGraphic.h>
 #include <OS/Window/PXWindow.h>
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 
 #if OSWindows // TODO: Temp fix
 

@@ -1,5 +1,4 @@
-#ifndef PXCPPProcessorINCLUDE
-#define PXCPPProcessorINCLUDE
+#pragma once
 
 #include <OS/Hardware/PXProcessor.h>
 
@@ -16,5 +15,3 @@ namespace PX
         static PXInt32U Temperature();
 	};
 }
-
-#endif

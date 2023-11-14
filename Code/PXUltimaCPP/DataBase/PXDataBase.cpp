@@ -1,36 +1,36 @@
 #include "PXDataBase.hpp"
 
-PX::SQLDataBaseConnection::SQLDataBaseConnection()
+PX::DataBase::DataBase()
 {
-	PXDataBaseConnectionConstruct(this);
+	PXDataBaseConstruct(this);
 }
 
-PX::SQLDataBaseConnection::~SQLDataBaseConnection()
+PX::DataBase::~DataBase()
 {
-	PXDataBaseConnectionDestruct(this);
+	PXDataBaseDestruct(this);
 }
 
-void PX::SQLDataBaseConnection::Connect(const Text& source, const Text& database, const Text& user, const Text& password)
+void PX::DataBase::Connect(const Text& source, const Text& database, const Text& user, const Text& password)
 {
-	PXDataBaseConnectionConnect(this, &source, &database, &user, &password);
+	PXDataBaseConnect(this, &source, &database, &user, &password);
 }
 
-void PX::SQLDataBaseConnection::Disconnect()
+void PX::DataBase::Disconnect()
 {
-	PXDataBaseConnectionDisconnect(this);
+	PXDataBaseDisconnect(this);
 }
 
-void PX::SQLDataBaseConnection::Cleanup()
+void PX::DataBase::Cleanup()
 {
-	PXDataBaseConnectionCleanup(this);
+	PXDataBaseCleanup(this);
 }
 
-void PX::SQLDataBaseConnection::ScanForDrivers()
+void PX::DataBase::ScanForDrivers()
 {
-	PXDataBaseConnectionScanForDrivers(this);
+	PXDataBaseScanForDrivers(this);
 }
 
-void PX::SQLDataBaseConnection::Execute(const Text& sqlStatement)
+void PX::DataBase::Execute(const Text& sqlStatement)
 {
-	PXDataBaseConnectionExecute(this, &sqlStatement);
+	PXDataBaseCommandExecute(this, &sqlStatement);
 }

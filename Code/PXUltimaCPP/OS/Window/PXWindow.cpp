@@ -15,9 +15,9 @@ float PX::Window::ScreenRatio()
 	return PXWindowScreenRatio(this);
 }
 
-void PX::Window::Create(const PXInt32S width, const PXInt32S height, const Text& const title, const bool async)
+void PX::Window::Create(const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const Text& const title, const bool async)
 {
-	PXWindowCreate(this, width, height, &title, async);
+	PXWindowCreate(this, x, y, width, height, &title, async);
 }
 
 void PX::Window::CreateHidden(const PXInt32S width, const PXInt32S height, const bool async)

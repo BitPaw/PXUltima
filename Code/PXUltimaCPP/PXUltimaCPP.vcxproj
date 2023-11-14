@@ -20,54 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataBase\PXDataBase.hpp" />
-    <ClInclude Include="Media\3DS\PX3DS.hpp" />
-    <ClInclude Include="Media\AAC\PXAAC.hpp" />
-    <ClInclude Include="Media\ADAM7\PXADAM7.hpp" />
-    <ClInclude Include="Media\ADLER\PXAdler32.hpp" />
-    <ClInclude Include="Media\AVI\PXAVI.hpp" />
-    <ClInclude Include="Media\Bitmap\PXBitmap.hpp" />
-    <ClInclude Include="Media\CPP\PXCPP.hpp" />
-    <ClInclude Include="Media\CRC32\PXCRC32.hpp" />
-    <ClInclude Include="Media\CSS\CSS.hpp" />
-    <ClInclude Include="Media\CS\PXCS.hpp" />
-    <ClInclude Include="Media\C\PXC.hpp" />
-    <ClInclude Include="Media\DEFLATE\PXDEFLATE.hpp" />
-    <ClInclude Include="Media\DLL\PXDLL.hpp" />
-    <ClInclude Include="Media\ELF\PXELF.hpp" />
-    <ClInclude Include="Media\Email\PXEmail.hpp" />
-    <ClInclude Include="Media\EXE\PXEXE.hpp" />
-    <ClInclude Include="Media\FilmBox\PXFilmBox.hpp" />
-    <ClInclude Include="Media\FLAC\PXFLAC.hpp" />
-    <ClInclude Include="Media\FMT\PXFMT.hpp" />
-    <ClInclude Include="Media\FTP\PXFTP.hpp" />
-    <ClInclude Include="Media\GIF\PXGIF.hpp" />
-    <ClInclude Include="Media\HTML\PXHTML.hpp" />
-    <ClInclude Include="Media\HTTP\PXHTTP.hpp" />
-    <ClInclude Include="Media\Huffman\PXHuffman.hpp" />
-    <ClInclude Include="Media\ID3\PXID3.hpp" />
-    <ClInclude Include="Media\INI\PXINI.hpp" />
-    <ClInclude Include="Media\IP\PXIP.hpp" />
-    <ClInclude Include="Media\ISBN\PXISBN.hpp" />
-    <ClInclude Include="Media\JPEG\PXJPEG.hpp" />
-    <ClInclude Include="Media\JSON\PXJSON.hpp" />
-    <ClInclude Include="Media\LAME\PXLAME.hpp" />
-    <ClInclude Include="Media\LZ77\PXLZ77.hpp" />
-    <ClInclude Include="Media\M4A\PXM4A.hpp" />
-    <ClInclude Include="Media\MD5\PXMD5.hpp" />
-    <ClInclude Include="Media\MIDI\PXMIDI.hpp" />
-    <ClInclude Include="Media\MP3\PXMP3.hpp" />
-    <ClInclude Include="Media\MP4\PXMP4.hpp" />
-    <ClInclude Include="Media\MSI\PXMSI.hpp" />
-    <ClInclude Include="Media\MTL\PXMTL.hpp" />
-    <ClInclude Include="Media\OGG\PXOGG.hpp" />
-    <ClInclude Include="Media\PDF\PXPDF.hpp" />
-    <ClInclude Include="Media\PHP\PXPHP.hpp" />
-    <ClInclude Include="Media\PLY\PXPLY.hpp" />
     <ClInclude Include="Media\PXColor.hpp" />
     <ClInclude Include="OS\Async\PXProcess.hpp" />
     <ClInclude Include="OS\Async\PXProgram.hpp" />
     <ClInclude Include="Media\PXResource.hpp" />
-    <ClInclude Include="OS\Graphic\PXGraphic.hpp" />
+    <ClInclude Include="OS\Console\PXConsole.hpp" />
     <ClInclude Include="Service\FTP\PXFTPServer.hpp" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.hpp" />
     <ClInclude Include="Service\FTP\PXFTPClient.hpp" />
@@ -76,44 +33,15 @@
     <ClInclude Include="Math\PXMath.hpp" />
     <ClInclude Include="Math\PXMatrix.hpp" />
     <ClInclude Include="Math\PXVector.hpp" />
-    <ClInclude Include="Media\PNG\PXPNG.hpp" />
-    <ClInclude Include="Media\PXFont.hpp" />
     <ClInclude Include="Media\PXImage.hpp" />
-    <ClInclude Include="Media\PXSound.hpp" />
     <ClInclude Include="Media\PXText.hpp" />
-    <ClInclude Include="Media\QOI\PXQOI.hpp" />
-    <ClInclude Include="Media\RIFF\PXRIFF.hpp" />
-    <ClInclude Include="Media\RSA\PXRSA.hpp" />
-    <ClInclude Include="Media\SHA\PXSHA.hpp" />
-    <ClInclude Include="Media\SpriteFont\PXSpriteFont.hpp" />
-    <ClInclude Include="Media\STEP\PXSTEP.hpp" />
-    <ClInclude Include="Media\STL\PXSTL.hpp" />
-    <ClInclude Include="Media\SVG\PXSVG.hpp" />
-    <ClInclude Include="Media\TGA\PXTGA.hpp" />
-    <ClInclude Include="Media\TIFF\PXTIFF.hpp" />
-    <ClInclude Include="Media\TTF\PXTTF.hpp" />
-    <ClInclude Include="Media\UUID\PXUUID.hpp" />
-    <ClInclude Include="Media\VRML\PXVRML.hpp" />
-    <ClInclude Include="Media\Wavefront\PXWavefront.hpp" />
-    <ClInclude Include="Media\WAV\PXWAV.hpp" />
-    <ClInclude Include="Media\WEBM\PXWEBM.hpp" />
-    <ClInclude Include="Media\WEBP\PXWEBP.hpp" />
-    <ClInclude Include="Media\WMA\PXWMA.hpp" />
-    <ClInclude Include="Media\XingInfo\PXXingInfo.hpp" />
-    <ClInclude Include="Media\XML\PXXML.hpp" />
-    <ClInclude Include="Media\YAML\PXYAML.hpp" />
-    <ClInclude Include="Media\ZLIB\PXZLIB.hpp" />
     <ClInclude Include="OS\Async\PXLock.hpp" />
     <ClInclude Include="OS\Async\PXThread.hpp" />
-    <ClInclude Include="OS\Audio\PXAudio.hpp" />
     <ClInclude Include="OS\ClipBoard\PXClipBoard.hpp" />
     <ClInclude Include="OS\Debug\PXDebug.hpp" />
     <ClInclude Include="OS\Error\PXActionResult.hpp" />
     <ClInclude Include="OS\File\PXDirectory.hpp" />
     <ClInclude Include="OS\File\PXFile.hpp" />
-    <ClInclude Include="OS\Graphic\DirectX\PXDirectX.hpp" />
-    <ClInclude Include="OS\Graphic\OpenGL\PXOpenGL.hpp" />
-    <ClInclude Include="OS\Graphic\Vulcan\PXVulcan.hpp" />
     <ClInclude Include="OS\Hardware\PXController.hpp" />
     <ClInclude Include="OS\Hardware\PXHardDrive.hpp" />
     <ClInclude Include="OS\Hardware\PXKeyBoard.hpp" />
@@ -132,54 +60,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataBase\PXDataBase.cpp" />
-    <ClCompile Include="Media\3DS\PX3DS.cpp" />
-    <ClCompile Include="Media\AAC\PXAAC.cpp" />
-    <ClCompile Include="Media\ADAM7\PXADAM7.cpp" />
-    <ClCompile Include="Media\ADLER\PXAdler32.cpp" />
-    <ClCompile Include="Media\AVI\PXAVI.cpp" />
-    <ClCompile Include="Media\Bitmap\PXBitmap.cpp" />
-    <ClCompile Include="Media\CPP\PXCPP.cpp" />
-    <ClCompile Include="Media\CRC32\PXCRC32.cpp" />
-    <ClCompile Include="Media\CSS\CSS.cpp" />
-    <ClCompile Include="Media\CS\PXCS.cpp" />
-    <ClCompile Include="Media\C\PXC.cpp" />
-    <ClCompile Include="Media\DEFLATE\PXDEFLATE.cpp" />
-    <ClCompile Include="Media\DLL\PXDLL.cpp" />
-    <ClCompile Include="Media\ELF\PXELF.cpp" />
-    <ClCompile Include="Media\Email\PXEmail.cpp" />
-    <ClCompile Include="Media\EXE\PXEXE.cpp" />
-    <ClCompile Include="Media\FilmBox\PXFilmBox.cpp" />
-    <ClCompile Include="Media\FLAC\PXFLAC.cpp" />
-    <ClCompile Include="Media\FMT\PXFMT.cpp" />
-    <ClCompile Include="Media\FTP\PXFTP.cpp" />
-    <ClCompile Include="Media\GIF\PXGIF.cpp" />
-    <ClCompile Include="Media\HTML\PXHTML.cpp" />
-    <ClCompile Include="Media\HTTP\PXHTTP.cpp" />
-    <ClCompile Include="Media\Huffman\PXHuffman.cpp" />
-    <ClCompile Include="Media\ID3\PXID3.cpp" />
-    <ClCompile Include="Media\INI\PXINI.cpp" />
-    <ClCompile Include="Media\IP\PXIP.cpp" />
-    <ClCompile Include="Media\ISBN\PXISBN.cpp" />
-    <ClCompile Include="Media\JPEG\PXJPEG.cpp" />
-    <ClCompile Include="Media\JSON\PXJSON.cpp" />
-    <ClCompile Include="Media\LAME\PXLAME.cpp" />
-    <ClCompile Include="Media\LZ77\PXLZ77.cpp" />
-    <ClCompile Include="Media\M4A\PXM4A.cpp" />
-    <ClCompile Include="Media\MD5\PXMD5.cpp" />
-    <ClCompile Include="Media\MIDI\PXMIDI.cpp" />
-    <ClCompile Include="Media\MP3\PXMP3.cpp" />
-    <ClCompile Include="Media\MP4\PXMP4.cpp" />
-    <ClCompile Include="Media\MSI\PXMSI.cpp" />
-    <ClCompile Include="Media\MTL\PXMTL.cpp" />
-    <ClCompile Include="Media\OGG\PXOGG.cpp" />
-    <ClCompile Include="Media\PDF\PXPDF.cpp" />
-    <ClCompile Include="Media\PHP\PXPHP.cpp" />
-    <ClCompile Include="Media\PLY\PXPLY.cpp" />
     <ClCompile Include="Media\PXColor.cpp" />
     <ClCompile Include="OS\Async\PXProcess.cpp" />
     <ClCompile Include="OS\Async\PXProgram.cpp" />
     <ClCompile Include="Media\PXResource.cpp" />
-    <ClCompile Include="OS\Graphic\PXGraphic.cpp" />
+    <ClCompile Include="OS\Console\PXConsole.cpp" />
     <ClCompile Include="Service\FTP\PXFTPServer.cpp" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.cpp" />
     <ClCompile Include="Service\FTP\PXFTPClient.cpp" />
@@ -188,44 +73,15 @@
     <ClCompile Include="Math\PXMath.cpp" />
     <ClCompile Include="Math\PXMatrix.cpp" />
     <ClCompile Include="Math\PXVector.cpp" />
-    <ClCompile Include="Media\PNG\PXPNG.cpp" />
-    <ClCompile Include="Media\PXFont.cpp" />
     <ClCompile Include="Media\PXImage.cpp" />
-    <ClCompile Include="Media\PXSound.cpp" />
     <ClCompile Include="Media\PXText.cpp" />
-    <ClCompile Include="Media\QOI\PXQOI.cpp" />
-    <ClCompile Include="Media\RIFF\PXRIFF.cpp" />
-    <ClCompile Include="Media\RSA\PXRSA.cpp" />
-    <ClCompile Include="Media\SHA\PXSHA.cpp" />
-    <ClCompile Include="Media\SpriteFont\PXSpriteFont.cpp" />
-    <ClCompile Include="Media\STEP\PXSTEP.cpp" />
-    <ClCompile Include="Media\STL\PXSTL.cpp" />
-    <ClCompile Include="Media\SVG\PXSVG.cpp" />
-    <ClCompile Include="Media\TGA\PXTGA.cpp" />
-    <ClCompile Include="Media\TIFF\PXTIFF.cpp" />
-    <ClCompile Include="Media\TTF\PXTTF.cpp" />
-    <ClCompile Include="Media\UUID\PXUUID.cpp" />
-    <ClCompile Include="Media\VRML\PXVRML.cpp" />
-    <ClCompile Include="Media\Wavefront\PXWavefront.cpp" />
-    <ClCompile Include="Media\WAV\PXWAV.cpp" />
-    <ClCompile Include="Media\WEBM\PXWEBM.cpp" />
-    <ClCompile Include="Media\WEBP\PXWEBP.cpp" />
-    <ClCompile Include="Media\WMA\PXWMA.cpp" />
-    <ClCompile Include="Media\XingInfo\PXXingInfo.cpp" />
-    <ClCompile Include="Media\XML\PXXML.cpp" />
-    <ClCompile Include="Media\YAML\PXYAML.cpp" />
-    <ClCompile Include="Media\ZLIB\PXZLIB.cpp" />
     <ClCompile Include="OS\Async\PXLock.cpp" />
     <ClCompile Include="OS\Async\PXThread.cpp" />
-    <ClCompile Include="OS\Audio\PXAudio.cpp" />
     <ClCompile Include="OS\ClipBoard\PXClipBoard.cpp" />
     <ClCompile Include="OS\Debug\PXDebug.cpp" />
     <ClCompile Include="OS\Error\PXActionResult.cpp" />
     <ClCompile Include="OS\File\PXDirectory.cpp" />
     <ClCompile Include="OS\File\PXFile.cpp" />
-    <ClCompile Include="OS\Graphic\DirectX\PXDirectX.cpp" />
-    <ClCompile Include="OS\Graphic\OpenGL\PXOpenGL.cpp" />
-    <ClCompile Include="OS\Graphic\Vulcan\PXVulcan.cpp" />
     <ClCompile Include="OS\Hardware\PXController.cpp" />
     <ClCompile Include="OS\Hardware\PXHardDrive.cpp" />
     <ClCompile Include="OS\Hardware\PXKeyBoard.cpp" />
@@ -329,6 +185,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -348,6 +205,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -367,6 +225,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -386,6 +245,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

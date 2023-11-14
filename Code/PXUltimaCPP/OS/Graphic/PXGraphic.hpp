@@ -58,7 +58,7 @@ namespace PX
 		PXDLLExport PX::ActionResult PXAPI Instantiate( InitializeInfo* const pxGraphicInitializeInfo);
 		PXDLLExport PX::ActionResult PXAPI Release();
 
-		PXDLLExport void PXAPI HotSwap( const System pxGraphicSystem);
+		PXDLLExport void PXAPI HotSwap( const PX::GraphicSystem pxGraphicSystem);
 
 		PXDLLExport void PXAPI ResourceRegister( ResourceInfo* const pxGraphicResourceInfo);
 		//-------------------------------------

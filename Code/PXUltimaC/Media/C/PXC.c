@@ -3,7 +3,7 @@
 #include <Compiler/PXCompiler.h>
 #include <Media/PXText.h>
 
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 
 #define PXCDebugOutput 0
 

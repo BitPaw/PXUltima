@@ -255,7 +255,16 @@ extern "C"
 	// This function is not like memcmp that returns -1, 0, and 1!
 	PXPublic PXBool PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
 
+
+
+
 //---------------------------------------------------------
+
+
+
+	PXPublic PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferSize);
+	PXPublic PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, const PXSize size);
+
 
 
 #ifdef __cplusplus

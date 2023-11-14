@@ -1,6 +1,6 @@
 #include "PXResource.h"
 
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 #include <OS/Time/PXStopWatch.h>
 
 #include "Autodesk3DS/PXAutodesk3DS.h"

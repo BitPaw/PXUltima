@@ -1,7 +1,6 @@
-#ifndef PXCPPDataBaseINLCUDE
-#define PXCPPDataBaseINLCUDE
+#pragma once
 
-#include <DataBase/PXDataBase.h>
+#include <OS/DataBase/PXDataBase.h>
 #include "../Media/PXText.hpp"
 
 namespace PX
@@ -35,11 +34,11 @@ namespace PX
 		TYPE_TIMESTAMP
 	};
 
-	class SQLDataBaseConnection : public PXSQLDataBaseConnection
+	class DataBase : public PXDataBase
 	{
 		public:
-		SQLDataBaseConnection();
-		~SQLDataBaseConnection();
+		DataBase();
+		~DataBase();
 
 		void Connect
 		(
@@ -56,5 +55,3 @@ namespace PX
 		void Execute(const PX::Text& sqlStatement);
 	};
 }
-
-#endif

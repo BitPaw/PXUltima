@@ -1,5 +1,4 @@
-#ifndef PXCPPFileINCLUDE
-#define PXCPPFileINCLUDE
+#pragma once
 
 #include <OS/File/PXFile.h>
 #include <Media/PXText.hpp>
@@ -218,5 +217,3 @@ namespace PX
 
 	};
 }
-
-#endif

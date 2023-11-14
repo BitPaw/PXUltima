@@ -1,5 +1,4 @@
-#ifndef PXCPPLockInclude
-#define PXCPPLockInclude
+#pragma once
 
 #include <OS/Async/PXLock.h>
 #include <OS/Error/PXActionResult.hpp>
@@ -27,4 +26,3 @@ namespace PX
 		PX::ActionResult Release();
 	};
 }
-#endif

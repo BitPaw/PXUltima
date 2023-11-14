@@ -1,5 +1,4 @@
-#ifndef PXCPPRegistryINCLUDE
-#define PXCPPRegistryINCLUDE
+#pragma once
 
 #include <OS/System/PXRegistry.h>
 #include <OS/Error/PXActionResult.hpp>
@@ -32,5 +31,3 @@ namespace PX
 		PXDLLExport void KeyDelete();
 	};
 }
-
-#endif

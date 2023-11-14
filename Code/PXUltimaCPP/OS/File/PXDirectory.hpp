@@ -1,5 +1,4 @@
-#ifndef PXCPPDirectoryINCLUDE
-#define PXCPPDirectoryINCLUDE
+#pragma once
 
 #include <OS/File/PXDirectory.h>
 #include <OS/Error/PXActionResult.hpp>
@@ -7,7 +6,7 @@
 
 namespace PX
 {
-	typedef enum FileElementInfoType_
+	enum class FileElementInfoType
 	{
 		Invalid,
 		Unkown, // DT_UNKNOWN
@@ -41,4 +40,3 @@ namespace PX
 		PX::ActionResult Close();
 	};
 }
-#endif

@@ -1,18 +1,18 @@
 #include "PXProgram.hpp"
 
-PXActionResult PX::Program::ExecuteAS(const char* programPath, const char* parameterString, PXProgramExecutedEvent* callback)
+PX::ActionResult PX::Program::ExecuteAS(const char* programPath, const char* parameterString, PXProgramExecutedEvent* callback)
 {
-    return PXActionNotImplemented;
+    return PX::ActionResult::RefusedNotImplemented;
 }
 
-PXActionResult PX::Program::ExecuteAL(const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent* callback)
+PX::ActionResult PX::Program::ExecuteAL(const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent* callback)
 {
-    return PXActionNotImplemented;
+    return PX::ActionResult::RefusedNotImplemented;
 }
 
-PXActionResult PX::Program::ExecuteWS(const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback)
+PX::ActionResult PX::Program::ExecuteWS(const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback)
 {
-    return PXActionNotImplemented;
+    return PX::ActionResult::RefusedNotImplemented;
 }
 
 ProcessHandle PX::Program::CurrentProcess()

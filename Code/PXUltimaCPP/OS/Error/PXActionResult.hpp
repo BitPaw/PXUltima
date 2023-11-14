@@ -1,7 +1,6 @@
-#ifndef PXCPPActionResultInclude
-#define PXCPPActionResultInclude
+#pragma once
 
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXType.h>
 
 namespace PX
 {
@@ -11,25 +10,167 @@ namespace PX
 	enum class ActionResult
 	{
 		//---<General>-----------------------
-		Invalid, // Default iniitlialisation value, no not use.
-		Successful, //  finished successful
-		FailedAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
-		DeniedNoPermission,
+		Invalid, // Default iniitlialisation value, do not use.
+		Successful, // Action finished successful
+		SuccessWithSubstitution,
+		DidNothing, // if the function did nothing
+		FailedUnkownError, // [OTHER] Undefined error
 		//-----------------------------------
 
-		NotImplemented,
-		NotSupportedByLibrary,
-		NotSupportedByOperatingSystem,
+		CanceledLoopDeteced, // LOOP
 
-		RefuedParameterNull, // Some needed Parameter is null
+		//-------------------------------------------------------
+		// Memory 
+		//-------------------------------------------------------
+		FailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
+		FailedMemoryRelease,
 
+		FailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord 
+		RefuedBufferSizeTooSmal,
 
 		RefuedInputBufferNull, // is NULL
 		RefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
 		RefuedInputBufferTooSmal, // cant 
+		RefuedInputBufferTooBig,
 
 		RefuedOutputBufferNull, // is NULL 
 		RefuedOutputBufferTooSmal, // 
+
+		//-------------------------------------------------------
+		// Object
+		//-------------------------------------------------------
+		RefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
+		RefuedObjectIDInvalid, // Use if you have an invalid ID or HANDLE
+		RefuedObjectStateDoesNotAllowAction,
+		RefuedObjectInterfaceNotAvailable,
+		RefuedObjectNotInizialized,
+		RefuedObjectAlreadyInizialized,
+		RefuedObjectAlreadyExists,
+		RefuedObjectTypeInvalid,
+		RefuedObjectTypeNotSupported,
+		RefuedObjectAggregationNotSupported,
+		RefuedObjectPropertyNotAvailable,
+
+		//-------------------------------------------------------
+		// Permission
+		//-------------------------------------------------------
+		DeniedNoPermission, // [ACCES] You do not have permission to use this command.
+		DeniedPriorityTooLow,
+		YieldToOtherProcessWithHigherPriority,
+		//Denied
+
+		//-------------------------------------------------------
+		// File I/O 
+		//-------------------------------------------------------
+		FailedFileNameTooLong, // NAMETOOLONG
+		RefusedTargetIsDirectory, // ISDIR
+		FailedFileDescriptorValueTooLarge, // MFILE
+		FailedTooManyLinks, // MLINK
+		RefusedFileAlreadyExists, // EXIST
+		FailedFileTooLarge, // FBIG
+		RefusedInvalidSeek, // SPIPE
+		FailedTooManyFilesOpenInSystem, // NFILE
+		RefusedNotADirectory, // NOTDIR
+		RefusedDirectoryNotEmpty, // NOTEMPTY
+
+		//-------------------------------------------------------
+		// Network 
+		//-------------------------------------------------------
+		RefusedAlreadyConnected, // [ISCONN]
+		RefusedNetworkIsDown, // [NETDOWN]
+		FailedConnectionAbortedByNetwork, // [NETRESET]
+		FailedNetworkUnreachable, // [NETUNREACH]
+		RefusedNotASocket, // [NOTSOCK]
+		FailedConnectionTimedOut, // [TIMEDOUT]
+		FailedNotConnected, // [NOTCONN]
+
+		//-------------------------------------------------------
+		// Audio/Video
+		//-------------------------------------------------------
+		RefusedEffectNotAvailable,
+
+
+		//-------------------------------------------------------
+		// Functions
+		//-------------------------------------------------------
+		RefusedArgumentNull, // Some needed Parameter is null
+		RefusedArgumentInvalid, // [INVAL]	
+
+		//-------------------------------------------------------
+		// Library
+		//-------------------------------------------------------
+		RefusedNotSupported, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
+		RefusedNotImplemented, // Function that exists but does not contain any code
+		NotSupportedByLibrary, // 
+		LibraryNotFound,
+		NotSupportedByOperatingSystem,
+
+		RefusedLibraryRequiredUpgrade,
+
+
+		RefusedMissingCallBack, // Callback is required but missing
+
+		FailedInitialization, // Re
+		RedundantAlreadyInitialized,
+		FailedCleanup,
+		FailedModuleLoad,
+		FailedDataFetch,
+
+		InterruptedByEvent,
+		InterruptedByFunctionCall,
+
+
+
+		RefuedPermissionDenied,
+		FailedResourcedNotEnough,
+
+		WouldBlock,
+		NowInProgress,
+		AlreadyInProgress,
+
+
+		RefusedInvalidOperationSpecified,
+		FailedStackOverflow,
+		FailedStackUnderflow,
+
+
+		RefuedNetworkNotConnected,
+		RefuedNetworkNotReachable,
+		FailedHostNotFound,
+
+		RefuedServiceNotRunning,
+
+		xxxxxxxxxxxx,
+
+		RefuedAlreadyInUse,
+
+		RefuedProtocolTypeInvalid,
+		RefuedProtocolOptionInvalid,
+		RefuedProtocolNotSupported,
+		RefuedProtocolFamilyNotSupported,
+
+		RefuedAddressFamilyNotSupportedByProtocol,
+
+
+
+
+		RefuedOperationNotSupported,
+
+		Cancelled,
+
+		//---<Function input>---
+		RefuedAdressInvalid, // System detected an invalid pointer
+
+
+
+
+
+		RefuedTextFormatUnsupported,
+
+
+		RefuedInputInvalid,
+
+
 
 
 		InvalidStateImpossible, // Is an object is used and has data that should not be possible
@@ -38,6 +179,25 @@ namespace PX
 		FailedElementNotFound,
 
 		InvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
+
+
+
+
+
+		RefuedDriverInvalid,
+		RefuedDriverMissing,
+
+
+		RefuedFormatIllegal,
+		RefuedFormatNotSupported,
+
+
+
+
+
+
+
+
 
 
 
@@ -104,6 +264,16 @@ namespace PX
 		RequestedServiceNotAvailableForSocket,
 
 
+		//---<Service>-----------------------
+		NoResposeCountNotConnect,
+		FailedConnectionFailure,
+		RefusedNotConnected, // Trying to use a command that requires an already established connection.
+		FailedSettingsInvalid,
+		FailedCommandDeploy, // Failure to awns from source to target
+		FailedCommandExecute, // Faiure to execute on target
+		FailedCommandRetrieve, // Failure to retrieve result from target
+		//-----------------------------------
+
 		//---<Server>------------------------
 		NoPXClientWithThisID,
 		//-----------------------------------
@@ -117,18 +287,94 @@ namespace PX
 		VersionNotSupported,
 		BlockedByOtherOperation,
 		LimitReached,
-		InvalidParameter,
 		SubSystemNotInitialised,
 		SubSystemNetworkFailed,
 		SocketIsBlocking,
 
+
+		FailedDirectoryIsNotEmpty,
+
+		FailedTooManyProcesses,
+
+		FailedUserQuotaExceeded,
+		FailedDiskQuotaExceeded,
+
+		FailedHandleIsStale,
+
+		FailedResourceNotAvailableLocally,
+
+		FailedNetworkSubsystemNotReady,
+
+		RefusedResourceIsShuttingdown,
+
+		WindowsSocketVersionNotSupported,
 		WindowsSocketSystemNotInitialized,
-		//----------------------------------------
+		WindowsSocketSystemWasShutdown,
+		//-------------------------------------------------
+
+		//---<Audio>---------------------------------------
+		AudioResultDeviceIDInvalid,
+		AudioResultDeviceHandleInvalid,
+		AudioResultDeviceNoDriver,
+
+		AudioResultDriverNotReachable, // Maybe diabled, or deactivated
+		AudioResultDriverNotEnabled, // No driver to use
+
+
+		AudioResultDeviceAlreadyAllocated,
+
+
+		AudioResultErrorValueInvalid,
+
+
+		AudioResultFlagInvalid,
+
+		AudioResultDeviceHandleBusy,
+
+		AudioResultAliasNotFound,
+
+
+
+		AudioResultPXRegistryValueNotFound,
+
+		AudioResultDriverNoCallback,
+
+		AudioResultMoreData,
+
+
+		// Custom
+		AudioResultDeviceListNotBigEnough,
+
+
+		// Windows spesific
+		AudioResultPXRegistryDatabaseInvalid,
+		AudioResultPXRegistryKeyNotFound,
+		AudioResultPXRegistryWriteError,
+		AudioResultPXRegistryReadError,
+		AudioResultPXRegistryDeleteError,
+
+		AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
+
+
+
+		// only
+
+		AudioResultDeviceIsStillPlaying,
+		AudioResultReaderIsNotPrepared,
+		AudioResultDeviceIsSynchronous,
+		//-------------------------------------------------
+
+		FailedConnectionTerminatedByNetwork,
+		FailedConnectionTerminatedByOwnSoftware,
+		FailedConnectionTerminatedByPeer,
+
+		FailedMemoryAllocationInternal,
+
 
 		// POSIX Error codes, these are pre-defined
-		UnkownError, // OTHER
 
-		PermissionDenied, // ACCES
+
+
 		AddressInUse, // ADDRINUSE
 		AddressNotAvailable, // ADDRNOTAVAIL
 		AddressFamilyNotSupported, // AFNOSUPPORT
@@ -137,7 +383,7 @@ namespace PX
 		ArgumentListTooLong, // 2BIG
 		BadFileDescriptor, // BADF
 		BadMessage, // BADMSG
-		DeviceOrResourceBusy, // BUSY
+		RefusedResourceBusy, // BUSY
 		OperationCanceled,// CANCELED
 		NoChildProcesses, // CHILD
 		ConnectionAborted, // CONNABORTED
@@ -146,27 +392,29 @@ namespace PX
 		ResourceDeadlockWouldOccur, // DEADLK
 		DestinationAddressRequired, // DESTADDRREQ
 		PXMathematicsArgumentOutOfDomainOfFunction, // DOM
-		FileExists, // EXIST
+
+
 		BadAddress, // FAULT
-		FileTooLarge, // FBIG
+
 		HostIsUnreachable, // HOSTUNREACH
 		IdentifierRemoved, // IDRM
 		IllegalByteSequence, // ILSEQ
 		OperationInProgress, // INPROGRESS
 		InterruptedFunction, // INTR
-		InvalidArgument, // INVAL
+
 		IOFailure, // IO
-		SocketIsConnected, // ISCONN
-		IsADirectory, // ISDIR
-		TooManyLevelsOfSymbolicLinks, // LOOP
-		FileDescriptorValueTooLarge, // MFILE
-		TooManyLinks, // MLINK
+
+
+
+
+
+
+
+
 		MessageTooLarge, // MSGSIZE
-		FilenameTooLong, // NAMETOOLONG
-		NetworkIsDown, // NETDOWN
-		ConnectionAbortedByNetwork, // NETRESET
-		NetworkUnreachable, // NETUNREACH
-		TooManyFilesOpenInSystem, // NFILE
+
+
+
 		NoBufferSpaceAvailable, // NOBUFS
 		NoMessageIsAvailableOnTheStreamHeadReadQueue, // NODATA
 		NoSuchDevice, // NODEV
@@ -180,12 +428,13 @@ namespace PX
 		NoStreamResources, // NOSR
 		NotAStream, // NOSTR
 		FunctionNotSupported, // NOSYS
-		TheSocketIsNotConnected, // NOTCONN
-		NotADirectory, // NOTDIR
-		DirectoryNotEmpty, // NOTEMPTY
+
+
 		StateNotRecoverable, // NOTRECOVERABLE
-		NotASocket, // NOTSOCK
-		NotSupported, // NOTSUP
+
+
+
+
 		InappropriateIOControlOperation, // NOTTY
 		NoSuchDeviceOrAddress, // NXIO
 		OperationNotSupportedOnSocket, // OPNOTSUPP
@@ -198,10 +447,10 @@ namespace PX
 		ProtocolWrongTypeForSocket, // PROTOTYPE
 		ResultTooLarge, // RANGE,
 		ReadOnlyFileSystem, //ROFS
-		InvalidSeek, // SPIPE
+
 		NoSuchProcess, // SRCH
 		StreamTimeout, // TIME -> ioctl()
-		ConnectionTimedOut, // TIMEDOUT
+
 		TextFileBusy, // TXTBSY
 		OperationWouldBlock, // WOULDBLOCK
 		CrossDeviceLink // XDEV
@@ -209,5 +458,3 @@ namespace PX
 
 	PXDLLExport PX::ActionResult ErrorCurrent();
 }
-
-#endif

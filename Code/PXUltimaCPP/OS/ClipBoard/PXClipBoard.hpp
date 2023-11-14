@@ -1,5 +1,4 @@
-#ifndef PXCPPClipBoardINCLUDE
-#define PXCPPClipBoardINCLUDE
+#pragma once
 
 #include <OS/ClipBoard/PXClipBoard.h>
 #include <OS/Error/PXActionResult.hpp>
@@ -8,34 +7,34 @@ namespace PX
 {
 	enum class ClipBoardFormat
 	{
-		ClipBoardFormatInvalid,
-		ClipBoardFormatText,
-		ClipBoardFormatBITMAP,
-		ClipBoardFormatMETAFILEPICT,
-		ClipBoardFormatSYLK,
-		ClipBoardFormatDIF,
-		ClipBoardFormatPXTIFF,
-		ClipBoardFormatOEMTEXT,
-		ClipBoardFormatDIB,
-		ClipBoardFormatPALETTE,
-		ClipBoardFormatPENDATA,
-		ClipBoardFormatPXRIFF,
-		ClipBoardFormatWAVE,
-		ClipBoardFormatUNICODETEXT,
-		ClipBoardFormatENHMETAFILE,
+		Invalid,
+		Text,
+		BITMAP,
+		METAFILEPICT,
+		SYLK,
+		DIF,
+		PXTIFF,
+		OEMTEXT,
+		DIB,
+		PALETTE,
+		PENDATA,
+		PXRIFF,
+		WAVE,
+		UNICODETEXT,
+		ENHMETAFILE,
 		ClipBoardForPXMathDROP,
-		ClipBoardFormatLOCALE,
-		ClipBoardFormatDIBV5,
-		ClipBoardFormatMAX,
-		ClipBoardFormatOWNERDISPLAY,
-		ClipBoardFormatDSPTEXT,
-		ClipBoardFormatDSPBITMAP,
-		ClipBoardFormatDSPMETAFILEPICT,
-		ClipBoardFormatDSPENHMETAFILE,
-		ClipBoardFormatPRIVATEFIRST,
-		ClipBoardFormatPRIVATELAST,
-		ClipBoardFormatGDIOBJFIRST,
-		ClipBoardFormatGDIOBJLAST,
+		LOCALE,
+		DIBV5,
+		MAX,
+		OWNERDISPLAY,
+		DSPTEXT,
+		DSPBITMAP,
+		DSPMETAFILEPICT,
+		DSPENHMETAFILE,
+		PRIVATEFIRST,
+		PRIVATELAST,
+		GDIOBJFIRST,
+		GDIOBJLAST,
 	};
 
 	class ClipBoard : public PXClipBoard
@@ -47,5 +46,3 @@ namespace PX
 		PX::ActionResult Clear();
 	};
 }
-
-#endif

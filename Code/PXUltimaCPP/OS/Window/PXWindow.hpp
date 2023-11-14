@@ -1,5 +1,4 @@
-#ifndef PXCPPWindowINCLUDE
-#define PXCPPWindowINCLUDE
+#pragma once
 
 #include <OS/Window/PXWindow.h>
 #include <Media/PXText.hpp>
@@ -75,7 +74,7 @@ namespace PX
 
 		PXDLLExport float ScreenRatio();
 
-		PXDLLExport void Create(const PXInt32S width, const PXInt32S height, const Text& const title, const bool async);
+		PXDLLExport void Create(const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const Text& const title, const bool async);
 		PXDLLExport void CreateHidden(const PXInt32S width, const PXInt32S height, const bool async);
 
 
@@ -110,5 +109,3 @@ namespace PX
 		PXDLLExport bool IsInFocus();
 	};
 }
-
-#endif

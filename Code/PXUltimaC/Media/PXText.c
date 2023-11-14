@@ -150,9 +150,17 @@ PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appen
 	return currentString->SizeUsed;
 }
 
-PXSize PXAPI PXTextAppendA(char* const dataString, const PXSize dataStringSize, const char* const appaendString, const char appaendStringSize)
+PXSize PXAPI PXTextAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize)
 {
-	return 0;
+	currentString->SizeUsed += PXTextCopyA
+	(
+		appaendString,
+		appaendStringSize,
+		&currentString->TextA[currentString->SizeUsed],
+		currentString->SizeAllocated - currentString->SizeUsed
+	);
+
+	return currentString->SizeUsed;
 }
 
 PXSize PXAPI PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize)

@@ -1,5 +1,4 @@
-#ifndef PXCPPControllerINCLUDE
-#define PXCPPControllerINCLUDE
+#pragma once
 
 #include <OS/Hardware/PXController.h>
 
@@ -17,5 +16,3 @@ namespace PX
 #endif
 	};
 }
-
-#endif

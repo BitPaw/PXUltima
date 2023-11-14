@@ -7,17 +7,17 @@ PX::Text::Text()
 
 PX::Text::Text(const char* adress, PXSize size)
 {
-	PXTextConstructFromAdressA(this, ((char*)adress), size);
+	PXTextConstructFromAdressA(this, ((char*)adress), PXTextUnkownLength, size);
 }
 
 template<PXSize stringLength>
 PX::Text::Text(const char(&stringAdress)[stringLength])
 {
-	PXTextConstructFromAdressA(this, stringAdress, stringLength);
+	PXTextConstructFromAdressA(this, stringAdress, PXTextUnkownLength, stringLength);
 }
 
 template<PXSize stringLength>
 PX::Text::Text(char(&stringAdress)[stringLength])
 {
-	PXTextConstructFromAdressA(this, stringAdress, stringLength);
+	PXTextConstructFromAdressA(this, stringAdress, PXTextUnkownLength, stringLength);
 }

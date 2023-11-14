@@ -28,7 +28,9 @@ extern "C"
 		//-------------------------------------------------------
 		PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
 		PXActionFailedMemoryRelease,
-		
+
+		PXActionRefusedIndexOutOfBounce, // A given index is outside of the given space of the array.
+
 		PXActionFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord 
 		PXActionRefuedBufferSizeTooSmal,
 
@@ -45,6 +47,7 @@ extern "C"
 		//-------------------------------------------------------
 		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
 		PXActionRefuedObjectIDInvalid, // Use if you have an invalid ID or HANDLE
+		PXActionRefusedObjectAlreadyExists, // [EXIST]
 		PXActionRefuedObjectStateDoesNotAllowAction,
 		PXActionRefuedObjectInterfaceNotAvailable,
 		PXActionRefuedObjectNotInizialized,
@@ -70,7 +73,6 @@ extern "C"
 		PXActionRefusedTargetIsDirectory, // ISDIR
 		PXActionFailedFileDescriptorValueTooLarge, // MFILE
 		PXActionFailedTooManyLinks, // MLINK
-		PXActionRefusedFileAlreadyExists, // EXIST
 		PXActionFailedFileTooLarge, // FBIG
 		PXActionRefusedInvalidSeek, // SPIPE
 		PXActionFailedTooManyFilesOpenInSystem, // NFILE

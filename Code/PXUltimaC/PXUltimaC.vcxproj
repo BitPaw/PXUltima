@@ -238,6 +238,7 @@
     <ClCompile Include="Compiler\PXCompiler.c" />
     <ClCompile Include="Compiler\PXCompilerSettings.c" />
     <ClCompile Include="Container\BinaryTree\PXBinaryTree.c" />
+    <ClCompile Include="Container\BTree\PXBTree.c" />
     <ClCompile Include="Container\Dictionary\PXDictionary.c" />
     <ClCompile Include="Container\LinkedList\PXLinkedList.c" />
     <ClCompile Include="Container\List\PXList.c" />
@@ -259,7 +260,7 @@
     <ClCompile Include="OS\Graphic\PXGraphic.c" />
     <ClCompile Include="OS\Graphic\SoftwareRender\PXSoftwareRender.c" />
     <ClCompile Include="Language\PXTranslator.c" />
-    <ClCompile Include="Log\PXLog.c" />
+    <ClCompile Include="OS\Console\PXConsole.c" />
     <ClCompile Include="Math\PXCollision.c" />
     <ClCompile Include="Math\PXDiagram.c" />
     <ClCompile Include="Math\PXMath.c" />
@@ -375,6 +376,7 @@
     <ClCompile Include="Engine\PXLobby.c" />
     <ClCompile Include="Engine\PXMod.c" />
     <ClCompile Include="OS\Audio\PXIAudio\PXIAudio.c" />
+    <ClCompile Include="Algorithm\BubbleSort\PXBubbleSort.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -388,6 +390,7 @@
     <ClInclude Include="Compiler\PXCompiler.h" />
     <ClInclude Include="Compiler\PXCompilerSettings.h" />
     <ClInclude Include="Container\BinaryTree\PXBinaryTree.h" />
+    <ClInclude Include="Container\BTree\PXBTree.h" />
     <ClInclude Include="Container\Dictionary\PXDictionary.h" />
     <ClInclude Include="Container\LinkedList\PXLinkedList.h" />
     <ClInclude Include="Container\List\PXList.h" />
@@ -409,7 +412,7 @@
     <ClInclude Include="OS\Graphic\PXGraphic.h" />
     <ClInclude Include="OS\Graphic\SoftwareRender\PXSoftwareRender.h" />
     <ClInclude Include="Language\PXTranslator.h" />
-    <ClInclude Include="Log\PXLog.h" />
+    <ClInclude Include="OS\Console\PXConsole.h" />
     <ClInclude Include="Math\PXCollision.h" />
     <ClInclude Include="Math\PXDiagram.h" />
     <ClInclude Include="Math\PXMath.h" />
@@ -525,6 +528,7 @@
     <ClInclude Include="Engine\PXLobby.h" />
     <ClInclude Include="Engine\PXMod.h" />
     <ClInclude Include="OS\Audio\PXIAudio\PXIAudio.h" />
+    <ClInclude Include="Algorithm\BubbleSort\PXBubbleSort.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />

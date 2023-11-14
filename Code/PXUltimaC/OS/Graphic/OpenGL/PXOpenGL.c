@@ -10,7 +10,7 @@
 #include <OS/Window/PXWindow.h>
 #include <OS/Async/PXAwait.h>
 
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 
 #if 0
 #include <GLEW/glew.h>
@@ -1518,6 +1518,13 @@ void PXAPI PXOpenGLCopy(PXOpenGL* const pxOpenGL, const PXOpenGL* const pxOpenGL
 
 PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Initialize..."
+    );
+
     // Safety
     {
         if (!pxOpenGL)
@@ -2451,7 +2458,13 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         int numberOfExtensions = 0;
         pxOpenGL->GetIntegerv(GL_NUM_EXTENSIONS, &numberOfExtensions);
 
-        printf("[OpenGL] Extensions detected <%i>.\n", numberOfExtensions);
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Extensions detected <%i>",
+            numberOfExtensions
+        );       
 
         for (int i = 0; i < numberOfExtensions; ++i)
         {
@@ -2481,9 +2494,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
         PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, &pxGraphicDevicePhysical);
 
-        printf
+        PXLogPrint
         (
-            "[OpenGL] %s, %s, %s, %s | Memory: %ikB/%ikB (%ikB) | Evicted: %xi/%ikB\n",
+            PXLoggingInfo,
+            "OpenGL",
+            "%s, %s, %s, %s | Memory: %ikB/%ikB (%ikB) | Evicted: %xi/%ikB",
             pxGraphicDevicePhysical.DeviceDisplay,
             pxGraphicDevicePhysical.DeviceName,
             pxGraphicDevicePhysical.Vendor,

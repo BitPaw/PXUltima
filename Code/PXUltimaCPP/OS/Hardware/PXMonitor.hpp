@@ -1,5 +1,4 @@
-#ifndef PXCPPMonitorINCLUDE
-#define PXCPPMonitorINCLUDE
+#pragma once
 
 #include <OS/Hardware/PXMonitor.h>
 
@@ -12,5 +11,3 @@ namespace PX
 		static void GetSize(PXInt32U& width, PXInt32U& height);
 	};
 }
-
-#endif

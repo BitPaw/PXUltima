@@ -818,6 +818,20 @@ extern "C"
 #define PXAudioFXI3DL2Reverb		(1 << 13)
 
 
+
+
+	typedef struct PXAudioDeviceInput_
+	{
+		int x;
+	}
+	PXAudioDeviceInput;
+
+	typedef struct PXAudioDeviceOutput_
+	{
+		int x;
+	}
+	PXAudioDeviceOutput;
+
 	typedef struct PXAudioDevice_
 	{
 		PXResourceID ResourceID;
@@ -833,6 +847,7 @@ extern "C"
 	
 		PXAudioDeviceRole Role;
 		PXAudioDeviceType Type;
+		PXInt32U FXSettingFlagList;
 
 
 		float Pitch; // [0.5 - 2.0]
@@ -842,7 +857,7 @@ extern "C"
 		PXBool Looping;
 
 
-		PXInt32U FXSettingFlagList;
+	
 	
 		//-------------------------------------------------
 		// General Shared Info

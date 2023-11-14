@@ -2,7 +2,7 @@
 
 PX::ActionResult PX::Server::Start(const PXInt16U port, const ProtocolMode protocolMode)
 {
-	return (PX::ActionResult)PXServerStart(this, port, protocolMode);
+	return (PX::ActionResult)PXServerStart(this, port, (PXProtocolMode)protocolMode);
 }
 
 PX::ActionResult PX::Server::Stop()

@@ -1,5 +1,4 @@
-#ifndef PXCPPLibraryINCLUDE
-#define PXCPPLibraryINCLUDE
+#pragma once
 
 #include <OS/Library/PXLibrary.h>
 #include <OS/File/PXFile.hpp>
@@ -22,4 +21,3 @@ namespace PX
         PXDLLExport bool ParseSymbols();
     };
 }
-#endif

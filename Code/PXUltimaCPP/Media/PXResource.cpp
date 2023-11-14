@@ -1,13 +1,13 @@
 #include "PXResource.hpp"
 
 template<typename T>
-PXActionResult PX::Resource::Load(T& resource, const PX::Text& filePath)
+PX::ActionResult PX::Resource::Load(T& resource, const PX::Text& filePath)
 {
-	return PXResourceLoad(&resource, filePath);
+	return (PX::ActionResult)PXResourceLoad(&resource, filePath);
 }
 
 template<typename T>
-PXActionResult PX::Resource::Load(T& resource, const char* const filePath)
+PX::ActionResult PX::Resource::Load(T& resource, const char* const filePath)
 {
-	return PXResourceLoadA(&resource, filePath);
+	return (PX::ActionResult)PXResourceLoadA(&resource, filePath);
 }

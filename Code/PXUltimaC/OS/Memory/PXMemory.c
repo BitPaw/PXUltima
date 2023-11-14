@@ -2,7 +2,7 @@
 
 #include <Math/PXMath.h>
 #include <OS/Error/PXActionResult.h>
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 
 #include <stdlib.h>
 #include <malloc.h>
@@ -242,6 +242,31 @@ PXBool PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize,
 
 	return equalSum == bufferSize;
 #endif
+}
+
+PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferSize)
+{
+	PXBool isNull = PXTrue;
+
+	for (PXSize i = 0; isNull && i < bufferSize; ++i)
+	{
+		isNull = ((PXAdress)buffer)[i] == 0;
+	}
+
+	return isNull;
+}
+
+PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, const PXSize size)
+{
+	void* adress = PXMemoryStackAllocate(size);
+
+	PXMemoryCopy(bufferA, size, adress, size);
+	PXMemoryCopy(bufferB, size, bufferA, size);
+	PXMemoryCopy(adress, size, bufferB, size);
+
+	PXMemoryStackRelease(adress);
+
+	return PXTrue;
 }
 
 const void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)

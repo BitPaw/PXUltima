@@ -10,7 +10,7 @@
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/Vulcan/PXVulcan.h>
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 
 //#include <gl/GL.h> // Not found???
 #include <GL/gl.h>

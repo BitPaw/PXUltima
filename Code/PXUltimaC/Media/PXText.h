@@ -173,7 +173,7 @@ extern "C"
 	PXPublic PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
 		 
 	PXPublic PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appendingString);
-	PXPublic PXSize PXAPI PXTextAppendA(char* const dataString, const PXSize dataStringSize, const char* const appaendString, const char appaendStringSize);
+	PXPublic PXSize PXAPI PXTextAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize);
 	PXPublic PXSize PXAPI PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
 
 	PXPublic PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...);

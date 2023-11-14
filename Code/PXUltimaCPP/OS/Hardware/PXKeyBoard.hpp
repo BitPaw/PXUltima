@@ -1,5 +1,4 @@
-#ifndef PXCPPKeyBoardINCLUDE
-#define PXCPPKeyBoardINCLUDE
+#pragma once
 
 #include <OS/Hardware/PXKeyBoard.h>
 
@@ -192,6 +191,3 @@ namespace PX
 		void InputPrint();
 	};
 }
-
-
-#endif

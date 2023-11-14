@@ -1,8 +1,8 @@
-#ifndef PXCPPServerINCLUDE
-#define PXCPPServerINCLUDE
+#pragma once
 
 #include <OS/Network/PXServer.h>
 #include <OS/Error/PXActionResult.hpp>
+#include "PXSocket.hpp"
 
 namespace PX
 {
@@ -17,5 +17,3 @@ namespace PX
 		PXDLLExport PX::ActionResult KickClient(const PXSocketID socketID);
 	};
 }
-
-#endif

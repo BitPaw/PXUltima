@@ -1,19 +1,27 @@
 #include "PXEngine.h"
 
 #include <Math/PXMath.h>
+#include <OS/Console/PXConsole.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
-	printf("[PX][FATAL] CPU tryed to exectue illegal instruction!\n");
+    PXLogPrint
+    (
+        PXLoggingFailure,
+        "PX",
+        "CPU tryed to exectue illegal instruction!"
+    );
 }
 
 void PXCDECL PXEngineOnMemoryViolation(const int signalID)
 {
-	printf("[PX][FATAL] CPU accessed memory illegally!\n");
+    PXLogPrint
+    (
+        PXLoggingFailure,
+        "PX",
+        "CPU accessed memory illegally!"
+    );
 }
-
-#define PXConsoleClear() printf("\033[H\033[J")
-#define PXConsoleGoToXY(x,y) printf("\033[%d;%dH", (y), (x))
 
 void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 {
@@ -60,7 +68,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     ++(pxEngine->CounterTimeCPU);
     ++(pxEngine->CounterTimeGPU);
 
-#if 1
+#if 0
     PXConsoleGoToXY(0, 0);
 
     printf("%15s : Hz %-20i\n", "FPS", pxEngine->FramesPerSecound);
@@ -87,17 +95,46 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
 
 void PXAPI PXEngineStart(PXEngine* const pxEngine)
 {
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PX",
+        "Starting..."
+    );
+
 	PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
 	PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
 
-    // Load all mods now, not fully tho, they may need very early checks before anything happens
-    PXText pxText;
-    PXTextMakeFixedA(&pxText, "Mod\\");
 
-    PXModLoaderScan(&pxEngine->ModLoader, &pxText);
+    // Load all mods now, not fully tho, they may need very early checks before anything happens
+    {
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX",
+            "Loading Mods..."
+        );
+
+      
+        PXText pxText;
+        PXTextMakeFixedA(&pxText, "Mod\\");
+
+        PXModLoaderScan(&pxEngine->ModLoader, &pxText);
+    }
+
+
+
 
 	// Create window
     {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX",
+            "Creating Window..."
+        );
+
         PXWindowConstruct(&pxEngine->Window);
         PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXFalse);
         PXWindowUpdate(&pxEngine->Window);
@@ -105,6 +142,13 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 
     // Create graphic instance
     {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX",
+            "Creating graphical instance..."
+        );
+
         PXGraphicInitializeInfo pxGraphicInitializeInfo;
         pxGraphicInitializeInfo.WindowReference = &pxEngine->Window;
         pxGraphicInitializeInfo.Width = -1;
@@ -130,7 +174,16 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     pxEngine->FrameTime = 0;
     pxEngine->IsRunning = PXTrue;
 
-    PXFunctionInvoke(pxEngine->OnStartUp, pxEngine->Owner, pxEngine);
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX",
+            "Engine is up and running. Invoking callback for extended load."
+        );
+
+        PXFunctionInvoke(pxEngine->OnStartUp, pxEngine->Owner, pxEngine);
+    }
 }
 
 void PXAPI PXEngineStop(PXEngine* const pxEngine)

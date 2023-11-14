@@ -71,7 +71,7 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 			return PXMathematicsArgumentOutOfDomainOfFunction;
 
 		case EEXIST:
-			return PXActionRefusedFileAlreadyExists;
+			return PXActionRefusedObjectAlreadyExists;
 
 		case EFAULT:
 			return BadAddress;

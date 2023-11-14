@@ -6,7 +6,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 #include <Media/PXResource.h>
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 
 #include <stdio.h>
 #include <stdarg.h>

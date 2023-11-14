@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <OS/Window/PXWindow.h>
-#include <Log/PXLog.h>
+#include <OS/Console/PXConsole.h>
 
 #include <stdio.h>
 

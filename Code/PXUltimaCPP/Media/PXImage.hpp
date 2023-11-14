@@ -12,16 +12,6 @@ namespace PX
 		Image();
 		~Image();
 
-		PX::ActionResult Load(const PX::Text& const filePath);
-		PX::ActionResult Load(PX::File& const dataStream, const FileFormatExtension guessedFormat);
-
-		PX::ActionResult Save(const PX::Text& const filePath, const FileFormatExtension fileFormat, const PXColorFormat pxColorFormat);
-		PX::ActionResult Save
-		(
-			PX::File& const PXFile,
-			const FileFormatExtension fileFormat,
-			const PXColorFormat dataFormat
-		);
 		bool Resize(const PXColorFormat format, const PXSize width, const PXSize height);
 		void FlipHorizontal();
 		void FlipVertical();

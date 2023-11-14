@@ -1,5 +1,4 @@
-#ifndef PXCPPMouseINCLUDE
-#define PXCPPMouseINCLUDE
+#pragma once
 
 #include <OS/Hardware/PXMouse.h>
 
@@ -12,5 +11,3 @@ namespace PX
 		void InputPrint();
 	};
 }
-
-#endif
