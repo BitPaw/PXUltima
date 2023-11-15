@@ -93,9 +93,6 @@
     <ClInclude Include="OS\Network\PXSocket.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\WAV\PXWAV.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="OS\System\PXRegistry.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -123,18 +120,6 @@
     <ClInclude Include="OS\Async\PXProgram.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\3DS\PX3DS.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Media\DLL\PXDLL.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Media\ELF\PXELF.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Media\EXE\PXEXE.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Media\PXColor.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -142,6 +127,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Console\PXConsole.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Audio\PXAudio.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -224,9 +212,6 @@
     <ClCompile Include="OS\Network\PXSocket.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\WAV\PXWAV.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="OS\System\PXRegistry.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -254,18 +239,6 @@
     <ClCompile Include="OS\Async\PXProgram.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\3DS\PX3DS.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Media\DLL\PXDLL.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Media\ELF\PXELF.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Media\EXE\PXEXE.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Media\PXColor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -273,6 +246,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Console\PXConsole.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Audio\PXAudio.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

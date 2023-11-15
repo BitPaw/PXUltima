@@ -24,6 +24,7 @@
     <ClInclude Include="OS\Async\PXProcess.hpp" />
     <ClInclude Include="OS\Async\PXProgram.hpp" />
     <ClInclude Include="Media\PXResource.hpp" />
+    <ClInclude Include="OS\Audio\PXAudio.hpp" />
     <ClInclude Include="OS\Console\PXConsole.hpp" />
     <ClInclude Include="Service\FTP\PXFTPServer.hpp" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.hpp" />
@@ -64,6 +65,7 @@
     <ClCompile Include="OS\Async\PXProcess.cpp" />
     <ClCompile Include="OS\Async\PXProgram.cpp" />
     <ClCompile Include="Media\PXResource.cpp" />
+    <ClCompile Include="OS\Audio\PXAudio.cpp" />
     <ClCompile Include="OS\Console\PXConsole.cpp" />
     <ClCompile Include="Service\FTP\PXFTPServer.cpp" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.cpp" />
