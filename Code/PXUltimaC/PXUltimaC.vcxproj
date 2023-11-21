@@ -377,6 +377,8 @@
     <ClCompile Include="Engine\PXMod.c" />
     <ClCompile Include="OS\Audio\PXIAudio\PXIAudio.c" />
     <ClCompile Include="Algorithm\BubbleSort\PXBubbleSort.c" />
+    <ClCompile Include="Media\SQL\PXSQL.c" />
+    <ClCompile Include="Media\PXDocument.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -529,6 +531,8 @@
     <ClInclude Include="Engine\PXMod.h" />
     <ClInclude Include="OS\Audio\PXIAudio\PXIAudio.h" />
     <ClInclude Include="Algorithm\BubbleSort\PXBubbleSort.h" />
+    <ClInclude Include="Media\SQL\PXSQL.h" />
+    <ClInclude Include="Media\PXDocument.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
@@ -542,7 +546,10 @@
     <None Include="Media\COFF\README.md" />
     <None Include="Media\BinaryWindows\README.md" />
     <None Include="Media\CanonRaw3\README.md" />
+    <None Include="Media\C\README.md" />
     <None Include="Media\Matroska\README.md" />
+    <None Include="Media\SQL\README.md" />
+    <None Include="Media\STL\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

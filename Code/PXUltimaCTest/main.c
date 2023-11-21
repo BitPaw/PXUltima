@@ -76,11 +76,47 @@ void PXTextMatchTest()
 #include <Media/BinaryLinux/PXBinaryLinux.h>
 #include <Media/BinaryWindows/PXBinaryWindows.h>
 #include <Media/CanonRaw3/PXCanonRaw3.h>
+#include <OS/Hardware/PXProcessor.h>
+#include <OS/Console/PXConsole.h>
+#include <Media/BinaryWindows/PXBinaryWindows.h>
 
 int main()
 {
 	printf("[i] Starting testing...\n");
+
+
+#if 1
+	PXFile pxFile;
+
+	PXResourceLoadA(&pxFile, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Media\\PXImage.h");
+
+
+#endif // 0
+
+
+
+
+#if 0
+	PXBinaryWindows pxBinaryWindows;
+
+	PXResourceLoadA(&pxBinaryWindows, "C:\\Windows\\System32\\user32.dll");
+#endif // 0
+
+
 	
+	
+	while (1)
+	{
+		PXInt32U temp;
+
+		PXProcessorTemperature(&temp);
+
+		PXConsoleGoToXY(0,0);
+		printf("CPU temp : %i\n", temp);
+
+	}
+
+
 
 	TestSoundAll();
 
@@ -463,7 +499,7 @@ int main()
 #endif // 1
 
 
-#if 1
+#if 0
 	TestSBPAll();
 #endif // 1
 

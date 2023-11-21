@@ -3,6 +3,7 @@
 #include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
+#include <OS/Console/PXConsole.h>
 
 #define PXCompilerDebug 0
 #define PXCompilerSanitise 1
@@ -29,16 +30,19 @@ void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry*
 		&compilerSymbolEntry->Source, PXDataTypeAdress
 	};
 
-	PXSize written = PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
+	const PXSize written = PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
 
-
-
-#if 0
-	PXFileWriteI8U(pxFile, symbolID);
-	PXFileWriteI32U(pxFile, compilerSymbolEntry->Coloum);
-	PXFileWriteI32U(pxFile, compilerSymbolEntry->Line);
-	PXFileWriteI32U(pxFile, compilerSymbolEntry->Size);
-	PXFileWriteB(pxFile, &compilerSymbolEntry->Source, sizeof(void*));
+#if PXCompilerDebug
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Compiler", 
+		"Element Added, L:%-4i C:%-4i S:%-4i E:(%i)",	
+		compilerSymbolEntry->Line,
+		compilerSymbolEntry->Coloum,
+		compilerSymbolEntry->Size,
+		symbolID
+	);
 #endif
 
 #if PXCompilerDebug
@@ -274,29 +278,99 @@ void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry*
 #endif
 }
 
-PXSize PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
+PXSize PXCompilerSymbolEntryMergeCurrentWithNext(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-	PXInt8U symbolID = 0;
+	PXFileCursorRewind(pxFile, 21); // Go back
 
-	const PXFileDataElementType pxFileDataElementType[] =
+	
+	PXCompilerSymbolEntry oldCopy;
+	PXCompilerSymbolEntry mergCopy;
+
+	PXCompilerSymbolEntryExtract(pxFile, &oldCopy);// Copy old value
+	PXCompilerSymbolEntryPeek(pxFile, &mergCopy); 
+
+
+	PXFileCursorRewind(pxFile, 21); // Go back again
+
+	// Write merged symbol
 	{
-		&symbolID, PXDataTypeInt08U,
-		&compilerSymbolEntry->Coloum, PXDataTypeInt32U,
-		&compilerSymbolEntry->Line, PXDataTypeInt32U,
-		&compilerSymbolEntry->Size, PXDataTypeInt32U,
-		&compilerSymbolEntry->Source, PXDataTypeAdress
-	};
-	const PXSize readBytes = PXFileReadMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
+		const PXInt8U symbolID = compilerSymbolEntry->ID;
+		const PXInt32U size = oldCopy.Size + mergCopy.Size;
+		const PXFileDataElementType pxFileDataElementType[] =
+		{
+			&oldCopy.ID, PXDataTypeInt08U,
+			&oldCopy.Coloum, PXDataTypeInt32U,
+			&oldCopy.Line, PXDataTypeInt32U,
+			&size, PXDataTypeInt32U,
+			&oldCopy.Source, PXDataTypeAdress
+		};
 
-	compilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
-
-	if (readBytes == 0)
-	{
-		compilerSymbolEntry->Coloum = -1;
-		compilerSymbolEntry->Line = -1;
+		const PXSize written = PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
 	}
 
+	// delete old symbol
+	{
+		const PXInt8U symbolID = PXCompilerSymbolLexerInvalid;
+		const PXFileDataElementType pxFileDataElementType[] =
+		{
+			&symbolID, PXDataTypeInt08U,
+			&mergCopy.Coloum, PXDataTypeInt32U,
+			&mergCopy.Line, PXDataTypeInt32U,
+			&mergCopy.Size, PXDataTypeInt32U,
+			&mergCopy.Source, PXDataTypeAdress
+		};
+
+		const PXSize written = PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
+	}
+
+	PXFileCursorRewind(pxFile, 21 * 2); // Go back again, again
+
+	PXCompilerSymbolEntryExtract(pxFile, compilerSymbolEntry);
+
+	return PXActionSuccessful;
+}
+
+PXSize PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
+{
+	PXSize readBytes = 0;
+
+	do
+	{
+		PXInt8U symbolID = 0;
+
+		const PXFileDataElementType pxFileDataElementType[] =
+		{
+			&symbolID, PXDataTypeInt08U,
+			&compilerSymbolEntry->Coloum, PXDataTypeInt32U,
+			&compilerSymbolEntry->Line, PXDataTypeInt32U,
+			&compilerSymbolEntry->Size, PXDataTypeInt32U,
+			&compilerSymbolEntry->Source, PXDataTypeAdress
+		};
+		readBytes = PXFileReadMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
+
+		compilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
+
+		if (readBytes == 0)
+		{
+			compilerSymbolEntry->Coloum = -1;
+			compilerSymbolEntry->Line = -1;
+		}
+	}
+	while (PXCompilerSymbolLexerInvalid == compilerSymbolEntry->ID);
+
 	return readBytes;
+}
+
+PXSize PXCompilerSymbolEntryForward(PXFile* const pxFile)
+{
+	const PXSize totalSize = 
+		sizeof(PXInt8U) +
+		sizeof(PXInt32U) + 
+		sizeof(PXInt32U) +
+		sizeof(PXInt32U) + 
+		sizeof(void*);
+
+	return totalSize;
 }
 
 PXSize PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)

@@ -1,6 +1,7 @@
 #include "PXCOFF.h"
 
 #include <Math/PXMath.h>
+#include <OS/Console/PXConsole.h>
 
 #include <assert.h>
 
@@ -87,6 +88,15 @@ PXSectionType PXSectionTypeFromID(const PXInt64U valueID)
 PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 {
 	PXClear(PXCOFF, pxCOFF);
+
+#if PXCOFFDebug
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"COFF",
+		"--- Start Parsing ---"
+	);
+#endif
 
 	// COFF File Header
 	{
@@ -333,8 +343,19 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
 			pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
 
-			printf("[COFF][Section deteced %2i/%-2i - %-8s] %6i Bytes\n", sectionID+1, pxCOFF->Header.NumberOfSections, pxSectionTableCurrent->Name.Data, pxSectionTableCurrent->SectionRawDataSize);
+#if PXCOFFDebug
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"COFF",
+				"Section deteced %2i/%-2i - %-8s %6i Bytes",
+				sectionID + 1, 
+				pxCOFF->Header.NumberOfSections,
+				pxSectionTableCurrent->Name.Data,
+				pxSectionTableCurrent->SectionRawDataSize
+			);
 		}
+#endif
 
 		const PXSize oldPosition = pxFile->DataCursor;
 
@@ -373,7 +394,12 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
 						if (isLastEntry)
 						{
-							printf("[.idata][ImportDirectoryTable] Last entry deteced.\n");
+							PXLogPrint
+							(
+								PXLoggingInfo,
+								"COFF",
+								"[.idata][ImportDirectoryTable] Last entry deteced."
+							);
 
 							break;
 						}
@@ -382,7 +408,12 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
 						//PXFileCursorRewind(pxFile, namePosition);
 
-						printf("[.idata][ImportDirectoryTable] entry deteced.\n");
+						PXLogPrint
+						(
+							PXLoggingInfo,
+							"COFF",
+							"[.idata][ImportDirectoryTable] entry deteced."
+						);
 
 #if 0
 
@@ -516,9 +547,11 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 #if PXCOFFDebug
-				printf
+				PXLogPrint
 				(
-					"[COFF][RelocationInformation] %6i,%6i,%6i\n",
+					PXLoggingInfo,
+					"COFF",
+					"[RelocationInformation] %6i,%6i,%6i",
 					pxRelocationInformation.VirtualAddressOfReference,
 					pxRelocationInformation.SymbolTableIndex,
 					pxRelocationInformation.RelocationType
@@ -564,7 +597,13 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 			PXCOFFSymbolTableEntry pxCOFFSymbolTableEntryXX;
 
 #if PXCOFFDebug
-			printf("[COFF] Symbols deteced <%i>\n", pxCOFF->Header.NumberOfSymbols);
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"COFF",
+				"Symbols deteced <%i>",
+				pxCOFF->Header.NumberOfSymbols
+			);
 #endif
 
 			for (PXInt32U i = 0; i < pxCOFF->Header.NumberOfSymbols; i++)
@@ -607,11 +646,23 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 #if PXCOFFDebug
 		else
 		{
-			printf("[COFF] No Symbols\n");
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"COFF",
+				"*** No Symbols ***"
+			);
 		}
 #endif
 		
 	}
+
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"COFF",
+		"--- Finished Parsing ---"
+	);
 
 	return PXActionSuccessful;
 }

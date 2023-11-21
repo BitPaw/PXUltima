@@ -51,7 +51,7 @@ extern "C"
 		PXCompilerSymbolLexerPlus,
 		PXCompilerSymbolLexerMinus,
 		PXCompilerSymbolLexerSlash,
-		PXCompilerSymbolLexerAsterisk,
+		PXCompilerSymbolLexerAsterisk, // '*'
 		PXCompilerSymbolLexerSlashBack,
 		PXCompilerSymbolLexerAmpercant,
 		PXCompilerSymbolLexerPercent,
@@ -133,16 +133,31 @@ extern "C"
 		const PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
 
-	PXPublic PXSize PXCompilerSymbolEntryExtract
+	// Take current Node and merge it with the next one.
+	PXPublic PXSize PXCompilerSymbolEntryMergeCurrentWithNext
 	(
 		PXFile* const pxFile,
 		PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
+
+	// Fetch next symbol without actually changing the file-cursor-position
 	PXPublic PXSize PXCompilerSymbolEntryPeek
 	(
 		PXFile* const pxFile,
 		PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
+	// Fetch next symbol and consume symbol
+	PXPublic PXSize PXCompilerSymbolEntryExtract
+	(
+		PXFile* const pxFile,
+		PXCompilerSymbolEntry* const compilerSymbolEntry
+	);
+	// Without fetching the symbol, consume it.
+	PXPublic PXSize PXCompilerSymbolEntryForward
+	(
+		PXFile* const pxFile
+	);
+
 
 	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 

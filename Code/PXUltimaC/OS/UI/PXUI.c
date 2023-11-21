@@ -1,6 +1,6 @@
 #include "PXUI.h"
 
-#define WindowsEnableModernColorSceme 1
+#define WindowsEnableModernColorSceme 0
 
 #if OSUnix
 #elif OSWindows

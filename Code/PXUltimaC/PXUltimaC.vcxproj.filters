@@ -465,6 +465,12 @@
     <ClCompile Include="Algorithm\BubbleSort\PXBubbleSort.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\SQL\PXSQL.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\PXDocument.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -917,6 +923,12 @@
     <ClInclude Include="Algorithm\BubbleSort\PXBubbleSort.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\SQL\PXSQL.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\PXDocument.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -926,5 +938,8 @@
     <None Include="Media\Bitmap\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
     <None Include="Media\CanonRaw3\README.md" />
+    <None Include="Media\SQL\README.md" />
+    <None Include="Media\STL\README.md" />
+    <None Include="Media\C\README.md" />
   </ItemGroup>
 </Project>

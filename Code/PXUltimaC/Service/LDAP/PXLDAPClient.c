@@ -127,7 +127,7 @@ PXActionResult PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 {
 	if (!pxLDAPClient->ID)
 	{
-		return PXActionRefuedObjectIDInvalid;
+		return PXActionRefusedObjectNotFound;
 	}
 
 #if OSUnix
@@ -150,7 +150,7 @@ PXActionResult PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearch
 {
 	if (!pxLDAPClient->ID)
 	{
-		return PXActionRefuedObjectIDInvalid;
+		return PXActionRefusedObjectNotFound;
 	}
 
 #if OSUnix

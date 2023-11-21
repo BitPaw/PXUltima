@@ -213,10 +213,11 @@ extern "C"
 #define PXUIElementDoRendering (1 << 0) 
 #define PXUIElementIsActive (1 << 1)
 #define PXUIElementIsHoverable (1 << 2)
+#define PXUIElementDrawBorder (1 << 3)
 
 #define PXUIElementNormal PXUIElementDoRendering | PXUIElementIsActive | PXUIElementIsHoverable
-#define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive
-
+#define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive | PXUIElementDrawBorder
+#define PXUIElementText PXUIElementDoRendering | PXUIElementIsActive 
 
 #define PXUIElementAncerParent  0b11110000
 

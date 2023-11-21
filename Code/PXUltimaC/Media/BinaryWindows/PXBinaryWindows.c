@@ -1,10 +1,22 @@
 #include "PXBinaryWindows.h"
+#include <OS/Console/PXConsole.h>
 
 const char PXDOSHeaderSignatore[2] = { 'M', 'Z' };
 const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
 
+#define PXBinaryWindowsDebug 1
+
 PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile)
 {
+#if PXBinaryWindowsDebug
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "BinaryWindows",
+        "--- Parsing Start ---"
+    );
+#endif
+
 	// Read header
 	{
         PXDOSHeader* const pxDOSHeader = &pxBinaryWindows->Header;
@@ -51,8 +63,19 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinary
 
         const PXBool isValidFile = PXFileReadAndCompare(pxFile, PXPEHeaderSignatore, sizeof(PXPEHeaderSignatore));
 
-        PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxFile);
+        const PXActionResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxFile);
+
+        PXActionReturnOnError(coffLoadResult);
     }
+
+#if PXBinaryWindowsDebug
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "BinaryWindows",
+        "--- Parsing finished ---"
+    );
+#endif
 
 
 	return PXActionRefusedNotImplemented;

@@ -4295,6 +4295,7 @@ PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture
     PXImage* const image = &pxTexture2D->Image;
 
     // Create image resource on GPU side
+    if(PXResourceIDIsUnused(&pxTexture2D->ResourceID))
     {
         const PXInt32U amount = 1u;
 
@@ -4315,16 +4316,15 @@ PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture
 
             return createResult;
         }
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Texture2D created <%i>",
+            pxTexture2D->ResourceID.OpenGLID
+        );
     }
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "OpenGL",
-        "Texture2D created <%i>",
-        pxTexture2D->ResourceID.OpenGLID
-    );
-
 
     // Bind resource
     {
@@ -4367,11 +4367,48 @@ PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const pxOpenGL, PXTexture2D* const pxTexture2DList, const PXSize amount)
+PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const pxOpenGL, PXTexture2D** const pxTexture2DList, const PXSize amount)
 {
+    // Register Textures
+    {
+        PXInt32U* iDListen = PXMemoryStackAllocate(sizeof(PXInt32U) * amount);
+
+        pxOpenGL->TextureCreate(amount, iDListen);
+
+        const PXActionResult createResult = PXOpenGLErrorCurrent();
+
+        if (createResult != PXActionSuccessful)
+        {
+            PXLogPrint
+            (
+                PXLoggingError,
+                "OpenGL",
+                "Batch <%i> Texture2D creation failed",
+                amount
+            );
+
+            return createResult;
+        }
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Batch <%i> Texture2D created",
+            amount
+        );
+
+        for (size_t i = 0; i < amount; i++)
+        {
+            pxTexture2DList[i]->ResourceID.OpenGLID = iDListen[i];
+        }
+
+        PXMemoryStackRelease(iDListen);
+    }
+
     for (size_t i = 0; i < amount; i++)
     {
-        PXOpenGLTexture2DCreate(pxOpenGL, &pxTexture2DList[i]);
+        PXOpenGLTexture2DCreate(pxOpenGL, pxTexture2DList[i]);
     }
 
     return PXActionSuccessful;
@@ -5455,15 +5492,24 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         {
             PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[containerID];
 
+            PXSize pxTextureListCounter = 0;
+            PXTexture2D** pxTextureList = (PXTexture2D**)PXMemoryStackAllocate(sizeof(PXTexture2D*) * pxMaterialContainer->MaterialListSize);
+
             for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListSize; ++materialID)
             {
                 PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
 
                 if (pxMaterial->DiffuseTexture)
                 {
-                    PXOpenGLTexture2DCreate(pxOpenGL, pxMaterial->DiffuseTexture);
+                    pxTextureList[pxTextureListCounter] = pxMaterial->DiffuseTexture;
+
+                    ++pxTextureListCounter;
                 }
             }
+
+            PXOpenGLTexture2DCreateV(pxOpenGL, pxTextureList, pxTextureListCounter);
+
+            PXMemoryStackRelease(pxTextureList);
         }
     }
 

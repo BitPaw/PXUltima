@@ -233,6 +233,8 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 		{
 			switch (*pxText.TextA)
 			{
+				case 'H': return PXFileFormatC;
+				case 'C': return PXFileFormatC;
 				case 'O': return PXFileFormatBinaryLinux;
 			}
 
@@ -256,12 +258,17 @@ PXFileFormat PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
+				case PXInt24Make('C', 'P', 'P'):
+				case PXInt24Make('H', 'P', 'P'): return PXFileFormatCPP;
+
 				case PXInt24Make('C', 'R', '3'): return PXFileFormatCanonRaw3;
+
 				case PXInt24Make('B', 'I', 'N'):
 				case PXInt24Make('P', 'R', 'X'):
 				case PXInt24Make('M', 'O', 'D'):
 				case PXInt24Make('E', 'L', 'F'):
 				case PXInt24Make('O', 'U', 'T'): return PXFileFormatBinaryLinux;
+
 				case PXInt24Make('F', 'N', 'T'): return PXFileFormatSpriteFont;
 				case PXInt24Make('G', 'I', 'F'): return PXFileFormatGIF;
 				case PXInt24Make('H', 'T', 'M'): return PXFileFormatHTML;
@@ -2336,6 +2343,8 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 
 PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length)
 {
+	++(pxFile->CounterOperationsRead);
+
 	if (!value)
 	{
 		return PXFileCursorAdvance(pxFile, length);
@@ -2352,6 +2361,8 @@ PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize l
 			const PXSize moveSize = PXFileCursorAdvance(pxFile, length);
 
 			PXMemoryCopy(currentPosition, moveSize, value, moveSize);
+
+			++(pxFile->CounterOperationsRead);
 
 			return moveSize;
 		}
@@ -2389,8 +2400,6 @@ PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize l
 				writtenBytes
 			);
 #endif
-
-			++(pxFile->CounterOperationsRead);
 
 			pxFile->DataCursor += writtenBytes;
 
@@ -2799,6 +2808,8 @@ PXSize PXFileWriteDV(PXFile* const pxFile, const double* const valueList, const 
 
 PXSize PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length)
 {
+	++(pxFile->CounterOperationsWrite);
+
 	switch (pxFile->LocationMode)
 	{
 		case PXFileLocationModeInternal:

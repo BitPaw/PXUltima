@@ -43,10 +43,15 @@ extern "C"
 		PXActionRefuedOutputBufferTooSmal, // 
 
 		//-------------------------------------------------------
+		// Type
+		//-------------------------------------------------------
+		PXActionRefusedTypeMissmatch, // When two types are not copartible
+
+		//-------------------------------------------------------
 		// Object
 		//-------------------------------------------------------
 		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
-		PXActionRefuedObjectIDInvalid, // Use if you have an invalid ID or HANDLE
+		PXActionRefusedObjectNotFound, // [404] Invalid ID or HANDLE -> Does not exist
 		PXActionRefusedObjectAlreadyExists, // [EXIST]
 		PXActionRefuedObjectStateDoesNotAllowAction,
 		PXActionRefuedObjectInterfaceNotAvailable,
@@ -57,6 +62,11 @@ extern "C"
 		PXActionRefuedObjectTypeNotSupported,
 		PXActionRefuedObjectAggregationNotSupported,
 		PXActionRefuedObjectPropertyNotAvailable,
+
+		PXActionRefusedObjectNameInvalid,
+		PXActionRefusedClassNameInvalid,
+		PXActionRefusedNameSpaceInvalid,
+		PXActionRefusedObjectParentInvalid,
 
 		//-------------------------------------------------------
 		// Permission
@@ -78,6 +88,12 @@ extern "C"
 		PXActionFailedTooManyFilesOpenInSystem, // NFILE
 		PXActionRefusedNotADirectory, // NOTDIR
 		PXActionRefusedDirectoryNotEmpty, // NOTEMPTY
+
+
+		//-------------------------------------------------------
+		// Compiler 
+		//-------------------------------------------------------
+		PXActionRefusedSymbolInvalid,
 
 		//-------------------------------------------------------
 		// Network 

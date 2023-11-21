@@ -264,8 +264,27 @@ extern "C"
 	PXPublic PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 	PXPublic PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 
-	PXPublic PXActionResult PXCFileLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream);
-	PXPublic PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStream);
+
+	// Parsing functions
+	PXPrivate PXActionResult PXAPI PXCParsePreprocessorCondition(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPrivate PXActionResult PXAPI PXCParsePreprocessorDefine(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPrivate PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPrivate PXActionResult PXAPI PXCParsePreprocessorPragma(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPrivate PXActionResult PXAPI PXCParseTypeDefinition(PXDocument* const pxDocument, PXFile* const pxFile);
+
+	PXPrivate PXActionResult PXAPI PXCParseEndOfCommand(PXDocument* const pxDocument, PXFile* const pxFile);
+
+	PXPrivate PXActionResult PXAPI PXCParseTypeParameterList(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPrivate PXActionResult PXAPI PXCParseFunctionDefinition(PXDocument* const pxDocument, PXFile* const pxFile);
+
+	PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationElement(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationFull(PXDocument* const pxDocument, PXFile* const pxFile);
+
+	PXPrivate PXActionResult PXAPI PXCParseTypeContainer(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPrivate PXActionResult PXAPI PXCParseTypeEnum(PXDocument* const pxDocument, PXFile* const pxFile);
+
+	PXPublic PXActionResult PXAPI PXCLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXCSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile);
 
 
 	PXPublic void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement);

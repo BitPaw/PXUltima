@@ -2,6 +2,7 @@
 
 #include <OS/Console/PXConsole.h>
 #include <OS/Time/PXStopWatch.h>
+#include <OS/Hardware/PXProcessor.h>
 
 #include "Autodesk3DS/PXAutodesk3DS.h"
 #include "AAC/PXAAC.h"
@@ -41,6 +42,10 @@
 #include "BinaryWindows/PXBinaryWindows.h"
 #include "BinaryLinux/PXBinaryLinux.h"
 #include "CanonRaw3/PXCanonRaw3.h"
+#include "C/PXC.h"
+#include "CS/PXCS.h"
+#include "CPP/PXCPP.h"
+#include "CSS/PXCSS.h"
 
 PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
@@ -217,24 +222,20 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
             return PXActionRefusedNotImplemented;
         }
 
-        PXStopWatch pxStopwatch;
-        PXTime pxTime;
-        PXStopWatchConstruct(&pxStopwatch);
-        PXStopWatchStart(&pxStopwatch);
+        PXInt32U time = PXProcessorTimeReal();
 
         const PXActionResult fileParsingResult = pxFile.TypeInfo.ResourceLoadFunction(resource, &pxFile);
 
-        PXStopWatchTrigger(&pxStopwatch, &pxTime);
+        PXInt32U timeDelat = PXProcessorTimeReal() - time;
 
         PXLogPrint
         (
             PXLoggingInfo,
             "Resource",
-            "Load <%s> took %ims, cycles=%lf, IOPs=%i",
-            filePath->TextA,
-            PXTimeMilliseconds(&pxTime),
-            pxTime.ClockCycleDelta,
-            pxFile.CounterOperationsRead        
+            "Loaded (%6.3fms, ROPs:%4i) <%s> ",      
+            timeDelat/1000.0f,
+            pxFile.CounterOperationsRead,
+            filePath->TextA
         );
 
         PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
@@ -320,26 +321,26 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatC:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeCode;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXCLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXCSaveToFile;
             break;
 
         case PXFileFormatCSharp:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeCode;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXCSLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXCSLoadFromFile;
             break;
 
         case PXFileFormatCSS:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXCSSLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXCSSLoadFromFile;
             break;
 
         case PXFileFormatCPP:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeCode;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXCPPLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXCPPLoadFromFile;
             break;
 
         case PXFileFormatBinaryWindows:

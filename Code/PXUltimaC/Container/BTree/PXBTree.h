@@ -3,45 +3,23 @@
 
 #include <Media/PXResource.h>
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-    // Default order
-#define ORDER 3
-
-    typedef struct record
-    {
-        int value;
-    } record;
 
     // Node
     typedef struct PXBTreeNode_
     {
         void* Data;
 
-        PXInt8U KeyListAmount; // How many keys do we have
-        void* KeyList; // The list of keys, 
-
-        PXInt8U NodeListAmount; // How many keys do we have
+        void* KeyList; // The list of keys,  
         void* NodeList; // The list of keys, 
 
-        void** pointers;
-        int* keys;
-        struct PXBTreeNode_* parent;
-        bool is_leaf;
-        int num_keys;
-        struct PXBTreeNode_* next;
+        PXInt8U KeyListAmount; // How many keys do we have
+        PXInt8U NodeListAmount; // How many keys do we have
     } 
     PXBTreeNode;
-
-    bool verbose_output = false;
 
     // Multilevel indexing tree.
     typedef struct PXBTree_

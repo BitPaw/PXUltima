@@ -24,7 +24,7 @@ PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data
 {
     if (pxClient->SocketClient.ID == PXSocketUnused)
     {
-        return PXActionRefuedObjectIDInvalid;
+        return PXActionRefusedObjectNotFound;
     }
 
     PXBufferConstruct(&pxClient->SocketClient.BufferOutput, (void*)data, dataSize, PXBufferExtern); 

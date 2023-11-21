@@ -4,6 +4,7 @@
 #include <OS/File/PXFile.h>
 #include <Math/PXVector.h>
 #include <Math/PXMatrix.h>
+#include <Media/PXDocument.h>
 #include "PXImage.h"
 #include "PXColor.h"
 
@@ -245,6 +246,7 @@ extern "C"
 	PXResourceID;
 
 #define PXResourceIDIsUnused(pxPesourceID) (pxPesourceID)->DirectXInterface == (void*)-1
+#define PXResourceIDIsUsed(pxPesourceID) (pxPesourceID)->DirectXInterface != (void*)-1
 #define PXResourceIDMarkAsUnused(pxPesourceID) (pxPesourceID)->DirectXInterface = (void*)-1
 
 

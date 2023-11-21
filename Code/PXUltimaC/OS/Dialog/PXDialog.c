@@ -1,10 +1,6 @@
 #include "PXDialog.h"
 
-#if PXDialogUSE
-
 #include <OS/File/PXFile.h>
-
-
 #include <stdio.h>
 
 #if OSUnix
@@ -22,19 +18,15 @@
 #endif
 
 
-
-
-
-PXBool PXDialogFileOpen(PXText* const filePath)
+PXActionResult PXDialogFileOpen(PXText* const filePath)
 {
-
 #if OSUnix
 
-    // Do stuff
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 
-#if WindowsAtleastVista
+#if WindowsAtleastVista && 0
 
 
 
@@ -42,10 +34,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
     //HRESULT BasicFileOpen()
     
         // CoCreate the File Open Dialog object.
-        char bufferVV[1024]; PXMemoryClear(bufferVV, 1024);
-        char bufferAAA[1024]; PXMemoryClear(bufferAAA, 1024);
-
-        IFileDialog* fileDialog = bufferVV;
+        IFileDialog* fileDialog = PXNull;
         //MemoryClear(&pfd, sizeof(IFileDialog));
 
        // fileDialog->lpVtbl-> = bufferAAA;
@@ -59,57 +48,22 @@ PXBool PXDialogFileOpen(PXText* const filePath)
         // IID_IFileDialog
         //                 
 
-        const HRESULT resss = CoInitialize(0);
+        const HRESULT resss = CoInitialize(NULL);
 
         const HRESULT hr = CoCreateInstance(&CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, &IID_IFileOpenDialog, &fileDialog); // Windows 2000, Ole32.dll, combaseapi.h
+        const PXActionResult result = PXWindowsHandleErrorFromID(hr);
 
-
-        switch (hr)
-        {
-
-            case S_OK:// An instance of the specified object class was successfully created.
-            {
-                printf("An instance of the specified object class was successfully created.\n");
-                break;
-            }
-
-            case REGDB_E_CLASSNOTREG: // A specified class is not registered in the registration database.Also can indicate that the type of server you requested in the CLSCTX enumeration is not registered or the values for the server types in the registry are corrupt.
-            {
-                printf("A specified class is not registered in the registration database.Also can indicate that the type of server you requested in the CLSCTX enumeration is not registered or the values for the server types in the registry are corrupt.\n");
-                break;
-            }
-            case CLASS_E_NOAGGREGATION: // This class cannot be created as part of an aggregate.
-            {
-                printf("This class cannot be created as part of an aggregate.\n");
-                break;
-            }
-            case E_NOINTERFACE: // The specified class does not implement the requested interface, or the controlling IUnknown does not expose the requested interface.
-            {
-                printf("The specified class does not implement the requested interface, or the controlling IUnknown does not expose the requested interface.\n");
-                break;
-            }
-            case E_POINTER: // The ppv parameter is NULL.
-            {
-                printf("The ppv parameter is NULL.\n");
-                break;
-            }
-            default:
-                break;
-        }
-
-
-        printf("");
 
 
         const HRESULT showResult = fileDialog->lpVtbl->Show(fileDialog, NULL);
 
 
-        fileDialog->lpVtbl->Release(&fileDialog);
+        fileDialog->lpVtbl->Release(fileDialog);
 
-        return PXActionInvalid;
+        return PXActionSuccessful;
 
 
-#else // OSWindowsXP
+#elif WindowsAtleast2000
 
     switch (filePath->Format)
     {
@@ -126,13 +80,17 @@ PXBool PXDialogFileOpen(PXText* const filePath)
             openFileName.hwndOwner = owner;
             openFileName.lpstrFilter = filter;
             openFileName.lpstrFile = filePath->TextA;
-            openFileName.nMaxFile = MAX_PATH;
+            openFileName.nMaxFile = filePath->SizeAllocated;
             openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
             openFileName.lpstrDefExt = "";
 
-            const PXBool wasSuccesful = GetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+            {
+                const PXBool wasSuccesful = GetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
 
-            return wasSuccesful;
+                PXActionOnErrorFetchAndReturn(!wasSuccesful);
+            }
+
+            return PXActionSuccessful;
         }
         case TextFormatUNICODE:
         {
@@ -146,7 +104,7 @@ PXBool PXDialogFileOpen(PXText* const filePath)
             openFileName.hwndOwner = owner;
             openFileName.lpstrFilter = filter;
             openFileName.lpstrFile = filePath->TextW;
-            openFileName.nMaxFile = MAX_PATH;
+            openFileName.nMaxFile = filePath->SizeAllocated;
             openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
             openFileName.lpstrDefExt = L"";
 
@@ -158,14 +116,13 @@ PXBool PXDialogFileOpen(PXText* const filePath)
 
     return PXActionInvalid;
 
-
-#endif
 #else
-return PXFalse;
+    return PXActionRefusedNotSupported;
+#endif
 #endif
 }
 
-PXBool PXDialogFileSave(PXText* const filePath)
+PXActionResult PXDialogFileSave(PXText* const filePath)
 {
 #if OSUnix
     return 0;
@@ -293,5 +250,3 @@ PXBool PXDialogPrint()
     return PXFalse;
 #endif
 }
-
-#endif

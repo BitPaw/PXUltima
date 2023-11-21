@@ -1513,7 +1513,7 @@ PXActionResult PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
     switch (errorID)
     {
         case WSAEBADF: // fall through
-        case WSA_INVALID_HANDLE: return PXActionRefuedObjectIDInvalid; // Specified event object handle is invalid.
+        case WSA_INVALID_HANDLE: return PXActionRefusedObjectNotFound; // Specified event object handle is invalid.
         case WSA_NOT_ENOUGH_MEMORY: return PXActionFailedMemoryAllocation; // Insufficient memory available.
         case WSAEINVAL: // fall through
         case WSA_INVALID_PARAMETER: return PXActionRefuedInputInvalid; // One or more parameters are invalid.
@@ -1527,7 +1527,7 @@ PXActionResult PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
         case WSAEWOULDBLOCK:  return PXActionWouldBlock; // xxxxxxxxxxxxxxxxx
         case WSAEINPROGRESS: return PXActionNowInProgress; // xxxxxxxxxxxxxxxxx
         case WSAEALREADY: return PXActionAlreadyInProgress; // xxxxxxxxxxxxxxxxx
-        case WSAENOTSOCK: return PXActionRefuedObjectIDInvalid; // Socket operation on nonsocket.
+        case WSAENOTSOCK: return PXActionRefusedObjectNotFound; // Socket operation on nonsocket.
         //case WSAEDESTADDRREQ:  return xxxxxxxxxxxx; // Destination address required.
         case WSAEMSGSIZE: return PXActionRefuedInputBufferTooBig; // Message too long.
         case WSAEPROTOTYPE: return PXActionRefuedProtocolTypeInvalid; // Protocol wrong type for socket.

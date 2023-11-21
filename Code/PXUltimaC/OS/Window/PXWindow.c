@@ -2321,6 +2321,8 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)
 
 void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
 {
+    pxWindow->MouseCurrentInput.ButtonsDelta = 0; // Reset mouse data
+
 #if OSUnix
     XEvent windowEvent;
 
@@ -2381,8 +2383,8 @@ void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
         const BOOL translateResult = TranslateMessage(&message); // Windows 2000, User32.dll, winuser.h
         const LRESULT dispatchResult = DispatchMessage(&message); // Windows 2000, User32.dll, winuser.h
     }
-
 #endif
+
 }
 
 void PXAPI PXWindowConstruct(PXWindow* const window)
@@ -2505,7 +2507,7 @@ PXBool PXAPI PXWindowTitleSet(PXWindow* const window, const PXText* const title)
 #if OSUnix
             return 0;
 #elif PXOSWindowsDestop
-            const PXBool success = SetWindowTextA(window->ID, window->Title.TextA); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = SetWindowTextA(window->ID, title->TextA); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
@@ -2520,7 +2522,7 @@ PXBool PXAPI PXWindowTitleSet(PXWindow* const window, const PXText* const title)
             return 0;
 #elif PXOSWindowsDestop
 
-            const PXBool success = SetWindowTextW(window->ID, window->Title.TextW); // Windows 2000, User32.dll, winuser.h
+            const PXBool success = SetWindowTextW(window->ID, title->TextW); // Windows 2000, User32.dll, winuser.h
 
             // could get extended error
 
@@ -3016,30 +3018,33 @@ void PXAPI PXWindowTriggerOnMouseClickEvent(PXWindow* const pxWindow, const PXMo
             {
                 case PXMouseButtonLeft:
                 {
-                    mouse->Buttons |= ButtonLeft;
+                    mouse->ButtonsDelta |= ButtonLeft;
                     break;
                 }
                 case PXMouseButtonMiddle:
                 {
-                    mouse->Buttons |= ButtonMiddle;
+                    mouse->ButtonsDelta |= ButtonMiddle;
                     break;
                 }
                 case PXMouseButtonRight:
                 {
-                    mouse->Buttons |= ButtonRight;
+                    mouse->ButtonsDelta |= ButtonRight;
                     break;
                 }
                 case PXMouseButtonSpecialA:
                 {
-                    mouse->Buttons |= ButtonCustomA;
+                    mouse->ButtonsDelta |= ButtonCustomA;
                     break;
                 }
                 case PXMouseButtonSpecialB:
                 {
-                    mouse->Buttons |= ButtonCustomB;
+                    mouse->ButtonsDelta |= ButtonCustomB;
                     break;
                 }
             }
+
+            mouse->Buttons |= mouse->ButtonsDelta;
+
             break;
         }
         case PXKeyPressStateUp:

@@ -47,7 +47,7 @@ PXActionResult PXAPI PXBTreeInsert(PXBTree* const pxBTree, void* const key, void
 
     // Go to child
     {
-        for (size_t i = 0; i < pxBTreeNode.KeyListAmount; i++)
+        for (PXSize i = 0; i < pxBTreeNode.KeyListAmount; i++)
         {
             void* const keyEntryCurrent = (PXAdress)pxBTreeNode.KeyList + i * pxBTree->KeySize;
 

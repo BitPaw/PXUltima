@@ -1455,7 +1455,7 @@ extern "C"
 	//-----------------------------------------------------
 	PXPublic void PXAPI PXOpenGLTextureActivate(PXOpenGL* const openGLContext, const unsigned int index);
 	PXPublic PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D); // glGenTextures
-	PXPublic PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2DList, const PXSize amount); // glGenTextures
+	PXPublic PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const openGLContext, PXTexture2D** const pxTexture2DList, const PXSize amount); // glGenTextures
 	PXPublic void PXAPI PXOpenGLTexture2DBind(PXOpenGL* const openGLContext, PXTexture2D* const pxTexture2D);
 	PXPublic void PXAPI PXOpenGLTextureUnbind(PXOpenGL* const openGLContext, const PXGraphicTextureType textureType);
 	PXPublic void PXAPI PXOpenGLTextureDelete(PXOpenGL* const openGLContext, const PXInt32S amount, const PXInt32U* const textureIDList); // glDeleteTextures

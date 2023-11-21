@@ -166,15 +166,11 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="OS\TestSocket.c" />
     <ClCompile Include="OS\TestSystemInfo.c" />
-    <ClCompile Include="Service\TestFTP.c" />
-    <ClCompile Include="Service\TestSBP.c" />
     <ClCompile Include="Sound\TestSound.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OS\TestSocket.h" />
     <ClInclude Include="OS\TestSystemInfo.h" />
-    <ClInclude Include="Service\TestFTP.h" />
-    <ClInclude Include="Service\TestSBP.h" />
     <ClInclude Include="Sound\TestSound.h" />
   </ItemGroup>
   <ItemGroup>

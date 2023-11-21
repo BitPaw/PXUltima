@@ -47,6 +47,10 @@ extern "C"
 
 	PXPublic void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const outputStream);
 
+
+	PXPublic PXActionResult PXAPI PXCSLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXCSSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile);
+
 #ifdef __cplusplus
 }
 #endif

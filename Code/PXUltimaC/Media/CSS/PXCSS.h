@@ -8,6 +8,9 @@ extern "C"
 {
 #endif
 
+	PXPublic PXActionResult PXAPI PXCSSLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXCSSSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile);
+
 #ifdef __cplusplus
 }
 #endif

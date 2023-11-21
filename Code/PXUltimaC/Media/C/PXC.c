@@ -5,7 +5,7 @@
 
 #include <OS/Console/PXConsole.h>
 
-#define PXCDebugOutput 0
+#define PXCDebugOutput 1
 
 PXBool PXCElementHasName(PXCElement* const pxCElement)
 {
@@ -616,7 +616,7 @@ PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputSt
 
 
 #if PXCDebugOutput
-            printf("| MemberField: %s Type, Name %-20s |\n", type, name);
+            printf("| MemberField: %s Type, Name %-20s |\n", variableType, variableName);
             printf("| - %-17s : %-20s |\n", "Const", PXFlagIsSet(flagList, MemberFieldFlagIsConstType) ? "Yes" : "No");
             printf("| - %-17s : %-20s |\n", "Singed", PXFlagIsSet(flagList, MemberFieldFlagIsSigned) ? "Yes" : "No");
             printf("| - %-17s : %-20s |\n", "Adress", PXFlagIsSet(flagList, MemberFieldFlagIsAdress) ? "Yes" : "No");
@@ -919,39 +919,839 @@ PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const ou
     return PXActionSuccessful;
 }
 
-PXActionResult PXCFileLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXCParsePreprocessorCondition(PXDocument* const pxDocument, PXFile* const pxFile)
 {
-    PXCompilerSettings compilerSettings;
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
 
-    PXCompilerSettingsConstruct(&compilerSettings);
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
 
-    compilerSettings.TryAnalyseTypes = PXYes;
-    compilerSettings.CommentsKeep = PXYes;
-    compilerSettings.CommentSingleLineSize = 2;
-    compilerSettings.CommentSingleLine = "//";
-    compilerSettings.CommentMultibleLineBegin = "/*";
-    compilerSettings.CommentMultibleLineBeginSize = 2;
-    compilerSettings.CommentMultibleLineEnd = "*/";
-    compilerSettings.CommentMultibleLineEndSize = 2;
+    const PXBool isExpectedText = pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
 
-    PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings);
+    if (!isExpectedText)
+    {
+#if PXCDebugOutput
+        PXLogPrint
+        (
+            PXLoggingError,
+            "C",
+            "Makro 'if not defined' has invalid name"
+        );
+#endif
+    }
+
+#if PXCDebugOutput
+    char buffer[64];
+
+    PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, buffer, 64);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "C",
+        "If not defined : %s",
+        buffer
+    );
+#endif
+}
+
+PXActionResult PXAPI PXCParsePreprocessorDefine(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    const PXSize defineTypePosition = pxFile->DataCursor;
+
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    // PXFileWriteI8U(outputStream, 0xFF); // Write dummy define type
+
+     // Fetch name [Required]
+    {
+        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+        const PXBool isExpectedText = PXCompilerSymbolLexerGenericElement == pxCompilerSymbolEntry.ID;
+
+        if (!isExpectedText)
+        {
+#if PXCDebugOutput
+            printf("Makro define has invalid name\n");
+#endif
+        }
+
+        // Write define name
+       // PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+       // PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+#if PXCDebugOutput
+        char buffer[64];
+
+        PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, buffer, 64);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "C",
+            "Makro define name : %s",
+            buffer
+        );
+#endif
+    }
+
+
+    PXInt16U currentLineA = pxCompilerSymbolEntry.Line;
+
+    PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+    PXInt16U currentLineB = pxCompilerSymbolEntry.Line;
+
+    PXBool isNewLine = currentLineA != currentLineB;
+
+    if (isNewLine)
+    {
+        // Is Makro-Flag
+
+       // PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroFlag, defineTypePosition);
+    }
+    else
+    {
+        switch (pxCompilerSymbolEntry.ID)
+        {
+            case PXCompilerSymbolLexerBrackedRoundOpen:
+            {
+                // Is Makro-Function
+
+                const PXSize position = 0;// outputStream->DataCursor;
+                PXInt8U parameterListLength = 0;
+
+                //PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroFunction, defineTypePosition);
+               // PXFileWriteI8U(outputStream, 0xFF);
+
+                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry); // Remove the '('
+
+                while (1)
+                {
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+                    const PXBool isClosingBreaked = PXCompilerSymbolLexerBrackedRoundClose == pxCompilerSymbolEntry.ID;
+
+                    if (isClosingBreaked)
+                    {
+                        break;
+                    }
+
+                    ++parameterListLength;
+
+                    // PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+                    // PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+                    PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+                    switch (pxCompilerSymbolEntry.ID)
+                    {
+                        case PXCompilerSymbolLexerComma:
+                            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry); // Extract comma
+                            break;
+                        case PXCompilerSymbolLexerBrackedRoundClose:
+                            // done, dont do anything
+                            break;
+
+                        default: // Error
+                            break;
+                    }
+                }
+
+                // PXFileWriteAtI8U(outputStream, parameterListLength, position);
+
+                break;
+            }
+            default:
+            {
+                // Is makro-Value
+
+              //  PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroValue, defineTypePosition);
+                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+                // PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
+               //  PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+                break;
+            }
+        }
+    }
+}
+
+PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+    char* defineTypePosition = 0;
+    PXSize libraryNameLength = 0;
+
+    //PXFileWriteI8U(outputStream, 0xFF); // Write dummy define type
+
+    switch (pxCompilerSymbolEntry.ID)
+    {
+        case PXCompilerSymbolLexerBracketAngleOpen:
+        {
+            // case A) #include <xxxxxxx>
+
+
+
+           // PXFileWriteI8U(outputStream, 0xFF);
+
+            while (1)
+            {
+                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+                const PXBool isString = pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+
+                if (isString)
+                {
+                    if (!defineTypePosition)
+                    {
+                        defineTypePosition = pxCompilerSymbolEntry.Source;
+                    }
+#if 1
+
+                    libraryNameLength += pxCompilerSymbolEntry.Size;
+
+                    PXLogPrintString(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+#endif
+
+
+
+                    //  PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                }
+
+                const PXBool isEnd = pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerBracketAngleClose;
+
+                if (isEnd)
+                {
+#if PXCDebugOutput
+                    //printf("\n");
+#endif // 0
+                    break;
+                }
+
+                const PXBool isSlash = pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerSlash || pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerSlashBack;
+
+                if (isSlash)
+                {
+                    libraryNameLength += 1;
+
+                    //  PXFileWriteB(outputStream, "/", 1u);
+
+#if PXCDebugOutput
+                                       // printf("/");
+#endif // 0
+                }
+                else
+                {
+#if PXCDebugOutput
+                    printf("Failure, include wrong");
+#endif
+                    break;
+                }
+            }
+
+#if PXCDebugOutput
+            char buffer[64];
+
+            PXTextCopyA(defineTypePosition, libraryNameLength, buffer, 64);
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "C",
+                "Include library (global) : %s",
+                buffer
+            );
+#endif
+
+            break;
+        }
+        case PXCompilerSymbolLexerString:
+        {
+            // Case B) #include "xxxxxxxx"
+
+
+
+            const PXBool isExpectedText = pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+
+            if (!isExpectedText)
+            {
+#if PXCDebugOutput
+                printf("Makro include has invalid name\n");
+#endif
+            }
+
+            defineTypePosition = PXFileCursorPosition(pxFile);
+
+            // PXFileWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
+            // PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+
+#if PXCDebugOutput
+
+            printf("Makro include : ");
+            PXLogPrintStringLine(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+#endif
+
+            //PXFileWriteI8U(outputStream, PXCLibraryPathTypeLocale);
+
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+}
+
+PXActionResult PXAPI PXCParsePreprocessorPragma(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+    const PXBool isExpectedText = pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
+
+    if (!isExpectedText)
+    {
+#if PXCDebugOutput
+        printf("Makro pragma has invalid name\n");
+#endif
+    }
+
+#if PXCDebugOutput
+
+    printf("Makro pragma : ");
+    PXLogPrintString(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+#endif
+}
+
+PXActionResult PXAPI PXCParseTypeDefinition(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+    const CKeyWord keyWord = PXCFileAnalyseElement(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "C",
+        "typedef"
+    );
+
+    switch (keyWord)
+    {
+        case CKeyWordStruct:
+        {
+            PXCParseTypeContainer(pxDocument, pxFile);
+            break;
+        }
+        case CKeyWordUnion:
+        {
+            PXCParseTypeEnum(pxDocument, pxFile);
+            break;
+        }
+        case CKeyWordEnum:
+        {
+            PXCParseTypeContainer(pxDocument, pxFile);
+            break;
+        }
+        case CKeyWordUnkown:
+        {
+            // unkown Return type
+
+            PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+            // Parse possible attributes
+
+            // Is function pointer?
+            const PXBool isOpenBreaked = PXCompilerSymbolLexerBrackedRoundOpen == pxCompilerSymbolEntry.ID;
+
+            if (isOpenBreaked)
+            {            
+                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+                // check calling convention
+                {
+                    const PXBool isText = PXCompilerSymbolLexerGenericElement == pxCompilerSymbolEntry.ID;
+                 
+                    if (isText)
+                    {
+                        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                        PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+                    }             
+                }
+
+                const PXBool isAsterics = PXCompilerSymbolLexerAsterisk == pxCompilerSymbolEntry.ID;
+
+                if (isAsterics)
+                {
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry); // remove '*'
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry); // Get new
+
+                    char buffer[64];
+
+                    PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, buffer, 64);
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "C",
+                        "typedef Funtion : %s",
+                        buffer
+                    );
+
+
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+     
+                    const PXBool isAsterics = PXCompilerSymbolLexerBrackedRoundClose == pxCompilerSymbolEntry.ID;
+
+                    PXCParseTypeParameterList(pxDocument, pxFile);
+
+                }           
+
+                PXCParseEndOfCommand(pxDocument, pxFile);
+            }
+
+          
+
+            printf("");
+
+            // Unknown Type
+
+            // can be function resturn type
+            // can also be 
+
+        }
+        default:
+        {
+            return PXActionRefusedSymbolInvalid;
+        }
+    }
+
+    // Check for secoundary name
+    {
+
+    }
+
+    // Expect ';'
+    {
+        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+        const PXBool isSemiColon = pxCompilerSymbolEntry.ID == PXCompilerSymbolLexerSemiColon;
+
+        if (!isSemiColon)
+        {
+            // Handle error
+
+            return PXActionRefusedSymbolInvalid;
+        }
+    }
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXCParseEndOfCommand(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+    const PXBool isOpenBracked = PXCompilerSymbolLexerSemiColon == pxCompilerSymbolEntry.ID;
+
+    if (!isOpenBracked)
+    {
+        return PXActionRefusedSymbolInvalid;
+    }
+
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXCParseTypeParameterList(PXDocument* const pxDocument, PXFile* const pxFile)
 {
-    PXSize errorCounter = 0;
-    PXFile tokenSteam;
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
 
-    // Lexer - Level I
+    PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+    // expect '('
+    const PXBool isOpenBracked = PXCompilerSymbolLexerBrackedRoundOpen == pxCompilerSymbolEntry.ID;
+
+    if (!isOpenBracked)
     {
-        PXCFileLexicalAnalysis(inputStream, outputStream);
-
-        PXFileBufferExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
-
-        outputStream->DataCursor = 0;
+        printf("");
+        // Error
+        //PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
     }
+    else
+    {
+        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+    }
+
+
+
+
+
+    for (PXBool doLoop = PXTrue; doLoop; )
+    {
+        PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+        switch (pxCompilerSymbolEntry.ID)
+        {
+            case PXCompilerSymbolLexerBrackedRoundClose:
+            {
+                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                doLoop = PXFalse;
+                break;
+            }
+            case PXCompilerSymbolLexerComma:
+            {
+                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                // OK
+                break;
+            }
+            default:
+            {
+                PXCParseTypeDeclarationElement(pxDocument, pxFile);
+
+                break;
+            }               
+        }
+    }
+
+    return PXActionRefusedNotImplemented;
+}
+
+typedef struct PXCFunction
+{
+    int x;
+};
+
+PXActionResult PXAPI PXCParseFunctionDefinition(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+    // Return type
+    const CKeyWord keyWord = PXCFileAnalyseElement(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+    const PXBool isBuildIn = CKeyWordUnkown != keyWord;
+
+    {
+        PXCompilerSymbolEntry pxCompilerSymbolEntryCheck;
+
+        PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntryCheck);
+        const PXBool isPointer = PXCompilerSymbolLexerAsterisk == pxCompilerSymbolEntryCheck.ID;
+        if (isPointer)
+        {
+            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntryCheck);
+        }
+    }
+
+
+
+
+    char bufferReturnName[64];
+    char bufferFunctionName[64];
+
+    {
+        PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, bufferReturnName, 64);
+    }
+
+    // check calling convention
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+
+    // Check name
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+    // Check if numbers are here xxxx8(), this is problematic
+    {
+        PXCompilerSymbolEntry pxCompilerSymbolEntryInt;
+
+        PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntryInt);
+
+        const PXBool isNumber = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntryInt.ID;
+
+        if (isNumber)
+        {
+            PXCompilerSymbolEntryMergeCurrentWithNext(pxFile, &pxCompilerSymbolEntry);
+        }
+    }
+
+
+    {
+        PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, bufferFunctionName, 64);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "C",
+            "Function : %6s %s",
+            bufferReturnName,
+            bufferFunctionName
+        );
+    }
+
+    PXCParseTypeParameterList(pxDocument, pxFile);
+
+
+    PXCParseEndOfCommand(pxDocument, pxFile);
+}
+
+PXActionResult PXAPI PXCParseTypeDeclarationElement(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    // check if const
+    {
+        PXBool done = 0;
+
+        do
+        {
+            PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+            const CKeyWord keyWord = PXCFileAnalyseElement(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+
+            switch (keyWord)
+            {
+                case CKeyWordConst:
+                {
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry); // consume "const"
+                    break;
+                }
+                case CKeyWordUnsigned:
+                {
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry); // consume "unsigned"
+                    break;
+                }
+
+                default:
+                    done = 1;
+                    break;
+            }
+        }
+        while (!done);         
+    }
+
+    // Get data entry
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+    PXBool aa = PXCompilerSymbolLexerGenericElement == pxCompilerSymbolEntry.ID;
+
+
+    PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+    PXBool isPointer = PXCompilerSymbolLexerAsterisk == pxCompilerSymbolEntry.ID;
+
+    if (isPointer)
+    {
+        // Throw away '*'
+        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+        // Get new element
+        PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+        const CKeyWord keyWord = PXCFileAnalyseElement(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+        const PXBool isConst = CKeyWordConst == keyWord;
+
+        if (isConst)
+        {
+            // Throw away 'const'
+            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+        }
+    }
+
+    // Name
+
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+    const PXBool isName = PXCompilerSymbolLexerGenericElement == pxCompilerSymbolEntry.ID;
+
+
+    char nameBuffer[64];
+    PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, nameBuffer, 64);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "C",
+        "Member : %s",
+        nameBuffer
+    );
+}
+
+PXActionResult PXAPI PXCParseTypeDeclarationFull(PXDocument* const pxDocument, PXFile* const pxFile)
+{   
+    PXCParseTypeDeclarationElement(pxDocument, pxFile);
+
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    // ';'
+    PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+    const PXBool isSemiColon = PXCompilerSymbolLexerSemiColon == pxCompilerSymbolEntry.ID;
+
+    if (isSemiColon)
+    {
+        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+    }
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXCParseTypeContainer(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    // Get name [optional]
+    {
+        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+        const PXBool isText = PXCompilerSymbolLexerGenericElement == pxCompilerSymbolEntry.ID;
+
+        char buffer[64];
+
+        PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, buffer, 64);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "C",
+            "struct : %s",
+            buffer
+        );
+    }
+
+
+    // expect '{' 
+    {
+        PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+        const PXBool isCurlyBrackedOpen = PXCompilerSymbolLexerBracketCurlyOpen == pxCompilerSymbolEntry.ID;
+
+        if (isCurlyBrackedOpen)
+        {
+            PXBool isCurlyBrackedClose = 0; 
+
+            for(;;)
+            {
+                PXCParseTypeDeclarationFull(pxDocument, pxFile);
+
+                // expect '}' 
+
+                PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);    
+
+                isCurlyBrackedClose = PXCompilerSymbolLexerBracketCurlyClose == pxCompilerSymbolEntry.ID;
+
+                if (isCurlyBrackedClose)
+                {
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                    break;
+                }                        
+            }
+        }
+    }
+   
+
+
+
+
+
+    // Alias [optional]
+    {
+        PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+        const PXBool isText = PXCompilerSymbolLexerGenericElement == pxCompilerSymbolEntry.ID;
+
+        if (isText)
+        {
+            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+            // Alias
+            char buffer[64];
+
+            PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, buffer, 64);
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "C",
+                "alias : %s",
+                buffer
+            );
+        }
+    }
+
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXCParseTypeEnum(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+    char buffer[64];
+
+    PXTextCopyA(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size, buffer, 64);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "C",
+        "enum : %s",
+        buffer
+    );
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXCLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXFile tokenSteam;
+    PXFileConstruct(&tokenSteam);
+
+    //-----------------------------------------------------
+    // Lexer - Level I
+    //-----------------------------------------------------
+    {
+        PXCompilerSettings compilerSettings;
+
+        PXCompilerSettingsConstruct(&compilerSettings);
+
+        compilerSettings.TryAnalyseTypes = PXYes;
+        compilerSettings.CommentsKeep = PXYes;
+        compilerSettings.CommentSingleLineSize = 2;
+        compilerSettings.CommentSingleLine = "//";
+        compilerSettings.CommentMultibleLineBegin = "/*";
+        compilerSettings.CommentMultibleLineBeginSize = 2;
+        compilerSettings.CommentMultibleLineEnd = "*/";
+        compilerSettings.CommentMultibleLineEndSize = 2;
+
+        PXFileBufferAllocate(&tokenSteam, pxFile->DataAllocated * 5);
+
+        PXCompilerLexicalAnalysis(pxFile, &tokenSteam, &compilerSettings);
+    }
+
+
+
+    //-----------------------------------------------------
+    // Precompiler
+    //-----------------------------------------------------
+
+
+
+    //-----------------------------------------------------
+    // Compile 
+    //-----------------------------------------------------
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {
@@ -971,301 +1771,38 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
                 {
                     case CKeyWordDefine:
                     {
-                        const PXSize defineTypePosition = outputStream->DataCursor;
-
-                        PXFileWriteI8U(outputStream, 0xFF); // Write dummy define type
-
-                        // Fetch name [Required]
-                        {
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                            const PXBool isExpectedText = PXCompilerSymbolLexerGenericElement == compilerSymbolEntry.ID;
-
-                            if (!isExpectedText)
-                            {
-#if PXCDebugOutput
-                                printf("Makro define has invalid name\n");
-#endif
-                            }
-
-                            // Write define name
-                            PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
-                            PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-#if PXCDebugOutput
-                            printf("[C] Makro define name : ");
-                            PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-#endif
-                        }
-
-
-                        PXInt16U currentLineA = compilerSymbolEntry.Line;
-
-                        PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
-
-                        PXInt16U currentLineB = compilerSymbolEntry.Line;
-
-                        PXBool isNewLine = currentLineA != currentLineB;
-
-                        if (isNewLine)
-                        {
-                            // Is Makro-Flag
-
-                            PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroFlag, defineTypePosition);
-                        }
-                        else
-                        {
-                            switch (compilerSymbolEntry.ID)
-                            {
-                                case PXCompilerSymbolLexerBrackedRoundOpen:
-                                {
-                                    // Is Makro-Function
-
-                                    const PXSize position = outputStream->DataCursor;
-                                    PXInt8U parameterListLength = 0;
-
-                                    PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroFunction, defineTypePosition);
-                                    PXFileWriteI8U(outputStream, 0xFF);
-
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Remove the '('
-
-                                    while (1)
-                                    {
-                                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                                        const PXBool isClosingBreaked = PXCompilerSymbolLexerBrackedRoundClose == compilerSymbolEntry.ID;
-
-                                        if (isClosingBreaked)
-                                        {
-                                            break;
-                                        }
-
-                                        ++parameterListLength;
-
-                                        PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
-                                        PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-                                        PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
-
-                                        switch (compilerSymbolEntry.ID)
-                                        {
-                                            case PXCompilerSymbolLexerComma:
-                                                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Extract comma
-                                                break;
-                                            case PXCompilerSymbolLexerBrackedRoundClose:
-                                                // done, dont do anything
-                                                break;
-
-                                            default: // Error
-                                                break;
-                                        }
-                                    }
-
-                                    PXFileWriteAtI8U(outputStream, parameterListLength, position);
-
-                                    break;
-                                }
-                                default:
-                                {
-                                    // Is makro-Value
-
-                                    PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroValue, defineTypePosition);
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                                    PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
-                                    PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        break;
-                    }
-                    case CKeyWordIfNotDefined:
-                    {
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                        const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-
-                        if (!isExpectedText)
-                        {
-#if PXCDebugOutput
-                            printf("Makro 'if not defined' has invalid name\n");
-#endif
-                        }
-
-#if PXCDebugOutput
-
-                        printf("Is makro not defined? : ");
-                        PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-#endif
-
+                        PXCParsePreprocessorDefine(pxDocument, &tokenSteam);
                         break;
                     }
                     case CKeyWordIfDefined:
                     {
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                        const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-
-                        if (!isExpectedText)
-                        {
-#if PXCDebugOutput
-                            printf("Makro 'if defined' has invalid name\n");
-#endif
-                        }
-
-#if PXCDebugOutput
-
-                        printf("Is makro if defined? : ");
-                        PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-#endif
-
+                        PXCParsePreprocessorCondition(pxDocument, &tokenSteam);
+                        break;
+                    }
+                    case CKeyWordIfNotDefined:
+                    {
+                        PXCParsePreprocessorCondition(pxDocument, &tokenSteam);
                         break;
                     }
                     case CKeyWordInclude:
                     {
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                        const PXSize defineTypePosition = outputStream->DataCursor;
-
-                        PXFileWriteI8U(outputStream, 0xFF); // Write dummy define type
-
-                        switch (compilerSymbolEntry.ID)
-                        {
-                            case PXCompilerSymbolLexerBracketAngleOpen:
-                            {
-                                // case A) #include <xxxxxxx>
-
-#if PXCDebugOutput
-                                printf("[C] Makro include libary : (global) ");
-#endif
-
-                                PXSize stringLength = 0;
-                                PXSize stringLengthPosition = 0;
-
-                                stringLengthPosition = outputStream->DataCursor;
-
-                                PXFileWriteI8U(outputStream, 0xFF);
-
-                                while (1)
-                                {
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                                    const PXBool isString = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-
-                                    if (isString)
-                                    {
-#if 1
-                                        PXLogPrintString(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-#endif
-
-                                        stringLength += compilerSymbolEntry.Size;
-
-                                        PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-                                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                                    }
-
-                                    const PXBool isEnd = compilerSymbolEntry.ID == PXCompilerSymbolLexerBracketAngleClose;
-
-                                    if (isEnd)
-                                    {
-#if PXCDebugOutput
-                                        printf("\n");
-#endif // 0
-                                        break;
-                                    }
-
-                                    const PXBool isSlash = compilerSymbolEntry.ID == PXCompilerSymbolLexerSlash || compilerSymbolEntry.ID == PXCompilerSymbolLexerSlashBack;
-
-                                    if (isSlash)
-                                    {
-                                        stringLength += 1;
-
-                                        PXFileWriteB(outputStream, "/", 1u);
-
-#if PXCDebugOutput
-                                        printf("/");
-#endif // 0
-                                    }
-                                    else
-                                    {
-#if PXCDebugOutput
-                                        printf("Failure, include wrong");
-#endif
-                                        break;
-                                    }
-                                }
-
-                                PXFileWriteAtI8U(outputStream, stringLength, stringLengthPosition);
-                                PXFileWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
-
-                                break;
-                            }
-                            case PXCompilerSymbolLexerString:
-                            {
-                                // Case B) #include "xxxxxxxx"
-
-                                const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-
-                                if (!isExpectedText)
-                                {
-#if PXCDebugOutput
-                                    printf("Makro include has invalid name\n");
-#endif
-                                }
-
-
-                                PXFileWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
-                                PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-
-#if PXCDebugOutput
-
-                                printf("Makro include : ");
-                                PXLogPrintStringLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-#endif
-
-                                PXFileWriteI8U(outputStream, PXCLibraryPathTypeLocale);
-
-                                break;
-                            }
-
-                            default:
-                            {
-                                break;
-                            }
-                        }
-
+                        PXCParsePreprocessorInclude(pxDocument, &tokenSteam);
                         break;
                     }
                     case CKeyWordPragma:
                     {
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-                        const PXBool isExpectedText = compilerSymbolEntry.ID == PXCompilerSymbolLexerGenericElement;
-
-                        if (!isExpectedText)
-                        {
-#if PXCDebugOutput
-                            printf("Makro pragma has invalid name\n");
-#endif
-                        }
-
-#if PXCDebugOutput
-
-                        printf("Makro pragma : ");
-                        PXLogPrintString(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-#endif
-
+                        PXCParsePreprocessorPragma(pxDocument, &tokenSteam);
                         break;
                     }
                     case CKeyWordDefinitionEnd:
                     {
 #if PXCDebugOutput
-                        printf("End definition\n");
+                        PXLogPrint
+                        (
+                            PXLoggingInfo,
+                            "C",
+                            "Makro : End definition"
+                        );
 #endif
 
                         // OK?
@@ -1286,14 +1823,22 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
                 {
                     case CKeyWordTypeDefinition:
                     {
-                        PXCFileParseTypedef(&tokenSteam, outputStream);
+                        PXCParseTypeDefinition(pxDocument, &tokenSteam);
+                        break;
+                    }             
+                    case CKeyWordEnum:
+                    {
+                        PXCParseTypeEnum(pxDocument, &tokenSteam);
                         break;
                     }
                     case CKeyWordUnion:
-                    case CKeyWordEnum:
+                    {
+                        PXCParseTypeContainer(pxDocument, &tokenSteam);
+                        break;
+                    }
                     case CKeyWordStruct:
                     {
-                        PXCFileParseStructure(&tokenSteam, outputStream, keyWord, PXFalse);
+                        PXCParseTypeContainer(pxDocument, &tokenSteam);
                         break;
                     }
                     case CKeyWordExtern:
@@ -1322,7 +1867,13 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
                                     PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Consome '{'
 
 #if PXCDebugOutput
-                                    printf("[C] Disable name mangeling in C++ for following block\n");
+
+                                    PXLogPrint
+                                    (
+                                        PXLoggingInfo,
+                                        "C",
+                                        "Disable name mangeling in C++ for following block"                                        
+                                    );
 #endif
                                 }
                                 else
@@ -1343,8 +1894,7 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
                     }
                     case CKeyWordVoid:
                     {
-
-
+                        PXCParseFunctionDefinition(pxDocument, &tokenSteam);
                         break;
                     }
                     case CKeyWordUnkown: // Might declaration of variable or function.
@@ -1354,13 +1904,11 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
                         // There is no result, so we take this as an extra unrsolved paramater
 
                         const PXSize index = PXTextFindFirstCharacterBeforeA(compilerSymbolEntry.Source, 260, '(', ';');
-                        const PXBool found = index != (PXSize)-1;
+                        const PXBool isFunxtion = index != (PXSize)-1;
 
-                        if (found)
+                        if (isFunxtion)
                         {
-                            // Probably a function
-
-                            PXCFileParseFunctionPrototype(&tokenSteam, outputStream, &compilerSymbolEntry);
+                            PXCParseFunctionDefinition(pxDocument, &tokenSteam);
                         }
 
                         break;
@@ -1382,6 +1930,11 @@ PXActionResult PXCFileCompile(PXFile* const inputStream, PXFile* const outputStr
     }
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXCSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    return PXActionRefusedNotImplemented;
 }
 
 void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)

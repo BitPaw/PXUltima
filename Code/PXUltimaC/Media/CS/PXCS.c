@@ -329,3 +329,13 @@ void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const output
 	outputStream->DataSize = outputStream->DataCursor;
 	outputStream->DataCursor = 0;
 }
+
+PXActionResult PXAPI PXCSLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXCSSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+	return PXActionRefusedNotImplemented;
+}

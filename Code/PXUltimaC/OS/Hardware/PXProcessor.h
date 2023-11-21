@@ -1,7 +1,7 @@
 #ifndef PXProcessorINCLUDE
 #define PXProcessorINCLUDE
 
-#include <Media/PXType.h>
+#include <Media/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -206,7 +206,7 @@ extern "C"
 	PXPublic unsigned int PXProcessorFrequencyCurrent();
 	PXPublic unsigned int PXProcessorTimeReal();
 
-    PXPublic PXInt32U PXProcessorTemperature();
+    PXPublic PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp);
 
 
     //-----------------------------------------------------
