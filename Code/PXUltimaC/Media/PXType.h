@@ -107,12 +107,12 @@ extern "C"
 
 #define PXCDECL _cdecl
 #define PXSTDCALL _stdcall
-#define PXSYSCALL
+#define PXSYSCALL 
 #define PXAPIFASTCALL _fastcall
 
 #endif
 
-#define PXAPI PXSTDCALL
+#define PXAPI PXCDECL
 
 #if OSUnix
 #define PXPrivate static
@@ -201,6 +201,7 @@ extern "C"
 #define PXDataTypeAdress64 PXDataTypeAdressMask | PXDataTypeSize64
 #define PXDataTypeAdressFlex PXDataTypeAdressMask
 #define PXDataTypeAdress PXDataTypeAdressMask | sizeof(void*)
+#define PXDataTypeString PXDataTypeAdress
 
 //-------------------------------------------------
 // Text - used to parse singatures
@@ -222,6 +223,8 @@ extern "C"
 
 #define PXDataTypeInt08S PXDataTypeSize08 | PXDataTypeIntS
 #define PXDataTypeInt08U PXDataTypeSize08 | PXDataTypeIntU
+
+#define PXDataTypeBool PXDataTypeInt08U
 
 #define PXDataTypeInt16U PXDataTypeSize16 | PXDataTypeIntS
 #define PXDataTypeInt16SLE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianLittle
@@ -247,75 +250,13 @@ extern "C"
 #define PXDataTypeInt32ULEOnlyIf32B PXDataTypeInt32ULE | PXDataTypeIgnoreIn32B
 #define PXDataTypeInt32ULEOnlyIf64B PXDataTypeInt32ULE | PXDataTypeIgnoreIn64B
 
+#define PXDataTypeSize PXDataTypeInt64U
+
 #define PXDataTypeIntFlexLE | PXDataTypeBaseNumeric | PXDataTypeEndianLittle
 #define PXDataTypeIntFlexBE | PXDataTypeBaseNumeric | PXDataTypeEndianBig
 
 #define PXDataTypeFloat PXDataTypeSize32 | PXDataTypeBaseDecimal
 #define PXDataTypeDouble PXDataTypeSize64 | PXDataTypeBaseDecimal
-
-typedef enum PXDataType_
-{
-	PXDataTypeTypeInvalid,
-
-	//-------------------------------------------------
-	// Emoty space
-	//-------------------------------------------------
-	PXDataTypePadding, // Use adress as offset value
-
-	//-------------------------------------------------
-	// Text - used to parse singatures
-	//-------------------------------------------------
-	PXDataTypeTextx2,
-	PXDataTypeTextx4,
-	PXDataTypeTextx8,
-
-	//-------------------------------------------------
-	// Adress, read as spesified but store it as (void*)
-	//-------------------------------------------------
-	PXDataTypeAdress8Bit,
-	PXDataTypeAdress16Bit,
-	PXDataTypeAdress32Bit,
-	PXDataTypeAdress64Bit,
-
-
-	//-------------------------------------------------
-	// Int - Flexible Modes
-	//-------------------------------------------------
-	PXDataTypeAdressFlexWWW, // 32-Bit or 64-Bit
-	PXDataTypeInt16Flex, // Big or little endian
-	PXDataTypeInt32Flex,
-	PXDataTypeInt32Flex32ONLY,
-	PXDataTypeInt32Flex64ONLY,
-	PXDataTypeInt64Flex,
-
-	//-------------------------------------------------
-	// Int - Normal
-	//-------------------------------------------------
-	PXDataTypeInt8S,
-	PXDataTypeInt8U,
-
-	PXDataTypeLEInt16S,
-	PXDataTypeLEInt16U,
-	PXDataTypeLEInt32S,
-	PXDataTypeLEInt32U,
-	PXDataTypeLEInt64S,
-	PXDataTypeLEInt64U,
-
-	PXDataTypeBEInt16S,
-	PXDataTypeBEInt16U,
-	PXDataTypeBEInt32S,
-	PXDataTypeBEInt32U,
-	PXDataTypeBEInt64S,
-	PXDataTypeBEInt64U,
-
-	PXDataTypeFloatWWW,
-	PXDataTypeDoubleWWW
-}
-PXDataType;
-
-
-
-
 
 	typedef unsigned char PXByte;
 	typedef unsigned char PXBool;

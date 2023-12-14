@@ -23,7 +23,7 @@ extern "C"
 
 	PXPublic void PXAPI PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize);
 
-	PXPublic void PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height);
+	PXPublic void PXAPI PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height);
 
 	// QueryDisplayConfig 
 

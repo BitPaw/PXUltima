@@ -1398,7 +1398,7 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount);
 	PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
 
-
+	PXPublic PXActionResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL* const pxOpenGL, PXImage* const pxImage);
 
 
 	PXPublic void PXAPI PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext);
@@ -1444,7 +1444,7 @@ extern "C"
 	// render
 
 	PXPublic void PXAPI PXOpenGLDrawArrays(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize offset, const PXSize amount);
-	PXPublic void PXAPI PXOpenGLDrawElements(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize amount, const PXDataType pxDataType, const void* const indexList);
+	PXPublic void PXAPI PXOpenGLDrawElements(const PXOpenGL* const openGLContext, const PXGraphicDrawMode renderMode, const PXSize amount, const PXInt32U pxDataType, const void* const indexList);
 
 
 
@@ -1509,7 +1509,7 @@ extern "C"
 		PXOpenGL* const openGLContext,
 		const PXInt32U index,
 		const PXInt32U size,
-		const PXDataType datatype,
+		const PXInt32U datatype,
 		const PXBool normalized,
 		const PXInt32U stride,
 		const PXSize offset

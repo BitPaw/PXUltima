@@ -4,7 +4,7 @@
 
 #include <OS/Memory/PXMemory.h>
 
-void PXClientConstruct(PXClient* const pxClient)
+void PXAPI PXClientConstruct(PXClient* const pxClient)
 {
     PXClear(PXClient, pxClient);
 
@@ -12,7 +12,7 @@ void PXClientConstruct(PXClient* const pxClient)
     PXSocketConstruct(&pxClient->SocketClient);
 }
 
-void PXClientDestruct(PXClient* const pxClient)
+void PXAPI PXClientDestruct(PXClient* const pxClient)
 {
     PXSocketDestruct(&pxClient->SocketServer);
     PXSocketDestruct(&pxClient->SocketClient);
@@ -20,7 +20,7 @@ void PXClientDestruct(PXClient* const pxClient)
     PXClientConstruct(pxClient);
 }
 
-PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
+PXActionResult PXAPI PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
 {
     if (pxClient->SocketClient.ID == PXSocketUnused)
     {
@@ -36,7 +36,7 @@ PXActionResult PXClientSendData(PXClient* const pxClient, const void* const data
     return sendResult;
 }
 
-PXActionResult PXClientConnectToSelf(PXClient* const client, const PXInt16U port)
+PXActionResult PXAPI PXClientConnectToSelf(PXClient* const client, const PXInt16U port)
 {
     PXText ip;
     PXTextMakeFixedA(&ip, "127.0.0.1");
@@ -44,7 +44,7 @@ PXActionResult PXClientConnectToSelf(PXClient* const client, const PXInt16U port
     return PXClientConnectToServer(client, &ip, port);
 }
 
-PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port)
+PXActionResult PXAPI PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port)
 {
     PXSocket pxSocketList[3];
     const PXSize pxSocketListSizeMax = 3;
@@ -116,7 +116,7 @@ PXActionResult PXClientConnectToServer(PXClient* const client, const PXText* con
     return lastError;
 }
 
-PXActionResult PXClientDisconnectFromServer(PXClient* const client)
+PXActionResult PXAPI PXClientDisconnectFromServer(PXClient* const client)
 {
     PXSocketClose(&client->SocketClient);
     PXSocketConstruct(&client->SocketServer);

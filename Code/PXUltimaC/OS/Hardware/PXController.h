@@ -33,12 +33,12 @@ extern "C"
 
 	typedef void (*NewControllerDetectedCallback)(PXControllerID controllerID);
 
-	PXPublic PXBool PXControllerScanDevices(NewControllerDetectedCallback callback);
-	PXPublic PXBool PXControllerDataGet(PXController* controller);
+	PXPublic PXBool PXAPI PXControllerScanDevices(NewControllerDetectedCallback callback);
+	PXPublic PXBool PXAPI PXControllerDataGet(PXController* controller);
 
 #if PXWindowUSE
-	PXPublic PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID);
-	PXPublic PXBool PXControllerDetachToWindow(const PXControllerID controllerID);
+	PXPublic PXBool PXAPI PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID);
+	PXPublic PXBool PXAPI PXControllerDetachToWindow(const PXControllerID controllerID);
 #endif
 
 #ifdef __cplusplus

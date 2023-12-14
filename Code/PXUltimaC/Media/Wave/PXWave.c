@@ -20,7 +20,7 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const px
 
 	// PXRIFF
 	{
-		const PXActionResult actionResult = PXRIFFParse(&riff, pxFile);
+		const PXActionResult actionResult = PXRIFFLoadFromFile(&riff, pxFile);
 
 		PXActionReturnOnError(actionResult);
 
@@ -119,7 +119,7 @@ PXActionResult PXAPI PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFi
 		riff.ChunkSize = dataSize + 36;
 		riff.Format = PXRIFFWaveformAudio;
 
-		const PXActionResult riffResult = PXRIFFSerialize(&riff, pxFile);
+		const PXActionResult riffResult = PXRIFFSaveToFile(&riff, pxFile);
 	}
 
 	// Write Format chunk

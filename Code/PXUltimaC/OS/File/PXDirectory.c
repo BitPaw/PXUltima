@@ -23,7 +23,7 @@
 #define OSWorkingDirectoryChangeA _chdir
 #define OSWorkingDirectoryChangeW _wchdir
 
-void PXFileElementInfoCOnvertFrom(PXFileElementInfo* const pxFileElementInfo, WIN32_FIND_DATA* const findData, PXInt8U depth)
+void PXAPI PXFileElementInfoCOnvertFrom(PXFileElementInfo* const pxFileElementInfo, WIN32_FIND_DATA* const findData, PXInt8U depth)
 {
 	pxFileElementInfo->Name = findData->cFileName;
 	pxFileElementInfo->NameSize = PXTextLengthA(findData->cFileName, PXTextUnkownLength);
@@ -55,7 +55,7 @@ void PXFileElementInfoCOnvertFrom(PXFileElementInfo* const pxFileElementInfo, WI
 
 #endif
 
-PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName)
+PXActionResult PXAPI PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName)
 {
 	PXClear(PXDirectoryIterator, pxDirectoryIterator);
 
@@ -114,7 +114,7 @@ PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, c
 #endif
 }
 
-PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
+PXBool PXAPI PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
 {
 #if OSUnix
 	struct dirent* directoryEntry;
@@ -209,7 +209,7 @@ PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
 #endif
 }
 
-PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
+PXBool PXAPI PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
 {
 #if OSUnix
 	const int returnCode = closedir(pxDirectoryIterator->ID);
@@ -224,7 +224,7 @@ PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
 #endif
 }
 
-PXActionResult PXDirectoryCreate(const PXText* const directoryName)
+PXActionResult PXAPI PXDirectoryCreate(const PXText* const directoryName)
 {
 	switch (directoryName->Format)
 	{
@@ -305,7 +305,7 @@ PXActionResult PXDirectoryCreate(const PXText* const directoryName)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName)
+PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const directoryName)
 {
 	switch (directoryName->Format)
 	{
@@ -341,7 +341,7 @@ PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName)
 	return PXActionInvalidStateImpossible;
 }
 
-PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory)
+PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory)
 {
 	switch (workingDirectory->Format)
 	{
@@ -378,7 +378,7 @@ PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory)
 	return PXActionInvalidStateImpossible;
 }
 
-PXActionResult PXDirectoryDelete(const PXText* const directoryName)
+PXActionResult PXAPI PXDirectoryDelete(const PXText* const directoryName)
 {
 	switch (directoryName->Format)
 	{
@@ -413,12 +413,12 @@ PXActionResult PXDirectoryDelete(const PXText* const directoryName)
 	return PXActionInvalidStateImpossible;
 }
 
-PXActionResult PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
+PXActionResult PXAPI PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
 {
 	return PXActionInvalid;
 }
 
-PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo)
+PXActionResult PXAPI PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo)
 {
     #if 0
 	wchar_t buffer[300];
@@ -551,7 +551,7 @@ PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDi
 	return PXActionSuccessful;
 }
 
-PXActionResult PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create)
+PXActionResult PXAPI PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create)
 {
 #if OSUnix
 #elif OSWindows

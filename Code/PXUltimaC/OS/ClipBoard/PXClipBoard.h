@@ -42,25 +42,25 @@ extern "C"
 	}
 	PXClipBoardFormat;
 
-	PXPrivate PXInt32U PXClipBoardFormatToID(const PXClipBoardFormat PXClipBoardFormat);
-	PXPrivate PXClipBoardFormat PXClipBoardFormatFromID(const PXInt32U PXClipBoardFormat);
-
 	typedef struct PXClipBoard_
 	{
 		unsigned int __Dummy_;
 	}
 	PXClipBoard;
 
+	PXPrivate PXInt32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat PXClipBoardFormat);
+	PXPrivate PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXInt32U PXClipBoardFormat);
+
 	// Open PXClipBoard, close it imedidly after using!
 	// Fails if another window has the PXClipBoard open.
-	PXPublic PXActionResult PXClipBoardOpen(PXClipBoard* const PXClipBoard);
+	PXPublic PXActionResult PXAPI PXClipBoardOpen(PXClipBoard* const PXClipBoard);
 
 	// Use this right after using!
-	PXPublic PXActionResult PXClipBoardClose(PXClipBoard* const PXClipBoard);
+	PXPublic PXActionResult PXAPI PXClipBoardClose(PXClipBoard* const PXClipBoard);
 
-	PXPublic PXActionResult PXClipBoardSet(PXClipBoard* const PXClipBoard, const PXClipBoardFormat format, const void* data);
+	PXPublic PXActionResult PXAPI PXClipBoardSet(PXClipBoard* const PXClipBoard, const PXClipBoardFormat format, const void* data);
 
-	PXPublic PXActionResult PXClipBoardClear(PXClipBoard* const PXClipBoard);
+	PXPublic PXActionResult PXAPI PXClipBoardClear(PXClipBoard* const PXClipBoard);
 
 
 #ifdef __cplusplus

@@ -13,9 +13,9 @@ const static char PXOGGHeaderSignature[4] = { 'O','g','g','S' };
 
 PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
 {
-	PXOGG* ogg = PXNull;
+	PXOGG ogg;
 
-	PXMemoryClear(ogg, sizeof(PXOGG));
+	PXClear(PXOGG, &ogg);
 
 	while(!PXFileIsAtEnd(pxFile))
 	{
@@ -27,7 +27,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxF
 
 		const PXFileDataElementType pxDataStreamElementList[] =
 		{ 
-			{signature.Data,PXDataTypeDatax4},
+			{signature.Data, PXDataTypeDatax4},
 			{&page.Version, PXDataTypeInt08U},
 			{&page.HeaderType, PXDataTypeInt08U},
 			{&page.GranulePosition, PXDataTypeInt32UBE},

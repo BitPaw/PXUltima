@@ -382,6 +382,9 @@ extern "C"
     PXPublic PXActionResult PXAPI PXDirectXDevicePhysicalListFetchFunction(PXDirectX* const pxDirectX, const PXInt32U pxGraphicDevicePhysicalListSize, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
 
 
+    PXPublic PXActionResult PXAPI PXDirectXSwapIntervalSet(PXDirectX* const pxDirectX, const PXInt32U interval);
+    PXPublic PXActionResult PXAPI PXDirectXSwapIntervalGet(PXDirectX* const pxDirectX, PXInt32U* const interval);
+
 #endif
 
 

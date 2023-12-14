@@ -53,11 +53,22 @@ extern "C"
 	}
 	PXLobbyUserFriendshipStatus;
 
+	typedef struct PXLobbyChatMessage_
+	{
+		int x;
+	}
+	PXLobbyChatMessage;
+
+	typedef struct PXLobbyPlayerItem_
+	{
+		int x;
+	}
+	PXLobbyPlayerItem;
+
 	typedef struct PXLobbyPlayer_
 	{
-		PXInt64U ID; // Unique ID for the user.
-	
-		PXInt32U Level; // Used in Steam as the account Level
+		PXInt64U ProfileID; // Unique ID for the user.	
+		PXInt32U ProfileAccountLevel; // Used in some programs
 
 		char Name[64]; // Username, can be changed at will.
 		PXSize NameSize; // Username size
@@ -70,6 +81,8 @@ extern "C"
 
 	typedef struct PXLobby_
 	{
+		void* Owner; // Is passed to every callback as a first argument.
+
 		PXLobbyType Type;
 
 		// List of clients/players/server
@@ -84,192 +97,104 @@ extern "C"
 
 	// For non dedicated servers, promote player to host the server.
 	// if you dont have permission, you start a vote.
-	typedef PXActionResult(PXAPI* PXLobbyUserPromoteToHost)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserRename)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserKick)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserBan)(void* const pxSteam);
+	typedef PXActionResult(PXAPI* PXLobbyUserPromoteToHost)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyUserRename)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyUserKick)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyUserBan)(void* const owner);
 
-	typedef PXActionResult(PXAPI* PXLobbyUserMe)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserListAll)(void* const pxSteam);
+	typedef PXActionResult(PXAPI* PXLobbyUserMe)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyUserListAll)(void* const owner);
 
-	typedef PXActionResult(PXAPI* PXLobbyUserProfileIconFetch)(void* const pxSteam, PXImage* const image);
-
-
-
-	typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAmount)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListSingle)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAll)(void* const pxSteam);
-
-	typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAmount)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListSingle)(void* const pxSteam);
-	typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAll)(void* const pxSteam);
-
-
-#if 0
-
-	// User is in a game pressing the talk button (will suppress the microphone for all voice comms from the Steam friends UI)
-	PXSteamPublic void PXSteamSetInGameVoiceSpeaking(PXSteam* const pxSteam, const PXSteamID pxSteamID, bool bSpeaking);
-
-	// activates the game overlay, with an optional dialog to open 
-	// valid options include "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements",
-	// "chatroomgroup/nnnn"
-	PXSteamPublic void PXSteamActivateGameOverlay(PXSteam* const pxSteam, const char* pchDialog);
-
-	// activates game overlay to a specific place
-	// valid options are
-	//		"steamid" - opens the overlay web browser to the specified user or groups profile
-	//		"chat" - opens a chat window to the specified user, or joins the group chat 
-	//		"jointrade" - opens a window to a Steam Trading session that was started with the ISteamEconomy/StartTrade Web API
-	//		"stats" - opens the overlay web browser to the specified user's stats
-	//		"achievements" - opens the overlay web browser to the specified user's achievements
-	//		"friendadd" - opens the overlay in minimal mode prompting the user to add the target user as a friend
-	//		"friendremove" - opens the overlay in minimal mode prompting the user to remove the target friend
-	//		"friendrequestaccept" - opens the overlay in minimal mode prompting the user to accept an incoming friend invite
-	//		"friendrequestignore" - opens the overlay in minimal mode prompting the user to ignore an incoming friend invite
-	PXSteamPublic void PXSteamActivateGameOverlayToUser(PXSteam* const pxSteam, const char* pchDialog, const PXSteamID steamID);
-
-	// activates game overlay web browser directly to the specified URL
-	// full address with protocol type is required, e.g. http://www.steamgames.com/
-	PXSteamPublic void ActivateGameOverlayToWebPage(PXSteam* const pxSteam, const char* pchURL, PXActivateGameOverlayToWebPageMode eMode);
-
-	// activates game overlay to store page for app
-	PXSteamPublic void PXSteamActivateGameOverlayToStore(PXSteam* const pxSteam, unsigned int nAppID, PXSteamOverlayToStoreFlag eFlag);
-
-	// Mark a target user as 'played with'. This is a client-side only feature that requires that the calling user is in game 
-	PXSteamPublic void PXSteamSetPlayedWith(PXSteam* const pxSteam, const PXSteamID pxSteamIDPlayedWith);
-
-	// activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.
-	PXSteamPublic void PXSteamActivateGameOverlayInviteDialog(PXSteam* const pxSteam, const PXSteamID steamIDLobby);
+	typedef PXActionResult(PXAPI* PXLobbyUserProfileIconFetch)(void* const owner, PXImage* const image);
 
 
 
+	typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAmount)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListSingle)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAll)(void* const owner);
+
+	typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAmount)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListSingle)(void* const owner);
+	
+	typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAll)(void* const owner);
+
+	// If you payed with a guy, store that info localy
+	typedef PXActionResult(PXAPI* PXLobbyUserRemember)(void* const owner);
 
 
+	// If User is ingame speaking (Push to talk) set this to supress a current voice call.
+	typedef PXActionResult(PXAPI* PXLobbyUserVoiceInGameSet)(void* const owner);
+
+	// User can be NULL
+	typedef PXActionResult(PXAPI* PXLobbyExternalOverlayActivate)(void* const owner);
+
+#if 1
+
+	// Fetch user inform,at
+	typedef PXActionResult(PXAPI* PXLobbyUserInformationRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const PXInt32U fetchFlagList);
 
 
+	typedef PXActionResult(PXAPI* PXLobbyClanOfficerListRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-	// requests information about a user - persona name & avatar
-	// if bRequireNameOnly is set, then the avatar of a user isn't downloaded 
-	// - it's a lot slower to download avatars and churns the local cache, so if you don't need avatars, don't request them
-	// if returns true, it means that data is being requested, and a PersonaStateChanged_t callback will be posted when it's retrieved
-	// if returns false, it means that we already have all the details about that user, and functions can be called immediately
-	PXSteamPublic PXSteamBool PXSteamRequestUserInformation(PXSteam* const pxSteam, const PXSteamID pxSteamID, const PXSteamBool bRequireNameOnly);
 
-	// requests information about a clan officer list
-	// when complete, data is returned in ClanOfficerListResponse_t call result
-	// this makes available the calls below
-	// you can only ask about clans that a user is a member of
-	// note that this won't download avatars automatically; if you get an officer,
-	// and no avatar image is available, call RequestUserInformation( steamID, false ) to download the avatar
-	PXSteamPublic __int64 PXSteamRequestClanOfficerList(PXSteam* const pxSteam, const PXSteamID pxSteamID);
+	typedef PXActionResult(PXAPI* PXLobbyClanOwnerGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-	// iteration of clan officers - can only be done when a RequestClanOfficerList() call has completed
+	typedef PXActionResult(PXAPI* PXLobbyClanOfficerCountGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	
+	typedef PXActionResult(PXAPI* PXLobbyClanOfficerByIndexGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, int iOfficer);
 
-	// returns the steamID of the clan owner
-	PXSteamPublic PXSteamID PXSteamGetClanOwner(PXSteam* const pxSteam, const PXSteamID pxSteamID);
-	// returns the number of officers in a clan (including the owner)
-	PXSteamPublic int PXSteamGetClanOfficerCount(PXSteam* const pxSteam, const PXSteamID pxSteamID);
-	// returns the steamID of a clan officer, by index, of range [0,GetClanOfficerCount)
-	PXSteamPublic PXSteamID PXSteamGetClanOfficerByIndex(PXSteam* const pxSteam, const PXSteamID pxSteamID, int iOfficer);
-	// if current user is chat restricted, he can't send or receive any text/voice chat messages.
-	// the user can't see custom avatars. But the user can be online and send/recv game invites.
-	// a chat restricted user can't add friends or join any groups.
-	PXSteamPublic unsigned int PXSteamGetUserRestrictions(PXSteam* const pxSteam);
+	typedef PXActionResult(PXAPI* PXLobbyUserRestrictionsGet)(void* const owner);
 
-	// Rich Presence data is automatically shared between friends who are in the same game
-	// Each user has a set of Key/Value pairs
-	// Note the following limits: k_cchMaxRichPresenceKeys, k_cchMaxRichPresenceKeyLength, k_cchMaxRichPresenceValueLength
-	// There are five magic keys:
-	//		"status"  - a UTF-8 string that will show up in the 'view game info' dialog in the Steam friends list
-	//		"connect" - a UTF-8 string that contains the command-line for how a friend can connect to a game
-	//		"steam_display"				- Names a rich presence localization token that will be displayed in the viewing user's selected language
-	//									  in the Steam client UI. For more info: https://partner.steamgames.com/doc/api/ISteamFriends#richpresencelocalization
-	//		"steam_player_group"		- When set, indicates to the Steam client that the player is a member of a particular group. Players in the same group
-	//									  may be organized together in various places in the Steam UI.
-	//		"steam_player_group_size"	- When set, indicates the total number of players in the steam_player_group. The Steam client may use this number to
-	//									  display additional information about a group when all of the members are not part of a user's friends list.
-	// GetFriendRichPresence() returns an empty string "" if no value is set
-	// SetRichPresence() to a NULL or an empty string deletes the key
-	// You can iterate the current set of keys for a friend with GetFriendRichPresenceKeyCount()
-	// and GetFriendRichPresenceKeyByIndex() (typically only used for debugging)
-	PXSteamPublic PXSteamBool PXSteamRichPresenceChange(PXSteam* const pxSteam, const char* pchKey, const char* pchValue);
-	PXSteamPublic void PXSteamClearRichPresence(PXSteam* const pxSteam);
-	PXSteamPublic PXSteamBool PXSteamFriendRichPresenceFetch(PXSteam* const pxSteam, const PXSteamID steamIDFriend, const char* pchKey, void* const outputBuffer, const unsigned int outputBufferSize);
-	PXSteamPublic int PXSteamFriendRichPresenceKeyCountFetch(PXSteam* const pxSteam, const PXSteamID steamIDFriend, void* const outputBuffer, const unsigned int outputBufferSize);
-	PXSteamPublic PXSteamBool PXSteamFriendRichPresenceKeyByIndex(PXSteam* const pxSteam, const PXSteamID steamIDFriend, int iKey);
-	// Requests rich presence for a specific user.
-	PXSteamPublic void PXSteamRequestFriendRichPresence(PXSteam* const pxSteam, const PXSteamID steamIDFriend);
 
-	// Rich invite support.
-	// If the target accepts the invite, a GameRichPresenceJoinRequested_t callback is posted containing the connect string.
-	// (Or you can configure your game so that it is passed on the command line instead.  This is a deprecated path; ask us if you really need this.)
-	PXSteamPublic PXSteamBool PXSteamUserInviteToGame(PXSteam* const pxSteam, const PXSteamID steamIDFriend, const char* pchConnectString);
+	typedef PXActionResult(PXAPI* PXLobbyRichPresenceChange)(void* const owner, const char* pchKey, const char* pchValue);
+	typedef PXActionResult(PXAPI* PXLobbyClearRichPresence)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceFetch)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchKey, void* const outputBuffer, const unsigned int outputBufferSize);
+	typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceKeyCountFetch)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, void* const outputBuffer, const unsigned int outputBufferSize);
+	typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceKeyByIndex)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, int iKey);
+	
+	typedef PXActionResult(PXAPI* PXLobbyRequestFriendRichPresence)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-	// recently-played-with friends iteration
-	// this iterates the entire list of users recently played with, across games
-	// GetFriendCoplayTime() returns as a unix time
-	PXSteamPublic int PXSteamGetCoplayFriendCount(PXSteam* const pxSteam);
-	PXSteamPublic PXSteamID PXSteamGetCoplayFriend(PXSteam* const pxSteam, int iCoplayFriend);
-	PXSteamPublic int PXSteamGetFriendCoplayTime(PXSteam* const pxSteam, const PXSteamID steamIDFriend);
-	PXSteamPublic unsigned int PXSteamGetFriendCoplayGame(PXSteam* const pxSteam, const PXSteamID steamIDFriend);
+	typedef PXActionResult(PXAPI* PXLobbyUserInviteToGame)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchConnectString);
 
-	// chat interface for games
-	// this allows in-game access to group (clan) chats from in the game
-	// the behavior is somewhat sophisticated, because the user may or may not be already in the group chat from outside the game or in the overlay
-	// use ActivateGameOverlayToUser( "chat", steamIDClan ) to open the in-game overlay version of the chat
-	PXSteamPublic __int64 PXSteamJoinClanChatRoom(PXSteam* const pxSteam, const PXSteamID pxSteamID);
-	PXSteamPublic PXSteamBool PXSteamLeaveClanChatRoom(PXSteam* const pxSteam, const PXSteamID pxSteamID);
-	PXSteamPublic int PXSteamGetClanChatMemberCount(PXSteam* const pxSteam, const PXSteamID pxSteamID);
-	PXSteamPublic PXSteamID PXSteamGetChatMemberByIndex(PXSteam* const pxSteam, const PXSteamID pxSteamID, int iUser);
-	PXSteamPublic PXSteamBool PXSteamSendClanChatMessage(PXSteam* const pxSteam, const PXSteamID pxSteamIDChat, const char* pchText);
-	PXSteamPublic int PXSteamGetClanChatMessage(PXSteam* const pxSteam, const PXSteamID pxSteamIDChat, int iMessage, void* prgchText, int cchTextMax, PXSteamChatEntryType* peChatEntryType, PXSteamID* psteamidChatter);
-	PXSteamPublic PXSteamBool PXSteamIsClanChatAdmin(PXSteam* const pxSteam, const PXSteamID pxSteamIDChat, const PXSteamID pxSteamID);
 
-	// interact with the Steam (game overlay / desktop)
-	PXSteamPublic PXSteamBool PXSteamIsClanChatWindowOpenInSteam(PXSteam* const pxSteam, const PXSteamID pxSteamIDChat);
-	PXSteamPublic PXSteamBool PXSteamOpenClanChatWindowInSteam(PXSteam* const pxSteam, const PXSteamID pxSteamIDChat);
-	PXSteamPublic PXSteamBool PXSteamCloseClanChatWindowInSteam(PXSteam* const pxSteam, const PXSteamID pxSteamIDChat);
+	typedef PXActionResult(PXAPI* PXLobbyCoplayFriendCountGet)(void* const owner);
+	typedef PXActionResult(PXAPI* PXLobbyCoplayFriendGet)(void* const owner, int iCoplayFriend);
+	typedef PXActionResult(PXAPI* PXLobbyFriendCoplayTimeGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyFriendCoplayGameGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-	// peer-to-peer chat interception
-	// this is so you can show P2P chats inline in the game
-	PXSteamPublic PXSteamBool PXSteamSetListenForFriendsMessages(PXSteam* const pxSteam, bool bInterceptEnabled);
-	PXSteamPublic PXSteamBool PXSteamReplyToFriendMessage(PXSteam* const pxSteam, const PXSteamID steamIDFriend, const char* pchMsgToSend);
-	PXSteamPublic int PXSteamGetFriendMessage(PXSteam* const pxSteam, const PXSteamID steamIDFriend, int iMessageID, void* pvData, int cubData, PXSteamChatEntryType* peChatEntryType);
 
-	// following apis
+	typedef PXActionResult(PXAPI* PXLobbyClanChatRoomJoin)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyClanChatRoomLeave)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyClanChatMemberCountGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyChatMemberByIndexGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, int iUser);
+	typedef PXActionResult(PXAPI* PXLobbyClanChatMessageSend)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchText);
+	typedef PXActionResult(PXAPI* PXLobbyClanChatMessageGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyChatMessage* const pxLobbyChatMessage);
+	typedef PXActionResult(PXAPI* PXLobbyClanChatIsAdmin)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-	PXSteamPublic __int64 PXSteamGetFollowerCount(PXSteam* const pxSteam, const PXSteamID steamID);
-	PXSteamPublic __int64 PXSteamIsFollowing(PXSteam* const pxSteam, const PXSteamID steamID);
-	PXSteamPublic __int64 PXSteamEnumerateFollowingList(PXSteam* const pxSteam, unsigned int unStartIndex);
+	typedef PXActionResult(PXAPI* PXLobbyClanChatWindowInExternalOpen)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyClanChatWindowInExternalClose)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-	PXSteamPublic PXSteamBool PXSteamIsClanPublic(PXSteam* const pxSteam, const PXSteamID pxSteamID);
-	PXSteamPublic PXSteamBool PXSteamIsClanOfficialGameGroup(PXSteam* const pxSteam, const PXSteamID pxSteamID);
+	typedef PXActionResult(PXAPI* PXLobbyFriendsMessagesListenForSet)(void* const owner, const PXBool enable);
+	typedef PXActionResult(PXAPI* PXLobbyFriendMessageReplyTo)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchMsgToSend);
+	typedef PXActionResult(PXAPI* PXLobbyFriendMessageGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyChatMessage* const pxLobbyChatMessage);
 
-	/// Return the number of chats (friends or chat rooms) with unread messages.
-	/// A "priority" message is one that would generate some sort of toast or
-	/// notification, and depends on user settings.
-	///
-	/// You can register for UnreadChatMessagesChanged_t callbacks to know when this
-	/// has potentially changed.
-	PXSteamPublic int PXSteamGetNumChatsWithUnreadPriorityMessages(PXSteam* const pxSteam);
+	typedef PXActionResult(PXAPI* PXLobbyUserFollowerAmount)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyUserFollowingAmount)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyEnumerateFollowingList)(void* const owner, unsigned int unStartIndex);
 
-	// activates game overlay to open the remote play together invite dialog. Invitations will be sent for remote play together
-	PXSteamPublic void PXSteamActivateGameOverlayRemotePlayTogetherInviteDialog(PXSteam* const pxSteam, const PXSteamID steamIDLobby);
+	typedef PXActionResult(PXAPI* PXLobbyClanIsPublic)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyClanIsOfficialGameGroup)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-	// Call this before calling ActivateGameOverlayToWebPage() to have the Steam Overlay Browser block navigations
-	// to your specified protocol (scheme) uris and instead dispatch a OverlayBrowserProtocolNavigation_t callback to your game.
-	// ActivateGameOverlayToWebPage() must have been called with k_EActivateGameOverlayToWebPageMode_Modal
-	PXSteamPublic PXSteamBool PXSteamRegisterProtocolInOverlayBrowser(PXSteam* const pxSteam, const char* pchProtocol);
+	typedef PXActionResult(PXAPI* PXLobbyNumChatsWithUnreadPriorityMessagesGet)(void* const owner);
 
-	// Activates the game overlay to open an invite dialog that will send the provided Rich Presence connect string to selected friends
-	PXSteamPublic void PXSteamActivateGameOverlayInviteDialogConnectString(PXSteam* const pxSteam, const char* pchConnectString);
+	typedef PXActionResult(PXAPI* PXLobbyRegisterProtocolInOverlayBrowser)(void* const owner, const char* pchProtocol);
 
-	// Steam Community items equipped by a user on their profile
-	// You can register for EquippedProfileItemsChanged_t to know when a friend has changed their equipped profile items
-	PXSteamPublic __int64 PXSteamRequestEquippedProfileItems(PXSteam* const pxSteam, const PXSteamID steamID);
-	PXSteamPublic PXSteamBool PXSteamBHasEquippedProfileItem(PXSteam* const pxSteam, const PXSteamID steamID, const PXSteamCommunityProfileItemType itemType);
-	PXSteamPublic PXSteamBool PXSteamGetProfileItemPropertyString(PXSteam* const pxSteam, const PXSteamID steamID, const PXSteamCommunityProfileItemType itemType, const PXSteamCommunityProfileItemProperty prop, void* const outputBuffer, const unsigned int outputBufferSize);
-	PXSteamPublic unsigned int PXSteamGetProfileItemPropertyUint(PXSteam* const pxSteam, const PXSteamID steamID, const PXSteamCommunityProfileItemType itemType, const PXSteamCommunityProfileItemProperty prop);
+	typedef PXActionResult(PXAPI* PXLobbyActivateGameOverlayInviteDialogConnectString)(void* const owner, const char* pchConnectString);
+
+	typedef PXActionResult(PXAPI* PXLobbyEquippedProfileItemsRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+	typedef PXActionResult(PXAPI* PXLobbyEquippedProfileItemHas)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
+	typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyStringGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
+	typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyUintGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
 #endif
 
 

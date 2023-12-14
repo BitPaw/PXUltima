@@ -18,7 +18,7 @@ extern "C"
 {
 #endif
 
-	typedef void (*PXProgramExecutedEvent)(const PXBool succesful, const PXSize returnResult, const PXActionResult errorCode);
+	typedef void (PXAPI*PXProgramExecutedEvent)(const PXBool succesful, const PXSize returnResult, const PXActionResult errorCode);
 
 	typedef struct PXProgram_
 	{

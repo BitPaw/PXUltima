@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="OS\TestSocket.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -25,6 +22,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Sound\TestSound.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

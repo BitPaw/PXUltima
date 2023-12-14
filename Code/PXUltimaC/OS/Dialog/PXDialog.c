@@ -18,7 +18,7 @@
 #endif
 
 
-PXActionResult PXDialogFileOpen(PXText* const filePath)
+PXActionResult PXAPI PXDialogFileOpen(PXText* const filePath)
 {
 #if OSUnix
 
@@ -122,7 +122,7 @@ PXActionResult PXDialogFileOpen(PXText* const filePath)
 #endif
 }
 
-PXActionResult PXDialogFileSave(PXText* const filePath)
+PXActionResult PXAPI PXDialogFileSave(PXText* const filePath)
 {
 #if OSUnix
     return 0;
@@ -179,7 +179,7 @@ PXActionResult PXDialogFileSave(PXText* const filePath)
 #endif
 }
 
-PXBool PXDialogColorSelect(PXColorRGBI8* const color)
+PXBool PXAPI PXDialogColorSelect(PXColorRGBI8* const color)
 {
 #if OSUnix
     return PXFalse;
@@ -215,7 +215,7 @@ PXBool PXDialogColorSelect(PXColorRGBI8* const color)
 #endif
 }
 
-PXBool PXDialogFontSelect()
+PXBool PXAPI PXDialogFontSelect()
 {
 #if OSUnix
     return PXFalse;
@@ -233,7 +233,7 @@ PXBool PXDialogFontSelect()
 #endif
 }
 
-PXBool PXDialogPrint()
+PXBool PXAPI PXDialogPrint()
 {
 #if OSUnix
     return PXFalse;

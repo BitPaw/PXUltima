@@ -2,6 +2,7 @@
 
 #include <Compiler/PXCompiler.h>
 #include <Media/PXText.h>
+#include <OS/Console/PXConsole.h>
 
 PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
 {
@@ -44,10 +45,175 @@ PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
     return PXXMLSymbolUnkown;
 }
 
-PXActionResult PXAPI PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
+void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXFile* const pxFile)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+    // Expect '<'
+    {
+        const PXBool isOpenAngleBracked = PXCompilerSymbolLexerBracketAngleOpen == pxCompilerSymbolEntry.ID;
+
+        if (isOpenAngleBracked) // Is XML tag <xxxx> 
+        {
+            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+         
+            PXBool isOpeningTag = PXTrue;
+
+            for (;;)
+            {         
+                PXBool isClosingTag = PXFalse;
+
+                PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntry);
+
+                // Exit if closing bracked
+                {
+                    switch (pxCompilerSymbolEntry.ID)
+                    {
+                        case PXCompilerSymbolLexerBracketAngleClose:
+                        {
+                            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);                    
+                            return; // DONE
+                        }
+                        case PXCompilerSymbolLexerBracketAngleOpen:    // Go deeper into
+                        {
+                            PXXMLBlockParse(pxDocument, pxFile);
+                            continue;
+                        }
+                        case PXCompilerSymbolLexerSlash: // Closing Tag 
+                        {
+                            //PXCompilerSymbolEntryMergeCurrentWithNext(pxFile, &pxCompilerSymbolEntry);
+                            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+
+                            isClosingTag = PXTrue;
+
+                            // Fall through
+                        }
+                        default:
+                        {
+                            PXCompilerSymbolEntry pxCompilerSymbolEntryPeek;
+
+                            PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                            PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntryPeek);
+
+                            PXBool isAttribute = PXCompilerSymbolLexerEqual==pxCompilerSymbolEntryPeek.ID;
+                            PXBool isTagEnd =
+                                PXCompilerSymbolLexerQuestionmark == pxCompilerSymbolEntry.ID &&
+                                PXCompilerSymbolLexerBracketAngleClose == pxCompilerSymbolEntryPeek.ID;
+
+                            PXDocumentElement pxDocumentElement;
+                            PXClear(PXDocumentElement, &pxDocumentElement);
+                            pxDocumentElement.Depth = pxDocument->Depth;
+                            pxDocumentElement.NameAdress = pxCompilerSymbolEntry.Source;
+                            pxDocumentElement.NameSize = pxCompilerSymbolEntry.Size;   
+                            pxDocumentElement.Depth = pxDocument->Depth;
+
+                            if (isAttribute)
+                            {                                 
+                                pxDocumentElement.Type = PXDocumentElementTypeClassMember;
+
+                                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
+                                PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);                      
+                             
+                                pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
+                                pxDocumentElement.ElementMember.ValueAdress = pxCompilerSymbolEntry.Source;
+                                pxDocumentElement.ElementMember.ValueSize = pxCompilerSymbolEntry.Size;       
+                            }
+                            else
+                            {
+                                pxDocumentElement.Type = PXDocumentElementTypeClass;     
+                                pxDocumentElement.ElementClass.IsTerminateSignal = isClosingTag;
+                            }   
+
+                            // Calc Depth
+                            {
+                                if (isClosingTag || isTagEnd)
+                                {
+                                    --(pxDocument->Depth);
+
+                                    pxDocumentElement.Depth = pxDocument->Depth;
+                                }
+                                else if(isOpeningTag)
+                                {
+                                    ++(pxDocument->Depth);                             
+
+                                    isOpeningTag = PXFalse;
+                                }                             
+                            }
+
+                            PXDocumentElementAdd(pxDocument, &pxDocumentElement);
+
+                            break;
+                        }
+                    }
+                }               
+            }
+        }
+        else // Is plain text, not an XML tag
+        {
+            for (;;)
+            {
+                PXCompilerSymbolEntry pxCompilerSymbolEntryEEE;
+
+                PXCompilerSymbolEntryForward(pxFile);
+                PXCompilerSymbolEntryPeek(pxFile, &pxCompilerSymbolEntryEEE);
+                PXCompilerSymbolRewind(pxFile, 1);
+
+                const PXBool isOpenAngleBracked = PXCompilerSymbolLexerBracketAngleOpen == pxCompilerSymbolEntryEEE.ID;
+
+                if (isOpenAngleBracked)
+                {
+                    PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntryEEE);
+
+                    PXDocumentElement pxDocumentElement;
+                    PXClear(PXDocumentElement, &pxDocumentElement);
+                    pxDocumentElement.Depth = 0;
+                    pxDocumentElement.ElementMember.ValueAdress = pxCompilerSymbolEntry.Source;
+                    pxDocumentElement.ElementMember.ValueSize = pxCompilerSymbolEntry.Size;
+                    pxDocumentElement.Type = PXDocumentElementTypeClassMember;
+               
+                    switch (pxCompilerSymbolEntryEEE.ID)
+                    {
+                        case PXCompilerSymbolLexerBool:
+                            pxDocumentElement.ElementMember.ValueType = PXDataTypeInt08S;
+                            break;
+
+                        case PXCompilerSymbolLexerFloat:
+                            pxDocumentElement.ElementMember.ValueType = PXDataTypeFloat;
+                            break;
+
+                        case PXCompilerSymbolLexerInteger:
+                            pxDocumentElement.ElementMember.ValueType = PXDataTypeIntS;
+                            break;
+
+                        default:
+                        case PXCompilerSymbolLexerString:
+                            pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
+                            break;
+                    }
+
+                    PXDocumentElementAdd(pxDocument, &pxDocumentElement);
+
+                    return;
+                }
+
+                PXCompilerSymbolEntryMergeCurrentWithNext(pxFile, &pxCompilerSymbolEntry);
+                // Check if we need to merge more
+             
+            }                    
+        }
+    }
+}
+
+PXActionResult PXAPI PXXMLLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
+
+    PXClear(PXDocument, pxDocument);
+
+    PXFileBufferAllocate(&pxDocument->Data, 2048*10);
 
     // Lexer - Level I
     {
@@ -61,321 +227,22 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXFile* const inputStream, PXFile* const 
         compilerSettings.KeepTabs = PXYes;
         compilerSettings.IntrepredTabsAsWhiteSpace = PXYes;
 
-        PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
-            
-        PXFileBufferExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+        PXFileBufferAllocate(&tokenSteam, pxFile->DataAllocated * 20);
 
-        outputStream->DataCursor = 0;
+        PXCompilerLexicalAnalysis(pxFile, &tokenSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens           
     }
-
-    unsigned char depthCounter = 0;
-    PXBool reuseModifiedToken = 0;
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {
-        PXCompilerSymbolEntry compilerSymbolEntry;
-
-        if (!reuseModifiedToken)
-        {
-            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-        }
-        else
-        {
-            // DO nothging
-            reuseModifiedToken = 0;
-        }
-
-        switch (compilerSymbolEntry.ID)
-        {
-            case PXCompilerSymbolLexerGenericElement:
-            {
-                const PXXMLSymbol xmlTag = PXXMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-                switch (xmlTag)
-                {
-                    case PXXMLSymbolAttribute:
-                    {
-                        const PXSize offsetEqualSign = PXTextFindFirstCharacterA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '=');
-                        const PXSize endOfValue = PXTextFindFirstCharacterA(compilerSymbolEntry.Source+ offsetEqualSign+2, compilerSymbolEntry.Size- offsetEqualSign-2, '\"');
-
-                        const PXSize nameSize = offsetEqualSign;
-                        const char* const nameAdress = compilerSymbolEntry.Source;
-                        const PXSize valueSize = endOfValue;
-                        const char* const valueAdrees = compilerSymbolEntry.Source + offsetEqualSign + 2u;
-
-                        //-----------------------------------------------------
-                        PXFileWriteI8U(outputStream, depthCounter);
-                        PXFileWriteI8U(outputStream, xmlTag);
-                        PXFileWriteI16U(outputStream, nameSize);
-                        PXFileWriteB(outputStream, nameAdress, nameSize);
-                        PXFileWriteI16U(outputStream, valueSize);
-                        PXFileWriteB(outputStream, valueAdrees, valueSize);
-                        //-----------------------------------------------------
-
-                        const char* startAfterValue = valueAdrees + valueSize;
-                        const PXSize startAfterValueSize = compilerSymbolEntry.Size - (nameSize + valueSize + 3u);
-
-                        const PXSize indexOfCloseTagSymbol = PXTextFindFirstCharacterA(startAfterValue, startAfterValueSize, '/');
-                        const PXBool hasCloseTag = indexOfCloseTagSymbol != (PXSize)-1;
-
-                        if (hasCloseTag)
-                        {
-                            const PXSize curSize = startAfterValueSize - indexOfCloseTagSymbol;
-                            const PXSize indexOfCloseTagSymbolEE = PXTextFindFirstCharacterA(startAfterValue, curSize, '>');
-                            const PXBool hasCloseTagEEE = indexOfCloseTagSymbolEE != (PXSize)-1;
-
-                            if (hasCloseTagEEE)
-                            {
-                                if (indexOfCloseTagSymbolEE < compilerSymbolEntry.Size) // Has even more data
-                                {
-                                    const PXSize offset = (nameSize + valueSize + 3u);
-
-                                    reuseModifiedToken = 1;
-
-                                    compilerSymbolEntry.Source += offset + 1u;
-                                    compilerSymbolEntry.Size -= offset + 1u;
-                                }
-                            }
-                        }
-
-                        break;
-                    }
-                    case PXXMLSymbolTagOpenBegin:
-                    {
-                        const PXSize indexOfCloseTagSymbol = PXTextFindFirstCharacterA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '>');
-                        const PXBool doesContainMoreData = indexOfCloseTagSymbol != (PXSize)-1;
-                        const PXSize cutIndex = doesContainMoreData ? indexOfCloseTagSymbol - 1u : compilerSymbolEntry.Size - 1;
-
-                        // Data
-                        PXFileWriteI8U(outputStream, depthCounter);
-                        PXFileWriteI8U(outputStream, xmlTag);
-                        PXFileWriteI16U(outputStream, cutIndex);
-                        PXFileWriteB(outputStream, compilerSymbolEntry.Source + 1u, cutIndex);
-                        //-----------------------------------------------------
-
-                        ++depthCounter;
-
-                        if (doesContainMoreData)
-                        {
-                            reuseModifiedToken = 1;
-
-                            compilerSymbolEntry.Source += indexOfCloseTagSymbol+1;
-                            compilerSymbolEntry.Size -= indexOfCloseTagSymbol+1;
-                        }
-
-                        break;
-                    }
-                    case PXXMLSymbolTagOpenFull:
-                    {
-                        const char* openTagName = compilerSymbolEntry.Source + 1u;
-                        const PXSize openTagNameSize = compilerSymbolEntry.Size - 2u;
-
-                        ++depthCounter;
-
-                        //-----------------------------------------------------
-                        PXFileWriteI8U(outputStream, depthCounter);
-                        PXFileWriteI8U(outputStream, xmlTag);
-                        PXFileWriteI16U(outputStream, openTagNameSize);
-                        PXFileWriteB(outputStream, openTagName, openTagNameSize);
-                        //-----------------------------------------------------
-
-                        break;
-                    }
-                    case PXXMLSymbolTagCloseCurrent:
-                    {
-                        --depthCounter;
-
-                        printf("[PXXML][%i] Close current [%s]\n", depthCounter, "");
-
-                        break;
-                    }
-                    case PXXMLSymbolTagCloseFull:
-                    {
-                        --depthCounter;
-
-                        //-----------------------------------------------------
-                        const char* closeTagName = compilerSymbolEntry.Source + 2u;
-                        const PXSize closeTagNameSize = compilerSymbolEntry.Size - 3u;
-
-                        PXFileWriteI8U(outputStream, depthCounter);
-                        PXFileWriteI8U(outputStream, xmlTag);
-                        PXFileWriteI16U(outputStream, closeTagNameSize);
-                        PXFileWriteB(outputStream, closeTagName, closeTagNameSize);
-                        //-----------------------------------------------------
-
-                        break;
-                    }
-
-                    case PXXMLSymbolUnkown:
-                    {
-                        PXFileWriteI8U(outputStream, depthCounter);
-                        PXFileWriteI8U(outputStream, PXXMLSymbolRawData);
-
-                        PXSize sizePositionOffset = outputStream->DataCursor;
-                        PXSize sizeWritten = 0;
-
-                        PXFileWriteI16U(outputStream, 0xFFFF);
-
-                        do
-                        {
-                            PXSize indexOfOpenTagSymbol = PXTextFindFirstCharacterA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '<');
-                            const PXBool found = indexOfOpenTagSymbol != (PXSize)-1;
-
-                            if (found)
-                            {
-                                sizeWritten += PXFileWriteB(outputStream, compilerSymbolEntry.Source, indexOfOpenTagSymbol);
-
-                                reuseModifiedToken = 1;
-
-                                compilerSymbolEntry.Source += indexOfOpenTagSymbol;
-                                compilerSymbolEntry.Size -= indexOfOpenTagSymbol;
-
-                                break;
-                            }
-                            else
-                            {
-                                PXSize indexOfCloseInlineTagSymbol = PXTextFindFirstCharacterA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, '/');
-                                const PXBool found = indexOfCloseInlineTagSymbol > 0 && indexOfCloseInlineTagSymbol != (PXSize)-1;
-
-                                if (found)
-                                {
-                                    --depthCounter;
-
-                                    PXFileWriteI8U(outputStream, depthCounter);
-                                    PXFileWriteI8U(outputStream, PXXMLSymbolTagCloseCurrent);
-                                    PXFileWriteI16U(outputStream, 0);
-                                }
-                                else
-                                {
-                                    sizeWritten += PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                                }
-                            }
-                        }
-                        while (1u);
-
-                        PXFileWriteAtI16U(outputStream, sizeWritten, sizePositionOffset);
-
-                        break;
-                    }
-                }
-            }
-        }
+        PXXMLBlockParse(pxDocument, &tokenSteam);
     }
 
-    outputStream->DataSize = outputStream->DataCursor;
-
-
-    PXSize currentPosition = outputStream->DataCursor;
-
-    outputStream->DataCursor = 0;
-
-    char textBuffer[512];
-
-    printf("[PXXML]\n");
-
-    while (!PXFileIsAtEnd(outputStream))
-    {
-        PXInt8U depth = 0;
-        PXInt8U modeID = 0;
-        PXXMLSymbol mode = PXXMLSymbolInvalid;
-
-        PXMemoryClear(textBuffer, 512);
-        PXFileReadI8U(outputStream, &depth);
-        PXFileReadI8U(outputStream, &modeID);
-
-        mode = (PXXMLSymbol)modeID;
-
-        for (PXSize i = 0; i < (PXSize)depth+1; ++i)
-        {
-            printf("  ");
-        }
-
-        switch (mode)
-        {
-            case PXXMLSymbolTagOpenBegin:
-            {
-                unsigned short size = 0;
-
-                PXFileReadI16U(outputStream, &size);
-                PXFileReadB(outputStream, textBuffer, size);
-
-                printf("<%s>", textBuffer);
-                break;
-            }
-            case PXXMLSymbolTagOpenFull:
-            {
-                unsigned short size = 0;
-
-                PXFileReadI16U(outputStream, &size);
-                PXFileReadB(outputStream, textBuffer, size);
-
-                printf("<%s>", textBuffer);
-
-                break;
-            }
-            case PXXMLSymbolTagCloseCurrent:
-            {
-                printf("</>");
-
-                break;
-            }
-            case PXXMLSymbolTagCloseFull:
-            {
-                unsigned short size = 0;
-
-                PXFileReadI16U(outputStream, &size);
-                PXFileReadB(outputStream, textBuffer, size);
-
-                printf("</%s>", textBuffer);
-                break;
-            }
-            case PXXMLSymbolAttribute:
-            {
-                unsigned short size = 0;
-
-                char text[256];
-                PXMemoryClear(text, 256);
-
-                PXFileReadI16U(outputStream, &size);
-                PXFileReadB(outputStream, textBuffer, size);
-
-                printf("A: %s:", textBuffer);
-                fflush(stdout);
-
-                PXFileReadI16U(outputStream, &size);
-                PXFileReadB(outputStream, text , size);
-
-                printf("%s", text);
-
-                break;
-            }
-            case PXXMLSymbolRawData:
-            {
-                unsigned short size = 0;
-
-                PXFileReadI16U(outputStream, &size);
-                PXFileReadB(outputStream, textBuffer, size);
-
-                for (PXSize i = 0; i < size; i++)
-                {
-                    textBuffer[i] = textBuffer[i] == '\n' ? ' ' : textBuffer[i];
-                }
-
-                printf("D: %s", textBuffer);
-                break;
-            }
-        }
-
-        printf("\n");
-    }
-
+    PXFileCursorPositionTerminate(&pxDocument->Data);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXXMLSaveToFile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXXMLSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile)
 {
     return PXActionRefusedNotImplemented;
 }

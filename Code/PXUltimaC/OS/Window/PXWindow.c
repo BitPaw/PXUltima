@@ -1775,7 +1775,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
 }
 #endif
 
-PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
+PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
 {
     pxWindow->IsRunning = 0;
     pxWindow->CursorModeCurrent = PXWindowCursorShow;
@@ -1895,12 +1895,12 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
     {
         XMapWindow(pxWindow->DisplayCurrent, pxWindow->ID);
 
-        switch(pxWindow->Title.Format)
+        switch (pxWindow->Title.Format)
         {
             case TextFormatASCII:
             case TextFormatUTF8:
             {
-                 XStoreName(pxWindow->DisplayCurrent, pxWindow->ID, pxWindow->Title.TextA);
+                XStoreName(pxWindow->DisplayCurrent, pxWindow->ID, pxWindow->Title.TextA);
 
                 break;
             }
@@ -1976,8 +1976,8 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
     HINSTANCE hInstance = GetModuleHandle(NULL);
     HICON       hIcon = LoadIcon(NULL, IDI_APPLICATION);
     HCURSOR     hCursor = pxWindow->CursorID;
-   // HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
-    
+    // HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
+
     HBRUSH hbrBackground = CreateSolidBrush(RGB(38, 38, 38));
 
     // Cursor setup
@@ -2143,7 +2143,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
     }
 #else
 
-// OS does not support window creation or it is not implemented
+    // OS does not support window creation or it is not implemented
 
 #endif
 
@@ -2178,7 +2178,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
     pxWindow->IsRunning = 1;
 
     PXFunctionInvoke(pxWindow->WindowCreatedCallBack, pxWindow->EventReceiver, pxWindow);
-      
+
 
 #if OSUnix
 #if 0
@@ -2186,7 +2186,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
 
     const XDeviceInfo* deviceInfoList = XListInputDevices(display, &numberOfDevices);
 
-    for(int i = 0; i < numberOfDevices; ++i)
+    for (int i = 0; i < numberOfDevices; ++i)
     {
         const XDeviceInfo& xDeviceInfo = deviceInfoList[i];
 
@@ -2233,11 +2233,19 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
     }
 #endif
 
+    return PXActionSuccessful;
+}
+
+PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
+{
+    PXWindowBuild(pxWindow);
+
     if (pxWindow->MessageThread.ThreadID != 0)
     {
         while (pxWindow->IsRunning)
         {
             PXWindowUpdate(pxWindow);
+            PXThreadYieldToOtherThreads();
         }
     }
 
@@ -2362,7 +2370,7 @@ void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
 
 #elif PXOSWindowsDestop     
   
-    while (1)
+    for (;;)
     {
         MSG message;
 
@@ -2389,7 +2397,7 @@ void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
 
 void PXAPI PXWindowConstruct(PXWindow* const window)
 {
-   // PXClear(PXWindow, window);
+    PXClear(PXWindow, window);
     window->Title.SizeAllocated = 256;
     window->Title.TextA = window->TitleBuffer;
     window->Mode = PXWindowModeNormal;
@@ -2433,6 +2441,9 @@ void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt3
             window->Height = screenHeight * 0.75f;
         }
     }
+
+
+
 
     if (async)
     {

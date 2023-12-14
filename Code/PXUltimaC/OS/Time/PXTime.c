@@ -7,7 +7,7 @@
 #include <Windows.h>
 #endif
 
-PXTimeMonth  PXTimeMonthFromID(const PXInt8U monthID)
+PXTimeMonth PXAPI PXTimeMonthFromID(const PXInt8U monthID)
 {
 	switch(monthID)
 	{
@@ -27,7 +27,7 @@ PXTimeMonth  PXTimeMonthFromID(const PXInt8U monthID)
 	}
 }
 
-PXTimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID)
+PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID)
 {
 	switch(dayID)
 	{
@@ -42,7 +42,7 @@ PXTimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID)
 	}
 }
 
-void PXTimeNow(PXTime* const time)
+void PXAPI PXTimeNow(PXTime* const time)
 {
 #if OSUnix
 #elif OSWindows
@@ -64,7 +64,7 @@ void PXTimeNow(PXTime* const time)
 #endif
 }
 
-PXSize PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult)
+PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult)
 {
 	timeResult->Day = (timeB->Day - timeA->Day);
 	timeResult->Hour = (timeB->Hour - timeA->Hour);
@@ -77,7 +77,7 @@ PXSize PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime*
 	return 0;
 }
 
-PXSize PXTimeMilliseconds(const PXTime* time)
+PXSize PXAPI PXTimeMilliseconds(const PXTime* time)
 {
 	const PXSize dayDelta = (time->Day);
 	const PXSize hourDelta = (time->Hour) + (dayDelta * 24);
@@ -88,7 +88,7 @@ PXSize PXTimeMilliseconds(const PXTime* time)
 	return millisecondsDelta;
 }
 
-PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
+PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 {
 	//Year = -1;
 //Month = Month::Invalid;
@@ -103,7 +103,7 @@ PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 	return millisecondsDelta;
 }
 
-PXInt64U PXTimeCounterStampGet()
+PXInt64U PXAPI PXTimeCounterStampGet()
 {
 #if OSUnix
 	return 0;
@@ -115,7 +115,7 @@ PXInt64U PXTimeCounterStampGet()
 #endif
 }
 
-PXInt64U PXTimeCounterFrequencyGet()
+PXInt64U PXAPI PXTimeCounterFrequencyGet()
 {
 #if OSUnix
 	return 0;

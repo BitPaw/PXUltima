@@ -14,7 +14,7 @@
 
 #pragma comment(lib, "D3DCompiler.lib")
 #pragma comment(lib, "D3d9.lib")
-#pragma comment(lib, "D3dx9.lib")
+//#pragma comment(lib, "D3dx9.lib")
 
 #endif
 
@@ -256,18 +256,18 @@ PXActionResult PXAPI PXDirectXIndexBufferCreate(PXDirectX* const pxDirectX, PXIn
     {
         switch (pxIndexBuffer->DataType)
         {
-            case PXDataTypeLEInt16S:
-            case PXDataTypeLEInt16U:
-            case PXDataTypeBEInt16S:
-            case PXDataTypeBEInt16U:
+            case PXDataTypeInt16SLE:
+            case PXDataTypeInt16ULE:
+            case PXDataTypeInt16SBE:
+            case PXDataTypeInt16UBE:
             {
                 dataFormat = D3DFMT_INDEX16;
                 break;
             }
-            case PXDataTypeLEInt32S:
-            case PXDataTypeLEInt32U:
-            case PXDataTypeBEInt32S:
-            case PXDataTypeBEInt32U:
+            case PXDataTypeInt32SLE:
+            case PXDataTypeInt32ULE:
+            case PXDataTypeInt32SBE:
+            case PXDataTypeInt32UBE:
             {
                 dataFormat = D3DFMT_INDEX32;
                 break;
@@ -353,8 +353,8 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
     switch (pxDirectX->DirectXVersion)
     {
-#if PXDX12Enable
         case PXDirectXVersionNewest:
+#if PXDX12Enable      
         case PXDirectXVersion12Emulate1x0Core:
         case PXDirectXVersion12Emulate9x1:
         case PXDirectXVersion12Emulate9x2:
@@ -613,9 +613,11 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
         default:
             return PXActionRefusedFormatNotSupported;
     }
+#else
+    return PXActionNotSupportedByOperatingSystem;
 #endif
 
-    return PXActionNotSupportedByOperatingSystem;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX)
@@ -1325,6 +1327,87 @@ PXActionResult PXAPI PXDirectXDevicePhysicalListFetchFunction(PXDirectX* const p
             }
         }    
     }
+}
+
+PXActionResult PXAPI PXDirectXSwapIntervalSet(PXDirectX* const pxDirectX, const PXInt32U interval)
+{
+    switch(pxDirectX->DirectXVersion)
+    {
+#if PXDX11Enable
+        case PXDirectXVersion11Emulate1x0Core:
+        case PXDirectXVersion11Emulate9x1:
+        case PXDirectXVersion11Emulate9x2:
+        case PXDirectXVersion11Emulate9x3:
+        case PXDirectXVersion11Emulate10x0:
+        case PXDirectXVersion11Emulate10x1:
+        case PXDirectXVersion11Emulate11x0:
+        case PXDirectXVersion11Emulate11x1:
+        {
+
+
+            return PXActionNotSupportedByLibrary;
+        }
+#endif
+
+#if PXDX9Enable
+        case PXDirectXVersion9:
+        {
+#if 0
+            IDXGISwapChain x;
+
+            // Get default swap chain
+            IDirect3DSwapChain9* direct3DSwapChain = PXNull;
+
+            const HRESULT resultA = pxDirectX->DX9->lpVtbl->GetSwapChain // DXGI.lib, dxgi.h
+            (
+                pxDirectX->DX9,
+                0,
+                &direct3DSwapChain
+            );
+
+            direct3DSwapChain->lpVtbl->Present
+            (
+                direct3DSwapChain,
+                0,
+                0,
+                0,
+                0,
+
+            );
+
+
+            if (bVysncEnabled)
+            {
+                presentParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+                presentParams.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+            }
+            else
+            {
+                presentParams.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+                presentParams.FullScreen_RefreshRateInHz = 0;
+            }
+
+
+            const HRESULT resultB = pxDirectX->DX9->lpVtbl->Present // DXGI.lib, dxgi.h
+            (
+                pxDirectX->DX9,
+                interval,
+
+            );
+#endif
+
+            return PXActionSuccessful;
+        }
+#endif
+
+        default:
+            return PXActionNotSupportedByLibrary;
+    }
+}
+
+PXActionResult PXAPI PXDirectXSwapIntervalGet(PXDirectX* const pxDirectX, PXInt32U* const interval)
+{
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXDirectXModelRegister(PXDirectX* const pxDirectX, PXModel* const pxModel)

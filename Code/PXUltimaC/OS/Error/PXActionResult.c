@@ -13,7 +13,7 @@
 #include <WbemCli.h> // Windows Vista
 #endif
 
-PXActionResult PXErrorCodeFromID(const int errorCode)
+PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 {
 	switch(errorCode)
 	{
@@ -260,7 +260,7 @@ PXActionResult PXErrorCodeFromID(const int errorCode)
 	}
 }
 
-PXActionResult PXErrorCurrent()
+PXActionResult PXAPI PXErrorCurrent()
 {
 	const int errorID = errno;
 	const PXActionResult actionResult = PXErrorCodeFromID(errorID);

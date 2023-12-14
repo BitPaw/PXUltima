@@ -9,12 +9,12 @@
 #pragma comment(lib, "Advapi32.lib")
 #endif
 
-PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace)
+PXActionResult PXAPI PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace)
 {
 	return PXRegistryConnectRemote(registry, 0, registrySpace);
 }
 
-PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace)
+PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace)
 {
 #if OSUnix
 	return PXActionNotSupportedByOperatingSystem;
@@ -72,7 +72,7 @@ PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText*
 #endif
 }
 
-PXActionResult PXRegistryClose(PXRegistry* const registry)
+PXActionResult PXAPI PXRegistryClose(PXRegistry* const registry)
 {
 #if OSUnix
 	return PXActionNotSupportedByOperatingSystem;
@@ -91,7 +91,7 @@ PXActionResult PXRegistryClose(PXRegistry* const registry)
 #endif
 }
 
-PXActionResult PXRegistryKeyListAll(PXRegistry* const registry)
+PXActionResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry)
 {
 #if OSUnix
 	return PXActionNotSupportedByOperatingSystem;
@@ -132,7 +132,7 @@ PXActionResult PXRegistryKeyListAll(PXRegistry* const registry)
 #endif
 }
 
-PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName)
+PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
 	return PXActionNotSupportedByOperatingSystem;
@@ -202,7 +202,7 @@ PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* con
 	return PXActionSuccessful;
 }
 
-PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile)
+PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile)
 {
 #if OSUnix
 	return PXActionNotSupportedByOperatingSystem;
@@ -245,7 +245,7 @@ PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const
 	return PXActionSuccessful;
 }
 
-PXActionResult PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName)
+PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
 	return PXActionNotSupportedByOperatingSystem;
@@ -288,7 +288,7 @@ PXActionResult PXRegistryKeySave(PXRegistry* const registry, const PXText* const
 #endif
 }
 
-PXActionResult PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName)
+PXActionResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
 	return PXActionNotSupportedByOperatingSystem;

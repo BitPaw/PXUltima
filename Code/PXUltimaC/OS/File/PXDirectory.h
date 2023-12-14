@@ -83,7 +83,7 @@ extern "C"
 	}
 	PXFileElementInfo;
 
-	typedef void (*PXFileElementDetected)(PXFileElementInfo* pxFileElementInfo);
+	typedef void (PXAPI*PXFileElementDetected)(PXFileElementInfo* pxFileElementInfo);
 
 	typedef struct PXDirectoryIterator_
 	{
@@ -104,17 +104,17 @@ extern "C"
 	PXDirectoryIterator;
 
 
-	PXPublic PXActionResult PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName);
-	PXPublic PXBool PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator);
-	PXPublic PXBool PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator);
+	PXPublic PXActionResult PXAPI PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName);
+	PXPublic PXBool PXAPI PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator);
+	PXPublic PXBool PXAPI PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator);
 
 
 
-	PXPublic PXActionResult PXDirectoryCreate(const PXText* const directoryName);
-	PXPublic PXActionResult PXWorkingDirectoryGet(PXText* const workingDirectory);
-	PXPublic PXActionResult PXWorkingDirectoryChange(const PXText* const directoryName);
+	PXPublic PXActionResult PXAPI PXDirectoryCreate(const PXText* const directoryName);
+	PXPublic PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory);
+	PXPublic PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const directoryName);
 
-	PXPublic PXActionResult PXDirectoryDelete(const PXText* const directoryName);
+	PXPublic PXActionResult PXAPI PXDirectoryDelete(const PXText* const directoryName);
 
 
 
@@ -135,11 +135,11 @@ extern "C"
 	}
 	PXDirectorySearchInfo;
 
-	PXPublic PXActionResult PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
-	PXPublic PXActionResult PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo);
+	PXPublic PXActionResult PXAPI PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
+	PXPublic PXActionResult PXAPI PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo);
 
 
-	PXPublic PXActionResult PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create);
+	PXPublic PXActionResult PXAPI PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create);
 
 
 #ifdef __cplusplus

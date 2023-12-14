@@ -8,7 +8,7 @@
 #include <direct.h>
 #endif
 
-PXSize PXHardDriveListSize()
+PXSize PXAPI PXHardDriveListSize()
 {
 #if OSUnix
     const PXSize numberOfDrives = 0;
@@ -34,7 +34,7 @@ PXSize PXHardDriveListSize()
 #endif   
 }
 
-PXActionResult PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
+PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
 {
     const PXSize numberOfDrives = PXHardDriveListSize();
 

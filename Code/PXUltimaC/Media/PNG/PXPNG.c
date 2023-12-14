@@ -10,20 +10,20 @@
 
 #define PNGDebugInfo 0
 
-static const char PNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
+static const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
 
 unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
 {
-    for (PXSize bit = 0; bit < 8; ++bit)
+    for (PXInt8U bit = 0; bit < 8; ++bit)
     {
-        int i = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
-        if (!tree->children[i])
+        const int index = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
+        if (!tree->children[index])
         {
-            tree->children[i] = PXNew(PNGColorTree);
+            tree->children[index] = PXNew(PNGColorTree);
 
-            if (!tree->children[i]) return 83; /*alloc fail*/
+            if (!tree->children[index]) return 83; /*alloc fail*/
         }
-        tree = tree->children[i];
+        tree = tree->children[index];
     }
     tree->index = (int)index;
     return 0;
@@ -616,75 +616,86 @@ void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, un
     }
 }
 
-unsigned rgba8ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+PXActionResult rgba8ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, PNGColorTree* tree, const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a)
 {
-    if (mode->colortype == LCT_GREY)
+    switch (mode->colortype)
     {
-        unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
-        if (mode->bitdepth == 8) out[i] = gray;
-        else if (mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
-        else
+        case LCT_GREY:
         {
-            /*take the most significant bits of gray*/
-            gray = ((unsigned)gray >> (8u - mode->bitdepth)) & ((1u << mode->bitdepth) - 1u);
-            addColorBits(out, i, mode->bitdepth, gray);
+            unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
+            if (mode->bitdepth == 8) out[i] = gray;
+            else if (mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
+            else
+            {
+                /*take the most significant bits of gray*/
+                gray = ((unsigned)gray >> (8u - mode->bitdepth)) & ((1u << mode->bitdepth) - 1u);
+                addColorBits(out, i, mode->bitdepth, gray);
+            }
+            break;
         }
-    }
-    else if (mode->colortype == LCT_RGB)
-    {
-        if (mode->bitdepth == 8)
+        case LCT_RGB:
         {
-            out[i * 3 + 0] = r;
-            out[i * 3 + 1] = g;
-            out[i * 3 + 2] = b;
+            if (mode->bitdepth == 8)
+            {
+                out[i * 3 + 0] = r;
+                out[i * 3 + 1] = g;
+                out[i * 3 + 2] = b;
+            }
+            else
+            {
+                out[i * 6 + 0] = out[i * 6 + 1] = r;
+                out[i * 6 + 2] = out[i * 6 + 3] = g;
+                out[i * 6 + 4] = out[i * 6 + 5] = b;
+            }
+            break;
         }
-        else
+        case LCT_PALETTE:
         {
-            out[i * 6 + 0] = out[i * 6 + 1] = r;
-            out[i * 6 + 2] = out[i * 6 + 3] = g;
-            out[i * 6 + 4] = out[i * 6 + 5] = b;
+            int index = color_tree_get(tree, r, g, b, a);
+            if (index < 0) return 82; /*color not in palette*/
+            if (mode->bitdepth == 8) out[i] = index;
+            else addColorBits(out, i, mode->bitdepth, (unsigned)index);
+            break;
         }
-    }
-    else if (mode->colortype == LCT_PALETTE)
-    {
-        int index = color_tree_get(tree, r, g, b, a);
-        if (index < 0) return 82; /*color not in palette*/
-        if (mode->bitdepth == 8) out[i] = index;
-        else addColorBits(out, i, mode->bitdepth, (unsigned)index);
-    }
-    else if (mode->colortype == LCT_GREY_ALPHA)
-    {
-        unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
-        if (mode->bitdepth == 8)
+        case LCT_GREY_ALPHA:
         {
-            out[i * 2 + 0] = gray;
-            out[i * 2 + 1] = a;
+            unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
+            if (mode->bitdepth == 8)
+            {
+                out[i * 2 + 0] = gray;
+                out[i * 2 + 1] = a;
+            }
+            else if (mode->bitdepth == 16)
+            {
+                out[i * 4 + 0] = out[i * 4 + 1] = gray;
+                out[i * 4 + 2] = out[i * 4 + 3] = a;
+            }
+            break;
         }
-        else if (mode->bitdepth == 16)
+        case LCT_RGBA:
         {
-            out[i * 4 + 0] = out[i * 4 + 1] = gray;
-            out[i * 4 + 2] = out[i * 4 + 3] = a;
+            if (mode->bitdepth == 8)
+            {
+                out[i * 4 + 0] = r;
+                out[i * 4 + 1] = g;
+                out[i * 4 + 2] = b;
+                out[i * 4 + 3] = a;
+            }
+            else
+            {
+                out[i * 8 + 0] = out[i * 8 + 1] = r;
+                out[i * 8 + 2] = out[i * 8 + 3] = g;
+                out[i * 8 + 4] = out[i * 8 + 5] = b;
+                out[i * 8 + 6] = out[i * 8 + 7] = a;
+            }
+            break;
         }
-    }
-    else if (mode->colortype == LCT_RGBA)
-    {
-        if (mode->bitdepth == 8)
-        {
-            out[i * 4 + 0] = r;
-            out[i * 4 + 1] = g;
-            out[i * 4 + 2] = b;
-            out[i * 4 + 3] = a;
-        }
-        else
-        {
-            out[i * 8 + 0] = out[i * 8 + 1] = r;
-            out[i * 8 + 2] = out[i * 8 + 3] = g;
-            out[i * 8 + 4] = out[i * 8 + 5] = b;
-            out[i * 8 + 6] = out[i * 8 + 7] = a;
-        }
+
+        default:
+            return PXActionRefusedArgumentInvalid;
     }
 
-    return 0; /*no error*/
+    return PXActionSuccessful;
 }
 
 PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth)
@@ -937,7 +948,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
 
         //---<Check PNG Header>------------------------------------------------
         {
-            const PXBool isValidHeader = PXFileReadAndCompare(pxFile, PNGHeaderSequenz, sizeof(PNGHeaderSequenz));
+            const PXBool isValidHeader = PXFileReadAndCompare(pxFile, PXPNGHeaderSequenz, sizeof(PXPNGHeaderSequenz));
 
             if (!isValidHeader)
             {
@@ -1700,7 +1711,6 @@ the scanlines with 1 extra byte per scanline
     /*bytewidth is used for filtering, is 1 when bpp < 8, number of bytes per pixel otherwise*/
     PXSize bytewidth = (bpp + 7u) / 8u;
     const unsigned char* prevline = 0;
-    unsigned x, y;
     unsigned error = 0;
 
     /*
@@ -1732,7 +1742,7 @@ the scanlines with 1 extra byte per scanline
     if (strategy >= LFS_ZERO && strategy <= LFS_FOUR)
     {
         unsigned char type = (unsigned char)strategy;
-        for (y = 0; y != height; ++y)
+        for (PXSize y = 0; y != height; ++y)
         {
             PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
             PXSize inindex = linebytes * y;
@@ -1756,7 +1766,7 @@ the scanlines with 1 extra byte per scanline
 
         if (!error)
         {
-            for (y = 0; y != height; ++y)
+            for (PXSize y = 0; y != height; ++y)
             {
                 /*try the 5 filter types*/
                 for (type = 0; type != 5; ++type)
@@ -1767,11 +1777,11 @@ the scanlines with 1 extra byte per scanline
                     /*calculate the sum of the result*/
                     if (type == 0)
                     {
-                        for (x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[type][x]);
+                        for (PXSize x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[type][x]);
                     }
                     else
                     {
-                        for (x = 0; x != linebytes; ++x)
+                        for (PXSize x = 0; x != linebytes; ++x)
                         {
                             /*For differences, each byte should be treated as signed, values above 127 are negative
                             (converted to signed char). Filtertype 0 isn't a difference though, so use unsigned there.
@@ -1793,7 +1803,7 @@ the scanlines with 1 extra byte per scanline
 
                 /*now fill the out values*/
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for (PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
@@ -1814,7 +1824,7 @@ the scanlines with 1 extra byte per scanline
 
         if (!error)
         {
-            for (y = 0; y != height; ++y)
+            for (PXSize y = 0; y != height; ++y)
             {
                 /*try the 5 filter types*/
                 for (type = 0; type != 5; ++type)
@@ -1822,9 +1832,9 @@ the scanlines with 1 extra byte per scanline
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
                     PXMemoryClear(count, 256 * sizeof(*count));
-                    for (x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
+                    for (PXSize x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
                     ++count[type]; /*the filter type itself is part of the scanline*/
-                    for (x = 0; x != 256; ++x)
+                    for (PXSize x = 0; x != 256; ++x)
                     {
                         sum += ilog2i(count[x]);
                     }
@@ -1840,7 +1850,7 @@ the scanlines with 1 extra byte per scanline
 
                 /*now fill the out values*/
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for (PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
@@ -1848,7 +1858,7 @@ the scanlines with 1 extra byte per scanline
     }
     else if (strategy == LFS_PREDEFINED)
     {
-        for (y = 0; y != height; ++y)
+        for (PXSize y = 0; y != height; ++y)
         {
             PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
             PXSize inindex = linebytes * y;
@@ -1886,7 +1896,7 @@ the scanlines with 1 extra byte per scanline
         }
         if (!error)
         {
-            for (y = 0; y != height; ++y) /*try the 5 filter types*/
+            for (PXSize y = 0; y != height; ++y) /*try the 5 filter types*/
             {
                 for (type = 0; type != 5; ++type)
                 {
@@ -1915,7 +1925,7 @@ the scanlines with 1 extra byte per scanline
                 }
                 prevline = &in[y * linebytes];
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for (x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for (PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
         for (type = 0; type != 5; ++type) PXDeleteList(PXByte, attempt[type], -1);
@@ -2070,7 +2080,7 @@ PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const p
 {
     //---<Signature>--- 8 Bytes
     {
-        const PXInt64U pngFileHeader = PNGHeaderSequenz;
+        const PXInt64U pngFileHeader = PXPNGHeaderSequenz;
 
         PXFileWriteI64U(pxExportStream, pngFileHeader);
     }
@@ -2243,14 +2253,19 @@ PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const p
         const unsigned char* chunkStart = PXFileCursorPosition(pxExportStream);
         const PXSize chunkLength = 7u;
 
-        PXFileWriteI32UE(pxExportStream, chunkLength, PXEndianBig);
-        PXFileWriteB(pxExportStream, "tIME", 4u);
-        PXFileWriteI16UE(pxExportStream, pngLastModificationTime.Year, PXEndianBig);
-        PXFileWriteI8U(pxExportStream, pngLastModificationTime.Month);
-        PXFileWriteI8U(pxExportStream, pngLastModificationTime.Day);
-        PXFileWriteI8U(pxExportStream, pngLastModificationTime.Hour);
-        PXFileWriteI8U(pxExportStream, pngLastModificationTime.Minute);
-        PXFileWriteI8U(pxExportStream, pngLastModificationTime.Second);
+        const PXFileDataElementType pxFileDataElementType[] =
+        {
+            {&chunkLength, PXDataTypeInt32UBE},
+            {"tIME", PXDataTypeDatax4},
+            {&pngLastModificationTime.Year, PXDataTypeInt16UBE},
+            {&pngLastModificationTime.Month, PXDataTypeInt08U},
+            {&pngLastModificationTime.Day, PXDataTypeInt08U},
+            {&pngLastModificationTime.Hour, PXDataTypeInt08U},
+            {&pngLastModificationTime.Minute, PXDataTypeInt08U},
+            {&pngLastModificationTime.Second, PXDataTypeInt08U},
+        };
+
+        PXFileWriteMultible(pxExportStream, pxFileDataElementType, sizeof(pxFileDataElementType));
 
         {
             const PXInt32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
@@ -2319,10 +2334,16 @@ PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const p
 
     //---<IEND>---------------------------------------------------------------- 12 Bytes
     {
-        const unsigned char imageEndChunk[13] = "\0\0\0\0IEND\xAE\x42\x60\x82"; // Combined write, as this is constand
-        const PXSize imageEndChunkSize = sizeof(imageEndChunk) - 1;
+        const PXInt8U imageEndChunk[] = {'I','E','N','D','\xAE','\x42','\x60','\x82'}; // Combined write, as this is constand
+        const PXSize imageEndChunkSize = sizeof(imageEndChunk);
 
-        PXFileWriteB(pxExportStream, imageEndChunk, imageEndChunkSize);
+        const PXFileDataElementType pxFileDataElementType[] =
+        {
+            {PXNull, PXDataTypePadding(4)},
+            {imageEndChunk, imageEndChunkSize}
+        };
+
+        PXFileWriteMultible(pxExportStream, pxFileDataElementType, sizeof(pxFileDataElementType));
     }
 
     return PXActionSuccessful;

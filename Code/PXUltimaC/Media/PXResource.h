@@ -1005,12 +1005,14 @@ extern "C"
 	PXVideo;
 
 
-	PXPublic PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);
+	PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);
 
 
-	PXPublic PXActionResult PXResourceLoad(void* resource, const PXText* const filePath);
-	PXPublic PXActionResult PXResourceLoadA(void* resource, const char* const filePath);
+	PXPublic PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath);
 
+	PXPublic PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath, const PXFileFormat pxFileFormat);
+	PXPublic PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath, const PXFileFormat pxFileFormat);
 
 #ifdef __cplusplus
 }

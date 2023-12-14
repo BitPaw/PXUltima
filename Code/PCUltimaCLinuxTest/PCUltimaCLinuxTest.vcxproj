@@ -99,78 +99,71 @@
     <IncludePath>$(SolutionDir)PXUltimaC\;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="..\PXUltimaCTest\Compiler\TestPXCompiler.c" />
-    <ClCompile Include="..\PXUltimaCTest\Compiler\TestYAML.c" />
-    <ClCompile Include="..\PXUltimaCTest\Debug\TestDebug.c" />
-    <ClCompile Include="..\PXUltimaCTest\Graphic\TestFont.c" />
-    <ClCompile Include="..\PXUltimaCTest\Graphic\TestImage.c" />
-    <ClCompile Include="..\PXUltimaCTest\Graphic\TestOpenGL.c" />
-    <ClCompile Include="..\PXUltimaCTest\Graphic\TestWindow.c" />
-    <ClCompile Include="..\PXUltimaCTest\main.c" />
-    <ClCompile Include="..\PXUltimaCTest\OS\TestSocket.c" />
-    <ClCompile Include="..\PXUltimaCTest\OS\TestSystemInfo.c" />
-    <ClCompile Include="..\PXUltimaCTest\Service\TestFTP.c" />
-    <ClCompile Include="..\PXUltimaCTest\Service\TestSBP.c" />
-    <ClCompile Include="..\PXUltimaCTest\Sound\TestSound.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\PXUltimaCTest\Compiler\TestPXCompiler.h" />
-    <ClInclude Include="..\PXUltimaCTest\Compiler\TestYAML.h" />
-    <ClInclude Include="..\PXUltimaCTest\Debug\TestDebug.h" />
-    <ClInclude Include="..\PXUltimaCTest\Graphic\TestFont.h" />
-    <ClInclude Include="..\PXUltimaCTest\Graphic\TestImage.h" />
-    <ClInclude Include="..\PXUltimaCTest\Graphic\TestOpenGL.h" />
-    <ClInclude Include="..\PXUltimaCTest\Graphic\TestWindow.h" />
-    <ClInclude Include="..\PXUltimaCTest\OS\TestSocket.h" />
-    <ClInclude Include="..\PXUltimaCTest\OS\TestSystemInfo.h" />
-    <ClInclude Include="..\PXUltimaCTest\Service\TestFTP.h" />
-    <ClInclude Include="..\PXUltimaCTest\Service\TestSBP.h" />
-    <ClInclude Include="..\PXUltimaCTest\Sound\TestSound.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PXUltimaCLinux\PXUltimaCLinux.vcxproj">
-      <Project>{8acbdd82-ca82-4c40-bc22-a1c484282400}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\PXUltimaCTest\main.cpp" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <Link>
       <LibraryDependencies>GL;X11;pthread;Xext;Xi;%(LibraryDependencies)</LibraryDependencies>
     </Link>
+    <ClCompile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

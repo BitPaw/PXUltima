@@ -48,12 +48,6 @@ extern "C"
 
 
 
-
-
-
-
-	typedef struct PXGraphic_ PXGraphic;
-
 	typedef struct PXGraphicInitializeInfo_
 	{
 		PXWindow* WindowReference;
@@ -66,7 +60,7 @@ extern "C"
 
 		PXGraphicSystem GraphicSystem;
 
-		PXGraphic* Graphic;
+		struct PXGraphic_* Graphic;
 	}
 	PXGraphicInitializeInfo;
 	
@@ -312,6 +306,8 @@ extern "C"
 	typedef void (PXAPI*PXGraphicSceneBeginFunction)(void* const pxGraphicAPI);
 	typedef void (PXAPI*PXGraphicSceneEndFunction)(void* const pxGraphicAPI);
 
+	typedef PXActionResult(PXAPI* PXGraphicScreenBufferReadFunction)(void* const pxGraphicAPI, PXImage* const pxImage);
+
 	typedef PXActionResult(PXAPI*PXGraphicDrawScriptCreate)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
 	typedef PXActionResult(PXAPI*PXGraphicDrawScriptBegin)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
 	typedef PXActionResult(PXAPI*PXGraphicDrawScriptEnd)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
@@ -431,6 +427,11 @@ extern "C"
 		PXGraphicSceneBeginFunction SceneBegin;
 		PXGraphicSceneDeployFunction SceneDeploy;
 		PXGraphicSceneEndFunction SceneEnd;
+
+		//-------------------------------------------------
+		// Screen
+		//-------------------------------------------------
+		PXGraphicScreenBufferReadFunction ScreenBufferRead;
 
 		//-------------------------------------------------
 		// View
@@ -645,8 +646,6 @@ extern "C"
 
 
 	//---<Texture>----------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicTextureScreenShot(PXGraphic* const pxGraphic, PXImage* const pxImage);
-
 	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTexture2D* const texture, const PXText* const filePath);
 	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTexture2D* const texture, const char* const filePath);
 	//-------------------------------------------------------------------------

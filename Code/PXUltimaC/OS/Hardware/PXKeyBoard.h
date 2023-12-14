@@ -313,6 +313,14 @@ extern "C"
 	}
 	PXVirtualKey;
 
+	typedef enum PXKeyPressState_
+	{
+		PXKeyPressStateInvalid,
+		PXKeyPressStateDown,
+		PXKeyPressStateUp,
+		PXKeyPressStateHold,
+	}
+	PXKeyPressState;
 
 	typedef struct PXKeyBoard_
 	{
@@ -323,47 +331,6 @@ extern "C"
 	}
 	PXKeyBoard;
 
-
-
-
-
-	PXPublic PXVirtualKey PXVirtualKeyFromID(const PXInt8U character);
-	PXPublic PXInt8U PXVirtualKeyToID(const PXVirtualKey character);
-
-	PXPublic void PXKeyBoardInputReset(PXKeyBoard* const keyBoard);
-
-	PXPublic unsigned char PXKeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey);
-	PXPublic unsigned char PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey, const unsigned char isPressed);
-
-	PXPublic void PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard);
-
-
-
-
-	// Remove this? Find better solution
-	PXPublic unsigned char PXInputButtonReset(unsigned char* value);
-	PXPublic unsigned char PXInputButtonIncrement(unsigned char* value);
-	PXPublic unsigned char PXInputButtonIncrementIfAlreadyPressed(unsigned char* value);
-	PXPublic unsigned char PXInputButtonIsShortPressed(const unsigned char value);
-	PXPublic unsigned char PXInputButtonIsLongPressed(const unsigned charvalue);
-	PXPublic unsigned char PXInputButtonIsPressed(const unsigned char value);
-
-
-
-
-	typedef enum PXKeyPressState_
-	{
-		PXKeyPressStateInvalid, 
-		PXKeyPressStateDown,
-		PXKeyPressStateUp,
-		PXKeyPressStateHold,
-	}
-	PXKeyPressState;
-
-	PXPublic PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID);
-	PXPublic PXInt8U PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
-
-
 	typedef struct PXKeyBoardVirtualInput_
 	{
 		PXVirtualKey VirtualKey;
@@ -371,9 +338,32 @@ extern "C"
 	}
 	PXKeyBoardVirtualInput;
 
+
+	PXPublic PXVirtualKey PXAPI PXVirtualKeyFromID(const PXInt8U character);
+	PXPublic PXInt8U PXAPI PXVirtualKeyToID(const PXVirtualKey character);
+
+	PXPublic void PXAPI PXKeyBoardInputReset(PXKeyBoard* const keyBoard);
+
+	PXPublic unsigned char PXAPI PXKeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey);
+	PXPublic unsigned char PXAPI PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey, const unsigned char isPressed);
+
+	PXPublic void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard);
+
+
+	// Remove this? Find better solution
+	PXPublic unsigned char PXAPI PXInputButtonReset(unsigned char* value);
+	PXPublic unsigned char PXAPI PXInputButtonIncrement(unsigned char* value);
+	PXPublic unsigned char PXAPI PXInputButtonIncrementIfAlreadyPressed(unsigned char* value);
+	PXPublic unsigned char PXAPI PXInputButtonIsShortPressed(const unsigned char value);
+	PXPublic unsigned char PXAPI PXInputButtonIsLongPressed(const unsigned charvalue);
+	PXPublic unsigned char PXAPI PXInputButtonIsPressed(const unsigned char value);
+
+	PXPublic PXKeyPressState PXAPI PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID);
+	PXPublic PXInt8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
+
 	#define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState; 
 
-	PXPublic PXBool PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize);
+	PXPublic PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize);
 
 
 #ifdef __cplusplus

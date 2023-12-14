@@ -266,7 +266,7 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxF
         PXFileReadB(pxFile, startBlock.Data, 2u);
 
         const PXJPEGMarker marker = PXJPEGMarkerFromID(startBlock.Value);
-        const PXBool validStart = marker == PXJPEGMarkerStartOfImage;
+        const PXBool validStart = PXJPEGMarkerStartOfImage == marker;
 
         if(!validStart)
         {
@@ -970,16 +970,26 @@ PXActionResult PXAPI PXJPEGSaveToImage(const PXImage* const image, PXFile* const
         jpegFileInfo.ThumbnailDataSize = 0;
         jpegFileInfo.ThumbnailData = 0;
 
-        PXFileWriteI16UE(pxFile, PXJPEGMarkerApplicationSegment00ID, EndianCurrentSystem);
-        PXFileWriteI16UE(pxFile, 16u, PXEndianBig);
-        PXFileWriteB(pxFile, "JFIF", 5u);
-        PXFileWriteI8U(pxFile, jpegFileInfo.VersionMajor);
-        PXFileWriteI8U(pxFile, jpegFileInfo.VersionMinor);
-        PXFileWriteI8U(pxFile, jpegFileInfo.DensityUnits);
-        PXFileWriteI16UE(pxFile, jpegFileInfo.DensityX, PXEndianBig);
-        PXFileWriteI16UE(pxFile, jpegFileInfo.DensityY, PXEndianBig);
-        PXFileWriteI8U(pxFile, jpegFileInfo.ThumbnailX);
-        PXFileWriteI8U(pxFile, jpegFileInfo.ThumbnailY);
+        const char PXJPEGApp0[4] = { 'J', 'F', 'I', 'F' };
+
+        const PXInt16U segmentID = PXJPEGMarkerApplicationSegment00ID;
+        const PXInt16U val = 16u;
+        const PXFileDataElementType pxDataStreamElementList[] =
+        {
+            {&segmentID, PXDataTypeInt16UBE},
+            {&val, PXDataTypeInt16UBE},
+            {PXJPEGApp0, 4u},
+            {PXNull, PXDataTypePadding(1)},
+            {&jpegFileInfo.VersionMajor, PXDataTypeInt08U},
+            {&jpegFileInfo.VersionMinor, PXDataTypeInt08U},
+            {&jpegFileInfo.DensityUnits, PXDataTypeInt08U},
+            {&jpegFileInfo.DensityX, PXDataTypeInt16UBE},
+            {&jpegFileInfo.DensityY, PXDataTypeInt16UBE},
+            {&jpegFileInfo.ThumbnailX, PXDataTypeInt08U},
+            {&jpegFileInfo.ThumbnailY, PXDataTypeInt08U}
+        };
+
+        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
     // ////////////////////////////////////////

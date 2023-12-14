@@ -12,7 +12,7 @@
 #pragma comment( lib, "winmm.lib" )
 #endif
 
-PXBool PXControllerScanDevices(NewControllerDetectedCallback callback)
+PXBool PXAPI PXControllerScanDevices(NewControllerDetectedCallback callback)
 {
 #if OSUnix
 #elif WindowsAtleastVista
@@ -85,7 +85,7 @@ const PXSize amountOfJoySticksSupported = joyGetNumDevs();
 #endif
 }
 
-PXBool PXControllerDataGet(PXController* controller)
+PXBool PXAPI PXControllerDataGet(PXController* controller)
 {
 #if OSUnix
     return 0u;
@@ -146,7 +146,7 @@ PXBool PXControllerDataGet(PXController* controller)
 }
 
 #if PXWindowUSE
-PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID)
+PXBool PXAPI PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID)
 {
 #if OSUnix
     return 0u;
@@ -164,7 +164,7 @@ PXBool PXControllerAttachToWindow(const PXControllerID controllerID, const PXWin
 #endif
 }
 
-PXBool PXControllerDetachToWindow(const PXControllerID controllerID)
+PXBool PXAPI PXControllerDetachToWindow(const PXControllerID controllerID)
 {
 #if OSUnix
     return 0u;

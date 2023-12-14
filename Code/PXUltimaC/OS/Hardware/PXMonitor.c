@@ -76,7 +76,7 @@ void PXAPI PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorL
 #endif
 }
 
-void PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height)
+void PXAPI PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height)
 {
 #if OSUnix
     *width = 1200;
@@ -165,6 +165,7 @@ void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevi
 			}
 		}
 
+#if 0
 		printf
 		(
 			"+--------------------------------------------------------+\n"
@@ -183,8 +184,8 @@ void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevi
 			pxGraphicDevicePhysical->AttachedMonitor.Driver,
 			displayDevice.DeviceID,
 			displayDevice.DeviceKey
-
-		);	
+		);
+#endif
 	}	
 #endif
 }

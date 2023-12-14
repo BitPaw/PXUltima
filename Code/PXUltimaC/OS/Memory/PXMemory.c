@@ -94,7 +94,7 @@ struct MemoryAllocationInfo
 #endif
 //-------------------------------------
 
-PXBool PXMemoryScan(PXMemoryUsage* memoryUsage)
+PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage)
 {
 	PXMemoryClear(memoryUsage, sizeof(PXMemoryUsage));
 
@@ -138,12 +138,12 @@ PXBool PXMemoryScan(PXMemoryUsage* memoryUsage)
 #endif
 }
 
-void PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize)
+void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize)
 {
 	PXMemorySet(bufferA, 0u, bufferASize);
 }
 
-void PXMemorySet(void* PXRestrict buffer, const PXByte value, const PXSize bufferSize)
+void PXAPI PXMemorySet(void* PXRestrict buffer, const PXByte value, const PXSize bufferSize)
 {
 //#if MemoryAssertEnable
 //	assert(bufferA);
@@ -168,7 +168,7 @@ void PXMemorySet(void* PXRestrict buffer, const PXByte value, const PXSize buffe
 #endif
 }
 
-int PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize)
+int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
 
@@ -205,7 +205,7 @@ int PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferA
 #endif
 }
 
-PXBool PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize bufferASize, const PXByte dataByte)
+PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize bufferASize, const PXByte dataByte)
 {
 	PXSize equalSum = 0;
 
@@ -217,7 +217,7 @@ PXBool PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize buffer
 	return equalSum == bufferASize;
 }
 
-PXBool PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize)
+PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
 
@@ -269,7 +269,7 @@ PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, co
 	return PXTrue;
 }
 
-const void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+const void* PXAPI PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
 {
 #if MemoryUseSystemFunction
 	const void* memoryPosition = memchr(inputBuffer, byteBlock, inputBufferSize);
@@ -288,7 +288,7 @@ const void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byte
 #endif
 }
 
-PXSize PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
+PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
@@ -321,7 +321,7 @@ PXSize PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBuffer
 	return bufferSize;
 }
 
-PXSize PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
+PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
 	const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
@@ -335,7 +335,7 @@ PXSize PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void*
 	return bufferSize;
 }
 
-void* PXMemoryStackAllocate(const PXSize size)
+void* PXAPI PXMemoryStackAllocate(const PXSize size)
 { 
 	void* const stackAllocated =
 
@@ -350,7 +350,7 @@ void* PXMemoryStackAllocate(const PXSize size)
 	return stackAllocated;
 }
 
-void* PXMemoryStackRelease(void* const adress)
+void* PXAPI PXMemoryStackRelease(void* const adress)
 {
 	if (!adress)
 	{
@@ -384,7 +384,7 @@ void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, c
 	return allocatedMemory;
 }
 #else
-void* PXMemoryHeapAllocate(const PXSize amount, const PXSize typeSize)
+void* PXAPI PXMemoryHeapAllocate(const PXSize amount, const PXSize typeSize)
 {
 	const PXSize totalSize = amount * typeSize;
 
@@ -456,7 +456,7 @@ PXBool PXMemoryHeapReallocateDetailed(void** const sourceAddress, PXSize* const 
 	return adressReallocated;
 }
 #else
-PXBool PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize)
+PXBool PXAPI PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize)
 {
 	void* const adressReallocated = realloc(*sourceAddress, requestedSize * typeSize);
 
@@ -492,7 +492,7 @@ PXBool PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAddress,
 }
 #endif
 
-PXBool PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize)
+PXBool PXAPI PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize)
 {
 	const PXBool needToRealocate = *currentSize < requestedSize;
 
@@ -539,7 +539,7 @@ void PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, 
 	free(adress);
 }
 #else
-void PXMemoryRelease(void* adress, const PXSize size)
+void PXAPI PXMemoryRelease(void* adress, const PXSize size)
 {
 	if(!adress || !size)
 	{
@@ -562,7 +562,7 @@ void PXMemoryRelease(void* adress, const PXSize size)
 }
 #endif
 
-void* PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode)
+void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode)
 {
 	const void* addressPrefered = 0;
 	const PXMemoryAccessModeType protectionModeID = PXMemoryAccessModeFromID(PXMemoryAccessMode);
@@ -655,7 +655,7 @@ void* PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAcce
 	return (void*)addressAllocated;
 }
 
-void PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
+void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 {
 #if OSUnix
 #elif OSWindows
@@ -684,7 +684,7 @@ void PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 #endif
 }
 
-void PXMemoryVirtualRelease(const void* adress, const PXSize size)
+void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 {
 #if OSUnix
 	const unsigned char result = 1u;
@@ -701,7 +701,7 @@ void PXMemoryVirtualRelease(const void* adress, const PXSize size)
 	//return result; // We dont return info
 }
 
-void* PXMemoryVirtualReallocate(const void* adress, const PXSize size)
+void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 {
 	const PXBool newAllocation = adress == PXNull;
 
@@ -713,7 +713,7 @@ void* PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 	return 0;
 }
 
-PXMemoryAccessModeType PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode)
+PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode)
 {
 	switch(PXMemoryAccessMode)
 	{

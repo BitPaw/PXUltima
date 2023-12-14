@@ -20,7 +20,7 @@
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 
-void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
+void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
     const char* processorName = 0;
 
@@ -246,7 +246,7 @@ void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char
     PXTextCopyA(processorName, -1, name, -1);
 }
 
-PXProcessorBrand PXProcessorBrandDetect(const char* name)
+PXProcessorBrand PXAPI PXProcessorBrandDetect(const char* name)
 {
     const PXSize bufferSize = 13;
 
@@ -283,7 +283,7 @@ PXProcessorBrand PXProcessorBrandDetect(const char* name)
     return ProcessorBrandInvalid;
 }
 
-PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model)
+PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model)
 {       
     const PXInt16U id = PXInt16Make(famliy, model);
 
@@ -377,7 +377,7 @@ PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processor
     return ProcessorModelNameInvalid;
 }
 
-void PXProcessorFetchInfo(PXProcessor* const processor)
+void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
 {
     PXMemoryClear(processor, sizeof(PXProcessor));
 
@@ -588,7 +588,7 @@ void PXProcessorFetchInfo(PXProcessor* const processor)
 #endif
 }
 
-unsigned int PXProcessorFrequencyCurrent()
+unsigned int PXAPI PXProcessorFrequencyCurrent()
 {
 #if OSWindows
     FILETIME a, b, c, d;
@@ -612,7 +612,7 @@ unsigned int PXProcessorFrequencyCurrent()
 #endif
 }
 
-unsigned int PXProcessorTimeReal()
+unsigned int PXAPI PXProcessorTimeReal()
 {
 #if OSUnix
     struct timeval time;
@@ -800,7 +800,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
     return PXActionSuccessful;
 }
 
-void PXProcessorSwapByteOrderI16U(PXInt16U* const value)
+void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value)
 {
 #if OSUnix
 #elif OSWindows
@@ -808,7 +808,7 @@ void PXProcessorSwapByteOrderI16U(PXInt16U* const value)
 #endif
 }
 
-void PXProcessorSwapByteOrderI32U(PXInt32U* const value)
+void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value)
 {
 #if OSUnix
 #elif OSWindows
@@ -816,7 +816,7 @@ void PXProcessorSwapByteOrderI32U(PXInt32U* const value)
 #endif
 }
 
-void PXProcessorSwapByteOrderI64U(PXInt64U* const value)
+void PXAPI PXProcessorSwapByteOrderI64U(PXInt64U* const value)
 {
 #if OSUnix
 #elif OSWindows

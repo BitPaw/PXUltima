@@ -79,6 +79,7 @@ void PXTextMatchTest()
 #include <OS/Hardware/PXProcessor.h>
 #include <OS/Console/PXConsole.h>
 #include <Media/BinaryWindows/PXBinaryWindows.h>
+#include <Algorithm/KnowlegeGraph/PXKnowlegeGraph.h>
 
 int main()
 {
@@ -86,11 +87,44 @@ int main()
 
 
 #if 1
+	{
+		PXImage pxImage;
+		PXClear(PXImage, &pxImage);
+
+		const PXActionResult pxLoadResult = PXResourceLoadA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput.bmp");
+		const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput_COPY.bmp", PXFileFormatBitMap);
+
+		printf("\n");
+	}
+#endif // 1
+
+
+#if 1 // XML -> Document -> Image
+	{
+		PXKnowlegeGraph pxKnowlegeGraph;
+		PXDocument pxDocument;
+		PXImage pxImage;
+
+		const PXActionResult pxLoadResult = PXResourceLoadA(&pxDocument, "_TEST_DATA_INPUT_\\books.xml");
+
+		const PXActionResult pxGraphResult = PXKnowlegeGraphLoadAndBuild(&pxKnowlegeGraph, &pxDocument, &pxImage);
+
+		const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
+
+		printf("\n");
+
+		return 0;
+	}
+#endif // 1 // XML -> Document -> Image
+
+
+
+
+
+#if 0
 	PXFile pxFile;
 
 	PXResourceLoadA(&pxFile, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Media\\PXImage.h");
-
-
 #endif // 0
 
 

@@ -33,6 +33,10 @@
 #include "PDF/PXPDF.h"
 #include "TTF/PXTTF.h"
 #include "VRML/PXVRML.h"
+#include "PHP/PXPHP.h"
+#include "M4A/PXM4A.h"
+#include "MP4/PXMP4.h"
+#include "MSI/PXMSI.h"
 #include "Wave/PXWave.h"
 #include "WMA/PXWMA.h"
 #include "XML/PXXML.h"
@@ -177,7 +181,7 @@ PXFontPageCharacter* PXFontPageCharacterFetch(PXFontPage* const pxFontPage, cons
     return lastMatch;
 }
 
-PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
+PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath)
 {
     PXFile pxFile;
 
@@ -232,7 +236,7 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
         (
             PXLoggingInfo,
             "Resource",
-            "Loaded (%6.3fms, ROPs:%4i) <%s> ",      
+            "Load %6.3fms ROPs:%-7i <%s> ",      
             timeDelat/1000.0f,
             pxFile.CounterOperationsRead,
             filePath->TextA
@@ -267,7 +271,7 @@ PXActionResult PXResourceLoad(void* resource, const PXText* const filePath)
 #endif
 }
 
-PXActionResult PXResourceLoadA(void* resource, const char* const filePath)
+PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath)
 {
     PXText pxText;
 
@@ -278,14 +282,95 @@ PXActionResult PXResourceLoadA(void* resource, const char* const filePath)
     return loadResult;
 }
 
+PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath, const PXFileFormat pxFileFormat)
+{
+    PXFile pxFile;
 
-PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText)
+    // Loading file
+    {
+        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+        pxFileOpenFromPathInfo.Text = *filePath;
+        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeWriteOnly;
+        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+        pxFileOpenFromPathInfo.CreateIfNotExist = PXTrue;
+        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+
+        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
+
+        PXActionReturnOnError(fileLoadingResult);
+    }
+
+    // Try to load assumed format
+    {
+        if (pxFile.TypeInfo.FormatExpected == PXFileFormatUnkown)
+        {
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Resource",
+                "Save refused : Format not known"
+            );
+
+            return PXActionRefusedNotSupported;
+        }
+
+        if (pxFile.TypeInfo.ResourceLoadFunction == PXNull)
+        {
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Resource",
+                "Save refused : Not implemented"
+            );
+
+            return PXActionRefusedNotImplemented;
+        }
+
+        PXInt32U time = PXProcessorTimeReal();
+
+        const PXActionResult fileParsingResult = pxFile.TypeInfo.ResourceSaveFunction(resource, &pxFile);
+
+        PXInt32U timeDelat = PXProcessorTimeReal() - time;
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "Save %6.3fms ROPs:%-7i <%s>",
+            timeDelat / 1000.0f,
+            pxFile.CounterOperationsWrite,
+            filePath->TextA
+        );
+
+       // PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
+
+       // return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
+
+    }
+
+    PXFileClose(&pxFile);
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath, const PXFileFormat pxFileFormat)
+{
+    PXText pxText;
+
+    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextUnkownLength);
+
+    const PXActionResult loadResult = PXResourceSave(resource, &pxText, pxFileFormat);
+
+    return loadResult;
+}
+
+PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText)
 {
     // Probe for file extension
     {
         pxFileTypeInfo->FormatExpected = PXFilePathExtensionDetectTry(pxText);
     }
-
 
     switch (pxFileTypeInfo->FormatExpected)
     {
@@ -435,13 +520,13 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatMP4:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeVideo;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXMP4LoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXMP4SaveToFile;
 
         case PXFileFormatMSI:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeInstaller;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXMSILoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXMSISaveToFile;
 
         case PXFileFormatMTL:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeRenderMaterial;
@@ -475,8 +560,8 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatPHP:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeCode;
-            pxFileTypeInfo->ResourceLoadFunction = PXNull;
-            pxFileTypeInfo->ResourceSaveFunction = PXNull;
+            pxFileTypeInfo->ResourceLoadFunction = PXPHPLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXPHPSaveToFile;
             break;
 
         case PXFileFormatPLY:
@@ -547,14 +632,14 @@ PXActionResult PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const P
 
         case PXFileFormatWEBM:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeSound;
-            pxFileTypeInfo->ResourceLoadFunction = PXWEBPLoadFromFile;
-            pxFileTypeInfo->ResourceSaveFunction = PXWEBPLoadSaveToFile;
+            pxFileTypeInfo->ResourceLoadFunction = PXWEBMLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXWEBMSaveToFile;
             break;
 
         case PXFileFormatWEBP:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeImage;
             pxFileTypeInfo->ResourceLoadFunction = PXWEBPLoadFromFile;
-            pxFileTypeInfo->ResourceSaveFunction = PXWEBPLoadSaveToFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXWEBPSaveToFile;
             break;
 
         case PXFileFormatWMA:

@@ -1,29 +1,18 @@
 #include "PXXingInfo.h"
 
-#define PXXingInfoSignatureInfo { 'I', 'n', 'f', 'o' }
-#define PXXingInfoSignatureXing { 'X', 'i', 'n', 'g' }
+static const char PXXingInfoSignatureInfo[4] = { 'I', 'n', 'f', 'o' };
+static const char PXXingInfoSignatureXing[4] = { 'X', 'i', 'n', 'g' };
 
 PXActionResult PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile)
 {
 	// parse signature
 	{
-		const char infoTag[] = PXXingInfoSignatureInfo;
-		const char xingTag[] = PXXingInfoSignatureXing;
 		char indetifier[4];
 
 		PXFileReadB(PXFile, indetifier, 4u);
 
-		const PXBool isInfo =
-			indetifier[0] == infoTag[0] &&
-			indetifier[1] == infoTag[1] &&
-			indetifier[2] == infoTag[2] &&
-			indetifier[3] == infoTag[3];
-
-		const PXBool isXing =
-			indetifier[0] == xingTag[0] &&
-			indetifier[1] == xingTag[1] &&
-			indetifier[2] == xingTag[2] &&
-			indetifier[3] == xingTag[3];
+		const PXBool isInfo = PXMemoryCompare(PXXingInfoSignatureInfo, 4, indetifier, 4);
+		const PXBool isXing = PXMemoryCompare(PXXingInfoSignatureXing, 4, indetifier, 4);
 
 		const PXBool validHeader = isInfo || isXing;
 

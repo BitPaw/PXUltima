@@ -140,6 +140,9 @@ extern "C"
 		PXCompilerSymbolEntry* const compilerSymbolEntry
 	);
 
+	// rewind one symbol back
+	PXPublic PXSize PXCompilerSymbolRewind(PXFile* const pxFile, const PXSize amount);
+
 	// Fetch next symbol without actually changing the file-cursor-position
 	PXPublic PXSize PXCompilerSymbolEntryPeek
 	(

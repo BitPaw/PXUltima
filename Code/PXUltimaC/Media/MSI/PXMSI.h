@@ -14,6 +14,9 @@ extern "C"
 	}
 	PXMSI;
 
+	PXPublic PXActionResult PXAPI PXMSILoadFromFile(void* const data, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMSISaveToFile(void* const data, PXFile* const pxFile);
+
 #ifdef __cplusplus
 }
 #endif

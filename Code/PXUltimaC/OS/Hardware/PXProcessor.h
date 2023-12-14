@@ -201,10 +201,10 @@ extern "C"
 	}
 	PXProcessor;
 
-	PXPublic void PXProcessorFetchInfo(PXProcessor* const processor);
+	PXPublic void PXAPI PXProcessorFetchInfo(PXProcessor* const processor);
 
-	PXPublic unsigned int PXProcessorFrequencyCurrent();
-	PXPublic unsigned int PXProcessorTimeReal();
+	PXPublic unsigned int PXAPI PXProcessorFrequencyCurrent();
+	PXPublic unsigned int PXAPI PXProcessorTimeReal();
 
     PXPublic PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp);
 
@@ -216,11 +216,11 @@ extern "C"
     // NOP - Execute no command.
     // Can have a side effect where the pipeline can still process stuff
     // So this command is not useless, it can help to flush out parralel running actions.
-    PXPublic void PXProcessorNoOperation();
+    PXPublic void PXAPI PXProcessorNoOperation();
 
-    PXPublic void PXProcessorSwapByteOrderI16U(PXInt16U* const value);
-    PXPublic void PXProcessorSwapByteOrderI32U(PXInt32U* const value);
-    PXPublic void PXProcessorSwapByteOrderI64U(PXInt64U* const value);
+    PXPublic void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value);
+    PXPublic void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value);
+    PXPublic void PXAPI PXProcessorSwapByteOrderI64U(PXInt64U* const value);
 
 #ifdef __cplusplus
 }

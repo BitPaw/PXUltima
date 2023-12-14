@@ -138,7 +138,7 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const px
 {
     PXBitmap bmp;
 
-    PXBitmapConstruct(&bmp);
+    PXBitmapConstruct(&bmp);    
 
     //---[ Parsing Header ]----------------------------------------------------
     {
@@ -284,7 +284,7 @@ PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* cons
     //-----------------------------------------------------
     {
         PXInt16UCluster byteCluster;
-        PXInt32U sizeOfFile = pxFile->DataSize;
+        PXInt32U sizeOfFile = PXBitmapFilePredictSize(image->Width, image->Height, PXColorFormatBitsPerPixel(image->Format)) - 14u;
         PXInt32U reservedBlock = 0;
         PXInt32U dataOffset = 54u;
 
@@ -293,9 +293,9 @@ PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* cons
         const PXFileDataElementType pxDataStreamElementList[] =
         {
             {byteCluster.Data, PXDataTypeDatax2},
-            {sizeOfFile, PXDataTypeInt32ULE},
-            {reservedBlock, PXDataTypeInt32ULE},
-            {dataOffset, PXDataTypeInt32ULE}
+            {&sizeOfFile, PXDataTypeInt32ULE},
+            {&reservedBlock, PXDataTypeInt32ULE},
+            {&dataOffset, PXDataTypeInt32ULE}
         };
 
         PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -310,7 +310,7 @@ PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* cons
         const PXBitmapInfoHeaderType bmpInfoHeaderType = PXBitmapHeaderBitMapInfoHeader;
 
         //---<Shared>----------------------------------------------------------
-        bitMap.InfoHeader.HeaderSize = PXBitmapInfoHeaderTypeFromID(bmpInfoHeaderType);
+        bitMap.InfoHeader.HeaderSize = PXBitmapInfoHeaderTypeToID(bmpInfoHeaderType);
         bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(image->Format);
         bitMap.InfoHeader.NumberOfColorPlanes = 1;
         bitMap.InfoHeader.Width = image->Width;
@@ -401,10 +401,10 @@ void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDat
 
 PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)
 {
-    const PXSize sizePXBitmapHeader = 14u;
-    const PXSize sizePXBitmapDIP = 40u;
-    const PXSize imageDataSize = (PXMathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height;
-    const PXSize fullSize = sizePXBitmapHeader + sizePXBitmapDIP + imageDataSize+512u;
+    const PXSize sizeBitmapHeader = 14u;
+    const PXSize sizeBitmapDIP = 40u;
+    const PXSize imageDataSize = (PXMathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height; // (PXMathFloorD((width * bitsPerPixel + 31u) / 32.0f) * 4u) * height;
+    const PXSize fullSize = sizeBitmapHeader + sizeBitmapDIP + imageDataSize+512u;
 
     return fullSize;
 }

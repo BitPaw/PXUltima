@@ -68,7 +68,7 @@
 #include <WinUser.h>
 #endif
 
-PXVirtualKey PXVirtualKeyFromID(const PXInt8U character)
+PXVirtualKey PXAPI PXVirtualKeyFromID(const PXInt8U character)
 {
 #if OSUnix
 #elif OSWindows
@@ -443,7 +443,7 @@ PXVirtualKey PXVirtualKeyFromID(const PXInt8U character)
 #endif
 }
 
-PXInt8U PXVirtualKeyToID(const PXVirtualKey character)
+PXInt8U PXAPI PXVirtualKeyToID(const PXVirtualKey character)
 {
 	switch (character)
 	{
@@ -488,22 +488,22 @@ PXInt8U PXVirtualKeyToID(const PXVirtualKey character)
 	}
 }
 
-void PXKeyBoardInputReset(PXKeyBoard* const keyBoard)
+void PXAPI PXKeyBoardInputReset(PXKeyBoard* const keyBoard)
 {
 	PXMemoryClear(keyBoard, sizeof(PXKeyBoard));
 }
 
-unsigned char PXKeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey)
+unsigned char PXAPI PXKeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey)
 {
 	return 0;
 }
 
-unsigned char PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey, const unsigned char isPressed)
+unsigned char PXAPI PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey, const unsigned char isPressed)
 {
 	return 0;
 }
 
-void PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
+void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
 {
 	char letters[64];
 	char numbers[64];
@@ -530,15 +530,14 @@ void PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
 	);
 }
 
-
-unsigned char PXInputButtonReset(unsigned char* value)
+unsigned char PXAPI PXInputButtonReset(unsigned char* value)
 {
 	*value = 0x00;
 
 	return 0;
 }
 
-unsigned char PXInputButtonIncrement(unsigned char* value)
+unsigned char PXAPI PXInputButtonIncrement(unsigned char* value)
 {
 	if (*value != 0xFF)
 	{
@@ -548,7 +547,7 @@ unsigned char PXInputButtonIncrement(unsigned char* value)
 	return 0;
 }
 
-unsigned char PXInputButtonIncrementIfAlreadyPressed(unsigned char* value)
+unsigned char PXAPI PXInputButtonIncrementIfAlreadyPressed(unsigned char* value)
 {
 	if (*value > 0 && *value != 0xFF)
 	{
@@ -558,22 +557,22 @@ unsigned char PXInputButtonIncrementIfAlreadyPressed(unsigned char* value)
 	return 0;
 }
 
-unsigned char PXInputButtonIsShortPressed(const unsigned char value)
+unsigned char PXAPI PXInputButtonIsShortPressed(const unsigned char value)
 {
 	return value > 0 && value < 0xA0;
 }
 
-unsigned char PXInputButtonIsLongPressed(const unsigned charvalue)
+unsigned char PXAPI PXInputButtonIsLongPressed(const unsigned charvalue)
 {
 	return charvalue >= 0xA0;
 }
 
-unsigned char PXInputButtonIsPressed(const unsigned char value)
+unsigned char PXAPI PXInputButtonIsPressed(const unsigned char value)
 {
 	return value > 0;
 }
 
-PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
+PXKeyPressState PXAPI PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
 {
 #if OSUnix
 	return -1;
@@ -592,7 +591,7 @@ PXKeyPressState PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
 #endif
 }
 
-PXInt8U PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
+PXInt8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
 {
 #if OSUnix
 	return -1;
@@ -612,7 +611,7 @@ PXInt8U PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
 #endif
 }
 
-PXBool PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize)
+PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize)
 {
 #if OSUnix
 

@@ -80,13 +80,6 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGraphicTextureScreenShot(PXGraphic* const pxGraphic, PXImage* const image)
-{
-  //  PXOpenGLPixelDataRead(pxGraphic, 0, 0, image->Width, image->Height, PXOpenGLImageFormatRGB, PXOpenGLTypeByteUnsigned, image->PixelData);
-
-	return PXActionSuccessful;
-}
-
 PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTexture2D* const texture, const PXText* filePath)
 {
     if (!pxGraphic || !texture || !filePath)
@@ -324,7 +317,7 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBo
     skyBox->Model.VertexBuffer.VertexDataRowSize = 3;
     skyBox->Model.VertexBuffer.Format = PXVertexBufferFormatXYZ; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
-    skyBox->Model.IndexBuffer.DataType = PXDataTypeInt8U;
+    skyBox->Model.IndexBuffer.DataType = PXDataTypeInt08U;
     skyBox->Model.IndexBuffer.IndexData = (void*)indexList;
     skyBox->Model.IndexBuffer.IndexDataSize = sizeof(indexList);
     skyBox->Model.IndexBuffer.IndexDataAmount = sizeof(indexList) / sizeof(PXInt8U);
@@ -1363,6 +1356,15 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     pxGraphic->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
     pxGraphicInitializeInfo->Graphic = pxGraphic;
 
+#if 0
+    // If window is not set, we need to make one!
+    if(pxGraphic->AttachedWindow == PXNull)
+    {
+        // Make window
+        PXWindowCreateHidden();
+    }
+#endif
+
     
     /*
     for (size_t displayID = 0; displayID < EnumDisplayMonitors(PXNull, ); ++displayID)
@@ -1475,6 +1477,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             pxGraphic->ShaderVariableMatrix3fv = PXOpenGLShaderVariableMatrix3fv;
             pxGraphic->ShaderVariableMatrix4fv = PXOpenGLShaderVariableMatrix4fv;
 
+            pxGraphic->ScreenBufferRead = PXOpenGLScreenBufferRead;
 
             pxGraphic->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
             pxGraphic->DrawModeSet = PXOpenGLDrawMode;
@@ -1563,8 +1566,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             pxGraphic->RectangleDraw = PXNull;
             pxGraphic->RectangleDrawTx = PXNull;
 
-            pxGraphic->SwapIntervalSet = PXNull;
-            pxGraphic->SwapIntervalGet = PXNull;
+            pxGraphic->SwapIntervalSet = PXDirectXSwapIntervalSet;
+            pxGraphic->SwapIntervalGet = PXDirectXSwapIntervalGet;
 
             pxGraphic->DevicePhysicalListAmount = PXNull;
             pxGraphic->DevicePhysicalListFetch = PXNull;
@@ -1600,7 +1603,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             pxGraphic->LightEnableGet = PXNull;
             pxGraphic->Texture2DRegister = PXDirectXTexture2DCreate;
             pxGraphic->Texture2DRelease = PXNull;
-            pxGraphic->Texture2DSelect = PXNull;     
+            pxGraphic->Texture2DSelect = PXNull;           
+
             break;
         }
 #endif
@@ -1627,6 +1631,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
     //-------------------------------------------------------------------------
 
+#if 0
     for (size_t i = 0; i < pxGraphic->DevicePhysicalListSize; i++)
     {
         PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &pxGraphic->DevicePhysicalList[i];
@@ -1640,9 +1645,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         else
         {
             PXTextPrintA(targetBuffer, 64, "%s, (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
-        }
-
-      
+        }      
 
         printf
         (
@@ -1664,7 +1667,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             pxGraphicDevicePhysical->Shader
         );
     }
-
+#endif
 
 
 

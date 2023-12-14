@@ -13,6 +13,9 @@ extern "C"
 	}
 	PXMP4;
 
+	PXPublic PXActionResult PXAPI PXMP4LoadFromFile(void* const data, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMP4SaveToFile(void* const data, PXFile* const pxFile);
+
 #ifdef __cplusplus
 }
 #endif

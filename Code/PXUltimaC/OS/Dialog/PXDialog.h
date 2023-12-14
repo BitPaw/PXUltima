@@ -8,12 +8,12 @@ extern "C"
 {
 #endif
 
-	PXPublic PXActionResult PXDialogFileOpen(PXText* const filePath);
-	PXPublic PXActionResult PXDialogFileSave(PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXDialogFileOpen(PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXDialogFileSave(PXText* const filePath);
 
-	PXPublic PXBool PXDialogColorSelect(PXColorRGBI8* const color);
-	PXPublic PXBool PXDialogFontSelect();
-	PXPublic PXBool PXDialogPrint();
+	PXPublic PXBool PXAPI PXDialogColorSelect(PXColorRGBI8* const color);
+	PXPublic PXBool PXAPI PXDialogFontSelect();
+	PXPublic PXBool PXAPI PXDialogPrint();
 
 #ifdef __cplusplus
 }

@@ -132,6 +132,9 @@
     <ClInclude Include="OS\Audio\PXAudio.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="OS\Graphic\PXGraphic.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataBase\PXDataBase.cpp">
@@ -249,6 +252,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Audio\PXAudio.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Graphic\PXGraphic.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

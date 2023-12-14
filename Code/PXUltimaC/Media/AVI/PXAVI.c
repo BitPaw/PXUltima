@@ -8,13 +8,13 @@ PXActionResult PXAPI PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxF
 
     // PXRIFF
     {
-        const PXActionResult riffResult = PXRIFFParse(&riff, pxFile);
+        const PXActionResult riffResult = PXRIFFLoadFromFile(&riff, pxFile);
 
         PXActionReturnOnError(riffResult);
 
         // Valid PXRIFF
         {
-            const PXBool isAVI = riff.Format == PXRIFFAudioVideoInterleave;
+            const PXBool isAVI = PXRIFFAudioVideoInterleave == riff.Format;
 
             if (!isAVI)
             {

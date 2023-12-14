@@ -8,13 +8,9 @@ extern "C"
 {
 #endif
 
-	/*
-write the lz77-encoded data, which has lit, len and dist codes, to compressed stream using huffman trees.
-tree_ll: the tree for lit and len codes.
-tree_d: the tree for distance codes.
-*/
-
-
+	// write the lz77-encoded data, which has lit, len and dist codes, to compressed stream using huffman trees.
+	// tree_ll: the tree for lit and len codes.
+	// tree_d: the tree for distance codes.
 	typedef struct PXLZ77ESetting
 	{
 		PXSize Windowsize; /*must be a power of two <= 32768. higher compresses more but is slower. Default value: 2048.*/

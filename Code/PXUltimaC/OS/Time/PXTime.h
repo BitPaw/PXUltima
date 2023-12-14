@@ -63,18 +63,18 @@ extern "C"
 	}
 	PXTime;
 
-	PXPublic PXTimeMonth  PXTimeMonthFromID(const PXInt8U monthID);
-	PXPublic PXTimeDayOfWeek PXTimeDayFromID(const PXInt8U dayID);
+	PXPublic PXTimeMonth  PXAPI PXTimeMonthFromID(const PXInt8U monthID);
+	PXPublic PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID);
 
-	PXPublic void PXTimeNow(PXTime* const time);
+	PXPublic void PXAPI PXTimeNow(PXTime* const time);
 
-	PXPublic PXSize PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult);
+	PXPublic PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult);
 
-	PXPublic PXSize PXTimeMilliseconds(const PXTime* time);
-	PXPublic PXSize PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
+	PXPublic PXSize PXAPI PXTimeMilliseconds(const PXTime* time);
+	PXPublic PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
 
-	PXPublic PXInt64U PXTimeCounterStampGet();
-	PXPublic PXInt64U PXTimeCounterFrequencyGet();
+	PXPublic PXInt64U PXAPI PXTimeCounterStampGet();
+	PXPublic PXInt64U PXAPI PXTimeCounterFrequencyGet();
 
 #ifdef __cplusplus
 }

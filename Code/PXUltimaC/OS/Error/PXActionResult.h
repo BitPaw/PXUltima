@@ -484,8 +484,8 @@ extern "C"
 #define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
 #define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
-	PXPublic PXActionResult PXErrorCodeFromID(const int errorCode);
-	PXPublic PXActionResult PXErrorCurrent();
+	PXPublic PXActionResult PXAPI PXErrorCodeFromID(const int errorCode);
+	PXPublic PXActionResult PXAPI PXErrorCurrent();
 
 #if PXOSWindowsDestop
 	PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);

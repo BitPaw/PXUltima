@@ -31,38 +31,38 @@ extern "C"
 	}
 	PXDebug;
 
-	PXPublic void PXDebugConstruct(PXDebug* const pxDebug);
-	PXPublic void PXDebugDestruct(PXDebug* const pxDebug);
+	PXPublic void PXAPI PXDebugConstruct(PXDebug* const pxDebug);
+	PXPublic void PXAPI PXDebugDestruct(PXDebug* const pxDebug);
 
 	// VS Debugger functions-- maybe
-	PXPublic PXActionResult PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* const isPresent);
-	PXPublic PXBool PXDebugProcessBeeingDebuggedCurrent();
+	PXPublic PXActionResult PXAPI PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* const isPresent);
+	PXPublic PXBool PXAPI PXDebugProcessBeeingDebuggedCurrent();
 
-	PXPublic void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message);
-
-
-	PXPublic PXActionResult PXDebugDebuggerInitialize(PXDebug* const pxDebug);
+	PXPublic void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message);
 
 
-	PXPublic PXActionResult PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName);
+	PXPublic PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug);
+
+
+	PXPublic PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName);
 
 	// Enables a debugger to continue a thread that previously reported a debugging event.
-	PXPublic void PXDebugContinue(PXDebug* const pxDebug);
-	PXPublic void PXDebugPause(PXDebug* const pxDebug);
-	PXPublic PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxProcessHandle);
-	PXPublic PXActionResult PXDebugAttach(PXDebug* const pxDebug);
+	PXPublic void PXAPI PXDebugContinue(PXDebug* const pxDebug);
+	PXPublic void PXAPI PXDebugPause(PXDebug* const pxDebug);
+	PXPublic PXBool PXAPI PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxProcessHandle);
+	PXPublic PXActionResult PXAPI PXDebugAttach(PXDebug* const pxDebug);
 	//PXPublic void PXDebugAttachToDebugger(PXDebug* const pxDebug);
-	PXPublic PXActionResult PXDebugDetach(PXDebug* const pxDebug);
+	PXPublic PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug);
 
-	PXPublic void PXDebugStackTrace(PXDebug* const pxDebug);
+	PXPublic void PXAPI PXDebugStackTrace(PXDebug* const pxDebug);
 
-	PXPublic PXSize PXDebugMemoryRead(PXDebug* const pxDebug, const void* const adress, void* const outputData, const PXSize outputDataSize);
-	PXPublic PXSize PXDebugMemoryWrite(PXDebug* const pxDebug, const void* const adress, const void* const inputData, const PXSize inputDataSize);
+	PXPublic PXSize PXAPI PXDebugMemoryRead(PXDebug* const pxDebug, const void* const adress, void* const outputData, const PXSize outputDataSize);
+	PXPublic PXSize PXAPI PXDebugMemoryWrite(PXDebug* const pxDebug, const void* const adress, const void* const inputData, const PXSize inputDataSize);
 
 	// Only the thread that created the process being debugged can call this function.
-	PXPublic PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug);
+	PXPublic PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug);
 
-	PXPrivate PXThreadResult PXDebugLoop(PXDebug* const pxDebug);
+	PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug);
 
 #ifdef __cplusplus
 }

@@ -195,7 +195,11 @@ extern "C"
 	PXPrivate LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
 #endif
 
-	PXPrivate PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const PXWindowAdress);
+
+	PXPrivate PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow);
+
+	PXPrivate PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow);
+
 
 
 	PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window);

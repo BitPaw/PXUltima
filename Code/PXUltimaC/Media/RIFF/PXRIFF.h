@@ -11,6 +11,7 @@ extern "C"
 	typedef enum PXRIFFFormat_
 	{
 		PXRIFFInvalid,
+		PXRIFFWebPicture, // WEBP
 		PXRIFFWaveformAudio, // WAVE
 		PXRIFFMultimediaMovieFile, // RMMP
 		PXRIFFPXMIDI, // RMID
@@ -38,9 +39,9 @@ extern "C"
 	PXPrivate inline PXInt32U PXRIFFFormatToID(const PXRIFFFormat value);
 
 
-	PXPublic PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const PXFile);
+	PXPublic PXActionResult PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const PXFile);
 
-	PXPublic PXActionResult PXRIFFSerialize(const PXRIFF* const riff, PXFile* const PXFile);
+	PXPublic PXActionResult PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

@@ -152,7 +152,7 @@
 
 #define SOCK_Invalid 0xFF
 
-PXProtocolMode PXProtocolModeFromID(const PXInt8U protocolMode)
+PXProtocolMode PXAPI PXProtocolModeFromID(const PXInt8U protocolMode)
 {
     switch(protocolMode)
     {
@@ -266,7 +266,7 @@ PXProtocolMode PXProtocolModeFromID(const PXInt8U protocolMode)
     }
 }
 
-PXInt8U ConvertFromProtocolMode(const PXProtocolMode protocolMode)
+PXInt8U PXAPI ConvertFromProtocolMode(const PXProtocolMode protocolMode)
 {
     switch(protocolMode)
     {
@@ -381,7 +381,7 @@ PXInt8U ConvertFromProtocolMode(const PXProtocolMode protocolMode)
     }
 }
 
-PXSocketType PXSocketTypeFromID(const PXInt8U socketType)
+PXSocketType PXAPI PXSocketTypeFromID(const PXInt8U socketType)
 {
     switch(socketType)
     {
@@ -405,7 +405,7 @@ PXSocketType PXSocketTypeFromID(const PXInt8U socketType)
     }
 }
 
-PXInt8U PXSocketTypeToID(const PXSocketType socketType)
+PXInt8U PXAPI PXSocketTypeToID(const PXSocketType socketType)
 {
     switch(socketType)
     {
@@ -430,7 +430,7 @@ PXInt8U PXSocketTypeToID(const PXSocketType socketType)
     }
 }
 
-IPAdressFamily PXIPAdressFamilyFromID(const PXInt8U ipMode)
+IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXInt8U ipMode)
 {
     switch(ipMode)
     {
@@ -470,7 +470,7 @@ IPAdressFamily PXIPAdressFamilyFromID(const PXInt8U ipMode)
     }
 }
 
-PXInt8U PXIPAdressFamilyToID(const IPAdressFamily ipMode)
+PXInt8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode)
 {
     switch(ipMode)
     {
@@ -591,7 +591,7 @@ PXInt8U PXIPAdressFamilyToID(const IPAdressFamily ipMode)
     }
 }
 
-void PXSocketConstruct(PXSocket* const pxSocket)
+void PXAPI PXSocketConstruct(PXSocket* const pxSocket)
 {
     PXMemoryClear(pxSocket, sizeof(PXSocket));
     PXThreadConstruct(&pxSocket->CommunicationThread);
@@ -600,7 +600,7 @@ void PXSocketConstruct(PXSocket* const pxSocket)
     pxSocket->ID = PXSocketUnused;
 }
 
-void PXSocketDestruct(PXSocket* const pxSocket)
+void PXAPI PXSocketDestruct(PXSocket* const pxSocket)
 {
     printf("[C] Socket destruct %i\n", pxSocket->ID);
 
@@ -611,7 +611,7 @@ void PXSocketDestruct(PXSocket* const pxSocket)
     PXSocketConstruct(pxSocket);
 }
 
-PXActionResult PXSocketCreate
+PXActionResult PXAPI PXSocketCreate
 (
     PXSocket* const pxSocket,
     const IPAdressFamily adressFamily,
@@ -669,7 +669,7 @@ PXActionResult PXSocketCreate
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketConnect(PXSocket* const pxClient, PXSocket* const pxServer)
+PXActionResult PXAPI PXSocketConnect(PXSocket* const pxClient, PXSocket* const pxServer)
 {
     const int serverSocketID = connect(pxClient->ID, (struct sockaddr*)pxClient->IP, pxClient->IPSize);
     const PXBool connected = serverSocketID != -1;
@@ -696,7 +696,7 @@ PXActionResult PXSocketConnect(PXSocket* const pxClient, PXSocket* const pxServe
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketSetupAdress
+PXActionResult PXAPI PXSocketSetupAdress
 (
     PXSocket* const pxSocketList,
     const PXSize socketListSizeMax,
@@ -898,12 +898,12 @@ PXActionResult PXSocketSetupAdress
     return PXActionSuccessful;
 }
 
-PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
+PXBool PXAPI PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
 {
     return pxSocket->ID != PXSocketUnused;
 }
 
-void PXSocketClose(PXSocket* const pxSocket)
+void PXAPI PXSocketClose(PXSocket* const pxSocket)
 {
     // If not used, we cant close.
     {
@@ -932,7 +932,7 @@ void PXSocketClose(PXSocket* const pxSocket)
     PXMemorySet(&pxSocket->ID, 0xFF, 4);
 }
 
-void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState)
+void PXAPI PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState)
 {
     const PXSocketState oldState = pxSocket->State;
 
@@ -941,7 +941,7 @@ void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketSta
     PXFunctionInvoke(pxSocket->EventList.SocketStateChangedCallBack, pxSocket->Owner, pxSocket, oldState, socketState);
 }
 
-PXActionResult PXSocketEventPull(PXSocket* const pxSocket)
+PXActionResult PXAPI PXSocketEventPull(PXSocket* const pxSocket)
 {
     PXSocketStateChange(pxSocket, SocketEventPolling);
 
@@ -1155,7 +1155,7 @@ for (PXSize i = 0; i < pxSocket->SocketPollingReadListSize; ++i)
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketBind(PXSocket* const pxSocket)
+PXActionResult PXAPI PXSocketBind(PXSocket* const pxSocket)
 {
     const int bindingResult = bind(pxSocket->ID, (struct sockaddr*)pxSocket->IP, pxSocket->IPSize);
     const PXBool sucessful = bindingResult == 0; //-1
@@ -1180,7 +1180,7 @@ PXActionResult PXSocketBind(PXSocket* const pxSocket)
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
+PXActionResult PXAPI PXSocketOptionsSet(PXSocket* const pxSocket)
 {
     if(pxSocket->ID == -1)
     {
@@ -1211,7 +1211,7 @@ PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket)
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketListen(PXSocket* const pxSocket)
+PXActionResult PXAPI PXSocketListen(PXSocket* const pxSocket)
 {
     const int maximalPXClientsWaitingInQueue = 10;
     const int listeningResult = listen(pxSocket->ID, maximalPXClientsWaitingInQueue);
@@ -1237,7 +1237,7 @@ PXActionResult PXSocketListen(PXSocket* const pxSocket)
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketAccept(PXSocket* const server)
+PXActionResult PXAPI PXSocketAccept(PXSocket* const server)
 {
     PXSocket clientSocket;
     PXSocketConstruct(&clientSocket);
@@ -1286,7 +1286,7 @@ PXActionResult PXSocketAccept(PXSocket* const server)
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxSocketReceiverID)
+PXActionResult PXAPI PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxSocketReceiverID)
 {
     // Check if socket is active and ready to send
     {
@@ -1366,7 +1366,7 @@ PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxS
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketID pxSocketSenderID)
+PXActionResult PXAPI PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketID pxSocketSenderID)
 {
     // Check if socket is active and ready to send
     {
@@ -1446,7 +1446,7 @@ PXActionResult PXSocketReceive(PXSocket* const pxSocketReceiver, const PXSocketI
     return PXActionSuccessful;
 }
 
-PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID)
+PXActionResult PXAPI PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID)
 {
     PXSocket clientSockket;
 
@@ -1471,7 +1471,7 @@ PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocket
 }
 
 #if OSWindows
-PXActionResult WindowsSocketAgentStartup(void)
+PXActionResult PXAPI WindowsSocketAgentStartup(void)
 {
     const WORD wVersionRequested = MAKEWORD(2, 2);
     WSADATA wsaData;
@@ -1487,7 +1487,7 @@ PXActionResult WindowsSocketAgentStartup(void)
     return PXWindowsSocketAgentErrorFromID(result);
 }
 
-PXActionResult WindowsSocketAgentShutdown(void)
+PXActionResult PXAPI WindowsSocketAgentShutdown(void)
 {
     const int result = WSACleanup();
     const PXBool successful = result == 0;
@@ -1500,7 +1500,7 @@ PXActionResult WindowsSocketAgentShutdown(void)
     return PXWindowsSocketAgentErrorFromID(result);
 }
 
-PXActionResult PXWindowsSocketAgentErrorFetch(void)
+PXActionResult PXAPI PXWindowsSocketAgentErrorFetch(void)
 {
     const int wsaErrorID = WSAGetLastError();
     const PXActionResult pxActionResult = PXWindowsSocketAgentErrorFromID(wsaErrorID);
@@ -1508,7 +1508,7 @@ PXActionResult PXWindowsSocketAgentErrorFetch(void)
     return pxActionResult;
 }
 
-PXActionResult PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
+PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
 {
     switch (errorID)
     {

@@ -39,12 +39,12 @@ extern "C"
 	PXLock;
 
     // Clear value of lock, sets CPrivate data to 0.
-    PXPublic void PXLockClear(PXLock* const lock);
+    PXPublic void PXAPI PXLockClear(PXLock* const lock);
 
-	PXPublic PXActionResult PXLockCreate(PXLock* const lock, const PXLockType type);
-	PXPublic PXActionResult PXLockDelete(PXLock* const lock);
-	PXPublic PXActionResult PXLockEngage(PXLock* const lock);
-	PXPublic PXActionResult PXLockRelease(PXLock* const lock);
+	PXPublic PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type);
+	PXPublic PXActionResult PXAPI PXLockDelete(PXLock* const lock);
+	PXPublic PXActionResult PXAPI PXLockEngage(PXLock* const lock);
+	PXPublic PXActionResult PXAPI PXLockRelease(PXLock* const lock);
 #ifdef __cplusplus
 }
 #endif

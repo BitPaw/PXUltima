@@ -2413,6 +2413,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     // WGL-Extensions (Wiggle OpenGL)
     //-----------------------------------------------------
     {
+#if 0
         if (pxOpenGL->StringGetExtensions)
         {
             char* teeext = pxOpenGL->StringGetExtensions(pxOpenGL->AttachedWindow->HandleDeviceContext);
@@ -2448,6 +2449,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         {
             printf("[OpenGL] wglGetExtensionsStringARB not deteced..\n");
         }
+#endif
     }
 
     //-----------------------------------------------------
@@ -2466,12 +2468,14 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             numberOfExtensions
         );       
 
+#if 0
         for (int i = 0; i < numberOfExtensions; ++i)
         {
             const char* ccc = (const char*)pxOpenGL->StringI(GL_EXTENSIONS, i);
 
             printf("| %3i | %-40s |\n", i+1, ccc);
         }
+#endif
     }
 #endif
 
@@ -2656,6 +2660,22 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
     pxGraphicDevicePhysicalList->VideoMemoryEvictionSize = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTED_MEMORY_NVX);
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL* const pxOpenGL, PXImage* const pxImage)
+{
+    GLenum formatStructure = 0;
+    GLenum formatData = 0;
+
+    PXOpenGLImageFormatToID(pxImage->Format, &formatStructure, &formatData);
+
+    PXImageResize(pxImage, pxImage->Format, pxImage->Width, pxImage->Height);
+
+    pxOpenGL->ReadPixels(0, 0, pxImage->Width, pxImage->Height, formatStructure, formatData, pxImage->PixelData);
+   
+    const PXActionResult pxActionResult = PXOpenGLErrorCurrent();
+
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
@@ -4232,35 +4252,10 @@ void PXAPI PXOpenGLDrawArrays(const PXOpenGL* const pxOpenGL, const PXGraphicDra
     pxOpenGL->DrawArrays(renderModeID, offset, amount);
 }
 
-void PXAPI PXOpenGLDrawElements(const PXOpenGL* const pxOpenGL, const PXGraphicDrawMode renderMode, const PXSize amount, const PXDataType pxDataType, const void* const indexList)
+void PXAPI PXOpenGLDrawElements(const PXOpenGL* const pxOpenGL, const PXGraphicDrawMode renderMode, const PXSize amount, const PXInt32U pxDataType, const void* const indexList)
 {
     const GLenum renderModeID = PXOpenGLRenderModeToID(renderMode);
-    GLenum openGLDataTypeID = 0;
-
-    switch (pxDataType)
-    {
-        case PXDataTypeInt8S:
-        case PXDataTypeInt8U:
-            openGLDataTypeID = GL_UNSIGNED_BYTE;
-            break;
-
-        case PXDataTypeBEInt16S:
-        case PXDataTypeBEInt16U:
-        case PXDataTypeLEInt16S:
-        case PXDataTypeLEInt16U:
-            openGLDataTypeID = GL_UNSIGNED_SHORT;
-            break;
-
-        case PXDataTypeBEInt32S:
-        case PXDataTypeBEInt32U:
-        case PXDataTypeLEInt32S:
-        case PXDataTypeLEInt32U:
-            openGLDataTypeID = GL_UNSIGNED_INT;
-            break;
-
-        default:
-            return;
-    }
+    const GLenum openGLDataTypeID = PXOpenGLTypeToID(pxDataType);
 
     pxOpenGL->DrawElements(renderModeID, amount, openGLDataTypeID, indexList);
 }
@@ -4828,7 +4823,7 @@ void PXAPI PXOpenGLVertexArrayAttributeDefine
     PXOpenGL* const pxOpenGL,
     const PXInt32U index,
     const PXInt32U size,
-    const PXDataType datatype,
+    const PXInt32U datatype,
     const PXBool normalized,
     const PXInt32U stride,
     const PXSize offset
@@ -4938,7 +4933,6 @@ PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
         case PXDataTypeDouble:
             return GL_DOUBLE;
 
-        case PXDataTypeTypeInvalid:
         default:
             return -1;
     }
@@ -5070,7 +5064,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
         pxSprite->Model.IndexBuffer.IndexData = (void*)indexData;
         pxSprite->Model.IndexBuffer.IndexDataSize = sizeof(indexData);
         pxSprite->Model.IndexBuffer.IndexDataAmount = indexAmount;
-        pxSprite->Model.IndexBuffer.DataType = PXDataTypeInt8U;
+        pxSprite->Model.IndexBuffer.DataType = PXDataTypeInt08U;
         pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
 
         PXOpenGLModelRegister(pxOpenGL, &pxSprite->Model);
@@ -5177,7 +5171,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
         pxSprite->Model.IndexBuffer.IndexData = (void*)indexData;
         pxSprite->Model.IndexBuffer.IndexDataSize = sizeof(indexData);
         pxSprite->Model.IndexBuffer.IndexDataAmount = indexAmount;
-        pxSprite->Model.IndexBuffer.DataType = PXDataTypeInt8U;
+        pxSprite->Model.IndexBuffer.DataType = PXDataTypeInt08U;
         pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
 
         PXOpenGLModelRegister(pxOpenGL, &pxSprite->Model);

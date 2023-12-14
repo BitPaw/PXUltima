@@ -47,37 +47,45 @@ extern "C"
 	{
 		volatile PXThreadIDType ThreadID;
 		volatile PXThreadMode Mode;
+		
+#if OSUnix
+		volatile void* ReturnResult;
+#elif OSWindows
+		volatile PXInt32U ReturnResult;
+#endif
 	}
 	PXThread;
 
-	PXPublic void PXThreadConstruct(PXThread* const pxThread);
-	PXPublic void PXThreadDestruct(PXThread* const pxThread);
+	PXPublic void PXAPI PXThreadConstruct(PXThread* const pxThread);
+	PXPublic void PXAPI PXThreadDestruct(PXThread* const pxThread);
 
 	// This function create a handle for the thread.
 	// The thread will clean itself up, yet you need to release the handle as a final step.
-	PXPublic PXActionResult PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter);
+	PXPublic PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter);
 
-	PXPublic PXActionResult PXThreadRunInOtherProcess(PXThread* const pxThread, const void* processHandle, const ThreadFunction threadFunction, const void* parameter);
+	PXPublic PXActionResult PXAPI PXThreadRunInOtherProcess(PXThread* const pxThread, const void* processHandle, const ThreadFunction threadFunction, const void* parameter);
 
 	// Dont call this function if you dont have to.
 	// In C++ this can cause memory leaks as destructors might not be called.
-	PXPublic PXActionResult PXThreadExitCurrent(const PXInt32U exitCode);
+	PXPublic PXActionResult PXAPI PXThreadExitCurrent(const PXInt32U exitCode);
 
 	// Causes the calling thread to yield execution to another
 	// thread that is ready to run on the current processor.
 	// The operating system selects the next thread to be executed.
-	PXPublic PXActionResult PXThreadYieldToOtherThreads();
+	PXPublic PXActionResult PXAPI PXThreadYieldToOtherThreads();
 
-	PXPublic PXActionResult PXThreadOpen(PXThread* const pxThread);
+	PXPublic PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread);
 
-	PXPublic PXActionResult PXThreadSuspend(PXThread* const pxThread);
-	PXPublic PXActionResult PXThreadResume(PXThread* const pxThread);
-	PXPublic PXActionResult PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
+	PXPublic PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread);
+	PXPublic PXActionResult PXAPI PXThreadResume(PXThread* const pxThread);
+	PXPublic PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
 
-	PXPublic PXSize PXThreadCurrentID();
-	PXPublic void PXThreadCurrentGet(PXThread* const pxThread);
+	PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID);
 
-	PXPublic void PXThreadWaitForFinish(PXThread* const pxThread);
+	PXPublic PXSize PXAPI PXThreadCurrentID();
+	PXPublic void PXAPI PXThreadCurrentGet(PXThread* const pxThread);
+
+	PXPublic PXActionResult PXAPI PXThreadWaitForFinish(PXThread* const pxThread);
 
 #ifdef __cplusplus
 }

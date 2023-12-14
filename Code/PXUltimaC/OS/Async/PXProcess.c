@@ -11,12 +11,12 @@
 
 #include <OS/Memory/PXMemory.h>
 
-void PXProcessConstruct(PXProcess* const pxProcess)
+void PXAPI PXProcessConstruct(PXProcess* const pxProcess)
 {
 	PXMemoryClear(pxProcess, sizeof(PXProcess));
 }
 
-void PXProcessCurrent(PXProcess* const pxProcess)
+void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
 {
 	PXProcessConstruct(pxProcess);
 
@@ -29,7 +29,7 @@ void PXProcessCurrent(PXProcess* const pxProcess)
 #endif
 }
 
-void PXProcessParent(PXProcess* const pxProcess)
+void PXAPI PXProcessParent(PXProcess* const pxProcess)
 {
 	PXProcessConstruct(pxProcess);
 
@@ -42,7 +42,7 @@ void PXProcessParent(PXProcess* const pxProcess)
 #endif
 }
 
-void PXProcessExitCurrent(const PXInt32U exitCode)
+void PXAPI PXProcessExitCurrent(const PXInt32U exitCode)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -52,7 +52,7 @@ void PXProcessExitCurrent(const PXInt32U exitCode)
 #endif
 }
 
-PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode)
+PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode)
 {
 	PXProcessConstruct(pxProcess);
 
@@ -148,7 +148,7 @@ PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const p
 	return PXActionSuccessful;
 }
 
-PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
+PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -201,7 +201,7 @@ PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 #endif
 }
 
-PXActionResult PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID)
+PXActionResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID)
 {
 	PXProcessConstruct(pxProcess);
 
@@ -223,7 +223,7 @@ PXActionResult PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID 
 #endif
 }
 
-PXActionResult PXProcessClose(PXProcess* const pxProcess)
+PXActionResult PXAPI PXProcessClose(PXProcess* const pxProcess)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -240,7 +240,7 @@ PXActionResult PXProcessClose(PXProcess* const pxProcess)
 #endif
 }
 
-PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
+PXActionResult PXAPI PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -264,7 +264,7 @@ PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void
 #endif
 }
 
-PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize)
+PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -289,7 +289,7 @@ PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void*
 #endif
 }
 
-PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo)
+PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo)
 {
 	PXMemoryClear(pxProcessMemoryInfo, sizeof(PXProcessMemoryInfo));
 

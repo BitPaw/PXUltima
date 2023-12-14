@@ -2,7 +2,7 @@
 
 #if PXBashUSE
 
-PXActionResult PXBashExecute(const PXText* const programPath, const PXBool syncronous)
+PXActionResult PXAPI PXBashExecute(const PXText* const programPath, const PXBool syncronous)
 {
 	/*
 	Pipe pipe;

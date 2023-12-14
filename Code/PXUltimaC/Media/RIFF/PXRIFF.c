@@ -16,6 +16,7 @@
 #define PXRIFFSubTypeRMMP PXInt32Make('R', 'M', 'M', 'P')
 #define PXRIFFSubTypeRMID PXInt32Make('R', 'M', 'I', 'D')
 #define PXRIFFSubTypeWAVE PXInt32Make('W', 'A', 'V', 'E')
+#define PXRIFFSubTypeWEBP PXInt32Make('W', 'E', 'B', 'P')
 
 PXEndian PXRIFFEndianFromID(const PXInt32U value)
 {
@@ -48,6 +49,7 @@ PXRIFFFormat PXRIFFFormatFromID(const PXInt32U value)
 		case PXRIFFSubTypeRMMP:	return PXRIFFMultimediaMovieFile;
 		case PXRIFFSubTypeRMID:	return PXRIFFPXMIDI;
 		case PXRIFFSubTypeWAVE:	return PXRIFFWaveformAudio;
+		case PXRIFFSubTypeWEBP: return PXRIFFWebPicture;
 		default: return PXRIFFInvalid;
 	}
 }
@@ -63,11 +65,12 @@ PXInt32U PXRIFFFormatToID(const PXRIFFFormat value)
 		case PXRIFFMultimediaMovieFile:	return PXRIFFSubTypeRMMP;
 		case PXRIFFPXMIDI:	return PXRIFFSubTypeRMID;
 		case PXRIFFWaveformAudio:	return PXRIFFSubTypeWAVE;
+		case PXRIFFWebPicture: return PXRIFFSubTypeWEBP;
 		default: return 0;
 	}
 }
 
-PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const pxFile)
+PXActionResult PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
 {
 	PXInt32UCluster chunkID;
 	PXInt32UCluster formatID;
@@ -88,7 +91,7 @@ PXActionResult PXRIFFParse(PXRIFF* const riff, PXFile* const pxFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXRIFFSerialize(const PXRIFF* const riff, PXFile* const pxFile)
+PXActionResult PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const pxFile)
 {
 	const PXInt32U riffSignature = PXRIFFEndianToID(riff->EndianFormat);
 	const PXInt32U riffType = PXRIFFFormatToID(riff->Format);

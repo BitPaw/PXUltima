@@ -34,7 +34,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     pxEngine->FrameTime = PXMathCeilingF((1000000 * pxEngine->CounterTimeDelta) / (float)pxEngine->TimeFrequency);
 
     pxEngine->CounterTimeWindow = PXTimeCounterStampGet();
-    PXWindowUpdate(&pxEngine->Window);
+    //PXWindowUpdate(&pxEngine->Window);
     pxEngine->CounterTimeWindow = PXTimeCounterStampGet() - pxEngine->CounterTimeWindow;
 
     pxEngine->CounterTimeUser = PXTimeCounterStampGet();
@@ -136,8 +136,8 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         );
 
         PXWindowConstruct(&pxEngine->Window);
-        PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXFalse);
-        PXWindowUpdate(&pxEngine->Window);
+        PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXTrue);
+        //PXWindowUpdate(&pxEngine->Window);
     }
 
     // Create graphic instance

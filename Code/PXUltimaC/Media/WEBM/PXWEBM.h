@@ -13,6 +13,9 @@ extern "C"
 	}
 	PXWEBM;
 
+	PXPublic PXActionResult PXAPI PXWEBMLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWEBMSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
+
 #ifdef __cplusplus
 }
 #endif

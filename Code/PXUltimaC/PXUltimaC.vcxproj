@@ -116,7 +116,8 @@
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <CallingConvention>StdCall</CallingConvention>
+      <CallingConvention>
+      </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
@@ -142,7 +143,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>StdCall</CallingConvention>
+      <CallingConvention>
+      </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <Optimization>MinSpace</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -178,7 +180,8 @@
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <CallingConvention>StdCall</CallingConvention>
+      <CallingConvention>
+      </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <EnableEnhancedInstructionSet>
       </EnableEnhancedInstructionSet>
@@ -207,7 +210,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
-      <CallingConvention>StdCall</CallingConvention>
+      <CallingConvention>
+      </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <Optimization>MinSpace</Optimization>
@@ -235,6 +239,7 @@
   <ItemGroup>
     <ClCompile Include="Algorithm\Dijkstra\PXDijkstra.c" />
     <ClCompile Include="Algorithm\KalmanFilter\PXKalmanFilter.c" />
+    <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c" />
     <ClCompile Include="Compiler\PXCompiler.c" />
     <ClCompile Include="Compiler\PXCompilerSettings.c" />
     <ClCompile Include="Container\BinaryTree\PXBinaryTree.c" />
@@ -389,6 +394,7 @@
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h" />
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h" />
+    <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h" />
     <ClInclude Include="Compiler\PXCompiler.h" />
     <ClInclude Include="Compiler\PXCompilerSettings.h" />
     <ClInclude Include="Container\BinaryTree\PXBinaryTree.h" />
@@ -541,6 +547,7 @@
     <ClInclude Include="Service\HTTP\PXHTTPClient.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Algorithm\KnowlegeGraph\README.md" />
     <None Include="Media\BinaryLinux\README.md" />
     <None Include="Media\Bitmap\README.md" />
     <None Include="Media\COFF\README.md" />
@@ -550,6 +557,7 @@
     <None Include="Media\Matroska\README.md" />
     <None Include="Media\SQL\README.md" />
     <None Include="Media\STL\README.md" />
+    <None Include="Media\XML\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

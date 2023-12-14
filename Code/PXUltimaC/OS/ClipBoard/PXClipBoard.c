@@ -55,7 +55,7 @@
 
 #endif
 
-PXInt32U PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
+PXInt32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
 {
 
 #if OSUnix
@@ -152,7 +152,7 @@ PXInt32U PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
 #endif
 }
 
-PXClipBoardFormat PXClipBoardFormatFromID(const PXInt32U clipBoardFormat)
+PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXInt32U clipBoardFormat)
 {
 #if OSUnix
     return PXActionInvalid;
@@ -247,7 +247,7 @@ PXClipBoardFormat PXClipBoardFormatFromID(const PXInt32U clipBoardFormat)
 #endif // defined
 }
 
-PXActionResult PXClipBoardOpen(PXClipBoard* const clipBoard)
+PXActionResult PXAPI PXClipBoardOpen(PXClipBoard* const clipBoard)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -264,7 +264,7 @@ PXActionResult PXClipBoardOpen(PXClipBoard* const clipBoard)
 #endif
 }
 
-PXActionResult PXClipBoardClose(PXClipBoard* const clipBoard)
+PXActionResult PXAPI PXClipBoardClose(PXClipBoard* const clipBoard)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -281,7 +281,7 @@ PXActionResult PXClipBoardClose(PXClipBoard* const clipBoard)
 #endif
 }
 
-PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFormat format, const void* data)
+PXActionResult PXAPI PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFormat format, const void* data)
 {
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -302,7 +302,7 @@ PXActionResult PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFor
 #endif
 }
 
-PXActionResult PXClipBoardClear(PXClipBoard* const clipBoard)
+PXActionResult PXAPI PXClipBoardClear(PXClipBoard* const clipBoard)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;

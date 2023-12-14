@@ -21,10 +21,10 @@ extern "C"
 	typedef struct PXXingInfo_
 	{
 		PXXingInfoVersion Version;
-		unsigned int NumberOfFrames;
-		unsigned int SizeInBytes;
+		PXInt32U NumberOfFrames;
+		PXInt32U SizeInBytes;
 		char TOCBuffer[PXXingInfoTOCBufferSize];
-		unsigned int VBRScale; // 0-100
+		PXInt32U VBRScale; // 0-100
 	}
 	PXXingInfo;
 

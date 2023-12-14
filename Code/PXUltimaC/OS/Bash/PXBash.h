@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-	PXPublic PXActionResult PXBashExecute(const PXText* const programPath, const PXBool syncronous);
+	PXPublic PXActionResult PXAPI PXBashExecute(const PXText* const programPath, const PXBool syncronous);
 
 #ifdef __cplusplus
 }

@@ -9,17 +9,17 @@
 #include <stdio.h>
 #endif
 
-void PXServerConstruct(PXServer* const server)
+void PXAPI PXServerConstruct(PXServer* const server)
 {
     PXMemoryClear(server, sizeof(PXServer));
 }
 
-void PXServerDestruct(PXServer* const server)
+void PXAPI PXServerDestruct(PXServer* const server)
 {
 
 }
 
-PXBool PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID socketID, PXSocket** const pxSocket)
+PXBool PXAPI PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID socketID, PXSocket** const pxSocket)
 {
     for (PXSize i = 0; i < server->ServerSocketListSize; ++i)
     {
@@ -37,7 +37,7 @@ PXBool PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID s
     return PXFalse;
 }
 
-PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const PXProtocolMode protocolMode)
+PXActionResult PXAPI PXServerStart(PXServer* const server, const PXInt16U port, const PXProtocolMode protocolMode)
 {
     // Setup adress info
     {
@@ -115,7 +115,7 @@ PXActionResult PXServerStart(PXServer* const server, const PXInt16U port, const 
     return PXActionSuccessful;
 }
 
-PXActionResult PXServerStop(PXServer* const server)
+PXActionResult PXAPI PXServerStop(PXServer* const server)
 {
     if (server->ServerSocketListSize == 0)
     {
@@ -139,12 +139,12 @@ PXActionResult PXServerStop(PXServer* const server)
     return PXActionSuccessful;
 }
 
-PXActionResult PXServerKickClient(PXServer* const server, const PXSocketID socketID)
+PXActionResult PXAPI PXServerKickClient(PXServer* const server, const PXSocketID socketID)
 {
 	return PXActionInvalid;
 }
 
-PXActionResult PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize)
+PXActionResult PXAPI PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize)
 {
     for (PXSize i = 0; i < server->ServerSocketListSize; i++)
     {

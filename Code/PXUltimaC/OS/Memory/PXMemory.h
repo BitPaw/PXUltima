@@ -71,13 +71,13 @@ extern "C"
 	PXMemoryUsage;
 
 
-	PXPublic PXBool PXMemoryScan(PXMemoryUsage* memoryUsage);
+	PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
 
 
 
 
 
-	PXPublic const void* PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
+	PXPublic const void* PXAPI PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
 
 	
 
@@ -87,8 +87,8 @@ extern "C"
 	// Allocates size bytes on the program stack.
 	// The allocated space is automatically freed when the calling function exits
 	// (not when the allocation merely passes out of scope).
-	PXPublic void* PXMemoryStackAllocate(const PXSize size);
-	PXPublic void* PXMemoryStackRelease(void* const adress);
+	PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize size);
+	PXPublic void* PXAPI PXMemoryStackRelease(void* const adress);
 
 
 
@@ -103,10 +103,10 @@ extern "C"
 	// Allocate memory in virtual memory space.
 	// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 	// Only use for bigger datablocks as thic has very hi overhead.
-	PXPublic void* PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode);
-	PXPublic void PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
-	PXPublic void PXMemoryVirtualRelease(const void* adress, const PXSize size);
-	PXPublic void* PXMemoryVirtualReallocate(const void* adress, const PXSize size);
+	PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode);
+	PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
+	PXPublic void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
+	PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
 
 
 	PXPublic PXMemoryAccessModeType PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode);
@@ -124,7 +124,7 @@ extern "C"
 #define PXNew(type) (type*)PXMemoryHeapAllocateDetailed(sizeof(type), 1, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #define PXNewList(type, amount) (type*)PXMemoryHeapAllocateDetailed(sizeof(type), amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #else
-	PXPublic void* PXMemoryHeapAllocate(const PXSize amount, const PXSize typeSize);
+	PXPublic void* PXAPI PXMemoryHeapAllocate(const PXSize amount, const PXSize typeSize);
 
 #define PXNew(type) (type*)PXMemoryHeapAllocate(1u, sizeof(type))
 #define PXNewList(type, amount) (type*)PXMemoryHeapAllocate(amount, sizeof(type))
@@ -142,7 +142,7 @@ extern "C"
 #define PXDelete(type, adress) PXMemoryReleaseDetailed(adress, sizeof(type), _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #define PXDeleteList(type, adress, amount) PXMemoryReleaseDetailed(adress, sizeof(type) * amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #else
-	PXPublic void PXMemoryRelease(void* adress, const PXSize size);
+	PXPublic void PXAPI PXMemoryRelease(void* adress, const PXSize size);
 
 #define PXDelete(type, adress) PXMemoryRelease(adress, sizeof(type))
 #define PXDeleteList(type, adress, amount) PXMemoryRelease(adress, sizeof(type) * (PXInt32U)amount)
@@ -158,7 +158,7 @@ extern "C"
 	PXPublic PXBool PXMemoryHeapReallocateDetailed(void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize, const char* const file, const char* const function, const PXSize line);
 #define PXResizeList(type, address, currentSize, requestedSize) PXMemoryHeapReallocateDetailed(address, currentSize, sizeof(type) * requestedSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #else
-	PXPublic PXBool PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize);
+	PXPublic PXBool PXAPI PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize);
 #define PXResizeList(type, address, currentSize, requestedSize) PXMemoryHeapReallocate(sizeof(type), address, currentSize, requestedSize)
 #endif	
 //---------------------------------------------------------
@@ -168,7 +168,7 @@ extern "C"
 //---------------------------------------------------------
 // Guaranteesize
 //---------------------------------------------------------
-	PXPublic PXBool PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize);
+	PXPublic PXBool PXAPI PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize);
 
 #define PXGuaranteeSize(type, address, currentSize, requestedSize) PXMemoryGuaranteeSize(sizeof(type), address, currentSize, requestedSize);
 //---------------------------------------------------------
@@ -178,7 +178,7 @@ extern "C"
 //---------------------------------------------------------
 // Copy
 //---------------------------------------------------------
-	PXPublic PXSize PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
+	PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
 #define PXCopy(type, source, target) PXMemoryCopy(source, sizeof(type), target, sizeof(type));
@@ -194,7 +194,7 @@ extern "C"
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
-	PXPublic PXSize PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
+	PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
 		
@@ -211,7 +211,7 @@ extern "C"
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
-	PXPublic void PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize);
+	PXPublic void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize);
 
 #define PXClear(type, adress) PXMemoryClear(adress, sizeof(type));
 #define PXClearList(type, adress, amount) PXMemoryClear(adress, sizeof(type) * amount);
@@ -229,7 +229,7 @@ extern "C"
 //---------------------------------------------------------
 // Set
 //---------------------------------------------------------
-	PXPublic void PXMemorySet(void* const PXRestrict bufferA, const PXByte value, const PXSize bufferSize);
+	PXPublic void PXAPI PXMemorySet(void* const PXRestrict bufferA, const PXByte value, const PXSize bufferSize);
 #define PXSet(type, adress, value) PXMemorySet(adress, value, sizeof(type));
 #define PXSetList(type, adress, amount, value) PXMemorySet(adress, value, sizeof(type) * amount);
 
@@ -246,14 +246,14 @@ extern "C"
 // Compare
 //---------------------------------------------------------
 
-	PXPublic int PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
+	PXPublic int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
 
 
-	PXPublic PXBool PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize bufferASize, const PXByte dataByte);
+	PXPublic PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize bufferASize, const PXByte dataByte);
 
 	// Returns 1 if correct, 0 if not.
 	// This function is not like memcmp that returns -1, 0, and 1!
-	PXPublic PXBool PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
+	PXPublic PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
 
 
 

@@ -26,19 +26,19 @@
 
 #endif
 
-void PXDebugConstruct(PXDebug* const pxDebug)
+void PXAPI PXDebugConstruct(PXDebug* const pxDebug)
 {
 	PXClear(PXDebug, pxDebug);
 
 	PXTextConstructFromAdressA(&pxDebug->ApplicatioName, pxDebug->ApplicatioNameBuffer, 0, sizeof(pxDebug->ApplicatioNameBuffer));
 }
 
-void PXDebugDestruct(PXDebug* const pxDebug)
+void PXAPI PXDebugDestruct(PXDebug* const pxDebug)
 {
 
 }
 
-PXActionResult PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* const isPresent)
+PXActionResult PXAPI PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* const isPresent)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -56,7 +56,7 @@ PXActionResult PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* cons
 	return PXActionSuccessful;
 }
 
-PXBool PXDebugProcessBeeingDebuggedCurrent()
+PXBool PXAPI PXDebugProcessBeeingDebuggedCurrent()
 {
 #if OSUnix
 #elif OSWindows
@@ -64,7 +64,7 @@ PXBool PXDebugProcessBeeingDebuggedCurrent()
 #endif
 }
 
-void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
+void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
 {
 	switch (message->Format)
 	{
@@ -88,7 +88,7 @@ void PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
 	}
 }
 
-PXActionResult PXDebugDebuggerInitialize(PXDebug* const pxDebug)
+PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -106,7 +106,7 @@ PXActionResult PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 #endif
 }
 
-PXActionResult PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName)
+PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName)
 {
 	PXDebugConstruct(pxDebug);
 
@@ -126,7 +126,7 @@ PXActionResult PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const a
 	return PXActionSuccessful;
 }
 
-void PXDebugContinue(PXDebug* const pxDebug)
+void PXAPI PXDebugContinue(PXDebug* const pxDebug)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -140,7 +140,7 @@ void PXDebugContinue(PXDebug* const pxDebug)
 #endif
 }
 
-void PXDebugPause(PXDebug* const pxDebug)
+void PXAPI PXDebugPause(PXDebug* const pxDebug)
 {
 #if OSUnix
 
@@ -149,7 +149,7 @@ void PXDebugPause(PXDebug* const pxDebug)
 #endif
 }
 
-PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxProcessHandle)
+PXBool PXAPI PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxProcessHandle)
 {
 #if OSUnix
     return PXFalse;
@@ -158,7 +158,7 @@ PXBool PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxProcess
 #endif
 }
 
-PXActionResult PXDebugAttach(PXDebug* const pxDebug)
+PXActionResult PXAPI PXDebugAttach(PXDebug* const pxDebug)
 {
 #if OSUnix
 	const long result = ptrace(PTRACE_ATTACH, pxDebug->Process.ProcessID, 0, 0);
@@ -173,7 +173,7 @@ PXActionResult PXDebugAttach(PXDebug* const pxDebug)
 #endif
 }
 
-PXActionResult PXDebugDetach(PXDebug* const pxDebug)
+PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
 {
 #if OSUnix
 	const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
@@ -188,7 +188,7 @@ PXActionResult PXDebugDetach(PXDebug* const pxDebug)
 #endif
 }
 
-void PXDebugStackTrace(PXDebug* const pxDebug)
+void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 {
 #if OSUnix
 
@@ -325,7 +325,7 @@ void PXDebugStackTrace(PXDebug* const pxDebug)
 #endif
 }
 
-PXSize PXDebugMemoryRead(PXDebug* const pxDebug, const void* const adress, void* const outputData, const PXSize outputDataSize)
+PXSize PXAPI PXDebugMemoryRead(PXDebug* const pxDebug, const void* const adress, void* const outputData, const PXSize outputDataSize)
 {
 	PXProcess pxProcess;
 	PXProcessConstruct(&pxProcess);
@@ -337,7 +337,7 @@ PXSize PXDebugMemoryRead(PXDebug* const pxDebug, const void* const adress, void*
 	return readBytes;
 }
 
-PXSize PXDebugMemoryWrite(PXDebug* const pxDebug, const void* const adress, const void* const inputData, const PXSize inputDataSize)
+PXSize PXAPI PXDebugMemoryWrite(PXDebug* const pxDebug, const void* const adress, const void* const inputData, const PXSize inputDataSize)
 {
 	PXProcess pxProcess;
 	PXProcessConstruct(&pxProcess);
@@ -349,32 +349,32 @@ PXSize PXDebugMemoryWrite(PXDebug* const pxDebug, const void* const adress, cons
 	return writtenBytes;
 }
 
-void OnDebugProcessCreate(PXDebug* const pxDebug)
+void PXAPI OnDebugProcessCreate(PXDebug* const pxDebug)
 {
 
 }
-void OnDebugProcessExit(PXDebug* const pxDebug, const PXInt32U exitCode)
+void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXInt32U exitCode)
 {
 	printf("[PXDebuger] Exit Thread <%i>\n", exitCode);
 }
 
-void OnDebugThreadCreate(PXDebug* const pxDebug)
+void PXAPI OnDebugThreadCreate(PXDebug* const pxDebug)
 {
 
 }
-void OnDebugThreadExit(PXDebug* const pxDebug, const PXInt32U exitCode)
+void PXAPI OnDebugThreadExit(PXDebug* const pxDebug, const PXInt32U exitCode)
 {
 
 }
 
 
-void OnDebugBreakPoint(PXDebug* const pxDebug)
+void PXAPI OnDebugBreakPoint(PXDebug* const pxDebug)
 {
 
 
 }
 
-PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
+PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -581,7 +581,7 @@ PXActionResult PXDebugWaitForEvent(PXDebug* const pxDebug)
 #endif
 }
 
-PXThreadResult PXDebugLoop(PXDebug* const pxDebug)
+PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
 {
 	// Create process to debug on
 	{

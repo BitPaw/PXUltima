@@ -299,16 +299,17 @@ extern "C"
 	} LodePNGColorMode;
 
 
-	/*
-One node of a color tree
-This is the data structure used to count the number of unique colors and to get a palette
-index for a color. It's like an octree, but because the alpha channel is used too, each
-node has 16 instead of 8 children.
-*/
+	
+	// One node of a color tree
+	// This is the data structure used to count the number of unique colors and to get a palette
+	// index for a color. It's like an octree, but because the alpha channel is used too, each
+	// node has 16 instead of 8 children.
+
 	typedef struct PNGColorTree_
 	{
-		struct PNGColorTree_* children[16]; /*up to 16 pointers to ColorTree of next level*/
-		int index; /*the payload. Only has a meaningful value if this is in the last level*/
+		// Up to 8
+		struct PNGColorTree_* children[16]; // up to 16 pointers to ColorTree of next level
+		int index;							// the payload. Only has a meaningful value if this is in the last level
 	}
 	PNGColorTree;
 
@@ -355,11 +356,11 @@ enough memory.*/
 	static void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode);
 
 	/*Get RGBA8 color of pixel with index i (y * width + x) from the raw image with given color type.*/
-	static void getPixelColorRGBA8(unsigned char* r, unsigned char* g,								   unsigned char* b, unsigned char* a,								   const unsigned char* in, PXSize i,								   const LodePNGColorMode* mode);
+	static void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, unsigned char* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
 
 
 	/*put a pixel, given its RGBA color, into image of any color type*/
-	static unsigned rgba8ToPixel(unsigned char* out, PXSize i,								 const LodePNGColorMode* mode, PNGColorTree* tree /*for palette*/,								 unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+	PXPrivate PXActionResult PXAPI rgba8ToPixel(unsigned char* out, PXSize i,								 const LodePNGColorMode* mode, PNGColorTree* tree /*for palette*/,	const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a);
 
 
 	PXPublic PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth);

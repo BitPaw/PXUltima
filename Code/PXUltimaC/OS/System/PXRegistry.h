@@ -40,17 +40,17 @@ extern "C"
 	}
 	PXRegistry;
 
-	PXPublic PXActionResult PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
-	PXPublic PXActionResult PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace);
+	PXPublic PXActionResult PXAPI PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
+	PXPublic PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace);
 
-	PXPublic PXActionResult PXRegistryClose(PXRegistry* const registry);
+	PXPublic PXActionResult PXAPI PXRegistryClose(PXRegistry* const registry);
 
-	PXPublic PXActionResult PXRegistryKeyListAll(PXRegistry* const registry);
+	PXPublic PXActionResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry);
 
-	PXPublic PXActionResult PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName);
-	PXPublic PXActionResult PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile);
-	PXPublic PXActionResult PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName);
-	PXPublic PXActionResult PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName);
+	PXPublic PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName);
+	PXPublic PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile);
+	PXPublic PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName);
+	PXPublic PXActionResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName);
 
 #ifdef __cplusplus
 }

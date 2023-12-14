@@ -21,9 +21,9 @@ extern "C"
 	}
 	PXHardDrive;
 
-	PXPublic PXSize PXHardDriveListSize();
+	PXPublic PXSize PXAPI PXHardDriveListSize();
 
-	PXPublic PXActionResult PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
+	PXPublic PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
 
 #ifdef __cplusplus
 }

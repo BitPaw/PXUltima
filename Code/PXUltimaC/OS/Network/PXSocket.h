@@ -210,18 +210,18 @@ extern "C"
 
 
 	//-----------------------------------------------------
-	typedef void (*PXSocketCreatingEvent)(void* owner, const PXSocket* const pxSocket, PXBool* use);
-	typedef void (*PXSocketCreatedEvent)(void* owner, const PXSocket* const pxSocket);
+	typedef void (PXAPI*PXSocketCreatingEvent)(void* owner, const PXSocket* const pxSocket, PXBool* use);
+	typedef void (PXAPI*PXSocketCreatedEvent)(void* owner, const PXSocket* const pxSocket);
 
-	typedef void (*PXSocketClosedEvent)(void* owner, const PXSocket* pxSocket);
+	typedef void (PXAPI*PXSocketClosedEvent)(void* owner, const PXSocket* pxSocket);
 
-	typedef void (*PXSocketConnectedEvent)(void* owner, const PXSocket* serverSocket, const PXSocket* clientSocket);
-	typedef void (*PXSocketDisconnectedEvent)(void* owner, const PXSocket* serverSocket, const PXSocket* clientSocket);
+	typedef void (PXAPI*PXSocketConnectedEvent)(void* owner, const PXSocket* serverSocket, const PXSocket* clientSocket);
+	typedef void (PXAPI*PXSocketDisconnectedEvent)(void* owner, const PXSocket* serverSocket, const PXSocket* clientSocket);
 
-	typedef void (*PXSocketStateChangedEvent)(void* owner, const PXSocket* pxSocket, const PXSocketState oldState, const PXSocketState newState);
+	typedef void (PXAPI*PXSocketStateChangedEvent)(void* owner, const PXSocket* pxSocket, const PXSocketState oldState, const PXSocketState newState);
 
-	typedef void (*PXSocketDataSendEvent)(void* owner, const PXSocketDataSendEventData* const pxSocketDataSendEventData);
-	typedef void (*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData);
+	typedef void (PXAPI*PXSocketDataSendEvent)(void* owner, const PXSocketDataSendEventData* const pxSocketDataSendEventData);
+	typedef void (PXAPI*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData);
 
 	typedef struct PXSocketEventList_
 	{
@@ -285,20 +285,20 @@ extern "C"
 	PXSocketAdressSetupInfo;
 
 
-	PXPrivate PXProtocolMode PXProtocolModeFromID(const PXInt8U protocolMode);
-	PXPrivate PXInt8U PXProtocolModeToID(const PXProtocolMode protocolMode);
+	PXPrivate PXProtocolMode PXAPI PXProtocolModeFromID(const PXInt8U protocolMode);
+	PXPrivate PXInt8U PXAPI PXProtocolModeToID(const PXProtocolMode protocolMode);
 
-	PXPrivate PXSocketType PXSocketTypeFromID(const PXInt8U socketType);
-	PXPrivate PXInt8U PXSocketTypeToID(const PXSocketType socketType);
+	PXPrivate PXSocketType PXAPI PXSocketTypeFromID(const PXInt8U socketType);
+	PXPrivate PXInt8U PXAPI PXSocketTypeToID(const PXSocketType socketType);
 
-	PXPrivate IPAdressFamily PXIPAdressFamilyFromID(const PXInt8U ipMode);
-	PXPrivate PXInt8U PXIPAdressFamilyToID(const IPAdressFamily ipMode);
+	PXPrivate IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXInt8U ipMode);
+	PXPrivate PXInt8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode);
 
 
-	PXPublic void PXSocketConstruct(PXSocket* const pxSocket);
-	PXPublic void PXSocketDestruct(PXSocket* const pxSocket);
+	PXPublic void PXAPI PXSocketConstruct(PXSocket* const pxSocket);
+	PXPublic void PXAPI PXSocketDestruct(PXSocket* const pxSocket);
 
-	PXPublic PXActionResult PXSocketCreate
+	PXPublic PXActionResult PXAPI PXSocketCreate
 	(
 		PXSocket* const pxSocket,
 		const IPAdressFamily adressFamily,
@@ -306,9 +306,9 @@ extern "C"
 		const PXProtocolMode protocolMode
 	);
 
-	PXPublic PXActionResult PXSocketConnect(PXSocket* const pxSocket, PXSocket* const pxServer);
+	PXPublic PXActionResult PXAPI PXSocketConnect(PXSocket* const pxSocket, PXSocket* const pxServer);
 
-	PXPublic PXActionResult PXSocketSetupAdress
+	PXPublic PXActionResult PXAPI PXSocketSetupAdress
 	(
 		PXSocket* const pxSocketList,
 		const PXSize PXSocketListSizeMax,
@@ -317,28 +317,28 @@ extern "C"
 		const PXSize pxSocketAdressSetupInfoSize
 	);
 
-	PXPublic PXBool PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
-	PXPublic void PXSocketClose(PXSocket* const pxSocket);
+	PXPublic PXBool PXAPI PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
+	PXPublic void PXAPI PXSocketClose(PXSocket* const pxSocket);
 
-	PXPublic void PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState);
+	PXPublic void PXAPI PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState);
 
-	PXPublic PXActionResult PXSocketEventPull(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXAPI PXSocketEventPull(PXSocket* const pxSocket);
 
-	PXPublic PXActionResult PXSocketBind(PXSocket* const pxSocket);
-	PXPublic PXActionResult PXSocketOptionsSet(PXSocket* const pxSocket);
-	PXPublic PXActionResult PXSocketListen(PXSocket* const pxSocket);
-	PXPublic PXActionResult PXSocketAccept(PXSocket* const server);
+	PXPublic PXActionResult PXAPI PXSocketBind(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXAPI PXSocketOptionsSet(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXAPI PXSocketListen(PXSocket* const pxSocket);
+	PXPublic PXActionResult PXAPI PXSocketAccept(PXSocket* const server);
 
-	PXPublic PXActionResult PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxSocketReceiverID);
-	PXPublic PXActionResult PXSocketReceive(PXSocket* const pxSocketSender, const PXSocketID pxSocketSenderID);
+	PXPublic PXActionResult PXAPI PXSocketSend(PXSocket* const pxSocketSender, const PXSocketID pxSocketReceiverID);
+	PXPublic PXActionResult PXAPI PXSocketReceive(PXSocket* const pxSocketSender, const PXSocketID pxSocketSenderID);
 
-	PXPublic PXActionResult PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);
+	PXPublic PXActionResult PXAPI PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);
 
 #if OSWindows
-	PXPrivate PXActionResult WindowsSocketAgentStartup(void);
-	PXPrivate PXActionResult WindowsSocketAgentShutdown(void);
-	PXPrivate PXActionResult PXWindowsSocketAgentErrorFetch(void);
-	PXPrivate PXActionResult PXWindowsSocketAgentErrorFromID(const PXInt32S errorID);
+	PXPrivate PXActionResult PXAPI WindowsSocketAgentStartup(void);
+	PXPrivate PXActionResult PXAPI WindowsSocketAgentShutdown(void);
+	PXPrivate PXActionResult PXAPI PXWindowsSocketAgentErrorFetch(void);
+	PXPrivate PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID);
 #endif
 
 #ifdef __cplusplus

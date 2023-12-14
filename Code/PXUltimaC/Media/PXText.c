@@ -293,6 +293,11 @@ PXSize PXAPI PXTextCopy(const PXText* const source, PXText* const destination)
 
 	const PXSize minLength = PXMathMinimumIU(source->SizeAllocated, destination->SizeAllocated);
 
+	if (minLength == 0)
+	{
+		return 0;
+	}
+
 	switch (source->Format)
 	{
 		case TextFormatASCII:
@@ -592,6 +597,11 @@ PXBool PXAPI PXTextCompare(const PXText* const textA, const PXText* const textB)
 
 PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize)
 {
+	if (!(a && aSize && b && bSize))
+	{
+		return PXFalse;
+	}
+
 	if (PXTextUnkownLength == aSize)
 	{
 		aSize = PXTextLengthA(a, PXTextUnkownLength);

@@ -76,12 +76,6 @@ extern "C"
 	}
 	PXProcessMemoryInfo;
 
-
-	PXPublic void PXProcessConstruct(PXProcess* const pxProcess);
-
-	PXPublic void PXProcessCurrent(PXProcess* const pxProcess);
-	PXPublic void PXProcessParent(PXProcess* const pxProcess);
-
 	typedef enum PXProcessCreationMode_
 	{
 		PXProcessCreationModeInvalid,
@@ -105,21 +99,26 @@ extern "C"
 	}
 	PXProcessCreationMode;
 
-	typedef void (*PXProcessDetectedEvent)(PXProcess* const pxProcess);
+	typedef void (PXAPI* PXProcessDetectedEvent)(PXProcess* const pxProcess);
 
-	PXPublic void PXProcessExitCurrent(const PXInt32U exitCode);
+	PXPublic void PXAPI PXProcessConstruct(PXProcess* const pxProcess);
 
-	PXPublic PXActionResult PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
+	PXPublic void PXAPI PXProcessCurrent(PXProcess* const pxProcess);
+	PXPublic void PXAPI PXProcessParent(PXProcess* const pxProcess);
 
-	PXPublic PXActionResult PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
+	PXPublic void PXAPI PXProcessExitCurrent(const PXInt32U exitCode);
 
-	PXPublic PXActionResult PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
-	PXPublic PXActionResult PXProcessClose(PXProcess* const pxProcess);
+	PXPublic PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
 
-	PXPublic PXActionResult PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
-	PXPublic PXActionResult PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
 
-	PXPublic PXActionResult PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
+	PXPublic PXActionResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
+	PXPublic PXActionResult PXAPI PXProcessClose(PXProcess* const pxProcess);
+
+	PXPublic PXActionResult PXAPI PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
+	PXPublic PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize);
+
+	PXPublic PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 
 #ifdef __cplusplus
 }

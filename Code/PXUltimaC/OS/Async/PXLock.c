@@ -2,12 +2,12 @@
 
 #include <OS/Memory/PXMemory.h>
 
-void PXLockClear(PXLock* const lock)
+void PXAPI PXLockClear(PXLock* const lock)
 {
 	PXMemoryClear(lock, sizeof(PXLock));
 }
 
-PXActionResult PXLockCreate(PXLock* const lock, const PXLockType type)
+PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type)
 {
 #if OSUnix
 	int sharedPointer = 0;
@@ -65,7 +65,7 @@ PXActionResult PXLockCreate(PXLock* const lock, const PXLockType type)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXLockDelete(PXLock* const lock)
+PXActionResult PXAPI PXLockDelete(PXLock* const lock)
 {
 	switch (lock->Type)
 	{
@@ -98,7 +98,7 @@ PXActionResult PXLockDelete(PXLock* const lock)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXLockEngage(PXLock* const lock)
+PXActionResult PXAPI PXLockEngage(PXLock* const lock)
 {
 	switch (lock->Type)
 	{
@@ -130,7 +130,7 @@ PXActionResult PXLockEngage(PXLock* const lock)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXLockRelease(PXLock* const lock)
+PXActionResult PXAPI PXLockRelease(PXLock* const lock)
 {
 	switch (lock->Type)
 	{
