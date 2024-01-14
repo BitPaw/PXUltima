@@ -392,7 +392,7 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxF
                         matixID = (cluster & 0b00001111);
                     }
 
-                    PXInt8U* const matrixAdress = &jpeg->QuantizationTable[matixID];
+                    PXInt8U* const matrixAdress = (PXInt8U*)&jpeg->QuantizationTable[matixID];
 
                     remainingBytes -= PXFileReadB(pxFile, matrixAdress, sizeof(PXInt8U) * 64u);
 
@@ -416,9 +416,6 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxF
                 }
 
                 break;
-
-
-
             }
             case PXJPEGMarkerDefineHuffmanTableList:
             {
@@ -604,7 +601,7 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxF
             case PXJPEGMarkerComment:
             {
                 jpeg->CommentSize = chunkLength;
-                jpeg->Comment = PXNewList(PXByte, chunkLength);
+                jpeg->Comment = PXNewList(char, chunkLength);
 
                 PXFileReadB(pxFile, jpeg->Comment, chunkLength);
 
@@ -627,23 +624,6 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxF
 }
 
 
-
-
-
-
-
-
-
-
-
-// two bytes
-typedef          short  int16_t;
-// four bytes (or more)
-typedef          int    int32_t;
-
-// ////////////////////////////////////////
-// basic structs (for CPrivate use only)
-
 // represent a few bits, typically a Huffman code
 typedef struct BitCode_
 {
@@ -651,21 +631,18 @@ typedef struct BitCode_
     // BitCode(PXInt16U code_, PXInt8U numBits_) : code(code_), numBits(numBits_) {}
     PXInt16U code;     // PXJPEG's Huffman codes are limited to 16 bits
     PXInt8U  numBits;  // actual number of bits
-}BitCode;
-
-
+}
+BitCode;
 
 // store the most recently encoded bits that are not written yet
 typedef struct BitBuffer_
 {
     // BitBuffer()        // actually, there will be only one instance of this object
      //    : bits(0), numBits(0) {}
-    int32_t bits;      // actually only at most 24 bits are used
+    PXInt32S bits;      // actually only at most 24 bits are used
     PXInt8U numBits;   // number of valid bits (the right-most bits)
-}BitBuffer;
-
-// ////////////////////////////////////////
-// constants (for CPrivate use only)
+}
+BitBuffer;
 
 // quantization tables from PXJPEG Standard, Annex K
 // there are a few experts proposing slightly more efficient values, e.g. https://www.imagemagick.org/discourse-server/viewtopic.php?t=20333
@@ -693,14 +670,16 @@ const unsigned char DefaultQuantChrominance[8 * 8] =
 // most encoders use a zig-zag table, I switched to its inverse for performance reasons
 // note: ZigZagInv[ZigZag[i]] = i
 const PXInt8U ZigZagInv[8 * 8] =
-{ 0, 1, 8,16, 9, 2, 3,10,   // ZigZag[] =  0, 1, 5, 6,14,15,27,28,
-  17,24,32,25,18,11, 4, 5,   //             2, 4, 7,13,16,26,29,42,
-  12,19,26,33,40,48,41,34,   //             3, 8,12,17,25,30,41,43,
-  27,20,13, 6, 7,14,21,28,   //             9,11,18,24,31,40,44,53,
-  35,42,49,56,57,50,43,36,   //            10,19,23,32,39,45,52,54,
-  29,22,15,23,30,37,44,51,   //            20,22,33,38,46,51,55,60,
-  58,59,52,45,38,31,39,46,   //            21,34,37,47,50,56,59,61,
-  53,60,61,54,47,55,62,63 }; //            35,36,48,49,57,58,62,63
+{ 
+    0, 1, 8,16, 9, 2, 3,10,     // ZigZag[] =  0, 1, 5, 6,14,15,27,28,
+    17,24,32,25,18,11, 4, 5,    //             2, 4, 7,13,16,26,29,42,
+    12,19,26,33,40,48,41,34,    //             3, 8,12,17,25,30,41,43,
+    27,20,13, 6, 7,14,21,28,    //             9,11,18,24,31,40,44,53,
+    35,42,49,56,57,50,43,36,    //            10,19,23,32,39,45,52,54,
+    29,22,15,23,30,37,44,51,    //            20,22,33,38,46,51,55,60,
+    58,59,52,45,38,31,39,46,    //            21,34,37,47,50,56,59,61,
+    53,60,61,54,47,55,62,63     //            35,36,48,49,57,58,62,63
+}; 
 
 // some constants for our DCT
 #define SqrtHalfSqrt 1.306562965f // sqrt((2 + sqrt(2)) / 2)  = cos(pi * 1 / 8) * sqrt(2)
@@ -840,14 +819,14 @@ short PXJPEGEncodeBlock
     BitBuffer* buffer,
     float block[8][8],
     const float scaled[8 * 8],
-    int16_t lastDC,
+    PXInt16S lastDC,
     const BitCode huffmanDC[256],
     const BitCode huffmanAC[256]
 )
 {
 
     // "linearize" the 8x8 block, treat it as a flat array of 64 floats
-    float* block64 = block;
+    float* block64 = (float*)block;
 
     // DCT: rows
     for(PXInt8U offset = 0; offset < 8u; ++offset)
@@ -881,7 +860,7 @@ short PXJPEGEncodeBlock
     {
         float value = block64[ZigZagInv[i]];
         // round to nearest integer (actually, rounding is performed by casting from float to int16)
-        quantized[i] = (int16_t)(value + (value >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
+        quantized[i] = (PXInt16S)(value + (value >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
         // remember offset of last non-zero coefficient
         if(quantized[i] != 0)
             posNonZero = i;
@@ -976,9 +955,9 @@ PXActionResult PXAPI PXJPEGSaveToImage(const PXImage* const image, PXFile* const
         const PXInt16U val = 16u;
         const PXFileDataElementType pxDataStreamElementList[] =
         {
-            {&segmentID, PXDataTypeInt16UBE},
-            {&val, PXDataTypeInt16UBE},
-            {PXJPEGApp0, 4u},
+            {(void*)&segmentID, PXDataTypeInt16UBE},
+            {(void*)&val, PXDataTypeInt16UBE},
+            {(void*)PXJPEGApp0, PXDataTypeDatax4},
             {PXNull, PXDataTypePadding(1)},
             {&jpegFileInfo.VersionMajor, PXDataTypeInt08U},
             {&jpegFileInfo.VersionMinor, PXDataTypeInt08U},
@@ -1151,12 +1130,12 @@ PXActionResult PXAPI PXJPEGSaveToImage(const PXImage* const image, PXFile* const
     buffer.numBits = 0;   // number of valid bits (the right-most bits)
 
     // just convert image data from void*
-    const unsigned char* pixels = image->PixelData;
+    const unsigned char* pixels = (unsigned char*)image->PixelData;
 
     // break down the image into 8x8 blocks and convert from RGB or grayscale to YCbCr color space
     float Y[8][8], Cb[8][8], Cr[8][8];
     // average color of the previous 8x8 block
-    int16_t lastYDC = 0, lastCbDC = 0, lastCrDC = 0;
+    PXInt16S lastYDC = 0, lastCbDC = 0, lastCrDC = 0;
 
     // downsampling of Cb and Cr channels, if sampling = 2 then 2x2 samples are used
     const PXSize sampling = downsample ? 2 : 1;

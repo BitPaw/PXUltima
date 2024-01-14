@@ -76,6 +76,10 @@ extern "C"
 	PXPublic PXInt64U PXAPI PXTimeCounterStampGet();
 	PXPublic PXInt64U PXAPI PXTimeCounterFrequencyGet();
 
+#if OSWindows
+	PXPublic void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

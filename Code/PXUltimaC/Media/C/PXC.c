@@ -1432,11 +1432,6 @@ PXActionResult PXAPI PXCParseTypeParameterList(PXDocument* const pxDocument, PXF
     return PXActionRefusedNotImplemented;
 }
 
-typedef struct PXCFunction
-{
-    int x;
-};
-
 PXActionResult PXAPI PXCParseFunctionDefinition(PXDocument* const pxDocument, PXFile* const pxFile)
 {
     PXCompilerSymbolEntry pxCompilerSymbolEntry;

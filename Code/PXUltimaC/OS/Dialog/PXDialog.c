@@ -13,7 +13,8 @@
 	#if WindowsAtleastVista
         #include <Shlobj.h>
         #include <combaseapi.h>
-		// #include <shobjidl.h> // [This is an internal header. Do not use as such] 		
+#include "PXDialog.h"
+// #include <shobjidl.h> // [This is an internal header. Do not use as such] 		
 	#endif
 #endif
 

@@ -22,7 +22,7 @@
 #define STYP_VECTOR 0x8000
 #define STYP_PADDED 0x00010000
 
-PXCOFFMachineType PXCOFFMachineFromID(const PXInt16U valueID)
+PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXInt16U valueID)
 {
 	switch (valueID)
 	{
@@ -49,7 +49,7 @@ PXCOFFMachineType PXCOFFMachineFromID(const PXInt16U valueID)
 	}
 }
 
-PXCOFFFormat PXCOFFFormatFromID(const PXInt16U valueID)
+PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID)
 {
 	switch (valueID)
 	{
@@ -61,7 +61,7 @@ PXCOFFFormat PXCOFFFormatFromID(const PXInt16U valueID)
 	}
 }
 
-PXSectionType PXSectionTypeFromID(const PXInt64U valueID)
+PXSectionType PXAPI PXSectionTypeFromID(const PXInt64U valueID)
 {
 	switch (valueID)
 	{
@@ -85,7 +85,7 @@ PXSectionType PXSectionTypeFromID(const PXInt64U valueID)
 	}
 }
 
-PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
+PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 {
 	PXClear(PXCOFF, pxCOFF);
 
@@ -667,7 +667,7 @@ PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile)
+PXActionResult PXAPI PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;
 }

@@ -7,9 +7,13 @@
 //#include <processthreadsapi.h> Not found in XP build
 #include <psapi.h>
 #include <tlhelp32.h>
+#include <winternl.h> // ntexapi.h.
 #endif
 
 #include <OS/Memory/PXMemory.h>
+#include <OS/Library/PXLibrary.h>
+#include <OS/Console/PXConsole.h>
+#include <OS/Async/PXThread.h>
 
 void PXAPI PXProcessConstruct(PXProcess* const pxProcess)
 {
@@ -50,6 +54,413 @@ void PXAPI PXProcessExitCurrent(const PXInt32U exitCode)
 #elif OSWindows
 	ExitProcess(exitCode);
 #endif
+}
+
+PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount)
+{
+	PXProcess pxProcessOverride;
+
+	if (!handlesAmount)
+	{
+		return PXActionRefusedArgumentInvalid;
+	}
+
+	*handlesAmount = 0;
+
+	// if pxProcess is NULL, override
+	if (!pxProcess)
+	{
+		pxProcess = &pxProcessOverride;
+
+		PXProcessCurrent(pxProcess);
+	}
+
+#if OSUnix
+	return PXActionRefusedNotImplemented;
+
+#elif OSWindows
+	DWORD handleCount = 0;
+
+	const BOOL result = GetProcessHandleCount // Windows XP, Kernel32.dll, processthreadsapi.h
+	(
+		pxProcess->ProcessHandle,
+		&handleCount
+	);
+
+	PXActionOnErrorFetchAndReturn(!result);
+
+	*handlesAmount = handleCount;
+
+	return PXActionSuccessful;
+
+#else 
+	return PXActionNotSupportedByOperatingSystem;
+#endif	
+}
+
+typedef enum PXHandleType_
+{
+	PXHandleTypeInvalid,
+	PXHandleTypeDirectory,
+	PXHandleTypeThread,
+	PXHandleTypeProcess,
+	PXHandleTypeIOCompletionReserve,
+	PXHandleTypeEvent, 
+	PXHandleTypeMutant,
+	PXHandleTypeSemaphore,
+	PXHandleTypeTimer,
+	PXHandleTypeIETimer,
+	PXHandleTypeWindowStation,
+	PXHandleTypeDesktop,
+	PXHandleTypeFile,
+	PXHandleTypeWaitCompleation,
+	PXHandleTypeIoCompleation,
+	PXHandleTypeTpWorkerFactor,
+	PXHandleTypeSection,
+	PXHandleTypeKey,
+	PXHandleTypeALPCPort,
+	PXHandleTypeEtwRegistration
+}
+PXHandleType;
+
+typedef struct PXHandle_
+{
+	char TypeName[32];
+	PXHandleType Type;
+
+	char Description[256];
+
+}
+PXHandle;
+
+PXHandleType PXHandleTypeFromID(const PXInt8U typeID)
+{
+	switch (typeID)
+	{
+		case 37: 
+			return PXHandleTypeFile;
+
+		case 3: return PXHandleTypeDirectory;
+		case 8: return PXHandleTypeThread;
+		case 11: return PXHandleTypeIOCompletionReserve;
+		case 16: return PXHandleTypeEvent; 
+		case 17: return PXHandleTypeMutant; 
+		case 19: return PXHandleTypeSemaphore; 
+		case 20: return PXHandleTypeTimer;
+		case 21: return PXHandleTypeIETimer;
+		case 24: return PXHandleTypeWindowStation;
+		case 25: return PXHandleTypeDesktop;
+
+		case 36: return PXHandleTypeWaitCompleation; 
+
+		case 35: 
+			return PXHandleTypeIoCompleation;
+
+		case 30: return PXHandleTypeTpWorkerFactor;
+		case 42: return PXHandleTypeSection;
+		case 44: return PXHandleTypeKey;
+		case 46: return PXHandleTypeALPCPort;
+		case 50: return PXHandleTypeEtwRegistration;
+
+		default:
+			return PXHandleTypeInvalid;
+	}
+}
+
+PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
+{
+	PXProcess pxProcessOverride;
+
+	// if pxProcess is NULL, override
+	if (!pxProcess)
+	{
+		pxProcess = &pxProcessOverride;
+
+		PXProcessCurrent(pxProcess);
+	}
+
+
+#if 0
+	typedef struct _SYSTEM_HANDLE
+	{
+		DWORD	ProcessID;
+		WORD	HandleType;
+		WORD	HandleNumber;
+		DWORD	KernelAddress;
+		DWORD	Flags;
+	} SYSTEM_HANDLE;
+#elif 0
+
+#else
+	typedef struct _SYSTEM_HANDLE_TABLE_ENTRY_INFO
+	{
+		USHORT  UniqueProcessId;
+		USHORT  CreatorBackTraceIndex;
+		UCHAR	ObjectTypeIndex;
+		UCHAR	HandleAttributes;
+		USHORT    HandleValue;
+		PVOID   Object;
+		ULONG   GrantedAccess;
+	}
+	SYSTEM_HANDLE_TABLE_ENTRY_INFO;
+#endif
+
+	const PXSize sysHandleSize = sizeof(SYSTEM_HANDLE_TABLE_ENTRY_INFO);
+
+	typedef struct _SYSTEM_HANDLE_INFORMATION
+	{
+		ULONG			NumberOfHandles;
+		SYSTEM_HANDLE_TABLE_ENTRY_INFO	Handles[1];
+	} 
+	SYSTEM_HANDLE_INFORMATION;
+
+	
+	typedef LONG (*NTAPI PXNtQuerySystemInformation)
+	(
+			const PXInt32U SystemInformationClass, // enum SYSTEM_INFORMATION_CLASS
+			void* const SystemInformation,
+			const PXInt32U SystemInformationLength,
+			PXInt32U* const ReturnLength
+	);
+
+
+	typedef LONG(*NTAPI PXNtQueryObject)
+	(
+		HANDLE                   Handle,
+		OBJECT_INFORMATION_CLASS ObjectInformationClass,
+		PVOID                    ObjectInformation,
+	    ULONG                    ObjectInformationLength,
+		PULONG                   ReturnLength
+	);
+
+
+
+	//NtQuerySystemInformation();
+
+	PXLibrary pxLibraryNTDLL;
+	PXLibraryOpenA(&pxLibraryNTDLL, "ntdll.dll");
+
+
+	PXNtQuerySystemInformation pxNtQuerySystemInformation;
+	PXNtQueryObject pxNtQueryObject;
+	
+	PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQuerySystemInformation, "NtQuerySystemInformation");
+	PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQueryObject, "NtQueryObject");
+
+
+
+
+
+	ULONG sizeNeeded = 0;
+
+	PXSize sizeAllocated = 0;
+
+	// Dummy peek
+	{
+	
+	}
+
+	{
+		SYSTEM_HANDLE_INFORMATION systemHandleInfo;
+
+		LONG resultA = pxNtQuerySystemInformation(16, &systemHandleInfo, sizeof(SYSTEM_HANDLE_INFORMATION), &sizeNeeded); // Peek size needed
+
+		printf("");
+
+		sizeAllocated = sizeNeeded;
+
+
+		//PXSize amunum = 0;
+		//PXProcessHandleCountGet(PXNull, &amunum); // Get Peeked size from this source, for some reason other one is bad
+		//sizeAllocated = sizeof(SYSTEM_HANDLE_INFORMATION) * sizeNeeded * amunum;
+	}	
+
+	//PXSize sizeAllocated = sizeof(SYSTEM_HANDLE_INFORMATION) * sizeNeeded;
+	SYSTEM_HANDLE_INFORMATION* memory = (SYSTEM_HANDLE_INFORMATION*)PXMemoryStackAllocate(sizeAllocated);
+	PXClearList(char, memory, sizeAllocated);
+
+	LONG resultB = pxNtQuerySystemInformation(16, memory, sizeAllocated, &sizeNeeded);
+
+	
+	char buffer[200];
+	PUBLIC_OBJECT_TYPE_INFORMATION* objectTypeInfo = buffer;
+
+	PXInt32U amountHandleTotalSystem = memory->NumberOfHandles;
+	PXInt32U amountHandleTotalProgram = 0;
+
+	for (size_t i = 0; i < memory->NumberOfHandles; i++)
+	{
+		SYSTEM_HANDLE_TABLE_ENTRY_INFO* sysHandle = &memory->Handles[i];
+
+		HANDLE handleCurrent = sysHandle->HandleValue;
+		const PXBool isSameProcess = pxProcess->ProcessID == sysHandle->UniqueProcessId; 
+
+		// We only want our own handles, if we would want the others aswell
+		// use OpenProcess() and DuplicateHandle() to fetch the handle to this process and use it
+		
+		if (!isSameProcess) 
+		{
+#if 1
+			continue;
+#else
+			// Open the remote process
+			const HANDLE remoteProcessHandle = OpenProcess
+			(
+				sysHandle->UniqueProcessId
+			);
+			const PXBool success = NULL != remoteProcessHandle;
+
+			if (!success)
+				continue;
+
+			// Duplicate the handle
+			HANDLE supedHandle = 0;
+
+			const PXBool duplicateResult = DuplicateHandle
+			(
+				remoteProcessHandle,
+				handleCurrent,
+				0,
+				&supedHandle,
+				DUPLICATE_SAME_ACCESS,
+				FALSE,
+				DUPLICATE_SAME_ACCESS
+			);
+
+			if (!duplicateResult)
+				continue;
+							
+
+			handleCurrent = supedHandle;
+#endif
+
+			//continue;
+		}
+
+		++amountHandleTotalProgram;
+
+		ULONG length = 0;
+		LONG xx = pxNtQueryObject(handleCurrent, ObjectTypeInformation, objectTypeInfo, 200, &length);
+
+		PXHandle pxHandle;
+		pxHandle.Type = PXHandleTypeFromID(sysHandle->ObjectTypeIndex);
+
+		PXTextCopyWA(objectTypeInfo->TypeName.Buffer, objectTypeInfo->TypeName.Length, pxHandle.TypeName, 32);
+
+
+		PXClearList(char, pxHandle.Description, 256);
+
+		switch (pxHandle.Type)
+		{
+			case PXHandleTypeFile:
+			{	
+				PXFile pxFile;
+				PXFileConstruct(&pxFile);
+				pxFile.ID = handleCurrent;
+
+				PXText buffer;
+				PXTextConstructNamedBufferA(&buffer, bufferAA, 256);
+
+				PXActionResult result = PXFilePathGet(&pxFile, &buffer);
+
+				if (PXActionSuccessful == result)
+				{
+					PXTextCopyA(buffer.TextA, buffer.SizeUsed, pxHandle.Description, 256);
+				}
+				else
+				{
+					PXTextCopyA("[N/A]", 5, pxHandle.Description, 256);
+				}		
+
+				break;
+			}
+			case PXHandleTypeProcess:
+			{
+				const DWORD processID = GetProcessId(handleCurrent);				
+
+				break;
+			}
+			case PXHandleTypeThread:
+			{
+				PXThread pxThread;
+				PXThreadConstruct(&pxThread);
+				pxThread.ThreadHandle = handleCurrent;
+				pxThread.ThreadID = GetThreadId(handleCurrent);
+
+				// GetThreadInformation()
+				PXText buffer;
+				PXTextConstructFromAdressA(&buffer, pxHandle.Description, 0, 256);
+
+				PXThreadNameGet(&pxThread, &buffer);
+				
+
+				// Fetch thread Description
+				{
+			
+#if 0
+
+					HANDLE process = GetCurrentProcess();
+
+					const BOOL ww = SymInitialize
+					(
+						process,
+						PXNull,
+						0
+					);
+					auto wwwwa = GetLastError();
+					PXActionResult xwwx = PXWindowsHandleErrorFromID(wwwwa);
+
+
+					char symBuffer[300];
+					SYMBOL_INFO* symbolInfo = symBuffer;
+
+					PXClearList(char, symbolInfo, 300);
+					symbolInfo->SizeOfStruct = sizeof(SYMBOL_INFO);
+					symbolInfo->MaxNameLen = symbolInfo->SizeOfStruct - sizeof(SYMBOL_INFO);
+
+					const BOOL rr = SymFromAddr
+					(
+						process,
+						sysHandle->Object,
+						PXNull,
+						symbolInfo
+					);
+					auto wwa = GetLastError();
+					PXActionResult xx = PXWindowsHandleErrorFromID(wwa);
+
+					if (rr)
+					{
+						PXTextCopyAW(symbolInfo->Name, symbolInfo->NameLen, pxHandle.Description, 256);
+						printf("");
+					}
+#endif
+
+				}
+
+				break;
+			}
+
+			default:
+				break;
+		}
+
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"Process",
+			"[%2i:%c] <%s> <%s>",
+			sysHandle->ObjectTypeIndex,
+			(pxHandle.Type != PXHandleTypeInvalid) ? 'Y' : 'N',
+			pxHandle.TypeName,
+			pxHandle.Description
+		);
+	}
+
+	PXMemoryStackRelease(memory, sizeAllocated);
+
+	PXLibraryClose(&pxLibraryNTDLL);
+
+	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode)

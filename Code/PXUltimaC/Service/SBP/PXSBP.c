@@ -93,7 +93,7 @@ PXActionResult PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* 
 
             const PXSocketID clientID = *(PXSocketID*)pxDictionaryEntry.Key;
 
-            PXBufferConstruct(&serverSubSocket->BufferOutput, data, dataSize, PXBufferTypeStack);
+            PXBufferConstruct(&serverSubSocket->BufferOutput, (void*)data, dataSize, PXBufferTypeStack);
 
             pxSBPServer->Emitter.MessageID = -1;
             pxSBPServer->Emitter.SocketSender = serverSubSocket;
@@ -446,11 +446,11 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
 
         // Parse byte
         {
-            const PXByte flagValue = 0;
+            PXInt8U flagValue = 0;
 
             PXFileReadI8U(&pxFile, &flagValue);
 
-            PXSBPMessageBitSize pxSBPMessageBitSize = (PXSBPMessageBitSize)((flagValue & 0b11000000) >> 6u) + 1;
+            PXSBPMessageBitSize pxSBPMessageBitSize = (PXSBPMessageBitSize)(((flagValue & 0b11000000) >> 6u) + 1);
             pxSBPMessage.HasExtendedDelegation = (flagValue & 0b00100000) >> 5u;
 
             switch (pxSBPMessageBitSize)

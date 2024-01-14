@@ -1,8 +1,7 @@
 #ifndef PXThreadInclude
 #define PXThreadInclude
 
-#include <Media/PXType.h>
-#include <OS/Error/PXActionResult.h>
+#include <Media/PXResource.h>
 
 // Return IDs
 
@@ -10,12 +9,12 @@
 #include <pthread.h>
 #include <unistd.h>
 typedef void* PXThreadResult;
-typedef pthread_t PXThreadIDType;
+//typedef pthread_t PXThreadIDType;
 #define PXThreadIDUnused 0  // Adress
 #elif OSWindows
 #include <windows.h>
 typedef unsigned long PXThreadResult;
-typedef HANDLE PXThreadIDType;
+//typedef HANDLE PXThreadIDType;
 #define PXThreadIDUnused nullptr
 #if OSWindowsXP
 typedef struct IUnknown IUnknown;
@@ -45,14 +44,17 @@ extern "C"
 
 	typedef struct PXThread_
 	{
-		volatile PXThreadIDType ThreadID;
-		volatile PXThreadMode Mode;
-		
 #if OSUnix
-		volatile void* ReturnResult;
-#elif OSWindows
-		volatile PXInt32U ReturnResult;
+		void* ReturnResult;
+
+		pthread_t ThreadHandle;
+#elif OSWindows		
+		HANDLE ThreadHandle;
+		PXInt32U ThreadID;
+		PXInt32U ReturnResult;
 #endif
+
+		PXThreadMode Mode;
 	}
 	PXThread;
 
@@ -61,7 +63,8 @@ extern "C"
 
 	// This function create a handle for the thread.
 	// The thread will clean itself up, yet you need to release the handle as a final step.
-	PXPublic PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter);
+	// "threadName" can be NULL
+	PXPublic PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const threadName, const ThreadFunction threadFunction, const void* parameter);
 
 	PXPublic PXActionResult PXAPI PXThreadRunInOtherProcess(PXThread* const pxThread, const void* processHandle, const ThreadFunction threadFunction, const void* parameter);
 
@@ -81,6 +84,9 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
 
 	PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID);
+
+	PXPublic PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
+	PXPublic PXActionResult PXAPI PXThreadNameGet(PXThread* const pxThread, PXText* const threadName);
 
 	PXPublic PXSize PXAPI PXThreadCurrentID();
 	PXPublic void PXAPI PXThreadCurrentGet(PXThread* const pxThread);

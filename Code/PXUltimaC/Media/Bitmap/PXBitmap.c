@@ -159,7 +159,7 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const px
         bmp.InfoHeaderType = PXBitmapInfoHeaderTypeFromID(bmp.InfoHeader.HeaderSize);
 
         {
-            const PXBool isValidType = bmp.Type != PXBitmapInvalid;
+            const PXBool isValidType = PXBitmapInvalid != bmp.Type;
 
             if(!isValidType)
             {

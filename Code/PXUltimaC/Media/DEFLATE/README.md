@@ -1,6 +1,11 @@
 # DEFLATE (v.1.3)<br>[RFC 1951]
 
 ## Info
+|||
+|:-:|:-:|
+|Type|Compression|
+|Format|Bit-Steam|
+
 Deflate is a compression format.<br>
 It uses Huffmancoding, because of that, not bound to byte borders.<br>
 For parsing, you need to view this format as a stream of bits, rather than bytes.
@@ -29,4 +34,4 @@ ToDo
 ToDo
 
 ## Links
-- https://en.wikipedia.org/wiki/Deflate
+- [Wikipedia](https://en.wikipedia.org/wiki/Deflate)

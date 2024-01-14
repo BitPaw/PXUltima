@@ -109,7 +109,7 @@ PXActionResult PXAPI PXServerStart(PXServer* const server, const PXInt16U port, 
 
         PXSocketStateChange(pxSocket, SocketIDLE);
 
-        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, PXServerClientListeningThread, pxSocket);
+        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, "PXServerClientListening", PXServerClientListeningThread, pxSocket);
     }
 
     return PXActionSuccessful;
@@ -158,7 +158,7 @@ PXActionResult PXAPI PXServerSendToAll(PXServer* const server, const void* const
 
             const PXSocketID clientID = *(PXSocketID*)pxDictionaryEntry.Key;          
 
-            PXBufferConstruct(&serverSubSocket->BufferOutput, data, dataSize, PXBufferTypeStack);
+            PXBufferConstruct(&serverSubSocket->BufferOutput, (void*)data, dataSize, PXBufferTypeStack);
 
             PXSocketSend(serverSubSocket, clientID);          
         }

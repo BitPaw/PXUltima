@@ -66,7 +66,7 @@ Example: if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83);
 
 /* amount of bits for first huffman table lookup (aka root bits), see HuffmanTree_makeTable and huffmanDecodeSymbol.*/
 /* values 8u and 9u work the fastest */
-#define FIRSTBITS 9u
+#define PXHuffmanFirstBits 9u
 
 /* a symbol value too big to represent any valid symbol, to indicate reading disallowed huffman bits combination,
 which is possible in case of only 0 or 1 present symbols. */
@@ -117,14 +117,19 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
 {
     PXDeflateBlock deflateBlock;
 
-    //(PXAdress)pxOutputStream->Data += 2;
-
     do
     {
-        deflateBlock.IsLastBlock = PXFileReadBits(pxInputStream, 1u);
-
+        // Read Deflate block header
         {
-            const PXInt8U encodingMethodValue = PXFileReadBits(pxInputStream, 2u);
+            PXInt8U encodingMethodValue = 0;
+
+            const PXFileDataElementType pxDataStreamElementList[] =
+            {
+                {&deflateBlock.IsLastBlock, PXDataTypeBit08U(1)},
+                {&encodingMethodValue, PXDataTypeBit08U(2)}
+            };
+
+            const PXSize readBytes = PXFileReadMultible(pxInputStream, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             deflateBlock.EncodingMethod = PXDeflateEncodingMethodFromID(encodingMethodValue);
         }
@@ -139,16 +144,29 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
             }
             case PXDeflateEncodingLiteralRaw:
             {
-                PXFileSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
+                PXInt16U length = 0;
 
-                const PXInt16U length = PXFileReadBits(pxInputStream, 16u);
-                const PXInt16U lengthInverse = PXFileReadBits(pxInputStream, 16u);
-                const PXBool validLength = (length + lengthInverse) == 65535;
-                //const PXSize bitsToJump = (PXSize)length * 8;
+                {
+                    PXInt16U lengthInverse = 0;
 
-                //assert(validLength);
+                    PXFileSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
 
-                PXFileDataCopy(pxInputStream, pxOutputStream, length);
+                    const PXFileDataElementType pxDataStreamElementList[] =
+                    {
+                        {&length, PXDataTypeInt16U},
+                        {&lengthInverse, PXDataTypeInt16U}
+                    };
+
+                    const PXSize readBytes = PXFileReadMultible(pxInputStream, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                    const PXBool validLength = 65535u == (length + lengthInverse);
+
+                    if (!validLength)
+                    {
+                        return PXActionFailedFormatNotAsExpected;
+                    }
+                }
+
+                const PXSize dataRead = PXFileDataCopy(pxInputStream, pxOutputStream, length);
 
                 break;
             }
@@ -166,9 +184,9 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
                 {
                     case PXDeflateEncodingHuffmanDynamic:
                     {
-                        const unsigned int result = PXHuffmanDistanceTreeGenerateDynamic(pxInputStream, &literalAndLengthCodes, &distanceCodes);
+                        const PXActionResult result = PXHuffmanDistanceTreeGenerateDynamic(pxInputStream, &literalAndLengthCodes, &distanceCodes);
 
-                        if(result != 0)
+                        if(PXActionSuccessful != result)
                         {
                             printf("EE");
                         }
@@ -190,18 +208,18 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
 
                     switch(huffmanCodeType)
                     {
-                        case HuffmanCodeInvalid:
+                        case PXHuffmanCodeInvalid:
                         {
                             // printf("[Symbol] Error: Invalid\n");
                             break; // ERROR
                         }
-                        case HuffmanCodeLiteral:
+                        case PXHuffmanCodeLiteral:
                         {
                             // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);
                             PXFileWriteI8U(pxOutputStream, resultLengthCode);
                             break;
                         }
-                        case HuffmanCodeLength:
+                        case PXHuffmanCodeLength:
                         {
                             // printf("[Symbol] <%2x>(%3i) Length.\n", resultLengthCode, resultLengthCode);
 
@@ -251,11 +269,11 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
                             {
                                 if(isIllegalCode)  /* if(code_d == INVALIDSYMBOL) */
                                 {
-                                    return(16); /*error: tried to read disallowed huffman symbol*/
+                                    return PXActionRefusedInvalidSymbol; // error: tried to read disallowed huffman symbol
                                 }
                                 else
                                 {
-                                    return(18); /*error: invalid distance code (30-31 are never used)*/
+                                    return PXActionRefusedInvalidSymbol; // error: invalid distance code (30-31 are never used)
                                 }
                             }
 
@@ -271,7 +289,10 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
 
                             /*part 5: fill in all the out[n] values based on the length and dist*/
                             PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
-                            if(distance > start) return (52); /*too long backward distance*/
+
+                            if(distance > start) 
+                                return PXActionRefusedInvalidSymbol; /*too long backward distance*/
+                          
                             PXSize backward = start - distance;
 
                             /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
@@ -294,7 +315,7 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
                             }
                             break;
                         }
-                        case HuffmanCodeEndOfBlock:
+                        case PXHuffmanCodeEndOfBlock:
                         {
                             //printf("[Symbol] <%2x>(%3i) End of Block.\n", resultLengthCode, resultLengthCode);
                             foundEndOFBlock = PXTrue;
@@ -606,9 +627,9 @@ unsigned encodeLZ77(uivector* out, Hash* hash, const unsigned char* in, PXSize i
 
 unsigned deflateFixed
 (
-    PXFile* const PXFile,
+    PXFile* const pxFile,
     Hash* hash,
-    const unsigned char* data,
+    const void* const data,
     PXSize datapos,
     PXSize dataend,
     const LodePNGCompressSettings* settings
@@ -619,12 +640,12 @@ unsigned deflateFixed
     LodePNGBitWriter* writer = &writerThing;
     ucvector aaucvector;
 
-    aaucvector.data = (PXAdress)PXFile->Data + PXFile->DataCursor;
+    aaucvector.data = (PXAdress)pxFile->Data + pxFile->DataCursor;
     aaucvector.size = 0;
-    aaucvector.allocsize = PXFile->DataSize;
+    aaucvector.allocsize = pxFile->DataSize;
 
     LodePNGBitWriter_init(writer, &aaucvector);
-    writer->bp = PXFile->DataCursorBitOffset + 16u;
+    writer->bp = pxFile->DataCursorBitOffset + 16u;
 
     //--------------------------
 
@@ -646,11 +667,12 @@ unsigned deflateFixed
         {
             uivector lz77_encoded;
             uivector_init(&lz77_encoded);
-            error = encodeLZ77(&lz77_encoded, hash, data, datapos, dataend, settings->windowsize,
+            error = encodeLZ77(&lz77_encoded, hash, (unsigned char*)data, datapos, dataend, settings->windowsize,
                                settings->minmatch, settings->nicematch, settings->lazymatching);
-            if (!error) writeLZ77data(writer, &lz77_encoded, &tree_ll, &tree_d);
+            if (!error)
+                writeLZ77data(writer, &lz77_encoded, &tree_ll, &tree_d);
+           
             uivector_cleanup(&lz77_encoded);
-
 
             //PXLZ77ESetting pxLZ77ESetting;
             //pxLZ77ESetting.Windowsize = settings->windowsize;
@@ -664,19 +686,22 @@ unsigned deflateFixed
         {
             for(PXSize i = datapos; i < dataend; ++i)
             {
-                writeBitsReversed(writer, tree_ll.codes[data[i]], tree_ll.lengths[data[i]]);
+                PXInt8U codeIndex = ((PXInt8U*)data)[i];
+
+                writeBitsReversed(writer, tree_ll.CodeSymbols[codeIndex], tree_ll.LengthsList[codeIndex]);
             }
         }
         /*add END code*/
-        if(!error) writeBitsReversed(writer, tree_ll.codes[256], tree_ll.lengths[256]);
+        if(!error)
+            writeBitsReversed(writer, tree_ll.CodeSymbols[256], tree_ll.LengthsList[256]);
     }
 
     /*cleanup*/
     PXHuffmanTreeDestruct(&tree_ll);
     PXHuffmanTreeDestruct(&tree_d);
 
-    PXFile->DataCursorBitOffset = writer->bp;
-    PXFile->DataCursor += aaucvector.size;
+    pxFile->DataCursorBitOffset = writer->bp;
+    pxFile->DataCursor += aaucvector.size;
 
     return error;
 }
@@ -882,22 +907,22 @@ void boundaryPM(BPMLists* lists, BPMNode* leaves, PXSize numpresent, int c, int 
 
 unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
 {
-    static const unsigned headsize = 1u << FIRSTBITS; /*size of the first table*/
-    static const unsigned mask = (1u << FIRSTBITS) /*headsize*/ - 1u;
+    static const unsigned headsize = 1u << PXHuffmanFirstBits; /*size of the first table*/
+    static const unsigned mask = (1u << PXHuffmanFirstBits) /*headsize*/ - 1u;
     PXSize i, numpresent, pointer, size; /*total table size*/
     PXInt32U* maxlens = PXNewList(PXInt32U, headsize);
     if(!maxlens) return 83; /*alloc fail*/
 
     /* compute maxlens: max total bit length of symbols sharing prefix in the first table*/
     PXMemoryClear(maxlens, headsize * sizeof(*maxlens));
-    for(i = 0; i < tree->numcodes; i++)
+    for(i = 0; i < tree->NumberOfSymbols; i++)
     {
-        PXSize symbol = tree->codes[i];
-        PXSize l = tree->lengths[i];
+        PXSize symbol = tree->CodeSymbols[i];
+        PXSize l = tree->LengthsList[i];
         PXSize index;
-        if(l <= FIRSTBITS) continue; /*symbols that fit in first table don't increase secondary table size*/
+        if(l <= PXHuffmanFirstBits) continue; /*symbols that fit in first table don't increase secondary table size*/
         /*get the FIRSTBITS MSBs, the MSBs of the symbol are encoded first. See later comment about the reversing*/
-        index = reverseBits(symbol >> (l - FIRSTBITS), FIRSTBITS);
+        index = reverseBits(symbol >> (l - PXHuffmanFirstBits), PXHuffmanFirstBits);
         maxlens[index] = PXMathMaximum(maxlens[index], l);
     }
     /* compute total table size: size of first table plus all secondary tables for symbols longer than FIRSTBITS */
@@ -905,11 +930,11 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
     for(i = 0; i < headsize; ++i)
     {
         unsigned int l = maxlens[i];
-        if(l > FIRSTBITS) size += (1u << (l - FIRSTBITS));
+        if(l > PXHuffmanFirstBits) size += (1u << (l - PXHuffmanFirstBits));
     }
-    tree->table_len = PXNewList(PXInt8U, size);
-    tree->table_value = PXNewList(PXInt16U, size);
-    if(!tree->table_len || !tree->table_value)
+    tree->TableLength = PXNewList(PXInt8U, size);
+    tree->TableValue = PXNewList(PXInt16U, size);
+    if(!tree->TableLength || !tree->TableValue)
     {
         PXDeleteList(PXInt32U, maxlens, headsize);
         /* freeing tree->table values is done at a higher scope */
@@ -917,45 +942,45 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
     }
     /*initialize with an invalid length to indicate unused entries*/
     //for(i = 0; i < size; ++i) tree->table_len[i] = 16;
-    PXMemorySet(tree->table_len, 16u, size);
+    PXMemorySet(tree->TableLength, 16u, size);
 
     /*fill in the first table for long symbols: max prefix size and pointer to secondary tables*/
     pointer = headsize;
     for(i = 0; i < headsize; ++i)
     {
         PXSize l = maxlens[i];
-        if(l <= FIRSTBITS) continue;
-        tree->table_len[i] = l;
-        tree->table_value[i] = pointer;
-        pointer += (1u << (l - FIRSTBITS));
+        if(l <= PXHuffmanFirstBits) continue;
+        tree->TableLength[i] = l;
+        tree->TableValue[i] = pointer;
+        pointer += (1u << (l - PXHuffmanFirstBits));
     }
 
     free(maxlens);
 
     /*fill in the first table for short symbols, or secondary table for long symbols*/
     numpresent = 0;
-    for(i = 0; i < tree->numcodes; ++i)
+    for(i = 0; i < tree->NumberOfSymbols; ++i)
     {
-        PXSize l = tree->lengths[i];
+        PXSize l = tree->LengthsList[i];
         PXSize symbol, reverse;
         if(l == 0) continue;
-        symbol = tree->codes[i]; /*the huffman bit pattern. i itself is the value.*/
+        symbol = tree->CodeSymbols[i]; /*the huffman bit pattern. i itself is the value.*/
         /*reverse bits, because the huffman bits are given in MSB first order but the bit reader reads LSB first*/
         reverse = reverseBits(symbol, l);
         numpresent++;
 
-        if(l <= FIRSTBITS)
+        if(l <= PXHuffmanFirstBits)
         {
             /*short symbol, fully in first table, replicated num times if l < FIRSTBITS*/
-            PXSize num = 1u << (FIRSTBITS - l);
+            PXSize num = 1u << (PXHuffmanFirstBits - l);
             PXSize j;
             for(j = 0; j < num; ++j)
             {
                 /*bit reader will read the l bits of symbol first, the remaining FIRSTBITS - l bits go to the MSB's*/
                 PXSize index = reverse | (j << l);
-                if(tree->table_len[index] != 16) return 55; /*invalid tree: long symbol shares prefix with short symbol*/
-                tree->table_len[index] = l;
-                tree->table_value[index] = i;
+                if(tree->TableLength[index] != 16) return 55; /*invalid tree: long symbol shares prefix with short symbol*/
+                tree->TableLength[index] = l;
+                tree->TableValue[index] = i;
             }
         }
         else
@@ -963,19 +988,19 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
             /*long symbol, shares prefix with other long symbols in first lookup table, needs second lookup*/
             /*the FIRSTBITS MSBs of the symbol are the first table index*/
             PXSize index = reverse & mask;
-            PXSize maxlen = tree->table_len[index];
+            PXSize maxlen = tree->TableLength[index];
             /*log2 of secondary table length, should be >= l - FIRSTBITS*/
-            PXSize tablelen = maxlen - FIRSTBITS;
-            PXSize start = tree->table_value[index]; /*starting index in secondary table*/
-            PXSize num = 1u << (tablelen - (l - FIRSTBITS)); /*amount of entries of this symbol in secondary table*/
+            PXSize tablelen = maxlen - PXHuffmanFirstBits;
+            PXSize start = tree->TableValue[index]; /*starting index in secondary table*/
+            PXSize num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
             PXSize j;
             if(maxlen < l) return 55; /*invalid tree: long symbol shares prefix with short symbol*/
             for(j = 0; j < num; ++j)
             {
-                PXSize reverse2 = reverse >> FIRSTBITS; /* l - FIRSTBITS bits */
-                PXSize index2 = start + (reverse2 | (j << (l - FIRSTBITS)));
-                tree->table_len[index2] = l;
-                tree->table_value[index2] = i;
+                PXSize reverse2 = reverse >> PXHuffmanFirstBits; /* l - FIRSTBITS bits */
+                PXSize index2 = start + (reverse2 | (j << (l - PXHuffmanFirstBits)));
+                tree->TableLength[index2] = l;
+                tree->TableValue[index2] = i;
             }
         }
     }
@@ -990,13 +1015,13 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
         huffmanDecodeSymbol will cause error. */
         for(i = 0; i < size; ++i)
         {
-            if(tree->table_len[i] == 16)
+            if(tree->TableLength[i] == 16)
             {
                 /* As length, use a value smaller than FIRSTBITS for the head table,
                 and a value larger than FIRSTBITS for the secondary table, to ensure
                 valid behavior for advanceBits when reading this symbol. */
-                tree->table_len[i] = (i < headsize) ? 1 : (FIRSTBITS + 1);
-                tree->table_value[i] = INVALIDSYMBOL;
+                tree->TableLength[i] = (i < headsize) ? 1 : (PXHuffmanFirstBits + 1);
+                tree->TableValue[i] = INVALIDSYMBOL;
             }
         }
     }
@@ -1008,7 +1033,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
         decoded): an oversubscribed huffman tree, indicated by error 55. */
         for(i = 0; i < size; ++i)
         {
-            if(tree->table_len[i] == 16) return 55;
+            if(tree->TableLength[i] == 16) return 55;
         }
     }
 
@@ -1019,29 +1044,29 @@ static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree* tree)
 {
     PXSize error = 0;
 
-    tree->codes = PXNewList(PXInt32U, tree->numcodes);
+    tree->CodeSymbols = PXNewList(PXInt32U, tree->NumberOfSymbols);
     PXInt32U* blcount = PXNewList(PXInt32U, (tree->maxbitlen + 1));
     PXInt32U* nextcode = PXNewList(PXInt32U, (tree->maxbitlen + 1));
-    if(!tree->codes || !blcount || !nextcode) error = 83; /*alloc fail*/
+    if(!tree->CodeSymbols || !blcount || !nextcode) error = 83; /*alloc fail*/
 
     if(!error)
     {
         for(PXSize n = 0; n != tree->maxbitlen + 1; n++) blcount[n] = nextcode[n] = 0;
         /*step 1: count number of instances of each code length*/
-        for(PXSize bits = 0; bits != tree->numcodes; ++bits) ++blcount[tree->lengths[bits]];
+        for(PXSize bits = 0; bits != tree->NumberOfSymbols; ++bits) ++blcount[tree->LengthsList[bits]];
         /*step 2: generate the nextcode values*/
         for(PXSize bits = 1; bits <= tree->maxbitlen; ++bits)
         {
             nextcode[bits] = (nextcode[bits - 1] + blcount[bits - 1]) << 1u;
         }
         /*step 3: generate all the codes*/
-        for(PXSize n = 0; n != tree->numcodes; ++n)
+        for(PXSize n = 0; n != tree->NumberOfSymbols; ++n)
         {
-            if(tree->lengths[n] != 0)
+            if(tree->LengthsList[n] != 0)
             {
-                tree->codes[n] = nextcode[tree->lengths[n]]++;
+                tree->CodeSymbols[n] = nextcode[tree->LengthsList[n]]++;
                 /*remove superfluous bits from the code*/
-                tree->codes[n] &= ((1u << tree->lengths[n]) - 1u);
+                tree->CodeSymbols[n] &= ((1u << tree->LengthsList[n]) - 1u);
             }
         }
     }
@@ -1146,12 +1171,12 @@ unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* fr
 {
     unsigned error = 0;
     while(!frequencies[numcodes - 1] && numcodes > mincodes) --numcodes; /*trim zeroes*/
-    tree->lengths = PXNewList(PXInt32U, numcodes);
-    if(!tree->lengths) return 83; /*alloc fail*/
+    tree->LengthsList = PXNewList(PXInt32U, numcodes);
+    if(!tree->LengthsList) return 83; /*alloc fail*/
     tree->maxbitlen = maxbitlen;
-    tree->numcodes = numcodes; /*number of symbols*/
+    tree->NumberOfSymbols = numcodes; /*number of symbols*/
 
-    error = lodepng_huffman_code_lengths(tree->lengths, frequencies, numcodes, maxbitlen);
+    error = lodepng_huffman_code_lengths(tree->LengthsList, frequencies, numcodes, maxbitlen);
     if(!error) error = HuffmanTree_makeFromLengths2(tree);
     return error;
 }
@@ -1160,9 +1185,9 @@ unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* fr
 
 unsigned deflateDynamic
 (
-    PXFile* const PXFile,
+    PXFile* const pxFile,
     Hash* hash,
-    const unsigned char* data,
+    const void* const data,
     PXSize datapos,
     PXSize dataend,
     const LodePNGCompressSettings* settings,
@@ -1179,12 +1204,12 @@ unsigned deflateDynamic
     LodePNGBitWriter* writer = &writerThing;
     ucvector aaucvector;
 
-    aaucvector.data = (PXAdress)PXFile->Data + PXFile->DataCursor;
+    aaucvector.data = (PXAdress)pxFile->Data + pxFile->DataCursor;
     aaucvector.size = 0;
-    aaucvector.allocsize = PXFile->DataSize;
+    aaucvector.allocsize = pxFile->DataSize;
 
     LodePNGBitWriter_init(writer, &aaucvector);
-    writer->bp = PXFile->DataCursorBitOffset;// +(2 * 8u);
+    writer->bp = pxFile->DataCursorBitOffset;// +(2 * 8u);
 
     //-------------------------
 
@@ -1256,14 +1281,14 @@ unsigned deflateDynamic
 
             //error = PXLZ77Encode(&lz77CacheStream, hash, data, datapos, dataend, &tree_ll, &tree_d, &pxLZ77ESetting);
 
-            error = encodeLZ77(&lz77_encoded, hash, data, datapos, dataend, settings->windowsize, settings->minmatch, settings->nicematch, settings->lazymatching);
+            error = encodeLZ77(&lz77_encoded, hash, (unsigned char*)data, datapos, dataend, settings->windowsize, settings->minmatch, settings->nicematch, settings->lazymatching);
             if(error) break;
         }
         else
         {
 
             if (!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
-            for (i = datapos; i < dataend; ++i) lz77_encoded.data[i - datapos] = data[i]; /*no LZ77, but still will be Huffman compressed*/
+            for (i = datapos; i < dataend; ++i) lz77_encoded.data[i - datapos] = ((char*)data)[i]; /*no LZ77, but still will be Huffman compressed*/
 
            //if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
            // for (PXSize index = datapos; index < dataend; ++index) // Data must be atleast "datasize"
@@ -1306,8 +1331,8 @@ unsigned deflateDynamic
         error = HuffmanTree_makeFromFrequencies(&tree_d, frequencies_d, 2, 30, 15);
         if(error) break;
 
-        numcodes_ll = PXMathMinimumIU(tree_ll.numcodes, 286);
-        numcodes_d = PXMathMinimumIU(tree_d.numcodes, 30);
+        numcodes_ll = PXMathMinimumIU(tree_ll.NumberOfSymbols, 286);
+        numcodes_d = PXMathMinimumIU(tree_d.NumberOfSymbols, 30);
         /*store the code lengths of both generated trees in bitlen_lld*/
         numcodes_lld = numcodes_ll + numcodes_d;
         bitlen_lld = PXNewList(PXInt32U, numcodes_lld);
@@ -1316,8 +1341,8 @@ unsigned deflateDynamic
         if(!bitlen_lld || !bitlen_lld_e) ERROR_BREAK(83); /*alloc fail*/
         numcodes_lld_e = 0;
 
-        for(i = 0; i != numcodes_ll; ++i) bitlen_lld[i] = tree_ll.lengths[i];
-        for(i = 0; i != numcodes_d; ++i) bitlen_lld[numcodes_ll + i] = tree_d.lengths[i];
+        for(i = 0; i != numcodes_ll; ++i) bitlen_lld[i] = tree_ll.LengthsList[i];
+        for(i = 0; i != numcodes_d; ++i) bitlen_lld[numcodes_ll + i] = tree_d.LengthsList[i];
 
         /*run-length compress bitlen_ldd into bitlen_lld_e by using repeat codes 16 (copy length 3-6 times),
         17 (3-10 zeroes), 18 (11-138 zeroes)*/
@@ -1381,7 +1406,7 @@ unsigned deflateDynamic
         /*compute amount of code-length-code-lengths to output*/
         numcodes_cl = NUM_CODE_LENGTH_CODES;
         /*trim zeros at the end (using CLCL_ORDER), but minimum size must be 4 (see HCLEN below)*/
-        while(numcodes_cl > 4u && tree_cl.lengths[CLCL_ORDER[numcodes_cl - 1u]] == 0)
+        while(numcodes_cl > 4u && tree_cl.LengthsList[CLCL_ORDER[numcodes_cl - 1u]] == 0)
         {
             numcodes_cl--;
         }
@@ -1416,12 +1441,12 @@ unsigned deflateDynamic
         PNGwriteBits(writer, HCLEN, 4);
 
         /*write the code lengths of the code length alphabet ("bitlen_cl")*/
-        for(i = 0; i != numcodes_cl; ++i) PNGwriteBits(writer, tree_cl.lengths[CLCL_ORDER[i]], 3);
+        for(i = 0; i != numcodes_cl; ++i) PNGwriteBits(writer, tree_cl.LengthsList[CLCL_ORDER[i]], 3);
 
         /*write the lengths of the lit/len AND the dist alphabet*/
         for(i = 0; i != numcodes_lld_e; ++i)
         {
-            writeBitsReversed(writer, tree_cl.codes[bitlen_lld_e[i]], tree_cl.lengths[bitlen_lld_e[i]]);
+            writeBitsReversed(writer, tree_cl.CodeSymbols[bitlen_lld_e[i]], tree_cl.LengthsList[bitlen_lld_e[i]]);
             /*extra bits of repeat codes*/
             if(bitlen_lld_e[i] == 16) PNGwriteBits(writer, bitlen_lld_e[++i], 2);
             else if(bitlen_lld_e[i] == 17) PNGwriteBits(writer, bitlen_lld_e[++i], 3);
@@ -1434,10 +1459,10 @@ unsigned deflateDynamic
 
 
         /*error: the length of the end code 256 must be larger than 0*/
-        if(tree_ll.lengths[256] == 0) ERROR_BREAK(64);
+        if(tree_ll.LengthsList[256] == 0) ERROR_BREAK(64);
 
         /*write the end code*/
-        writeBitsReversed(writer, tree_ll.codes[256], tree_ll.lengths[256]);
+        writeBitsReversed(writer, tree_ll.CodeSymbols[256], tree_ll.LengthsList[256]);
 
         break; /*end of error-while*/
     }
@@ -1450,8 +1475,8 @@ unsigned deflateDynamic
     free(bitlen_lld);
     free(bitlen_lld_e);
 
-    PXFile->DataCursorBitOffset = writer->bp;
-    PXFile->DataCursor += aaucvector.size;
+    pxFile->DataCursorBitOffset = writer->bp;
+    pxFile->DataCursor += aaucvector.size;
 
     return error;
 }
@@ -1630,7 +1655,7 @@ void writeLZ77data
     for (i = 0; i != lz77_encoded->size; ++i)
     {
         PXSize val = lz77_encoded->data[i];
-        writeBitsReversed(writer, tree_ll->codes[val], tree_ll->lengths[val]);
+        writeBitsReversed(writer, tree_ll->CodeSymbols[val], tree_ll->LengthsList[val]);
         if (val > 256) /*for a length code, 3 more things have to be added*/
         {
             PXSize length_index = val - FIRST_LENGTH_CODE_INDEX;
@@ -1644,7 +1669,7 @@ void writeLZ77data
             PXSize distance_extra_bits = lz77_encoded->data[++i];
 
             PNGwriteBits(writer, length_extra_bits, n_length_extra_bits);
-            writeBitsReversed(writer, tree_d->codes[distance_code], tree_d->lengths[distance_code]);
+            writeBitsReversed(writer, tree_d->CodeSymbols[distance_code], tree_d->LengthsList[distance_code]);
             PNGwriteBits(writer, distance_extra_bits, n_distance_extra_bits);
         }
     }

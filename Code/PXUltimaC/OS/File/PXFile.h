@@ -25,6 +25,7 @@
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Error/PXActionResult.h>
+#include <OS/Time/PXTime.h>
 
 
 #if OSUnix
@@ -87,6 +88,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileFormatAAC,
 		PXFileFormatAVI,
 		PXFileFormatBitMap,
+		PXFileFormatBinkVideo,
 		PXFileFormatC,
 		PXFileFormatCSharp,
 		PXFileFormatCSS,
@@ -277,7 +279,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 
 
-	PXPublic void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, const PXText* const resultPath);
+	PXPublic void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath);
 
 
 	PXPublic void PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);
@@ -533,9 +535,25 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXSize PXAPI PXFileWriteBits(PXFile* const pxFile, const PXSize bitData, const PXSize amountOfBits);
 	//-------------------------------------------------------------------------
 
+	FILETIME creationTime;
+	FILETIME lastAccessTime;
+	FILETIME lastWriteTime;
+
+
+
+	PXPublic PXActionResult PXAPI PXFileTimeGet
+	(
+		const PXFile* const pxFile,
+		PXTime* const pxTimeCreation,
+		PXTime* const pxTimeAccessLast,
+		PXTime* const pxTimeWriteLast
+	);
 
 	PXPublic PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
 	PXPublic PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
+
+
+
 
 
 #ifdef __cplusplus

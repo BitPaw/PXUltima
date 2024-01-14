@@ -119,13 +119,13 @@ extern "C"
 		char Album[PXID3AlbumSize + 1];
 		char Year[PXID3YearSize + 1];
 		char Comment[PXID3CommentSize + 1];
-		unsigned char Genre;
+		PXInt8U Genre;
 
 		// Version 1.1
-		unsigned char TrackID;
+		PXInt8U TrackID;
 
 		// Version 2.x
-		unsigned int BeatsPerMinute;
+		PXInt32U BeatsPerMinute;
 		char Composer[PXID3ArtistSize + 1];
 	}
 	PXID3;

@@ -1,4 +1,4 @@
-# Portable Network PXGraphics (.PNG) [RFC 2083]
+# Portable Network Graphics (.PNG) [RFC 2083]
 ## Info
 |||
 |:-:|:-:|

@@ -2240,7 +2240,7 @@ PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
 {
     PXWindowBuild(pxWindow);
 
-    if (pxWindow->MessageThread.ThreadID != 0)
+    if (pxWindow->MessageThread.ThreadHandle != 0)
     {
         while (pxWindow->IsRunning)
         {
@@ -2442,12 +2442,9 @@ void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt3
         }
     }
 
-
-
-
     if (async)
     {
-        const PXActionResult actionResult = PXThreadRun(&window->MessageThread, PXWindowCreateThread, window);
+        const PXActionResult actionResult = PXThreadRun(&window->MessageThread, "PXWindowMessageLoop", PXWindowCreateThread, window);
         const PXBool sucessful = PXActionSuccessful == actionResult;
 
         if (!sucessful)

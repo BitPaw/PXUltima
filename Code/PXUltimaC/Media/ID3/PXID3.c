@@ -166,28 +166,29 @@ PXActionResult PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 
     // Parse
     {
-        const PXBool useOldHeader = version == PXID3Versionv1x0 || version == PXID3Versionv1x1;
+        const PXBool useOldHeader = PXID3Versionv1x0 == version || PXID3Versionv1x1 == version;
 
         if(useOldHeader)
         {
-            const PXBool hasTrackID = version == PXID3Versionv1x1;
+            const PXBool hasTrackID = PXID3Versionv1x1 == version;
 
-            PXFileReadTextU(PXFile, id3->Title, PXID3TitleSize);
-            PXFileReadTextU(PXFile, id3->Artist, PXID3TitleSize);
-            PXFileReadTextU(PXFile, id3->Album, PXID3TitleSize);
-            PXFileReadTextU(PXFile, id3->Year, PXID3TitleSize);
+            const PXFileDataElementType pxFileDataElementType[] =
+            {
+                {id3->Title, PXID3TitleSize},
+                {id3->Artist, PXID3ArtistSize},
+                {id3->Album, PXID3AlbumSize},
+                {id3->Year, PXID3YearSize},
+                {id3->Comment, PXID3CommentSize},
+                {&id3->Genre, PXDataTypeInt08U}
+            };
+
+            PXFileWriteMultible(PXFile, pxFileDataElementType, sizeof(pxFileDataElementType));
 
             if(hasTrackID)
             {
-                PXFileReadTextU(PXFile, id3->Comment, PXID3CommentSize - 1);
-                PXFileReadI8U(PXFile, &id3->TrackID);
-            }
-            else
-            {
-                PXFileReadTextU(PXFile, id3->Comment, PXID3CommentSize);
-            }
-
-            PXFileReadI8U(PXFile, &id3->Genre);
+                id3->TrackID = id3->Comment[PXID3CommentSize - 1];
+                id3->Comment[PXID3CommentSize - 1] = 0;
+            }  
         }
         else
         {

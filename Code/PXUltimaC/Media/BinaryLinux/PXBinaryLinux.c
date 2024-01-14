@@ -348,7 +348,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 	// Program header - Read
 	//--------------------------------------------------------
 	{
-		PXFileCursorMoveTo(pxFile, pxBinaryLinux->Header.ProgrammHeaderOffset);
+		PXFileCursorMoveTo(pxFile, (PXSize)pxBinaryLinux->Header.ProgrammHeaderOffset);
 
 		for (PXInt16U programHeaderID = 0; programHeaderID < pxBinaryLinux->Header.ProgrammHeaderAmount; ++programHeaderID)
 		{
@@ -395,7 +395,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 	// Section header
 	//--------------------------------------------------------
 	{
-		PXFileCursorMoveTo(pxFile, pxBinaryLinux->Header.SectionHeaderOffset);
+		PXFileCursorMoveTo(pxFile, (PXSize)pxBinaryLinux->Header.SectionHeaderOffset);
 
 		for (PXInt16U i = 0; i < pxBinaryLinux->Header.SectionHeaderAmount; ++i)
 		{

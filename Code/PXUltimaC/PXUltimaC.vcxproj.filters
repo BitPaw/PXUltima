@@ -474,6 +474,9 @@
     <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Dialog\PXDialogContainer.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -935,6 +938,9 @@
     <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Dialog\PXDialogContainer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -949,5 +955,12 @@
     <None Include="Media\C\README.md" />
     <None Include="Media\XML\README.md" />
     <None Include="Algorithm\KnowlegeGraph\README.md" />
+    <None Include="OS\Graphic\SoftwareRender\README.md" />
+    <None Include="OS\Graphic\OpenGL\README.md" />
+    <None Include="OS\Graphic\DirectX\README.md" />
+    <None Include="Media\AAC\README.md" />
+    <None Include="Media\RIFF\README.md" />
+    <None Include="Media\PNG\README.md" />
+    <None Include="Media\LDAP\README.md" />
   </ItemGroup>
 </Project>

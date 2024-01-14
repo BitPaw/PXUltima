@@ -193,18 +193,17 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 
 	// Ferch header
 	{
-		const PXInt16U* const dataList[] =
+		const PXFileDataElementType pxDataStreamElementList[] =
 		{
-			&offsetTable.Version.Major,
-			&offsetTable.Version.Minor,
-			&offsetTable.NumberOfTables,
-			&offsetTable.SearchRange,
-			&offsetTable.EntrySelctor,
-			&offsetTable.RangeShift
+			{&offsetTable.Version.Major,	PXDataTypeInt16UBE},
+			{&offsetTable.Version.Minor,	PXDataTypeInt16UBE},
+			{&offsetTable.NumberOfTables,	PXDataTypeInt16UBE},
+			{&offsetTable.SearchRange,		PXDataTypeInt16UBE},
+			{&offsetTable.EntrySelctor,		PXDataTypeInt16UBE},
+			{&offsetTable.RangeShift,		PXDataTypeInt16UBE}
 		};
-		const PXInt8U dataListSize = sizeof(dataList) / sizeof(PXInt16U*);
 
-		PXFileReadI16UVE(pxFile, dataList, dataListSize, PXEndianBig);
+		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 	}
 
 	for (PXSize i = 0; i < offsetTable.NumberOfTables; ++i)

@@ -1,18 +1,24 @@
-# Wavefront (OBJ)
+# Wavefront (.obj)
+---
 ## Info
 |||
 |:-:|:-:|
-|Type| 🧊 3D model format |
-|Documentation| :heavy_check_mark: Yes |
+|Type| 🧊 3D Model |
 |Format|Text|
+|Documentation| :heavy_check_mark: Yes |
 
 ## Dependency
 - MTL
+## Advantage
+
+## Drawback
+
+---
 
 ## Structure
 
 |Command|Name|Format|
-|:-:|:-:|:-:|
+|:-:|:-|:-:|
 |#| Comment|
 |v|Geometric Position||
 |vt|Texture Position||
@@ -21,5 +27,7 @@
 |s|Smoothing||
 |f|Face||
 
+---
+
 ## Links
-- https://en.wikipedia.org/wiki/Wavefront_.obj_file
+- [Wikipedia](https://en.wikipedia.org/wiki/Wavefront_.obj_file)

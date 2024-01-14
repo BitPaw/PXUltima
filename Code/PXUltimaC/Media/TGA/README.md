@@ -1,4 +1,4 @@
-# Truevision Advanced Raster PXGraphics Array (Targa)
+# Truevision Advanced Raster Graphics Array (Targa)
 
 ## Info
 

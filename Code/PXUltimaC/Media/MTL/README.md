@@ -3,7 +3,8 @@
 ## Info
 |||
 |:-:|:-:|
-|Format|Text|
+| Type | ObjectData |
+| Format | Text |
 
 Contains data about visual aspects and textures. Used in OBJ-Model files.
 

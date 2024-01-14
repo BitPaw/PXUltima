@@ -13,7 +13,7 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 //---<Settings>---
 #define MemorySizeUnkown -1
 #define MemoryAssertEnable 0
-#define PXMemoryDebug 0
+#define PXMemoryDebug 1
 #define MemoryDebugLeakDetection 0
 #define MemoryUseSystemFunction 1
 #define MemorySanitise 0
@@ -82,13 +82,16 @@ extern "C"
 	
 
 
-	//CPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
+	// PXPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
 
 	// Allocates size bytes on the program stack.
 	// The allocated space is automatically freed when the calling function exits
 	// (not when the allocation merely passes out of scope).
 	PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize size);
-	PXPublic void* PXAPI PXMemoryStackRelease(void* const adress);
+
+	// Deallocates stack allocated memory if it was commited to the heap.
+	// Additional size parameter can be ignored
+	PXPublic void PXAPI PXMemoryStackRelease(void* const dataAdress, const PXSize dataSize);
 
 
 

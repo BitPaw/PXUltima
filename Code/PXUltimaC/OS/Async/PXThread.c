@@ -4,7 +4,8 @@
 
 void PXAPI PXThreadConstruct(PXThread* const pxThread)
 {
-	pxThread->ThreadID = PXHandleNotSet;
+	PXClear(PXThread, pxThread);
+	pxThread->ThreadHandle = PXHandleNotSet;
 	pxThread->Mode = PXThreadModeInvalid;
 }
 
@@ -15,7 +16,7 @@ void PXAPI PXThreadDestruct(PXThread* const pxThread)
 		return;
 	}
 
-	if (pxThread->ThreadID == PXHandleNotSet)
+	if (pxThread->ThreadHandle == PXHandleNotSet)
 	{
 		return;
 	}
@@ -24,8 +25,8 @@ void PXAPI PXThreadDestruct(PXThread* const pxThread)
 
 #elif OSWindows
 	const HANDLE currentThread = GetCurrentThread();
-	const PXBool isTargetCurrentThread = currentThread == pxThread->ThreadID;
-	const PXBool success = CloseHandle(pxThread->ThreadID); // Windows 2000 Professional (+UWP), Kernel32.dll, handleapi.h
+	const PXBool isTargetCurrentThread = currentThread == pxThread->ThreadHandle;
+	const PXBool success = CloseHandle(pxThread->ThreadHandle); // Windows 2000 Professional (+UWP), Kernel32.dll, handleapi.h
 	
 	if (!success)
 	{
@@ -37,8 +38,13 @@ void PXAPI PXThreadDestruct(PXThread* const pxThread)
 	PXThreadConstruct(pxThread);
 }
 
-PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const ThreadFunction threadFunction, const void* parameter)
+PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const threadName, const ThreadFunction threadFunction, const void* parameter)
 {
+	if (!pxThread || !threadFunction)
+	{
+		return PXActionRefusedArgumentInvalid;
+	}
+
 #if OSUnix
 	const int result = pthread_create(&pxThread->ThreadID, 0, threadFunction, (void*)parameter);
 
@@ -58,9 +64,18 @@ PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const ThreadFunction 
 
 	if (pxThread)
 	{
-		pxThread->ThreadID = threadID;
+		pxThread->ThreadHandle = threadID;
 		pxThread->Mode = PXThreadModeRunning;
 	}
+
+	// Name thread if possible
+	{
+		PXText pxText;
+		PXTextConstructFromAdressA(&pxText, threadName, 0, PXTextLengthUnkown);
+
+		PXThreadNameSet(pxThread, &pxText);
+	}
+
 	return PXActionSuccessful;
 
 #else
@@ -95,7 +110,7 @@ PXActionResult PXAPI PXThreadRunInOtherProcess(PXThread* const pxThread, const v
 
 	PXActionOnErrorFetchAndReturn(!successful);
 
-	pxThread->ThreadID = threadID;
+	pxThread->ThreadHandle = threadID;
 
 	return PXActionSuccessful;
 #else 
@@ -172,13 +187,13 @@ PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread)
 
 PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
 {
-	if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefusedObjectNotFound;
+	if (pxThread->ThreadHandle == PXHandleNotSet) return PXActionRefusedObjectNotFound;
 
 #if OSUnix
 	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-	const DWORD result = SuspendThread(pxThread->ThreadID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	const DWORD result = SuspendThread(pxThread->ThreadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 	const PXBool successful = result != -1;
 
 	PXActionOnErrorFetchAndReturn(!successful);
@@ -191,13 +206,13 @@ PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
 
 PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
 {
-	if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefusedObjectNotFound;
+	if (pxThread->ThreadHandle == PXHandleNotSet) return PXActionRefusedObjectNotFound;
 
 #if OSUnix
 	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-	const DWORD suspendCount = ResumeThread(pxThread->ThreadID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	const DWORD suspendCount = ResumeThread(pxThread->ThreadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 	const PXBool successful = suspendCount != -1;
 
 	PXActionOnErrorFetchAndReturn(!successful);
@@ -234,6 +249,98 @@ PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID)
 #endif
 }
 
+PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName)
+{
+	PXThread pxThreadOverride;
+	PXClear(PXThread, &pxThreadOverride);
+
+	if (!pxThread)
+	{
+		pxThread = &pxThreadOverride;
+		PXThreadCurrentGet(pxThread);
+	}
+
+#if OSUnix
+	return PXActionRefusedNotImplemented;
+#elif OSWindows
+
+#if WindowsAtleast10
+
+	wchar_t threadNameW[64];
+	PXTextCopyAW(threadName->TextA, threadName->SizeUsed, threadNameW, 64);
+
+	const HRESULT resultID = SetThreadDescription(pxThread->ThreadHandle, threadNameW);
+	const PXActionResult result = PXWindowsHandleErrorFromID(resultID);
+
+	return result;
+
+#else
+	typedef struct tagTHREADNAME_INFO
+	{
+		DWORD dwType; // Must be 0x1000.
+		LPCSTR szName; // Pointer to name (in user addr space).
+		DWORD dwThreadID; // Thread ID (-1=caller thread).
+		DWORD dwFlags; // Reserved for future use, must be zero.
+	}
+	THREADNAME_INFO;
+
+	THREADNAME_INFO info;
+	info.dwType = 0x1000;
+	info.szName = pxHandle.Description;
+	info.dwThreadID = pxThread.ThreadID;
+	info.dwFlags = 0;
+
+	const DWORD MS_VC_EXCEPTION = 0x406D1388;
+	const PXSize numberOfArguments = sizeof(info) / sizeof(ULONG_PTR);
+
+	__try
+	{
+		RaiseException(MS_VC_EXCEPTION, 0, 3, (ULONG_PTR*)&info);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+	}
+#endif
+
+#else
+	return PXActionRefusedNotSupported;
+#endif
+}
+
+PXActionResult PXAPI PXThreadNameGet(PXThread* const pxThread, PXText* const threadName)
+{
+#if OSUnix
+	return PXActionRefusedNotImplemented;
+#elif OSWindows
+
+#if WindowsAtleast10
+
+	wchar_t* tempThreadDescription = 0;
+	const HRESULT resultID = GetThreadDescription(pxThread->ThreadHandle, &tempThreadDescription);
+	//const PXActionResult result = PXWindowsHandleErrorFromID(resultID);
+
+	//PXActionReturnOnError(result);
+
+	if (tempThreadDescription)
+	{
+		threadName->SizeUsed = PXTextCopyWA(tempThreadDescription, 256, threadName->TextA, threadName->SizeAllocated);
+	}
+	else
+	{
+		threadName->SizeUsed = PXTextCopyA("[N/A]", 5, threadName->TextA, threadName->SizeAllocated);
+	}
+	
+	LocalFree(tempThreadDescription);
+
+#else
+
+#endif
+
+#else
+	return PXActionRefusedNotSupported;
+#endif
+}
+
 PXSize PXAPI PXThreadCurrentID()
 {
 #if OSUnix
@@ -250,7 +357,8 @@ void PXAPI PXThreadCurrentGet(PXThread* const pxThread)
 #if OSUnix
 	pxThread->ThreadID = pthread_self();
 #elif OSWindows
-	pxThread->ThreadID = GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	pxThread->ThreadHandle = GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	pxThread->ThreadID = GetCurrentThreadId();
 #endif
 }
 
@@ -271,11 +379,11 @@ PXActionResult PXAPI PXThreadWaitForFinish(PXThread* const pxThread)
 
 #elif OSWindows
 
-	const DWORD resultID = WaitForSingleObject(pxThread->ThreadID, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h
+	const DWORD resultID = WaitForSingleObject(pxThread->ThreadHandle, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h
 
 	for (;;)
 	{
-		const BOOL result = GetExitCodeThread(pxThread->ThreadID, &pxThread->ReturnResult); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+		const BOOL result = GetExitCodeThread(pxThread->ThreadHandle, &pxThread->ReturnResult); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 		const PXBool isDone = STILL_ACTIVE != pxThread->ReturnResult;
 
 		if (isDone)

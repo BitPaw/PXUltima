@@ -42,7 +42,7 @@ PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID)
 	}
 }
 
-void PXAPI PXTimeNow(PXTime* const time)
+void PXAPI PXTimeNow(PXTime* const pxTime)
 {
 #if OSUnix
 #elif OSWindows
@@ -51,16 +51,9 @@ void PXAPI PXTimeNow(PXTime* const time)
 	//GetSystemTime(&st);
 	GetLocalTime(&systemTime);
 
-	time->Year = systemTime.wYear;
-	time->Month = systemTime.wMonth;
-	time->DayOfWeek = systemTime.wDayOfWeek;
-	time->Day = systemTime.wDay;
-	time->Hour = systemTime.wHour;
-	time->Minute = systemTime.wMinute;
-	time->Second = systemTime.wSecond;
-	time->Milliseconds = systemTime.wMilliseconds;
+	PXTimeConvertFromOS(pxTime, &systemTime);
 
-	time->ClockCycle = clock();
+	pxTime->ClockCycle = clock();
 #endif
 }
 
@@ -90,9 +83,9 @@ PXSize PXAPI PXTimeMilliseconds(const PXTime* time)
 
 PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 {
-	//Year = -1;
-//Month = Month::Invalid;
-//DayOfWeek = DayOfWeek::Invalid;;
+	// Year = -1;
+	// Month = Month::Invalid;
+	// DayOfWeek = DayOfWeek::Invalid;;
 
 	const PXSize dayDelta = (timeB->Day - timeA->Day);
 	const PXSize hourDelta = (timeB->Hour - timeA->Hour) + (dayDelta * 24);
@@ -125,4 +118,16 @@ PXInt64U PXAPI PXTimeCounterFrequencyGet()
 
 	return largeInteger.QuadPart;
 #endif
+}
+
+void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime)
+{
+	time->Year = systemTime->wYear;
+	time->Month = systemTime->wMonth;
+	time->DayOfWeek = systemTime->wDayOfWeek;
+	time->Day = systemTime->wDay;
+	time->Hour = systemTime->wHour;
+	time->Minute = systemTime->wMinute;
+	time->Second = systemTime->wSecond;
+	time->Milliseconds = systemTime->wMilliseconds;
 }

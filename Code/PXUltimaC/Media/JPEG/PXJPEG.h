@@ -117,7 +117,6 @@ extern "C"
 	{
 		void* ThumbnailData;
 		PXInt32U ThumbnailDataSize;
-
 		PXInt16U DensityX;
 		PXInt16U DensityY;
 		PXInt8U VersionMajor;

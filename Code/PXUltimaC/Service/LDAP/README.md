@@ -1,1 +1,0 @@
-# Lightweight Directory Access Protocol (LDAP)<br>[RFC 1823][RFC 4515]

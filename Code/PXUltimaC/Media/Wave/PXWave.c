@@ -16,8 +16,6 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const px
 
 	PXRIFF riff;
 
-
-
 	// PXRIFF
 	{
 		const PXActionResult actionResult = PXRIFFLoadFromFile(&riff, pxFile);

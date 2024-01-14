@@ -41,6 +41,8 @@
     <EnableASAN>false</EnableASAN>
     <EnableFuzzer>
     </EnableFuzzer>
+    <UseOfMfc>
+    </UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -57,6 +59,8 @@
     <EnableASAN>false</EnableASAN>
     <EnableFuzzer>
     </EnableFuzzer>
+    <UseOfMfc>
+    </UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -90,6 +94,7 @@
     <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <CopyCppRuntimeToOutputDir />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
@@ -104,6 +109,7 @@
     <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
     <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
+    <CopyCppRuntimeToOutputDir />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -139,7 +145,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
@@ -206,7 +212,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
@@ -384,6 +390,7 @@
     <ClCompile Include="Algorithm\BubbleSort\PXBubbleSort.c" />
     <ClCompile Include="Media\SQL\PXSQL.c" />
     <ClCompile Include="Media\PXDocument.c" />
+    <ClCompile Include="Engine\Dialog\PXDialogContainer.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -539,6 +546,7 @@
     <ClInclude Include="Algorithm\BubbleSort\PXBubbleSort.h" />
     <ClInclude Include="Media\SQL\PXSQL.h" />
     <ClInclude Include="Media\PXDocument.h" />
+    <ClInclude Include="Engine\Dialog\PXDialogContainer.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
@@ -548,16 +556,23 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Algorithm\KnowlegeGraph\README.md" />
+    <None Include="Media\AAC\README.md" />
     <None Include="Media\BinaryLinux\README.md" />
     <None Include="Media\Bitmap\README.md" />
     <None Include="Media\COFF\README.md" />
     <None Include="Media\BinaryWindows\README.md" />
     <None Include="Media\CanonRaw3\README.md" />
     <None Include="Media\C\README.md" />
+    <None Include="Media\LDAP\README.md" />
     <None Include="Media\Matroska\README.md" />
+    <None Include="Media\PNG\README.md" />
+    <None Include="Media\RIFF\README.md" />
     <None Include="Media\SQL\README.md" />
     <None Include="Media\STL\README.md" />
     <None Include="Media\XML\README.md" />
+    <None Include="OS\Graphic\DirectX\README.md" />
+    <None Include="OS\Graphic\OpenGL\README.md" />
+    <None Include="OS\Graphic\SoftwareRender\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

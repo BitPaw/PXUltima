@@ -4366,9 +4366,10 @@ PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const pxOpenGL, PXTextur
 {
     // Register Textures
     {
-        PXInt32U* iDListen = PXMemoryStackAllocate(sizeof(PXInt32U) * amount);
+        const PXSize openGLTextureIDListSize = sizeof(PXInt32U) * amount;
+        PXInt32U* openGLTextureIDListData = (PXInt32U*)PXMemoryStackAllocate(openGLTextureIDListSize);
 
-        pxOpenGL->TextureCreate(amount, iDListen);
+        pxOpenGL->TextureCreate(amount, openGLTextureIDListData);
 
         const PXActionResult createResult = PXOpenGLErrorCurrent();
 
@@ -4395,10 +4396,10 @@ PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const pxOpenGL, PXTextur
 
         for (size_t i = 0; i < amount; i++)
         {
-            pxTexture2DList[i]->ResourceID.OpenGLID = iDListen[i];
+            pxTexture2DList[i]->ResourceID.OpenGLID = openGLTextureIDListData[i];
         }
 
-        PXMemoryStackRelease(iDListen);
+        PXMemoryStackRelease(openGLTextureIDListData, openGLTextureIDListSize);
     }
 
     for (size_t i = 0; i < amount; i++)
@@ -5487,7 +5488,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[containerID];
 
             PXSize pxTextureListCounter = 0;
-            PXTexture2D** pxTextureList = (PXTexture2D**)PXMemoryStackAllocate(sizeof(PXTexture2D*) * pxMaterialContainer->MaterialListSize);
+            const PXSize pxTextureListSize = sizeof(PXTexture2D*) * pxMaterialContainer->MaterialListSize;
+            PXTexture2D** pxTextureList = (PXTexture2D**)PXMemoryStackAllocate(pxTextureListSize);
 
             for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListSize; ++materialID)
             {
@@ -5503,7 +5505,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
             PXOpenGLTexture2DCreateV(pxOpenGL, pxTextureList, pxTextureListCounter);
 
-            PXMemoryStackRelease(pxTextureList);
+            PXMemoryStackRelease(pxTextureList, pxTextureListSize);
         }
     }
 

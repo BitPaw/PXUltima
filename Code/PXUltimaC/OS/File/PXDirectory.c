@@ -365,7 +365,7 @@ PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory)
 #if OSUnix
 		const char* const text = 0; // TODO: Add conversion?
 #elif OSWindows
-		const char* const text = _wgetcwd(workingDirectory->TextW, workingDirectory->SizeAllocated);
+		const wchar_t* const text = _wgetcwd(workingDirectory->TextW, workingDirectory->SizeAllocated);
 #endif
 		const PXBool successful = text != 0;
 

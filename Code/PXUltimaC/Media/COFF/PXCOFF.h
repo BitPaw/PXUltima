@@ -287,12 +287,12 @@ extern "C"
 	}
 	PXCOFF;
 
-	PXPrivate inline PXCOFFMachineType PXCOFFMachineFromID(const PXInt16U valueID);
-	PXPrivate inline PXCOFFFormat PXCOFFFormatFromID(const PXInt16U valueID);
-	PXPrivate inline PXSectionType PXSectionTypeFromID(const PXInt64U valueID);
+	PXPrivate inline PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXInt16U valueID);
+	PXPrivate inline PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID);
+	PXPrivate inline PXSectionType PXAPI PXSectionTypeFromID(const PXInt64U valueID);
 
-	PXPublic PXActionResult PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile);
-	PXPublic PXActionResult PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile);
 
 #ifdef __cplusplus
 }

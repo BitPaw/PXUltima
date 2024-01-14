@@ -268,6 +268,7 @@ extern "C"
 		PXActionFailedFormatNotAsExpected,
 		PXActionRefusedInvalidHeaderSignature,
 		PXActionRefusedInvalidVersion,
+		PXActionRefusedInvalidSymbol, // While parsing found symbol thats not supported to be read
 		//-----------------------------------
 
 		//---<File-Writing>------------------

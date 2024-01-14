@@ -3,15 +3,19 @@
 ## Info
 |||
 |:-:|:-:|
-|Type| 🧊 3D model format |
-|Documentation| :x: No (proprietary) |
+|Type| 🧊 3D model |
 |Format| Text and Binary|
+|Documentation| :x: No (proprietary) |
 
 Developed by Kaydara for MotionBuilder, bought up by Autodesk Inc in 2006.<br>
 The format is hidden behind a SDK. 
 
 ### Dependency
-- PXZLIB
+- ZLIB
+### Advantage
+### Drawback
+- Difficult to parse
+---
 
 ## Structure - Binary file
 ### Header [27 bytes]
@@ -82,6 +86,8 @@ The format is hidden behind a SDK.
 ## Structure - Text-Based File
 ...ToDo...
 
+---
+
 ## Links
-- https://docs.fileformat.com/3d/fbx/
-- https://code.blender.org/2013/08/fbx-binary-file-format-specification
+- [FileFormat.com](https://docs.fileformat.com/3d/fbx/)
+- [Blender](https://code.blender.org/2013/08/fbx-binary-file-format-specification)

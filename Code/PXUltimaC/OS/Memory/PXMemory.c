@@ -227,7 +227,15 @@ PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize buffer
 #endif
 
 #if PXMemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) Compare to 0x%p\n", bufferA, bufferSize, bufferB);
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Memory",
+		"0x%p (%10zi B) Compare to 0x%p",
+		bufferA, 
+		bufferSize, 
+		bufferB
+	);
 #endif
 
 #if MemoryUseSystemFunction
@@ -264,7 +272,7 @@ PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, co
 	PXMemoryCopy(bufferB, size, bufferA, size);
 	PXMemoryCopy(adress, size, bufferB, size);
 
-	PXMemoryStackRelease(adress);
+	PXMemoryStackRelease(adress, size);
 
 	return PXTrue;
 }
@@ -347,12 +355,23 @@ void* PXAPI PXMemoryStackAllocate(const PXSize size)
 		_malloca(size);
 #endif
 
+#if PXMemoryDebug
+	PXLogPrint
+	(
+		PXLoggingAllocation,
+		"Memory",
+		"0x%p (%10zi B) Stack Allocate",
+		stackAllocated,
+		size
+	);
+#endif
+
 	return stackAllocated;
 }
 
-void* PXAPI PXMemoryStackRelease(void* const adress)
+void PXAPI PXMemoryStackRelease(void* const dataAdress, const PXSize dataSize)
 {
-	if (!adress)
+	if (!dataAdress)
 	{
 		return;
 	}
@@ -360,7 +379,18 @@ void* PXAPI PXMemoryStackRelease(void* const adress)
 #if OSUnix
 	
 #elif OSWindows
-	_freea(adress);
+	_freea(dataAdress);
+#endif
+
+#if PXMemoryDebug
+	PXLogPrint
+	(
+		PXLoggingDeallocation,
+		"Memory",
+		"0x%p (%10zi B) Stack Release",
+		dataAdress,
+		dataSize
+	);
 #endif
 }
 
@@ -377,7 +407,7 @@ void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, c
 	(
 		PXLoggingAllocation,
 		"Memory",
-		"[%-37.37s|%7iB|",
+		"%-37.37s %7i B",
 		buffer, (unsigned int)amount * typeSize
 	);
 
@@ -448,7 +478,7 @@ PXBool PXMemoryHeapReallocateDetailed(void** const sourceAddress, PXSize* const 
 	(
 		PXLoggingReallocation,
 		"Memory",
-		"[%-37.37s|%7iB|",
+		"%-37.37s %7i B",
 		buffer,
 		requestedSize
 	);
@@ -501,7 +531,7 @@ PXBool PXAPI PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAdd
 		return PXTrue;
 	}
 
-	return PXMemoryHeapReallocate(typeSize, sourceAddress, currentSize, requestedSize);
+	return 0;// PXMemoryHeapReallocate(typeSize, sourceAddress, currentSize, requestedSize);
 }
 
 
@@ -522,7 +552,7 @@ void PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, 
 	(
 		PXLoggingDeallocation,
 		"Memory",
-		"[%-37.37s|%7iB|",
+		"%-37.37s %7i B",
 		buffer,
 		size
 	);
@@ -649,7 +679,15 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemo
 			break;
 	}
 
-	printf("[#][Memory] 0x%p (%10zi B) Virtual allocation [%s]\n", addressAllocated, size, readMode);
+	PXLogPrint
+	(
+		PXLoggingAllocation,
+		"Memory",
+		"0x%p (%10zi B) Virtual allocation [%s]",
+		addressAllocated, 
+		size,
+		readMode
+	);
 #endif
 
 	return (void*)addressAllocated;
@@ -671,8 +709,16 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 	//const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags); // Windows 8, Kernel32.dll, memoryapi.h
 
 #if PXMemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) Pre-Fetched\n", adress, size);
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Memory",
+		"0x%p (%10zi B) Pre-Fetched", 
+		adress,
+		size
+	);
 #endif
+
 #else
 	// Not supported function
 #endif
@@ -695,7 +741,14 @@ void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 #endif
 
 #if PXMemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) Virtual free\n", adress, size);
+	PXLogPrint
+	(
+		PXLoggingDeallocation,
+		"Memory",
+		"0x%p (%10zi B) Virtual free",
+		adress,
+		size
+	);
 #endif
 
 	//return result; // We dont return info

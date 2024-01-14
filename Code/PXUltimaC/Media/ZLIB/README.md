@@ -1,15 +1,14 @@
-# PXZLIB<br>[RFC 1950]
+# ZLIB<br>[RFC 1950]
 
 ## Info
-PXZLIB is a structure to aid compression formats.<br>
+ZLIB is a structure to aid compression formats.<br>
 Currently the only format specified is DEFLATE, thus this is just a code husk for that format. 
 
-## Structure
-
-### Dependency
+## Dependency
 - ADLER32
-- DEFLATE
+- [DEFLATE](../DEFLATE/README.md)
 
+## Structure
 ### Compression Method and flags block (minimum 6 Bytes)
 |Name|Length|Type| Description |
 |:-:|:-:|:-:|:-|

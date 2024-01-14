@@ -278,7 +278,7 @@ extern "C"
 
 		The palette is only supported for color type 3.
 		*/
-		unsigned char* palette; /*palette in RGBARGBA... order. Must be either 0, or when allocated must have 1024 bytes*/
+		PXInt8U* palette; /*palette in RGBARGBA... order. Must be either 0, or when allocated must have 1024 bytes*/
 		PXSize palettesize; /*palette size in number of colors (amount of used bytes is 4 * palettesize)*/
 
 		/*
@@ -317,7 +317,7 @@ extern "C"
 
 
 
-	static unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pixelDataIn, unsigned char* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
+	static unsigned int ImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
 
 
 

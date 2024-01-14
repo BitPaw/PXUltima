@@ -1,4 +1,19 @@
-# MP3 File (.mp3)
+# Moving Picture Experts Group Layer III (.mp3)<br>[ISO/IEC 11172-3]<br>[ISO/IEC 13818-3]
+---
+## Info
+|||
+|:-:|:-:|
+| Type | Musik |
+| Format | Binary |
+
+## Dependency
+- ID3
+
+## Advantage
+
+## Drawback
+
+---
 
 ## Structure
 File <b>can</b> begin with a 'ID3' Chunk. It contains meta data.<br>
@@ -32,3 +47,8 @@ Values stored in Big-PXEndian order.
 ***
 
 ### MP3-Data-Chunk
+
+---
+
+## Links
+- [Wikipedia](https://en.wikipedia.org/wiki/MIDI)

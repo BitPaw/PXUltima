@@ -112,7 +112,7 @@ extern "C"
 
 #endif
 
-#define PXAPI PXCDECL
+#define PXAPI PXSTDCALL
 
 #if OSUnix
 #define PXPrivate static
@@ -164,15 +164,26 @@ extern "C"
 
 
 
-#define PXDataTypeAdressMask		0b01000000000000000000000000000000 // Used if the type is
-#define PXDataTypeEndianMask		0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
-#define PXDataTypeUseFileModeMask	0b00000000000000000000000000000000
-#define PXDataTypeSignedMask		0b00001000000000000000000000000000 // Only useful in numeric values
-#define PXDataTypeIgnoreIFMask		0b00000110000000000000000000000000
-#define PXDataTypeShallDoIO			0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
-#define PXDataTypeBaseNumeric		0b00000000100000000000000000000000
-#define PXDataTypeBaseDecimal		0b00000000010000000000000000000000
-#define PXDataTypeSizeMask			0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
+#define PXDataTypeAdressMask			0b01000000000000000000000000000000 // Used if the type is
+#define PXDataTypeEndianMask			0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
+#define PXDataTypeUseFileModeMask		0b00000000000000000000000000000000
+#define PXDataTypeSignedMask			0b00001000000000000000000000000000 // Only useful in numeric values
+#define PXDataTypeIgnoreIFMask			0b00000110000000000000000000000000
+#define PXDataTypeShallDoIO				0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
+#define PXDataTypeBaseNumeric			0b00000000100000000000000000000000
+#define PXDataTypeBaseDecimal			0b00000000010000000000000000000000
+
+#define PXDataTypeBitFieldHolderMask	0b00000000000001100000000000000000
+#define PXDataTypeBitFieldHolder08U		0b00000000000000000000000000000000 // 1 Bytes
+#define PXDataTypeBitFieldHolder16U		0b00000000000000100000000000000000 // 2 Bytes
+#define PXDataTypeBitFieldHolder32U		0b00000000000001000000000000000000 // 4 Bytes
+#define PXDataTypeBitFieldHolder64U		0b00000000000001100000000000000000 // 8 Bytes
+
+#define PXDataTypeModeMask				0b00000000000000010000000000000000
+#define PXDataTypeModeByte				0b00000000000000000000000000000000
+#define PXDataTypeModeBit				0b00000000000000010000000000000000
+
+#define PXDataTypeSizeMask				0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
 
 
 #define PXDataTypeIgnoreIn32B 0b00000010000000000000000000000000
@@ -190,7 +201,7 @@ extern "C"
 #define PXDataTypeSize16		2
 #define PXDataTypeSize32		4
 #define PXDataTypeSize64		8
-
+#define PXDataTypeSize128		16
 
 //-------------------------------------------------
 // Adress, read as spesified but store it as (void*)
@@ -209,6 +220,7 @@ extern "C"
 #define PXDataTypeDatax2 PXDataTypeSize16
 #define PXDataTypeDatax4 PXDataTypeSize32
 #define PXDataTypeDatax8 PXDataTypeSize64
+#define PXDataTypeDatax16 PXDataTypeSize128
 
 //-------------------------------------------------
 // Emoty space
@@ -226,17 +238,17 @@ extern "C"
 
 #define PXDataTypeBool PXDataTypeInt08U
 
-#define PXDataTypeInt16U PXDataTypeSize16 | PXDataTypeIntS
+#define PXDataTypeInt16S PXDataTypeSize16 | PXDataTypeIntS
 #define PXDataTypeInt16SLE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianLittle
 #define PXDataTypeInt16SBE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianBig
-#define PXDataTypeInt16S PXDataTypeSize16 | PXDataTypeIntU
+#define PXDataTypeInt16U PXDataTypeSize16 | PXDataTypeIntU
 #define PXDataTypeInt16ULE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianLittle
 #define PXDataTypeInt16UBE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianBig
-
-#define PXDataTypeInt32U PXDataTypeSize32 | PXDataTypeIntS
+ 
+#define PXDataTypeInt32S PXDataTypeSize32 | PXDataTypeIntS
 #define PXDataTypeInt32SLE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianLittle
 #define PXDataTypeInt32SBE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianBig
-#define PXDataTypeInt32S PXDataTypeSize32 | PXDataTypeIntU
+#define PXDataTypeInt32U PXDataTypeSize32 | PXDataTypeIntU
 #define PXDataTypeInt32ULE PXDataTypeSize32 | PXDataTypeIntU | PXDataTypeEndianLittle
 #define PXDataTypeInt32UBE PXDataTypeSize32 | PXDataTypeIntU | PXDataTypeEndianBig
 
@@ -257,6 +269,16 @@ extern "C"
 
 #define PXDataTypeFloat PXDataTypeSize32 | PXDataTypeBaseDecimal
 #define PXDataTypeDouble PXDataTypeSize64 | PXDataTypeBaseDecimal
+
+
+//-------------------------------------------------
+// Int - BitMode
+//-------------------------------------------------
+#define PXDataTypeIntUFlexBit PXDataTypeIntU | PXDataTypeModeBit
+#define PXDataTypeBit08U(bitSize) PXDataTypeBitFieldHolder08U | PXDataTypeIntUFlexBit | bitSize
+#define PXDataTypeBit16U(bitSize) PXDataTypeBitFieldHolder16U | PXDataTypeIntUFlexBit | bitSize
+#define PXDataTypeBit32U(bitSize) PXDataTypeBitFieldHolder32U | PXDataTypeIntUFlexBit | bitSize
+#define PXDataTypeBit64U(bitSize) PXDataTypeBitFieldHolder64U | PXDataTypeIntUFlexBit | bitSize
 
 	typedef unsigned char PXByte;
 	typedef unsigned char PXBool;

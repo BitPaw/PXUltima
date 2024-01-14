@@ -15,7 +15,7 @@ static const unsigned PXADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; /*y start values*
 static const unsigned PXADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; /*x delta values*/
 static const unsigned PXADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
 
-unsigned int PXADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bpp, PXPNGInterlaceMethod interlaceMethod)
+unsigned int PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, PXSize height, PXSize bpp, PXPNGInterlaceMethod interlaceMethod)
 {
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
@@ -58,14 +58,14 @@ unsigned int PXADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSiz
 
             for (PXSize i = 0; i != 7u; ++i)
             {
-                CERROR_TRY_RETURN(PXADAM7unfilter(&in[padded_passstart[i]], &in[filter_passstart[i]], passw[i], passh[i], bpp));
+                CERROR_TRY_RETURN(PXADAM7unfilter(&((char*)in)[padded_passstart[i]], &((char*)in)[filter_passstart[i]], passw[i], passh[i], bpp));
                 /*TODO: possible efficiency improvement: if in this reduced image the bits fit nicely in 1 scanline,
                 move bytes instead of bits or move not at all*/
                 if (bpp < 8)
                 {
                     /*remove padding bits in scanlines; after this there still may be padding
                     bits between the different reduced images: each reduced image still starts nicely at a byte*/
-                    PXADAM7removePaddingBits(&in[passstart[i]], &in[padded_passstart[i]], passw[i] * bpp, ((passw[i] * bpp + 7u) / 8u) * 8u, passh[i]);
+                    PXADAM7removePaddingBits(&((char*)in)[passstart[i]], &((char*)in)[padded_passstart[i]], passw[i] * bpp, ((passw[i] * bpp + 7u) / 8u) * 8u, passh[i]);
                 }
             }
 
@@ -78,7 +78,7 @@ unsigned int PXADAM7ScanlinesDecode(unsigned char* out, unsigned char* in, PXSiz
     return 0;
 }
 
-unsigned int PXADAM7ScanlinesEncode(unsigned char* out, unsigned char* in, PXSize width, PXSize height, PXSize bbp, PXPNGInterlaceMethod interlaceMethod)
+unsigned int PXADAM7ScanlinesEncode(void* out, void* in, PXSize width, PXSize height, PXSize bbp, PXPNGInterlaceMethod interlaceMethod)
 {
     return 0;
 }
@@ -372,7 +372,7 @@ void PXADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize filter_p
     }
 }
 
-void PXADAM7_deinterlace(unsigned char* out, const unsigned char* in, PXSize w, unsigned h, unsigned bpp)
+void PXADAM7_deinterlace(void* out, const void* in, PXSize w, unsigned h, unsigned bpp)
 {
     unsigned int passw[7];
     unsigned int passh[7];
@@ -395,7 +395,7 @@ void PXADAM7_deinterlace(unsigned char* out, const unsigned char* in, PXSize w, 
                   
                     for (PXSize b = 0; b < bytewidth; ++b)
                     {
-                        out[pixeloutstart + b] = in[pixelinstart + b];
+                        ((char*)out)[pixeloutstart + b] = ((char*)in)[pixelinstart + b];
                     }
                 }
             }                
@@ -413,8 +413,8 @@ void PXADAM7_deinterlace(unsigned char* out, const unsigned char* in, PXSize w, 
                 for (PXSize x = 0; x < passw[i]; ++x)
                 {
                     // bit pointers (for out and in buffer)
-                    const PXSize ibp = (8 * passstart[i]) + (y * ilinebits + x * bpp);
-                    const PXSize obp = (PXADAM7_IY[i] + (PXSize)y * PXADAM7_DY[i]) * olinebits + (PXADAM7_IX[i] + (PXSize)x * PXADAM7_DX[i]) * bpp;
+                    PXSize ibp = (8 * passstart[i]) + (y * ilinebits + x * bpp);
+                    PXSize obp = (PXADAM7_IY[i] + (PXSize)y * PXADAM7_DY[i]) * olinebits + (PXADAM7_IX[i] + (PXSize)x * PXADAM7_DX[i]) * bpp;
                     
                     for (PXSize b = 0; b < bpp; ++b)
                     {

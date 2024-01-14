@@ -132,6 +132,14 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 	return PXActionRefusedNotSupported;
 }
 
+PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* const filePath)
+{
+	PXText pxText;
+	PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
+
+	return PXLibraryOpen(pxLibrary, &pxText);
+}
+
 PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 {
 	const PXBool result =

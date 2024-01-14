@@ -29,7 +29,7 @@ unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g
     return 0;
 }
 
-unsigned int ImageDataDecompress(const PXPNG* const png, const unsigned char* pixelDataIn, unsigned char* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType)
+unsigned int ImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType)
 {
     LodePNGColorMode colorModeIn;
     LodePNGColorMode colorModeOut;
@@ -652,7 +652,10 @@ PXActionResult rgba8ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode
         case LCT_PALETTE:
         {
             int index = color_tree_get(tree, r, g, b, a);
-            if (index < 0) return 82; /*color not in palette*/
+
+            if (index < 0) 
+                return PXActionInvalid; // color not in palette
+
             if (mode->bitdepth == 8) out[i] = index;
             else addColorBits(out, i, mode->bitdepth, (unsigned)index);
             break;
@@ -742,9 +745,9 @@ void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned 
     }
 }
 
-unsigned char readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream)
+unsigned char readBitFromReversedStream(PXSize* bitpointer, const void* bitstream)
 {
-    unsigned char result = (unsigned char)((bitstream[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
+    unsigned char result = (unsigned char)((((char*)bitstream)[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
     ++(*bitpointer);
     return result;
 }
@@ -1131,7 +1134,8 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
                         case PXPNGColorGrayscale:
                         {
                             /*error: this chunk must be 2 bytes for grayscale image*/
-                            if (chunk.Lengh != 2) return 30;
+                            if (chunk.Lengh != 2) 
+                                return PXActionInvalid;
 
                             unsigned short value;
 
@@ -1145,7 +1149,8 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
                         case PXPNGColorRGB:
                         {
                             /*error: this chunk must be 6 bytes for RGB image*/
-                            if (chunk.Lengh != 6) return 41;
+                            if (chunk.Lengh != 6)
+                                return PXActionInvalid;
 
                             unsigned short red;
                             unsigned short green;
@@ -1359,7 +1364,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
                     png.PaletteHistogram.ColorFrequencyListSize = listSize;
                     png.PaletteHistogram.ColorFrequencyList = list;
 
-                    PXFileReadI16UVE(pxFile, list, listSize, PXEndianBig);
+                    PXFileReadI16UVE(pxFile, &list, listSize, PXEndianBig);
 
                     break;
                 }
@@ -2279,7 +2284,7 @@ PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const p
     {
         const PXSize offsetSizeofChunk = pxExportStream->DataCursor;
 
-        const unsigned char* chunkStart = PXFileCursorPosition(pxExportStream);
+        const void* chunkStart = PXFileCursorPosition(pxExportStream);
 
         PXSize chunkLength = 0;
 
@@ -2326,7 +2331,7 @@ PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const p
         PXFileDestruct(&pxScanlineStream);
 
         {
-            const PXInt32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
+            const PXInt32U crc = PXCRC32Generate(&((PXByte*)chunkStart)[4], chunkLength + 4);
 
             PXFileWriteI32UE(pxExportStream, crc, PXEndianBig);
         }
@@ -2334,13 +2339,12 @@ PXActionResult PXAPI PXPNGSaveToFile(const PXImage* const image, PXFile* const p
 
     //---<IEND>---------------------------------------------------------------- 12 Bytes
     {
-        const PXInt8U imageEndChunk[] = {'I','E','N','D','\xAE','\x42','\x60','\x82'}; // Combined write, as this is constand
-        const PXSize imageEndChunkSize = sizeof(imageEndChunk);
+        const PXInt8U imageEndChunk[8] = {'I','E','N','D','\xAE','\x42','\x60','\x82'}; // Combined write, as this is constand
 
         const PXFileDataElementType pxFileDataElementType[] =
         {
             {PXNull, PXDataTypePadding(4)},
-            {imageEndChunk, imageEndChunkSize}
+            {(void*)imageEndChunk, sizeof(imageEndChunk)}
         };
 
         PXFileWriteMultible(pxExportStream, pxFileDataElementType, sizeof(pxFileDataElementType));

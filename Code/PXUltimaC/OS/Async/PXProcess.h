@@ -108,6 +108,13 @@ extern "C"
 
 	PXPublic void PXAPI PXProcessExitCurrent(const PXInt32U exitCode);
 
+	// Get all open handles from given process.
+	// pxProcess can be NULL, current process is used. 
+	PXPublic PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount);
+
+	PXPublic PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess);
+
+
 	PXPublic PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
 
 	PXPublic PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);

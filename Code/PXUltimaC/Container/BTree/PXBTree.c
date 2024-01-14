@@ -17,14 +17,14 @@ PXActionResult PXAPI PXBTreeResize(PXBTree* const pxBTree, const PXSize amount)
 {
     // Allocate Data
     {
-        PXMemoryHeapReallocate(pxBTree->ValueSize, &pxBTree->ValueDataAdress, &pxBTree->ValueAmount, amount);
+       // PXMemoryHeapReallocate(pxBTree->ValueSize, &pxBTree->ValueDataAdress, &pxBTree->ValueAmount, amount);
     }
 
     // Allocate Index
     {
         const PXSize rowSize = pxBTree->KeyOrder * pxBTree->KeySize + ((pxBTree->KeyOrder + 1) * sizeof(void*));
 
-        PXMemoryHeapReallocate(rowSize, &pxBTree->KeyDataAdress, &pxBTree->KeyAmount, amount);
+       // PXMemoryHeapReallocate(rowSize, &pxBTree->KeyDataAdress, &pxBTree->KeyAmount, amount);
     }
 
     return PXActionSuccessful;

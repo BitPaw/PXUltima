@@ -1,4 +1,19 @@
-# OGG File (.ogg)
+# Ogging File (.ogg)
+---
+## Info
+|||
+|:-:|:-:|
+| Type | Musik |
+| Format | Binary |
+
+## Dependency
+- (None)
+
+## Advantage
+
+## Drawback
+
+---
 
 ## Structure
 ### OGG Page (27 Bytes + Segments)
@@ -22,3 +37,7 @@ Each number shall be stored and read after this loop.
 Loop though the array above and use the value you've read, use it as length.<br>
 On this resulting adress a different stream begins.
 ***
+---
+
+## Links
+- [Wikipedia](https://en.wikipedia.org/wiki/Ogg)

@@ -79,39 +79,55 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 {
 	char loggingTypeSymbol;
 
+	int symbolColor = 7;
+	int nameColor = 6;
 
 	switch (loggingType)
 	{
 		case PXLoggingInfo:
 			loggingTypeSymbol = 'i';
+			symbolColor = 6;
 			break;
 
 		case PXLoggingWarning:
 			loggingTypeSymbol = '!';
+			symbolColor = 9;
+			nameColor = 1;
 			break;
 
 		case PXLoggingQuestion:
 			loggingTypeSymbol = '?';
+			symbolColor = 6;
 			break;
 
 		case PXLoggingError:
 			loggingTypeSymbol = 'E';
+			symbolColor = 9;
+			nameColor = 1;
 			break;
 
 		case PXLoggingFailure:
 			loggingTypeSymbol = 'x';
+			symbolColor = 9;
+			nameColor = 1;
 			break;
 
 		case PXLoggingAllocation:
-			loggingTypeSymbol = 'A';
+			loggingTypeSymbol = '+';
+			symbolColor = 9;
+			nameColor = 1;
 			break;
 
 		case PXLoggingReallocation:
-			loggingTypeSymbol = 'R';
+			loggingTypeSymbol = '*';
+			symbolColor = 9;
+			nameColor = 1;
 			break;
 
 		case PXLoggingDeallocation:
-			loggingTypeSymbol = 'D';
+			loggingTypeSymbol = '-';
+			symbolColor = 2;
+			nameColor = 2;
 			break;
 
 		case PXLoggingTypeInvalid:
@@ -132,9 +148,11 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	(
 		formattedText.TextA,
 		formattedText.SizeAllocated, 
-		"§7[§1%c§7][§3%s§7] §6%s\n", 
+		"§7[§%i%c§7][§3%s§7] §%i%s\n",
+		symbolColor,
 		loggingTypeSymbol, 
 		source, 
+		nameColor,
 		format
 	);
 

@@ -105,7 +105,7 @@ PXActionResult PXAPI PXClientConnectToServer(PXClient* const client, const PXTex
 
         PXFunctionInvoke(pxSocketClient->EventList.SocketConnectedCallBack, client->Owner, &client->SocketClient, &client->SocketServer);
 
-        lastError = PXThreadRun(&pxSocketClient->CommunicationThread, (ThreadFunction)PXClientCommunicationThread, pxSocketClient);
+        lastError = PXThreadRun(&pxSocketClient->CommunicationThread, "PXClientCommunication", (ThreadFunction)PXClientCommunicationThread, pxSocketClient);
 
         PXActionContinueOnError(lastError);
 

@@ -2,6 +2,7 @@
 
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
+#include <OS/Async/PXProcess.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -105,6 +106,15 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 	PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
 	PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
 
+    {
+        PXText pxText;
+        PXTextMakeFixedA(&pxText, "PXEngineMain");
+
+        PXThreadNameSet(PXNull, &pxText);
+    }
+
+  
+
 
     // Load all mods now, not fully tho, they may need very early checks before anything happens
     {
@@ -184,6 +194,21 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 
         PXFunctionInvoke(pxEngine->OnStartUp, pxEngine->Owner, pxEngine);
     }
+
+    PXSize amount = 0;
+    PXActionResult res = PXProcessHandleCountGet(PXNull, &amount);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PX",
+        "Currently <%i> Handles open",
+        amount
+    );
+
+    PXActionResult ww = PXProcessHandleListAll(PXNull);
+
+    printf("");
 }
 
 void PXAPI PXEngineStop(PXEngine* const pxEngine)

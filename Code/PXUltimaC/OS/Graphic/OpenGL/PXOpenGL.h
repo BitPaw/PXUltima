@@ -1436,9 +1436,7 @@ extern "C"
 
 	PXPublic void PXAPI PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode pxBlendingMode);
 
-
-
-	PXPublic void PXOpenGLAPI PXOpenGLErrorMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const char* const message, void* const userParam);
+	PXPublic void PXOpenGLAPI PXOpenGLErrorMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const char* const message, const void* const userParam);
 	//-------------------------------------------------------------------------
 
 	// render

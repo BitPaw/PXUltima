@@ -114,7 +114,7 @@ PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* c
 
 	// Start Thread that will listen to given process.
 	{
-		const PXActionResult result = PXThreadRun(&pxDebug->EventListenLoop, (ThreadFunction)PXDebugLoop, pxDebug);
+		const PXActionResult result = PXThreadRun(&pxDebug->EventListenLoop, "PXDebugLoop", (ThreadFunction)PXDebugLoop, pxDebug);
 
 		// If thread cannot be started, stop.
 		PXActionReturnOnError(result);

@@ -121,7 +121,6 @@ void PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const flo
 		xRotation.Data[6] = sinResult;
 		xRotation.Data[9] = -sinResult;
 		xRotation.Data[10] = cosResult;
-
 	}
 
 	//-----<X ROT>-----
@@ -146,7 +145,6 @@ void PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const flo
 		zRotation.Data[5] = cosResult;
 	}
 
-
 	// Gimble (result = xRotation * yRotation * zRotation;)
 	{
 		PXMatrix4x4F tempRotation;
@@ -160,9 +158,7 @@ void PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const flo
 
 void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult)
 {
-	const PXSize sizeOfMatrix = sizeof(PXMatrix4x4F);
-
-	PXMemoryCopy(matrixA, sizeOfMatrix, matrixResult, sizeOfMatrix);
+	PXCopy(PXMatrix4x4F, matrixA, matrixResult);
 }
 
 void PXMatrix4x4FMove3F(PXMatrix4x4F* const matrixData, const PXVector3F* const vector3F)
