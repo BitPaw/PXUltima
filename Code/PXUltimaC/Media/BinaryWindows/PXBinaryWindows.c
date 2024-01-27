@@ -13,7 +13,8 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinary
     (
         PXLoggingInfo,
         "BinaryWindows",
-        "--- Parsing Start ---"
+        "Parsing",
+        "Start"
     );
 #endif
 
@@ -73,7 +74,8 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinary
     (
         PXLoggingInfo,
         "BinaryWindows",
-        "--- Parsing finished ---"
+        "Parsing",
+        "finished"
     );
 #endif
 

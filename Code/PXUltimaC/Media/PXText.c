@@ -1509,3 +1509,79 @@ PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number)
 
 	return 0;
 }
+
+#define PXSizeKB 1000 
+#define PXSizeMB 1000000 
+#define PXSizeGB 1000000000 
+#define PXSizeTB 1000000000000 
+#define PXSizePB 1000000000000000  
+#define PXSizeEB 1000000000000000000
+
+PXSize PXAPI PXTextFormatTime(const PXText* const pxText, const PXSize pxTime)
+{
+	if (pxTime < 1000)
+	{
+		return PXTextPrint(pxText, "%i us", pxTime);
+	}
+
+	if (pxTime < 1000000)
+	{
+		return PXTextPrint(pxText, "%.3f ms", pxTime / (float)1000);
+	}
+
+	if (pxTime < 1000000000)
+	{
+		return PXTextPrint(pxText, "%.3f s", pxTime / (float)1000000);
+	}
+
+	return 0;
+
+#if 0
+	if (pxTime < PXSizeTB)
+	{
+		return PXTextPrint(pxText, "%.3f m", pxTime / (float)PXSizeGB);
+	}
+
+	if (pxTime < PXSizePB)
+	{
+		return PXTextPrint(pxText, "%.3f h", pxTime / (float)PXSizeTB);
+	}
+
+	return PXTextPrint(pxText, "%.3f d", pxTime / (float)PXSizePB);
+#endif
+}
+
+PXSize PXAPI PXTextFormatSize(const PXText* const pxText, const PXSize pxSize)
+{
+	if (pxSize < PXSizeKB)
+	{
+		return PXTextPrint(pxText, "%i.-  B", pxSize);
+	}
+
+	if (pxSize < PXSizeMB)
+	{
+		return PXTextPrint(pxText, "%.1f KB", pxSize / (float)PXSizeKB);
+	}
+
+	if (pxSize < PXSizeGB)
+	{
+		return PXTextPrint(pxText, "%.1f MB", pxSize / (float)PXSizeMB);
+	}
+
+	if (pxSize < PXSizeTB)
+	{
+		return PXTextPrint(pxText, "%.1f GB", pxSize / (float)PXSizeGB);
+	}
+
+	if (pxSize < PXSizePB)
+	{
+		return PXTextPrint(pxText, "%.1f TB", pxSize / (float)PXSizeTB);
+	}
+
+	if (pxSize < PXSizeEB)
+	{
+		return PXTextPrint(pxText, "%.1f PB", pxSize / (float)PXSizePB);
+	}
+
+	return PXTextPrint(pxText, "%.1f EB", pxSize / (float)PXSizeEB);
+}

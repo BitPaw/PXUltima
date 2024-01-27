@@ -10,6 +10,7 @@ void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
     (
         PXLoggingFailure,
         "PX",
+        "Signal",
         "CPU tryed to exectue illegal instruction!"
     );
 }
@@ -20,6 +21,7 @@ void PXCDECL PXEngineOnMemoryViolation(const int signalID)
     (
         PXLoggingFailure,
         "PX",
+        "Signal",
         "CPU accessed memory illegally!"
     );
 }
@@ -38,17 +40,80 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     //PXWindowUpdate(&pxEngine->Window);
     pxEngine->CounterTimeWindow = PXTimeCounterStampGet() - pxEngine->CounterTimeWindow;
 
-    pxEngine->CounterTimeUser = PXTimeCounterStampGet();
-    PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine);
-    pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
-    
-    pxEngine->CounterTimeNetwork = PXTimeCounterStampGet();
-    PXFunctionInvoke(pxEngine->OnNetworkUpdate, pxEngine->Owner, pxEngine);
-    pxEngine->CounterTimeNetwork = PXTimeCounterStampGet() - pxEngine->CounterTimeNetwork;
+    // User input
+    {
+        PXWindow* pxWindow = &pxEngine->Window;
+        PXKeyBoard* keyboard = &pxWindow->KeyBoardCurrentInput;
+        PXMouse* mouse = &pxWindow->MouseCurrentInput;
 
-    pxEngine->CounterTimeCPU = PXTimeCounterStampGet();
-    PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
-    pxEngine->CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->CounterTimeCPU;
+        pxEngine->CounterTimeUser = PXTimeCounterStampGet();
+
+        PXPlayerMoveInfo pxPlayerMoveInfo;    
+        PXClear(PXPlayerMoveInfo, &pxPlayerMoveInfo);
+
+        if (keyboard->Commands & KeyBoardIDShiftLeft)   { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0, -1,  0); }
+        if (keyboard->Letters & KeyBoardIDLetterW)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  0,  1); }
+        if (keyboard->Letters & KeyBoardIDLetterA)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, -1,  0,  0); }
+        if (keyboard->Letters & KeyBoardIDLetterS)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  0, -1); }
+        if (keyboard->Letters & KeyBoardIDLetterD)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  1,  0,  0); }
+        if (keyboard->Letters & KeyBoardIDSpace)        { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  1,  0); }
+
+        pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
+        pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
+        pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
+        pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
+
+        PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
+
+        PXMouseInputReset(mouse);
+
+        if (pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
+        {
+            PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+            PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
+            PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
+
+            //printf("[#][OnMouseMove] X:%5.2f Y:%5.2f\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y);
+        }
+
+        pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
+
+
+        // Extended windows resize check
+        if(pxWindow->HasSizeChanged)
+        {
+            PXViewPort pxViewPort;
+            pxViewPort.X = 0;
+            pxViewPort.Y = 0;
+            pxViewPort.Width = pxWindow->Width;
+            pxViewPort.Height = pxWindow->Height;
+            pxViewPort.ClippingMinimum = 0;
+            pxViewPort.ClippingMaximum = 1;
+
+            pxWindow->HasSizeChanged = PXFalse;
+
+            PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
+
+            if (pxEngine->CameraCurrent)
+            {
+                PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindow->Width, pxWindow->Height);
+            }
+        }
+    }
+
+    // Network
+    {
+        pxEngine->CounterTimeNetwork = PXTimeCounterStampGet();
+        PXFunctionInvoke(pxEngine->OnNetworkUpdate, pxEngine->Owner, pxEngine);
+        pxEngine->CounterTimeNetwork = PXTimeCounterStampGet() - pxEngine->CounterTimeNetwork;
+    }
+
+    // Gameupdate
+    {
+        pxEngine->CounterTimeCPU = PXTimeCounterStampGet();
+        PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
+        pxEngine->CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->CounterTimeCPU;
+    }
 
     if ((timeNow - pxEngine->CounterTimeRenderLast) > 0.02)
     {
@@ -96,10 +161,17 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
 
 void PXAPI PXEngineStart(PXEngine* const pxEngine)
 {
+    PXCameraConstruct(&pxEngine->CameraDefault);
+    PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 80, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.05, 10000);
+
+    pxEngine->CameraCurrent = &pxEngine->CameraDefault;
+
+
     PXLogPrint
     (
         PXLoggingInfo,
         "PX",
+        "Init",
         "Starting..."
     );
 
@@ -123,6 +195,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         (
             PXLoggingInfo,
             "PX",
+            "Init",
             "Loading Mods..."
         );
 
@@ -142,6 +215,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         (
             PXLoggingInfo,
             "PX",
+            "Init",
             "Creating Window..."
         );
 
@@ -156,6 +230,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         (
             PXLoggingInfo,
             "PX",
+            "Init",
             "Creating graphical instance..."
         );
 
@@ -173,6 +248,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     }
 
 
+    pxEngine->Graphic.Select(pxEngine->Graphic.EventOwner);
 
   // PXControllerAttachToWindow(&pxBitFireEngine->Controller, pxBitFireEngine->WindowMain.ID);
   // PXCameraAspectRatioChange(pxBitFireEngine->CameraCurrent, pxBitFireEngine->WindowMain.Width, pxBitFireEngine->WindowMain.Height);
@@ -189,12 +265,14 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         (
             PXLoggingInfo,
             "PX",
+            "Init",
             "Engine is up and running. Invoking callback for extended load."
         );
 
         PXFunctionInvoke(pxEngine->OnStartUp, pxEngine->Owner, pxEngine);
     }
 
+#if 0
     PXSize amount = 0;
     PXActionResult res = PXProcessHandleCountGet(PXNull, &amount);
 
@@ -206,9 +284,9 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         amount
     );
 
-    PXActionResult ww = PXProcessHandleListAll(PXNull);
-
-    printf("");
+    //PXActionResult ww = PXProcessHandleListAll(PXNull);
+   // printf("");
+#endif
 }
 
 void PXAPI PXEngineStop(PXEngine* const pxEngine)
@@ -217,4 +295,64 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
 
     PXGraphicRelease(&pxEngine->Graphic);
     PXWindowDestruct(&pxEngine->Window);
+}
+
+PXActionResult PXAPI PXSkyBoxCreate(PXEngine* const pxEngine, PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData)
+{
+    return PXActionInvalid;
+}
+
+PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEventData* const pxSpriteCreateEventData)
+{
+    PXLogPrint
+    (
+        PXLoggingAllocation,
+        "PX",
+        "Sprite-Create",
+        "Use <%s>",
+        pxSpriteCreateEventData->TextureName
+    );
+
+    PXSprite* pxSprite = pxSpriteCreateEventData->SpriteReference;
+
+    // Clear sprite //     PXGraphicSpriteConstruct(&pxEngine->Graphic, pxSprite);
+    {
+        PXClear(PXSprite, pxSprite);
+        PXModelConstruct(&pxSprite->Model);
+
+        //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
+        //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
+
+        PXVector2FSetXY(&pxSprite->TextureScaleOffset, 1, 1);
+
+        //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
+    }
+
+    PXGraphicSpriteTextureLoadA(&pxEngine->Graphic, pxSprite, pxSpriteCreateEventData->TextureName);
+
+    pxSprite->Model.ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
+    pxSprite->Model.IgnoreViewRotation = 0;
+    pxSprite->Model.IgnoreViewPosition = 0;
+    //pxSprite->Model.
+    pxSprite->Model.RenderBothSides = PXTrue;
+
+
+    pxSprite->Model.MaterialContaierList = PXNew(PXMaterialContainer);
+    pxSprite->Model.MaterialContaierListSize = 1u;
+
+    pxSprite->Model.MaterialContaierList->MaterialList = PXNew(PXMaterial);
+    pxSprite->Model.MaterialContaierList->MaterialListSize = 1u;
+
+
+    PXMaterial* materiial = &pxSprite->Model.MaterialContaierList->MaterialList[0];
+
+    PXClear(PXMaterial, materiial);
+
+    materiial->DiffuseTexture = pxSprite->Texture;
+
+    pxSprite->Model.IndexBuffer.SegmentListSize = 1;
+    pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;
+
+
+    PXGraphicSpriteRegister(&pxEngine->Graphic, pxSprite);
 }

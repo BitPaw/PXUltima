@@ -8,6 +8,14 @@ extern "C"
 {
 #endif
 
+	typedef enum PXLoggingTypeTarget_
+	{
+		PXLoggingTypeTargetInvalid,
+		PXLoggingTypeTargetMemory,
+		PXLoggingTypeTargetFile,
+	}
+	PXLoggingTypeTarget;
+
 	typedef enum PXLoggingType_
 	{
 		PXLoggingTypeInvalid,
@@ -22,6 +30,45 @@ extern "C"
 	}
 	PXLoggingType;
 
+	typedef struct PXLoggingMemoryData_
+	{
+		PXSize TypeSize;
+		PXSize Amount;
+
+		char* NameFile;
+		char* NameFunction;
+		PXSize NumberLine;
+	}
+	PXLoggingMemoryData;
+
+	typedef struct PXLoggingEventData_
+	{
+		union
+		{
+			PXSize Time;
+			PXFile* FileReference;
+			PXLoggingMemoryData MemoryData;
+		};
+
+		const char* ModuleSource;
+		const char* ModuleAction;
+		const char* PrintFormat;
+
+		char Symbol;
+		PXLoggingType Type;
+		PXLoggingTypeTarget Target;
+	}
+	PXLoggingEventData;
+
+	#define PXLoggingEventDataConstructSize(obj, type, size, moduleSource, moduleAction, printFormat, ...) \
+		obj->Type = type; \
+		obj->Size = size; \
+		obj->ModuleSource = moduleSource; \
+		obj->ModuleAction = moduleAction; \
+		obj->PrintFormat = printFormat; \
+		obj->Type = type; \
+
+
 	typedef void (PXAPI*PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
 
 	PXPublic void PXAPI PXConsoleClear();
@@ -30,7 +77,15 @@ extern "C"
 	//PXPublic void PXAPI PXConsoleTranlateColorsA(char* const bufferInput, char* const bufferOuput);
 	PXPublic void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const bufferOuput);
 
-	PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const format, ...);
+
+	PXPublic void PXAPI PXLogPrintInvoke
+	(
+		PXLoggingEventData* const pxLoggingEventData,
+		...
+	);
+
+	PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...);
+
 
 	PXPublic void PXAPI PXLogPrintString(const char* const source, PXSize length);
 	PXPublic void PXAPI PXLogPrintStringLine(const char* const source, PXSize length);

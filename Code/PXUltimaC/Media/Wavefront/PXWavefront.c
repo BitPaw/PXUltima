@@ -4,6 +4,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
+#include <OS/Console/PXConsole.h>
 
 #define PXWavefrontDetectMaterial 0
 
@@ -90,13 +91,14 @@ void PXAPI PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEn
 
     PXTextCopyA(compilerSymbolEntry->Source, 20, textBuffer, 32);
 
-    printf
+    PXLogPrint
     (
-        "[PXWavefront][Error] At line <%i> at <%i>, unexpected symbol.\n"
-        "          -> %s\n",
+        PXLoggingError,
+        "Wavefront",
+        "At line <%i> at <%i>, unexpected symbol.\n%s",
         compilerSymbolEntry->Line,
         compilerSymbolEntry->Coloum,
-        textBuffer
+        textBuffer        
     );
 }
 
@@ -133,7 +135,24 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
 
     PXInt32U currentTotalOffset = 0;
 
-    PXFileOpenTemporal(&tokenSteam, pxFile->DataSize * 6);
+    PXFileOpenTemporal(&tokenSteam, pxFile->DataSize * 16);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Start"
+    );
+
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Step 1, Lexer..."
+    );
 
     // Lexer - Level I
     {
@@ -150,6 +169,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
     }
 
     // Stage - 1 - Analyse file
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Step 2, analyse file..."
+    );
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {
@@ -422,6 +449,15 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
         }
     }
 
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Step 3, prealocate memory..."
+    );
+
     //
     PXBool requireToCalculateNormals = PXFalse;
 
@@ -502,6 +538,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
 
 
     // Stage - 3 - Extract data
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Step 4, extract data..."
+    );
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {
@@ -867,7 +911,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
     PXDeleteList(float, vertexDataCache, vertexDataCacheSize); // Delete cached vertex data
 
 
-    
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Done!"
+    );
 
 
     if (errorCounter)
@@ -883,6 +933,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
 
     // Calculate normals
 
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Generating missing normals..."
+    );
 
     for (PXSize i = 0; i < counterVertex; ++i)
     {
@@ -914,6 +971,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
         normalData[2] = normalFactor;
     }
 
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "WaveFront",
+        "Parsing",
+        "Generated missing normals!"
+    );
 
 
     return PXActionSuccessful;

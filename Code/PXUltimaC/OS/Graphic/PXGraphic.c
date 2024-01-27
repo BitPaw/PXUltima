@@ -41,7 +41,8 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
             (
                 PXLoggingWarning,
                 "Graphic",
-                "Texture load skipped <%s> (Redundant)",
+                "Texture",
+                "Load skipped <%s> (Redundant)",
                 pxImageFilePath->TextA
             );
 
@@ -59,6 +60,7 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
             (
                 PXLoggingError,
                 "Graphic",
+                "Texture",
                 "Texture load failed <%s>!",
                 pxImageFilePath->TextA
             );
@@ -70,6 +72,7 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
         (
             PXLoggingInfo,
             "Graphic",
+            "Texture",
             "Texture load successful <%s>.",
             pxImageFilePath->TextA
         );
@@ -102,7 +105,7 @@ PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTextur
 
     // Register as normal
     {
-        const PXActionResult registerResult = pxGraphic->Texture2DRegister(pxGraphic, texture);
+        const PXActionResult registerResult = pxGraphic->Texture2DRegister(pxGraphic->EventOwner, texture);
 
         PXActionReturnOnError(registerResult);
     }
@@ -152,7 +155,8 @@ PXActionResult PXAPI PXGraphicFontLoad(PXGraphic* const pxGraphic, PXFont* const
     (
         PXLoggingInfo,
         "Graphic",
-        "Font load <%s>.",
+        "Font",
+        "load <%s>.",
         filePath->TextA
     );
 
@@ -179,7 +183,8 @@ PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* c
     (
         PXLoggingInfo,
         "Graphic",
-        "Font Registering..."
+        "Font",
+        "Registering..."
     );
 
     PXLockEngage(&pxGraphic->_resourceLock);
@@ -200,7 +205,8 @@ PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* c
     (
         PXLoggingInfo,
         "Graphic",
-        "Font registerd",
+        "Font",
+        "Registerd",
         PXNull
     );
 
@@ -372,7 +378,8 @@ PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBo
     (
         PXLoggingInfo,
         "Graphic",
-        "Skybox register",
+        "Skybox",
+        "Register",
         PXNull
     );
 
@@ -1721,11 +1728,17 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSpri
 
 PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphic* const pxGraphic, PXSprite* const pxSprite, const char* textureFilePath)
 {
-    PXTexture2D* pxTexture = PXNew(PXTexture2D);
+    pxSprite->Texture = PXNew(PXTexture2D);
 
-    PXActionResult loadTextureResult = PXGraphicTexture2DLoadA(pxGraphic, pxTexture, textureFilePath);
+    PXActionResult loadTextureResult = PXGraphicTexture2DLoadA(pxGraphic, pxSprite->Texture, textureFilePath);
 
-    float aspectRationX = pxTexture->Image.Width / pxTexture->Image.Height;
+
+    float aspectRationX = 1;
+
+    if (pxSprite->Texture->Image.Width && pxSprite->Texture->Image.Height)
+    {
+        aspectRationX = pxSprite->Texture->Image.Width / pxSprite->Texture->Image.Height;
+    }
 
     PXMatrix4x4FScaleSetXY(&pxSprite->Model.ModelMatrix, aspectRationX, 1);
 
@@ -1816,7 +1829,6 @@ void PXAPI PXCameraViewChangeToPerspective(PXCamera* const camera, const float f
 
 void PXAPI PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height)
 {
-
     camera->Width = width;
     camera->Height = height;
 

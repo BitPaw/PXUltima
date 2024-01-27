@@ -269,7 +269,7 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
 	wchar_t threadNameW[64];
 	PXTextCopyAW(threadName->TextA, threadName->SizeUsed, threadNameW, 64);
 
-	const HRESULT resultID = SetThreadDescription(pxThread->ThreadHandle, threadNameW);
+	const HRESULT resultID = SetThreadDescription(pxThread->ThreadHandle, threadNameW); // Windows 10 - 1607 (+UWP), Kernel32.dll, processthreadsapi.h
 	const PXActionResult result = PXWindowsHandleErrorFromID(resultID);
 
 	return result;
@@ -286,8 +286,8 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
 
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
-	info.szName = pxHandle.Description;
-	info.dwThreadID = pxThread.ThreadID;
+	info.szName = threadName->TextA;
+	info.dwThreadID = pxThread->ThreadID;
 	info.dwFlags = 0;
 
 	const DWORD MS_VC_EXCEPTION = 0x406D1388;
@@ -316,7 +316,7 @@ PXActionResult PXAPI PXThreadNameGet(PXThread* const pxThread, PXText* const thr
 #if WindowsAtleast10
 
 	wchar_t* tempThreadDescription = 0;
-	const HRESULT resultID = GetThreadDescription(pxThread->ThreadHandle, &tempThreadDescription);
+	const HRESULT resultID = GetThreadDescription(pxThread->ThreadHandle, &tempThreadDescription); // Windows 10 - 1607 (+UWP), Kernel32.dll, processthreadsapi.h
 	//const PXActionResult result = PXWindowsHandleErrorFromID(resultID);
 
 	//PXActionReturnOnError(result);

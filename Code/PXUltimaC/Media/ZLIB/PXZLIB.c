@@ -133,7 +133,7 @@ PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutp
             const PXInt8U compressionLevelValue = (flagByte & 0b11000000) >> 6;
 
             PXZLIB.Header.CheckFlag = (flagByte & 0b00011111);
-            PXZLIB.Header.PXDictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
+            PXZLIB.Header.DictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
             PXZLIB.Header.CompressionLevel = PXZLIBCompressionLevelFromID(compressionLevelValue);
         }
         //-------------------------------------------------------------------------        
@@ -141,7 +141,7 @@ PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutp
 
 
     //---<PXDictionary Parse>----------------------------------------------------
-    if(PXZLIB.Header.PXDictionaryPresent)
+    if(PXZLIB.Header.DictionaryPresent)
     {
         // Parse DICT dictionary identifier 
 

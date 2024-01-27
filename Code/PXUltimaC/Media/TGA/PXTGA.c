@@ -1,6 +1,6 @@
 #include "PXTGA.h"
 
-const char PXTGAFileIdentifier[] = {'T','R','U','E','V','I','S','I','O','N',' ','-',' ','X','F','I','L','E','.'};
+const char PXTGAFileIdentifier[19] = {'T','R','U','E','V','I','S','I','O','N',' ','-',' ','X','F','I','L','E','.'};
 
 PXTGABitsPerPixel PXAPI ConvertToPixelDepth(const unsigned char pixelDepth)
 {

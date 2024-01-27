@@ -9,6 +9,10 @@ extern "C"
 {
 #endif	
 
+#define PXYearMask		0b00000000000000000000000000000000
+#define PXMonthMask		0b00000000000000000000000000000000 // 5 Bits
+#define PXDayMask		0b00000000000000000000000000000000 // 5 Bits
+
 
 	typedef enum PXTimeDayOfWeek_
 	{

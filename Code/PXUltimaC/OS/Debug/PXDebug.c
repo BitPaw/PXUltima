@@ -353,6 +353,7 @@ void PXAPI OnDebugProcessCreate(PXDebug* const pxDebug)
 {
 
 }
+
 void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXInt32U exitCode)
 {
 	printf("[PXDebuger] Exit Thread <%i>\n", exitCode);
@@ -362,11 +363,11 @@ void PXAPI OnDebugThreadCreate(PXDebug* const pxDebug)
 {
 
 }
+
 void PXAPI OnDebugThreadExit(PXDebug* const pxDebug, const PXInt32U exitCode)
 {
 
 }
-
 
 void PXAPI OnDebugBreakPoint(PXDebug* const pxDebug)
 {

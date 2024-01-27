@@ -5,7 +5,7 @@
 #include <Math/PXMath.h>
 
 const char PXGIFHeader[3] = { 'G','I','F' };
-const char PXGIFVersionA[3] = { '8','7','a' };
+const char PXGIFVersionA[3] = {'8','7','a' };
 const char PXGIFVersionB[3] = {'8','9','a'};
 #define PXGIFEOF 0x3B
 

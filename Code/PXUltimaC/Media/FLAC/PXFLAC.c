@@ -60,6 +60,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const px
 		(
 			PXLoggingInfo,
 			"FLAC",
+			"Parsing",
 			"E"
 		);
 	}
@@ -84,6 +85,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const px
 		(
 			PXLoggingInfo,
 			"FLAC",
+			"Parsing",
 			"E"
 		);
 	}

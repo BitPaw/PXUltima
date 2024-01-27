@@ -53,7 +53,9 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxF
 #if PXOPGGDebug
 		printf
 		(
-			"|         | %7s | %4s | %8s | %6s | %7s | %11s | %4s |\n"
+			"|         | %7s | %4s | %8s | %6s | %7s | 
+			
+			s | %4s |\n"
 			"|  Chunk  | %7i | %4i | %8zi | %6i | %7i | %11i | %4i |\n",
 
 			"Version",

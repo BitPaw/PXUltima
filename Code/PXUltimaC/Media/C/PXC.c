@@ -934,6 +934,7 @@ PXActionResult PXAPI PXCParsePreprocessorCondition(PXDocument* const pxDocument,
         (
             PXLoggingError,
             "C",
+            "Parsing",
             "Makro 'if not defined' has invalid name"
         );
 #endif
@@ -1164,6 +1165,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, P
             (
                 PXLoggingInfo,
                 "C",
+                "Parsing",
                 "Include library (global) : %s",
                 buffer
             );
@@ -1244,6 +1246,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXDocument* const pxDocument, PXFile
     (
         PXLoggingInfo,
         "C",
+        "Parsing",
         "typedef"
     );
 
@@ -1306,6 +1309,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXDocument* const pxDocument, PXFile
                     (
                         PXLoggingInfo,
                         "C",
+                        "Parsing",
                         "typedef Funtion : %s",
                         buffer
                     );
@@ -1492,6 +1496,7 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXDocument* const pxDocument, PX
         (
             PXLoggingInfo,
             "C",
+            "Parsing",
             "Function : %6s %s",
             bufferReturnName,
             bufferFunctionName
@@ -1578,6 +1583,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXDocument* const pxDocument
     (
         PXLoggingInfo,
         "C",
+        "Parsing",
         "Member : %s",
         nameBuffer
     );
@@ -1619,6 +1625,7 @@ PXActionResult PXAPI PXCParseTypeContainer(PXDocument* const pxDocument, PXFile*
         (
             PXLoggingInfo,
             "C",
+            "Parsing",
             "struct : %s",
             buffer
         );
@@ -1678,6 +1685,7 @@ PXActionResult PXAPI PXCParseTypeContainer(PXDocument* const pxDocument, PXFile*
             (
                 PXLoggingInfo,
                 "C",
+                "Parsing",
                 "alias : %s",
                 buffer
             );
@@ -1702,6 +1710,7 @@ PXActionResult PXAPI PXCParseTypeEnum(PXDocument* const pxDocument, PXFile* cons
     (
         PXLoggingInfo,
         "C",
+        "Parsing",
         "enum : %s",
         buffer
     );
@@ -1796,6 +1805,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXDocument* const pxDocument, PXFile* const
                         (
                             PXLoggingInfo,
                             "C",
+                            "Parsing",
                             "Makro : End definition"
                         );
 #endif
@@ -1867,6 +1877,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXDocument* const pxDocument, PXFile* const
                                     (
                                         PXLoggingInfo,
                                         "C",
+                                        "Parsing",
                                         "Disable name mangeling in C++ for following block"                                        
                                     );
 #endif

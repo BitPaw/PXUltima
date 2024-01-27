@@ -24,6 +24,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
 		(
 			PXLoggingInfo,
 			"Mod",
+			"Load",
 			"Possible Mod file deteced <%s>",
 			pxDirectoryIterator.EntryCurrent.Name
 		);
@@ -39,6 +40,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
 			(
 				PXLoggingError,
 				"Mod",
+				"Load",
 				"File is not a Mod and cannot be opened <%s>",
 				pxDirectoryIterator.EntryCurrent.FullPath
 			);
@@ -50,6 +52,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
 		(
 			PXLoggingInfo,
 			"Mod",
+			"Load",
 			"Library detected, try fetching functions in <%s>",
 			pxDirectoryIterator.EntryCurrent.FullPath
 		);
@@ -62,6 +65,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
 			(
 				PXLoggingError,
 				"Mod",
+				"Load",
 				"Library does not contain function <%s>. Cannot use mod <%s>",
 				PXModLoadFunctionName,
 				pxDirectoryIterator.EntryCurrent.FullPath
@@ -74,6 +78,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
 		(
 			PXLoggingInfo,
 			"Mod",
+			"Load",
 			"Function detected <%s>. Linking.. <%s>",
 			PXModLoadFunctionName,
 			pxDirectoryIterator.EntryCurrent.FullPath
@@ -96,6 +101,7 @@ PXActionResult PXAPI PXModLoaderAdd(PXModLoader* const pxModLoader, PXMod* const
 	(
 		PXLoggingInfo,
 		"Mod",
+		"Load",
 		"<%s>, <%s>",
 		pxMod->Name,
 		pxMod->BuildDate

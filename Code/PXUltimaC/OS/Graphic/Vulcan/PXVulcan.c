@@ -93,6 +93,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 	(
 		PXLoggingInfo,
 		"Vulcan",
+		"Init",
 		"Starting initializing library..."
 	);
 #endif
@@ -134,6 +135,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 				(
 					PXLoggingError,
 					"Vulcan",
+					"Init",
 					"initializing failed: Library not found"
 				);
 #endif
@@ -148,6 +150,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 	(
 		PXLoggingInfo,
 		"Vulcan",
+		"Init",
 		"Library detected 0x%p",
 		pxVulcan->LibraryID.ID
 	);
@@ -170,6 +173,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		(
 			PXLoggingInfo,
 			"Vulcan",
+			"Init",
 			"Fetching functions..."
 		);
 #endif
@@ -219,6 +223,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 			(
 				PXLoggingInfo,
 				"Vulcan",
+				"Init",
 				"Instance created 0x%p",
 				pxVulcan->Instance
 			);
@@ -259,6 +264,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		(
 			PXLoggingInfo,
 			"Vulcan",
+			"Init",
 			"Extensions detected. Amount:%i",
 			amountOfExtenions
 		);
@@ -273,6 +279,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 			(
 				PXLoggingInfo,
 				"Vulcan",
+				"Init",
 				"- %2i %s ",
 				extensionPropertie->specVersion,
 				extensionPropertie->extensionName
@@ -317,6 +324,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		(
 			PXLoggingInfo,
 			"Vulcan",
+			"Init",
 			"Deteced %i physical devices",
 			numberOfDevices
 		);
@@ -335,6 +343,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 			(
 				PXLoggingInfo,
 				"Vulcan",
+				"Init",
 				"[Device %i/%i] %s",
 				i + 1,
 				numberOfDevices, 
@@ -373,6 +382,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		(
 			PXLoggingInfo,
 			"Vulcan",
+			"Init",
 			"Creating device..."
 		);
 #endif
@@ -390,6 +400,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		(
 			PXLoggingInfo,
 			"Vulcan",
+			"Init",
 			"Deteced %i displays",
 			amountOfDisplays
 		);
@@ -407,6 +418,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 			(
 				PXLoggingInfo,
 				"Vulcan",
+				"Init",
 				"[Device %i/%i] (%8ix%-8i) %s\n",
 				i + 1,
 				amountOfDisplays,
@@ -416,12 +428,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 			);
 #endif
 		}
-
-
 	}
-
-
-
 
 	// createSwapChain
 	{

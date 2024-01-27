@@ -13,10 +13,40 @@ extern "C"
 
 	typedef struct PXEngine_ PXEngine;
 
+
+	typedef struct PXSkyBoxCreateEventData_
+	{
+		int dummy;
+	}
+	PXSkyBoxCreateEventData;
+
+	typedef struct PXSpriteCreateEventData_
+	{
+		PXSprite* SpriteReference;
+		PXTexture2D* TextureCurrent;
+		char* TextureName;
+		PXShaderProgram* ShaderProgramCurrent;
+
+		PXBool ViewRotationIgnore;
+		PXBool ViewPositionIgnore;
+	}
+	PXSpriteCreateEventData;
+
+
+	typedef struct PXPlayerMoveInfo_
+	{
+		PXVector3F MovementWalk;
+		PXVector3F MovementView;
+		PXBool IsWindowInFocus;
+		PXBool ActionCommit; // If this stays true, action will be commited
+	}
+	PXPlayerMoveInfo;
+
+
 	typedef void (PXAPI* PXEngineStartUpEvent)(void* const owner, PXEngine* const pxEngine);
 	typedef void (PXAPI* PXEngineShutDownEvent)(void* const owner, PXEngine* const pxEngine);
 
-	typedef void (PXAPI* PXEngineUserUpdateEvent)(void* const owner, PXEngine* const pxEngine);
+	typedef void (PXAPI* PXEngineUserUpdateEvent)(void* const owner, PXEngine* const pxEngine, PXPlayerMoveInfo* const pxPlayerMoveInfo);
 	typedef void (PXAPI* PXEngineNetworkUpdateEvent)(void* const owner, PXEngine* const pxEngine);
 	typedef void (PXAPI* PXEngineGameUpdateEvent)(void* const owner, PXEngine* const pxEngine);
 	typedef void (PXAPI* PXEngineRenderUpdateEvent)(void* const owner, PXEngine* const pxEngine);
@@ -26,8 +56,10 @@ extern "C"
 		PXGraphic Graphic;
 		PXWindow Window;
 		PXModLoader ModLoader;
+		PXCamera CameraDefault;
 
 		void* Owner;
+		PXCamera* CameraCurrent;
 
 		PXEngineStartUpEvent OnStartUp;
 		PXEngineShutDownEvent OnShutDown;
@@ -57,12 +89,16 @@ extern "C"
 	PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
 	PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
 
-	PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
+
 	
 	PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
 
 	PXPublic void PXAPI PXEngineStart(PXEngine* const pxEngine);
 	PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
+	PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
+
+	PXPublic PXActionResult PXAPI PXSkyBoxCreate(PXEngine* const pxEngine, PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData);
+	PXPublic PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEventData* const pxSpriteCreateEventData);
 
 #ifdef __cplusplus
 }

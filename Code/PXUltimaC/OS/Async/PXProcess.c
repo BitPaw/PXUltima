@@ -214,7 +214,6 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 	} 
 	SYSTEM_HANDLE_INFORMATION;
 
-	
 	typedef LONG (*NTAPI PXNtQuerySystemInformation)
 	(
 			const PXInt32U SystemInformationClass, // enum SYSTEM_INFORMATION_CLASS
@@ -222,7 +221,6 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 			const PXInt32U SystemInformationLength,
 			PXInt32U* const ReturnLength
 	);
-
 
 	typedef LONG(*NTAPI PXNtQueryObject)
 	(
@@ -276,7 +274,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 	}	
 
 	//PXSize sizeAllocated = sizeof(SYSTEM_HANDLE_INFORMATION) * sizeNeeded;
-	SYSTEM_HANDLE_INFORMATION* memory = (SYSTEM_HANDLE_INFORMATION*)PXMemoryStackAllocate(sizeAllocated);
+	SYSTEM_HANDLE_INFORMATION* memory = (SYSTEM_HANDLE_INFORMATION*)(sizeAllocated);
 	PXClearList(char, memory, sizeAllocated);
 
 	LONG resultB = pxNtQuerySystemInformation(16, memory, sizeAllocated, &sizeNeeded);
@@ -456,7 +454,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 		);
 	}
 
-	PXMemoryStackRelease(memory, sizeAllocated);
+	PXStackDelete(char, sizeAllocated, memory);
 
 	PXLibraryClose(&pxLibraryNTDLL);
 

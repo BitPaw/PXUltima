@@ -198,7 +198,7 @@ extern "C"
 
 	PXPrivate PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow);
 
-	PXPrivate PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow);
+	PXPrivate PXThreadResult PXOSAPI PXWindowMessageLoop(PXWindow* const pxWindow);
 
 
 
@@ -265,7 +265,8 @@ extern "C"
 	PXPublic void PXAPI PXWindowTriggerOnMouseMoveEvent(PXWindow* const window, const PXInt32S positionX, const PXInt32S positionY, const PXInt32S deltaX, const PXInt32S deltaY);
 	PXPublic void PXAPI PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMouse* mouse);
 	PXPublic void PXAPI PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse);
-
+	PXPublic void PXAPI PXWindowTriggerOnWindowSizeChangeEvent(PXWindow* const window, const PXInt32S width, const PXInt32S height);
+	PXPublic void PXAPI PXWindowTriggerOnWindowMoveEvent(PXWindow* const window);
 
 	PXPublic void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(PXWindow* const window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo);
 

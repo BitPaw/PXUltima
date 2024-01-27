@@ -84,14 +84,27 @@ extern "C"
 
 	// PXPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
 
+
+
 	// Allocates size bytes on the program stack.
 	// The allocated space is automatically freed when the calling function exits
 	// (not when the allocation merely passes out of scope).
-	PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize size);
+#if PXMemoryDebug
+	PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount, const char* file, const char* function, const PXSize line);
+#else
+	PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount);
+#endif
+
+
 
 	// Deallocates stack allocated memory if it was commited to the heap.
-	// Additional size parameter can be ignored
-	PXPublic void PXAPI PXMemoryStackRelease(void* const dataAdress, const PXSize dataSize);
+	// Additional size parameter can be ignored	
+#if PXMemoryDebug
+	PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amount, void* const dataAdress, const char* file, const char* function, const PXSize line);
+#else
+	PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amount, void* const dataAdress);
+#endif
+
 
 
 
@@ -126,6 +139,9 @@ extern "C"
 	PXPublic void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, const char* file, const char* function, const PXSize line);
 #define PXNew(type) (type*)PXMemoryHeapAllocateDetailed(sizeof(type), 1, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #define PXNewList(type, amount) (type*)PXMemoryHeapAllocateDetailed(sizeof(type), amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+
+#define PXStackNew(type, amount) (type*)PXMemoryStackAllocate(sizeof(type), amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+
 #else
 	PXPublic void* PXAPI PXMemoryHeapAllocate(const PXSize amount, const PXSize typeSize);
 
@@ -144,6 +160,9 @@ extern "C"
 
 #define PXDelete(type, adress) PXMemoryReleaseDetailed(adress, sizeof(type), _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #define PXDeleteList(type, adress, amount) PXMemoryReleaseDetailed(adress, sizeof(type) * amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+
+#define PXStackDelete(type, amount, adress) PXMemoryStackRelease(sizeof(type), amount, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+
 #else
 	PXPublic void PXAPI PXMemoryRelease(void* adress, const PXSize size);
 

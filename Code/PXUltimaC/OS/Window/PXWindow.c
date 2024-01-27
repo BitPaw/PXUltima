@@ -11,6 +11,7 @@
 #include <OS/Graphic/PXGraphic.h>
 
 #include <Math/PXMath.h>
+#include <OS/Console/PXConsole.h>
 
 #if OSUnix
 
@@ -1007,17 +1008,17 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
             break;
         }
         case WindowEventMove:
+        {
+            PXWindowTriggerOnWindowMoveEvent(window);
+
             break;
+        }
         case WindowEventSize:
         {
-#if 1
-            window->Width = LOWORD(lParam);
-            window->Height = HIWORD(lParam);
+            const WORD width = LOWORD(lParam);
+            const WORD height = HIWORD(lParam);
 
-            window->HasSizeChanged = PXYes;
-
-            PXFunctionInvoke(window->WindowSizeChangedCallBack, window->EventReceiver, window);
-#endif
+            PXWindowTriggerOnWindowSizeChangeEvent(window, width, height);
 
             break;
         }
@@ -2236,7 +2237,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
     return PXActionSuccessful;
 }
 
-PXThreadResult PXOSAPI PXWindowCreateThread(PXWindow* const pxWindow)
+PXThreadResult PXOSAPI PXWindowMessageLoop(PXWindow* const pxWindow)
 {
     PXWindowBuild(pxWindow);
 
@@ -2444,7 +2445,7 @@ void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt3
 
     if (async)
     {
-        const PXActionResult actionResult = PXThreadRun(&window->MessageThread, "PXWindowMessageLoop", PXWindowCreateThread, window);
+        const PXActionResult actionResult = PXThreadRun(&window->MessageThread, "PXWindowMessageLoop", PXWindowMessageLoop, window);
         const PXBool sucessful = PXActionSuccessful == actionResult;
 
         if (!sucessful)
@@ -2456,7 +2457,7 @@ void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt3
     }
     else
     {
-        PXWindowCreateThread(window);
+        PXWindowMessageLoop(window);
     }
 }
 
@@ -3229,6 +3230,36 @@ void PXAPI PXWindowTriggerOnMouseEnterEvent(const PXWindow* window, const PXMous
 
 void PXAPI PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMouse* mouse)
 {
+}
+
+void PXAPI PXWindowTriggerOnWindowSizeChangeEvent(PXWindow* const window, const PXInt32S width, const PXInt32S height)
+{
+    PXLoggingEventData pxLoggingEventData;
+    PXClear(PXLoggingEventData, &pxLoggingEventData);
+    pxLoggingEventData.ModuleSource = "Window";
+    pxLoggingEventData.ModuleAction = "Event";
+    pxLoggingEventData.PrintFormat = "Size changed to <%ix%i>";
+    pxLoggingEventData.Type = PXLoggingInfo;
+
+    PXLogPrintInvoke(&pxLoggingEventData, width, height);
+
+    window->Width = width;
+    window->Height = height;
+    window->HasSizeChanged = PXYes;
+
+    PXFunctionInvoke(window->WindowSizeChangedCallBack, window->EventReceiver, window);
+}
+
+void PXAPI PXWindowTriggerOnWindowMoveEvent(PXWindow* const window)
+{
+    PXLoggingEventData pxLoggingEventData;
+    PXClear(PXLoggingEventData, &pxLoggingEventData);
+    pxLoggingEventData.ModuleSource = "Window";
+    pxLoggingEventData.ModuleAction = "Event";
+    pxLoggingEventData.PrintFormat = "Moved";
+    pxLoggingEventData.Type = PXLoggingInfo;
+
+    PXLogPrintInvoke(&pxLoggingEventData);
 }
 
 void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(PXWindow* const window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)

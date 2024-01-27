@@ -920,6 +920,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 			(
 				PXLoggingError,
 				"File",
+				"Open",
 				"Does not exist <%s>\n",
 				pxFileOpenFromPathInfo->Text.TextA
 			);
@@ -1004,9 +1005,6 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 
 		//PXActionExitOnError(directoryCreateResult);
 	}
-
-
-
 
 	// Open file
 	{
@@ -1104,23 +1102,21 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 	}
 
 
-
 #if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingAllocation,
-		"File",
-		"<%s> (%10zi B) File Opened",
-		pxFileOpenFromPathInfo->Text.TextA,
-		pxFile->DataSize
-	);
+	PXLoggingEventData pxLoggingEventData;
+	PXClear(PXLoggingEventData, &pxLoggingEventData);
+	pxLoggingEventData.FileReference = pxFile;
+	pxLoggingEventData.ModuleSource = "File";
+	pxLoggingEventData.ModuleAction = "Opening";
+	pxLoggingEventData.PrintFormat = "";
+	pxLoggingEventData.Type = PXLoggingAllocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetFile;
+
+	PXLogPrintInvoke(&pxLoggingEventData);
 #endif
-
-
 
 	// File is now opened.
 	// Can we map the whole file into memory?
-
 	
 
 	if (!(pxFileOpenFromPathInfo->AllowMapping && PXFileMappingAllow))
@@ -1313,16 +1309,26 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 					pxFile->Data = fileMapped;
 					pxFile->DataAllocated = pxFile->DataSize;
 
+#if PXMemoryDebug
+					PXLoggingEventData pxLoggingEventData;
+					PXClear(PXLoggingEventData, &pxLoggingEventData);
+					pxLoggingEventData.FileReference = pxFile;
+					pxLoggingEventData.ModuleSource = "File";
+					pxLoggingEventData.ModuleAction = "MMAP-Create";
+					pxLoggingEventData.PrintFormat = "";
+					pxLoggingEventData.Type = PXLoggingAllocation;
+					pxLoggingEventData.Target = PXLoggingTypeTargetFile;
+
+					PXLogPrintInvoke(&pxLoggingEventData);
+#endif
+
+
 					PXMemoryVirtualPrefetch(fileMapped, pxFile->DataSize);
 				}
 
 #endif
 
 				pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
-
-#if PXMemoryDebug
-				//printf("[#][Memory] 0x%p (%10zi B) MMAP %ls\n", pxFile->Data, pxFile->DataSize, filePath);
-#endif
 
 				return PXActionSuccessful;
 			}
@@ -1508,6 +1514,19 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 	}
 #endif
 
+#if PXMemoryDebug
+	PXLoggingEventData pxLoggingEventData;
+	PXClear(PXLoggingEventData, &pxLoggingEventData);
+	pxLoggingEventData.FileReference = pxFile;
+	pxLoggingEventData.ModuleSource = "File";
+	pxLoggingEventData.ModuleAction = "Close";
+	pxLoggingEventData.PrintFormat = "";
+	pxLoggingEventData.Type = PXLoggingDeallocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetFile;
+
+	PXLogPrintInvoke(&pxLoggingEventData);
+#endif
+
 	if (pxFile->ID != PXHandleNotSet)
 	{
 		const PXBool successful = CloseHandle(pxFile->ID); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
@@ -1519,17 +1538,6 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 
 		pxFile->ID = PXHandleNotSet;
 	}
-
-#if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingDeallocation,
-		"File",
-		"%0xp (%10zi B) File Closed",
-		pxFile->ID,
-		pxFile->DataSize
-	);
-#endif
 
 	return PXActionSuccessful;
 #endif
@@ -1551,17 +1559,6 @@ PXActionResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, 
 	pxFile->LocationMode = PXFileLocationModeMappedVirtual;
 	pxFile->Data = data;
 	pxFile->DataSize = size;
-
-#if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingAllocation,
-		"File",
-		"0x%p (%10zi B) MMAP-Create",
-		pxFile->Data,
-		pxFile->DataSize
-	);
-#endif
 
 	return PXActionSuccessful;
 }
@@ -1587,16 +1584,7 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
 	}
 
 
-#if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingDeallocation,
-		"File",
-		"0x%p (%10zi B) MMAP-Destroy", 
-		pxFile->Data,
-		pxFile->DataSize
-	);
-#endif
+
 
 #if OSUnix
 	const int result = munmap(pxFile->Data, pxFile->DataSize);
@@ -1611,35 +1599,50 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
 
 #elif OSWindows
 
-	// Write pending data
+	// undo filemapping
 	{
-		if (isWriteMapped)
-		{
-			const BOOL flushSuccessful = FlushViewOfFile(pxFile->Data, pxFile->DataCursor);
+#if PXMemoryDebug
+		PXLoggingEventData pxLoggingEventData;
+		PXClear(PXLoggingEventData, &pxLoggingEventData);
+		pxLoggingEventData.FileReference = pxFile;
+		pxLoggingEventData.ModuleSource = "File";
+		pxLoggingEventData.ModuleAction = "MMAP-Destroy";
+		pxLoggingEventData.PrintFormat = "";
+		pxLoggingEventData.Type = PXLoggingDeallocation;
+		pxLoggingEventData.Target = PXLoggingTypeTargetFile;
 
-			PXActionOnErrorFetchAndReturn(flushSuccessful);
+		PXLogPrintInvoke(&pxLoggingEventData);
+#endif
+
+		// Write pending data
+		{
+			if (isWriteMapped)
+			{
+				const BOOL flushSuccessful = FlushViewOfFile(pxFile->Data, pxFile->DataCursor);
+
+				PXActionOnErrorFetchAndReturn(flushSuccessful);
+			}
+		}
+
+		{
+			const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Data);
+
+			PXActionOnErrorFetchAndReturn(!unmappingSucessful);
+
+			pxFile->Data = PXNull;
+		}
+
+		{
+			const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingID);
+
+			PXActionOnErrorFetchAndReturn(!closeMappingSucessful);
+
+			pxFile->MappingID = PXHandleNotSet;
 		}
 	}
-
+	
+	// Close file itself
 	{
-		const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Data);
-
-		PXActionOnErrorFetchAndReturn(unmappingSucessful);
-
-		pxFile->Data = PXNull;
-	}
-
-	{
-		const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingID);
-
-		PXActionOnErrorFetchAndReturn(closeMappingSucessful);
-
-		pxFile->MappingID = PXHandleNotSet;
-	}
-
-	// Close
-	{
-
 		if (isWriteMapped)
 		{
 			//fseek();
@@ -2256,7 +2259,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 			totalSizeToRead += sizeOfType;
 		}
 
-		void* stackMemory = PXMemoryStackAllocate(totalSizeToRead);
+		void* stackMemory = PXStackNew(char, totalSizeToRead);
 
 		PXFileBufferExternal(&pxStackFile, stackMemory, totalSizeToRead);
 
@@ -2288,8 +2291,6 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 		);
 	}
 #endif
-
-
 
 	for (PXSize i = 0; i < pxDataStreamElementListSize; ++i)
 	{
@@ -2500,7 +2501,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 #endif	
 	}
 
-	PXMemoryStackRelease(stackMemory, totalSizeToRead);
+	PXStackDelete(char, totalSizeToRead, stackMemory);
 
 	return totalReadBytes;
 }
@@ -3045,7 +3046,7 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
 		return 0;
 	}
 
-	PXByte* const stackMemory = (PXByte*)PXMemoryStackAllocate(length);
+	PXByte* const stackMemory = PXStackNew(PXByte, length);
 
 	for (PXSize i = 0; i < length; ++i)
 	{
@@ -3054,7 +3055,7 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
 
 	const PXSize writtenBytes = PXFileWriteB(pxFile, stackMemory, length);
 
-	PXMemoryStackRelease(stackMemory, length);
+	PXStackDelete(PXByte, length, stackMemory);
 
 	return writtenBytes;
 }
@@ -3207,7 +3208,6 @@ PXSize PXAPI PXFileReadBits(PXFile* const pxFile, const PXSize amountOfBits)
 
 PXSize PXAPI PXFileWriteBits(PXFile* const pxFile, const PXSize bitData, const PXSize amountOfBits)
 {
-
 	PXSize* const currentPos = (PXSize* const)PXFileCursorPosition(pxFile);
 	PXSize bitBlockCache = 0;
 
@@ -3289,18 +3289,46 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 #if WindowsAtleastVista
 
 	// FILE_NAME_OPENED, VOLUME_NAME_DOS
-	const PXSize length = GetFinalPathNameByHandleA(pxFile->ID, filePath->TextA, filePath->SizeAllocated, FILE_NAME_OPENED | VOLUME_NAME_DOS); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
+
+	const PXSize length = GetFinalPathNameByHandleA
+	(
+		pxFile->ID, 
+		filePath->TextA,
+		filePath->SizeAllocated,
+		FILE_NAME_OPENED | VOLUME_NAME_DOS
+	); // Windows Vista, Kernel32.dll, Windows.h
 	const PXBool successful = 0u != length;
+
+
+	// GetShortPathNameA() makes a path to something like "\\?\C:\Data\WORKSP~1\_GIT_~1\BITFIR~1\GAMECL~1\Shader\SKYBOX~2.GLS"
+	// Why would you ever want this?	
+
+	// _fullpath(filePath->TextA, buffer, PXPathSizeMax); also, does not what we need it to do
+
 
 	if (!successful)
 	{
 		return PXActionRefusedArgumentInvalid;
 	}
 
-	filePath->SizeUsed = length - 4;
-	filePath->TextA += 4;
+	filePath->SizeUsed = length - 4u;
+	filePath->TextA += 4u;
 	filePath->Format = TextFormatASCII;
 	filePath->SizeUsed = length;
+
+
+	char buffer[PXPathSizeMax];
+
+	const DWORD currentPathSize = GetCurrentDirectoryA(PXPathSizeMax, buffer); // Windows XP (+UWP), Kernel32.dll, winbase.h
+
+	const PXSize maxSize = PXMathMinimumIU(currentPathSize, filePath->SizeUsed);
+	const PXBool isMatching = PXTextCompareA(buffer, currentPathSize, filePath->TextA, maxSize);
+
+	if (isMatching)
+	{
+		filePath->TextA += (currentPathSize + 1);
+		filePath->SizeUsed -= (currentPathSize + 1);
+	}
 
 	PXTextReplace(filePath, '\\', '/');
 

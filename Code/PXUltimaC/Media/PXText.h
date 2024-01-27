@@ -161,7 +161,8 @@ extern "C"
 	PXPublic PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number);
 	PXPublic PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number);
 
-
+	PXPublic PXSize PXAPI PXTextFormatTime(const PXText* const pxText, const PXSize pxTime);
+	PXPublic PXSize PXAPI PXTextFormatSize(const PXText* const pxText, const PXSize pxSize);
 
 	PXPublic PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
 	PXPublic PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);

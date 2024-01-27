@@ -5,6 +5,8 @@
 //#include <stdio.h>
 //#include <stdarg.h>
 
+#define PXConsoleColorEnable 1
+
 
 void PXAPI PXConsoleClear()
 {
@@ -56,15 +58,19 @@ void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const buff
 
 		const PXInt8U colorID = bufferInput->TextA[i] - '0';
 
+#if PXConsoleColorEnable && 0
 		char buffer[128];
 		PXSize bufferSize = sprintf_s(buffer, 128, "\x1b[38;5;%im", colorID);
+
 
 		PXTextAppendA
 		(
 			bufferOuput,
 			buffer,
 			bufferSize
-		);	
+		);
+#endif
+	
 	}
 }
 
@@ -74,8 +80,175 @@ void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const buff
 #define PXConsoleColorCyan 12
 #define PXConsoleColorGray 7
 
+void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
+{
+	PXText textPreFormatted;
+	PXTextConstructNamedBufferA(&textPreFormatted, formattedTextBuffer, 512);
 
-void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const format, ...)
+	PXText textColored;
+	PXTextConstructNamedBufferA(&textColored, bufferColorBuffer, 1024);
+
+	PXText textExtra;
+	PXTextConstructBufferA(&textExtra, 512);
+
+	PXTextClear(&textExtra);
+
+	char loggingTypeSymbol;
+
+	int symbolColor = 7;
+	int nameColor = 6;
+
+	switch (pxLoggingEventData->Type)
+	{
+		case PXLoggingInfo:
+			loggingTypeSymbol = 'i';
+			symbolColor = 6;
+			nameColor = 6;
+			break;
+
+		case PXLoggingWarning:
+			loggingTypeSymbol = '!';
+			symbolColor = 9;
+			nameColor = 1;
+			break;
+
+		case PXLoggingQuestion:
+			loggingTypeSymbol = '?';
+			symbolColor = 6;
+			break;
+
+		case PXLoggingError:
+			loggingTypeSymbol = 'E';
+			symbolColor = 1;
+			nameColor = 1;
+			break;
+
+		case PXLoggingFailure:
+			loggingTypeSymbol = 'x';
+			symbolColor = 9;
+			nameColor = 1;
+			break;
+
+		case PXLoggingAllocation:
+			loggingTypeSymbol = '+';
+			symbolColor = 9;
+			nameColor = 9;
+			break;
+
+		case PXLoggingReallocation:
+			loggingTypeSymbol = '*';
+			symbolColor = 9;
+			nameColor = 9;
+			break;
+
+		case PXLoggingDeallocation:
+			loggingTypeSymbol = '-';
+			symbolColor = 2;
+			nameColor = 2;
+			break;
+
+		case PXLoggingTypeInvalid:
+		default:
+			loggingTypeSymbol = '°';
+			break;
+	}
+
+	switch (pxLoggingEventData->Target)
+	{
+		case PXLoggingTypeTargetFile:
+		{
+			PXFile* pxFile = pxLoggingEventData->FileReference;
+			//PXFilePathGet();
+
+			PXText pxTextFilePath;
+			PXTextConstructNamedBufferA(&pxTextFilePath, pxTextFilePathBuffer, PXPathSizeMax);
+
+			PXFilePathGet(pxFile, &pxTextFilePath);
+
+			PXText pxText;
+			PXTextConstructNamedBufferA(&pxText, pxTextBuffer, 32);
+
+			PXTextFormatSize(&pxText, pxFile->DataSize);
+
+			PXTextPrint
+			(
+				&textExtra,
+				"%8s  ID:%i <%s>",
+				pxText.TextA,
+				(int)pxFile->ID,
+				pxTextFilePath.TextA
+			);
+
+			break;
+		}
+		case PXLoggingTypeTargetMemory:
+		{
+			PXLoggingMemoryData* pxLoggingMemoryData = &pxLoggingEventData->MemoryData;
+
+			PXText pxText;
+			PXTextConstructBufferA(&pxText, 32);
+
+			PXTextFormatSize(&pxText, pxLoggingMemoryData->Amount * pxLoggingMemoryData->TypeSize);
+
+			if (pxLoggingMemoryData->NameFile)
+			{
+				PXTextPrint
+				(
+					&textExtra,
+					"%8s  %s::%s::%i",
+					pxText.TextA,
+					pxLoggingMemoryData->NameFile,
+					pxLoggingMemoryData->NameFunction,
+					pxLoggingMemoryData->NumberLine
+				);
+			}
+			else
+			{
+				PXTextPrint
+				(
+					&textExtra,
+					"%8s",
+					pxText.TextA
+				);
+			}		
+
+			break;
+		}
+
+		default:
+			break;
+	}
+
+
+	// sprintf_s
+	textPreFormatted.SizeUsed = PXTextPrintA
+	(
+		textPreFormatted.TextA,
+		textPreFormatted.SizeAllocated,
+		"§3%10s §%i%c %-14s §%i%s%s\n",
+		pxLoggingEventData->ModuleSource,
+		symbolColor,
+		loggingTypeSymbol,
+		pxLoggingEventData->ModuleAction,
+		nameColor,
+		textExtra.TextA,
+		pxLoggingEventData->PrintFormat
+	);
+
+	PXConsoleTranlateColors(&textPreFormatted, &textColored);
+
+
+
+	va_list args;
+	va_start(args, pxLoggingEventData);
+
+	vfprintf(stdout, textColored.TextA, args);
+
+	va_end(args);
+}
+
+
+void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...)
 {
 	char loggingTypeSymbol;
 
@@ -143,21 +316,32 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	PXText bufferColor;
 	PXTextConstructNamedBufferA(&bufferColor, bufferColorBuffer, 1024);
 
-		// sprintf_s
+	// sprintf_s
 	formattedText.SizeUsed = PXTextPrintA
 	(
 		formattedText.TextA,
-		formattedText.SizeAllocated, 
-		"§7[§%i%c§7][§3%s§7] §%i%s\n",
+		formattedText.SizeAllocated,
+		"§3%10s §%i%c %-14s §%i%s\n",
+		source,
 		symbolColor,
-		loggingTypeSymbol, 
-		source, 
+		loggingTypeSymbol,
+		action,
 		nameColor,
 		format
 	);
 
 	PXConsoleTranlateColors(&formattedText, &bufferColor);
 
+
+	if (PXLoggingError == loggingType)
+	{
+		for (PXSize i = 0; i < 80; ++i)
+		{
+			printf("%c", '-');
+		}
+
+		printf("\n");
+	}
 
 	{
 		va_list args;
@@ -166,6 +350,16 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 		vfprintf(stdout, bufferColor.TextA, args);
 
 		va_end(args);
+	}
+
+	if (PXLoggingError == loggingType)
+	{
+		for (PXSize i = 0; i < 80; ++i)
+		{
+			printf("%c", '-');
+		}
+
+		printf("\n");
 	}
 }
 

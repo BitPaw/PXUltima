@@ -76,7 +76,6 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 
 	// Analyse -
 	{
-
 		while (!PXFileIsAtEnd(&compiledSteam))
 		{
 			PXCompilerSymbolEntry compilerSymbolEntry;

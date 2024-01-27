@@ -199,11 +199,11 @@ extern "C"
 		PXVertexBufferFormatRGBXYZ,
 		PXVertexBufferFormatN3F_XYZ,
 		PXVertexBufferFormatC4F_N3F_XYZ,
-		PXVertexBufferFormatT2F_XYZ,
+		PXVertexBufferFormatT2F_XYZ, // TT PPP
 		PXVertexBufferFormatT4F_XYZW,
 		PXVertexBufferFormatT2F_C4UB_XYZ,
 		PXVertexBufferFormatT2F_C3F_XYZ,
-		PXVertexBufferFormatT2F_N3F_XYZ,
+		PXVertexBufferFormatT2F_N3F_XYZ, // TT NNN PPP
 		PXVertexBufferFormatT2F_C4F_N3F_XYZ,
 		PXVertexBufferFormatT4F_C4F_N3F_XYZW,
 
@@ -492,12 +492,14 @@ extern "C"
 		PXInt32U DrawModeID;
 
 		PXSize SegmentListSize;
-		PXIndexSegment* SegmentList;
+
+		union
+		{
+			PXIndexSegment* SegmentList;
+			PXIndexSegment SegmentPrime; // Only used if Segment is only one
+		};	
 	}
 	PXIndexBuffer;
-
-
-	typedef struct PXModel_ PXModel;
 
 	typedef struct PXModel_
 	{
@@ -517,10 +519,10 @@ extern "C"
 		PXVertexBuffer VertexBuffer;
 		PXIndexBuffer IndexBuffer;
 
-		PXModel* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
-		PXModel* StructureParent; // Structural parent of structure
-		PXModel* StructureSibling; // Stuctual sibling, works like a linked list.
-		PXModel* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
+		struct PXModel_* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
+		struct PXModel_* StructureParent; // Structural parent of structure
+		struct PXModel_* StructureSibling; // Stuctual sibling, works like a linked list.
+		struct PXModel_* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
 		//-----------------------------
 
 		PXSize MaterialContaierListSize;
@@ -705,6 +707,8 @@ extern "C"
 		PXVector2F TextureScaleOffset;
 
 		PXModel Model;
+
+		PXTexture2D* Texture;
 	}
 	PXSprite;
 

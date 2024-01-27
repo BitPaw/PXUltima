@@ -94,7 +94,8 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 	(
 		PXLoggingInfo,
 		"COFF",
-		"--- Start Parsing ---"
+		"Parsing",
+		"Start"
 	);
 #endif
 
@@ -348,6 +349,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 			(
 				PXLoggingInfo,
 				"COFF",
+				"Parsing",
 				"Section deteced %2i/%-2i - %-8s %6i Bytes",
 				sectionID + 1, 
 				pxCOFF->Header.NumberOfSections,
@@ -398,6 +400,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 							(
 								PXLoggingInfo,
 								"COFF",
+								"Parsing",
 								"[.idata][ImportDirectoryTable] Last entry deteced."
 							);
 
@@ -412,6 +415,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 						(
 							PXLoggingInfo,
 							"COFF",
+							"Parsing",
 							"[.idata][ImportDirectoryTable] entry deteced."
 						);
 
@@ -650,6 +654,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 			(
 				PXLoggingInfo,
 				"COFF",
+				"Parsing",
 				"*** No Symbols ***"
 			);
 		}
@@ -661,6 +666,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 	(
 		PXLoggingInfo,
 		"COFF",
+		"Parsing",
 		"--- Finished Parsing ---"
 	);
 

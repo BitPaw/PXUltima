@@ -178,8 +178,17 @@ int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize b
 	assert(bufferB);
 #endif
 
-#if PXMemoryDebug
-	printf("[#][Memory] 0x%p (%10zi B) Compare to 0x%p\n", bufferA, bufferSize, bufferB);
+#if PXMemoryDebug  && 0
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Memory",
+		"Compare",
+		"%6zi B  0x%p == 0x%p",	
+		bufferSize,
+		bufferA,
+		bufferB
+	);
 #endif
 
 #if MemoryUseSystemFunction
@@ -226,14 +235,15 @@ PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize buffer
 	assert(bufferB);
 #endif
 
-#if PXMemoryDebug
+#if PXMemoryDebug  && 0
 	PXLogPrint
 	(
 		PXLoggingInfo,
 		"Memory",
-		"0x%p (%10zi B) Compare to 0x%p",
-		bufferA, 
-		bufferSize, 
+		"Compare",
+		"%6zi B  0x%p == 0x%p",		
+		bufferSize,
+		bufferA,
 		bufferB
 	);
 #endif
@@ -266,13 +276,13 @@ PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferS
 
 PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, const PXSize size)
 {
-	void* adress = PXMemoryStackAllocate(size);
+	void* adress = PXStackNew(char, size);
 
 	PXMemoryCopy(bufferA, size, adress, size);
 	PXMemoryCopy(bufferB, size, bufferA, size);
 	PXMemoryCopy(adress, size, bufferB, size);
 
-	PXMemoryStackRelease(adress, size);
+	PXStackDelete(char, size, adress);
 
 	return PXTrue;
 }
@@ -310,9 +320,10 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
 	(
 		PXLoggingInfo,
 		"Memory",
-		"0x%p (%10zi B) Copy to 0x%p",
-		inputBuffer,
+		"Copy",
+		"%6zi B  0x%p -> 0x%p",
 		bufferSize,
+		inputBuffer,	
 		outputBufferSize
 	);
 #endif
@@ -343,8 +354,14 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
 	return bufferSize;
 }
 
-void* PXAPI PXMemoryStackAllocate(const PXSize size)
-{ 
+
+#if PXMemoryDebug
+PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount, const char* file, const char* function, const PXSize line)
+#else
+PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount)
+#endif
+{
+	const PXSize totalSize = typeSize * amount;
 	void* const stackAllocated =
 
 #if OSUnix
@@ -352,24 +369,33 @@ void* PXAPI PXMemoryStackAllocate(const PXSize size)
 #elif OSWindows
 		//_alloca(size); // _alloca() is deprecated (security reasons) but _malloca() is not an alternative
 
-		_malloca(size);
+		_malloca(totalSize);
 #endif
 
 #if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingAllocation,
-		"Memory",
-		"0x%p (%10zi B) Stack Allocate",
-		stackAllocated,
-		size
-	);
+	PXLoggingEventData pxLoggingEventData;
+	pxLoggingEventData.MemoryData.TypeSize = typeSize;
+	pxLoggingEventData.MemoryData.Amount = amount;
+	pxLoggingEventData.MemoryData.NameFile = file;
+	pxLoggingEventData.MemoryData.NameFunction = function;
+	pxLoggingEventData.MemoryData.NumberLine = line;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Stack-Alloc";
+	pxLoggingEventData.PrintFormat = "";
+	pxLoggingEventData.Type = PXLoggingAllocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
+
+	PXLogPrintInvoke(&pxLoggingEventData);
 #endif
 
 	return stackAllocated;
 }
 
-void PXAPI PXMemoryStackRelease(void* const dataAdress, const PXSize dataSize)
+#if PXMemoryDebug
+PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amount, void* const dataAdress, const char* file, const char* function, const PXSize line)
+#else
+PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amount, void* const dataAdress)
+#endif
 {
 	if (!dataAdress)
 	{
@@ -383,14 +409,19 @@ void PXAPI PXMemoryStackRelease(void* const dataAdress, const PXSize dataSize)
 #endif
 
 #if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingDeallocation,
-		"Memory",
-		"0x%p (%10zi B) Stack Release",
-		dataAdress,
-		dataSize
-	);
+	PXLoggingEventData pxLoggingEventData;
+	pxLoggingEventData.MemoryData.TypeSize = typeSize;
+	pxLoggingEventData.MemoryData.Amount = amount;
+	pxLoggingEventData.MemoryData.NameFile = file;
+	pxLoggingEventData.MemoryData.NameFunction = function;
+	pxLoggingEventData.MemoryData.NumberLine = line;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Stack Release";
+	pxLoggingEventData.PrintFormat = "";
+	pxLoggingEventData.Type = PXLoggingDeallocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
+
+	PXLogPrintInvoke(&pxLoggingEventData);
 #endif
 }
 
@@ -399,17 +430,19 @@ void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, c
 {
 	void* const allocatedMemory = _calloc_dbg(amount, typeSize, _NORMAL_BLOCK, file, line); // crtdbg.h
 
-	char buffer[64];
+	PXLoggingEventData pxLoggingEventData;
+	pxLoggingEventData.MemoryData.TypeSize = typeSize;
+	pxLoggingEventData.MemoryData.Amount = amount;
+	pxLoggingEventData.MemoryData.NameFile = file;
+	pxLoggingEventData.MemoryData.NameFunction = function;
+	pxLoggingEventData.MemoryData.NumberLine = line;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Heap-Alloc";
+	pxLoggingEventData.PrintFormat = "";
+	pxLoggingEventData.Type = PXLoggingAllocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
 
-	sprintf_s(buffer, 64, "%s:%s:%i", file, function, (unsigned int)line);
-
-	PXLogPrint
-	(
-		PXLoggingAllocation,
-		"Memory",
-		"%-37.37s %7i B",
-		buffer, (unsigned int)amount * typeSize
-	);
+	PXLogPrintInvoke(&pxLoggingEventData);
 
 	return allocatedMemory;
 }
@@ -470,18 +503,21 @@ PXBool PXMemoryHeapReallocateDetailed(void** const sourceAddress, PXSize* const 
 
 	PXClearList(PXByte, &(((PXByte*)adressReallocated)[beforeSize]), offset);
 
-	char buffer[64];
 
-	sprintf_s(buffer, 64, "%s:%s:%i", file, function, (unsigned int)line);
+	PXLoggingEventData pxLoggingEventData;
+	PXClear(PXLoggingEventData, &pxLoggingEventData);
+	pxLoggingEventData.MemoryData.TypeSize = requestedSize;
+	pxLoggingEventData.MemoryData.Amount = 1;
+	pxLoggingEventData.MemoryData.NameFile = file;
+	pxLoggingEventData.MemoryData.NameFunction = function;
+	pxLoggingEventData.MemoryData.NumberLine = line;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Heap-Realloc";
+	pxLoggingEventData.PrintFormat = "";
+	pxLoggingEventData.Type = PXLoggingReallocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
 
-	PXLogPrint
-	(
-		PXLoggingReallocation,
-		"Memory",
-		"%-37.37s %7i B",
-		buffer,
-		requestedSize
-	);
+	PXLogPrintInvoke(&pxLoggingEventData);
 
 	return adressReallocated;
 }
@@ -544,18 +580,20 @@ void PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, 
 	}
 
 #if PXMemoryDebug
-	char buffer[64];
+	PXLoggingEventData pxLoggingEventData;
+	PXClear(PXLoggingEventData, &pxLoggingEventData);
+	pxLoggingEventData.MemoryData.TypeSize = size;
+	pxLoggingEventData.MemoryData.Amount = 1;
+	pxLoggingEventData.MemoryData.NameFile = file;
+	pxLoggingEventData.MemoryData.NameFunction = function;
+	pxLoggingEventData.MemoryData.NumberLine = line;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Heap-Free";
+	pxLoggingEventData.PrintFormat = "";
+	pxLoggingEventData.Type = PXLoggingDeallocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
 
-	sprintf_s(buffer, 64, "%s:%s:%i", file, function, (unsigned int)line);
-
-	PXLogPrint
-	(
-		PXLoggingDeallocation,
-		"Memory",
-		"%-37.37s %7i B",
-		buffer,
-		size
-	);
+	PXLogPrintInvoke(&pxLoggingEventData);
 #endif
 
 #if MemorySanitise
@@ -679,15 +717,18 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemo
 			break;
 	}
 
-	PXLogPrint
-	(
-		PXLoggingAllocation,
-		"Memory",
-		"0x%p (%10zi B) Virtual allocation [%s]",
-		addressAllocated, 
-		size,
-		readMode
-	);
+
+	PXLoggingEventData pxLoggingEventData;
+	PXClear(PXLoggingEventData, &pxLoggingEventData);
+	pxLoggingEventData.MemoryData.TypeSize = size;
+	pxLoggingEventData.MemoryData.Amount = 1;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Virtual-Alloc";
+	pxLoggingEventData.PrintFormat = "  0x%p [%s]";
+	pxLoggingEventData.Type = PXLoggingAllocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
+
+	PXLogPrintInvoke(&pxLoggingEventData, addressAllocated,	readMode);
 #endif
 
 	return (void*)addressAllocated;
@@ -709,14 +750,17 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 	//const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags); // Windows 8, Kernel32.dll, memoryapi.h
 
 #if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"Memory",
-		"0x%p (%10zi B) Pre-Fetched", 
-		adress,
-		size
-	);
+	PXLoggingEventData pxLoggingEventData;
+	PXClear(PXLoggingEventData, &pxLoggingEventData);
+	pxLoggingEventData.MemoryData.TypeSize = size;
+	pxLoggingEventData.MemoryData.Amount = 1;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Pre-Fetch";
+	pxLoggingEventData.PrintFormat = "  0x%p";
+	pxLoggingEventData.Type = PXLoggingInfo;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
+
+	PXLogPrintInvoke(&pxLoggingEventData, adress);
 #endif
 
 #else
@@ -741,14 +785,17 @@ void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 #endif
 
 #if PXMemoryDebug
-	PXLogPrint
-	(
-		PXLoggingDeallocation,
-		"Memory",
-		"0x%p (%10zi B) Virtual free",
-		adress,
-		size
-	);
+	PXLoggingEventData pxLoggingEventData;
+	PXClear(PXLoggingEventData, &pxLoggingEventData);
+	pxLoggingEventData.MemoryData.TypeSize = size;
+	pxLoggingEventData.MemoryData.Amount = 1;
+	pxLoggingEventData.ModuleSource = "Memory";
+	pxLoggingEventData.ModuleAction = "Virtual-free";
+	pxLoggingEventData.PrintFormat = "  0x%p";
+	pxLoggingEventData.Type = PXLoggingDeallocation;
+	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
+
+	PXLogPrintInvoke(&pxLoggingEventData, adress);
 #endif
 
 	//return result; // We dont return info

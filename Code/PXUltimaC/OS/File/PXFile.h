@@ -27,7 +27,6 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/Time/PXTime.h>
 
-
 #if OSUnix
 
 #include <sys/types.h>
@@ -222,6 +221,9 @@ void PXDirectoryIsDotFolder(const char* s)
 
 		PXText FilePath;
 
+		//FILETIME creationTime;
+		//FILETIME lastAccessTime;
+		//FILETIME lastWriteTime;
 
 		// Statistic
 		PXSize CounterOperationsRead;
@@ -534,12 +536,6 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	PXPublic PXSize PXAPI PXFileWriteBits(PXFile* const pxFile, const PXSize bitData, const PXSize amountOfBits);
 	//-------------------------------------------------------------------------
-
-	FILETIME creationTime;
-	FILETIME lastAccessTime;
-	FILETIME lastWriteTime;
-
-
 
 	PXPublic PXActionResult PXAPI PXFileTimeGet
 	(

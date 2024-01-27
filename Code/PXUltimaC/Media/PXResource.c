@@ -208,7 +208,8 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
             (
                 PXLoggingError,
                 "Resource",
-                "Load refused : Format not detected"
+                "Load",
+                "Refused : Format not detected"
             );
 
             return PXActionRefusedNotSupported;
@@ -220,7 +221,8 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
             (
                 PXLoggingError,
                 "Resource",
-                "Load refused : Not implemented"
+                "Load",
+                "Refused : Not implemented"
             );
 
             return PXActionRefusedNotImplemented;
@@ -232,15 +234,22 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
 
         PXInt32U timeDelat = PXProcessorTimeReal() - time;
 
+        PXText pxText;
+        PXTextConstructBufferA(&pxText, 32);
+        PXTextFormatTime(&pxText, timeDelat);
+
         PXLogPrint
         (
             PXLoggingInfo,
             "Resource",
-            "Load %6.3fms ROPs:%-7i <%s> ",      
-            timeDelat/1000.0f,
+            "Load",
+            "%6s  ROPs:%-7i <%s>",
+            pxText.TextA,
             pxFile.CounterOperationsRead,
             filePath->TextA
         );
+
+        PXFileDestruct(&pxFile);
 
         PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
 
@@ -309,7 +318,8 @@ PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath
             (
                 PXLoggingError,
                 "Resource",
-                "Save refused : Format not known"
+                "Save",
+                "Refused : Format not known"
             );
 
             return PXActionRefusedNotSupported;
@@ -321,7 +331,8 @@ PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath
             (
                 PXLoggingError,
                 "Resource",
-                "Save refused : Not implemented"
+                "Save",
+                "Refused : Not implemented"
             );
 
             return PXActionRefusedNotImplemented;
@@ -337,7 +348,8 @@ PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath
         (
             PXLoggingInfo,
             "Resource",
-            "Save %6.3fms ROPs:%-7i <%s>",
+            "Save",
+            "%6.3fms SOPs:%-7i <%s>",
             timeDelat / 1000.0f,
             pxFile.CounterOperationsWrite,
             filePath->TextA

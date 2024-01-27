@@ -44,7 +44,7 @@ extern "C"
 
 		PXSize WindowSize;
 		PXInt8U CheckFlag; // 5 Bits
-		PXBool PXDictionaryPresent; // 1 Bit
+		PXBool DictionaryPresent; // 1 Bit
 		PXZLIBCompressionLevel CompressionLevel; // 2 Bits
 	}
 	PXZLIBHeader;

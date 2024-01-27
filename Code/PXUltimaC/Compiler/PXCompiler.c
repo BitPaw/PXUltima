@@ -803,6 +803,15 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	// Settings invalid?
 
 
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Compiler",
+		"Parsing",
+		"Start"
+	);
+
+
 
 	PXSize currentLine = 0;
 	PXSize currentColoum = 0;
@@ -973,6 +982,14 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	// Mark end of output Stream
 	outputStream->DataSize = outputStream->DataCursor;
 	PXFileCursorToBeginning(outputStream);
+
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Compiler",
+		"Parsing",
+		"Done"
+	);
 }
 
 PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText)
