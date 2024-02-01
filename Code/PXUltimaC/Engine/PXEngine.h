@@ -27,6 +27,11 @@ extern "C"
 		char* TextureName;
 		PXShaderProgram* ShaderProgramCurrent;
 
+		PXVector2F TextureScalingPoints[4];
+
+		PXVector3F Position;
+		PXVector2F Scaling;
+
 		PXBool ViewRotationIgnore;
 		PXBool ViewPositionIgnore;
 	}

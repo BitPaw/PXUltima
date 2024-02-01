@@ -234,7 +234,7 @@ PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprit
 
     PXDictionaryAdd(&pxGraphic->SpritelLookUp, &pxSprite->PXID, pxSprite);
 
-    const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 1 || pxSprite->TextureScaleOffset.Y != 1;
+    const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 0 || pxSprite->TextureScaleOffset.Y != 0;
 
     if (hasScaling)
     {

@@ -17,12 +17,12 @@ extern "C"
 	}
 	PXList;
 
-	PXPublic void PXListConstruct(PXList* const list);
-	PXPublic void PXListDestruct(PXList* const list);
+	PXPublic void PXAPI PXListConstruct(PXList* const list);
+	PXPublic void PXAPI PXListDestruct(PXList* const list);
 
-	PXPublic void PXListInitialize(PXList* const list, void* const data, const PXSize dataTypeSize, const PXSize sizeAllocated);
+	PXPublic void PXAPI PXListInitialize(PXList* const list, void* const data, const PXSize dataTypeSize, const PXSize sizeAllocated);
 
-	PXPublic PXBool PXListAdd(PXList* const list, void* const dataElement);
+	PXPublic PXBool PXAPI PXListAdd(PXList* const list, void* const dataElement);
 
 #ifdef __cplusplus
 }

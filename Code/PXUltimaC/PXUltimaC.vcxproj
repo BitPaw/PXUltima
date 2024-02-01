@@ -391,6 +391,7 @@
     <ClCompile Include="Media\SQL\PXSQL.c" />
     <ClCompile Include="Media\PXDocument.c" />
     <ClCompile Include="Engine\Dialog\PXDialogContainer.c" />
+    <ClCompile Include="Media\RAR\PXRAR.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -547,6 +548,7 @@
     <ClInclude Include="Media\SQL\PXSQL.h" />
     <ClInclude Include="Media\PXDocument.h" />
     <ClInclude Include="Engine\Dialog\PXDialogContainer.h" />
+    <ClInclude Include="Media\RAR\PXRAR.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
@@ -566,6 +568,7 @@
     <None Include="Media\LDAP\README.md" />
     <None Include="Media\Matroska\README.md" />
     <None Include="Media\PNG\README.md" />
+    <None Include="Media\RAR\README.md" />
     <None Include="Media\RIFF\README.md" />
     <None Include="Media\SQL\README.md" />
     <None Include="Media\STL\README.md" />

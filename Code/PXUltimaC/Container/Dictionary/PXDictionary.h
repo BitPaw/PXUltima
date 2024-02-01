@@ -40,23 +40,23 @@ extern "C"
 	}
 	PXDictionaryEntry;
 
-	PXPublic void PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality);
-	PXPublic void PXDictionaryDestruct(PXDictionary* const dictionary);
+	PXPublic void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality);
+	PXPublic void PXAPI PXDictionaryDestruct(PXDictionary* const dictionary);
 
-	PXPublic PXSize PXDictionaryValueSize(const PXDictionary* const dictionary);
+	PXPublic PXSize PXAPI PXDictionaryValueSize(const PXDictionary* const dictionary);
 
-	PXPublic void PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys);
-	PXPublic PXBool PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);
-	PXPublic void PXDictionaryRemove(PXDictionary* const dictionary, const void* key);
-	PXPublic PXBool PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value);
+	PXPublic void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys);
+	PXPublic PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);
+	PXPublic void PXAPI PXDictionaryRemove(PXDictionary* const dictionary, const void* key);
+	PXPublic PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value);
 
 	// Removed the object and returns it 
-	PXPublic PXBool PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value);
-	PXPublic void PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry);
-	PXPublic PXBool PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void** const value);
+	PXPublic PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value);
+	PXPublic void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry);
+	PXPublic PXBool PXAPI PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void** const value);
 
 
-	PXPublic PXBool PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult);
+	PXPublic PXBool PXAPI PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult);
 
 #ifdef __cplusplus
 }

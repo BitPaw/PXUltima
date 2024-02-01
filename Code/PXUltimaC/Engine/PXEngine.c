@@ -328,11 +328,21 @@ PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEven
         //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
     }
 
+
     PXGraphicSpriteTextureLoadA(&pxEngine->Graphic, pxSprite, pxSpriteCreateEventData->TextureName);
 
+
+    PXMatrix4x4FScaleByXY(&pxSprite->Model.ModelMatrix, pxSpriteCreateEventData->Scaling.X, pxSpriteCreateEventData->Scaling.Y);
+
+    PXMatrix4x4FPositionSet(&pxSprite->Model.ModelMatrix, &pxSpriteCreateEventData->Position);
+
+
+    pxSprite->TextureScaleOffset.X = pxSpriteCreateEventData->TextureScalingPoints[0].X;
+    pxSprite->TextureScaleOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[0].Y;
+
     pxSprite->Model.ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
-    pxSprite->Model.IgnoreViewRotation = 0;
-    pxSprite->Model.IgnoreViewPosition = 0;
+    pxSprite->Model.IgnoreViewRotation = pxSpriteCreateEventData->ViewRotationIgnore;
+    pxSprite->Model.IgnoreViewPosition = pxSpriteCreateEventData->ViewPositionIgnore;
     //pxSprite->Model.
     pxSprite->Model.RenderBothSides = PXTrue;
 
@@ -352,6 +362,8 @@ PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEven
 
     pxSprite->Model.IndexBuffer.SegmentListSize = 1;
     pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;
+
+
 
 
     PXGraphicSpriteRegister(&pxEngine->Graphic, pxSprite);

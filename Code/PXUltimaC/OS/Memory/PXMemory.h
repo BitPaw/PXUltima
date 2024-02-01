@@ -86,6 +86,13 @@ extern "C"
 
 
 
+
+
+
+
+
+
+
 	// Allocates size bytes on the program stack.
 	// The allocated space is automatically freed when the calling function exits
 	// (not when the allocation merely passes out of scope).
@@ -107,6 +114,31 @@ extern "C"
 
 
 
+	typedef struct PXMemoryHeapReallocateEventData_
+	{
+		PXSize TypeSize;
+		PXSize AmountDemand;
+		PXSize* AmountCurrent;
+		PXSize* DataSize;
+		void** DataAdress;
+#if PXMemoryDebug
+		char* CodeFileName;
+		char* CodeFunctionName;
+		PXSize CodeFileLine;
+#endif
+
+		PXBool DoFillNewSpace;
+		PXByte FillSymbol;
+
+		// Additinaional Flags
+		PXBool FreshAllocationPerformed;
+		PXBool WasSuccessful;
+		PXBool WasDataMoved;
+		PXBool WasSizeIncreased;
+	}
+	PXMemoryHeapReallocateEventData;
+
+	PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateEventData);
 
 
 	//PXPublic PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSizeCurrent, const PXSize dataAddressSizeRequired);
@@ -177,11 +209,33 @@ extern "C"
 // Reallocation
 //---------------------------------------------------------
 #if PXMemoryDebug
-	PXPublic PXBool PXMemoryHeapReallocateDetailed(void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize, const char* const file, const char* const function, const PXSize line);
-#define PXResizeList(type, address, currentSize, requestedSize) PXMemoryHeapReallocateDetailed(address, currentSize, sizeof(type) * requestedSize, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-#else
-	PXPublic PXBool PXAPI PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize);
-#define PXResizeList(type, address, currentSize, requestedSize) PXMemoryHeapReallocate(sizeof(type), address, currentSize, requestedSize)
+
+// PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
+// PXHeapListResizeSize
+
+#define	PXMemoryHeapReallocateEventDataFill(eventDataAdress, typeSize, target, current, sizeCurrent, dataAdress) \
+	PXMemoryClear(eventDataAdress, sizeof(PXMemoryHeapReallocateEventData));  \
+	(*eventDataAdress).TypeSize = typeSize; \
+	(*eventDataAdress).AmountDemand = target; \
+	(*eventDataAdress).AmountCurrent = current; \
+	(*eventDataAdress).DataSize = sizeCurrent; \
+	(*eventDataAdress).DataAdress = dataAdress; \
+	(*eventDataAdress).CodeFileName = _PX_FILENAME_; \
+	(*eventDataAdress).CodeFunctionName = _PX_FUNCTION_; \
+	(*eventDataAdress).CodeFileLine = _PX_LINE_;
+
+#define	PXMemoryHeapReallocateEventDataFillType(eventDataAdress, type, target, current, sizeCurrent, dataAdress) \
+	PXMemoryHeapReallocateEventDataFill(eventDataAdress, sizeof(type), target, current, sizeCurrent, dataAdress)
+
+#define PXMemoryHeapReallocateEventDataFillNew(eventDataAdress, fillSymbol) \
+	(*eventDataAdress).DoFillNewSpace = PXTrue; \
+	(*eventDataAdress).FillSymbol = fillSymbol; \
+
+
+//#define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+//#define PXHeapListResizeT(typeSize, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(typeSize, amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+#else 
+#define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress)
 #endif	
 //---------------------------------------------------------
 

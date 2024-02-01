@@ -52,9 +52,21 @@ PXBool PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const
 
     // reallocate
     {
-        const void* newadress = PXResizeList(PXByte, &image->PixelData, &image->PixelDataSize, newSize);
+        PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
 
-        if (!newadress)
+        PXMemoryHeapReallocateEventDataFillType
+        (
+            &pxMemoryHeapReallocateEventData,
+            PXByte,
+            newSize,
+            PXNull,
+            &image->PixelDataSize,
+            &image->PixelData
+        );
+
+        PXMemoryHeapReallocate(&pxMemoryHeapReallocateEventData);
+
+        if (!pxMemoryHeapReallocateEventData.WasSuccessful)
         {
             return PXFalse;
         }

@@ -103,6 +103,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileFormatHighEfficiencyImageFile,
 		PXFileFormatHTML,
 		PXFileFormatINI,
+		PXFileFormatEugeneRoshalArchive, // .rar
 		PXFileFormatJPEG,
 		PXFileFormatJSON,
 		PXFileFormatM4A,
@@ -162,7 +163,8 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileResourceTypeBinary,
 		PXFileResourceTypeStructuredText,
 		PXFileResourceTypeCode,
-		PXFileResourceTypeInstaller
+		PXFileResourceTypeInstaller,
+		PXFileResourceTypeArchiv
 	}
 	PXFileResourceType;
 

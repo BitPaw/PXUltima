@@ -32,16 +32,15 @@ extern "C"
 	}
 	PXRIFF;
 
-	PXPrivate inline PXEndian PXRIFFEndianFromID(const PXInt32U value);
-	PXPrivate inline PXInt32U PXRIFFEndianToID(const PXEndian value);
+	PXPrivate inline PXEndian PXAPI PXRIFFEndianFromID(const PXInt32U value);
+	PXPrivate inline PXInt32U PXAPI PXRIFFEndianToID(const PXEndian value);
 
-	PXPrivate inline PXRIFFFormat PXRIFFFormatFromID(const PXInt32U value);
-	PXPrivate inline PXInt32U PXRIFFFormatToID(const PXRIFFFormat value);
+	PXPrivate inline PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXInt32U value);
+	PXPrivate inline PXInt32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value);
 
 
-	PXPublic PXActionResult PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const PXFile);
-
-	PXPublic PXActionResult PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const PXFile);
+	PXPublic PXActionResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const PXFile);
+	PXPublic PXActionResult PXAPI PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const PXFile);
 
 #ifdef __cplusplus
 }

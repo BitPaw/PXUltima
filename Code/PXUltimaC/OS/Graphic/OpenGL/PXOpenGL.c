@@ -5137,7 +5137,7 @@ PXActionResult PXAPI PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextu
 
 PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite)
 {
-    const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 1 || pxSprite->TextureScaleOffset.Y != 1;
+    const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 0 || pxSprite->TextureScaleOffset.Y != 0;
     
     if (!hasScaling)
     {
@@ -5161,56 +5161,61 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
         pxSprite->Model.IndexBuffer.IndexDataSize = sizeof(indexData);
         pxSprite->Model.IndexBuffer.IndexDataAmount = indexAmount;
         pxSprite->Model.IndexBuffer.DataType = PXDataTypeInt08U;
-        pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+        pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
 
         PXOpenGLModelRegister(pxOpenGL, &pxSprite->Model);
     }
     else
     {
-        const float textureWidth = 0;// pxSprite->Model.IndexBuffer.Texture2D->Image.Width;
-        const float textureHeight = 0;//pxSprite->Model.IndexBuffer.Texture2D->Image.Height;
-
+        const float textureWidth = pxSprite->Model.IndexBuffer.SegmentPrime.Material->DiffuseTexture->Image.Width;
+        const float textureHeight = pxSprite->Model.IndexBuffer.SegmentPrime.Material->DiffuseTexture->Image.Height;
         float offset[2] =
         {
 
             //pxSprite->Position.XX, pxSprite->Position.YY
           // 0.05f,  0.05f
-            textureWidth / (float)pxOpenGL->AttachedWindow->Width, textureHeight / (float)pxOpenGL->AttachedWindow->Height
+            pxSprite->TextureScaleOffset.X,
+            pxSprite->TextureScaleOffset.Y
+            //textureWidth / (float)pxOpenGL->AttachedWindow->Width,
+            //textureHeight / (float)pxOpenGL->AttachedWindow->Height
         };
         // float tx[2] = { (pxSprite->Texture.Image.Width + 200)/ (float)window->Width, (pxSprite->Texture.Image.Height + 200) / (float)window->Height };
 
         const float tx[2] =
         {
-            pxSprite->TextureScaleOffset.X / textureWidth,
-            pxSprite->TextureScaleOffset.Y / textureHeight
+            pxSprite->TextureScaleOffset.X,
+            pxSprite->TextureScaleOffset.Y
         };
+
+        PXVector2F vxOffset[4];
+
 
 
         const float vertexData[] =
         {
             // Left-Lower-Quadrant
-            0,      1,              -1,                -1,                0,  // 00
-            tx[0],  1,              -1 + offset[0],    -1,                0,// 10
-            tx[0],  1 - tx[1],        -1 + offset[0],    -1 + offset[1],    0,// 11
-            0,      1 - tx[1],        -1,                -1 + offset[1],    0,// 01
+            0,          1,                  -1,                -1,                0,  // 00
+            tx[0],  1,                  -1 + offset[0],    -1,                0,// 10
+            tx[0],  1 - tx[1],      -1 + offset[0],    -1 + offset[1],    0,// 11
+            0,          1 - tx[1],      -1,                -1 + offset[1],    0,// 01
 
             // Left-Upper-Quadrant
-            0,      tx[1],          -1,                 1 - offset[1],    0, // 00
+            0,          tx[1],          -1,                 1 - offset[1],    0, // 00
             tx[0],  tx[1],          -1 + offset[0],     1 - offset[1],    0,// 10
-            tx[0],  0,              -1 + offset[0],     1,                0,// 11
-            0,      0,              -1,                 1,                0, // 01
+            tx[0],  0,                  -1 + offset[0],     1,                0,// 11
+            0,          0,                  -1,                 1,                0, // 01
 
             // Right-Lower-Quadrant
-            1 - tx[0],  1,           1 - offset[0],    -1,                0,
-            1,          1,           1,                -1,                0, // OK
-            1,          1 - tx[1],   1,                -1 + offset[1],    0,
-            1 - tx[0],  1 - tx[1],   1 - offset[0],    -1 + offset[1],    0,
+            1 - tx[0],  1,              1 - offset[0],    -1,                0,
+            1,              1,              1,                -1,                0, // OK
+            1,              1 - tx[1],  1,                -1 + offset[1],    0,
+            1 - tx[0],  1 - tx[1],  1 - offset[0],    -1 + offset[1],    0,
 
             // Right-Upper-Quadrant
-            1 - tx[0],  tx[1],       1 - offset[0],     1 - offset[1],    0,
-            1,          tx[1],       1,                 1 - offset[1],    0,
-            1,          0,           1,                 1,                0,
-            1 - tx[0],  0,           1 - offset[0],     1,                0
+            1 - tx[0],  tx[1],      1 - offset[0],     1 - offset[1],    0,
+            1,              tx[1],      1,                 1 - offset[1],    0,
+            1,              0,              1,                 1,                0,
+            1 - tx[0],  0,              1 - offset[0],     1,                0
         };
         const PXInt8U indexData[] =
         {
@@ -5268,7 +5273,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
         pxSprite->Model.IndexBuffer.IndexDataSize = sizeof(indexData);
         pxSprite->Model.IndexBuffer.IndexDataAmount = indexAmount;
         pxSprite->Model.IndexBuffer.DataType = PXDataTypeInt08U;
-        pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+        pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDPoint | PXDrawModeIDLine | PXDrawModeIDTriangle;
 
         PXOpenGLModelRegister(pxOpenGL, &pxSprite->Model);
     }

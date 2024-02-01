@@ -46,6 +46,7 @@
 #include "BinaryWindows/PXBinaryWindows.h"
 #include "BinaryLinux/PXBinaryLinux.h"
 #include "CanonRaw3/PXCanonRaw3.h"
+#include "RAR/PXRAR.h"
 #include "C/PXC.h"
 #include "CS/PXCS.h"
 #include "CPP/PXCPP.h"
@@ -563,6 +564,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, c
             pxFileTypeInfo->ResourceLoadFunction = PXOGGLoadFromFile;
             pxFileTypeInfo->ResourceSaveFunction = PXOGGSaveToFile;
             break;
+
+        case PXFileFormatEugeneRoshalArchive:
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeArchiv;
+            pxFileTypeInfo->ResourceLoadFunction = PXRARLoadFromFile;
+            pxFileTypeInfo->ResourceSaveFunction = PXRARSaveToFile;
+            break;            
 
         case PXFileFormatPDF:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeDocument;

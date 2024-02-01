@@ -18,7 +18,7 @@
 #define PXRIFFSubTypeWAVE PXInt32Make('W', 'A', 'V', 'E')
 #define PXRIFFSubTypeWEBP PXInt32Make('W', 'E', 'B', 'P')
 
-PXEndian PXRIFFEndianFromID(const PXInt32U value)
+PXEndian PXAPI PXRIFFEndianFromID(const PXInt32U value)
 {
 	switch (value)
 	{
@@ -28,7 +28,7 @@ PXEndian PXRIFFEndianFromID(const PXInt32U value)
 	}
 }
 
-PXInt32U PXRIFFEndianToID(const PXEndian value)
+PXInt32U PXAPI PXRIFFEndianToID(const PXEndian value)
 {
 	switch (value)
 	{
@@ -38,7 +38,7 @@ PXInt32U PXRIFFEndianToID(const PXEndian value)
 	}
 }
 
-PXRIFFFormat PXRIFFFormatFromID(const PXInt32U value)
+PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXInt32U value)
 {
 	switch (value)
 	{
@@ -54,7 +54,7 @@ PXRIFFFormat PXRIFFFormatFromID(const PXInt32U value)
 	}
 }
 
-PXInt32U PXRIFFFormatToID(const PXRIFFFormat value)
+PXInt32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value)
 {
 	switch (value)
 	{
@@ -70,7 +70,7 @@ PXInt32U PXRIFFFormatToID(const PXRIFFFormat value)
 	}
 }
 
-PXActionResult PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
+PXActionResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
 {
 	PXInt32UCluster chunkID;
 	PXInt32UCluster formatID;
@@ -91,7 +91,7 @@ PXActionResult PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
 	return PXActionSuccessful;
 }
 
-PXActionResult PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const pxFile)
+PXActionResult PXAPI PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const pxFile)
 {
 	const PXInt32U riffSignature = PXRIFFEndianToID(riff->EndianFormat);
 	const PXInt32U riffType = PXRIFFFormatToID(riff->Format);

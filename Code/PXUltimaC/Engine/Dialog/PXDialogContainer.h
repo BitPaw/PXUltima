@@ -16,8 +16,35 @@ extern "C"
 	}
 	PXDialogBoxState;
 
+	typedef enum PXDialogCharacterMood_
+	{
+		PXDialogCharacterMoodInvalid,
+		PXDialogCharacterMoodCustom,
+		PXDialogCharacterMoodNeutral,
+		PXDialogCharacterMoodShame,
+		PXDialogCharacterMoodHeh,
+		PXDialogCharacterMoodHuh,
+		PXDialogCharacterMoodSmile,
+		PXDialogCharacterMoodHappy,
+		PXDialogCharacterMoodSigh,
+		PXDialogCharacterMoodConfused,
+		PXDialogCharacterMoodShock,
+		PXDialogCharacterMoodSad,
+		PXDialogCharacterMoodEcstatic,
+		PXDialogCharacterMoodDistressed,
+		PXDialogCharacterMoodWhat,
+		PXDialogCharacterMoodThinking,
+		PXDialogCharacterMoodAngry,
+		PXDialogCharacterMoodCry,
+		PXDialogCharacterMoodYawn
+	}
+	PXDialogCharacterMood;
+
 	typedef struct PXDialogContainerMesssage_
 	{
+		PXDialogCharacterMood CharacterMood;
+		PXInt8U CharacterMoodCounter;
+
 		PXTexture2D* CharacterSprite;
 		PXText Text;
 		PXDialogBoxState State;

@@ -274,6 +274,8 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('E', 'L', 'F'):
 				case PXInt24Make('O', 'U', 'T'): return PXFileFormatBinaryLinux;
 
+				case PXInt24Make('R', 'A', 'R'): return PXFileFormatEugeneRoshalArchive;
+
 				case PXInt24Make('F', 'N', 'T'): return PXFileFormatSpriteFont;
 				case PXInt24Make('G', 'I', 'F'): return PXFileFormatGIF;
 				case PXInt24Make('H', 'T', 'M'): return PXFileFormatHTML;

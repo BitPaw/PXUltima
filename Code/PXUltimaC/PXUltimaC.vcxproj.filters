@@ -477,6 +477,9 @@
     <ClCompile Include="Engine\Dialog\PXDialogContainer.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\RAR\PXRAR.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -941,6 +944,9 @@
     <ClInclude Include="Engine\Dialog\PXDialogContainer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\RAR\PXRAR.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -962,5 +968,6 @@
     <None Include="Media\RIFF\README.md" />
     <None Include="Media\PNG\README.md" />
     <None Include="Media\LDAP\README.md" />
+    <None Include="Media\RAR\README.md" />
   </ItemGroup>
 </Project>
