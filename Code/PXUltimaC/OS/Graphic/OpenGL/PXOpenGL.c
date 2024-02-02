@@ -5137,7 +5137,7 @@ PXActionResult PXAPI PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextu
 
 PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite)
 {
-    const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 0 || pxSprite->TextureScaleOffset.Y != 0;
+    const PXBool hasScaling = pxSprite->TextureScalePositionOffset.X != 0 || pxSprite->TextureScalePositionOffset.Y != 0;
     
     if (!hasScaling)
     {
@@ -5174,8 +5174,8 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
 
             //pxSprite->Position.XX, pxSprite->Position.YY
           // 0.05f,  0.05f
-            pxSprite->TextureScaleOffset.X,
-            pxSprite->TextureScaleOffset.Y
+            pxSprite->TextureScalePositionOffset.X,
+            pxSprite->TextureScalePositionOffset.Y
             //textureWidth / (float)pxOpenGL->AttachedWindow->Width,
             //textureHeight / (float)pxOpenGL->AttachedWindow->Height
         };
@@ -5183,8 +5183,8 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
 
         const float tx[2] =
         {
-            pxSprite->TextureScaleOffset.X,
-            pxSprite->TextureScaleOffset.Y
+            pxSprite->TextureScalePointOffset.X,
+            pxSprite->TextureScalePointOffset.Y
         };
 
         PXVector2F vxOffset[4];

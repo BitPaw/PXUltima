@@ -16,7 +16,15 @@ extern "C"
 
 	typedef struct PXSkyBoxCreateEventData_
 	{
-		int dummy;
+		PXSkyBox* SkyboxReference;
+		char* SkyBoxShaderVertex;
+		char* SkyBoxShaderPixel;
+		char* SkyBoxTextureA;
+		char* SkyBoxTextureB;
+		char* SkyBoxTextureC;
+		char* SkyBoxTextureD;
+		char* SkyBoxTextureE;
+		char* SkyBoxTextureF;
 	}
 	PXSkyBoxCreateEventData;
 

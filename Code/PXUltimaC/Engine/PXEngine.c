@@ -299,7 +299,22 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
 
 PXActionResult PXAPI PXSkyBoxCreate(PXEngine* const pxEngine, PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData)
 {
-    return PXActionInvalid;
+    PXGraphicSkyboxRegisterA
+    (
+        &pxEngine->Graphic,
+        pxSkyBoxCreateEventData->SkyboxReference,
+        pxSkyBoxCreateEventData->SkyBoxShaderVertex,
+        pxSkyBoxCreateEventData->SkyBoxShaderPixel,
+        pxSkyBoxCreateEventData->SkyBoxTextureA,
+        pxSkyBoxCreateEventData->SkyBoxTextureB,
+        pxSkyBoxCreateEventData->SkyBoxTextureC,
+        pxSkyBoxCreateEventData->SkyBoxTextureD,
+        pxSkyBoxCreateEventData->SkyBoxTextureE,
+        pxSkyBoxCreateEventData->SkyBoxTextureF
+    );
+    //bitFireEngine->DefaultSkyBox = &pxSkyBoxCreateEventData->SkyboxReference;
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEventData* const pxSpriteCreateEventData)
@@ -323,7 +338,8 @@ PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEven
         //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
         //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
 
-        PXVector2FSetXY(&pxSprite->TextureScaleOffset, 1, 1);
+        PXVector2FSetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
+        PXVector2FSetXY(&pxSprite->TextureScalePointOffset, 1, 1);
 
         //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
     }
@@ -337,8 +353,11 @@ PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEven
     PXMatrix4x4FPositionSet(&pxSprite->Model.ModelMatrix, &pxSpriteCreateEventData->Position);
 
 
-    pxSprite->TextureScaleOffset.X = pxSpriteCreateEventData->TextureScalingPoints[0].X;
-    pxSprite->TextureScaleOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[0].Y;
+    pxSprite->TextureScalePositionOffset.X = pxSpriteCreateEventData->TextureScalingPoints[0].X;
+    pxSprite->TextureScalePositionOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[0].Y;
+    pxSprite->TextureScalePointOffset.X = pxSpriteCreateEventData->TextureScalingPoints[1].X;
+    pxSprite->TextureScalePointOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[1].Y;
+
 
     pxSprite->Model.ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
     pxSprite->Model.IgnoreViewRotation = pxSpriteCreateEventData->ViewRotationIgnore;

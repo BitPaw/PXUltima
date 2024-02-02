@@ -225,7 +225,7 @@ PXActionResult PXAPI PXGraphicFontUse(PXGraphic* const pxGraphic, PXFont* const 
 
 PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y)
 {
-    PXVector2FSetXY(&pxSprite->TextureScaleOffset, x, y);
+    PXVector2FSetXY(&pxSprite->TextureScalePointOffset, x, y);
 }
 
 PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprite* const pxSprite)
@@ -234,7 +234,7 @@ PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprit
 
     PXDictionaryAdd(&pxGraphic->SpritelLookUp, &pxSprite->PXID, pxSprite);
 
-    const PXBool hasScaling = pxSprite->TextureScaleOffset.X != 0 || pxSprite->TextureScaleOffset.Y != 0;
+    const PXBool hasScaling = pxSprite->TextureScalePositionOffset.X != 0 || pxSprite->TextureScalePositionOffset.Y != 0;
 
     if (hasScaling)
     {
@@ -1721,7 +1721,7 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSpri
     //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
     //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
 
-    PXVector2FSetXY(&pxSprite->TextureScaleOffset, 1, 1);
+    PXVector2FSetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
 
   //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
