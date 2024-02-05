@@ -5,7 +5,7 @@
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
 
-#define PXCompilerDebug 0
+#define PXCompilerDebug 1
 #define PXCompilerSanitise 1
 
 #if PXCompilerDebug
@@ -378,8 +378,11 @@ PXSize PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry*
 
 		if (readBytes == 0)
 		{
+			compilerSymbolEntry->ID = PXCompilerSymbolLexerEndOfFile;
+			compilerSymbolEntry->Source = PXNull;
 			compilerSymbolEntry->Coloum = -1;
 			compilerSymbolEntry->Line = -1;
+			compilerSymbolEntry->Size = 0;
 			return 0;
 		}
 	}

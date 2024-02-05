@@ -7,7 +7,7 @@
 //---------------------------------------------------------
 #define FileLineBufferSize 2048
 #define PXFileMappingAllow 1
-#define PXFileDebugOutput 0
+#define PXFileDebugOutput 1
 //---------------------------------------------------------
 
 
@@ -271,6 +271,15 @@ void PXDirectoryIsDotFolder(const char* s)
 	FilePath;*/
 
 	PXPublic PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath);
+
+
+	PXPublic void PXAPI PXFileDataElementTypeInfo
+	(
+		PXFileDataElementType* const pxFileDataElementType,
+		PXText* const dataType,
+		PXText* const dataContent
+	);
+
 
 	//---<Utility>---------------------------------------------------------
 	PXPublic PXBool PXAPI PXFileDoesExist(const PXText* const filePath);

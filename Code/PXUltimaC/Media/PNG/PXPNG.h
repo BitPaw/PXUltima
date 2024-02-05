@@ -317,7 +317,7 @@ extern "C"
 
 
 
-	static unsigned int ImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
+	PXPublic PXActionResult PXAPI PXPNGImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
 
 
 
@@ -356,18 +356,25 @@ enough memory.*/
 	static void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode);
 
 	/*Get RGBA8 color of pixel with index i (y * width + x) from the raw image with given color type.*/
-	static void getPixelColorRGBA8(unsigned char* r, unsigned char* g, unsigned char* b, unsigned char* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
+	static void getPixelColorRGBA8(PXColorRGBAI8* const color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
 
 
 	/*put a pixel, given its RGBA color, into image of any color type*/
-	PXPrivate PXActionResult PXAPI rgba8ToPixel(unsigned char* out, PXSize i,								 const LodePNGColorMode* mode, PNGColorTree* tree /*for palette*/,	const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a);
+	PXPrivate PXActionResult PXAPI rgba8ToPixel
+	(
+		unsigned char* out, 
+		PXSize i,
+		const LodePNGColorMode* mode,
+		PNGColorTree* tree /*for palette*/,	
+		const PXColorRGBAI8* const color
+	);
 
 
 	PXPublic PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth);
 	PXPublic PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color);
 
 	/*returns -1 if color not present, its index otherwise*/
-	PXPublic int color_tree_get(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+	PXPublic int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8* const color);
 
 	/*index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to*/
 	PXPublic void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in);

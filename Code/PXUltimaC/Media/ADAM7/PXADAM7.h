@@ -23,7 +23,7 @@ extern "C"
 
 
 
-	PXPublic unsigned int PXADAM7ScanlinesDecode
+	PXPublic PXActionResult PXAPI PXADAM7ScanlinesDecode
 	(
 		void* out,
 		void* in,
@@ -33,7 +33,7 @@ extern "C"
 		PXPNGInterlaceMethod interlaceMethod
 	);
 
-	PXPublic unsigned int PXADAM7ScanlinesEncode
+	PXPublic PXActionResult PXAPI PXADAM7ScanlinesEncode
 	(
 		void* out,
 		void* in,

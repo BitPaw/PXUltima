@@ -14,6 +14,40 @@ extern "C"
 	typedef struct PXEngine_ PXEngine;
 
 
+	typedef enum PXEngineCreateType_
+	{
+		PXEngineCreateTypeInvalid,
+		PXEngineCreateTypeCustom,
+		PXEngineCreateTypeModel,
+		PXEngineCreateTypeFont,
+		PXEngineCreateTypeSkybox,
+		PXEngineCreateTypeSprite,
+		PXEngineCreateTypeUIElement
+	}
+	PXEngineCreateType;
+
+
+	typedef struct PXEngineUIElementCreateData_
+	{
+		PXUIElement* UIElementReference;
+	}
+	PXEngineUIElementCreateData;
+
+	typedef struct PXModelCreateEventData_
+	{
+		PXModel* ModelReference;
+		char* ModelFilePath;
+	}
+	PXModelCreateEventData;
+
+	typedef struct PXEngineFontCreateData_
+	{
+		PXFont* FontReference;
+		char* FontFilePath;
+		PXShaderProgram* ShaderProgramCurrent;
+	}
+	PXEngineFontCreateData;
+
 	typedef struct PXSkyBoxCreateEventData_
 	{
 		PXSkyBox* SkyboxReference;
@@ -44,6 +78,22 @@ extern "C"
 		PXBool ViewPositionIgnore;
 	}
 	PXSpriteCreateEventData;
+
+
+	typedef struct PXEngineResourceCreateInfo_
+	{
+		PXEngineCreateType CreateType;
+
+		union
+		{
+			PXModelCreateEventData Model;
+			PXEngineFontCreateData Font;
+			PXSkyBoxCreateEventData SkyBox;
+			PXSpriteCreateEventData Sprite;
+			PXEngineUIElementCreateData UIElement;
+		};
+	}
+	PXEngineResourceCreateInfo;
 
 
 	typedef struct PXPlayerMoveInfo_
@@ -96,13 +146,23 @@ extern "C"
 		PXInt32U FrameTime;
 
 		PXBool IsRunning;
+
+		// Register List
+		PXInt32U UniqeIDGeneratorCounter;
+
+		PXDictionary SpritelLookUp;
+		PXDictionary FontLookUp;
+		PXDictionary UIElementLookUp;
+
+		// Cached most-common objects
+		PXModel SpriteScaled;
+		PXModel SpriteUnScaled;
 	}
 	PXEngine;
 
 	PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
 	PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
-
-
+	PXPrivate PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine);
 	
 	PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
 
@@ -110,8 +170,8 @@ extern "C"
 	PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
 	PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
 
-	PXPublic PXActionResult PXAPI PXSkyBoxCreate(PXEngine* const pxEngine, PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData);
-	PXPublic PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEventData* const pxSpriteCreateEventData);
+
+	PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
 
 #ifdef __cplusplus
 }

@@ -26,6 +26,12 @@ void PXCDECL PXEngineOnMemoryViolation(const int signalID)
     );
 }
 
+PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine)
+{
+    return ++pxEngine->UniqeIDGeneratorCounter;
+   
+}
+
 void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 {
     const PXInt64U timeNow = PXTimeCounterStampGet();
@@ -162,7 +168,7 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
 void PXAPI PXEngineStart(PXEngine* const pxEngine)
 {
     PXCameraConstruct(&pxEngine->CameraDefault);
-    PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 80, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.05, 10000);
+    PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 80, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
 
     pxEngine->CameraCurrent = &pxEngine->CameraDefault;
 
@@ -185,7 +191,16 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         PXThreadNameSet(PXNull, &pxText);
     }
 
-  
+
+
+    //-----------------------------------------------------
+    // Create containers
+    //-----------------------------------------------------
+    PXDictionaryConstruct(&pxEngine->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxEngine->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxEngine->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
+    //-----------------------------------------------------
+
 
 
     // Load all mods now, not fully tho, they may need very early checks before anything happens
@@ -297,93 +312,505 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
     PXWindowDestruct(&pxEngine->Window);
 }
 
-PXActionResult PXAPI PXSkyBoxCreate(PXEngine* const pxEngine, PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData)
+PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo)
 {
-    PXGraphicSkyboxRegisterA
-    (
-        &pxEngine->Graphic,
-        pxSkyBoxCreateEventData->SkyboxReference,
-        pxSkyBoxCreateEventData->SkyBoxShaderVertex,
-        pxSkyBoxCreateEventData->SkyBoxShaderPixel,
-        pxSkyBoxCreateEventData->SkyBoxTextureA,
-        pxSkyBoxCreateEventData->SkyBoxTextureB,
-        pxSkyBoxCreateEventData->SkyBoxTextureC,
-        pxSkyBoxCreateEventData->SkyBoxTextureD,
-        pxSkyBoxCreateEventData->SkyBoxTextureE,
-        pxSkyBoxCreateEventData->SkyBoxTextureF
-    );
-    //bitFireEngine->DefaultSkyBox = &pxSkyBoxCreateEventData->SkyboxReference;
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXSpriteCreate(PXEngine* const pxEngine, PXSpriteCreateEventData* const pxSpriteCreateEventData)
-{
-    PXLogPrint
-    (
-        PXLoggingAllocation,
-        "PX",
-        "Sprite-Create",
-        "Use <%s>",
-        pxSpriteCreateEventData->TextureName
-    );
-
-    PXSprite* pxSprite = pxSpriteCreateEventData->SpriteReference;
-
-    // Clear sprite //     PXGraphicSpriteConstruct(&pxEngine->Graphic, pxSprite);
+    if (!(pxEngine && pxEngineResourceCreateInfo))
     {
-        PXClear(PXSprite, pxSprite);
-        PXModelConstruct(&pxSprite->Model);
-
-        //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
-        //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
-
-        PXVector2FSetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
-        PXVector2FSetXY(&pxSprite->TextureScalePointOffset, 1, 1);
-
-        //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
+        return PXActionRefusedArgumentNull;
     }
 
-
-    PXGraphicSpriteTextureLoadA(&pxEngine->Graphic, pxSprite, pxSpriteCreateEventData->TextureName);
-
-
-    PXMatrix4x4FScaleByXY(&pxSprite->Model.ModelMatrix, pxSpriteCreateEventData->Scaling.X, pxSpriteCreateEventData->Scaling.Y);
-
-    PXMatrix4x4FPositionSet(&pxSprite->Model.ModelMatrix, &pxSpriteCreateEventData->Position);
+    switch (pxEngineResourceCreateInfo->CreateType)
+    {
+        case PXEngineCreateTypeCustom:
+        {
 
 
-    pxSprite->TextureScalePositionOffset.X = pxSpriteCreateEventData->TextureScalingPoints[0].X;
-    pxSprite->TextureScalePositionOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[0].Y;
-    pxSprite->TextureScalePointOffset.X = pxSpriteCreateEventData->TextureScalingPoints[1].X;
-    pxSprite->TextureScalePointOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[1].Y;
+            break;
+        }
+        case PXEngineCreateTypeModel:
+        {
+            PXModelCreateEventData* const pxModelCreateEventData = &pxEngineResourceCreateInfo->Model;
 
 
-    pxSprite->Model.ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
-    pxSprite->Model.IgnoreViewRotation = pxSpriteCreateEventData->ViewRotationIgnore;
-    pxSprite->Model.IgnoreViewPosition = pxSpriteCreateEventData->ViewPositionIgnore;
-    //pxSprite->Model.
-    pxSprite->Model.RenderBothSides = PXTrue;
+            break;
+        }
+        case PXEngineCreateTypeFont:
+        {
+            PXEngineFontCreateData* const pxEngineFontCreateData = &pxEngineResourceCreateInfo->Font;
+            PXFont* const pxFont = pxEngineFontCreateData->FontReference;
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Font-Create",
+                "load <%s>.",
+                pxEngineFontCreateData->FontFilePath
+            );
+
+            // Load texture
+            {
+                PXText pxText;
+                PXTextConstructFromAdressA(&pxText, pxEngineFontCreateData->FontFilePath, PXTextLengthUnkown, PXTextLengthUnkown);
+
+                const PXActionResult loadResult = PXResourceLoad(pxFont, &pxText);
+
+                PXActionReturnOnError(loadResult);
+            }
+
+            // Register as normal
+            {
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Font",
+                    "Registering..."
+                );
+
+               // PXLockEngage(&pxGraphic->_resourceLock);
+                //pxFont->ID = PXGraphicGenerateUniqeID(pxGraphic);
+                //PXDictionaryAdd(&pxGraphic->FontLookUp, &pxFont->ID, pxFont);
+                //PXLockRelease(&pxGraphic->_resourceLock);
+
+                pxEngine->Graphic.Texture2DRegister(pxEngine->Graphic.EventOwner, &pxFont->MainPage.Texture);
+
+                for (PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)
+                {
+                    PXFontPage* const pxFontPage = &pxFont->AdditionalPageList[i];
+
+                    pxEngine->Graphic.Texture2DRegister(pxEngine->Graphic.EventOwner, &pxFontPage->Texture);
+                }
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Font",
+                    "Registerd",
+                    PXNull
+                );
+            }
+
+            break;
+        }
+        case PXEngineCreateTypeSkybox:
+        {
+            PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData = &pxEngineResourceCreateInfo->SkyBox;
+
+            PXGraphicSkyboxRegisterA
+            (
+                &pxEngine->Graphic,
+                pxSkyBoxCreateEventData->SkyboxReference,
+                pxSkyBoxCreateEventData->SkyBoxShaderVertex,
+                pxSkyBoxCreateEventData->SkyBoxShaderPixel,
+                pxSkyBoxCreateEventData->SkyBoxTextureA,
+                pxSkyBoxCreateEventData->SkyBoxTextureB,
+                pxSkyBoxCreateEventData->SkyBoxTextureC,
+                pxSkyBoxCreateEventData->SkyBoxTextureD,
+                pxSkyBoxCreateEventData->SkyBoxTextureE,
+                pxSkyBoxCreateEventData->SkyBoxTextureF
+            );
+            //bitFireEngine->DefaultSkyBox = &pxSkyBoxCreateEventData->SkyboxReference;
+
+            break;
+        }
+        case PXEngineCreateTypeSprite:
+        {
+            PXSpriteCreateEventData* const pxSpriteCreateEventData = &pxEngineResourceCreateInfo->Sprite;
+            PXSprite* const pxSprite = pxSpriteCreateEventData->SpriteReference;
+
+            PXClear(PXSprite, pxSprite);
+            pxSprite->PXID = PXEngineGenerateUniqeID(pxEngine);
+            PXDictionaryAdd(&pxEngine->SpritelLookUp, &pxSprite->PXID, pxSprite);
 
 
-    pxSprite->Model.MaterialContaierList = PXNew(PXMaterialContainer);
-    pxSprite->Model.MaterialContaierListSize = 1u;
+            PXLogPrint
+            (
+                PXLoggingAllocation,
+                "PX",
+                "Sprite-Create",
+                "Use <%s>",
+                pxSpriteCreateEventData->TextureName
+            );      
 
-    pxSprite->Model.MaterialContaierList->MaterialList = PXNew(PXMaterial);
-    pxSprite->Model.MaterialContaierList->MaterialListSize = 1u;
+            // Clear sprite //     PXGraphicSpriteConstruct(&pxEngine->Graphic, pxSprite);
+            {         
+                PXModelConstruct(&pxSprite->Model);
+
+                //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
+                //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
+
+                PXVector2FSetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
+                PXVector2FSetXY(&pxSprite->TextureScalePointOffset, 1, 1);
+
+                //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
+            }
+
+            PXTextCopyA(pxSpriteCreateEventData->TextureName, 20, pxSprite->Name, 50);
+
+            pxSprite->TextureScalePositionOffset.X = pxSpriteCreateEventData->TextureScalingPoints[0].X;
+            pxSprite->TextureScalePositionOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[0].Y;
+            pxSprite->TextureScalePointOffset.X = pxSpriteCreateEventData->TextureScalingPoints[1].X;
+            pxSprite->TextureScalePointOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[1].Y;
 
 
-    PXMaterial* materiial = &pxSprite->Model.MaterialContaierList->MaterialList[0];
-
-    PXClear(PXMaterial, materiial);
-
-    materiial->DiffuseTexture = pxSprite->Texture;
-
-    pxSprite->Model.IndexBuffer.SegmentListSize = 1;
-    pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;
+            pxSprite->Model.ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
+            pxSprite->Model.IgnoreViewRotation = pxSpriteCreateEventData->ViewRotationIgnore;
+            pxSprite->Model.IgnoreViewPosition = pxSpriteCreateEventData->ViewPositionIgnore;
+            //pxSprite->Model.
+            pxSprite->Model.RenderBothSides = PXTrue;
 
 
+#if 0
+            pxSprite->Model.MaterialContaierList = PXNew(PXMaterialContainer);
+            pxSprite->Model.MaterialContaierListSize = 1u;
+
+            pxSprite->Model.MaterialContaierList->MaterialList = PXNew(PXMaterial);
+            pxSprite->Model.MaterialContaierList->MaterialListSize = 1u;
+
+            PXMaterial* materiial = &pxSprite->Model.MaterialContaierList->MaterialList[0];
+
+            PXClear(PXMaterial, materiial);
+
+            materiial->DiffuseTexture = pxSprite->Texture;
+#endif
+
+            PXGraphicSpriteTextureLoadA(&pxEngine->Graphic, pxSprite, pxSpriteCreateEventData->TextureName);
+
+            PXMaterial* materiial = PXNew(PXMaterial);
+            PXClear(PXMaterial, materiial);
+
+            materiial->DiffuseTexture = pxSprite->Texture;
+
+            pxSprite->Model.IndexBuffer.SegmentListSize = 1;
+            pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;            
+
+    
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Sprite",
+                "Register ID:%i from %i",
+                pxSprite->PXID,
+                pxEngine->SpritelLookUp.EntryAmountCurrent
+            );
+
+            const PXBool hasScaling = pxSprite->TextureScalePositionOffset.X != 0 || pxSprite->TextureScalePositionOffset.Y != 0;
+
+            if (hasScaling)
+            {
+                if (pxEngine->SpriteScaled.ResourceID.OpenGLID == 0)
+                {
+                    PXOpenGLSpriteRegister(&pxEngine->Graphic.OpenGLInstance, pxSprite);
+                }
+                else
+                {
+                    pxSprite->Model.StructureOverride = &pxEngine->SpriteScaled;
+                }
+            }
+            else
+            {
+                if (pxEngine->SpriteUnScaled.ResourceID.OpenGLID == 0)
+                {
+                    PXOpenGLSpriteRegister(&pxEngine->Graphic.OpenGLInstance, pxSprite);
+                }
+                else
+                {
+                    pxSprite->Model.StructureOverride = &pxEngine->SpriteUnScaled;
+                }
+            }
+
+            if (pxSpriteCreateEventData->Scaling.X == 0)
+            {
+                pxSpriteCreateEventData->Scaling.X = 1;
+            }
+
+            if (pxSpriteCreateEventData->Scaling.Y == 0)
+            {
+                pxSpriteCreateEventData->Scaling.Y = 1;
+            }
 
 
-    PXGraphicSpriteRegister(&pxEngine->Graphic, pxSprite);
+
+            float aspectRationX = 1;
+
+            if (pxSprite->Texture->Image.Width && pxSprite->Texture->Image.Height)
+            {
+                aspectRationX = (float)pxSprite->Texture->Image.Width / (float)pxSprite->Texture->Image.Height;
+            }
+
+            PXMatrix4x4FScaleSetXY(&pxSprite->Model.ModelMatrix, aspectRationX, 1);
+
+            PXMatrix4x4FScaleByXY
+            (
+                &pxSprite->Model.ModelMatrix,
+                pxSpriteCreateEventData->Scaling.X,
+                pxSpriteCreateEventData->Scaling.Y
+            );
+
+
+            PXMatrix4x4FPositionSet(&pxSprite->Model.ModelMatrix, &pxSpriteCreateEventData->Position);
+
+            break;
+        }
+        case PXEngineCreateTypeUIElement:
+        {
+            PXEngineUIElementCreateData* const pxEngineUIElementCreateData = &pxEngineResourceCreateInfo->UIElement;
+            PXUIElement* const pxUIElement = pxEngineUIElementCreateData->UIElementReference;
+
+            // Is Registerd
+            {
+                const PXBool isRegisterd = pxUIElement->ID != -1;
+
+                if (!isRegisterd)
+                {
+                    return PXActionInvalidRedundandInteraction;
+                }
+
+                pxUIElement->ID = PXEngineGenerateUniqeID(pxEngine);
+                PXDictionaryAdd(&pxEngine->UIElementLookUp, &pxUIElement->ID, pxUIElement);      
+            }
+
+            switch (pxUIElement->Type)
+            {
+                case PXUIElementTypeRenderFrame:
+                {
+                    //PXOpenGL* const pxOpenGL = &pxGraphic->OpenGLInstance;
+
+#if 0
+                    // Texture
+                   // PXTexture2DSet(pxUIElement->FrameRenderTextureReference, PXColorFormatRGBI8, pxUIElement->FrameRenderWidth, pxUIElement->Height);
+                    PXOpenGLTexture2DCreate(pxOpenGL, pxUIElement->FrameRenderTextureReference);
+
+
+                    // Framebuffer
+                    PXOpenGLFrameBufferCreate(pxOpenGL, 1, &pxUIElement->FrameBufferID);
+                    PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, pxUIElement->FrameBufferID);
+
+                    // Renderbuffer as depthbuffer
+                    PXOpenGLRenderBufferCreate(pxOpenGL, 1, &pxUIElement->FrameRenderID);
+                    PXOpenGLRenderBufferBind(pxOpenGL, pxUIElement->FrameRenderID);
+                    PXOpenGLRenderBufferStorage(pxOpenGL, PXOpenGLRenderBufferFormatDepthComponent, pxUIElement->FrameRenderWidth, pxUIElement->FrameRenderHeight);
+
+                    // Link buffer
+                    PXOpenGLFrameBufferLinkRenderBuffer(pxOpenGL, PXOpenGLRenderBufferAttachmentPointDepth, pxUIElement->FrameRenderID);
+
+
+
+                    PXOpenGLFrameBufferLinkTexture2D(pxOpenGL, PXOpenGLRenderBufferAttachmentPointColor, PXGraphicTextureType2D, pxUIElement->FrameRenderTextureReference->ResourceID.OpenGLID, 0);
+
+                    // Set the list of draw buffers.
+                   // GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+                    //glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+
+                   // // Always check that our framebuffer is ok
+                    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                     //   return false;
+
+
+                    PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, 0);
+                    PXOpenGLRenderBufferBind(pxOpenGL, 0);
+#endif
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+
+
+
+            /*
+            switch (pxUIElement->Type)
+            {
+                case PXUIElementTypePanel:
+                {
+                    const float vertexData[] =
+                    {
+                         -1,  -1,  0, 0,1,
+                        1,  -1,  0,  1,1,
+                         1, 1,  0,   1,0,
+                        -1, 1,  0,   0,0
+                    };
+                    const PXSize vertexDataSize = sizeof(vertexData) / sizeof(float);
+
+                    PXByte bufferData[32];
+                    PXModel model;
+
+                    ModelConstruct(&model);
+
+                    model.Data = bufferData;
+
+                    MemoryClear(bufferData, sizeof(bufferData));
+                    ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
+
+                    model.DataVertexList = vertexData;
+                    model.DataVertexListSize = vertexDataSize;
+
+                    model.DataVertexWidth = 3u;
+                    model.DataVertexSize = vertexDataSize;
+                    model.DataTextureWidth = 2u;
+                    model.DataTextureSize = vertexDataSize;
+
+                    {
+                        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxUIPanel->UIElement.Renderable, &model);
+
+                        PXActionExitOnError(actionResult);
+                    }
+
+                    PXGraphicRenderableRegister(pxGraphic, &pxUIPanel->UIElement.Renderable);
+
+                    break;
+                }
+                case PXUIElementTypeLabel:
+                {
+                    const PXSize textSize = PXTextLengthA(text, 256);
+                    const PXSize vertexDataSize = textSize * 4u * (3u + 2u);
+
+                    float* vertexData = MemoryAllocate(vertexDataSize * sizeof(float));
+
+                    PXSize index = 0;
+                    float xoffset = 0;
+
+                    float imgwidth = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Width;
+                    float imgheight = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Height;
+
+                    for (size_t i = 0; i < textSize; i++)
+                    {
+                        char character = text[i];
+
+                        PXSpriteFontCharacter* PXSpriteFontChar = PXSpriteFontGetCharacter(pxGraphicUIText->TextFont->FontElement, character);
+
+                        float texturePositionX = PXSpriteFontChar->Position[0] / imgwidth;
+                        float texturePositionY = PXSpriteFontChar->Position[1] / imgheight;
+                        float texturePositionWidth = PXSpriteFontChar->Size[0] / imgwidth;
+                        float texturePositionHeight = PXSpriteFontChar->Size[1] / imgheight;
+
+                        vertexData[index++] = xoffset;
+                        vertexData[index++] = 0;
+                        vertexData[index++] = 0;
+
+                        vertexData[index++] = texturePositionX;
+                        vertexData[index++] = texturePositionY + texturePositionHeight;
+
+                        vertexData[index++] = PXSpriteFontChar->Size[0] + xoffset;
+                        vertexData[index++] = 0;
+                        vertexData[index++] = 0;
+
+                        vertexData[index++] = texturePositionX + texturePositionWidth;
+                        vertexData[index++] = texturePositionY + texturePositionHeight;
+
+                        vertexData[index++] = PXSpriteFontChar->Size[0] + xoffset;
+                        vertexData[index++] = PXSpriteFontChar->Size[1];
+                        vertexData[index++] = 0;
+
+                        vertexData[index++] = texturePositionX + texturePositionWidth;
+                        vertexData[index++] = texturePositionY;
+
+                        vertexData[index++] = xoffset;
+                        vertexData[index++] = PXSpriteFontChar->Size[1];
+                        vertexData[index++] = 0;
+
+                        vertexData[index++] = texturePositionX;
+                        vertexData[index++] = texturePositionY;
+
+
+
+                        xoffset += PXSpriteFontChar->XAdvance + 10;
+
+
+                        //vertexData[index++] = PXSpriteFontChar->Position[0];
+                        //vertexData[index++] = PXSpriteFontChar->Position[1];
+
+                        //vertexData[index++] = PXSpriteFontChar->Position[0];
+                        //vertexData[index++] = PXSpriteFontChar->Position[1];
+                        //vertexData[index++] = PXSpriteFontChar->Position[0];
+                        //vertexData[index++] = PXSpriteFontChar->Position[1];
+
+                    }
+
+                    PXByte bufferData[32];
+                    PXModel model;
+
+                    ModelConstruct(&model);
+
+                    model.Data = bufferData;
+
+                    MemoryClear(bufferData, sizeof(bufferData));
+                    ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
+
+                    model.DataVertexList = vertexData;
+                    model.DataVertexListSize = vertexDataSize;
+
+                    model.DataVertexWidth = 3u;
+                    model.DataVertexSize = vertexDataSize;
+                    model.DataTextureWidth = 2u;
+                    model.DataTextureSize = vertexDataSize;
+
+                    {
+                        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxGraphicUIText->UIElement.Renderable, &model);
+
+                        PXActionExitOnError(actionResult);
+                    }
+
+                    PXGraphicRenderableRegister(pxGraphic, &pxGraphicUIText->UIElement.Renderable);
+
+
+
+                    PXTexture pxTexture;
+
+                    PXTextureConstruct(&pxTexture);
+
+                    MemoryCopy(&pxGraphicUIText->TextFont->FontElement[0].FontPageList[0].FontTextureMap, sizeof(Image), &pxTexture.Image, sizeof(Image));
+
+                    pxTexture.Type = PXGraphicTextureType2D;
+                    pxTexture.Filter = PXGraphicRenderFilterNoFilter;
+                    pxTexture.LayoutNear = PXGraphicImageLayoutNearest;
+                    pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
+                    pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
+                    pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
+
+                    PXGraphicTextureRegister(pxGraphic, &pxTexture);
+
+                    pxGraphicUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
+
+                    break;
+                }
+                case PXUIElementTypeButton:
+                {
+                    PXRenderable* renderable = &pxButton->UIElement.Renderable;
+
+                    pxButton->TextFont = pxFont;
+                    PXGraphicUITextRegister(pxGraphic, renderable, 0, 0, 1, 1, text);
+                    PXGraphicModelShaderSet(pxGraphic, renderable, shader);
+                    PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
+                    PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
+                    renderable->MeshSegmentList[0].RenderMode = PXGraphicDrawModeSquare;
+
+                    PXLockEngage(&pxGraphic->_pxUIElements);
+                    PXLinkedListFixedNodeAdd(&pxGraphic->_pxUIElements, &pxButton->UIElement);
+                    PXLockRelease(&pxGraphic->_pxUIElements);
+
+                    break;
+                }
+                case PXUIElementTypeImage:
+
+                case PXUIElementTypeCustom:
+
+                default:
+                    break;
+            }*/
+
+
+            break;
+        }
+        default:
+            return PXActionRefusedArgumentInvalid;
+    }
+
+    return PXActionSuccessful;
 }

@@ -704,6 +704,8 @@ extern "C"
 	{
 		unsigned int PXID;
 
+		char Name[20];
+
 		PXVector2F TextureScalePositionOffset;
 		PXVector2F TextureScalePointOffset;
 

@@ -150,7 +150,7 @@ void PXModelConstruct(PXModel* const pxModel)
 {
     PXClear(PXModel, pxModel);
 
-    PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
+    PXMatrix4x4FIdentity(&pxModel->ModelMatrix);    
     
     PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
 }

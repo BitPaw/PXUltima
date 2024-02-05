@@ -536,7 +536,7 @@ extern "C"
 		PXSkyBox* _currentSkyBox;
 
 		//---<Registered Objects>---
-		PXInt32U UniqeIDGeneratorCounter;
+
 
 		PXLinkedListFixed _renderList; // PXRenderable
 	
@@ -544,18 +544,16 @@ extern "C"
 
 		PXDictionary UIElementLookUp;
 		PXDictionary TextureLookUp;
-		PXDictionary SpritelLookUp;
+
 		PXDictionary ModelLookUp;
-		PXDictionary FontLookUp;
+
 		PXDictionary SoundLookup;
 		PXDictionary ShaderPXProgramLookup;
 		//--------------------------
 
 
 
-		// Cached most-common objects
-		PXModel SpriteScaled;
-		PXModel SpriteUnScaled;
+
 
 
 		PXSize DevicePhysicalListSize;
@@ -606,11 +604,7 @@ extern "C"
 	PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
 	PXPublic void PXAPI PXTextureDestruct(PXTexture2D* const texture);
 
-	PXPrivate PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphic* const pxGraphic);
 
-	PXPublic PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement);
-	PXPublic PXActionResult PXAPI PXGraphicUIElementUpdate(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement);
-	PXPublic PXActionResult PXAPI PXGraphicUIElementUnregister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement);
 	//-------------------------------------------------------------------------
 
 	//-----------------------------------------------------
@@ -620,7 +614,7 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphic* const pxGraphic, PXSprite* const pxSprite, const char* textureFilePath);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
-	PXPublic PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
+
 
 
 	PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
@@ -648,14 +642,6 @@ extern "C"
 	//---<Texture>----------------------------------------------------------------
 	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTexture2D* const texture, const PXText* const filePath);
 	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTexture2D* const texture, const char* const filePath);
-	//-------------------------------------------------------------------------
-
-
-	//---<Font>----------------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicFontLoad(PXGraphic* const pxGraphic, PXFont* const pxFont, const PXText* const filePath);
-	PXPublic PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* const pxFont);
-	PXPublic PXActionResult PXAPI PXGraphicFontRelease(PXGraphic* const pxGraphic, PXFont* const pxFont);
-	PXPublic PXActionResult PXAPI PXGraphicFontUse(PXGraphic* const pxGraphic, PXFont* const pxFont);
 	//-------------------------------------------------------------------------
 
 

@@ -134,7 +134,7 @@ PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
     }
 }
 
-PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile)
+PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
     PXBitmap bmp;
 
@@ -244,7 +244,7 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const px
 
     // Generate imagedata
     {
-        const PXBool allocationSuccess = PXImageResize(image, PXColorFormatRGBI8, bmp.InfoHeader.Width, bmp.InfoHeader.Height);
+        const PXBool allocationSuccess = PXImageResize(pxImage, PXColorFormatRGBI8, bmp.InfoHeader.Width, bmp.InfoHeader.Height);
 
         if(!allocationSuccess)
         {
@@ -258,8 +258,8 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const px
     PXBitmapImageDataLayoutCalculate(&imageDataLayout, bmp.InfoHeader.Width, bmp.InfoHeader.Height, bmp.InfoHeader.NumberOfBitsPerPixel);
 
     while(imageDataLayout.RowAmount--) // loop through each image row
-    {
-        PXByte* const data = (PXByte* const)image->PixelData + (imageDataLayout.RowFullSize * imageDataLayout.RowAmount); // Get the starting point of each row
+    { 
+        PXByte* const data = (PXByte* const)pxImage->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
         PXFileReadB(pxFile, data, imageDataLayout.RowImageDataSize); // Read/Write image data
         PXFileCursorAdvance(pxFile, imageDataLayout.RowPaddingSize); // Skip padding

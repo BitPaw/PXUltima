@@ -346,6 +346,149 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 	return PXFileFormatUnkown;
 }
 
+void PXAPI PXFileDataElementTypeInfo(PXFileDataElementType* const pxFileDataElementType, PXText* const dataType, PXText* const dataContent)
+{
+	PXTextPrint(dataType, "???");
+	PXTextPrint(dataContent, "???");
+
+	switch (pxFileDataElementType->Type & PXDataTypeTypeMask)
+	{
+		case PXDataTypeBaseNumeric:
+		{
+
+			switch (pxFileDataElementType->Type & PXDataTypeSizeMask)
+			{
+				case 1:
+				{
+					PXInt32U number = *(PXInt8U*)pxFileDataElementType->Adress;
+
+					PXTextPrint(dataType, "int8");
+					PXTextPrint(dataContent, "%i", number);
+					break;
+				}
+				case 2:
+				{
+					PXInt32U number = *(PXInt16U*)pxFileDataElementType->Adress;
+
+					PXTextPrint(dataType, "int16");
+					PXTextPrint(dataContent, "%i", number);
+					break;
+				}
+				case 4:
+				{
+					PXInt32U number = *(PXInt32U*)pxFileDataElementType->Adress;
+
+					PXTextPrint(dataType, "int32");
+					PXTextPrint(dataContent, "%i", number);
+					break;
+				}
+				case 8:
+				{
+					PXInt64U number = *(PXInt64U*)pxFileDataElementType->Adress;
+
+					PXTextPrint(dataType, "int64");
+					PXTextPrint(dataContent, "%li", number);
+
+					break;
+				}
+
+				default:
+					break;
+			}
+
+			switch (pxFileDataElementType->Type & PXDataTypeEndianMask)
+			{
+				case PXDataTypeEndianBig:
+				{
+					//PXTextCopyA("Big Endian", 10, endianText, 45);					
+
+				//	sprintf_s(type, 30, "%s %i", "Int", sizeOfType * 8);
+					break;
+				}
+				case PXDataTypeEndianLittle:
+				{
+					//PXTextCopyA("Little Endian", 13, endianText, 45);
+				
+
+					//sprintf_s(type, 30, "%s %i", "Int", sizeOfType * 8);
+					break;
+				}
+			}
+			break;
+		}
+		case PXDataTypeBaseDecimal:
+		{
+			switch (pxFileDataElementType->Type & PXDataTypeSizeMask)
+			{
+				case 4:
+				{
+					float* value = (float*)pxFileDataElementType->Adress;
+
+					PXTextPrint(dataType, "float");
+					PXTextPrint(dataContent, "%f", value);
+
+					break;
+				}
+				case 8:
+				{
+					double* value = (double*)pxFileDataElementType->Adress;
+
+					PXTextPrint(dataType, "double");
+					PXTextPrint(dataContent, "%lf", value);
+
+					break;
+				}
+			}
+
+			break;
+		}
+		default: // Probably raw data
+		{
+			PXSize sizeOfType = pxFileDataElementType->Type & PXDataTypeSizeMask;
+
+			for (PXSize i = 0; i < 4; i++)
+			{
+				char* textAdress = *((char**)pxFileDataElementType->Adress);
+				char byteCurrent = textAdress[i];
+				PXBool Ischaracter = IsPrintable(byteCurrent);
+
+				byteCurrent = Ischaracter ? byteCurrent : '.';
+
+				dataContent->SizeUsed += sprintf_s(dataContent->TextA + i, dataContent->SizeAllocated - i, "%c", byteCurrent);
+			}
+
+
+			PXTextPrint(dataType, "ADR %i", sizeOfType * 8);
+
+
+#if 0
+			if (!pxFileDataElementType->Adress)
+			{
+				sprintf_s(data, 30, "%i", sizeOfType);
+				sprintf_s(type, 30, "%s", "Padding");
+			}
+			else
+			{
+				if (pxFileDataElementType->Type & PXDataTypeAdressMask)
+				{
+					
+
+					sprintf_s(data, 45, "0x%p", pxFileDataElementType->Adress);
+					sprintf_s(type, 45, "ADR %i", sizeOfType * 8);
+				}
+				else
+				{
+					sprintf_s(data, 45, "???", pxFileDataElementType->Adress);
+					sprintf_s(type, 30, "Byte[%i]", sizeOfType);
+				}
+			}
+#endif
+
+			break;
+		}
+	}	
+}
+
 PXBool PXAPI PXFileDoesExist(const PXText* const filePath)
 {
 	if (!filePath)
@@ -2270,12 +2413,13 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 
 		pxFileRedirect = &pxStackFile;
 
-#if PXFileDebug
+#if PXFileDebugOutput
 		PXLogPrint
 		(
 			PXLoggingInfo,
 			"File",
-			"Cached batch read. (x%-2i, %2i B)",
+			"I/O",
+			"Cached batch (x%-2i, %2i B)",
 			pxDataStreamElementListSize,
 			totalSizeToRead
 		);
@@ -2288,7 +2432,8 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 		(
 			PXLoggingInfo,
 			"File",
-			"Direct batch read. (x%-2i)",
+			"I/O",
+			"Direct batch (x%-2i)",
 			pxDataStreamElementListSize
 		);
 	}
@@ -2367,138 +2512,26 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 		
 #if PXFileDebugOutput
 
-		char type[45];
-		char* endianText = 0;
-		char data[45];
+		PXText dataType;
+		PXTextConstructNamedBufferA(&dataType, dataTypeBuffer, 64);
 
-		PXMemoryClear(type, 30);
-		PXMemoryClear(data, 30);
+		PXText dataContent;
+		PXTextConstructNamedBufferA(&dataContent, dataContentBuffer, 64);
 
-		switch (pxFileDataElementType->Type & PXDataTypeEndianMask)
-		{
-			case PXDataTypeEndianBig:
-			{
-				endianText = "Big Endian";
-				switch (pxFileDataElementType->Type & PXDataTypeSizeMask)
-				{
-					case 1:
-					{
-						PXInt32U number = *(PXInt8U*)pxFileDataElementType->Adress;
-
-						sprintf_s(data, 30, "%i", pxFileDataElementType->Adress);
-						break;
-					}
-					case 2:
-					{
-						PXInt32U number = *(PXInt16U*)pxFileDataElementType->Adress;
-
-						sprintf_s(data, 30, "%i", number);
-						break;
-					}
-					case 4:
-					{
-						sprintf_s(data, 30, "%i", *(PXInt32U*)pxFileDataElementType->Adress);
-						break;
-					}
-					case 8:
-					{
-						break;
-					}
-
-					default:
-						break;
-				}
-
-				sprintf_s(type, 30, "%s %i", "Int", sizeOfType * 8);
-				break;
-			}
-			case PXDataTypeEndianLittle:
-			{
-				endianText = "Little Endian";
-
-				switch (pxFileDataElementType->Type & PXDataTypeSizeMask)
-				{
-					case 1:
-					{
-						PXInt32U number = *(PXInt8U*)pxFileDataElementType->Adress;
-
-						sprintf_s(data, 30, "%i", pxFileDataElementType->Adress);
-						break;
-					}
-					case 2:
-					{
-						PXInt32U number = *(PXInt16U*)pxFileDataElementType->Adress;
-
-						sprintf_s(data, 30, "%i", number);
-						break;
-					}
-					case 4:
-					{
-						sprintf_s(data, 30, "%i", *(PXInt32U*)pxFileDataElementType->Adress);
-						break;
-					}
-					case 8:
-					{
-						break;
-					}
-
-					default:
-						break;
-				}
-
-				sprintf_s(type, 30, "%s %i", "Int", sizeOfType * 8);
-				break;
-			}
-
-			default:
-				endianText = "---";
-
-				if (!pxFileDataElementType->Adress)
-				{
-					sprintf_s(data, 30, "%i", sizeOfType);
-					sprintf_s(type, 30, "%s", "Padding");
-				}
-				else
-				{
-					if (pxFileDataElementType->Type & PXDataTypeAdressMask)
-					{
-						sprintf_s(data, 45, "0x%p", pxFileDataElementType->Adress);
-						sprintf_s(type, 45, "ADR %i", sizeOfType * 8);
-					}
-					else
-					{
-						for (size_t i = 0; i < sizeOfType; i++)
-						{
-							char byteCurrent = ((char*)pxFileDataElementType->Adress)[i];
-							PXBool Ischaracter = IsPrintable(byteCurrent);
-
-							byteCurrent = Ischaracter ? byteCurrent : '°';
-
-							sprintf_s(data + i, 30 - i, "%c", byteCurrent);
-						}
-
-						sprintf_s(type, 30, "Byte[%i]", sizeOfType);
-					}
-
-
-				}
-
-
-				break;
-		}
+		PXFileDataElementTypeInfo(pxFileDataElementType, &dataType, &dataContent);	
 
 		PXLogPrint
 		(
 			PXLoggingInfo,
 			"File",
-			"| %2i | %3i / %-3i | %2i B | %-7s | %-13s | %-20s |",
+			"I/O",
+			"| %2i | %3i / %-3i | %2i B | %-7s | %-33s |",
 			i + 1,
 			pxFileRedirect->DataCursor - sizeOfType,
 			pxFileRedirect->DataAllocated,
 			sizeOfType,
-			type,
-			endianText,
-			data
+			dataType.TextA,
+			dataContent.TextA
 		);
 #endif	
 	}

@@ -15,7 +15,7 @@ static const unsigned PXADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; /*y start values*
 static const unsigned PXADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; /*x delta values*/
 static const unsigned PXADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
 
-unsigned int PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, PXSize height, PXSize bpp, PXPNGInterlaceMethod interlaceMethod)
+PXActionResult PXAPI PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, PXSize height, PXSize bpp, PXPNGInterlaceMethod interlaceMethod)
 {
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
@@ -24,15 +24,20 @@ unsigned int PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, PXSize he
      *) if adam7: 1) 7x unfilter 2) 7x remove padding bits 3) Adam7_deinterlace
      NOTE: the in buffer will be overwritten with intermediate data!
      */
-    if (bpp == 0) return 31; /*error: invalid colortype*/
 
+    // Input check
+    {
+        const PXBool isValidInput = out && in && width && height && bpp;
 
+        if (!isValidInput)
+            return PXActionRefusedArgumentInvalid; // error: invalid colortype
+    }
 
     switch (interlaceMethod)
     {
         default:
         case PXPNGInterlaceInvalid:
-            break;
+            return PXActionRefusedArgumentInvalid;
 
         case PXPNGInterlaceNone:
         {
@@ -75,10 +80,10 @@ unsigned int PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, PXSize he
         }
     }
 
-    return 0;
+    return PXActionSuccessful;
 }
 
-unsigned int PXADAM7ScanlinesEncode(void* out, void* in, PXSize width, PXSize height, PXSize bbp, PXPNGInterlaceMethod interlaceMethod)
+PXActionResult PXAPI PXADAM7ScanlinesEncode(void* out, void* in, PXSize width, PXSize height, PXSize bbp, PXPNGInterlaceMethod interlaceMethod)
 {
     return 0;
 }

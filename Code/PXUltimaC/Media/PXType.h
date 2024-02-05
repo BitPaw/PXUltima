@@ -170,6 +170,7 @@ extern "C"
 #define PXDataTypeSignedMask			0b00001000000000000000000000000000 // Only useful in numeric values
 #define PXDataTypeIgnoreIFMask			0b00000110000000000000000000000000
 #define PXDataTypeShallDoIO				0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
+#define PXDataTypeTypeMask				0b00000000110000000000000000000000
 #define PXDataTypeBaseNumeric			0b00000000100000000000000000000000
 #define PXDataTypeBaseDecimal			0b00000000010000000000000000000000
 

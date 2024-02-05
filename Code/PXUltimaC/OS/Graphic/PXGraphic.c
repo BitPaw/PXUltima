@@ -90,11 +90,7 @@ PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTextur
         return PXActionRefusedArgumentNull;
     }
 
-    texture->Filter = PXGraphicRenderFilterNoFilter;
-    texture->LayoutNear = PXGraphicImageLayoutNearest;
-    texture->LayoutFar = PXGraphicImageLayoutNearest;
-    texture->WrapHeight = PXGraphicImageWrapRepeat;
-    texture->WrapWidth = PXGraphicImageWrapRepeat;
+    PXTextureConstruct(texture);
 
     // Load texture..
     {
@@ -149,117 +145,9 @@ PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTextu
     return PXGraphicTexture2DLoad(pxGraphic, texture, &pxText);
 }
 
-PXActionResult PXAPI PXGraphicFontLoad(PXGraphic* const pxGraphic, PXFont* const pxFont, const PXText* const filePath)
-{
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Graphic",
-        "Font",
-        "load <%s>.",
-        filePath->TextA
-    );
-
-    // Load texture
-    {
-        const PXActionResult loadResult = PXResourceLoad(pxFont, filePath);
-
-        PXActionReturnOnError(loadResult);
-    }
-
-    // Register as normal
-    {
-        const PXActionResult registerResult = PXGraphicFontRegister(pxGraphic, pxFont);
-
-        PXActionReturnOnError(registerResult);
-    } 
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGraphicFontRegister(PXGraphic* const pxGraphic, PXFont* const pxFont)
-{
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Graphic",
-        "Font",
-        "Registering..."
-    );
-
-    PXLockEngage(&pxGraphic->_resourceLock);
-    //pxFont->ID = PXGraphicGenerateUniqeID(pxGraphic);
-    //PXDictionaryAdd(&pxGraphic->FontLookUp, &pxFont->ID, pxFont);
-    PXLockRelease(&pxGraphic->_resourceLock);
-
-    pxGraphic->Texture2DRegister(pxGraphic->EventOwner, &pxFont->MainPage.Texture);
-
-    for (PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)
-    {
-        PXFontPage* const pxFontPage = &pxFont->AdditionalPageList[i];
-
-        pxGraphic->Texture2DRegister(pxGraphic, &pxFontPage->Texture);
-    }
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Graphic",
-        "Font",
-        "Registerd",
-        PXNull
-    );
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGraphicFontRelease(PXGraphic* const pxGraphic, PXFont* const pxFont)
-{
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGraphicFontUse(PXGraphic* const pxGraphic, PXFont* const pxFont)
-{
-    return PXActionSuccessful;
-}
-
 PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y)
 {
     PXVector2FSetXY(&pxSprite->TextureScalePointOffset, x, y);
-}
-
-PXActionResult PXAPI PXGraphicSpriteRegister(PXGraphic* const pxGraphic, PXSprite* const pxSprite)
-{
-    pxSprite->PXID = PXGraphicGenerateUniqeID(pxGraphic);
-
-    PXDictionaryAdd(&pxGraphic->SpritelLookUp, &pxSprite->PXID, pxSprite);
-
-    const PXBool hasScaling = pxSprite->TextureScalePositionOffset.X != 0 || pxSprite->TextureScalePositionOffset.Y != 0;
-
-    if (hasScaling)
-    {
-        if (pxGraphic->SpriteScaled.ResourceID.OpenGLID == 0)
-        {
-            PXOpenGLSpriteRegister(&pxGraphic->OpenGLInstance, pxSprite);
-        }
-        else
-        {
-            pxSprite->Model.StructureOverride = &pxGraphic->SpriteScaled;
-        }
-    }
-    else
-    {
-        if (pxGraphic->SpriteUnScaled.ResourceID.OpenGLID == 0)
-        {
-            PXOpenGLSpriteRegister(&pxGraphic->OpenGLInstance, pxSprite);
-        }
-        else
-        {
-            pxSprite->Model.StructureOverride = &pxGraphic->SpriteUnScaled;
-        }
-    }
-
-    return PXActionSuccessful;
 }
 
 #define QuadSkybox 0
@@ -828,7 +716,15 @@ void PXAPI PXShaderDataSet(PXShader* const shader, const PXGraphicShaderType typ
 
 void PXAPI PXTextureConstruct(PXTexture2D* const texture)
 {
-    PXMemoryClear(texture, sizeof(PXTexture2D));
+    PXClear(PXTexture2D, texture);
+
+    PXResourceIDMarkAsUnused(&texture->ResourceID);
+
+    texture->Filter = PXGraphicRenderFilterNoFilter;
+    texture->LayoutNear = PXGraphicImageLayoutNearest;
+    texture->LayoutFar = PXGraphicImageLayoutNearest;
+    texture->WrapHeight = PXGraphicImageWrapRepeat;
+    texture->WrapWidth = PXGraphicImageWrapRepeat;
 }
 
 void PXAPI PXTextureDestruct(PXTexture2D* const texture)
@@ -1082,270 +978,6 @@ void PXAPI PXGraphicPXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElem
     pxUIElement->Child = pxUIElementParent;
 }
 
-PXInt32U PXAPI PXGraphicGenerateUniqeID(PXGraphic* const pxGraphic)
-{
-    return ++pxGraphic->UniqeIDGeneratorCounter;
-}
-
-PXActionResult PXAPI PXGraphicUIElementRegister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement)
-{
-    // Is Registerd
-    {
-        const PXBool isRegisterd = pxUIElement->ID != -1;
-
-        if (!isRegisterd)
-        {
-            return PXActionInvalidRedundandInteraction;
-        }
-
-        // Create
-        pxUIElement->ID = PXGraphicGenerateUniqeID(pxGraphic);
-
-        PXDictionaryAdd(&pxGraphic->UIElementLookUp, &pxUIElement->ID, pxUIElement);
-    }
-
-
-
-    switch (pxUIElement->Type)
-    {
-        case PXUIElementTypeRenderFrame:
-        {
-            PXOpenGL* const pxOpenGL = &pxGraphic->OpenGLInstance;
-
-#if 0
-            // Texture
-           // PXTexture2DSet(pxUIElement->FrameRenderTextureReference, PXColorFormatRGBI8, pxUIElement->FrameRenderWidth, pxUIElement->Height);
-            PXOpenGLTexture2DCreate(pxOpenGL, pxUIElement->FrameRenderTextureReference);
-
-
-            // Framebuffer
-            PXOpenGLFrameBufferCreate(pxOpenGL, 1, &pxUIElement->FrameBufferID);
-            PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, pxUIElement->FrameBufferID);
-
-            // Renderbuffer as depthbuffer
-            PXOpenGLRenderBufferCreate(pxOpenGL, 1, &pxUIElement->FrameRenderID);
-            PXOpenGLRenderBufferBind(pxOpenGL, pxUIElement->FrameRenderID);
-            PXOpenGLRenderBufferStorage(pxOpenGL, PXOpenGLRenderBufferFormatDepthComponent, pxUIElement->FrameRenderWidth, pxUIElement->FrameRenderHeight);
-
-            // Link buffer
-            PXOpenGLFrameBufferLinkRenderBuffer(pxOpenGL, PXOpenGLRenderBufferAttachmentPointDepth, pxUIElement->FrameRenderID);
-
-
-
-            PXOpenGLFrameBufferLinkTexture2D(pxOpenGL, PXOpenGLRenderBufferAttachmentPointColor, PXGraphicTextureType2D, pxUIElement->FrameRenderTextureReference->ResourceID.OpenGLID, 0);
-
-            // Set the list of draw buffers.
-           // GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-            //glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-
-           // // Always check that our framebuffer is ok
-            //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-             //   return false;
-
-
-            PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, 0);
-            PXOpenGLRenderBufferBind(pxOpenGL, 0);
-#endif
-            break;
-        }
-
-        default:
-            break;
-    }
-
-
-
-
-    /*
-    switch (pxUIElement->Type)
-    {
-        case PXUIElementTypePanel:
-        {
-            const float vertexData[] =
-            {
-                 -1,  -1,  0, 0,1,
-                1,  -1,  0,  1,1,
-                 1, 1,  0,   1,0,
-                -1, 1,  0,   0,0
-            };
-            const PXSize vertexDataSize = sizeof(vertexData) / sizeof(float);
-
-            PXByte bufferData[32];
-            PXModel model;
-
-            ModelConstruct(&model);
-
-            model.Data = bufferData;
-
-            MemoryClear(bufferData, sizeof(bufferData));
-            ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
-
-            model.DataVertexList = vertexData;
-            model.DataVertexListSize = vertexDataSize;
-
-            model.DataVertexWidth = 3u;
-            model.DataVertexSize = vertexDataSize;
-            model.DataTextureWidth = 2u;
-            model.DataTextureSize = vertexDataSize;
-
-            {
-                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxUIPanel->UIElement.Renderable, &model);
-
-                PXActionExitOnError(actionResult);
-            }
-
-            PXGraphicRenderableRegister(pxGraphic, &pxUIPanel->UIElement.Renderable);
-
-            break;
-        }
-        case PXUIElementTypeLabel:
-        {
-            const PXSize textSize = PXTextLengthA(text, 256);
-            const PXSize vertexDataSize = textSize * 4u * (3u + 2u);
-
-            float* vertexData = MemoryAllocate(vertexDataSize * sizeof(float));
-
-            PXSize index = 0;
-            float xoffset = 0;
-
-            float imgwidth = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Width;
-            float imgheight = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Height;
-
-            for (size_t i = 0; i < textSize; i++)
-            {
-                char character = text[i];
-
-                PXSpriteFontCharacter* PXSpriteFontChar = PXSpriteFontGetCharacter(pxGraphicUIText->TextFont->FontElement, character);
-
-                float texturePositionX = PXSpriteFontChar->Position[0] / imgwidth;
-                float texturePositionY = PXSpriteFontChar->Position[1] / imgheight;
-                float texturePositionWidth = PXSpriteFontChar->Size[0] / imgwidth;
-                float texturePositionHeight = PXSpriteFontChar->Size[1] / imgheight;
-
-                vertexData[index++] = xoffset;
-                vertexData[index++] = 0;
-                vertexData[index++] = 0;
-
-                vertexData[index++] = texturePositionX;
-                vertexData[index++] = texturePositionY + texturePositionHeight;
-
-                vertexData[index++] = PXSpriteFontChar->Size[0] + xoffset;
-                vertexData[index++] = 0;
-                vertexData[index++] = 0;
-
-                vertexData[index++] = texturePositionX + texturePositionWidth;
-                vertexData[index++] = texturePositionY + texturePositionHeight;
-
-                vertexData[index++] = PXSpriteFontChar->Size[0] + xoffset;
-                vertexData[index++] = PXSpriteFontChar->Size[1];
-                vertexData[index++] = 0;
-
-                vertexData[index++] = texturePositionX + texturePositionWidth;
-                vertexData[index++] = texturePositionY;
-
-                vertexData[index++] = xoffset;
-                vertexData[index++] = PXSpriteFontChar->Size[1];
-                vertexData[index++] = 0;
-
-                vertexData[index++] = texturePositionX;
-                vertexData[index++] = texturePositionY;
-
-
-
-                xoffset += PXSpriteFontChar->XAdvance + 10;
-
-
-                //vertexData[index++] = PXSpriteFontChar->Position[0];
-                //vertexData[index++] = PXSpriteFontChar->Position[1];
-
-                //vertexData[index++] = PXSpriteFontChar->Position[0];
-                //vertexData[index++] = PXSpriteFontChar->Position[1];
-                //vertexData[index++] = PXSpriteFontChar->Position[0];
-                //vertexData[index++] = PXSpriteFontChar->Position[1];
-
-            }
-
-            PXByte bufferData[32];
-            PXModel model;
-
-            ModelConstruct(&model);
-
-            model.Data = bufferData;
-
-            MemoryClear(bufferData, sizeof(bufferData));
-            ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
-
-            model.DataVertexList = vertexData;
-            model.DataVertexListSize = vertexDataSize;
-
-            model.DataVertexWidth = 3u;
-            model.DataVertexSize = vertexDataSize;
-            model.DataTextureWidth = 2u;
-            model.DataTextureSize = vertexDataSize;
-
-            {
-                const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxGraphicUIText->UIElement.Renderable, &model);
-
-                PXActionExitOnError(actionResult);
-            }
-
-            PXGraphicRenderableRegister(pxGraphic, &pxGraphicUIText->UIElement.Renderable);
-
-
-
-            PXTexture pxTexture;
-
-            PXTextureConstruct(&pxTexture);
-
-            MemoryCopy(&pxGraphicUIText->TextFont->FontElement[0].FontPageList[0].FontTextureMap, sizeof(Image), &pxTexture.Image, sizeof(Image));
-
-            pxTexture.Type = PXGraphicTextureType2D;
-            pxTexture.Filter = PXGraphicRenderFilterNoFilter;
-            pxTexture.LayoutNear = PXGraphicImageLayoutNearest;
-            pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
-            pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
-            pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
-
-            PXGraphicTextureRegister(pxGraphic, &pxTexture);
-
-            pxGraphicUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
-
-            break;
-        }
-        case PXUIElementTypeButton:
-        {
-            PXRenderable* renderable = &pxButton->UIElement.Renderable;
-
-            pxButton->TextFont = pxFont;
-            PXGraphicUITextRegister(pxGraphic, renderable, 0, 0, 1, 1, text);
-            PXGraphicModelShaderSet(pxGraphic, renderable, shader);
-            PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
-            PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
-            renderable->MeshSegmentList[0].RenderMode = PXGraphicDrawModeSquare;
-
-            PXLockEngage(&pxGraphic->_pxUIElements);
-            PXLinkedListFixedNodeAdd(&pxGraphic->_pxUIElements, &pxButton->UIElement);
-            PXLockRelease(&pxGraphic->_pxUIElements);
-
-            break;
-        }
-        case PXUIElementTypeImage:
-
-        case PXUIElementTypeCustom:
-
-        default:
-            break;
-    }*/
-}
-PXActionResult PXAPI PXGraphicUIElementUpdate(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement)
-{
-
-}
-PXActionResult PXAPI PXGraphicUIElementUnregister(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement)
-{
-
-}
-
 void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)
 {
     pxRenderableMeshSegment->NumberOfVertices = 0;
@@ -1442,11 +1074,11 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
     PXDictionaryConstruct(&pxGraphic->ResourceImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
 
-    PXDictionaryConstruct(&pxGraphic->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
+
     PXDictionaryConstruct(&pxGraphic->TextureLookUp, sizeof(PXInt32U), sizeof(PXTexture2D), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxGraphic->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
+
     PXDictionaryConstruct(&pxGraphic->ModelLookUp, sizeof(PXInt32U), sizeof(PXModel), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxGraphic->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
+
     PXDictionaryConstruct(&pxGraphic->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxGraphic->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
@@ -1731,18 +1363,6 @@ PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphic* const pxGraphic, PXS
     pxSprite->Texture = PXNew(PXTexture2D);
 
     PXActionResult loadTextureResult = PXGraphicTexture2DLoadA(pxGraphic, pxSprite->Texture, textureFilePath);
-
-
-    float aspectRationX = 1;
-
-    if (pxSprite->Texture->Image.Width && pxSprite->Texture->Image.Height)
-    {
-        aspectRationX = pxSprite->Texture->Image.Width / pxSprite->Texture->Image.Height;
-    }
-
-    PXMatrix4x4FScaleSetXY(&pxSprite->Model.ModelMatrix, aspectRationX, 1);
-
-    //pxSprite->Model.IndexBuffer.Texture2D = pxTexture;
 
     return loadTextureResult;
 }

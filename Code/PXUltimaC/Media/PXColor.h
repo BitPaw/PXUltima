@@ -114,6 +114,15 @@ extern "C"
 	}
 	PXColorRGBI8;
 
+	typedef struct PXColorRGBAI8_
+	{
+		PXInt8U Red;
+		PXInt8U Green;
+		PXInt8U Blue;
+		PXInt8U Alpha;
+	}
+	PXColorRGBAI8;
+
 	typedef struct PXColorRGBI16_
 	{
 		PXInt16U Red;

@@ -74,6 +74,43 @@ PXBool PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const
         image->Format = dataFormat;
         image->Width = width;
         image->Height = height;
+
+
+        // Set image data, so we dont have a random fully empty image with no alpha
+        // Causes wierd problems if you dont expect that.
+        if(pxMemoryHeapReallocateEventData.WasSizeIncreased)
+        {
+            switch (bbp)
+            {
+                case 3:
+                {
+                    for (PXSize i = 0; i < pxMemoryHeapReallocateEventData.PointOfNewDataSize; i += 3)
+                    {
+                        char* data = &((char*)pxMemoryHeapReallocateEventData.PointOfNewData)[i];
+
+                        data[0] = 0xFF;
+                        data[1] = 0xFF;
+                        data[2] = 0xFF;
+                    }
+                    break;
+                }
+
+                case 4:
+                {
+                    for (PXSize i = 0; i < pxMemoryHeapReallocateEventData.PointOfNewDataSize; i += 4)
+                    {
+                        char* data = &((char*)pxMemoryHeapReallocateEventData.PointOfNewData)[i];
+
+                        data[0] = 0xFF;
+                        data[1] = 0xFF;
+                        data[2] = 0xFF;
+                        data[3] = 0xFF;
+                    }
+                    break;
+                }
+            }      
+        }
+
     }
 
     return PXTrue;

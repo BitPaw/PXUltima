@@ -645,12 +645,25 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
 	}
 
 	// Is we have new space and we want to fill it, do now.
-	if ((pxMemoryHeapReallocateEventData->FreshAllocationPerformed || pxMemoryHeapReallocateEventData->WasSizeIncreased) && pxMemoryHeapReallocateEventData->DoFillNewSpace)
+	if (pxMemoryHeapReallocateEventData->FreshAllocationPerformed || pxMemoryHeapReallocateEventData->WasSizeIncreased)
 	{
-		void* endOfOldData = &((char*)adressReallocated)[beforeSize];
-		PXSize newDataSize = sizeToAllocate - beforeSize;
+		pxMemoryHeapReallocateEventData->PointOfNewData = &((char*)adressReallocated)[beforeSize];
+		pxMemoryHeapReallocateEventData->PointOfNewDataSize = sizeToAllocate - beforeSize;
 
-		PXMemorySet(endOfOldData, pxMemoryHeapReallocateEventData->FillSymbol, newDataSize);
+		if (pxMemoryHeapReallocateEventData->DoFillNewSpace)
+		{
+			PXMemorySet
+			(
+				pxMemoryHeapReallocateEventData->PointOfNewData,
+				pxMemoryHeapReallocateEventData->FillSymbol,
+				pxMemoryHeapReallocateEventData->PointOfNewDataSize
+			);
+		}	
+	}
+	else
+	{
+		pxMemoryHeapReallocateEventData->PointOfNewData = 0;
+		pxMemoryHeapReallocateEventData->PointOfNewDataSize = 0;
 	}
 
 	PXLoggingEventData pxLoggingEventData;

@@ -134,6 +134,10 @@ extern "C"
 		PXBool FreshAllocationPerformed;
 		PXBool WasSuccessful;
 		PXBool WasDataMoved;
+
+		// Data of added memory space
+		void* PointOfNewData;
+		PXSize PointOfNewDataSize;
 		PXBool WasSizeIncreased;
 	}
 	PXMemoryHeapReallocateEventData;
