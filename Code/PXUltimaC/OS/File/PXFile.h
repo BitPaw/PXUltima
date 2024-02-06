@@ -7,7 +7,7 @@
 //---------------------------------------------------------
 #define FileLineBufferSize 2048
 #define PXFileMappingAllow 1
-#define PXFileDebugOutput 1
+#define PXFileDebugOutput 0
 //---------------------------------------------------------
 
 

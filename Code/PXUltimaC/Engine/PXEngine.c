@@ -199,6 +199,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     PXDictionaryConstruct(&pxEngine->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxEngine->TextLookUp, sizeof(PXInt32U), sizeof(PXEngineText), PXDictionaryValueLocalityExternalReference);
     //-----------------------------------------------------
 
 
@@ -556,6 +557,25 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             break;
         }
+        case PXEngineCreateTypeText:
+        {
+            PXEngineTextCreateData* const pxEngineTextCreateData = &pxEngineResourceCreateInfo->Text;
+            PXEngineText* const pxEngineText = pxEngineTextCreateData->EngineTextReference;
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Text",
+                "Register",
+                PXNull
+            );
+
+            pxEngineText->PXID = PXEngineGenerateUniqeID(pxEngine);
+            PXDictionaryAdd(&pxEngine->TextLookUp, &pxEngineText->PXID, pxEngineText);
+
+            break;
+        }
         case PXEngineCreateTypeUIElement:
         {
             PXEngineUIElementCreateData* const pxEngineUIElementCreateData = &pxEngineResourceCreateInfo->UIElement;
@@ -813,4 +833,168 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
     }
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo)
+{
+    if (!(pxEngine && pxEngineResourceRenderInfo))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    switch (pxEngineResourceRenderInfo->Type)
+    {
+        case PXEngineCreateTypeModel:
+        {
+            PXModel* const pxModel = pxEngineResourceRenderInfo->ModelRender.ModelReference;
+
+            break;
+        }
+        case PXEngineCreateTypeSkybox:
+        {
+            PXSkyBox* const pxSkyBox = pxEngineResourceRenderInfo->SkyBoxRender.SkyBoxReference;
+
+            PXOpenGLSkyboxDraw(&pxEngine->Graphic.OpenGLInstance, pxSkyBox, pxEngineResourceRenderInfo->CameraReference);
+
+            break;
+        }
+        case PXEngineCreateTypeSprite:
+        {
+            PXSprite* const pxSprite = pxEngineResourceRenderInfo->SpriteRender.SpriteReference;
+
+            PXGraphicSpriteDraw(&pxEngine->Graphic, pxSprite, pxEngineResourceRenderInfo->CameraReference);
+
+            break;
+        }
+        case PXEngineCreateTypeText:
+        {
+            PXGraphic* const pxGraphic = &pxEngine->Graphic;
+            PXEngineText* const pxEngineText = pxEngineResourceRenderInfo->TextRender.TextReference;
+            PXText* const pxText = &pxEngineText->Text;
+            PXFont* const pxFont = pxEngineText->Font;
+
+            float offsetX = 0;
+
+            for (PXSize i = 0; i < pxText->SizeUsed; ++i)
+            {
+                const char character = pxText->TextA[i];
+                PXFontPageCharacter* const pxFontPageCharacter = PXFontPageCharacterFetch(&pxFont->MainPage, character);
+
+                float textureWidth;
+                float textureHeight;
+                float charWidth;
+                float charHeight;
+                float charWidthSpacing;
+                float tx1;
+                float ty1;
+                float tx2;
+                float ty2;
+
+                if (pxFontPageCharacter)
+                {
+                    textureWidth = pxFont->MainPage.Texture.Image.Width;
+                    textureHeight = pxFont->MainPage.Texture.Image.Height;
+
+                    charWidth = pxFontPageCharacter->Size[0];
+                    charHeight = pxFontPageCharacter->Size[1];
+                    charWidthSpacing = pxFontPageCharacter->XAdvance;
+
+                    tx1 = pxFontPageCharacter->Position[0] / textureWidth;
+                    ty1 = pxFontPageCharacter->Position[1] / textureHeight;
+                    tx2 = ((pxFontPageCharacter->Position[0] + pxFontPageCharacter->Size[0]) / textureWidth);
+                    ty2 = ((pxFontPageCharacter->Position[1] + pxFontPageCharacter->Size[1]) / textureHeight);
+                }
+                else
+                {
+                    textureWidth = 20;
+                    textureHeight = 20;
+
+                    charWidth = 40;
+                    charHeight = 60;
+                    charWidthSpacing = 45;
+
+                    tx1 = 0;
+                    ty1 = 0;
+                    tx2 = 1;
+                    ty2 = 1;
+                }
+
+                //pxUIElement->TextInfo.Scale = 0.35;
+
+                float sclaingWidth = (9.0f / 16.0f);//pxUIElement->TextInfo.Scale * ;
+                float scalingHeight = 0;//pxUIElement->TextInfo.Scale;
+
+                float x1 = -1 + 0;//offsetX;// currentOffset.Left + offsetX; // offset // currentOffset.Left  
+                float y1 = -1;// currentOffset.Bottom;
+
+                // Add offset
+                x1 += 0;// currentOffset.Left;
+                y1 += 0;//currentOffset.Top;
+
+                float x2 = (x1 + ((charWidth / textureWidth) * sclaingWidth));
+                float y2 = (y1 + ((charHeight / textureHeight) * scalingHeight));
+
+                offsetX += ((charWidthSpacing / textureWidth) * sclaingWidth);
+
+
+
+                //x1 -= 1.0;
+                //y1 += 0.9;
+                //x2 -= 1.0;
+                //y2 += 0.9;
+
+                if (character == ' ')
+                {
+                    continue;
+                }
+
+#if 0
+                pxGraphic->DrawColorRGBAF // Text color
+                (
+                    pxGraphic->EventOwner,
+                    pxUIElement->ColorTintReference->Red,
+                    pxUIElement->ColorTintReference->Green,
+                    pxUIElement->ColorTintReference->Blue,
+                    pxUIElement->ColorTintReference->Alpha
+                );
+#endif
+
+#if 0 // Text debug
+                pxGraphic->Texture2DSelect(pxGraphic->EventOwner, 0);
+                pxGraphic->DrawModeSet(pxGraphic->EventOwner, PXGraphicDrawFillModeFill);
+                pxGraphic->DrawColorRGBAF(pxGraphic->EventOwner, 0, 1, 0, 1);
+                pxGraphic->RectangleDraw(pxGraphic->EventOwner, x1, y1, x2, y2, 0x01);
+#else
+
+                if (pxFontPageCharacter)
+                {
+                    pxGraphic->RectangleDrawTx(pxGraphic->EventOwner, x1, y1, x2, y2, tx1, ty1, tx2, ty2, 0x01);
+                }
+                else
+                {
+                    pxGraphic->Texture2DSelect(pxGraphic->EventOwner, PXNull);
+                    pxGraphic->RectangleDraw(pxGraphic->EventOwner, x1, y1, x2, y2, 0x01);
+                    pxGraphic->Texture2DSelect(pxGraphic->EventOwner, &pxFont->MainPage.Texture);
+                }
+#endif // Text debug
+
+            }
+
+            pxGraphic->Texture2DSelect(pxGraphic->EventOwner, PXNull);
+            PXOpenGLBlendingMode(pxGraphic, PXBlendingModeNone);
+
+#if 0 // Text debug
+            pxGraphic->DrawModeSet(pxGraphic->EventOwner, PXGraphicDrawFillModeFill);
+            pxGraphic->DrawColorRGBAF(pxGraphic->EventOwner, 0, 1, 0, 1);
+            pxGraphic->RectangleDraw(pxGraphic->EventOwner, currentOffset.Left, currentOffset.Top, currentOffset.Right, currentOffset.Bottom, 0x02);
+#endif // Text debug
+
+
+            break;
+        }
+        default:
+        {
+            return PXActionRefusedArgumentInvalid;
+        }
+    }
 }

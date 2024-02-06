@@ -22,10 +22,25 @@ extern "C"
 		PXEngineCreateTypeFont,
 		PXEngineCreateTypeSkybox,
 		PXEngineCreateTypeSprite,
+		PXEngineCreateTypeText,
 		PXEngineCreateTypeUIElement
 	}
 	PXEngineCreateType;
 
+	typedef struct PXEngineText_
+	{
+		PXInt32U PXID;
+
+		PXText Text;
+		PXFont* Font;
+	}
+	PXEngineText;
+
+	typedef struct PXEngineTextCreateData_
+	{
+		PXEngineText* EngineTextReference;
+	}
+	PXEngineTextCreateData;
 
 	typedef struct PXEngineUIElementCreateData_
 	{
@@ -90,10 +105,65 @@ extern "C"
 			PXEngineFontCreateData Font;
 			PXSkyBoxCreateEventData SkyBox;
 			PXSpriteCreateEventData Sprite;
+			PXEngineTextCreateData Text;
 			PXEngineUIElementCreateData UIElement;
 		};
 	}
 	PXEngineResourceCreateInfo;
+
+
+
+
+
+
+
+
+
+
+
+	typedef struct PXEngineModelRenderInfo_
+	{
+		PXModel* ModelReference;
+	}
+	PXEngineModelRenderInfo;
+
+	typedef struct PXEngineSkyBoxRenderInfo_
+	{
+		PXSkyBox* SkyBoxReference;
+	}
+	PXEngineSkyBoxRenderInfo;
+
+	typedef struct PXEngineSpriteRenderInfo_
+	{
+		PXSprite* SpriteReference;
+	}
+	PXEngineSpriteRenderInfo;
+
+	typedef struct PXEngineTextRenderInfo_
+	{
+		PXEngineText* TextReference;
+	}
+	PXEngineTextRenderInfo;
+
+
+	typedef struct PXEngineResourceRenderInfo_
+	{
+		PXEngineCreateType Type;
+
+		PXCamera* CameraReference;
+
+		union
+		{
+			PXEngineModelRenderInfo ModelRender;
+			PXEngineSkyBoxRenderInfo SkyBoxRender;
+			PXEngineSpriteRenderInfo SpriteRender;
+			PXEngineTextRenderInfo TextRender;
+		};
+	}
+	PXEngineResourceRenderInfo;
+
+
+
 
 
 	typedef struct PXPlayerMoveInfo_
@@ -153,6 +223,7 @@ extern "C"
 		PXDictionary SpritelLookUp;
 		PXDictionary FontLookUp;
 		PXDictionary UIElementLookUp;
+		PXDictionary TextLookUp;
 
 		// Cached most-common objects
 		PXModel SpriteScaled;
@@ -172,6 +243,7 @@ extern "C"
 
 
 	PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
+	PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo);
 
 #ifdef __cplusplus
 }

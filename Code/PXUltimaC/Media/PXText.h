@@ -82,7 +82,7 @@ extern "C"
 		(pxText)->NumberOfCharacters = 0;\
 		(pxText)->Format = format;\
 		(pxText)->TextA = bufferCacheName;\
-		PXMemorySet((pxText)->TextA, '°', (pxText)->SizeAllocated);
+		PXMemorySet((pxText)->TextA, '\0', (pxText)->SizeAllocated);
 
 
 #define PXTextConstructNamedBufferA(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, TextFormatASCII)
@@ -125,6 +125,14 @@ extern "C"
 
 #define PXTextMakeFixedA(pxText, s)\
 		char text[] = s;\
+		(pxText)->SizeAllocated = sizeof(text);\
+		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
+		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
+		(pxText)->Format = TextFormatASCII;\
+		(pxText)->TextA = text;
+
+#define PXTextMakeFixedGlobalA(pxText, s)\
+		const char* text = s;\
 		(pxText)->SizeAllocated = sizeof(text);\
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\

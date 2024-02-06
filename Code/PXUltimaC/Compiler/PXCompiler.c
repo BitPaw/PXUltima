@@ -5,7 +5,7 @@
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
 
-#define PXCompilerDebug 1
+#define PXCompilerDebug 0
 #define PXCompilerSanitise 1
 
 #if PXCompilerDebug
@@ -37,6 +37,7 @@ void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry*
 	(
 		PXLoggingInfo,
 		"Compiler", 
+		"Entry",
 		"Element Added, L:%-4i C:%-4i S:%-4i E:(%i)",	
 		compilerSymbolEntry->Line,
 		compilerSymbolEntry->Coloum,

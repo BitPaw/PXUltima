@@ -1003,13 +1003,13 @@ extern "C"
 
 
 
-
-
 	typedef struct PXVideo_
 	{
 		int __Dummy__;
 	}
 	PXVideo;
+
+
 
 
 	PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);

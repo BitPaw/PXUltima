@@ -446,16 +446,32 @@ void PXAPI PXFileDataElementTypeInfo(PXFileDataElementType* const pxFileDataElem
 		{
 			PXSize sizeOfType = pxFileDataElementType->Type & PXDataTypeSizeMask;
 
-			for (PXSize i = 0; i < 4; i++)
+			char* textAdress = *((char**)pxFileDataElementType->Adress);
+
+			const PXBool isNormalAdress = textAdress > 0x0000FF00000000;
+
+			if (isNormalAdress)
 			{
-				char* textAdress = *((char**)pxFileDataElementType->Adress);
-				char byteCurrent = textAdress[i];
-				PXBool Ischaracter = IsPrintable(byteCurrent);
+#if	0
+				for (PXSize i = 0; i < 4; i++)
+				{				
+					char byteCurrent = textAdress[i];
+					PXBool Ischaracter = IsPrintable(byteCurrent);
 
-				byteCurrent = Ischaracter ? byteCurrent : '.';
+					byteCurrent = Ischaracter ? byteCurrent : '.';
 
-				dataContent->SizeUsed += sprintf_s(dataContent->TextA + i, dataContent->SizeAllocated - i, "%c", byteCurrent);
+					dataContent->SizeUsed += sprintf_s(dataContent->TextA + i, dataContent->SizeAllocated - i, "%c", byteCurrent);
+				}
+#else
+				PXTextPrint(dataContent, "0x%p", pxFileDataElementType->Adress);
+#endif
 			}
+			else
+			{
+				PXTextPrint(dataContent, "0x%p", pxFileDataElementType->Adress);
+			}
+
+			
 
 
 			PXTextPrint(dataType, "ADR %i", sizeOfType * 8);
