@@ -133,7 +133,7 @@ extern "C"
 
 #define PXTextMakeFixedGlobalA(pxText, s)\
 		const char* text = s;\
-		(pxText)->SizeAllocated = sizeof(text);\
+		(pxText)->SizeAllocated = PXTextLengthA(text, PXTextLengthUnkown);\
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = TextFormatASCII;\

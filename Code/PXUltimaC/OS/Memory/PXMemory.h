@@ -129,6 +129,7 @@ extern "C"
 
 		PXBool DoFillNewSpace;
 		PXByte FillSymbol;
+		PXBool ReduceSizeIfPossible;
 
 		// Additinaional Flags
 		PXBool FreshAllocationPerformed;
@@ -224,6 +225,7 @@ extern "C"
 	(*eventDataAdress).AmountCurrent = current; \
 	(*eventDataAdress).DataSize = sizeCurrent; \
 	(*eventDataAdress).DataAdress = dataAdress; \
+	(*eventDataAdress).ReduceSizeIfPossible = PXTrue; \
 	(*eventDataAdress).CodeFileName = _PX_FILENAME_; \
 	(*eventDataAdress).CodeFunctionName = _PX_FUNCTION_; \
 	(*eventDataAdress).CodeFileLine = _PX_LINE_;
@@ -241,16 +243,6 @@ extern "C"
 #else 
 #define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress)
 #endif	
-//---------------------------------------------------------
-
-
-
-//---------------------------------------------------------
-// Guaranteesize
-//---------------------------------------------------------
-	PXPublic PXBool PXAPI PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize);
-
-#define PXGuaranteeSize(type, address, currentSize, requestedSize) PXMemoryGuaranteeSize(sizeof(type), address, currentSize, requestedSize);
 //---------------------------------------------------------
 
 

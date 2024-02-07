@@ -26,7 +26,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 	PXSpriteFontConstruct(pxSpriteFont);
 
 	PXFile tokenStream;
-	PXFileOpenTemporal(&tokenStream, pxFile->DataSize * 5);
+	PXFileOpenTemporal(&tokenStream, pxFile->DataSize * 8);
 
 	PXSize currentPageIndex = 0;
 	PXSize currentCharacterIndex = 0;
@@ -262,6 +262,8 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 					{
 						PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
+						PXResourceIDMarkAsUnused(&pxFontPage->Texture.ResourceID);
+
 						const PXSize targetLine = compilerSymbolEntry.Line;
 
 						while (targetLine == compilerSymbolEntry.Line)
@@ -367,7 +369,8 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 								{
 									PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
-									pxFontPage->CharacteListSize = compilerSymbolEntry.DataI32U;
+									pxFontPage->CharacteListEntrys = compilerSymbolEntry.DataI32U;
+									pxFontPage->CharacteListSize = sizeof(PXFontPageCharacter) * compilerSymbolEntry.DataI32U;
 									pxFontPage->CharacteList = PXNewList(PXFontPageCharacter, compilerSymbolEntry.DataI32U);
 									break;
 								}	
@@ -383,7 +386,23 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 						const PXSize targetLine = compilerSymbolEntry.Line;
 						PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
-						const PXBool resizeSuccess = PXGuaranteeSize(PXFontPageCharacter, &pxFontPage->CharacteList, &pxFontPage->CharacteListSize, currentCharacterIndex + 2);
+						// Guarantee size of list
+						{
+							PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
+
+							PXMemoryHeapReallocateEventDataFillType
+							(
+								&pxMemoryHeapReallocateEventData,
+								PXFontPageCharacter,
+								currentCharacterIndex + 2,
+								&pxFontPage->CharacteListEntrys,
+								&pxFontPage->CharacteListSize,
+								&pxFontPage->CharacteList
+							);
+							pxMemoryHeapReallocateEventData.ReduceSizeIfPossible = PXFalse;
+
+							PXMemoryHeapReallocate(&pxMemoryHeapReallocateEventData);
+						}		
 							
 						PXFontPageCharacter* const pxFontPageCharacter = &pxFontPage->CharacteList[currentCharacterIndex++];
 
@@ -490,14 +509,6 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 
 
 #if 0
-	/*
-
-	
-
-	
-
-	*/
-
 	PXSpriteFontPage* currentPage = 0;
 	PXSize characterIndex = 0;
 

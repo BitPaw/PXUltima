@@ -653,6 +653,7 @@ extern "C"
 	typedef struct PXFontPage_
 	{
 		PXSize CharacteListSize;
+		PXSize CharacteListEntrys;
 		PXFontPageCharacter* CharacteList;
 		PXTexture2D Texture;
 	}

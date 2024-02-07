@@ -31,8 +31,14 @@ extern "C"
 	{
 		PXInt32U PXID;
 
+		PXVector2F Position;
+		PXVector2F Scaling;
+
+		PXBool DoubleRenderForShadow;
+
 		PXText Text;
 		PXFont* Font;
+		float FontScaling;
 	}
 	PXEngineText;
 

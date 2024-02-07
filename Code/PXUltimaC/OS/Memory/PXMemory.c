@@ -545,18 +545,6 @@ PXBool PXAPI PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAd
 }
 #endif
 
-PXBool PXAPI PXMemoryGuaranteeSize(const PXSize typeSize, void** const sourceAddress, PXSize* const currentSize, const PXSize requestedSize)
-{
-	const PXBool needToRealocate = *currentSize < requestedSize;
-
-	if (!needToRealocate)
-	{
-		return PXTrue;
-	}
-
-	return 0;// PXMemoryHeapReallocate(typeSize, sourceAddress, currentSize, requestedSize);
-}
-
 
 #if PXMemoryDebug
 void PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, const char* function, const PXSize line)
@@ -620,6 +608,19 @@ void PXAPI PXMemoryRelease(void* adress, const PXSize size)
 PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateEventData)
 {
 	const PXSize sizeToAllocate = pxMemoryHeapReallocateEventData->AmountDemand * pxMemoryHeapReallocateEventData->TypeSize;
+
+	// Need realloc?
+	{
+		const PXSize isEnoughSpace = pxMemoryHeapReallocateEventData->DataSize >= sizeToAllocate;
+
+		// If there is enough space and we dont want to minimize size, we dont need to realloc
+		if (isEnoughSpace && !pxMemoryHeapReallocateEventData->ReduceSizeIfPossible)
+		{
+			return PXTrue;
+		}
+	}
+
+
 	const PXSize beforeSize = *pxMemoryHeapReallocateEventData->DataSize;
 
 	void* const adressReallocated = realloc(*pxMemoryHeapReallocateEventData->DataAdress, sizeToAllocate);
