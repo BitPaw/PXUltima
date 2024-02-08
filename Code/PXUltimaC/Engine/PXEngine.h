@@ -14,6 +14,9 @@ extern "C"
 	typedef struct PXEngine_ PXEngine;
 
 
+
+
+
 	typedef enum PXEngineCreateType_
 	{
 		PXEngineCreateTypeInvalid,
@@ -23,9 +26,42 @@ extern "C"
 		PXEngineCreateTypeSkybox,
 		PXEngineCreateTypeSprite,
 		PXEngineCreateTypeText,
+		PXEngineCreateTypeTimer,
 		PXEngineCreateTypeUIElement
 	}
 	PXEngineCreateType;
+
+	typedef struct PXEngineTimerEventInfo_
+	{
+		PXInt32U Acuracy;
+
+		PXBool WasHandled;
+	}
+	PXEngineTimerEventInfo;
+
+	typedef void (*PXEngineTimerCallBack)(void* owner, PXEngineTimerEventInfo* const pxEngineTimerEventInfo);
+
+	typedef struct PXEngineTimer_
+	{
+		void* Owner;
+		PXEngineTimerCallBack CallBack;
+
+		PXInt32U TimeStampStart;
+
+		PXInt32U TimeDeltaTarget;
+
+		PXInt32U PXID;
+	}
+	PXEngineTimer;
+
+
+	typedef struct PXEngineTimerCreateInfo_
+	{
+		PXEngineTimer* TimerReference;
+	}
+	PXEngineTimerCreateInfo;
+
+
 
 	typedef struct PXEngineText_
 	{
@@ -39,6 +75,8 @@ extern "C"
 		PXText Text;
 		PXFont* Font;
 		float FontScaling;
+
+		PXInt32U TextRenderAmount;
 	}
 	PXEngineText;
 
@@ -113,6 +151,7 @@ extern "C"
 			PXSpriteCreateEventData Sprite;
 			PXEngineTextCreateData Text;
 			PXEngineUIElementCreateData UIElement;
+			PXEngineTimerCreateInfo Timer;
 		};
 	}
 	PXEngineResourceCreateInfo;
@@ -230,6 +269,7 @@ extern "C"
 		PXDictionary FontLookUp;
 		PXDictionary UIElementLookUp;
 		PXDictionary TextLookUp;
+		PXDictionary TimerLookUp;
 
 		// Cached most-common objects
 		PXModel SpriteScaled;

@@ -114,6 +114,46 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         pxEngine->CounterTimeNetwork = PXTimeCounterStampGet() - pxEngine->CounterTimeNetwork;
     }
 
+    // Timer
+    {
+        PXDictionary* const timerList = &pxEngine->TimerLookUp;
+
+        for (PXSize timerIndex = 0; timerIndex < timerList->EntryAmountCurrent; ++timerIndex)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXEngineTimer* pxEngineTimer = PXNull;
+
+            PXDictionaryIndex(timerList, timerIndex, &pxDictionaryEntry);
+
+            pxEngineTimer = *(PXEngineTimer**)pxDictionaryEntry.Value;
+
+            // Check timing, is it time to call yet?
+            const PXInt32U timeStamp = PXTimeCounterStampGet();
+            const PXBool isLongEnough = (timeStamp - pxEngineTimer->TimeStampStart) > pxEngineTimer->TimeDeltaTarget;
+
+            if (isLongEnough)
+            {
+                pxEngineTimer->TimeStampStart = timeStamp;
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Timer",
+                    "Trigger",
+                    PXNull
+                );
+
+                if (pxEngineTimer->CallBack)
+                {
+                    PXEngineTimerEventInfo pxEngineTimerEventInfo;
+
+                    pxEngineTimer->CallBack(pxEngineTimer->Owner, &pxEngineTimerEventInfo);
+                }
+            }
+        }
+    }
+
     // Gameupdate
     {
         pxEngine->CounterTimeCPU = PXTimeCounterStampGet();
@@ -200,6 +240,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     PXDictionaryConstruct(&pxEngine->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->TextLookUp, sizeof(PXInt32U), sizeof(PXEngineText), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxEngine->TimerLookUp, sizeof(PXInt32U), sizeof(PXEngineTimer), PXDictionaryValueLocalityExternalReference);
     //-----------------------------------------------------
 
 
@@ -576,6 +617,27 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             break;
         }
+        case PXEngineCreateTypeTimer:
+        {
+            PXEngineTimerCreateInfo* const pxEngineTimerCreateInfo = &pxEngineResourceCreateInfo->Timer;
+            PXEngineTimer* const pxEngineTimer = pxEngineTimerCreateInfo->TimerReference;
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Timer",
+                "Register",
+                PXNull
+            );
+
+            pxEngineTimer->PXID = PXEngineGenerateUniqeID(pxEngine);
+            pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
+
+            PXDictionaryAdd(&pxEngine->TimerLookUp, &pxEngineTimer->PXID, pxEngineTimer);
+
+            break;
+        }
         case PXEngineCreateTypeUIElement:
         {
             PXEngineUIElementCreateData* const pxEngineUIElementCreateData = &pxEngineResourceCreateInfo->UIElement;
@@ -888,7 +950,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                 PXOpenGLBlendingMode(pxGraphic, PXBlendingModeOneToOne);
                 pxGraphic->Texture2DSelect(pxGraphic->EventOwner, &pxFont->MainPage.Texture);
 
-                for (PXSize i = 0; i < pxText->SizeUsed; ++i)
+                for (PXSize i = 0; i < pxText->SizeUsed && i < pxEngineText->TextRenderAmount; ++i)
                 {
                     const char character = pxText->TextA[i];
                     PXFontPageCharacter* const pxFontPageCharacter = PXFontPageCharacterFetch(&pxFont->MainPage, character);
