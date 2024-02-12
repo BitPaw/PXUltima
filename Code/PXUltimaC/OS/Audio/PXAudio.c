@@ -117,6 +117,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 			pxAudio->DeviceVolumeSetEqual = PXDirectSoundDeviceVolumeSetEqual;
 			pxAudio->DeviceVolumeSetIndividual = PXDirectSoundDeviceVolumeSetIndividual;
 			pxAudio->DeviceStart = PXDirectSoundDeviceStart;
+			pxAudio->DeviceRestart = PXDirectSoundDeviceRestart;
 			pxAudio->DeviceStop = PXDirectSoundDeviceStop;
 			pxAudio->DevicePause = PXDirectSoundDevicePause;
 			pxAudio->PlayCursorSet = PXDirectSoundDevicePlayCursorSet;

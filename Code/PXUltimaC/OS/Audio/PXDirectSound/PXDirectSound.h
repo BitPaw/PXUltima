@@ -124,6 +124,7 @@ extern "C"
 	// Device - Playback
 	//--------------------------------------------------------
 	PXPublic PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
+	PXPublic PXActionResult PXAPI PXDirectSoundDeviceRestart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
 	PXPublic PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
 	PXPublic PXActionResult PXAPI PXDirectSoundDevicePause(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
 

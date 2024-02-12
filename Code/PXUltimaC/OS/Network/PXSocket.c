@@ -1294,7 +1294,7 @@ PXActionResult PXAPI PXSocketSend(PXSocket* const pxSocketSender, const PXSocket
 
         if (!isSenderReady)
         {
-            return PXActionRefuedObjectNotReady;
+            return PXActionRefusedObjectNotReady;
         }
 
         const PXBool isReceiverReady = pxSocketReceiverID != -1;
@@ -1374,7 +1374,7 @@ PXActionResult PXAPI PXSocketReceive(PXSocket* const pxSocketReceiver, const PXS
 
         if (!isReceiverReady)
         {
-            return PXActionRefuedObjectNotReady;
+            return PXActionRefusedObjectNotReady;
         }
 
         const PXBool isSenderReady = pxSocketSenderID != -1;

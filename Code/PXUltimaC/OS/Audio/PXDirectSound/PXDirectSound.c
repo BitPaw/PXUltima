@@ -741,6 +741,15 @@ PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudio* const pxAudio, PXAudioDev
 	return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXDirectSoundDeviceRestart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+{
+	const PXActionResult cursorResetResult = PXDirectSoundDevicePlayCursorSet(pxAudio, pxAudioDevice, 0);
+
+	const PXActionResult startResult = PXDirectSoundDeviceStart(pxAudio, pxAudioDevice);
+
+	return startResult;
+}
+
 PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
 	if (!pxAudio || !pxAudioDevice)

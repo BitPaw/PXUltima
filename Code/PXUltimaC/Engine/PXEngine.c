@@ -3,6 +3,7 @@
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Async/PXProcess.h>
+#include <Engine/Dialog/PXDialogBox.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -63,6 +64,15 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         if (keyboard->Letters & KeyBoardIDLetterS)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  0, -1); }
         if (keyboard->Letters & KeyBoardIDLetterD)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  1,  0,  0); }
         if (keyboard->Letters & KeyBoardIDSpace)        { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  1,  0); }
+        if (keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
+        {
+            pxEngine->InteractionLock = PXTrue;
+            PXFunctionInvoke(pxEngine->OnInteract, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
+        }
+        if (!(keyboard->Letters & KeyBoardIDLetterF))
+        {
+            pxEngine->InteractionLock = PXFalse;
+        }
 
         pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
         pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
@@ -127,28 +137,49 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             pxEngineTimer = *(PXEngineTimer**)pxDictionaryEntry.Value;
 
+            if (!pxEngineTimer->Enabled)
+            {
+                continue;
+            }
+
             // Check timing, is it time to call yet?
             const PXInt32U timeStamp = PXTimeCounterStampGet();
-            const PXBool isLongEnough = (timeStamp - pxEngineTimer->TimeStampStart) > pxEngineTimer->TimeDeltaTarget;
+            const PXInt32U timeerDeltaTime = timeStamp - pxEngineTimer->TimeStampStart;
+            const PXBool isTimeDelayToStrong = ((PXInt32S)pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift) < 0;
+            const PXBool isLongEnough = 
+                isTimeDelayToStrong ||
+                (timeerDeltaTime > (pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift));
 
             if (isLongEnough)
             {
                 pxEngineTimer->TimeStampStart = timeStamp;
+
+#if 1
+
+                PXText pxText;
+                PXTextConstructBufferA(&pxText, 64);
+
+                PXTextFormatTime(&pxText, timeerDeltaTime);
+
 
                 PXLogPrint
                 (
                     PXLoggingInfo,
                     "PX",
                     "Timer",
-                    "Trigger",
-                    PXNull
+                    "Trigger, Waited for %10s",
+                    pxText.TextA
                 );
+#endif
 
                 if (pxEngineTimer->CallBack)
                 {
                     PXEngineTimerEventInfo pxEngineTimerEventInfo;
+                    PXClear(PXEngineTimerEventInfo, &pxEngineTimerEventInfo);
+                    pxEngineTimerEventInfo.TimerReference = pxEngineTimer;
 
-                    pxEngineTimer->CallBack(pxEngineTimer->Owner, &pxEngineTimerEventInfo);
+
+                    pxEngineTimer->CallBack(pxEngine, &pxEngineTimerEventInfo, pxEngineTimer->Owner);
                 }
             }
         }
@@ -200,6 +231,168 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 #endif
 }
 
+PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo)
+{
+    if (!(pxEngine && pxEngineResourceActionInfo))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    switch (pxEngineResourceActionInfo->Type)
+    {     
+        case PXEngineResourceActionTypeCreate:
+        {
+            return PXEngineResourceCreate(pxEngine, &pxEngineResourceActionInfo->Create);
+        }
+        case PXEngineResourceActionTypeDestroy:
+        {
+            return PXActionRefusedNotImplemented;
+        }
+        case PXEngineResourceActionTypeUpdate:
+        {
+            return PXActionRefusedNotImplemented;
+        }
+        case PXEngineResourceActionTypeFetch:
+        {
+            return PXActionRefusedNotImplemented;
+        }
+        case PXEngineResourceActionTypeSelect:
+        {
+            return PXActionRefusedNotImplemented;
+        }
+        case PXEngineResourceActionTypeRender:
+        {
+            return PXEngineResourceRender(pxEngine, &pxEngineResourceActionInfo->Render);
+        }
+        case PXEngineResourceActionTypePlay:
+        {
+            return PXActionRefusedNotImplemented;
+        }
+        case PXEngineResourceActionTypeStateChange:
+        {
+            PXEngineResourceStateChangeInfo* const pxEngineResourceStateChangeInfo = &pxEngineResourceActionInfo->ChangeInfo;
+
+            if (!pxEngineResourceStateChangeInfo->Object)
+            {
+                return PXActionRefusedArgumentNull;
+            }
+
+            switch (pxEngineResourceStateChangeInfo->Type)
+            {
+                case PXEngineCreateTypeModel:
+                {
+                    PXModel* const pxModel = (PXModel*)pxEngineResourceStateChangeInfo->Object;
+
+                    pxModel->Enabled = pxEngineResourceStateChangeInfo->Enable;
+
+                    break;
+                }
+                case PXEngineCreateTypeSkybox:
+                {
+
+                    break;
+                }
+                case PXEngineCreateTypeSprite:
+                {
+                    PXSprite* const pxSprite = (PXSprite*)pxEngineResourceStateChangeInfo->Object;
+
+                    pxSprite->Enabled = pxEngineResourceStateChangeInfo->Enable;
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "PX",
+                        "Sprite",
+                        "Enable:%s",
+                        pxEngineResourceStateChangeInfo->Enable ? "Yes" : "No"
+                    );
+
+                    break;
+                }
+                case PXEngineCreateTypeText:
+                {
+                    PXEngineText* const pxEngineText = (PXEngineText*)pxEngineResourceStateChangeInfo->Object;
+
+                    pxEngineText->Enabled = pxEngineResourceStateChangeInfo->Enable;
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "PX",
+                        "Text",
+                        "Enable:%s",
+                        pxEngineResourceStateChangeInfo->Enable ? "Yes" : "No"
+                    );
+
+                    break;
+                }
+                case PXEngineCreateTypeTimer:
+                {
+                    PXEngineTimer* const pxEngineTimer = (PXEngineTimer*)pxEngineResourceStateChangeInfo->Object;
+
+                    pxEngineTimer->Enabled = pxEngineResourceStateChangeInfo->Enable;
+                    pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "PX",
+                        "Timer",
+                        "Enable:%s",
+                        pxEngineResourceStateChangeInfo->Enable ? "Yes" : "No"
+                    );
+
+                    break;
+                }
+                case PXEngineCreateTypeUIElement:
+                {
+
+                    break;
+                }
+                default:
+                    break;
+            }
+
+
+            return PXActionRefusedNotImplemented;
+        }
+        case PXEngineResourceActionTypeCustom:
+        {
+            return PXActionRefusedNotImplemented;
+        }
+        default:
+            return PXActionRefusedArgumentInvalid;
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount)
+{
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PX",
+        "Resource",
+        "Action Batch <%i>",
+        amount
+    );
+
+    for (PXSize i = 0; i < amount; ++i)
+    {
+        PXEngineResourceActionInfo* const pxEngineResourceAction = &pxEngineResourceActionInfoList[i];
+
+        PXEngineResourceAction(pxEngine, pxEngineResourceAction);
+    }
+
+    return PXActionSuccessful;
+}
+
+PXInt32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXInt32U limiter)
+{
+    return PXMathRandomeNumber(&pxEngine->RandomGeneratorSeed) % limiter;
+}
+
 PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
 {
     return pxEngine->IsRunning;
@@ -241,8 +434,11 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     PXDictionaryConstruct(&pxEngine->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->TextLookUp, sizeof(PXInt32U), sizeof(PXEngineText), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->TimerLookUp, sizeof(PXInt32U), sizeof(PXEngineTimer), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxEngine->SoundLookUp, sizeof(PXInt32U), sizeof(PXEngineSound), PXDictionaryValueLocalityExternalReference);
     //-----------------------------------------------------
 
+
+    PXMathRandomeSeed(&pxEngine->RandomGeneratorSeed);
 
 
     // Load all mods now, not fully tho, they may need very early checks before anything happens
@@ -266,7 +462,9 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 
 
 
+    //-----------------------------------------------------
 	// Create window
+    //-----------------------------------------------------
     {
         PXLogPrint
         (
@@ -280,8 +478,13 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXTrue);
         //PXWindowUpdate(&pxEngine->Window);
     }
+    //-----------------------------------------------------
 
+
+
+    //-----------------------------------------------------
     // Create graphic instance
+    //-----------------------------------------------------
     {
         PXLogPrint
         (
@@ -302,10 +505,53 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
 
         pxEngine->Graphic.SwapIntervalSet(pxEngine->Graphic.EventOwner, 1);
+        pxEngine->Graphic.Select(pxEngine->Graphic.EventOwner);
     }
+    //-----------------------------------------------------
+  
 
 
-    pxEngine->Graphic.Select(pxEngine->Graphic.EventOwner);
+    //-----------------------------------------------------
+    // Create Audio Session
+    //-----------------------------------------------------
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX",
+            "Init",
+            "Creating audio instance..."
+        );
+
+        const PXActionResult audioInitResult = PXAudioInitialize(&pxEngine->Audio, PXAudioSystemWindowsDirectSound);
+
+        PXInt32U audioDeviceAmountInput = 0;
+        PXInt32U audioDeviceAmountOutput = 0;
+
+        pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeInput, &audioDeviceAmountInput);
+        pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeOutput, &audioDeviceAmountOutput);
+
+        for (size_t i = 0; i < audioDeviceAmountInput; i++)
+        {
+            PXAudioDevice pxAudioDevice;
+
+            pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
+        }
+
+        for (size_t i = 0; i < audioDeviceAmountOutput; i++)
+        {
+            PXAudioDevice pxAudioDevice;
+
+            pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
+        }
+
+        pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
+
+        pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
+    }
+    //-----------------------------------------------------
+
+
 
   // PXControllerAttachToWindow(&pxBitFireEngine->Controller, pxBitFireEngine->WindowMain.ID);
   // PXCameraAspectRatioChange(pxBitFireEngine->CameraCurrent, pxBitFireEngine->WindowMain.Width, pxBitFireEngine->WindowMain.Height);
@@ -372,6 +618,32 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         case PXEngineCreateTypeModel:
         {
             PXModelCreateEventData* const pxModelCreateEventData = &pxEngineResourceCreateInfo->Model;
+            
+            break;
+        }
+        case PXEngineCreateTypeTexture:
+        {
+            PXEngineTexture2DCreateData* const pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
+            PXTexture2D* const pxTexture2D = pxEngineTexture2DCreateData->Texture2DReference;
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Texture-Create",
+                "load <%s>.",
+                pxEngineTexture2DCreateData->FilePath
+            );
+
+            PXText pxText;
+            PXTextConstructFromAdressA(&pxText, pxEngineTexture2DCreateData->FilePath, PXTextLengthUnkown, PXTextLengthUnkown);
+
+            const PXActionResult loadResult = PXResourceLoad(&pxTexture2D->Image, &pxText);
+
+            PXActionReturnOnError(loadResult);
+
+
+            pxEngine->Graphic.Texture2DRegister(pxEngine->Graphic.EventOwner, pxTexture2D);
 
 
             break;
@@ -518,17 +790,14 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             materiial->DiffuseTexture = pxSprite->Texture;
 #endif
 
-            PXGraphicSpriteTextureLoadA(&pxEngine->Graphic, pxSprite, pxSpriteCreateEventData->TextureName);
+            if (pxSpriteCreateEventData->TextureName)
+            {
+                PXGraphicSpriteTextureLoadA(&pxEngine->Graphic, pxSprite, pxSpriteCreateEventData->TextureName);
 
-            PXMaterial* materiial = PXNew(PXMaterial);
-            PXClear(PXMaterial, materiial);
+                PXEngineSpriteTextureSet(pxEngine, pxSprite, pxSprite->Texture);
 
-            materiial->DiffuseTexture = pxSprite->Texture;
-
-            pxSprite->Model.IndexBuffer.SegmentListSize = 1;
-            pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;            
-
-    
+           
+            }    
 
             PXLogPrint
             (
@@ -579,10 +848,15 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             float aspectRationX = 1;
 
-            if (pxSprite->Texture->Image.Width && pxSprite->Texture->Image.Height)
+            if (pxSprite->Texture)
             {
-                aspectRationX = (float)pxSprite->Texture->Image.Width / (float)pxSprite->Texture->Image.Height;
+                if (pxSprite->Texture->Image.Width && pxSprite->Texture->Image.Height)
+                {
+                    aspectRationX = (float)pxSprite->Texture->Image.Width / (float)pxSprite->Texture->Image.Height;
+                }
             }
+
+         
 
             PXMatrix4x4FScaleSetXY(&pxSprite->Model.ModelMatrix, aspectRationX, 1);
 
@@ -595,6 +869,25 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
 
             PXMatrix4x4FPositionSet(&pxSprite->Model.ModelMatrix, &pxSpriteCreateEventData->Position);
+
+
+            //---------------------------------------------
+            // Trigger enable
+            //---------------------------------------------
+            if (pxEngineResourceCreateInfo->SpawnEnabled)
+            {
+                PXEngineResourceActionInfo pxEngineResourceActionInfo;
+                PXClear(PXEngineResourceActionInfo, &pxEngineResourceActionInfo);
+
+                pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
+                pxEngineResourceActionInfo.ChangeInfo.Enable = PXTrue;
+                pxEngineResourceActionInfo.ChangeInfo.Type = PXEngineCreateTypeSprite;
+                pxEngineResourceActionInfo.ChangeInfo.Object = pxSprite;
+
+                PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
+            }
+            //---------------------------------------------
+
 
             break;
         }
@@ -614,6 +907,23 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             pxEngineText->PXID = PXEngineGenerateUniqeID(pxEngine);
             PXDictionaryAdd(&pxEngine->TextLookUp, &pxEngineText->PXID, pxEngineText);
+
+            //---------------------------------------------
+            // Trigger enable
+            //---------------------------------------------
+            if (pxEngineResourceCreateInfo->SpawnEnabled)
+            {
+                PXEngineResourceActionInfo pxEngineResourceActionInfo;
+                PXClear(PXEngineResourceActionInfo, &pxEngineResourceActionInfo);
+
+                pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
+                pxEngineResourceActionInfo.ChangeInfo.Enable = PXTrue;
+                pxEngineResourceActionInfo.ChangeInfo.Type = PXEngineCreateTypeText;
+                pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineText;
+
+                PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
+            }
+            //---------------------------------------------
 
             break;
         }
@@ -635,6 +945,109 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
 
             PXDictionaryAdd(&pxEngine->TimerLookUp, &pxEngineTimer->PXID, pxEngineTimer);
+
+            //---------------------------------------------
+            // Trigger enable
+            //---------------------------------------------
+            if (pxEngineResourceCreateInfo->SpawnEnabled)
+            {
+                PXEngineResourceActionInfo pxEngineResourceActionInfo;
+                PXClear(PXEngineResourceActionInfo, &pxEngineResourceActionInfo);
+
+                pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
+                pxEngineResourceActionInfo.ChangeInfo.Enable = PXTrue;
+                pxEngineResourceActionInfo.ChangeInfo.Type = PXEngineCreateTypeTimer;
+                pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineTimer;
+
+                PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
+            }
+            //---------------------------------------------
+
+            break;
+        }
+        case PXEngineCreateTypeSound:
+        {
+            PXEngineSoundCreateInfo* const pxEngineSoundCreateInfo = &pxEngineResourceCreateInfo->Sound;
+            PXEngineSound* const pxEngineSound = pxEngineSoundCreateInfo->EngineSoundReference;
+
+            // Register
+            {
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Sound",
+                    "Register",
+                    PXNull
+                );
+
+                pxEngineSound->PXID = PXEngineGenerateUniqeID(pxEngine);
+
+                PXDictionaryAdd(&pxEngine->SoundLookUp, &pxEngineSound->PXID, pxEngineSound);
+            }
+
+            // Load
+            {
+                PXText pxTextFilePath;
+                PXTextConstructFromAdressA(&pxTextFilePath, pxEngineSoundCreateInfo->FilePath, PXTextLengthUnkown, PXTextLengthUnkown);
+
+                const PXActionResult loadResult = PXResourceLoad(&pxEngineSound->Sound, &pxTextFilePath);
+
+                if (PXActionSuccessful != loadResult)
+                {
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "PX",
+                        "Sound-Load",
+                        "failed <%s>!",
+                        pxEngineSoundCreateInfo->FilePath
+                    );
+                }
+
+                PXActionReturnOnError(loadResult);
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Sound-Load",
+                    "successful <%s>.",
+                    pxEngineSoundCreateInfo->FilePath
+                );
+            }
+
+
+
+            {
+                const PXActionResult pxActionResult = pxEngine->Audio.DeviceLoad(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, &pxEngineSound->Sound);
+
+                if (PXActionSuccessful == pxActionResult)
+                {
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "PX",
+                        "Sound-Upload",
+                        "Success <%s>!",
+                        pxEngineSoundCreateInfo->FilePath
+                    );
+                }
+                else
+                {
+
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "PX",
+                        "Sound-Upload",
+                        "Failed <%s>!",
+                        pxEngineSoundCreateInfo->FilePath
+                    );
+                }
+
+            }
+
 
             break;
         }
@@ -890,6 +1303,40 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             break;
         }
+        case PXEngineCreateTypeShaderProgram:
+        {
+            PXShaderProgramCreateData* const pxShaderProgramCreateData = &pxEngineResourceCreateInfo->ShaderProgram;
+            PXShaderProgram* const pxShaderProgram = pxShaderProgramCreateData->ShaderProgrammReference;
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Shader-Create",
+                "load..."
+            );
+
+            PXResourceIDMarkAsUnused(&pxShaderProgram->ResourceID);
+
+            pxEngine->Graphic.ShaderProgramCreateFromFileVPA
+            (
+                pxEngine->Graphic.EventOwner,
+                pxShaderProgram,
+                pxShaderProgramCreateData->VertexShaderFilePath,
+                pxShaderProgramCreateData->PixelShaderFilePath
+            );
+
+            break;
+        }
+        case PXEngineCreateTypeDialogBox:
+        {
+
+
+
+
+
+            break;
+        }
         default:
             return PXActionRefusedArgumentInvalid;
     }
@@ -910,6 +1357,11 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
         {
             PXModel* const pxModel = pxEngineResourceRenderInfo->ModelRender.ModelReference;
 
+            if (!pxModel->Enabled)
+            {
+                break;
+            }
+
             break;
         }
         case PXEngineCreateTypeSkybox:
@@ -924,20 +1376,38 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
         {
             PXSprite* const pxSprite = pxEngineResourceRenderInfo->SpriteRender.SpriteReference;
 
+            if (!pxSprite->Enabled)
+            {
+                break;
+            }
+
             PXGraphicSpriteDraw(&pxEngine->Graphic, pxSprite, pxEngineResourceRenderInfo->CameraReference);
 
             break;
         }
         case PXEngineCreateTypeText:
         {
+      
+
             PXGraphic* const pxGraphic = &pxEngine->Graphic;
             PXEngineText* const pxEngineText = pxEngineResourceRenderInfo->TextRender.TextReference;
-            PXText* const pxText = &pxEngineText->Text;
+
+            if (!pxEngineText->Text)
+            {
+                break; // No text, no content to render, done
+            }
+
+            PXText* const pxText = pxEngineText->Text;
             PXFont* const pxFont = pxEngineText->Font;
 
+            if (!pxEngineText->Enabled)
+            {
+                break;
+            }
 
             PXVector2F offsetShadowCurrent = { 0.0f, 0.0f };
-            const PXVector2F shadowOffset = { 0.005f, -0.005f };
+            const PXVector2F shadowOffset = { 0.0045f, -0.005f };
+            PXBlendingMode blendingMode[2] = { PXBlendingModeSoureAlphaOnly, PXBlendingModeSoureAlphaOnly };
 
             for (PXInt8U j = 0; j < 2u; ++j)
             {
@@ -947,7 +1417,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                 float offsetY = 0;
 
                 pxGraphic->ShaderProgramSelect(pxGraphic->EventOwner, PXNull);
-                PXOpenGLBlendingMode(pxGraphic, PXBlendingModeOneToOne);
+                PXOpenGLBlendingMode(pxGraphic, blendingMode[j]);
                 pxGraphic->Texture2DSelect(pxGraphic->EventOwner, &pxFont->MainPage.Texture);
 
                 for (PXSize i = 0; i < pxText->SizeUsed && i < pxEngineText->TextRenderAmount; ++i)
@@ -1024,7 +1494,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                         case '\n':
                         {
                             // Reset X and go to next Y line
-                            offsetY -= 0.2f;
+                            offsetY -= 0.2f * scalingHeight;
                             offsetX = 0;
 
                             continue;
@@ -1058,6 +1528,16 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                         pxGraphic->RectangleDraw(pxGraphic->EventOwner, x1, y1, x2, y2, 0x01);
 #else
 
+                        pxGraphic->DrawColorRGBAF // Text color
+                        (
+                            pxGraphic->EventOwner,
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            1.0f
+                        );
+
+
                         if (pxFontPageCharacter)
                         {
                             pxGraphic->RectangleDrawTx(pxGraphic->EventOwner, x1, y1, x2, y2, tx1, ty1, tx2, ty2, 0x01);
@@ -1074,9 +1554,9 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                         pxGraphic->DrawColorRGBAF // Text color
                         (
                             pxGraphic->EventOwner,
-                            0.8f,
-                            0.2f,
-                            0.2f,
+                            0.95f,
+                            0.95f,
+                            0.95f,
                             1.0f
                         );
 
@@ -1098,8 +1578,8 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                 }
 
 
-                offsetShadowCurrent.X += shadowOffset.X;
-                offsetShadowCurrent.Y += shadowOffset.Y;
+                offsetShadowCurrent.X -= shadowOffset.X;
+                offsetShadowCurrent.Y -= shadowOffset.Y;
 
                 pxGraphic->Texture2DSelect(pxGraphic->EventOwner, PXNull);
                 PXOpenGLBlendingMode(pxGraphic, PXBlendingModeNone);
@@ -1117,5 +1597,25 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
         {
             return PXActionRefusedArgumentInvalid;
         }
+    }
+}
+
+PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture2D* const pxTexture2D)
+{
+    if (pxSprite->Model.IndexBuffer.SegmentListSize > 0)
+    {
+        PXMaterial* materiial = pxSprite->Model.IndexBuffer.SegmentPrime.Material;
+
+        materiial->DiffuseTexture = pxTexture2D;
+    }
+    else
+    {
+        PXMaterial* materiial = PXNew(PXMaterial);
+        PXClear(PXMaterial, materiial);
+
+        materiial->DiffuseTexture = pxSprite->Texture;
+
+        pxSprite->Model.IndexBuffer.SegmentListSize = 1;
+        pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;
     }
 }

@@ -131,13 +131,13 @@ extern "C"
 		(pxText)->Format = TextFormatASCII;\
 		(pxText)->TextA = text;
 
-#define PXTextMakeFixedGlobalA(pxText, s)\
-		const char* text = s;\
-		(pxText)->SizeAllocated = PXTextLengthA(text, PXTextLengthUnkown);\
+#define PXTextMakeFixedGlobalA(pxText, s) \
+		(pxText)->TextA = s; \
+		(pxText)->SizeAllocated = PXTextLengthA((pxText)->TextA, PXTextLengthUnkown);\
 		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
 		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
 		(pxText)->Format = TextFormatASCII;\
-		(pxText)->TextA = text;
+	
 
 #define PXTextMakeFixedNamed(pxText, name, s, format)\
 		char name[] = s;\

@@ -197,22 +197,27 @@ int PXMathCeilingD(const double value)
 	return fullNumberBlockInt;
 }
 
-unsigned long x = 123456789, y = 362436069, z = 521288629;
-
-unsigned int PXMathRandomeNumber()
+void PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
 {
-	unsigned long t;
+	pxMathRandomGeneratorSeed->X = 123456789;
+	pxMathRandomGeneratorSeed->Y = 362436069;
+	pxMathRandomGeneratorSeed->Z = 521288629;
+}
 
-	x ^= x << 16;
-	x ^= x >> 5;
-	x ^= x << 1;
+PXInt32U PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
+{
+	PXInt32U t;
 
-	t = x;
-	x = y;
-	y = z;
-	z = t ^ x ^ y;
+	pxMathRandomGeneratorSeed->X ^= pxMathRandomGeneratorSeed->X << 16;
+	pxMathRandomGeneratorSeed->X ^= pxMathRandomGeneratorSeed->X >> 5;
+	pxMathRandomGeneratorSeed->X ^= pxMathRandomGeneratorSeed->X << 1;
 
-	return z;
+	t = pxMathRandomGeneratorSeed->X;
+	pxMathRandomGeneratorSeed->X = pxMathRandomGeneratorSeed->Y;
+	pxMathRandomGeneratorSeed->Y = pxMathRandomGeneratorSeed->Z;
+	pxMathRandomGeneratorSeed->Z = t ^ pxMathRandomGeneratorSeed->X ^ pxMathRandomGeneratorSeed->Y;
+
+	return pxMathRandomGeneratorSeed->Z;
 }
 
 double PXMathSinus(double value)

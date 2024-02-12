@@ -8,6 +8,8 @@
 #endif
 #pragma comment(lib, "winmm.lib") // Library: Windows Multimedia 
 
+#include <OS/Console/PXConsole.h>
+
 PXActionResult PXAPI PXMultiMediaDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
 	MMRESULT result;
@@ -143,6 +145,14 @@ PXActionResult PXAPI PXMultiMediaDeviceReset(PXAudio* const pxAudio, PXAudioDevi
 
 PXActionResult PXAPI PXMultiMediaInitialize(PXAudio* const pxAudio)
 {
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"WinMM",
+		"Initialize",
+		"..."
+	);
+
 	return PXActionSuccessful;
 }
 
@@ -198,7 +208,7 @@ PXActionResult PXAPI PXMultiMediaDeviceFetch(PXAudio* const pxAudio, const PXAud
 			const UINT size = sizeof(WAVEOUTCAPS);
 			WAVEOUTCAPS waveOutCapA;
 
-			result = waveOutGetDevCapsA(deviceID, &waveOutCapA, size);
+			result = waveOutGetDevCapsA(deviceID, &waveOutCapA, size);	
 
 			pxAudioDevice->ManufacturerID = waveOutCapA.wMid;
 			pxAudioDevice->ProductID = waveOutCapA.wPid;
@@ -219,6 +229,15 @@ PXActionResult PXAPI PXMultiMediaDeviceFetch(PXAudio* const pxAudio, const PXAud
 
 		PXActionReturnOnError(audioResult);
 	}
+
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"WinMM",
+		"Device-Fetch",
+		"%s",
+		pxAudioDevice->DeviceName
+	);
 
 	return PXActionSuccessful;
 }
@@ -250,10 +269,18 @@ PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudio* const pxAudio, PXAudioDevic
 	waveFormat.wBitsPerSample = pxAudioDevice->BitsPerSample;     /* number of bits per sample of mono data */
 	waveFormat.cbSize = sizeof(WAVEFORMATEX);
 
-	///aveFormat.wFormatTag = WAVE_FORMAT_PCM;
-	//waveFormat.nChannels = 2;
-	//waveFormat.nSamplesPerSec = 44100;
-	//waveFormat.wBitsPerSample = 8;
+
+
+	waveFormat.nChannels = 2;
+	waveFormat.nSamplesPerSec = 44100;
+	waveFormat.nAvgBytesPerSec = 44100;
+	waveFormat.nBlockAlign = 4;
+	waveFormat.wBitsPerSample = 8;
+
+
+
+
+
 
 	MMRESULT result;
 
@@ -295,6 +322,15 @@ PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudio* const pxAudio, PXAudioDevic
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	pxAudioDevice->Type = pxAudioDeviceType;
+
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"WinMM",
+		"Device-Open",
+		"%s",
+		pxAudioDevice->DeviceName
+	);
 
 	return audioResult;
 }

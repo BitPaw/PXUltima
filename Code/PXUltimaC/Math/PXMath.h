@@ -35,6 +35,14 @@ extern "C"
 {
 #endif
 
+	typedef struct PXMathRandomGeneratorSeed_
+	{
+		PXInt32U X;
+		PXInt32U Y;
+		PXInt32U Z;
+	}
+	PXMathRandomGeneratorSeed;
+
 	PXPublic int PXMathMinimumI(const int a, const int b);
 	PXPublic PXSize PXMathMinimumIU(const PXSize a, const PXSize b);
 	PXPublic double PXMathMinimumD(const double a, const double b);
@@ -69,7 +77,8 @@ extern "C"
 	PXPublic double PXMathNewtonGravitation(double massA, double massB, double distance);
 	PXPublic int PXMathCeilingF(const float value);
 	PXPublic int PXMathCeilingD(const double value);
-	PXPublic unsigned int PXMathRandomeNumber();
+	PXPublic void PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
+	PXPublic PXInt32U PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
 	PXPublic double PXMathSinus(double value);
 	PXPublic double PXMathTangens(double value);
 	PXPublic double PXMathCosinus(double value);

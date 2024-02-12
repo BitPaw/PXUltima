@@ -1531,7 +1531,7 @@ PXSize PXAPI PXTextFormatTime(const PXText* const pxText, const PXSize pxTime)
 
 	if (pxTime < 1000000000)
 	{
-		return PXTextPrint(pxText, "%.3f s", pxTime / (float)1000000);
+		return PXTextPrint(pxText, "%.3f  s", pxTime / (float)1000000);
 	}
 
 	return 0;

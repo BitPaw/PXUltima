@@ -147,7 +147,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -214,7 +214,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -392,6 +392,8 @@
     <ClCompile Include="Media\PXDocument.c" />
     <ClCompile Include="Engine\Dialog\PXDialogContainer.c" />
     <ClCompile Include="Media\RAR\PXRAR.c" />
+    <ClCompile Include="Engine\Dialog\PXDialogBox.c" />
+    <ClCompile Include="Engine\Interact\PXSign.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -549,6 +551,8 @@
     <ClInclude Include="Media\PXDocument.h" />
     <ClInclude Include="Engine\Dialog\PXDialogContainer.h" />
     <ClInclude Include="Media\RAR\PXRAR.h" />
+    <ClInclude Include="Engine\Dialog\PXDialogBox.h" />
+    <ClInclude Include="Engine\Interact\PXSign.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />

@@ -8,14 +8,6 @@ extern "C"
 {
 #endif
 
-	typedef enum PXDialogBoxState_
-	{
-		PXDialogBoxStateInvalid,
-		PXDialogBoxStateClosed,
-		PXDialogBoxStateOpen
-	}
-	PXDialogBoxState;
-
 	typedef enum PXDialogCharacterMood_
 	{
 		PXDialogCharacterMoodInvalid,
@@ -40,24 +32,20 @@ extern "C"
 	}
 	PXDialogCharacterMood;
 
-	typedef struct PXDialogContainerMesssage_
+	typedef struct PXDialogMessagePage_
 	{
 		PXDialogCharacterMood CharacterMood;
 		PXInt8U CharacterMoodCounter;
 
-		PXTexture2D* CharacterSprite;
+		PXTexture2D* CharacterSprite; // Can be NULL, means no texture shall be used
+		//PXFont* FontOverride;
+
 		PXText Text;
-		PXDialogBoxState State;
 	}
-	PXDialogContainerMesssage;
+	PXDialogMessagePage;
 
-	typedef struct PXDialogContainer_
-	{
-		int __dummy__;
-	}
-	PXDialogContainer;
 
-	PXPublic PXActionResult PXAPI PXDialogContainerMessageFetch(PXDialogContainer* const pxDialogContainer);
+	PXPublic PXActionResult PXAPI PXDialogContainerMessageFetch(PXDialogMessagePage* const pxDialogContainer);
 
 #ifdef __cplusplus
 }

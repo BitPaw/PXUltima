@@ -1409,24 +1409,23 @@ void PXAPI PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode p
     GLenum sfactor = 0;
     GLenum dfactor = 0;
 
-    if (pxBlendingMode == PXBlendingModeNone)
-    {
-        glDisable(GL_BLEND);
-        return;
-    }
-
-    if (pxBlendingMode == PXBlendingModeNone)
-    {
-        glDisable(GL_BLEND);
-        return;
-    }
-
     switch (pxBlendingMode)
     {
         case PXBlendingModeOneToOne:
         {
             sfactor = GL_ONE;
             dfactor = GL_ONE;
+            break;
+        }
+        case PXBlendingModeNone:
+        {
+            glDisable(GL_BLEND);
+            return;
+        }
+        case PXBlendingModeSoureAlphaOnly:
+        {
+            sfactor = GL_SRC_ALPHA;
+            dfactor = GL_ONE_MINUS_SRC_ALPHA;
             break;
         }
 
@@ -2501,19 +2500,19 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, &pxGraphicDevicePhysical);
 
         PXText pxTextVideoMemoryCurrent;
-        PXTextConstructNamedBufferA(&pxTextVideoMemoryCurrent, pxTextVideoMemoryCurrentBuffer, 8);
+        PXTextConstructNamedBufferA(&pxTextVideoMemoryCurrent, pxTextVideoMemoryCurrentBuffer, 16);
         PXTextFormatSize(&pxTextVideoMemoryCurrent, pxGraphicDevicePhysical.VideoMemoryCurrent);
 
         PXText pxTextVideoMemoryTotal;
-        PXTextConstructNamedBufferA(&pxTextVideoMemoryTotal, pxTextVideoMemoryTotalBuffer, 8);
+        PXTextConstructNamedBufferA(&pxTextVideoMemoryTotal, pxTextVideoMemoryTotalBuffer, 16);
         PXTextFormatSize(&pxTextVideoMemoryTotal, pxGraphicDevicePhysical.VideoMemoryTotal);
 
         PXText pxTextVideoMemoryDedicated;
-        PXTextConstructNamedBufferA(&pxTextVideoMemoryDedicated, pxTextVideoMemoryDedicatedBuffer, 8);
+        PXTextConstructNamedBufferA(&pxTextVideoMemoryDedicated, pxTextVideoMemoryDedicatedBuffer, 16);
         PXTextFormatSize(&pxTextVideoMemoryDedicated, pxGraphicDevicePhysical.VideoMemoryDedicated);
 
         PXText pxTextVideoMemorySize;
-        PXTextConstructNamedBufferA(&pxTextVideoMemorySize, pxTextVideoMemorySizeBuffer, 8);
+        PXTextConstructNamedBufferA(&pxTextVideoMemorySize, pxTextVideoMemorySizeBuffer, 16);
         PXTextFormatSize(&pxTextVideoMemorySize, pxGraphicDevicePhysical.VideoMemoryEvictionSize);
 
 
@@ -4272,7 +4271,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
         return PXActionSuccessful;
     }
 
-    if (PXResourceIDIsUnused(&pxShaderProgram->ResourceID)) return PXActionRefuedObjectNotReady;
+    if (PXResourceIDIsUnused(&pxShaderProgram->ResourceID)) return PXActionRefusedObjectNotReady;
 
 #if 0
     PXLogPrint

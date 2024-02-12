@@ -1263,6 +1263,14 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
     // Graphic initialize
     {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Graphic",
+            "Init",
+            "Invoke spesific API..."
+        );
+
         const PXActionResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
 
         PXActionReturnOnError(pxActionResult);

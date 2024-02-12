@@ -50,9 +50,10 @@ extern "C"
 		//-------------------------------------------------------
 		// Object
 		//-------------------------------------------------------
-		PXActionRefuedObjectNotReady, // Object can't process this function, setup is needed or its busy
+		PXActionRefusedObjectNotReady, // Object can't process this function, setup is needed or its busy
 		PXActionRefusedObjectNotFound, // [404] Invalid ID or HANDLE -> Does not exist
 		PXActionRefusedObjectAlreadyExists, // [EXIST]
+		PXActionRefusedObjectStateInvalid,
 		PXActionRefuedObjectStateDoesNotAllowAction,
 		PXActionRefuedObjectInterfaceNotAvailable,
 		PXActionRefuedObjectNotInizialized,

@@ -424,7 +424,7 @@ PXSize PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* co
 	return readBytes;
 }
 
-PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
+PXCompilerSymbolLexer PXCompilerTryAnalyseType(PXFile* const tokenStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	if (textSize == 1)
 	{
@@ -628,15 +628,31 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 			if (!isFull)
 			{
 				char* const dataAdress = (PXAdress)compilerSymbolEntry->Source + 1u;
-				const PXSize symbolPositionQuotationMark = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, '\"');
-				const PXBool hasIndex = symbolPositionQuotationMark != (PXSize)-1;
+				PXSize symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, '\"');
+				PXBool hasIndex = symbolPositionIndex != (PXSize)-1;
 
-				if (!hasIndex)
+				if (!hasIndex) // Prop string has empty space, so we need to mend them together
 				{
-					// Error
+					char* const dataAdressExtended = &dataAdress[compilerSymbolEntry->Size-1];
+
+					PXBool isEmptySpace = dataAdressExtended[0] == ' ';
+
+					if (isEmptySpace) // Parse into oblivion for next 
+					{
+						const PXSize spaceLeft = PXFileRemainingSize(tokenStream);
+
+						symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, spaceLeft, '\"');
+						hasIndex = symbolPositionIndex != (PXSize)-1;
+
+						if (hasIndex)
+						{
+							compilerSymbolEntry->Size = symbolPositionIndex;
+							PXFileCursorAdvance(tokenStream, symbolPositionIndex);
+						}
+					}
 				}
 
-				compilerSymbolEntry->Size = symbolPositionQuotationMark+2u;
+				compilerSymbolEntry->Size = symbolPositionIndex + 2u;
 			}
 
 			return PXCompilerSymbolLexerString;
@@ -785,20 +801,16 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(const char* const text, const PXS
 
 void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings)
 {
-	if (!inputStream)
+	// Valid call
 	{
-		return;
+		const PXBool isValidCall = inputStream && outputStream && compilerSettings;
+
+		if (!isValidCall)
+		{
+			return;
+		}
 	}
 
-	if (!outputStream)
-	{
-		return;
-	}
-
-	if (!compilerSettings)
-	{
-		return;
-	}
 
 	// Do you have a valid input file?
 
@@ -954,7 +966,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 				compilerSymbolEntry.Line = currentLine;
 				compilerSymbolEntry.Coloum = currentColoum;
 				compilerSymbolEntry.Size = fullBlockSize;
-				compilerSymbolEntry.ID = PXCompilerTryAnalyseType(compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);
+				compilerSymbolEntry.ID = PXCompilerTryAnalyseType(inputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);
 
 				if (compilerSymbolEntry.ID == PXCompilerSymbolLexerWhiteSpace || compilerSymbolEntry.ID == PXCompilerSymbolLexerNewLine)
 				{
@@ -973,6 +985,11 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 				{
 					--compilerSymbolEntry.Source;
 					compilerSymbolEntry.Size += 2;
+				}
+
+				if (fullBlockSize < compilerSymbolEntry.Size) // Block got expanded manually, considering this as done
+				{
+					break;
 				}
 
 				// Change data for next itteration

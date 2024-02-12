@@ -1,6 +1,6 @@
 #include "PXDialogContainer.h"
 
-PXActionResult PXAPI PXDialogContainerMessageFetch(PXDialogContainer* const pxDialogContainer)
+PXActionResult PXAPI PXDialogContainerMessageFetch(PXDialogMessagePage* const pxDialogContainer)
 {
     return PXActionRefusedNotImplemented;
 }

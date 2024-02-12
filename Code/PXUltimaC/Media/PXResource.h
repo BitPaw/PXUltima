@@ -504,6 +504,7 @@ extern "C"
 	typedef struct PXModel_
 	{
 		PXResourceID ResourceID;
+		PXBool Enabled;
 
 		//-----------------------------
 		// Render info
@@ -682,7 +683,8 @@ extern "C"
 
 		PXBlendingModeNone,
 
-		PXBlendingModeOneToOne // Direct 1:1 mixing
+		PXBlendingModeOneToOne, // Direct 1:1 mixing
+		PXBlendingModeSoureAlphaOnly
 	}
 	PXBlendingMode;
 
@@ -703,7 +705,8 @@ extern "C"
 
 	typedef struct PXSprite
 	{
-		unsigned int PXID;
+		PXInt32U PXID;
+		PXBool Enabled;
 
 		char Name[20];
 
