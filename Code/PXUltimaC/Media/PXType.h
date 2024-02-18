@@ -112,7 +112,7 @@ extern "C"
 
 #endif
 
-#define PXAPI PXSTDCALL
+#define PXAPI PXCDECL
 
 #if OSUnix
 #define PXPrivate static

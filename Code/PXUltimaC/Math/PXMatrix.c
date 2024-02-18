@@ -4,7 +4,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXResource.h>
 
-void PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
+void PXAPI PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
 {
 	for (PXSize y = 0; y < 4u; ++y)
 	{
@@ -15,7 +15,7 @@ void PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
 	}
 }
 
-void PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F)
+void PXAPI PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F)
 {
 	// ---0
 	// ---0
@@ -31,21 +31,21 @@ void PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F)
 	matrix4x4F->Data[15] = 1;
 }
 
-void PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F* const position)
+void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F* const position)
 {
 	position->X = matrix->Data[TransformX];
 	position->Y = matrix->Data[TransformY];
 	position->Z = matrix->Data[TransformZ];
 }
 
-void PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position)
+void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position)
 {
 	matrix4x4F->Data[TransformX] = position->X;
 	matrix4x4F->Data[TransformY] = position->Y;
 	matrix4x4F->Data[TransformZ] = position->Z;
 }
 
-void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult)
+void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult)
 {
 	float a = matrixA->Data[0];
 	float b = matrixA->Data[1];
@@ -102,7 +102,7 @@ void PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matri
 	matrixResult->Data[15] = m * D + n * H + o * L + p * P;
 }
 
-void PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const float y, const float z)
+void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const float y, const float z)
 {
 	PXMatrix4x4F xRotation;
 	PXMatrix4x4F yRotation;
@@ -156,44 +156,44 @@ void PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const flo
 	}
 }
 
-void PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult)
+void PXAPI PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult)
 {
 	PXCopy(PXMatrix4x4F, matrixA, matrixResult);
 }
 
-void PXMatrix4x4FMove3F(PXMatrix4x4F* const matrixData, const PXVector3F* const vector3F)
+void PXAPI PXMatrix4x4FMove3F(PXMatrix4x4F* const matrixData, const PXVector3F* const vector3F)
 {
 	matrixData->Data[TransformX] += vector3F->X;
 	matrixData->Data[TransformY] += vector3F->Y;
 	matrixData->Data[TransformZ] += vector3F->Z;
 }
 
-void PXMatrix4x4FMoveXY(PXMatrix4x4F* const matrixData, const float x, const float y)
+void PXAPI PXMatrix4x4FMoveXY(PXMatrix4x4F* const matrixData, const float x, const float y)
 {
 	matrixData->Data[TransformX] += x;
 	matrixData->Data[TransformY] += y;
 }
 
-void PXMatrix4x4FMoveToScaleXY(PXMatrix4x4F* const matrixData, const float x, const float y)
+void PXAPI PXMatrix4x4FMoveToScaleXY(PXMatrix4x4F* const matrixData, const float x, const float y)
 {
 	PXMatrix4x4FMoveXY(matrixData, x * (1- matrixData->Data[ScaleX]), y * (1 - matrixData->Data[ScaleY]));
 }
 
-void PXMatrix4x4FMoveXYZ(PXMatrix4x4F* const matrixData, const float x, const float y, const float z)
+void PXAPI PXMatrix4x4FMoveXYZ(PXMatrix4x4F* const matrixData, const float x, const float y, const float z)
 {
 	matrixData->Data[TransformX] += x;
 	matrixData->Data[TransformY] += y;
 	matrixData->Data[TransformZ] += z;
 }
 
-void PXMatrix4x4FScaleBy(PXMatrix4x4F* const pxMatrix4x4F, const float scalar)
+void PXAPI PXMatrix4x4FScaleBy(PXMatrix4x4F* const pxMatrix4x4F, const float scalar)
 {
 	pxMatrix4x4F->Data[ScaleX] *= scalar;
 	pxMatrix4x4F->Data[ScaleY] *= scalar;
 	pxMatrix4x4F->Data[ScaleZ] *= scalar;
 }
 
-void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin)
+void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin)
 {
 #if 1
 
@@ -238,40 +238,40 @@ void PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectang
 
 }
 
-void PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y)
+void PXAPI PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y)
 {
 	pxMatrix4x4F->Data[ScaleX] *= x;
 	pxMatrix4x4F->Data[ScaleY] *= y;
 }
 
-void PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F)
+void PXAPI PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F)
 {
 	pxMatrix4x4F->Data[ScaleX] = pxVector3F->X;
 	pxMatrix4x4F->Data[ScaleY] = pxVector3F->Y;
 	pxMatrix4x4F->Data[ScaleZ] = pxVector3F->Z;
 }
 
-void PXMatrix4x4FScaleSetXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y)
+void PXAPI PXMatrix4x4FScaleSetXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y)
 {
 	pxMatrix4x4F->Data[ScaleX] = x;
 	pxMatrix4x4F->Data[ScaleY] = y;
 }
 
-void PXMatrix4x4FScaleSetXYZ(PXMatrix4x4F* const xpMatrix4x4F, const float x, const float y, const float z)
+void PXAPI PXMatrix4x4FScaleSetXYZ(PXMatrix4x4F* const xpMatrix4x4F, const float x, const float y, const float z)
 {
 	const PXVector3F pxVector3F = {x, y, z};
 
 	PXMatrix4x4FScaleSet(xpMatrix4x4F, &pxVector3F);
 }
 
-void PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z)
+void PXAPI PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z)
 {
 	*x = matrixResult->Data[ScaleX];
 	*y = matrixResult->Data[ScaleY];
 	*z = matrixResult->Data[ScaleZ];
 }
 
-void PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane)
+void PXAPI PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane)
 {
 	PXMatrix4x4FIdentity(matrix4x4F);
 
@@ -283,7 +283,7 @@ void PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const float left, 
 	matrix4x4F->Data[TransformZ] = -(farPlane + nearPlane) / (farPlane - nearPlane);
 }
 
-void PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, const float fielfOfView, const float aspectRatio, const float nearPlane, const float farPlane)
+void PXAPI PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, const float fielfOfView, const float aspectRatio, const float nearPlane, const float farPlane)
 {
 	const float difference = farPlane - nearPlane;
 	const float fielfOfViewRadians = PXMathDegreeToRadians(fielfOfView);
@@ -298,7 +298,7 @@ void PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, const float fielfOf
 	matrix4x4F->Data[TransformZ] = -((2) * farPlane * nearPlane) / difference;
 }
 
-PXBool PXMatrix4x4FInverse(PXMatrix4x4F* const matrix4x4F)
+PXBool PXAPI PXMatrix4x4FInverse(PXMatrix4x4F* const matrix4x4F)
 {
 	PXMatrix4x4F temp;
 	double det = 0;
@@ -335,7 +335,7 @@ PXBool PXMatrix4x4FInverse(PXMatrix4x4F* const matrix4x4F)
 	return PXYes;
 }
 
-void PXMatrix4x4FTranpose(PXMatrix4x4F* const matrix4x4F)
+void PXAPI PXMatrix4x4FTranpose(PXMatrix4x4F* const matrix4x4F)
 {
 	//NumberType a = this->Data[0];
 	const float b = matrix4x4F->Data[1];
@@ -378,7 +378,7 @@ void PXMatrix4x4FTranpose(PXMatrix4x4F* const matrix4x4F)
 	//this->Data[15] = p;
 }
 
-void PXMatrix4x4FLookAt(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const eye, const PXVector3F* const center, const PXVector3F* const up)
+void PXAPI PXMatrix4x4FLookAt(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const eye, const PXVector3F* const center, const PXVector3F* const up)
 {
 	PXVector3F centereye = *center;
 	PXVector3F frontUpCross;

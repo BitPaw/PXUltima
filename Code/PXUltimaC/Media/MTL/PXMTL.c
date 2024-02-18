@@ -156,9 +156,14 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 					break; // Error
 				}
 
+				// TODO: bad
+
 				PXFilePathRelativeFromFile(pxFile, &nameTexturePath, &fullTexturePath);
 
-				pxMaterialCurrent->DiffuseTexture = PXNew(PXTexture2D);
+				pxMaterialCurrent->DiffuseTexture = PXNew(PXTexture2D);			
+				PXClear(PXTexture2D, pxMaterialCurrent->DiffuseTexture);
+				pxMaterialCurrent->DiffuseTexture->Image = PXNew(PXImage);
+				PXClear(PXImage, pxMaterialCurrent->DiffuseTexture->Image);
 				PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
 
 				PXResourceLoad(&pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);

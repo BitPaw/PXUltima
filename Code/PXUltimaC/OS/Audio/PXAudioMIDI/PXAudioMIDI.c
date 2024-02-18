@@ -85,7 +85,7 @@ PXActionResult PXAPI PXMIDIDeviceFetch(PXAudio* const pxAudio, const PXAudioDevi
 	{
 		case PXAudioDeviceTypeInput:
 		{
-			MIDIINCAPS midi;
+			MIDIOUTCAPSA midi;
 
 			mmresultID = midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
 
@@ -152,11 +152,11 @@ PXActionResult PXAPI PXMIDIDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* con
 	{
 		case PXAudioDeviceTypeInput:
 		{
-			resultID = midiInOpen(&(HMIDIIN*)pxAudio->DirectSoundInterface, deviceID, PXMIDIInputMessageEvent, pxAudioDevice, CALLBACK_FUNCTION);
+			resultID = midiInOpen(&(HMIDIIN*)pxAudio->DirectSoundInterface, deviceID, (DWORD_PTR)PXMIDIInputMessageEvent, (DWORD_PTR)pxAudioDevice, CALLBACK_FUNCTION);
 			break;
 		}
 		case PXAudioDeviceTypeOutput:
-			resultID = midiOutOpen(&(HMIDIOUT*)pxAudio->DirectSoundInterface, deviceID, PXMIDIOutputMessageEvent, pxAudioDevice, CALLBACK_FUNCTION);
+			resultID = midiOutOpen(&(HMIDIOUT*)pxAudio->DirectSoundInterface, deviceID, (DWORD_PTR)PXMIDIOutputMessageEvent, (DWORD_PTR)pxAudioDevice, CALLBACK_FUNCTION);
 			break;
 
 		default:
@@ -180,7 +180,7 @@ PXActionResult PXAPI PXMIDIDeviceClose(PXAudio* const pxAudio, PXAudioDevice* co
 			break;
 		
 		case PXAudioDeviceTypeOutput:
-			resultID = midiOutClose((HMIDIIN)pxAudio->DirectSoundInterface);
+			resultID = midiOutClose((HMIDIOUT)pxAudio->DirectSoundInterface);
 			break;
 
 		default:
@@ -403,7 +403,7 @@ PXActionResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioD
 			break;
 
 		case PXAudioDeviceTypeOutput:
-			resultID = midiOutSetVolume((HMIDIIN)pxAudio->DirectSoundInterface, 0);
+			resultID = midiOutSetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, 0);
 			break;
 
 		default:

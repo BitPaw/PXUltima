@@ -387,9 +387,6 @@
     <ClCompile Include="OS\UI\PXUI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\User\PXUser.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="OS\Window\PXWindow.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -861,9 +858,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\UI\PXUI.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="OS\User\PXUser.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Window\PXWindow.h">

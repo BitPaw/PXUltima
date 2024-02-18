@@ -20,7 +20,7 @@ extern "C"
 
 	typedef PXInt16U PXMessageID;
 
-	typedef void (*PXSBPReceiverOnMessageInvalid)(PXSocket* const socket, const PXSocketID socketID);
+	typedef void (PXAPI*PXSBPReceiverOnMessageInvalid)(PXSocket* const socket, const PXSocketID socketID);
 
 	typedef enum PXSBPRecieverState_
 	{
@@ -85,12 +85,12 @@ extern "C"
 	}
 	PXSBPMessage;
 
-	typedef void (*PXSBPOnMessageUpdatedFunction)(const PXSBPMessage* const pxSBPMessage); // If message has updated but not fully recieved
-	typedef void (*PXSBPOnMessageReceivedFunction)(const PXSBPMessage* const pxSBPMessage); // if message is fully recieved
+	typedef void (PXAPI*PXSBPOnMessageUpdatedFunction)(const PXSBPMessage* const pxSBPMessage); // If message has updated but not fully recieved
+	typedef void (PXAPI*PXSBPOnMessageReceivedFunction)(const PXSBPMessage* const pxSBPMessage); // if message is fully recieved
 
-	PXPublic void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage);
-	PXPublic void PXSBPMessageConstructFlat(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize, const void* const owner);
-	PXPublic void PXSBPMessageParse(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize);
+	PXPublic void PXAPI PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage);
+	PXPublic void PXAPI PXSBPMessageConstructFlat(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize, const void* const owner);
+	PXPublic void PXAPI PXSBPMessageParse(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize);
 	//-----------------------------------------------------
 
 
@@ -108,21 +108,21 @@ extern "C"
 	}
 	PXSBPChunkCache;
 
-	typedef void (*PXSBPOnChunkSegmentUpdatedFunction)(const PXSBPChunkCache* const pxSBPChunkSegment);
+	typedef void (PXAPI*PXSBPOnChunkSegmentUpdatedFunction)(const PXSBPChunkCache* const pxSBPChunkSegment);
 
-	PXPrivate PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
+	PXPrivate PXBool PXAPI PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
 
-	PXPublic PXInt16U PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage);
-	PXPublic PXBool PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage);	
+	PXPublic PXInt16U PXAPI PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage);
+	PXPublic PXBool PXAPI PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage);
 
-	PXPublic PXBool PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk);
-	PXPublic PXBool PXSBPMessageChunkDataContainsMultible(const PXSBPChunkCache* const pxSBPMessageChunk);
+	PXPublic PXBool PXAPI PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk);
+	PXPublic PXBool PXAPI PXSBPMessageChunkDataContainsMultible(const PXSBPChunkCache* const pxSBPMessageChunk);
 
 	// Consumes data that will be merged into the SBP-Message. The result is the size consumed by this function.
-	PXPublic PXSize PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
+	PXPublic PXSize PXAPI PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
 
-	PXPublic void PXSBPMessageConstructSet(PXSBPChunkCache* const pxSBPMessage);
-	PXPublic void PXSBPMessageConstructAllocate(PXSBPChunkCache* const pxSBPMessage);
+	PXPublic void PXAPI PXSBPMessageConstructSet(PXSBPChunkCache* const pxSBPMessage);
+	PXPublic void PXAPI PXSBPMessageConstructAllocate(PXSBPChunkCache* const pxSBPMessage);
 	//-----------------------------------------------------
 
 
@@ -138,8 +138,8 @@ extern "C"
 	}
 	PXSBPChunk;
 
-	typedef void (*PXSBPOnChunkReceivedFunction)(const PXSBPChunk* const pxSBPChunk);
-	typedef void (*PXSBPOnChunkEmittedFunction)(const PXSBPChunk* const pxSBPChunk);
+	typedef void (PXAPI*PXSBPOnChunkReceivedFunction)(const PXSBPChunk* const pxSBPChunk);
+	typedef void (PXAPI*PXSBPOnChunkEmittedFunction)(const PXSBPChunk* const pxSBPChunk);
 	//-----------------------------------------------------
 
 
@@ -178,14 +178,14 @@ extern "C"
 	}
 	PXSBPReceiver;
 
-	PXPublic void PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver);
+	PXPublic void PXAPI PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver);
 
-	PXPrivate void PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRecieverState pxSBPRecieverState);
+	PXPrivate void PXAPI PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRecieverState pxSBPRecieverState);
 
-	PXPublic void PXSBPReceiverEventListSet(PXSBPReceiver* const pxSBPReceiver, PXSBPReceiverEventList* const pxSBPReceiverEventList);
+	PXPublic void PXAPI PXSBPReceiverEventListSet(PXSBPReceiver* const pxSBPReceiver, PXSBPReceiverEventList* const pxSBPReceiverEventList);
 
-	PXPrivate void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData);
-	PXPrivate void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChunk* const pxSBPChunk);
+	PXPrivate void PXAPI PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData);
+	PXPrivate void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChunk* const pxSBPChunk);
 	//-----------------------------------------------------
 
 
@@ -207,8 +207,8 @@ extern "C"
 	}
 	PXSBPEmitter;
 
-	PXPublic void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter);
-	PXPublic PXActionResult PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize);
+	PXPublic void PXAPI PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter);
+	PXPublic PXActionResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize);
 	//-----------------------------------------------------
 
 
@@ -226,16 +226,16 @@ extern "C"
 	}
 	PXSBPClient;
 
-	PXPublic void PXSBPClientConstruct(PXSBPClient* const pxSBPClient);
-	PXPublic void PXSBPClientDestruct(PXSBPClient* const pxSBPClient);
+	PXPublic void PXAPI PXSBPClientConstruct(PXSBPClient* const pxSBPClient);
+	PXPublic void PXAPI PXSBPClientDestruct(PXSBPClient* const pxSBPClient);
 
-	PXPublic void PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiverEventList* const pxSBPReceiverEventList);
+	PXPublic void PXAPI PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiverEventList* const pxSBPReceiverEventList);
 
-	PXPublic PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port);
-	PXPublic PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient);
+	PXPublic PXActionResult PXAPI PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port);
+	PXPublic PXActionResult PXAPI PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient);
 
-	PXPublic PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize);
-	PXPublic PXActionResult PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize);
+	PXPublic PXActionResult PXAPI PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath);
 	//-----------------------------------------------------
 
 
@@ -251,15 +251,15 @@ extern "C"
 	}
 	PXSBPServer;
 
-	PXPublic void PXSBPServerConstruct(PXSBPServer* const pxSBPServer);
-	PXPublic void PXSBPServerDestruct(PXSBPServer* const pxSBPServer);
+	PXPublic void PXAPI PXSBPServerConstruct(PXSBPServer* const pxSBPServer);
+	PXPublic void PXAPI PXSBPServerDestruct(PXSBPServer* const pxSBPServer);
 
-	PXPublic void PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceiverEventList* const pxSBPReceiverEventList);
+	PXPublic void PXAPI PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceiverEventList* const pxSBPReceiverEventList);
 
-	PXPublic PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port);
-	PXPublic PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer);
+	PXPublic PXActionResult PXAPI PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port);
+	PXPublic PXActionResult PXAPI PXSBPServerStop(PXSBPServer* const pxSBPServer);
 
-	PXPublic PXActionResult PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize);
+	PXPublic PXActionResult PXAPI PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize);
 	//-----------------------------------------------------
 
 #ifdef __cplusplus

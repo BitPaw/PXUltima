@@ -9,11 +9,6 @@
 #define PXMathConstantP 1.32471795724474602596090885447809734
 #define PXMathConstantA 2.50290787509589282228390287321821578
 #define PXMathConstantGravity 0.00000000006673
-
-#define PXMathConstantGravityOnVenus 8.87
-#define PXMathConstantGravityOnEarth 9.807
-#define PXMathConstantGravityOnMoon 1.62
-#define PXMathConstantGravityOnMars 3.711
 //-----------------------------------------------------------------------------
 
 //---<Makro Functions>---------------------------------------------------------
@@ -43,53 +38,53 @@ extern "C"
 	}
 	PXMathRandomGeneratorSeed;
 
-	PXPublic int PXMathMinimumI(const int a, const int b);
-	PXPublic PXSize PXMathMinimumIU(const PXSize a, const PXSize b);
-	PXPublic double PXMathMinimumD(const double a, const double b);
+	PXPublic int PXAPI PXMathMinimumI(const int a, const int b);
+	PXPublic PXSize PXAPI PXMathMinimumIU(const PXSize a, const PXSize b);
+	PXPublic double PXAPI PXMathMinimumD(const double a, const double b);
 
-	PXPublic PXSize PXMathMaximumIU(const PXSize a, const PXSize b);
+	PXPublic PXSize PXAPI PXMathMaximumIU(const PXSize a, const PXSize b);
 
-	PXPublic int PXMathFloorI(const int a);
-	PXPublic int PXMathFloorD(const double a);
+	PXPublic int PXAPI PXMathFloorI(const int a);
+	PXPublic int PXAPI PXMathFloorD(const double a);
 
-	PXPublic PXSize PXMathAbsoluteI16(const PXInt16S value);
-	PXPublic PXSize PXMathAbsoluteI32(const PXInt32S value);
-	PXPublic double PXMathAbsoluteD(const double value);
+	PXPublic PXSize PXAPI PXMathAbsoluteI16(const PXInt16S value);
+	PXPublic PXSize PXAPI PXMathAbsoluteI32(const PXInt32S value);
+	PXPublic double PXAPI PXMathAbsoluteD(const double value);
 
 
-	PXPublic char PXMathLimitC(const char value, const char minimum, const char maximum);
-	PXPublic unsigned char PXMathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
-	PXPublic int PXMathLimitI(const int value, const int minimum, const int maximum);
-	PXPublic PXSize PXMathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum);
+	PXPublic char PXAPI PXMathLimitC(const char value, const char minimum, const char maximum);
+	PXPublic unsigned char PXAPI PXMathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
+	PXPublic int PXAPI PXMathLimitI(const int value, const int minimum, const int maximum);
+	PXPublic PXSize PXAPI PXMathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum);
 
-	PXPublic float PXMathFastInverseSqaureRoot(float number);
-	PXPublic double PXMathPower(double base, double exponent);
-	PXPublic double PXMathPowerOfTwo(double base);
-	PXPublic unsigned int PXMathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo);
-	PXPublic double PXMathRoot(unsigned int rootNr, double value);
-	PXPublic double PXMathSquareRoot(double value);
-	PXPublic double PXMathCubicRoot(double value);
-	PXPublic double PXMathPythagoras(double a, double b);
-	PXPublic double PXMathPythagorasReverse(double c, double a);
-	PXPublic double PXMathLogarithmus(int base, double exponent);
-	PXPublic double PXMathLogarithmusBase2(double exponent);
-	PXPublic double PXMathLogarithmusBase10(double exponent);
-	PXPublic double PXMathNewtonGravitation(double massA, double massB, double distance);
-	PXPublic int PXMathCeilingF(const float value);
-	PXPublic int PXMathCeilingD(const double value);
-	PXPublic void PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
-	PXPublic PXInt32U PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
-	PXPublic double PXMathSinus(double value);
-	PXPublic double PXMathTangens(double value);
-	PXPublic double PXMathCosinus(double value);
-	PXPublic unsigned long PXMathFibonacci(unsigned long step);
-	PXPublic double PXMathRadiansToDegree(double radians);
-	PXPublic double PXMathDegreeToRadians(double degree);
+	PXPublic float PXAPI PXMathFastInverseSqaureRoot(float number);
+	PXPublic double PXAPI PXMathPower(double base, double exponent);
+	PXPublic double PXAPI PXMathPowerOfTwo(double base);
+	PXPublic PXInt32U PXAPI PXMathPowerModulo(const PXInt32U base, const PXInt32U exponent, const PXInt32U modulo);
+	PXPublic double PXAPI PXMathRoot(unsigned int rootNr, double value);
+	PXPublic double PXAPI PXMathSquareRoot(double value);
+	PXPublic double PXAPI PXMathCubicRoot(double value);
+	PXPublic double PXAPI PXMathPythagoras(double a, double b);
+	PXPublic double PXAPI PXMathPythagorasReverse(double c, double a);
+	PXPublic double PXAPI PXMathLogarithmus(int base, double exponent);
+	PXPublic double PXAPI PXMathLogarithmusBase2(double exponent);
+	PXPublic double PXAPI PXMathLogarithmusBase10(double exponent);
+	PXPublic double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance);
+	PXPublic int PXAPI PXMathCeilingF(const float value);
+	PXPublic int PXAPI PXMathCeilingD(const double value);
+	PXPublic void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
+	PXPublic PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
+	PXPublic double PXAPI PXMathSinus(double value);
+	PXPublic double PXAPI PXMathTangens(double value);
+	PXPublic double PXAPI PXMathCosinus(double value);
+	PXPublic unsigned long PXAPI PXMathFibonacci(unsigned long step);
+	PXPublic double PXAPI PXMathRadiansToDegree(double radians);
+	PXPublic double PXAPI PXMathDegreeToRadians(double degree);
 
 	// Liniar interpolate a value from the range of 'x' min and max to another range 'y'.
-	PXPublic float PXMathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue);
-	PXPublic float PXMathNormalizeF(const float minimum, const float maximum, const float value);
-	PXPublic unsigned int PXMathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value);
+	PXPublic float PXAPI PXMathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue);
+	PXPublic float PXAPI PXMathNormalizeF(const float minimum, const float maximum, const float value);
+	PXPublic unsigned int PXAPI PXMathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value);
 
 #ifdef __cplusplus
 }

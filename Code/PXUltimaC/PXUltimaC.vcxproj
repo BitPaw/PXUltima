@@ -147,7 +147,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -214,7 +214,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -378,7 +378,6 @@
     <ClCompile Include="OS\Time\PXStopWatch.c" />
     <ClCompile Include="OS\Time\PXTime.c" />
     <ClCompile Include="OS\UI\PXUI.c" />
-    <ClCompile Include="OS\User\PXUser.c" />
     <ClCompile Include="OS\Window\PXWindow.c" />
     <ClCompile Include="Container\Buffer\PXBuffer.c" />
     <ClCompile Include="Media\COFF\PXCOFF.c" />
@@ -537,7 +536,6 @@
     <ClInclude Include="OS\Time\PXStopWatch.h" />
     <ClInclude Include="OS\Time\PXTime.h" />
     <ClInclude Include="OS\UI\PXUI.h" />
-    <ClInclude Include="OS\User\PXUser.h" />
     <ClInclude Include="OS\Window\PXWindow.h" />
     <ClInclude Include="Container\Buffer\PXBuffer.h" />
     <ClInclude Include="Media\COFF\PXCOFF.h" />

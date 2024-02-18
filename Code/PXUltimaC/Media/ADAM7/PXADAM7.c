@@ -85,7 +85,7 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, P
 
 PXActionResult PXAPI PXADAM7ScanlinesEncode(void* out, void* in, PXSize width, PXSize height, PXSize bbp, PXPNGInterlaceMethod interlaceMethod)
 {
-    return 0;
+    return PXActionRefusedNotImplemented;
 }
 
 PXSize PXADAM7CaluclateExpectedSize(PXSize width, PXSize height, PXSize bpp)

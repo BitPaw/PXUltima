@@ -1263,7 +1263,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 	}
 
 
-#if PXMemoryDebug
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.FileReference = pxFile;
@@ -1470,7 +1470,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 					pxFile->Data = fileMapped;
 					pxFile->DataAllocated = pxFile->DataSize;
 
-#if PXMemoryDebug
+#if PXLogEnable
 					PXLoggingEventData pxLoggingEventData;
 					PXClear(PXLoggingEventData, &pxLoggingEventData);
 					pxLoggingEventData.FileReference = pxFile;
@@ -1675,7 +1675,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 	}
 #endif
 
-#if PXMemoryDebug
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.FileReference = pxFile;
@@ -1762,7 +1762,7 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
 
 	// undo filemapping
 	{
-#if PXMemoryDebug
+#if PXLogEnable
 		PXLoggingEventData pxLoggingEventData;
 		PXClear(PXLoggingEventData, &pxLoggingEventData);
 		pxLoggingEventData.FileReference = pxFile;

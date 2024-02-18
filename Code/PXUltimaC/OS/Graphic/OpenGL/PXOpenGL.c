@@ -1517,6 +1517,7 @@ void PXAPI PXOpenGLCopy(PXOpenGL* const pxOpenGL, const PXOpenGL* const pxOpenGL
 
 PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -1524,6 +1525,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         "Init",
         "Initialize..."
     );
+#endif
 
     // Safety
     {
@@ -2460,6 +2462,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         int numberOfExtensions = 0;
         pxOpenGL->GetIntegerv(GL_NUM_EXTENSIONS, &numberOfExtensions);
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -2467,7 +2470,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             "Init",
             "Extensions detected <%i>",
             numberOfExtensions
-        );       
+        );      
+#endif
 
 #if 0
         for (int i = 0; i < numberOfExtensions; ++i)
@@ -2515,7 +2519,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         PXTextConstructNamedBufferA(&pxTextVideoMemorySize, pxTextVideoMemorySizeBuffer, 16);
         PXTextFormatSize(&pxTextVideoMemorySize, pxGraphicDevicePhysical.VideoMemoryEvictionSize);
 
-
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -2535,6 +2539,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             pxGraphicDevicePhysical.VideoMemoryEvictionCount,
             pxTextVideoMemorySize.TextA
         );
+#endif
     }
 
     PXOpenGLDeselect(pxOpenGL);
@@ -3283,6 +3288,7 @@ void APIENTRY PXOpenGLErrorMessageCallback(const GLenum source, const GLenum typ
             break;
     }
 
+#if PXLogEnable
     PXLogPrint
     (
         pxLoggingType,
@@ -3293,6 +3299,7 @@ void APIENTRY PXOpenGLErrorMessageCallback(const GLenum source, const GLenum typ
         typeText,
         message
      );
+#endif
 }
 
 
@@ -4132,6 +4139,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
     pxShaderProgram->ResourceID.OpenGLID = pxOpenGL->ShaderProgramCreate();
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -4140,6 +4148,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         "Shaderprogram create <%i>",
         pxShaderProgram->ResourceID.OpenGLID
     );
+#endif
 
     const PXBool success = pxShaderProgram->ResourceID.OpenGLID != -1;
 
@@ -4174,6 +4183,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
         pxOpenGL->ShaderCompile(shader->ResourceID.OpenGLID);
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -4182,6 +4192,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             "Compile <%i>",
             shader->ResourceID.OpenGLID
         );
+#endif
 
         {
             GLint isCompiled = 0;
@@ -4210,6 +4221,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
             shaderErrorLengthData[shaderErrorLengthCurrent-1] = '\0';
 
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingError,
@@ -4218,6 +4230,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 "GLSL - Compiler Error\n%s",
                 shaderErrorLengthData
             );
+#endif
 
             PXStackDelete(char, shaderErrorLengthMaximal, shaderErrorLengthData);
 
@@ -4273,7 +4286,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
 
     if (PXResourceIDIsUnused(&pxShaderProgram->ResourceID)) return PXActionRefusedObjectNotReady;
 
-#if 0
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -4371,7 +4384,7 @@ void PXAPI PXOpenGLTextureActivate(PXOpenGL* const pxOpenGL, const unsigned int 
 
 PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture2D* const pxTexture2D)
 {
-    PXImage* const image = &pxTexture2D->Image;
+    PXImage* const image = pxTexture2D->Image;
 
     // Create image resource on GPU side
     if(PXResourceIDIsUnused(&pxTexture2D->ResourceID))
@@ -4386,6 +4399,7 @@ PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture
         {
             const PXActionResult createResult = PXOpenGLErrorCurrent();
 
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingError,
@@ -4393,10 +4407,12 @@ PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture
                 "Texture2D",
                 "Creation failed"
             );
+#endif
 
             return createResult;
         }
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -4405,6 +4421,7 @@ PXActionResult PXAPI PXOpenGLTexture2DCreate(PXOpenGL* const pxOpenGL, PXTexture
             "Created <%i>",
             pxTexture2D->ResourceID.OpenGLID
         );
+#endif
     }
 
     // Bind resource
@@ -4460,6 +4477,7 @@ PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const pxOpenGL, PXTextur
 
         if (createResult != PXActionSuccessful)
         {
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingError,
@@ -4468,10 +4486,12 @@ PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const pxOpenGL, PXTextur
                 "Batch <%i> creation failed",
                 amount
             );
+#endif
 
             return createResult;
         }
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -4480,6 +4500,7 @@ PXActionResult PXAPI PXOpenGLTexture2DCreateV(PXOpenGL* const pxOpenGL, PXTextur
             "Batch <%i> created",
             amount
         );
+#endif
 
         for (PXSize i = 0; i < amount; i++)
         {
@@ -4529,15 +4550,16 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* con
     GLenum internalFormat = 0;
     GLenum internalType = 0;
 
-    const PXBool successA = PXOpenGLImageFormatToID(pxTexture2D->Image.Format, &imageFormat, &imageFormatType);
+    const PXBool successA = PXOpenGLImageFormatToID(pxTexture2D->Image->Format, &imageFormat, &imageFormatType);
     const PXBool successB = PXOpenGLImageFormatToID(PXColorFormatRGBAF, &internalFormat, &internalType);
 
     pxOpenGL->PixelStorei(GL_UNPACK_ALIGNMENT, 1); // This is needed to state we have tightly packed image data. If not, the GPU expects padding bytes and will crash.
 
     PXText pxText;
     PXTextConstructBufferA(&pxText, 32);
-    PXTextFormatSize(&pxText, pxTexture2D->Image.PixelDataSize);
+    PXTextFormatSize(&pxText, pxTexture2D->Image->PixelDataSize);
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -4546,26 +4568,30 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* con
         "%8s  Data upload <%i> (%ix%i)",
         pxText.TextA,
         pxTexture2D->ResourceID.OpenGLID,
-        pxTexture2D->Image.Width,
-        pxTexture2D->Image.Height
+        pxTexture2D->Image->Width,
+        pxTexture2D->Image->Height
     );
+#endif
 
     pxOpenGL->TextureData2D
     (
         GL_TEXTURE_2D,
         0, // detail
         internalFormat,
-        pxTexture2D->Image.Width,
-        pxTexture2D->Image.Height,
+        pxTexture2D->Image->Width,
+        pxTexture2D->Image->Height,
         0,
         imageFormat,
         imageFormatType,
-        pxTexture2D->Image.PixelData
+        pxTexture2D->Image->PixelData
     );
 }
 
 void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCamera* const pxCamera)
 {
+    PXModel* const pxModel = pxSkyBox->Model;
+    PXTextureCube* const pxTextureCube = pxSkyBox->TextureCube;
+
     void* indexBuffer = 0;
 
     if (!(pxOpenGL && pxSkyBox && pxCamera))
@@ -4611,7 +4637,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
     {
         PXOpenGLShaderProgramSelect(pxOpenGL, 0);
 
-        pxOpenGL->InterleavedArrays(GL_V3F, pxSkyBox->Model.VertexBuffer.VertexDataRowSize * sizeof(float), pxSkyBox->Model.VertexBuffer.VertexData);
+        pxOpenGL->InterleavedArrays(GL_V3F, pxModel->VertexBuffer.VertexDataRowSize * sizeof(float), pxModel->VertexBuffer.VertexData);
 
         pxOpenGL->Color4f(0.5f, 0.2f, 0.2f, 1.0f);
 
@@ -4621,41 +4647,46 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
         //glMultMatrixf(pxSkyBox->Model.ModelMatrix.Data);
         pxOpenGL->PushMatrix();
 
-        indexBuffer = pxSkyBox->Model.IndexBuffer.IndexData;
+        indexBuffer = pxModel->IndexBuffer.IndexData;
     }
 
     if (pxOpenGL->VertexArrayBind)
     {
-        pxOpenGL->VertexArrayBind(pxSkyBox->Model.ResourceID.OpenGLID);
+        pxOpenGL->VertexArrayBind(pxModel->ResourceID.OpenGLID);
     }
 
 
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, pxSkyBox->Model.VertexBuffer.ResourceID.OpenGLID);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, pxSkyBox->Model.IndexBuffer.ResourceID.OpenGLID);
-    pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, pxSkyBox->TextureCube.ResourceID.OpenGLID);
+    if (pxTextureCube)
+    {
+        pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, pxTextureCube->ResourceID.OpenGLID);
+    }
+
+   
 
    // glBindTexture(GL_TEXTURE_2D, pxSkyBox->TextureCube.ResourceID.OpenGLID);
 
     //PXOpenGLBufferBind(pxOpenGL, PXOpenGLBufferElementArray, skybox->Model.IndexBuffer.ResourceID.OpenGLID);
    // PXOpenGLTextureBind(pxOpenGL, PXOpenGLTextureTypeCubeMap, skybox->TextureCube.ResourceID.OpenGLID);
 
-    if (pxSkyBox->Model.IndexBuffer.DrawModeID & PXDrawModeIDPoint)
+    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDPoint)
     {
-        pxOpenGL->DrawArrays(GL_POINTS, 0, pxSkyBox->Model.IndexBuffer.IndexDataAmount);
+        pxOpenGL->DrawArrays(GL_POINTS, 0, pxModel->IndexBuffer.IndexDataAmount);
     }
-    if (pxSkyBox->Model.IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
+    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
     {
-        pxOpenGL->DrawElements(GL_LINE_LOOP, pxSkyBox->Model.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
+        pxOpenGL->DrawElements(GL_LINE_LOOP, pxModel->IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
-    if (pxSkyBox->Model.IndexBuffer.DrawModeID & PXDrawModeIDSquare)
+    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDSquare)
     {
         //pxOpenGL->DrawElements(GL_QUADS, 0, pxSkyBox->Model.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer); // Not supported?
     }
 
-    if (pxSkyBox->Model.IndexBuffer.DrawModeID & PXDrawModeIDTriangle)
+    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDTriangle)
     {
-        pxOpenGL->DrawElements(GL_TRIANGLES, pxSkyBox->Model.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
+        pxOpenGL->DrawElements(GL_TRIANGLES, pxModel->IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
 
@@ -4697,6 +4728,7 @@ void PXAPI PXOpenGLFrameBufferCreate(PXOpenGL* const pxOpenGL, const unsigned in
 {
     pxOpenGL->FrameBufferCreate(amount, framebufferIDList);
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -4705,6 +4737,7 @@ void PXAPI PXOpenGLFrameBufferCreate(PXOpenGL* const pxOpenGL, const unsigned in
         "Created <%i>",
         framebufferIDList[0]
     );
+#endif
 }
 
 void PXAPI PXOpenGLRenderBufferStorage(PXOpenGL* const pxOpenGL, const PXOpenGLRenderBufferFormat internalformat, const int width, const int height)
@@ -4985,11 +5018,11 @@ void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL* const pxOpenGL, PXTexture2D* 
     PXInt32U imageFormatID = 0;
     PXInt32U dataTypeID = 0;
 
-    PXOpenGLImageFormatToID(pxTexture2D->Image.Format, &imageFormatID, &dataTypeID);
+    PXOpenGLImageFormatToID(pxTexture2D->Image->Format, &imageFormatID, &dataTypeID);
 
-    PXImageResize(&pxTexture2D->Image, pxTexture2D->Image.Format, width, height);
+    PXImageResize(pxTexture2D->Image, pxTexture2D->Image->Format, width, height);
 
-    pxOpenGL->ReadPixels(x, y, width, height, imageFormatID, dataTypeID, pxTexture2D->Image.PixelData);
+    pxOpenGL->ReadPixels(x, y, width, height, imageFormatID, dataTypeID, pxTexture2D->Image->PixelData);
 }
 
 PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
@@ -5094,14 +5127,24 @@ PXActionResult PXAPI PXOpenGLTextureCubeCreate(PXOpenGL* const pxOpenGL, PXTextu
         GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
     };
 
+    PXImage* imageList[6] =
+    {
+        pxTextureCube->ImageA,
+        pxTextureCube->ImageB,
+        pxTextureCube->ImageC,
+        pxTextureCube->ImageD,
+        pxTextureCube->ImageE,
+        pxTextureCube->ImageF,
+    };
+
     for (PXSize i = 0; i < 6u; ++i)
     {
-        const PXImage* const image = &pxTextureCube->ImageList[i];
+        PXImage* image = imageList[i];
         const PXInt16U textureTypeID = openGLTextureTypeList[i];
         const int levelOfDetail = 0;
 
         PXTexture2D pxTexture2D;
-        pxTexture2D.Image = *image;
+        pxTexture2D.Image = image;
 
        // PXOpenGLTexture2DDataWrite(pxOpenGL, &pxTexture2D);
 
@@ -5166,8 +5209,8 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
     }
     else
     {
-        const float textureWidth = pxSprite->Model.IndexBuffer.SegmentPrime.Material->DiffuseTexture->Image.Width;
-        const float textureHeight = pxSprite->Model.IndexBuffer.SegmentPrime.Material->DiffuseTexture->Image.Height;
+        const float textureWidth = pxSprite->Model.IndexBuffer.SegmentPrime.Material->DiffuseTexture->Image->Width;
+        const float textureHeight = pxSprite->Model.IndexBuffer.SegmentPrime.Material->DiffuseTexture->Image->Height;
         float offset[2] =
         {
 
@@ -5368,6 +5411,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         pxOpenGL->VertexArraysGenerate(1, &(pxModel->ResourceID.OpenGLID)); // VAO
         pxOpenGL->VertexArrayBind(pxModel->ResourceID.OpenGLID);
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -5376,11 +5420,13 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "VAO created <%i>",
             pxModel->ResourceID.OpenGLID
         );
+#endif
     }
     else
     {
         PXResourceIDMarkAsUnused(&pxModel->ResourceID);
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingWarning,
@@ -5389,6 +5435,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "VAO not supported",
             pxModel->ResourceID.OpenGLID
         );
+#endif
     }
 
 
@@ -5410,6 +5457,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         pxModel->IndexBuffer.IndexData = PXNewList(PXByte, pxModel->IndexBuffer.IndexDataSize);
         PXMemoryCopy(indexData, pxModel->IndexBuffer.IndexDataSize, pxModel->IndexBuffer.IndexData, pxModel->IndexBuffer.IndexDataSize);
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingWarning,
@@ -5418,6 +5466,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "VBO not supported, Copy for Client-Buffer use.",
             pxModel->ResourceID.OpenGLID
         );
+#endif
 
         return PXActionRefusedNotSupported;
     }
@@ -5436,6 +5485,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         pxModel->VertexBuffer.ResourceID.OpenGLID = bufferIDs[0];
         pxModel->IndexBuffer.ResourceID.OpenGLID = bufferIDs[1];
 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -5445,8 +5495,10 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             bufferIDs[0],
             bufferIDs[1]
         );
+#endif
     }
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -5457,6 +5509,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         pxModel->VertexBuffer.VertexData,
         pxModel->VertexBuffer.VertexDataSize
     );
+#endif
 
     pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxModel->VertexBuffer.ResourceID.OpenGLID);
     pxOpenGL->BufferData(GL_ARRAY_BUFFER, pxModel->VertexBuffer.VertexDataSize, pxModel->VertexBuffer.VertexData, GL_STATIC_DRAW);
@@ -5468,6 +5521,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
     if (hasIndexData)
     {
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -5478,6 +5532,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             pxModel->IndexBuffer.IndexData,
             pxModel->IndexBuffer.IndexDataSize
         );
+#endif
 
         pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxModel->IndexBuffer.ResourceID.OpenGLID);
         pxOpenGL->BufferData(GL_ELEMENT_ARRAY_BUFFER, pxModel->IndexBuffer.IndexDataSize, pxModel->IndexBuffer.IndexData, GL_STATIC_DRAW);

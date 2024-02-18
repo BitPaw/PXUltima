@@ -95,6 +95,7 @@ void PXAPI PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEn
     (
         PXLoggingError,
         "Wavefront",
+        "Compile",
         "At line <%i> at <%i>, unexpected symbol.\n%s",
         compilerSymbolEntry->Line,
         compilerSymbolEntry->Coloum,

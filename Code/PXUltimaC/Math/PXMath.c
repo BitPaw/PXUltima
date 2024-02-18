@@ -2,72 +2,72 @@
 
 #include <math.h>
 
-int PXMathMinimumI(const int a, const int b)
+int PXAPI PXMathMinimumI(const int a, const int b)
 {
 	return PXMathMinimum(a, b);
 }
 
-PXSize PXMathMinimumIU(const PXSize a, const PXSize b)
+PXSize PXAPI PXMathMinimumIU(const PXSize a, const PXSize b)
 {
 	return PXMathMinimum(a, b);
 }
 
-double PXMathMinimumD(const double a, const double b)
+double PXAPI PXMathMinimumD(const double a, const double b)
 {
 	return PXMathMinimum(a, b);
 }
 
-PXSize PXMathMaximumIU(const PXSize a, const PXSize b)
+PXSize PXAPI PXMathMaximumIU(const PXSize a, const PXSize b)
 {
 	return PXMathMaximum(a, b);
 }
 
-int PXMathFloorI(const int a)
+int PXAPI PXMathFloorI(const int a)
 {
 	return PXMathFloor(a);
 }
 
-int PXMathFloorD(const double a)
+int PXAPI PXMathFloorD(const double a)
 {
 	return PXMathFloor(a);
 }
 
-PXSize PXMathAbsoluteI16(const PXInt16S value)
+PXSize PXAPI PXMathAbsoluteI16(const PXInt16S value)
 {
 	return PXMathAbsolute(value);
 }
 
-PXSize PXMathAbsoluteI32(const PXInt32S value)
+PXSize PXAPI PXMathAbsoluteI32(const PXInt32S value)
 {
 	return PXMathAbsolute(value);
 }
 
-double PXMathAbsoluteD(const double a)
+double PXAPI PXMathAbsoluteD(const double a)
 {
 	return PXMathAbsolute(a);
 }
 
-char PXMathLimitC(const char value, const char minimum, const char maximum)
+char PXAPI PXMathLimitC(const char value, const char minimum, const char maximum)
 {
 	return PXMathLimit(value, minimum, maximum);
 }
 
-unsigned char PXMathLimitCU(const unsigned char value, const unsigned char minimum, const unsigned char maximum)
+unsigned char PXAPI PXMathLimitCU(const unsigned char value, const unsigned char minimum, const unsigned char maximum)
 {
 	return PXMathLimit(value, minimum, maximum);
 }
 
-int PXMathLimitI(const int value, const int minimum, const int maximum)
+int PXAPI PXMathLimitI(const int value, const int minimum, const int maximum)
 {
 	return PXMathLimit(value, minimum, maximum);
 }
 
-PXSize PXMathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum)
+PXSize PXAPI PXMathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum)
 {
 	return PXMathLimit(value, minimum, maximum);
 }
 
-float PXMathFastInverseSqaureRoot(float number)
+float PXAPI PXMathFastInverseSqaureRoot(float number)
 {
 	const float threehalfs = 1.5f;
 	float x2 = number * 0.5f;
@@ -83,28 +83,30 @@ float PXMathFastInverseSqaureRoot(float number)
 	return y;
 }
 
-double PXMathPower(double base, double exponent)
+double PXAPI PXMathPower(double base, double exponent)
 {
 	return pow(base, exponent);
 }
 
-double PXMathPowerOfTwo(double base)
+double PXAPI PXMathPowerOfTwo(double base)
 {
 	return PXMathPower(base, 2);
 }
 
-unsigned int PXMathPowerModulo(unsigned int base, unsigned int exponent, unsigned int modulo)
+PXInt32U PXAPI PXMathPowerModulo(const PXInt32U base, const PXInt32U exponent, const PXInt32U modulo)
 {
-	unsigned int result = 1;
-	for(int i = 0; i < exponent; i++)
+	PXInt32U result = 1;
+
+	for(PXInt32U i = 0; i < exponent; ++i)
 	{
 		result *= base;
 		result %= modulo;
 	}
+
 	return result;
 }
 
-double PXMathRoot(unsigned int rootNr, double value)
+double PXAPI PXMathRoot(unsigned int rootNr, double value)
 {
 	switch(rootNr)
 	{
@@ -125,27 +127,27 @@ double PXMathRoot(unsigned int rootNr, double value)
 	}
 }
 
-double PXMathSquareRoot(double value)
+double PXAPI PXMathSquareRoot(double value)
 {
 	return PXMathRoot(2, value);
 }
 
-double PXMathCubicRoot(double value)
+double PXAPI PXMathCubicRoot(double value)
 {
 	return PXMathRoot(3, value);
 }
 
-double PXMathPythagoras(double a, double b)
+double PXAPI PXMathPythagoras(double a, double b)
 {
 	return PXMathSquareRoot(PXMathPowerOfTwo(a) + PXMathPowerOfTwo(b));
 }
 
-double PXMathPythagorasReverse(double c, double a)
+double PXAPI PXMathPythagorasReverse(double c, double a)
 {
 	return 0.0;
 }
 
-double PXMathLogarithmus(int base, double exponent)
+double PXAPI PXMathLogarithmus(int base, double exponent)
 {
 #if OSUnix
 	return 0; // TODO: not implemented?
@@ -154,22 +156,22 @@ double PXMathLogarithmus(int base, double exponent)
 #endif	
 }
 
-double PXMathLogarithmusBase2(double exponent)
+double PXAPI PXMathLogarithmusBase2(double exponent)
 {
 	return log2(exponent);
 }
 
-double PXMathLogarithmusBase10(double exponent)
+double PXAPI PXMathLogarithmusBase10(double exponent)
 {
 	return log10(exponent);
 }
 
-double PXMathNewtonGravitation(double massA, double massB, double distance)
+double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance)
 {
 	return PXMathConstantGravity * ((massA * massB) / (PXMathPower(distance, 2)));
 }
 
-int PXMathCeilingF(const float value)
+int PXAPI PXMathCeilingF(const float value)
 {
 	const int fullNumberBlockInt = (int)value;
 	const float fullNumberBlock = fullNumberBlockInt;
@@ -183,7 +185,7 @@ int PXMathCeilingF(const float value)
 	return fullNumberBlockInt;
 }
 
-int PXMathCeilingD(const double value)
+int PXAPI PXMathCeilingD(const double value)
 {
 	const int fullNumberBlockInt = (int)value;
 	const double fullNumberBlock = fullNumberBlockInt;
@@ -197,14 +199,14 @@ int PXMathCeilingD(const double value)
 	return fullNumberBlockInt;
 }
 
-void PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
+void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
 {
 	pxMathRandomGeneratorSeed->X = 123456789;
 	pxMathRandomGeneratorSeed->Y = 362436069;
 	pxMathRandomGeneratorSeed->Z = 521288629;
 }
 
-PXInt32U PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
+PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
 {
 	PXInt32U t;
 
@@ -220,22 +222,22 @@ PXInt32U PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGenera
 	return pxMathRandomGeneratorSeed->Z;
 }
 
-double PXMathSinus(double value)
+double PXAPI PXMathSinus(double value)
 {
 	return sin(value);
 }
 
-double PXMathTangens(double value)
+double PXAPI PXMathTangens(double value)
 {
 	return tan(value);
 }
 
-double PXMathCosinus(double value)
+double PXAPI PXMathCosinus(double value)
 {
 	return cos(value);
 }
 
-unsigned long PXMathFibonacci(unsigned long step)
+unsigned long PXAPI PXMathFibonacci(unsigned long step)
 {
 	double rootOfFive = PXMathSquareRoot(5);
 
@@ -259,17 +261,17 @@ unsigned long PXMathFibonacci(unsigned long step)
 	}
 }
 
-double PXMathRadiansToDegree(double radians)
+double PXAPI PXMathRadiansToDegree(double radians)
 {
 	return radians * (180.0 / PXMathConstantPI);
 }
 
-double PXMathDegreeToRadians(double degree)
+double PXAPI PXMathDegreeToRadians(double degree)
 {
 	return degree * (PXMathConstantPI / 180.0);
 }
 
-float PXMathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue)
+float PXAPI PXMathLiniarF(const float yMinimum, const float yMaximum, const float xMinimum, const float xMaximum, const float xValue)
 {
 	// Cap Value
 	float xCap = xValue > xMaximum ? xMaximum : xValue;
@@ -280,12 +282,12 @@ float PXMathLiniarF(const float yMinimum, const float yMaximum, const float xMin
 	return (((yMaximum - yMinimum) * (xValue - xMinimum)) / (xMaximum - xMinimum)) + yMinimum;
 }
 
-float PXMathNormalizeF(const float minimum, const float maximum, const float value)
+float PXAPI PXMathNormalizeF(const float minimum, const float maximum, const float value)
 {
 	return PXMathLiniarF(0, 1, minimum, maximum, value);
 }
 
-unsigned int PXMathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value)
+unsigned int PXAPI PXMathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value)
 {
 	const float result = PXMathLiniarF(0, 255, minimum, maximum, value);
 	const unsigned int convertedResult = (unsigned int)(result);

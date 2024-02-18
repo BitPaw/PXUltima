@@ -262,8 +262,6 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 					{
 						PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
-						PXResourceIDMarkAsUnused(&pxFontPage->Texture.ResourceID);
-
 						const PXSize targetLine = compilerSymbolEntry.Line;
 
 						while (targetLine == compilerSymbolEntry.Line)
@@ -313,17 +311,9 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 
 										PXFilePathSwapFileName(&fontFilePath, &resultFullPath, &fileName);
 
-										const PXActionResult actionResult = PXResourceLoad(&pxFontPage->Texture.Image, &resultFullPath);
+										PXTextCopyA(resultFullPath.TextA, resultFullPath.SizeUsed, pxFontPage->TextureFilePath, 260);
 
-										if (actionResult == PXActionSuccessful)
-										{
-											pxFontPage->Texture.Filter = PXGraphicRenderFilterNoFilter;
-											pxFontPage->Texture.LayoutNear = PXGraphicImageLayoutNearest;
-											pxFontPage->Texture.LayoutFar = PXGraphicImageLayoutNearest;
-											pxFontPage->Texture.WrapHeight = PXGraphicImageWrapStrechEdges;
-											pxFontPage->Texture.WrapWidth = PXGraphicImageWrapStrechEdges;
-										}
-
+										// We dont load the texture here as it cause interaction problems with the engine
 									}
 									break;
 								}

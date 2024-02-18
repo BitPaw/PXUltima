@@ -3,6 +3,12 @@
 
 #include <Media/PXResource.h>
 
+#define PXLogEnable 1
+#define PXLogEnableColor 0
+
+//PXBool PXLogEnablePrint = 1;
+//PXBool PXLogEnableColor = 1;
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -35,8 +41,8 @@ extern "C"
 		PXSize TypeSize;
 		PXSize Amount;
 
-		char* NameFile;
-		char* NameFunction;
+		const char* NameFile;
+		const char* NameFunction;
 		PXSize NumberLine;
 	}
 	PXLoggingMemoryData;

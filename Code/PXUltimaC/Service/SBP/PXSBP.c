@@ -7,7 +7,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <OS/User/PXUser.h>
 
-void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
+void PXAPI PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
 {
     PXClear(PXSBPMessage, pxSBPMessage);
 
@@ -16,7 +16,7 @@ void PXSBPMessageConstruct(PXSBPMessage* const pxSBPMessage)
     pxSBPMessage->ID = -1;
     pxSBPMessage->LastKnown = pxSBPMessage->FirstKnown;
 }
-void PXSBPMessageConstructFlat(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize, const void* const owner)
+void PXAPI PXSBPMessageConstructFlat(PXSBPMessage* const pxSBPMessage, const void* const data, const PXSize dataSize, const void* const owner)
 {
     PXSBPMessageConstruct(pxSBPMessage);
 
@@ -26,17 +26,17 @@ void PXSBPMessageConstructFlat(PXSBPMessage* const pxSBPMessage, const void* con
     pxSBPMessage->DataSizeExpected = dataSize;
     pxSBPMessage->StorageType = PXSBPMessageStorageTypeDirect;
 }
-PXBool PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk)
+PXBool PXAPI PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk)
 {
     return pxSBPMessageChunk->SizeExpected <= pxSBPMessageChunk->SizeCurrent;
 }
 
-PXBool PXSBPMessageChunkDataContainsMultible(const PXSBPChunkCache* const pxSBPMessageChunk)
+PXBool PXAPI PXSBPMessageChunkDataContainsMultible(const PXSBPChunkCache* const pxSBPMessageChunk)
 {
     return pxSBPMessageChunk->SizeExpected < pxSBPMessageChunk->SizeCurrent;
 }
 
-void PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver)
+void PXAPI PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver)
 {
     PXMemoryClear(pxSBPReceiver, sizeof(PXSBPReceiver));
 
@@ -46,7 +46,7 @@ void PXSBPReceiverConstruct(PXSBPReceiver* const pxSBPReceiver)
     //PXDictionaryConstruct(&pxSBPClient->Receiver.MessageLookup, sizeof(PXMessageID), sizeof(PXSBPMessage), PXDictionaryValueLocalityInternalEmbedded);
 }
 
-void PXSBPServerConstruct(PXSBPServer* const pxSBPServer)
+void PXAPI PXSBPServerConstruct(PXSBPServer* const pxSBPServer)
 {
     PXServerConstruct(&pxSBPServer->Server);
     PXSBPReceiverConstruct(&pxSBPServer->Receiver);
@@ -56,7 +56,7 @@ void PXSBPServerConstruct(PXSBPServer* const pxSBPServer)
     pxSBPServer->Server.Owner = &pxSBPServer->Receiver;
 }
 
-void PXSBPServerDestruct(PXSBPServer* const pxSBPServer)
+void PXAPI PXSBPServerDestruct(PXSBPServer* const pxSBPServer)
 {
     PXServerDestruct(&pxSBPServer->Server);
 
@@ -64,22 +64,22 @@ void PXSBPServerDestruct(PXSBPServer* const pxSBPServer)
     PXSBPServerConstruct(pxSBPServer);
 }
 
-void PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceiverEventList* const pxSBPReceiverEventList)
+void PXAPI PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceiverEventList* const pxSBPReceiverEventList)
 {
     PXSBPReceiverEventListSet(&pxSBPServe->Receiver, pxSBPReceiverEventList);
 }
 
-PXActionResult PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port)
+PXActionResult PXAPI PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port)
 {
     return PXServerStart(&pxSBPServer->Server, port, PXProtocolModeTCP);
 }
 
-PXActionResult PXSBPServerStop(PXSBPServer* const pxSBPServer)
+PXActionResult PXAPI PXSBPServerStop(PXSBPServer* const pxSBPServer)
 {
     return PXServerStop(&pxSBPServer->Server);
 }
 
-PXActionResult PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize)
+PXActionResult PXAPI PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize)
 {
     for (PXSize i = 0; i < pxSBPServer->Server.ServerSocketListSize; i++)
     {
@@ -108,7 +108,7 @@ PXActionResult PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* 
     return PXActionSuccessful;
 }
 
-void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
+void PXAPI PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
 {
     PXClientConstruct(&pxSBPClient->Client);
     PXSBPReceiverConstruct(&pxSBPClient->Receiver);
@@ -120,29 +120,29 @@ void PXSBPClientConstruct(PXSBPClient* const pxSBPClient)
     pxSBPClient->Client.Owner = &pxSBPClient->Receiver;
 }
 
-void PXSBPClientDestruct(PXSBPClient* const pxSBPClient)
+void PXAPI PXSBPClientDestruct(PXSBPClient* const pxSBPClient)
 {
     PXClientDestruct(&pxSBPClient->Client);
 
     PXSBPClientConstruct(pxSBPClient);
 }
 
-void PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiverEventList* const pxSBPReceiverEventList)
+void PXAPI PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiverEventList* const pxSBPReceiverEventList)
 {
     pxSBPClient->Receiver.EventList = *pxSBPReceiverEventList;
 }
 
-PXActionResult PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port)
+PXActionResult PXAPI PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port)
 {
     return PXClientConnectToServer(&pxSBPClient->Client, ip, port);
 }
 
-PXActionResult PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
+PXActionResult PXAPI PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
 {
     return PXClientDisconnectFromServer(&pxSBPClient->Client);
 }
 
-PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize)
+PXActionResult PXAPI PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize)
 {
     if (!pxSBPClient->EnableSBP)
     {
@@ -157,12 +157,12 @@ PXActionResult PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void
     return result;
 }
 
-PXActionResult PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath)
+PXActionResult PXAPI PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize)
+PXBool PXAPI PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize)
 {
     if (dataSize < PXSBPMessageChunkHeaderSize)
     {
@@ -186,27 +186,27 @@ PXBool PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const vo
     return PXTrue;
 }
 
-void PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRecieverState pxSBPRecieverState)
+void PXAPI PXSBPReceiverStateChanged(PXSBPReceiver* const pxSBPReceiver, const PXSBPRecieverState pxSBPRecieverState)
 {
     pxSBPReceiver->State = pxSBPRecieverState;
 }
 
-void PXSBPReceiverEventListSet(PXSBPReceiver* const pxSBPReceiver, PXSBPReceiverEventList* const pxSBPReceiverEventList)
+void PXAPI PXSBPReceiverEventListSet(PXSBPReceiver* const pxSBPReceiver, PXSBPReceiverEventList* const pxSBPReceiverEventList)
 {
     pxSBPReceiver->EventList = *pxSBPReceiverEventList;
 }
 
-PXInt16U PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage)
+PXInt16U PXAPI PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage)
 {
     return pxSBPMessage->SizeExpected - pxSBPMessage->SizeCurrent;
 }
 
-PXBool PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage)
+PXBool PXAPI PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage)
 {
     return pxSBPMessage->SizeCurrent == pxSBPMessage->SizeExpected;
 }
 
-PXSize PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessage, const void* const data, const PXSize dataSize)
+PXSize PXAPI PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessage, const void* const data, const PXSize dataSize)
 {
     const PXSize before = PXSBPMessageSizeMissing(pxSBPMessage);
     const PXAdress* adress = (PXAdress)pxSBPMessage->Message + pxSBPMessage->SizeCurrent;
@@ -217,7 +217,7 @@ PXSize PXSBPMessageChunkDataConsume(PXSBPChunkCache* const pxSBPMessage, const v
     return copyedSize;
 }
 
-void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData)
+void PXAPI PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData)
 {
     if (!pxSBPReceiver->EnableSBP)
     {
@@ -399,7 +399,7 @@ void PXSBPOnDataRawReceive(PXSBPReceiver* const pxSBPReceiver, const PXSocketDat
     }
 }
 
-void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChunk* const pxSBPChunk)
+void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChunk* const pxSBPChunk)
 {
     // Fetch steam if it exists
     {
@@ -520,14 +520,14 @@ void PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXSBPChun
     }
 }
 
-void PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)
+void PXAPI PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)
 {
     PXMemoryClear(pxSBPEmitter, sizeof(PXSBPEmitter));
 
     pxSBPEmitter->PackageSizeMaximal = PXSocketBufferSize;
 }
 
-PXActionResult PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize)
+PXActionResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize)
 {
     PXActionResult sendResult = PXActionInvalid;
 

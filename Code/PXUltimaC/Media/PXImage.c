@@ -12,29 +12,29 @@
 #include <Media/TIFF/PXTIFF.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
 
-void PXImageConstruct(PXImage* const image)
+void PXAPI PXImageConstruct(PXImage* const image)
 {
     PXMemoryClear(image, sizeof(PXImage));
 }
 
-void PXImageDestruct(PXImage* const image)
+void PXAPI PXImageDestruct(PXImage* const image)
 {
     PXDeleteList(PXByte, image->PixelData, image->PixelDataSize);
 
     PXImageConstruct(image);
 }
 
-void PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
+void PXAPI PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
 {
     PXMemoryCopy(pxImageSource, sizeof(PXImage), pxImageTarget, sizeof(PXImage));
 }
 
-void PXImageCopyAsNew(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
+void PXAPI PXImageCopyAsNew(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
 {
     
 }
 
-PXBool PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const PXSize width, const PXSize height)
+PXBool PXAPI PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const PXSize width, const PXSize height)
 {
     const PXSize bbp = PXColorFormatBytePerPixel(dataFormat);
     const PXSize newSize = width * height * bbp;
@@ -116,7 +116,7 @@ PXBool PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const
     return PXTrue;
 }
 
-void PXImageFlipHorizontal(PXImage* image)
+void PXAPI PXImageFlipHorizontal(PXImage* image)
 {
     const PXSize bbp = PXColorFormatBytePerPixel(image->Format);
     const PXSize rowSize = (image->Width * bbp);
@@ -141,7 +141,7 @@ void PXImageFlipHorizontal(PXImage* image)
     }
 }
 
-void PXImageFlipVertical(PXImage* image)
+void PXAPI PXImageFlipVertical(PXImage* image)
 {
     const PXSize bbp = PXColorFormatBytePerPixel(image->Format);;
     const PXSize scanLineWidthSize = image->Width * bbp;
@@ -166,7 +166,7 @@ void PXImageFlipVertical(PXImage* image)
     PXDeleteList(PXByte, copyBufferRow, scanLineWidthSize);
 }
 
-void PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, unsigned char blue)
+void PXAPI PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, unsigned char blue)
 {
     // DO we have alpha? If not, make one
 
@@ -191,7 +191,7 @@ void PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, 
     }
 }
 
-void PXImageFillColorRGBA8(PXImage* const image, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)
+void PXAPI PXImageFillColorRGBA8(PXImage* const image, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)
 {
     for (PXSize i = 0; i < image->PixelDataSize; i += 4u)
     {
@@ -204,7 +204,7 @@ void PXImageFillColorRGBA8(PXImage* const image, const PXByte red, const PXByte 
     }
 }
 
-void* PXImageDataPoint(const PXImage* const image, const PXSize x, const PXSize y)
+void* PXAPI PXImageDataPoint(const PXImage* const image, const PXSize x, const PXSize y)
 {
     const PXSize bytesPerPixel = PXColorFormatBytePerPixel(image->Format);
     const PXSize index = x * bytesPerPixel + y * image->Width;
@@ -212,7 +212,7 @@ void* PXImageDataPoint(const PXImage* const image, const PXSize x, const PXSize 
     return (unsigned char*)image->PixelData + index;
 }
 
-PXSize PXImagePixelPosition(const PXImage* const image, const PXSize x, const PXSize y)
+PXSize PXAPI PXImagePixelPosition(const PXImage* const image, const PXSize x, const PXSize y)
 {
     const PXSize bytesPerPixel = PXColorFormatBitsPerPixel(image->Format);
     const PXSize index = x * bytesPerPixel + y * bytesPerPixel * image->Width;
@@ -220,7 +220,7 @@ PXSize PXImagePixelPosition(const PXImage* const image, const PXSize x, const PX
     return index;
 }
 
-void PXImagePixelSetRGB8
+void PXAPI PXImagePixelSetRGB8
 (
     PXImage* const image,
     const PXSize x,

@@ -559,7 +559,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
                 if (!success)
                 {
-#if PXDirectXDebug
+#if PXLogEnable
                     PXLogPrint
                     (
                         PXLoggingError,
@@ -573,7 +573,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
                 }
             }
 
-#if PXDirectXDebug
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -802,7 +802,7 @@ PXActionResult PXAPI PXDirectXVertexBufferCreate(PXDirectX* const pxDirectX, PXV
                 return PXActionInvalid;
             }
 
-#if PXDirectXDebug
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -930,15 +930,15 @@ PXActionResult PXAPI PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXText
         {
             const UINT levels = 0;
             const DWORD usage = 0; // D3DUSAGE
-            const D3DFORMAT format = PXDirectXColorFormatFromID(pxTexture->Image.Format);
+            const D3DFORMAT format = PXDirectXColorFormatFromID(pxTexture->Image->Format);
             const D3DPOOL pool = D3DPOOL_DEFAULT;
             HANDLE sharedHandle = PXNull;
 
             const HRESULT result = pxDirectX->DX9->lpVtbl->CreateTexture
             (
                 pxDirectX->DX9,
-                pxTexture->Image.Width,
-                pxTexture->Image.Height,
+                pxTexture->Image->Width,
+                pxTexture->Image->Height,
                 levels,
                 usage,
                 format,
@@ -947,14 +947,14 @@ PXActionResult PXAPI PXDirectXTexture2DCreate(PXDirectX* const pxDirectX, PXText
                 &sharedHandle
             );
 
-#if PXDirectXDebug
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
                 "DirectX9",
                 "Texture2D created (%ix%i) 0x%p",
-                pxTexture->Image.Width,
-                pxTexture->Image.Height,
+                pxTexture->Image->Width,
+                pxTexture->Image->Height,
                 pxTexture->ResourceID.DirectXInterface
             );
 #endif
@@ -1042,7 +1042,7 @@ PXActionResult PXAPI PXDirectXTexture3DCreate(PXDirectX* const pxDirectX, PXText
                 &sharedHandle
             );
 
-#if PXDirectXDebug
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -1114,7 +1114,7 @@ PXActionResult PXAPI PXDirectXTextureCubeCreate(PXDirectX* const pxDirectX, PXTe
                 &sharedHandle
             );
 
-#if PXDirectXDebug
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -2551,7 +2551,7 @@ PXActionResult PXAPI PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader*
                         &(IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
                     );
 
-#if PXDirectXDebug
+#if PXLogEnable
                     PXLogPrint
                     (
                         PXLoggingInfo,
@@ -2572,7 +2572,7 @@ PXActionResult PXAPI PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader*
                         &(IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
                     );
 
-#if PXDirectXDebug
+#if PXLogEnable
                     PXLogPrint
                     (
                         PXLoggingInfo,
@@ -2630,7 +2630,7 @@ PXActionResult PXAPI PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader*
                         (IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
                     );
 
-#if PXDirectXDebug
+#if PXLogEnable
                     PXLogPrint
                     (
                         PXLoggingInfo,
@@ -2650,7 +2650,7 @@ PXActionResult PXAPI PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader*
                         (IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
                     );
 
-#if PXDirectXDebug
+#if PXLogEnable
                     PXLogPrint
                     (
                         PXLoggingInfo,

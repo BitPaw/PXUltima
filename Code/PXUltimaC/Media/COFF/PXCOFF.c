@@ -555,6 +555,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 				(
 					PXLoggingInfo,
 					"COFF",
+					"Parse",
 					"[RelocationInformation] %6i,%6i,%6i",
 					pxRelocationInformation.VirtualAddressOfReference,
 					pxRelocationInformation.SymbolTableIndex,
@@ -605,6 +606,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 			(
 				PXLoggingInfo,
 				"COFF",
+				"Parse",
 				"Symbols deteced <%i>",
 				pxCOFF->Header.NumberOfSymbols
 			);

@@ -819,6 +819,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	// Settings invalid?
 
 
+#if PXLogEnable
 	PXLogPrint
 	(
 		PXLoggingInfo,
@@ -826,6 +827,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 		"Parsing",
 		"Start"
 	);
+#endif
 
 
 
@@ -1004,6 +1006,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 	outputStream->DataSize = outputStream->DataCursor;
 	PXFileCursorToBeginning(outputStream);
 
+#if PXLogEnable
 	PXLogPrint
 	(
 		PXLoggingInfo,
@@ -1011,6 +1014,7 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 		"Parsing",
 		"Done"
 	);
+#endif
 }
 
 PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText)

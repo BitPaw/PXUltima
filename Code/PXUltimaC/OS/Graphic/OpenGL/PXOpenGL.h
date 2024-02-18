@@ -64,8 +64,8 @@ extern "C"
 		PXOpenGLVersion4x2x0, // 2011 August    8. GLSL 4.20, Shaders with atomic counters, draw transform feedback instanced, shader packing, performance improvements
 		PXOpenGLVersion4x3x0, // 2012 August    6. GLSL 4.30, Compute shaders leveraging GPU parallelism, shader storage buffer objects, high - quality ETC2 / EAC texture compression, increased memory security, a multi - application robustness extension, compatibility with PXOpenGL ES 3.0
 		PXOpenGLVersion4x4x0, // 2013 July     22. GLSL 4.40, Buffer Placement Control, Efficient Asynchronous Queries, Shader Variable Layout, Efficient Multiple Object Binding, Streamlined Porting of Direct3D applications, Bindless Texture Extension, Sparse Texture Extension
-		PXOpenGLVersion4x5x0,	// 2014 August   11. GLSL 4.50, Direct State Access(DSA), Flush Control, Robustness, PXOpenGL ES 3.1 API and shader compatibility, DX11 emulation features
-		PXOpenGLVersion4x6x0	// 2017 July     31. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering
+		PXOpenGLVersion4x5x0, // 2014 August   11. GLSL 4.50, Direct State Access(DSA), Flush Control, Robustness, PXOpenGL ES 3.1 API and shader compatibility, DX11 emulation features
+		PXOpenGLVersion4x6x0  // 2017 July     31. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering
 	}
 	PXOpenGLVersion;
 

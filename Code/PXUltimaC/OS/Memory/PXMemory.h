@@ -162,7 +162,7 @@ extern "C"
 	PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
 
 
-	PXPublic PXMemoryAccessModeType PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode);
+	PXPublic PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode);
 
 
 
@@ -193,7 +193,7 @@ extern "C"
 // Deallocation
 //---------------------------------------------------------
 #if PXMemoryDebug
-	PXPublic void PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, const char* function, const PXSize line);
+	PXPublic void PXAPI PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, const char* function, const PXSize line);
 
 #define PXDelete(type, adress) PXMemoryReleaseDetailed(adress, sizeof(type), _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #define PXDeleteList(type, adress, amount) PXMemoryReleaseDetailed(adress, sizeof(type) * amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)

@@ -531,10 +531,10 @@ void PXHuffmanTreeConstruct(PXHuffmanTree* const huffmanTree)
 
 void PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
 {
-	PXDeleteList(PXInt32U, huffmanTree->CodeSymbols, -1);
-	PXDeleteList(PXInt32U, huffmanTree->LengthsList, -1);
-	PXDeleteList(PXInt8U, huffmanTree->TableLength, -1);
-	PXDeleteList(PXInt16U, huffmanTree->TableValue, -1);
+	PXDeleteList(PXInt32U, huffmanTree->CodeSymbols, 0);
+	PXDeleteList(PXInt32U, huffmanTree->LengthsList, 0);
+	PXDeleteList(PXInt8U, huffmanTree->TableLength, 0);
+	PXDeleteList(PXInt16U, huffmanTree->TableValue, 0);
 }
 
 PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXInt16U code)

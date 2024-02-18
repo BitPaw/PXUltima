@@ -70,9 +70,6 @@ void PXAPI PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorL
 	PXClear(RECT, &rectangleClip);
 
 	while(EnumDisplayMonitors(hdc, &rectangleClip, lpfnEnum, dwData));
-
-
-
 #endif
 }
 

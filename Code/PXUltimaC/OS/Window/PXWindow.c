@@ -2131,14 +2131,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
     }
 
     {
-        if (!windowID)
-        {
-            const PXActionResult windowsCreateResult = PXErrorCurrent();
-
-            // Handle error?
-
-            return PXThreadActionFailed;
-        }
+        PXActionOnErrorFetchAndReturn(!windowID);
 
         pxWindow->ID = windowID;
     }
@@ -3234,6 +3227,7 @@ void PXAPI PXWindowTriggerOnMouseLeaveEvent(const PXWindow* window, const PXMous
 
 void PXAPI PXWindowTriggerOnWindowSizeChangeEvent(PXWindow* const window, const PXInt32S width, const PXInt32S height)
 {
+#if PXLogEnable
     PXLoggingEventData pxLoggingEventData;
     PXClear(PXLoggingEventData, &pxLoggingEventData);
     pxLoggingEventData.ModuleSource = "Window";
@@ -3242,6 +3236,7 @@ void PXAPI PXWindowTriggerOnWindowSizeChangeEvent(PXWindow* const window, const 
     pxLoggingEventData.Type = PXLoggingInfo;
 
     PXLogPrintInvoke(&pxLoggingEventData, width, height);
+#endif
 
     window->Width = width;
     window->Height = height;
@@ -3252,6 +3247,7 @@ void PXAPI PXWindowTriggerOnWindowSizeChangeEvent(PXWindow* const window, const 
 
 void PXAPI PXWindowTriggerOnWindowMoveEvent(PXWindow* const window)
 {
+#if PXLogEnable
     PXLoggingEventData pxLoggingEventData;
     PXClear(PXLoggingEventData, &pxLoggingEventData);
     pxLoggingEventData.ModuleSource = "Window";
@@ -3260,6 +3256,7 @@ void PXAPI PXWindowTriggerOnWindowMoveEvent(PXWindow* const window)
     pxLoggingEventData.Type = PXLoggingInfo;
 
     PXLogPrintInvoke(&pxLoggingEventData);
+#endif
 }
 
 void PXAPI PXWindowTriggerOnKeyBoardKeyEvent(PXWindow* const window, const PXKeyBoardKeyInfo* const keyBoardKeyInfo)

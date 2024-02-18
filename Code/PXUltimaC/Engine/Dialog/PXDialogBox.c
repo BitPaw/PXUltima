@@ -14,7 +14,7 @@ void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox
         {
             pxEngineDialogBox->IsNewWord = PXFalse;
             pxEngineDialogBox->LineNumber = 0;
-            pxEngineDialogBox->DialogBoxText.TextRenderAmount = 0;
+            pxEngineDialogBox->DialogBoxText->TextRenderAmount = 0;
 
             ++(pxEngineDialogBox->PageAmountCurrent);
 
@@ -30,7 +30,7 @@ void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox
             pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
             pxEngineResourceActionInfo.ChangeInfo.Enable = PXTrue;
             pxEngineResourceActionInfo.ChangeInfo.Type = PXEngineCreateTypeTimer;
-            pxEngineResourceActionInfo.ChangeInfo.Object = &pxEngineDialogBox->DialogBoxTextTimer;
+            pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
             PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
 
@@ -68,7 +68,7 @@ void PXAPI PXEngineDialogBoxOpen
     dialogBoxText->TextRenderAmount = 0;
 
     PXEngineResourceActionInfo pxEngineResourceActionInfo[5];
-    PXClearList(PXEngineResourceActionInfo, &pxEngineResourceActionInfo, 5);
+    PXClearList(PXEngineResourceActionInfo, pxEngineResourceActionInfo, 5);
 
     pxEngineResourceActionInfo[0].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[0].ChangeInfo.Enable = PXTrue;
@@ -78,7 +78,7 @@ void PXAPI PXEngineDialogBoxOpen
     pxEngineResourceActionInfo[1].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[1].ChangeInfo.Enable = PXTrue;
     pxEngineResourceActionInfo[1].ChangeInfo.Type = PXEngineCreateTypeSprite;
-    pxEngineResourceActionInfo[1].ChangeInfo.Object = &pxEngineDialogBox->DialogBoxSprite;
+    pxEngineResourceActionInfo[1].ChangeInfo.Object = pxEngineDialogBox->DialogBoxSprite;
 
     pxEngineResourceActionInfo[2].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[2].ChangeInfo.Enable = PXTrue;
@@ -88,12 +88,12 @@ void PXAPI PXEngineDialogBoxOpen
     pxEngineResourceActionInfo[3].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[3].ChangeInfo.Enable = PXTrue;
     pxEngineResourceActionInfo[3].ChangeInfo.Type = PXEngineCreateTypeSprite;
-    pxEngineResourceActionInfo[3].ChangeInfo.Object = &pxEngineDialogBox->DialogBoxText;
+    pxEngineResourceActionInfo[3].ChangeInfo.Object = pxEngineDialogBox->DialogBoxText;
 
     pxEngineResourceActionInfo[4].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[4].ChangeInfo.Enable = PXTrue;
     pxEngineResourceActionInfo[4].ChangeInfo.Type = PXEngineCreateTypeTimer;
-    pxEngineResourceActionInfo[4].ChangeInfo.Object = &pxEngineDialogBox->DialogBoxTextTimer;
+    pxEngineResourceActionInfo[4].ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
     PXEngineResourceActionBatch(pxEngine, pxEngineResourceActionInfo, 5);
 
@@ -115,7 +115,7 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
     pxEngineResourceActionInfo[1].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[1].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[1].ChangeInfo.Type = PXEngineCreateTypeSprite;
-    pxEngineResourceActionInfo[1].ChangeInfo.Object = &pxEngineDialogBox->DialogBoxSprite;
+    pxEngineResourceActionInfo[1].ChangeInfo.Object = pxEngineDialogBox->DialogBoxSprite;
 
     pxEngineResourceActionInfo[2].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[2].ChangeInfo.Enable = PXFalse;
@@ -125,12 +125,12 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
     pxEngineResourceActionInfo[3].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[3].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[3].ChangeInfo.Type = PXEngineCreateTypeSprite;
-    pxEngineResourceActionInfo[3].ChangeInfo.Object = &pxEngineDialogBox->DialogBoxText;
+    pxEngineResourceActionInfo[3].ChangeInfo.Object = pxEngineDialogBox->DialogBoxText;
  
     pxEngineResourceActionInfo[4].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[4].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[4].ChangeInfo.Type = PXEngineCreateTypeTimer;
-    pxEngineResourceActionInfo[4].ChangeInfo.Object = &pxEngineDialogBox->DialogBoxTextTimer;
+    pxEngineResourceActionInfo[4].ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
     PXEngineResourceActionBatch(pxEngine, pxEngineResourceActionInfo, 5);
 
@@ -138,11 +138,11 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
     pxEngineDialogBox->IsLocked = PXFalse;
 }
 
-void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox)
+PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox)
 {
     if (!(pxEngine && pxEngineTimerEventInfo && pxEngineDialogBox))
     {
-        return;// PXActionRefusedArgumentNull;
+        return PXActionRefusedArgumentNull;
     }
 
     // Check state. If we already done, stop the timer from triggering.
@@ -154,7 +154,7 @@ void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimer
 
         case PXEngineDialogStateActive:
         {
-            PXEngineText* const dialogBoxText = &pxEngineDialogBox->DialogBoxText;
+            PXEngineText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
             PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
             PXText* const pxTextDialog = &pxDialogMessagePage->Text;
 
@@ -176,6 +176,7 @@ void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimer
                 {
                     pxEngineDialogBox->State = PXEngineDialogStateReadyForNextPage;
 
+#if PXLogEnable
                     PXLogPrint
                     (
                         PXLoggingInfo,
@@ -186,11 +187,13 @@ void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimer
                         pxEngineDialogBox->PageAmountLoaded,
                         pxEngineDialogBox->PageAmountCurrent + 2                  
                     );
+#endif
                 }
                 else
                 {
                     pxEngineDialogBox->State = PXEngineDialogStateReadyToClose;     
 
+#if PXLogEnable
                     PXLogPrint
                     (
                         PXLoggingInfo,
@@ -199,6 +202,7 @@ void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimer
                         "Done with all pages <%i>.",
                         pxEngineDialogBox->PageAmountCurrent + 1
                     );
+#endif
                 }
 
                 PXEngineResourceActionInfo pxEngineResourceActionInfo;
@@ -207,7 +211,7 @@ void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimer
                 pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
                 pxEngineResourceActionInfo.ChangeInfo.Enable = PXFalse;
                 pxEngineResourceActionInfo.ChangeInfo.Type = PXEngineCreateTypeTimer;
-                pxEngineResourceActionInfo.ChangeInfo.Object = &pxEngineDialogBox->DialogBoxTextTimer;
+                pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
                 PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
 
@@ -220,17 +224,6 @@ void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimer
 
             const PXInt32U rendomDelay = (PXEngineGenerateRandom(pxEngine, 400) - 200) * 1000; // -2000 to 2000
             PXEngineTimer* const pxEngineTimer = pxEngineTimerEventInfo->TimerReference;
-
-#if 0
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "BFEngine",
-                "Dialog",
-                "Random: %5i",
-                rendomDelay
-            );
-#endif
 
             pxEngineTimer->TimeDelayShift = 0;
 

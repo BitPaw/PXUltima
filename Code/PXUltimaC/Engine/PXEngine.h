@@ -23,19 +23,92 @@ extern "C"
 		// Fudamental components
 		PXEngineCreateTypeModel,
 		PXEngineCreateTypeFont,
-		PXEngineCreateTypeTexture,
+		PXEngineCreateTypeTexture2D,
+
+		PXEngineCreateTypeImage,
+		PXEngineCreateTypeTextureCube,
+
 		PXEngineCreateTypeShaderProgram,
 		PXEngineCreateTypeSkybox,
 		PXEngineCreateTypeSprite,
 		PXEngineCreateTypeText,
 		PXEngineCreateTypeTimer,
 		PXEngineCreateTypeSound,
+		PXEngineCreateTypeEngineSound,
 		PXEngineCreateTypeUIElement,
+
+		PXEngineCreateTypeHitBox,
 
 		// Extended basic components
 		PXEngineCreateTypeDialogBox
 	}
 	PXEngineCreateType;
+
+
+#define PXEngineResourceInfoExist			0b00000001// Indicated deleted Resource
+#define PXEngineResourceInfoEnabled			0b00000010// Shall it be rendered? Does it tick?
+#define PXEngineResourceInfoStorageDrive	0b00010000// Resource is in permanent storage
+#define PXEngineResourceInfoStorageCached	0b00100000// Resource is in semi-permanent cache (temp file)
+#define PXEngineResourceInfoStorageMemory	0b01000000// Resource exists in RAM
+#define PXEngineResourceInfoStorageDevice	0b10000000// Resource exists in spesific device
+
+	typedef struct PXEngineResourceInfo_
+	{
+		PXInt32U ID;
+		PXInt32U Flags;
+	}
+	PXEngineResourceInfo;
+
+
+
+	//-----------------------------------------------------
+	// HitBox
+	//-----------------------------------------------------
+	typedef enum PXHitBoxForm_
+	{
+		PXHitBoxTypeInvalid,
+		PXHitBoxTypeBox,
+		PXHitBoxTypeCube,
+		PXHitBoxTypeCircle
+
+	}
+	PXHitBoxForm;
+
+	//---------------
+	// BehaviourFlag
+	//---------------
+#define PXHitBoxBehaviourKeepOut 0b00000001 // Prevent from entering 
+#define PXHitBoxBehaviourKeepIn  0b00000010 // Prevent from leaving
+#define PXHitBoxBehaviourDetect  0b00000100 // Trigger if in inside
+//#define PXHitBoxBehaviourDetect  0b00001000 // Trigger if in inside
+	//---------------
+
+	typedef enum PXHitBoxCollisionVarriant_
+	{
+		PXHitBoxCollisionVarriantInvalid,
+		PXHitBoxCollisionVarriantEnter,
+		PXHitBoxCollisionVarriantLeave
+	}
+	PXHitBoxCollisionVarriant;
+
+	typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox, const PXHitBoxCollisionVarriant pxHitBoxCollisionVarriant);
+
+	typedef struct PXHitBox_
+	{
+		PXInt32U PXID;
+		PXBool Enabled;
+
+		PXMatrix4x4F* ModelPosition;
+		
+		PXInt8U BehaviourFlag;
+		PXHitBoxForm Form;
+
+		void* CallBackOwner;
+		PXHitBoxCollisionDetect CollisionDetectCallBack;
+
+	}
+	PXHitBox;
+	//-----------------------------------------------------
 
 
 
@@ -54,7 +127,7 @@ extern "C"
 	}
 	PXEngineTimerEventInfo;
 
-	typedef void (PXAPI*PXEngineTimerCallBack)(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, void* const owner);
+	typedef PXActionResult(PXAPI*PXEngineTimerCallBack)(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, void* const owner);
 
 	typedef struct PXEngineTimer_
 	{
@@ -67,16 +140,9 @@ extern "C"
 		PXInt32U TimeStampStart;
 
 		PXInt32U TimeDeltaTarget;
-		PXInt32S TimeDelayShift;	
+		PXInt32S TimeDelayShift;
 	}
 	PXEngineTimer;
-
-
-	typedef struct PXEngineTimerCreateInfo_
-	{
-		PXEngineTimer* TimerReference;
-	}
-	PXEngineTimerCreateInfo;
 	//-----------------------------------------------------
 
 
@@ -101,12 +167,6 @@ extern "C"
 		PXInt32U TextRenderAmount;
 	}
 	PXEngineText;
-
-	typedef struct PXEngineTextCreateData_
-	{
-		PXEngineText* EngineTextReference;
-	}
-	PXEngineTextCreateData;
 	//-----------------------------------------------------
 
 
@@ -118,16 +178,16 @@ extern "C"
 	//-----------------------------------------------------
 	typedef struct PXEngineSound_
 	{
+		PXSound* Sound;
+
 		PXInt32U PXID;
-		PXSound Sound;
+		
 		PXBool SoundLoop;
 	}
 	PXEngineSound;
 
 	typedef struct PXEngineSoundCreateInfo_
 	{
-		PXEngineSound* EngineSoundReference;
-		char* FilePath;
 		PXBool SoundLoop;
 	}
 	PXEngineSoundCreateInfo;
@@ -140,7 +200,6 @@ extern "C"
 	//-----------------------------------------------------
 	typedef struct PXShaderProgramCreateData_
 	{
-		PXShaderProgram* ShaderProgrammReference;
 		char* VertexShaderFilePath;
 		char* PixelShaderFilePath;
 	}
@@ -148,37 +207,14 @@ extern "C"
 	//-----------------------------------------------------
 
 
-	typedef struct PXEngineUIElementCreateData_
-	{
-		PXUIElement* UIElementReference;
-	}
-	PXEngineUIElementCreateData;
-
-	typedef struct PXModelCreateEventData_
-	{
-		PXModel* ModelReference;
-		char* ModelFilePath;
-	}
-	PXModelCreateEventData;
-
 	typedef struct PXEngineFontCreateData_
 	{
-		PXFont* FontReference;
-		char* FontFilePath;
 		PXShaderProgram* ShaderProgramCurrent;
 	}
 	PXEngineFontCreateData;
 
-	typedef struct PXEngineTexture2DCreateData_
-	{
-		PXTexture2D* Texture2DReference;
-		char* FilePath;
-	}
-	PXEngineTexture2DCreateData;
-
 	typedef struct PXSkyBoxCreateEventData_
 	{
-		PXSkyBox* SkyboxReference;
 		char* SkyBoxShaderVertex;
 		char* SkyBoxShaderPixel;
 		char* SkyBoxTextureA;
@@ -192,12 +228,12 @@ extern "C"
 
 	typedef struct PXSpriteCreateEventData_
 	{
-		PXSprite* SpriteReference;
 		PXTexture2D* TextureCurrent;
-		char* TextureName;
 		PXShaderProgram* ShaderProgramCurrent;
 
 		PXVector2F TextureScalingPoints[4];
+
+		PXHitBox HitBox;
 
 		PXVector3F Position;
 		PXVector2F Scaling;
@@ -208,24 +244,35 @@ extern "C"
 	PXSpriteCreateEventData;
 
 
+	typedef struct PXTextureCubeCreateData_
+	{
+		char* FilePathA;
+		char* FilePathB;
+		char* FilePathC;
+		char* FilePathD;
+		char* FilePathE;
+		char* FilePathF;
+	}
+	PXTextureCubeCreateData;
+
+
 	typedef struct PXEngineResourceCreateInfo_
 	{
+		void** ObjectReference;
+		char* FilePath;
+
 		PXEngineCreateType CreateType;
 
 		PXBool SpawnEnabled;
 
 		union
 		{
-			PXModelCreateEventData Model;
 			PXEngineFontCreateData Font;
 			PXSkyBoxCreateEventData SkyBox;
 			PXSpriteCreateEventData Sprite;
-			PXEngineTextCreateData Text;
-			PXEngineUIElementCreateData UIElement;
-			PXEngineTimerCreateInfo Timer;
 			PXEngineSoundCreateInfo Sound;
-			PXEngineTexture2DCreateData Texture2D;
 			PXShaderProgramCreateData ShaderProgram;
+			PXTextureCubeCreateData TextureCube;
 		};
 	}
 	PXEngineResourceCreateInfo;
@@ -400,6 +447,11 @@ extern "C"
 		PXDictionary TextLookUp;
 		PXDictionary TimerLookUp;
 		PXDictionary SoundLookUp;
+		PXDictionary HitBoxLookUp;
+		PXDictionary ImageLookUp;
+		PXDictionary TextureLookUp;
+		PXDictionary ModelLookUp;
+		PXDictionary ShaderProgramLookup;
 
 		// Cached most-common objects
 		PXModel SpriteScaled;
@@ -432,6 +484,7 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo);
 
 
+	PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine);
 
 	PXPublic PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture2D* const pxTexture2D);
 

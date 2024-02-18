@@ -226,7 +226,7 @@ extern "C"
 	}
 	PXVertexBufferFormat;
 
-	PXPublic PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat);
+	PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat);
 
 
 
@@ -281,7 +281,7 @@ extern "C"
 		PXGraphicImageWrap WrapHeight;
 		PXGraphicImageWrap WrapWidth;
 
-		PXImage Image;
+		PXImage* Image;
 	}
 	PXTexture2D;
 
@@ -292,11 +292,11 @@ extern "C"
 	(texture)->LayoutFar = PXGraphicImageLayoutNearest; \
 	(texture)->WrapHeight= PXGraphicImageWrapStrechEdges; \
 	(texture)->WrapWidth = PXGraphicImageWrapStrechEdges; \
-	(texture)->Image.Width = width; \
-	(texture)->Image.Height = height;  \
-	(texture)->Image.PixelDataSize = 0;  \
-	(texture)->Image.PixelData = 0; \
-	(texture)->Image.Format = format; \
+	(texture)->Image->Width = width; \
+	(texture)->Image->Height = height;  \
+	(texture)->Image->PixelDataSize = 0;  \
+	(texture)->Image->PixelData = 0; \
+	(texture)->Image->Format = format; \
 
 
 	typedef struct PXTexture3D_
@@ -318,7 +318,12 @@ extern "C"
 
 		PXColorFormat Format;
 
-		PXImage ImageList[6];
+		PXImage* ImageA;
+		PXImage* ImageB;
+		PXImage* ImageC;
+		PXImage* ImageD;
+		PXImage* ImageE;
+		PXImage* ImageF;
 	}
 	PXTextureCube;
 
@@ -369,7 +374,7 @@ extern "C"
 	PXMaterialContainer;
 
 
-	PXPublic PXMaterial* PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName);
+	PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName);
 
 
 	typedef struct PXShader_
@@ -445,7 +450,7 @@ extern "C"
 	}
 	PXVertexBuffer;
 
-	PXPublic void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index);
+	PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index);
 
 
 
@@ -541,8 +546,8 @@ extern "C"
 	PXModel;
 
 
-	PXPublic void PXModelConstruct(PXModel* const pxModel);
-	PXPublic void PXModelDestruct(PXModel* const pxModel);
+	PXPublic void PXAPI PXModelConstruct(PXModel* const pxModel);
+	PXPublic void PXAPI PXModelDestruct(PXModel* const pxModel);
 
 
 
@@ -656,11 +661,13 @@ extern "C"
 		PXSize CharacteListSize;
 		PXSize CharacteListEntrys;
 		PXFontPageCharacter* CharacteList;
-		PXTexture2D Texture;
+		
+		PXTexture2D* Texture;
+		char TextureFilePath[260];
 	}
 	PXFontPage;
 
-	PXPublic PXFontPageCharacter* PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID);
+	PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID);
 
 #define PXFontPageGet(adress, index) (!currentPageIndex) ?  &(adress)->MainPage : &(adress)->AdditionalPageList[currentPageIndex-1];
 
@@ -672,6 +679,8 @@ extern "C"
 
 		PXFontPage* AdditionalPageList;
 		PXSize AdditionalPageListSize;
+
+		PXInt32U PXID;
 	}
 	PXFont;
 
@@ -761,10 +770,8 @@ extern "C"
 
 	typedef	struct PXSkyBox_
 	{
-		PXModel Model;
-
-		PXTextureCube TextureCube;
-
+		PXModel* Model;
+		PXTextureCube* TextureCube;
 		PXShaderProgram* ShaderProgramReference;
 	}
 	PXSkyBox;

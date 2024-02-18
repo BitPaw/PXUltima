@@ -612,7 +612,6 @@ extern "C"
 	//-----------------------------------------------------
 	PXPublic PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
-	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureLoadA(PXGraphic* const pxGraphic, PXSprite* const pxSprite, const char* textureFilePath);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
 
 
@@ -635,46 +634,7 @@ extern "C"
 
 	//-------------------------------------------------------------------------
 
-	// Load image resource and register it to prevent multible loads of the same file
-	PXPublic PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* const pxImage, const PXText* const pxImageFilePath);
 
-
-	//---<Texture>----------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoad(PXGraphic* const pxGraphic, PXTexture2D* const texture, const PXText* const filePath);
-	PXPublic PXActionResult PXAPI PXGraphicTexture2DLoadA(PXGraphic* const pxGraphic, PXTexture2D* const texture, const char* const filePath);
-	//-------------------------------------------------------------------------
-
-
-	//---<Model>---------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegister(PXGraphic* const pxGraphic, PXSkyBox* const skyBox);
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegisterD
-	(
-		PXGraphic* const pxGraphic,
-		PXSkyBox* const skyBox,
-		const PXText* const shaderVertex,
-		const PXText* const shaderFragment,
-		const PXText* const textureRight,
-		const PXText* const textureLeft,
-		const PXText* const textureTop,
-		const PXText* const textureBottom,
-		const PXText* const textureBack,
-		const PXText* const textureFront
-	);
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxRegisterA
-	(
-		PXGraphic* const pxGraphic,
-		PXSkyBox* const skyBox,
-		const char* const shaderVertex,
-		const char* const shaderFragment,
-		const char* const textureRight,
-		const char* const textureLeft,
-		const char* const textureTop,
-		const char* const textureBottom,
-		const char* const textureBack,
-		const char* const textureFront
-	);
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxUse(PXGraphic* const pxGraphic, PXSkyBox* const skyBox);
-	PXPublic PXActionResult PXAPI PXGraphicSkyboxRelease(PXGraphic* const pxGraphic, PXSkyBox* const skyBox);
 
 	//PXPublic PXSize PXGraphicModelListSize(const PXGraphic* const pxGraphic);
 	//PXPublic PXBool PXGraphicModelListGetFromIndex(const PXGraphic* const pxGraphic, PXModel** pxModel, const PXSize index);

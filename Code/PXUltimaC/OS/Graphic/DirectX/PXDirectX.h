@@ -13,7 +13,6 @@
 #define PXDX12Enable OSWindows && 0u
 
 #define PXDX10Atleast PXDX10Enable || PXDX10x1Enable || PXDX11Enable || PXDX12Enable
-#define PXDirectXDebug 1
 //-------------------------------------
 
 #if OSUnix

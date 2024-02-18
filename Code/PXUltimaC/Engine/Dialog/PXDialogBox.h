@@ -35,13 +35,13 @@ extern "C"
 	{
 		PXEngineDialogState State;
 
-		PXSprite DialogBoxSprite;
+		PXSprite* DialogBoxSprite;
 		
-		PXEngineText DialogBoxText;
-		PXEngineTimer DialogBoxTextTimer;
+		PXEngineText* DialogBoxText;
+		PXEngineTimer* DialogBoxTextTimer;
 
-		PXTexture2D TexturePageNext;
-		PXTexture2D TexturePageFinal;
+		PXTexture2D* TexturePageNext;
+		PXTexture2D* TexturePageFinal;
 
 		// References
 		PXSprite* SpriteCharacterFace;
@@ -74,7 +74,7 @@ extern "C"
 		const PXSize amountOfPages
 	);
 	PXPublic void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox);
-	PXPublic void PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox);
+	PXPublic PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox);
 
 #ifdef __cplusplus
 }

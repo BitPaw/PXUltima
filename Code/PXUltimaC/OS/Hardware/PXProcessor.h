@@ -103,9 +103,9 @@ extern "C"
     }
     PXProcessorModelName;
 
-    PXPrivate void PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name);
-    PXPrivate PXProcessorBrand PXProcessorBrandDetect(const char* name);
-    PXPrivate PXProcessorModelName PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model);
+    PXPrivate void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name);
+    PXPrivate PXProcessorBrand PXAPI PXProcessorBrandDetect(const char* name);
+    PXPrivate PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model);
 
 	typedef struct PXProcessor_
 	{       

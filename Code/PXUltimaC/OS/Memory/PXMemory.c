@@ -26,7 +26,7 @@
 #define ProtectionIDReadWrite PAGE_READWRITE
 
 
-PXActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable)
+PXActionResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 {
 	HANDLE           hToken;
 	TOKEN_PRIVILEGES tp;
@@ -38,7 +38,7 @@ PXActionResult WindowsProcessPrivilege(const wchar_t* pszPrivilege, BOOL bEnable
 		return PXErrorCurrent(); // OpenProcessToken
 
 	// get the luid
-	if (!LookupPrivilegeValue(NULL, pszPrivilege, &tp.Privileges[0].Luid))
+	if (!LookupPrivilegeValueA(NULL, pszPrivilege, &tp.Privileges[0].Luid))
 		return PXErrorCurrent();  // LookupPrivilegeValue
 
 	tp.PrivilegeCount = 1;
@@ -143,7 +143,7 @@ void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASiz
 	PXMemorySet(bufferA, 0u, bufferASize);
 }
 
-void PXAPI PXMemorySet(void* PXRestrict buffer, const PXByte value, const PXSize bufferSize)
+void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const PXSize bufferSize)
 {
 //#if MemoryAssertEnable
 //	assert(bufferA);
@@ -372,7 +372,7 @@ void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount)
 		_malloca(totalSize);
 #endif
 
-#if PXMemoryDebug
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	pxLoggingEventData.MemoryData.TypeSize = typeSize;
 	pxLoggingEventData.MemoryData.Amount = amount;
@@ -408,7 +408,7 @@ PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amo
 	_freea(dataAdress);
 #endif
 
-#if PXMemoryDebug
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	pxLoggingEventData.MemoryData.TypeSize = typeSize;
 	pxLoggingEventData.MemoryData.Amount = amount;
@@ -449,6 +449,7 @@ void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, c
 {
 	void* const allocatedMemory = _calloc_dbg(amount, typeSize, _NORMAL_BLOCK, file, line); // crtdbg.h
 
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	pxLoggingEventData.MemoryData.TypeSize = typeSize;
 	pxLoggingEventData.MemoryData.Amount = amount;
@@ -462,6 +463,7 @@ void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, c
 	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
 
 	PXLogPrintInvoke(&pxLoggingEventData);
+#endif
 
 	return allocatedMemory;
 }
@@ -547,14 +549,14 @@ PXBool PXAPI PXMemoryHeapReallocate(const PXSize typeSize, void** const sourceAd
 
 
 #if PXMemoryDebug
-void PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, const char* function, const PXSize line)
+void PXAPI PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, const char* function, const PXSize line)
 {
 	if (!adress || !size)
 	{
 		return;
 	}
 
-#if PXMemoryDebug
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = size;
@@ -611,7 +613,7 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
 
 	// Need realloc?
 	{
-		const PXSize isEnoughSpace = pxMemoryHeapReallocateEventData->DataSize >= sizeToAllocate;
+		const PXSize isEnoughSpace = *pxMemoryHeapReallocateEventData->DataSize >= sizeToAllocate;
 
 		// If there is enough space and we dont want to minimize size, we dont need to realloc
 		if (isEnoughSpace && !pxMemoryHeapReallocateEventData->ReduceSizeIfPossible)
@@ -637,7 +639,17 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
 	pxMemoryHeapReallocateEventData->WasDataMoved = adressReallocated != pxMemoryHeapReallocateEventData->DataAdress;
 	*pxMemoryHeapReallocateEventData->DataAdress = adressReallocated;
 	*pxMemoryHeapReallocateEventData->DataSize = sizeToAllocate;
-	pxMemoryHeapReallocateEventData->WasSizeIncreased = pxMemoryHeapReallocateEventData->AmountDemand > pxMemoryHeapReallocateEventData->AmountCurrent;
+
+	if (beforeSize == 0)
+	{
+		pxMemoryHeapReallocateEventData->WasSizeIncreased = PXTrue;
+	}
+	else
+	{
+		pxMemoryHeapReallocateEventData->WasSizeIncreased = pxMemoryHeapReallocateEventData->AmountDemand > *pxMemoryHeapReallocateEventData->AmountCurrent;
+	}
+
+	
 	pxMemoryHeapReallocateEventData->WasSuccessful = PXTrue;
 
 	if (pxMemoryHeapReallocateEventData->AmountCurrent)
@@ -667,6 +679,7 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
 		pxMemoryHeapReallocateEventData->PointOfNewDataSize = 0;
 	}
 
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = pxMemoryHeapReallocateEventData->TypeSize;
@@ -681,6 +694,7 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
 	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
 
 	PXLogPrintInvoke(&pxLoggingEventData);
+#endif
 
 	return adressReallocated;
 }
@@ -772,7 +786,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemo
 			break;
 	}
 
-
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = size;
@@ -784,6 +798,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemo
 	pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
 
 	PXLogPrintInvoke(&pxLoggingEventData, addressAllocated,	readMode);
+#endif
 #endif
 
 	return (void*)addressAllocated;
@@ -804,7 +819,7 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 
 	//const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags); // Windows 8, Kernel32.dll, memoryapi.h
 
-#if PXMemoryDebug
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = size;
@@ -839,7 +854,7 @@ void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 	const PXBool result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
 #endif
 
-#if PXMemoryDebug
+#if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = size;

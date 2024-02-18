@@ -47,7 +47,7 @@ PXActionResult PXAPI PXUserNameGet(PXText* const name)
 #if OSUnix
 
 			return 0;
-
+			
 #elif OSWindows
 			DWORD size = name->SizeAllocated;
 

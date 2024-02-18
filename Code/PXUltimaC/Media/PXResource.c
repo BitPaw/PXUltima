@@ -52,7 +52,7 @@
 #include "CPP/PXCPP.h"
 #include "CSS/PXCSS.h"
 
-PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
+PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
     switch (pxVertexBufferFormat)
     {
@@ -65,7 +65,7 @@ PXInt8U PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBuffer
     }
 }
 
-PXMaterial* PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName)
+PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName)
 {
     if (!pxMaterialContainer)
     {
@@ -92,7 +92,7 @@ PXMaterial* PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialC
     return PXNull;
 }
 
-void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index)
+void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index)
 {
     const PXSize rowEntiry = pxVertexBuffer->VertexDataRowSize * index;
 
@@ -146,7 +146,7 @@ void* PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, c
     }   
 }
 
-void PXModelConstruct(PXModel* const pxModel)
+void PXAPI PXModelConstruct(PXModel* const pxModel)
 {
     PXClear(PXModel, pxModel);
 
@@ -155,12 +155,12 @@ void PXModelConstruct(PXModel* const pxModel)
     PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
 }
 
-void PXModelDestruct(PXModel* const pxModel)
+void PXAPI PXModelDestruct(PXModel* const pxModel)
 {
     
 }
 
-PXFontPageCharacter* PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID)
+PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID)
 {
     PXFontPageCharacter* lastMatch = PXNull;
     PXBool match = PXFalse;
@@ -205,6 +205,7 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
     {
         if (pxFile.TypeInfo.FormatExpected == PXFileFormatUnkown)
         {
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingError,
@@ -212,12 +213,14 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
                 "Load",
                 "Refused : Format not detected"
             );
+#endif
 
             return PXActionRefusedNotSupported;
         }
 
         if (pxFile.TypeInfo.ResourceLoadFunction == PXNull)
         {
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingError,
@@ -225,6 +228,7 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
                 "Load",
                 "Refused : Not implemented"
             );
+#endif
 
             return PXActionRefusedNotImplemented;
         }
@@ -233,6 +237,7 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
 
         const PXActionResult fileParsingResult = pxFile.TypeInfo.ResourceLoadFunction(resource, &pxFile);
 
+#if PXLogEnable
         PXInt32U timeDelat = PXProcessorTimeReal() - time;
 
         PXText pxText;
@@ -249,6 +254,7 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
             pxFile.CounterOperationsRead,
             filePath->TextA
         );
+#endif
 
         PXFileDestruct(&pxFile);
 

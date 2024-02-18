@@ -242,8 +242,8 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 	PXNtQuerySystemInformation pxNtQuerySystemInformation;
 	PXNtQueryObject pxNtQueryObject;
 	
-	PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQuerySystemInformation, "NtQuerySystemInformation");
-	PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQueryObject, "NtQueryObject");
+	PXLibraryGetSymbolA(&pxLibraryNTDLL, (LibraryFunction*)&pxNtQuerySystemInformation, "NtQuerySystemInformation");
+	PXLibraryGetSymbolA(&pxLibraryNTDLL, (LibraryFunction*)&pxNtQueryObject, "NtQueryObject");
 
 
 
@@ -446,6 +446,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 		(
 			PXLoggingInfo,
 			"Process",
+			"Handle",
 			"[%2i:%c] <%s> <%s>",
 			sysHandle->ObjectTypeIndex,
 			(pxHandle.Type != PXHandleTypeInvalid) ? 'Y' : 'N',
@@ -571,9 +572,9 @@ PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEv
 	const DWORD processID = PXNull;
 	const HANDLE snapshotHandle = CreateToolhelp32Snapshot(flag, processID); // Windows XP, Kernel32.dll, tlhelp32.h
 	const PXBool success = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
-	PROCESSENTRY32W processEntryW;
-	processEntryW.dwSize = sizeof(PROCESSENTRY32W);
-
+	PROCESSENTRY32 processEntryW;
+	processEntryW.dwSize = sizeof(PROCESSENTRY32);
+	
 	PXActionOnErrorFetchAndReturn(!success);
 
 	PXBool successfulFetch = Process32First(snapshotHandle, &processEntryW);
@@ -595,9 +596,7 @@ PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEv
 		pxProcess.ProcessIDParent = processEntryW.th32ParentProcessID;
 		pxProcess.ExecutableFilePath;
 
-		const PXSize executableFilePathSize = PXTextLengthW(processEntryW.szExeFile, MAX_PATH);
-
-		PXTextConstructFromAdressW(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, executableFilePathSize, executableFilePathSize);
+		PXTextConstructFromAdressA(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, PXTextLengthUnkown, PXTextLengthUnkown);
 
 		PXFunctionInvoke(pxProcessDetectedEvent, &pxProcess);
 

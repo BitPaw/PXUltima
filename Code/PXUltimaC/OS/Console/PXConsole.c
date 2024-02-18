@@ -58,7 +58,7 @@ void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const buff
 
 		const PXInt8U colorID = bufferInput->TextA[i] - '0';
 
-#if PXConsoleColorEnable
+#if PXConsoleColorEnable && 0
 		char buffer[128];
 		PXSize bufferSize = sprintf_s(buffer, 128, "\x1b[38;5;%im", colorID);
 

@@ -5,17 +5,17 @@
 #include <Math/PXVector.h>
 #include <Math/PXMatrix.h>
 
-#define GravityForceSun 274
-#define GravityForceMercury 3.7
-#define GravityForceVenus 8.87
-#define GravityForceEarth 9.807
-#define GravityForceEarthMoon 1.62
-#define GravityForceMars 3.721
-#define GravityForceJupiter 24.79
-#define GravityForceSaturn 10.44
-#define GravityForceNeptune 11.15
-#define GravityForceUranus 8.87
-#define GravityForcePluto 0.62
+#define PXGravityForceSun 274
+#define PXGravityForceMercury 3.7
+#define PXGravityForceVenus 8.87
+#define PXGravityForceEarth 9.807
+#define PXGravityForceEarthMoon 1.62
+#define PXGravityForceMars 3.721
+#define PXGravityForceJupiter 24.79
+#define PXGravityForceSaturn 10.44
+#define PXGravityForceNeptune 11.15
+#define PXGravityForceUranus 8.87
+#define PXGravityForcePluto 0.62
 
 
 #ifdef __cplusplus
@@ -39,7 +39,7 @@ extern "C"
 	}
 	PXPhysicProperties;
 
-    PXPublic void PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F* const gravityDircetion, const float gravityForce, const float deltaTime);
+    PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F* const gravityDircetion, const float gravityForce, const float deltaTime);
 
     
 #ifdef __cplusplus

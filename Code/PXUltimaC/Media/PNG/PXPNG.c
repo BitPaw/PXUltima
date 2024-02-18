@@ -655,7 +655,7 @@ void getPixelColorRGBA8(PXColorRGBAI8* const color, const unsigned char* in, PXS
     }
 }
 
-PXActionResult rgba8ToPixel
+PXActionResult PXAPI rgba8ToPixel
 (
     unsigned char* out, 
     PXSize i,
@@ -1926,7 +1926,8 @@ the scanlines with 1 extra byte per scanline
             }
         }
 
-        for (type = 0; type != 5; ++type) PXDeleteList(PXByte, attempt[type], -1);
+        for (type = 0; type != 5; ++type) 
+            PXDeleteList(PXByte, attempt[type], 0);
     }
     else if (strategy == LFS_PREDEFINED)
     {
@@ -2000,7 +2001,8 @@ the scanlines with 1 extra byte per scanline
                 for (PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
-        for (type = 0; type != 5; ++type) PXDeleteList(PXByte, attempt[type], -1);
+        for (type = 0; type != 5; ++type)
+            PXDeleteList(PXByte, attempt[type], 0);
     }
     else return 88; // unknown filter strategy
 

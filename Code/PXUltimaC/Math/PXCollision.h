@@ -45,7 +45,12 @@ extern "C"
 	}
 	PXCollisionGravityField;
 
-	PXPublic PXBool PXCollisionAABB(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy);
+
+
+
+	PXPublic PXBool PXAPI PXCollisionAABB(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy);
+
+	//PXPublic PXBool PXAPI PXCollisionCheck(PXModel);
 
 
 #ifdef __cplusplus

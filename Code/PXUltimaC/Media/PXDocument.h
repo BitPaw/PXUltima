@@ -107,6 +107,8 @@ extern "C"
 
 	PXPublic PXActionResult PXAPI PXDocumentPrint(PXDocument* const pxDocument);
 
+	PXPublic PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElement);
+
 
 #ifdef __cplusplus
 }

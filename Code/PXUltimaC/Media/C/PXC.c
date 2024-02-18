@@ -1188,7 +1188,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, P
 #endif
             }
 
-            defineTypePosition = PXFileCursorPosition(pxFile);
+            defineTypePosition = (char*)PXFileCursorPosition(pxFile);
 
             // PXFileWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
             // PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
