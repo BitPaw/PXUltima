@@ -1781,6 +1781,16 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
     pxWindow->IsRunning = 0;
     pxWindow->CursorModeCurrent = PXWindowCursorShow;
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Window",
+        "Create",
+        "Building..."
+    );
+#endif
+
 #if OSUnix
 
     // Make this thread safe
@@ -1886,8 +1896,6 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
             &setWindowAttributes
         );
         const PXBool sucessful = PXWindowID;
-
-        printf("[i][Window] Create <%i x %i> \n", pxWindow->Width, pxWindow->Height);
 
         pxWindow->ID = sucessful ? PXWindowID : 0;
     }
@@ -2140,6 +2148,19 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
     // OS does not support window creation or it is not implemented
 
 #endif
+
+#if PXLogEnable
+PXLogPrint
+(
+    PXLoggingInfo,
+    "Window",
+    "Create",
+    "Success, <%i x %i>",
+    pxWindow->Width,
+    pxWindow->Height
+);
+#endif
+
 
     //---<POST-Update>----------------
     PXWindowPosition(pxWindow, PXNull, PXNull);

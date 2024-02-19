@@ -1537,6 +1537,39 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
     pxOpenGL->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
 
+    // TODO: bad Spinninglock
+    if (!pxOpenGL->AttachedWindow->IsRunning)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            "OpenGL",
+            "Init",
+            "Wait for window..."
+        );
+#endif
+        while (!pxOpenGL->AttachedWindow->IsRunning)
+        {
+            printf("");
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Init",
+            "Window done, proceed"
+        );
+#endif
+    }
+
+ 
+
+
+
+
     if (!pxGraphicInitializeInfo->WindowReference) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
     {
 #if OSWindows
@@ -2495,7 +2528,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     // List devices
     {
         PXGraphicDevicePhysical pxGraphicDevicePhysical;
-        PXMemoryClear(&pxGraphicDevicePhysical, sizeof(PXGraphicDevicePhysical));
+        PXClear(PXGraphicDevicePhysical, &pxGraphicDevicePhysical);
 
         PXInt32U devices = 0;
 
@@ -2594,12 +2627,22 @@ PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID
         return currentMemory;
     }
 
-    return -1;
+    return 0; // Returning -1 is not a good idea
 }
 
 PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount)
 {
+    if (!(pxOpenGL && amount))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    *amount = 0;
+
 #if OSUnix
+
+    *amount = 1; // ToDo: Bad Hack, get the correct amount!
+
     return PXActionRefusedNotSupported;
 
 #elif OSWindows
@@ -2638,6 +2681,16 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 
 PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList)
 {
+    if (!(pxOpenGL && pxGraphicDevicePhysicalList))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    if (amount == 0)
+    {
+        return PXActionSuccessful;
+    }
+
     // Returns the company responsible for this GL implementation.
      // This name does not change from release to release.
     const char* vendor = pxOpenGL->GetString(GL_VENDOR);
