@@ -230,7 +230,19 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 		}
 #endif
 		default:
+		{
+#if PXLogEnable
+			PXLogPrint
+			(
+				PXLoggingError,
+				"PXAudio",
+				"Initialize",
+				"There is no audio system"
+			);
+#endif
 			return PXActionRefusedArgumentInvalid;
+
+		}	
 	}
 
 	pxAudio->Initialize(pxAudio);

@@ -2442,6 +2442,19 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         }
     }
 
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Init",
+        "Done fetching funtions"
+    );
+#endif
+
+
+
 #if OSWindows // print extensions
 
     //-----------------------------------------------------
@@ -2536,46 +2549,59 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
         PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, &pxGraphicDevicePhysical);
 
-        PXText pxTextVideoMemoryCurrent;
-        PXTextConstructNamedBufferA(&pxTextVideoMemoryCurrent, pxTextVideoMemoryCurrentBuffer, 16);
-        PXTextFormatSize(&pxTextVideoMemoryCurrent, pxGraphicDevicePhysical.VideoMemoryCurrent);
+        for (PXInt32U i = 0; i < devices; i++)
+        {
+            PXText pxTextVideoMemoryCurrent;
+            PXTextConstructNamedBufferA(&pxTextVideoMemoryCurrent, pxTextVideoMemoryCurrentBuffer, 32);
+            PXTextFormatSize(&pxTextVideoMemoryCurrent, pxGraphicDevicePhysical.VideoMemoryCurrent);
 
-        PXText pxTextVideoMemoryTotal;
-        PXTextConstructNamedBufferA(&pxTextVideoMemoryTotal, pxTextVideoMemoryTotalBuffer, 16);
-        PXTextFormatSize(&pxTextVideoMemoryTotal, pxGraphicDevicePhysical.VideoMemoryTotal);
+            PXText pxTextVideoMemoryTotal;
+            PXTextConstructNamedBufferA(&pxTextVideoMemoryTotal, pxTextVideoMemoryTotalBuffer, 32);
+            PXTextFormatSize(&pxTextVideoMemoryTotal, pxGraphicDevicePhysical.VideoMemoryTotal);
 
-        PXText pxTextVideoMemoryDedicated;
-        PXTextConstructNamedBufferA(&pxTextVideoMemoryDedicated, pxTextVideoMemoryDedicatedBuffer, 16);
-        PXTextFormatSize(&pxTextVideoMemoryDedicated, pxGraphicDevicePhysical.VideoMemoryDedicated);
+            PXText pxTextVideoMemoryDedicated;
+            PXTextConstructNamedBufferA(&pxTextVideoMemoryDedicated, pxTextVideoMemoryDedicatedBuffer, 32);
+            PXTextFormatSize(&pxTextVideoMemoryDedicated, pxGraphicDevicePhysical.VideoMemoryDedicated);
 
-        PXText pxTextVideoMemorySize;
-        PXTextConstructNamedBufferA(&pxTextVideoMemorySize, pxTextVideoMemorySizeBuffer, 16);
-        PXTextFormatSize(&pxTextVideoMemorySize, pxGraphicDevicePhysical.VideoMemoryEvictionSize);
+            PXText pxTextVideoMemorySize;
+            PXTextConstructNamedBufferA(&pxTextVideoMemorySize, pxTextVideoMemorySizeBuffer, 32);
+            PXTextFormatSize(&pxTextVideoMemorySize, pxGraphicDevicePhysical.VideoMemoryEvictionSize);
 
 #if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "OpenGL",
-            "Init",
-            "%s\n"
-            "%s\n"
-            "Memory  : %s / %s (%s)\n"
-            "Evicted : %i / %s",
-            pxGraphicDevicePhysical.Vendor,
-            pxGraphicDevicePhysical.Renderer,
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "OpenGL",
+                "Init",
+                "%s\n"
+                "%s\n"
+                "Memory  : %s / %s (%s)\n"
+                "Evicted : %i / %s",
+                pxGraphicDevicePhysical.Vendor,
+                pxGraphicDevicePhysical.Renderer,
 
-            pxTextVideoMemoryCurrent.TextA,
-            pxTextVideoMemoryTotal.TextA,
-            pxTextVideoMemoryDedicated.TextA,
+                pxTextVideoMemoryCurrent.TextA,
+                pxTextVideoMemoryTotal.TextA,
+                pxTextVideoMemoryDedicated.TextA,
 
-            pxGraphicDevicePhysical.VideoMemoryEvictionCount,
-            pxTextVideoMemorySize.TextA
-        );
+                pxGraphicDevicePhysical.VideoMemoryEvictionCount,
+                pxTextVideoMemorySize.TextA
+            );
 #endif
+        }      
     }
 
     PXOpenGLDeselect(pxOpenGL);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Init",
+        "Finished"
+    );
+#endif
 
     return PXActionSuccessful;
 }
@@ -2609,25 +2635,45 @@ PXBool PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
 
 PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID)
 {
+    PXInt64S result = 0;
+
     if (pxOpenGL->glGetInteger64v)
     {
         PXInt64S currentMemory = 0;
 
         pxOpenGL->glGetInteger64v(enumID, &currentMemory);
 
-        return currentMemory;
+        result = currentMemory;
     }
-
-    if (pxOpenGL->glGetIntegerv)
+    else if (pxOpenGL->glGetIntegerv)
     {
         PXInt32S currentMemory = 0;
 
         pxOpenGL->glGetIntegerv(enumID, &currentMemory);
 
-        return currentMemory;
+        result = currentMemory;
+    }
+    else
+    {
+        return result;
     }
 
-    return 0; // Returning -1 is not a good idea
+
+    switch (enumID)
+    {
+    case GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
+    case GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
+    case GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:
+    case GPU_MEMORY_INFO_EVICTION_COUNT_NVX:
+    case GPU_MEMORY_INFO_EVICTED_MEMORY_NVX:
+    {
+        result *= 1000;
+        break;
+    }
+    }
+
+
+    return result; // Returning -1 is not a good idea
 }
 
 PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount)
@@ -2721,14 +2767,24 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
         PXSize offset = 0;
 
         offset = PXTextToInt(&pxTextVersion, &versionMajor);
-        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
-        offset = PXTextToInt(&pxTextVersion, &versionMinor);
-        PXTextAdvance(&pxTextVersion, offset + 1u); // dot
-        PXTextToInt(&pxTextVersion, &versionPatch);
 
-        const PXInt32U id = PXInt24Make(versionMajor, versionMinor, versionPatch);
+        pxOpenGL->Version = PXOpenGLVersionInvalid;
 
-        pxOpenGL->Version = PXOpenGLVersionParse(id);
+        if (offset != -1)
+        {
+            PXTextAdvance(&pxTextVersion, offset + 1u); // dot
+            offset = PXTextToInt(&pxTextVersion, &versionMinor);
+
+            if (offset != -1)
+            {
+                PXTextAdvance(&pxTextVersion, offset + 1u); // dot
+                PXTextToInt(&pxTextVersion, &versionPatch);
+
+                const PXInt32U id = PXInt24Make(versionMajor, versionMinor, versionPatch);
+
+                pxOpenGL->Version = PXOpenGLVersionParse(id);
+            }    
+        }
     }
 
     pxGraphicDevicePhysicalList->VideoMemoryDedicated = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX);
@@ -2737,12 +2793,6 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
     pxGraphicDevicePhysicalList->VideoMemoryEvictionCount = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTION_COUNT_NVX);
     pxGraphicDevicePhysicalList->VideoMemoryEvictionSize = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTED_MEMORY_NVX);
    
-    pxGraphicDevicePhysicalList->VideoMemoryDedicated *= 1000;
-    pxGraphicDevicePhysicalList->VideoMemoryCurrent *= 1000;
-    pxGraphicDevicePhysicalList->VideoMemoryTotal *= 1000;
-    pxGraphicDevicePhysicalList->VideoMemoryEvictionCount *= 1000;
-    pxGraphicDevicePhysicalList->VideoMemoryEvictionSize *= 1000;
-
     return PXActionSuccessful;
 }
 

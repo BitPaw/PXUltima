@@ -552,29 +552,32 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 
         const PXActionResult audioInitResult = PXAudioInitialize(&pxEngine->Audio, PXAudioSystemWindowsDirectSound);
 
-        PXInt32U audioDeviceAmountInput = 0;
-        PXInt32U audioDeviceAmountOutput = 0;
-
-        pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeInput, &audioDeviceAmountInput);
-        pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeOutput, &audioDeviceAmountOutput);
-
-        for (size_t i = 0; i < audioDeviceAmountInput; i++)
+        if (PXActionSuccessful == audioInitResult)
         {
-            PXAudioDevice pxAudioDevice;
+            PXInt32U audioDeviceAmountInput = 0;
+            PXInt32U audioDeviceAmountOutput = 0;
 
-            pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
+            pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeInput, &audioDeviceAmountInput);
+            pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeOutput, &audioDeviceAmountOutput);
+
+            for (size_t i = 0; i < audioDeviceAmountInput; i++)
+            {
+                PXAudioDevice pxAudioDevice;
+
+                pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
+            }
+
+            for (size_t i = 0; i < audioDeviceAmountOutput; i++)
+            {
+                PXAudioDevice pxAudioDevice;
+
+                pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
+            }
+
+            pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
+
+            pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
         }
-
-        for (size_t i = 0; i < audioDeviceAmountOutput; i++)
-        {
-            PXAudioDevice pxAudioDevice;
-
-            pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
-        }
-
-        pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
-
-        pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
     }
     //-----------------------------------------------------
 

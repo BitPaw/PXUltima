@@ -969,6 +969,16 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     //PXMatrix4x4FIdentity(&pxGraphic->SpriteScaled.ModelMatrix);
    // PXMatrix4x4FIdentity(&pxGraphic->SpriteUnScaled.ModelMatrix);
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Graphic",
+        "Init",
+        "Finished"
+    );
+#endif
+
     return PXActionSuccessful;
 }
 
