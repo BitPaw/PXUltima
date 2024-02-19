@@ -255,6 +255,38 @@ extern "C"
 	}
 	PXTextureCubeCreateData;
 
+	typedef struct PXModelCreateInfo_
+	{
+		PXShaderProgram* ShaderProgramReference;
+		float Scale;
+	}
+	PXModelCreateInfo;
+
+	typedef struct PXUIElementCreateData_
+	{
+		PXUIElement* Paranet;
+
+		PXUIElementType Type;
+		PXInt32U BehaviourFlags;
+		PXColorRGBAF* ColorTintReference;
+
+		PXColorRGBAF Color;
+
+		float X;
+		float Y;
+		float Width;
+		float Height;
+		PXInt32U PositionMode;
+
+		// Text
+		char* Text;
+		PXFont* FontReference;
+
+		PXUIOnClick OnClickCallback;
+		PXUIOnMouseEnter OnMouseEnterCallback;
+		PXUIOnMouseLeave OnMouseLeaveCallback;
+	}
+	PXUIElementCreateData;
 
 	typedef struct PXEngineResourceCreateInfo_
 	{
@@ -273,6 +305,8 @@ extern "C"
 			PXEngineSoundCreateInfo Sound;
 			PXShaderProgramCreateData ShaderProgram;
 			PXTextureCubeCreateData TextureCube;
+			PXUIElementCreateData UIElement;
+			PXModelCreateInfo Model;
 		};
 	}
 	PXEngineResourceCreateInfo;

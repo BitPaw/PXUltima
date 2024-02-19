@@ -123,7 +123,7 @@ PXActionResult PXAPI PXXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* 
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXActionResult PXAPI PXXAudioDeviceLoad(PXAudio* const pxAudio,	PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
 	IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 

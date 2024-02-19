@@ -377,9 +377,6 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIEl
 {
     //PXClear(PXUIElement, *pxUIElement);
 
-    (*pxUIElement) = PXNew(PXUIElement);
-
-    (*pxUIElement)->ID = ++(pxGraphic->UIElementIDCounter);   
 
 
     //*pxUIElement->Type = pxUIElementType;
@@ -630,8 +627,6 @@ void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRen
 
 PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
-    pxGraphic->UIElementIDCounter = 0;
-
     pxGraphic->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
     pxGraphic->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
     pxGraphicInitializeInfo->Graphic = pxGraphic;

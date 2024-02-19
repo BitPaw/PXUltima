@@ -953,6 +953,8 @@ PXActionResult PXAPI PXCParsePreprocessorCondition(PXDocument* const pxDocument,
         buffer
     );
 #endif
+
+    return PXActionInvalid;
 }
 
 PXActionResult PXAPI PXCParsePreprocessorDefine(PXDocument* const pxDocument, PXFile* const pxFile)
@@ -1076,6 +1078,8 @@ PXActionResult PXAPI PXCParsePreprocessorDefine(PXDocument* const pxDocument, PX
             }
         }
     }
+
+    return PXActionInvalid;
 }
 
 PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, PXFile* const pxFile)
@@ -1210,6 +1214,8 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, P
             break;
         }
     }
+
+    return PXActionInvalid;
 }
 
 PXActionResult PXAPI PXCParsePreprocessorPragma(PXDocument* const pxDocument, PXFile* const pxFile)
@@ -1232,6 +1238,8 @@ PXActionResult PXAPI PXCParsePreprocessorPragma(PXDocument* const pxDocument, PX
     printf("Makro pragma : ");
     PXLogPrintString(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
 #endif
+
+    return PXActionInvalid;
 }
 
 PXActionResult PXAPI PXCParseTypeDefinition(PXDocument* const pxDocument, PXFile* const pxFile)
@@ -1507,6 +1515,8 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXDocument* const pxDocument, PX
 
 
     PXCParseEndOfCommand(pxDocument, pxFile);
+
+    return PXActionInvalid;
 }
 
 PXActionResult PXAPI PXCParseTypeDeclarationElement(PXDocument* const pxDocument, PXFile* const pxFile)
@@ -1587,6 +1597,8 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXDocument* const pxDocument
         "Member : %s",
         nameBuffer
     );
+
+    return PXActionInvalid;
 }
 
 PXActionResult PXAPI PXCParseTypeDeclarationFull(PXDocument* const pxDocument, PXFile* const pxFile)

@@ -284,7 +284,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXImage* const pxImage, PXFile* con
 		{
 			PXInt32UCluster boxID;
 
-			PXFileReadI32U(pxFile, &boxID.Data);
+			PXFileReadI32U(pxFile, &boxID.Value);
 
 		
 

@@ -120,6 +120,7 @@ PXInt64U PXAPI PXTimeCounterFrequencyGet()
 #endif
 }
 
+#if OSWindows
 void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime)
 {
 	time->Year = systemTime->wYear;
@@ -131,3 +132,4 @@ void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const syste
 	time->Second = systemTime->wSecond;
 	time->Milliseconds = systemTime->wMilliseconds;
 }
+#endif

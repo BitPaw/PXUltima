@@ -560,8 +560,6 @@ extern "C"
 		PXGraphicDevicePhysical* DevicePhysicalList;
 
 
-
-		PXInt32U UIElementIDCounter;
 		PXUIElement UIElementBase;
 
 	}

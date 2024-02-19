@@ -21,8 +21,8 @@ typedef struct IUnknown IUnknown;
 #endif
 #endif
 
-#define PXThreadSucessful (PXThreadResult)0
-#define PXThreadActionFailed (PXThreadResult)1
+//#define PXThreadSucessful (PXThreadResult)0
+//#define PXThreadActionFailed (PXThreadResult)1
 
 #ifdef __cplusplus
 extern "C"

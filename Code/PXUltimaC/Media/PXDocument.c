@@ -261,8 +261,8 @@ PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElem
 			PXBool value;
 			PXCopy(PXBool, &pxDocumentElement->ElementMember.ValueAdress, &value);
 
-			sprintf_s(typeBuffer, 64, "bool");
-			sprintf_s(valueBuffer, 64, "%s", value ? "true" : "false");
+			PXTextPrintA(typeBuffer, 64, "bool");
+			PXTextPrintA(valueBuffer, 64, "%s", value ? "true" : "false");
 			break;
 		}
 		case PXDataTypeFloat:
@@ -270,8 +270,8 @@ PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElem
 			float value;
 			PXCopy(float, &pxDocumentElement->ElementMember.ValueAdress, &value);
 
-			sprintf_s(typeBuffer, 64, "float");
-			sprintf_s(valueBuffer, 64, "%-5.2f", value);
+			PXTextPrintA(typeBuffer, 64, "float");
+			PXTextPrintA(valueBuffer, 64, "%-5.2f", value);
 			break;
 		}
 		case PXDataTypeIntS:
@@ -279,13 +279,13 @@ PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElem
 			int value;
 			PXCopy(int, &pxDocumentElement->ElementMember.ValueAdress, &value);
 
-			sprintf_s(typeBuffer, 64, "int");
-			sprintf_s(valueBuffer, 64, "%i", value);
+			PXTextPrintA(typeBuffer, 64, "int");
+			PXTextPrintA(valueBuffer, 64, "%i", value);
 			break;
 		}
 		case PXDataTypeString:
 		{
-			sprintf_s(typeBuffer, 64, "string");
+			PXTextPrintA(typeBuffer, 64, "string");
 			PXTextCopyA(pxDocumentElement->ElementMember.ValueAdress, pxDocumentElement->ElementMember.ValueSize, valueBuffer, 63);
 			break;
 		}
@@ -313,22 +313,22 @@ PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElem
 		}
 		case PXDocumentElementTypeClass:
 		{
-			sprintf_s(elementType, 64, "class");
+			PXTextPrintA(elementType, 64, "class");
 			break;
 		}
 		case PXDocumentElementTypeFunction:
 		{
-			sprintf_s(elementType, 64, "function");
+			PXTextPrintA(elementType, 64, "function");
 			break;
 		}
 		case PXDocumentElementTypeClassMember:
 		{
-			sprintf_s(elementType, 64, "member");
+			PXTextPrintA(elementType, 64, "member");
 			break;
 		}
 		case PXDocumentElementTypeClassAttribute:
 		{
-			sprintf_s(elementType, 64, "attribute");
+			PXTextPrintA(elementType, 64, "attribute");
 			break;
 		}	
 		default:

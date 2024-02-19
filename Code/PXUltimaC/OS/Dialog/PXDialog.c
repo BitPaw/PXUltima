@@ -150,7 +150,9 @@ PXActionResult PXAPI PXDialogFileSave(PXText* const filePath)
 
             const PXBool wasSuccesful = GetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
 
-            return wasSuccesful;
+            PXActionOnErrorFetchAndReturn(!wasSuccesful);
+
+            return PXActionSuccessful;
         }
         case TextFormatUNICODE:
         {
@@ -158,7 +160,7 @@ PXActionResult PXAPI PXDialogFileSave(PXText* const filePath)
             HWND owner = NULL;
 
             OPENFILENAMEW openFileName;
-            PXMemoryClear(&openFileName, sizeof(OPENFILENAMEW));
+            PXClear(OPENFILENAMEW, &openFileName);
 
             openFileName.lStructSize = sizeof(OPENFILENAMEW);
             openFileName.hwndOwner = owner;
@@ -169,8 +171,10 @@ PXActionResult PXAPI PXDialogFileSave(PXText* const filePath)
             openFileName.lpstrDefExt = L"";
 
             const PXBool wasSuccesful = GetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+          
+            PXActionOnErrorFetchAndReturn(!wasSuccesful);
 
-            return wasSuccesful;
+            return PXActionSuccessful;
         }
     }
 

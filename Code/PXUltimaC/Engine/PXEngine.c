@@ -860,10 +860,10 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeModel:
         {
-            //PXModelCreateEventData* const pxModelCreateEventData = &pxEngineResourceCreateInfo->Model;
+            PXModelCreateInfo* const pxModelCreateInfo = &pxEngineResourceCreateInfo->Model;
             PXModel* pxModel = *(PXModel**)pxEngineResourceCreateInfo->ObjectReference;
 
-            if (pxModel)
+            if (!pxModel)
             {
                 pxModel = PXNew(PXModel);
                 *pxEngineResourceCreateInfo->ObjectReference = pxModel;
@@ -879,9 +879,25 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 pxEngineResourceCreateInfo->FilePath
             );
 #endif
+            // Init
+            PXModelConstruct(pxModel);
 
+            // Register
             pxModel->ResourceID.PXID = PXEngineGenerateUniqeID(pxEngine);
             PXDictionaryAdd(&pxEngine->FontLookUp, &pxModel->ResourceID.PXID, pxModel);
+
+            // Load
+            {
+                PXResourceLoadA(pxModel, pxEngineResourceCreateInfo->FilePath);
+            }
+
+            // Setup    
+            PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
+         
+            pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
+
+            // Register
+            pxEngine->Graphic.ModelRegister(pxEngine->Graphic.EventOwner, pxModel);
 
             break;
         }
@@ -1545,13 +1561,13 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeUIElement:
         {
-            //PXEngineUIElementCreateData* const pxEngineUIElementCreateData = &pxEngineResourceCreateInfo->UIElement;
+            PXUIElementCreateData* const pxUIElementCreateData = &pxEngineResourceCreateInfo->UIElement;
             PXUIElement* pxUIElement = *(PXUIElement**)pxEngineResourceCreateInfo->ObjectReference;
 
             if (!pxUIElement)
             {
                 pxUIElement = PXNew(PXUIElement);
-                *pxEngineResourceCreateInfo->ObjectReference;
+                *pxEngineResourceCreateInfo->ObjectReference = pxUIElement;
             }
 
             // Is Registerd
@@ -1567,8 +1583,32 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXDictionaryAdd(&pxEngine->UIElementLookUp, &pxUIElement->ID, pxUIElement);      
             }
 
+            // General stuff
+            {
+                PXGraphicUIElementCreate(&pxEngine->Graphic, &pxUIElement, 1, pxUIElementCreateData->Paranet);
+                PXGraphicUIElementTypeSet(&pxEngine->Graphic, pxUIElement, PXUIElementTypePanel);
+                PXGraphicUIElementFlagSet(pxUIElement, PXUIElementDecorative);
+                pxUIElement->ColorTintReference = pxUIElementCreateData->ColorTintReference;
+                PXUIElementSizeSet(pxUIElement, 0.00, 1.95, 0.0, 0.00, PXUIElementPositionRelative);
+
+
+                PXUIElementColorSet4F(pxUIElement, 0.40f, 0.15f, 0.15f, 1);
+
+ 
+                pxUIElement->OnClickCallback = pxUIElementCreateData->OnClickCallback;
+
+            }
+
+
             switch (pxUIElement->Type)
             {
+                case PXUIElementTypeText:
+                {
+                    pxUIElement->TextInfo.FontID = pxUIElementCreateData->FontReference;
+                    PXGraphicPXUIElementTextSetA(pxUIElement, pxUIElementCreateData->Text);
+                    break;
+                }
+
                 case PXUIElementTypeRenderFrame:
                 {
                     //PXOpenGL* const pxOpenGL = &pxGraphic->OpenGLInstance;

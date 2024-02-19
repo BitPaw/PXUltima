@@ -120,7 +120,7 @@ PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, const void*
 
 PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value)
 {
-	const void* valteAdress = 0;
+	void* valteAdress = 0;
 
 	const PXBool found = PXDictionaryFindEntry(dictionary, key, &valteAdress);
 

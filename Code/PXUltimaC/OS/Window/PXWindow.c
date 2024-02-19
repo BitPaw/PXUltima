@@ -1795,7 +1795,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
 
         if (!successful)
         {
-            return PXThreadSucessful; // printf("\n\tcannot connect to X server\n\n");
+            return PXActionSuccessful; // printf("\n\tcannot connect to X server\n\n");
         }
 
         pxWindow->DisplayCurrent = display;
@@ -1819,7 +1819,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
 
         if (!successful)
         {
-            return PXThreadSucessful; // no appropriate visual found
+            return PXActionSuccessful; // no appropriate visual found
         }
     }
 
@@ -2243,7 +2243,7 @@ PXThreadResult PXOSAPI PXWindowMessageLoop(PXWindow* const pxWindow)
         }
     }
 
-    return PXThreadSucessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)

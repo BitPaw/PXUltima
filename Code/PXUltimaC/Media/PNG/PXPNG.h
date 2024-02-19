@@ -375,7 +375,7 @@ enough memory.*/
 	/*index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to*/
 	PXPublic void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in);
 
-	PXPublic unsigned char readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream);
+	PXPublic unsigned char readBitFromReversedStream(PXSize* bitpointer, const void* bitstream);
 	PXPublic unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream, PXSize nbits);
 
 

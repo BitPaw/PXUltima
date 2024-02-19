@@ -3285,11 +3285,11 @@ PXActionResult PXAPI PXFileTimeGet
 )
 {
 #if OSUnix
-	st_ctime
+	//st_ctime
 
-		strftime(date, sizeof date, ... to);
+	//	strftime(date, sizeof date, ... to);
 
-	stat();
+	//stat();
 
 	return PXActionRefusedNotImplemented;
 #elif OSWindows

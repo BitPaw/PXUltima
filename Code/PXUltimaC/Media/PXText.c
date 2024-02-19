@@ -14,12 +14,6 @@
 #include <assert.h>
 #endif
 
-#if OSUnix
-#define PrintSN snprintf
-#elif OSWindows
-#define PrintSN sprintf_s
-#endif
-
 PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number)
 {
 	const PXSize numberOfDigits = sizeof(PXInt8U) * 8u;
@@ -1517,7 +1511,7 @@ PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number)
 #define PXSizePB 1000000000000000  
 #define PXSizeEB 1000000000000000000
 
-PXSize PXAPI PXTextFormatTime(const PXText* const pxText, const PXSize pxTime)
+PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime)
 {
 	if (pxTime < 1000)
 	{
@@ -1551,7 +1545,7 @@ PXSize PXAPI PXTextFormatTime(const PXText* const pxText, const PXSize pxTime)
 #endif
 }
 
-PXSize PXAPI PXTextFormatSize(const PXText* const pxText, const PXSize pxSize)
+PXSize PXAPI PXTextFormatSize(PXText* const pxText, const PXSize pxSize)
 {
 	if (pxSize < PXSizeKB)
 	{

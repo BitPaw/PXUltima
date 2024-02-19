@@ -4,7 +4,7 @@
 
 /*Try the code, if it returns error, also return the error.*/
 #define CERROR_TRY_RETURN(call){\
-  unsigned error = call;\
+  unsigned int error = call;\
   if(error) return error;\
 }
 
@@ -41,16 +41,23 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, P
 
         case PXPNGInterlaceNone:
         {
-            const unsigned char additionalStep = bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u;
+            const PXSize additionalStep = bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u;
 
             if (additionalStep)
             {
-                CERROR_TRY_RETURN(PXADAM7unfilter(in, in, width, height, bpp));
+                const PXActionResult unfilterResult = PXADAM7unfilter(in, in, width, height, bpp);
+
+                PXActionReturnOnError(unfilterResult);
+
                 PXADAM7removePaddingBits(out, in, width * bpp, ((width * bpp + 7u) / 8u) * 8u, height);
             }
+            else
+            {
+                // We can immediately filter into the out buffer, no other steps needed
+                const PXActionResult unfilterResult = PXADAM7unfilter(out, in, width, height, bpp);
 
-            /*we can immediately filter into the out buffer, no other steps needed*/
-            else CERROR_TRY_RETURN(PXADAM7unfilter(out, in, width, height, bpp));
+                PXActionReturnOnError(unfilterResult);
+            }
 
             break;
         }    
@@ -61,13 +68,21 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(void* out, void* in, PXSize width, P
 
             PXADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
 
-            for (PXSize i = 0; i != 7u; ++i)
+            for (PXInt8U i = 0; i != 7u; ++i)
             {
-                CERROR_TRY_RETURN(PXADAM7unfilter(&((char*)in)[padded_passstart[i]], &((char*)in)[filter_passstart[i]], passw[i], passh[i], bpp));
+                void* inPointA = &((char*)in)[padded_passstart[i]];
+                void* inPointB = &((char*)in)[filter_passstart[i]];
+
+                const PXActionResult unfilterResult = PXADAM7unfilter(inPointA, inPointB, passw[i], passh[i], bpp);
+
+                PXActionReturnOnError(unfilterResult);
+
                 /*TODO: possible efficiency improvement: if in this reduced image the bits fit nicely in 1 scanline,
                 move bytes instead of bits or move not at all*/
                 if (bpp < 8)
                 {
+
+
                     /*remove padding bits in scanlines; after this there still may be padding
                     bits between the different reduced images: each reduced image still starts nicely at a byte*/
                     PXADAM7removePaddingBits(&((char*)in)[passstart[i]], &((char*)in)[padded_passstart[i]], passw[i] * bpp, ((passw[i] * bpp + 7u) / 8u) * 8u, passh[i]);
@@ -104,8 +119,12 @@ unsigned char PXADAM7paethPredictor(short a, short b, short c)
     return (pc < pa) ? c : a;
 }
 
-unsigned PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length)
+PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanlineXX, const void* preconXX, PXSize bytewidth, PXInt8U filterType, PXSize length)
 {
+    char* recon = (char*)reconXX;
+    const char* scanline = (char*)scanlineXX;
+    const char* precon = (char*)preconXX;
+
     /*
  For PNG filter method 0
  unfilter a PNG image scanline by scanline. when the pixels are smaller than 1 byte,
@@ -118,23 +137,29 @@ unsigned PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scan
     switch (filterType)
     {
         case 0:
-            for (PXSize i = 0; i != length; ++i) recon[i] = scanline[i];
-            break;
-        case 1:
         {
-            PXSize j = 0;
-            for (PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
-            for (PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + recon[j];
+            PXMemoryCopy(scanline, length, recon, length);
+            break;
+        }
+        case 1:
+        {            
+            PXMemoryCopy(scanline, bytewidth, recon, bytewidth);
+
+            for (PXSize i = bytewidth, j = 0; i != length; ++i, ++j)
+                ((char*)recon)[i] = ((char*)scanline)[i] + ((char*)recon)[j];
+
             break;
         }
         case 2:
             if (precon)
             {
-                for (PXSize i = 0; i != length; ++i) recon[i] = scanline[i] + precon[i];
+                for (PXSize i = 0; i != length; ++i) 
+                    recon[i] = scanline[i] + precon[i];
             }
             else
             {
-                for (PXSize i = 0; i != length; ++i) recon[i] = scanline[i];
+                for (PXSize i = 0; i != length; ++i) 
+                    recon[i] = scanline[i];
             }
             break;
         case 3:
@@ -142,7 +167,8 @@ unsigned PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scan
             {
                 PXSize j = 0;
                 PXSize i = 0;
-                for (i = 0; i != bytewidth; ++i) recon[i] = scanline[i] + (precon[i] >> 1u);
+                for (i = 0; i != bytewidth; ++i) 
+                    recon[i] = scanline[i] + (precon[i] >> 1u);
                 /* Unroll independent paths of this predictor. A 6x and 8x version is also possible but that adds
                 too much code. Whether this speeds up anything depends on compiler and settings. */
                 if (bytewidth >= 4)
@@ -261,9 +287,11 @@ unsigned PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scan
                 }
             }
             break;
-        default: return 36; /*error: invalid filter type given*/
+        default:
+            return PXActionRefusedArgumentInvalid; // error: invalid filter type given
     }
-    return 0;
+
+    return PXActionSuccessful;
 }
 
 PXSize PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
@@ -274,7 +302,7 @@ PXSize PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
     return (PXSize)h * line;
 }
 
-unsigned PXADAM7unfilter(unsigned char* out, const unsigned char* in, PXSize w, PXSize h, PXSize bpp)
+PXActionResult PXAPI PXADAM7unfilter(void* out, const void* in, PXSize w, PXSize h, PXSize bpp)
 {
     /*
   For PNG filter method 0
@@ -296,17 +324,20 @@ unsigned PXADAM7unfilter(unsigned char* out, const unsigned char* in, PXSize w, 
     {
         const PXSize outindex = linebytes * y;
         const PXSize inindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
-        const unsigned char filterType = in[inindex];
+        const PXInt8U filterType = ((PXInt8U*)in)[inindex];
+        void* outPoint = &((char*)out)[outindex];
+        void* inPoint = &((char*)in)[inindex + 1];
 
-        CERROR_TRY_RETURN(PXADAM7unfilterScanline(&out[outindex], &in[inindex + 1], prevline, bytewidth, filterType, linebytes));
+        PXActionResult unfilterResult = PXADAM7unfilterScanline(outPoint, inPoint, prevline, bytewidth, filterType, linebytes);
+        PXActionReturnOnError(unfilterResult);
 
-        prevline = &out[outindex];
+        prevline = &((PXInt8U*)out)[outindex];
     }
 
-    return 0;
+    return PXActionSuccessful;
 }
 
-void PXADAM7removePaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, PXSize h)
+void PXADAM7removePaddingBits(void* out, const void* in, PXSize olinebits, PXSize ilinebits, PXSize h)
 {
     /*
   After filtering there are still padding bits if scanlines have non multiple of 8 bit amounts. They need
@@ -340,11 +371,14 @@ unsigned char PXADAM7readBitFromReversedStream(PXSize* bitpointer, const unsigne
     return result;
 }
 
-void PXADAM7setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
+void PXADAM7setBitOfReversedStream(PXSize* bitpointer, void* bitstream, unsigned char bit)
 {
     /*the current bit in bitstream may be 0 or 1 for this to work*/
-    if (bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
-    else         bitstream[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
+    if (bit == 0) 
+        ((char*)bitstream)[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));   
+    else        
+        ((char*)bitstream)[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
+
     ++(*bitpointer);
 }
 

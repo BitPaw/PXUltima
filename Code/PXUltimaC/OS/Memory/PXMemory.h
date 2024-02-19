@@ -122,8 +122,8 @@ extern "C"
 		PXSize* DataSize;
 		void** DataAdress;
 #if PXMemoryDebug
-		char* CodeFileName;
-		char* CodeFunctionName;
+		const char* CodeFileName;
+		const char* CodeFunctionName;
 		PXSize CodeFileLine;
 #endif
 

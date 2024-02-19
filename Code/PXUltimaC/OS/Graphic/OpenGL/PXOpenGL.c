@@ -3185,7 +3185,7 @@ void PXAPI PXOpenGLTextureParameterF(PXOpenGL* const pxOpenGL, const PXGraphicTe
     glTexParameterf(textureTypeID, pnameID, param);
 }
 
-void APIENTRY PXOpenGLErrorMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const char* const message, void* const userParam)
+void PXOpenGLAPI PXOpenGLErrorMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const char* const message, const void* const userParam)
 {
     unsigned char openGLspecific = type == GL_DEBUG_TYPE_ERROR;
     const char* sourceText = 0;

@@ -175,7 +175,7 @@ PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocke
 
     if(!serverSocket)
     {
-        return PXThreadSucessful;
+        return PXActionSuccessful;
     }
 
     PXDictionaryAdd(&serverSocket->SocketLookup, &serverSocket->ID, serverSocket);
@@ -192,6 +192,6 @@ PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocke
 
     PXBufferDestruct(&serverSocket->BufferInput);
 
-    return PXThreadSucessful;
+    return PXActionSuccessful;
 }
 #endif

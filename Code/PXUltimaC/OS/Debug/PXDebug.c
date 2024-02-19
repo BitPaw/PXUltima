@@ -602,6 +602,6 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
 		pxActionResult = PXActionInvalid;
 	}
 
-	return PXThreadSucessful;
+	return PXActionSuccessful;
 }
 #endif

@@ -35,7 +35,7 @@ PXActionResult PXAPI PXIAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXIAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXActionResult PXAPI PXIAudioDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
     return PXActionRefusedNotImplemented;
 }

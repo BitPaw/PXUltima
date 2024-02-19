@@ -118,7 +118,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 		{
 			//PXDeleteList(PXInt32U, maxlens, maxlensSize);
 			/* freeing tree->table values is done at a higher scope */
-			return 83; /*alloc fail*/
+			return PXActionFailedMemoryAllocation; /*alloc fail*/
 		}
 		/*initialize with an invalid length to indicate unused entries*/
 		for (PXSize i = 0; i < size; ++i)
@@ -167,7 +167,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 				PXInt32U index = reverse | (j << l);
 
 				if (huffmanTree->TableLength[index] != 16) 
-					return 55; // invalid tree: long symbol shares prefix with short symbol
+					return PXActionRefusedInvalidSymbol; // invalid tree: long symbol shares prefix with short symbol
 
 				huffmanTree->TableLength[index] = l;
 				huffmanTree->TableValue[index] = i;
@@ -185,7 +185,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 			const PXInt32U num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
 
 			if (maxlen < l) 
-				return 55; // invalid tree: long symbol shares prefix with short symbol
+				return PXActionRefusedInvalidSymbol; // invalid tree: long symbol shares prefix with short symbol
 
 			for (PXInt32U j = 0; j < num; ++j)
 			{
@@ -226,7 +226,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 		for (PXSize i = 0; i < size; ++i)
 		{
 			if (huffmanTree->TableLength[i] == 16) 
-				return 55;
+				return PXActionRefusedInvalidSymbol;
 		}
 	}
 	//----------------------------
@@ -339,7 +339,8 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
 					// repeat this value in the next lengths
 					for (n = 0; n < replength; ++n)
 					{
-						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) return(15); // error: i is larger than the amount of codes
+						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
+							return PXActionRefusedInvalidSymbol; // error: i is larger than the amount of codes
 
 						if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
 						else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
@@ -356,7 +357,8 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
 					/*repeat this value in the next lengths*/
 					for (n = 0; n < replength; ++n)
 					{
-						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) return(14); // error: i is larger than the amount of codes
+						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
+							return PXActionRefusedInvalidSymbol; // error: i is larger than the amount of codes
 
 						if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
 						else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
@@ -370,7 +372,8 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
 					PXSize replength = 3; /*read in the 2 bits that indicate repeat length (3-6)*/
 					PXSize value; /*set value to the previous code*/
 
-					if (i == 0) return(54); /*can't repeat previous if i is 0*/
+					if (i == 0) 
+						return PXActionRefusedInvalidSymbol; // can't repeat previous if i is 0
 
 					replength += PXFileReadBits(pxFile, 2u);
 
@@ -379,7 +382,9 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
 					/*repeat this value in the next lengths*/
 					for (n = 0; n < replength; ++n)
 					{
-						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) return(13); /*error: i is larger than the amount of codes*/
+						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
+							return PXActionRefusedInvalidSymbol; /*error: i is larger than the amount of codes*/
+
 						if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = value;
 						else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = value;
 						++i;

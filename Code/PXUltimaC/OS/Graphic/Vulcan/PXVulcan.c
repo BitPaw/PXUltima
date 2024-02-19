@@ -14,6 +14,8 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 	{
 		case VK_SUCCESS: return PXActionSuccessful;
 		case VK_NOT_READY: return ResourceUnavailableTryAgain;
+
+#if 0
 		case VK_TIMEOUT: return 000000000;
 		case VK_EVENT_SET:return 000000000;
 		case VK_EVENT_RESET:return 000000000;
@@ -68,6 +70,7 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 		// case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS: return 000000000;
 		// case VK_PIPELINE_COMPILE_REQUIRED_EXT: return 000000000;
 		// case VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT_: return 000000000;
+#endif
 
 		default:
 			return PXActionInvalid;
@@ -184,7 +187,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 
 		// Create instance
 		{
-			char* buffer[] = 
+			const char* buffer[] = 
 			{
 				"VK_KHR_surface",  
 				"VK_KHR_win32_surface",

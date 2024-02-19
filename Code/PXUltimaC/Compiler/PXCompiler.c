@@ -627,7 +627,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(PXFile* const tokenStream, const 
 
 			if (!isFull)
 			{
-				char* const dataAdress = (PXAdress)compilerSymbolEntry->Source + 1u;
+				char* const dataAdress = compilerSymbolEntry->Source + 1u;
 				PXSize symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, '\"');
 				PXBool hasIndex = symbolPositionIndex != (PXSize)-1;
 
@@ -799,7 +799,7 @@ PXCompilerSymbolLexer PXCompilerTryAnalyseType(PXFile* const tokenStream, const 
 	return PXCompilerSymbolLexerGenericElement;
 }
 
-void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings)
+PXActionResult PXAPI PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings)
 {
 	// Valid call
 	{
@@ -1015,6 +1015,8 @@ void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputSt
 		"Done"
 	);
 #endif
+
+	return PXActionSuccessful;
 }
 
 PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText)

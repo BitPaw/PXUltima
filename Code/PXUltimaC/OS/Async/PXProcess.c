@@ -179,6 +179,8 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 		PXProcessCurrent(pxProcess);
 	}
 
+#if OSUnix
+#elif OSWindows
 
 #if 0
 	typedef struct _SYSTEM_HANDLE
@@ -458,6 +460,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 	PXStackDelete(char, sizeAllocated, memory);
 
 	PXLibraryClose(&pxLibraryNTDLL);
+#endif
 
 	return PXActionSuccessful;
 }

@@ -26,9 +26,7 @@
 		(
 			PXAudio* const pxAudio,
 			PXAudioDevice* const pxAudioDevice,
-			PXSound* const pxSound,
-			const PXAudioDeviceType pxAudioDeviceType,
-			const PXInt32U deviceID
+			PXSound* const pxSound
 		);
 
 		//--------------------------------------------------------

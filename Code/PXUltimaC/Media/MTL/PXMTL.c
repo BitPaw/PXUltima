@@ -162,11 +162,13 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 
 				pxMaterialCurrent->DiffuseTexture = PXNew(PXTexture2D);			
 				PXClear(PXTexture2D, pxMaterialCurrent->DiffuseTexture);
+				
 				pxMaterialCurrent->DiffuseTexture->Image = PXNew(PXImage);
+				
 				PXClear(PXImage, pxMaterialCurrent->DiffuseTexture->Image);
 				PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
 
-				PXResourceLoad(&pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
+				PXResourceLoad(pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
 
 				break;
 			}

@@ -365,7 +365,7 @@ void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount)
 	void* const stackAllocated =
 
 #if OSUnix
-		alloca(size);
+		alloca(totalSize);
 #elif OSWindows
 		//_alloca(size); // _alloca() is deprecated (security reasons) but _malloca() is not an alternative
 
@@ -447,7 +447,11 @@ PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amo
 #if PXMemoryDebug
 void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, const char* file, const char* function, const PXSize line)
 {
+#if OSUnix
+	void* const allocatedMemory = malloc(typeSize * amount);
+#elif OSWindows
 	void* const allocatedMemory = _calloc_dbg(amount, typeSize, _NORMAL_BLOCK, file, line); // crtdbg.h
+#endif
 
 #if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;

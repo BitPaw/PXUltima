@@ -46,7 +46,10 @@ PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const thr
 	}
 
 #if OSUnix
-	const int result = pthread_create(&pxThread->ThreadID, 0, threadFunction, (void*)parameter);
+	const int result = pthread_create(&pxThread->ThreadHandle, 0, threadFunction, (void*)parameter);
+	const PXBool successful = 0 == result;
+
+	PXActionOnErrorFetchAndReturn(!successful);
 
 #elif OSWindows
 	const HANDLE threadID = CreateThread // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -355,7 +358,7 @@ PXSize PXAPI PXThreadCurrentID()
 void PXAPI PXThreadCurrentGet(PXThread* const pxThread)
 {
 #if OSUnix
-	pxThread->ThreadID = pthread_self();
+	pxThread->ThreadHandle = pthread_self();
 #elif OSWindows
 	pxThread->ThreadHandle = GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 	pxThread->ThreadID = GetCurrentThreadId();
@@ -367,7 +370,7 @@ PXActionResult PXAPI PXThreadWaitForFinish(PXThread* const pxThread)
 	pxThread->ReturnResult = 0;
 
 #if OSUnix
-	const int resultID = pthread_join(thread->ID, &pxThread->ReturnResult);
+	const int resultID = pthread_join(pxThread->ThreadHandle, &pxThread->ReturnResult); // pthread.h
 	const PXBool success = 0 == resultID;
 
 	if (!success)

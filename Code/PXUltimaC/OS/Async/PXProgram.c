@@ -46,7 +46,7 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
 
     // Free?
 
-    return PXThreadSucessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXProgramExecute(PXProgram* const program)
@@ -230,7 +230,7 @@ PXActionResult PXAPI PXProgramAttach(PXProgram* const pxProgram)
     pxProgram->Handle = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID); // Windows XP (+UWP), Kernel32.dll
     const PXBool openSuccess = pxProgram->Handle != PXNull;
 
-    PXActionReturnOnError(!openSuccess);
+    PXActionOnErrorFetchAndReturn(!openSuccess);
 
     return PXActionSuccessful;
 #else
@@ -251,7 +251,7 @@ PXActionResult PXAPI PXProgramDetach(PXProgram* const pxProgram)
 
     const PXBool closeResult = CloseHandle(pxProgram->Handle);
 
-    PXActionReturnOnError(!closeResult);
+    PXActionOnErrorFetchAndReturn(!closeResult);
 
     pxProgram->Handle = PXNull;
 
@@ -271,7 +271,13 @@ PXActionResult PXAPI PXProgramReadMemory(PXProgram* const pxProgram, const void*
     return PXActionSuccessful;
 
 #elif PXOSWindowsDestop
-    const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h
+    SIZE_T readSize = 0;
+
+    const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, &readSize); // Windows XP, Kernel32.dll, memoryapi.h
+
+    PXActionOnErrorFetchAndReturn(!readResult);
+
+    *bufferSizeWritten = readSize;
 
     return PXActionSuccessful;
 #else
@@ -289,7 +295,13 @@ PXActionResult PXAPI PXProgramWriteMemory(PXProgram* const pxProgram, const void
     return PXActionSuccessful;
 
 #elif PXOSWindowsDestop
-    const PXBool readResult = WriteProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, bufferSizeWritten); // Windows XP, Kernel32.dll, memoryapi.h
+    SIZE_T writtenSize = 0;
+
+    const PXBool readResult = WriteProcessMemory(pxProgram->Handle, (LPVOID)adress, buffer, bufferSize, &writtenSize); // Windows XP, Kernel32.dll, memoryapi.h
+
+    PXActionOnErrorFetchAndReturn(!readResult);
+
+    *bufferSizeWritten = writtenSize;
 
     return PXActionSuccessful;
 #else

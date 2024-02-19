@@ -56,7 +56,7 @@ void PXAPI PXEngineDialogBoxOpen
     const PXSize amountOfPages
 )
 {
-    PXEngineText* const dialogBoxText = &pxEngineDialogBox->DialogBoxText;
+    PXEngineText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
      
     pxEngineDialogBox->State = PXEngineDialogStateActive;
     pxEngineDialogBox->PageAmountCurrent = 0;
@@ -161,7 +161,8 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
             if (!pxTextDialog)
             {
                 PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
-                return;
+
+                return PXActionSuccessful;
             }
 
             dialogBoxText->Text = pxTextDialog;
@@ -277,4 +278,6 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
         default:
             return PXActionRefusedObjectStateInvalid;
     }
+
+    return PXActionSuccessful;
 }

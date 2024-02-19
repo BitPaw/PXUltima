@@ -224,7 +224,7 @@ PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudio* const pxAudio, PXAudioDev
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
 	PXDirectSoundOutputInterface* const directSound = (PXDirectSoundOutputInterface*)pxAudio->DirectSoundInterface;
 	PXDirectSoundBuffer* soundBuffer = PXNull;

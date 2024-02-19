@@ -164,7 +164,7 @@ extern "C"
 
 	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(PXFile* const inputStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
-	PXPublic void PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings);
+	PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings);
 
 
 	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText);

@@ -30,7 +30,7 @@ PXActionResult PXAPI PXBTreeResize(PXBTree* const pxBTree, const PXSize amount)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXBTreeInsert(PXBTree* const pxBTree, void* const key, void* const value)
+PXActionResult PXAPI PXBTreeInsert(PXBTree* const pxBTree, const void* const key, const void* const value)
 {
     PXBTreeNode pxBTreeNode; 
 
