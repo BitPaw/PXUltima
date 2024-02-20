@@ -1359,8 +1359,29 @@ PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI
 {
     if (!pxOpenGL->SwapIntervalSet)
     {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OpenGL",
+            "SwapInterval",
+            "Set not supported"
+        );
+#endif
+
         return PXActionRefusedNotSupported;
     }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "SwapInterval",
+        "Set to <%i>",
+        interval
+    );
+#endif
 
     pxOpenGL->SwapIntervalSet(interval);
 

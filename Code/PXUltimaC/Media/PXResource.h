@@ -744,10 +744,7 @@ extern "C"
 	{
 		PXMatrix4x4F MatrixModel;
 		PXMatrix4x4F MatrixView;
-		PXMatrix4x4F MatrixProjection;
-
-		float WalkSpeed;
-		float ViewSpeed;
+		PXMatrix4x4F MatrixProjection;	
 
 		PXVector3F LookAtPosition;
 		PXVector3F CurrentRotation;
@@ -764,6 +761,9 @@ extern "C"
 		PXInt32S Width;
 		float Near;
 		float Far;
+
+		float WalkSpeed;
+		float ViewSpeed;
 	}
 	PXCamera;
 

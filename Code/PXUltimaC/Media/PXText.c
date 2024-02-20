@@ -1520,12 +1520,12 @@ PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime)
 
 	if (pxTime < 1000000)
 	{
-		return PXTextPrint(pxText, "%.3f ms", pxTime / (float)1000);
+		return PXTextPrint(pxText, "%.2f ms", pxTime / (float)1000);
 	}
 
 	if (pxTime < 1000000000)
 	{
-		return PXTextPrint(pxText, "%.3f  s", pxTime / (float)1000000);
+		return PXTextPrint(pxText, "%.2f  s", pxTime / (float)1000000);
 	}
 
 	return 0;
@@ -1533,15 +1533,15 @@ PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime)
 #if 0
 	if (pxTime < PXSizeTB)
 	{
-		return PXTextPrint(pxText, "%.3f m", pxTime / (float)PXSizeGB);
+		return PXTextPrint(pxText, "%.2f m", pxTime / (float)PXSizeGB);
 	}
 
 	if (pxTime < PXSizePB)
 	{
-		return PXTextPrint(pxText, "%.3f h", pxTime / (float)PXSizeTB);
+		return PXTextPrint(pxText, "%.2f h", pxTime / (float)PXSizeTB);
 	}
 
-	return PXTextPrint(pxText, "%.3f d", pxTime / (float)PXSizePB);
+	return PXTextPrint(pxText, "%.2f d", pxTime / (float)PXSizePB);
 #endif
 }
 

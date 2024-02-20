@@ -516,13 +516,9 @@ extern "C"
 		PXGraphicDrawModeSetFunction DrawModeSet;
 		PXGraphicDrawColorRGBFFunction DrawColorRGBAF;
 		PXGraphicRectangleDrawFunction RectangleDraw;
-		PXGraphicRectangleDrawTxFunction RectangleDrawTx;	
+		PXGraphicRectangleDrawTxFunction RectangleDrawTx;
 		//-------------------------------------------------
-
-
-
-		PXGraphicSystem GraphicSystem;
-
+		
 		union
 		{
 			PXDirectX DirectXInstance;
@@ -530,47 +526,27 @@ extern "C"
 			PXVulcan VulcanInstance;
 		};
 
-
-		PXLock _resourceLock;
-
-		PXSkyBox* _currentSkyBox;
-
-		//---<Registered Objects>---
-
-
-		PXLinkedListFixed _renderList; // PXRenderable
-	
-		PXDictionary ResourceImageLookUp;
-
-		PXDictionary UIElementLookUp;
-		PXDictionary TextureLookUp;
-
-		PXDictionary ModelLookUp;
-
-		PXDictionary SoundLookup;
-		PXDictionary ShaderPXProgramLookup;
-		//--------------------------
-
-
-
-
-
+		PXGraphicSystem GraphicSystem;
 
 		PXSize DevicePhysicalListSize;
 		PXGraphicDevicePhysical* DevicePhysicalList;
 
-
 		PXUIElement UIElementBase;
-
 	}
 	PXGraphic;
 
-#if 0
-	const PXSize size = sizeof(PXGraphic);
-#endif 
+
+	//-----------------------------------------------------
+	PXPublic PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
+	PXPublic PXActionResult PXAPI PXGraphicRelease(PXGraphic* const pxGraphic);
+	PXPublic PXActionResult PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem);
+	//-----------------------------------------------------
+
+
+
+
 
 	typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXUIElement* const pxUIElement);
-
 
 	//-------------------------------------------------------------------------
 	PXPublic PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent);
@@ -600,7 +576,6 @@ extern "C"
 
 	PXPublic void PXAPI PXShaderDataSet(PXShader* const shader, const PXGraphicShaderType type, const char* data, const PXSize size);
 	PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
-	PXPublic void PXAPI PXTextureDestruct(PXTexture2D* const texture);
 
 
 	//-------------------------------------------------------------------------
@@ -610,40 +585,19 @@ extern "C"
 	//-----------------------------------------------------
 	PXPublic PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
 	PXPublic PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
-	PXPublic PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y);
 
 
 
 	PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
 
 
-	//-------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
-	PXPublic PXActionResult PXAPI PXGraphicRelease(PXGraphic* const pxGraphic);
 
-	PXPublic void PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem);
-
-	PXPublic void PXAPI PXGraphicResourceRegister(PXGraphic* const pxGraphic, PXGraphicResourceInfo* const pxGraphicResourceInfo);
-	//-------------------------------------
 
 	//---<Shader>-----------------------------------------------------------------
 
 	PXPublic void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphic* const pxGraphic, const unsigned int locationID, const float* const matrix4x4);
 
 	//-------------------------------------------------------------------------
-
-
-
-	//PXPublic PXSize PXGraphicModelListSize(const PXGraphic* const pxGraphic);
-	//PXPublic PXBool PXGraphicModelListGetFromIndex(const PXGraphic* const pxGraphic, PXModel** pxModel, const PXSize index);
-
-	PXPublic PXSize PXAPI PXGraphicRenderableListSize(const PXGraphic* const pxGraphic);
-	PXPublic PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphic* const pxGraphic, PXRenderable** pxRenderable, const PXSize index);
-
-	//PXPublic PXActionResult PXGraphicModelCreate(PXGraphic* const pxGraphic, PXModel** const pxModel);
-	//PXPublic PXBool PXGraphicModelRegister(PXGraphic* const pxGraphic, PXModel* const pxModel);
-	PXPublic PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphic* const pxGraphic, PXRenderable** const pxRenderable);
-	PXPublic PXBool PXAPI PXGraphicRenderableRegister(PXGraphic* const pxGraphic, PXRenderable* const pxRenderable);
 
 
 	PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);
@@ -656,23 +610,7 @@ extern "C"
 
 
 
-	//PXPublic PXActionResult Load(PXModel& model, const wchar_t* filePath, const bool loadAsynchronously = true);
-	//PXPublic PXActionResult Load(PXRenderable& renderable, PXModel* model, const wchar_t* filePath, bool loadAsynchronously = true);
-	//PXPublic PXActionResult Load(PXRenderable& renderable, const float* vertexData, const PXSize vertexDataSize, const unsigned int* indexList, const PXSize indexListSize);
-
-
-	//PXPublic PXActionResult Load(Level& level, const wchar_t* filePath, const bool loadAsynchronously = true);
-	// 	PXPublic PXActionResult Load(Collider* collider);
-
-	//PXPublic PXActionResult Load(PXFont& font, const wchar_t* filePath, bool loadAsynchronously = true);
-	//PXPublic PXActionResult Load(ShaderPXProgram& shaderPXProgram, const wchar_t* vertexShaderFilePath, const wchar_t* fragmentShaderFilePath);
-
-	//PXPublic PXActionResult Load(Image& image, const wchar_t* filePath, bool loadAsynchronously = true);
-
-
-
 	PXPublic void PXAPI PXCameraConstruct(PXCamera* const camera);
-	PXPublic void PXAPI PXCameraDestruct(PXCamera* const camera);
 
 
 	//-----------

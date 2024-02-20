@@ -357,6 +357,8 @@ PXSize PXAPI PXThreadCurrentID()
 
 void PXAPI PXThreadCurrentGet(PXThread* const pxThread)
 {
+	PXClear(PXThread, pxThread);
+
 #if OSUnix
 	pxThread->ThreadHandle = pthread_self();
 #elif OSWindows

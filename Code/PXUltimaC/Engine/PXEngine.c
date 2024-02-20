@@ -527,7 +527,33 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
         pxGraphicInitializeInfo.GraphicSystem = PXGraphicSystemOpenGL;
 
-        PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
+        const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
+
+        if (PXActionSuccessful != graphicInit)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "PX",
+                "Init",
+                "failed to create graphical instance!"
+            );
+#endif
+
+            return graphicInit;
+        }
+
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX",
+            "Init",
+            "Created graphical instance"
+        );
+#endif
 
         pxEngine->Graphic.SwapIntervalSet(pxEngine->Graphic.EventOwner, 1);
         pxEngine->Graphic.Select(pxEngine->Graphic.EventOwner);

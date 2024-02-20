@@ -1,6 +1,7 @@
 #include "PXConsole.h"
 
 #include <Media/PXText.h>
+#include <OS/Async/PXThread.h>
 #include <stdarg.h>
 //#include <stdio.h>
 //#include <stdarg.h>
@@ -219,13 +220,22 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 			break;
 	}
 
+	PXThread pxThread;
+	PXThreadCurrentGet(&pxThread);
+
+	PXTime pxTime;
+	PXTimeNow(&pxTime);
 
 	// sprintf_s
 	textPreFormatted.SizeUsed = PXTextPrintA
 	(
 		textPreFormatted.TextA,
 		textPreFormatted.SizeAllocated,
-		"§3%10s §%i%c %-14s §%i%s%s\n",
+		"[%2.2i:%2.2i:%2.2i] §3%10s §%i%c %-14s §%i%s%s\n",
+		pxTime.Hour,
+		pxTime.Minute,
+		pxTime.Second,
+		//(int)pxThread.ThreadID,
 		pxLoggingEventData->ModuleSource,
 		symbolColor,
 		loggingTypeSymbol,
@@ -316,12 +326,17 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	PXText bufferColor;
 	PXTextConstructNamedBufferA(&bufferColor, bufferColorBuffer, 1024);
 
-	// sprintf_s
+	PXTime pxTime;
+	PXTimeNow(&pxTime);
+
 	formattedText.SizeUsed = PXTextPrintA
 	(
 		formattedText.TextA,
 		formattedText.SizeAllocated,
-		"§3%10s §%i%c %-14s §%i%s\n",
+		"[%2.2i:%2.2i:%2.2i] §3%10s §%i%c %-14s §%i%s\n",
+		pxTime.Hour,
+		pxTime.Minute,
+		pxTime.Second,
 		source,
 		symbolColor,
 		loggingTypeSymbol,

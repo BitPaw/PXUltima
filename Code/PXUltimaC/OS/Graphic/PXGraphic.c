@@ -15,97 +15,12 @@
 //#include <gl/GL.h> // Not found???
 #include <GL/gl.h>
 
-
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
 #include <OS/Hardware/PXMonitor.h>
 #include <stdarg.h>
 
-PXActionResult PXAPI PXGraphicSpriteTextureScaleBorder(PXSprite* const pxSprite, const float x, const float y)
-{
-    PXVector2FSetXY(&pxSprite->TextureScalePointOffset, x, y);
-}
-
 #define QuadSkybox 0
-
-PXSize PXAPI PXGraphicRenderableListSize(const PXGraphic* const pxGraphic)
-{
-    return pxGraphic->_renderList.NodeListSizeCurrent;
-}
-
-PXBool PXAPI PXGraphicRenderableListGetFromIndex(const PXGraphic* const pxGraphic, PXRenderable** pxRenderable, const PXSize index)
-{
-#if 1 //
-    PXLinkedListNodeFixed currentModel;
-
-    const PXBool successful = PXLinkedListFixedNodeAt(&pxGraphic->_renderList, &currentModel, index);
-
-    if (!successful)
-    {
-        return PXNo;
-    }
-
-    {
-        PXRenderable* const renderableCurrent = (PXRenderable*)currentModel.BlockData;
-
-        *pxRenderable = renderableCurrent;
-
-        return PXYes;
-    }
-
-#else
-
-    PXLinkedListNodeFixed currentModel;
-
-    PXLinkedListFixedNodeAt(&pxGraphic->_renderList, &currentModel, 0);
-
-    *pxRenderable = 0;
-
-    PXSize counter = 0;
-
-    do
-    {
-        const PXRenderable* const renderableCurrent = currentModel.BlockData;
-
-        if (index == counter++)
-        {
-            *pxRenderable = renderableCurrent;
-            return PXTrue;
-        }
-
-    }
-    while (PXLinkedListFixedNodeNext(&pxGraphic->_renderList, &currentModel));
-
-    return PXNo;
-#endif
-}
-
-PXActionResult PXAPI PXGraphicRenderableCreate(PXGraphic* const pxGraphic, PXRenderable** const pxRenderable)
-{
-    PXRenderable* const renderable = PXNew(PXRenderable);
-
-    if (!renderable)
-    {
-        return PXActionFailedMemoryAllocation;
-    }
-
-    PXMemoryClear(renderable, sizeof(PXRenderable));
-
-    PXGraphicRenderableRegister(pxGraphic, *pxRenderable);
-
-    *pxRenderable = renderable; // TODO: Is this right?
-
-    return PXActionSuccessful;
-}
-
-PXBool PXAPI PXGraphicRenderableRegister(PXGraphic* const pxGraphic, PXRenderable* const pxRenderable)
-{
-    PXLockEngage(&pxGraphic->_resourceLock);
-    PXLinkedListFixedNodeAdd(&pxGraphic->_renderList, pxRenderable);
-    PXLockRelease(&pxGraphic->_resourceLock);
-
-    return PXTrue;
-}
 
 void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram)
 {
@@ -116,213 +31,6 @@ void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* con
         pxRenderableMeshSegment->ShaderID = shaderPXProgram->ResourceID.OpenGLID;
     }
 }
-
-/*
-PXActionResult PXGraphicModelLoad(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXText* const filePath)
-{
-    PXModel* model = 0;
-
-    // Create model
-    {
-        const PXActionResult createResult = PXGraphicModelCreate(pxGraphic, &model);
-
-        PXActionReturnOnError(createResult);
-    }
-
-    // create PXRenderable
-    {
-        PXLockEngage(&pxGraphic->_resourceLock);
-        PXLinkedListFixedNodeAdd(&pxGraphic->_renderList, renderable);
-        PXLockRelease(&pxGraphic->_resourceLock);
-
-        /*
-
-        if (renderable) // Owner is caller
-        {
-            pxRenderable = *renderable;
-
-
-        }
-        else // No model, make one
-        {
-            const PXActionResult createResult = PXGraphicRenderableCreate(pxGraphic, &pxRenderable);
-
-            PXActionExitOnError(createResult);
-
-            *renderable = pxRenderable; // Write to return back to caller
-        }
-        * /
-    }
-
-    // Load model
-    {
-        const PXActionResult loadResult = PXModelLoad(model, filePath);
-
-        PXActionReturnOnError(loadResult);
-    }
-
-    // Register model into renderable
-    {
-        const PXActionResult loadResult = PXGraphicModelRegisterFromModel(pxGraphic, renderable, model);
-
-        PXActionReturnOnError(loadResult);
-    }
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXGraphicModelRegisterFromModel(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXModel* const model)
-{
-#if PXOpenGLUSE
-    PXOpenGL* const openGLContext = &pxGraphic->OpenGLInstance;
-
-    PXRenderableConstruct(renderable);
-
-    PXOpenGLVertexArrayGenerate(openGLContext, 1u, &renderable->VAO);
-
-    PXInt32U vbo = 0;
-
-    // Create VBO Buffers
-    PXOpenGLBufferGenerate(openGLContext, 1u, &vbo);
-    renderable->VBO = vbo;
-
-
-
-    PXOpenGLVertexArrayBind(openGLContext, renderable->VAO);
-
-    PXOpenGLBufferBind(openGLContext, PXOpenGLBufferArray, renderable->VBO);
-    PXOpenGLBufferData(openGLContext, PXOpenGLBufferArray, model->DataSize, model->Data, PXOpenGLStoreStaticDraw);
-
-#if 0
-    printf
-    (
-        "| %7s %7s %7s | %7s %7s %7s | %7s %7s |\n",
-        "X",
-        "Y",
-        "Z",
-        "Nx",
-        "Ny",
-        "Nz",
-        "Tx",
-        "Ty"
-    );
-
-    for (PXSize i = 0; i < model->DataIndexSize * stride; i+=8)
-    {
-        float* data = &(((float*)model->DataVertex)[i]);
-
-        printf
-        (
-            "| %7.2f %7.2f %7.2f | %7.2f %7.2f %7.2f | %7.2f %7.2f |\n",
-            data[0],
-            data[1],
-            data[2],
-
-            data[3],
-            data[4],
-            data[5],
-
-            data[6],
-            data[7]
-        );
-    }
-#endif
-
-    // TODO
-    unsigned int index = 0;
-    unsigned int offset = 0;
-
-    if (model->DataVertexWidth)
-    {
-        PXOpenGLVertexArrayAttributeDefine(openGLContext, index, model->DataVertexWidth, PXDataTypeFloat, 0, model->DataVertexWidth * sizeof(float), offset);
-        PXOpenGLVertexArrayEnable(openGLContext, index++);
-
-        offset += model->DataVertexWidth * sizeof(float);
-    }
-
-    if (model->DataNormalWidth)
-    {
-        PXOpenGLVertexArrayAttributeDefine(openGLContext, index, model->DataNormalWidth, PXDataTypeFloat, 0, model->DataNormalWidth * sizeof(float), offset);
-        PXOpenGLVertexArrayEnable(openGLContext, index++);
-
-        offset += model->DataNormalWidth * sizeof(float);
-    }
-
-    if (model->DataTextureWidth)
-    {
-        PXOpenGLVertexArrayAttributeDefine(openGLContext, index, model->DataTextureWidth, PXDataTypeFloat, 0, model->DataTextureWidth * sizeof(float), offset);
-        PXOpenGLVertexArrayEnable(openGLContext, index++);
-
-        offset += model->DataTextureWidth * sizeof(float);
-    }
-
-    // Color?
-
-    PXOpenGLBufferUnbind(openGLContext, PXOpenGLBufferArray);
-
-    if (model->DataIndexWidth)
-    {
-        PXOpenGLBufferGenerate(openGLContext, 1u, &renderable->IBO);
-
-        PXOpenGLBufferBind(openGLContext, PXOpenGLBufferElementArray, renderable->IBO);
-
-        PXOpenGLBufferData(openGLContext, PXOpenGLBufferElementArray, sizeof(unsigned int) * model->DataIndexSize, model->DataIndexList, PXOpenGLStoreStaticDraw);
-
-        PXOpenGLBufferUnbind(openGLContext, PXOpenGLBufferElementArray);
-    }
-
-    PXOpenGLVertexArrayUnbind(openGLContext);
-    //-------------------------------------------------------------------------
-
-    //---<Register all textures>-----------------------------------------------
-    const PXSize segmentsListSize = 1;// PXModelSegmentsAmount(model);
-    const PXSize modelListSize = 1;// PXModelMaterialAmount(model);
-
-    renderable->MeshSegmentListSize = segmentsListSize;
-    renderable->MeshSegmentList = PXMemoryAllocateType(PXRenderableMeshSegment, segmentsListSize);
-
-    for (PXSize i = 0; i < segmentsListSize; ++i)
-    {
-        PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
-        MeshSegment meshSegment;
-
-        PXRenderableMeshSegmentConstruct(pxRenderableMeshSegment);
-        PXModelSegmentsGet(model, i, &meshSegment);
-
-        pxRenderableMeshSegment->RenderMode = PXGraphicDrawModeTriangle;
-        pxRenderableMeshSegment->NumberOfVertices = meshSegment.DrawClusterSize;
-
-        PXMaterial material;
-        const PXBool fetchMaterialSuccess = PXModelMaterialGet(model, meshSegment.TextureID, &material);
-
-        if (fetchMaterialSuccess)
-        {
-            PXTexture2D pxTexture;
-
-            PXTextureConstruct(&pxTexture);
-
-            pxTexture.Filter = PXGraphicRenderFilterNoFilter;
-            pxTexture.LayoutNear = PXGraphicImageLayoutNearest;
-            pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
-            pxTexture.WrapHeight = PXGraphicImageWrapRepeat;
-            pxTexture.WrapWidth = PXGraphicImageWrapRepeat;
-
-            //PXGraphicTextureLoad(pxGraphic, &pxTexture, &material.DiffuseTextureFilePath);
-
-            pxRenderableMeshSegment->TextureID = pxTexture.ResourceID.OpenGLID;
-        }
-
-        pxRenderableMeshSegment->DoRendering = PXYes;
-    }
-    //-------------------------------------------------------------------------
-
-    // Model is not fully registered and ready to be rendered
-    renderable->DoRendering = 1u;
-#endif
-
-    return PXActionSuccessful;
-}*/
-
 
 PXActionResult PXAPI PXGraphicUIRectangleCreate(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
 {
@@ -366,11 +74,6 @@ void PXAPI PXTextureConstruct(PXTexture2D* const texture)
     texture->LayoutFar = PXGraphicImageLayoutNearest;
     texture->WrapHeight = PXGraphicImageWrapRepeat;
     texture->WrapWidth = PXGraphicImageWrapRepeat;
-}
-
-void PXAPI PXTextureDestruct(PXTexture2D* const texture)
-{
-
 }
 
 PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent)
@@ -534,7 +237,7 @@ PXActionResult PXAPI PXGraphicUIElementPrint(PXGraphic* const pxGraphic)
 
 void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
 {
-    PXMemoryClear(pxRenderable, sizeof(PXRenderable));
+    PXClear(PXRenderable, pxRenderable);
 
     PXMatrix4x4FIdentity(&pxRenderable->MatrixModel);
 
@@ -706,17 +409,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
   //  }
 #endif
 
-    PXLockCreate(&pxGraphic->_resourceLock, PXLockTypeGlobal);
 
-    PXDictionaryConstruct(&pxGraphic->ResourceImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
-
-
-    PXDictionaryConstruct(&pxGraphic->TextureLookUp, sizeof(PXInt32U), sizeof(PXTexture2D), PXDictionaryValueLocalityExternalReference);
-
-    PXDictionaryConstruct(&pxGraphic->ModelLookUp, sizeof(PXInt32U), sizeof(PXModel), PXDictionaryValueLocalityExternalReference);
-
-    PXDictionaryConstruct(&pxGraphic->SoundLookup, sizeof(PXInt32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxGraphic->ShaderPXProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
 
     //-------------------------------------------------------------------------
     // Setup references
@@ -894,7 +587,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         }
 
         default:
-            break;
+            return PXActionRefusedArgumentInvalid;
     }
 
     // Graphic initialize
@@ -987,9 +680,21 @@ PXActionResult PXAPI PXGraphicRelease(PXGraphic* const pxGraphic)
     return PXActionRefusedNotImplemented;
 }
 
-void PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem)
+PXActionResult PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem)
 {
-    //pxGraphic->Release();
+    // 1.) Store all elements in a cache
+
+    // 2.) Release all elements
+
+    // 3.) Release session
+
+    // 4.) create new session
+
+    // 5.) Restore all thing from cache
+
+    // 6.) Delete cache
+
+    return PXActionRefusedNotImplemented;
 }
 
 void PXAPI PXGraphicResourceRegister(PXGraphic* const pxGraphic, PXGraphicResourceInfo* const pxGraphicResourceInfo)
@@ -1039,7 +744,7 @@ void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphic* const pxGraphic, const uns
 
 void PXAPI PXCameraConstruct(PXCamera* const camera)
 {
-    PXMemoryClear(camera, sizeof(PXCamera));
+    PXClear(PXCamera, camera);
 
     camera->WalkSpeed = 0.2;
     camera->ViewSpeed = 0.4;
@@ -1058,11 +763,6 @@ void PXAPI PXCameraConstruct(PXCamera* const camera)
 
     const PXVector3F position = {0,0,0};
     PXCameraRotate(camera, &position);
-}
-
-void PXAPI PXCameraDestruct(PXCamera* const camera)
-{
-
 }
 
 void PXAPI PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const float nearPlane, const float farPlane)
