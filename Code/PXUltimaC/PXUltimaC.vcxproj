@@ -147,7 +147,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -168,6 +168,7 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <OpenMPSupport>true</OpenMPSupport>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -214,7 +215,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -235,6 +236,7 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <OpenMPSupport>true</OpenMPSupport>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -256,6 +258,9 @@
     <ClCompile Include="Container\QuadTree\PXQuadTree.c" />
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c" />
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX12.c" />
     <ClCompile Include="Media\HEIF\PXHEIF.c" />
     <ClCompile Include="Media\Matroska\PXMatroska.c" />
     <ClCompile Include="OS\Audio\PXALSA\PXALSA.c" />
@@ -393,6 +398,8 @@
     <ClCompile Include="Media\RAR\PXRAR.c" />
     <ClCompile Include="Engine\Dialog\PXDialogBox.c" />
     <ClCompile Include="Engine\Interact\PXSign.c" />
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX9.c" />
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX10x1.c" />
     <ClCompile Include="Service\FTP\PXFTPServer.c" />
     <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
@@ -414,6 +421,9 @@
     <ClInclude Include="Container\QuadTree\PXQuadTree.h" />
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h" />
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX12.h" />
     <ClInclude Include="Media\HEIF\PXHEIF.h" />
     <ClInclude Include="Media\Matroska\PXMatroska.h" />
     <ClInclude Include="OS\Audio\PXALSA\PXALSA.h" />
@@ -551,6 +561,8 @@
     <ClInclude Include="Media\RAR\PXRAR.h" />
     <ClInclude Include="Engine\Dialog\PXDialogBox.h" />
     <ClInclude Include="Engine\Interact\PXSign.h" />
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX9.h" />
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX10x1.h" />
     <ClInclude Include="Service\FTP\PXFTPServer.h" />
     <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />

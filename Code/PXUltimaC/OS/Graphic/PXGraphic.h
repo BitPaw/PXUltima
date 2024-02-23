@@ -28,7 +28,14 @@ extern "C"
 {
 #endif
 
-	
+	typedef enum PXGraphicSystem_
+	{
+		PXGraphicSystemInvalid,
+		PXGraphicSystemOpenGL,
+		PXGraphicSystemDirectX,
+		PXGraphicSystemVulcan
+	}
+	PXGraphicSystem;
 
 	typedef PXInt32U PXGraphicResourceID;
 
@@ -284,8 +291,36 @@ extern "C"
 
 
 
+	typedef struct PXGraphicTexturInfo_
+	{		
+		void* TextureReference;
+		PXSize Amount;
+		PXGraphicTextureType Type;
+		PXResourceAction Action;	
+	}
+	PXGraphicTexturInfo;
 
 
+	typedef enum PXGraphicShaderVariableType_
+	{
+		PXGraphicShaderVariableTypeInt32Single,
+		PXGraphicShaderVariableTypeFloatSingle,
+		PXGraphicShaderVariableTypeDouble,
+		PXGraphicShaderVariableTypeMatrix2x2,
+		PXGraphicShaderVariableTypeMatrix3x3,
+		PXGraphicShaderVariableTypeMatrix4x4,
+	}
+	PXGraphicShaderVariableType;
+
+	typedef struct PXGraphicShaderVariable_
+	{
+		char* Name;
+		void* Data;
+		PXSize Amount;
+		PXInt32U IndexID;
+		PXGraphicShaderVariableType Type;
+	}
+	PXGraphicShaderVariable;
 
 
 	//-------------------------------------------------------------------------
@@ -314,10 +349,6 @@ extern "C"
 	typedef PXActionResult(PXAPI*PXGraphicDrawScriptDelete)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
 	typedef PXActionResult(PXAPI*PXGraphicDrawScriptExecute)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
 
-	typedef PXActionResult(PXAPI*PXGraphicTextureCubeRegisterFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
-	typedef PXActionResult(PXAPI*PXGraphicTextureCubeRegisterUseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
-	typedef PXActionResult(PXAPI*PXGraphicTextureCubeReleaseFunction)(void* const pxGraphicAPI, PXTextureCube* const textureCube);
-
 
 	typedef PXActionResult(PXAPI*PXGraphicModelRegisterFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
 	typedef PXActionResult(PXAPI*PXGraphicModelDrawFunction)(void* const pxGraphicAPI, PXModel* const pxModel, const PXCamera* const pxCamera);
@@ -330,9 +361,8 @@ extern "C"
 	typedef PXActionResult(PXAPI*PXGraphicLightEnableGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
 
 
-	typedef PXActionResult(PXAPI*PXGraphicTexture2DRegisterFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
-	typedef PXActionResult(PXAPI*PXGraphicTexture2DReleaseFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
-	typedef PXActionResult(PXAPI*PXGraphicTexture2DSelectFunction)(void* const pxGraphicAPI, PXTexture2D* const pxTexture2D);
+	typedef PXActionResult(PXAPI*PXGraphicTextureActionFunction)(void* const pxGraphicAPI, PXGraphicTexturInfo* const pxGraphicTexturInfo);
+
 
 	typedef void (PXAPI*PXGraphicClearFunction)(void* const pxGraphicAPI, const PXColorRGBAF* const backgroundColor);
 	typedef PXBool(PXAPI*PXGraphicSceneDeployFunction)(void* const pxGraphicAPI);
@@ -352,41 +382,14 @@ extern "C"
 
 	typedef PXActionResult (PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
 
-
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromFileVPAFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVPFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const PXText* const vertexShaderFilePath, const PXText* const fragmentShaderFilePath);
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFromStringVPAFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
-
-
-	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
+	typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount);
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramSelectFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramDeleteFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
 
 
 	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIDFetchFunction)(void* const graphicAPI, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
 
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx1Function)(void* const graphicAPI, const PXInt32U location, const float v0);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx1xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx1Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx1xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx2Function)(void* const graphicAPI, const PXInt32U location, const float v0, const float v1);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx2xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx2Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0, const PXInt32U v1);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx2xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx3Function)(void* const graphicAPI, const PXInt32U location, const float v0, const float v1, const float v2);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx3xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx3Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0, const PXInt32U v1, const PXInt32U v2);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx3xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx4Function)(void* const graphicAPI, const PXInt32U location, const float v0, const float v1, const float v2, const float v3);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableFx4xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const float* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx4Function)(void* const graphicAPI, const PXInt32U location, const PXInt32U v0, const PXInt32U v1, const PXInt32U v2, const PXInt32U v3);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIx4xNFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXInt32U* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableMatrix2fvFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXBool transpose, const float* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableMatrix3fvFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXBool transpose, const float* const value);
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableMatrix4fvFunction)(void* const graphicAPI, const PXInt32U location, const PXSize count, const PXBool transpose, const float* const value);
-	//-------------------------------------------------------------------------
-
+	typedef PXActionResult(PXAPI* PXGraphicShaderVariableSetFunction)(void* const graphicAPI, PXGraphicShaderVariable* const pxGraphicShaderVariable);
 	//-------------------------------------------------------------------------
 
 
@@ -451,14 +454,7 @@ extern "C"
 		//-------------------------------------------------
 		// Textures
 		//-------------------------------------------------
-		PXGraphicTexture2DRegisterFunction Texture2DRegister;
-		PXGraphicTexture2DReleaseFunction Texture2DRelease;
-		PXGraphicTexture2DSelectFunction  Texture2DSelect;
-
-		PXGraphicTextureCubeRegisterFunction TextureCubeRegister;
-		PXGraphicTextureCubeRegisterUseFunction TextureCubeRegisterUse;
-		PXGraphicTextureCubeReleaseFunction TextureCubeRelease;
-
+		PXGraphicTextureActionFunction TextureAction;
 
 		//-------------------------------------------------
 		// Model
@@ -479,37 +475,13 @@ extern "C"
 		//-------------------------------------------------
 		// Shader
 		//-------------------------------------------------
-		PXGraphicShaderProgramCreateFromFileVPFunction ShaderProgramCreateFromFileVP;
-		PXGraphicShaderProgramCreateFromFileVPAFunction ShaderProgramCreateFromFileVPA;
-		PXGraphicShaderProgramCreateFromStringVPFunction ShaderProgramCreateFromStringVP;
-		PXGraphicShaderProgramCreateFromStringVPAFunction ShaderProgramCreateFromStringVPA;
+		PXGraphicShaderVariableSetFunction ShaderVariableSet;
 
 		PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
 		PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
 		PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
 		PXGraphicShaderVariableIDFetchFunction  ShaderVariableIDFetch;
-		PXGraphicShaderVariableFx1Function  ShaderVariableFx1;
-		PXGraphicShaderVariableFx1xNFunction  ShaderVariableFx1xN;
-		PXGraphicShaderVariableIx1Function  ShaderVariableIx1;
-		PXGraphicShaderVariableIx1xNFunction  ShaderVariableIx1xN;
-		PXGraphicShaderVariableFx2Function  ShaderVariableFx2;
-		PXGraphicShaderVariableFx2xNFunction  ShaderVariableFx2xN;
-		PXGraphicShaderVariableIx2Function  ShaderVariableIx2;
-		PXGraphicShaderVariableIx2xNFunction ShaderVariableIx2xN;
-		PXGraphicShaderVariableFx3Function  ShaderVariableFx3;
-		PXGraphicShaderVariableFx3xNFunction  ShaderVariableFx3xN;
-		PXGraphicShaderVariableIx3Function  ShaderVariableIx3;
-		PXGraphicShaderVariableIx3xNFunction  ShaderVariableIx3xN;
-		PXGraphicShaderVariableFx4Function  ShaderVariableFx4;
-		PXGraphicShaderVariableFx4xNFunction  ShaderVariableFx4xN;
-		PXGraphicShaderVariableIx4Function  ShaderVariableIx4;
-		PXGraphicShaderVariableIx4xNFunction  ShaderVariableIx4xN;
-		PXGraphicShaderVariableMatrix2fvFunction  ShaderVariableMatrix2fv;
-		PXGraphicShaderVariableMatrix3fvFunction  ShaderVariableMatrix3fv;
-		PXGraphicShaderVariableMatrix4fvFunction  ShaderVariableMatrix4fv;
-
-
-
+		
 		//-------------------------------------------------
 		// Draw
 		//-------------------------------------------------

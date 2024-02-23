@@ -4,6 +4,7 @@
 
 #include <OS/Error/PXActionResult.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
 
 #if OSUnix
 #include <dlfcn.h>
@@ -84,6 +85,17 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 
 PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 {
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingAllocation,
+		"Library",
+		"Load",
+		"open <%s>",
+		filePath->TextA
+	);
+#endif
+
 	switch (filePath->Format)
 	{
 		case TextFormatUTF8:
@@ -142,6 +154,17 @@ PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* cons
 
 PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 {
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingDeallocation,
+		"Library",
+		"Release",
+		"%s",
+		PXNull
+	);
+#endif
+
 	const PXBool result =
 #if OSUnix
 		dlclose(pxLibrary->ID);
@@ -156,14 +179,48 @@ PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 	return PXActionSuccessful;
 }
 
-PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName)
+PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntionEntry* const pxLibraryFuntionEntryList, const PXSize amount)
 {
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingAllocation,
+		"Library",
+		"Load",
+		"Symbol batch (%i)",
+		amount
+	);
+#endif
+
+	for (PXSize i = 0; i < amount; ++i)
+	{
+		PXLibraryFuntionEntry* pxLibraryFuntionEntry = &pxLibraryFuntionEntryList[i];
+
+		PXLibraryGetSymbolA(pxLibrary, pxLibraryFuntionEntry->Function, pxLibraryFuntionEntry->FuntionName);
+	}
+
+	return PXTrue;
+}
+
+PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName)
+{
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingAllocation,
+		"Library",
+		"Load",
+		"Symbol <%s>",
+		symbolName
+	);
+#endif
+
 #if OSUnix
 	*libraryFunction = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName);
 	const char* errorString = dlerror();
 	const PXBool successful = errorString;
 #elif OSWindows
-	*libraryFunction = (LibraryFunction)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+	*libraryFunction = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 	const PXBool successful = *libraryFunction != PXNull;
 
 	PXActionOnErrorFetchAndReturn(!successful);
@@ -173,7 +230,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* co
 	return PXTrue;
 }
 
-PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName)
+PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const libraryFunction, const PXText* symbolName)
 {
 	return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA);
 }

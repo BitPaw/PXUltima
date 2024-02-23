@@ -110,8 +110,16 @@ extern "C"
     PXPublic PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* const filePath);
     PXPublic PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
 
-    PXPublic PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const char* const symbolName);
-    PXPublic PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, LibraryFunction* const libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
+    typedef struct PXLibraryFuntionEntry_
+    {
+        void** Function;
+        const char* FuntionName;
+    }
+    PXLibraryFuntionEntry;
+
+    PXPublic PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntionEntry* const pxLibraryFuntionEntryList, const PXSize amount);
+    PXPublic PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName);
+    PXPublic PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
 
     PXPublic PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName);
 

@@ -2179,10 +2179,7 @@ extern "C"
 
 	PXPrivate PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID);
 
-	PXPublic void PXAPI PXVulcanConstruct(PXVulcan* const pxVulcan);
-	PXPublic void PXAPI PXVulcanDestruct(PXVulcan* const pxVulcan);
-
-	PXPublic PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize width, const PXSize height, PXWindow* const pxWindow);
+	PXPublic PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraphicInitializeInfo_* const pxGraphicInitializeInfo);
 	PXPublic PXActionResult PXAPI PXVulcanRelease(PXVulcan* const pxVulcan);
 
 #ifdef __cplusplus

@@ -26,7 +26,7 @@ extern "C"
 	{
 		PXPNGInterlaceInvalid,
 		PXPNGInterlaceNone,
-		PXPNGInterlacePXADAM7
+		PXPNGInterlaceADAM7
 	}
 	PXPNGInterlaceMethod;
 

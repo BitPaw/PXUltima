@@ -5,6 +5,7 @@
 #include <Math/PXVector.h>
 #include <Math/PXMatrix.h>
 #include <Media/PXDocument.h>
+
 #include "PXImage.h"
 #include "PXColor.h"
 
@@ -13,14 +14,7 @@ extern "C"
 {
 #endif	
 
-	typedef enum PXGraphicSystem_
-	{
-		PXGraphicSystemInvalid,
-		PXGraphicSystemOpenGL,
-		PXGraphicSystemDirectX,
-		PXGraphicSystemVulcan
-	}
-	PXGraphicSystem;
+
 
 	typedef enum PXRefreshRateMode_
 	{
@@ -184,6 +178,16 @@ extern "C"
 	}
 	PXGraphicDrawFillMode;
 
+	typedef enum PXResourceAction_
+	{
+		PXResourceActionInvalid,
+		PXResourceActionCreate,
+		PXResourceActionDelete,
+		PXResourceActionUpdate,
+		PXResourceActionSelect
+	}
+	PXResourceAction;
+
 
 	typedef enum PXVertexBufferFormat_
 	{
@@ -273,7 +277,7 @@ extern "C"
 
 	typedef struct PXTexture2D_
 	{
-		PXResourceID ResourceID; // IDirect3DTexture9
+		PXResourceID ResourceID;
 
 		PXGraphicRenderFilter Filter;
 		PXGraphicImageLayout LayoutNear;
@@ -301,20 +305,22 @@ extern "C"
 
 	typedef struct PXTexture3D_
 	{
-		PXResourceID ResourceID; // IDirect3DVolumeTexture9
+		PXResourceID ResourceID;
 
 		PXInt32U Width;
 		PXInt32U Height;
 		PXInt32U Depth;
 
 		PXColorFormat Format;
+
+		PXImage* Image;
 	}
 	PXTexture3D;
 
 	// A Texture for a cube. 6 Sides, used for actual boxes like a skybox.
 	typedef struct PXTextureCube_
 	{
-		PXResourceID ResourceID; // IDirect3DCubeTexture9
+		PXResourceID ResourceID;
 
 		PXColorFormat Format;
 
@@ -379,7 +385,7 @@ extern "C"
 
 	typedef struct PXShader_
 	{
-		PXResourceID ResourceID; // IDirect3DVertexShader9, IDirect3DPixelShader9
+		PXResourceID ResourceID;
 
 		PXGraphicShaderType Type;
 
@@ -392,13 +398,8 @@ extern "C"
 	typedef struct PXShaderProgram_
 	{
 		PXResourceID ResourceID;
-
-		PXShader VertexShader;
-		PXShader PixelShader;
 	}
 	PXShaderProgram;
-
-
 
 
 	typedef enum PXDrawScriptType_

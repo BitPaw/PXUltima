@@ -53,19 +53,161 @@ void CALLBACK PXMIDIOutputMessageEvent(void* hMidiIn, PXInt32U wMsg, void* dwIns
 
 PXActionResult PXAPI PXMIDIInitialize(PXAudio* const pxAudio)
 {
+	// load library
+	{
+		const PXActionResult loadLibResult = PXLibraryOpenA(&pxAudio->Library, "winmm.dll");
+
+		if (PXActionSuccessful != loadLibResult)
+		{
+			return PXActionLibraryNotFound;
+		}
+	}
+
+
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = PXNew(PXWindowsAudioMultimedia);
+	pxAudio->WindowsMultiMediaInterface = pxWindowsAudioMultimedia;
+
+	// MAke new 
+	{
+		
+	}
+
+	// Fetch all functions
+	{
+		PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =		
+		{
+			{ &pxWindowsAudioMultimedia->waveOutGetDevCapsA, "waveOutGetDevCapsA"},
+			{ &pxWindowsAudioMultimedia->waveOutGetDevCapsW,"waveOutGetDevCapsW"},
+			{ &pxWindowsAudioMultimedia->waveOutGetNumDevs, "waveOutGetNumDevs"},
+			{ &pxWindowsAudioMultimedia->waveOutGetVolume,"waveOutGetVolume"},
+			{ &pxWindowsAudioMultimedia->waveOutSetVolume,"waveOutSetVolume"},
+			{ &pxWindowsAudioMultimedia->waveOutGetErrorTextA,"waveOutGetErrorTextA"},
+		{ &pxWindowsAudioMultimedia->waveOutGetErrorTextW,"waveOutGetErrorTextW"},
+		{ &pxWindowsAudioMultimedia->waveOutOpen,"waveOutOpen"},
+		{ &pxWindowsAudioMultimedia->waveOutClose,"waveOutClose"},
+		{ &pxWindowsAudioMultimedia->waveOutPrepareHeader,"waveOutPrepareHeader"},
+		{ &pxWindowsAudioMultimedia->waveOutUnprepareHeader,"waveOutUnprepareHeader"},
+		{ &pxWindowsAudioMultimedia->waveOutWrite,"waveOutWrite"},
+		{ &pxWindowsAudioMultimedia->waveOutPause,"waveOutPause"},
+		{ &pxWindowsAudioMultimedia->waveOutRestart,"waveOutRestart"},
+		{ &pxWindowsAudioMultimedia->waveOutReset,"waveOutReset"},
+		{ &pxWindowsAudioMultimedia->waveOutBreakLoop,"waveOutBreakLoop"},
+		{ &pxWindowsAudioMultimedia->waveOutGetPosition,"waveOutGetPosition"},
+		{ &pxWindowsAudioMultimedia->waveOutGetPitch,"waveOutGetPitch"},
+		{ &pxWindowsAudioMultimedia->waveOutSetPitch,"waveOutSetPitch"},
+		{ &pxWindowsAudioMultimedia->waveOutGetPlaybackRate,"waveOutGetPlaybackRate"},
+		{ &pxWindowsAudioMultimedia->waveOutSetPlaybackRate,"waveOutSetPlaybackRate"},
+		{ &pxWindowsAudioMultimedia->waveOutGetID,"waveOutGetID"},
+		{ &pxWindowsAudioMultimedia->waveOutMessage, "waveOutMessage" },
+		{ &pxWindowsAudioMultimedia->waveInGetNumDevs, "waveInGetNumDevs"},
+		{ &pxWindowsAudioMultimedia->waveInGetDevCapsA, "waveInGetDevCapsA" },
+		{ &pxWindowsAudioMultimedia->waveInGetDevCapsW, "waveInGetDevCapsW" },
+		{ &pxWindowsAudioMultimedia->waveInGetErrorTextA, "waveInGetErrorTextA" },
+		{ &pxWindowsAudioMultimedia->waveInGetErrorTextW,	"waveInGetErrorTextW"},
+{ &pxWindowsAudioMultimedia->waveInOpen,	"waveInOpen"},
+{ &pxWindowsAudioMultimedia->waveInClose,	"waveInClose"},
+{ &pxWindowsAudioMultimedia->waveInPrepareHeader,	"waveInPrepareHeader"},
+{ &pxWindowsAudioMultimedia->waveInUnprepareHeader,	"waveInUnprepareHeader"},
+{ &pxWindowsAudioMultimedia->waveInAddBuffer,	"waveInAddBuffer"},
+{ &pxWindowsAudioMultimedia->waveInStart,	"waveInStart"},
+{ &pxWindowsAudioMultimedia->waveInStop,	"waveInStop"},
+{ &pxWindowsAudioMultimedia->waveInReset,	"waveInReset"},
+{ &pxWindowsAudioMultimedia->waveInGetPosition,	"waveInGetPosition"},
+{ &pxWindowsAudioMultimedia->waveInGetID,	"waveInGetID"},
+{ &pxWindowsAudioMultimedia->waveInMessage,	"waveInMessage"},
+{ &pxWindowsAudioMultimedia->midiOutGetNumDevs,	"midiOutGetNumDevs"},
+{ &pxWindowsAudioMultimedia->midiStreamOpen,"midiStreamOpen"},
+{ &pxWindowsAudioMultimedia->midiStreamClose,"midiStreamClose"},
+{ &pxWindowsAudioMultimedia->midiStreamProperty,"midiStreamProperty"},
+{ &pxWindowsAudioMultimedia->midiStreamPosition,"midiStreamPosition"},
+{ &pxWindowsAudioMultimedia->midiStreamOut,"midiStreamOut"},
+{ &pxWindowsAudioMultimedia->midiStreamPause,"midiStreamPause"},
+{ &pxWindowsAudioMultimedia->midiStreamRestart,"midiStreamRestart"},
+{ &pxWindowsAudioMultimedia->midiStreamStop,"midiStreamStop"},
+{ &pxWindowsAudioMultimedia->midiConnect,"midiConnect"},
+{ &pxWindowsAudioMultimedia->midiDisconnect,"midiDisconnect"},
+{ &pxWindowsAudioMultimedia->midiOutGetDevCapsA,"midiOutGetDevCapsA"},
+{ &pxWindowsAudioMultimedia->midiOutGetDevCapsW,"midiOutGetDevCapsW"},
+{ &pxWindowsAudioMultimedia->midiOutGetVolume,"midiOutGetVolume"},
+{ &pxWindowsAudioMultimedia->midiOutSetVolume,"midiOutSetVolume"},
+{ &pxWindowsAudioMultimedia->midiOutGetErrorTextA,"midiOutGetErrorTextA"},
+{ &pxWindowsAudioMultimedia->midiOutGetErrorTextW,"midiOutGetErrorTextW"},
+{ &pxWindowsAudioMultimedia->midiOutOpen,"midiOutOpen"},
+{ &pxWindowsAudioMultimedia->midiOutClose,"midiOutClose"},
+{ &pxWindowsAudioMultimedia->midiOutPrepareHeader,"midiOutPrepareHeader"},
+{ &pxWindowsAudioMultimedia->midiOutUnprepareHeader,"midiOutUnprepareHeader"},
+{ &pxWindowsAudioMultimedia->midiOutShortMsg,"midiOutShortMsg"},
+{ &pxWindowsAudioMultimedia->midiOutLongMsg,"midiOutLongMsg"},
+{ &pxWindowsAudioMultimedia->midiOutReset,"midiOutReset"},
+{ &pxWindowsAudioMultimedia->midiOutCachePatches,"midiOutCachePatches"},
+{ &pxWindowsAudioMultimedia->midiOutCacheDrumPatches,"midiOutCacheDrumPatches"},
+{ &pxWindowsAudioMultimedia->midiOutGetID,"midiOutGetID"},
+{ &pxWindowsAudioMultimedia->midiOutMessage,"midiOutMessage"},
+{ &pxWindowsAudioMultimedia->midiInGetNumDevs,"midiInGetNumDevs"},
+{ &pxWindowsAudioMultimedia->midiInGetDevCapsA,"midiInGetDevCapsA"},
+{ &pxWindowsAudioMultimedia->midiInGetDevCapsW,"midiInGetDevCapsW"},
+{ &pxWindowsAudioMultimedia->midiInGetErrorTextA,"midiInGetErrorTextA"},
+{ &pxWindowsAudioMultimedia->midiInGetErrorTextW,"midiInGetErrorTextW"},
+{ &pxWindowsAudioMultimedia->midiInOpen,"midiInOpen"},
+{ &pxWindowsAudioMultimedia->midiInClose,"midiInClose"},
+{ &pxWindowsAudioMultimedia->midiInPrepareHeader,"midiInPrepareHeader"},
+{ &pxWindowsAudioMultimedia->midiInUnprepareHeader,"midiInUnprepareHeader"},
+{ &pxWindowsAudioMultimedia->midiInAddBuffer,"midiInAddBuffer"},
+{ &pxWindowsAudioMultimedia->midiInStart,"midiInStart"},
+{ &pxWindowsAudioMultimedia->midiInStop,"midiInStop"},
+{ &pxWindowsAudioMultimedia->midiInReset,"midiInReset"},
+{ &pxWindowsAudioMultimedia->midiInGetID,"midiInGetID"},
+{ &pxWindowsAudioMultimedia->midiInMessage,"midiInMessage"},
+{ &pxWindowsAudioMultimedia->auxGetNumDevs,"auxGetNumDevs"},
+{ &pxWindowsAudioMultimedia->auxGetDevCapsA,"auxGetDevCapsA"},
+{ &pxWindowsAudioMultimedia->auxGetDevCapsW,"auxGetDevCapsW"},
+{ &pxWindowsAudioMultimedia->auxSetVolume,"auxSetVolume"},
+{ &pxWindowsAudioMultimedia->auxGetVolume,"auxGetVolume"},
+{ &pxWindowsAudioMultimedia->auxOutMessage,"auxOutMessage"},
+{ &pxWindowsAudioMultimedia->mixerGetNumDevs,"mixerGetNumDevs"},
+{ &pxWindowsAudioMultimedia->mixerGetDevCapsA,"mixerGetDevCapsA"},
+{ &pxWindowsAudioMultimedia->mixerGetDevCapsW,"mixerGetDevCapsW"},
+{ &pxWindowsAudioMultimedia->mixerOpen,"mixerOpen"},
+{ &pxWindowsAudioMultimedia->mixerClose,"mixerClose"},
+{ &pxWindowsAudioMultimedia->mixerMessage,"mixerMessage"},
+{ &pxWindowsAudioMultimedia->mixerGetLineInfoA,"mixerGetLineInfoA"},
+{ &pxWindowsAudioMultimedia->mixerGetLineInfoW,"mixerGetLineInfoW"},
+{ &pxWindowsAudioMultimedia->mixerGetID,"mixerGetID"},
+{ &pxWindowsAudioMultimedia->mixerGetLineControlsA,"mixerGetLineControlsA"},
+{ &pxWindowsAudioMultimedia->mixerGetLineControlsW,"mixerGetLineControlsW"},
+{ &pxWindowsAudioMultimedia->mixerGetControlDetailsA,"mixerGetControlDetailsA"},
+{ &pxWindowsAudioMultimedia->mixerGetControlDetailsW,"mixerGetControlDetailsW"}
+};
+
+const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+
+PXLibraryGetSymbolListA(&pxAudio->Library, pxLibraryFuntionEntryList, amount);
+
+	}
+	
+
 	return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXMIDIRelease(PXAudio* const pxAudio)
+{
+	PXLibraryClose(&pxAudio->Library);
+
+	PXDelete(PXWindowsAudioMultimedia, pxAudio->WindowsMultiMediaInterface);
 }
 
 PXActionResult PXAPI PXMIDIDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	switch (pxAudioDeviceType)
 	{
 		case PXAudioDeviceTypeInput:
-			*amount = midiInGetNumDevs();
+			*amount = pxWindowsAudioMultimedia->midiInGetNumDevs();
 			break;
 
 		case PXAudioDeviceTypeOutput:
-			*amount = midiOutGetNumDevs();
+			*amount = pxWindowsAudioMultimedia->midiOutGetNumDevs();
 			break;
 
 		default:
@@ -77,6 +219,8 @@ PXActionResult PXAPI PXMIDIDeviceAmount(PXAudio* const pxAudio, const PXAudioDev
 
 PXActionResult PXAPI PXMIDIDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT mmresultID = 0;
 
 	PXClear(PXAudioDevice, pxAudioDevice);
@@ -87,7 +231,7 @@ PXActionResult PXAPI PXMIDIDeviceFetch(PXAudio* const pxAudio, const PXAudioDevi
 		{
 			MIDIOUTCAPSA midi;
 
-			mmresultID = midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
+			mmresultID = pxWindowsAudioMultimedia->midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
 
 			pxAudioDevice->ManufacturerID = midi.wMid;  
 			pxAudioDevice->ProductID = midi.wPid;                  
@@ -106,7 +250,7 @@ PXActionResult PXAPI PXMIDIDeviceFetch(PXAudio* const pxAudio, const PXAudioDevi
 		{
 			MIDIOUTCAPS midi;
 
-			mmresultID = midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));	
+			mmresultID = pxWindowsAudioMultimedia->midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
 
 			pxAudioDevice->ManufacturerID = midi.wMid;
 			pxAudioDevice->ProductID = midi.wPid;
@@ -144,6 +288,8 @@ PXActionResult PXAPI PXMIDIDeviceFetchAll(PXAudio* const pxAudio, const PXAudioD
 
 PXActionResult PXAPI PXMIDIDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT resultID = 0;
 
 	pxAudioDevice->Type = pxAudioDeviceType;
@@ -152,11 +298,11 @@ PXActionResult PXAPI PXMIDIDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* con
 	{
 		case PXAudioDeviceTypeInput:
 		{
-			resultID = midiInOpen(&(HMIDIIN*)pxAudio->DirectSoundInterface, deviceID, (DWORD_PTR)PXMIDIInputMessageEvent, (DWORD_PTR)pxAudioDevice, CALLBACK_FUNCTION);
+			resultID = pxWindowsAudioMultimedia->midiInOpen(&(HMIDIIN*)pxAudio->DirectSoundInterface, deviceID, (DWORD_PTR)PXMIDIInputMessageEvent, (DWORD_PTR)pxAudioDevice, CALLBACK_FUNCTION);
 			break;
 		}
 		case PXAudioDeviceTypeOutput:
-			resultID = midiOutOpen(&(HMIDIOUT*)pxAudio->DirectSoundInterface, deviceID, (DWORD_PTR)PXMIDIOutputMessageEvent, (DWORD_PTR)pxAudioDevice, CALLBACK_FUNCTION);
+			resultID = pxWindowsAudioMultimedia->midiOutOpen(&(HMIDIOUT*)pxAudio->DirectSoundInterface, deviceID, (DWORD_PTR)PXMIDIOutputMessageEvent, (DWORD_PTR)pxAudioDevice, CALLBACK_FUNCTION);
 			break;
 
 		default:
@@ -171,16 +317,18 @@ PXActionResult PXAPI PXMIDIDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* con
 
 PXActionResult PXAPI PXMIDIDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT resultID = 0;
 
 	switch (pxAudioDevice->Type)
 	{
 		case PXAudioDeviceTypeInput:		
-			resultID = midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
+			resultID = pxWindowsAudioMultimedia->midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
 			break;
 		
 		case PXAudioDeviceTypeOutput:
-			resultID = midiOutClose((HMIDIOUT)pxAudio->DirectSoundInterface);
+			resultID = pxWindowsAudioMultimedia->midiOutClose((HMIDIOUT)pxAudio->DirectSoundInterface);
 			break;
 
 		default:
@@ -362,6 +510,8 @@ PXActionResult PXAPI PXMIDIDevicePitchReduce(PXAudio* const pxAudio, PXAudioDevi
 
 PXActionResult PXAPI PXMIDIDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT resultID = 0;
 
 	switch (pxAudioDevice->Type)
@@ -374,7 +524,7 @@ PXActionResult PXAPI PXMIDIDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice
 		{
 			DWORD volumeDW = 0;
 
-			resultID = midiOutGetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, &volumeDW);
+			resultID = pxWindowsAudioMultimedia->midiOutGetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, &volumeDW);
 
 			*volume = volumeDW;
 
@@ -394,16 +544,18 @@ PXActionResult PXAPI PXMIDIDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice
 
 PXActionResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT resultID = 0;
 
 	switch (pxAudioDevice->Type)
 	{
 		case PXAudioDeviceTypeInput:
-			resultID = midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
+			resultID = pxWindowsAudioMultimedia->midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
 			break;
 
 		case PXAudioDeviceTypeOutput:
-			resultID = midiOutSetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, 0);
+			resultID = pxWindowsAudioMultimedia->midiOutSetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, 0);
 			break;
 
 		default:
@@ -425,12 +577,14 @@ PXActionResult PXAPI PXMIDIDeviceVolumeSetIndividual(PXAudio* const pxAudio, PXA
 
 PXActionResult PXAPI PXMIDIDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT resultID = 0;
 
 	switch (pxAudioDevice->Type)
 	{
 		case PXAudioDeviceTypeInput:
-			resultID = midiInStart((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
+			resultID = pxWindowsAudioMultimedia->midiInStart((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
 			break;
 
 		//case PXAudioDeviceTypeOutput:
@@ -450,12 +604,14 @@ PXActionResult PXAPI PXMIDIDeviceStart(PXAudio* const pxAudio, PXAudioDevice* co
 
 PXActionResult PXAPI PXMIDIDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {	
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT resultID = 0;		
 
 	switch (pxAudioDevice->Type)
 	{
 		case PXAudioDeviceTypeInput:
-			resultID = midiInStop((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
+			resultID = pxWindowsAudioMultimedia->midiInStop((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
 			break;
 
 		//case PXAudioDeviceTypeOutput:
@@ -475,16 +631,18 @@ PXActionResult PXAPI PXMIDIDeviceStop(PXAudio* const pxAudio, PXAudioDevice* con
 
 PXActionResult PXAPI PXMIDIDevicePause(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
 {
+	PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
+
 	MMRESULT resultID = 0;
 
 	switch (pxAudioDevice->Type)
 	{
 		case PXAudioDeviceTypeInput:
-			resultID = midiInReset((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
+			resultID = pxWindowsAudioMultimedia->midiInReset((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
 			break;
 
 		case PXAudioDeviceTypeOutput:
-			resultID = midiOutReset((HMIDIOUT)pxAudioDevice->ResourceID.DirectXInterface);
+			resultID = pxWindowsAudioMultimedia->midiOutReset((HMIDIOUT)pxAudioDevice->ResourceID.DirectXInterface);
 			break;
 
 		default:

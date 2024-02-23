@@ -2,6 +2,7 @@
 #define PXAudioINCLUDE
 
 #include <Media/PXResource.h>
+#include <OS/Library/PXLibrary.h>
 
 #define PitchMaximum 2.9f
 #define PitchMinimum 0.2f
@@ -169,6 +170,11 @@ extern "C"
 		void* XAudioInterface;
 		void* XAudioMasterVoice;
 #endif
+
+		void* WindowsMultiMediaInterface;
+
+
+		PXLibrary Library;
 
 		PXInt32U DeviceOutputAmount;
 		PXInt32U DeviceInputAmount;

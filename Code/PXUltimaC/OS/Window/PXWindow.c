@@ -2669,8 +2669,36 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
     return PXActionNotSupportedByOperatingSystem;
 #elif WindowsAtleast10
 
+    PXLibrary pyLibrary;
+
+    // Open lib
+    {
+        const PXActionResult libOpenResult = PXLibraryOpenA(&pyLibrary, "DWMAPI.DLL");
+
+        if (PXActionSuccessful != libOpenResult)
+        {
+            return PXActionRefusedNotSupported;
+        }
+    }
+
+
+    typedef HRESULT(WINAPI* PXDwmSetWindowAttribute)(HWND hwnd, DWORD dwAttribute, _In_reads_bytes_(cbAttribute) LPCVOID pvAttribute, DWORD cbAttribute);
+
+    PXDwmSetWindowAttribute pxDwmSetWindowAttribute;
+
+    PXBool hasFunction = PXLibraryGetSymbolA(&pyLibrary, &pxDwmSetWindowAttribute, "DwmSetWindowAttribute");
+
+    if (!hasFunction)
+    {
+        PXLibraryClose(&pyLibrary);
+
+        return PXActionRefusedNotSupported;        
+    }
+
     const BOOL useDarkMode = PXTrue;
-    const BOOL setAttributeSuccess = SUCCEEDED(DwmSetWindowAttribute(pxWindow->ID, Windows10DarkModeID, &useDarkMode, sizeof(BOOL))); // Windows Vista, Dwmapi.dll;Uxtheme.dll, dwmapi.h
+    const BOOL setAttributeSuccess = SUCCEEDED(pxDwmSetWindowAttribute(pxWindow->ID, Windows10DarkModeID, &useDarkMode, sizeof(BOOL))); // Windows Vista, Dwmapi.dll;Uxtheme.dll, dwmapi.h
+
+    PXLibraryClose(&pyLibrary);
 
     if (!setAttributeSuccess)
     {

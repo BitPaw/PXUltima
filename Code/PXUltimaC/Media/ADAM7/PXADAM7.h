@@ -10,42 +10,39 @@ extern "C"
 {
 #endif
 
+	typedef struct PXADAM7_
+	{
+		void* DataInput;
+		void* DataOutput;
+
+		PXSize Width;
+		PXSize Height;
+		PXSize BitsPerPixel;
+
+		PXPNGInterlaceMethod InterlaceMethod;
+	}
+	PXADAM7;
+
 	PXPublic unsigned char PXADAM7paethPredictor(short a, short b, short c);
-	PXPublic PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanlineXX, const void* preconXX, PXSize bytewidth, PXInt8U filterType, PXSize length);
-	PXPublic PXSize PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp);
-	PXPublic PXActionResult PXAPI PXADAM7unfilter(void* out, const void* in, PXSize w, PXSize h, PXSize bpp);
 	PXPublic void PXADAM7removePaddingBits(void* out, const void* in, PXSize olinebits, PXSize ilinebits, PXSize h);
 	PXPublic unsigned char PXADAM7readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream);
 	PXPublic void PXADAM7setBitOfReversedStream(PXSize* bitpointer, void* bitstream, unsigned char bit);
-	PXPublic void PXADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize filter_passstart[8], PXSize padded_passstart[8], PXSize passstart[8], PXSize w, PXSize h, PXSize bpp);
-	PXPublic void PXADAM7_deinterlace(void* out, const void* in, PXSize w, unsigned h, unsigned bpp);
+	PXPublic void PXAPI PXADAM7_getpassvalues(const PXADAM7* const pxADAM7, unsigned passw[7], unsigned passh[7], PXSize filter_passstart[8], PXSize padded_passstart[8], PXSize passstart[8]);
+	
 
 
 
+	
+	PXPublic PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7);
+	PXPublic PXActionResult PXAPI PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7);
 
-	PXPublic PXActionResult PXAPI PXADAM7ScanlinesDecode
-	(
-		void* out,
-		void* in,
-		PXSize width,
-		PXSize height,
-		PXSize bbp,
-		PXPNGInterlaceMethod interlaceMethod
-	);
+	PXPublic PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7);
+	PXPublic PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXADAM7* const pxADAM7);
 
-	PXPublic PXActionResult PXAPI PXADAM7ScanlinesEncode
-	(
-		void* out,
-		void* in,
-		PXSize width,
-		PXSize height,
-		PXSize bbp,
-		PXPNGInterlaceMethod interlaceMethod
-	);
+	PXPublic void PXAPI PXADAM7Deinterlace(PXADAM7* const pxADAM7);
 
-
-	PXPublic PXSize PXADAM7CaluclateExpectedSize(PXSize width, PXSize height, PXSize bpp);
-
+	PXPublic PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7);
+	PXPublic PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanlineXX, const void* preconXX, PXSize bytewidth, PXInt8U filterType, PXSize length);
 
 #ifdef __cplusplus
 }

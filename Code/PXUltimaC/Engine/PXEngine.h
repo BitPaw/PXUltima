@@ -233,7 +233,8 @@ extern "C"
 
 		PXVector2F TextureScalingPoints[4];
 
-		PXHitBox HitBox;
+		PXBool HitBoxCreate;
+		PXHitBox* HitBox;
 
 		PXVector3F Position;
 		PXVector2F Scaling;
@@ -321,44 +322,14 @@ extern "C"
 
 
 
-	typedef struct PXEngineModelRenderInfo_
-	{
-		PXModel* ModelReference;
-	}
-	PXEngineModelRenderInfo;
-
-	typedef struct PXEngineSkyBoxRenderInfo_
-	{
-		PXSkyBox* SkyBoxReference;
-	}
-	PXEngineSkyBoxRenderInfo;
-
-	typedef struct PXEngineSpriteRenderInfo_
-	{
-		PXSprite* SpriteReference;
-	}
-	PXEngineSpriteRenderInfo;
-
-	typedef struct PXEngineTextRenderInfo_
-	{
-		PXEngineText* TextReference;
-	}
-	PXEngineTextRenderInfo;
-
 
 	typedef struct PXEngineResourceRenderInfo_
 	{
+		PXCamera* CameraReference; // Camera required for rendering
+
+		void* ObjectReference; // Containing the object, type described in 'Type'
+
 		PXEngineCreateType Type;
-
-		PXCamera* CameraReference;
-
-		union
-		{
-			PXEngineModelRenderInfo ModelRender;
-			PXEngineSkyBoxRenderInfo SkyBoxRender;
-			PXEngineSpriteRenderInfo SpriteRender;
-			PXEngineTextRenderInfo TextRender;
-		};
 	}
 	PXEngineResourceRenderInfo;
 

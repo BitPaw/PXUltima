@@ -77,17 +77,7 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 	};
 }
 
-void PXAPI PXVulcanConstruct(PXVulcan* const pxVulcan)
-{
-    PXMemoryClear(pxVulcan, sizeof(PXVulcan));
-}
-
-void PXAPI PXVulcanDestruct(PXVulcan* const pxVulcan)
-{
-	PXLibraryClose(&pxVulcan->LibraryID);
-}
-
-PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize width, const PXSize height, PXWindow* const pxWindow)
+PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraphicInitializeInfo_* const pxGraphicInitializeInfo)
 {
 	PXClear(PXVulcan, pxVulcan);
 
@@ -158,6 +148,14 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		pxVulcan->LibraryID.ID
 	);
 #endif
+
+
+	// Link functions
+	{
+		PXGraphic* pxGraphic = pxGraphicInitializeInfo->Graphic;
+
+		pxGraphic->Release = PXVulcanRelease;
+	}
 
 
 	PXVulcanAllocationCallbacks pxVulcanAllocationCallbacks;
@@ -304,7 +302,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 		vkWin32SurfaceCreateInfoKHR.pNext = PXNull;
 		vkWin32SurfaceCreateInfoKHR.flags = PXNull;
 		vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandle(NULL);
-		vkWin32SurfaceCreateInfoKHR.hwnd = pxWindow->ID;
+		vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->ID;		
 
 		const VkResult createSurface = pxVulcan->SurfaceCreate(pxVulcan->Instance, &vkWin32SurfaceCreateInfoKHR, PXNull, &pxVulcan->SurfaceMainRendering);
 	}
@@ -460,8 +458,9 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, const PXSize w
 PXActionResult PXAPI PXVulcanRelease(PXVulcan* const pxVulcan)
 {
 	pxVulcan->InstanceDestroy(pxVulcan->Instance, PXNull);
-
 	pxVulcan->Instance = PXNull;
+
+	PXLibraryClose(&pxVulcan->LibraryID);
 
 	return PXActionRefusedNotImplemented;
 }

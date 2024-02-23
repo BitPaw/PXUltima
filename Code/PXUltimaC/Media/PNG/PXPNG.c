@@ -10,7 +10,7 @@
 
 #define PNGDebugInfo 0
 
-static const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
+const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
 
 unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
 {
@@ -911,7 +911,7 @@ PXPNGInterlaceMethod PXAPI PXPNGInterlaceMethodFromID(const PXInt8U interlaceMet
             return PXPNGInterlaceNone;
 
         case 1u:
-            return PXPNGInterlacePXADAM7;
+            return PXPNGInterlaceADAM7;
 
         default:
             return PXPNGInterlaceInvalid;
@@ -929,7 +929,7 @@ PXInt8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMetho
         case PXPNGInterlaceNone:
             return 0u;
 
-        case PXPNGInterlacePXADAM7:
+        case PXPNGInterlaceADAM7:
             return 1u;
     }
 }
@@ -1538,21 +1538,30 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
         //---------------------------------------------------------------------
         // ADAM7
         //---------------------------------------------------------------------
-        const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel);
+        PXADAM7 pxADAM7;
+        pxADAM7.DataInput = PXNull;
+        pxADAM7.DataOutput = PXNull;
+        pxADAM7.Width = png.ImageHeader.Width;
+        pxADAM7.Height = png.ImageHeader.Height;
+        pxADAM7.BitsPerPixel = bitsPerPixel;
+        pxADAM7.InterlaceMethod = png.ImageHeader.InterlaceMethod;
+
+        const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(&pxADAM7);
 
         PXByte* adam7Cache = PXNewList(PXByte, expectedadam7CacheSize);
+        pxADAM7.DataInput = pxZLIBResultStream.Data;
+        pxADAM7.DataOutput = adam7Cache;
 
-        const PXActionResult scanDecodeResult = PXADAM7ScanlinesDecode(adam7Cache, pxZLIBResultStream.Data, png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
+        const PXActionResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // Color Comprerss
         //---------------------------------------------------------------------
-        const unsigned int decompress = PXPNGImageDataDecompress(&png, adam7Cache, image->PixelData, png.ImageHeader.BitDepth, png.ImageHeader.ColorType);
+        const PXActionResult decompress = PXPNGImageDataDecompress(&png, adam7Cache, image->PixelData, png.ImageHeader.BitDepth, png.ImageHeader.ColorType);
 
         PXDeleteList(PXByte, adam7Cache, expectedadam7CacheSize);
         //---------------------------------------------------------------------
-
 
 
         PXFileDestruct(&pxZLIBResultStream);
@@ -2096,7 +2105,7 @@ PXSize preProcessScanlines
 
             break;
         }
-        case PXPNGInterlacePXADAM7:
+        case PXPNGInterlaceADAM7:
         {
             unsigned passw[7], passh[7];
             PXSize filter_passstart[8], padded_passstart[8], passstart[8];

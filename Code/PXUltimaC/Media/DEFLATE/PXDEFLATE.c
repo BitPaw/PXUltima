@@ -359,7 +359,7 @@ typedef struct uivector
 static void uivector_cleanup(void* p)
 {
     ((uivector*)p)->size = ((uivector*)p)->allocsize = 0;
-    free(((uivector*)p)->data);
+    PXDelete(PXInt32U,((uivector*)p)->data);
     ((uivector*)p)->data = NULL;
 }
 
@@ -370,7 +370,8 @@ static unsigned uivector_resize(uivector* p, PXSize size)
     if(allocsize > p->allocsize)
     {
         PXSize newsize = allocsize + (p->allocsize >> 1u);
-        void* data = realloc(p->data, newsize);
+        void* data = PXMemoryHeapRealloc(p->data, newsize);
+
         if(data)
         {
             p->allocsize = newsize;
@@ -451,7 +452,8 @@ typedef struct Hash
     int* headz; /*similar to head, but for chainz*/
     unsigned short* chainz; /*those with same amount of zeros*/
     unsigned short* zeros; /*length of zeros streak, used as a second hash chain*/
-} Hash;
+} 
+Hash;
 
 unsigned hash_init(Hash* hash, unsigned windowsize)
 {
@@ -481,13 +483,13 @@ unsigned hash_init(Hash* hash, unsigned windowsize)
 
 void hash_cleanup(Hash* hash)
 {
-    free(hash->head);
-    free(hash->val);
-    free(hash->chain);
+    PXDelete(int, hash->head);
+    PXDelete(int, hash->val);
+    PXDelete(unsigned short, hash->chain);
 
-    free(hash->zeros);
-    free(hash->headz);
-    free(hash->chainz);
+    PXDelete(unsigned short, hash->zeros);
+    PXDelete(int, hash->headz);
+    PXDelete(unsigned short, hash->chainz);
 }
 
 
@@ -531,7 +533,7 @@ unsigned ucvector_reserve(ucvector* p, PXSize size)
     if(size > p->allocsize)
     {
         PXSize newsize = size + (p->allocsize >> 1u);
-        void* data = realloc(p->data, newsize);
+        void* data = PXMemoryHeapRealloc(p->data, newsize);
         if(data)
         {
             p->allocsize = newsize;
@@ -955,7 +957,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
         pointer += (1u << (l - PXHuffmanFirstBits));
     }
 
-    free(maxlens);
+    PXDelete(PXInt32U, maxlens);
 
     /*fill in the first table for short symbols, or secondary table for long symbols*/
     numpresent = 0;
@@ -1082,7 +1084,6 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
                                       PXSize numcodes, unsigned maxbitlen)
 {
     unsigned error = 0;
-    unsigned i;
     PXSize numpresent = 0; /*number of symbols with non-zero frequency*/
     BPMNode* leaves; /*the symbols, only those with > 0 frequency*/
 
@@ -1092,7 +1093,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
     leaves = PXNewList(BPMNode, numcodes);
     if(!leaves) return 83; /*alloc fail*/
 
-    for(i = 0; i != numcodes; ++i)
+    for(PXSize i = 0; i != numcodes; ++i)
     {
         if(frequencies[i] > 0)
         {
@@ -1102,7 +1103,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
         }
     }
 
-    memset(lengths, 0, numcodes * sizeof(*lengths));
+    PXMemoryClear(lengths, numcodes * sizeof(*lengths));
 
     /*ensure at least two present symbols. There should be at least one symbol
     according to RFC 1951 section 3.2.7. Some decoders incorrectly require two. To
@@ -1137,33 +1138,35 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
 
         if(!error)
         {
-            for(i = 0; i != lists.memsize; ++i) lists.freelist[i] = &lists.memory[i];
+            for(PXSize i = 0; i != lists.memsize; ++i) lists.freelist[i] = &lists.memory[i];
 
             bpmnode_create(&lists, leaves[0].weight, 1, 0);
             bpmnode_create(&lists, leaves[1].weight, 2, 0);
 
-            for(i = 0; i != lists.listsize; ++i)
+            for(PXSize i = 0; i != lists.listsize; ++i)
             {
                 lists.chains0[i] = &lists.memory[0];
                 lists.chains1[i] = &lists.memory[1];
             }
 
             /*each boundaryPM call adds one chain to the last list, and we need 2 * numpresent - 2 chains.*/
-            for(i = 2; i != 2 * numpresent - 2; ++i) boundaryPM(&lists, leaves, numpresent, (int)maxbitlen - 1, (int)i);
+            for(PXSize i = 2; i != 2 * numpresent - 2; ++i)
+                boundaryPM(&lists, leaves, numpresent, (int)maxbitlen - 1, (int)i);
 
             for(node = lists.chains1[maxbitlen - 1]; node; node = node->tail)
             {
-                for(i = 0; i != node->index; ++i) ++lengths[leaves[i].index];
+                for(PXSize i = 0; i != node->index; ++i) 
+                    ++lengths[leaves[i].index];
             }
         }
 
-        free(lists.memory);
-        free(lists.freelist);
-        free(lists.chains0);
-        free(lists.chains1);
+        PXDelete(BPMNode, lists.memory);
+        PXDelete(BPMNode*, lists.freelist);
+        PXDelete(BPMNode*, lists.chains0);
+        PXDelete(BPMNode*, lists.chains1);
     }
 
-    free(leaves);
+    PXDelete(BPMNode, leaves);
     return error;
 }
 
@@ -1472,8 +1475,9 @@ unsigned deflateDynamic
     PXHuffmanTreeDestruct(&tree_ll);
     PXHuffmanTreeDestruct(&tree_d);
     PXHuffmanTreeDestruct(&tree_cl);
-    free(bitlen_lld);
-    free(bitlen_lld_e);
+   
+    PXDelete(PXInt32U, bitlen_lld);
+    PXDelete(PXInt32U, bitlen_lld_e);
 
     pxFile->DataCursorBitOffset = writer->bp;
     pxFile->DataCursor += aaucvector.size;

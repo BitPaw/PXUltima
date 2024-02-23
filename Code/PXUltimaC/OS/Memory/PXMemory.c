@@ -611,6 +611,16 @@ void PXAPI PXMemoryRelease(void* adress, const PXSize size)
 }
 #endif
 
+void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size)
+{
+	PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
+	PXMemoryHeapReallocateEventDataFillType(&pxMemoryHeapReallocateEventData, PXByte, size, 0, 0, buffer);
+
+	PXMemoryHeapReallocate(&pxMemoryHeapReallocateEventData);
+
+	return pxMemoryHeapReallocateEventData.DataAdress;
+}
+
 PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateEventData)
 {
 	const PXSize sizeToAllocate = pxMemoryHeapReallocateEventData->AmountDemand * pxMemoryHeapReallocateEventData->TypeSize;

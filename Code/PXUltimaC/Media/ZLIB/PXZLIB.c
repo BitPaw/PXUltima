@@ -250,7 +250,7 @@ PXSize PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, cons
             expected_size = PXZLIBCalculateRawSizeIDAT(width, height, bpp);
             break;
         }
-        case PXPNGInterlacePXADAM7:
+        case PXPNGInterlaceADAM7:
         {
             // Adam-7 interlaced: expected size is the sum of the 7 sub-images sizes
             expected_size = 0;

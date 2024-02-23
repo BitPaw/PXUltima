@@ -419,170 +419,19 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         case PXGraphicSystemOpenGL:
         {
             pxGraphic->EventOwner = &pxGraphic->OpenGLInstance;
-
-            pxGraphic->ShaderProgramCreateFromFileVP = PXOpenGLShaderProgramCreateFromFileVF;
-            pxGraphic->ShaderProgramCreateFromFileVPA = PXOpenGLShaderProgramCreateFromFileVFA;
-            pxGraphic->ShaderProgramCreateFromStringVP = PXOpenGLShaderProgramCreateFromStringVF;
-            pxGraphic->ShaderProgramCreateFromStringVPA = PXOpenGLShaderProgramCreateFromStringVFA;
-
-            pxGraphic->ShaderVariableFx1 = PXOpenGLShaderVariableFx1;
-            pxGraphic->ShaderVariableFx1xN = PXOpenGLShaderVariableFx1xN;
-            pxGraphic->ShaderVariableIx1 = PXOpenGLShaderVariableIx1;
-            pxGraphic->ShaderVariableIx1xN = PXOpenGLShaderVariableIx1xN;
-            pxGraphic->ShaderVariableFx2 = PXOpenGLShaderVariableFx2;
-            pxGraphic->ShaderVariableFx2xN = PXOpenGLShaderVariableFx2xN;
-            pxGraphic->ShaderVariableIx2 = PXOpenGLShaderVariableIx2;
-            pxGraphic->ShaderVariableIx2xN = PXOpenGLShaderVariableIx2xN;
-            pxGraphic->ShaderVariableFx3 = PXOpenGLShaderVariableFx3;
-            pxGraphic->ShaderVariableFx3xN = PXOpenGLShaderVariableFx3xN;
-            pxGraphic->ShaderVariableIx3 = PXOpenGLShaderVariableIx3;
-            pxGraphic->ShaderVariableIx3xN = PXOpenGLShaderVariableIx3xN;
-            pxGraphic->ShaderVariableFx4 = PXOpenGLShaderVariableFx4;
-            pxGraphic->ShaderVariableFx4xN = PXOpenGLShaderVariableFx4xN;
-            pxGraphic->ShaderVariableIx4 = PXOpenGLShaderVariableIx4;
-            pxGraphic->ShaderVariableIx4xN = PXOpenGLShaderVariableIx4xN;
-            pxGraphic->ShaderVariableMatrix2fv = PXOpenGLShaderVariableMatrix2fv;
-            pxGraphic->ShaderVariableMatrix3fv = PXOpenGLShaderVariableMatrix3fv;
-            pxGraphic->ShaderVariableMatrix4fv = PXOpenGLShaderVariableMatrix4fv;
-
-            pxGraphic->ScreenBufferRead = PXOpenGLScreenBufferRead;
-
-            pxGraphic->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
-            pxGraphic->DrawModeSet = PXOpenGLDrawMode;
-
-            pxGraphic->DrawColorRGBAF = PXOpenGLDrawColorRGBAF;
-
-            pxGraphic->RectangleDraw = PXOpenGLRectangleDraw;
-            pxGraphic->RectangleDrawTx = PXOpenGLRectangleDrawTx;
-
-            pxGraphic->SwapIntervalSet = PXOpenGLSwapIntervalSet;
-            pxGraphic->SwapIntervalGet = PXOpenGLSwapIntervalGet;
-
-            pxGraphic->DevicePhysicalListAmount = PXOpenGLDevicePhysicalListAmount;
-            pxGraphic->DevicePhysicalListFetch = PXOpenGLDevicePhysicalListFetch;
-
             pxGraphic->Initialize = PXOpenGLInitialize;
-            pxGraphic->Release = PXOpenGLRelease;
-            pxGraphic->Select = PXOpenGLSelect;
-            pxGraphic->Deselect = PXOpenGLDeselect;
-            pxGraphic->Clear = PXOpenGLClear;
-            pxGraphic->SceneDeploy = PXOpenGLSceneDeploy;
-            pxGraphic->ViewPortGet = PXOpenGLViewPortGet;
-            pxGraphic->ViewPortSet = PXOpenGLViewPortSet;
-            pxGraphic->ShaderProgramCreate = PXOpenGLShaderProgramCreate;
-            pxGraphic->ShaderProgramSelect = PXOpenGLShaderProgramSelect;
-            pxGraphic->ShaderProgramDelete = PXOpenGLShaderProgramDelete;
-            pxGraphic->SceneBegin = PXNull;
-            pxGraphic->SceneEnd = PXNull;
-            pxGraphic->DrawScriptCreate = PXOpenGLDrawScriptCreate;
-            pxGraphic->DrawScriptBegin = PXOpenGLDrawScriptBegin;
-            pxGraphic->DrawScriptEnd = PXOpenGLDrawScriptEnd;
-            pxGraphic->DrawScriptDelete = PXOpenGLDrawScriptDelete;
-            pxGraphic->DrawScriptExecute = PXOpenGLDrawScriptExecute;
-            pxGraphic->TextureCubeRegister = PXOpenGLTextureCubeCreate;
-            pxGraphic->TextureCubeRegisterUse = PXNull;
-            pxGraphic->TextureCubeRelease = PXNull;
-            pxGraphic->ModelRegister = PXOpenGLModelRegister;
-            pxGraphic->ModelDraw = PXOpenGLModelDraw;
-            pxGraphic->ModelSelect = PXNull;
-            pxGraphic->ModelRelease = PXNull;
-            pxGraphic->LightSet = PXOpenGLLightSet;
-            pxGraphic->LightGet = PXOpenGLLightGet;
-            pxGraphic->LightEnableSet = PXNull;
-            pxGraphic->LightEnableGet = PXNull;
-            pxGraphic->Texture2DRegister = PXOpenGLTexture2DCreate;
-            pxGraphic->Texture2DRelease = PXNull;
-            pxGraphic->Texture2DSelect = PXOpenGLTexture2DBind;
-
             break;
         }
-#if OSWindows
         case PXGraphicSystemDirectX:
         {
             pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
-
-            pxGraphic->ShaderProgramCreateFromFileVP = PXDirectXShaderProgramCreateFromFileVF;
-            pxGraphic->ShaderProgramCreateFromFileVPA = PXDirectXShaderProgramCreateFromFileVFA;
-            pxGraphic->ShaderProgramCreateFromStringVP = PXDirectXShaderProgramCreateFromStringVF;
-            pxGraphic->ShaderProgramCreateFromStringVPA = PXDirectXShaderProgramCreateFromStringVFA;
-
-            pxGraphic->ShaderVariableIDFetch = PXNull;
-
-            pxGraphic->ShaderVariableFx1 = PXNull;
-            pxGraphic->ShaderVariableFx1xN = PXNull;
-            pxGraphic->ShaderVariableIx1 = PXNull;
-            pxGraphic->ShaderVariableIx1xN = PXNull;
-            pxGraphic->ShaderVariableFx2 = PXNull;
-            pxGraphic->ShaderVariableFx2xN = PXNull;
-            pxGraphic->ShaderVariableIx2 = PXNull;
-            pxGraphic->ShaderVariableIx2xN = PXNull;
-            pxGraphic->ShaderVariableFx3 = PXNull;
-            pxGraphic->ShaderVariableFx3xN = PXNull;
-            pxGraphic->ShaderVariableIx3 = PXNull;
-            pxGraphic->ShaderVariableIx3xN = PXNull;
-            pxGraphic->ShaderVariableFx4 = PXNull;
-            pxGraphic->ShaderVariableFx4xN = PXNull;
-            pxGraphic->ShaderVariableIx4 = PXNull;
-            pxGraphic->ShaderVariableIx4xN = PXNull;
-            pxGraphic->ShaderVariableMatrix2fv = PXNull;
-            pxGraphic->ShaderVariableMatrix3fv = PXNull;
-            pxGraphic->ShaderVariableMatrix4fv = PXNull;
-
-            pxGraphic->DrawModeSet = PXNull;
-            pxGraphic->DrawColorRGBAF = PXNull;
-
-            pxGraphic->RectangleDraw = PXNull;
-            pxGraphic->RectangleDrawTx = PXNull;
-
-            pxGraphic->SwapIntervalSet = PXDirectXSwapIntervalSet;
-            pxGraphic->SwapIntervalGet = PXDirectXSwapIntervalGet;
-
-            pxGraphic->DevicePhysicalListAmount = PXNull;
-            pxGraphic->DevicePhysicalListFetch = PXNull;
-
-            pxGraphic->Initialize = PXDirectXInitialize; // PXDirectXVersion9, PXDirectXDriverTypeHardwareDevice);
-            pxGraphic->Release = PXDirectXRelease;
-            pxGraphic->Select = PXNull;
-            pxGraphic->Deselect = PXNull;
-            pxGraphic->Clear = PXDirectXClear;
-            pxGraphic->SceneDeploy = PXDirectXSceneDeploy;
-            pxGraphic->ViewPortGet = PXDirectXViewportGet;
-            pxGraphic->ViewPortSet = PXDirectXViewportSet;
-            pxGraphic->ShaderProgramCreate = PXDirectXShaderProgramCreate;
-            pxGraphic->ShaderProgramSelect = PXDirectXShaderProgramSelect;
-            pxGraphic->ShaderProgramDelete = PXDirectXShaderProgramDelete;
-            pxGraphic->SceneBegin = PXDirectXSceneBegin;
-            pxGraphic->SceneEnd = PXDirectXSceneEnd;
-            pxGraphic->DrawScriptCreate = PXDirectXDrawScriptCreate;
-            pxGraphic->DrawScriptBegin = PXDirectXDrawScriptBegin;
-            pxGraphic->DrawScriptEnd = PXDirectXDrawScriptEnd;
-            pxGraphic->DrawScriptDelete = PXDirectXDrawScriptDelete;
-            pxGraphic->DrawScriptExecute = PXDirectXDrawScriptExecute;
-            pxGraphic->TextureCubeRegister = PXDirectXTextureCubeCreate;
-            pxGraphic->TextureCubeRegisterUse = PXNull;
-            pxGraphic->TextureCubeRelease = PXNull;
-            pxGraphic->ModelRegister = PXDirectXModelRegister;
-            pxGraphic->ModelDraw = PXDirectXModelDraw;
-            pxGraphic->ModelSelect = PXNull;
-            pxGraphic->ModelRelease = PXNull;
-            pxGraphic->LightSet = PXDirectXLightSet;
-            pxGraphic->LightGet = PXDirectXLightGet;
-            pxGraphic->LightEnableSet = PXNull;
-            pxGraphic->LightEnableGet = PXNull;
-            pxGraphic->Texture2DRegister = PXDirectXTexture2DCreate;
-            pxGraphic->Texture2DRelease = PXNull;
-            pxGraphic->Texture2DSelect = PXNull;           
-
+            pxGraphic->Initialize = PXDirectXInitialize;
             break;
         }
-#endif
         case PXGraphicSystemVulcan:
         {
             pxGraphic->EventOwner = &pxGraphic->VulcanInstance;
-
             pxGraphic->Initialize = PXVulcanInitialize;
-            pxGraphic->Release = PXVulcanRelease;
-
             break;
         }
 

@@ -26,6 +26,7 @@ extern "C"
 	{
 		PXLoggingTypeInvalid,
 		PXLoggingInfo,
+		PXLoggingEvent,
 		PXLoggingWarning,
 		PXLoggingQuestion,
 		PXLoggingError,

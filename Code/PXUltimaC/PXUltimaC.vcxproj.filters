@@ -468,9 +468,6 @@
     <ClCompile Include="Media\PXDocument.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Dialog\PXDialogContainer.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -481,6 +478,24 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Interact\PXSign.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX9.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX12.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\Graphic\DirectX\PXDirectX10x1.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -938,9 +953,6 @@
     <ClInclude Include="Media\PXDocument.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Dialog\PXDialogContainer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -951,6 +963,24 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Interact\PXSign.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX9.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX12.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Graphic\DirectX\PXDirectX10x1.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

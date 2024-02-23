@@ -143,6 +143,8 @@ extern "C"
 	}
 	PXMemoryHeapReallocateEventData;
 
+	PXPublic void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size);
+
 	PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateEventData);
 
 
