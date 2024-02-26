@@ -89,7 +89,7 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 
 	// kernel32.dll
 	{
-		PXLibraryOpenA(&pxDebug->LibraryKernel, "kernel32.dll");
+		PXLibraryOpenA(&pxDebug->LibraryKernel, "KERNEL32.DLL");
 
 		PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
 		{
@@ -101,7 +101,7 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 			{ &pxDebug->WOutputDebugStringW, "OutputDebugStringW" },
 			{ &pxDebug->XIsDebuggerPresent, "IsDebuggerPresent" },
 			{ &pxDebug->XCheckRemoteDebuggerPresent, "CheckRemoteDebuggerPresent" },
-
+			{ &pxDebug->XDebugActiveProcessStop, "DebugActiveProcessStop" }	
 		};
 
 		const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
@@ -111,7 +111,7 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 
 	// Dbghelp.dll
 	{
-		PXLibraryOpenA(&pxDebug->LibraryDebugHelp, "Dbghelp.dll"); 
+		PXLibraryOpenA(&pxDebug->LibraryDebugHelp, "DBGHELP.DLL"); 
 
 		PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
 		{
@@ -120,6 +120,9 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 			{ &pxDebug->XUnDecorateSymbolName, "UnDecorateSymbolName"},
 			{ &pxDebug->XSymGetSymFromAddr64, "SymGetSymFromAddr64"},
 			{ &pxDebug->XUnDecorateSymbolName, "UnDecorateSymbolName"},
+			{ &pxDebug->SymbolEnumerate, "SymEnumSymbols" },
+			{ &pxDebug->SymbolEnumerateEx, "SymEnumSymbolsEx" },
+			{ &pxDebug->SymbolModuleLoad, "SymLoadModule" }
 		};
 
 		const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
@@ -217,7 +220,13 @@ PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
 	const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
 
 #elif PXOSWindowsDestop
-	const BOOL sucessfulCode = DebugActiveProcessStop(pxDebug->Process.ProcessID);
+
+	if(!pxDebug->XDebugActiveProcessStop)
+	{
+		return PXActionRefusedNotSupported;
+	}
+
+	const BOOL sucessfulCode = pxDebug->XDebugActiveProcessStop(pxDebug->Process.ProcessID);
 	const PXBool sucessful = sucessfulCode != 0;
 
 	PXActionOnErrorFetchAndReturn(!sucessful);

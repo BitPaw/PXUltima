@@ -86,8 +86,8 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 	(
 		PXLoggingInfo,
 		"Vulcan",
-		"Init",
-		"Starting initializing library..."
+		"Initialize",
+		"Starting library..."
 	);
 #endif
 
@@ -128,7 +128,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 				(
 					PXLoggingError,
 					"Vulcan",
-					"Init",
+					"Initialize",
 					"initializing failed: Library not found"
 				);
 #endif
@@ -143,7 +143,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 	(
 		PXLoggingInfo,
 		"Vulcan",
-		"Init",
+		"Initialize",
 		"Library detected 0x%p",
 		pxVulcan->LibraryID.ID
 	);
@@ -179,7 +179,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 		);
 #endif
 
-		PXLibraryGetSymbolA(&pxVulcan->LibraryID, (LibraryFunction*)&pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
+		PXLibraryGetSymbolA(&pxVulcan->LibraryID, &pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
 
 		pxVulcan->InstanceCreate = pxVulcan->InstanceProcAddrGetCallBack(PXNull, "vkCreateInstance");
 
@@ -224,8 +224,8 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 			(
 				PXLoggingInfo,
 				"Vulcan",
-				"Init",
-				"Instance created 0x%p",
+				"Initialize",
+				"Created 0x%p",
 				pxVulcan->Instance
 			);
 #endif
@@ -265,7 +265,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 		(
 			PXLoggingInfo,
 			"Vulcan",
-			"Init",
+			"Initialize",
 			"Extensions detected. Amount:%i",
 			amountOfExtenions
 		);
@@ -280,7 +280,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 			(
 				PXLoggingInfo,
 				"Vulcan",
-				"Init",
+				"Initialize",
 				"- %2i %s ",
 				extensionPropertie->specVersion,
 				extensionPropertie->extensionName
@@ -325,7 +325,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 		(
 			PXLoggingInfo,
 			"Vulcan",
-			"Init",
+			"Initialize",
 			"Deteced %i physical devices",
 			numberOfDevices
 		);

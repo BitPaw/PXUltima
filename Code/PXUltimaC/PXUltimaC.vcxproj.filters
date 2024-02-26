@@ -498,6 +498,9 @@
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10x1.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\System\PXWindows.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -983,6 +986,9 @@
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10x1.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="OS\System\PXWindows.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -1005,5 +1011,10 @@
     <None Include="Media\PNG\README.md" />
     <None Include="Media\LDAP\README.md" />
     <None Include="Media\RAR\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="OS\System\PXWindowsLegacy.asm">
+      <Filter>Quelldateien</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

@@ -93,7 +93,6 @@ extern "C"
 
 
 
-
     typedef struct PXLibrary_
     {
 #if OSUnix

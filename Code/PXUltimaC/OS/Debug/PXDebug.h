@@ -21,7 +21,8 @@ extern "C"
 #endif
 
 #if OSWindows
-	typedef BOOL(WINAPI* PXSymInitialize)(_In_ HANDLE hProcess, _In_opt_ PCSTR UserSearchPath, _In_ BOOL fInvadeProcess);
+
+	typedef BOOL(WINAPI* PXDebugActiveProcessStop)(_In_ DWORD dwProcessId);
 	typedef BOOL(WINAPI* PXContinueDebugEvent)(_In_ DWORD dwProcessId, _In_ DWORD dwThreadId, _In_ DWORD dwContinueStatus);
 	typedef BOOL(WINAPI* PXWaitForDebugEvent)(_Out_ LPDEBUG_EVENT lpDebugEvent, _In_ DWORD dwMilliseconds);
 	typedef BOOL(WINAPI* PXDebugActiveProcess)(_In_ DWORD dwProcessId);	
@@ -31,6 +32,13 @@ extern "C"
 	typedef BOOL(WINAPI* PXDebugBreakProcess)(_In_ HANDLE Process);
 	typedef BOOL(WINAPI* PXIsDebuggerPresent)(VOID);
 	typedef BOOL(WINAPI* PXCheckRemoteDebuggerPresent)(_In_ HANDLE hProcess, _Out_ PBOOL pbDebuggerPresent);
+
+	typedef BOOL(WINAPI* PXSymCleanup)(		_In_ HANDLE hProcess		);
+	typedef DWORD(WINAPI* PXSymLoadModule)(		_In_ HANDLE hProcess,		_In_opt_ HANDLE hFile,		_In_opt_ PCSTR ImageName,		_In_opt_ PCSTR ModuleName,		_In_ DWORD BaseOfDll,		_In_ DWORD SizeOfDll		);
+	typedef BOOL(WINAPI* PXSymInitialize)(_In_ HANDLE hProcess, _In_opt_ PCSTR UserSearchPath, _In_ BOOL fInvadeProcess);
+	typedef BOOL(WINAPI* PXSymEnumSymbols)(_In_ HANDLE hProcess, _In_ ULONG64 BaseOfDll, _In_opt_ PCSTR Mask, _In_ PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback, _In_opt_ PVOID UserContext);
+	typedef BOOL(WINAPI* PXSymEnumSymbolsEx)(_In_ HANDLE hProcess, _In_ ULONG64 BaseOfDll, _In_opt_ PCSTR Mask, _In_ PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback, _In_opt_ PVOID UserContext, _In_ DWORD Options);
+
 
 	// Debug
 	typedef BOOL(WINAPI* PXStackWalk64)
@@ -75,12 +83,18 @@ extern "C"
 		PXDebugBreakProcess XDebugBreakProcess;
 		PXIsDebuggerPresent XIsDebuggerPresent;
 		PXCheckRemoteDebuggerPresent XCheckRemoteDebuggerPresent;
+		PXDebugActiveProcessStop XDebugActiveProcessStop;
 
 		// Debug
 		PXSymInitialize SymbolServerInitialize;
+		PXSymCleanup SymbolServerCleanup;
+		PXSymLoadModule SymbolModuleLoad;
 		PXStackWalk64 XStackWalk64;
 		PXUnDecorateSymbolName XUnDecorateSymbolName;
 		PXSymGetSymFromAddr64 XSymGetSymFromAddr64;
+		PXSymEnumSymbols SymbolEnumerate;
+		PXSymEnumSymbolsEx SymbolEnumerateEx;
+
 #endif
 	}
 	PXDebug;

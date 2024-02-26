@@ -8,12 +8,6 @@ extern "C"
 {
 #endif
 
-
-
-
-
-
-
     PXPublic PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
 	PXPublic PXActionResult PXAPI PXDirectX9Release(PXDirectX9* const pxDirectX9);
 

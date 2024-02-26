@@ -6,12 +6,22 @@
 //#include <stdio.h>
 //#include <stdarg.h>
 
-#define PXConsoleColorEnable 1
+#define PXConsoleColorEnable 0
 
 
 void PXAPI PXConsoleClear()
 {
 	printf("\033[H\033[J");
+}
+
+void PXAPI PXConsoleWriteA(const char* text, ...)
+{
+	va_list args;
+	va_start(args, text);
+
+	PXSize xx = vprintf(text, args);
+
+	va_end(args);
 }
 
 void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y)
@@ -350,7 +360,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
 	if (PXLoggingError == loggingType)
 	{
-		for (PXSize i = 0; i < 80; ++i)
+		for (PXSize i = 1; i < 80; ++i)
 		{
 			printf("%c", '-');
 		}
@@ -369,7 +379,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
 	if (PXLoggingError == loggingType)
 	{
-		for (PXSize i = 0; i < 80; ++i)
+		for (PXSize i = 1; i < 80; ++i)
 		{
 			printf("%c", '-');
 		}

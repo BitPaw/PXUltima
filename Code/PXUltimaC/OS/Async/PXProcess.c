@@ -17,7 +17,16 @@
 
 void PXAPI PXProcessConstruct(PXProcess* const pxProcess)
 {
-	PXMemoryClear(pxProcess, sizeof(PXProcess));
+	PXClear(PXProcess, pxProcess);
+}
+
+void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE processHandle)
+{
+	PXProcessConstruct(pxProcess);
+
+#if WindowsAtleastXP
+	pxProcess->ProcessID = GetProcessId(processHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+#endif	
 }
 
 void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
@@ -28,8 +37,13 @@ void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
 	pxProcess->ThreadHandle = 0;
 	pxProcess->ProcessID = getpid();
 #elif OSWindows
-	pxProcess->ProcessHandle = GetCurrentProcess(); // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
-	pxProcess->ProcessID = GetProcessId(pxProcess->ProcessHandle);
+	// Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
+	pxProcess->ProcessHandle = GetCurrentProcess(); // Windows 2000 SP4, Kernel32.dll, processthreadsapi.h
+
+#if WindowsAtleastXP
+	pxProcess->ProcessID = GetProcessId(pxProcess->ProcessHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+#endif
+
 #endif
 }
 
@@ -78,7 +92,7 @@ PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const
 #if OSUnix
 	return PXActionRefusedNotImplemented;
 
-#elif OSWindows
+#elif OSWindows && WindowsAtleastXP
 	DWORD handleCount = 0;
 
 	const BOOL result = GetProcessHandleCount // Windows XP, Kernel32.dll, processthreadsapi.h
@@ -376,16 +390,16 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 			}
 			case PXHandleTypeProcess:
 			{
-				const DWORD processID = GetProcessId(handleCurrent);				
+				PXProcess pxProcess;
+				PXProcessConstructFromHandle(&pxProcess, handleCurrent);
 
 				break;
 			}
 			case PXHandleTypeThread:
 			{
 				PXThread pxThread;
-				PXThreadConstruct(&pxThread);
-				pxThread.ThreadHandle = handleCurrent;
-				pxThread.ThreadID = GetThreadId(handleCurrent);
+				PXThreadConstructFromHandle(&pxThread, handleCurrent);
+		
 
 				// GetThreadInformation()
 				PXText buffer;
@@ -481,8 +495,8 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
 			STARTUPINFOA startupInfo;
 			PROCESS_INFORMATION processInfo;
 
-			PXMemoryClear(&startupInfo, sizeof(STARTUPINFOA));
-			PXMemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+			PXClear(STARTUPINFOA , &startupInfo);
+			PXClear(PROCESS_INFORMATION, &processInfo);
 
 			startupInfo.cb = sizeof(STARTUPINFOA);
 
@@ -492,7 +506,7 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
 				PROCESS_QUERY_INFORMATION |
 				PROCESS_VM_READ;
 
-			const PXBool success = CreateProcessA // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+			const PXBool success = CreateProcessA // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
 			(
 				programmPath->TextA,
 				NULL,
@@ -531,7 +545,7 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
 
 			startupInfo.cb = sizeof(STARTUPINFOW);
 
-			const PXBool success = CreateProcessW // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+			const PXBool success = CreateProcessW // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
 			(
 				programmPath->TextW,
 				NULL,

@@ -7,6 +7,64 @@
 
 PXActionResult PXAPI PXIAudioInitialize(PXAudio* const pxAudio)
 {
+    // Open Library
+    {
+
+    }
+
+    // Load functions
+    {
+
+    }
+
+    // Link functions
+    {
+        pxAudio->DeviceAmount = PXIAudioDeviceAmount;
+        pxAudio->DeviceFetch = PXIAudioDeviceFetch;
+        pxAudio->DeviceFetchAll = PXIAudioDeviceFetchAll;
+        pxAudio->DeviceOpen = PXIAudioDeviceOpen;
+        pxAudio->DeviceClose = PXIAudioDeviceClose;
+        pxAudio->DeviceLoad = PXIAudioDeviceLoad;
+        pxAudio->DevicePitchIncrease = PXIAudioDevicePitchIncrease;
+        pxAudio->DevicePitchSet = PXIAudioDevicePitchSet;
+        pxAudio->DevicePitchReduce = PXIAudioDevicePitchReduce;
+        pxAudio->DeviceVolumeGet = PXIAudioDeviceVolumeGet;
+        pxAudio->DeviceVolumeSetEqual = PXIAudioDeviceVolumeSetEqual;
+        pxAudio->DeviceVolumeSetIndividual = PXIAudioDeviceVolumeSetIndividual;
+        pxAudio->DeviceStart = PXIAudioDeviceStart;
+        pxAudio->DeviceStop = PXIAudioDeviceStop;
+        pxAudio->DevicePause = PXIAudioDevicePause;
+        pxAudio->PlayCursorSet = PXIAudioDevicePlayCursorSet;
+        pxAudio->PlayCursorGet = PXIAudioDevicePlayCursorGet;
+        pxAudio->PlaySpeedSet = PXIAudioDevicePlaySpeedSet;
+        pxAudio->PlaySpeedGet = PXIAudioDevicePlaySpeedGet;
+        pxAudio->PositionSet = PXIAudioDevicePositionSet;
+        pxAudio->PositionGet = PXIAudioDevicePositionGet;
+        pxAudio->ConeAnglesSet = PXIAudioDeviceConeAnglesSet;
+        pxAudio->ConeAnglesGet = PXIAudioDeviceConeAnglesGet;
+        pxAudio->ConeOrientationGet = PXIAudioDeviceConeOrientationGet;
+        pxAudio->ConeOrientationSet = PXIAudioDeviceConeOrientationSet;
+        pxAudio->ConeOutsideVolumeGet = PXIAudioDeviceConeOutsideVolumeGet;
+        pxAudio->ConeOutsideVolumeSet = PXIAudioDeviceConeOutsideVolumeSet;
+        pxAudio->DistanceMaxGet = PXIAudioDeviceDistanceMaxGet;
+        pxAudio->DistanceMaxSet = PXIAudioDeviceDistanceMaxSet;
+        pxAudio->DistanceMinGet = PXIAudioDeviceDistanceMinGet;
+        pxAudio->DistanceMinSet = PXIAudioDeviceDistanceMinSet;
+        pxAudio->ModeGet = PXIAudioDeviceModeGet;
+        pxAudio->ModeSet = PXIAudioDeviceModeSet;
+        pxAudio->VelocityGet = PXIAudioDeviceVelocityGet;
+        pxAudio->VelocitySet = PXIAudioDeviceVelocitySet;
+        pxAudio->DistanceFactorGet = PXIAudioDeviceDistanceFactorGet;
+        pxAudio->DistanceFactorSet = PXIAudioDeviceDistanceFactorSet;
+        pxAudio->DopplerFactorGet = PXIAudioDeviceDopplerFactorGet;
+        pxAudio->DopplerFactorSet = PXIAudioDeviceDopplerFactorSet;
+        pxAudio->OrientationGet = PXIAudioDeviceOrientationGet;
+        pxAudio->OrientationSet = PXIAudioDeviceOrientationSet;
+        pxAudio->RolloffFactorGet = PXIAudioDeviceRolloffFactorGet;
+        pxAudio->RolloffFactorSet = PXIAudioDeviceRolloffFactorSet;
+        pxAudio->DeferredSettingsCommit = PXIAudioDeviceDeferredSettingsCommit;
+    }
+
     return PXActionRefusedNotImplemented;
 }
 

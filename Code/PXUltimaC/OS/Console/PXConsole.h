@@ -78,7 +78,9 @@ extern "C"
 
 	typedef void (PXAPI*PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
 
+	
 	PXPublic void PXAPI PXConsoleClear();
+	PXPublic void PXAPI PXConsoleWriteA(const char* text, ...);
 	PXPublic void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y);
 
 	//PXPublic void PXAPI PXConsoleTranlateColorsA(char* const bufferInput, char* const bufferOuput);

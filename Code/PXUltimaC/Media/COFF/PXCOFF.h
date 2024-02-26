@@ -236,6 +236,9 @@ extern "C"
 		PXInt64U SizeOfHeapCommit;
 		PXInt32U LoaderFlags;
 		PXInt32U NumberOfRvaAndSizes;
+
+		// Extra
+		PXWindowsVersion WindowsVersion;
 	}
 	PXCOFFOptionalHeaderWindowsNT;
 

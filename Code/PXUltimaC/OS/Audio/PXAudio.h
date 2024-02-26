@@ -160,6 +160,39 @@ extern "C"
 	typedef PXActionResult(PXAPI* PXAudioDeviceRestartFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
 	typedef PXActionResult(PXAPI* PXAudioDeviceResetFunction)(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
 
+
+
+
+
+
+	// Direct Sound
+	typedef struct PXAudioMultiMedia_
+	{
+		PXLibrary MultiMediaLibrary;
+
+
+	}
+	PXAudioMultiMedia;
+
+	typedef struct PXAudioDirectSound_
+	{
+		PXLibrary DirectSoundLibrary;
+
+		void* SoundCreate;
+		void* SoundEnumerateA;
+		void* SoundEnumerateW;
+		void* SoundCaptureCreate;
+		void* SoundCaptureEnumerateA;
+		void* SoundCaptureEnumerateW;
+		void* ClassObjectGet;
+		void* CanUnloadNow;
+
+		void* SoundCreate8;
+		void* SoundCaptureCreate8;
+	}
+	PXAudioDirectSound;
+
+
 	typedef struct PXAudio_
 	{
 #if OSUnix
@@ -172,6 +205,11 @@ extern "C"
 #endif
 
 		void* WindowsMultiMediaInterface;
+
+		union
+		{
+			PXAudioDirectSound DirectSound;
+		};	
 
 
 		PXLibrary Library;

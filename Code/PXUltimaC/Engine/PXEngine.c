@@ -523,7 +523,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         pxGraphicInitializeInfo.WindowReference = &pxEngine->Window;
         pxGraphicInitializeInfo.Width = -1;
         pxGraphicInitializeInfo.Height = -1;
-        pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersion9;
+        pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersion11Emulate11x0;
         pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
         pxGraphicInitializeInfo.GraphicSystem = PXGraphicSystemOpenGL;
 
@@ -1967,9 +1967,12 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                         pxShader[0].Type = PXShaderTypeVertex;
                         pxShader[0].ContentSize = vertexShaderFile.DataSize;
                         pxShader[0].Content = vertexShaderFile.Data;
-                        pxShader[1].Type = PXShaderTypeFragment;
+                        pxShader[0].ShaderFilePath = pxShaderProgramCreateData->VertexShaderFilePath;
+
+                        pxShader[1].Type = PXShaderTypePixel;
                         pxShader[1].ContentSize = fragmentShaderFile.DataSize;
                         pxShader[1].Content = fragmentShaderFile.Data;
+                        pxShader[1].ShaderFilePath = pxShaderProgramCreateData->PixelShaderFilePath;
                                   
                         pxEngine->Graphic.ShaderProgramCreate
                         (

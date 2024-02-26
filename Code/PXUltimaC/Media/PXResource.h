@@ -58,7 +58,7 @@ extern "C"
 	{
 		PXShaderTypeInvalid,
 		PXShaderTypeVertex,     // .vert - a vertex shader
-		PXShaderTypeFragment,   // .frag - a fragment shader
+		PXShaderTypePixel,   // .frag - a fragment shader
 		PXShaderTypeTessellationControl,    // .tesc - a tessellation control shader
 		PXShaderTypeTessellationEvaluation,     // .tese - a tessellation evaluation shader
 		PXShaderTypeGeometry,      // .geom - a geometry shader
@@ -389,8 +389,15 @@ extern "C"
 
 		PXGraphicShaderType Type;
 
+		PXInt8U VersionMajor;
+		PXInt8U VersionMinor;
+
+		char* ShaderFilePath;
+
 		PXSize ContentSize;
 		const char* Content;
+
+		 
 	}
 	PXShader;
 

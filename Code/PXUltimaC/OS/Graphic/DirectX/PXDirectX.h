@@ -10,7 +10,7 @@
 #define PXDX10Enable OSWindows && 1u
 #define PXDX10x1Enable OSWindows && 1u
 #define PXDX11Enable OSWindows && 1u
-#define PXDX12Enable OSWindows && 1u
+#define PXDX12Enable OSWindows && 0
 
 #define PXDX10Atleast PXDX10Enable || PXDX10x1Enable || PXDX11Enable || PXDX12Enable
 //-------------------------------------
@@ -102,6 +102,11 @@ extern "C"
     typedef struct PXDirectX12_
     {
         struct ID3D12Device* Device;
+        struct ID3D12CommandQueue* CommandQueue;
+        struct IDXGISwapChain* SwapChain;
+        struct ID3D12DescriptorHeap* HeapDescriptor;
+        struct ID3D12CommandAllocator* CommandAllocator;
+        struct IDXGIFactory* GIFactory;
     }
     PXDirectX12;
 
@@ -111,6 +116,11 @@ extern "C"
     {
         struct ID3D11Device* Device;
         struct ID3D11DeviceContext* Context;
+        struct IDXGISwapChain* SwapChain;
+        struct ID3D11RenderTargetView* RenderTargetView;
+        struct ID3D11Texture2D* FrameBuffer;
+
+        PXLibrary DirectX11Library;
     }
     PXDirectX11;
 
@@ -137,6 +147,14 @@ extern "C"
         struct IDirect3D9* Context;
 
         PXLibrary LibraryDirect3D;
+        PXLibrary LibraryDirect3DExtension;
+        PXLibrary LibraryDirectShaderCompiler;
+
+
+        void* ShaderCompile; // D3DCompile
+         
+        void* ShaderConstantTableGet;
+        void* ShaderConstantTableGetEx;
 
         D3DCAPS9 DeviceCapabilitiesCurrent;
       
@@ -397,32 +415,6 @@ extern "C"
 
     PXPublic PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
     PXPublic PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX);
-
-
-
-#if OSWindows // TODO: Temp fix, cant compile
-    
-
-   
-    //-----------------------------------------------------
-    // Direct X - Shader
-    //-----------------------------------------------------
-#if 0
-    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
-    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
-    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath);
-    PXPublic PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath);
-
-    PXPublic PXActionResult PXAPI PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const pxShader);
-    PXPublic PXActionResult PXAPI PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader* const pxShader);
-    PXPublic PXActionResult PXAPI PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* const pxShader, const PXText* const shaderFilePath);
-
-    PXPublic PXActionResult PXAPI PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
-
-#endif
-
-#endif
-
 
 #ifdef __cplusplus
 }

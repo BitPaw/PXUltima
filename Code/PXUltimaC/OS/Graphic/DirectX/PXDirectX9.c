@@ -14,11 +14,14 @@
 
 #include <d3dcompiler.h>
 #include <d3d9caps.h>
+#include <d3dcompiler.h>
+#include <D3DX9Shader.h>
+
 //#include <d3dx9shader.h>
 
 #pragma comment(lib, "D3DCompiler.lib")
 #pragma comment(lib, "D3d9.lib")
-//#pragma comment(lib, "D3dx9.lib")
+#pragma comment(lib, "D3dx9.lib")
 
 #endif
 
@@ -36,7 +39,34 @@ void PXAPI PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3D
 void PXAPI PXDirectXMaterialFromPXMaterial(D3DMATERIAL9* const d3dMaterial, const PXMaterial* const pxMaterial);
 D3DPRIMITIVETYPE PXAPI PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphicDrawMode);
 PXInt32U PXAPI PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat);
+
+
+
+typedef HRESULT(WINAPI* PXD3DCompile)
+(
+    __in_bcount(SrcDataSize) LPCVOID pSrcData,
+    __in SIZE_T SrcDataSize,
+    __in_opt LPCSTR pSourceName,
+    __in_xcount_opt(pDefines->Name != NULL) CONST D3D_SHADER_MACRO* pDefines,
+    __in_opt ID3DInclude* pInclude,
+    __in LPCSTR pEntrypoint,
+    __in LPCSTR pTarget,
+    __in UINT Flags1,
+    __in UINT Flags2,
+    __out ID3DBlob** ppCode,
+    __out_opt ID3DBlob** ppErrorMsgs
+);
+
+
+typedef HRESULT(WINAPI* PXD3DXGetShaderConstantTable)(CONST DWORD* pFunction, LPD3DXCONSTANTTABLE* ppConstantTable);
+typedef HRESULT(WINAPI* PXD3DXGetShaderConstantTableEx)(CONST DWORD* pFunction, DWORD Flags, LPD3DXCONSTANTTABLE* ppConstantTable);
+
 #endif
+
+
+
+
+
 
 
 PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
@@ -94,12 +124,24 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
 #endif
     }
 
+    // Get Additional Lib
+    {
+        const PXActionResult libraryCompilerLoad = PXLibraryOpenA(&pxDirectX9->LibraryDirectShaderCompiler, "D3DCOMPILER_43.DLL");
+
+        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirectShaderCompiler, &pxDirectX9->ShaderCompile, "D3DCompile");
+
+        const PXActionResult libraryExtensionLoad = PXLibraryOpenA(&pxDirectX9->LibraryDirect3DExtension, "D3DX9_43.DLL");
+
+        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3DExtension, &pxDirectX9->ShaderConstantTableGet, "D3DXGetShaderConstantTable");
+        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3DExtension, &pxDirectX9->ShaderConstantTableGetEx, "D3DXGetShaderConstantTableEx");
+    }
+
     // Merge all functions
     {
         PXGraphic* pxGraphic = pxGraphicInitializeInfo->Graphic;
         pxGraphic->TextureAction = PXDirectX9TextureAction;
         pxGraphic->ShaderVariableIDFetch = PXDirectX9ShaderVariableIDFetch;
-        pxGraphic->ShaderVariableSet = PXDirectX9ShaderVariableSetFunction;        
+        pxGraphic->ShaderVariableSet = PXDirectX9ShaderVariableSetFunction;
         pxGraphic->ScreenBufferRead = PXNull;
         pxGraphic->ShaderVariableIDFetch = PXNull;
         pxGraphic->DrawModeSet = PXNull;
@@ -191,6 +233,16 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
 
 PXActionResult PXAPI PXDirectX9Release(PXDirectX9* const pxDirectX9)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingDeallocation,
+        "DirectX9",
+        "Release",
+        "Destruct session"
+    );
+#endif
+
     if (pxDirectX9->Device)
     {
         pxDirectX9->Device->lpVtbl->Release(pxDirectX9->Device);
@@ -200,6 +252,10 @@ PXActionResult PXAPI PXDirectX9Release(PXDirectX9* const pxDirectX9)
     {
         pxDirectX9->Context->lpVtbl->Release(pxDirectX9->Context);
     }
+
+    PXLibraryClose(&pxDirectX9->LibraryDirect3D);
+
+    PXClear(PXDirectX9, pxDirectX9);
 }
 
 void PXAPI PXDirectX9Select(PXDirectX9* const pxDirectX9)
@@ -349,12 +405,224 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struc
 
 PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
 {
-    return PXActionRefusedNotImplemented;
+    for(PXSize i = 0; i < amount; i++)
+    {
+        PXShader* const pxShader = &shaderList[i];  
+
+        ID3DBlob* shaderByteCode = PXNull;
+        ID3DBlob* shaderCompileErrorMessage = PXNull;
+
+        char shaderVersion[8];
+
+        switch(pxShader->Type)
+        {
+            case PXShaderTypeVertex:
+            {
+                if(pxShader->VersionMajor == 0 && pxShader->VersionMinor == 0)
+                {
+                    pxShader->VersionMajor = D3DSHADER_VERSION_MAJOR(pxDirectX9->DeviceCapabilitiesCurrent.VertexShaderVersion);
+                    pxShader->VersionMinor = D3DSHADER_VERSION_MINOR(pxDirectX9->DeviceCapabilitiesCurrent.VertexShaderVersion);
+                }
+
+                PXTextPrintA(shaderVersion, 8, "vs_%i_%i", pxShader->VersionMajor, pxShader->VersionMinor);
+                break;
+            }
+            case PXShaderTypePixel:
+            {
+                if(pxShader->VersionMajor == 0 && pxShader->VersionMinor == 0)
+                {
+                    pxShader->VersionMajor = D3DSHADER_VERSION_MAJOR(pxDirectX9->DeviceCapabilitiesCurrent.PixelShaderVersion);
+                    pxShader->VersionMinor = D3DSHADER_VERSION_MINOR(pxDirectX9->DeviceCapabilitiesCurrent.PixelShaderVersion);
+                }
+
+                PXTextPrintA(shaderVersion, 8, "ps_%i_%i", pxShader->VersionMajor, pxShader->VersionMinor);
+                break;
+            }
+            default:
+                return PXActionRefusedArgumentInvalid;
+        }
+
+        PXD3DCompile pxD3DCompile = (PXD3DCompile)pxDirectX9->ShaderCompile;
+
+        const HRESULT resultID = pxD3DCompile // d3dcompiler_47.dll, d3dcompiler.h
+        (
+            pxShader->Content,
+            pxShader->ContentSize,
+            pxShader->ShaderFilePath, // Name?
+            PXNull, // Makro count?
+            PXNull, // include?
+            "main", // entry point
+            shaderVersion, // target version
+            D3DCOMPILE_ENABLE_STRICTNESS, // flag 1
+            0, // flag 2
+            &shaderByteCode,
+            &shaderCompileErrorMessage
+         );
+        const PXActionResult vertexShaderCompileResult = PXWindowsHandleErrorFromID(resultID);
+
+        if(shaderCompileErrorMessage) // if we have a message
+        {
+            char* data = (char*)shaderCompileErrorMessage->lpVtbl->GetBufferPointer(shaderCompileErrorMessage);
+            PXSize dataSize = shaderCompileErrorMessage->lpVtbl->GetBufferSize(shaderCompileErrorMessage);
+
+            data[dataSize - 2] = '\0';
+
+            // TODO: Error string contains full path of file EXE. remove it. A new allocate might be needed.
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "DirectX9",
+                "Shader-Compile",
+                "HLSL %s\n"
+                "%s",
+                shaderVersion,
+                data
+            );
+#endif
+
+            shaderCompileErrorMessage->lpVtbl->Release(shaderCompileErrorMessage);
+
+            return PXActionFailedResourceCompile;
+        }
+     
+
+        switch(pxShader->Type)
+        {
+            case PXShaderTypeVertex:
+            {
+                const HRESULT result = pxDirectX9->Device->lpVtbl->CreateVertexShader
+                (
+                    pxDirectX9->Device,
+                    shaderByteCode,
+                    &(IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
+                );
+                const PXActionResult vertexShaderCreateResult = PXWindowsHandleErrorFromID(result);
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "DirectX9",
+                    "Shader-Create",
+                    "Vertex 0x%p",
+                    pxShader->ResourceID.DirectXInterface
+                );
+#endif
+
+                break;
+            }
+            case PXShaderTypePixel:
+            {
+                const HRESULT result = pxDirectX9->Device->lpVtbl->CreatePixelShader
+                (
+                    pxDirectX9->Device,
+                    shaderByteCode,
+                    &(IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
+                );
+                const PXActionResult pixelShaderCreateResult = PXWindowsHandleErrorFromID(result);
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "DirectX9",
+                    "Shader-Create",
+                    "Pixel 0x%p",
+                    pxShader->ResourceID.DirectXInterface
+                );
+#endif
+
+                break;
+            }
+            default:
+                return PXActionRefusedFormatNotSupported;
+        }
+    }    
+
+    return PXActionSuccessful;
+
+
+#if 0
+
+    ID3DBlob* ps_blob_ptr = NULL;
+    ID3DBlob* error_blob = NULL;
+    UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if defined( DEBUG ) || defined( _DEBUG )
+    flags |= D3DCOMPILE_DEBUG; // add more debug output
+#endif
+
+    // COMPILE VERTEX SHADER
+    const HRESULT result = D3DCompileFromFile // D3DCompiler_47.dll, d3dcompiler.h
+    (
+        shaderFilePath->TextW,
+        PXNull,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "vs_main",
+        "vs_5_0",
+        flags,
+        0,
+        &(ID3DBlob*)pxShader->Content,
+        &error_blob
+    );
+    const PXBool failed = FAILED(result);
+
+
+
+    return PXActionCompilingError;
+#endif
 }
 
 PXActionResult PXAPI PXDirectX9ShaderProgramSelect(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram)
 {
-    return PXActionRefusedNotImplemented;
+#if 0
+    switch(pxShader->Type)
+    {
+        case PXShaderTypeVertex:
+        {
+            const HRESULT result = pxDirectX9->Device->lpVtbl->SetVertexShader
+            (
+                pxDirectX9->Device,
+                (IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
+            );
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "DirectX9",
+                "Shader:Vertex select 0x%p",
+                pxShader->ResourceID.DirectXInterface
+            );
+#endif
+
+            break;
+        }
+        case PXShaderTypeFragment:
+        {
+            const HRESULT result = pxDirectX9->Device->lpVtbl->SetPixelShader
+            (
+                pxDirectX9->Device,
+                (IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
+            );
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "DirectX9",
+                "Shader:Pixel select 0x%p",
+                pxShader->ResourceID.DirectXInterface
+            );
+#endif
+
+            break;
+        }
+        default:
+            return PXActionRefusedFormatNotSupported;
+    }
+#endif
 }
 
 PXActionResult PXAPI PXDirectX9ShaderProgramDelete(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram)
@@ -364,7 +632,98 @@ PXActionResult PXAPI PXDirectX9ShaderProgramDelete(PXDirectX9* const pxDirectX9,
 
 PXActionResult PXAPI PXDirectX9ShaderVariableIDFetch(PXDirectX9* const pxDirectX9, const PXShaderProgram* const pxShaderProgram, PXInt32U* const shaderVariableID, const char* const name)
 {
-    return PXActionRefusedNotImplemented;
+    IDirect3DVertexShader9* pShader = NULL;
+    ID3DXConstantTable* pConstantTable = NULL;
+    DWORD* pData = NULL;
+
+    const HRESULT fetchResult = pxDirectX9->Device->lpVtbl->GetVertexShader(pxDirectX9->Device, &pShader);
+
+
+    UINT pSizeOfData;
+
+    const HRESULT getSizeResult = pShader->lpVtbl->GetFunction(pShader, NULL, &pSizeOfData);
+    //findWeirdMirrorsEdgeShader(pSizeOfData);
+    pData = malloc(pSizeOfData);
+    const HRESULT getDataResult = pShader->lpVtbl->GetFunction(pShader, pData, &pSizeOfData);
+
+    // bool shaderSeen = hasSeenShader(pSizeOfData);
+
+    D3DXCONSTANT_DESC pConstantDesc[32];
+    UINT pConstantNum = 32;
+
+
+    PXD3DXGetShaderConstantTable pxD3DXGetShaderConstantTable = (PXD3DXGetShaderConstantTable)pxDirectX9->ShaderConstantTableGet;
+
+    const HRESULT err = pxD3DXGetShaderConstantTable(pData, &pConstantTable);
+
+
+
+    D3DXCONSTANTTABLE_DESC pDesc;
+   
+    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
+   
+    for(UINT i = 0; i < pDesc.Constants; ++i)
+    {
+        D3DXHANDLE Handle = pConstantTable->lpVtbl->GetConstant(pConstantTable, NULL, i);
+       
+        if(Handle == NULL) 
+            continue;
+      
+        pConstantTable->lpVtbl->GetConstantDesc(pConstantTable, Handle, pConstantDesc, &pConstantNum);
+
+
+        printf("\n");
+
+#if 0
+        for(UINT j = 0; j < pConstantNum; j++)
+        {
+            removeExistingMatrices(pConstantDesc[j]);
+            parse4by4Matrices(pConstantDesc[j]);
+            parseIndividualFloats(pConstantDesc[j]);
+        }
+#endif
+    }
+
+    return PXActionSuccessful;
+
+    /*
+    ID3DXConstantTable* pConstantTable = PXNull;
+
+    DWORD bufferData[1024];
+    D3DXCONSTANT_DESC pConstantDesc[32];
+    UINT pConstantNum = 32;
+
+    const HRESULT HRESULT = D3DXGetShaderConstantTable(bufferData, &pConstantTable);
+
+    //if (pConstantTable == NULL) goto grexit;
+
+    D3DXCONSTANTTABLE_DESC pDesc;
+
+
+    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
+
+
+    for (UINT i = 0; i < pDesc.Constants; i++)
+    {
+        D3DXHANDLE Handle = pConstantTable->GetConstant(NULL, i);
+        if (Handle == NULL) continue;
+        pConstantTable->GetConstantDesc(Handle, pConstantDesc, &pConstantNum);
+        for (UINT j = 0; j < pConstantNum; j++)
+        {
+            removeExistingMatrices(pConstantDesc[j]);
+            parse4by4Matrices(pConstantDesc[j]);
+            parseIndividualFloats(pConstantDesc[j]);
+        }
+    }
+
+    pxDirectX->DX10->lpVtbl.tab;
+
+
+    ID3DXConstantTable id3DXConstantTable;
+
+    id3DXConstantTable.lpVtbl->
+
+    return NotSupported;*/
 }
 
 PXActionResult PXAPI PXDirectX9ShaderVariableSetFunction(PXDirectX9* const pxDirectX9, struct PXGraphicShaderVariable_* const pxGraphicShaderVariable)
@@ -1048,7 +1407,6 @@ void PXAPI PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3D
     pxMaterial->Power = d3dMaterial->Power;
 }
 
-
 PXInt32U PXAPI PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat)
 {
     switch(pxVertexBufferFormat)
@@ -1183,438 +1541,3 @@ D3DPRIMITIVETYPE PXAPI PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphic
             return 0; // Invalid mode does not exist!
     }
 }
-
-
-
-#if 0
-
-PXActionResult PXAPI PXDirectXShaderVariableIDFetch(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name)
-{
-#if WindowsAtleast10 && 0 // if the "D3DX9_43.DLL" is missing
-
-    IDirect3DVertexShader9* pShader = NULL;
-    ID3DXConstantTable* pConstantTable = NULL;
-    DWORD* pData = NULL;
-
-    pxDirectX->DX9->lpVtbl->GetVertexShader(pxDirectX->DX9, &pShader);
-
-
-    UINT pSizeOfData;
-
-    pShader->lpVtbl->GetFunction(pShader, NULL, &pSizeOfData);
-    //findWeirdMirrorsEdgeShader(pSizeOfData);
-    pData = malloc(pSizeOfData);
-    pShader->lpVtbl->GetFunction(pShader, pData, &pSizeOfData);
-
-    // bool shaderSeen = hasSeenShader(pSizeOfData);
-
-    D3DXCONSTANT_DESC pConstantDesc[32];
-    UINT pConstantNum = 32;
-
-    const HRESULT err = D3DXGetShaderConstantTable(pData, &pConstantTable);
-
-
-
-    D3DXCONSTANTTABLE_DESC pDesc;
-    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
-    for(UINT i = 0; i < pDesc.Constants; ++i)
-    {
-        D3DXHANDLE Handle = pConstantTable->lpVtbl->GetConstant(pConstantTable, NULL, i);
-        if(Handle == NULL) continue;
-        pConstantTable->lpVtbl->GetConstantDesc(pConstantTable, Handle, pConstantDesc, &pConstantNum);
-
-
-        printf("\n");
-
-#if 0
-        for(UINT j = 0; j < pConstantNum; j++)
-        {
-            removeExistingMatrices(pConstantDesc[j]);
-            parse4by4Matrices(pConstantDesc[j]);
-            parseIndividualFloats(pConstantDesc[j]);
-        }
-#endif
-    }
-
-    return PXActionSuccessful;
-#else
-    return PXActionRefusedNotSupported;
-#endif
-
-
-    /*
-
-
-
-
-
-
-
-
-
-
-
-
-    ID3DXConstantTable* pConstantTable = PXNull;
-
-    DWORD bufferData[1024];
-    D3DXCONSTANT_DESC pConstantDesc[32];
-    UINT pConstantNum = 32;
-
-    const HRESULT HRESULT = D3DXGetShaderConstantTable(bufferData, &pConstantTable);
-
-    //if (pConstantTable == NULL) goto grexit;
-
-    D3DXCONSTANTTABLE_DESC pDesc;
-
-
-    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
-
-
-    for (UINT i = 0; i < pDesc.Constants; i++)
-    {
-        D3DXHANDLE Handle = pConstantTable->GetConstant(NULL, i);
-        if (Handle == NULL) continue;
-        pConstantTable->GetConstantDesc(Handle, pConstantDesc, &pConstantNum);
-        for (UINT j = 0; j < pConstantNum; j++)
-        {
-            removeExistingMatrices(pConstantDesc[j]);
-            parse4by4Matrices(pConstantDesc[j]);
-            parseIndividualFloats(pConstantDesc[j]);
-        }
-    }
-
-    pxDirectX->DX10->lpVtbl.tab;
-
-
-    ID3DXConstantTable id3DXConstantTable;
-
-    id3DXConstantTable.lpVtbl->
-
-    return NotSupported;*/
-}
-
-
-
-PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
-{
-    PXFile vertexShaderFile;
-    PXFile fragmentShaderFile;
-
-    {
-        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-        pxFileOpenFromPathInfo.Text = *vertexShaderFilePath;
-        pxFileOpenFromPathInfo.FileSize = 0;
-        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
-        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
-        pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
-        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
-
-        PXFileOpenFromPath(&vertexShaderFile, &pxFileOpenFromPathInfo);
-
-        pxFileOpenFromPathInfo.Text = *fragmentShaderFilePath;
-
-        PXFileOpenFromPath(&fragmentShaderFile, &pxFileOpenFromPathInfo);
-
-        {
-            PXText veretxShaderText;
-            PXText pixelShaderText;
-
-            PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFile.Data, vertexShaderFile.DataSize, vertexShaderFile.DataSize);
-            PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFile.Data, vertexShaderFile.DataSize, fragmentShaderFile.DataSize);
-
-            PXActionResult shaderResult = PXDirectXShaderProgramCreateFromStringVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
-        }
-    }
-
-    PXFileDestruct(&vertexShaderFile);
-    PXFileDestruct(&fragmentShaderFile);
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXDirectXShaderProgramCreateFromFileVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath)
-{
-    PXText veretxShaderText;
-    PXText pixelShaderText;
-
-    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
-    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
-
-    return PXDirectXShaderProgramCreateFromFileVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
-
-    /*
-        PXText pxTextVertexShaderW;
-    PXText pxTextPixelShaderW;
-
-    PXTextConstructFromAdressW(&pxTextVertexShaderW, vertexShader, PXTextUnkownLength);
-    PXTextConstructFromAdressW(&pxTextPixelShaderW, pixelShader, PXTextUnkownLength);
-
-    return PXDirectXShaderProgramCreateVP(pxDirectX, pxShaderProgram, &pxTextVertexShaderW, &pxTextPixelShaderW);
-    */
-}
-
-PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVF(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, PXText* const vertexShaderFilePath, PXText* const fragmentShaderFilePath)
-{
-    PXDirectXShaderCompile(pxDirectX, &pxShaderProgram->VertexShader, vertexShaderFilePath);
-    PXDirectXShaderCreate(pxDirectX, &pxShaderProgram->VertexShader);
-
-    PXDirectXShaderCompile(pxDirectX, &pxShaderProgram->PixelShader, fragmentShaderFilePath);
-    PXDirectXShaderCreate(pxDirectX, &pxShaderProgram->PixelShader);
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXDirectXShaderProgramCreateFromStringVFA(PXDirectX* const pxDirectX, PXShaderProgram* const pxShaderProgram, const char* const vertexShaderFilePath, const char* const fragmentShaderFilePath)
-{
-    PXText veretxShaderText;
-    PXText pixelShaderText;
-
-    PXTextConstructFromAdressA(&veretxShaderText, vertexShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
-    PXTextConstructFromAdressA(&pixelShaderText, fragmentShaderFilePath, PXTextUnkownLength, PXTextUnkownLength);
-
-    return PXDirectXShaderProgramCreateFromStringVF(pxDirectX, pxShaderProgram, &veretxShaderText, &pixelShaderText);
-}
-
-PXActionResult PXAPI PXDirectXShaderCreate(PXDirectX* const pxDirectX, PXShader* const pxShader)
-{
-    switch(pxDirectX->DirectXVersion)
-    {
-#if PXDX11Enable
-        case PXDirectXVersion11Emulate1x0Core:
-        case PXDirectXVersion11Emulate9x1:
-        case PXDirectXVersion11Emulate9x2:
-        case PXDirectXVersion11Emulate9x3:
-        case PXDirectXVersion11Emulate10x0:
-        case PXDirectXVersion11Emulate10x1:
-        case PXDirectXVersion11Emulate11x0:
-        case PXDirectXVersion11Emulate11x1:
-        {
-            ID3DBlob* const shaderCode = (ID3DBlob*)pxShader->Content;
-            const void* const shaderBytecode = shaderCode->lpVtbl->GetBufferPointer(shaderCode);
-            const SIZE_T bytecodeLength = shaderCode->lpVtbl->GetBufferSize(shaderCode);
-
-            switch(pxShader->Type)
-            {
-                case PXShaderTypeVertex:
-                {
-                    const HRESULT result = pxDirectX->DX11->lpVtbl->CreateVertexShader
-                    (
-                        pxDirectX->DX11,
-                        shaderBytecode,
-                        bytecodeLength,
-                        PXNull,
-                        &(ID3D11VertexShader*)pxShader->ResourceID.DirectXInterface
-                    );
-
-                    break;
-                }
-                case PXShaderTypeFragment:
-                {
-                    const HRESULT result = pxDirectX->DX11->lpVtbl->CreatePixelShader
-                    (
-                        pxDirectX->DX11,
-                        shaderBytecode,
-                        bytecodeLength,
-                        PXNull,
-                        &(ID3D11PixelShader*)pxShader->ResourceID.DirectXInterface
-                    );
-
-                    break;
-                }
-                default:
-                    return PXActionRefusedFormatNotSupported;
-            }
-        }
-#endif
-
-#if PXDX9Enable
-        case PXDirectXVersion9:
-        {
-            switch(pxShader->Type)
-            {
-                case PXShaderTypeVertex:
-                {
-                    const HRESULT result = pxDirectX->DX9->lpVtbl->CreateVertexShader
-                    (
-                        pxDirectX->DX9,
-                        0,
-                        &(IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
-                    );
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "DirectX9",
-                        "Shader:Vertex created 0x%p",
-                        pxShader->ResourceID.DirectXInterface
-                    );
-#endif
-
-                    break;
-                }
-                case PXShaderTypeFragment:
-                {
-                    const HRESULT result = pxDirectX->DX9->lpVtbl->CreatePixelShader
-                    (
-                        pxDirectX->DX9,
-                        0,
-                        &(IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
-                    );
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "DirectX9",
-                        "Shader:Pixel created 0x%p",
-                        pxShader->ResourceID.DirectXInterface
-                    );
-#endif
-
-                    break;
-                }
-                default:
-                    return PXActionRefusedFormatNotSupported;
-            }
-
-            return PXActionSuccessful;
-        }
-#endif
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXDirectXShaderSelect(PXDirectX* const pxDirectX, PXShader* const pxShader)
-{
-    switch(pxDirectX->DirectXVersion)
-    {
-#if PXDX11Enable
-        case PXDirectXVersion11Emulate1x0Core:
-        case PXDirectXVersion11Emulate9x1:
-        case PXDirectXVersion11Emulate9x2:
-        case PXDirectXVersion11Emulate9x3:
-        case PXDirectXVersion11Emulate10x0:
-        case PXDirectXVersion11Emulate10x1:
-        case PXDirectXVersion11Emulate11x0:
-        case PXDirectXVersion11Emulate11x1:
-        {
-            return PXActionRefusedFormatNotSupported;
-        }
-#endif
-
-#if PXDX9Enable
-        case PXDirectXVersion9:
-        {
-            switch(pxShader->Type)
-            {
-                case PXShaderTypeVertex:
-                {
-                    const HRESULT result = pxDirectX->DX9->lpVtbl->SetVertexShader
-                    (
-                        pxDirectX->DX9,
-                        (IDirect3DVertexShader9*)pxShader->ResourceID.DirectXInterface
-                    );
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "DirectX9",
-                        "Shader:Vertex select 0x%p",
-                        pxShader->ResourceID.DirectXInterface
-                    );
-#endif
-
-                    break;
-                }
-                case PXShaderTypeFragment:
-                {
-                    const HRESULT result = pxDirectX->DX9->lpVtbl->SetPixelShader
-                    (
-                        pxDirectX->DX9,
-                        (IDirect3DPixelShader9*)pxShader->ResourceID.DirectXInterface
-                    );
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "DirectX9",
-                        "Shader:Pixel select 0x%p",
-                        pxShader->ResourceID.DirectXInterface
-                    );
-#endif
-
-                    break;
-                }
-                default:
-                    return PXActionRefusedFormatNotSupported;
-            }
-
-            return PXActionSuccessful;
-        }
-#endif
-
-        default:
-            return PXActionNotSupportedByLibrary;
-    }
-}
-
-PXActionResult PXAPI PXDirectXShaderCompile(PXDirectX* const pxDirectX, PXShader* const pxShader, const PXText* const shaderFilePath)
-{
-#if 0
-
-    ID3DBlob* ps_blob_ptr = NULL;
-    ID3DBlob* error_blob = NULL;
-    UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
-    flags |= D3DCOMPILE_DEBUG; // add more debug output
-#endif
-
-    // COMPILE VERTEX SHADER
-    const HRESULT result = D3DCompileFromFile // D3DCompiler_47.dll, d3dcompiler.h
-    (
-        shaderFilePath->TextW,
-        PXNull,
-        D3D_COMPILE_STANDARD_FILE_INCLUDE,
-        "vs_main",
-        "vs_5_0",
-        flags,
-        0,
-        &(ID3DBlob*)pxShader->Content,
-        &error_blob
-    );
-    const PXBool failed = FAILED(result);
-
-    if(!failed)
-    {
-        pxShader->ContentSize = ((ID3DBlob*)pxShader->Content)->lpVtbl->GetBufferSize((ID3DBlob*)pxShader->Content);
-
-        return PXActionSuccessful;
-    }
-
-
-    if(error_blob)
-    {
-        OutputDebugStringA((char*)error_blob->lpVtbl->GetBufferPointer(error_blob));
-        error_blob->lpVtbl->Release(error_blob);
-    }
-    /*
-    if (shaderCode)
-    {
-        shaderCode->Release();
-    }*/
-
-#endif
-
-    return PXActionCompilingError;
-}
-
-#endif

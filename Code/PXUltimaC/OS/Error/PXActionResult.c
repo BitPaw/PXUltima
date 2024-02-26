@@ -8,7 +8,11 @@
 #define EOTHER -1
 #elif OSWindows
 #include <Windows.h>
+#if WindowsAtleastVista
 #include <mmeapi.h>
+#else
+#include <MMSystem.h>
+#endif
 #include <dsound.h> // Windows XP, Only used for error codes
 #include <WbemCli.h> // Windows Vista
 #endif
@@ -428,7 +432,11 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case	ERROR_MAX_THRDS_REACHED: return PXActionInvalid; //	No more threads can be created in the system.	164 (0xA4)
 		case	ERROR_LOCK_FAILED: return PXActionInvalid; //	Unable to lock a region of a file.	167 (0xA7)
 		case	ERROR_BUSY: return PXActionInvalid; //	The requested resource is in use.	170 (0xAA)
+		
+#if WindowsAtleastVista
 		case	ERROR_DEVICE_SUPPORT_IN_PROGRESS: return PXActionInvalid; //	Device's command support detection is in progress.	171 (0xAB)
+#endif
+
 		case	ERROR_CANCEL_VIOLATION: return PXActionInvalid; //	A lock request was not outstanding for the supplied cancel region.	173 (0xAD)
 		case	ERROR_ATOMIC_LOCKS_NOT_SUPPORTED: return PXActionInvalid; //	The file system does not support atomic changes to the lock type.	174 (0xAE)
 		case	ERROR_INVALID_SEGMENT_NUMBER: return PXActionInvalid; //	The system detected a segment number that was not correct.	180 (0xB4)
@@ -502,6 +510,8 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case	ERROR_INVALID_LOCK_RANGE: return PXActionInvalid; //	A requested file lock operation cannot be processed due to an invalid byte range.	307 (0x133)
 		case	ERROR_IMAGE_SUBSYSTEM_NOT_PRESENT: return PXActionInvalid; //	The subsystem needed to support the image type is not present.	308 (0x134)
 		case	ERROR_NOTIFICATION_GUID_ALREADY_DEFINED: return PXActionInvalid; //	The specified file already has a notification GUID associated with it.	309 (0x135)
+		
+#if WindowsAtleastVista
 		case	ERROR_INVALID_EXCEPTION_HANDLER: return PXActionInvalid; //	An invalid exception handler routine has been detected.	310 (0x136)
 		case	ERROR_DUPLICATE_PRIVILEGES: return PXActionInvalid; //	Duplicate privileges were specified for the token.	311 (0x137)
 		case	ERROR_NO_RANGES_PROCESSED: return PXActionInvalid; //	No ranges for the specified operation were able to be processed.	312 (0x138)
@@ -509,8 +519,12 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case	ERROR_DISK_RESOURCES_EXHAUSTED: return PXActionInvalid; //	The physical resources of this disk have been exhausted.	314 (0x13A)
 		case	ERROR_INVALID_TOKEN: return PXActionInvalid; //	The token representing the data is invalid.	315 (0x13B)
 		case	ERROR_DEVICE_FEATURE_NOT_SUPPORTED: return PXActionInvalid; //	The device does not support the command feature.	316 (0x13C)
+#endif
+		
 		case	ERROR_MR_MID_NOT_FOUND: return PXActionInvalid; //	The system cannot find message text for message number 0x%1 in the message file for %2.	317 (0x13D)
 		case	ERROR_SCOPE_NOT_FOUND: return PXActionInvalid; //	The scope specified was not found.	318 (0x13E)
+		
+#if WindowsAtleastVista
 		case	ERROR_UNDEFINED_SCOPE: return PXActionInvalid; //	The Central Access Policy specified is not defined on the target machine.	319 (0x13F)
 		case	ERROR_INVALID_CAP: return PXActionInvalid; //	The Central Access Policy obtained from Active Directory is invalid.	320 (0x140)
 		case	ERROR_DEVICE_UNREACHABLE: return PXActionInvalid; //	The device is unreachable.	321 (0x141)
@@ -529,6 +543,8 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case	ERROR_COMPRESSED_FILE_NOT_SUPPORTED: return PXActionInvalid; //	An operation is not supported on a compressed file.	335 (0x14F)
 		case	ERROR_DIRECTORY_NOT_SUPPORTED: return PXActionInvalid; //	An operation is not supported on a directory.	336 (0x150)
 		case	ERROR_NOT_READ_FROM_COPY: return PXActionInvalid; //	The specified copy of the requested data could not be read.	337 (0x151)
+#endif
+		
 		case	ERROR_FAIL_NOACTION_REBOOT: return PXActionInvalid; //	No action was taken as a system reboot is required.	350 (0x15E)
 		case	ERROR_FAIL_SHUTDOWN: return PXActionInvalid; //	The shutdown operation failed.	351 (0x15F)
 		case	ERROR_FAIL_RESTART: return PXActionInvalid; //	The restart operation failed.	352 (0x160)
@@ -581,7 +597,11 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case PEERDIST_ERROR_INVALID_CONFIGURATION: return  PXActionInvalid; // A configuration value is invalid. 4063 (0xFDF)
 		case PEERDIST_ERROR_NOT_LICENSED: return  PXActionInvalid; // The SKU is not licensed. 4064 (0xFE0)
 		case PEERDIST_ERROR_SERVICE_UNAVAILABLE: return  PXActionInvalid; // PeerDist Service is still initializing and will be available shortly. 4065 (0xFE1)
+		
+#if WindowsAtleastVista
 		case PEERDIST_ERROR_TRUST_FAILURE: return  PXActionInvalid; // Communication with one or more computers will be temporarily blocked due to recent errors. 4066 (0xFE2)
+#endif
+		
 		case ERROR_DHCP_ADDRESS_CONFLICT: return  PXActionInvalid; // The DHCP client has obtained an IP address that is already in use on the network. The local interface will be disabled until the DHCP client can obtain a new address. 4100 (0x1004)
 		case ERROR_WMI_GUID_NOT_FOUND: return  PXActionInvalid; // The GUID passed was not recognized as valid by a WMI data provider. 4200 (0x1068)
 		case ERROR_WMI_INSTANCE_NOT_FOUND: return  PXActionInvalid; // The instance name passed was not recognized as valid by a WMI data provider. 4201 (0x1069)
@@ -598,10 +618,14 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case ERROR_WMI_ALREADY_DISABLED: return  PXActionInvalid; // The WMI data block or event notification has already been disabled. 4212 (0x1074)
 		case ERROR_WMI_READ_ONLY: return  PXActionInvalid; // The WMI data item or data block is read only. 4213 (0x1075)
 		case ERROR_WMI_SET_FAILURE: return  PXActionInvalid; // The WMI data item or data block could not be changed. 4214 (0x1076)
+		
+#if WindowsAtleastVista
 		case ERROR_NOT_APPCONTAINER: return  PXActionInvalid; // This operation is only valid in the context of an app container. 4250 (0x109A)
 		case ERROR_APPCONTAINER_REQUIRED: return  PXActionInvalid; // This application can only run in the context of an app container. 4251 (0x109B)
 		case ERROR_NOT_SUPPORTED_IN_APPCONTAINER: return  PXActionInvalid; // This functionality is not supported in the context of an app container. 4252 (0x109C)
 		case ERROR_INVALID_PACKAGE_SID_LENGTH: return  PXActionInvalid; // The length of the SID supplied is not a valid length for app container SIDs. 4253 (0x109D)
+#endif
+		
 		case ERROR_INVALID_MEDIA: return  PXActionInvalid; // The media identifier does not represent a valid medium. 4300 (0x10CC)
 		case ERROR_INVALID_LIBRARY: return  PXActionInvalid; // The library identifier does not represent a valid library. 4301 (0x10CD)
 		case ERROR_INVALID_MEDIA_POOL: return  PXActionInvalid; // The media pool identifier does not represent a valid media pool. 4302 (0x10CE)
@@ -652,6 +676,8 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case ERROR_INVALID_REPARSE_DATA: return  PXActionInvalid; // The data present in the reparse point buffer is invalid. 4392 (0x1128)
 		case ERROR_REPARSE_TAG_INVALID: return  PXActionInvalid; // The tag present in the reparse point buffer is invalid. 4393 (0x1129)
 		case ERROR_REPARSE_TAG_MISMATCH: return  PXActionInvalid; // There is a mismatch between the tag specified in the request and the tag present in the reparse point. 4394 (0x112A)
+		
+#if WindowsAtleastVista
 		case ERROR_APP_DATA_NOT_FOUND: return  PXActionInvalid; // Fast Cache data not found. 4400 (0x1130)
 		case ERROR_APP_DATA_EXPIRED: return  PXActionInvalid; // Fast Cache data expired. 4401 (0x1131)
 		case ERROR_APP_DATA_CORRUPT: return  PXActionInvalid; // Fast Cache data corrupt. 4402 (0x1132)
@@ -668,6 +694,8 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case ERROR_OFFLOAD_WRITE_FLT_NOT_SUPPORTED: return  PXActionInvalid; // The copy offload write operation is not supported by a filter. 4441 (0x1159)
 		case ERROR_OFFLOAD_READ_FILE_NOT_SUPPORTED: return  PXActionInvalid; // The copy offload read operation is not supported for the file. 4442 (0x115A)
 		case ERROR_OFFLOAD_WRITE_FILE_NOT_SUPPORTED: return  PXActionInvalid; // The copy offload write operation is not supported for the file. 4443 (0x115B)
+#endif
+		
 		case ERROR_VOLUME_NOT_SIS_ENABLED: return  PXActionInvalid; // Single Instance Storage is not available on this volume. 4500 (0x1194)
 		case ERROR_DEPENDENT_RESOURCE_EXISTS: return  PXActionInvalid; // The operation cannot be completed because other resources are dependent on this resource. 5001 (0x1389)
 		case ERROR_DEPENDENCY_NOT_FOUND: return  PXActionInvalid; // The cluster resource dependency cannot be found. 5002 (0x138A)
@@ -820,6 +848,8 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case ERROR_NON_CSV_PATH: return  PXActionInvalid; // The path does not belong to a cluster shared volume. 5950 (0x173E)
 		case ERROR_CSV_VOLUME_NOT_LOCAL: return  PXActionInvalid; // The cluster shared volume is not locally mounted on this node. 5951 (0x173F)
 		case ERROR_CLUSTER_WATCHDOG_TERMINATING: return  PXActionInvalid; // The cluster watchdog is terminating. 5952 (0x1740)
+	
+#if WindowsAtleastVista
 		case ERROR_CLUSTER_RESOURCE_VETOED_MOVE_INCOMPATIBLE_NODES: return  PXActionInvalid; // A resource vetoed a move between two nodes because they are incompatible. 5953 (0x1741)
 		case ERROR_CLUSTER_INVALID_NODE_WEIGHT: return  PXActionInvalid; // The request is invalid either because node weight cannot be changed while the cluster is in disk-only quorum mode, or because changing the node weight would violate the minimum cluster quorum requirements. 5954 (0x1742)
 		case ERROR_CLUSTER_RESOURCE_VETOED_CALL: return  PXActionInvalid; // The resource vetoed the call. 5955 (0x1743)
@@ -840,7 +870,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case ERROR_CLUSTER_RESOURCE_IS_IN_MAINTENANCE_MODE: return  PXActionInvalid; // The operation cannot be completed because the resource is in maintenance mode. 5970 (0x1752)
 		case ERROR_CLUSTER_AFFINITY_CONFLICT: return  PXActionInvalid; // The operation cannot be completed because of cluster affinity conflicts. 5971 (0x1753)
 		case ERROR_CLUSTER_RESOURCE_IS_REPLICA_VIRTUAL_MACHINE: return  PXActionInvalid; // The operation cannot be completed because the resource is a replica virtual machine. 5972 (0x1754)
-
+#endif
 
 		// 
 		// 

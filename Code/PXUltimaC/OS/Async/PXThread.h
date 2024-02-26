@@ -61,6 +61,11 @@ extern "C"
 	PXPublic void PXAPI PXThreadConstruct(PXThread* const pxThread);
 	PXPublic void PXAPI PXThreadDestruct(PXThread* const pxThread);
 
+#if OSWindows
+	PXPublic void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHandle);
+#endif // OSWindows
+
+
 	// This function create a handle for the thread.
 	// The thread will clean itself up, yet you need to release the handle as a final step.
 	// "threadName" can be NULL

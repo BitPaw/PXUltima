@@ -88,6 +88,19 @@ int main()
 
 #if 1
 	{
+		PXBinaryWindows binaryWindows;
+
+		const PXActionResult result = PXResourceLoadA(&binaryWindows, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\GameCleaved\\32B-Windows-Release\\GameCleaved2K.exe");
+
+		printf("\n");
+	}
+#endif // 1
+
+
+
+
+#if 1
+	{
 		PXImage pxImage;
 		PXClear(PXImage, &pxImage);
 

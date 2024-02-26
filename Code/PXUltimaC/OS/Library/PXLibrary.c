@@ -12,6 +12,7 @@
 //#include <dbghelp.h> // MISSING
 #include <stdio.h>
 #include <Psapi.h> // Psapi.lib
+#include <OS/Debug/PXDebug.h>
 
 #pragma comment( lib, "Dbghelp.lib" ) 
 #pragma comment( lib, "Psapi.lib " )
@@ -305,16 +306,21 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
 
 PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent)
 {
+	PXDebug pxDebug;
+
 #if OSUnix
 	return PXFalse;
 
 #elif PXOSWindowsDestop
 
-	const HANDLE hCurrentProcess = GetCurrentProcess();
+	PXDebugDebuggerInitialize(&pxDebug);
+
+	PXProcess pxProcess;
+	PXProcessCurrent(&pxProcess);
 
 	// Initialize
 	{		
-		const PXBool status = SymInitialize(hCurrentProcess, PXNull, PXFalse); // DbgHelp.dll 5.1 or later 
+		const PXBool status = pxDebug.SymbolServerInitialize(pxProcess.ProcessHandle, PXNull, PXFalse); // DbgHelp.dll 5.1 or later 
 
 		if (!status)
 		{
@@ -322,15 +328,13 @@ PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, 
 		}
 	}
 
-	const DWORD64 baseOfDll = SymLoadModuleEx // DbgHelp.dll 6.0 or later
+	const DWORD64 baseOfDll = pxDebug.SymbolModuleLoad // DbgHelp.dll 5.1 or later        SymLoadModuleEx, DbgHelp.dll 6.0 or later
 	(
-		hCurrentProcess,
+		pxProcess.ProcessHandle,
 		PXNull,
 		libraryFilePath->TextA,
 		PXNull,
 		0,
-		0,
-		PXNull,
 		0
 	);
 
@@ -340,7 +344,7 @@ PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, 
 
 		if (!wasLoadingSuccessful)
 		{
-			const PXBool cleanupSuccess = SymCleanup(hCurrentProcess); // DbgHelp.dll 5.1 or later 
+			const PXBool cleanupSuccess = pxDebug.SymbolServerCleanup(pxProcess.ProcessHandle); // DbgHelp.dll 5.1 or later 
 
 			if (!cleanupSuccess)
 			{
@@ -355,9 +359,9 @@ PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, 
 	{
 		// SymEnumSym, SymEnumerateSymbols64 is outdated?
 
-		const PXBool enumerateResult = SymEnumSymbols // DbgHelp.dll 5.1 or later 
+		const PXBool enumerateResult = pxDebug.SymbolEnumerate// DbgHelp.dll 5.1 or later 
 		(
-			hCurrentProcess,
+			pxProcess.ProcessHandle,
 			baseOfDll,
 			0,
 			PXLibraryNameSymbolEnumerate,
@@ -372,13 +376,15 @@ PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, 
 
 	// Final cleanup
 	{
-		const PXBool cleanupSuccess = SymCleanup(hCurrentProcess); // DbgHelp.dll 5.1 or later 
+		const PXBool cleanupSuccess = pxDebug.SymbolServerCleanup(pxProcess.ProcessHandle); // DbgHelp.dll 5.1 or later 
 
 		if (!cleanupSuccess)
 		{
 			return PXActionFailedCleanup;
 		}
 	}
+
+	PXDebugDestruct(&pxDebug);
 
 	return PXActionSuccessful;
 #else

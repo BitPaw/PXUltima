@@ -80,6 +80,12 @@ extern "C"
 		//-------------------------------------------------------
 		// File I/O 
 		//-------------------------------------------------------
+		
+		// Resource is available and has been loaded but containing
+		// elements caused a compile error and thus can't be used.
+		PXActionFailedResourceCompile, 
+
+
 		PXActionFailedFileNameTooLong, // NAMETOOLONG
 		PXActionRefusedTargetIsDirectory, // ISDIR
 		PXActionFailedFileDescriptorValueTooLarge, // MFILE

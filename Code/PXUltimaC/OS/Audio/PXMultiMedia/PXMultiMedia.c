@@ -153,6 +153,31 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudio* const pxAudio)
 		"..."
 	);
 
+	// Link
+	{
+		pxAudio->DeviceAmount = PXMultiMediaDeviceAmount;
+		pxAudio->DeviceFetch = PXMultiMediaDeviceFetch;
+		pxAudio->DeviceFetchAll = PXMultiMediaDeviceFetchAll;
+		pxAudio->DeviceOpen = PXMultiMediaDeviceOpen;
+		pxAudio->DeviceClose = PXMultiMediaDeviceClose;
+		pxAudio->DeviceLoad = PXMultiMediaDeviceLoad;
+		pxAudio->DeviceBreakLoop = PXMultiMediaDeviceBreakLoop;
+		pxAudio->DevicePositionGet = PXMultiMediaDevicePositionGet;
+		pxAudio->DevicePlaybackRateGet = PXMultiMediaDevicePlaybackRateGet;
+		pxAudio->DevicePlaybackRateSet = PXMultiMediaDevicePlaybackRateSet;
+		pxAudio->DevicePitchIncrease = PXMultiMediaDevicePitchIncrease;
+		pxAudio->DevicePitchSet = PXMultiMediaDevicePitchSet;
+		pxAudio->DevicePitchReduce = PXMultiMediaDevicePitchReduce;
+		pxAudio->DeviceVolumeGet = PXMultiMediaDeviceVolumeGet;
+		pxAudio->DeviceVolumeSetEqual = PXMultiMediaDeviceVolumeSetEqual;
+		pxAudio->DeviceVolumeSetIndividual = PXMultiMediaDeviceVolumeSetIndividual;
+		pxAudio->DeviceStart = PXMultiMediaDeviceStart;
+		pxAudio->DeviceStop = PXMultiMediaDeviceStop;
+		pxAudio->DevicePause = PXMultiMediaDevicePause;
+		pxAudio->DeviceRestart = PXMultiMediaDeviceRestart;
+		pxAudio->DeviceReset = PXMultiMediaDeviceReset;
+	}
+
 	return PXActionSuccessful;
 }
 

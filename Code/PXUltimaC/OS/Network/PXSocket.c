@@ -829,13 +829,20 @@ PXActionResult PXAPI PXSocketSetupAdress
                 ADDRINFOW addressInfoHintW;
                 ADDRINFOW* addressInfoListW = 0;
 
-                PXMemoryClear(&addressInfoHintW, sizeof(ADDRINFOW));
+                PXClear(ADDRINFOW , &addressInfoHintW);
                 addressInfoHintW.ai_flags = AI_PASSIVE;    // For wildcard IP address (AI_NUMERICHOST | AI_PASSIVE;)
                 addressInfoHintW.ai_family = PXIPAdressFamilyToID(pxSocketAdressSetupInfo->IPMode);
                 addressInfoHintW.ai_socktype = PXSocketTypeToID(pxSocketAdressSetupInfo->SocketType); // Datagram socket
                 addressInfoHintW.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
 
-                const int adressInfoResultID = GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, (wchar_t*)portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
+
+                const int adressInfoResultID =
+#if WindowsAtleastVista
+                    GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, (wchar_t*)portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
+#else
+                    0;
+#endif
+                
                 const PXBool validAdressInfo = adressInfoResultID == 0;
 
                 if (!validAdressInfo)
@@ -853,9 +860,20 @@ PXActionResult PXAPI PXSocketSetupAdress
                     struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfoCurrent->ai_addr;
                     const char* result = 0;
 
-                    PXMemoryClear(pxSocket->IP, IPv6LengthMax);
+                    PXClearList(char, pxSocket->IP, IPv6LengthMax);
 
-                    result = inet_ntop(adressInfoCurrent->ai_family, &ipv6->sin6_addr, pxSocket->IP, IPv6LengthMax);
+                    // Convert IPv4 or IPv6 into string
+#if WindowsAtleastVista
+                    result = inet_ntop  // Windows Vista (*UWP), Ws2_32.dll, ws2tcpip.h
+                    (
+                        adressInfoCurrent->ai_family, 
+                        &ipv6->sin6_addr,
+                        pxSocket->IP,
+                        IPv6LengthMax
+                    );
+#else
+                    // ???
+#endif
 
                     switch (adressInfoCurrent->ai_family)
                     {
@@ -886,8 +904,11 @@ PXActionResult PXAPI PXSocketSetupAdress
                     pxSocket->State = SocketInitialised;
                 }
 
-                FreeAddrInfoW(addressInfoListW);
+#if WindowsAtleastVista
+                FreeAddrInfoW(addressInfoListW); // Windows Vista (+UWP), Ws2_32.dll, ws2tcpip.h
 
+#endif
+                 
 #endif
                 break;
             }

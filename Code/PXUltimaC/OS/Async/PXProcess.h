@@ -30,6 +30,7 @@ extern "C"
 {
 #endif
 
+
 	typedef struct PXProcess_
 	{
 		// Main Process
@@ -102,6 +103,9 @@ extern "C"
 	typedef void (PXAPI* PXProcessDetectedEvent)(PXProcess* const pxProcess);
 
 	PXPublic void PXAPI PXProcessConstruct(PXProcess* const pxProcess);
+#if OSWindows
+	PXPublic void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE processHandle);
+#endif
 
 	PXPublic void PXAPI PXProcessCurrent(PXProcess* const pxProcess);
 	PXPublic void PXAPI PXProcessParent(PXProcess* const pxProcess);

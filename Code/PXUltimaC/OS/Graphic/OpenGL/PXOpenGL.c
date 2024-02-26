@@ -1541,8 +1541,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     (
         PXLoggingInfo,
         "OpenGL",
-        "Init",
-        "Initialize..."
+        "Initialize",
+        "Start..."
     );
 #endif
 
@@ -1564,7 +1564,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         (
             PXLoggingWarning,
             "OpenGL",
-            "Init",
+            "Initialize",
             "Wait for window..."
         );
 #endif
@@ -1578,7 +1578,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         (
             PXLoggingInfo,
             "OpenGL",
-            "Init",
+            "Initialize",
             "Window done, proceed"
         );
 #endif
@@ -2063,9 +2063,36 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         const HGLRC handle = pxOpenGL->CreateContext(pxOpenGL->AttachedWindow->HandleDeviceContext);
         const PXBool successful = handle != 0;
 
-        PXActionOnErrorFetchAndReturn(!successful);
+        if(!successful) // Failed context create
+        {
+            const PXActionResult createContextResult = PXErrorCurrent();
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "OpenGL",
+                "Initialize",
+                "Context create failed! HDC:0x%p",
+                pxOpenGL->AttachedWindow->HandleDeviceContext
+            );
+#endif
+
+            return createContextResult;
+        }
 
         pxOpenGL->Context = handle;
+
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Initialize",
+            "Context creation successful"
+        );
+#endif
     }
 
 #endif
@@ -2552,7 +2579,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     (
         PXLoggingInfo,
         "OpenGL",
-        "Init",
+        "Initialize",
         "Done fetching funtions"
     );
 #endif
@@ -2617,7 +2644,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         (
             PXLoggingInfo,
             "OpenGL",
-            "Init",
+            "Initialize",
             "Extensions detected <%i>",
             numberOfExtensions
         );      
@@ -2676,7 +2703,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             (
                 PXLoggingInfo,
                 "OpenGL",
-                "Init",
+                "Initialize",
                 "%s\n"
                 "%s\n"
                 "Memory  : %s / %s (%s)\n"
@@ -2702,7 +2729,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     (
         PXLoggingInfo,
         "OpenGL",
-        "Init",
+        "Initialize",
         "Finished"
     );
 #endif
@@ -2712,6 +2739,16 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
 void PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Select",
+        "Session"
+    );
+#endif
+
     assert(pxOpenGL);
 
     const PXWindow* const window = (const PXWindow* const)pxOpenGL->AttachedWindow;
@@ -2725,6 +2762,16 @@ void PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 
 PXBool PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Deselect",
+        "Session"
+    );
+#endif
+
     const PXWindow* const window = (const PXWindow* const)pxOpenGL->AttachedWindow;
 
     const PXBool successful =
@@ -4435,7 +4482,7 @@ PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderT
         case PXShaderTypeVertex:
             return GL_VERTEX_SHADER;
 
-        case PXShaderTypeFragment:
+        case PXShaderTypePixel:
             return GL_FRAGMENT_SHADER;
 
         case PXShaderTypeTessellationControl:

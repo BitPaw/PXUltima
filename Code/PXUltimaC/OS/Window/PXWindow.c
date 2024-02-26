@@ -1255,7 +1255,15 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
                     RAWINPUT rawInput;
                     UINT rawInputSize = sizeof(RAWINPUT); // Can't be 'const' !
 
-                    const UINT result = GetRawInputData(handle, uiCommand, &rawInput, &rawInputSize, sizeof(RAWINPUTHEADER));
+#if WindowsAtleastXP
+                    const UINT result = GetRawInputData // Windows XP, User32.dll, winuser.h
+                    (
+                        handle, 
+                        uiCommand,
+                        &rawInput,
+                        &rawInputSize,
+                        sizeof(RAWINPUTHEADER)
+                    );  
                     const PXBool sucessful = result != -1;
 
                     if(sucessful)
@@ -1283,7 +1291,10 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
                             //     input.mouse.wheel = (*(short*)&raw->data.mouse.usButtonData) / WHEEL_DELTA;
                         }
 #endif
+
+
                     }
+#endif
 
                     break;
                 }
@@ -1982,7 +1993,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
     WNDPROC     lpfnWndProc = PXWindowEventHandler;
     int         cbClsExtra = 0; // The number of extra bytes to allocate following the window-class structure.
     int         cbWndExtra = 0;
-    HINSTANCE hInstance = GetModuleHandle(NULL);
+    HINSTANCE hInstance = GetModuleHandleA(NULL);
     HICON       hIcon = LoadIcon(NULL, IDI_APPLICATION);
     HCURSOR     hCursor = pxWindow->CursorID;
     // HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
@@ -2013,7 +2024,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
             {
                 WNDCLASSA wndclass;
 
-                PXMemoryClear(&wndclass, sizeof(WNDCLASSA));
+                PXClear(WNDCLASSA, &wndclass);
 
                 wndclass.style = style;
                 wndclass.lpfnWndProc = lpfnWndProc;
@@ -2057,7 +2068,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
             {
                 WNDCLASSW wndclass;
 
-                PXMemoryClear(&wndclass, sizeof(WNDCLASSW));
+                PXClear(WNDCLASSW, &wndclass);
 
                 wndclass.style = style;
                 wndclass.lpfnWndProc = lpfnWndProc;
@@ -2101,7 +2112,7 @@ PXActionResult PXAPI PXWindowBuild(PXWindow* const pxWindow)
             {
                 WNDCLASS wndclass;
 
-                PXMemoryClear(&wndclass, sizeof(WNDCLASS));
+                PXClear(WNDCLASS, &wndclass);
 
                 wndclass.style = style;
                 wndclass.lpfnWndProc = lpfnWndProc;
@@ -2223,7 +2234,7 @@ PXLogPrint
         // printf("");
     }
 #endif
-#elif PXOSWindowsDestop
+#elif PXOSWindowsDestop && WindowsAtleastXP
     // Register input device
     {
         // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
@@ -2234,7 +2245,7 @@ PXLogPrint
         rid.dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
         rid.hwndTarget = windowID;
 
-        const PXBool result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE));
+        const PXBool result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
 
         if (!result)
         {

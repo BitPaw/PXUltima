@@ -3,7 +3,11 @@
 #if PXAudioSystemWindowsDirectSoundEnable
 
 #include <Windows.h>
+#if WindowsAtleastVista
 #include <mmeapi.h>
+#else
+#include <MMSystem.h>
+#endif
 #include <dsound.h> // Windows Direct Sound
 #pragma comment(lib, "dsound.lib") 
 #pragma comment(lib, "dxguid.lib")
@@ -23,6 +27,11 @@
 #define PXDirectSoundOutputCreate DirectSoundCreate
 #define PXDirectSoundBuffer IDirectSoundBuffer
 #endif
+
+
+typedef HRESULT(WINAPI* PXDirectSoundCreate8)(__in_opt LPCGUID pcGuidDevice, __deref_out LPDIRECTSOUND8* ppDS8, __null LPUNKNOWN pUnkOuter);
+typedef HRESULT(WINAPI* PXDirectSoundCaptureCreate8)(__in_opt LPCGUID pcGuidDevice, __deref_out LPDIRECTSOUNDCAPTURE8* ppDSC8, __null LPUNKNOWN pUnkOuter);
+
 
 
 BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount)
@@ -68,11 +77,98 @@ BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescript
 
 PXActionResult PXAPI PXDirectSoundInitialize(PXAudio* const pxAudio)
 {
+	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
+
+	// Library Open
+	{
+		const PXActionResult libraryOpenResult  = PXLibraryOpenA(&pxAudioDirectSound->DirectSoundLibrary, "DSOUND.DLL");
+
+		if(PXActionSuccessful != libraryOpenResult)
+		{
+			return PXActionRefusedNotSupported;
+		}
+	}
+
+	{
+		const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+		{
+			// OpenGL Standard functions
+			{ &pxAudioDirectSound->SoundCreate , "DirectSoundCreate"},
+			{ &pxAudioDirectSound->SoundEnumerateA , "DirectSoundEnumerateA"},
+			{ &pxAudioDirectSound->SoundEnumerateW , "DirectSoundEnumerateW"},
+			{ &pxAudioDirectSound->CanUnloadNow , "DllCanUnloadNow"},
+			{ &pxAudioDirectSound->ClassObjectGet , "DllGetClassObject"},
+			{ &pxAudioDirectSound->SoundCaptureCreate , "DirectSoundCaptureCreate"},
+			{ &pxAudioDirectSound->SoundCaptureEnumerateA , "DirectSoundCaptureEnumerateA"},
+			{ &pxAudioDirectSound->SoundCaptureEnumerateW , "DirectSoundCaptureEnumerateW"},
+
+			{ &pxAudioDirectSound->SoundCreate8 , "DirectSoundCreate8"},
+			{ &pxAudioDirectSound->SoundCaptureCreate8 , "DirectSoundCaptureCreate8"},
+
+		};
+
+		const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
+
+		PXLibraryGetSymbolListA(&pxAudioDirectSound->DirectSoundLibrary, pxLibraryFuntionEntry, amount);
+	}
+
+	// Link functions
+	{
+		pxAudio->DeviceAmount = PXDirectSoundDeviceAmount;
+		pxAudio->DeviceFetch = PXDirectSoundDeviceFetch;
+		pxAudio->DeviceFetchAll = PXDirectSoundDeviceFetchAll;
+		pxAudio->DeviceOpen = PXDirectSoundDeviceOpen;
+		pxAudio->DeviceClose = PXDirectSoundDeviceClose;
+		pxAudio->DeviceLoad = PXDirectSoundDeviceLoad;
+		pxAudio->DevicePitchIncrease = PXDirectSoundDevicePitchIncrease;
+		pxAudio->DevicePitchSet = PXDirectSoundDevicePitchSet;
+		pxAudio->DevicePitchReduce = PXDirectSoundDevicePitchReduce;
+		pxAudio->DeviceVolumeGet = PXDirectSoundDeviceVolumeGet;
+		pxAudio->DeviceVolumeSetEqual = PXDirectSoundDeviceVolumeSetEqual;
+		pxAudio->DeviceVolumeSetIndividual = PXDirectSoundDeviceVolumeSetIndividual;
+		pxAudio->DeviceStart = PXDirectSoundDeviceStart;
+		pxAudio->DeviceRestart = PXDirectSoundDeviceRestart;
+		pxAudio->DeviceStop = PXDirectSoundDeviceStop;
+		pxAudio->DevicePause = PXDirectSoundDevicePause;
+		pxAudio->PlayCursorSet = PXDirectSoundDevicePlayCursorSet;
+		pxAudio->PlayCursorGet = PXDirectSoundDevicePlayCursorGet;
+		pxAudio->PlaySpeedSet = PXDirectSoundDevicePlaySpeedSet;
+		pxAudio->PlaySpeedGet = PXDirectSoundDevicePlaySpeedGet;
+		pxAudio->PositionSet = PXDirectSoundDevicePositionSet;
+		pxAudio->PositionGet = PXDirectSoundDevicePositionGet;
+		pxAudio->ConeAnglesSet = PXDirectSoundDeviceConeAnglesSet;
+		pxAudio->ConeAnglesGet = PXDirectSoundDeviceConeAnglesGet;
+		pxAudio->ConeOrientationGet = PXDirectSoundDeviceConeOrientationGet;
+		pxAudio->ConeOrientationSet = PXDirectSoundDeviceConeOrientationSet;
+		pxAudio->ConeOutsideVolumeGet = PXDirectSoundDeviceConeOutsideVolumeGet;
+		pxAudio->ConeOutsideVolumeSet = PXDirectSoundDeviceConeOutsideVolumeSet;
+		pxAudio->DistanceMaxGet = PXDirectSoundDeviceDistanceMaxGet;
+		pxAudio->DistanceMaxSet = PXDirectSoundDeviceDistanceMaxSet;
+		pxAudio->DistanceMinGet = PXDirectSoundDeviceDistanceMinGet;
+		pxAudio->DistanceMinSet = PXDirectSoundDeviceDistanceMinSet;
+		pxAudio->ModeGet = PXDirectSoundDeviceModeGet;
+		pxAudio->ModeSet = PXDirectSoundDeviceModeSet;
+		pxAudio->VelocityGet = PXDirectSoundDeviceVelocityGet;
+		pxAudio->VelocitySet = PXDirectSoundDeviceVelocitySet;
+		pxAudio->DistanceFactorGet = PXDirectSoundDeviceDistanceFactorGet;
+		pxAudio->DistanceFactorSet = PXDirectSoundDeviceDistanceFactorSet;
+		pxAudio->DopplerFactorGet = PXDirectSoundDeviceDopplerFactorGet;
+		pxAudio->DopplerFactorSet = PXDirectSoundDeviceDopplerFactorSet;
+		pxAudio->OrientationGet = PXDirectSoundDeviceOrientationGet;
+		pxAudio->OrientationSet = PXDirectSoundDeviceOrientationSet;
+		pxAudio->RolloffFactorGet = PXDirectSoundDeviceRolloffFactorGet;
+		pxAudio->RolloffFactorSet = PXDirectSoundDeviceRolloffFactorSet;
+		pxAudio->DeferredSettingsCommit = PXDirectSoundDeviceDeferredSettingsCommit;
+
+	}
+
 	return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount)
 {
+	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
+
 	HRESULT enumResultID;
 
 	*amount = 0;
@@ -81,12 +177,16 @@ PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudio* const pxAudio, const PXA
 	{
 		case PXAudioDeviceTypeInput:
 		{
-			enumResultID = DirectSoundCaptureEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
+			PXDirectSoundCaptureEnumerateA pxDirectSoundCaptureEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+
+			enumResultID = pxDirectSoundCaptureEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
 			break;
 		}
 		case PXAudioDeviceTypeOutput:
 		{
-			enumResultID = DirectSoundEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
+			PXDirectSoundEnumerateA pxDirectSoundEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+
+			enumResultID = pxDirectSoundEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
 			break;
 		}
 		default:
@@ -102,6 +202,8 @@ PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudio* const pxAudio, const PXA
 
 PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
+	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
+
 	PXAudioDeviceDetectObjectEventData pxAudioDeviceDetectObjectEventData;
 	pxAudioDeviceDetectObjectEventData.IndexCurrent = 0;
 	pxAudioDeviceDetectObjectEventData.IndexTarget = deviceID;
@@ -113,12 +215,24 @@ PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudio* const pxAudio, const PXAu
 	{
 		case PXAudioDeviceTypeInput:
 		{
-			enumResultID = DirectSoundCaptureEnumerateA(PXAudioDeviceDetectObjectCallBack, &pxAudioDeviceDetectObjectEventData);
+			PXDirectSoundEnumerateA pxDirectSoundEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+
+			enumResultID = pxDirectSoundEnumerateA
+			(
+				PXAudioDeviceDetectObjectCallBack, 
+				&pxAudioDeviceDetectObjectEventData
+			);
 			break;
 		}
 		case PXAudioDeviceTypeOutput:
 		{
-			enumResultID = DirectSoundEnumerateA(PXAudioDeviceDetectObjectCallBack, &pxAudioDeviceDetectObjectEventData);
+			PXDirectSoundCaptureEnumerateA pxDirectSoundCaptureEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+
+			enumResultID = pxDirectSoundCaptureEnumerateA
+			(
+				PXAudioDeviceDetectObjectCallBack,
+				&pxAudioDeviceDetectObjectEventData
+			);
 			break;
 		}
 		default:
@@ -144,6 +258,8 @@ PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudio* const pxAudio, const P
 
 PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
+	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
+
 	pxAudioDevice->Type = pxAudioDeviceType;
 
 	switch (pxAudioDeviceType)
@@ -151,8 +267,21 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudio* const pxAudio, PXAudioDevi
 		case PXAudioDeviceTypeInput:
 		{
 			IDirectSoundCapture8* directSoundCapture;
+			HRESULT crateResultID = 0;
 
-			const HRESULT crateResultID = PXDirectSoundInputCreate(PXNull, (IDirectSoundCapture8**)&pxAudio->DirectSoundInterface, PXNull); // dsound.h		
+			if(pxAudioDirectSound->SoundCaptureCreate8) // Can create 8?
+			{
+				PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = pxAudioDirectSound->SoundCaptureCreate8;
+
+				crateResultID = pxDirectSoundCaptureCreate8(PXNull, (IDirectSoundCapture8**)&pxAudio->DirectSoundInterface, PXNull);
+			}
+			else
+			{
+				PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = pxAudioDirectSound->SoundCaptureCreate;
+
+				crateResultID = pxDirectSoundCaptureCreate(PXNull, (IDirectSoundCapture**)&pxAudio->DirectSoundInterface, PXNull);
+			}
+	
 			const PXActionResult crateResult = PXWindowsHandleErrorFromID(crateResultID);
 
 			PXActionReturnOnError(crateResult);
@@ -176,7 +305,21 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudio* const pxAudio, PXAudioDevi
 			PXDirectSoundOutputInterface* directSound = PXNull;
 
 			{
-				const HRESULT crateResultID = PXDirectSoundOutputCreate(PXNull, (PXDirectSoundOutputInterface**)&pxAudio->DirectSoundInterface, PXNull); // [Deprecated] dsound.h
+				HRESULT crateResultID = 0;
+
+				if(pxAudioDirectSound->SoundCreate8) // Can create 8?
+				{
+					PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = pxAudioDirectSound->SoundCreate8;
+
+					crateResultID = pxDirectSoundCaptureCreate8(PXNull, (PXDirectSoundOutputInterface**)&pxAudio->DirectSoundInterface, PXNull);
+				}
+				else
+				{
+					PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = pxAudioDirectSound->SoundCreate;
+
+					crateResultID = pxDirectSoundCaptureCreate(PXNull, (PXDirectSoundOutputInterface**)&pxAudio->DirectSoundInterface, PXNull);
+				}
+
 				const PXActionResult crateResult = PXWindowsHandleErrorFromID(crateResultID);
 
 				PXActionReturnOnError(crateResult);

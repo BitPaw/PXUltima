@@ -223,6 +223,58 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 							break;
 					}
 
+					// Parse version
+					{
+						switch(pxCOFF->OptionalHeader.WindowsNT.MinorImageVersion)
+						{
+							case 4:
+							{
+								pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionNT;
+								break;
+							}							
+							case 5:
+							{
+								switch(pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion)
+								{
+									case 0:
+										pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion2000;
+										break;
+									case 1:
+										pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionXP;
+										break;
+									case 2:
+										pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionServer2003;
+										break;
+								}
+
+								break;
+							}
+							case 6:
+							{
+								switch(pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion)
+								{
+									case 0:
+										pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionVista;
+										break;
+									case 1:
+										pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion7;
+										break;
+									case 2:
+										pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion8;
+										break;
+									case 3:
+										pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion8x1;
+										break;
+								}
+
+								break;
+							}						
+							case 0xA:
+								pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion10;
+								break;
+						}
+					}
+
 					// D
 					{
 			

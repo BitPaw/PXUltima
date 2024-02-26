@@ -158,6 +158,24 @@ defined(__WIN32__)
     #define Version_Windows_11 0x0A01
     #define Version_Windows_12 0x0A02
 
+typedef enum PXWindowsVersion_
+{
+    PXWindowsVersionInvalid,
+    PXWindowsVersionNT,
+    PXWindowsVersion2000,
+    PXWindowsVersionXP,
+    PXWindowsVersionServer2003,
+    PXWindowsVersionVista,
+    PXWindowsVersionServer2008,
+    PXWindowsVersion7,
+    PXWindowsVersion8,
+    PXWindowsVersion8x1,
+    PXWindowsVersion10,
+    PXWindowsVersion11,
+    PXWindowsVersion12
+}
+PXWindowsVersion;
+
     #if Version_Windows >= Version_Windows_NT
         #define WindowsAtleastNT 1u
     #else

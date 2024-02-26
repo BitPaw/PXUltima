@@ -38,6 +38,22 @@ void PXAPI PXThreadDestruct(PXThread* const pxThread)
 	PXThreadConstruct(pxThread);
 }
 
+
+#if OSWindows
+void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHandle)
+{
+	PXThreadConstruct(pxThread);
+
+	pxThread->ThreadHandle = threadHandle;
+
+#if WindowsAtleastVista
+	pxThread->ThreadID = GetThreadId(threadHandle); // Windows Vista (+UWP), Kernel32.dll, processthreadsapi.h
+#else
+	pxThread->ThreadID = 0xFFFFFFFF;
+#endif
+}
+#endif
+
 PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const threadName, const ThreadFunction threadFunction, const void* parameter)
 {
 	if (!pxThread || !threadFunction)
@@ -242,11 +258,21 @@ PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepT
 
 PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID)
 {
+	*processorID = 0xFFFFFFFF;
+
 #if OSUnix
 	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
+
+#if WindowsAtleastVista
 	*processorID = GetCurrentProcessorNumber(); // Windows Vista (+UWP), Kernel32.dll, processthreadsapi.h
+
+	return PXActionSuccessful;
+#else
+	return PXActionRefusedNotSupported;
+#endif
+
 #else 
 	return PXActionRefusedNotSupported;
 #endif

@@ -59,6 +59,8 @@ extern "C"
 	{
 		PXWindow* WindowReference;
 
+		PXSize TargetFrameRate;
+
 		PXSize Width;
 		PXSize Height;	
 
