@@ -33,8 +33,40 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
 
 
 #elif PXOSWindowsDestop
+
+#if 1 // normal
+
+    PROCESS_INFORMATION processInformation;
+    PXClear(PROCESS_INFORMATION, &processInformation);
+
+    STARTUPINFOA startupInfo;
+    PXClear(STARTUPINFOA, &startupInfo);
+    startupInfo.cb = sizeof(STARTUPINFOA);
+
+    const BOOL createSuccessful = CreateProcessA
+    (
+        program->FilePath, // lpApplicationName,
+        PXNull,            // lpCommandLine,
+        PXNull,            // LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        PXNull,            // LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        PXFalse,           // bInheritHandles,
+        0,                  // dwCreationFlags,
+        PXNull,            //     LPVOID                lpEnvironment,
+        PXNull,            //     LPCSTR                lpCurrentDirectory,
+        &startupInfo,
+        &processInformation
+    );
+
+  //  pxProgram.Handle = processInformation.han
+
+   // PXProgramWaitForFinish();
+
+#else
     program->ReturnValue = _spawnv(_P_WAIT, program->FilePath, (const char* const*)program->ParameterList);
     program->ExecutionSuccessfull = program->ReturnValue == 0;
+#endif
+
+ 
 #else
     return -1;
 #endif
@@ -71,6 +103,7 @@ PXActionResult PXAPI PXProgramExecute(PXProgram* const program)
 
 PXActionResult PXAPI PXProgramExecuteAS(PXProgram* const program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback)
 {
+#if 0
     PXTextCopyAW(programPath, 260, program->FilePath, 260);
 
     program->PXProgramExecutedCallBack = callback;
@@ -94,10 +127,15 @@ PXActionResult PXAPI PXProgramExecuteAS(PXProgram* const program, const char* pr
     const PXActionResult actionResult = PXProgramExecute(program);
 
     return actionResult;
+#endif
+
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXProgramExecuteAL(PXProgram* const program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback)
 {
+#if 0
+
     PXTextCopyA(program->FilePath, 260, programPath, 260);
 
     program->PXProgramExecutedCallBack = callback;
@@ -133,6 +171,9 @@ PXActionResult PXAPI PXProgramExecuteAL(PXProgram* const program, const char* pr
     const PXActionResult actionResult = PXProgramExecute(program);
 
     return actionResult;
+#endif
+
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXProgramExecuteWS(PXProgram* const program, const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback)

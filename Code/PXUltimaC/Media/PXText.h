@@ -159,6 +159,9 @@ extern "C"
 		(pxText)->TextA = text;
 
 
+	PXPublic enum PXActionResult_ PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource);
+	PXPublic enum PXActionResult_ PXAPI PXTextDestroy(PXText* const pxText);
+
 	PXPublic PXSize PXAPI PXTextFromInt(PXText* const pxText, int number);
 	PXPublic PXSize PXAPI PXTextFromBool(PXText* const pxText, const PXBool number);
 	PXPublic PXSize PXAPI PXTextFromFloat(PXText* const pxText, const float number);
@@ -171,6 +174,7 @@ extern "C"
 
 	PXPublic PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime);
 	PXPublic PXSize PXAPI PXTextFormatSize(PXText* const pxText, const PXSize pxSize);
+	PXPublic PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, const PXSize dataSize);
 
 	PXPublic PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
 	PXPublic PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
@@ -228,6 +232,9 @@ extern "C"
 	PXPublic char PXAPI PXTextCompareIgnoreCaseWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
 
 	PXPublic char* PXAPI PXTextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize);
+
+	PXPublic PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char character);
+	PXPublic PXSize PXAPI PXTextFindFirstCharacter(const PXText* const pxText, const char character);
 
 	PXPublic PXSize PXAPI PXTextFindFirstCharacterA(const char* PXRestrict const string, const PXSize dataSize, const char character);
 	PXPublic PXSize PXAPI PXTextFindFirstCharacterBeforeA(const char* PXRestrict const string, const PXSize dataSize, const char target, const char barrier);

@@ -11,10 +11,8 @@
 #pragma comment(lib, "SetupApi.lib")
 
 
-PXActionResult PXAPI PXXAudioInitialize(PXAudio* const pxAudio)
+PXActionResult PXAPI PXXAudioInitialize(PXAudioXSystem* const pxAudioXSystem, PXAudioInitializeInfo* const pxAudioInitializeInfo)
 {
-	IXAudio2* xAudio = PXNull;
-
 	// Setup COM pbject
 	{
 		const HRESULT initializeResultID = CoInitializeEx(PXNull, COINIT_MULTITHREADED);
@@ -25,18 +23,16 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudio* const pxAudio)
 
 	// Create API interface 
 	{
-		const HRESULT createResultID = XAudio2Create((IXAudio2**)&pxAudio->XAudioInterface, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
+		const HRESULT createResultID = XAudio2Create(&pxAudioXSystem->XAudioInterface, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
 		const PXActionResult createResult = PXWindowsHandleErrorFromID(createResultID);
 
 		PXActionReturnOnError(createResult);
-
-		xAudio = (IXAudio2*)pxAudio->XAudioInterface;
 	}
 
 	// Output
 	{
-		const HRESULT getCountResult = xAudio->lpVtbl->GetDeviceCount(xAudio, &pxAudio->DeviceOutputAmount);
-		//const HRESULT getCountResult = xAudio->lpVtbl->GetDeviceCount(xAudio, &pxAudio->DeviceInputAmount);
+		/*/
+		
 
 		pxAudio->DeviceOutputList = PXNewList(PXAudioDevice, pxAudio->DeviceOutputAmount);
 
@@ -59,9 +55,11 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudio* const pxAudio)
 			pxAudioDeviceCurrent->BlockAlignSize = xAudioDeviceDetails.OutputFormat.Format.nBlockAlign;
 			pxAudioDeviceCurrent->BitsPerSample = xAudioDeviceDetails.OutputFormat.Format.wBitsPerSample;
 		}
+		*/
 	}
 
 	{
+		/*
 		const HRESULT hr = xAudio->lpVtbl->CreateMasteringVoice
 		(
 			xAudio,
@@ -72,34 +70,52 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudio* const pxAudio)
 			0,
 			0,
 			0
-		);
+		);*/
 	}
 
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount)
+PXActionResult PXAPI PXXAudioDeviceAmount(PXAudioXSystem* const pxAudioXSystem, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo)
+{
+	if(!(pxAudioXSystem && pxAudioDeviceAmountInfo))
+	{
+		return PXActionRefusedArgumentNull;
+	}
+
+	pxAudioDeviceAmountInfo->DeviceInput = 0;
+	pxAudioDeviceAmountInfo->DeviceOutput = 0;
+
+	if(!pxAudioXSystem->XAudioInterface)
+	{
+		return PXActionRefuedObjectNotInizialized;
+	}
+
+	const HRESULT getCountResult = pxAudioXSystem->XAudioInterface->lpVtbl->GetDeviceCount(pxAudioXSystem->XAudioInterface, &pxAudioDeviceAmountInfo->DeviceOutput);
+	
+
+	return PXActionSuccessful;;
+}
+
+PXActionResult PXAPI PXXAudioDeviceFetch(PXAudioXSystem* const pxAudioXSystem, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXXAudioDeviceFetchAll(PXAudioXSystem* const pxAudioXSystem, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
+PXActionResult PXAPI PXXAudioDeviceOpen(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
-	return PXActionRefusedNotImplemented;
-}
+	IXAudio2SourceVoice* audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
-PXActionResult PXAPI PXXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
-{
-#if 0
-	const HRESULT result = ((IXAudio2*)pxAudio->XAudioInterface)->lpVtbl->CreateSourceVoice
+	/*
+	const HRESULT result = pxAudioXSystem->XAudioInterface->lpVtbl->CreateSourceVoice
 	(
-		(IXAudio2*)pxAudio->XAudioInterface,
-		&(IXAudio2SourceVoice*)pxAudioSource->ResourceID.DirectXInterface,
+		pxAudioXSystem->XAudioInterface,
+		&audio2SourceVoice,
 		&waveFormat,
 		0,
 		XAUDIO2_MAX_FREQ_RATIO,
@@ -107,12 +123,12 @@ PXActionResult PXAPI PXXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* c
 		0,
 		0
 	);
-#endif
+	*/
 
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXXAudioDeviceClose(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice)
 {
 	IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
@@ -123,7 +139,7 @@ PXActionResult PXAPI PXXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* 
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceLoad(PXAudio* const pxAudio,	PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
+PXActionResult PXAPI PXXAudioDeviceLoad(PXAudioXSystem* const pxAudioXSystem,	PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
 	IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
@@ -140,37 +156,37 @@ PXActionResult PXAPI PXXAudioDeviceLoad(PXAudio* const pxAudio,	PXAudioDevice* c
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDevicePitchIncrease(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
+PXActionResult PXAPI PXXAudioDevicePitchIncrease(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, float amount)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDevicePitchSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
+PXActionResult PXAPI PXXAudioDevicePitchSet(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDevicePitchReduce(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
+PXActionResult PXAPI PXXAudioDevicePitchReduce(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, float amount)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
+PXActionResult PXAPI PXXAudioDeviceVolumeGet(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
+PXActionResult PXAPI PXXAudioDeviceVolumeSetEqual(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceVolumeSetIndividual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
+PXActionResult PXAPI PXXAudioDeviceVolumeSetIndividual(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXXAudioDeviceStart(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice)
 {
 	IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
@@ -179,7 +195,7 @@ PXActionResult PXAPI PXXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* 
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXXAudioDeviceStop(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice)
 {
 	IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
@@ -188,7 +204,7 @@ PXActionResult PXAPI PXXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* c
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXXAudioDevicePause(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXXAudioDevicePause(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice)
 {
 	return PXActionRefusedNotImplemented;
 }

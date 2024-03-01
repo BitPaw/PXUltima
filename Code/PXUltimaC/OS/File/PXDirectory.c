@@ -20,9 +20,6 @@
 #include <io.h>
 #include <Shlobj.h>
 
-#define OSWorkingDirectoryChangeA _chdir
-#define OSWorkingDirectoryChangeW _wchdir
-
 void PXAPI PXFileElementInfoCOnvertFrom(PXFileElementInfo* const pxFileElementInfo, WIN32_FIND_DATA* const findData, PXInt8U depth)
 {
 	pxFileElementInfo->Name = findData->cFileName;
@@ -315,11 +312,10 @@ PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const directoryName)
 #if OSUnix
 		const int resultID = chdir(directoryName->TextA);
 #elif OSWindows
-		const int resultID = _chdir(directoryName->TextA);
+		const PXBool resultID = SetCurrentDirectoryA(directoryName->TextA); // _chdir()
 #endif
-		const PXBool successful = resultID == 0;
 
-		PXActionOnErrorFetchAndReturn(!successful);
+		PXActionOnErrorFetchAndReturn(!resultID);
 
 		return PXActionSuccessful;
 	}
@@ -328,11 +324,10 @@ PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const directoryName)
 #if OSUnix
 		const int resultID = 0; // TODO: Add conversion?
 #elif OSWindows
-		const int resultID = _wchdir(directoryName->TextW);
+		const PXBool resultID = SetCurrentDirectoryW(directoryName->TextW); // _wchdir()
 #endif
-		const PXBool successful = resultID == 0;
 
-		PXActionOnErrorFetchAndReturn(!successful);
+		PXActionOnErrorFetchAndReturn(!resultID);
 
 		return PXActionSuccessful;
 	}
@@ -351,12 +346,11 @@ PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory)
 #if OSUnix
 		const char* const text = getcwd(workingDirectory->TextA, workingDirectory->SizeAllocated);
 #elif OSWindows
-		const char* const text = _getcwd(workingDirectory->TextA, workingDirectory->SizeAllocated);
+		workingDirectory->SizeUsed = GetCurrentDirectoryA(workingDirectory->SizeAllocated, workingDirectory->TextA); // _getcwd()
 #endif
-		const PXBool successful = text != 0;
+		const PXBool successful = workingDirectory->SizeUsed > 0;
 
 		PXActionOnErrorFetchAndReturn(!successful);
-
 
 		return PXActionSuccessful;
 	}
@@ -365,9 +359,9 @@ PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory)
 #if OSUnix
 		const char* const text = 0; // TODO: Add conversion?
 #elif OSWindows
-		const wchar_t* const text = _wgetcwd(workingDirectory->TextW, workingDirectory->SizeAllocated);
+		workingDirectory->SizeUsed = GetCurrentDirectoryW(workingDirectory->SizeAllocated, workingDirectory->TextW); // _wgetcwd()
 #endif
-		const PXBool successful = text != 0;
+		const PXBool successful = workingDirectory->SizeUsed > 0;
 
 		PXActionOnErrorFetchAndReturn(!successful);
 

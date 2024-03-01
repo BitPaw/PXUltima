@@ -237,8 +237,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 
 									if (amountOfPages > 1)
 									{
-										pxFont->AdditionalPageListSize = amountOfPages - 1u;
-										pxFont->AdditionalPageList = PXNewList(PXFontPage, amountOfPages);
+										PXNewList(PXFontPage, amountOfPages-1, &pxFont->AdditionalPageList, &pxFont->AdditionalPageListSize);
 									}
 								
 									break;
@@ -360,8 +359,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 									PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
 									pxFontPage->CharacteListEntrys = compilerSymbolEntry.DataI32U;
-									pxFontPage->CharacteListSize = sizeof(PXFontPageCharacter) * compilerSymbolEntry.DataI32U;
-									pxFontPage->CharacteList = PXNewList(PXFontPageCharacter, compilerSymbolEntry.DataI32U);
+									PXNewList(PXFontPageCharacter, compilerSymbolEntry.DataI32U, &pxFontPage->CharacteList, &pxFontPage->CharacteListSize);
 									break;
 								}	
 							}

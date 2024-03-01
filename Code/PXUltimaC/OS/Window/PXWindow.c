@@ -2166,7 +2166,8 @@ PXLogPrint
     PXLoggingInfo,
     "Window",
     "Create",
-    "Success, <%i x %i>",
+    "Success, ID:%i, Size:<%i x %i>",
+    (int)pxWindow->ID,
     pxWindow->Width,
     pxWindow->Height
 );
@@ -2201,6 +2202,7 @@ PXLogPrint
     }
 #endif
 
+    pxWindow->HandleDeviceContext = GetDC(pxWindow->ID); // Get the "default" device
     pxWindow->IsRunning = 1;
 
     PXFunctionInvoke(pxWindow->WindowCreatedCallBack, pxWindow->EventReceiver, pxWindow);
@@ -2280,6 +2282,16 @@ PXThreadResult PXOSAPI PXWindowMessageLoop(PXWindow* const pxWindow)
 
 PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Window",
+        "PixelSystem",
+        "Setting info"
+    );
+#endif
+
 #if OSUnix
     return PXActionRefusedNotImplemented;
 
@@ -2342,9 +2354,22 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)
         dwLayerMask, dwVisibleMask, dwDamageMask
     };
     const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(window->HandleDeviceContext, &pfd);
-    const PXBool sucessul = SetPixelFormat(window->HandleDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
+    const PXBool successul = SetPixelFormat(window->HandleDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
 
-    PXActionOnErrorFetchAndReturn(!sucessul);
+    if(!successul)
+    {
+        const PXActionResult pxActionResult = PXErrorCurrent();
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "Window",
+            "PixelSystem",
+            "Setting failed"
+        );
+#endif
+    }
        
     return PXActionSuccessful;
 
@@ -2444,6 +2469,16 @@ void PXAPI PXWindowCreateA(PXWindow* const window, const PXInt32S x, const PXInt
 
 void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height, const PXText* const title, const PXBool async)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Window",
+        "Create",
+        "..."
+    );
+#endif
+
     PXTextCopy(title, &window->Title);
 
     window->X = x;
@@ -2478,7 +2513,13 @@ void PXAPI PXWindowCreate(PXWindow* const window, const PXInt32S x, const PXInt3
             return; // TODO: return something?
         }
 
-        PXAwaitChangeCU(&window->IsRunning);
+        PXBool expected = PXTrue;
+        PXAwaitInfo pxAwaitInfo;
+        pxAwaitInfo.DataTarget = &window->IsRunning;
+        pxAwaitInfo.DataExpect = &expected;
+        pxAwaitInfo.DataSize = sizeof(PXBool);
+
+        PXAwaitChange(&pxAwaitInfo);
     }
     else
     {

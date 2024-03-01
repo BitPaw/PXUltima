@@ -122,7 +122,9 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 			{ &pxDebug->XUnDecorateSymbolName, "UnDecorateSymbolName"},
 			{ &pxDebug->SymbolEnumerate, "SymEnumSymbols" },
 			{ &pxDebug->SymbolEnumerateEx, "SymEnumSymbolsEx" },
-			{ &pxDebug->SymbolModuleLoad, "SymLoadModule" }
+			{ &pxDebug->SymbolModuleLoad, "SymLoadModule" },
+			{ &pxDebug->SymbolFunctionTableAccess, "SymFunctionTableAccess" },
+			{ &pxDebug->SymbolGetModuleBase, "SymGetModuleBase" }
 		};
 
 		const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
@@ -299,8 +301,8 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 			&stackFrame,
 			&contextRecord,
 			NULL,
-			SymFunctionTableAccess,
-			SymGetModuleBase,
+			pxDebug->SymbolFunctionTableAccess,
+			pxDebug->SymbolGetModuleBase,
 			NULL
 		);
 		const PXBool sucessfull = result != 0;

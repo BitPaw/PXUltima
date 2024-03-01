@@ -15,7 +15,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 #if PXLogEnable
 	PXLogPrint
 	(
-		PXLoggingError,
+		PXLoggingInfo,
 		"Audio",
 		"Initialize",
 		"---Start---"
@@ -23,6 +23,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 #endif
 
 	PXClear(PXAudio, pxAudio);
+
 	pxAudio->System = pxAudioSystem;
 
 	switch (pxAudioSystem)
@@ -30,7 +31,8 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 #if OSWindows
 		case PXAudioSystemWindowsMIDI:
 		{
-			pxAudio->Initialize = PXMIDIInitialize;
+			//pxAudio->Initialize = PXMIDIInitialize;
+			pxAudio->SystemReference = &pxAudio->MultiMedia;
 			break;
 		}
 #endif
@@ -39,6 +41,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			pxAudio->Initialize = PXMultiMediaInitialize;
+			pxAudio->SystemReference = &pxAudio->MultiMedia;
 			break;
 		}
 #endif
@@ -47,6 +50,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 		case PXAudioSystemWindowsDirectSound:
 		{
 			pxAudio->Initialize = PXDirectSoundInitialize;
+			pxAudio->SystemReference = &pxAudio->DirectSound;
 			break;
 		}
 #endif
@@ -89,7 +93,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 			PXLogPrint
 			(
 				PXLoggingError,
-				"PXAudio",
+				"Audio",
 				"Initialize",
 				"There is no audio system"
 			);
@@ -101,7 +105,11 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 
 	// Initialize
 	{
-		const PXActionResult initializeResult = pxAudio->Initialize(pxAudio);
+		PXAudioInitializeInfo pxAudioInitializeInfo;
+		pxAudioInitializeInfo.AudioSystem = pxAudioSystem;
+		pxAudioInitializeInfo.AudioReference = pxAudio;
+
+		const PXActionResult initializeResult = pxAudio->Initialize(pxAudio->SystemReference, &pxAudioInitializeInfo);
 
 		if(PXActionSuccessful != initializeResult)
 		{
@@ -133,7 +141,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 #if PXLogEnable
 	PXLogPrint
 	(
-		PXLoggingError,
+		PXLoggingInfo,
 		"Audio",
 		"Initialize",
 		"---Done---"

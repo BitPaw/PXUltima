@@ -221,6 +221,8 @@ void PXDirectoryIsDotFolder(const char* s)
 
 		PXFileTypeInfo TypeInfo;
 
+		// The file path can't always be fetched from the OS.
+		// for this we store the name here at creation time.
 		PXText FilePath;
 
 		//FILETIME creationTime;
@@ -305,23 +307,17 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXBool PXAPI PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const directoryPath);
 
 
-	PXPublic void PXAPI PXFilePathSplitt
-	(
-		const PXText* const fullPath,
-		PXText* const drive,
-		PXText* const directory,
-		PXText* const fileName,
-		PXText* const extension
-	);
+	typedef struct PXFilePathStructure_
+	{
+		PXText Drive;
+		PXText Directory;
+		PXText FileName;
+		PXText Extension;
+	}
+	PXFilePathStructure;
 
-	PXPublic void PXAPI PXFilePathSplittPositionW
-	(
-		const wchar_t* fullPath, PXSize fullPXPathSizeMax,
-		PXSize* drivePos, PXSize driveSize,
-		PXSize* directory, PXSize directorySize,
-		PXSize* fileName, PXSize fileNameSize,
-		PXSize* extension, PXSize extensionSize
-	);
+	PXPublic PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
+	PXPublic PXActionResult PXAPI PXFilePathCombine(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
 
 	PXPublic PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXText* const extension);
 
@@ -556,6 +552,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXTime* const pxTimeWriteLast
 	);
 
+	PXPublic PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath);
 	PXPublic PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
 	PXPublic PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
 

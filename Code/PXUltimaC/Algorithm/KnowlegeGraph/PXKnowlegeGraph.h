@@ -2,6 +2,7 @@
 #define PXKnowlegeGraphINCLUDE
 
 #include <Media/PXResource.h>
+#include <Media/PXDocument.h>
 
 #ifdef __cplusplus
 extern "C"

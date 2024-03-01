@@ -120,7 +120,7 @@ double PXAPI PXMathRoot(unsigned int rootNr, double value)
 			return sqrt(value);
 
 		case 3:
-			return cbrt(value);
+			return 0;// cbrt(value); // TODO:! !!!
 
 		default:
 			return 0;
@@ -152,13 +152,13 @@ double PXAPI PXMathLogarithmus(int base, double exponent)
 #if OSUnix
 	return 0; // TODO: not implemented?
 #elif OSWindows
-	return _dlog(exponent, base);
+	return 0;// _dlog(exponent, base); // TODO: !!!
 #endif	
 }
 
 double PXAPI PXMathLogarithmusBase2(double exponent)
 {
-	return log2(exponent);
+	return 0;// log2(exponent); // TODO: !!!
 }
 
 double PXAPI PXMathLogarithmusBase10(double exponent)

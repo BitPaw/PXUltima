@@ -1,5 +1,7 @@
 #include "PXSVG.h"
 
+#include <OS/File/PXFile.h>
+
 PXActionResult PXAPI PXSVGLoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
 {
 	return PXActionRefusedNotImplemented;

@@ -27,6 +27,7 @@
 
 #include <OS/Graphic/PXGraphic.h>
 #include <OS/Window/PXWindow.h>
+#include <OS/Memory/PXMemory.h>
 
 typedef IDirect3D9* (WINAPI* PXDirect3DCreate9)(UINT SDKVersion);
 
@@ -641,9 +642,11 @@ PXActionResult PXAPI PXDirectX9ShaderVariableIDFetch(PXDirectX9* const pxDirectX
 
     UINT pSizeOfData;
 
+    
+
     const HRESULT getSizeResult = pShader->lpVtbl->GetFunction(pShader, NULL, &pSizeOfData);
     //findWeirdMirrorsEdgeShader(pSizeOfData);
-    pData = malloc(pSizeOfData);
+    PXNewList(PXByte, pSizeOfData, &pData, PXNull);
     const HRESULT getDataResult = pShader->lpVtbl->GetFunction(pShader, pData, &pSizeOfData);
 
     // bool shaderSeen = hasSeenShader(pSizeOfData);

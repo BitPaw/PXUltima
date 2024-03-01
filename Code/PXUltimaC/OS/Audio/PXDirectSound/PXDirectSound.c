@@ -2,6 +2,12 @@
 
 #if PXAudioSystemWindowsDirectSoundEnable
 
+
+#pragma comment(lib, "dsound.lib") 
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "Dxgi.lib")
+#pragma comment(lib, "uuid.lib")
+
 #include <Windows.h>
 #if WindowsAtleastVista
 #include <mmeapi.h>
@@ -9,8 +15,10 @@
 #include <MMSystem.h>
 #endif
 #include <dsound.h> // Windows Direct Sound
-#pragma comment(lib, "dsound.lib") 
-#pragma comment(lib, "dxguid.lib")
+
+
+#include <OS/Console/PXConsole.h>
+#include <OS/Memory/PXMemory.h>
 
 #define PXDirectSound8Use DIRECTSOUND_VERSION >= 0x0800
 
@@ -75,9 +83,17 @@ BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescript
 }
 
 
-PXActionResult PXAPI PXDirectSoundInitialize(PXAudio* const pxAudio)
+PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo)
 {
-	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"DirectSound",
+		"Initialize",
+		"---Start---"
+	);
+#endif
 
 	// Library Open
 	{
@@ -88,6 +104,16 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudio* const pxAudio)
 			return PXActionRefusedNotSupported;
 		}
 	}
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"DirectSound",
+		"Initialize",
+		"Fetching functions"
+	);
+#endif
 
 	{
 		const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
@@ -114,6 +140,8 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudio* const pxAudio)
 
 	// Link functions
 	{
+		PXAudio* const pxAudio = pxAudioInitializeInfo->AudioReference;
+
 		pxAudio->DeviceAmount = PXDirectSoundDeviceAmount;
 		pxAudio->DeviceFetch = PXDirectSoundDeviceFetch;
 		pxAudio->DeviceFetchAll = PXDirectSoundDeviceFetchAll;
@@ -162,36 +190,42 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudio* const pxAudio)
 
 	}
 
-	return PXActionRefusedNotImplemented;
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"DirectSound",
+		"Initialize",
+		"---Done---"
+	);
+#endif
+
+	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount)
+PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo)
 {
-	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
-
 	HRESULT enumResultID;
 
-	*amount = 0;
+	pxAudioDeviceAmountInfo->DeviceInput = 0;
+	pxAudioDeviceAmountInfo->DeviceOutput = 0;
 
-	switch (pxAudioDeviceType)
-	{
-		case PXAudioDeviceTypeInput:
-		{
-			PXDirectSoundCaptureEnumerateA pxDirectSoundCaptureEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+	//-----------------------------------------------------
+	// Input
+	//-----------------------------------------------------
+	PXDirectSoundCaptureEnumerateA pxDirectSoundCaptureEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
 
-			enumResultID = pxDirectSoundCaptureEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
-			break;
-		}
-		case PXAudioDeviceTypeOutput:
-		{
-			PXDirectSoundEnumerateA pxDirectSoundEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+	enumResultID = pxDirectSoundCaptureEnumerateA(PXAudioDeviceDetectAmountCallBack, &pxAudioDeviceAmountInfo->DeviceInput);
+	//-----------------------------------------------------
 
-			enumResultID = pxDirectSoundEnumerateA(PXAudioDeviceDetectAmountCallBack, amount);
-			break;
-		}
-		default:
-			return PXActionRefusedArgumentInvalid;
-	}
+
+	//-----------------------------------------------------
+	// Output
+	//-----------------------------------------------------
+	PXDirectSoundEnumerateA pxDirectSoundEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+
+	enumResultID = pxDirectSoundEnumerateA(PXAudioDeviceDetectAmountCallBack, &pxAudioDeviceAmountInfo->DeviceOutput);
+	//-----------------------------------------------------
 
 	const PXActionResult enumResult = PXWindowsHandleErrorFromID(enumResultID);
 
@@ -200,10 +234,8 @@ PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudio* const pxAudio, const PXA
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
-	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
-
 	PXAudioDeviceDetectObjectEventData pxAudioDeviceDetectObjectEventData;
 	pxAudioDeviceDetectObjectEventData.IndexCurrent = 0;
 	pxAudioDeviceDetectObjectEventData.IndexTarget = deviceID;
@@ -246,20 +278,18 @@ PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudio* const pxAudio, const PXAu
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
+PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
 {
-	for (size_t i = 0; i < amount; i++)
+	for (PXSize i = 0; i < amount; ++i)
 	{
-		PXDirectSoundDeviceFetch(pxAudio, pxAudioDeviceType, i, &pxAudioDevice[i]);
+		PXDirectSoundDeviceFetch(pxAudioDirectSound, pxAudioDeviceType, i, &pxAudioDevice[i]);
 	}
 
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
-	PXAudioDirectSound* const pxAudioDirectSound = &pxAudio->DirectSound;
-
 	pxAudioDevice->Type = pxAudioDeviceType;
 
 	switch (pxAudioDeviceType)
@@ -273,20 +303,20 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudio* const pxAudio, PXAudioDevi
 			{
 				PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = pxAudioDirectSound->SoundCaptureCreate8;
 
-				crateResultID = pxDirectSoundCaptureCreate8(PXNull, (IDirectSoundCapture8**)&pxAudio->DirectSoundInterface, PXNull);
+				crateResultID = pxDirectSoundCaptureCreate8(PXNull, (IDirectSoundCapture8**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 			}
 			else
 			{
 				PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = pxAudioDirectSound->SoundCaptureCreate;
 
-				crateResultID = pxDirectSoundCaptureCreate(PXNull, (IDirectSoundCapture**)&pxAudio->DirectSoundInterface, PXNull);
+				crateResultID = pxDirectSoundCaptureCreate(PXNull, (IDirectSoundCapture**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 			}
 	
 			const PXActionResult crateResult = PXWindowsHandleErrorFromID(crateResultID);
 
 			PXActionReturnOnError(crateResult);
 
-			directSoundCapture = (IDirectSoundCapture8*)pxAudio->DirectSoundInterface;
+			directSoundCapture = (IDirectSoundCapture8*)pxAudioDirectSound->DirectSoundInterface;
 
 			DSCCAPS capabiltys;
 			PXClear(DSCCAPS, &capabiltys);
@@ -311,20 +341,20 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudio* const pxAudio, PXAudioDevi
 				{
 					PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = pxAudioDirectSound->SoundCreate8;
 
-					crateResultID = pxDirectSoundCaptureCreate8(PXNull, (PXDirectSoundOutputInterface**)&pxAudio->DirectSoundInterface, PXNull);
+					crateResultID = pxDirectSoundCaptureCreate8(PXNull, (PXDirectSoundOutputInterface**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 				}
 				else
 				{
 					PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = pxAudioDirectSound->SoundCreate;
 
-					crateResultID = pxDirectSoundCaptureCreate(PXNull, (PXDirectSoundOutputInterface**)&pxAudio->DirectSoundInterface, PXNull);
+					crateResultID = pxDirectSoundCaptureCreate(PXNull, (PXDirectSoundOutputInterface**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 				}
 
 				const PXActionResult crateResult = PXWindowsHandleErrorFromID(crateResultID);
 
 				PXActionReturnOnError(crateResult);
 
-				directSound = (PXDirectSoundOutputInterface*)pxAudio->DirectSoundInterface;
+				directSound = (PXDirectSoundOutputInterface*)pxAudioDirectSound->DirectSoundInterface;
 			}
 
 			/// Capability
@@ -362,14 +392,14 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudio* const pxAudio, PXAudioDevi
 	return PXActionSuccessful;	
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
+PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
-	PXDirectSoundOutputInterface* const directSound = (PXDirectSoundOutputInterface*)pxAudio->DirectSoundInterface;
+	PXDirectSoundOutputInterface* const directSound = (PXDirectSoundOutputInterface*)pxAudioDirectSound->DirectSoundInterface;
 	PXDirectSoundBuffer* soundBuffer = PXNull;
 	const PXBool canUse3DStuff = pxSound->NumerOfChannels == 1u; // DirectSoundBuffer3D can only use MONO sounds 
 
@@ -596,9 +626,9 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudio* const pxAudio, PXAudioDevi
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePlayCursorSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXSize offset)
+PXActionResult PXAPI PXDirectSoundDevicePlayCursorSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXSize offset)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -618,9 +648,9 @@ PXActionResult PXAPI PXDirectSoundDevicePlayCursorSet(PXAudio* const pxAudio, PX
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePlayCursorGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXSize* const offset)
+PXActionResult PXAPI PXDirectSoundDevicePlayCursorGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXSize* const offset)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -647,9 +677,9 @@ PXActionResult PXAPI PXDirectSoundDevicePlayCursorGet(PXAudio* const pxAudio, PX
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePlaySpeedSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U frequency)
+PXActionResult PXAPI PXDirectSoundDevicePlaySpeedSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U frequency)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -671,9 +701,9 @@ PXActionResult PXAPI PXDirectSoundDevicePlaySpeedSet(PXAudio* const pxAudio, PXA
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePlaySpeedGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const frequency)
+PXActionResult PXAPI PXDirectSoundDevicePlaySpeedGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const frequency)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -699,9 +729,9 @@ PXActionResult PXAPI PXDirectSoundDevicePlaySpeedGet(PXAudio* const pxAudio, PXA
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePositionSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z)
+PXActionResult PXAPI PXDirectSoundDevicePositionSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -721,9 +751,9 @@ PXActionResult PXAPI PXDirectSoundDevicePositionSet(PXAudio* const pxAudio, PXAu
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePositionGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z)
+PXActionResult PXAPI PXDirectSoundDevicePositionGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -749,54 +779,54 @@ PXActionResult PXAPI PXDirectSoundDevicePositionGet(PXAudio* const pxAudio, PXAu
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceConeAnglesSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U dwInsideConeAngle, const PXInt32U dwOutsideConeAngle)
+PXActionResult PXAPI PXDirectSoundDeviceConeAnglesSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U dwInsideConeAngle, const PXInt32U dwOutsideConeAngle)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceConeAnglesGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwInsideConeAngle, PXInt32U* const pdwOutsideConeAngle)
+PXActionResult PXAPI PXDirectSoundDeviceConeAnglesGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwInsideConeAngle, PXInt32U* const pdwOutsideConeAngle)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceConeOrientationGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z)
+PXActionResult PXAPI PXDirectSoundDeviceConeOrientationGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceConeOrientationSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z)
+PXActionResult PXAPI PXDirectSoundDeviceConeOrientationSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceConeOutsideVolumeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const plConeOutsideVolume)
+PXActionResult PXAPI PXDirectSoundDeviceConeOutsideVolumeGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const plConeOutsideVolume)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceConeOutsideVolumeSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U lConeOutsideVolume)
+PXActionResult PXAPI PXDirectSoundDeviceConeOutsideVolumeSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U lConeOutsideVolume)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePitchIncrease(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
+PXActionResult PXAPI PXDirectSoundDevicePitchIncrease(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, float amount)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePitchSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
+PXActionResult PXAPI PXDirectSoundDevicePitchSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePitchReduce(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount)
+PXActionResult PXAPI PXDirectSoundDevicePitchReduce(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, float amount)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
+PXActionResult PXAPI PXDirectSoundDeviceVolumeGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -822,9 +852,9 @@ PXActionResult PXAPI PXDirectSoundDeviceVolumeGet(PXAudio* const pxAudio, PXAudi
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
+PXActionResult PXAPI PXDirectSoundDeviceVolumeSetEqual(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -846,14 +876,14 @@ PXActionResult PXAPI PXDirectSoundDeviceVolumeSetEqual(PXAudio* const pxAudio, P
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceVolumeSetIndividual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
+PXActionResult PXAPI PXDirectSoundDeviceVolumeSetIndividual(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -875,18 +905,18 @@ PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudio* const pxAudio, PXAudioDev
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceRestart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXDirectSoundDeviceRestart(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
-	const PXActionResult cursorResetResult = PXDirectSoundDevicePlayCursorSet(pxAudio, pxAudioDevice, 0);
+	const PXActionResult cursorResetResult = PXDirectSoundDevicePlayCursorSet(pxAudioDirectSound, pxAudioDevice, 0);
 
-	const PXActionResult startResult = PXDirectSoundDeviceStart(pxAudio, pxAudioDevice);
+	const PXActionResult startResult = PXDirectSoundDeviceStart(pxAudioDirectSound, pxAudioDevice);
 
 	return startResult;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -910,44 +940,44 @@ PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudio* const pxAudio, PXAudioDevi
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDevicePause(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXDirectSoundDevicePause(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDistanceMaxGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const pflMaxDistance)
+PXActionResult PXAPI PXDirectSoundDeviceDistanceMaxGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, float* const pflMaxDistance)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDistanceMaxSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float flMaxDistance)
+PXActionResult PXAPI PXDirectSoundDeviceDistanceMaxSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const float flMaxDistance)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDistanceMinGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const pflMinDistance)
+PXActionResult PXAPI PXDirectSoundDeviceDistanceMinGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, float* const pflMinDistance)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDistanceMinSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float flMinDistance)
+PXActionResult PXAPI PXDirectSoundDeviceDistanceMinSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const float flMinDistance)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceModeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwMode)
+PXActionResult PXAPI PXDirectSoundDeviceModeGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const pdwMode)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceModeSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U dwMode)
+PXActionResult PXAPI PXDirectSoundDeviceModeSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U dwMode)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceVelocityGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z)
+PXActionResult PXAPI PXDirectSoundDeviceVelocityGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, float* const x, float* const y, float* const z)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!(pxAudioDirectSound && pxAudioDevice))
 	{
 		return PXActionRefusedArgumentNull;
 	}
@@ -973,54 +1003,54 @@ PXActionResult PXAPI PXDirectSoundDeviceVelocityGet(PXAudio* const pxAudio, PXAu
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDistanceFactorGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDistanceFactor)
+PXActionResult PXAPI PXDirectSoundDeviceDistanceFactorGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDistanceFactor)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDistanceFactorSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDistanceFactor)
+PXActionResult PXAPI PXDirectSoundDeviceDistanceFactorSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U flDistanceFactor)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDopplerFactorGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDopplerFactor)
+PXActionResult PXAPI PXDirectSoundDeviceDopplerFactorGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflDopplerFactor)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDopplerFactorSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flDopplerFactor)
+PXActionResult PXAPI PXDirectSoundDeviceDopplerFactorSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U flDopplerFactor)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceOrientationGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pvOrientFront, PXInt32U* const pvOrientTop)
+PXActionResult PXAPI PXDirectSoundDeviceOrientationGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const pvOrientFront, PXInt32U* const pvOrientTop)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceOrientationSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U xFront, const PXInt32U yFront, const PXInt32U zFront, const PXInt32U xTop, const PXInt32U yTop, const PXInt32U zTop)
+PXActionResult PXAPI PXDirectSoundDeviceOrientationSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U xFront, const PXInt32U yFront, const PXInt32U zFront, const PXInt32U xTop, const PXInt32U yTop, const PXInt32U zTop)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceRolloffFactorGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflRolloffFactor)
+PXActionResult PXAPI PXDirectSoundDeviceRolloffFactorGet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXInt32U* const pflRolloffFactor)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceRolloffFactorSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXInt32U flRolloffFactor)
+PXActionResult PXAPI PXDirectSoundDeviceRolloffFactorSet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXInt32U flRolloffFactor)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceDeferredSettingsCommit(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
+PXActionResult PXAPI PXDirectSoundDeviceDeferredSettingsCommit(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceVelocitySet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z)
+PXActionResult PXAPI PXDirectSoundDeviceVelocitySet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z)
 {
-	if (!pxAudio || !pxAudioDevice)
+	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
 	}

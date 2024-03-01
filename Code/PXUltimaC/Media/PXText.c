@@ -132,7 +132,7 @@ PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appen
 	const PXSize freeSpace = currentString->SizeAllocated - currentString->SizeUsed;
 	const PXBool isEnoughSpace = freeSpace > appendingString->SizeUsed;
 
-	if (!isEnoughSpace)
+	if (!isEnoughSpace && appendingString->TextA == PXNull)
 	{
 		return 0;
 	}
@@ -766,6 +766,34 @@ char* PXAPI PXTextFindPositionA(const char* data, PXSize dataSize, const char* t
 	return (char*)(found * (PXSize)source);
 }
 
+PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char character)
+{
+	switch(pxText->Format)
+	{
+		case TextFormatASCII:
+		{
+			void* foundAdress = PXMemoryLocateLast(pxText->TextA, character, pxText->SizeUsed);
+
+			if(!foundAdress)
+			{
+				return -1;
+			}
+
+			PXSize offset = (PXSize)foundAdress - (PXSize)pxText->TextA;
+
+
+			return offset;
+		}
+	}
+
+	return -1;
+}
+
+PXSize PXAPI PXTextFindFirstCharacter(const PXText* const pxText, const char character)
+{
+	return PXTextFindFirstCharacterA(pxText->TextA, pxText->SizeUsed, character);
+}
+
 PXSize PXAPI PXTextFindFirstCharacterA(const char* PXRestrict  const string, const PXSize dataSize, const char character)
 {
 	PXBool found = 0;
@@ -1173,6 +1201,22 @@ PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
 	}
 }
 
+PXActionResult PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource)
+{
+	PXNewList(char, pxTextSource->SizeUsed+1, &pxText->TextA, &pxText->SizeAllocated);
+	PXTextCopy(pxTextSource, pxText);
+
+	return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXTextDestroy(PXText* const pxText)
+{
+	PXDeleteList(char, pxText->SizeAllocated, &pxText->TextA, &pxText->SizeAllocated);
+	PXClear(PXText, pxText);
+
+	return PXActionSuccessful;
+}
+
 PXSize PXAPI PXTextFromInt(PXText* const pxText, int number)
 {
 	switch (pxText->Format)
@@ -1578,4 +1622,19 @@ PXSize PXAPI PXTextFormatSize(PXText* const pxText, const PXSize pxSize)
 	}
 
 	return PXTextPrint(pxText, "%.1f EB", pxSize / (float)PXSizeEB);
+}
+
+PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, const PXSize dataSize)
+{
+	for(PXSize i = 0; i < dataSize; i++)
+	{
+		const char dataChar = MakePrintable(((char*)data)[i]);
+
+		pxText->TextA[pxText->SizeUsed] = dataChar;
+		pxText->SizeUsed += 1;
+	}
+
+	pxText->TextA[pxText->SizeUsed+1] = 0; 
+
+	return dataSize;
 }

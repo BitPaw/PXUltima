@@ -1,6 +1,7 @@
 #include "PXCanonRaw3.h"
 
 #include <Media/TIFF/PXTIFF.h>
+#include <OS/File/PXFile.h>
 
 #define  PXCanonRaw3FTYPID PXInt32Make('f', 't', 'y', 'p')
 #define  PXCanonRaw3FREEID PXInt32Make('f', 'r', 'e', 'e')

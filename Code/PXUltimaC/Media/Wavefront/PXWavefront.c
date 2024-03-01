@@ -484,7 +484,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
         vertexNormalDataCacheSize = counterNormal * 3u;
 
         vertexDataCacheSize = vertexPositionDataCacheSize + vertexTextureDataCacheSize + vertexNormalDataCacheSize;
-        vertexDataCache = PXNewList(float, vertexDataCacheSize);
+        PXNewList(float, vertexDataCacheSize, &vertexDataCache, PXNull);
 
         vertexTextureDataCache = vertexDataCache;    
         vertexNormalDataCache = &vertexTextureDataCache[vertexNormalDataCacheSize];
@@ -495,13 +495,10 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
         pxModel->VertexBuffer.VertexDataRowSize = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
 
         const PXSize amountOfVertexElemets = pxModel->VertexBuffer.VertexDataRowSize * counterIndex;
+        
+        PXNewList(float, amountOfVertexElemets, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
+        PXNewList(PXIndexSegment, materialUseIndex, &pxModel->IndexBuffer.SegmentList, &pxModel->IndexBuffer.SegmentListSize);
 
-        pxModel->VertexBuffer.VertexDataSize = amountOfVertexElemets * sizeof(float);
-        pxModel->VertexBuffer.VertexData = PXNewList(float, amountOfVertexElemets);
-
-
-        pxModel->IndexBuffer.SegmentListSize = materialUseIndex;
-        pxModel->IndexBuffer.SegmentList = PXNewList(PXIndexSegment, pxModel->IndexBuffer.SegmentListSize);
         materialUseIndex = 0;
 
 
@@ -522,8 +519,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
         pxModel->IndexBuffer.IndexDataSize = 0;
 #endif
 
-        pxModel->MaterialContaierListSize = materialInlcudeIndex;
-        pxModel->MaterialContaierList = PXNewList(PXMaterialContainer, pxModel->MaterialContaierListSize);
+        PXNewList(PXMaterialContainer, materialInlcudeIndex, &pxModel->MaterialContaierList, &pxModel->MaterialContaierListSize);
 
 
          // Reset all size values
@@ -540,6 +536,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
 
     // Stage - 3 - Extract data
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -547,7 +544,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
         "Parsing",
         "Step 4, extract data..."
     );
-
+#endif
+    
     while (!PXFileIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntry compilerSymbolEntry;
@@ -909,7 +907,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
 
     PXFileDestruct(&tokenSteam);
 
-    PXDeleteList(float, vertexDataCache, vertexDataCacheSize); // Delete cached vertex data
+    PXDeleteList(float, vertexDataCacheSize, &vertexDataCache, PXNull); // Delete cached vertex data
 
 
     PXLogPrint

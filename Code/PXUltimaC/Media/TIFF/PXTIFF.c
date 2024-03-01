@@ -1,5 +1,7 @@
 #include "PXTIFF.h"
 
+#include <OS/File/PXFile.h>
+
 #define PXTIFFDebug 1
 
 PXTIFFType PXAPI PXTIFFTypeFromID(const unsigned char tiffTypeID)

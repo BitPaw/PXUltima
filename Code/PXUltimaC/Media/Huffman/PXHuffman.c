@@ -1,7 +1,9 @@
 #include "PXHuffman.h"
 
-#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/File/PXFile.h>
+
 #include <stdlib.h>
 
 // a symbol value too big to represent any valid symbol, to indicate reading disallowed huffman bits combination,
@@ -16,10 +18,10 @@
 PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXInt32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen)
 {
 	// HuffmanTree_makeFromLengths()
-	huffmanTree->LengthsList = PXNewList(PXInt32U, numcodes);
+	PXNewList(PXInt32U, numcodes, &huffmanTree->LengthsList, PXNull);
 	huffmanTree->NumberOfSymbols = NUM_DEFLATE_CODE_SYMBOLS;
 	huffmanTree->maxbitlen = 15;
-	huffmanTree->CodeSymbols = PXNewList(PXInt32U, numcodes);
+	PXNewList(PXInt32U, numcodes, &huffmanTree->CodeSymbols, PXNull);
 
 	PXCopyList(PXInt32U, numcodes, bitlen, huffmanTree->LengthsList);
 	//-----------
@@ -111,8 +113,8 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 			}
 		}
 
-		huffmanTree->TableLength = PXNewList(PXInt8U, size); // unsigned char*
-		huffmanTree->TableValue = PXNewList(PXInt16U, size); // unsigned short
+		PXNewList(PXInt8U, size, &huffmanTree->TableLength, PXNull); // unsigned char*
+		PXNewList(PXInt16U, size, &huffmanTree->TableValue, PXNull); // unsigned short
 
 		if (!huffmanTree->TableLength || !huffmanTree->TableValue)
 		{
@@ -234,7 +236,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance)
+PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance)
 {
 	// the order in which "code length alphabet code lengths" are stored as specified by deflate, out of this the huffman
 	// tree of the dynamic huffman tree lengths is generated
@@ -451,7 +453,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
 	return PXActionSuccessful;
 }
 
-PXInt16U PXAPI PXHuffmanSymbolDecode(PXFile* const pxFile, const PXHuffmanTree* const huffmanTree)
+PXInt16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const huffmanTree)
 {
 	PXHuffmanSymbol huffmanSymbol;
 	huffmanSymbol.Code = PXFilePeekBits(pxFile, PXHuffmanFirstBits);
@@ -536,10 +538,10 @@ void PXHuffmanTreeConstruct(PXHuffmanTree* const huffmanTree)
 
 void PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
 {
-	PXDeleteList(PXInt32U, huffmanTree->CodeSymbols, 0);
-	PXDeleteList(PXInt32U, huffmanTree->LengthsList, 0);
-	PXDeleteList(PXInt8U, huffmanTree->TableLength, 0);
-	PXDeleteList(PXInt16U, huffmanTree->TableValue, 0);
+	PXDeleteList(PXInt32U, 0, huffmanTree->CodeSymbols, 0);
+	PXDeleteList(PXInt32U, 0, huffmanTree->LengthsList, 0);
+	PXDeleteList(PXInt8U, 0, huffmanTree->TableLength, 0);
+	PXDeleteList(PXInt16U, 0, huffmanTree->TableValue, 0);
 }
 
 PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXInt16U code)

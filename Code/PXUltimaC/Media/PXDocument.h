@@ -1,9 +1,8 @@
 #ifndef PXDocumentINCLUDE
 #define PXDocumentINCLUDE
 
+#include <Media/PXResource.h>
 #include <OS/File/PXFile.h>
-#include <Media/PXColor.h>
-
 
 #ifdef __cplusplus
 extern "C"

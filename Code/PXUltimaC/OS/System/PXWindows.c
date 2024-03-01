@@ -1,10 +1,6 @@
 #include "PXWindows.h"
 
-BOOL __stdcall GetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule)
-{
-    return 0;
-}
-
+#if !WindowsAtleastXP
 PVOID WINAPI PXWindowsEncodePointer(PVOID Ptr)
 {
     return Ptr;
@@ -34,3 +30,4 @@ VOID WINAPI PXWindowsRtlCaptureContext(PCONTEXT ContextRecord)
 {
 
 }
+#endif

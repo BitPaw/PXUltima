@@ -15,31 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OS\TestSocket.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="OS\TestSystemInfo.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Sound\TestSound.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="main.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Network\PXNetworkTest.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\PXWindowTest.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OS\TestSocket.h">
+    <ClInclude Include="Network\PXNetworkTest.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\TestSystemInfo.h">
+    <ClInclude Include="Window\PXWindowTest.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Sound\TestSound.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="..\[Export]\PXUltimaC\32B-Windows-Debug\PXUltima.dll" />
   </ItemGroup>
 </Project>

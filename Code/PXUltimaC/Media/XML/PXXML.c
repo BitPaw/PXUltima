@@ -1,8 +1,9 @@
 #include "PXXML.h"
 
 #include <Compiler/PXCompiler.h>
-#include <Media/PXText.h>
 #include <OS/Console/PXConsole.h>
+#include <Media/PXText.h>
+#include <Media/PXDocument.h>
 
 PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
 {

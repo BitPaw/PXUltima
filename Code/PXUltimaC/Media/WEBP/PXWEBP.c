@@ -1,6 +1,7 @@
 #include "PXWEBP.h"
 
 #include <Media/RIFF/PXRIFF.h>
+#include <OS/File/PXFile.h>
 
 const char PXWEBPVP[4] = { 'V', 'P', '8', ' ' };
 

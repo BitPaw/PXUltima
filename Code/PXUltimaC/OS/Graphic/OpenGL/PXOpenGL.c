@@ -1568,10 +1568,13 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             "Wait for window..."
         );
 #endif
-        while (!pxOpenGL->AttachedWindow->IsRunning)
-        {
-            printf("");
-        }
+        PXBool expected = PXTrue;
+        PXAwaitInfo pxAwaitInfo;
+        pxAwaitInfo.DataTarget = &pxOpenGL->AttachedWindow->IsRunning;
+        pxAwaitInfo.DataExpect = &expected;
+        pxAwaitInfo.DataSize = sizeof(PXBool);
+
+        PXAwaitChange(&pxAwaitInfo);
 
 #if PXLogEnable
         PXLogPrint
@@ -2022,15 +2025,20 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     if (!pxGraphicInitializeInfo->WindowReference) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
     {
 #if OSWindows
-        PXWindow* const window = PXNew(PXWindow);
-
-        pxOpenGL->AttachedWindow = window;
-
+        PXWindow* const window = PXNull;
+        PXNew(PXWindow, &window);
         PXWindowConstruct(window);
 
+        pxOpenGL->AttachedWindow = window;
         PXWindowCreateHidden(window, pxGraphicInitializeInfo->Width, pxGraphicInitializeInfo->Height, 1u); // This will call this function again. Recursive
 
-        PXAwaitChangeCU(&window->IsRunning); // Wait
+        PXBool expected = PXTrue;
+        PXAwaitInfo pxAwaitInfo;
+        pxAwaitInfo.DataTarget = &window->IsRunning;
+        pxAwaitInfo.DataExpect = &expected;
+        pxAwaitInfo.DataSize = sizeof(PXBool);
+
+        PXAwaitChange(&pxAwaitInfo);
 
         pxOpenGL->AttachedWindow = window;
 
@@ -4374,7 +4382,8 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             pxOpenGL->ShaderGetiv(shader->ResourceID.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
 
 
-            char* shaderErrorLengthData = PXStackNew(char, shaderErrorLengthMaximal);
+            char* shaderErrorLengthData = PXNull;
+            PXNewStackList(char, shaderErrorLengthMaximal, &shaderErrorLengthData, PXNull);
 
             // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
@@ -4393,7 +4402,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             );
 #endif
 
-            PXStackDelete(char, shaderErrorLengthMaximal, shaderErrorLengthData);
+            PXDeleteStackList(char, shaderErrorLengthMaximal, &shaderErrorLengthData, PXNull);
 
             break;
         }
@@ -4543,7 +4552,8 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, struct PXGr
         case PXResourceActionCreate:
         {
             // Batch create textures
-            PXInt32U* const openGLTextureIDListData = PXStackNew(PXInt32U, pxGraphicTexturInfo->Amount);
+            PXInt32U* const openGLTextureIDListData = PXNull;
+            PXNewStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
 
             pxOpenGL->TextureCreate(pxGraphicTexturInfo->Amount, openGLTextureIDListData);
 
@@ -4730,7 +4740,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, struct PXGr
                 }
             }
 
-            PXStackDelete(PXInt32U, pxGraphicTexturInfo->Amount, openGLTextureIDListData);
+            PXDeleteStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
             
             break;
         }
@@ -5637,11 +5647,11 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         void* indexData = pxModel->IndexBuffer.IndexData;
 
         // Copy vertex data
-        pxModel->VertexBuffer.VertexData = PXNewList(PXByte, pxModel->VertexBuffer.VertexDataSize);
+        PXNewList(PXByte, pxModel->VertexBuffer.VertexDataSize, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
         PXMemoryCopy(vertexData, pxModel->VertexBuffer.VertexDataSize, pxModel->VertexBuffer.VertexData, pxModel->VertexBuffer.VertexDataSize);
 
         // Copy index data
-        pxModel->IndexBuffer.IndexData = PXNewList(PXByte, pxModel->IndexBuffer.IndexDataSize);
+        PXNewList(PXByte, pxModel->IndexBuffer.IndexDataSize, &pxModel->IndexBuffer.IndexData, &pxModel->IndexBuffer.IndexDataSize);
         PXMemoryCopy(indexData, pxModel->IndexBuffer.IndexDataSize, pxModel->IndexBuffer.IndexData, pxModel->IndexBuffer.IndexDataSize);
 
 #if PXLogEnable
@@ -5832,7 +5842,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[containerID];
 
             PXSize pxTextureListCounter = 0;
-            PXTexture2D** pxTextureList = PXStackNew(PXTexture2D*, pxMaterialContainer->MaterialListSize);
+            PXTexture2D** pxTextureList = PXNull;
+            PXNewStackList(PXTexture2D*, pxMaterialContainer->MaterialListSize, &pxTextureList, PXNull);
 
             for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListSize; ++materialID)
             {
@@ -5855,7 +5866,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
             PXOpenGLTextureAction(pxOpenGL, &pxGraphicTexturInfo);
 
-            PXStackDelete(PXTexture2D*, pxMaterialContainer->MaterialListSize,  pxTextureList);
+            PXDeleteStackList(PXTexture2D*, pxMaterialContainer->MaterialListSize, pxTextureList, PXNull);
         }
     }
 

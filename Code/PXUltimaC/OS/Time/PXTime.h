@@ -56,14 +56,7 @@ extern "C"
 		PXInt8U Hour; // 0-24
 		PXInt8U Day; // 0-31
 		PXInt8U DayOfWeek; // enum
-		PXInt8U Month; // 0-12	
-
-		union
-		{
-			clock_t ClockCycle;
-			double ClockCycleDelta;
-		};
-	
+		PXInt8U Month; // 0-12
 	}
 	PXTime;
 

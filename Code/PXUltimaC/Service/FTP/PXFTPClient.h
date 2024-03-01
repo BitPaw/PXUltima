@@ -13,7 +13,8 @@ extern "C"
 
 	typedef struct PXFTPClient_
 	{
-		PXClient Client;
+		int x;
+		//PXClient Client;
 	}
 	PXFTPClient;
 

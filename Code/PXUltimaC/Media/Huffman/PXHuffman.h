@@ -64,11 +64,11 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(PXHuffmanTree* const huffmanTree);
 	PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const huffmanTree);
 
-	PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance);
+	PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance);
 
 	PXPublic PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXInt32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen);
 
-	PXPublic PXInt16U PXAPI PXHuffmanSymbolDecode(PXFile* const pxFile, const PXHuffmanTree* const codetree);
+	PXPublic PXInt16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const codetree);
 
 	PXPublic PXInt32U PXAPI reverseBits(const PXInt32U bits, const PXInt32U num);
 

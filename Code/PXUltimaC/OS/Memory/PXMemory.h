@@ -3,6 +3,8 @@
 
 #include <Media/PXType.h>
 #include <Compiler/PXCompilerSettings.h>
+#include <Media/PXResource.h>
+#include <OS/Error/PXActionResult.h>
 
 #if OSUnix
 typedef int PXMemoryAccessModeType;
@@ -15,7 +17,7 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 #define MemoryAssertEnable 0
 #define PXMemoryDebug 1
 #define MemoryDebugLeakDetection 0
-#define MemoryUseSystemFunction 1
+#define MemoryUseSystemFunction 0
 #define MemorySanitise 0
 //----------------
 
@@ -70,47 +72,27 @@ extern "C"
 	}
 	PXMemoryUsage;
 
+	typedef struct PXMemoryInfo_
+	{
+		// OUT
+		void** Data;
+		PXSize* SizeTotal;
 
-	PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
-
-
-
-
-
-	PXPublic const void* PXAPI PXMemoryLocate(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
-
+		// Input
+		PXSize Amount;
+		PXSize TypeSize;
 	
-
-
-	// PXPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
-
-
-
-
-
-
-
-
-
-
-	// Allocates size bytes on the program stack.
-	// The allocated space is automatically freed when the calling function exits
-	// (not when the allocation merely passes out of scope).
+		// Debug Info
 #if PXMemoryDebug
-	PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount, const char* file, const char* function, const PXSize line);
-#else
-	PXPublic void* PXAPI PXMemoryStackAllocate(const PXSize typeSize, const PXSize amount);
+		char* File;
+		char* Function;
+		PXSize Line;
 #endif
 
+		PXBool MemoryClear;
+	}
+	PXMemoryInfo;
 
-
-	// Deallocates stack allocated memory if it was commited to the heap.
-	// Additional size parameter can be ignored	
-#if PXMemoryDebug
-	PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amount, void* const dataAdress, const char* file, const char* function, const PXSize line);
-#else
-	PXPublic void PXAPI PXMemoryStackRelease(const PXSize typeSize, const PXSize amount, void* const dataAdress);
-#endif
 
 
 
@@ -121,11 +103,6 @@ extern "C"
 		PXSize* AmountCurrent;
 		PXSize* DataSize;
 		void** DataAdress;
-#if PXMemoryDebug
-		const char* CodeFileName;
-		const char* CodeFunctionName;
-		PXSize CodeFileLine;
-#endif
 
 		PXBool DoFillNewSpace;
 		PXByte FillSymbol;
@@ -140,12 +117,52 @@ extern "C"
 		void* PointOfNewData;
 		PXSize PointOfNewDataSize;
 		PXBool WasSizeIncreased;
+
+#if PXMemoryDebug
+		const char* CodeFileName;
+		const char* CodeFunctionName;
+		PXSize CodeFileLine;
+#endif
 	}
 	PXMemoryHeapReallocateEventData;
 
+
+
+
+	// POSIX
+
+
+
+
+	PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
+
+	PXPublic inline const void* PXAPI PXMemoryLocateFirst(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
+	PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
+	
+
+
+	// PXPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
+
+
+
+
+
+
+
+#if OSUnix
+#define _PX_FILENAME_ ((const char*)(PXMemoryLocateLast(__FILE__, '/', -1) ? (char*)PXMemoryLocateLast(__FILE__, '/', -1) + 1 : __FILE__))
+#elif OSWindows
+#define _PX_FILENAME_ ((const char*)(PXMemoryLocateLast(__FILE__, '\\', -1) ? (char*)PXMemoryLocateLast(__FILE__, '\\', -1) + 1 : __FILE__))
+#endif
+
+
+
+
+
+
 	PXPublic void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size);
 
-	PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateEventData);
+	PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo);
 
 
 	//PXPublic PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSizeCurrent, const PXSize dataAddressSizeRequired);
@@ -169,45 +186,64 @@ extern "C"
 
 
 
+	// Allocates size bytes on the program stack.
+	// The allocated space is automatically freed when the calling function exits
+	// (not when the allocation merely passes out of scope).
+	PXPublic PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+	
+	// Deallocates stack allocated memory if it was commited to the heap.
+	// Additional size parameter can be ignored	
+	PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 
-//---------------------------------------------------------
-// Allocation
-//---------------------------------------------------------
-#if PXMemoryDebug
-	PXPublic void* PXMemoryHeapAllocateDetailed(const PXSize typeSize, const PXSize amount, const char* file, const char* function, const PXSize line);
-#define PXNew(type) (type*)PXMemoryHeapAllocateDetailed(sizeof(type), 1, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-#define PXNewList(type, amount) (type*)PXMemoryHeapAllocateDetailed(sizeof(type), amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+	PXPublic PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+	PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
-#define PXStackNew(type, amount) (type*)PXMemoryStackAllocate(sizeof(type), amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-
-#else
-	PXPublic void* PXAPI PXMemoryHeapAllocate(const PXSize amount, const PXSize typeSize);
-
-#define PXNew(type) (type*)PXMemoryHeapAllocate(1u, sizeof(type))
-#define PXNewList(type, amount) (type*)PXMemoryHeapAllocate(amount, sizeof(type))
-#endif
-//---------------------------------------------------------
+#define PXMemoryInfoFill(pxMemoryInfo, type, amount, dataAdress, dataSizeAdress, memoryClear) \
+	pxMemoryHeapAllocateInfo.Data = dataAdress; \
+	pxMemoryHeapAllocateInfo.SizeTotal = dataSizeAdress; \
+	pxMemoryHeapAllocateInfo.Amount = amount; \
+	pxMemoryHeapAllocateInfo.TypeSize = sizeof(type); \
+	pxMemoryHeapAllocateInfo.MemoryClear = memoryClear; \
+	pxMemoryHeapAllocateInfo.File = _PX_FILENAME_; \
+	pxMemoryHeapAllocateInfo.Function = _PX_FUNCTION_; \
+	pxMemoryHeapAllocateInfo.Line = _PX_LINE_; \
 
 
+#define PXNewListSettings(type, amount, dataAdress, dataSizeAdress, memoryClear) { \
+	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, memoryClear); \
+	PXMemoryHeapAllocate(&pxMemoryHeapAllocateInfo); }
 
-//---------------------------------------------------------
-// Deallocation
-//---------------------------------------------------------
-#if PXMemoryDebug
-	PXPublic void PXAPI PXMemoryReleaseDetailed(void* adress, const PXSize size, const char* file, const char* function, const PXSize line);
+#define PXNewList(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXFalse);
+#define PXNewListZerod(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXTrue)
+	
+#define PXNew(type, dataAdress) PXNewList(type, 1u, dataAdress, PXNull)
+#define PXNewZerod(type, dataAdress) PXNewListZerod(type, 1u, dataAdress, PXNull)
 
-#define PXDelete(type, adress) PXMemoryReleaseDetailed(adress, sizeof(type), _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-#define PXDeleteList(type, adress, amount) PXMemoryReleaseDetailed(adress, sizeof(type) * amount, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+#define PXDeleteList(type, amount, dataAdress, dataSizeAdress) { \
+	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
+	PXMemoryHeapDeallocate(&pxMemoryHeapAllocateInfo); }
 
-#define PXStackDelete(type, amount, adress) PXMemoryStackRelease(sizeof(type), amount, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
+#define PXDelete(type, dataAdress) PXDeleteList(type, 1u, dataAdress, PXNull)
 
-#else
-	PXPublic void PXAPI PXMemoryRelease(void* adress, const PXSize size);
 
-#define PXDelete(type, adress) PXMemoryRelease(adress, sizeof(type))
-#define PXDeleteList(type, adress, amount) PXMemoryRelease(adress, sizeof(type) * (PXInt32U)amount)
-#endif
+#define PXNewStackList(type, amount, dataAdress, dataSizeAdress) { \
+	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
+	PXMemoryStackAllocate(&pxMemoryHeapAllocateInfo); }
+
+#define PXNewStack(type, dataAdress) PXNewStackList(type, 1u, dataAdress, PXNull)
+
+
+#define PXDeleteStackList(type, amount, dataAdress, dataSizeAdress) { \
+	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
+	PXMemoryStackDeallocate(&pxMemoryHeapAllocateInfo); }
+
+#define PXDeleteStack(type, dataAdress) PXDeleteStackList(type, 1u, dataAdress, PXNull)
+
 //---------------------------------------------------------
 
 

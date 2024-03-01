@@ -14,12 +14,12 @@
 
 void PXAPI PXImageConstruct(PXImage* const image)
 {
-    PXMemoryClear(image, sizeof(PXImage));
+    PXClear(PXImage, image);
 }
 
 void PXAPI PXImageDestruct(PXImage* const image)
 {
-    PXDeleteList(PXByte, image->PixelData, image->PixelDataSize);
+    PXDeleteList(PXByte, image->PixelDataSize, &image->PixelData, &image->PixelDataSize);
 
     PXImageConstruct(image);
 }
@@ -146,7 +146,9 @@ void PXAPI PXImageFlipVertical(PXImage* image)
     const PXSize bbp = PXColorFormatBytePerPixel(image->Format);;
     const PXSize scanLineWidthSize = image->Width * bbp;
     const PXSize scanLinesToSwap = image->Height / 2u;
-    PXByte* copyBufferRow = PXNewList(PXByte, scanLineWidthSize);
+    PXByte* copyBufferRow = PXNull;
+    
+    PXNewList(PXByte, scanLineWidthSize, &copyBufferRow, PXNull);
 
     if(!copyBufferRow)
     {
@@ -163,7 +165,7 @@ void PXAPI PXImageFlipVertical(PXImage* image)
         PXMemoryCopy(copyBufferRow, scanLineWidthSize, bufferA, scanLineWidthSize); // Buffer -> B 'Move SaveCopy (A) to B'
     }
 
-    PXDeleteList(PXByte, copyBufferRow, scanLineWidthSize);
+    PXDeleteList(PXByte, scanLineWidthSize, &copyBufferRow, PXNull);
 }
 
 void PXAPI PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, unsigned char blue)

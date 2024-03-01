@@ -2,11 +2,13 @@
 
 #include <stdlib.h>
 
-#include <OS/Memory/PXMemory.h>
-#include <OS/Time/PXTime.h>
 #include <Media/ZLIB/PXZLIB.h>
 #include <Media/ADAM7/PXADAM7.h>
 #include <Media/CRC32/PXCRC32.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/File/PXFile.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/Time/PXTime.h>
 
 #define PNGDebugInfo 0
 
@@ -19,7 +21,7 @@ unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g
         const int index = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
         if (!tree->children[index])
         {
-            tree->children[index] = PXNew(PNGColorTree);
+            PXNew(PNGColorTree, &tree->children[index]);
 
             if (!tree->children[index])
                 return 83; /*alloc fail*/
@@ -408,7 +410,9 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
     {
         if (mode->bitdepth == 8)
         {
-            memcpy(buffer, in, numpixels * 4);
+            const PXSize size = numpixels * 4u;
+            
+            PXMemoryCopy(in, size, buffer, size); 
         }
         else
         {
@@ -458,7 +462,9 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
     {
         if (mode->bitdepth == 8)
         {
-            memcpy(buffer, in, numpixels * 3);
+            PXSize size = numpixels * 3;
+
+            PXMemoryCopy(in, size, buffer, size);
         }
         else
         {
@@ -478,7 +484,9 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
             {
                 unsigned index = in[i];
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-                memcpy(buffer, &mode->palette[index * 4], 3);
+
+                const PXSize size = 3;
+                PXMemoryCopy(&mode->palette[index * 4], size, buffer, size);            
             }
         }
         else
@@ -488,7 +496,9 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
             {
                 unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
                 /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-                memcpy(buffer, &mode->palette[index * 4], 3);
+           
+                const PXSize size = 3;
+                PXMemoryCopy(&mode->palette[index * 4], size, buffer, size);
             }
         }
     }
@@ -515,7 +525,9 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
         {
             for (i = 0; i != numpixels; ++i, buffer += num_channels)
             {
-                memcpy(buffer, &in[i * 4], 3);
+                const PXSize size = 3;
+
+                PXMemoryCopy(&in[i * 4], size, buffer, size);
             }
         }
         else
@@ -941,7 +953,7 @@ void PXAPI PXPNGConstruct(PXPNG* const png)
 
 void PXAPI PXPNGDestruct(PXPNG* const png)
 {
-    PXDeleteList(PXByte, png->PixelData, png->PixelDataSize);
+    PXDeleteList(PXByte, png->PixelDataSize, &png->PixelData, &png->PixelDataSize);
 
     png->PixelDataSize = 0;
     png->PixelData = 0;
@@ -1017,8 +1029,8 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
         }
 
         // Allocate Memory for later ImageData Chunks
-        imageDataChunkCacheSizeMAX = pxFile->DataSize - 0u;
-        imageDataChunkCache = PXNewList(PXByte, imageDataChunkCacheSizeMAX);
+
+        PXNewList(PXByte, pxFile->DataSize, &imageDataChunkCache, &imageDataChunkCacheSizeMAX);
 
         //---------------------------------------------------------------------
 
@@ -1416,12 +1428,9 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
                 {
                     const PXInt32U listSize = chunk.Lengh / 2;
 
-                    PXInt16U* const list = PXNewList(PXInt16U, listSize);
+                    PXNewList(PXInt16U, listSize, &png.PaletteHistogram.ColorFrequencyList, &png.PaletteHistogram.ColorFrequencyListSize);
 
-                    png.PaletteHistogram.ColorFrequencyListSize = listSize;
-                    png.PaletteHistogram.ColorFrequencyList = list;
-
-                    PXFileReadI16UVE(pxFile, &list, listSize, PXEndianBig);
+                    PXFileReadI16UVE(pxFile, &png.PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
 
                     break;
                 }
@@ -1548,9 +1557,8 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
 
         const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(&pxADAM7);
 
-        PXByte* adam7Cache = PXNewList(PXByte, expectedadam7CacheSize);
+        PXNewList(PXByte, expectedadam7CacheSize, &pxADAM7.DataOutput, &pxADAM7.OutputSize);
         pxADAM7.DataInput = pxZLIBResultStream.Data;
-        pxADAM7.DataOutput = adam7Cache;
 
         const PXActionResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
         //---------------------------------------------------------------------
@@ -1558,9 +1566,9 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXImage* const image, PXFile* const pxFil
         //---------------------------------------------------------------------
         // Color Comprerss
         //---------------------------------------------------------------------
-        const PXActionResult decompress = PXPNGImageDataDecompress(&png, adam7Cache, image->PixelData, png.ImageHeader.BitDepth, png.ImageHeader.ColorType);
+        const PXActionResult decompress = PXPNGImageDataDecompress(&png, pxADAM7.DataOutput, image->PixelData, png.ImageHeader.BitDepth, png.ImageHeader.ColorType);
 
-        PXDeleteList(PXByte, adam7Cache, expectedadam7CacheSize);
+        PXDeleteList(PXByte, expectedadam7CacheSize, &pxADAM7.DataOutput, &pxADAM7.OutputSize);
         //---------------------------------------------------------------------
 
 
@@ -1841,8 +1849,10 @@ the scanlines with 1 extra byte per scanline
 
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = PXNewList(PXByte, linebytes);
-            if (!attempt[type]) error = 83; /*alloc fail*/
+            PXNewList(PXByte, linebytes, &attempt[type], PXNull);
+           
+            if (!attempt[type])
+                error = 83; /*alloc fail*/
         }
 
         if (!error)
@@ -1858,7 +1868,8 @@ the scanlines with 1 extra byte per scanline
                     /*calculate the sum of the result*/
                     if (type == 0)
                     {
-                        for (PXSize x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[type][x]);
+                        for (PXSize x = 0; x != linebytes; ++x) 
+                            sum += (unsigned char)(attempt[type][x]);
                     }
                     else
                     {
@@ -1884,7 +1895,9 @@ the scanlines with 1 extra byte per scanline
 
                 /*now fill the out values*/
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for (PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+               
+                for (PXSize x = 0; x != linebytes; ++x) 
+                    out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
@@ -1899,8 +1912,10 @@ the scanlines with 1 extra byte per scanline
 
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = PXNewList(PXByte, linebytes);
-            if (!attempt[type]) error = 83; /*alloc fail*/
+            PXNewList(PXByte, linebytes, &attempt[type], PXNull);
+
+            if (!attempt[type])
+                error = 83; /*alloc fail*/
         }
 
         if (!error)
@@ -1913,12 +1928,17 @@ the scanlines with 1 extra byte per scanline
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
                     PXMemoryClear(count, 256 * sizeof(*count));
-                    for (PXSize x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
+
+                    for (PXSize x = 0; x != linebytes; ++x) 
+                        ++count[attempt[type][x]];
+
                     ++count[type]; /*the filter type itself is part of the scanline*/
+                   
                     for (PXSize x = 0; x != 256; ++x)
                     {
                         sum += ilog2i(count[x]);
                     }
+
                     /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
                     if (type == 0 || sum > bestSum)
                     {
@@ -1936,7 +1956,7 @@ the scanlines with 1 extra byte per scanline
         }
 
         for (type = 0; type != 5; ++type) 
-            PXDeleteList(PXByte, attempt[type], 0);
+            PXDeleteList(PXByte, PXNull, &attempt[type], PXNull);
     }
     else if (strategy == LFS_PREDEFINED)
     {
@@ -1973,8 +1993,10 @@ the scanlines with 1 extra byte per scanline
         PXZLIBsettings.custom_deflate = 0;
         for (type = 0; type != 5; ++type)
         {
-            attempt[type] = PXNewList(PXByte, linebytes);
-            if (!attempt[type]) error = 83; /*alloc fail*/
+            PXNewList(PXByte, linebytes, &attempt[type], PXNull);
+
+            if (!attempt[type]) 
+                error = 83; /*alloc fail*/
         }
         if (!error)
         {
@@ -1990,14 +2012,14 @@ the scanlines with 1 extra byte per scanline
                     dummy = 0;
 
                     const PXSize sizeAA = 0xFFFF * 2;
-                    dummy = PXNewList(PXByte, sizeAA);
+                    PXNewList(PXByte, sizeAA, &dummy, PXNull);
 
                     PXSize written = 0;
 
                     // fix this: PXZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
                     // PXZLIB_compress( , &PXZLIBsettings);
 
-                    PXDeleteList(PXByte, dummy, sizeAA);
+                    PXDeleteList(PXByte, sizeAA, dummy, PXNull);
                     /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
                     if (type == 0 || size[type] < smallest)
                     {
@@ -2011,9 +2033,10 @@ the scanlines with 1 extra byte per scanline
             }
         }
         for (type = 0; type != 5; ++type)
-            PXDeleteList(PXByte, attempt[type], 0);
+            PXDeleteList(PXByte, 0, attempt[type], 0);
     }
-    else return 88; // unknown filter strategy
+    else
+        return 88; // unknown filter strategy
 
     return error;
 }
@@ -2086,16 +2109,21 @@ PXSize preProcessScanlines
 
             if (paddingBitsNeeded)
             {
+                PXByte* padded;
+
                 const PXSize size = height * ((width * bpp + 7u) / 8u);
-                PXByte* padded = PXNewList(PXByte, size);
-                if (!padded) error = 83; /*alloc fail*/
+                PXNewList(PXByte, size, &padded, 0);
+              
+                if (!padded)
+                    error = 83; /*alloc fail*/
+
                 if (!error)
                 {
                     addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
                     error = filter(pxScanlineStream->Data, padded, width, height, bpp, LFS_MINSUM);
                 }
 
-                PXDeleteList(PXByte, padded, size);
+                PXDeleteList(PXByte, size, padded, PXNull);
             }
             else
             {
@@ -2117,35 +2145,40 @@ PXSize preProcessScanlines
 
             PXActionReturnOnError(allocationResult);
 
-            PXByte* adam7 = PXNewList(PXByte, passstart[7]);
+            PXByte* adam7 = PXNull;
+            
+            PXNewList(PXByte, passstart[7], &adam7, PXNull);
 
-            if (!adam7 && passstart[7]) error = 83; //alloc fail
+            if (!adam7 && passstart[7]) 
+                error = 83; //alloc fail
 
             if (!error)
             {
                 //Adam7_interlace(adam7, in, png->ImageHeader.Width, png->ImageHeader.Height, bpp);
-                for (PXSize i = 0; i != 7u; ++i)
+                for (PXInt8U i = 0; i != 7u; ++i)
                 {
                     if (bpp < 8)
                     {
+                        PXByte* padded = PXNull;
                         const PXSize newSize = padded_passstart[i + 1] - padded_passstart[i];
-                        PXByte* padded = PXNewList(PXByte, newSize);
+                        PXNewList(PXByte, newSize, &padded, PXNull);
                         //  if(!padded) ERROR_BREAK(83); //alloc fail
                         addPaddingBits(padded, &adam7[passstart[i]], ((passw[i] * bpp + 7u) / 8u) * 8u, passw[i] * bpp, passh[i]);
                         //  error = filter(&(*out)[filter_passstart[i]], padded, passw[i], passh[i], &info_png->color, settings);
                                                 
-                        PXDeleteList(PXByte, padded, newSize);
+                        PXDeleteList(PXByte, newSize, padded, PXNull);
                     }
                     else
                     {
                         //error = filter(&(*out)[filter_passstart[i]], &adam7[padded_passstart[i]], passw[i], passh[i], &info_png->color, settings);
                     }
 
-                    if (error) break;
+                    if (error) 
+                        break;
                 }
             }
 
-            PXDeleteList(PXByte, adam7, passstart[7]);
+            PXDeleteList(PXByte, adam7, passstart[7], PXNull);
 
             break;
         }

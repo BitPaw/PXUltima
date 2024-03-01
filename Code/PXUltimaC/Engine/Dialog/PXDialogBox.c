@@ -1,6 +1,7 @@
 #include "PXDialogBox.h"
 
 #include <OS/Console/PXConsole.h>
+#include <OS/Memory/PXMemory.h>
 
 void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox)
 {

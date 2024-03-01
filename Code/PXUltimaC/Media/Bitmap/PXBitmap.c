@@ -1,7 +1,8 @@
 #include "PXBitmap.h"
 
-#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
+#include <OS/File/PXFile.h>
+#include <OS/Memory/PXMemory.h>
 
 #define PXQuickSwap(a, b) \
 a = a + b; \
@@ -383,10 +384,7 @@ void PXAPI PXBitmapConstruct(PXBitmap* const bmp)
 
 void PXAPI PXBitmapDestruct(PXBitmap* const bmp)
 {
-    PXDeleteList(PXByte, bmp->PixelData, bmp->PixelDataSize);
-
-    bmp->PixelData = PXNull;
-    bmp->PixelDataSize = 0;
+    PXDeleteList(PXByte, bmp->PixelDataSize, &bmp->PixelData, &bmp->PixelDataSize);
 }
 
 void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp)

@@ -8,8 +8,15 @@ extern "C"
 {
 #endif
 
-	PXPublic PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSize);
-	PXPublic PXBool PXAPI PXAwaitChangeCU(volatile unsigned char* const dataAdress);
+	typedef struct PXAwaitInfo_
+	{
+		volatile void* DataTarget;
+		const void* DataExpect;
+		PXSize DataSize;
+	}
+	PXAwaitInfo;
+
+	PXPublic PXBool PXAPI PXAwaitChange(PXAwaitInfo* const pxAwaitInfo);
 
 #ifdef __cplusplus
 }

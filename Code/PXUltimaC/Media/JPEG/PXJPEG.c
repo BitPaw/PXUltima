@@ -589,8 +589,9 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxF
 
                     if(hasThumbnail)
                     {
-                        jpeg->FileInfo.ThumbnailDataSize = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
-                        jpeg->FileInfo.ThumbnailData = PXNewList(PXByte, jpeg->FileInfo.ThumbnailDataSize);
+                        const PXSize size = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
+
+                        PXNewList(PXByte, size, &jpeg->FileInfo.ThumbnailData, &jpeg->FileInfo.ThumbnailDataSize);
 
                         PXFileReadB(pxFile, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
                     }
@@ -599,9 +600,8 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxF
                 break;
             }
             case PXJPEGMarkerComment:
-            {
-                jpeg->CommentSize = chunkLength;
-                jpeg->Comment = PXNewList(char, chunkLength);
+            {        
+                PXNewList(char, chunkLength, &jpeg->Comment, &jpeg->CommentSize);
 
                 PXFileReadB(pxFile, jpeg->Comment, chunkLength);
 

@@ -1,6 +1,7 @@
 #include "PXLAME.h"
 
 #include <Media/PXText.h>
+#include <OS/File/PXFile.h>
 
 const char PXLameSignatureID[] = { 'L', 'A', 'M', 'E' };
 

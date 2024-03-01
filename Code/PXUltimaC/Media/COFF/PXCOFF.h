@@ -287,6 +287,7 @@ extern "C"
 		PXCOFFImportDirectoryTable ImportDirectoryTable;
 
 		PXSectionTable* SectionTableList;
+		PXSize SectionTableListSize;
 	}
 	PXCOFF;
 

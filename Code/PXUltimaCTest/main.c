@@ -4,6 +4,21 @@
 #define PXLDAPTest 0
 #define PXKeyBoardVirtualTest 0
 
+
+#if defined _M_IX86
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_IA64
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_X64
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#else
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
+
+#pragma comment(lib, "Comctl32.lib")
+
+
+#if 0
 #include "OS/TestSystemInfo.h"
 #include "Graphic/TestWindow.h"
 #include "Graphic/TestOpenGL.h"
@@ -15,24 +30,11 @@
 #include "OS/TestSocket.h"
 #include "Service/TestFTP.h"
 #include "Service/TestSBP.h"
+#endif
 
-#include <Media/TTF/PXTTF.h>
+#include "Network/PXNetworkTest.h"
+#include "Window/PXWindowTest.h"
 
-#include <OS/Audio/PXAudio.h>
-
-#include <OS/Graphic/DirectX/PXDirectX.h>
-
-
-#if PXLDAPTest
-#include <Service/LDAP/PXLDAPClient.h>
-
-#endif // PXLDAPTest
-
-
-#if PXKeyBoardVirtualTest
-#include <OS/Hardware/PXKeyBoard.h>
-#endif // PXKeyBoardVirtualTest
-#include <OS/Window/PXWindow.h>
 
 /*
 
@@ -73,20 +75,28 @@ void PXTextMatchTest()
 	const PXBool c = PXTextMatchW(L"MyFile.*", 8, L"*.h", 3);
 	printf("");
 }*/
-#include <Media/BinaryLinux/PXBinaryLinux.h>
-#include <Media/BinaryWindows/PXBinaryWindows.h>
-#include <Media/CanonRaw3/PXCanonRaw3.h>
-#include <OS/Hardware/PXProcessor.h>
-#include <OS/Console/PXConsole.h>
-#include <Media/BinaryWindows/PXBinaryWindows.h>
-#include <Algorithm/KnowlegeGraph/PXKnowlegeGraph.h>
+
+
 
 int main()
 {
-	printf("[i] Starting testing...\n");
+	PXConsoleWriteA("[i] Starting testing...\n");
 
 
 #if 1
+	PXTestWindowAll();
+#endif // 0
+
+#if 0
+	PXTestNetworkAll();
+#endif // 0
+
+
+
+
+
+
+#if 0
 	{
 		PXBinaryWindows binaryWindows;
 
@@ -99,7 +109,7 @@ int main()
 
 
 
-#if 1
+#if 0
 	{
 		PXImage pxImage;
 		PXClear(PXImage, &pxImage);
@@ -112,7 +122,7 @@ int main()
 #endif // 1
 
 
-#if 1 // XML -> Document -> Image
+#if 0 // XML -> Document -> Image
 	{
 		PXKnowlegeGraph pxKnowlegeGraph;
 		PXDocument pxDocument;
@@ -151,7 +161,7 @@ int main()
 
 
 	
-	
+#if 0
 	while (1)
 	{
 		PXInt32U temp;
@@ -162,10 +172,14 @@ int main()
 		printf("CPU temp : %i\n", temp);
 
 	}
+#endif
 
 
-
+#if 0
 	TestSoundAll();
+#endif // 0
+
+	
 
 
 #if 0
@@ -203,6 +217,7 @@ int main()
 #endif
 
 
+#if 0
 	// X86
 	{
 		PXInt32U coolNumber = 0xAABBCCDD;
@@ -214,6 +229,7 @@ int main()
 		printf("Hello, \n");
 
 	}
+#endif
 
 
 
@@ -578,7 +594,7 @@ int main()
 
 
 
-	printf("[i] Finished testing...\n");
+	PXConsoleWriteA("[i] Finished testing...\n");
 
 	return 0;
 }

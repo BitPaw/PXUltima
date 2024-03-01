@@ -13,7 +13,10 @@ extern "C"
 	typedef struct PXADAM7_
 	{
 		void* DataInput;
+		PXSize InputSize;
+
 		void* DataOutput;
+		PXSize OutputSize;
 
 		PXSize Width;
 		PXSize Height;

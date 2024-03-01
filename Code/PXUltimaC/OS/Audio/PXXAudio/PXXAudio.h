@@ -16,17 +16,17 @@ extern "C"
 
 
 	//--------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXXAudioInitialize(PXAudio* const pxAudio);
+	PXPublic PXActionResult PXAPI PXXAudioInitialize(PXAudioXSystem* const pxAudioXSystem, PXAudioInitializeInfo* const pxAudioInitializeInfo);
 
-	PXPublic PXActionResult PXAPI PXXAudioDeviceAmount(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXInt32U* const amount);
-	PXPublic PXActionResult PXAPI PXXAudioDeviceFetch(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice);
-	PXPublic PXActionResult PXAPI PXXAudioDeviceFetchAll(PXAudio* const pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceAmount(PXAudioXSystem* const pxAudioXSystem, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceFetch(PXAudioXSystem* const pxAudioXSystem, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceFetchAll(PXAudioXSystem* const pxAudioXSystem, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount);
 
-	PXPublic PXActionResult PXAPI PXXAudioDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID);
-	PXPublic PXActionResult PXAPI PXXAudioDeviceClose(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceOpen(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceClose(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice);
 	PXPublic PXActionResult PXAPI PXXAudioDeviceLoad
 	(
-		PXAudio* const pxAudio,
+		PXAudioXSystem* const pxAudioXSystem,
 		PXAudioDevice* const pxAudioDevice,
 		PXSound* const pxSound
 	);
@@ -44,23 +44,23 @@ extern "C"
 	//--------------------------------------------------------
 	// Device - Pitch
 	//--------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXXAudioDevicePitchIncrease(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount);
-	PXPublic PXActionResult PXAPI PXXAudioDevicePitchSet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int pitch);
-	PXPublic PXActionResult PXAPI PXXAudioDevicePitchReduce(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, float amount);
+	PXPublic PXActionResult PXAPI PXXAudioDevicePitchIncrease(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, float amount);
+	PXPublic PXActionResult PXAPI PXXAudioDevicePitchSet(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const unsigned int pitch);
+	PXPublic PXActionResult PXAPI PXXAudioDevicePitchReduce(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, float amount);
 
 	//--------------------------------------------------------
 	// Device - Volume
 	//--------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXXAudioDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, unsigned short* const volume);
-	PXPublic PXActionResult PXAPI PXXAudioDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned int volume);
-	PXPublic PXActionResult PXAPI PXXAudioDeviceVolumeSetIndividual(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceVolumeGet(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, unsigned short* const volume);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceVolumeSetEqual(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const unsigned int volume);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceVolumeSetIndividual(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight);
 
 	//--------------------------------------------------------
 	// Device - Playback
 	//--------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXXAudioDeviceStart(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
-	PXPublic PXActionResult PXAPI PXXAudioDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
-	PXPublic PXActionResult PXAPI PXXAudioDevicePause(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceStart(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice);
+	PXPublic PXActionResult PXAPI PXXAudioDeviceStop(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice);
+	PXPublic PXActionResult PXAPI PXXAudioDevicePause(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice);
 
 #endif
 

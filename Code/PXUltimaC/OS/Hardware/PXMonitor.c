@@ -1,6 +1,7 @@
 #include "PXMonitor.h"
 
 #include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
 
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -54,6 +55,18 @@ PXActionResult PXAPI PXMonitorDeviceAmount(PXSize* const amount)
 	// Count how many devices we have.
 	for ( ; EnumDisplayDevicesA(NULL, *amount, &displayDevice, 0); ++(*amount));
 
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Monitor",
+		"Device",
+		"Detected <%i> monitor devices",
+		*amount
+	);
+#endif
+
 	return PXActionSuccessful;
 #endif	
 }
@@ -104,6 +117,17 @@ void PXAPI PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height)
 
 void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList, const PXSize amount)
 {
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Monitor",
+		"Device",
+		"Fetching <%i> monitor devices",
+		amount
+	);
+#endif
+
 #if OSUnix
 #elif OSWindows
 	DISPLAY_DEVICEA displayDevice;

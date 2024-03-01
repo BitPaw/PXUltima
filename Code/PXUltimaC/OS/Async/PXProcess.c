@@ -14,6 +14,7 @@
 #include <OS/Library/PXLibrary.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Async/PXThread.h>
+#include <OS/File/PXFile.h>
 
 void PXAPI PXProcessConstruct(PXProcess* const pxProcess)
 {
@@ -471,7 +472,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 		);
 	}
 
-	PXStackDelete(char, sizeAllocated, memory);
+	PXDeleteStackList(char, sizeAllocated, &memory, PXNull);
 
 	PXLibraryClose(&pxLibraryNTDLL);
 #endif

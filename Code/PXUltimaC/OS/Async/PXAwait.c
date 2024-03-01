@@ -3,11 +3,13 @@
 #include <OS/System/PXOSVersion.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Async/PXThread.h>
+#include <OS/Console/PXConsole.h>
 
 #if WindowsAtleast8
 #pragma comment(lib, "Synchronization.lib")
 #endif
 
+/*
 PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSize)
 {
 #if OSUnix
@@ -55,7 +57,7 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 
         // [Fix?] Could we tell the scheduler not to bother with this thread and skip it? 
         // So it just uses very smal timeframe to do stuff. 
-        PXThreadYieldToOtherThreads();     
+   
     }
 
     return PXFalse;
@@ -64,8 +66,42 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 
 #endif
 }
+*/
 
-PXBool PXAPI PXAwaitChangeCU(volatile unsigned char* const dataAdress)
+PXBool PXAPI PXAwaitChange(PXAwaitInfo* const pxAwaitInfo)
 {
-    return PXAwaitChange(dataAdress, sizeof(unsigned char));
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Await",
+        "Wait",
+        "..."
+    );
+#endif
+
+    for(;;)
+    {
+        const PXBool isSame = PXMemoryCompare(pxAwaitInfo->DataTarget, pxAwaitInfo->DataSize, pxAwaitInfo->DataExpect, pxAwaitInfo->DataSize);
+
+        if(isSame)
+        {
+            break;
+        }
+
+        PXThreadSleep(PXNull, 1);
+       // PXThreadYieldToOtherThreads();
+    }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Await",
+        "Wait",
+        "Done!"
+    );
+#endif
+
+    return PXTrue;
 }

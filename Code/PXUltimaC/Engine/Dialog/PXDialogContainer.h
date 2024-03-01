@@ -2,6 +2,7 @@
 #define PXDialogInclude
 
 #include <Media/PXResource.h>
+#include <Media/PXText.h>
 
 #ifdef __cplusplus
 extern "C"

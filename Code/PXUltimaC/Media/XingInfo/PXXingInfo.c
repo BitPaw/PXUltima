@@ -1,5 +1,7 @@
 #include "PXXingInfo.h"
 
+#include <OS/File/PXFile.h>
+
 static const char PXXingInfoSignatureInfo[4] = { 'I', 'n', 'f', 'o' };
 static const char PXXingInfoSignatureXing[4] = { 'X', 'i', 'n', 'g' };
 

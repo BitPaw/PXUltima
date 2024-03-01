@@ -1,5 +1,7 @@
 #include "PXTTF.h"
 
+#include <OS/File/PXFile.h>
+
 PXPlatformID PXAPI PXTTFPlatformFromID(const PXInt16U platformID)
 {
 	switch (platformID)
@@ -610,8 +612,13 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 				PXFileReadI16UE(pxFile, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
 				PXFileReadI16UE(pxFile, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
 
-				ttf->CharacterMapping.EncodingRecordListSize = sizeof(PXEncodingRecord) * ttf->CharacterMapping.NumberOfTables;
-				ttf->CharacterMapping.EncodingRecordList = PXNewList(PXEncodingRecord, ttf->CharacterMapping.NumberOfTables);
+				PXNewList
+				(
+					PXEncodingRecord, 
+					ttf->CharacterMapping.NumberOfTables,
+					&ttf->CharacterMapping.EncodingRecordList,
+					&ttf->CharacterMapping.EncodingRecordListSize
+				);
 
 				for (PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)
 				{

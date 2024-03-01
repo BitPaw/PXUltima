@@ -1,6 +1,7 @@
 #include "PXFLAC.h"
 
 #include <OS/Console/PXConsole.h>
+#include <OS/File/PXFile.h>
 
 const char PXFLACSignature[4] = {'f','L','a','C'};
 

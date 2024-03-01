@@ -1,5 +1,7 @@
 #include "PXSignal.h"
 
+#include <OS/File/PXFile.h>
+
 #include <signal.h> // [POSIX] Exists on Linux and Windows
 
 PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)

@@ -17,8 +17,11 @@ PXSize PXAPI PXHardDriveListSize()
 
 #elif PXOSWindowsDestop
 
-    PXSize bitmaskDrives = _getdrives();
-    PXSize numberOfDrives = 0;
+   // GetLogicalDriveStringsA();
+
+
+    DWORD bitmaskDrives = GetLogicalDrives(); //_getdrives(); -> Not supported in windows runtime
+    DWORD numberOfDrives = 0;
 
     for (PXSize indexDrive = 1; indexDrive <= 26u; ++indexDrive)
     {
@@ -38,7 +41,7 @@ PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const
 {
     const PXSize numberOfDrives = PXHardDriveListSize();
 
-    PXMemoryClear(hardDriveList, sizeof(PXHardDrive) * hardDriveListMaxSize);
+    PXClearList(PXHardDrive, hardDriveList, hardDriveListMaxSize);
 
     // Has enough space?
     {
@@ -55,7 +58,12 @@ PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const
 
 #elif PXOSWindowsDestop   
 
-    PXSize bitmaskDrives = _getdrives(); // Not supported in windows runtime
+    // GetDriveTypeA()
+    // GetDiskFreeSpaceA
+
+#if 0
+
+    DWORD bitmaskDrives = GetLogicalDrives(); 
 
     for (PXSize indexDrive = 1; numberOfDrives; ++indexDrive)
     {
@@ -80,6 +88,7 @@ PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const
 
         bitmaskDrives >>= 1;
     }
+#endif
 #endif
 
     *hardDriveListSize = (numberOfDrives);

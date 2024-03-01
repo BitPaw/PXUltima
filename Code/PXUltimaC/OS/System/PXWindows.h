@@ -1,7 +1,10 @@
-#ifndef PXWindowsINCLUDE
+#ifndef PXWindowsINCLUDE 
 #define PXWindowsINCLUDE
 
 #include <Media/PXResource.h>
+
+#if !WindowsAtleastXP
+
 #include <Windows.h>
 //#include <libloaderapi.h>
 //#include <interlockedapi.h>
@@ -10,6 +13,8 @@
 extern "C"
 {
 #endif
+
+    int _fltused = 0; // prevent compile errors
 
     //-----------------------------------------------------
     // Declare prototypes
@@ -98,6 +103,8 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

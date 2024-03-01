@@ -1,7 +1,6 @@
 #ifndef PXImageINCLUDE
 #define PXImageINCLUDE
 
-#include <OS/File/PXFile.h>
 #include <Media/PXColor.h>
 
 #ifdef __cplusplus
@@ -20,8 +19,6 @@ extern "C"
 		PXColorFormat Format;
 	}
 	PXImage;
-
-	typedef PXActionResult(PXAPI*PXImageTranslateFunction)(const PXImage* const pxImage, PXFile* const imageDataStream);
 
 	PXPublic void PXAPI PXImageConstruct(PXImage* const image);
 	PXPublic void PXAPI PXImageDestruct(PXImage* const image);

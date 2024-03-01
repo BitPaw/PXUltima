@@ -1,5 +1,7 @@
 #include "PXBinaryWindows.h"
+
 #include <OS/Console/PXConsole.h>
+#include <OS/File/PXFile.h>
 
 const char PXDOSHeaderSignatore[2] = { 'M', 'Z' };
 const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };

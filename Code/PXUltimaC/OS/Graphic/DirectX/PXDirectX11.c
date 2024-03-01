@@ -11,6 +11,7 @@
 #include <OS/Graphic/PXGraphic.h>
 #include <OS/Window/PXWindow.h>
 #include <OS/Console/PXConsole.h>
+#include <OS/Memory/PXMemory.h>
 
 
 typedef HRESULT (WINAPI* PXD3D11CreateDeviceAndSwapChain)
@@ -40,7 +41,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
         PXLoggingInfo,
         "DirectX11",
         "Initialize",
-        "Start..."
+        "---Start---"
     );
 #endif
 
@@ -56,9 +57,11 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
                 PXLoggingError,
                 "DirectX11",
                 "Initialize",
-                "Library linking failed!"
+                "Library load failed!"
             );
 #endif
+
+            return PXActionRefusedNotSupported;
         }
 
 

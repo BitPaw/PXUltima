@@ -1,6 +1,7 @@
 #include "PXID3.h"
 
 #include <Media/PXText.h>
+#include <OS/File/PXFile.h>
 
 const char PXID3HeaderSignature[3] = { 'I','D','3' };
 

@@ -1,19 +1,21 @@
 #ifndef PXResourceINCLUDE
 #define PXResourceINCLUDE
 
-#include <OS/File/PXFile.h>
-#include <Math/PXVector.h>
 #include <Math/PXMatrix.h>
-#include <Media/PXDocument.h>
 
 #include "PXImage.h"
-#include "PXColor.h"
 
 #ifdef __cplusplus
 extern "C"
 {
-#endif	
+#endif
 
+
+	// Predefine
+	typedef enum PXActionResult_ PXActionResult;
+	typedef struct PXFile_ PXFile;
+	typedef struct PXText_ PXText;
+	typedef struct PXDocument_ PXDocument;
 
 
 	typedef enum PXRefreshRateMode_
@@ -43,7 +45,6 @@ extern "C"
 		PXGraphicResourceTypeFont
 	}
 	PXGraphicResourceType;
-
 
 	typedef enum PXGraphicRenderFilter_
 	{
@@ -226,7 +227,6 @@ extern "C"
 		PXVertexBufferFormatXYZB4,
 		PXVertexBufferFormatXYZB5,
 		PXVertexBufferFormatXYZW,
-
 	}
 	PXVertexBufferFormat;
 
@@ -285,7 +285,7 @@ extern "C"
 		PXGraphicImageWrap WrapHeight;
 		PXGraphicImageWrap WrapWidth;
 
-		PXImage* Image;
+		struct PXImage_* Image;
 	}
 	PXTexture2D;
 
@@ -313,7 +313,7 @@ extern "C"
 
 		PXColorFormat Format;
 
-		PXImage* Image;
+		struct PXImage_* Image;
 	}
 	PXTexture3D;
 
@@ -324,12 +324,12 @@ extern "C"
 
 		PXColorFormat Format;
 
-		PXImage* ImageA;
-		PXImage* ImageB;
-		PXImage* ImageC;
-		PXImage* ImageD;
-		PXImage* ImageE;
-		PXImage* ImageF;
+		struct PXImage_* ImageA;
+		struct PXImage_* ImageB;
+		struct PXImage_* ImageC;
+		struct PXImage_* ImageD;
+		struct PXImage_* ImageE;
+		struct PXImage_* ImageF;
 	}
 	PXTextureCube;
 
@@ -355,7 +355,6 @@ extern "C"
 	typedef struct PXMaterial_
 	{
 		char Name[32];
-		PXTexture2D* DiffuseTexture;
 
 		float Diffuse[4];
 		float Ambient[4];
@@ -366,6 +365,8 @@ extern "C"
 		float Weight; 		// Ranges between 0 and 1000
 		float Dissolved;
 		float Density; // range from 0.001 to 10. A value of 1.0 means that light does not bend as it passes through an object.
+
+		struct PXTexture2D_* DiffuseTexture;
 
 		PXMaterialIlluminationMode IlluminationMode;
 	}
@@ -380,7 +381,7 @@ extern "C"
 	PXMaterialContainer;
 
 
-	PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName);
+	PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
 
 
 	typedef struct PXShader_
@@ -498,7 +499,8 @@ extern "C"
 		PXInt8U IndexTypeSize;
 
 		void* IndexData;
-		PXInt32U IndexDataSize;
+		PXSize IndexDataSize;
+
 		PXInt32U IndexDataAmount;
 
 		PXInt32U DataType;
@@ -633,21 +635,22 @@ extern "C"
 	{
 		PXResourceID ResourceID; // D3DLIGHT9
 
-		PXBool Enabled;
+		float Diffuse[4];           // Diffuse color of light
+		float Specular[4];          // Specular color of light
+		float Ambient[4];           // Ambient color of light
+		float Position[3];          // Position in world space
+		float Direction[3];         // Direction in world space
+		float CutoffRange;          // Cutoff range
+		float Falloff;              // Falloff
+		float AttenuationConstant;  // Constant attenuation
+		float AttenuationLinear;    // Linear attenuation
+		float AttenuationQuadratic; // Quadratic attenuation
+		float Theta;                // Inner angle of spotlight cone
+		float Phi;                  // Outer angle of spotlight cone
 
-		PXLightType    Type;            /* Type of light source */
-		float   Diffuse[4];         /* Diffuse color of light */
-		float   Specular[4];        /* Specular color of light */
-		float   Ambient[4];         /* Ambient color of light */
-		float       Position[3];         /* Position in world space */
-		float       Direction[3];        /* Direction in world space */
-		float           CutoffRange;            /* Cutoff range */
-		float           Falloff;          /* Falloff */
-		float           AttenuationConstant;     /* Constant attenuation */
-		float           AttenuationLinear;     /* Linear attenuation */
-		float           AttenuationQuadratic;     /* Quadratic attenuation */
-		float           Theta;            /* Inner angle of spotlight cone */
-		float           Phi;              /* Outer angle of spotlight cone */
+		PXLightType Type;           // Type of light source
+
+		PXBool Enabled;
 	}
 	PXLight;
 
@@ -670,7 +673,7 @@ extern "C"
 		PXSize CharacteListEntrys;
 		PXFontPageCharacter* CharacteList;
 		
-		PXTexture2D* Texture;
+		struct PXTexture2D_* Texture;
 		char TextureFilePath[260];
 	}
 	PXFontPage;
@@ -732,7 +735,7 @@ extern "C"
 
 		PXModel Model;
 
-		PXTexture2D* Texture;
+		struct PXTexture2D_* Texture;
 	}
 	PXSprite;
 
@@ -778,11 +781,192 @@ extern "C"
 
 	typedef	struct PXSkyBox_
 	{
-		PXModel* Model;
-		PXTextureCube* TextureCube;
-		PXShaderProgram* ShaderProgramReference;
+		struct PXModel_* Model;
+		struct PXTextureCube_* TextureCube;
+		struct PXShaderProgram_* ShaderProgramReference;
 	}
 	PXSkyBox;
+
+
+
+
+
+	//-----------------------------------------------------
+	// UI-Element
+	//-----------------------------------------------------
+#define PXUIElementDoRendering (1 << 0) 
+#define PXUIElementIsActive (1 << 1)
+#define PXUIElementIsHoverable (1 << 2)
+#define PXUIElementDrawBorder (1 << 3)
+
+#define PXUIElementNormal PXUIElementDoRendering | PXUIElementIsActive | PXUIElementIsHoverable
+#define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive | PXUIElementDrawBorder
+#define PXUIElementText PXUIElementDoRendering | PXUIElementIsActive 
+
+#define PXUIElementAncerParent  0b11110000
+
+#define PXUIElementAncerParentLeft 0b10000000
+#define PXUIElementAncerParentTop 0b01000000
+#define PXUIElementAncerParentRight 0b00100000
+#define PXUIElementAncerParentBottom 0b00010000
+
+#define PXUIElementAncerSibling 0b00001111
+
+#define PXUIElementAncerSiblingLeft 0b00001000
+#define PXUIElementAncerSiblingTop 0b00000100
+#define PXUIElementAncerSiblingRight 0b00000010
+#define PXUIElementAncerSiblingBottom 0b00000001
+
+#define PXUIElementPositionGlobal 0
+#define PXUIElementPositionRelative PXUIElementAncerParent
+
+	typedef enum PXUIHoverState_
+	{
+		PXUIHoverStateInvalid,
+		PXUIHoverStateNotBeeingHovered, // Not beeing hovered
+		PXUIHoverStateHovered, // IS beeing hovered
+		PXUIHoverStateHoveredButOverlapped // User hovers over this object but its been blocked by other object
+	}
+	PXUIHoverState;
+
+	typedef enum PXUIElementType_
+	{
+		PXUIElementTypeInvalid,
+		PXUIElementTypeCustom,
+		PXUIElementTypePanel,
+		PXUIElementTypeText,
+		PXUIElementTypeButton,
+		PXUIElementTypeImage,
+		PXUIElementTypeDropDown,
+		PXUIElementTypeListBox,
+		PXUIElementTypeTextEdit,
+		PXUIElementTypeRichEdit,
+		PXUIElementTypeScrollBar,
+		PXUIElementTypeTrackBar,
+		PXUIElementTypeStatusBar,
+		PXUIElementTypeUpDown,
+		PXUIElementTypeProgressBar,
+		PXUIElementTypeHotKey,
+		PXUIElementTypeCalender,
+		PXUIElementTypeToolTip,
+		PXUIElementTypeAnimate,
+		PXUIElementTypeDatePicker,
+		PXUIElementTypeGroupBox,
+		PXUIElementTypeRadioButton,
+		PXUIElementTypeGroupRadioButton,
+		PXUIElementTypeTreeView,
+		PXUIElementTypeIPInput,
+		PXUIElementTypeLink,
+		PXUIElementTypeHeader,
+		PXUIElementTypeFontSelector,
+		PXUIElementTypePageScroll,
+		PXUIElementTypeTabControll,
+		PXUIElementTypeToggle,
+		PXUIElementTypeCheckBox,
+		PXUIElementTypeComboBox,
+		PXUIElementTypeColorPicker,
+		PXUIElementTypeSlider,
+		PXUIElementTypeRenderFrame
+	}
+	PXUIElementType;
+
+	typedef void (PXAPI* PXUIOnClick)(struct PXUIElement_* const pxUIElement);
+	typedef void (PXAPI* PXUIOnMouseEnter)(struct PXUIElement_* const pxUIElement);
+	typedef void (PXAPI* PXUIOnMouseLeave)(struct PXUIElement_* const pxUIElement);
+
+	typedef struct PXUIElementFrameBufferInfo_
+	{
+		struct PXTexture2D_* TextureReference;
+
+		PXInt32U Width;
+		PXInt32U Height;
+		PXInt32U BufferID;
+		PXInt32U RenderID;
+	}
+	PXUIElementFrameBufferInfo;
+
+	typedef struct PXUIElementImageInfo_
+	{
+		struct PXTexture2D_* TextureReference;
+	}
+	PXUIElementImageInfo;
+
+	typedef struct PXUIElementTextInfo_
+	{
+		char Content[32];
+		struct PXFont_* FontID;
+		float Scale;
+	}
+	PXUIElementTextInfo;
+
+	typedef struct PXPoisition2D_
+	{
+		int X; 
+		int Y;
+		int Width;
+		int Height;
+	}	
+	PXPoisition2D;
+
+	// Atomic UI-Element
+	// Only Text can be text
+	// Only image can be image
+	typedef struct PXUIElement_
+	{
+		//------------------------------
+		// References 
+		//------------------------------
+		struct PXUIElement_* Parent;
+		struct PXUIElement_* Sibling;
+		struct PXUIElement_* Child;
+
+		//------------------------------
+		// Events
+		//------------------------------
+		PXUIOnClick OnClickCallback;
+		PXUIOnMouseEnter OnMouseEnterCallback;
+		PXUIOnMouseLeave OnMouseLeaveCallback;
+
+
+		//------------------------------
+		// Position
+		//------------------------------
+		PXRectangleOffset Margin;
+		PXRectangleOffset Padding;
+		PXPoisition2D Poisition2D;
+		PXInt8U AncerFlagList;
+
+
+		//---<State-Info>------------------------
+		PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
+		PXUIHoverState Hover;
+		PXInt32U FlagsList;
+		//---------------------------------------
+
+		//---<Property>--------------------------		
+		//PXUIElementPositionMode PositionMode;
+		union
+		{
+			PXUIElementFrameBufferInfo FrameBufferInfo;
+			PXUIElementImageInfo ImageInfo;
+			PXUIElementTextInfo TextInfo;
+		};
+
+		PXUIElementType Type;
+		PXSize ID;
+	}
+	PXUIElement;
+	//-----------------------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1031,14 +1215,14 @@ extern "C"
 
 
 
-	PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);
+	PXPublic enum PXActionResult PXAPI PXFileTypeInfoProbe(struct PXFileTypeInfo_* const pxFileTypeInfo, const struct PXText_* const pxText);
 
 
-	PXPublic PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath);
-	PXPublic PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath);
+	PXPublic enum PXActionResult PXAPI PXResourceLoad(void* resource, const struct PXText_* const filePath);
+	PXPublic enum PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath);
 
-	PXPublic PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath, const PXFileFormat pxFileFormat);
-	PXPublic PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath, const PXFileFormat pxFileFormat);
+	PXPublic enum PXActionResult PXAPI PXResourceSave(void* resource, const struct PXText_* const filePath, const enum PXFileFormat_ pxFileFormat);
+	PXPublic enum PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath, const enum PXFileFormat_ pxFileFormat);
 
 #ifdef __cplusplus
 }

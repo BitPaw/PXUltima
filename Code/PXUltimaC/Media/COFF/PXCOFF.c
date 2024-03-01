@@ -2,6 +2,7 @@
 
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
+#include <OS/File/PXFile.h>
 
 #include <assert.h>
 
@@ -288,12 +289,32 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 							printf("RVA\n");
 
+#if PXCOFFDebug
+							PXLogPrint
+							(
+								PXLoggingInfo,
+								"COFF",
+								"Parsing",
+								"RVA"
+							);
+#endif
+
 							for (PXInt32U i = 0; i < pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes; ++i)
 							{
 								PXFileReadI32U(pxFile, &virtualAddress);
 								PXFileReadI32U(pxFile, &size);
 
-								printf("[PXCOFF][RVA] 0x%p %i\n", virtualAddress, size);
+#if PXCOFFDebug
+								PXLogPrint
+								(
+									PXLoggingInfo,
+									"COFF",
+									"Parsing-RVA",
+									"0x%p %i",
+									virtualAddress, 
+									size
+								);
+#endif
 							}
 						}						
 					}
@@ -368,7 +389,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 	// Parse SectionTable
 	
 
-	pxCOFF->SectionTableList = PXNewList(PXSectionTable, pxCOFF->Header.NumberOfSections);
+	PXNewList(PXSectionTable, pxCOFF->Header.NumberOfSections, &pxCOFF->SectionTableList, &pxCOFF->SectionTableListSize);
 
 	for (PXInt16U sectionID = 0; sectionID < pxCOFF->Header.NumberOfSections; ++sectionID)
 	{
@@ -636,8 +657,19 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
+
 #if PXCOFFDebug
-				printf("[COFF][Section][LineEntry] %3i/%-3i - Line:%i Index:%i\n", i + 1, pxSectionTableCurrent->NumberOfLinenumbers, pxLineNumberEntry->LineNumber, pxLineNumberEntry->SymbolIndex);
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"COFF",
+					"Parsing-Section",
+					"[LineEntry] %3i/%-3i - Line:%i Index:%i",
+					i + 1,
+					pxSectionTableCurrent->NumberOfLinenumbers, 
+					pxLineNumberEntry->LineNumber, 
+					pxLineNumberEntry->SymbolIndex
+				);
 #endif
 			}
 		}
@@ -658,8 +690,8 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 			(
 				PXLoggingInfo,
 				"COFF",
-				"Parse",
-				"Symbols deteced <%i>",
+				"Parse-Symbols",
+				"Deteced <%i>",
 				pxCOFF->Header.NumberOfSymbols
 			);
 #endif
@@ -685,7 +717,16 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 				if (pxCOFFSymbolTableEntry->DoesNotUseExternalString && pxCOFFSymbolTableEntry->DoesNotUseExternalString != 0xCCCCCCCC)
 				{
-					printf("[COFF][Symbol] %8.8s\n", pxCOFFSymbolTableEntry->Name);
+#if PXCOFFDebug
+					PXLogPrint
+					(
+						PXLoggingInfo,
+						"COFF",
+						"Parse-Symbols",
+						"%8.8s",
+						pxCOFFSymbolTableEntry->Name
+					);
+#endif
 				}
 				else
 				{
@@ -695,7 +736,17 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 					char* xxx = (char*)PXFileCursorPosition(pxFile);
 
-					printf("[COFF][Symbol] -------- -> %s\n", xxx);
+
+#if PXCOFFDebug
+					PXLogPrint
+					(
+						PXLoggingInfo,
+						"COFF",
+						"Parse-Symbols",
+						" -------- -> %s",
+						xxx
+					);
+#endif
 
 					PXFileCursorMoveTo(pxFile, oolPos);
 				}

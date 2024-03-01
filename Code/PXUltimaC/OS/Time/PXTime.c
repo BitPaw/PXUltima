@@ -52,8 +52,6 @@ void PXAPI PXTimeNow(PXTime* const pxTime)
 	GetLocalTime(&systemTime);
 
 	PXTimeConvertFromOS(pxTime, &systemTime);
-
-	pxTime->ClockCycle = clock();
 #endif
 }
 
@@ -64,8 +62,6 @@ PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, P
 	timeResult->Minute = (timeB->Minute - timeA->Minute);
 	timeResult->Second = (timeB->Second - timeA->Second);
 	timeResult->Milliseconds = (timeB->Milliseconds - timeA->Milliseconds);
-
-	timeResult->ClockCycleDelta = (timeB->ClockCycle - timeA->ClockCycle) / (double)CLOCKS_PER_SEC;
 
 	return 0;
 }

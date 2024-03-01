@@ -13,7 +13,7 @@ void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize ke
 
 void PXAPI PXDictionaryDestruct(PXDictionary* const dictionary)
 {
-	PXDeleteList(PXByte, dictionary->Data, dictionary->DataSize);
+	PXDeleteList(PXByte, dictionary->DataSize, dictionary->Data, &dictionary->DataSize);
 }
 
 PXSize PXAPI PXDictionaryValueSize(const PXDictionary* const dictionary)

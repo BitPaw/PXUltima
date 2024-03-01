@@ -11,6 +11,7 @@
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/Vulcan/PXVulcan.h>
 #include <OS/Console/PXConsole.h>
+#include <OS/Memory/PXMemory.h>
 
 //#include <gl/GL.h> // Not found???
 #include <GL/gl.h>
@@ -248,7 +249,8 @@ void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
 
 void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha)
 {
-    PXColorRGBAF* color = PXNew(PXColorRGBAF);
+    PXColorRGBAF* color = PXNull;
+    PXNewZerod(PXColorRGBAF, &color);
 
     color->Red = red;
     color->Green = green;
@@ -330,6 +332,16 @@ void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRen
 
 PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Graphic",
+        "Instantiate",
+        "Creating graphical instance..."
+    );
+#endif
+
     pxGraphic->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
     pxGraphic->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
     pxGraphicInitializeInfo->Graphic = pxGraphic;
@@ -353,11 +365,13 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     // EnumDisplayDevicesA
 
     // Fetch all graphical devices 
-    {
-        PXMonitorDeviceAmount(&pxGraphic->DevicePhysicalListSize);
-      
+
+    PXMonitorDeviceAmount(&pxGraphic->DevicePhysicalListSize);
+
+    if(0)
+    {      
         // Allocate space for needed devices
-        pxGraphic->DevicePhysicalList = PXNewList(PXGraphicDevicePhysical, pxGraphic->DevicePhysicalListSize);
+        PXNewList(PXGraphicDevicePhysical, pxGraphic->DevicePhysicalListSize, &pxGraphic->DevicePhysicalList, &pxGraphic->DevicePhysicalListSize);
 
         PXPhysicalDeviceFetchAll(pxGraphic->DevicePhysicalList, pxGraphic->DevicePhysicalListSize);
     }  
@@ -373,8 +387,15 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     pxWindow->HandleDeviceContext = dc;
 #endif
 
-    PXWindowPixelSystemSet(pxGraphicInitializeInfo->WindowReference);
+    // Set pixel system
+    {
+        const PXActionResult pixelSystem = PXWindowPixelSystemSet(pxGraphicInitializeInfo->WindowReference);
 
+        if(PXActionSuccessful != pixelSystem)
+        {
+            return pixelSystem;
+        }
+    }
 
 
 #if 0
@@ -445,13 +466,52 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         (
             PXLoggingInfo,
             "Graphic",
-            "Init",
+            "Initialize",
             "Invoke spesific API..."
         );
 
-        const PXActionResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
+        PXActionResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
 
-        PXActionReturnOnError(pxActionResult);
+        if(PXActionSuccessful != pxActionResult) // if loading targeted API failed, load plan B
+        {
+            PXLogPrint
+            (
+                PXLoggingWarning,
+                "Graphic",
+                "Initialize",
+                "Failure initializing API. Thinking about plan B"
+            );
+
+#if OSUnix 
+            return pxActionResult; // On linux systems, dont try a plan B, if opengl does not work, nothing will be
+#elif OSWindows
+            // On windows, try DirectX. some version will work, hopefully.
+
+
+            pxGraphic->GraphicSystem = PXGraphicSystemDirectX;
+            pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
+            pxGraphic->Initialize = PXDirectXInitialize;
+
+            pxGraphicInitializeInfo->GraphicSystem = PXGraphicSystemDirectX;
+            pxGraphicInitializeInfo->DirectXVersion = PXDirectXVersionNewest;
+
+            pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "Graphic",
+                    "Initialize",
+                    "Failure initializing plan B. Exiting engine..."
+                );
+
+                return pxActionResult;
+            }
+#endif
+
+        }
     }
 
     //-------------------------------------------------------------------------

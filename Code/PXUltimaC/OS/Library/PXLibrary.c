@@ -4,6 +4,7 @@
 
 #include <OS/Error/PXActionResult.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/File/PXFile.h>
 #include <OS/Console/PXConsole.h>
 
 #if OSUnix
@@ -86,13 +87,15 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 
 PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 {
+	PXClear(PXLibrary, pxLibrary);
+
 #if PXLogEnable
 	PXLogPrint
 	(
 		PXLoggingAllocation,
 		"Library",
 		"Load",
-		"open <%s>",
+		"Open <%s>",
 		filePath->TextA
 	);
 #endif
@@ -110,19 +113,15 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 
 			PXActionOnErrorFetchAndReturn(pxLibrary->ID != PXNull);
 
-			return PXActionSuccessful;
-
 #elif PXOSWindowsDestop
 			SetLastError(0);
 
 			pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
-
-			PXActionOnErrorFetchAndReturn(pxLibrary->ID == PXNull);
-
-			return PXActionSuccessful;
 #else 
 			return PXActionRefusedNotSupported;
 #endif	
+
+			break;
 		}
 
 		case TextFormatUNICODE:
@@ -131,18 +130,50 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 			return 0;
 
 #elif PXOSWindowsDestop
+			SetLastError(0);
+
 			pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
-
-			PXActionOnErrorFetchAndReturn(pxLibrary->ID == PXNull);
-
-			return PXActionSuccessful;
 #else 
 			return PXActionRefusedNotSupported;
 #endif	
+			break;
 		}
 	}
 
-	return PXActionRefusedNotSupported;
+
+	const PXBool success = PXNull != pxLibrary->ID;
+
+	if(!success)
+	{
+		const PXActionResult libraryOpenResult = PXErrorCurrent();
+		// Library couln't be opened
+
+#if PXLogEnable
+		PXLogPrint
+		(
+			PXLoggingError,
+			"Library",
+			"Load",
+			"Can't be loaded <%s>",
+			filePath->TextA
+		);
+#endif
+
+		return PXActionLibraryNotFound;
+	}
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Library",
+		"Load",
+		"Successful <%i>",
+		(int)pxLibrary->ID
+	);
+#endif
+
+	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* const filePath)
@@ -249,7 +280,13 @@ PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const lib
 			return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-			libraryName->SizeUsed = GetModuleFileNameExA(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextA, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
+			libraryName->SizeUsed = GetModuleFileNameExA // Windows XP, Kernel32.dll, psapi.h
+			(
+				pxLibrary->ProcessHandle,
+				pxLibrary->ID, 
+				libraryName->TextA,
+				libraryName->SizeAllocated
+			); 
 
 			PXActionOnErrorFetchAndReturn(libraryName->SizeUsed == 0);
 #endif
@@ -263,7 +300,13 @@ PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const lib
 			return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-			libraryName->SizeUsed = GetModuleFileNameExW(pxLibrary->ProcessHandle, pxLibrary->ID, libraryName->TextW, libraryName->SizeAllocated); // Windows XP, Kernel32.dll, psapi.h
+			libraryName->SizeUsed = GetModuleFileNameExW // Windows XP, Kernel32.dll, psapi.h
+			(
+				pxLibrary->ProcessHandle,
+				pxLibrary->ID,
+				libraryName->TextW, 
+				libraryName->SizeAllocated
+			); 
 
 			PXActionOnErrorFetchAndReturn(libraryName->SizeUsed == 0);
 #endif

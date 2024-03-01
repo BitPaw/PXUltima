@@ -6,6 +6,16 @@
 
 PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory)
 {
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"ModLoader",
+		"Scan",
+		"Loading Mods..."
+	);
+#endif
+
 	PXDirectoryIterator pxDirectoryIterator;	
 
 	// Open

@@ -29,14 +29,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141_xp</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <EnableASAN>false</EnableASAN>
     <EnableFuzzer>
@@ -115,7 +115,7 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;_DEBUG;_CONSOLE;WINVER=0x500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -128,10 +128,15 @@
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <ShowIncludes>false</ShowIncludes>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ShowProgress>LinkVerbose</ShowProgress>
+      <NoEntryPoint>false</NoEntryPoint>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,7 +144,6 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_CONSOLE;WINVER=0x500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -147,7 +151,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -156,25 +160,27 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <BuildStlModules>false</BuildStlModules>
       <StringPooling>true</StringPooling>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <DiagnosticsFormat>
       </DiagnosticsFormat>
-      <SupportJustMyCode>true</SupportJustMyCode>
       <ExceptionHandling>false</ExceptionHandling>
       <ControlFlowGuard>false</ControlFlowGuard>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <OpenMPSupport>true</OpenMPSupport>
       <ShowIncludes>false</ShowIncludes>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <NoEntryPoint>false</NoEntryPoint>
+      <AdditionalDependencies>libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;vcruntime.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -199,8 +205,11 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <NoEntryPoint>
+      </NoEntryPoint>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -243,6 +252,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -369,12 +379,10 @@
     <ClCompile Include="OS\Library\PXLibrary.c" />
     <ClCompile Include="OS\Memory\PXMemory.c" />
     <ClCompile Include="OS\Hardware\PXMonitor.c" />
-    <ClCompile Include="OS\Network\PXClient.c" />
-    <ClCompile Include="OS\Network\PXServer.c" />
-    <ClCompile Include="OS\Network\PXSocket.c" />
     <ClCompile Include="OS\Hardware\PXProcessor.c" />
     <ClCompile Include="OS\Async\PXProcess.c" />
     <ClCompile Include="OS\Async\PXProgram.c" />
+    <ClCompile Include="OS\Network\PXNetwork.c" />
     <ClCompile Include="OS\Signal\PXSignal.c" />
     <ClCompile Include="OS\System\PXOSVersion.c" />
     <ClCompile Include="OS\System\PXRegistry.c" />
@@ -402,12 +410,7 @@
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX9.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10x1.c" />
     <ClCompile Include="OS\System\PXWindows.c" />
-    <ClCompile Include="Service\FTP\PXFTPServer.c" />
-    <ClCompile Include="Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
-    <ClCompile Include="Service\SBP\PXSBP.c" />
-    <ClCompile Include="Service\FTP\PXFTPClient.c" />
-    <ClCompile Include="Service\HTTP\PXHTTPClient.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h" />
@@ -533,12 +536,10 @@
     <ClInclude Include="OS\Library\PXLibrary.h" />
     <ClInclude Include="OS\Memory\PXMemory.h" />
     <ClInclude Include="OS\Hardware\PXMonitor.h" />
-    <ClInclude Include="OS\Network\PXClient.h" />
-    <ClInclude Include="OS\Network\PXServer.h" />
-    <ClInclude Include="OS\Network\PXSocket.h" />
     <ClInclude Include="OS\Hardware\PXProcessor.h" />
     <ClInclude Include="OS\Async\PXProcess.h" />
     <ClInclude Include="OS\Async\PXProgram.h" />
+    <ClInclude Include="OS\Network\PXNetwork.h" />
     <ClInclude Include="OS\Signal\PXSignal.h" />
     <ClInclude Include="OS\System\PXOSVersion.h" />
     <ClInclude Include="OS\System\PXRegistry.h" />
@@ -566,12 +567,7 @@
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX9.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10x1.h" />
     <ClInclude Include="OS\System\PXWindows.h" />
-    <ClInclude Include="Service\FTP\PXFTPServer.h" />
-    <ClInclude Include="Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
-    <ClInclude Include="Service\SBP\PXSBP.h" />
-    <ClInclude Include="Service\FTP\PXFTPClient.h" />
-    <ClInclude Include="Service\HTTP\PXHTTPClient.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Algorithm\KnowlegeGraph\README.md" />

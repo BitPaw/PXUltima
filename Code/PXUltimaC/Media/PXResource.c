@@ -65,7 +65,7 @@ PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertex
     }
 }
 
-PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, PXText* const pxMaterialName)
+PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName)
 {
     if (!pxMaterialContainer)
     {
@@ -182,7 +182,7 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage
     return lastMatch;
 }
 
-PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath)
+enum PXActionResult PXAPI PXResourceLoad(void* resource, const struct PXText_* const filePath)
 {
     PXFile pxFile;
 
@@ -287,7 +287,7 @@ PXActionResult PXAPI PXResourceLoad(void* resource, const PXText* const filePath
 #endif
 }
 
-PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath)
+enum PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath)
 {
     PXText pxText;
 
@@ -298,7 +298,7 @@ PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath)
     return loadResult;
 }
 
-PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath, const PXFileFormat pxFileFormat)
+enum PXActionResult PXAPI PXResourceSave(void* resource, const struct PXText_* const filePath, const enum PXFileFormat_ pxFileFormat)
 {
     PXFile pxFile;
 
@@ -373,7 +373,7 @@ PXActionResult PXAPI PXResourceSave(void* resource, const PXText* const filePath
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath, const PXFileFormat pxFileFormat)
+enum PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath, const enum PXFileFormat_ pxFileFormat)
 {
     PXText pxText;
 
@@ -384,7 +384,7 @@ PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath,
     return loadResult;
 }
 
-PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText)
+enum PXActionResult PXAPI PXFileTypeInfoProbe(struct PXFileTypeInfo_* const pxFileTypeInfo, const struct PXText_* const pxText)
 {
     // Probe for file extension
     {

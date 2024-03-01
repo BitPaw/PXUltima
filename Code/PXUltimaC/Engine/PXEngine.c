@@ -3,6 +3,7 @@
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Async/PXProcess.h>
+#include <OS/File/PXFile.h>
 #include <Engine/Dialog/PXDialogBox.h>
 #include <Media/ADLER/PXAdler32.h>
 
@@ -425,7 +426,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     (
         PXLoggingInfo,
         "PX",
-        "Init",
+        "Instantiate",
         "Starting..."
     );
 #endif
@@ -463,43 +464,30 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 
 
     // Load all mods now, not fully tho, they may need very early checks before anything happens
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX",
-            "Init",
-            "Loading Mods..."
-        );
-#endif
-      
+    {      
         PXText pxText;
         PXTextMakeFixedA(&pxText, "Mod\\");
 
         PXModLoaderScan(&pxEngine->ModLoader, &pxText);
     }
 
-
-
-
     //-----------------------------------------------------
 	// Create window
     //-----------------------------------------------------
     {
+        PXWindowConstruct(&pxEngine->Window);
+        PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXTrue);
+        //PXWindowUpdate(&pxEngine->Window);
+
 #if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
             "PX",
-            "Init",
-            "Creating Window..."
+            "Instantiate",
+            "Window created"
         );
 #endif
-
-        PXWindowConstruct(&pxEngine->Window);
-        PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXTrue);
-        //PXWindowUpdate(&pxEngine->Window);
     }
     //-----------------------------------------------------
 
@@ -509,16 +497,6 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     // Create graphic instance
     //-----------------------------------------------------
     {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX",
-            "Init",
-            "Creating graphical instance..."
-        );
-#endif
-
         PXGraphicInitializeInfo pxGraphicInitializeInfo;
         pxGraphicInitializeInfo.WindowReference = &pxEngine->Window;
         pxGraphicInitializeInfo.Width = -1;
@@ -536,7 +514,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
             (
                 PXLoggingError,
                 "PX",
-                "Init",
+                "Instantiate",
                 "failed to create graphical instance!"
             );
 #endif
@@ -550,7 +528,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         (
             PXLoggingInfo,
             "PX",
-            "Init",
+            "Instantiate",
             "Created graphical instance"
         );
 #endif
@@ -571,7 +549,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         (
             PXLoggingInfo,
             "PX",
-            "Init",
+            "Instantiate",
             "Creating audio instance..."
         );
 #endif
@@ -580,20 +558,18 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
 
         if (PXActionSuccessful == audioInitResult)
         {
-            PXInt32U audioDeviceAmountInput = 0;
-            PXInt32U audioDeviceAmountOutput = 0;
+            PXAudioDeviceAmountInfo pxAudioDeviceAmountInfo;
 
-            pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeInput, &audioDeviceAmountInput);
-            pxEngine->Audio.DeviceAmount(&pxEngine->Audio, PXAudioDeviceTypeOutput, &audioDeviceAmountOutput);
+            pxEngine->Audio.DeviceAmount(&pxEngine->Audio, &pxAudioDeviceAmountInfo);
 
-            for (size_t i = 0; i < audioDeviceAmountInput; i++)
+            for (size_t i = 0; i < pxAudioDeviceAmountInfo.DeviceInput; i++)
             {
                 PXAudioDevice pxAudioDevice;
 
                 pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
             }
 
-            for (size_t i = 0; i < audioDeviceAmountOutput; i++)
+            for (size_t i = 0; i < pxAudioDeviceAmountInfo.DeviceOutput; i++)
             {
                 PXAudioDevice pxAudioDevice;
 
@@ -625,7 +601,7 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
         (
             PXLoggingInfo,
             "PX",
-            "Init",
+            "Instantiate",
             "Engine is up and running. Invoking callback for extended load."
         );
 #endif
@@ -781,7 +757,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxImage)
             {
-                pxImage = PXNew(PXImage);
+                PXNewZerod(PXImage, &pxImage);
                 *pxEngineResourceCreateInfo->ObjectReference = pxImage;
             }
 
@@ -841,11 +817,10 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxTextureCube)
             {
-                pxTextureCube = PXNew(PXTextureCube);
+                PXNewZerod(PXTextureCube, &pxTextureCube);
                 *pxEngineResourceCreateInfo->ObjectReference = pxTextureCube;
             }
 
-            PXClear(PXTextureCube, pxTextureCube);
             pxTextureCube->Format = PXColorFormatRGBI8;
 
             PXEngineResourceActionInfo pxEngineResourceActionInfoList[6];
@@ -901,7 +876,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxModel)
             {
-                pxModel = PXNew(PXModel);
+                PXNewZerod(PXModel, &pxModel);
                 *pxEngineResourceCreateInfo->ObjectReference = pxModel;
             }
 
@@ -944,7 +919,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxTexture2D)
             {
-                pxTexture2D = PXNew(PXTexture2D);
+                PXNewZerod(PXTexture2D, &pxTexture2D);
                 *pxEngineResourceCreateInfo->ObjectReference = pxTexture2D;
             }
 
@@ -995,7 +970,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             // create if not exist
             if(!pxFont)
             {
-                pxFont = PXNew(PXFont);
+                PXNewZerod(PXFont, &pxFont);
                 *pxEngineResourceCreateInfo->ObjectReference = pxFont;
             }
 
@@ -1086,11 +1061,9 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxSkyBox)
             {
-                pxSkyBox = PXNew(PXSkyBox);
+                PXNewZerod(PXSkyBox, &pxSkyBox);
                 *pxEngineResourceCreateInfo->ObjectReference = pxSkyBox;
             }
-
-            PXClear(PXSkyBox, pxSkyBox);
 
 #if PXLogEnable
             PXLogPrint
@@ -1138,7 +1111,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             // Model create
             {
-                PXModel* const pxModel = PXNew(PXModel);
+                PXModel* pxModel = PXNull;                
+                PXNewZerod(PXModel, &pxModel);
                 pxSkyBox->Model = pxModel;
 
                 const float vertexData[] =
@@ -1223,11 +1197,9 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxSprite)
             {
-                pxSprite = PXNew(PXSprite);
+                PXNewZerod(PXSprite, &pxSprite);
                 *pxEngineResourceCreateInfo->ObjectReference = pxSprite;
             }
-
-            PXClear(PXSprite, pxSprite);
 
             pxSprite->PXID = PXEngineGenerateUniqeID(pxEngine);
             PXDictionaryAdd(&pxEngine->SpritelLookUp, &pxSprite->PXID, pxSprite);
@@ -1419,7 +1391,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxEngineText)
             {
-                pxEngineText = PXNew(PXEngineText);
+                PXNewZerod(PXEngineText, &pxEngineText);
                 *pxEngineResourceCreateInfo->ObjectReference = pxEngineText;
             }
 
@@ -1462,7 +1434,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxEngineTimer)
             {
-                pxEngineTimer = PXNew(PXEngineTimer);
+                PXNewZerod(PXEngineTimer, &pxEngineTimer);
                 *pxEngineResourceCreateInfo->ObjectReference = pxEngineTimer;
             }
 
@@ -1510,7 +1482,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxSound)
             {
-                pxSound = PXNew(PXSound);
+                PXNewZerod(PXSound, &pxSound);
                 *pxEngineResourceCreateInfo->ObjectReference = pxSound;
             }
 
@@ -1553,7 +1525,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             // Create if not exists
             if (!pxEngineSound)
             {
-                pxEngineSound = PXNew(PXEngineSound);
+                PXNewZerod(PXEngineSound, &pxEngineSound);
                 *pxEngineResourceCreateInfo->ObjectReference = pxEngineSound;
             }
 
@@ -1632,7 +1604,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxUIElement)
             {
-                pxUIElement = PXNew(PXUIElement);
+                PXNewZerod(PXUIElement, &pxUIElement);
                 *pxEngineResourceCreateInfo->ObjectReference = pxUIElement;
             }
 
@@ -1916,7 +1888,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             {
                 if (!pxShaderProgram)
                 {
-                    pxShaderProgram = PXNew(PXShaderProgram);
+                    PXNewZerod(PXShaderProgram, &pxShaderProgram);
                     *pxEngineResourceCreateInfo->ObjectReference = pxShaderProgram;
                 }
             }
@@ -2005,7 +1977,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             if (!pxHitBox)
             {
-                pxHitBox = PXNew(PXHitBox);
+                PXNewZerod(PXHitBox, &pxHitBox);
                 *pxEngineResourceCreateInfo->ObjectReference = pxHitBox;
             }
 
@@ -2429,8 +2401,8 @@ PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite
     }
     else
     {
-        PXMaterial* materiial = PXNew(PXMaterial);
-        PXClear(PXMaterial, materiial);
+        PXMaterial* materiial = PXNull;
+        PXNewZerod(PXMaterial, &materiial);
 
         materiial->DiffuseTexture = pxSprite->Texture;
 

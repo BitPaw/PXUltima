@@ -1,5 +1,7 @@
 #include "PXPDF.h"
 
+#include <OS/Error/PXActionResult.h>
+
 const static char PXPDFSignature[5] = {'%', 'P', 'D', 'F', '-'};
 
 PXActionResult PXAPI PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile)

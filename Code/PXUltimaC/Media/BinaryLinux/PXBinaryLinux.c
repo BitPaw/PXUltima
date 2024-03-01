@@ -1,5 +1,8 @@
 #include "PXBinaryLinux.h"
 
+#include <OS/File/PXFile.h>
+#include <OS/Error/PXActionResult.h>
+
 #define PXEFIDebug 0
 
 const char PXELFSignature[4] = { 0x7F, 'E', 'L' ,'F' };

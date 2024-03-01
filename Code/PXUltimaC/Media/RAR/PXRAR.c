@@ -1,5 +1,7 @@
 #include "PXRAR.h"
 
+#include <OS/File/PXFile.h>
+
 const char PXRARSignature[] = { 'R', 'a', 'r', '!', 0x1A ,0x07 };
 
 PXActionResult PXAPI PXRARLoadFromFile(PXFile* const pxUncompressedFile, PXFile* const pxCompressedFile)

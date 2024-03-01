@@ -74,13 +74,107 @@
 
 #endif
 
-void PXAPI PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, PXText* const directory, PXText* const fileName, PXText* const extension)
+PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure)
 {
+	PXClear(PXFilePathStructure, pxFilePathStructure);
+
 	switch (fullPath->Format)
 	{
 		case TextFormatUTF8:
 		case TextFormatASCII:
 		{
+			const PXSize indexFirstDot = PXTextFindLastCharacter(fullPath, '.');
+			const PXBool hasDot = -1 != indexFirstDot;
+
+			const PXSize indexFirstSlash = PXTextFindFirstCharacter(fullPath, '/');
+			const PXSize indexFirstSlashBack = PXTextFindFirstCharacter(fullPath, '\\');
+			const PXSize indexLastSlash = PXTextFindLastCharacter(fullPath, '/');
+			const PXSize indexLastSlashBack = PXTextFindLastCharacter(fullPath, '\\');
+
+			const PXSize endDrive = PXMathMinimumIU(indexFirstSlash, indexFirstSlashBack);
+			const PXSize endPath = PXMathMinimumIU(indexLastSlash, indexLastSlashBack);
+			const PXSize fileEnd = hasDot ? indexFirstDot : fullPath->SizeUsed;
+
+			const PXBool hasDirectory = endDrive != -1 || endPath != -1;
+
+			const PXBool hasFileName = hasDot && (indexFirstDot < fullPath->SizeUsed);
+			const PXSize indexFileNameStart = hasDirectory ? endPath + 1 : 0;
+			const PXSize lengthFileName = indexFileNameStart == 0 ? indexFirstDot : endPath + 1;
+
+			if(indexFirstDot)
+			{
+				pxFilePathStructure->Extension.SizeAllocated = fullPath->SizeUsed - indexFirstDot - 1;
+				pxFilePathStructure->Extension.SizeUsed = pxFilePathStructure->Extension.SizeAllocated;
+				pxFilePathStructure->Extension.NumberOfCharacters;
+				pxFilePathStructure->Extension.TextA = fullPath->TextA + indexFirstDot + 1;
+				pxFilePathStructure->Extension.Format = fullPath->Format;
+			}
+
+			// File
+			if(hasFileName)
+			{
+				pxFilePathStructure->FileName.SizeAllocated = lengthFileName;
+				pxFilePathStructure->FileName.SizeUsed = pxFilePathStructure->FileName.SizeAllocated;
+				pxFilePathStructure->FileName.NumberOfCharacters;
+				pxFilePathStructure->FileName.TextA = fullPath->TextA + indexFileNameStart;
+				pxFilePathStructure->FileName.Format = fullPath->Format;
+			}
+
+			if(hasDirectory)
+			{
+				pxFilePathStructure->Directory.SizeAllocated = endPath + 1;
+				pxFilePathStructure->Directory.SizeUsed = pxFilePathStructure->Directory.SizeAllocated;
+				pxFilePathStructure->Directory.NumberOfCharacters;
+				pxFilePathStructure->Directory.TextA = fullPath->TextA;
+				pxFilePathStructure->Directory.Format = fullPath->Format;
+			}
+
+
+#if PXLogEnable
+			{
+				char bufferDrive[260];
+				char bufferFolder[260];
+				char bufferFile[260];
+				char bufferExtension[260];
+
+				PXClearList(char, bufferDrive, 260);
+				PXClearList(char, bufferFolder, 260);
+				PXClearList(char, bufferFile, 260);
+				PXClearList(char, bufferExtension, 260);
+
+				PXTextCopyA(pxFilePathStructure->Drive.TextA, pxFilePathStructure->Drive.SizeUsed, bufferDrive, 260);
+				PXTextCopyA(pxFilePathStructure->Directory.TextA, pxFilePathStructure->Directory.SizeUsed, bufferFolder, 260);
+				PXTextCopyA(pxFilePathStructure->FileName.TextA, pxFilePathStructure->FileName.SizeUsed, bufferFile, 260);
+				PXTextCopyA(pxFilePathStructure->Extension.TextA, pxFilePathStructure->Extension.SizeUsed, bufferExtension, 260);
+
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"File",
+					"Path-Split",
+					"Drive:%s, Folder:%s, File:%s, Extension:%s",
+					bufferDrive,
+					bufferFolder,
+					bufferFile,
+					bufferExtension
+				);
+
+			}
+
+
+#endif // 1
+
+			return PXActionSuccessful;
+
+
+
+
+
+
+
+
+
+
 #if OSUnix
 
 #if 0
@@ -110,8 +204,19 @@ void PXAPI PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, P
 #endif // 0
 
 #elif OSWindows
-			char fileNameCache[FileNameMaxSize];
+		
+			
 
+
+			
+
+
+
+
+
+
+#if 0
+#if 0 // TODO
 			_splitpath_s
 			(
 				fullPath->TextA,
@@ -120,6 +225,7 @@ void PXAPI PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, P
 				fileName->TextA, fileName->SizeAllocated,
 				extension->TextA, extension->SizeAllocated
 			);
+#endif
 
 			for (PXSize i = 0; fileName->TextA[i] != '\0'; i++)
 			{
@@ -132,6 +238,7 @@ void PXAPI PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, P
 					break;
 				}
 			}
+#endif
 #endif
 
 			break;
@@ -161,9 +268,10 @@ void PXAPI PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, P
 			PXTextCopyAW(directoryA, DirectoryMaxSize, directory, DirectoryMaxSize);
 			PXTextCopyAW(fileNameA, FileNameMaxSize, fileName, FileNameMaxSize);
 			PXTextCopyAW(extensionA, ExtensionMaxSize, extension, ExtensionMaxSize);
-#elif OSWindows
+#elif OSWindows && 0
 			wchar_t extensionCache[FileNameMaxSize];
 
+#if 0 // TODO
 			_wsplitpath_s
 			(
 				fullPath,
@@ -172,6 +280,7 @@ void PXAPI PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, P
 				fileName->TextW, fileName->SizeAllocated,
 				extension->TextW, extension->SizeAllocated
 			);
+#endif
 
 			for (PXSize i = 0; extension->TextW[i] != '\0'; i++)
 			{
@@ -191,8 +300,15 @@ void PXAPI PXFilePathSplitt(const PXText* const fullPath, PXText* const drive, P
 	}
 }
 
-void PXAPI PXFilePathSplittPositionW(const wchar_t* fullPath, PXSize fullPXPathSizeMax, PXSize* drivePos, PXSize driveSize, PXSize* directory, PXSize directorySize, PXSize* fileName, PXSize fileNameSize, PXSize* extension, PXSize extensionSize)
+PXActionResult PXAPI PXFilePathCombine(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure)
 {
+	PXTextAppend(fullPath, &pxFilePathStructure->Drive);
+	PXTextAppend(fullPath, &pxFilePathStructure->Directory);
+	PXTextAppend(fullPath, &pxFilePathStructure->FileName);
+	PXTextAppendA(fullPath, ".", 1);
+	PXTextAppend(fullPath, &pxFilePathStructure->Extension);
+
+	return PXActionSuccessful;
 }
 
 PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXText* const extension)
@@ -750,74 +866,38 @@ void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* 
 
 void PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName)
 {
-	switch (inputPath->Format)
+	PXFilePathStructure pxFilePathStructureBefore;
+	PXFilePathStructure pxFilePathStructureAfter;
+
+	// Run a
 	{
-		case TextFormatUTF8:
-		case TextFormatASCII:
+
+		const PXActionResult result = PXFilePathSplitt(inputPath, &pxFilePathStructureBefore);
+
+		if(PXActionSuccessful != result)
 		{
-			PXText drive;
-			PXTextConstructNamedBufferA(&drive, driveBuffer, DriveMaxSize);
-
-			PXText directory;
-			PXTextConstructNamedBufferA(&directory, directoryBuffer, DirectoryMaxSize);
-
-			{
-				PXText fileName;
-				PXTextConstructNamedBufferA(&fileName, fileNameBuffer, FileNameMaxSize);
-
-				PXText extension;
-				PXTextConstructNamedBufferA(&extension, extensionBuffer, ExtensionMaxSize);
-
-				PXFilePathSplitt(inputPath, &drive, &directory, &fileName, &extension);
-			}
-
-			{
-				exportPath->SizeUsed = 0;
-				exportPath->SizeUsed += PXTextCopyA(drive.TextA, drive.SizeAllocated, exportPath->TextA, exportPath->SizeAllocated - exportPath->SizeUsed);
-				exportPath->SizeUsed += PXTextCopyA(directory.TextA, directory.SizeAllocated, exportPath->TextA + exportPath->SizeUsed, exportPath->SizeAllocated - exportPath->SizeUsed);
-				exportPath->SizeUsed += PXTextCopyA(fileName->TextA, fileName->SizeAllocated, exportPath->TextA + exportPath->SizeUsed, exportPath->SizeAllocated - exportPath->SizeUsed);
-
-				//PXTextCopyA(fileName->TextA, offset, exportPath, PXPathSizeMax);
-			}
-
-			break;
+			return result;
 		}
 
-		case TextFormatUNICODE:
+	}
+
+	// RUn B
+	{
+		const PXActionResult result = PXFilePathSplitt(fileName, &pxFilePathStructureAfter);
+
+		if(PXActionSuccessful != result)
 		{
-			/*
-			wchar_t finalPath[PXPathSizeMax];
-
-			wchar_t driveW[DriveMaxSize];
-			wchar_t directoryW[DirectoryMaxSize];
-
-			{
-				wchar_t fileNameW[FileNameMaxSize];
-				wchar_t extensionW[ExtensionMaxSize];
-
-				PXFilePathSplittW
-				(
-					inputPath, PXPathSizeMax,
-					driveW, DriveMaxSize,
-					directoryW, DirectoryMaxSize,
-					fileNameW, FileNameMaxSize,
-					extensionW, ExtensionMaxSize
-				);
-			}
-
-			{
-				PXSize offset = 0;
-
-				offset += PXTextCopyW(driveW, DriveMaxSize, finalPath, PXPathSizeMax - offset);
-				offset += PXTextCopyW(directoryW, DirectoryMaxSize, finalPath + offset, PXPathSizeMax - offset);
-				offset += PXTextCopyW(fileName, PXPathSizeMax, finalPath + offset, PXPathSizeMax - offset);
-
-				PXTextCopyW(finalPath, offset, exportPath, PXPathSizeMax);
-			}*/
-
-			break;
+			return result;
 		}
 	}
+
+	// Override 
+	{
+		PXCopy(PXText, &pxFilePathStructureAfter.FileName, &pxFilePathStructureBefore.FileName);
+		PXCopy(PXText, &pxFilePathStructureAfter.Extension, &pxFilePathStructureBefore.Extension);
+	}
+
+	PXFilePathCombine(exportPath, &pxFilePathStructureBefore);
 }
 
 void PXAPI PXFilePathSwapExtension(const PXText* const inputPath, PXText* const exportPath)
@@ -970,7 +1050,7 @@ void PXAPI PXFileDestruct(PXFile* const pxFile)
 			break;
 
 		case PXFileLocationModeInternal:
-			PXDeleteList(PXByte, pxFile->Data, pxFile->DataSize);
+			PXDeleteList(PXByte, pxFile->DataSize, &pxFile->Data, &pxFile->DataSize);
 			break;
 
 		case PXFileLocationModeMappedVirtual:
@@ -978,7 +1058,7 @@ void PXAPI PXFileDestruct(PXFile* const pxFile)
 			break;
 
 		case PXFileLocationModeDirectCached:
-			PXDeleteList(PXByte, pxFile->Data, pxFile->DataSize);
+			PXDeleteList(PXByte, pxFile->DataSize, &pxFile->Data, &pxFile->DataSize);
 			PXFileClose(pxFile);
 			break;
 
@@ -1042,8 +1122,7 @@ void PXAPI PXFileBufferAllocate(PXFile* const pxFile, const PXSize dataSize)
 {
 	PXFileConstruct(pxFile);
 
-	pxFile->Data = PXNewList(PXByte, dataSize);
-	pxFile->DataAllocated = dataSize;
+	PXNewList(PXByte, dataSize, &pxFile->Data, &pxFile->DataAllocated);
 	pxFile->DataSize = dataSize;
 	pxFile->AccessMode = PXMemoryAccessModeReadAndWrite;
 	pxFile->LocationMode = PXFileLocationModeInternal;
@@ -1262,6 +1341,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 		pxFile->DataSize = largeInt.QuadPart;
 	}
 
+	PXFilePathSet(pxFile, &pxFileOpenFromPathInfo->Text);
 
 #if PXLogEnable
 	PXLoggingEventData pxLoggingEventData;
@@ -1846,7 +1926,7 @@ PXBool PXAPI PXFileIsAtEnd(const PXFile* const pxFile)
 PXSize PXAPI PXFileFindEndOfText(PXFile* const pxFile)
 {
 	const void* const startIndex = PXFileCursorPosition(pxFile);
-	const void* const targetAdress = PXMemoryLocate(pxFile->Data, '\0', pxFile->DataSize);
+	const void* const targetAdress = PXMemoryLocateFirst(pxFile->Data, '\0', pxFile->DataSize);
 	const PXSize offset = (PXSize)targetAdress - (PXSize)startIndex;
 
 	return offset;
@@ -2420,7 +2500,8 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 			totalSizeToRead += sizeOfType;
 		}
 
-		void* stackMemory = PXStackNew(char, totalSizeToRead);
+		void* stackMemory = PXNull;
+		PXNewStackList(char, totalSizeToRead, &stackMemory, PXNull);
 
 		PXFileBufferExternal(&pxStackFile, stackMemory, totalSizeToRead);
 
@@ -2552,7 +2633,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 #endif	
 	}
 
-	PXStackDelete(char, totalSizeToRead, stackMemory);
+	PXDeleteStackList(char, totalSizeToRead, &stackMemory, PXNull);
 
 	return totalReadBytes;
 }
@@ -3046,7 +3127,7 @@ PXSize PXAPI PXFileWriteB(PXFile* const pxFile, const void* const value, const P
 		case PXFileLocationModeDirectUncached:
 		{
 #if OSUnix
-// TODO: implement
+			// TODO: implement
             return 0;
 #elif OSWindows
             DWORD writtenBytes = 0;
@@ -3097,7 +3178,8 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
 		return 0;
 	}
 
-	PXByte* const stackMemory = PXStackNew(PXByte, length);
+	PXByte* const stackMemory = PXNull;
+	PXNewStackList(PXByte, length, &stackMemory, PXNull);
 
 	for (PXSize i = 0; i < length; ++i)
 	{
@@ -3106,7 +3188,7 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
 
 	const PXSize writtenBytes = PXFileWriteB(pxFile, stackMemory, length);
 
-	PXStackDelete(PXByte, length, stackMemory);
+	PXDeleteStackList(PXByte, length, &stackMemory, PXNull);
 
 	return writtenBytes;
 }
@@ -3327,16 +3409,36 @@ PXActionResult PXAPI PXFileTimeGet
 #endif
 }
 
-PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
+PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath)
 {
-#if 1
-
 #if OSUnix
-	return 0; // TODO
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 
+#if WindowsAtleastVista // On Vista we can always store. No Store needed
+	return PXActionSuccessful;
+#elif WindowsAtleastXP // On windows XP only if beeing mapped.
+	const PXBool isMapped = PXNull != pxFile->MappingID;
 
+	if(isMapped)
+	{
+		return PXActionSuccessful;
+	}
+#endif
+
+	PXTextCreateCopy(&pxFile->FilePath, filePath);
+
+	return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
+{
+#if OSUnix
+	return PXActionRefusedNotImplemented; // TODO
+
+#elif OSWindows
+	
 #if WindowsAtleastVista
 
 	// FILE_NAME_OPENED, VOLUME_NAME_DOS
@@ -3384,43 +3486,20 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 	PXTextReplace(filePath, '\\', '/');
 
 	return PXActionSuccessful;
-#else
-	return PXActionRefusedNotSupported;
+#elif WindowsAtleastXP
+
+	GetMappedFileName(GetCurrentProcess(), pMem, pszFilename, MAX_PATH)
+
 #endif
 
+	// Last resort not to get the file name per handle but from self-storage
 
-#endif
-
-#else
-
-#if OSUnix
-	return 0; // TODO
-
-#elif OSWindows
-	const DWORD flags = VOLUME_NAME_DOS | FILE_NAME_NORMALIZED;
-	const DWORD length = GetFinalPathNameByHandleW(pxFile->ID, filePath->TextW, filePath->SizeAllocated, flags); // Minimum support: Windows Vista, Windows.h, Kernel32.dll
-	const PXBool successful = 0u != length;
-
-	if (!successful)
-	{
-		return PXFalse;
-	}
-
-	filePath->Format = TextFormatUNICODE;
-	filePath->SizeUsed = length;
-
-	wchar_t buffer[PXPathSizeMax];
-
-	if (filePath->TextW[0] == '\\')
-	{
-		PXTextCopyW(filePath + 4, length - 4, buffer, PXPathSizeMax);
-		PXTextCopyW(buffer, PXPathSizeMax, filePath, length - 4);
-	}
+	PXTextCopy(&pxFile->FilePath, filePath);
 
 	return PXActionSuccessful;
 #endif
 
-#endif // 0
+#endif
 }
 
 PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput)

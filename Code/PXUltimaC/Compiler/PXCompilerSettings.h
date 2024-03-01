@@ -6,11 +6,6 @@
 
 #define _PX_FILEPATH_ __FILE__
 
-#if OSUnix
-#define _PX_FILENAME_ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-#elif OSWindows
-#define _PX_FILENAME_ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
-#endif
 
 #define _PX_FUNCTION_ __FUNCTION__
 #define _PX_LINE_ __LINE__

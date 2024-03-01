@@ -1,9 +1,11 @@
 #include "PXConsole.h"
 
+#include <stdarg.h>
+#include <stdio.h>
 #include <Media/PXText.h>
 #include <OS/Async/PXThread.h>
-#include <stdarg.h>
-//#include <stdio.h>
+#include <OS/Time/PXTime.h>
+#include <OS/File/PXFile.h>
 //#include <stdarg.h>
 
 #define PXConsoleColorEnable 0
@@ -12,6 +14,8 @@
 void PXAPI PXConsoleClear()
 {
 	printf("\033[H\033[J");
+
+	//SetConsoleCursorPosition();
 }
 
 void PXAPI PXConsoleWriteA(const char* text, ...)

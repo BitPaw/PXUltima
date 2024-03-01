@@ -53,7 +53,9 @@ extern "C"
 	typedef struct PXMIDI_
 	{
 		PXMIDITrack* TrackList;
-		PXInt16U TrackListSize;
+		PXSize TrackListSize;
+
+		PXInt16U TrackListAmount;
 		PXInt16U Format;
 		PXInt16U MusicSpeed;
 	}

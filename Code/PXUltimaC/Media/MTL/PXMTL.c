@@ -105,9 +105,8 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 
 
 	// Allcoate
-	{		
-		pxMaterialList->MaterialListSize = materialAmount;
-		pxMaterialList->MaterialList = PXNewList(PXMaterial, materialAmount);
+	{
+		PXNewList(PXMaterial, materialAmount, &pxMaterialList->MaterialList, &pxMaterialList->MaterialListSize);
 
 		materialAmount = 0;
 	}
@@ -160,12 +159,9 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 
 				PXFilePathRelativeFromFile(pxFile, &nameTexturePath, &fullTexturePath);
 
-				pxMaterialCurrent->DiffuseTexture = PXNew(PXTexture2D);			
-				PXClear(PXTexture2D, pxMaterialCurrent->DiffuseTexture);
-				
-				pxMaterialCurrent->DiffuseTexture->Image = PXNew(PXImage);
-				
-				PXClear(PXImage, pxMaterialCurrent->DiffuseTexture->Image);
+				PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);				
+				PXNewZerod(PXImage, &pxMaterialCurrent->DiffuseTexture->Image);
+
 				PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
 
 				PXResourceLoad(pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);

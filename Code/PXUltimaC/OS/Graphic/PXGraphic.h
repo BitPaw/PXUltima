@@ -123,36 +123,7 @@ extern "C"
 
 	//---<UI Elements>---------------------------------------------------------
 
-	typedef enum PXUIHoverState_
-	{
-		PXUIHoverStateInvalid,
-		PXUIHoverStateNotBeeingHovered, // Not beeing hovered
-		PXUIHoverStateHovered, // IS beeing hovered
-		PXUIHoverStateHoveredButOverlapped // User hovers over this object but its been blocked by other object
-	}
-	PXUIHoverState;
-
-	typedef enum PXUIElementType_
-	{
-		PXUIElementTypeInvalid,
-		PXUIElementTypePanel,
-		PXUIElementTypeText,
-		PXUIElementTypeButton,
-		PXUIElementTypeImage,
-
-		PXUIElementTypeDropDown,
-		PXUIElementTypeToggle,
-		PXUIElementTypeCheckBox,
-		PXUIElementTypeColorPicker,
-		PXUIElementTypeSlider,
-		PXUIElementTypeRadioButton,
-		PXUIElementTypeToolTip,
-
-		PXUIElementTypeRenderFrame,
-
-		PXUIElementTypeCustom
-	}
-	PXUIElementType;
+	
 
 
 
@@ -181,115 +152,7 @@ extern "C"
 	UIContainerRoot;
 
 
-	typedef struct PXUIElement_ PXUIElement;
 
-	typedef void (PXAPI*PXUIOnClick)(PXUIElement* const pxUIElement);
-	typedef void (PXAPI*PXUIOnMouseEnter)(PXUIElement* const pxUIElement);
-	typedef void (PXAPI*PXUIOnMouseLeave)(PXUIElement* const pxUIElement);
-
-
-	typedef struct PXUIElementFrameBufferInfo_
-	{
-		PXTexture2D* TextureReference;
-
-		PXInt32U Width;
-		PXInt32U Height;
-		PXInt32U BufferID;
-		PXInt32U RenderID;
-	}
-	PXUIElementFrameBufferInfo;
-
-	typedef struct PXUIElementImageInfo_
-	{
-		PXTexture2D* TextureReference;
-	}
-	PXUIElementImageInfo;
-
-	typedef struct PXUITextInfo_
-	{
-		char Content[32];
-		PXFont* FontID;
-		float Scale;
-	}
-	PXUITextInfo;
-
-#define PXUIElementDoRendering (1 << 0) 
-#define PXUIElementIsActive (1 << 1)
-#define PXUIElementIsHoverable (1 << 2)
-#define PXUIElementDrawBorder (1 << 3)
-
-#define PXUIElementNormal PXUIElementDoRendering | PXUIElementIsActive | PXUIElementIsHoverable
-#define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive | PXUIElementDrawBorder
-#define PXUIElementText PXUIElementDoRendering | PXUIElementIsActive 
-
-#define PXUIElementAncerParent  0b11110000
-
-#define PXUIElementAncerParentLeft 0b10000000
-#define PXUIElementAncerParentTop 0b01000000
-#define PXUIElementAncerParentRight 0b00100000
-#define PXUIElementAncerParentBottom 0b00010000
-
-#define PXUIElementAncerSibling 0b00001111
-
-#define PXUIElementAncerSiblingLeft 0b00001000
-#define PXUIElementAncerSiblingTop 0b00000100
-#define PXUIElementAncerSiblingRight 0b00000010
-#define PXUIElementAncerSiblingBottom 0b00000001
-
-#define PXUIElementPositionGlobal 0
-#define PXUIElementPositionRelative PXUIElementAncerParent
-
-
-	// Atomic UI-Element
-	// Only Text can be text
-	// Only image can be image
-	typedef struct PXUIElement_
-	{
-		//------------------------------
-		// References 
-		//------------------------------
-		PXUIElement* Parent;
-		PXUIElement* Sibling;
-		PXUIElement* Child;
-
-		//------------------------------
-		// Events
-		//------------------------------
-		PXUIOnClick OnClickCallback;
-		PXUIOnMouseEnter OnMouseEnterCallback;
-		PXUIOnMouseLeave OnMouseLeaveCallback;
-
-
-		//------------------------------
-		// Position
-		//------------------------------
-		PXRectangleOffset Margin;
-		PXRectangleOffset Padding;
-		PXInt8U AncerFlagList;
-
-
-		//---<State-Info>------------------------
-		PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
-		PXUIHoverState Hover;
-		PXInt32U FlagsList; 
-		//---------------------------------------
-
-		//---<Property>--------------------------
-		PXInt16U ID;
-		PXUIElementType Type;
-		//PXUIElementPositionMode PositionMode;
-
-		union
-		{
-			PXUIElementFrameBufferInfo FrameBufferInfo;
-			PXUIElementImageInfo ImageInfo;
-			PXUITextInfo TextInfo;
-		};	
-	}
-	PXUIElement;
-
-	//const PXSize element = sizeof(PXUIElement);
-	//const PXSize possibleElements = 4096 / sizeof(PXUIElement);
 
 
 

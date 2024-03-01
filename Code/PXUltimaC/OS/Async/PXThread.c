@@ -1,5 +1,8 @@
 #include "PXThread.h"
 
+#include <OS/Console/PXConsole.h>
+#include <OS/File/PXFile.h>
+
 // Note, TerminateThread() should not be used, it can lead to a memory leak in XP
 
 void PXAPI PXThreadConstruct(PXThread* const pxThread)
@@ -79,7 +82,37 @@ PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const thr
 	);
 	const PXBool wasSucessful = threadID != 0;
 
-	PXActionOnErrorFetchAndReturn(!wasSucessful);
+	if(!wasSucessful)
+	{
+		const PXActionResult threadResult = PXErrorCurrent();
+
+#if PXLogEnable
+		PXLogPrint
+		(
+			PXLoggingError,
+			"Thread",
+			"Create",
+			"Failed to create Name:<%s>",
+			threadName
+		);
+#endif
+
+		return threadResult;
+	}
+
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Thread",
+		"Create",
+		"Success. ID:%i Name:%s",
+		(int)threadID,
+		threadName
+	);
+#endif
+
 
 	if (pxThread)
 	{
@@ -173,9 +206,34 @@ PXActionResult PXAPI PXThreadYieldToOtherThreads()
 #elif OSWindows
 	// UmsThreadYield() // Windows 7 (64-Bit only), Kernel32.dll, winbase.h [Debcricated in Windows 11]
 
-	const PXBool successful = SwitchToThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+	const PXBool successful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
 
-	PXActionOnErrorFetchAndReturn(!successful);
+	if(!successful)
+	{
+		const PXActionResult xx = PXErrorCurrent();
+
+#if PXLogEnable && 0
+		PXLogPrint
+		(
+			PXLoggingError,
+			"Thread",
+			"Yield",
+			"Failed action."
+		);
+#endif
+
+		return xx;
+	}
+
+#if PXLogEnable && 0
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Thread",
+		"Yield",
+		"Done with work, swapping to next thread"
+	);
+#endif
 
 	return PXActionSuccessful;
 #else 

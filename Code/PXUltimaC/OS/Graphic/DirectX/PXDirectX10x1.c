@@ -6,6 +6,8 @@
 
 PXActionResult PXAPI PXDirectX10x1Initialize(PXDirectX10x1* const pxDirectX10x1)
 {
+    return PXActionRefusedNotImplemented;
+
 #if 0
     D3D10_FEATURE_LEVEL1 featureLevel = 0;
     D3D10_DRIVER_TYPE dxDriverType = 0;

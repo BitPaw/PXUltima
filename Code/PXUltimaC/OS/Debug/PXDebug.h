@@ -38,6 +38,8 @@ extern "C"
 	typedef BOOL(WINAPI* PXSymInitialize)(_In_ HANDLE hProcess, _In_opt_ PCSTR UserSearchPath, _In_ BOOL fInvadeProcess);
 	typedef BOOL(WINAPI* PXSymEnumSymbols)(_In_ HANDLE hProcess, _In_ ULONG64 BaseOfDll, _In_opt_ PCSTR Mask, _In_ PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback, _In_opt_ PVOID UserContext);
 	typedef BOOL(WINAPI* PXSymEnumSymbolsEx)(_In_ HANDLE hProcess, _In_ ULONG64 BaseOfDll, _In_opt_ PCSTR Mask, _In_ PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback, _In_opt_ PVOID UserContext, _In_ DWORD Options);
+	typedef PVOID(WINAPI* PXSymFunctionTableAccess)(__in HANDLE hProcess, __in DWORD AddrBase);
+	typedef DWORD(WINAPI* PXSymGetModuleBase)(__in HANDLE hProcess, __in DWORD dwAddr);
 
 
 	// Debug
@@ -94,7 +96,8 @@ extern "C"
 		PXSymGetSymFromAddr64 XSymGetSymFromAddr64;
 		PXSymEnumSymbols SymbolEnumerate;
 		PXSymEnumSymbolsEx SymbolEnumerateEx;
-
+		PXSymFunctionTableAccess SymbolFunctionTableAccess;
+		PXSymGetModuleBase SymbolGetModuleBase;
 #endif
 	}
 	PXDebug;
