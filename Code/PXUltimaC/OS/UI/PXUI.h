@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-	PXPublic PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, struct PXWindow_* pxWindow);
+	PXPublic PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PXWindow* const pxWindow);
 
 #ifdef __cplusplus
 }

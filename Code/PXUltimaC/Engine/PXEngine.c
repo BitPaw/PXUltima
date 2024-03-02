@@ -414,7 +414,7 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
     return pxEngine->IsRunning;
 }
 
-void PXAPI PXEngineStart(PXEngine* const pxEngine)
+PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
 {
     PXCameraConstruct(&pxEngine->CameraDefault);
     PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 80, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
@@ -515,7 +515,9 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
                 PXLoggingError,
                 "PX",
                 "Instantiate",
-                "failed to create graphical instance!"
+                "failed to create graphical instance!\n"
+                "Graphics card driver is not able to provide a rendering context."
+                "Either the card itself is not capable or a driver is missing and needs to be installed."
             );
 #endif
 
@@ -624,6 +626,8 @@ void PXAPI PXEngineStart(PXEngine* const pxEngine)
     //PXActionResult ww = PXProcessHandleListAll(PXNull);
    // printf("");
 #endif
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXEngineStop(PXEngine* const pxEngine)

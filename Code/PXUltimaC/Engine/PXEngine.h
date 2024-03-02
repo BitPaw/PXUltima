@@ -478,7 +478,7 @@ extern "C"
 
 	PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
 
-	PXPublic void PXAPI PXEngineStart(PXEngine* const pxEngine);
+	PXPublic PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine);
 	PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
 	PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
 

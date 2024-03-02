@@ -33,9 +33,11 @@
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
+#include <OS/Console/PXConsole.h>
 #include <stdio.h>
+#include <WindowsX.h>
 
-PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, struct PXWindow_* pxWindow)
+PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PXWindow* const pxWindow)
 {
     PXInt32U styleFlags = 0;
     wchar_t* className = PXNull;
@@ -60,17 +62,19 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         case PXUIElementTypeButton:
         {// BS_USERBUTTON 
             className = WC_BUTTONW;
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON| WS_BORDER; // BS_DEFPUSHBUTTON 
+            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD |  WS_BORDER; // BS_DEFPUSHBUTTON 
             break;
         }
         case PXUIElementTypeImage:
         {
-
+           // className = WC_IMAGE;
+            //styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeDropDown:
         {
-
+            className = WC_COMBOBOX;
+            styleFlags = CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE;
             break;
         }
         case PXUIElementTypeListBox:
@@ -249,6 +253,7 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
     }
 
 
+
     DWORD dwExStyle = 0;
     const wchar_t* lpWindowName = L"TEST";
     HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(pxWindow->ID, GWLP_HINSTANCE);
@@ -270,12 +275,270 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
     );
     const PXBool success = -1 != pxUIElement->ID;
 
+
+    
+    char buffer[255];
+    PXClearList(char, buffer, 255);
+
+    PXSize* size = buffer;
+    *size = 255;
+
+    COLORREF colorAA = RGB(255, 0, 0);
+
+    HDC xx = GetDC(pxUIElement->ID);
+
+    HBRUSH brush = SendMessageA(pxWindow->ID, WM_CTLCOLORBTN, xx, pxUIElement->ID); // RB_SETBKCOLOR
+    SetTextColor(xx, RGB(255, 0, 0));
+    SetBkColor(xx, RGB(0, 255, 0));
+
+
+
+   // SetTextColor(xx, colorAA);
+
+
+    //LRESULT ww = SendMessageA(pxUIElement->ID, EM_GETLINE, 0, buffer); // RB_SETBKCOLOR
+
+
+  //  PXConsoleWriteA("\n\n%i     %i %s", brush, ww, buffer);
+
+
+   // SendMessageA(pxUIElement->ID, RB_SETTEXTCOLOR, 0, &colorAA);
+    
+
+
+
+
+    Pager_SetBkColor(pxUIElement->ID, &colorAA);
+
     if(!success)
     {
         const PXActionResult pxActionResult = PXErrorCurrent();
 
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "UI",
+            "Element-Create",
+            "Failed: Name:%ls, X:%i, Y:%i, Width:%i, Height:%i",
+            className,
+            pxUIElement->Poisition2D.X,
+            pxUIElement->Poisition2D.Y,
+            pxUIElement->Poisition2D.Width,
+            pxUIElement->Poisition2D.Height
+        );
+#endif
+
         return pxActionResult;
     }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "UI",
+        "Element-Create",
+        "Successful: Name:%ls, X:%i, Y:%i, Width:%i, Height:%i",
+        className,
+        pxUIElement->Poisition2D.X,
+        pxUIElement->Poisition2D.Y,
+        pxUIElement->Poisition2D.Width,
+        pxUIElement->Poisition2D.Height
+    );
+#endif
+
+
+
+    switch(pxUIElement->Type)
+    {
+        case PXUIElementTypePanel:
+        {
+            break;
+        }
+        case PXUIElementTypeText:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeButton:
+        {
+
+            break;
+        }
+        case PXUIElementTypeImage:
+        {
+    
+            break;
+        }
+        case PXUIElementTypeDropDown:
+        {
+        
+            break;
+        }
+        case PXUIElementTypeListBox:
+        {
+           
+            break;
+        }
+        case PXUIElementTypeTextEdit:
+        {
+       
+            break;
+        }
+        case PXUIElementTypeRichEdit:
+        {
+         
+            break;
+        }
+        case PXUIElementTypeScrollBar:
+        {
+        
+            break;
+        }
+        case PXUIElementTypeTrackBar:
+        {
+           
+            break;
+        }
+        case PXUIElementTypeStatusBar:
+        {
+        
+            break;
+        }
+        case PXUIElementTypeUpDown:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeProgressBar:
+        {
+            PXUIElementProgressBarInfo* const progressBar = &pxUIElement->ProgressBar;
+
+            // Set percentage
+            PXInt32U stepsConverted = progressBar->Percentage * 100;
+            SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
+
+            COLORREF color = RGB(255,0,0);
+            SendMessageA(pxUIElement->ID, PBM_SETBARCOLOR, 0, color);
+
+            break;
+        }
+        case PXUIElementTypeHotKey:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeCalender:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeToolTip:
+        {
+           
+            break;
+        }
+        case PXUIElementTypeAnimate:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeDatePicker:
+        {
+           
+            break;
+        }
+        case PXUIElementTypeGroupBox:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeRadioButton:
+        {
+        
+            break;
+        }
+        case PXUIElementTypeGroupRadioButton:
+        {
+      
+            break;
+        }
+        case PXUIElementTypeTreeView:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeIPInput:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeLink:
+        {
+         
+            break;
+        }
+        case PXUIElementTypeHeader:
+        {
+          
+            break;
+        }
+        case PXUIElementTypeFontSelector:
+        {
+        
+            break;
+        }
+        case PXUIElementTypePageScroll:
+        {
+         
+            break;
+        }
+        case PXUIElementTypeTabControll:
+        {
+       
+            break;
+        }
+        case PXUIElementTypeToggle:
+        {
+         
+            break;
+        }
+        case PXUIElementTypeColorPicker:
+        {
+         
+            break;
+        }
+        case PXUIElementTypeSlider:
+        {
+        
+            break;
+        }
+        case PXUIElementTypeCheckBox:
+        {
+         
+
+            break;
+        }
+        case PXUIElementTypeComboBox:
+        {
+        
+            break;
+        }
+        default:
+            return PXActionRefusedArgumentInvalid;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     return PXActionSuccessful;
 }

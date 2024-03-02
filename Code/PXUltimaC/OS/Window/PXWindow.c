@@ -1426,19 +1426,38 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         case WindowEventQUERYUISTATE:
             break;
         case WindowEventCTLCOLORMSGBOX:
-            break;
-        case WindowEventCTLCOLOREDIT:
-            break;
-        case WindowEventCTLCOLORLISTBOX:
-            break;
-        case WindowEventCTLCOLORBTN:
-            break;
-        case WindowEventCTLCOLORDLG:
-            break;
+        case WindowEventCTLCOLORDLG:        
         case WindowEventCTLCOLORSCROLLBAR:
-            break;
+        case WindowEventCTLCOLOREDIT:
+        case WindowEventCTLCOLORLISTBOX:
+        case WindowEventCTLCOLORBTN:
         case WindowEventCTLCOLORSTATIC:
-            break;
+        {
+            COLORREF colorRef = lParam;
+            HDC hdcStatic = (HDC)wParam;
+            HBRUSH hbrBkgnd;
+
+            // SetDCBrushColor
+
+            
+
+            SetTextColor(hdcStatic, RGB(255, 50, 50));
+            SetBkColor(hdcStatic, RGB(20, 20, 20));
+
+            PXConsoleWriteA("EEEE\n");
+
+      
+            if(hbrBkgnd == NULL)
+            {
+                hbrBkgnd = CreateSolidBrush(colorRef);
+            }
+            return (INT_PTR)hbrBkgnd;
+
+            //break;
+        }
+
+
+         
         case WindowEventGETHMENU:
             break;
         //case WindowEventMOUSEFIRST:
@@ -2719,7 +2738,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
 {
 #if OSUnix
     return PXActionNotSupportedByOperatingSystem;
-#elif WindowsAtleast10
+#elif OSWindows
 
     PXLibrary pyLibrary;
 

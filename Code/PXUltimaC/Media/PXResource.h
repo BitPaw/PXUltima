@@ -16,6 +16,7 @@ extern "C"
 	typedef struct PXFile_ PXFile;
 	typedef struct PXText_ PXText;
 	typedef struct PXDocument_ PXDocument;
+	typedef struct PXWindow_ PXWindow;
 
 
 	typedef enum PXRefreshRateMode_
@@ -891,6 +892,12 @@ extern "C"
 	}
 	PXUIElementImageInfo;
 
+	typedef struct PXUIElementProgressBarInfo_
+	{
+		float Percentage;
+	}
+	PXUIElementProgressBarInfo;
+
 	typedef struct PXUIElementTextInfo_
 	{
 		char Content[32];
@@ -950,6 +957,7 @@ extern "C"
 			PXUIElementFrameBufferInfo FrameBufferInfo;
 			PXUIElementImageInfo ImageInfo;
 			PXUIElementTextInfo TextInfo;
+			PXUIElementProgressBarInfo ProgressBar;
 		};
 
 		PXUIElementType Type;

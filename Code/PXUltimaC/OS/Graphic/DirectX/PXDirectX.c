@@ -77,7 +77,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
                 PXLoggingInfo,
                 "DirectX",
                 "Initialize",
-                "Calling spesific API. Try <%i%i>",
+                "Calling spesific API. Try <%i/%i>",
                 i+1,
                 amountOfSolutions
             );
