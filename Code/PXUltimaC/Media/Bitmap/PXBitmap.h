@@ -126,8 +126,8 @@ extern "C"
 	//----------------------------------------------------------------------------
 	PXPublic PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-	PXPublic PXActionResult PXAPI PXBitmapLoadFromFile(PXImage* const image, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXBitmapSaveToFile(const PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXBitmapSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 	//----------------------------------------------------------------------------
 
 #ifdef __cplusplus

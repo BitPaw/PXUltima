@@ -57,7 +57,7 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXActionResult PXAPI PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const outputStream)
+PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -75,12 +75,14 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const
         compilerSettings.CommentSingleLineSize = 1u;
         compilerSettings.CommentSingleLine = "#";
 
-        PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
+        //PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 
-        PXFileBufferExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
+       // PXFileBufferExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
 
-        outputStream->DataCursor = 0;
+       // outputStream->DataCursor = 0;
     }
+
+#if 0
 
     unsigned int indentCounter = 0;
 
@@ -316,13 +318,14 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXFile* const inputStream, PXFile* const
                 break;
         }
     }
-
     outputStream->DataCursor = oldpos;
+
+#endif
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXYAMLSaveToFile(PXFile* const inputStream, PXFile* const pxFile)
+PXActionResult PXAPI PXYAMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

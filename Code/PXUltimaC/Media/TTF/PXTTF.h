@@ -692,8 +692,8 @@ extern "C"
     PXPublic void PXAPI PXTTFConstruct(PXTTF* const ttf);
     PXPublic void PXAPI PXTTFDestruct(PXTTF* const ttf);
 
-	PXPublic PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile);
-    PXPublic PXActionResult PXAPI PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+    PXPublic PXActionResult PXAPI PXTTFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

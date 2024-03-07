@@ -6,6 +6,7 @@
 #include <OS/File/PXFile.h>
 #include <Engine/Dialog/PXDialogBox.h>
 #include <Media/ADLER/PXAdler32.h>
+#include <OS/UI/PXUI.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -52,6 +53,16 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     pxEngine->CounterTimeWindow = PXTimeCounterStampGet();
     //PXWindowUpdate(&pxEngine->Window);
     pxEngine->CounterTimeWindow = PXTimeCounterStampGet() - pxEngine->CounterTimeWindow;
+
+    // Fetch Window input if SYNC
+    {
+        const PXBool isRunningASYNC = pxEngine->Window.MessageThread.ThreadID != 0;
+
+        if(!isRunningASYNC)
+        {
+            PXWindowUpdate(&pxEngine->Window);
+        }
+    }
 
     // User input
     {
@@ -119,6 +130,44 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             if (pxEngine->CameraCurrent)
             {
                 PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindow->Width, pxWindow->Height);
+            }
+
+            // Update all of UI
+            if(1)
+            {
+               //???
+#if 1
+                PXDictionary* const uiElementLookup = &pxEngine->UIElementLookUp;
+
+
+                PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+                PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+
+                PXInt32S width = 0;
+                PXInt32S height = 0;
+
+                PXWindowSize(&pxEngine->Window, 0, 0, &width, &height);
+
+                for(PXSize i = 0; i < uiElementLookup->EntryAmountCurrent; ++i)
+                {
+                    PXDictionaryEntry pxDictionaryEntry;
+                    PXUIElement* uiElement = PXNull;
+
+                    PXDictionaryIndex(uiElementLookup, i, &pxDictionaryEntry);
+
+                    uiElement = *(PXUIElement**)pxDictionaryEntry.Value;
+
+                    PXUIElementPositionCalculcate(uiElement, &pxUIElementPositionCalulcateInfo);
+
+
+                    PXUIElementUpdateInfo pxUIElementUpdateInfo;
+                    pxUIElementUpdateInfo.UIElementReference = uiElement;
+                    pxUIElementUpdateInfo.WindowReference = &pxEngine->Window;
+                    pxUIElementUpdateInfo.Property = PXUIElementPropertySize;
+
+                    PXUIElementUpdateOSStyle(&pxUIElementUpdateInfo);
+                }
+#endif
             }
         }
     }
@@ -200,6 +249,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         pxEngine->CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->CounterTimeCPU;
     }
 
+#if 0
     if ((timeNow - pxEngine->CounterTimeRenderLast) > 0.02)
     {
         pxEngine->CounterTimeRenderLast = timeNow;
@@ -212,6 +262,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         pxEngine->CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->CounterTimeGPU;
         pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
     }
+#endif
 
     ++(pxEngine->CounterTimeWindow);
     ++(pxEngine->CounterTimeUser);
@@ -476,7 +527,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
     //-----------------------------------------------------
     {
         PXWindowConstruct(&pxEngine->Window);
-        PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXTrue);
+        PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXFalse);
         //PXWindowUpdate(&pxEngine->Window);
 
 #if PXLogEnable
@@ -769,7 +820,12 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             // Load texture
             {
-                const PXActionResult loadResult = PXResourceLoad(pxImage, &pxText);
+                PXResourceLoadInfo pxResourceLoadInfo;
+                PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+                pxResourceLoadInfo.Target = pxImage;
+                pxResourceLoadInfo.Type = PXGraphicResourceTypeImage;
+
+                const PXActionResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
 
 
                 if (PXActionSuccessful != loadResult)
@@ -903,7 +959,15 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             // Load
             {
-                PXResourceLoadA(pxModel, pxEngineResourceCreateInfo->FilePath);
+                PXResourceLoadInfo pxResourceLoadInfo;
+                PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+                pxResourceLoadInfo.Target = pxModel;
+                pxResourceLoadInfo.Type = PXGraphicResourceTypeModel;
+
+                PXText pxText;
+                PXTextConstructFromAdressA(&pxText, pxEngineResourceCreateInfo->FilePath, PXTextLengthUnkown, PXTextLengthUnkown);
+
+                PXResourceLoad(&pxResourceLoadInfo, &pxText);
             }
 
             // Setup    
@@ -996,7 +1060,12 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXText pxText;
                 PXTextConstructFromAdressA(&pxText, pxEngineResourceCreateInfo->FilePath, PXTextLengthUnkown, PXTextLengthUnkown);
 
-                const PXActionResult loadResult = PXResourceLoad(pxFont, &pxText);
+                PXResourceLoadInfo pxResourceLoadInfo;
+                PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+                pxResourceLoadInfo.Target = pxFont;
+                pxResourceLoadInfo.Type = PXGraphicResourceTypeFont;
+
+                const PXActionResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
 
                 PXActionReturnOnError(loadResult);
             }
@@ -1612,11 +1681,13 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 *pxEngineResourceCreateInfo->ObjectReference = pxUIElement;
             }
 
+            pxUIElementCreateData->OSButton = PXTrue;
+
             // Is Registerd
             {
-                const PXBool isRegisterd = pxUIElement->ID != -1;
-
-                if (!isRegisterd)
+                const PXBool isRegisterd = 0 != pxUIElement->ID;
+               
+                if(isRegisterd)
                 {
                     return PXActionInvalidRedundandInteraction;
                 }
@@ -1631,23 +1702,31 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXGraphicUIElementTypeSet(&pxEngine->Graphic, pxUIElement, PXUIElementTypePanel);
                 PXGraphicUIElementFlagSet(pxUIElement, PXUIElementDecorative);
                 pxUIElement->ColorTintReference = pxUIElementCreateData->ColorTintReference;
-                PXUIElementSizeSet(pxUIElement, 0.00, 1.95, 0.0, 0.00, PXUIElementPositionRelative);
 
+                PXCopy(PXUIElementPosition, &pxUIElementCreateData->Position, &pxUIElement->Position);
 
                 PXUIElementColorSet4F(pxUIElement, 0.40f, 0.15f, 0.15f, 1);
 
- 
-                pxUIElement->OnClickCallback = pxUIElementCreateData->OnClickCallback;
 
+                PXCopy(PXUIElementTextInfo, &pxUIElementCreateData->TextInfo, &pxUIElement->TextInfo);
+
+                pxUIElement->Type = pxUIElementCreateData->Type;
+                pxUIElement->OnClickCallback = pxUIElementCreateData->OnClickCallback;
             }
 
+            // Register as OSButton?
+            if(pxUIElementCreateData->OSButton)
+            {
+                pxUIElementCreateData->WindowReference = &pxEngine->Window;
+                PXUIElementCreateOSStyle(pxUIElement, pxUIElementCreateData);
+            }        
 
             switch (pxUIElement->Type)
             {
                 case PXUIElementTypeText:
                 {
-                    pxUIElement->TextInfo.FontID = pxUIElementCreateData->FontReference;
-                    PXGraphicPXUIElementTextSetA(pxUIElement, pxUIElementCreateData->Text);
+                    pxUIElement->TextInfo.FontID = pxUIElementCreateData->TextInfo.FontID;
+                    //PXGraphicPXUIElementTextSetA(pxUIElement, pxUIElementCreateData->Text);
                     break;
                 }
 

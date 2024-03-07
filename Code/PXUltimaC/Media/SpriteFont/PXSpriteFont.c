@@ -8,25 +8,17 @@
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
 
-void PXAPI PXSpriteFontConstruct(PXSpriteFont* const pxPXSpriteFont)
+PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	PXMemoryClear(pxPXSpriteFont, sizeof(PXSpriteFont));
-}
+	PXFont* const pxFont = (PXFont*)pxResourceLoadInfo->Target;
 
-void PXAPI PXSpriteFontDestruct(PXSpriteFont* const pxPXSpriteFont)
-{
-
-}
-
-PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
-{
 	PXSpriteFont pxSpriteFontEE;
 	PXSpriteFont* pxSpriteFont = &pxSpriteFontEE;
 
-	PXSpriteFontConstruct(pxSpriteFont);
+	PXClear(PXSpriteFont, pxSpriteFont);
 
 	PXFile tokenStream;
-	PXFileOpenTemporal(&tokenStream, pxFile->DataSize * 8);
+	PXFileOpenTemporal(&tokenStream, pxResourceLoadInfo->FileReference->DataSize * 8);
 
 	PXSize currentPageIndex = 0;
 	PXSize currentCharacterIndex = 0;
@@ -40,7 +32,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 		compilerSettings.CommentSingleLineSize = 1u;
 		compilerSettings.CommentSingleLine = "#";
 
-		PXCompilerLexicalAnalysis(pxFile, &tokenStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
+		PXCompilerLexicalAnalysis(pxResourceLoadInfo->FileReference, &tokenStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
 	}
 
 	unsigned int indentCounter = 0;
@@ -306,7 +298,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 										PXText resultFullPath;
 										PXTextConstructNamedBufferA(&resultFullPath, resultFullPathBuffer, PXPathSizeMax);
 		
-										PXFilePathGet(pxFile, &fontFilePath);
+										PXFilePathGet(pxResourceLoadInfo->FileReference, &fontFilePath);
 
 										PXFilePathSwapFileName(&fontFilePath, &resultFullPath, &fileName);
 
@@ -763,7 +755,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* cons
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXSpriteFontSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXAPI PXSpriteFontSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }

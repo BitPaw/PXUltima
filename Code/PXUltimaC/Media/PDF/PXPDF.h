@@ -10,13 +10,13 @@ extern "C"
 
 	typedef struct PXPDF_
 	{
-		unsigned char VersionMajor;
-		unsigned char VersionMinor;
+		PXInt8U VersionMajor;
+		PXInt8U VersionMinor;
 	}
 	PXPDF;
 
-	PXPublic PXActionResult PXAPI PXPDFLoadFromFile(PXPDF* const pxPDF, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXPDFSaveToFile(PXPDF* const pxPDF, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPDFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXPDFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

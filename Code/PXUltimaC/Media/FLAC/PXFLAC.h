@@ -52,8 +52,8 @@ extern "C"
 
 	PXPrivate inline PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID);
 
-	PXPublic PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXFLACLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXFLACSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

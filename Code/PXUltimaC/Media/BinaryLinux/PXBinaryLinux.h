@@ -212,8 +212,8 @@ extern "C"
 	PXPrivate inline PXELFType PXAPI PXELFTypeFromID(const PXInt8U value);
 	PXPrivate inline PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value);
 
-	PXPublic PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

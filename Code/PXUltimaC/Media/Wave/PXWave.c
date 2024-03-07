@@ -8,18 +8,20 @@
 const static char WAVSignatureLIST[4] = { 'L', 'I', 'S', 'T' };
 const static char WAVSignatureData[4] = { 'd', 'a', 't', 'a' };
 
-PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+	PXSound* const pxSound = (PXSound*)pxResourceLoadInfo->Target;
+
 	PXWave wav;;
 	PXClear(PXWave, &wav);
 
-	pxSound->BaseObject = &wav;
+	//pxSound->BaseObject = &wav;
 
 	PXRIFF riff;
 
 	// PXRIFF
 	{
-		const PXActionResult actionResult = PXRIFFLoadFromFile(&riff, pxFile);
+		const PXActionResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
 
 		PXActionReturnOnError(actionResult);
 
@@ -37,7 +39,7 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const px
 
 	//---<FMT Chunk>-----------------------------------------------------------
 	{
-		const PXActionResult actionResult = PXFMTLoadFromFile(&wav.Format, pxFile, riff.EndianFormat);
+		const PXActionResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileReference, riff.EndianFormat);
 
 		PXActionReturnOnError(actionResult);
 
@@ -55,16 +57,16 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const px
 
 	//---------------------------------------
 	{
-		const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxFile, WAVSignatureLIST, sizeof(WAVSignatureLIST));
+		const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureLIST, sizeof(WAVSignatureLIST));
 
 		if (isPXRIFFListChunk)
 		{
-			PXFileCursorAdvance(pxFile, 30u);
+			PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 30u);
 		}
 	}
 	//---------------------------------------
 	{
-		const PXBool validDataChunk = PXFileReadAndCompare(pxFile, WAVSignatureData, sizeof(WAVSignatureData));
+		const PXBool validDataChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureData, sizeof(WAVSignatureData));
 
 		if (!validDataChunk)
 		{
@@ -72,16 +74,16 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXSound* const pxSound, PXFile* const px
 		}
 	}
 
-	PXFileReadI32UE(pxFile, &wav.SoundDataSize, riff.EndianFormat);
+	PXFileReadI32UE(pxResourceLoadInfo->FileReference, &wav.SoundDataSize, riff.EndianFormat);
 
 	PXNewList(PXByte, wav.SoundDataSize, &pxSound->Data, &pxSound->DataSize);
 
-	PXFileReadB(pxFile, pxSound->Data, pxSound->DataSize);
+	PXFileReadB(pxResourceLoadInfo->FileReference, pxSound->Data, pxSound->DataSize);
 
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	unsigned int bitdepth = 16, bpm = 120;
 	float wave = 0, duration = 12;
@@ -117,7 +119,7 @@ PXActionResult PXAPI PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFi
 		riff.ChunkSize = dataSize + 36;
 		riff.Format = PXRIFFWaveformAudio;
 
-		const PXActionResult riffResult = PXRIFFSaveToFile(&riff, pxFile);
+		const PXActionResult riffResult = PXRIFFSaveToFile(&riff, pxResourceSaveInfo->FileReference);
 	}
 
 	// Write Format chunk
@@ -133,13 +135,13 @@ PXActionResult PXAPI PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFi
 			bitdepth// BitsPerSample;
 		};
 
-		const PXActionResult fmtResult = PXFMTSaveToFile(&fmt, pxFile, targetEndian);
+		const PXActionResult fmtResult = PXFMTSaveToFile(&fmt, pxResourceSaveInfo->FileReference, targetEndian);
 	}
 
 	//Data chunk
 	{
-		PXFileWriteB(pxFile, WAVSignatureData, sizeof(WAVSignatureData));
-		PXFileWriteI32U(pxFile, dataSize);
+		PXFileWriteB(pxResourceSaveInfo->FileReference, WAVSignatureData, sizeof(WAVSignatureData));
+		PXFileWriteI32U(pxResourceSaveInfo->FileReference, dataSize);
 	}
 
 	for (PXSize section = 0; section < (duration / 60) * bpm; section++)
@@ -148,7 +150,7 @@ PXActionResult PXAPI PXWaveSaveToFile(PXSound* const pxSound, PXFile* const pxFi
 		{
 			float sample = (frequences[section] > 0) * 0.5f * ((1 + PXMathSinus(1 + (3.7 / ((44100 * 60) / bpm) * i))) / 2) + PXMathSinus(wave);
 			unsigned int correctedsample = sample * maxAmp;
-			PXFileWriteB(pxFile, &correctedsample, bitdepth / 8);
+			PXFileWriteB(pxResourceSaveInfo->FileReference, &correctedsample, bitdepth / 8);
 			wave += 2 * PXMathConstantPI * frequences[section] * (100 / (((i >= ((44100 * 60) / bpm) * i) + 1))) / 44100;
 		}
 	}

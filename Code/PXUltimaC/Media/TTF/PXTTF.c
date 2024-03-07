@@ -184,7 +184,7 @@ void PXAPI PXTTFDestruct(PXTTF* const ttf)
 	// TODO
 }
 
-PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	PXTTF ttfdata;
 	PXTTF* ttf = &ttfdata;
@@ -205,7 +205,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 			{&offsetTable.RangeShift,		PXDataTypeInt16UBE}
 		};
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 	}
 
 	for (PXSize i = 0; i < offsetTable.NumberOfTables; ++i)
@@ -223,7 +223,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 				{&tableEntry.Length,	PXDataTypeInt32UBE}
 			};
 
-			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+			PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 			tableEntry.Type = PXTTFTableEntryTypeFromID(tableEntry.TypeID);
 		}
@@ -242,8 +242,8 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 		);
 #endif
 
-		sourcePosition = pxFile->DataCursor;
-		PXFileCursorMoveTo(pxFile, tableEntry.Offset);
+		sourcePosition = pxResourceLoadInfo->FileReference->DataCursor;
+		PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tableEntry.Offset);
 
 		switch (tableEntry.Type)
 		{
@@ -273,7 +273,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 					{&ttf->Header.GlyphDataFormat,	PXDataTypeInt16SBE},
 				};
 
-				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+				PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 				break;
 			}
@@ -297,7 +297,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 					{ &ttf->HorizontalHeader.NumberOfHorizontalMetrics, PXDataTypeInt16UBE }
 				};
 
-				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+				PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 				break;
 			}
@@ -542,24 +542,24 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 
 				PXMemoryClear(&tableEntryGlyphOutlineEntry, sizeof(PXTableEntryGlyphOutlineEntry));
 
-				PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
-				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Minimum[0], PXEndianBig);
-				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Minimum[1], PXEndianBig);
-				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Maximum[0], PXEndianBig);
-				PXFileReadI16UE(pxFile, &tableEntryGlyphOutlineEntry.Maximum[1], PXEndianBig);
+				PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
+				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Minimum[0], PXEndianBig);
+				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Minimum[1], PXEndianBig);
+				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Maximum[0], PXEndianBig);
+				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Maximum[1], PXEndianBig);
 
 				const PXBool isSimpleGlyph = tableEntryGlyphOutlineEntry.ContourListSize >= 0;
 
 				if (isSimpleGlyph)
 				{
-					PXFileReadI16UVE(pxFile, tableEntryGlyphOutlineEntry.ContourList, tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
+					PXFileReadI16UVE(pxResourceLoadInfo->FileReference, tableEntryGlyphOutlineEntry.ContourList, tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
 
-					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.InstructionListSize, PXEndianBig);
+					PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionListSize, PXEndianBig);
 
-					PXFileReadB(pxFile, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
+					PXFileReadB(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
 
 
-					PXFileReadI8U(pxFile, &tableEntryGlyphOutlineEntry.FlagList);
+					PXFileReadI8U(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.FlagList);
 
 					// xCoordinates
 					//PXFileReadB(pxFile, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
@@ -569,8 +569,8 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 				}
 				else // compound glyph
 				{
-					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
-					PXFileReadI16SE(pxFile, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
+					PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
+					PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
 				}
 
 
@@ -609,8 +609,8 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 			// Windows 
 			case PXTTFTableEntryCharacterCodeMapping:
 			{
-				PXFileReadI16UE(pxFile, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
-				PXFileReadI16UE(pxFile, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
+				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
+				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
 
 				PXNewList
 				(
@@ -627,9 +627,9 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 					PXInt16U platformID = 0;
 					PXInt16U encodingID = 0;
 
-					PXFileReadI16UE(pxFile, &platformID, PXEndianBig);
-					PXFileReadI16UE(pxFile, &encodingID, PXEndianBig);
-					PXFileReadI32UE(pxFile, &encodingRecord->SubtableOffset, PXEndianBig);
+					PXFileReadI16UE(pxResourceLoadInfo->FileReference, &platformID, PXEndianBig);
+					PXFileReadI16UE(pxResourceLoadInfo->FileReference, &encodingID, PXEndianBig);
+					PXFileReadI32UE(pxResourceLoadInfo->FileReference, &encodingRecord->SubtableOffset, PXEndianBig);
 
 					encodingRecord->Platform = PXTTFPlatformFromID(platformID);
 					encodingRecord->Encoding = PXTTFEncodingFromID(encodingRecord->Platform, encodingID);
@@ -697,13 +697,13 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXFont* const pxFont, PXFile* const pxFil
 			}
 		}
 
-		PXFileCursorMoveTo(pxFile, sourcePosition);
+		PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, sourcePosition);
 	}
 
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTTFSaveToFile(PXFont* const pxFont, PXFile* const pxFile)
+PXActionResult PXAPI PXTTFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }

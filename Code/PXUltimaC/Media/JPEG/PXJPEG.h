@@ -179,8 +179,8 @@ extern "C"
 
 	PXPublic PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 	
-	PXPublic PXActionResult PXAPI PXJPEGLoadFromImage(PXImage* const image, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXJPEGSaveToImage(const PXImage* const image, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXJPEGLoadFromImage(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXJPEGSaveToImage(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

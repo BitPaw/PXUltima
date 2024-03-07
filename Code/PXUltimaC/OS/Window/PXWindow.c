@@ -1435,7 +1435,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         {
             COLORREF colorRef = lParam;
             HDC hdcStatic = (HDC)wParam;
-            HBRUSH hbrBkgnd;
+            HBRUSH hbrBkgnd = PXNull;
 
             // SetDCBrushColor
 
@@ -2788,15 +2788,32 @@ void PXAPI PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt
 #elif PXOSWindowsDestop
     RECT rect;
 
-    const unsigned char result = GetWindowRect(pxWindow->ID, &rect); // Windows 2000, User32.dll, winuser.h
-    const PXBool success = result != 0;
+    //const PXBool result = GetWindowRect(pxWindow->ID, &rect); // Windows 2000, User32.dll, winuser.h
+    const PXBool result = GetClientRect(pxWindow->ID, &rect); // Windows 2000, User32.dll, winuser.h
 
     // Get Last Error
 
-    *x = rect.left;
-    *y = rect.top;
-    *width = rect.right - *x;
-    *height = rect.bottom - *y;
+    if(x)
+    {
+        *x = rect.left;
+    }
+
+    if(y)
+    {
+        *y = rect.top;
+    }
+
+    if(width)
+    {
+        *width = rect.right - rect.left;
+    }
+
+    if(height)
+    {
+        *height = rect.bottom - rect.top;
+    } 
+
+
 #endif
 }
 
@@ -2830,7 +2847,9 @@ PXActionResult PXAPI PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y
 
 #elif PXOSWindowsDestop
     RECT rectangle;
-    const PXBool success = GetWindowRect(window->ID, &rectangle); // Windows 2000, User32.dll, winuser.h
+    //const PXBool success = GetWindowRect(window->ID, &rectangle); // Windows 2000, User32.dll, winuser.h
+
+    const PXBool success = GetWindowRect(window->ID, &rectangle);
 
     if (!success)
     {

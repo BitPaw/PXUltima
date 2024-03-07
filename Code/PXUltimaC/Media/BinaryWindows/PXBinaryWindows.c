@@ -8,8 +8,10 @@ const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
 
 #define PXBinaryWindowsDebug 1
 
-PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+    PXBinaryWindows* const pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->Target;
+
 #if PXBinaryWindowsDebug
     PXLogPrint
     (
@@ -47,7 +49,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinary
             {&pxDOSHeader->FileOffsetToHeader, PXDataTypeInt32ULE}
         };
 
-        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
         // if this is not a DOS file, yeet
         const PXBool isValidFile = PXMemoryCompare(pxDOSHeader->Magic.Data, sizeof(PXDOSHeaderSignatore), PXDOSHeaderSignatore, sizeof(PXDOSHeaderSignatore));
@@ -62,11 +64,11 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinary
 
     // Start Parse of PE header
     {
-        PXFileCursorMoveTo(pxFile, pxBinaryWindows->Header.FileOffsetToHeader);
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxBinaryWindows->Header.FileOffsetToHeader);
 
-        const PXBool isValidFile = PXFileReadAndCompare(pxFile, PXPEHeaderSignatore, sizeof(PXPEHeaderSignatore));
+        const PXBool isValidFile = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXPEHeaderSignatore, sizeof(PXPEHeaderSignatore));
 
-        const PXActionResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxFile);
+        const PXActionResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxResourceLoadInfo->FileReference);
 
         PXActionReturnOnError(coffLoadResult);
     }
@@ -85,7 +87,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinary
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }

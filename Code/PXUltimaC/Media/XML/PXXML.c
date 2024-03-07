@@ -207,8 +207,10 @@ void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXFile* const pxFile)
     }
 }
 
-PXActionResult PXAPI PXXMLLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+    PXDocument* const pxDocument = (PXDocument*)pxResourceLoadInfo->Target;
+
     PXSize errorCounter = 0;
     PXFile tokenSteam;
 
@@ -228,9 +230,9 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXDocument* const pxDocument, PXFile* con
         compilerSettings.KeepTabs = PXYes;
         compilerSettings.IntrepredTabsAsWhiteSpace = PXYes;
 
-        PXFileBufferAllocate(&tokenSteam, pxFile->DataAllocated * 20);
+        PXFileBufferAllocate(&tokenSteam, pxResourceLoadInfo->FileReference->DataAllocated * 20);
 
-        PXCompilerLexicalAnalysis(pxFile, &tokenSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens           
+        PXCompilerLexicalAnalysis(pxResourceLoadInfo->FileReference, &tokenSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens           
     }
 
     while (!PXFileIsAtEnd(&tokenSteam))
@@ -243,7 +245,7 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXDocument* const pxDocument, PXFile* con
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXXMLSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXXMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

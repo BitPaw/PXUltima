@@ -25,8 +25,8 @@ extern "C"
 	}
 	PXRAR;
 
-	PXPublic PXActionResult PXAPI PXRARLoadFromFile(PXFile* const pxUncompressedFile, PXFile* const pxCompressedFile);
-	PXPublic PXActionResult PXAPI PXRARSaveToFile(const PXFile* const pxUncompressedFile, PXFile* const pxCompressedFile);
+	PXPublic PXActionResult PXAPI PXRARLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXRARSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

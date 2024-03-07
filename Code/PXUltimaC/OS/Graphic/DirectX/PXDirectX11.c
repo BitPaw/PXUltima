@@ -255,20 +255,86 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
         {
             switch(pxGraphicTexturInfo->Type)
             {
+                case PXGraphicTextureType1D:
+                {
+                    PXTexture1D* pxTexture1D = (PXTexture1D*)pxGraphicTexturInfo->TextureReference;
+                    ID3D11Texture1D** dx11Texture1D = &((ID3D11Texture1D*)pxTexture1D->ResourceID.DirectXInterface);
+
+                    D3D11_TEXTURE1D_DESC desc;
+                    desc.Width = pxTexture1D->Image->Width;
+                    desc.MipLevels = 0;// static_cast<UINT>(mipCount);
+                    desc.ArraySize = 0;//static_cast<UINT>(arraySize);
+                    desc.Format = 0;
+                    desc.Usage = D3D11_USAGE_DEFAULT;
+                    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+                    desc.CPUAccessFlags = 0;
+                    desc.MiscFlags = 0;
+
+                    D3D11_SUBRESOURCE_DATA initialData;
+                    initialData.pSysMem = 0;
+                    initialData.SysMemPitch = 0;
+                    initialData.SysMemSlicePitch = 0;
+
+                    const HRESULT hr = pxDirectX11->Device->lpVtbl->CreateTexture1D
+                    (
+                        pxDirectX11->Device,
+                        &desc, 
+                        &initialData,
+                        dx11Texture1D
+                    );
+                    const PXBool success = SUCCEEDED(hr);
+
+                    if(!success)
+                    {
+                        return PXActionFailedResourceRegister;
+                    }
+
+#if 0
+                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+                    PXClear(D3D11_SHADER_RESOURCE_VIEW_DESC, &SRVDesc);
+                    SRVDesc.Format = format;
+
+                    if(arraySize > 1)
+                    {
+                        SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE1DARRAY;
+                        SRVDesc.Texture1DArray.MipLevels = desc.MipLevels;
+                        SRVDesc.Texture1DArray.ArraySize = static_cast<UINT>(arraySize);
+                    }
+                    else
+                    {
+                        SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE1D;
+                        SRVDesc.Texture1D.MipLevels = desc.MipLevels;
+                    }
+
+                    hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
+
+                    if(FAILED(hr))
+                    {
+                        tex->Release();
+                        return hr;
+                    }
+#endif
+
+                    break;
+                }
                 case PXGraphicTextureType2D:
                 {
                     PXTexture2D* const pxTexture2D = pxGraphicTexturInfo->TextureReference;
+                    ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->ResourceID.DirectXInterface;
 
                     D3D11_TEXTURE2D_DESC textureDescription;
                     textureDescription.Width = pxTexture2D->Image->Width,
                     textureDescription.Height = pxTexture2D->Image->Height,
                     textureDescription.MipLevels = 0;
-                    textureDescription.ArraySize = pxTexture2D->Image->PixelDataSize;
-                    //textureDescription.Format = PXDirectXColorFormatFromID(pxTexture->Image.Format);
-                    textureDescription.Usage = 0;
-                    textureDescription.BindFlags = 0;
+                    textureDescription.ArraySize = 0;
+                   // textureDescription.Format = format;
+                    textureDescription.SampleDesc.Count = 1;
+                    textureDescription.SampleDesc.Quality = 0;
+                    textureDescription.Usage = D3D11_USAGE_DEFAULT;
+                    textureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
                     textureDescription.CPUAccessFlags = 0;
-                    textureDescription.MiscFlags = 0;
+                   // textureDescription.MiscFlags = (isCubeMap) ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0;
+
 
                     D3D11_SUBRESOURCE_DATA pInitialData;
                     pInitialData.pSysMem = 0;
@@ -280,20 +346,84 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
                         pxDirectX11->Device,
                         &textureDescription,
                         &pInitialData,
-                        &(ID3D11Texture2D*)pxTexture2D->ResourceID.DirectXInterface
+                        texture2D
                     );
+
+
+#if 0
+                    if(textureView != 0)
+                    {
+                        D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+                        memset(&SRVDesc, 0, sizeof(SRVDesc));
+                        SRVDesc.Format = format;
+
+                        if(isCubeMap)
+                        {
+                            if(arraySize > 6)
+                            {
+                                SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBEARRAY;
+                                SRVDesc.TextureCubeArray.MipLevels = desc.MipLevels;
+
+                                // Earlier, we set arraySize to (NumCubes * 6).
+                                SRVDesc.TextureCubeArray.NumCubes = static_cast<UINT>(arraySize / 6);
+                            }
+                            else
+                            {
+                                SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
+                                SRVDesc.TextureCube.MipLevels = desc.MipLevels;
+                            }
+                        }
+                        else if(arraySize > 1)
+                        {
+                            SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DARRAY;
+                            SRVDesc.Texture2DArray.MipLevels = desc.MipLevels;
+                            SRVDesc.Texture2DArray.ArraySize = static_cast<UINT>(arraySize);
+                        }
+                        else
+                        {
+                            SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+                            SRVDesc.Texture2D.MipLevels = desc.MipLevels;
+                        }
+
+                        hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
+
+                        if(FAILED(hr))
+                        {
+                            tex->Release();
+                            return hr;
+                        }
+                    }
+
+                    if(texture != 0)
+                    {
+                        *texture = tex;
+                    }
+                    else
+                    {
+                        tex->Release();
+                    }
+#endif
+
+
 
                     break;
                 }
                 case PXGraphicTextureType3D:
                 {
                     PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
+                    ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture3D->ResourceID.DirectXInterface;
 
                     D3D11_TEXTURE3D_DESC textureDescription;
                     textureDescription.Width = pxTexture3D->Image->Width,
                     textureDescription.Height = pxTexture3D->Image->Height,
-                    textureDescription.Depth = 0;// pxTexture3D->Image->,
-                    textureDescription.MipLevels = 0;
+                    textureDescription.Depth = pxTexture3D->Image->Depth,
+                    //textureDescription.MipLevels = static_cast<UINT>(mipCount);
+                    //textureDescription.Format = format;
+                    textureDescription.Usage = D3D11_USAGE_DEFAULT;
+                    textureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+                    textureDescription.CPUAccessFlags = 0;
+                    textureDescription.MiscFlags = 0;
+
                     //textureDescription.ArraySize = pxTexture3D->Image->PixelDataSize;
                     //textureDescription.Format = PXDirectXColorFormatFromID(pxTexture->Image.Format);
                     textureDescription.Usage = 0;
@@ -311,8 +441,42 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
                         pxDirectX11->Device,
                         &textureDescription,
                         &pInitialData,
-                        &(ID3D11Texture3D*)pxTexture3D->ResourceID.DirectXInterface
+                        dxTexture3D
                     );
+                    const PXBool successful = SUCCEEDED(result);
+
+#if 0
+                    if(SUCCEEDED(hr) && tex != 0)
+                    {
+                        if(textureView != 0)
+                        {
+                            D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+                            memset(&SRVDesc, 0, sizeof(SRVDesc));
+                            SRVDesc.Format = format;
+                            SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
+                            SRVDesc.Texture3D.MipLevels = desc.MipLevels;
+
+                            hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
+
+                            if(FAILED(hr))
+                            {
+                                tex->Release();
+                                return hr;
+                            }
+                        }
+
+                        if(texture != 0)
+                        {
+                            *texture = tex;
+                        }
+                        else
+                        {
+                            tex->Release();
+                        }
+
+#endif
+
+
 
                     break;
                 }

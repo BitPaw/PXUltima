@@ -15,6 +15,7 @@
 extern "C"
 {
 #endif
+
 	typedef enum PXID3Version_
 	{
 		PXID3VersionInvalid,

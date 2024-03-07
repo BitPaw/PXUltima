@@ -114,11 +114,8 @@ extern "C"
 	}
 	PXSpriteFont;
 
-	PXPublic void PXAPI PXSpriteFontConstruct(PXSpriteFont* const pxSpriteFont);
-	PXPublic void PXAPI PXSpriteFontDestruct(PXSpriteFont* const pxSpriteFont);
-
-	PXPublic PXActionResult PXAPI PXSpriteFontLoadFromFile(PXFont* const pxFont, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXSpriteFontSaveToFile(PXFont* const pxFont, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXSpriteFontSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 	PXPrivate PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileDataSize);
 

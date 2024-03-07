@@ -3,13 +3,13 @@
 #include <Media/RIFF/PXRIFF.h>
 #include <OS/File/PXFile.h>
 
-PXActionResult PXAPI PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXAVILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXRIFF riff;
 
     // RIFF
     {
-        const PXActionResult riffResult = PXRIFFLoadFromFile(&riff, pxFile);
+        const PXActionResult riffResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
 
         PXActionReturnOnError(riffResult);
 
@@ -27,7 +27,7 @@ PXActionResult PXAPI PXAVILoadFromFile(PXVideo* const pxVideo, PXFile* const pxF
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXAVISaveToFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXAVISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

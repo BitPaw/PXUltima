@@ -71,8 +71,8 @@ extern "C"
 
 	PXPrivate PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize size);
 
-	PXPublic PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXWavefrontSaveFromFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

@@ -5866,7 +5866,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
             PXOpenGLTextureAction(pxOpenGL, &pxGraphicTexturInfo);
 
-            PXDeleteStackList(PXTexture2D*, pxMaterialContainer->MaterialListSize, pxTextureList, PXNull);
+            PXDeleteStackList(PXTexture2D*, pxMaterialContainer->MaterialListSize, &pxTextureList, PXNull);
         }
     }
 

@@ -135,8 +135,10 @@ void PXAPI PXTGADestruct(PXTGA* const tga)
 
 }
 
-PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXTGALoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+	PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->Target;
+
 	PXTGA tgaOBJ;
 	PXTGA* tga = &tgaOBJ;
 
@@ -173,7 +175,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxF
 			{&tga->ImageDescriptor, PXDataTypeInt08U}
 		};
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 		tga->ImageInformationSize = imageIDLengh;
 
@@ -213,27 +215,27 @@ PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxF
 	//---[Parse Image ID]--------------
 	if(tga->ImageInformationSize)
 	{
-		PXFileReadB(pxFile, tga->ImageInformation, tga->ImageInformationSize);
+		PXFileReadB(pxResourceLoadInfo->FileReference, tga->ImageInformation, tga->ImageInformationSize);
 	}
 	//----------------------------------
 
 	//---[Parse Color-Palette]----------
 	if(colorPaletteChunkSize > 0)
 	{
-		PXFileCursorAdvance(pxFile, colorPaletteChunkSize);
+		PXFileCursorAdvance(pxResourceLoadInfo->FileReference, colorPaletteChunkSize);
 	}
 	//--------------------------------
 
 	//---[ ImageData ]------------------
-	PXFileReadB(pxFile, pxImage->PixelData, pxImage->PixelDataSize);
+	PXFileReadB(pxResourceLoadInfo->FileReference, pxImage->PixelData, pxImage->PixelDataSize);
 	//-----------------------------------------------------------------
 
 
 	// Check end of pxFile if the pxFile is a Version 2.0 pxFile.
 	{
-		footerEntryIndex = pxFile->DataSize - (26u - 1u);
+		footerEntryIndex = pxResourceLoadInfo->FileReference->DataSize - (26u - 1u);
 
-		const PXBool isPXTGAVersionTwo = PXFileReadAndCompare(pxFile, PXTGAFileIdentifier, sizeof(PXTGAFileIdentifier)); // Is this string at this address?;
+		const PXBool isPXTGAVersionTwo = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXTGAFileIdentifier, sizeof(PXTGAFileIdentifier)); // Is this string at this address?;
 
 		if(!isPXTGAVersionTwo) // Is this a PXTGA v.1.0 pxFile?
 		{
@@ -241,19 +243,19 @@ PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxF
 		}
 	}
 
-	firstFieldAfterHeader = pxFile->DataCursor;
+	firstFieldAfterHeader = pxResourceLoadInfo->FileReference->DataCursor;
 
 	//---[ Parse Footer ]--------------------------------------------------------
-	pxFile->DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the PXTGA-Footer.
+	pxResourceLoadInfo->FileReference->DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the PXTGA-Footer.
 
-	PXFileReadI32UE(pxFile, &extensionOffset, PXEndianLittle);
-	PXFileReadI32UE(pxFile, &developerAreaOffset, PXEndianLittle);
+	PXFileReadI32UE(pxResourceLoadInfo->FileReference, &extensionOffset, PXEndianLittle);
+	PXFileReadI32UE(pxResourceLoadInfo->FileReference, &developerAreaOffset, PXEndianLittle);
 	//---------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
 	if(developerAreaOffset > 0)
 	{
-		pxFile->DataCursor = developerAreaOffset;// Jump to Developer Block
+		pxResourceLoadInfo->FileReference->DataCursor = developerAreaOffset;// Jump to Developer Block
 		// Parse Developer Fields
 		// Parse Developer Directory
 	}
@@ -264,8 +266,8 @@ PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxF
 	{
 		PXInt16U extensionSize = 0;
 
-		pxFile->DataCursor = extensionOffset; // Jump to Extension Header
-		PXFileReadI16UE(pxFile, &extensionSize, PXEndianLittle);
+		pxResourceLoadInfo->FileReference->DataCursor = extensionOffset; // Jump to Extension Header
+		PXFileReadI16UE(pxResourceLoadInfo->FileReference, &extensionSize, PXEndianLittle);
 
 		const PXBool isExtensionSizeAsExpected = extensionSize == 495u;
 
@@ -310,13 +312,13 @@ PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxF
 			{&tga->AttributesType, PXDataTypeInt08U},
 		};
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 	}
 
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTGASaveToFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXTGASaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }

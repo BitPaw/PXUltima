@@ -41,8 +41,8 @@ extern "C"
 
 	PXPublic PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-	PXPublic PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXGIFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXGIFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

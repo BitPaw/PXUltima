@@ -5,7 +5,7 @@
 const static char PXMIDITrackHeaderID[4] = { 'M','T','h','d' };
 const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };
 
-PXActionResult PXAPI PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXMIDILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	PXMIDI* const pxMIDI = PXNull;
 	PXNew(PXMIDI,&pxMIDI);
@@ -15,7 +15,7 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const px
 		PXInt16U chunkLength = 0;
 
 		{
-			const PXBool isValid = PXFileReadAndCompare(pxFile, PXMIDITrackHeaderID, sizeof(PXMIDITrackHeaderID));
+			const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXMIDITrackHeaderID, sizeof(PXMIDITrackHeaderID));
 
 			if (!isValid)
 			{
@@ -31,7 +31,7 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const px
 			{&pxMIDI->MusicSpeed,PXDataTypeInt16UBE}
 		};
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 	}
 
 	if (!pxMIDI->TrackListSize)
@@ -48,7 +48,7 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const px
 		PXInt32U chunkLength = 0;
 
 		{
-			const PXBool isValid = PXFileReadAndCompare(pxFile, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
+			const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
 
 			if (!isValid)
 			{
@@ -56,18 +56,18 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXSound* const pxSound, PXFile* const px
 			}
 		}
 
-		PXFileReadI32UE(pxFile, &chunkLength, PXEndianBig);
+		PXFileReadI32UE(pxResourceLoadInfo->FileReference, &chunkLength, PXEndianBig);
 
 		track->ID = i;
 		PXNewList(PXByte, chunkLength, &track->EventData, &track->EventDataSize);
 		
-		PXFileReadB(pxFile, track->EventData, chunkLength);
+		PXFileReadB(pxResourceLoadInfo->FileReference, track->EventData, chunkLength);
 	}
 
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMIDISaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXMIDISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	PXMIDI* pxMIDI = PXNull;
 
@@ -82,16 +82,16 @@ PXActionResult PXAPI PXMIDISaveToFile(PXSound* const pxSound, PXFile* const pxFi
 			{&pxMIDI->MusicSpeed,PXDataTypeInt16UBE}
 		};
 
-		PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 	}	
 
 	for (PXInt16U i = 0; i < pxMIDI->TrackListSize; ++i)
 	{
 		PXMIDITrack* const track = &pxMIDI->TrackList[i];
 
-		PXFileWriteB(pxFile, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
-		PXFileWriteI32UE(pxFile, track->EventDataSize, PXEndianBig);
-		PXFileWriteB(pxFile, track->EventData, track->EventDataSize);
+		PXFileWriteB(pxResourceSaveInfo->FileReference, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
+		PXFileWriteI32UE(pxResourceSaveInfo->FileReference, track->EventDataSize, PXEndianBig);
+		PXFileWriteB(pxResourceSaveInfo->FileReference, track->EventData, track->EventDataSize);
 	}
 
 	return PXActionSuccessful;

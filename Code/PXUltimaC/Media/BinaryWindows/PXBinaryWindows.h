@@ -45,8 +45,8 @@ extern "C"
 	}
 	PXBinaryWindows;
 
-	PXPublic PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXBinaryWindows* const pxBinaryWindows, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

@@ -21,13 +21,13 @@ PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID)
 	}
 }
 
-PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXFLACLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXFLACSteamInfo pxFLACSteamInfo;
 
 	// Check header{
 	{
-		const PXBool isValidSignature = PXFileReadAndCompare(pxFile, PXFLACSignature, 4u);
+		const PXBool isValidSignature = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXFLACSignature, sizeof(PXFLACSignature));
 
 		if (!isValidSignature)
 		{
@@ -49,7 +49,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const px
 			{pxFLACSteamInfo.MD5Signature, PXDataTypeDatax16}
 		};
 
-		const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		const PXSize readBytes = PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 		const PXBool expectedSize = 34u == readBytes;
 
 		if (!expectedSize)
@@ -80,7 +80,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const px
 
 		pxFLACBlock.BlockType = PXFLACBlockTypeFromID(typeID);
 
-		const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));	
+		const PXSize readBytes = PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 		PXLogPrint
 		(
@@ -95,14 +95,14 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXSound* const pxSound, PXFile* const px
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXFLACSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	PXFLACSteamInfo pxFLACSteamInfo;
 
 	{
 		const PXFileDataElementType pxDataStreamElementList[] =
 		{
-			{PXFLACSignature, 4u},
+			{PXFLACSignature, sizeof(PXFLACSignature)},
 			{&pxFLACSteamInfo.SampleSizeMinimum, PXDataTypeInt16ULE},
 			{&pxFLACSteamInfo.SampleSizeMaximum, PXDataTypeInt16ULE},
 			{&pxFLACSteamInfo.FrameSizeMinimum, PXDataTypeBit32U(24u)},
@@ -114,7 +114,7 @@ PXActionResult PXAPI PXFLACSaveToFile(PXSound* const pxSound, PXFile* const pxFi
 			{pxFLACSteamInfo.MD5Signature, PXDataTypeDatax16}
 		};
 
-		const PXSize readBytes = PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		const PXSize readBytes = PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 		const PXBool expectedSize = 38u == readBytes;
 
 		if (!expectedSize)

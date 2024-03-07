@@ -103,8 +103,10 @@ void PXAPI PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEn
     );
 }
 
-PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+    PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->Target;
+
     PXFile tokenSteam;
     PXSize errorCounter = 0;
 
@@ -136,7 +138,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
 
     PXInt32U currentTotalOffset = 0;
 
-    PXFileOpenTemporal(&tokenSteam, pxFile->DataSize * 16);
+    PXFileOpenTemporal(&tokenSteam, pxResourceLoadInfo->FileReference->DataSize * 16);
 
     PXLogPrint
     (
@@ -166,7 +168,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
         compilerSettings.CommentSingleLineSize = 1u;
         compilerSettings.CommentSingleLine = "#";
 
-        PXCompilerLexicalAnalysis(pxFile, &tokenSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens
+        PXCompilerLexicalAnalysis(pxResourceLoadInfo->FileReference, &tokenSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens
     }
 
     // Stage - 1 - Analyse file
@@ -595,7 +597,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
                             PXText materialFilePathFull;
                             PXTextConstructNamedBufferA(&materialFilePathFull, materialFilePathFullBuffer, PXPathSizeMax);
 
-                            PXFilePathRelativeFromFile(pxFile, &materialFileName, &materialFilePathFull);
+                            PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &materialFileName, &materialFilePathFull);
      
                             PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
                             PXFileOpenFromPathInfoMakeLoadOneshot(&pxFileOpenFromPathInfo, materialFilePathFull);
@@ -982,7 +984,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXModel* const pxModel, PXFile* con
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWavefrontSaveFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -27,8 +27,8 @@ extern "C"
 	}
 	PXWEBP;
 
-	PXPublic PXActionResult PXAPI PXWEBPLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXWEBPSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXWEBPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

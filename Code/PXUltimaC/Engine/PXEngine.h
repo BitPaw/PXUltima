@@ -265,6 +265,8 @@ extern "C"
 
 	typedef struct PXUIElementCreateData_
 	{
+		struct PXWindow_* WindowReference;
+
 		PXUIElement* Paranet;
 
 		PXUIElementType Type;
@@ -273,15 +275,15 @@ extern "C"
 
 		PXColorRGBAF Color;
 
-		float X;
-		float Y;
-		float Width;
-		float Height;
-		PXInt32U PositionMode;
+		PXUIElementPosition Position;
+
+		PXBool OSButton;
 
 		// Text
-		char* Text;
-		PXFont* FontReference;
+		union MyUnion
+		{
+			PXUIElementTextInfo TextInfo;
+		};
 
 		PXUIOnClick OnClickCallback;
 		PXUIOnMouseEnter OnMouseEnterCallback;

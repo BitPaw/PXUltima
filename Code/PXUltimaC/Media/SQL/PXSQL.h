@@ -45,8 +45,8 @@ extern "C"
 	}
 	PXSQLKeyWord;
 
-	//PXPublic PXActionResult PXAPI PXSQLLoadFromFile(PXModel* const pxModel, PXFile* const pxFile);
-	//PXPublic PXActionResult PXAPI PXSQLSaveToFile(PXModel* const pxModel, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXSQLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXSQLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

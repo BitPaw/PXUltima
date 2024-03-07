@@ -269,8 +269,10 @@ PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value)
 	}
 }
 
-PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+	PXBinaryLinux* const pxBinaryLinux = (PXBinaryLinux*)pxResourceLoadInfo->Target;
+
 	PXClear(PXBinaryLinux, pxBinaryLinux);
 
 	// Read Header
@@ -294,7 +296,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 				{PXNull, PXDataTypePadding(7u})
 			};
 
-			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+			PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 			{
 				const PXBool isValidSignature = PXMemoryCompare(signature.Data, 4u, PXELFSignature, sizeof(PXELFSignature));
@@ -309,8 +311,8 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 			pxBinaryLinux->Header.Endian = PXELFEndianessFromID(dataID);
 			pxBinaryLinux->Header.TargetOSAPI = PXPXELFTargetOSAPIFromID(osAPIID);
 
-			pxFile->BitFormatOfData = pxBinaryLinux->Header.BitFormat;
-			pxFile->EndiannessOfData = pxBinaryLinux->Header.Endian;
+			pxResourceLoadInfo->FileReference->BitFormatOfData = pxBinaryLinux->Header.BitFormat;
+			pxResourceLoadInfo->FileReference->EndiannessOfData = pxBinaryLinux->Header.Endian;
 		}
 
 		// B
@@ -339,7 +341,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 				{&shstrndx, PXDataTypeInt16U}
 			};
 
-			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+			PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 			pxBinaryLinux->Header.Machine = PXELFMachineFromID(machineID);
 			pxBinaryLinux->Header.Type = PXELFTypeFromID(typeID);
@@ -351,7 +353,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 	// Program header - Read
 	//--------------------------------------------------------
 	{
-		PXFileCursorMoveTo(pxFile, (PXSize)pxBinaryLinux->Header.ProgrammHeaderOffset);
+		PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, (PXSize)pxBinaryLinux->Header.ProgrammHeaderOffset);
 
 		for (PXInt16U programHeaderID = 0; programHeaderID < pxBinaryLinux->Header.ProgrammHeaderAmount; ++programHeaderID)
 		{
@@ -372,7 +374,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 				{&pxELFProgramHeader.p_align,PXDataTypeAdressFlex}
 			};
 
-			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+			PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 			pxELFProgramHeader.IsSegmentExecutable = 0x01 & flagsID;
 			pxELFProgramHeader.IsSegmentWriteable = (0x02 & flagsID) >> 1;
@@ -398,7 +400,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 	// Section header
 	//--------------------------------------------------------
 	{
-		PXFileCursorMoveTo(pxFile, (PXSize)pxBinaryLinux->Header.SectionHeaderOffset);
+		PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, (PXSize)pxBinaryLinux->Header.SectionHeaderOffset);
 
 		for (PXInt16U i = 0; i < pxBinaryLinux->Header.SectionHeaderAmount; ++i)
 		{
@@ -418,16 +420,16 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXBinaryLinux* const pxBinaryLinu
 				{&pxSectionHeader.sh_entsize,PXDataTypeAdressFlex}
 			};
 
-			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+			PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 		}	
 	}
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXBinaryLinux* const pxBinaryLinux, PXFile* const pxFile)
+PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	PXFileWriteB(pxFile, PXELFSignature, sizeof(PXELFSignature));
+	PXFileWriteB(pxResourceSaveInfo->FileReference, PXELFSignature, sizeof(PXELFSignature));
 
     return PXActionRefusedNotImplemented;
 }

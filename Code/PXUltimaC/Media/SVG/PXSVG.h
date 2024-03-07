@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXSVG;
 
-	PXPublic PXActionResult PXAPI PXSVGLoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXSVGSaveToFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXSVGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXSVGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

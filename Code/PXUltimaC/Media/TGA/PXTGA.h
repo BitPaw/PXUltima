@@ -113,8 +113,8 @@ extern "C"
 	PXPublic void PXAPI PXTGADestruct(PXTGA* const tga);
 
 
-	PXPublic PXActionResult PXAPI PXTGALoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXTGASaveToFile(PXImage* const pxImage, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXTGALoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXTGASaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 	PXPublic PXActionResult PXAPI PXTGASerializeFromImage(const PXImage* const image, PXFile* const pxFile);
 

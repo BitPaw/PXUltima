@@ -224,8 +224,8 @@ extern "C"
 	PXPrivate inline PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
 	PXPrivate inline PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXInt8U mpegGenre);
 
-	PXPublic PXActionResult PXAPI PXMP3LoadFromFile(PXSound* const pxSound, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXMP3SaveToFile(PXSound* const pxSound, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXMP3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXMP3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

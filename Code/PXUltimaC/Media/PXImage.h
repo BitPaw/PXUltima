@@ -14,7 +14,8 @@ extern "C"
 		PXSize PixelDataSize;
 
 		PXSize Width;
-		PXSize Height;	
+		PXSize Height;
+		PXSize Depth;
 
 		PXColorFormat Format;
 	}

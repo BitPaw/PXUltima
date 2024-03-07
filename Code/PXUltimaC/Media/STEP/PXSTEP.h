@@ -15,8 +15,8 @@ extern "C"
 	}
 	PXSTEP;
 
-	PXPublic PXActionResult PXAPI PXSTEPLoadFromFile(PXSTEP* const step, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXSTEPSaveToFile(PXSTEP* const step, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXSTEPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXSTEPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

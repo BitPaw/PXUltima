@@ -93,6 +93,7 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileFormatCSS,
 		PXFileFormatCPP,
 		PXFileFormatCanonRaw3,
+		PXFileFormatDirectDrawSurfaceTexture,
 		PXFileFormatBinaryWindows,
 		PXFileFormatBinaryLinux,
 		PXFileFormatEML,
@@ -177,10 +178,8 @@ void PXDirectoryIsDotFolder(const char* s)
 	}
 	PXFileDataElementType;
 
-	typedef struct PXFile_ PXFile;
-
-	typedef PXActionResult (PXAPI*PXResourceTranslateFunction)(void* const pxResource, PXFile* const pxFile);
-
+	typedef PXActionResult (PXAPI* PXResourceLoadFunction)(struct PXResourceLoadInfo_* const pxResourceLoadInfo);
+	typedef PXActionResult (PXAPI* PXResourceSaveFunction)(struct PXResourceSaveInfo_* const pxResourceSaveInfo);
 
 	typedef struct PXFileTypeInfo_
 	{
@@ -189,8 +188,8 @@ void PXDirectoryIsDotFolder(const char* s)
 		PXFileResourceType ResourceType; // Type of resource. Image, Sound, Video...
 
 
-		PXResourceTranslateFunction ResourceLoadFunction;
-		PXResourceTranslateFunction ResourceSaveFunction;
+		PXResourceLoadFunction ResourceLoad;
+		PXResourceSaveFunction ResourceSave;
 	}
 	PXFileTypeInfo;
 

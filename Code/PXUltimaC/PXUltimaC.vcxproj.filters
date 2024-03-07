@@ -480,6 +480,9 @@
     <ClCompile Include="Service\LDAP\PXLDAPClient.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\DDS\PXDDS.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
@@ -947,6 +950,9 @@
     <ClInclude Include="Service\LDAP\PXLDAPClient.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\DDS\PXDDS.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -969,6 +975,8 @@
     <None Include="Media\PNG\README.md" />
     <None Include="Media\LDAP\README.md" />
     <None Include="Media\RAR\README.md" />
+    <None Include="OS\UI\README.md" />
+    <None Include="Media\DDS\README.md" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="OS\System\PXWindowsLegacy.asm">

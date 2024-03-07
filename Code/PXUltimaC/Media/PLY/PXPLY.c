@@ -2,12 +2,12 @@
 
 #include <OS/Error/PXActionResult.h>
 
-PXActionResult PXAPI PXPLYLoadFromFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXAPI PXPLYLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXPLYSaveToFile(PXModel* const pxModel, PXFile* const pxFile)
+PXActionResult PXAPI PXPLYSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }

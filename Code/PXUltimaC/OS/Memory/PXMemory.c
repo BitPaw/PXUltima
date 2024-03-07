@@ -921,7 +921,7 @@ PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
 		*pxMemoryInfo->SizeTotal = totalSize;
 	}
 
-#if PXLogEnable
+#if PXLogEnable && 0
 	PXLoggingEventData pxLoggingEventData;
 	pxLoggingEventData.MemoryData.TypeSize = pxMemoryInfo->TypeSize;
 	pxLoggingEventData.MemoryData.Amount = pxMemoryInfo->Amount;
@@ -961,7 +961,7 @@ PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
 	}
 
 
-#if PXLogEnable
+#if PXLogEnable && 0
 	PXLoggingEventData pxLoggingEventData;
 	pxLoggingEventData.MemoryData.TypeSize = pxMemoryInfo->TypeSize;
 	pxLoggingEventData.MemoryData.Amount = pxMemoryInfo->Amount;

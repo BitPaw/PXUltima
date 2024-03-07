@@ -410,6 +410,7 @@
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX9.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10x1.c" />
     <ClCompile Include="OS\System\PXWindows.c" />
+    <ClCompile Include="Media\DDS\PXDDS.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
   </ItemGroup>
   <ItemGroup>
@@ -567,6 +568,7 @@
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX9.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10x1.h" />
     <ClInclude Include="OS\System\PXWindows.h" />
+    <ClInclude Include="Media\DDS\PXDDS.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
   </ItemGroup>
   <ItemGroup>
@@ -578,6 +580,7 @@
     <None Include="Media\BinaryWindows\README.md" />
     <None Include="Media\CanonRaw3\README.md" />
     <None Include="Media\C\README.md" />
+    <None Include="Media\DDS\README.md" />
     <None Include="Media\LDAP\README.md" />
     <None Include="Media\Matroska\README.md" />
     <None Include="Media\PNG\README.md" />
@@ -590,6 +593,7 @@
     <None Include="OS\Graphic\OpenGL\README.md" />
     <None Include="OS\Graphic\SoftwareRender\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
+    <None Include="OS\UI\README.md" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="OS\System\PXWindowsLegacy.asm" />

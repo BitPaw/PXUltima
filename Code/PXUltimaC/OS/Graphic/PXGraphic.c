@@ -267,9 +267,9 @@ void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, con
     // pxUIElement->Width = width;
    // pxUIElement->Height = height;
 
-    pxUIElement->AncerFlagList = pxUIElementPositionMode;
+   // pxUIElement->AncerFlagList = pxUIElementPositionMode;
 
-    PXRectangleOffsetSet(&pxUIElement->Margin, x, y, width, height);
+    //PXRectangleOffsetSet(&pxUIElement->Margin, x, y, width, height);
 
    // pxUIElement->PositionMode = pxUIElementPositionMode;
 }

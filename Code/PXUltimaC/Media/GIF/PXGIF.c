@@ -14,7 +14,7 @@ PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const
     return 0;
 }
 
-PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXGIFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXGIF gif;
 
@@ -23,7 +23,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxF
     // Check Header
     {
         {
-            const PXBool validHeader = PXFileReadAndCompare(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
+            const PXBool validHeader = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
 
             if (!validHeader)
             {
@@ -35,7 +35,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxF
             const char** const versionDataList[2] = { PXGIFVersionA, PXGIFVersionB };
             const PXSize versionSizeList[2] = { sizeof(PXGIFVersionA),  sizeof(PXGIFVersionB) };
             const PXSize versionSizeListSize = sizeof(versionDataList) / sizeof(void*);
-            const PXBool validVersion = PXFileReadAndCompareV(pxFile, versionDataList, versionSizeList, versionSizeListSize);
+            const PXBool validVersion = PXFileReadAndCompareV(pxResourceLoadInfo->FileReference, versionDataList, versionSizeList, versionSizeListSize);
 
             if (!validVersion)
             {
@@ -58,7 +58,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxF
                 {&gif.PixelAspectRatio, PXDataTypeInt08U}
             };
 
-            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             gif.GlobalColorTableSize = packedFields & 0b00000111;
             gif.IsSorted = (packedFields & 0b00001000) >> 3;
@@ -88,7 +88,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxF
                     {&packedFields,PXDataTypeInt08U}
                 };
 
-                PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                 imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
                 imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;
@@ -115,9 +115,9 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXVideo* const pxVideo, PXFile* const pxF
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGIFSaveToFile(const PXVideo* const pxVideo, PXFile* const pxFile)
+PXActionResult PXAPI PXGIFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-    PXFileWriteB(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
+    PXFileWriteB(pxResourceSaveInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
 
     return PXActionRefusedNotImplemented;
 }

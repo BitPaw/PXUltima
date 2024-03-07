@@ -13,10 +13,13 @@ extern "C"
 
 	// Predefine
 	typedef enum PXActionResult_ PXActionResult;
+	typedef enum PXFileFormat_ PXFileFormat;
+
 	typedef struct PXFile_ PXFile;
 	typedef struct PXText_ PXText;
 	typedef struct PXDocument_ PXDocument;
 	typedef struct PXWindow_ PXWindow;
+	typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 
 
 	typedef enum PXRefreshRateMode_
@@ -41,6 +44,7 @@ extern "C"
 	{
 		PXGraphicResourceTypeInvalid,
 		PXGraphicResourceTypeModel,
+		PXGraphicResourceTypeImage,
 		PXGraphicResourceTypeTexure,
 		PXGraphicResourceTypeSkyBox,
 		PXGraphicResourceTypeFont
@@ -266,15 +270,32 @@ extern "C"
 	}
 	PXRectangleOffset;
 
-#define PXRectangleOffsetSet(adress, l, t, r, b) \
-	(adress)->Left = l; \
-	(adress)->Top = t; \
-	(adress)->Right = r; \
-	(adress)->Bottom = b;
+	PXPublic inline void PXAPI PXRectangleOffsetSet
+	(
+		PXRectangleOffset* const pxRectangleOffset,
+		float left,
+		float top,
+		float right,
+		float bottom
+	);
 
 
 
 
+
+	typedef struct PXTexture1D_
+	{
+		PXResourceID ResourceID;
+
+		PXGraphicRenderFilter Filter;
+		PXGraphicImageLayout LayoutNear;
+		PXGraphicImageLayout LayoutFar;
+		PXGraphicImageWrap WrapHeight;
+		PXGraphicImageWrap WrapWidth;
+
+		struct PXImage_* Image;
+	}
+	PXTexture1D;
 
 	typedef struct PXTexture2D_
 	{
@@ -308,12 +329,6 @@ extern "C"
 	{
 		PXResourceID ResourceID;
 
-		PXInt32U Width;
-		PXInt32U Height;
-		PXInt32U Depth;
-
-		PXColorFormat Format;
-
 		struct PXImage_* Image;
 	}
 	PXTexture3D;
@@ -334,6 +349,20 @@ extern "C"
 	}
 	PXTextureCube;
 
+
+	typedef struct PXTexture_
+	{
+		PXGraphicTextureType Type;
+
+		union
+		{
+			PXTexture1D Texture1D;
+			PXTexture2D Texture2D;
+			PXTexture3D Texture3D;
+			PXTextureCube TextureCube;
+		};
+	}
+	PXTexture;
 
 	typedef enum PXMaterialIlluminationMode_
 	{
@@ -804,22 +833,6 @@ extern "C"
 #define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive | PXUIElementDrawBorder
 #define PXUIElementText PXUIElementDoRendering | PXUIElementIsActive 
 
-#define PXUIElementAncerParent  0b11110000
-
-#define PXUIElementAncerParentLeft 0b10000000
-#define PXUIElementAncerParentTop 0b01000000
-#define PXUIElementAncerParentRight 0b00100000
-#define PXUIElementAncerParentBottom 0b00010000
-
-#define PXUIElementAncerSibling 0b00001111
-
-#define PXUIElementAncerSiblingLeft 0b00001000
-#define PXUIElementAncerSiblingTop 0b00000100
-#define PXUIElementAncerSiblingRight 0b00000010
-#define PXUIElementAncerSiblingBottom 0b00000001
-
-#define PXUIElementPositionGlobal 0
-#define PXUIElementPositionRelative PXUIElementAncerParent
 
 	typedef enum PXUIHoverState_
 	{
@@ -892,28 +905,83 @@ extern "C"
 	}
 	PXUIElementImageInfo;
 
+	typedef struct PXUIElementButtonInfo_
+	{
+		char* Text;
+	}
+	PXUIElementButtonInfo;
+
 	typedef struct PXUIElementProgressBarInfo_
 	{
 		float Percentage;
+		PXColorRGBI8 BarColor;
 	}
 	PXUIElementProgressBarInfo;
 
 	typedef struct PXUIElementTextInfo_
 	{
-		char Content[32];
+		char* Content;
 		struct PXFont_* FontID;
 		float Scale;
 	}
 	PXUIElementTextInfo;
 
-	typedef struct PXPoisition2D_
+
+
+
+
+// Ancering will stick the given edge to a side.
+// Offset will be interpretet 0=NoSpace, 1=???
+// Goal: Scale the object with screensize
+#define PXUIElementAncerParent			0b11110000
+#define PXUIElementAncerParentLeft		0b10000000
+#define PXUIElementAncerParentTop		0b01000000
+#define PXUIElementAncerParentRight		0b00100000
+#define PXUIElementAncerParentBottom	0b00010000
+
+// Let siblings calulate their offset themself.
+// Goal: Group multible objects together that belong together
+#define PXUIElementAncerSibling			0b00001111
+#define PXUIElementAncerSiblingLeft		0b00001000
+#define PXUIElementAncerSiblingTop		0b00000100
+#define PXUIElementAncerSiblingRight	0b00000010
+#define PXUIElementAncerSiblingBottom	0b00000001
+
+#define PXUIElementKeepFlags		0b00001111
+#define PXUIElementKeepPositionX	0b00000001
+#define PXUIElementKeepPositionY	0b00000010
+#define PXUIElementKeepWidth		0b00000100
+#define PXUIElementKeepHeight		0b00001000
+
+#define PXUIElementAllignFlags		0b11110000
+#define PXUIElementAllignLeft		0b00010000
+#define PXUIElementAllignTop		0b00100000
+#define PXUIElementAllignRight		0b01000000
+#define PXUIElementAllignBottom		0b10000000
+
+	typedef struct PXUIElementPosition_
 	{
-		int X; 
-		int Y;
-		int Width;
-		int Height;
-	}	
-	PXPoisition2D;
+		float MarginLeft;
+		float MarginTop;
+		float MarginRight;
+		float MarginBottom;
+
+		float PaddingLeft;
+		float PaddingTop;
+		float PaddingRight;
+		float PaddingBottom;
+
+		float X;
+		float Y;
+		float Width;
+		float Height;
+
+		PXInt16U FlagListFormat; // Unused
+		PXInt8U FlagListAncer;
+		PXInt8U FlagListKeep;
+	}
+	PXUIElementPosition;
+
 
 	// Atomic UI-Element
 	// Only Text can be text
@@ -935,14 +1003,7 @@ extern "C"
 		PXUIOnMouseLeave OnMouseLeaveCallback;
 
 
-		//------------------------------
-		// Position
-		//------------------------------
-		PXRectangleOffset Margin;
-		PXRectangleOffset Padding;
-		PXPoisition2D Poisition2D;
-		PXInt8U AncerFlagList;
-
+		PXUIElementPosition Position;
 
 		//---<State-Info>------------------------
 		PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
@@ -958,6 +1019,7 @@ extern "C"
 			PXUIElementImageInfo ImageInfo;
 			PXUIElementTextInfo TextInfo;
 			PXUIElementProgressBarInfo ProgressBar;
+			PXUIElementButtonInfo Button;
 		};
 
 		PXUIElementType Type;
@@ -968,8 +1030,36 @@ extern "C"
 
 
 
+	typedef struct PXUIElementPositionCalulcateInfo_
+	{
+		// Input
+		float WindowWidth;
+		float WindowHeight;
+
+		// Result
+		PXInt32U DepthCounter;
+		
+		// Margin total
+		float MarginLeft;
+		float MarginTop;
+		float MarginRight;
+		float MarginBottom;
 
 
+		float AA;
+		float BA;
+		float BB;
+		float AB;
+
+		float X;
+		float Y;
+		float Width;
+		float Height;
+	}
+	PXUIElementPositionCalulcateInfo;
+
+
+	PXPublic void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
 
 
 
@@ -1222,15 +1312,34 @@ extern "C"
 
 
 
+	typedef struct PXResourceLoadInfo_
+	{
+		void* Target;
+		PXFile* FileReference;
+		PXGraphicResourceType Type;
+	}
+	PXResourceLoadInfo;
 
-	PXPublic enum PXActionResult PXAPI PXFileTypeInfoProbe(struct PXFileTypeInfo_* const pxFileTypeInfo, const struct PXText_* const pxText);
+	typedef struct PXResourceSaveInfo_
+	{
+		void* Target;	
+		PXFile* FileReference;
+		PXGraphicResourceType Type;
+		PXFileFormat Format;
+	}
+	PXResourceSaveInfo;
 
 
-	PXPublic enum PXActionResult PXAPI PXResourceLoad(void* resource, const struct PXText_* const filePath);
-	PXPublic enum PXActionResult PXAPI PXResourceLoadA(void* resource, const char* const filePath);
 
-	PXPublic enum PXActionResult PXAPI PXResourceSave(void* resource, const struct PXText_* const filePath, const enum PXFileFormat_ pxFileFormat);
-	PXPublic enum PXActionResult PXAPI PXResourceSaveA(void* resource, const char* const filePath, const enum PXFileFormat_ pxFileFormat);
+
+	PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);
+
+
+	PXPublic PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXResourceLoadA(PXResourceLoadInfo* const pxResourceLoadInfo, const char* const filePath);
+
+	PXPublic PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo, const PXText* const filePath);
+	PXPublic PXActionResult PXAPI PXResourceSaveA(PXResourceSaveInfo* const pxResourceSaveInfo, const char* const filePath);
 
 #ifdef __cplusplus
 }

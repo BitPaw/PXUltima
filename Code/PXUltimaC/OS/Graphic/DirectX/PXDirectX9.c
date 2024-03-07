@@ -324,9 +324,9 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struc
                     const HRESULT result = pxDirectX9->Device->lpVtbl->CreateVolumeTexture
                     (
                         pxDirectX9->Device,
-                        pxTexture3D->Width,
-                        pxTexture3D->Height,
-                        pxTexture3D->Depth,
+                        pxTexture3D->Image->Width,
+                        pxTexture3D->Image->Height,
+                        pxTexture3D->Image->Depth,
                         levels,
                         usage,
                         format,
@@ -341,9 +341,9 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struc
                         PXLoggingInfo,
                         "DirectX9",
                         "Texture3D created (%ix%ix%i) 0x%p",
-                        pxTexture3D->Width,
-                        pxTexture3D->Height,
-                        pxTexture3D->Depth,
+                        pxTexture3D->Image->Width,
+                        pxTexture3D->Image->Height,
+                        pxTexture3D->Image->Depth,
                         pxTexture3D->ResourceID.DirectXInterface
                     );
 #endif

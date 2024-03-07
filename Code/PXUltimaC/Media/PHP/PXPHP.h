@@ -14,8 +14,8 @@ extern "C"
 	}
 	PXPHP;
 
-	PXPublic PXActionResult PXAPI PXPHPLoadFromFile(void* const data, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXPHPSaveToFile(void* const data, PXFile* const pxFile);
+	PXPublic PXActionResult PXAPI PXPHPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+	PXPublic PXActionResult PXAPI PXPHPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #ifdef __cplusplus
 }

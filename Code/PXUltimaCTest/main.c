@@ -172,7 +172,7 @@ int main()
 
 		PXProcessorTemperature(&temp);
 
-		PXConsoleGoToXY(0,0);
+		PXonsoleGoToXY(0,0);
 		printf("CPU temp : %i\n", temp);
 
 	}

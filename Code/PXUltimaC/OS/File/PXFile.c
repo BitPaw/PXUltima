@@ -384,6 +384,8 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt24Make('B', 'K', '2'):
 				case PXInt24Make('B', 'I', 'K'): return PXFileFormatBinkVideo;
 
+				case PXInt24Make('D', 'D', 'S'): return PXFileFormatDirectDrawSurfaceTexture;
+
 				case PXInt24Make('B', 'I', 'N'):
 				case PXInt24Make('P', 'R', 'X'):
 				case PXInt24Make('M', 'O', 'D'):

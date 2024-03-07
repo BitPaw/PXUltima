@@ -11,13 +11,13 @@ const static char PXOGGHeaderSignature[4] = { 'O','g','g','S' };
 
 #define PXOPGGDebug 0
 
-PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXOGGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	PXOGG ogg;
 
 	PXClear(PXOGG, &ogg);
 
-	while(!PXFileIsAtEnd(pxFile))
+	while(!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
 	{
 		// Header tag does exist multible times.
 		// You can refocus it when the file is corrupted.
@@ -37,7 +37,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxF
 			{&page.PageSegments, PXDataTypeInt08U}
 		};
 
-		PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+		PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 		const PXBool validHeaderSignature = PXMemoryCompare(signature.Data, 4u, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
@@ -78,7 +78,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxF
 
 		for(PXSize i = 0; i < page.PageSegments; ++i)
 		{
-			PXFileReadI8U(pxFile, &segmentSizeList[i]);
+			PXFileReadI8U(pxResourceLoadInfo->FileReference, &segmentSizeList[i]);
 
 #if PXOPGGDebug
 			printf
@@ -98,7 +98,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxF
 
 			for(PXSize i = 0; i < x; i++)
 			{
-				unsigned char* currentPos = (unsigned char*)PXFileCursorPosition(pxFile) + i;
+				unsigned char* currentPos = (unsigned char*)PXFileCursorPosition(pxResourceLoadInfo->FileReference) + i;
 
 				char print = (*currentPos >= ' ' && *currentPos <= '~') ? *currentPos : '.';
 
@@ -116,16 +116,16 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXSound* const pxSound, PXFile* const pxF
 			printf("\n");
 #endif
 
-			PXFileCursorAdvance(pxFile, x);
+			PXFileCursorAdvance(pxResourceLoadInfo->FileReference, x);
 		}
 	}
 
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOGGSaveToFile(PXSound* const pxSound, PXFile* const pxFile)
+PXActionResult PXAPI PXOGGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {	
-	PXFileWriteB(pxFile, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
+	PXFileWriteB(pxResourceSaveInfo->FileReference, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
 	return PXActionRefusedNotImplemented;
 }

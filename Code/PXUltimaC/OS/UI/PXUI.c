@@ -34,10 +34,11 @@
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
 #include <OS/Console/PXConsole.h>
+#include <Engine/PXEngine.h>
 #include <stdio.h>
 #include <WindowsX.h>
 
-PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PXWindow* const pxWindow)
+PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, struct PXUIElementCreateData_* const pxUIElementCreateData)
 {
     PXInt32U styleFlags = 0;
     wchar_t* className = PXNull;
@@ -51,6 +52,8 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
     {
         case PXUIElementTypePanel:
         {
+            className = WC_STATICW;
+            styleFlags = WS_VISIBLE | WS_CHILD;
             break;
         }
         case PXUIElementTypeText:
@@ -255,20 +258,33 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
 
 
     DWORD dwExStyle = 0;
-    const wchar_t* lpWindowName = L"TEST";
-    HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(pxWindow->ID, GWLP_HINSTANCE);
+    HWND windowHandle = pxUIElementCreateData->WindowReference->ID;
+    const HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(windowHandle, GWLP_HINSTANCE);
+
+
+    PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+    PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+    PXInt32S width = 0;
+    PXInt32S height = 0;
+    PXWindowSize(pxUIElementCreateData->WindowReference, PXNull, PXNull, &width, &height);
+
+    pxUIElementPositionCalulcateInfo.WindowWidth = width;
+    pxUIElementPositionCalulcateInfo.WindowHeight = height;
+
+    PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
+
 
     pxUIElement->ID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
     (
         dwExStyle,
         className,
-        lpWindowName,
+        PXNull, // Text content
         styleFlags,
-        pxUIElement->Poisition2D.X,
-        pxUIElement->Poisition2D.Y,
-        pxUIElement->Poisition2D.Width,
-        pxUIElement->Poisition2D.Height,
-        pxWindow->ID,
+        pxUIElementPositionCalulcateInfo.X,
+        pxUIElementPositionCalulcateInfo.Y,
+        pxUIElementPositionCalulcateInfo.Width,
+        pxUIElementPositionCalulcateInfo.Height,
+        windowHandle,
         PXNull,  // No menu.
         hInstance,
         NULL // Pointer not needed.
@@ -287,7 +303,7 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
 
     HDC xx = GetDC(pxUIElement->ID);
 
-    HBRUSH brush = SendMessageA(pxWindow->ID, WM_CTLCOLORBTN, xx, pxUIElement->ID); // RB_SETBKCOLOR
+    HBRUSH brush = SendMessageA(windowHandle, WM_CTLCOLORBTN, xx, pxUIElement->ID); // RB_SETBKCOLOR
     SetTextColor(xx, RGB(255, 0, 0));
     SetBkColor(xx, RGB(0, 255, 0));
 
@@ -320,12 +336,12 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
             PXLoggingError,
             "UI",
             "Element-Create",
-            "Failed: Name:%ls, X:%i, Y:%i, Width:%i, Height:%i",
+            "Failed: Name:%ls, X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
             className,
-            pxUIElement->Poisition2D.X,
-            pxUIElement->Poisition2D.Y,
-            pxUIElement->Poisition2D.Width,
-            pxUIElement->Poisition2D.Height
+            pxUIElementPositionCalulcateInfo.X,
+            pxUIElementPositionCalulcateInfo.Y,
+            pxUIElementPositionCalulcateInfo.Width,
+            pxUIElementPositionCalulcateInfo.Height
         );
 #endif
 
@@ -338,12 +354,12 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
         PXLoggingInfo,
         "UI",
         "Element-Create",
-        "Successful: Name:%ls, X:%i, Y:%i, Width:%i, Height:%i",
+        "Successful: Name:%ls, X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
         className,
-        pxUIElement->Poisition2D.X,
-        pxUIElement->Poisition2D.Y,
-        pxUIElement->Poisition2D.Width,
-        pxUIElement->Poisition2D.Height
+        pxUIElementPositionCalulcateInfo.X,
+        pxUIElementPositionCalulcateInfo.Y,
+        pxUIElementPositionCalulcateInfo.Width,
+        pxUIElementPositionCalulcateInfo.Height
     );
 #endif
 
@@ -357,11 +373,30 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
         }
         case PXUIElementTypeText:
         {
-          
+            PXUIElementUpdateInfo pxUIElementUpdateInfo[2];
+            pxUIElementUpdateInfo[0].UIElementReference = pxUIElement;
+            pxUIElementUpdateInfo[0].WindowReference = pxUIElementCreateData->WindowReference;
+            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
+            
+            PXUIElementUpdateOSStyleV(pxUIElementUpdateInfo, 1);
+
             break;
         }
         case PXUIElementTypeButton:
         {
+            PXUIElementUpdateInfo pxUIElementUpdateInfo[2];
+            pxUIElementUpdateInfo[0].UIElementReference = pxUIElement;
+            pxUIElementUpdateInfo[0].WindowReference = pxUIElementCreateData->WindowReference;
+            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
+            pxUIElementUpdateInfo[1].UIElementReference = pxUIElement;
+            pxUIElementUpdateInfo[1].WindowReference = pxUIElementCreateData->WindowReference;
+            pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
+
+            PXTextCopyA(pxUIElement->Button.Text, PXTextLengthUnkown, pxUIElement->TextInfo.Content, 32);
+
+            PXUIElementUpdateOSStyleV(pxUIElementUpdateInfo, 2);
+
+            // SetWindowTextA(pxUIElement->ID, buttonInfo->Text); // ButtonTextSet()
 
             break;
         }
@@ -412,15 +447,15 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
         }
         case PXUIElementTypeProgressBar:
         {
-            PXUIElementProgressBarInfo* const progressBar = &pxUIElement->ProgressBar;
+            PXUIElementUpdateInfo pxUIElementUpdateInfo[2];
+            pxUIElementUpdateInfo[0].UIElementReference = pxUIElement;
+            pxUIElementUpdateInfo[0].WindowReference = pxUIElementCreateData->WindowReference;
+            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
+            pxUIElementUpdateInfo[1].UIElementReference = pxUIElement;
+            pxUIElementUpdateInfo[1].WindowReference = pxUIElementCreateData->WindowReference;
+            pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
 
-            // Set percentage
-            PXInt32U stepsConverted = progressBar->Percentage * 100;
-            SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
-
-            COLORREF color = RGB(255,0,0);
-            SendMessageA(pxUIElement->ID, PBM_SETBARCOLOR, 0, color);
-
+            PXUIElementUpdateOSStyleV(pxUIElementUpdateInfo, 2);
             break;
         }
         case PXUIElementTypeHotKey:
@@ -542,6 +577,109 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, PX
 
     return PXActionSuccessful;
 }
+
+PXActionResult PXAPI PXUIElementUpdateOSStyle(PXUIElementUpdateInfo* const pxUIElementUpdateInfo)
+{
+    PXUIElement* const pxUIElement = pxUIElementUpdateInfo->UIElementReference;
+
+    switch(pxUIElementUpdateInfo->Property)
+    {
+        case PXUIElementPropertyTextContent:
+        {
+            PXUIElementTextInfo* const pxUIElementTextInfo = &pxUIElement->TextInfo;
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "UI",
+                "Text-Update",
+                "[%i] %s",
+                (int)pxUIElement->ID,
+                pxUIElementTextInfo->Content
+            );
+#endif        
+
+            SetWindowTextA(pxUIElement->ID, pxUIElementTextInfo->Content);
+
+            break;
+        }
+        case PXUIElementPropertySize:
+        {
+            PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+            PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+
+
+            PXInt32S width = 0;
+            PXInt32S height = 0;
+            PXWindowSize(pxUIElementUpdateInfo->WindowReference, PXNull, PXNull, &width, &height);
+
+            pxUIElementPositionCalulcateInfo.WindowWidth = width;
+            pxUIElementPositionCalulcateInfo.WindowHeight = height;
+
+            PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
+
+            const PXBool success = MoveWindow
+            (
+                pxUIElement->ID,
+                pxUIElementPositionCalulcateInfo.X,
+                pxUIElementPositionCalulcateInfo.Y,
+                pxUIElementPositionCalulcateInfo.Width,
+                pxUIElementPositionCalulcateInfo.Height,
+                PXTrue
+            );
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "UI",
+                "Element-Update",
+                "Size X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
+                pxUIElementPositionCalulcateInfo.X,
+                pxUIElementPositionCalulcateInfo.Y,
+                pxUIElementPositionCalulcateInfo.Width,
+                pxUIElementPositionCalulcateInfo.Height
+            );
+#endif
+
+            break;
+        }
+        case PXUIElementPropertyProgressbarPercentage:
+        {
+            PXUIElementProgressBarInfo* const progressBar = &pxUIElement->ProgressBar;
+
+            PXInt32U stepsConverted = progressBar->Percentage * 100;
+            SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
+
+            break;
+        }
+        case PXUIElementPropertyProgressbarBarColor:
+        {
+            PXUIElementProgressBarInfo* const progressBar = &pxUIElement->ProgressBar;
+
+            COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
+            SendMessageA(pxUIElement->ID, PBM_SETBARCOLOR, 0, color);
+
+            break;
+        }
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXUIElementUpdateOSStyleV(PXUIElementUpdateInfo* const pxUIElementUpdateInfoList, const PXSize amount)
+{
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        PXUIElementUpdateInfo* pxUIElementUpdateInfo = &pxUIElementUpdateInfoList[i];
+
+        PXUIElementUpdateOSStyle(pxUIElementUpdateInfo);
+    }
+
+    return PXActionSuccessful;
+}
+
 
 /*
 
