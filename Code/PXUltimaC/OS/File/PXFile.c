@@ -3488,7 +3488,7 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 	PXTextReplace(filePath, '\\', '/');
 
 	return PXActionSuccessful;
-#elif WindowsAtleastXP
+#elif WindowsAtleastXP && 0
 
 	GetMappedFileName(GetCurrentProcess(), pMem, pszFilename, MAX_PATH)
 

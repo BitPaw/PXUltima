@@ -4,7 +4,7 @@
 
 #if OSUnix
 #elif OSWindows
-
+#include <Windows.h>
 #include <commctrl.h>
 #include <commdlg.h>
 //#include <ShObjIdl.h>
@@ -29,19 +29,23 @@
 #endif
 #endif
 
-#include <OS/Memory/PXMemory.h>
+
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
+#include <OS/Memory/PXMemory.h>
 #include <OS/Console/PXConsole.h>
 #include <Engine/PXEngine.h>
+
 #include <stdio.h>
+
 #include <WindowsX.h>
 
 PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, struct PXUIElementCreateData_* const pxUIElementCreateData)
 {
     PXInt32U styleFlags = 0;
     wchar_t* className = PXNull;
+    PXBool creationSkip = PXFalse;
 
     if(!pxUIElement)
     {
@@ -59,7 +63,21 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         case PXUIElementTypeText:
         {
             className = WC_STATICW;
-            styleFlags = WS_VISIBLE | WS_CHILD | SS_LEFT | WS_BORDER;
+            styleFlags = WS_VISIBLE | WS_CHILD | SS_CENTER | WS_BORDER;
+
+            PXBool hasParenet = pxUIElement->Parent;
+
+            if(hasParenet)
+            {
+                creationSkip = PXUIElementTypeButton == pxUIElement->Parent->Type;
+
+                if(creationSkip)
+                {
+                    pxUIElement->Type = PXUIElementTypeButtonText;
+                    pxUIElement->ID = 0;
+                }
+            }
+
             break;
         }
         case PXUIElementTypeButton:
@@ -179,7 +197,7 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         case PXUIElementTypeTreeView:
         {
             className = WC_TREEVIEWW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT;
             break;
         }
         case PXUIElementTypeIPInput:
@@ -251,6 +269,70 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
             styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
+
+        case PXUIElementTypeRenderFrame:
+        {
+            // HBRUSH hbrBackground = CreateSolidBrush(RGB(38, 38, 38));
+            className = WC_STATICW;
+            styleFlags = WS_VISIBLE | CS_OWNDC | CS_HREDRAW | CS_VREDRAW | WS_BORDER | WS_CHILD;
+            break;
+        }
+
+
+        /*
+    
+
+    switch (pxWindow->Title.Format)
+    {
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
+            char* windowClassName = 0;
+
+            // Registering of class
+            {
+                WNDCLASSA wndclass;
+
+                PXClear(WNDCLASSA, &wndclass);
+
+                wndclass.style = style;
+                wndclass.lpfnWndProc = lpfnWndProc;
+                wndclass.cbClsExtra = cbClsExtra;
+                wndclass.cbWndExtra = cbWndExtra;
+                wndclass.hInstance = hInstance;
+                wndclass.hIcon = hIcon;
+                wndclass.hCursor = hCursor;
+                wndclass.hbrBackground = hbrBackground;
+                wndclass.lpszMenuName = 0;
+                wndclass.lpszClassName = "PXUltima_WindowCreate";
+
+                const WORD classID = RegisterClassA(&wndclass);
+
+                windowClassName = (char*)classID;
+            }
+
+            windowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
+            (
+                windowStyle,
+                windowClassName,
+                pxWindow->Title.TextA,
+                dwStyle,
+                pxWindow->X,
+                pxWindow->Y,
+                pxWindow->Width,
+                pxWindow->Height,
+                hWndParent,
+                hMenu,
+                hInstance,
+                lpParam
+            );
+        */
+
+        case PXUIElementTypeTreeViewItem:
+        {
+            creationSkip = PXTrue;
+            break;
+        }
         default:
             return PXActionRefusedArgumentInvalid;
     }
@@ -259,39 +341,133 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
 
     DWORD dwExStyle = 0;
     HWND windowHandle = pxUIElementCreateData->WindowReference->ID;
+
     const HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(windowHandle, GWLP_HINSTANCE);
 
 
     PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
     PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
-    PXInt32S width = 0;
-    PXInt32S height = 0;
-    PXWindowSize(pxUIElementCreateData->WindowReference, PXNull, PXNull, &width, &height);
+   
+    PXWindowSizeInfo pxWindowSizeInfo;
+    PXWindowSizeGet(pxUIElementCreateData->WindowReference->ID, &pxWindowSizeInfo);
 
-    pxUIElementPositionCalulcateInfo.WindowWidth = width;
-    pxUIElementPositionCalulcateInfo.WindowHeight = height;
+    pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
+    pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
 
     PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
 
-
-    pxUIElement->ID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
-    (
-        dwExStyle,
-        className,
-        PXNull, // Text content
-        styleFlags,
-        pxUIElementPositionCalulcateInfo.X,
-        pxUIElementPositionCalulcateInfo.Y,
-        pxUIElementPositionCalulcateInfo.Width,
-        pxUIElementPositionCalulcateInfo.Height,
-        windowHandle,
-        PXNull,  // No menu.
-        hInstance,
-        NULL // Pointer not needed.
-    );
-    const PXBool success = -1 != pxUIElement->ID;
+    // If we a text that should be rendered on a button, the OS does not really intent to do this.
+    // To avoid wierd graphical bugs, we will merge these into one object.
+    // Still this object needs to be seperate for other render systems
+     // pxUIElement->Type == PXUIElementTypeText&&;
 
 
+    if(!creationSkip)
+    {
+        pxUIElement->ID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
+        (
+            dwExStyle,
+            className,
+            PXNull, // Text content
+            styleFlags,
+            pxUIElementPositionCalulcateInfo.X,
+            pxUIElementPositionCalulcateInfo.Y,
+            pxUIElementPositionCalulcateInfo.Width,
+            pxUIElementPositionCalulcateInfo.Height,
+            windowHandle,
+            PXNull,  // No menu.
+            hInstance,
+            NULL // Pointer not needed.
+        );
+        const PXBool success = -1 != pxUIElement->ID;
+
+
+        if(!success)
+        {
+            const PXActionResult pxActionResult = PXErrorCurrent();
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "UI",
+                "Element-Create",
+                "Failed: Name:%ls, X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
+                className,
+                pxUIElementPositionCalulcateInfo.X,
+                pxUIElementPositionCalulcateInfo.Y,
+                pxUIElementPositionCalulcateInfo.Width,
+                pxUIElementPositionCalulcateInfo.Height
+            );
+#endif
+
+            return pxActionResult;
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "UI",
+            "Element-Create",
+            "Successful: Name:%ls, X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
+            className,
+            pxUIElementPositionCalulcateInfo.X,
+            pxUIElementPositionCalulcateInfo.Y,
+            pxUIElementPositionCalulcateInfo.Width,
+            pxUIElementPositionCalulcateInfo.Height
+        );
+#endif
+
+
+
+        if(pxUIElement->ID && pxUIElement->Parent)
+        {
+            PXUIElement* parent = pxUIElement->Parent;
+
+            HDWP resA = BeginDeferWindowPos(1);
+
+            if(PXUIElementTypeButtonText == pxUIElement->Type)
+            {
+                HDWP resB = DeferWindowPos
+                (
+                    resA,
+                    parent->ID,
+                    pxUIElement->ID,
+                    0,
+                    0,
+                    0,
+                    0,
+                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
+                );
+            }
+            else
+            {              
+                HDWP resB = DeferWindowPos
+                (
+                    resA,
+                    pxUIElement->ID,
+                    parent->ID,
+                    0,
+                    0,
+                    0,
+                    0,
+                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
+                );         
+            }
+
+            EndDeferWindowPos(resA);
+        }
+               
+
+
+
+    }
+
+   
+
+
+#if 0
     
     char buffer[255];
     PXClearList(char, buffer, 255);
@@ -303,10 +479,13 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
 
     HDC xx = GetDC(pxUIElement->ID);
 
-    HBRUSH brush = SendMessageA(windowHandle, WM_CTLCOLORBTN, xx, pxUIElement->ID); // RB_SETBKCOLOR
+    HBRUSH brush = SendMessageA(windowHandle, WM_CTLCOLORSTATIC, xx, pxUIElement->ID); // RB_SETBKCOLOR
     SetTextColor(xx, RGB(255, 0, 0));
     SetBkColor(xx, RGB(0, 255, 0));
 
+
+    Pager_SetBkColor(pxUIElement->ID, &colorAA);
+#endif
 
 
    // SetTextColor(xx, colorAA);
@@ -324,44 +503,6 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
 
 
 
-    Pager_SetBkColor(pxUIElement->ID, &colorAA);
-
-    if(!success)
-    {
-        const PXActionResult pxActionResult = PXErrorCurrent();
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "UI",
-            "Element-Create",
-            "Failed: Name:%ls, X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
-            className,
-            pxUIElementPositionCalulcateInfo.X,
-            pxUIElementPositionCalulcateInfo.Y,
-            pxUIElementPositionCalulcateInfo.Width,
-            pxUIElementPositionCalulcateInfo.Height
-        );
-#endif
-
-        return pxActionResult;
-    }
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "UI",
-        "Element-Create",
-        "Successful: Name:%ls, X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
-        className,
-        pxUIElementPositionCalulcateInfo.X,
-        pxUIElementPositionCalulcateInfo.Y,
-        pxUIElementPositionCalulcateInfo.Width,
-        pxUIElementPositionCalulcateInfo.Height
-    );
-#endif
 
 
 
@@ -369,6 +510,8 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
     {
         case PXUIElementTypePanel:
         {
+            
+
             break;
         }
         case PXUIElementTypeText:
@@ -378,6 +521,25 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
             pxUIElementUpdateInfo[0].WindowReference = pxUIElementCreateData->WindowReference;
             pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
             
+            pxUIElementUpdateInfo[1].UIElementReference = pxUIElement;
+            pxUIElementUpdateInfo[1].WindowReference = pxUIElementCreateData->WindowReference;
+            pxUIElementUpdateInfo[1].Property = PXUIElementPropertyTextAllign;
+
+            PXUIElementUpdateOSStyleV(pxUIElementUpdateInfo, 2);
+
+            break;
+        }
+        case PXUIElementTypeButtonText: // Local override for OSStyle buttons
+        {
+            PXUIElement* pxButton = pxUIElement->Parent;
+
+            PXUIElementUpdateInfo pxUIElementUpdateInfo[2];
+            pxUIElementUpdateInfo[0].UIElementReference = pxButton;
+            pxUIElementUpdateInfo[0].WindowReference = pxUIElementCreateData->WindowReference;
+            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
+
+            PXCopy(PXUIElementTextInfo, &pxUIElement->TextInfo, &pxButton->TextInfo);
+
             PXUIElementUpdateOSStyleV(pxUIElementUpdateInfo, 1);
 
             break;
@@ -392,11 +554,71 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
             pxUIElementUpdateInfo[1].WindowReference = pxUIElementCreateData->WindowReference;
             pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
 
-            PXTextCopyA(pxUIElement->Button.Text, PXTextLengthUnkown, pxUIElement->TextInfo.Content, 32);
-
             PXUIElementUpdateOSStyleV(pxUIElementUpdateInfo, 2);
 
-            // SetWindowTextA(pxUIElement->ID, buttonInfo->Text); // ButtonTextSet()
+            break;
+        }
+        case PXUIElementTypeTreeViewItem:
+        {
+            PXUIElementTreeViewItemInfo* const pxUIElementTreeViewItemInfo = &pxUIElementCreateData->TreeViewItem;
+            // Create ui item for a tree view
+
+            TVINSERTSTRUCT item;
+            PXClear(TVINSERTSTRUCT, &item);
+
+            const char text[] = "[N/A]";
+
+            if(pxUIElementTreeViewItemInfo->ItemParent)
+            {
+                item.hParent = pxUIElementTreeViewItemInfo->ItemParent->ID;
+            }         
+
+            if(pxUIElementTreeViewItemInfo->TextDataOverride)
+            {
+                item.item.pszText = pxUIElementTreeViewItemInfo->TextDataOverride;
+                item.item.cchTextMax = pxUIElementTreeViewItemInfo->TextSizeOverride;
+            }
+            else
+            {
+                item.item.pszText = pxUIElement->NameData;
+                item.item.cchTextMax = pxUIElement->NameSize;
+            }
+          
+            switch(pxUIElementTreeViewItemInfo->InsertMode)
+            {
+                case PXUIElementTreeViewItemInsertModeROOT:
+                    item.hInsertAfter = TVI_ROOT;
+                    break;
+
+                case PXUIElementTreeViewItemInsertModeFIRST:
+                    item.hInsertAfter = TVI_FIRST;
+                    break;
+
+                case PXUIElementTreeViewItemInsertModeLAST:
+                    item.hInsertAfter = TVI_LAST;
+                    break;
+
+                case PXUIElementTreeViewItemInsertModeSORT:
+                    item.hInsertAfter = TVI_SORT;
+                    break;
+            }
+
+            item.item.mask = TVIF_TEXT;
+
+            HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->ID, &item);
+
+            if(pxUIElementTreeViewItemInfo->ItemParent)
+            {
+                TreeView_Expand
+                (
+                    pxUIElementTreeViewItemInfo->TreeView->ID,
+                    pxUIElementTreeViewItemInfo->ItemParent->ID,
+                    TVE_EXPAND
+                );
+            }           
+
+            pxUIElement->ID = itemID;
+            pxUIElementTreeViewItemInfo->ItemHandle = itemID;
 
             break;
         }
@@ -500,7 +722,11 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         }
         case PXUIElementTypeTreeView:
         {
-          
+            TreeView_SetBkColor(pxUIElement->ID, RGB(10, 10, 10));
+
+            TreeView_SetTextColor(pxUIElement->ID, RGB(200, 200, 200));
+
+
             break;
         }
         case PXUIElementTypeIPInput:
@@ -559,6 +785,24 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         
             break;
         }
+        case PXUIElementTypeRenderFrame:
+        {
+#if 1
+            PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxUIElementCreateData->SceneRender;
+            PXEngine* pxEngine = pxUIElementSceneRenderInfo->Engine;
+  
+            PXEngineStartInfo pxEngineStartInfo;
+            pxEngineStartInfo.Mode = PXGraphicInitializeModeOSGUIElement;
+            pxEngineStartInfo.System = PXGraphicSystemOpenGL;
+            pxEngineStartInfo.Width = pxUIElement->Position.Width;
+            pxEngineStartInfo.Height = pxUIElement->Position.Height;
+            pxEngineStartInfo.UIElement = pxUIElement;
+
+            PXEngineStart(pxEngine, &pxEngineStartInfo);
+#endif
+
+            break;
+        }
         default:
             return PXActionRefusedArgumentInvalid;
     }
@@ -600,7 +844,52 @@ PXActionResult PXAPI PXUIElementUpdateOSStyle(PXUIElementUpdateInfo* const pxUIE
             );
 #endif        
 
-            SetWindowTextA(pxUIElement->ID, pxUIElementTextInfo->Content);
+            const PXBool success = SetWindowTextA(pxUIElement->ID, pxUIElementTextInfo->Content);
+
+
+         //   SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
+
+      
+            
+
+
+            break;
+        }
+        case PXUIElementPropertyTextAllign:
+        {
+            PXUIElementTextInfo* const pxUIElementTextInfo = &pxUIElement->TextInfo;
+
+            HDC xx = GetDC(pxUIElement->ID);
+
+            
+
+            LONG ww = SetWindowLongA(pxUIElement->ID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
+
+           // const UINT allign = SetTextAlign(xx, TA_CENTER);
+           // const PXBool success = GDI_ERROR == allign;
+
+            if(!ww)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "UI",
+                    "Text-Update",
+                    "Allign Failed"
+                );
+#endif   
+            }
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "UI",
+                "Text-Update",
+                "Allign successful"
+            );
+#endif   
 
             break;
         }
@@ -609,13 +898,12 @@ PXActionResult PXAPI PXUIElementUpdateOSStyle(PXUIElementUpdateInfo* const pxUIE
             PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
             PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
 
+            PXWindowSizeInfo pxWindowSizeInfo;
 
-            PXInt32S width = 0;
-            PXInt32S height = 0;
-            PXWindowSize(pxUIElementUpdateInfo->WindowReference, PXNull, PXNull, &width, &height);
+            PXWindowSizeGet(pxUIElementUpdateInfo->WindowReference->ID, &pxWindowSizeInfo);
 
-            pxUIElementPositionCalulcateInfo.WindowWidth = width;
-            pxUIElementPositionCalulcateInfo.WindowHeight = height;
+            pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
+            pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
 
             PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
 
@@ -660,6 +948,25 @@ PXActionResult PXAPI PXUIElementUpdateOSStyle(PXUIElementUpdateInfo* const pxUIE
 
             COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
             SendMessageA(pxUIElement->ID, PBM_SETBARCOLOR, 0, color);
+
+            break;
+        }
+    
+        case PXUIElementPropertyItemAdd:
+        {
+            PXUIElementItemInfo* pxUIElementItemInfo = &pxUIElement->Item;
+
+            TVINSERTSTRUCT item;
+            PXClear(TVINSERTSTRUCT, &item);
+
+            const char text[] = "[N/A]";
+
+            item.item.pszText = text;
+            item.item.cchTextMax = sizeof(text);
+            item.hInsertAfter = TVI_ROOT;
+            item.item.mask = TVIF_TEXT;
+
+            TreeView_InsertItem(pxUIElement->ID, &item);
 
             break;
         }

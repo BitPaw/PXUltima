@@ -44,6 +44,8 @@ extern "C"
 	}
 	PXEngineCreateType;
 
+	PXPublic const char* PXAPI PXEngineCreateTypeToString(const PXEngineCreateType pxEngineCreateType);
+
 
 #define PXEngineResourceInfoExist			0b00000001// Indicated deleted Resource
 #define PXEngineResourceInfoEnabled			0b00000010// Shall it be rendered? Does it tick?
@@ -263,11 +265,42 @@ extern "C"
 	}
 	PXModelCreateInfo;
 
+
+	typedef struct PXUIElementSceneRenderInfo_
+	{
+		struct PXEngine_* Engine;
+	}
+	PXUIElementSceneRenderInfo;
+
+
+	typedef enum PXUIElementTreeViewItemInsertMode_
+	{
+		PXUIElementTreeViewItemInsertModeROOT,
+		PXUIElementTreeViewItemInsertModeFIRST,
+		PXUIElementTreeViewItemInsertModeLAST,
+		PXUIElementTreeViewItemInsertModeSORT
+	}
+	PXUIElementTreeViewItemInsertMode;
+
+	typedef struct PXUIElementTreeViewItemInfo_
+	{
+		char* TextDataOverride;
+		PXSize TextSizeOverride;
+
+		struct PXUIElement_* ItemParent;
+		struct PXUIElement_* TreeView;
+
+		PXUIElementTreeViewItemInsertMode InsertMode;
+
+		// Result
+		struct _TREEITEM* ItemHandle;
+	}
+	PXUIElementTreeViewItemInfo;
+
 	typedef struct PXUIElementCreateData_
 	{
 		struct PXWindow_* WindowReference;
-
-		PXUIElement* Paranet;
+		struct PXUIElement_* Paranet;
 
 		PXUIElementType Type;
 		PXInt32U BehaviourFlags;
@@ -280,21 +313,30 @@ extern "C"
 		PXBool OSButton;
 
 		// Text
-		union MyUnion
+		union
 		{
 			PXUIElementTextInfo TextInfo;
+			PXUIElementButtonInfo ButtonInfo;
+			PXUIElementTreeViewItemInfo TreeViewItem;
+			PXUIElementSceneRenderInfo SceneRender;
 		};
 
-		PXUIOnClick OnClickCallback;
+	
 		PXUIOnMouseEnter OnMouseEnterCallback;
 		PXUIOnMouseLeave OnMouseLeaveCallback;
 	}
 	PXUIElementCreateData;
 
+
+
+
+
 	typedef struct PXEngineResourceCreateInfo_
 	{
 		void** ObjectReference;
 		char* FilePath;
+
+		char* Name;
 
 		PXEngineCreateType CreateType;
 
@@ -310,6 +352,8 @@ extern "C"
 			PXTextureCubeCreateData TextureCube;
 			PXUIElementCreateData UIElement;
 			PXModelCreateInfo Model;
+			PXUIElementSceneRenderInfo SceneRender;
+		
 		};
 	}
 	PXEngineResourceCreateInfo;
@@ -397,6 +441,8 @@ extern "C"
 	PXPlayerMoveInfo;
 
 
+	typedef void (PXAPI* PXEngineResourceAdded)(void* const owner, PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
+
 	typedef void (PXAPI* PXEngineStartUpEvent)(void* const owner, PXEngine* const pxEngine);
 	typedef void (PXAPI* PXEngineShutDownEvent)(void* const owner, PXEngine* const pxEngine);
 
@@ -419,6 +465,8 @@ extern "C"
 
 		void* Owner;
 		PXCamera* CameraCurrent;
+
+		PXEngineResourceAdded ResourceAdded;
 
 		PXEngineStartUpEvent OnStartUp;
 		PXEngineShutDownEvent OnShutDown;
@@ -466,21 +514,36 @@ extern "C"
 
 		PXMathRandomGeneratorSeed RandomGeneratorSeed;
 
-
+		PXBool HasGraphicInterface;
 		PXBool InteractionLock;
+
+		char ApplicationName[64];
 	}
 	PXEngine;
 
 	PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
 	PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
 	PXPrivate PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine);
-	
+	PXPrivate void PXAPI PXEngineWindowLookupHelper(PXEngine* const pxEngine, PXWindowHelperLookupInfo* const pxWindowHelperLookupInfo);
+
 	// Generate a random number with a maximum of the "limiter"
 	PXPublic PXInt32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXInt32U limiter);
 
 	PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
 
-	PXPublic PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine);
+	typedef struct PXEngineStartInfo_
+	{
+		PXGraphicInitializeMode Mode;
+		PXGraphicSystem System;
+
+		PXSize Width;
+		PXSize Height;
+
+		struct PXUIElement_* UIElement;
+	}
+	PXEngineStartInfo;
+
+	PXPublic PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
 	PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
 	PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
 

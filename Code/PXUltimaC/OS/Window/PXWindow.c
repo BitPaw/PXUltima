@@ -985,7 +985,7 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
 LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam)
 {
     const PXWindowEventType windowEventType = ToWindowEventType(eventID);
-    PXWindow* const window = PXWindowLookupFind(windowsID);
+    PXWindow* const window = PXWindowLookupFind(windowsID);    
 
     if(!window)
     {
@@ -1386,7 +1386,40 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         case WindowEventINITDIALOG:
             break;
         case WindowEventCOMMAND:
+        {    
+            PXInt32U buttonType = wParam; // IDOK;
+            HANDLE handle = (HANDLE)lParam;
+
+            PXWindowHelperLookupInfo pxWindowHelperLookupInfo;
+            PXClear(PXWindowHelperLookupInfo, &pxWindowHelperLookupInfo);
+            pxWindowHelperLookupInfo.ID = handle;
+
+            PXFunctionInvoke(window->LookupHelperEvent, window->EventReceiver, &pxWindowHelperLookupInfo);
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event",
+                "Command <%i>, <%i>",
+                wParam,
+                handle
+            );
+
+            if(pxWindowHelperLookupInfo.UIElementReference)
+            {
+                PXUIElement* const pxUIElement = pxWindowHelperLookupInfo.UIElementReference;
+
+                PXUIElementOnClickInfo pxUIElementOnClickInfo;
+                pxUIElementOnClickInfo.UIElement = pxUIElement;
+
+                PXFunctionInvoke(pxUIElement->OnClickCallback, &pxUIElementOnClickInfo);
+            }
+
+         
+
             break;
+        }     
         case WindowEventSYSCOMMAND:
             break;
         case WindowEventTIMER:
@@ -1426,13 +1459,42 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         case WindowEventQUERYUISTATE:
             break;
         case WindowEventCTLCOLORMSGBOX:
+            break;
         case WindowEventCTLCOLORDLG:        
+            break;
         case WindowEventCTLCOLORSCROLLBAR:
+            break;
         case WindowEventCTLCOLOREDIT:
-        case WindowEventCTLCOLORLISTBOX:
-        case WindowEventCTLCOLORBTN:
+            break;
         case WindowEventCTLCOLORSTATIC:
         {
+           // HWND windowFocusedHandle = (HWND)GetFocus();;
+            HWND windowHandle = (HWND)lParam;
+            HDC hdc = (HDC)wParam;
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Window",
+                "Event",
+                "Color Edit"
+            );
+
+            // can you fetch the object?
+          //  PXUIElement* pxUIElement = PXNull;
+
+            SetTextColor(hdc, RGB(200, 200, 200));  
+            SetBkColor(hdc, RGB(25, 25, 25));            // yellow
+         
+            return (LONG)GetStockObject(BLACK_BRUSH);
+        }
+        case WindowEventCTLCOLORLISTBOX:
+            break;
+        case WindowEventCTLCOLORBTN:
+            break;
+        //case WindowEventCTLCOLORSTATIC:
+        {
+#if 0
             COLORREF colorRef = lParam;
             HDC hdcStatic = (HDC)wParam;
             HBRUSH hbrBkgnd = PXNull;
@@ -1441,7 +1503,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
 
             
 
-            SetTextColor(hdcStatic, RGB(255, 50, 50));
+            SetTextColor(hdcStatic, RGB(50, 50, 50));
             SetBkColor(hdcStatic, RGB(20, 20, 20));
 
             PXConsoleWriteA("EEEE\n");
@@ -1452,8 +1514,9 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
                 hbrBkgnd = CreateSolidBrush(colorRef);
             }
             return (INT_PTR)hbrBkgnd;
+#endif
 
-            //break;
+           break;
         }
 
 
@@ -2299,7 +2362,7 @@ PXThreadResult PXOSAPI PXWindowMessageLoop(PXWindow* const pxWindow)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)
+PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWindowPixelSystemInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2316,21 +2379,27 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)
 
 #elif OSWindows
 
-    if (!window->HandleDeviceContext) // If we dont have a prefered GPU
+    if (!pxWindowPixelSystemInfo->HandleDeviceContext) // If we dont have a prefered GPU
     {
-        window->HandleDeviceContext = GetDC(window->ID); // Get the "default" device
+        pxWindowPixelSystemInfo->HandleDeviceContext = GetDC(pxWindowPixelSystemInfo->HandleWindow); // Get the "default" device
     }
 
     const WORD  nVersion = 1;
-    const DWORD dwFlags = 
+    DWORD dwFlags = 
         //PFD_DRAW_TO_WINDOW |
-        PFD_SUPPORT_OPENGL |
-        //PFD_SUPPORT_DIRECTDRAW | 
         //PFD_DIRECT3D_ACCELERATED | 
         PFD_DOUBLEBUFFER | 
         0;
+
+
+
+    dwFlags |= pxWindowPixelSystemInfo->OpenGL * PFD_SUPPORT_OPENGL;
+    dwFlags |= pxWindowPixelSystemInfo->DirectX * PFD_SUPPORT_DIRECTDRAW;
+    dwFlags |= pxWindowPixelSystemInfo->GDI * PFD_SUPPORT_GDI;
+
+
     const BYTE  iPixelType = PFD_TYPE_RGBA; // The kind of framebuffer. RGBA or palette.
-    const BYTE  cColorBits = 32;   // Colordepth of the framebuffer.
+    const BYTE  cColorBits = pxWindowPixelSystemInfo->BitPerPixel;   // Colordepth of the framebuffer.
     const BYTE  cRedBits = 0;
     const BYTE  cRedShift = 0;
     const BYTE  cGreenBits = 0;
@@ -2372,8 +2441,8 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window)
         bReserved,
         dwLayerMask, dwVisibleMask, dwDamageMask
     };
-    const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(window->HandleDeviceContext, &pfd);
-    const PXBool successul = SetPixelFormat(window->HandleDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
+    const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(pxWindowPixelSystemInfo->HandleDeviceContext, &pfd);
+    const PXBool successul = SetPixelFormat(pxWindowPixelSystemInfo->HandleDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
 
     if(!successul)
     {
@@ -2782,59 +2851,52 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindow* const pxWindow)
 #endif
 }
 
-void PXAPI PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height)
+void PXAPI PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height)
 {
+
+}
+
+PXActionResult PXAPI PXWindowSizeGet(const PXWindowID pxWindow, PXWindowSizeInfo* const pxWindowSizeInfo)
+{
+    if(!pxWindowSizeInfo)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
 #if OSUnix
 #elif PXOSWindowsDestop
     RECT rect;
 
     //const PXBool result = GetWindowRect(pxWindow->ID, &rect); // Windows 2000, User32.dll, winuser.h
-    const PXBool result = GetClientRect(pxWindow->ID, &rect); // Windows 2000, User32.dll, winuser.h
+    const PXBool result = GetClientRect(pxWindow, &rect); // Windows 2000, User32.dll, winuser.h
 
     // Get Last Error
 
-    if(x)
-    {
-        *x = rect.left;
-    }
-
-    if(y)
-    {
-        *y = rect.top;
-    }
-
-    if(width)
-    {
-        *width = rect.right - rect.left;
-    }
-
-    if(height)
-    {
-        *height = rect.bottom - rect.top;
-    } 
-
-
+    pxWindowSizeInfo->X = rect.left;
+    pxWindowSizeInfo->Y = rect.top;
+    pxWindowSizeInfo->Width = rect.right - rect.left;
+    pxWindowSizeInfo->Height = rect.bottom - rect.top;
 #endif
 }
 
-void PXAPI PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height)
+PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo* const pxWindowSizeInfo)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
     RECT rect;
 
-    rect.left = x;
-    rect.top = y;
-    rect.right = width + x;
-    rect.bottom = height + y;
+    rect.left = pxWindowSizeInfo->X;
+    rect.top = pxWindowSizeInfo->Y;
+    rect.right = pxWindowSizeInfo->X + pxWindowSizeInfo->Width;
+    rect.bottom = pxWindowSizeInfo->Y + pxWindowSizeInfo->Height;
 
     DWORD style = 0;
     DWORD exStyle = 0;
 
     //AdjustWindowRectEx();
 
-    const unsigned char result = AdjustWindowRectEx(&rect, style, FALSE, exStyle); // Windows 2000, User32.dll, winuser.h
-    const unsigned char success = result != 0;
+    const PXBool result = AdjustWindowRectEx(&rect, style, FALSE, exStyle); // Windows 2000, User32.dll, winuser.h
+    const PXBool success = result != 0;
 
     // Get Last Error
 #endif

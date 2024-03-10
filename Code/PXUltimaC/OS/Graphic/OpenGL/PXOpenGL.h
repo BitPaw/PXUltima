@@ -886,11 +886,17 @@ extern "C"
 	{
 		PXLibrary LibraryOpenGL;
 
-		PXOpenGLConextID Context;
+		PXOpenGLConextID ContextHandle;
 
 		PXOpenGLVersion Version;
 
 		PXWindow* AttachedWindow;
+
+#if OSUnix
+#elif OSWindows
+		HWND WindowHandle;
+		HDC WindowDeviceContextHandle;
+#endif
 
 		PXBool IsTexture2DEnabled;
 

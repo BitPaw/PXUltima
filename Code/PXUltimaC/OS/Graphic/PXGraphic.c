@@ -342,7 +342,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     );
 #endif
 
-    pxGraphic->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
+    //pxGraphic->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
     pxGraphic->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
     pxGraphicInitializeInfo->Graphic = pxGraphic;
 
@@ -389,7 +389,37 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
     // Set pixel system
     {
-        const PXActionResult pixelSystem = PXWindowPixelSystemSet(pxGraphicInitializeInfo->WindowReference);
+        PXWindowPixelSystemInfo pxWindowPixelSystemInfo;
+        pxWindowPixelSystemInfo.HandleDeviceContext = PXNull;
+        pxWindowPixelSystemInfo.HandleWindow = PXNull;
+        pxWindowPixelSystemInfo.BitPerPixel = 32;
+        pxWindowPixelSystemInfo.OpenGL = PXTrue;
+        pxWindowPixelSystemInfo.DirectX = PXTrue;
+        pxWindowPixelSystemInfo.GDI = PXFalse;
+
+        switch(pxGraphicInitializeInfo->Mode)
+        {
+            case PXGraphicInitializeModeWindowfull:
+            {
+                // Use window
+                pxWindowPixelSystemInfo.HandleWindow = pxGraphicInitializeInfo->WindowReference->ID;
+                break;
+            }
+            case PXGraphicInitializeModeWindowless:
+            {
+                // Create window
+
+                break;
+            }
+            case PXGraphicInitializeModeOSGUIElement:
+            case PXGraphicInitializeModeOSGUI:
+            {
+                pxWindowPixelSystemInfo.HandleWindow = pxGraphicInitializeInfo->WindowID;
+                break;
+            }
+        }
+
+        const PXActionResult pixelSystem = PXWindowPixelSystemSet(&pxWindowPixelSystemInfo);
 
         if(PXActionSuccessful != pixelSystem)
         {
@@ -413,7 +443,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         {
             if (!EnumDisplayDevicesA(NULL, idx, &dd, 0))
                 return; // not found!
-            if (strstr(dd.DeviceID, vendor_id))
+            if (strstr(dd.DeviceID, vendor_pxOpenGL->AttachedWindowid))
                 break; // there we go
             idx += 1;
         }
@@ -499,6 +529,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
             if(PXActionSuccessful != pxActionResult)
             {
+                PXClear(PXGraphic, pxGraphic);
+
                 PXLogPrint
                 (
                     PXLoggingError,

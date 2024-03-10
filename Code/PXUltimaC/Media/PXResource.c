@@ -192,6 +192,55 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage
     return lastMatch;
 }
 
+const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
+{
+
+
+    switch(pxUIElementType)
+    {
+        case PXUIElementTypeCustom: return "Custom";
+        case PXUIElementTypePanel: return "Panel";
+        case PXUIElementTypeText: return "Text";
+        case PXUIElementTypeButton: return "Button";
+        case PXUIElementTypeButtonText: return "ButtonText";
+        case PXUIElementTypeImage: return "Image";
+        case PXUIElementTypeDropDown: return "DropDown";
+        case PXUIElementTypeListBox: return "ListBox";
+        case PXUIElementTypeTextEdit: return "TextEdit";
+        case PXUIElementTypeRichEdit: return "RichText";
+        case PXUIElementTypeScrollBar: return "";
+        case PXUIElementTypeTrackBar: return "";
+        case PXUIElementTypeStatusBar: return "";
+        case PXUIElementTypeUpDown: return "";
+        case PXUIElementTypeProgressBar: return "";
+        case PXUIElementTypeHotKey: return "";
+        case PXUIElementTypeCalender: return "";
+        case PXUIElementTypeToolTip: return "";
+        case PXUIElementTypeAnimate: return "";
+        case PXUIElementTypeDatePicker: return "";
+        case PXUIElementTypeGroupBox: return "";
+        case PXUIElementTypeRadioButton: return "";
+        case PXUIElementTypeGroupRadioButton: return "";
+        case PXUIElementTypeTreeView: return "TreeView";
+        case PXUIElementTypeTreeViewItem: return "TreeViewItem";
+        case PXUIElementTypeIPInput: return "";
+        case PXUIElementTypeLink: return "";
+        case PXUIElementTypeHeader: return "";
+        case PXUIElementTypeFontSelector: return "";
+        case PXUIElementTypePageScroll: return "";
+        case PXUIElementTypeTabControll: return "";
+        case PXUIElementTypeToggle: return "";
+        case PXUIElementTypeCheckBox: return "";
+        case PXUIElementTypeComboBox: return "";
+        case PXUIElementTypeColorPicker: return "";
+        case PXUIElementTypeSlider: return "";
+        case PXUIElementTypeRenderFrame: return "FrameRender";
+
+        default:
+            return PXNull;
+    }
+}
+
 void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
     for(PXUIElement* pxUIElementParent = pxUIElement->Parent; pxUIElementParent; pxUIElementParent = pxUIElementParent->Parent)
@@ -218,6 +267,17 @@ void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIEle
     float remRight = (pxUIElementPositionCalulcateInfo->MarginRight) * pxUIElementPositionCalulcateInfo->WindowWidth / 2.0f;
     float remBottom = (pxUIElementPositionCalulcateInfo->MarginBottom) * pxUIElementPositionCalulcateInfo->WindowHeight / 2.0f;
 
+
+    // Add perspective scaling
+    {
+        float factorX = pxUIElementPositionCalulcateInfo->WindowWidth / (float)pxUIElementPositionCalulcateInfo->WindowHeight;
+        float factorY = pxUIElementPositionCalulcateInfo->WindowHeight / (float)pxUIElementPositionCalulcateInfo->WindowWidth;
+
+        remLeft += factorX;
+        remTop += factorY;
+        remRight -= factorX;
+        remBottom -= factorY;
+    }
 
 
     float mathWithScaling = pxUIElementPositionCalulcateInfo->WindowWidth - remRight - remLeft;

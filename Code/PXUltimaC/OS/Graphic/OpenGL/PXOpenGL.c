@@ -1554,38 +1554,44 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         }
     }
 
+#if 0
     pxOpenGL->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
 
-    // TODO: bad Spinninglock
-    if (!pxOpenGL->AttachedWindow->IsRunning)
-    {
+    if(pxOpenGL->AttachedWindow)
+    { // TODO: bad Spinninglock
+        if(!pxOpenGL->AttachedWindow->IsRunning)
+        {
 #if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            "OpenGL",
-            "Initialize",
-            "Wait for window..."
-        );
+            PXLogPrint
+            (
+                PXLoggingWarning,
+                "OpenGL",
+                "Initialize",
+                "Wait for window..."
+            );
 #endif
-        PXBool expected = PXTrue;
-        PXAwaitInfo pxAwaitInfo;
-        pxAwaitInfo.DataTarget = &pxOpenGL->AttachedWindow->IsRunning;
-        pxAwaitInfo.DataExpect = &expected;
-        pxAwaitInfo.DataSize = sizeof(PXBool);
+            PXBool expected = PXTrue;
+            PXAwaitInfo pxAwaitInfo;
+            pxAwaitInfo.DataTarget = &pxOpenGL->AttachedWindow->IsRunning;
+            pxAwaitInfo.DataExpect = &expected;
+            pxAwaitInfo.DataSize = sizeof(PXBool);
 
-        PXAwaitChange(&pxAwaitInfo);
+            PXAwaitChange(&pxAwaitInfo);
 
 #if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "OpenGL",
-            "Initialize",
-            "Window done, proceed"
-        );
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "OpenGL",
+                "Initialize",
+                "Window done, proceed"
+            );
 #endif
+        }
     }
+#endif
+
+   
 
 
 
@@ -2022,32 +2028,6 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         //pxGraphic->Texture2DSelect = PXOpenGLTexture2DBind;
     }
 
-    if (!pxGraphicInitializeInfo->WindowReference) // if not set, we want a "hidden" window. Windows needs a window to make a PXOpenGL context.. for some reason.
-    {
-#if OSWindows
-        PXWindow* const window = PXNull;
-        PXNew(PXWindow, &window);
-        PXWindowConstruct(window);
-
-        pxOpenGL->AttachedWindow = window;
-        PXWindowCreateHidden(window, pxGraphicInitializeInfo->Width, pxGraphicInitializeInfo->Height, 1u); // This will call this function again. Recursive
-
-        PXBool expected = PXTrue;
-        PXAwaitInfo pxAwaitInfo;
-        pxAwaitInfo.DataTarget = &window->IsRunning;
-        pxAwaitInfo.DataExpect = &expected;
-        pxAwaitInfo.DataSize = sizeof(PXBool);
-
-        PXAwaitChange(&pxAwaitInfo);
-
-        pxOpenGL->AttachedWindow = window;
-
-       // PXOpenGLSet(pxOpenGL, &window->GraphicInstance.OpenGLInstance);
-#endif
-
-        return PXActionSuccessful; // We should have all data here, stoping.
-    }
-
 #if OSUnix
     const int attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 
@@ -2066,9 +2046,17 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
 #elif OSWindows
 
+    // Get DC
+    {
+        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphicInitializeInfo->WindowID);
+
+        pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowID;
+        pxOpenGL->WindowDeviceContextHandle = pxGraphicInitializeInfo->HandleDeviceContext;
+    }
+
     // Check if failed
     {
-        const HGLRC handle = pxOpenGL->CreateContext(pxOpenGL->AttachedWindow->HandleDeviceContext);
+        const HGLRC handle = pxOpenGL->CreateContext(pxGraphicInitializeInfo->HandleDeviceContext);
         const PXBool successful = handle != 0;
 
         if(!successful) // Failed context create
@@ -2082,14 +2070,14 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 "OpenGL",
                 "Initialize",
                 "Context create failed! HDC:0x%p",
-                pxOpenGL->AttachedWindow->HandleDeviceContext
+                pxGraphicInitializeInfo->HandleDeviceContext
             );
 #endif
 
             return createContextResult;
         }
 
-        pxOpenGL->Context = handle;
+        pxOpenGL->ContextHandle = handle;
 
 
 #if PXLogEnable
@@ -2123,10 +2111,10 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                     0, 0
                 };
 
-                HGLRC bufferTHH = pxOpenGL->ContextCreateAttributes
+                const HGLRC contextAttributes = pxOpenGL->ContextCreateAttributes
                 (
-                    pxOpenGL->AttachedWindow->HandleDeviceContext,
-                    pxOpenGL->Context,
+                    pxGraphicInitializeInfo->HandleDeviceContext,
+                    pxOpenGL->ContextHandle,
                     attributeList
                 );
 
@@ -2675,7 +2663,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXFunctionInvoke(pxOpenGL->DebugMessage, PXOpenGLErrorMessageCallback, 0);
     PXFunctionInvoke(pxOpenGL->Enable, GL_DEBUG_OUTPUT);
 
-    pxOpenGL->Viewport(0, 0, pxOpenGL->AttachedWindow->Width, pxOpenGL->AttachedWindow->Height);
+    PXWindowSizeInfo pxWindowSizeInfo;
+
+    PXWindowSizeGet(pxOpenGL->WindowHandle, &pxWindowSizeInfo);
+
+    pxOpenGL->Viewport(0, 0, pxWindowSizeInfo.Width, pxWindowSizeInfo.Height);
 
     // List devices
     {
@@ -2759,12 +2751,10 @@ void PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 
     assert(pxOpenGL);
 
-    const PXWindow* const window = (const PXWindow* const)pxOpenGL->AttachedWindow;
-
 #if OSUnix
     const int result = glXMakeCurrent(window->DisplayCurrent, window->ID, pxOpenGL->PXOpenGLConext);
 #elif OSWindows
-    const BOOL result = pxOpenGL->MakeCurrent(window->HandleDeviceContext, pxOpenGL->Context);
+    const BOOL result = pxOpenGL->MakeCurrent(pxOpenGL->WindowDeviceContextHandle, pxOpenGL->ContextHandle);
 #endif
 }
 
@@ -3058,6 +3048,7 @@ void PXAPI PXOpenGLClear(PXOpenGL* const pxOpenGL, const PXColorRGBAF* const pxC
 
 PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL* const pxOpenGL)
 {
+#if 0
     PXWindow* const pxWindow = pxOpenGL->AttachedWindow;
 
     if (pxWindow->HasSizeChanged) // Check if view has changed.
@@ -3069,8 +3060,11 @@ PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL* const pxOpenGL)
     // NOTE: Possible improvement? Using 'wglSwapLayerBuffers()'
 
     const PXBool success = PXWindowFrameBufferSwap(pxWindow);
+#endif
 
-    return success;
+    SwapBuffers(pxOpenGL->WindowDeviceContextHandle);
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXOpenGLDrawScaleF(PXOpenGL* const pxOpenGL, const float x, const float y, const float z)

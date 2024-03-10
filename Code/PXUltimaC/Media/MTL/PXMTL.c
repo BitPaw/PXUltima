@@ -159,12 +159,18 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 
 				PXFilePathRelativeFromFile(pxFile, &nameTexturePath, &fullTexturePath);
 
-				PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);				
-				PXNewZerod(PXImage, &pxMaterialCurrent->DiffuseTexture->Image);
+				// fullTexturePath
 
-				PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
 
-				PXResourceLoad(pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
+				PXTextCopyA(nameTexturePath.TextA, nameTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
+
+
+				//PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);				
+				//PXNewZerod(PXImage, &pxMaterialCurrent->DiffuseTexture->Image);
+
+				//PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
+
+				//PXResourceLoad(pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
 
 				break;
 			}

@@ -47,7 +47,8 @@ extern "C"
 		PXGraphicResourceTypeImage,
 		PXGraphicResourceTypeTexure,
 		PXGraphicResourceTypeSkyBox,
-		PXGraphicResourceTypeFont
+		PXGraphicResourceTypeFont,
+		PXGraphicResourceTypeSound
 	}
 	PXGraphicResourceType;
 
@@ -395,6 +396,9 @@ extern "C"
 		float Weight; 		// Ranges between 0 and 1000
 		float Dissolved;
 		float Density; // range from 0.001 to 10. A value of 1.0 means that light does not bend as it passes through an object.
+
+
+		char DiffuseTextureFilePath[260];
 
 		struct PXTexture2D_* DiffuseTexture;
 
@@ -850,6 +854,7 @@ extern "C"
 		PXUIElementTypePanel,
 		PXUIElementTypeText,
 		PXUIElementTypeButton,
+		PXUIElementTypeButtonText,
 		PXUIElementTypeImage,
 		PXUIElementTypeDropDown,
 		PXUIElementTypeListBox,
@@ -869,6 +874,7 @@ extern "C"
 		PXUIElementTypeRadioButton,
 		PXUIElementTypeGroupRadioButton,
 		PXUIElementTypeTreeView,
+		PXUIElementTypeTreeViewItem,
 		PXUIElementTypeIPInput,
 		PXUIElementTypeLink,
 		PXUIElementTypeHeader,
@@ -884,7 +890,15 @@ extern "C"
 	}
 	PXUIElementType;
 
-	typedef void (PXAPI* PXUIOnClick)(struct PXUIElement_* const pxUIElement);
+	PXPublic const char* PXAPI  PXUIElementTypeToString(const PXUIElementType pxUIElementType);
+
+	typedef struct PXUIElementOnClickInfo_
+	{
+		struct PXUIElement_* UIElement;
+	}
+	PXUIElementOnClickInfo;
+
+	typedef void (PXAPI* PXUIOnClick)(PXUIElementOnClickInfo* const pxUIElementOnClickInfo);
 	typedef void (PXAPI* PXUIOnMouseEnter)(struct PXUIElement_* const pxUIElement);
 	typedef void (PXAPI* PXUIOnMouseLeave)(struct PXUIElement_* const pxUIElement);
 
@@ -905,9 +919,17 @@ extern "C"
 	}
 	PXUIElementImageInfo;
 
+	typedef struct PXUIElementItemInfo_
+	{
+		char* TextData;
+		PXSize TextSize;
+	}
+	PXUIElementItemInfo;
+
 	typedef struct PXUIElementButtonInfo_
 	{
 		char* Text;
+		PXUIOnClick OnClickCallback;
 	}
 	PXUIElementButtonInfo;
 
@@ -988,6 +1010,9 @@ extern "C"
 	// Only image can be image
 	typedef struct PXUIElement_
 	{
+		char NameData[64];
+		PXSize NameSize;
+
 		//------------------------------
 		// References 
 		//------------------------------
@@ -1011,7 +1036,7 @@ extern "C"
 		PXInt32U FlagsList;
 		//---------------------------------------
 
-		//---<Property>--------------------------		
+		//---<Property>--------------------------
 		//PXUIElementPositionMode PositionMode;
 		union
 		{
@@ -1020,6 +1045,7 @@ extern "C"
 			PXUIElementTextInfo TextInfo;
 			PXUIElementProgressBarInfo ProgressBar;
 			PXUIElementButtonInfo Button;
+			PXUIElementItemInfo Item;
 		};
 
 		PXUIElementType Type;

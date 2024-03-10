@@ -108,6 +108,31 @@ extern "C"
 
 	typedef struct PXWindow_ PXWindow;
 
+
+	typedef enum PXWindowHandleType_
+	{
+		PXWindowHandleTypeInvalid,
+		PXWindowHandleTypeWindow,
+		PXWindowHandleTypeUIElement
+	}
+	PXWindowHandleType;
+
+	typedef struct PXWindowHelperLookupInfo_
+	{
+		union
+		{
+			struct PXWindow_* WindowReference;
+			struct PXUIElement_* UIElementReference;
+		};	
+
+		HWND ID;
+
+		PXWindowHandleType Type;
+	}
+	PXWindowHelperLookupInfo;
+
+	typedef void (PXAPI* PXWindowLookupHelperEvent)(const void* const receiver, PXWindowHelperLookupInfo* const pxWindowHelperLookupInfo);
+
 	// Mouse
 	typedef void (PXAPI*MouseScrollEvent)(const void* const receiver, const PXWindow* sender, const PXMouseScrollDirection mouseScrollDirection);
 	typedef void (PXAPI*MouseClickEvent)(const void* const receiver, const PXWindow* sender, const PXMouseButton mouseButton, const PXKeyPressState buttonState);
@@ -171,6 +196,8 @@ extern "C"
 
 		void* EventReceiver;
 
+		PXWindowLookupHelperEvent LookupHelperEvent;
+
 		MouseScrollEvent MouseScrollCallBack;
 		MouseClickEvent MouseClickCallBack;
 		MouseClickDoubleEvent MouseClickDoubleCallBack;
@@ -202,7 +229,20 @@ extern "C"
 
 
 
-	PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindow* const window);
+	typedef struct PXWindowPixelSystemInfo_
+	{
+		HDC HandleDeviceContext;
+		HWND HandleWindow;
+
+		PXInt8U BitPerPixel; // 32=8Bit Default
+
+		PXBool OpenGL;
+		PXBool DirectX;
+		PXBool GDI;
+	}
+	PXWindowPixelSystemInfo;
+
+	PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWindowPixelSystemInfo);
 
 	PXPublic void PXAPI PXWindowUpdate(PXWindow* const pxWindow);
 
@@ -235,8 +275,17 @@ extern "C"
 
 	PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindow* const pxWindow);
 
-	PXPublic void PXAPI PXWindowSize(const PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y, PXInt32S* const width, PXInt32S* const height);
-	PXPublic void PXAPI PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height);
+	typedef struct PXWindowSizeInfo_
+	{
+		PXInt32S X; 
+		PXInt32S Y;
+		PXInt32S Width;
+		PXInt32S Height;
+	}
+	PXWindowSizeInfo;
+
+	PXPublic PXActionResult PXAPI PXWindowSizeGet(const PXWindowID pxWindow, PXWindowSizeInfo* const pxWindowSizeInfo);
+	PXPublic PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo* const pxWindowSizeInfo);
 	PXPublic PXActionResult PXAPI PXWindowPosition(PXWindow* const pxWindow, PXInt32S* x, PXInt32S* y);
 	PXPublic PXActionResult PXAPI PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y);
 	PXPublic void PXAPI PXWindowPositonCenterScreen(PXWindow* const pxWindow);

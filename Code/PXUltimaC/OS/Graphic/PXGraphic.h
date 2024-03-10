@@ -54,10 +54,26 @@ extern "C"
 	PXGraphicResourceInfo;
 
 
+	typedef enum PXGraphicInitializeMode_
+	{
+		PXGraphicInitializeModeInvalid,
+		PXGraphicInitializeModeWindowfull,
+		PXGraphicInitializeModeWindowless,
+		PXGraphicInitializeModeOSGUI,
+		PXGraphicInitializeModeOSGUIElement
+	}
+	PXGraphicInitializeMode;
+
 
 	typedef struct PXGraphicInitializeInfo_
 	{
-		PXWindow* WindowReference;
+		PXGraphicInitializeMode Mode;
+
+		PXWindow* WindowReference; // Can be null depending on mode
+		PXWindowID WindowID; // Needed for GUI init
+		HDC HandleDeviceContext;
+		
+
 
 		PXSize TargetFrameRate;
 

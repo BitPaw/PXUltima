@@ -7,6 +7,33 @@
 #include <Engine/Dialog/PXDialogBox.h>
 #include <Media/ADLER/PXAdler32.h>
 #include <OS/UI/PXUI.h>
+#include <OS/Hardware/PXProcessor.h>
+
+const char* PXAPI PXEngineCreateTypeToString(const PXEngineCreateType pxEngineCreateType)
+{
+    switch(pxEngineCreateType)
+    {
+        case PXEngineCreateTypeCustom: return "Custom";
+        case PXEngineCreateTypeModel: return "Model";
+        case PXEngineCreateTypeFont: return "Font";
+        case PXEngineCreateTypeTexture2D: return "Texture2D";
+        case PXEngineCreateTypeImage: return "Image";
+        case PXEngineCreateTypeTextureCube: return "TetxureCube";
+        case PXEngineCreateTypeShaderProgram: return "ShaderProgram";
+        case PXEngineCreateTypeSkybox: return "SkyBox";
+        case PXEngineCreateTypeSprite: return "Sprite";
+        case PXEngineCreateTypeText: return "Text";
+        case PXEngineCreateTypeTimer: return "Timer";
+        case PXEngineCreateTypeSound: return "Sound";
+        case PXEngineCreateTypeEngineSound: return "PXSound";
+        case PXEngineCreateTypeUIElement: return "UI";
+        case PXEngineCreateTypeHitBox: return "HitBox";
+        case PXEngineCreateTypeDialogBox: return "DialogBox";
+
+        default:
+            return PXNull;
+    }
+}
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -38,6 +65,36 @@ PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine)
 {
     return ++pxEngine->UniqeIDGeneratorCounter;
    
+}
+
+void PXAPI PXEngineWindowLookupHelper(PXEngine* const pxEngine, PXWindowHelperLookupInfo* const pxWindowHelperLookupInfo)
+{
+    if(pxEngine->Window.ID == pxWindowHelperLookupInfo->ID)
+    {
+        pxWindowHelperLookupInfo->Type = PXWindowHandleTypeWindow;
+        pxWindowHelperLookupInfo->WindowReference = &pxEngine->Window;
+        return;
+    }
+
+
+    PXDictionary* const uiElementLookup = &pxEngine->UIElementLookUp;
+
+    for(PXSize i = 0; i < uiElementLookup->EntryAmountCurrent; ++i)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXUIElement* uiElement = PXNull;
+
+        PXDictionaryIndex(uiElementLookup, i, &pxDictionaryEntry);
+
+        uiElement = *(PXUIElement**)pxDictionaryEntry.Value;
+
+        if(uiElement->ID == pxWindowHelperLookupInfo->ID)
+        {
+            pxWindowHelperLookupInfo->Type = PXWindowHandleTypeUIElement;
+            pxWindowHelperLookupInfo->UIElementReference = uiElement;
+            return;
+        }
+    }   
 }
 
 void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
@@ -106,7 +163,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
             PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
 
-            //printf("[#][OnMouseMove] X:%5.2f Y:%5.2f\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y);
+            printf("[#][OnMouseMove] X:%5.2f Y:%5.2f\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y);
         }
 
         pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
@@ -115,6 +172,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Extended windows resize check
         if(pxWindow->HasSizeChanged)
         {
+           // PXWindowSizeGet(pxWindow->);
+
             PXViewPort pxViewPort;
             pxViewPort.X = 0;
             pxViewPort.Y = 0;
@@ -143,10 +202,11 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
                 PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
 
-                PXInt32S width = 0;
-                PXInt32S height = 0;
+                PXWindowSizeInfo pxWindowSizeInfo;
 
-                PXWindowSize(&pxEngine->Window, 0, 0, &width, &height);
+                PXWindowSizeGet(pxEngine->Window.ID, &pxWindowSizeInfo);
+                pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
+                pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
 
                 for(PXSize i = 0; i < uiElementLookup->EntryAmountCurrent; ++i)
                 {
@@ -249,26 +309,53 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         pxEngine->CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->CounterTimeCPU;
     }
 
-#if 0
-    if ((timeNow - pxEngine->CounterTimeRenderLast) > 0.02)
+
+    if ((timeNow - pxEngine->CounterTimeRenderLast) > 0.2)
     {
         pxEngine->CounterTimeRenderLast = timeNow;
 
         const PXColorRGBAF color = {0.01,0.01,0.01,1};
 
-        pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
-        pxEngine->CounterTimeGPU = PXTimeCounterStampGet();
-        PXFunctionInvoke(pxEngine->OnRenderUpdate, pxEngine->Owner, pxEngine);
-        pxEngine->CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->CounterTimeGPU;
-        pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
-    }
+        {
+            PXText pxText;
+            PXTextConstructBufferA(&pxText, 64);
+
+            PXTextClear(&pxText);
+
+            const char* date = __DATE__;
+            const char* time = __TIME__;
+
+            PXInt32U cpuTemp = 0;
+
+            PXProcessorTemperature(&cpuTemp);
+
+            PXTextPrint(&pxText, "[%s] (Build:%s %s) FPS:%-3i CPU:%i°C", pxEngine->ApplicationName, date, time, pxEngine->FramesPerSecound, cpuTemp);
+
+            PXWindowTitleSet(&pxEngine->Window, &pxText);
+        }
+
+        if(pxEngine->HasGraphicInterface)
+        {
+#if 1
+            pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
+            pxEngine->CounterTimeGPU = PXTimeCounterStampGet();
+            PXFunctionInvoke(pxEngine->OnRenderUpdate, pxEngine->Owner, pxEngine);
+            pxEngine->CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->CounterTimeGPU;
+            pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
 #endif
+        }
+    }
+
 
     ++(pxEngine->CounterTimeWindow);
     ++(pxEngine->CounterTimeUser);
     ++(pxEngine->CounterTimeNetwork);
     ++(pxEngine->CounterTimeCPU);
     ++(pxEngine->CounterTimeGPU);
+
+    Sleep(20);
+
+    PXThreadYieldToOtherThreads();
 
 #if 0
     PXConsoleGoToXY(0, 0);
@@ -465,12 +552,19 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
     return pxEngine->IsRunning;
 }
 
-PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
+PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
 {
     PXCameraConstruct(&pxEngine->CameraDefault);
     PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 80, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
 
     pxEngine->CameraCurrent = &pxEngine->CameraDefault;
+    pxEngine->CounterTimeLast = 0;
+    pxEngine->CounterTimeGPU = 0;
+    pxEngine->CounterTimeCPU = 0;
+    pxEngine->FramesPerSecound = 0;
+    pxEngine->FrameTime = 0;
+    pxEngine->IsRunning = PXFalse;
+    pxEngine->HasGraphicInterface = PXFalse;
 
 #if PXLogEnable
     PXLogPrint
@@ -525,20 +619,42 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
     //-----------------------------------------------------
 	// Create window
     //-----------------------------------------------------
+    PXWindowConstruct(&pxEngine->Window);
+    pxEngine->Window.EventReceiver = pxEngine;
+    pxEngine->Window.LookupHelperEvent = PXEngineWindowLookupHelper;
+
+    switch(pxEngineStartInfo->Mode)
     {
-        PXWindowConstruct(&pxEngine->Window);
-        PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXFalse);
-        //PXWindowUpdate(&pxEngine->Window);
+        case PXGraphicInitializeModeWindowless:
+        {       
+            PXWindowCreateHidden(&pxEngine->Window, pxEngineStartInfo->Width, pxEngineStartInfo->Height, PXFalse); // This will call this function again. Recursive
+            
+            break;
+        }
+        case PXGraphicInitializeModeOSGUIElement:
+        {
+
+
+            break;
+        }
+        case PXGraphicInitializeModeOSGUI:
+        case PXGraphicInitializeModeWindowfull:
+        {
+            PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXFalse);
+            //PXWindowUpdate(&pxEngine->Window);
 
 #if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX",
-            "Instantiate",
-            "Window created"
-        );
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Instantiate",
+                "Window created"
+            );
 #endif
+
+            break;
+        }
     }
     //-----------------------------------------------------
 
@@ -547,14 +663,27 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
     //-----------------------------------------------------
     // Create graphic instance
     //-----------------------------------------------------
+    if(pxEngineStartInfo->Mode != PXGraphicInitializeModeOSGUI) // if we have GDI, we init this later
     {
         PXGraphicInitializeInfo pxGraphicInitializeInfo;
-        pxGraphicInitializeInfo.WindowReference = &pxEngine->Window;
+        PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
+        pxGraphicInitializeInfo.Mode = pxEngineStartInfo->Mode;
+        pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;
+
+        if(PXGraphicInitializeModeOSGUIElement == pxEngineStartInfo->Mode)
+        {
+            pxGraphicInitializeInfo.WindowID = pxEngineStartInfo->UIElement->ID;
+        }
+        else
+        {
+            pxGraphicInitializeInfo.WindowReference = &pxEngine->Window;
+        }
+
+      
         pxGraphicInitializeInfo.Width = -1;
         pxGraphicInitializeInfo.Height = -1;
         pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersion11Emulate11x0;
         pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
-        pxGraphicInitializeInfo.GraphicSystem = PXGraphicSystemOpenGL;
 
         const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
 
@@ -572,8 +701,13 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
             );
 #endif
 
-            return graphicInit;
+            if(0) // If its really important that the graphic API exists, we can exit now.
+            {
+                return graphicInit;
+            }           
         }
+
+        pxEngine->HasGraphicInterface = PXTrue;
 
 
 #if PXLogEnable
@@ -586,8 +720,20 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
         );
 #endif
 
-        pxEngine->Graphic.SwapIntervalSet(pxEngine->Graphic.EventOwner, 1);
-        pxEngine->Graphic.Select(pxEngine->Graphic.EventOwner);
+        PXFunctionInvoke(pxEngine->Graphic.SwapIntervalSet, pxEngine->Graphic.EventOwner, 1);
+        PXFunctionInvoke(pxEngine->Graphic.Select, pxEngine->Graphic.EventOwner);
+    }
+    else
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX",
+            "Instantiate",
+            "Creation of graphical skipped for now"
+        );
+#endif
     }
     //-----------------------------------------------------
   
@@ -641,11 +787,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine)
   // PXControllerAttachToWindow(&pxBitFireEngine->Controller, pxBitFireEngine->WindowMain.ID);
   // PXCameraAspectRatioChange(pxBitFireEngine->CameraCurrent, pxBitFireEngine->WindowMain.Width, pxBitFireEngine->WindowMain.Height);
 
-    pxEngine->CounterTimeLast = 0;
-    pxEngine->CounterTimeGPU = 0;
-    pxEngine->CounterTimeCPU = 0;
-    pxEngine->FramesPerSecound = 0;
-    pxEngine->FrameTime = 0;
+
     pxEngine->IsRunning = PXTrue;
 
     {
@@ -865,6 +1007,21 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             PXTextureCubeCreateData* const pxTextureCubeCreateData = &pxEngineResourceCreateInfo->TextureCube;
             PXTextureCube* pxTextureCube = *(PXTextureCube**)pxEngineResourceCreateInfo->ObjectReference;
 
+            if(!pxEngine->Graphic.TextureAction)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "PX",
+                    "TextureCube",
+                    "Create not possible"
+                );
+#endif
+
+                return PXActionRefusedAPIIsNotLinked;
+            }
+
 #if PXLogEnable
             PXLogPrint
             (
@@ -924,8 +1081,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             pxGraphicTexturInfo.Amount = 1u;
             pxGraphicTexturInfo.Type = PXGraphicTextureTypeCubeContainer;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;
-
-            pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
+                
+            pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);          
 
             break;
         }
@@ -933,6 +1090,21 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         {
             PXModelCreateInfo* const pxModelCreateInfo = &pxEngineResourceCreateInfo->Model;
             PXModel* pxModel = *(PXModel**)pxEngineResourceCreateInfo->ObjectReference;
+
+            if(!pxEngine->Graphic.ModelRegister)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "PX",
+                    "Model-Create",
+                    "Not possible"
+                );
+#endif
+
+                return PXActionRefusedAPIIsNotLinked;
+            }
 
             if (!pxModel)
             {
@@ -984,6 +1156,22 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         {
             //PXEngineTexture2DCreateData* const pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
             PXTexture2D* pxTexture2D = *(PXTexture2D**)pxEngineResourceCreateInfo->ObjectReference;
+
+            if(!pxEngine->Graphic.TextureAction)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Texture-Create",
+                    "Not possible",
+                    pxEngineResourceCreateInfo->FilePath
+                );
+#endif
+
+                return PXActionRefusedAPIIsNotLinked;
+            }
 
             if (!pxTexture2D)
             {
@@ -1131,6 +1319,21 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         {
             PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData = &pxEngineResourceCreateInfo->SkyBox;
             PXSkyBox* pxSkyBox = *(PXSkyBox**)pxEngineResourceCreateInfo->ObjectReference;
+
+            if(!pxEngine->Graphic.ModelRegister)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "PX",
+                    "SkyBox-Create",
+                    "Not possible"
+                );
+#endif
+
+                return PXActionRefusedAPIIsNotLinked;
+            }
 
             if (!pxSkyBox)
             {
@@ -1559,7 +1762,12 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 *pxEngineResourceCreateInfo->ObjectReference = pxSound;
             }
 
-            const PXActionResult loadResult = PXResourceLoad(pxSound, &pxTextFilePath);
+            PXResourceLoadInfo pxResourceLoadInfo;
+            PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+            pxResourceLoadInfo.Target = pxSound;
+            pxResourceLoadInfo.Type = PXGraphicResourceTypeSound;
+        
+            const PXActionResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxTextFilePath);
 
             if (PXActionSuccessful != loadResult)
             {
@@ -1696,6 +1904,21 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXDictionaryAdd(&pxEngine->UIElementLookUp, &pxUIElement->ID, pxUIElement);      
             }
 
+            //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
+            if(PXUIElementTypeTreeViewItem != pxUIElementCreateData->Type)
+            {
+                const char* uielementName = PXUIElementTypeToString(pxUIElementCreateData->Type);
+
+                pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 64, "[%s] %s", uielementName, pxEngineResourceCreateInfo->Name);
+            }
+            else
+            {
+                pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 64, "%s", pxEngineResourceCreateInfo->Name);
+            }
+
+
+
+
             // General stuff
             {
                 PXGraphicUIElementCreate(&pxEngine->Graphic, &pxUIElement, 1, pxUIElementCreateData->Paranet);
@@ -1711,7 +1934,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXCopy(PXUIElementTextInfo, &pxUIElementCreateData->TextInfo, &pxUIElement->TextInfo);
 
                 pxUIElement->Type = pxUIElementCreateData->Type;
-                pxUIElement->OnClickCallback = pxUIElementCreateData->OnClickCallback;
+                pxUIElement->OnClickCallback = pxUIElementCreateData->ButtonInfo.OnClickCallback;
             }
 
             // Register as OSButton?
@@ -1720,6 +1943,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 pxUIElementCreateData->WindowReference = &pxEngine->Window;
                 PXUIElementCreateOSStyle(pxUIElement, pxUIElementCreateData);
             }        
+
+            PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxEngineResourceCreateInfo);
 
             switch (pxUIElement->Type)
             {
@@ -1967,6 +2192,21 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             PXShaderProgramCreateData* const pxShaderProgramCreateData = &pxEngineResourceCreateInfo->ShaderProgram;
             PXShaderProgram* pxShaderProgram = *(PXShaderProgram**)pxEngineResourceCreateInfo->ObjectReference;
 
+            if(!pxEngine->Graphic.ShaderProgramCreate)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "PX",
+                    "Shader-Create",
+                    "Not possible"
+                );
+#endif
+
+                return PXActionRefusedAPIIsNotLinked;
+            }
+
             // Make sure object exists
             {
                 if (!pxShaderProgram)
@@ -2105,6 +2345,8 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
             {
                 break;
             }
+
+            pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxModel, pxEngineResourceRenderInfo->CameraReference);
 
             break;
         }

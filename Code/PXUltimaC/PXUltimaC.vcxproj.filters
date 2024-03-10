@@ -978,9 +978,4 @@
     <None Include="OS\UI\README.md" />
     <None Include="Media\DDS\README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <MASM Include="OS\System\PXWindowsLegacy.asm">
-      <Filter>Quelldateien</Filter>
-    </MASM>
-  </ItemGroup>
 </Project>
