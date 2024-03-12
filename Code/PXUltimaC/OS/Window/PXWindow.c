@@ -1172,7 +1172,84 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         case WindowEventCANCELJOURNAL:
             break;
         case WindowEventNOTIFY:
+        {
+            const HWND windowsHandle = (HWND)wParam; 
+            NMHDR* const notificationCode = (NMHDR*)lParam;
+
+            switch(notificationCode->code)
+            {
+                case TVN_SELCHANGED:
+                {
+                    // NOTE:
+                    // On treeview item selection, "wParam" will might always be NULL.
+                    // It's a copy of the item "lParam" parameter on creation.
+
+                    PXUIElement* pxTreeViewContainer = PXNull;
+                    PXUIElement* pxTreeViewItem = PXNull;
+
+                    // Fetch treeview object
+                    {
+                        PXWindowHelperLookupInfo pxWindowHelperLookupInfo;
+                        PXClear(PXWindowHelperLookupInfo, &pxWindowHelperLookupInfo);
+                        pxWindowHelperLookupInfo.ID = notificationCode->hwndFrom;
+
+                        PXFunctionInvoke(window->LookupHelperEvent, window->EventReceiver, &pxWindowHelperLookupInfo);
+
+                        pxTreeViewContainer = pxWindowHelperLookupInfo.UIElementReference;
+                    }
+
+                    // Fetch treeviewitem object
+                    {
+                        const HWND itemHandle = TreeView_GetSelection(notificationCode->hwndFrom); // Event does not give us the handle, fetch manually.
+
+                        PXWindowHelperLookupInfo pxWindowHelperLookupInfo;
+                        PXClear(PXWindowHelperLookupInfo, &pxWindowHelperLookupInfo);
+                        pxWindowHelperLookupInfo.ID = itemHandle;
+
+                        PXFunctionInvoke(window->LookupHelperEvent, window->EventReceiver, &pxWindowHelperLookupInfo);
+
+                        pxTreeViewItem = pxWindowHelperLookupInfo.UIElementReference;
+                    }            
+
+                    PXUIElementInteractInfo pxUIElementInteractInfo;
+                    PXClear(PXUIElementInteractInfo, &pxUIElementInteractInfo);
+                    pxUIElementInteractInfo.Type = PXUIElementInteractTypeSelect;
+                    pxUIElementInteractInfo.UIElementSender = pxTreeViewContainer;
+                    pxUIElementInteractInfo.UIElementSelected = pxTreeViewItem;
+
+                    PXFunctionInvoke(pxTreeViewContainer->InteractCallBack, &pxUIElementInteractInfo);
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "Windows",
+                        "Event",
+                        "TVN_SELCHANGED <0x%p>, ID:<%i>",
+                        windowsHandle,
+                        notificationCode->code
+                    );
+
+                    break;
+                }
+                default:
+                {
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "Windows",
+                        "Event",
+                        "Notify <0x%p>, ID:<%i>",
+                        windowsHandle,
+                        notificationCode->code
+                    );
+
+                    break;
+                }
+            }
+
+       
             break;
+        }        
         case WindowEventINPUTLANGCHANGEREQUEST:
             break;
         case WindowEventINPUTLANGCHANGE:
@@ -1410,10 +1487,12 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
             {
                 PXUIElement* const pxUIElement = pxWindowHelperLookupInfo.UIElementReference;
 
-                PXUIElementOnClickInfo pxUIElementOnClickInfo;
-                pxUIElementOnClickInfo.UIElement = pxUIElement;
+                PXUIElementInteractInfo pxUIElementInteractInfo;
+                PXClear(PXUIElementInteractInfo, &pxUIElementInteractInfo);
+                pxUIElementInteractInfo.UIElementSender = pxUIElement; 
+                pxUIElementInteractInfo.Type = PXUIElementInteractTypeClick;
 
-                PXFunctionInvoke(pxUIElement->OnClickCallback, &pxUIElementOnClickInfo);
+                PXFunctionInvoke(pxUIElement->InteractCallBack, &pxUIElementInteractInfo);
             }
 
          
@@ -1465,7 +1544,6 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
         case WindowEventCTLCOLORSCROLLBAR:
             break;
         case WindowEventCTLCOLOREDIT:
-            break;
         case WindowEventCTLCOLORSTATIC:
         {
            // HWND windowFocusedHandle = (HWND)GetFocus();;
@@ -1484,9 +1562,18 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
           //  PXUIElement* pxUIElement = PXNull;
 
             SetTextColor(hdc, RGB(200, 200, 200));  
-            SetBkColor(hdc, RGB(25, 25, 25));            // yellow
+            SetBkColor(hdc, RGB(50, 50, 50));            // yellow
          
-            return (LONG)GetStockObject(BLACK_BRUSH);
+
+            HBRUSH brush = 0;
+#if 0
+            brush = GetStockObject(WHITE_BRUSH);
+#else
+            brush = CreateSolidBrush(RGB(20, 20, 20));
+#endif
+   
+
+            return brush;
         }
         case WindowEventCTLCOLORLISTBOX:
             break;

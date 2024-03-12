@@ -892,15 +892,30 @@ extern "C"
 
 	PXPublic const char* PXAPI  PXUIElementTypeToString(const PXUIElementType pxUIElementType);
 
-	typedef struct PXUIElementOnClickInfo_
-	{
-		struct PXUIElement_* UIElement;
-	}
-	PXUIElementOnClickInfo;
 
-	typedef void (PXAPI* PXUIOnClick)(PXUIElementOnClickInfo* const pxUIElementOnClickInfo);
-	typedef void (PXAPI* PXUIOnMouseEnter)(struct PXUIElement_* const pxUIElement);
-	typedef void (PXAPI* PXUIOnMouseLeave)(struct PXUIElement_* const pxUIElement);
+	typedef enum PXUIElementInteractType_
+	{
+		PXUIElementInteractTypeInvalid,
+		PXUIElementInteractTypeSelect,
+		PXUIElementInteractTypeClick,
+		PXUIElementInteractTypeMouseEnter,
+		PXUIElementInteractTypeMouseLeave
+	}
+	PXUIElementInteractType;
+
+	typedef struct PXUIElementInteractInfo_
+	{
+		struct PXUIElement_* UIElementSender;
+
+		PXUIElementInteractType Type;
+
+		struct PXUIElement_* UIElementSelected;
+	}
+	PXUIElementInteractInfo;
+
+	typedef void (PXAPI* PXUIElementInteractFunction)(PXUIElementInteractInfo* const pxUIElementInteractInfo);
+
+
 
 	typedef struct PXUIElementFrameBufferInfo_
 	{
@@ -929,7 +944,6 @@ extern "C"
 	typedef struct PXUIElementButtonInfo_
 	{
 		char* Text;
-		PXUIOnClick OnClickCallback;
 	}
 	PXUIElementButtonInfo;
 
@@ -1023,9 +1037,7 @@ extern "C"
 		//------------------------------
 		// Events
 		//------------------------------
-		PXUIOnClick OnClickCallback;
-		PXUIOnMouseEnter OnMouseEnterCallback;
-		PXUIOnMouseLeave OnMouseLeaveCallback;
+		PXUIElementInteractFunction InteractCallBack;
 
 
 		PXUIElementPosition Position;

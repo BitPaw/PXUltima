@@ -7,6 +7,8 @@
 #include <Windows.h>
 #include <commctrl.h>
 #include <commdlg.h>
+#include <Richedit.h>
+
 //#include <ShObjIdl.h>
 
 #if WindowsEnableModernColorSceme
@@ -107,7 +109,7 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         case PXUIElementTypeTextEdit:
         {
             className = WC_EDITW;
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
+            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE;
             break;
         }
         case PXUIElementTypeRichEdit:
@@ -197,7 +199,18 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         case PXUIElementTypeTreeView:
         {
             className = WC_TREEVIEWW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT;
+
+            styleFlags =
+                WS_VISIBLE |
+                WS_CHILD | 
+                WS_BORDER | 
+                TVIF_TEXT |
+                TVIF_IMAGE | 
+                TVIF_SELECTEDIMAGE | 
+                TVIF_PARAM | // Required to get the a selected item, otherwise its just NULL.
+                TVS_HASBUTTONS |
+                TVS_HASLINES | 
+                TVS_LINESATROOT;
             break;
         }
         case PXUIElementTypeIPInput:
@@ -639,12 +652,19 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         }
         case PXUIElementTypeTextEdit:
         {
+          
+           
+
        
             break;
         }
         case PXUIElementTypeRichEdit:
-        {
-         
+        {         
+           
+
+           // EM_SETBKGNDCOLOR(pxUIElement->ID, RGB(10, 10, 10));
+           // EM_SETTEXTCOLOR(pxUIElement->ID, RGB(200, 200, 200));
+
             break;
         }
         case PXUIElementTypeScrollBar:
@@ -722,7 +742,7 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         }
         case PXUIElementTypeTreeView:
         {
-            TreeView_SetBkColor(pxUIElement->ID, RGB(10, 10, 10));
+            TreeView_SetBkColor(pxUIElement->ID, RGB(30, 30, 30));
 
             TreeView_SetTextColor(pxUIElement->ID, RGB(200, 200, 200));
 

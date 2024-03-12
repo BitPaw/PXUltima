@@ -1,5 +1,4 @@
-
-#include <stdio.h>
+#include <OS/Console/PXConsole.h>
 
 #define PXLDAPTest 0
 #define PXKeyBoardVirtualTest 0

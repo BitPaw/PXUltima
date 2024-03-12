@@ -312,6 +312,8 @@ extern "C"
 
 		PXBool OSButton;
 
+		PXUIElementInteractFunction InteractCallBack;
+
 		// Text
 		union
 		{
@@ -320,10 +322,6 @@ extern "C"
 			PXUIElementTreeViewItemInfo TreeViewItem;
 			PXUIElementSceneRenderInfo SceneRender;
 		};
-
-	
-		PXUIOnMouseEnter OnMouseEnterCallback;
-		PXUIOnMouseLeave OnMouseLeaveCallback;
 	}
 	PXUIElementCreateData;
 

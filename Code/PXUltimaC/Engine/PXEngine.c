@@ -69,6 +69,13 @@ PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine)
 
 void PXAPI PXEngineWindowLookupHelper(PXEngine* const pxEngine, PXWindowHelperLookupInfo* const pxWindowHelperLookupInfo)
 {
+    if(!pxWindowHelperLookupInfo->ID)
+    {
+        pxWindowHelperLookupInfo->Type = PXWindowHandleTypeInvalid;
+        pxWindowHelperLookupInfo->WindowReference = PXNull;
+        return;
+    }
+
     if(pxEngine->Window.ID == pxWindowHelperLookupInfo->ID)
     {
         pxWindowHelperLookupInfo->Type = PXWindowHandleTypeWindow;
@@ -163,7 +170,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
             PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
 
-            printf("[#][OnMouseMove] X:%5.2f Y:%5.2f\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y);
+            //printf("[#][OnMouseMove] X:%5.2f Y:%5.2f\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y);
         }
 
         pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
@@ -1934,7 +1941,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXCopy(PXUIElementTextInfo, &pxUIElementCreateData->TextInfo, &pxUIElement->TextInfo);
 
                 pxUIElement->Type = pxUIElementCreateData->Type;
-                pxUIElement->OnClickCallback = pxUIElementCreateData->ButtonInfo.OnClickCallback;
+                pxUIElement->InteractCallBack = pxUIElementCreateData->InteractCallBack;
             }
 
             // Register as OSButton?
