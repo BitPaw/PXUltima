@@ -1233,6 +1233,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
                 }
                 default:
                 {
+#if 0
                     PXLogPrint
                     (
                         PXLoggingInfo,
@@ -1242,6 +1243,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowsID, const UINT eventID, 
                         windowsHandle,
                         notificationCode->code
                     );
+#endif
 
                     break;
                 }
@@ -2555,6 +2557,16 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
 
 void PXAPI PXWindowUpdate(PXWindow* const pxWindow)
 {
+    if(!pxWindow)
+    {
+        return;
+    }
+
+    if(!pxWindow->ID)
+    {
+        return;
+    }
+
     pxWindow->MouseCurrentInput.ButtonsDelta = 0; // Reset mouse data
 
 #if OSUnix

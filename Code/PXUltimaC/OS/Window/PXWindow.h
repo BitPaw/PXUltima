@@ -125,7 +125,11 @@ extern "C"
 			struct PXUIElement_* UIElementReference;
 		};	
 
+#if OSUnix
+	
+#elif OSWindows
 		HWND ID;
+#endif
 
 		PXWindowHandleType Type;
 	}
@@ -231,8 +235,13 @@ extern "C"
 
 	typedef struct PXWindowPixelSystemInfo_
 	{
+#if OSUnix
+
+#elif OSWindows
 		HDC HandleDeviceContext;
 		HWND HandleWindow;
+#endif
+
 
 		PXInt8U BitPerPixel; // 32=8Bit Default
 

@@ -266,11 +266,7 @@ extern "C"
 	PXModelCreateInfo;
 
 
-	typedef struct PXUIElementSceneRenderInfo_
-	{
-		struct PXEngine_* Engine;
-	}
-	PXUIElementSceneRenderInfo;
+
 
 
 	typedef enum PXUIElementTreeViewItemInsertMode_
@@ -313,6 +309,16 @@ extern "C"
 		PXBool OSButton;
 
 		PXUIElementInteractFunction InteractCallBack;
+
+
+		PXBool CreationSkip;
+#if OSUnix
+		PXInt32U StyleFlags;
+		char* ClassName;
+#elif OSWindows
+		PXInt32U StyleFlags;
+		char* ClassName;
+#endif
 
 		// Text
 		union
@@ -472,7 +478,6 @@ extern "C"
 		PXEngineNetworkUpdateEvent OnNetworkUpdate;
 		PXEngineGameUpdateEvent OnGameUpdate;
 		PXEngineRenderUpdateEvent OnRenderUpdate;
-
 		PXEngineInteractCallBack OnInteract;
 
 		PXInt32U CounterTimeLast;

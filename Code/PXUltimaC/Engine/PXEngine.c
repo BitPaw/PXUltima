@@ -155,25 +155,35 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             pxEngine->InteractionLock = PXFalse;
         }
 
-        pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
-        pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
-        pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
-        pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
 
-        PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
+        const PXBool hasViewChanged = mouse->Delta[0] != 0 || mouse->Delta[1] != 0;
+        const PXBool hasMoveChanged = mouse->Position[0] != 0 || mouse->Position[1] != 0;
+        const PXBool hasAnyChanged = hasViewChanged || hasMoveChanged;
 
-        PXMouseInputReset(mouse);
-
-        if (pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
+        if(hasAnyChanged)
         {
-            PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-            PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
-            PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
+            pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
+            pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
+            pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
+            pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
 
-            //printf("[#][OnMouseMove] X:%5.2f Y:%5.2f\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y);
+            PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
+
+            PXMouseInputReset(mouse);
+
+            if(pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
+            {
+                PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+                PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
+                PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
+          
+               // printf("[#][OnMouseMove] X:%5.2f Y:%5.2f, %s\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y, pxEngine->ApplicationName);
+            }
+
+            pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
         }
 
-        pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
+      
 
 
         // Extended windows resize check
@@ -360,7 +370,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     ++(pxEngine->CounterTimeCPU);
     ++(pxEngine->CounterTimeGPU);
 
-    Sleep(20);
+  //  Sleep(20);
 
     PXThreadYieldToOtherThreads();
 
@@ -562,7 +572,7 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
 PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
 {
     PXCameraConstruct(&pxEngine->CameraDefault);
-    PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 80, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
+    PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 90, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
 
     pxEngine->CameraCurrent = &pxEngine->CameraDefault;
     pxEngine->CounterTimeLast = 0;

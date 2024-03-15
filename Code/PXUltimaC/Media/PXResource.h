@@ -941,6 +941,12 @@ extern "C"
 	}
 	PXUIElementItemInfo;
 
+	typedef struct PXUIElementSceneRenderInfo_
+	{
+		struct PXEngine_* Engine;
+	}
+	PXUIElementSceneRenderInfo;
+
 	typedef struct PXUIElementButtonInfo_
 	{
 		char* Text;
@@ -954,11 +960,23 @@ extern "C"
 	}
 	PXUIElementProgressBarInfo;
 
+
+
+	typedef enum PXUIElementTextAllign_
+	{
+		PXUIElementTextAllignInvalid,
+		PXUIElementTextAllignLeft,
+		PXUIElementTextAllignRight,
+		PXUIElementTextAllignCenter
+	}
+	PXUIElementTextAllign;
+
 	typedef struct PXUIElementTextInfo_
 	{
 		char* Content;
 		struct PXFont_* FontID;
 		float Scale;
+		PXUIElementTextAllign Allign;
 	}
 	PXUIElementTextInfo;
 
@@ -994,6 +1012,7 @@ extern "C"
 #define PXUIElementAllignTop		0b00100000
 #define PXUIElementAllignRight		0b01000000
 #define PXUIElementAllignBottom		0b10000000
+#define PXUIElementAllignCenter		0b11110000
 
 	typedef struct PXUIElementPosition_
 	{
@@ -1058,6 +1077,7 @@ extern "C"
 			PXUIElementProgressBarInfo ProgressBar;
 			PXUIElementButtonInfo Button;
 			PXUIElementItemInfo Item;
+			PXUIElementSceneRenderInfo SceneRender;
 		};
 
 		PXUIElementType Type;

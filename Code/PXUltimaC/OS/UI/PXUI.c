@@ -3,11 +3,13 @@
 #define WindowsEnableModernColorSceme 1
 
 #if OSUnix
+//#include <gtk/gtk.h>
 #elif OSWindows
 #include <Windows.h>
 #include <commctrl.h>
 #include <commdlg.h>
 #include <Richedit.h>
+#include <WindowsX.h>
 
 //#include <ShObjIdl.h>
 
@@ -31,41 +33,64 @@
 #endif
 #endif
 
-
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 #include <OS/Window/PXWindow.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Console/PXConsole.h>
 #include <Engine/PXEngine.h>
-
 #include <stdio.h>
-
-#include <WindowsX.h>
 
 PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, struct PXUIElementCreateData_* const pxUIElementCreateData)
 {
-    PXInt32U styleFlags = 0;
-    wchar_t* className = PXNull;
-    PXBool creationSkip = PXFalse;
-
-    if(!pxUIElement)
+    if(!(pxUIElement && pxUIElementCreateData))
     {
         return PXActionRefusedArgumentNull;
     }
+
+    pxUIElementCreateData->CreationSkip = PXFalse;
+
+    PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+    PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+
+    PXWindowSizeInfo pxWindowSizeInfo;
+    PXWindowSizeGet(pxUIElementCreateData->WindowReference->ID, &pxWindowSizeInfo);
+
+    pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
+    pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
+
+    PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
 
     switch(pxUIElement->Type)
     {
         case PXUIElementTypePanel:
         {
-            className = WC_STATICW;
-            styleFlags = WS_VISIBLE | WS_CHILD;
+            pxUIElementCreateData->ClassName = WC_STATICW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeText:
         {
-            className = WC_STATICW;
-            styleFlags = WS_VISIBLE | WS_CHILD | SS_CENTER | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_STATICW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD;
+
+            PXUIElementTextInfo* const pxUIElementTextInfo = &pxUIElement->TextInfo;
+          
+            switch(pxUIElementTextInfo->Allign)
+            {
+                case PXUIElementTextAllignLeft:
+                    pxUIElementCreateData->StyleFlags |= SS_LEFT;
+                    break;
+
+                case PXUIElementTextAllignRight:
+                    pxUIElementCreateData->StyleFlags |= SS_RIGHT;
+                    break;
+
+                default:
+                case PXUIElementTextAllignCenter:
+                    pxUIElementCreateData->StyleFlags |= SS_CENTER;
+                    break;
+            }
 
             PXBool hasParenet = pxUIElement->Parent;
 
@@ -84,123 +109,123 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         }
         case PXUIElementTypeButton:
         {// BS_USERBUTTON 
-            className = WC_BUTTONW;
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD |  WS_BORDER; // BS_DEFPUSHBUTTON 
+            pxUIElementCreateData->ClassName = WC_BUTTONW;
+            pxUIElementCreateData->StyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD |  WS_BORDER; // BS_DEFPUSHBUTTON 
             break;
         }
         case PXUIElementTypeImage:
         {
-           // className = WC_IMAGE;
-            //styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
+           // pxUIElementCreateData->ClassName = WC_IMAGE;
+            //pxUIElementCreateData->StyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeDropDown:
         {
-            className = WC_COMBOBOX;
-            styleFlags = CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE;
+            pxUIElementCreateData->ClassName = WC_COMBOBOX;
+            pxUIElementCreateData->StyleFlags = CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE;
             break;
         }
         case PXUIElementTypeListBox:
         { 
-            className = WC_LISTBOXW;
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_LISTBOXW;
+            pxUIElementCreateData->StyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeTextEdit:
         {
-            className = WC_EDITW;
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE;
+            pxUIElementCreateData->ClassName = WC_EDITW;
+            pxUIElementCreateData->StyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE;
             break;
         }
         case PXUIElementTypeRichEdit:
         {
-            className = L"RICHEDIT_CLASS";
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = L"RICHEDIT_CLASS";
+            pxUIElementCreateData->StyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeScrollBar:
         {
-            className = WC_SCROLLBARW;
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_SCROLLBARW;
+            pxUIElementCreateData->StyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeTrackBar:
         {
-            className = TRACKBAR_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | TBS_AUTOTICKS | WS_BORDER;
+            pxUIElementCreateData->ClassName = TRACKBAR_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | TBS_AUTOTICKS | WS_BORDER;
             break;
         }
         case PXUIElementTypeStatusBar:
         {
-            className = STATUSCLASSNAMEW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = STATUSpxUIElementCreateData->ClassNameW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeUpDown:
         {
-            className = UPDOWN_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = UPDOWN_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeProgressBar:
         {
-            className = PROGRESS_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = PROGRESS_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeHotKey:
         {
-            className = HOTKEY_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = HOTKEY_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeCalender:
         {
-            className = MONTHCAL_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = MONTHCAL_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeToolTip:
         {
-            className = TOOLTIPS_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = TOOLTIPS_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeAnimate:
         {
-            className = ANIMATE_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = ANIMATE_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeDatePicker:
         {
-            className = DATETIMEPICK_CLASSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = DATETIMEPICK_CLASSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeGroupBox:
         {
-            className = WC_BUTTONW;
-            styleFlags = WS_VISIBLE | WS_CHILD | BS_GROUPBOX | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_BUTTONW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | BS_GROUPBOX | WS_BORDER;
             break;
         }
         case PXUIElementTypeRadioButton:
         {
-            className = WC_BUTTONW;
-            styleFlags = WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_BUTTONW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON | WS_BORDER;
             break;
         }
         case PXUIElementTypeGroupRadioButton:
         {
-            className = WC_BUTTONW;
-            styleFlags = WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_BUTTONW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_BORDER;
             break;
         }
         case PXUIElementTypeTreeView:
         {
-            className = WC_TREEVIEWW;
+            pxUIElementCreateData->ClassName = WC_TREEVIEWW;
 
-            styleFlags =
+            pxUIElementCreateData->StyleFlags =
                 WS_VISIBLE |
                 WS_CHILD | 
                 WS_BORDER | 
@@ -215,62 +240,62 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         }
         case PXUIElementTypeIPInput:
         {
-            className = WC_IPADDRESSW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_IPADDRESSW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeLink:
         {
-            className = WC_LINK;
-            styleFlags = WS_VISIBLE | WS_CHILD;
+            pxUIElementCreateData->ClassName = WC_LINK;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD;
             break;
         }
         case PXUIElementTypeHeader:
         {
-            className = WC_HEADERW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_HEADERW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeFontSelector:
         {
-            className = WC_NATIVEFONTCTLW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER; // NFS_USEFONTASSOC
+            pxUIElementCreateData->ClassName = WC_NATIVEFONTCTLW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER; // NFS_USEFONTASSOC
             break;
         }
         case PXUIElementTypePageScroll:
         {
-            className = WC_PAGESCROLLERW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_PAGESCROLLERW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeTabControll:
         {
-            className = WC_TABCONTROLW;
-            styleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_TABCONTROLW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
         case PXUIElementTypeToggle:
         {
-            className = 00000000000000000000;
-            styleFlags = 000000000000000000000000;
+            pxUIElementCreateData->ClassName = 00000000000000000000;
+            pxUIElementCreateData->StyleFlags = 000000000000000000000000;
             break;
         }
         case PXUIElementTypeColorPicker:
         {
-            className = 00000000000000000000;
-            styleFlags = 000000000000000000000000;
+            pxUIElementCreateData->ClassName = 00000000000000000000;
+            pxUIElementCreateData->StyleFlags = 000000000000000000000000;
             break;
         }
         case PXUIElementTypeSlider:
         {
-            className = 00000000000000000000;
-            styleFlags = 000000000000000000000000;
+            pxUIElementCreateData->ClassName = 00000000000000000000;
+            pxUIElementCreateData->pxUIElementCreateData->StyleFlags = 000000000000000000000000;
             break;
         }
         case PXUIElementTypeCheckBox:
         {
-            className = WC_BUTTONW;
-            styleFlags = WS_VISIBLE | WS_CHILD | BS_CHECKBOX | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_BUTTONW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | WS_CHILD | BS_CHECKBOX | WS_BORDER;
 
             //CheckDlgButton(uiCheckBox->ID, 1, BST_CHECKED); // BST_UNCHECKED
 
@@ -278,16 +303,16 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
         }
         case PXUIElementTypeComboBox:
         {
-            className = WC_COMBOBOXEXW;
-            styleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
+            pxUIElementCreateData->ClassName = WC_COMBOBOXEXW;
+            pxUIElementCreateData->StyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
             break;
         }
 
         case PXUIElementTypeRenderFrame:
         {
             // HBRUSH hbrBackground = CreateSolidBrush(RGB(38, 38, 38));
-            className = WC_STATICW;
-            styleFlags = WS_VISIBLE | CS_OWNDC | CS_HREDRAW | CS_VREDRAW | WS_BORDER | WS_CHILD;
+            pxUIElementCreateData->ClassName = WC_STATICW;
+            pxUIElementCreateData->StyleFlags = WS_VISIBLE | CS_OWNDC | CS_HREDRAW | CS_VREDRAW | WS_BORDER | WS_CHILD;
             break;
         }
 
@@ -351,6 +376,9 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
     }
 
 
+  
+
+
 
     DWORD dwExStyle = 0;
     HWND windowHandle = pxUIElementCreateData->WindowReference->ID;
@@ -358,16 +386,7 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
     const HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(windowHandle, GWLP_HINSTANCE);
 
 
-    PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
-    PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
-   
-    PXWindowSizeInfo pxWindowSizeInfo;
-    PXWindowSizeGet(pxUIElementCreateData->WindowReference->ID, &pxWindowSizeInfo);
-
-    pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
-    pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
-
-    PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
+ 
 
     // If we a text that should be rendered on a button, the OS does not really intent to do this.
     // To avoid wierd graphical bugs, we will merge these into one object.
@@ -375,14 +394,14 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
      // pxUIElement->Type == PXUIElementTypeText&&;
 
 
-    if(!creationSkip)
+    if(!pxUIElementCreateData->CreationSkip)
     {
-        pxUIElement->ID = CreateWindowExW // Windows 2000, User32.dll, winuser.h
+        pxUIElement->ID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
         (
             dwExStyle,
-            className,
+            pxUIElementCreateData->ClassName,
             PXNull, // Text content
-            styleFlags,
+            pxUIElementCreateData->StyleFlags,
             pxUIElementPositionCalulcateInfo.X,
             pxUIElementPositionCalulcateInfo.Y,
             pxUIElementPositionCalulcateInfo.Width,
@@ -424,7 +443,7 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
             "UI",
             "Element-Create",
             "Successful: Name:%ls, X:%4.2f, Y:%4.2f, Width:%4.2f, Height:%4.2f",
-            className,
+            pxUIElementCreateData->ClassName,
             pxUIElementPositionCalulcateInfo.X,
             pxUIElementPositionCalulcateInfo.Y,
             pxUIElementPositionCalulcateInfo.Width,
@@ -810,6 +829,8 @@ PXActionResult PXAPI PXUIElementCreateOSStyle(PXUIElement* const pxUIElement, st
 #if 1
             PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxUIElementCreateData->SceneRender;
             PXEngine* pxEngine = pxUIElementSceneRenderInfo->Engine;
+
+            pxUIElement->SceneRender.Engine = pxEngine;
   
             PXEngineStartInfo pxEngineStartInfo;
             pxEngineStartInfo.Mode = PXGraphicInitializeModeOSGUIElement;
@@ -870,7 +891,29 @@ PXActionResult PXAPI PXUIElementUpdateOSStyle(PXUIElementUpdateInfo* const pxUIE
          //   SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
 
       
-            
+#if 4
+            PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+            PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+
+            PXWindowSizeInfo pxWindowSizeInfo;
+
+            PXWindowSizeGet(pxUIElementUpdateInfo->WindowReference->ID, &pxWindowSizeInfo);
+
+            pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
+            pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
+
+            PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
+
+            const PXBool succes54s = MoveWindow
+            (
+                pxUIElement->ID,
+                pxUIElementPositionCalulcateInfo.X,
+                pxUIElementPositionCalulcateInfo.Y,
+                pxUIElementPositionCalulcateInfo.Width,
+                pxUIElementPositionCalulcateInfo.Height,
+                PXTrue
+            );
+#endif
 
 
             break;
@@ -936,6 +979,27 @@ PXActionResult PXAPI PXUIElementUpdateOSStyle(PXUIElementUpdateInfo* const pxUIE
                 pxUIElementPositionCalulcateInfo.Height,
                 PXTrue
             );
+
+
+            // If we have a render window, we also need to fix the viewport
+            if(PXUIElementTypeRenderFrame == pxUIElement->Type)
+            {
+                PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxUIElement->SceneRender;
+                PXEngine* pxEngine = pxUIElementSceneRenderInfo->Engine;
+
+                PXViewPort pxViewPort;
+              
+                PXFunctionInvoke(pxEngine->Graphic.ViewPortGet, pxEngine->Graphic.EventOwner, &pxViewPort);
+
+                pxViewPort.X = 0;//  pxUIElementPositionCalulcateInfo.X;
+                pxViewPort.Y = 0;// pxUIElementPositionCalulcateInfo.Y;
+                pxViewPort.Width = pxUIElementPositionCalulcateInfo.Width;
+                pxViewPort.Height = pxUIElementPositionCalulcateInfo.Height;
+
+                PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
+
+            }
+
 
 #if PXLogEnable
             PXLogPrint
