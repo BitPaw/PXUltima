@@ -241,7 +241,7 @@ PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize buffer
 	assert(bufferB);
 #endif
 
-#if PXMemoryDebug  && 1
+#if PXMemoryDebug && 0
 
 	if(bufferSize == 1)
 	{
@@ -498,7 +498,7 @@ PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryInfo)
 		*pxMemoryInfo->SizeTotal = allocationSize;
 	}
 
-#if PXLogEnable
+#if PXLogEnable && PXMemoryDebug && 0
 	PXLoggingEventData pxLoggingEventData;
 	pxLoggingEventData.MemoryData.TypeSize = pxMemoryInfo->TypeSize;
 	pxLoggingEventData.MemoryData.Amount = pxMemoryInfo->Amount;
@@ -524,7 +524,7 @@ PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryInfo)
 		return PXFalse;
 	}
 
-#if PXLogEnable
+#if PXLogEnable && PXMemoryDebug && 0
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = pxMemoryInfo->TypeSize;
@@ -679,7 +679,7 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
 		pxMemoryHeapReallocateInfo->PointOfNewDataSize = 0;
 	}
 
-#if PXLogEnable
+#if PXLogEnable && PXMemoryDebug
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = pxMemoryHeapReallocateInfo->TypeSize;
@@ -854,7 +854,7 @@ void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 	const PXBool result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
 #endif
 
-#if PXLogEnable
+#if PXLogEnable && PXMemoryDebug
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.MemoryData.TypeSize = size;
@@ -921,7 +921,7 @@ PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
 		*pxMemoryInfo->SizeTotal = totalSize;
 	}
 
-#if PXLogEnable && 0
+#if PXLogEnable && PXMemoryDebug
 	PXLoggingEventData pxLoggingEventData;
 	pxLoggingEventData.MemoryData.TypeSize = pxMemoryInfo->TypeSize;
 	pxLoggingEventData.MemoryData.Amount = pxMemoryInfo->Amount;

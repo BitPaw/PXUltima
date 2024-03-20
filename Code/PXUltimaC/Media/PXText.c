@@ -248,6 +248,11 @@ void PXAPI PXTextAdvance(PXText* const pxText, const PXSize advanceBy)
 
 PXSize PXAPI PXTextLengthA(const char* string, const PXSize stringSize)
 {
+	if(!(string && stringSize))
+	{
+		return 0;
+	}
+
 	PXSize index = 0;
 
 	for (; (string[index] != '\0') && (index < stringSize); ++index);
@@ -257,6 +262,11 @@ PXSize PXAPI PXTextLengthA(const char* string, const PXSize stringSize)
 
 PXSize PXAPI PXTextLengthW(const wchar_t* string, const PXSize stringSize)
 {
+	if(!(string && stringSize))
+	{
+		return 0;
+	}
+
 	PXSize index = 0;
 
 	for (; (string[index] != L'\0') && (index < stringSize); ++index);
@@ -266,6 +276,11 @@ PXSize PXAPI PXTextLengthW(const wchar_t* string, const PXSize stringSize)
 
 PXSize PXAPI PXTextLengthUntilA(const char* string, const PXSize stringSize, const char character)
 {
+	if(!(string && stringSize))
+	{
+		return 0;
+	}
+
 	PXSize index = 0;
 
 	for (; (index < stringSize) && (string[index] != '\0') && (string[index] != character); ++index);

@@ -904,7 +904,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case 	WBEM_E_INVALID_SUPERCLASS: return PXActionRefusedObjectParentInvalid; //	Parent class specified is not valid.	2147749901 (0x8004100D)
 		case 	WBEM_E_INVALID_NAMESPACE: return PXActionRefusedNameSpaceInvalid; //	Namespace specified cannot be found.	2147749902 (0x8004100E)
 		case 	WBEM_E_INVALID_OBJECT: return PXActionRefusedObjectNameInvalid; //	Specified instance is not valid.	2147749903 (0x8004100F)
-		case 	WBEM_E_INVALID_CLASS: return PXActionRefusedClassNameInvalid; //	Specified class is not valid.	2147749904 (0x80041010)
+		case 	WBEM_E_INVALID_CLASS: return PXActionRefusedWindowsClassNameInvalid; //	Specified class is not valid.	2147749904 (0x80041010)
 		case 	WBEM_E_PROVIDER_NOT_FOUND: return PXActionInvalid; //	Provider referenced in the schema does not have a corresponding registration.	2147749905 (0x80041011)
 		case 	WBEM_E_INVALID_PROVIDER_REGISTRATION: return PXActionInvalid; //	Provider referenced in the schema has an incorrect or incomplete registration.	2147749906
 		case 	WBEM_E_PROVIDER_LOAD_FAILURE: return PXActionInvalid; //	COM cannot locate a provider referenced in the schema.	2147749907 (0x80041013)

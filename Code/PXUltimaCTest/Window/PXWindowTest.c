@@ -2,7 +2,6 @@
 
 #include <OS/Window/PXWindow.h>
 #include <OS/Memory/PXMemory.h>
-#include <OS/UI/PXUI.h>
 #include <Engine/PXEngine.h>
 
 void PXAPI PXTestWindowAll()
@@ -33,6 +32,7 @@ void PXAPI PXTestWindowOpenClose()
 
 void PXAPI PXTestWindowOpenUIRender()
 {
+#if 0
 	PXWindow pxWindow;
 	PXWindowConstruct(&pxWindow);
 
@@ -138,7 +138,13 @@ void PXAPI PXTestWindowOpenUIRender()
 
 	while(1)
 	{
-		PXUIElementUpdateOSStyle(&button, &pxWindow,  PXUIElementPropertySize);
+		PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
+		PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+		pxGUIElementUpdateInfo.UIElement = &button;
+		pxGUIElementUpdateInfo.WindowReference = &pxWindow;
+		pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
+
+		PXGUIElementUpdate(PXNull, &pxGUIElementUpdateInfo, 1);
 
 		PXWindowUpdate(&pxWindow);
 		PXWindowFrameBufferSwap(&pxWindow);
@@ -146,4 +152,5 @@ void PXAPI PXTestWindowOpenUIRender()
 
 
 	PXWindowDestruct(&pxWindow);
+#endif
 }

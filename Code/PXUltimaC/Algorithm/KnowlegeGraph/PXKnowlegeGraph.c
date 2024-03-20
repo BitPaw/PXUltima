@@ -148,9 +148,9 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
 
     // for each sibling, add their Siblings
     PXWindow pxWindow;
-    PXWindowConstruct(&pxWindow);
+    //PXWindowConstruct(&pxWindow);
     //PXWindowCreateA(&pxWindow, 50,50, 1000, 1000, "==", PXTrue);
-    PXWindowCreateHidden(&pxWindow, imageWidth, imageHeight, PXTrue);
+    //PXWindowCreateHidden(&pxWindow, imageWidth, imageHeight, PXTrue);
 
 
     // Create windowless rendering instance

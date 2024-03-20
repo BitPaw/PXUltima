@@ -245,7 +245,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 	(
 		textPreFormatted.TextA,
 		textPreFormatted.SizeAllocated,
-		"[%2.2i:%2.2i:%2.2i] §3%10s §%i%c %-14s §%i%s%s\n",
+		"[%2.2i:%2.2i:%2.2i] §3%11s §%i%c %-14s §%i%s%s\n",
 		pxTime.Hour,
 		pxTime.Minute,
 		pxTime.Second,
@@ -347,7 +347,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	(
 		formattedText.TextA,
 		formattedText.SizeAllocated,
-		"[%2.2i:%2.2i:%2.2i] §3%10s §%i%c %-14s §%i%s\n",
+		"[%2.2i:%2.2i:%2.2i] §3%11s §%i%c %-14s §%i%s\n",
 		pxTime.Hour,
 		pxTime.Minute,
 		pxTime.Second,

@@ -1554,6 +1554,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         }
     }
 
+    pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowReference->ID;
+    pxOpenGL->WindowDeviceContextHandle = pxGraphicInitializeInfo->HandleDeviceContext;
+
+
+
 #if 0
     pxOpenGL->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
 
@@ -2045,14 +2050,6 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     pxOpenGL->PXOpenGLConext = glXCreateContext(pxOpenGL->AttachedWindow->DisplayCurrent, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
-
-    // Get DC
-    {
-        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphicInitializeInfo->WindowID);
-
-        pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowID;
-        pxOpenGL->WindowDeviceContextHandle = pxGraphicInitializeInfo->HandleDeviceContext;
-    }
 
     // Check if failed
     {

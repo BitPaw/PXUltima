@@ -77,8 +77,12 @@ void PXAPI PXTextureConstruct(PXTexture2D* const texture)
     texture->WrapWidth = PXGraphicImageWrapRepeat;
 }
 
+/*
+
 PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent)
 {
+
+
     //PXClear(PXUIElement, *pxUIElement);
 
 
@@ -142,99 +146,8 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIEl
 
     return PXActionSuccessful;
 }
+*/
 
-PXActionResult PXAPI PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement)
-{
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType)
-{
-    pxUIElement->Type = pxUIElementType;
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGraphicUIElementPrintfNode(PXUIElement* const pxUIElement, int depth, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
-{
-    PXFunctionInvoke(preFound, sender, pxUIElement);
-#if 0
-    const char* nothing = "---";
-    const char* offset = "    ";
-
-    for (size_t i = 0; i < depth; i++) printf(offset);
-    printf("+--------------------+\n");
-
-    for (size_t i = 0; i < depth; i++) printf(offset);
-
-    printf("| Node: <%i> |\n", pxUIElement->ID);  
-
-    for (size_t i = 0; i < depth; i++) printf(offset);
-
-    if (pxUIElement->Parent)
-    {
-        printf("| %-10s : <%i>\n", "Parent", pxUIElement->Parent->ID);
-    }
-    else
-    {
-        printf("| %-10s : %s\n", "Parent", nothing);
-    }  
-
-    for (size_t i = 0; i < depth; i++) printf(offset);
-#endif
-
-    if (pxUIElement->Child)
-    {
-#if 0
-        printf("| %-10s : <%i>\n", "Child", pxUIElement->Child->ID);
-#endif
-        PXGraphicUIElementPrintfNode(pxUIElement->Child, depth+1, sender, preFound, postFound);
-    }
-#if 0
-    else
-    {
-        printf("| %-10s : %s\n", "Child", nothing);
-    }
-
-    for (size_t i = 0; i < depth; i++) printf(offset);
-#endif
-
-    if (pxUIElement->Sibling)
-    {
-#if 0
-        printf("| %-10s : %s\n", "Siblings", "-->");
-        for (size_t i = 0; i < depth; i++) printf(offset);
-        printf("+--------------------+\n");
-#endif
-
-        PXGraphicUIElementPrintfNode(pxUIElement->Sibling, depth, sender, preFound, postFound);
-    }
-#if 0
-    else
-    {
-        printf("| %-10s : %s\n", "Siblings", nothing);
-
-       for (size_t i = 0; i < depth; i++) printf(offset);
-        printf("+--------------------+\n");
-    }
-#endif
-
-    PXFunctionInvoke(postFound, sender, pxUIElement);
-}
-
-PXActionResult PXAPI PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound)
-{
-    PXGraphicUIElementPrintfNode(&pxGraphic->UIElementBase, 0, sender, preFound, postFound);
-}
-
-PXActionResult PXAPI PXGraphicUIElementPrint(PXGraphic* const pxGraphic)
-{
-   // printf("+---------------------------------------------------------+\n");
-
-    PXGraphicUIElementIterator(pxGraphic, 0, 0, 0);
-
-   // printf("+---------------------------------------------------------+\n");
-}
 
 void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
 {
@@ -274,52 +187,6 @@ void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, con
    // pxUIElement->PositionMode = pxUIElementPositionMode;
 }
 
-void PXAPI PXGraphicPXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText)
-{
-   // PXText nameBuffer;
-   // PXTextConstructFromAdressA(&nameBuffer, pxUIElement->Name, 32);
-
-   // PXTextCopy(pxText, &nameBuffer);
-}
-
-void PXAPI PXGraphicPXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text)
-{
-    PXTextCopyA(text, -1, pxUIElement->TextInfo.Content, 32);
-
-    pxUIElement->TextInfo.Scale = 0.5;
-}
-
-void PXAPI PXGraphicPXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...)
-{
-    va_list args;
-    va_start(args, format);
-
-    PXTextPrintA(pxUIElement->TextInfo.Content, 32, format, args);
-
-    va_end(args);
-}
-
-void PXAPI PXGraphicPXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont)
-{
-    //pxUIElement->FontID = pxFont;
-}
-
-void PXAPI PXGraphicUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList)
-{
-    pxUIElement->FlagsList = flagList;
-}
-
-void PXAPI PXGraphicPXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
-{
-    pxUIElement->Parent = pxUIElementParent;
-
-    PXGraphicPXUIElementChildSet(pxUIElementParent, pxUIElement);
-}
-
-void PXAPI PXGraphicPXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent)
-{
-    pxUIElement->Child = pxUIElementParent;
-}
 
 void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)
 {
@@ -338,22 +205,22 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         PXLoggingInfo,
         "Graphic",
         "Instantiate",
-        "Creating graphical instance..."
+        "Creating context on <%x>",
+        pxGraphicInitializeInfo->WindowReference->ID
     );
 #endif
 
     //pxGraphic->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
     pxGraphic->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
+    pxGraphic->WindowReference = pxGraphicInitializeInfo->WindowReference;
     pxGraphicInitializeInfo->Graphic = pxGraphic;
 
-#if 0
-    // If window is not set, we need to make one!
-    if(pxGraphic->AttachedWindow == PXNull)
+    // Get Device context if not already done
+    if(!pxGraphicInitializeInfo->HandleDeviceContext)
     {
-        // Make window
-        PXWindowCreateHidden();
+        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphic->WindowReference->ID);
     }
-#endif
+
 
     
     /*
@@ -390,34 +257,12 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     // Set pixel system
     {
         PXWindowPixelSystemInfo pxWindowPixelSystemInfo;
-        pxWindowPixelSystemInfo.HandleDeviceContext = PXNull;
-        pxWindowPixelSystemInfo.HandleWindow = PXNull;
+        pxWindowPixelSystemInfo.HandleDeviceContext = pxGraphicInitializeInfo->HandleDeviceContext;
+        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->ID;
         pxWindowPixelSystemInfo.BitPerPixel = 32;
         pxWindowPixelSystemInfo.OpenGL = PXTrue;
         pxWindowPixelSystemInfo.DirectX = PXTrue;
         pxWindowPixelSystemInfo.GDI = PXFalse;
-
-        switch(pxGraphicInitializeInfo->Mode)
-        {
-            case PXGraphicInitializeModeWindowfull:
-            {
-                // Use window
-                pxWindowPixelSystemInfo.HandleWindow = pxGraphicInitializeInfo->WindowReference->ID;
-                break;
-            }
-            case PXGraphicInitializeModeWindowless:
-            {
-                // Create window
-
-                break;
-            }
-            case PXGraphicInitializeModeOSGUIElement:
-            case PXGraphicInitializeModeOSGUI:
-            {
-                pxWindowPixelSystemInfo.HandleWindow = pxGraphicInitializeInfo->WindowID;
-                break;
-            }
-        }
 
         const PXActionResult pixelSystem = PXWindowPixelSystemSet(&pxWindowPixelSystemInfo);
 

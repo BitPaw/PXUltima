@@ -319,6 +319,7 @@ extern "C"
 		PXKeyPressStateDown,
 		PXKeyPressStateUp,
 		PXKeyPressStateHold,
+		PXKeyPressStateDoubleClick,
 	}
 	PXKeyPressState;
 
@@ -343,9 +344,6 @@ extern "C"
 	PXPublic PXInt8U PXAPI PXVirtualKeyToID(const PXVirtualKey character);
 
 	PXPublic void PXAPI PXKeyBoardInputReset(PXKeyBoard* const keyBoard);
-
-	PXPublic unsigned char PXAPI PXKeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey);
-	PXPublic unsigned char PXAPI PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey, const unsigned char isPressed);
 
 	PXPublic void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard);
 

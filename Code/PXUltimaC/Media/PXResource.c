@@ -194,11 +194,10 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage
 
 const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
 {
-
-
     switch(pxUIElementType)
     {
         case PXUIElementTypeCustom: return "Custom";
+        case PXUIElementTypeWindow: return "Window";
         case PXUIElementTypePanel: return "Panel";
         case PXUIElementTypeText: return "Text";
         case PXUIElementTypeButton: return "Button";
@@ -208,17 +207,17 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
         case PXUIElementTypeListBox: return "ListBox";
         case PXUIElementTypeTextEdit: return "TextEdit";
         case PXUIElementTypeRichEdit: return "RichText";
-        case PXUIElementTypeScrollBar: return "";
-        case PXUIElementTypeTrackBar: return "";
-        case PXUIElementTypeStatusBar: return "";
-        case PXUIElementTypeUpDown: return "";
+        case PXUIElementTypeScrollBar: return "ScrollBar";
+        case PXUIElementTypeTrackBar: return "TrackBar";
+        case PXUIElementTypeStatusBar: return "StatusBar";
+        case PXUIElementTypeUpDown: return "UpDown";
         case PXUIElementTypeProgressBar: return "";
         case PXUIElementTypeHotKey: return "";
         case PXUIElementTypeCalender: return "";
         case PXUIElementTypeToolTip: return "";
         case PXUIElementTypeAnimate: return "";
         case PXUIElementTypeDatePicker: return "";
-        case PXUIElementTypeGroupBox: return "";
+        case PXUIElementTypeGroupBox: return "GroupBox";
         case PXUIElementTypeRadioButton: return "";
         case PXUIElementTypeGroupRadioButton: return "";
         case PXUIElementTypeTreeView: return "TreeView";
@@ -228,12 +227,12 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
         case PXUIElementTypeHeader: return "";
         case PXUIElementTypeFontSelector: return "";
         case PXUIElementTypePageScroll: return "";
-        case PXUIElementTypeTabControll: return "";
-        case PXUIElementTypeToggle: return "";
-        case PXUIElementTypeCheckBox: return "";
-        case PXUIElementTypeComboBox: return "";
-        case PXUIElementTypeColorPicker: return "";
-        case PXUIElementTypeSlider: return "";
+        case PXUIElementTypeTabControll: return "TabControll";
+        case PXUIElementTypeToggle: return "Toggle";
+        case PXUIElementTypeCheckBox: return "CheckBox";
+        case PXUIElementTypeComboBox: return "ComboBox";
+        case PXUIElementTypeColorPicker: return "ColorPicker";
+        case PXUIElementTypeSlider: return "Slider";
         case PXUIElementTypeRenderFrame: return "FrameRender";
 
         default:
@@ -245,10 +244,10 @@ void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIEle
 {
     for(PXUIElement* pxUIElementParent = pxUIElement->Parent; pxUIElementParent; pxUIElementParent = pxUIElementParent->Parent)
     {
-        pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.MarginLeft + pxUIElement->Position.PaddingLeft;
-        pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.MarginTop + pxUIElement->Position.PaddingTop;
-        pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.MarginRight + pxUIElement->Position.PaddingRight;
-        pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.MarginBottom + pxUIElement->Position.PaddingBottom;
+        pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.MarginLeft;
+        pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.MarginTop;
+        pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.MarginRight;
+        pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.MarginBottom;
     }
 
     pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElement->Position.MarginLeft;

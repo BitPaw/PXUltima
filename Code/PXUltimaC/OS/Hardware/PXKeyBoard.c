@@ -493,16 +493,6 @@ void PXAPI PXKeyBoardInputReset(PXKeyBoard* const keyBoard)
 	PXMemoryClear(keyBoard, sizeof(PXKeyBoard));
 }
 
-unsigned char PXAPI PXKeyBoardKeyPressedGet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey)
-{
-	return 0;
-}
-
-unsigned char PXAPI PXKeyBoardKeyPressedSet(PXKeyBoard* const keyBoard, const PXVirtualKey virtualKey, const unsigned char isPressed)
-{
-	return 0;
-}
-
 void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
 {
 	char letters[64];

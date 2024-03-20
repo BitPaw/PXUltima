@@ -269,68 +269,7 @@ extern "C"
 
 
 
-	typedef enum PXUIElementTreeViewItemInsertMode_
-	{
-		PXUIElementTreeViewItemInsertModeROOT,
-		PXUIElementTreeViewItemInsertModeFIRST,
-		PXUIElementTreeViewItemInsertModeLAST,
-		PXUIElementTreeViewItemInsertModeSORT
-	}
-	PXUIElementTreeViewItemInsertMode;
-
-	typedef struct PXUIElementTreeViewItemInfo_
-	{
-		char* TextDataOverride;
-		PXSize TextSizeOverride;
-
-		struct PXUIElement_* ItemParent;
-		struct PXUIElement_* TreeView;
-
-		PXUIElementTreeViewItemInsertMode InsertMode;
-
-		// Result
-		struct _TREEITEM* ItemHandle;
-	}
-	PXUIElementTreeViewItemInfo;
-
-	typedef struct PXUIElementCreateData_
-	{
-		struct PXWindow_* WindowReference;
-		struct PXUIElement_* Paranet;
-
-		PXUIElementType Type;
-		PXInt32U BehaviourFlags;
-		PXColorRGBAF* ColorTintReference;
-
-		PXColorRGBAF Color;
-
-		PXUIElementPosition Position;
-
-		PXBool OSButton;
-
-		PXUIElementInteractFunction InteractCallBack;
-
-
-		PXBool CreationSkip;
-#if OSUnix
-		PXInt32U StyleFlags;
-		char* ClassName;
-#elif OSWindows
-		PXInt32U StyleFlags;
-		char* ClassName;
-#endif
-
-		// Text
-		union
-		{
-			PXUIElementTextInfo TextInfo;
-			PXUIElementButtonInfo ButtonInfo;
-			PXUIElementTreeViewItemInfo TreeViewItem;
-			PXUIElementSceneRenderInfo SceneRender;
-		};
-	}
-	PXUIElementCreateData;
-
+	
 
 
 
@@ -354,10 +293,8 @@ extern "C"
 			PXEngineSoundCreateInfo Sound;
 			PXShaderProgramCreateData ShaderProgram;
 			PXTextureCubeCreateData TextureCube;
-			PXUIElementCreateData UIElement;
+			PXGUIElementCreateInfo UIElement;
 			PXModelCreateInfo Model;
-			PXUIElementSceneRenderInfo SceneRender;
-		
 		};
 	}
 	PXEngineResourceCreateInfo;
@@ -459,11 +396,15 @@ extern "C"
 
 	typedef struct PXEngine_
 	{
+		PXGUISystem GUISystem;
 		PXGraphic Graphic;
-		PXWindow Window;
+		PXUIElement* Window; // PXWindow
 		PXModLoader ModLoader;
 		PXCamera CameraDefault;
 		PXAudio Audio;
+
+		PXKeyBoard KeyBoardCurrentInput;
+		PXMouse MouseCurrentInput;
 
 		PXAudioDevice AudioStandardOutDevice;
 
@@ -501,7 +442,6 @@ extern "C"
 
 		PXDictionary SpritelLookUp;
 		PXDictionary FontLookUp;
-		PXDictionary UIElementLookUp;
 		PXDictionary TextLookUp;
 		PXDictionary TimerLookUp;
 		PXDictionary SoundLookUp;
@@ -527,7 +467,8 @@ extern "C"
 	PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
 	PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
 	PXPrivate PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine);
-	PXPrivate void PXAPI PXEngineWindowLookupHelper(PXEngine* const pxEngine, PXWindowHelperLookupInfo* const pxWindowHelperLookupInfo);
+	PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent);
+
 
 	// Generate a random number with a maximum of the "limiter"
 	PXPublic PXInt32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXInt32U limiter);
@@ -541,6 +482,8 @@ extern "C"
 
 		PXSize Width;
 		PXSize Height;
+
+		PXBool UseMods;
 
 		struct PXUIElement_* UIElement;
 	}

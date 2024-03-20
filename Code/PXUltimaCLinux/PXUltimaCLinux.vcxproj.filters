@@ -98,7 +98,6 @@
     <ClCompile Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.c" />
     <ClCompile Include="..\PXUltimaC\OS\Bash\PXBash.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXLock.c" />
-    <ClCompile Include="..\PXUltimaC\OS\UI\PXUI.c" />
     <ClCompile Include="..\PXUltimaC\Media\CPP\PXCPP.c" />
     <ClCompile Include="..\PXUltimaC\Media\CS\PXCS.c" />
     <ClCompile Include="..\PXUltimaC\Media\CSS\PXCSS.c" />
@@ -306,7 +305,6 @@
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXMultiMedia\PXMultiMedia.h" />
     <ClInclude Include="..\PXUltimaC\OS\Audio\PXALSA\PXALSA.h" />
     <ClInclude Include="..\PXUltimaC\Engine\PXMod.h" />
-    <ClInclude Include="..\PXUltimaC\OS\UI\PXUI.h" />
     <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h" />
     <ClInclude Include="..\PXUltimaC\OS\Graphic\SoftwareRender\PXSoftwareRender.h" />
     <ClInclude Include="..\PXUltimaC\Media\PXUltimaInfo.h" />

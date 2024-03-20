@@ -68,11 +68,9 @@ extern "C"
 	typedef struct PXGraphicInitializeInfo_
 	{
 		PXGraphicInitializeMode Mode;
+		PXUIElement* WindowReference;
 
-		PXWindow* WindowReference; // Can be null depending on mode
-		PXWindowID WindowID; // Needed for GUI init
-		HDC HandleDeviceContext;
-		
+		HDC HandleDeviceContext;		
 
 
 		PXSize TargetFrameRate;
@@ -279,7 +277,7 @@ extern "C"
 		//-------------------
 		// References
 		//-------------------
-		PXWindow* AttachedWindow;
+		PXUIElement* WindowReference;
 		void* EventOwner;
 		//-------------------
 
@@ -383,8 +381,6 @@ extern "C"
 
 		PXSize DevicePhysicalListSize;
 		PXGraphicDevicePhysical* DevicePhysicalList;
-
-		PXUIElement UIElementBase;
 	}
 	PXGraphic;
 
@@ -402,23 +398,9 @@ extern "C"
 	typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXUIElement* const pxUIElement);
 
 	//-------------------------------------------------------------------------
-	PXPublic PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent);
-	PXPublic PXActionResult PXAPI PXGraphicUIElementDelete(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement);
-
-	PXPublic PXActionResult PXAPI PXGraphicUIElementTypeSet(PXGraphic* const pxGraphic, PXUIElement* const pxUIElement, const PXUIElementType pxUIElementType);
 	PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
 	PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXInt32U pxUIElementPositionMode);
 
-	PXPublic void PXAPI PXGraphicPXUIElementTextSet(PXUIElement* const pxUIElement, PXText* const pxText);
-	PXPublic void PXAPI PXGraphicPXUIElementTextSetA(PXUIElement* const pxUIElement, const char* const text);
-	PXPublic void PXAPI PXGraphicPXUIElementTextSetAV(PXUIElement* const pxUIElement, const char* const format, ...);
-	PXPublic void PXAPI PXGraphicPXUIElementFontSet(PXUIElement* const pxUIElement, const PXFont* const pxFont);
-	PXPublic void PXAPI PXGraphicUIElementFlagSet(PXUIElement* const pxUIElement, const PXInt32U flagList);
-	PXPublic void PXAPI PXGraphicPXUIElementParentSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
-	PXPublic void PXAPI PXGraphicPXUIElementChildSet(PXUIElement* const pxUIElement, PXUIElement* const pxUIElementParent);
-
-	PXPublic PXActionResult PXAPI PXGraphicUIElementIterator(PXGraphic* const pxGraphic, void* sender, PXGraphicUIElementTrigger preFound, PXGraphicUIElementTrigger postFound);
-	PXPublic PXActionResult PXAPI PXGraphicUIElementPrint(PXGraphic* const pxGraphic);
 	//-------------------------------------------------------------------------
 
 

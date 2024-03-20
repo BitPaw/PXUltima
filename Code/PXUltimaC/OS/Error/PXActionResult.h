@@ -65,7 +65,7 @@ extern "C"
 		PXActionRefuedObjectPropertyNotAvailable,
 
 		PXActionRefusedObjectNameInvalid,
-		PXActionRefusedClassNameInvalid,
+		PXActionRefusedWindowsClassNameInvalid,
 		PXActionRefusedNameSpaceInvalid,
 		PXActionRefusedObjectParentInvalid,
 

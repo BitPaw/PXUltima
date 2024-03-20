@@ -19,6 +19,7 @@ extern "C"
 	typedef struct PXText_ PXText;
 	typedef struct PXDocument_ PXDocument;
 	typedef struct PXWindow_ PXWindow;
+	typedef struct PXUIElement_ PXUIElement;
 	typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 
 
@@ -851,6 +852,7 @@ extern "C"
 	{
 		PXUIElementTypeInvalid,
 		PXUIElementTypeCustom,
+		PXUIElementTypeWindow,
 		PXUIElementTypePanel,
 		PXUIElementTypeText,
 		PXUIElementTypeButton,
@@ -902,19 +904,6 @@ extern "C"
 		PXUIElementInteractTypeMouseLeave
 	}
 	PXUIElementInteractType;
-
-	typedef struct PXUIElementInteractInfo_
-	{
-		struct PXUIElement_* UIElementSender;
-
-		PXUIElementInteractType Type;
-
-		struct PXUIElement_* UIElementSelected;
-	}
-	PXUIElementInteractInfo;
-
-	typedef void (PXAPI* PXUIElementInteractFunction)(PXUIElementInteractInfo* const pxUIElementInteractInfo);
-
 
 
 	typedef struct PXUIElementFrameBufferInfo_
@@ -1038,6 +1027,9 @@ extern "C"
 	PXUIElementPosition;
 
 
+	typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
+
+
 	// Atomic UI-Element
 	// Only Text can be text
 	// Only image can be image
@@ -1056,7 +1048,8 @@ extern "C"
 		//------------------------------
 		// Events
 		//------------------------------
-		PXUIElementInteractFunction InteractCallBack;
+		void* InteractOwner;
+		PXWindowEventFunction InteractCallBack;
 
 
 		PXUIElementPosition Position;
@@ -1069,6 +1062,8 @@ extern "C"
 
 		//---<Property>--------------------------
 		//PXUIElementPositionMode PositionMode;
+
+#if 0
 		union
 		{
 			PXUIElementFrameBufferInfo FrameBufferInfo;
@@ -1079,6 +1074,7 @@ extern "C"
 			PXUIElementItemInfo Item;
 			PXUIElementSceneRenderInfo SceneRender;
 		};
+#endif
 
 		PXUIElementType Type;
 		PXSize ID;

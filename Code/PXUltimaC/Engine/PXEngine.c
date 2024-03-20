@@ -6,7 +6,6 @@
 #include <OS/File/PXFile.h>
 #include <Engine/Dialog/PXDialogBox.h>
 #include <Media/ADLER/PXAdler32.h>
-#include <OS/UI/PXUI.h>
 #include <OS/Hardware/PXProcessor.h>
 
 const char* PXAPI PXEngineCreateTypeToString(const PXEngineCreateType pxEngineCreateType)
@@ -67,41 +66,517 @@ PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine)
    
 }
 
-void PXAPI PXEngineWindowLookupHelper(PXEngine* const pxEngine, PXWindowHelperLookupInfo* const pxWindowHelperLookupInfo)
+#define UseOSDelta 0
+
+void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent)
 {
-    if(!pxWindowHelperLookupInfo->ID)
+    switch(pxWindowEvent->Type)
     {
-        pxWindowHelperLookupInfo->Type = PXWindowHandleTypeInvalid;
-        pxWindowHelperLookupInfo->WindowReference = PXNull;
-        return;
-    }
-
-    if(pxEngine->Window.ID == pxWindowHelperLookupInfo->ID)
-    {
-        pxWindowHelperLookupInfo->Type = PXWindowHandleTypeWindow;
-        pxWindowHelperLookupInfo->WindowReference = &pxEngine->Window;
-        return;
-    }
-
-
-    PXDictionary* const uiElementLookup = &pxEngine->UIElementLookUp;
-
-    for(PXSize i = 0; i < uiElementLookup->EntryAmountCurrent; ++i)
-    {
-        PXDictionaryEntry pxDictionaryEntry;
-        PXUIElement* uiElement = PXNull;
-
-        PXDictionaryIndex(uiElementLookup, i, &pxDictionaryEntry);
-
-        uiElement = *(PXUIElement**)pxDictionaryEntry.Value;
-
-        if(uiElement->ID == pxWindowHelperLookupInfo->ID)
+        case PXWindowEventTypeInputMouseButton:
         {
-            pxWindowHelperLookupInfo->Type = PXWindowHandleTypeUIElement;
-            pxWindowHelperLookupInfo->UIElementReference = uiElement;
-            return;
+            PXWindowEventInputMouseButton* const inputMouseButton = &pxWindowEvent->InputMouseButton;
+
+            PXMouse* const mouse = &pxEngine->MouseCurrentInput;
+
+            switch(inputMouseButton->PressState)
+            {
+                case PXKeyPressStateDown:
+                {
+                    switch(inputMouseButton->Button)
+                    {
+                        case PXMouseButtonLeft:
+                        {
+                            mouse->ButtonsDelta |= ButtonLeft;
+                            break;
+                        }
+                        case PXMouseButtonMiddle:
+                        {
+                            mouse->ButtonsDelta |= ButtonMiddle;
+                            break;
+                        }
+                        case PXMouseButtonRight:
+                        {
+                            mouse->ButtonsDelta |= ButtonRight;
+                            break;
+                        }
+                        case PXMouseButtonSpecialA:
+                        {
+                            mouse->ButtonsDelta |= ButtonCustomA;
+                            break;
+                        }
+                        case PXMouseButtonSpecialB:
+                        {
+                            mouse->ButtonsDelta |= ButtonCustomB;
+                            break;
+                        }
+                    }
+
+                    mouse->Buttons |= mouse->ButtonsDelta;
+
+                    break;
+                }
+                case PXKeyPressStateUp:
+                {
+                    switch(inputMouseButton->Button)
+                    {
+                        case PXMouseButtonLeft:
+                        {
+                            mouse->Buttons &= ~ButtonLeft;
+                            break;
+                        }
+                        case PXMouseButtonMiddle:
+                        {
+                            mouse->Buttons &= ~ButtonMiddle;
+                            break;
+                        }
+                        case PXMouseButtonRight:
+                        {
+                            mouse->Buttons &= ~ButtonRight;
+                            break;
+                        }
+                        case PXMouseButtonSpecialA:
+                        {
+                            mouse->Buttons &= ~ButtonCustomA;
+                            break;
+                        }
+                        case PXMouseButtonSpecialB:
+                        {
+                            mouse->Buttons &= ~ButtonCustomB;
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+#if 0
+            const char* buttonStateText = 0;
+            const char* mouseButtonText = 0;
+
+            switch(buttonState)
+            {
+                case PXKeyPressStateInvalid:
+                    buttonStateText = "Invalid";
+                    break;
+
+                case PXKeyPressStateDown:
+                    buttonStateText = "Down";
+                    break;
+
+                case PXKeyPressStateHold:
+                    buttonStateText = "Hold";
+                    break;
+
+                case PXKeyPressStateUp:
+                    buttonStateText = "Release";
+                    break;
+            }
+
+            switch(mouseButton)
+            {
+                case PXMouseButtonInvalid:
+                    mouseButtonText = "Invalid";
+                    break;
+
+                case PXMouseButtonLeft:
+                    mouseButtonText = "Left";
+                    break;
+
+                case PXMouseButtonMiddle:
+                    mouseButtonText = "Middle";
+                    break;
+
+                case PXMouseButtonRight:
+                    mouseButtonText = "Right";
+                    break;
+
+                case PXMouseButtonSpecialA:
+                    mouseButtonText = "Special A";
+                    break;
+
+                case PXMouseButtonSpecialB:
+                    mouseButtonText = "Special B";
+                    break;
+
+                case PXMouseButtonSpecialC:
+                    mouseButtonText = "Special C";
+                    break;
+
+                case PXMouseButtonSpecialD:
+                    mouseButtonText = "Special D";
+                    break;
+
+                case PXMouseButtonSpecialE:
+                    mouseButtonText = "Special E";
+                    break;
+            }
+
+            printf("[#][Event][Mouse] Button:%-10s State:%-10s\n", mouseButtonText, buttonStateText);
+
+#endif
+
+           // PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, mouseButton, buttonState);
+
+            break;
         }
-    }   
+        case PXWindowEventTypeInputMouseMove:
+        {
+            PXWindowEventInputMouseMove* const inputMouseMove = &pxWindowEvent->InputMouseMove;
+            PXMouse* const mouse = &pxEngine->MouseCurrentInput;
+
+            const PXInt32S mousePositionOld[2] =
+            {
+                mouse->Position[0],
+                mouse->Position[1]
+            };
+            const PXInt32S mousePositionNew[2] =
+            {
+        #if UseOSDelta
+                mousePositionOld + deltaX,
+                mousePositionOld - deltaY
+        #else
+                // PXMathLimit(inputMouseMove->AxisX, 0, window->Width),
+                // window->Height - PXMathLimit(inputMouseMove->AxisY, 0, window->Height)
+                0,
+                0
+        #endif
+            };
+
+            const PXInt32S mousePositionDeltaNew[2] =
+            {
+                #if UseOSDelta
+                mousePositionNew[0] - mousePositionOld[0],
+                mousePositionNew[1] - mousePositionOld[1]
+                #else
+                inputMouseMove->DeltaX,
+                inputMouseMove->DeltaY
+                #endif
+            };
+
+            const PXBool hasDelta = (mousePositionDeltaNew[0] != 0 && mousePositionDeltaNew[1] != 0) || 1;
+
+            if(hasDelta)
+            {
+                //mouse->Delta[0] = mousePositionDeltaNew[0];
+                //mouse->Delta[1] = mousePositionDeltaNew[1];
+                mouse->Delta[0] += inputMouseMove->DeltaX;
+                mouse->Delta[1] += inputMouseMove->DeltaY;
+               // mouse->DeltaNormalisized[0] = (mousePositionDeltaNew[0] / ((float)window->Width / 2.0f)) - 1.0f;
+              //  mouse->DeltaNormalisized[1] = (mousePositionDeltaNew[1] / ((float)window->Height / 2.0f)) - 1.0f;
+                mouse->Position[0] = mousePositionNew[0];
+                mouse->Position[1] = mousePositionNew[1];
+             //   mouse->PositionNormalisized[0] = (mousePositionNew[0] / ((float)window->Width / 2.0f)) - 1.0f;
+             //   mouse->PositionNormalisized[1] = (mousePositionNew[1] / ((float)window->Height / 2.0f)) - 1.0f;
+            }
+            else
+            {
+                mouse->Delta[0] = 0;
+                mouse->Delta[1] = 0;
+            }
+
+            //PXFunctionInvoke(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
+
+            break;
+        }
+        case PXWindowEventTypeInputKeyboard:
+        {
+            PXWindowEventInputKeyboard* const inputKeyboard = &pxWindowEvent->InputKeyboard;
+            PXKeyBoard* const keyBoard = &pxEngine->KeyBoardCurrentInput;
+
+            PXInt32U mask = 0;
+            PXInt32U data = 0;
+            
+
+            // printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
+
+            if(PXKeyPressStateDown == inputKeyboard->PressState)
+            {
+                switch(inputKeyboard->VirtualKey)
+                {
+                    case KeyA: keyBoard->Letters |= KeyBoardIDLetterA; break;
+                    case KeyB: keyBoard->Letters |= KeyBoardIDLetterB; break;
+                    case KeyC: keyBoard->Letters |= KeyBoardIDLetterC; break;
+                    case KeyD: keyBoard->Letters |= KeyBoardIDLetterD; break;
+                    case KeyE: keyBoard->Letters |= KeyBoardIDLetterE; break;
+                    case KeyF: keyBoard->Letters |= KeyBoardIDLetterF; break;
+                    case KeyG: keyBoard->Letters |= KeyBoardIDLetterG; break;
+                    case KeyH: keyBoard->Letters |= KeyBoardIDLetterH; break;
+                    case KeyI: keyBoard->Letters |= KeyBoardIDLetterI; break;
+                    case KeyJ: keyBoard->Letters |= KeyBoardIDLetterJ; break;
+                    case KeyK: keyBoard->Letters |= KeyBoardIDLetterK; break;
+                    case KeyL: keyBoard->Letters |= KeyBoardIDLetterL; break;
+                    case KeyM: keyBoard->Letters |= KeyBoardIDLetterM; break;
+                    case KeyN: keyBoard->Letters |= KeyBoardIDLetterN; break;
+                    case KeyO: keyBoard->Letters |= KeyBoardIDLetterO; break;
+                    case KeyP: keyBoard->Letters |= KeyBoardIDLetterP; break;
+                    case KeyQ: keyBoard->Letters |= KeyBoardIDLetterQ; break;
+                    case KeyR: keyBoard->Letters |= KeyBoardIDLetterR; break;
+                    case KeyS: keyBoard->Letters |= KeyBoardIDLetterS; break;
+                    case KeyT: keyBoard->Letters |= KeyBoardIDLetterT; break;
+                    case KeyU: keyBoard->Letters |= KeyBoardIDLetterU; break;
+                    case KeyV: keyBoard->Letters |= KeyBoardIDLetterV; break;
+                    case KeyW: keyBoard->Letters |= KeyBoardIDLetterW; break;
+                    case KeyX: keyBoard->Letters |= KeyBoardIDLetterX; break;
+                    case KeyY: keyBoard->Letters |= KeyBoardIDLetterY; break;
+                    case KeyZ: keyBoard->Letters |= KeyBoardIDLetterZ; break;
+                    case KeySpace: keyBoard->Letters |= KeyBoardIDSpace; break;
+                    case KeyApostrophe: keyBoard->Letters |= KeyBoardIDAPOSTROPHE; break;
+                    case KeyComma: keyBoard->Letters |= KeyBoardIDComma; break;
+                    case KeyGraveAccent: keyBoard->Letters |= KeyBoardIDGRAVE_ACCENT; break;
+                    case KeySemicolon: keyBoard->Letters |= KeyBoardIDSemicolon; break;
+                    case KeyPeriod: keyBoard->Letters |= KeyBoardIDDECIMAL; break;
+
+
+                    case KeyEscape: keyBoard->Commands |= KeyBoardIDCommandEscape; break;
+                    case KeyEnter: keyBoard->Commands |= KeyBoardIDCommandEnter; break;
+                    case KeyTab: keyBoard->Commands |= KeyBoardIDCommandTab; break;
+                        //case : keyBoard->Commands |= KeyBoardIDCommandShift; break;
+                    case KeyBackspace: keyBoard->Commands |= KeyBoardIDBACKSPACE; break;
+                    case KeyInsert: keyBoard->Commands |= KeyBoardIDINSERT; break;
+                    case KeyDelete: keyBoard->Commands |= KeyBoardIDDELETE; break;
+                    case KeyRight: keyBoard->Commands |= KeyBoardIDRIGHT; break;
+                    case KeyLeft: keyBoard->Commands |= KeyBoardIDLEFT; break;
+                    case KeyDown: keyBoard->Commands |= KeyBoardIDDOWN; break;
+                    case KeyUp: keyBoard->Commands |= KeyBoardIDUP; break;
+                    case KeyPageUp: keyBoard->Commands |= KeyBoardIDPAGE_UP; break;
+                    case KeyPageDown: keyBoard->Commands |= KeyBoardIDPAGE_DOWN; break;
+                    case KeyHome: keyBoard->Commands |= KeyBoardIDHOME; break;
+                    case KeyEnd: keyBoard->Commands |= KeyBoardIDEND; break;
+                    case KeyCapsLock: keyBoard->Commands |= KeyBoardIDCAPS_LOCK; break;
+                    case KeyScrollLock: keyBoard->Commands |= KeyBoardIDSCROLL_LOCK; break;
+                    case KeyNumLock: keyBoard->Commands |= KeyBoardIDNUM_LOCK; break;
+                    case KeyPrintScreen: keyBoard->Commands |= KeyBoardIDPRINT_SCREEN; break;
+                    case KeyPause: keyBoard->Commands |= KeyBoardIDPAUSE; break;
+                    case KeyPadEnter: keyBoard->Commands |= KeyBoardIDPadENTER; break;
+                    case KeyShiftLeft: keyBoard->Commands |= KeyBoardIDShiftLeft; break;
+                    case KeyShiftRight: keyBoard->Commands |= KeyBoardIDShiftRight; break;
+                    case KeyControlLeft: keyBoard->Commands |= KeyBoardIDCONTROLLEFT; break;
+                    case KeyAltLeft: keyBoard->Commands |= KeyBoardIDALTLEFT; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDSUPERLEFT; break;
+                    case KeyControlRight: keyBoard->Commands |= KeyBoardIDCONTROLRIGHT; break;
+                    case KeyAltRight: keyBoard->Commands |= KeyBoardIDALTRIGHT; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDSUPERRIGHT; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDMENU; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDWORLD_1; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands |= KeyBoardIDWORLD_2; break;
+
+
+                            // Numbers
+                    case Key0: keyBoard->Numbers |= KeyBoardIDNumber0; break;
+                    case Key1: keyBoard->Numbers |= KeyBoardIDNumber1; break;
+                    case Key2: keyBoard->Numbers |= KeyBoardIDNumber2; break;
+                    case Key3: keyBoard->Numbers |= KeyBoardIDNumber3; break;
+                    case Key4: keyBoard->Numbers |= KeyBoardIDNumber4; break;
+                    case Key5: keyBoard->Numbers |= KeyBoardIDNumber5; break;
+                    case Key6: keyBoard->Numbers |= KeyBoardIDNumber6; break;
+                    case Key7: keyBoard->Numbers |= KeyBoardIDNumber7; break;
+                    case Key8: keyBoard->Numbers |= KeyBoardIDNumber8; break;
+                    case Key9: keyBoard->Numbers |= KeyBoardIDNumber9; break;
+                    case KeyPad0: keyBoard->Numbers |= KeyBoardIDNumberBlock0; break;
+                    case KeyPad1: keyBoard->Numbers |= KeyBoardIDNumberBlock1; break;
+                    case KeyPad2: keyBoard->Numbers |= KeyBoardIDNumberBlock2; break;
+                    case KeyPad3: keyBoard->Numbers |= KeyBoardIDNumberBlock3; break;
+                    case KeyPad4: keyBoard->Numbers |= KeyBoardIDNumberBlock4; break;
+                    case KeyPad5: keyBoard->Numbers |= KeyBoardIDNumberBlock5; break;
+                    case KeyPad6: keyBoard->Numbers |= KeyBoardIDNumberBlock6; break;
+                    case KeyPad7: keyBoard->Numbers |= KeyBoardIDNumberBlock7; break;
+                    case KeyPad8: keyBoard->Numbers |= KeyBoardIDNumberBlock8; break;
+                    case KeyPad9: keyBoard->Numbers |= KeyBoardIDNumberBlock9; break;
+                    case KeyMinus: keyBoard->Numbers |= KeyBoardIDNumberKeyMinus; break;
+                        // case KeyPeriod: keyBoard->Numbers |= KeyBoardIDNumberKeyPeriod; break;
+                    case KeySlash: keyBoard->Numbers |= KeyBoardIDNumberKeySlash; break;
+                    case KeyEqual: keyBoard->Numbers |= KeyBoardIDNumberKeyEqual; break;
+                    case KeyBrackedLeft: keyBoard->Numbers |= KeyBoardIDNumberKeyLEFT_BRACKET; break;
+                    case KeyBackSlash: keyBoard->Numbers |= KeyBoardIDNumberKeyBACKSLASH; break;
+                    case KeyBrackedRight: keyBoard->Numbers |= KeyBoardIDNumberKeyRIGHT_BRACKET; break;
+                    case KeyPadDivide: keyBoard->Numbers |= KeyBoardIDNumberKeyPadDIVIDE; break;
+                    case KeyPadMultiply: keyBoard->Numbers |= KeyBoardIDNumberKeyPadMULTIPLY; break;
+                    case KeyPadSubtract: keyBoard->Numbers |= KeyBoardIDNumberKeyPadSUBTRACT; break;
+                    case KeyPadAdd: keyBoard->Numbers |= KeyBoardIDNumberKeyPadADD; break;
+                    case KeyPadEqual: keyBoard->Numbers |= KeyBoardIDNumberKeyPadEQUAL; break;
+
+                        // Function key
+
+                    case KeyF1: keyBoard->Actions |= KeyBoardIDF01; break;
+                    case KeyF2: keyBoard->Actions |= KeyBoardIDF02; break;
+                    case KeyF3: keyBoard->Actions |= KeyBoardIDF03; break;
+                    case KeyF4: keyBoard->Actions |= KeyBoardIDF04; break;
+                    case KeyF5: keyBoard->Actions |= KeyBoardIDF05; break;
+                    case KeyF6: keyBoard->Actions |= KeyBoardIDF06; break;
+                    case KeyF7: keyBoard->Actions |= KeyBoardIDF07; break;
+                    case KeyF8: keyBoard->Actions |= KeyBoardIDF08; break;
+                    case KeyF9: keyBoard->Actions |= KeyBoardIDF09; break;
+                    case KeyF10: keyBoard->Actions |= KeyBoardIDF10; break;
+                    case KeyF11: keyBoard->Actions |= KeyBoardIDF11; break;
+                    case KeyF12: keyBoard->Actions |= KeyBoardIDF12; break;
+                    case KeyF13: keyBoard->Actions |= KeyBoardIDF13; break;
+                    case KeyF14: keyBoard->Actions |= KeyBoardIDF14; break;
+                    case KeyF15: keyBoard->Actions |= KeyBoardIDF15; break;
+                    case KeyF16: keyBoard->Actions |= KeyBoardIDF16; break;
+                    case KeyF17: keyBoard->Actions |= KeyBoardIDF17; break;
+                    case KeyF18: keyBoard->Actions |= KeyBoardIDF18; break;
+                    case KeyF19: keyBoard->Actions |= KeyBoardIDF19; break;
+                    case KeyF20: keyBoard->Actions |= KeyBoardIDF20; break;
+                    case KeyF21: keyBoard->Actions |= KeyBoardIDF21; break;
+                    case KeyF22: keyBoard->Actions |= KeyBoardIDF22; break;
+                    case KeyF23: keyBoard->Actions |= KeyBoardIDF23; break;
+                    case KeyF24: keyBoard->Actions |= KeyBoardIDF24; break;
+                    case KeyF25: keyBoard->Actions |= KeyBoardIDF25; break;
+
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                switch(inputKeyboard->VirtualKey)
+                {
+                    case KeyA: keyBoard->Letters &= ~KeyBoardIDLetterA; break;
+                    case KeyB: keyBoard->Letters &= ~KeyBoardIDLetterB; break;
+                    case KeyC: keyBoard->Letters &= ~KeyBoardIDLetterC; break;
+                    case KeyD: keyBoard->Letters &= ~KeyBoardIDLetterD; break;
+                    case KeyE: keyBoard->Letters &= ~KeyBoardIDLetterE; break;
+                    case KeyF: keyBoard->Letters &= ~KeyBoardIDLetterF; break;
+                    case KeyG: keyBoard->Letters &= ~KeyBoardIDLetterG; break;
+                    case KeyH: keyBoard->Letters &= ~KeyBoardIDLetterH; break;
+                    case KeyI: keyBoard->Letters &= ~KeyBoardIDLetterI; break;
+                    case KeyJ: keyBoard->Letters &= ~KeyBoardIDLetterJ; break;
+                    case KeyK: keyBoard->Letters &= ~KeyBoardIDLetterK; break;
+                    case KeyL: keyBoard->Letters &= ~KeyBoardIDLetterL; break;
+                    case KeyM: keyBoard->Letters &= ~KeyBoardIDLetterM; break;
+                    case KeyN: keyBoard->Letters &= ~KeyBoardIDLetterN; break;
+                    case KeyO: keyBoard->Letters &= ~KeyBoardIDLetterO; break;
+                    case KeyP: keyBoard->Letters &= ~KeyBoardIDLetterP; break;
+                    case KeyQ: keyBoard->Letters &= ~KeyBoardIDLetterQ; break;
+                    case KeyR: keyBoard->Letters &= ~KeyBoardIDLetterR; break;
+                    case KeyS: keyBoard->Letters &= ~KeyBoardIDLetterS; break;
+                    case KeyT: keyBoard->Letters &= ~KeyBoardIDLetterT; break;
+                    case KeyU: keyBoard->Letters &= ~KeyBoardIDLetterU; break;
+                    case KeyV: keyBoard->Letters &= ~KeyBoardIDLetterV; break;
+                    case KeyW: keyBoard->Letters &= ~KeyBoardIDLetterW; break;
+                    case KeyX: keyBoard->Letters &= ~KeyBoardIDLetterX; break;
+                    case KeyY: keyBoard->Letters &= ~KeyBoardIDLetterY; break;
+                    case KeyZ: keyBoard->Letters &= ~KeyBoardIDLetterZ; break;
+                    case KeySpace: keyBoard->Letters &= ~KeyBoardIDSpace; break;
+                    case KeyApostrophe: keyBoard->Letters &= ~KeyBoardIDAPOSTROPHE; break;
+                    case KeyComma: keyBoard->Letters &= ~KeyBoardIDComma; break;
+                    case KeyGraveAccent: keyBoard->Letters &= ~KeyBoardIDGRAVE_ACCENT; break;
+                    case KeySemicolon: keyBoard->Letters &= ~KeyBoardIDSemicolon; break;
+                    case KeyPeriod: keyBoard->Letters &= ~KeyBoardIDDECIMAL; break;
+
+
+                    case KeyEscape: keyBoard->Commands &= ~KeyBoardIDCommandEscape; break;
+                    case KeyEnter: keyBoard->Commands &= ~KeyBoardIDCommandEnter; break;
+                    case KeyTab: keyBoard->Commands &= ~KeyBoardIDCommandTab; break;
+                        //case : keyBoard->Commands &= ~KeyBoardIDCommandShift; break;
+                    case KeyBackspace: keyBoard->Commands &= ~KeyBoardIDBACKSPACE; break;
+                    case KeyInsert: keyBoard->Commands &= ~KeyBoardIDINSERT; break;
+                    case KeyDelete: keyBoard->Commands &= ~KeyBoardIDDELETE; break;
+                    case KeyRight: keyBoard->Commands &= ~KeyBoardIDRIGHT; break;
+                    case KeyLeft: keyBoard->Commands &= ~KeyBoardIDLEFT; break;
+                    case KeyDown: keyBoard->Commands &= ~KeyBoardIDDOWN; break;
+                    case KeyUp: keyBoard->Commands &= ~KeyBoardIDUP; break;
+                    case KeyPageUp: keyBoard->Commands &= ~KeyBoardIDPAGE_UP; break;
+                    case KeyPageDown: keyBoard->Commands &= ~KeyBoardIDPAGE_DOWN; break;
+                    case KeyHome: keyBoard->Commands &= ~KeyBoardIDHOME; break;
+                    case KeyEnd: keyBoard->Commands &= ~KeyBoardIDEND; break;
+                    case KeyCapsLock: keyBoard->Commands &= ~KeyBoardIDCAPS_LOCK; break;
+                    case KeyScrollLock: keyBoard->Commands &= ~KeyBoardIDSCROLL_LOCK; break;
+                    case KeyNumLock: keyBoard->Commands &= ~KeyBoardIDNUM_LOCK; break;
+                    case KeyPrintScreen: keyBoard->Commands &= ~KeyBoardIDPRINT_SCREEN; break;
+                    case KeyPause: keyBoard->Commands &= ~KeyBoardIDPAUSE; break;
+                    case KeyPadEnter: keyBoard->Commands &= ~KeyBoardIDPadENTER; break;
+                    case KeyShiftLeft: keyBoard->Commands &= ~KeyBoardIDShiftLeft; break;
+                    case KeyShiftRight: keyBoard->Commands &= ~KeyBoardIDShiftRight; break;
+                    case KeyControlLeft: keyBoard->Commands &= ~KeyBoardIDCONTROLLEFT; break;
+                    case KeyAltLeft: keyBoard->Commands &= ~KeyBoardIDALTLEFT; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDSUPERLEFT; break;
+                    case KeyControlRight: keyBoard->Commands &= ~KeyBoardIDCONTROLRIGHT; break;
+                    case KeyAltRight: keyBoard->Commands &= ~KeyBoardIDALTRIGHT; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDSUPERRIGHT; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDMENU; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDWORLD_1; break;
+                        //case xxxxxxxxxxxxx: keyBoard->Commands &= ~KeyBoardIDWORLD_2; break;
+
+
+                            // Numbers
+                    case Key0: keyBoard->Numbers &= ~KeyBoardIDNumber0; break;
+                    case Key1: keyBoard->Numbers &= ~KeyBoardIDNumber1; break;
+                    case Key2: keyBoard->Numbers &= ~KeyBoardIDNumber2; break;
+                    case Key3: keyBoard->Numbers &= ~KeyBoardIDNumber3; break;
+                    case Key4: keyBoard->Numbers &= ~KeyBoardIDNumber4; break;
+                    case Key5: keyBoard->Numbers &= ~KeyBoardIDNumber5; break;
+                    case Key6: keyBoard->Numbers &= ~KeyBoardIDNumber6; break;
+                    case Key7: keyBoard->Numbers &= ~KeyBoardIDNumber7; break;
+                    case Key8: keyBoard->Numbers &= ~KeyBoardIDNumber8; break;
+                    case Key9: keyBoard->Numbers &= ~KeyBoardIDNumber9; break;
+                    case KeyPad0: keyBoard->Numbers &= ~KeyBoardIDNumberBlock0; break;
+                    case KeyPad1: keyBoard->Numbers &= ~KeyBoardIDNumberBlock1; break;
+                    case KeyPad2: keyBoard->Numbers &= ~KeyBoardIDNumberBlock2; break;
+                    case KeyPad3: keyBoard->Numbers &= ~KeyBoardIDNumberBlock3; break;
+                    case KeyPad4: keyBoard->Numbers &= ~KeyBoardIDNumberBlock4; break;
+                    case KeyPad5: keyBoard->Numbers &= ~KeyBoardIDNumberBlock5; break;
+                    case KeyPad6: keyBoard->Numbers &= ~KeyBoardIDNumberBlock6; break;
+                    case KeyPad7: keyBoard->Numbers &= ~KeyBoardIDNumberBlock7; break;
+                    case KeyPad8: keyBoard->Numbers &= ~KeyBoardIDNumberBlock8; break;
+                    case KeyPad9: keyBoard->Numbers &= ~KeyBoardIDNumberBlock9; break;
+                    case KeyMinus: keyBoard->Numbers &= ~KeyBoardIDNumberKeyMinus; break;
+                        // case KeyPeriod: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPeriod; break;
+                    case KeySlash: keyBoard->Numbers &= ~KeyBoardIDNumberKeySlash; break;
+                    case KeyEqual: keyBoard->Numbers &= ~KeyBoardIDNumberKeyEqual; break;
+                    case KeyBrackedLeft: keyBoard->Numbers &= ~KeyBoardIDNumberKeyLEFT_BRACKET; break;
+                    case KeyBackSlash: keyBoard->Numbers &= ~KeyBoardIDNumberKeyBACKSLASH; break;
+                    case KeyBrackedRight: keyBoard->Numbers &= ~KeyBoardIDNumberKeyRIGHT_BRACKET; break;
+                    case KeyPadDivide: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadDIVIDE; break;
+                    case KeyPadMultiply: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadMULTIPLY; break;
+                    case KeyPadSubtract: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadSUBTRACT; break;
+                    case KeyPadAdd: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadADD; break;
+                    case KeyPadEqual: keyBoard->Numbers &= ~KeyBoardIDNumberKeyPadEQUAL; break;
+
+                        // Function key
+
+                    case KeyF1: keyBoard->Actions &= ~KeyBoardIDF01; break;
+                    case KeyF2: keyBoard->Actions &= ~KeyBoardIDF02; break;
+                    case KeyF3: keyBoard->Actions &= ~KeyBoardIDF03; break;
+                    case KeyF4: keyBoard->Actions &= ~KeyBoardIDF04; break;
+                    case KeyF5: keyBoard->Actions &= ~KeyBoardIDF05; break;
+                    case KeyF6: keyBoard->Actions &= ~KeyBoardIDF06; break;
+                    case KeyF7: keyBoard->Actions &= ~KeyBoardIDF07; break;
+                    case KeyF8: keyBoard->Actions &= ~KeyBoardIDF08; break;
+                    case KeyF9: keyBoard->Actions &= ~KeyBoardIDF09; break;
+                    case KeyF10: keyBoard->Actions &= ~KeyBoardIDF10; break;
+                    case KeyF11: keyBoard->Actions &= ~KeyBoardIDF11; break;
+                    case KeyF12: keyBoard->Actions &= ~KeyBoardIDF12; break;
+                    case KeyF13: keyBoard->Actions &= ~KeyBoardIDF13; break;
+                    case KeyF14: keyBoard->Actions &= ~KeyBoardIDF14; break;
+                    case KeyF15: keyBoard->Actions &= ~KeyBoardIDF15; break;
+                    case KeyF16: keyBoard->Actions &= ~KeyBoardIDF16; break;
+                    case KeyF17: keyBoard->Actions &= ~KeyBoardIDF17; break;
+                    case KeyF18: keyBoard->Actions &= ~KeyBoardIDF18; break;
+                    case KeyF19: keyBoard->Actions &= ~KeyBoardIDF19; break;
+                    case KeyF20: keyBoard->Actions &= ~KeyBoardIDF20; break;
+                    case KeyF21: keyBoard->Actions &= ~KeyBoardIDF21; break;
+                    case KeyF22: keyBoard->Actions &= ~KeyBoardIDF22; break;
+                    case KeyF23: keyBoard->Actions &= ~KeyBoardIDF23; break;
+                    case KeyF24: keyBoard->Actions &= ~KeyBoardIDF24; break;
+                    case KeyF25: keyBoard->Actions &= ~KeyBoardIDF25; break;
+
+                    default:
+                        break;
+                }
+            }
+
+            //PXFunctionInvoke(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
+
+            break;
+        }
+        
+        default:
+            break;
+    }
 }
 
 void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
@@ -120,19 +595,19 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
     // Fetch Window input if SYNC
     {
-        const PXBool isRunningASYNC = pxEngine->Window.MessageThread.ThreadID != 0;
+        const PXBool isRunningASYNC = 0;// pxEngine->Window->Win.MessageThread.ThreadID != 0;
 
         if(!isRunningASYNC)
         {
-            PXWindowUpdate(&pxEngine->Window);
+            PXWindowUpdate(pxEngine->Window);
         }
     }
 
     // User input
     {
         PXWindow* pxWindow = &pxEngine->Window;
-        PXKeyBoard* keyboard = &pxWindow->KeyBoardCurrentInput;
-        PXMouse* mouse = &pxWindow->MouseCurrentInput;
+        PXKeyBoard* keyboard = &pxEngine->KeyBoardCurrentInput;
+        PXMouse* mouse = &pxEngine->MouseCurrentInput;
 
         pxEngine->CounterTimeUser = PXTimeCounterStampGet();
 
@@ -189,13 +664,15 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Extended windows resize check
         if(pxWindow->HasSizeChanged)
         {
-           // PXWindowSizeGet(pxWindow->);
+            PXWindowSizeInfo pxWindowSizeInfo;
+
+            PXWindowSizeGet(pxWindow->ID, &pxWindowSizeInfo);
 
             PXViewPort pxViewPort;
             pxViewPort.X = 0;
             pxViewPort.Y = 0;
-            pxViewPort.Width = pxWindow->Width;
-            pxViewPort.Height = pxWindow->Height;
+            pxViewPort.Width = pxWindowSizeInfo.Width;
+            pxViewPort.Height = pxWindowSizeInfo.Height;
             pxViewPort.ClippingMinimum = 0;
             pxViewPort.ClippingMaximum = 1;
 
@@ -205,47 +682,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             if (pxEngine->CameraCurrent)
             {
-                PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindow->Width, pxWindow->Height);
-            }
-
-            // Update all of UI
-            if(1)
-            {
-               //???
-#if 1
-                PXDictionary* const uiElementLookup = &pxEngine->UIElementLookUp;
-
-
-                PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
-                PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
-
-                PXWindowSizeInfo pxWindowSizeInfo;
-
-                PXWindowSizeGet(pxEngine->Window.ID, &pxWindowSizeInfo);
-                pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
-                pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
-
-                for(PXSize i = 0; i < uiElementLookup->EntryAmountCurrent; ++i)
-                {
-                    PXDictionaryEntry pxDictionaryEntry;
-                    PXUIElement* uiElement = PXNull;
-
-                    PXDictionaryIndex(uiElementLookup, i, &pxDictionaryEntry);
-
-                    uiElement = *(PXUIElement**)pxDictionaryEntry.Value;
-
-                    PXUIElementPositionCalculcate(uiElement, &pxUIElementPositionCalulcateInfo);
-
-
-                    PXUIElementUpdateInfo pxUIElementUpdateInfo;
-                    pxUIElementUpdateInfo.UIElementReference = uiElement;
-                    pxUIElementUpdateInfo.WindowReference = &pxEngine->Window;
-                    pxUIElementUpdateInfo.Property = PXUIElementPropertySize;
-
-                    PXUIElementUpdateOSStyle(&pxUIElementUpdateInfo);
-                }
-#endif
-            }
+                PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindowSizeInfo.Width, pxWindowSizeInfo.Height);
+            }   
         }
     }
 
@@ -348,10 +786,20 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             PXTextPrint(&pxText, "[%s] (Build:%s %s) FPS:%-3i CPU:%i°C", pxEngine->ApplicationName, date, time, pxEngine->FramesPerSecound, cpuTemp);
 
-            PXWindowTitleSet(&pxEngine->Window, &pxText);
+
+            PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
+            PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+
+            pxGUIElementUpdateInfo.UIElement = pxEngine->Window;
+            pxGUIElementUpdateInfo.Property = PXUIElementPropertyTextContent;
+            pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
+
+            PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
+
+            //PXWindowTitleSet(&pxEngine->Window, &pxText);
         }
 
-        if(pxEngine->HasGraphicInterface)
+        if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
 #if 1
             pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
@@ -609,7 +1057,6 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     // Create containers
     //-----------------------------------------------------
     PXDictionaryConstruct(&pxEngine->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxEngine->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->TextLookUp, sizeof(PXInt32U), sizeof(PXEngineText), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxEngine->TimerLookUp, sizeof(PXInt32U), sizeof(PXEngineTimer), PXDictionaryValueLocalityExternalReference);
@@ -625,7 +1072,11 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     PXMathRandomeSeed(&pxEngine->RandomGeneratorSeed);
 
 
+    PXGUISystemInitialize(&pxEngine->GUISystem);
+
+
     // Load all mods now, not fully tho, they may need very early checks before anything happens
+    if(pxEngineStartInfo->UseMods)
     {      
         PXText pxText;
         PXTextMakeFixedA(&pxText, "Mod\\");
@@ -636,42 +1087,50 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     //-----------------------------------------------------
 	// Create window
     //-----------------------------------------------------
-    PXWindowConstruct(&pxEngine->Window);
-    pxEngine->Window.EventReceiver = pxEngine;
-    pxEngine->Window.LookupHelperEvent = PXEngineWindowLookupHelper;
-
-    switch(pxEngineStartInfo->Mode)
     {
-        case PXGraphicInitializeModeWindowless:
-        {       
-            PXWindowCreateHidden(&pxEngine->Window, pxEngineStartInfo->Width, pxEngineStartInfo->Height, PXFalse); // This will call this function again. Recursive
-            
-            break;
-        }
-        case PXGraphicInitializeModeOSGUIElement:
+        PXGUIElementCreateInfo pxGUIElementCreateInfo;
+        PXClear(PXGUIElementCreateInfo, &pxGUIElementCreateInfo);
+        pxGUIElementCreateInfo.UIElement = &pxEngine->Window;
+        pxGUIElementCreateInfo.Type = PXUIElementTypeWindow;
+        pxGUIElementCreateInfo.StyleFlagList = PXGUIElementStyleDefault;
+        pxGUIElementCreateInfo.InteractOwner = pxEngine;
+        pxGUIElementCreateInfo.InteractCallBack = PXEngineWindowEvent;
+        pxGUIElementCreateInfo.Data.Window.EventOwner = pxEngine;
+        pxGUIElementCreateInfo.Data.Window.IsVisible = PXTrue;
+        pxGUIElementCreateInfo.Data.Window.BackGroundColor.Red = 38;
+        pxGUIElementCreateInfo.Data.Window.BackGroundColor.Green = 38;
+        pxGUIElementCreateInfo.Data.Window.BackGroundColor.Blue = 38;
+        pxGUIElementCreateInfo.Data.Window.BackGroundColor.Alpha = 0xFF;
+        pxGUIElementCreateInfo.Data.Window.Width = pxEngineStartInfo->Width;
+        pxGUIElementCreateInfo.Data.Window.Height = pxEngineStartInfo->Height;
+        pxGUIElementCreateInfo.Data.Window.Title = "[N/A]";
+
+        switch(pxEngineStartInfo->Mode)
         {
+            case PXGraphicInitializeModeWindowless:
+            {
+                pxGUIElementCreateInfo.Data.Window.IsVisible = PXFalse;
 
+                PXGUIElementCreate(&pxEngine->GUISystem, &pxGUIElementCreateInfo, 1u);
+                break;
+            }
+            case PXGraphicInitializeModeOSGUIElement:
+            {
+                // ... ?
 
-            break;
-        }
-        case PXGraphicInitializeModeOSGUI:
-        case PXGraphicInitializeModeWindowfull:
-        {
-            PXWindowCreate(&pxEngine->Window, 0, 0, -1, -1, PXNull, PXFalse);
-            //PXWindowUpdate(&pxEngine->Window);
+                // We dont need to create any UI resource, it has been created already
 
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "PX",
-                "Instantiate",
-                "Window created"
-            );
-#endif
+                pxEngine->Window = pxEngineStartInfo->UIElement;
 
-            break;
-        }
+                break;
+            }
+            case PXGraphicInitializeModeOSGUI:
+            case PXGraphicInitializeModeWindowfull:
+            {
+                PXGUIElementCreate(&pxEngine->GUISystem, &pxGUIElementCreateInfo, 1u);
+                break;
+            }
+        }    
     }
     //-----------------------------------------------------
 
@@ -685,21 +1144,11 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         PXGraphicInitializeInfo pxGraphicInitializeInfo;
         PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
         pxGraphicInitializeInfo.Mode = pxEngineStartInfo->Mode;
-        pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;
-
-        if(PXGraphicInitializeModeOSGUIElement == pxEngineStartInfo->Mode)
-        {
-            pxGraphicInitializeInfo.WindowID = pxEngineStartInfo->UIElement->ID;
-        }
-        else
-        {
-            pxGraphicInitializeInfo.WindowReference = &pxEngine->Window;
-        }
-
-      
+        pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;      
+        pxGraphicInitializeInfo.WindowReference = pxEngine->Window;
         pxGraphicInitializeInfo.Width = -1;
         pxGraphicInitializeInfo.Height = -1;
-        pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersion11Emulate11x0;
+        pxGraphicInitializeInfo.DirectXVersion = PXGraphicSystemOpenGL;
         pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
 
         const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
@@ -1897,34 +2346,19 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeUIElement:
         {
-            PXUIElementCreateData* const pxUIElementCreateData = &pxEngineResourceCreateInfo->UIElement;
-            PXUIElement* pxUIElement = *(PXUIElement**)pxEngineResourceCreateInfo->ObjectReference;
+            PXGUIElementCreateInfo* const pxGUIElementCreateInfo = &pxEngineResourceCreateInfo->UIElement;
 
-            if (!pxUIElement)
-            {
-                PXNewZerod(PXUIElement, &pxUIElement);
-                *pxEngineResourceCreateInfo->ObjectReference = pxUIElement;
-            }
+           // pxGUIElementCreateInfo->UIElementWindow = pxEngine->Window;
 
-            pxUIElementCreateData->OSButton = PXTrue;
+            pxGUIElementCreateInfo->UIElement = pxEngineResourceCreateInfo->ObjectReference;
+            PXGUIElementCreate(&pxEngine->GUISystem, pxGUIElementCreateInfo, 1);
 
-            // Is Registerd
-            {
-                const PXBool isRegisterd = 0 != pxUIElement->ID;
-               
-                if(isRegisterd)
-                {
-                    return PXActionInvalidRedundandInteraction;
-                }
-
-                pxUIElement->ID = PXEngineGenerateUniqeID(pxEngine);
-                PXDictionaryAdd(&pxEngine->UIElementLookUp, &pxUIElement->ID, pxUIElement);      
-            }
-
+       
+            /*
             //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
-            if(PXUIElementTypeTreeViewItem != pxUIElementCreateData->Type)
+            if(PXUIElementTypeTreeViewItem != pxGUIElementCreateInfo->Type)
             {
-                const char* uielementName = PXUIElementTypeToString(pxUIElementCreateData->Type);
+                const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
 
                 pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 64, "[%s] %s", uielementName, pxEngineResourceCreateInfo->Name);
             }
@@ -1932,275 +2366,10 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             {
                 pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 64, "%s", pxEngineResourceCreateInfo->Name);
             }
-
-
-
-
-            // General stuff
-            {
-                PXGraphicUIElementCreate(&pxEngine->Graphic, &pxUIElement, 1, pxUIElementCreateData->Paranet);
-                PXGraphicUIElementTypeSet(&pxEngine->Graphic, pxUIElement, PXUIElementTypePanel);
-                PXGraphicUIElementFlagSet(pxUIElement, PXUIElementDecorative);
-                pxUIElement->ColorTintReference = pxUIElementCreateData->ColorTintReference;
-
-                PXCopy(PXUIElementPosition, &pxUIElementCreateData->Position, &pxUIElement->Position);
-
-                PXUIElementColorSet4F(pxUIElement, 0.40f, 0.15f, 0.15f, 1);
-
-
-                PXCopy(PXUIElementTextInfo, &pxUIElementCreateData->TextInfo, &pxUIElement->TextInfo);
-
-                pxUIElement->Type = pxUIElementCreateData->Type;
-                pxUIElement->InteractCallBack = pxUIElementCreateData->InteractCallBack;
-            }
-
-            // Register as OSButton?
-            if(pxUIElementCreateData->OSButton)
-            {
-                pxUIElementCreateData->WindowReference = &pxEngine->Window;
-                PXUIElementCreateOSStyle(pxUIElement, pxUIElementCreateData);
-            }        
+            */
+   
 
             PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxEngineResourceCreateInfo);
-
-            switch (pxUIElement->Type)
-            {
-                case PXUIElementTypeText:
-                {
-                    pxUIElement->TextInfo.FontID = pxUIElementCreateData->TextInfo.FontID;
-                    //PXGraphicPXUIElementTextSetA(pxUIElement, pxUIElementCreateData->Text);
-                    break;
-                }
-
-                case PXUIElementTypeRenderFrame:
-                {
-                    //PXOpenGL* const pxOpenGL = &pxGraphic->OpenGLInstance;
-
-#if 0
-                    // Texture
-                   // PXTexture2DSet(pxUIElement->FrameRenderTextureReference, PXColorFormatRGBI8, pxUIElement->FrameRenderWidth, pxUIElement->Height);
-                    PXOpenGLTexture2DCreate(pxOpenGL, pxUIElement->FrameRenderTextureReference);
-
-
-                    // Framebuffer
-                    PXOpenGLFrameBufferCreate(pxOpenGL, 1, &pxUIElement->FrameBufferID);
-                    PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, pxUIElement->FrameBufferID);
-
-                    // Renderbuffer as depthbuffer
-                    PXOpenGLRenderBufferCreate(pxOpenGL, 1, &pxUIElement->FrameRenderID);
-                    PXOpenGLRenderBufferBind(pxOpenGL, pxUIElement->FrameRenderID);
-                    PXOpenGLRenderBufferStorage(pxOpenGL, PXOpenGLRenderBufferFormatDepthComponent, pxUIElement->FrameRenderWidth, pxUIElement->FrameRenderHeight);
-
-                    // Link buffer
-                    PXOpenGLFrameBufferLinkRenderBuffer(pxOpenGL, PXOpenGLRenderBufferAttachmentPointDepth, pxUIElement->FrameRenderID);
-
-
-
-                    PXOpenGLFrameBufferLinkTexture2D(pxOpenGL, PXOpenGLRenderBufferAttachmentPointColor, PXGraphicTextureType2D, pxUIElement->FrameRenderTextureReference->ResourceID.OpenGLID, 0);
-
-                    // Set the list of draw buffers.
-                   // GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-                    //glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-
-                   // // Always check that our framebuffer is ok
-                    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-                     //   return false;
-
-
-                    PXOpenGLFrameBufferBind(pxOpenGL, PXOpenGLFrameBufferModeDrawAndRead, 0);
-                    PXOpenGLRenderBufferBind(pxOpenGL, 0);
-#endif
-                    break;
-                }
-
-                default:
-                    break;
-            }
-
-
-
-
-            /*
-            switch (pxUIElement->Type)
-            {
-                case PXUIElementTypePanel:
-                {
-                    const float vertexData[] =
-                    {
-                         -1,  -1,  0, 0,1,
-                        1,  -1,  0,  1,1,
-                         1, 1,  0,   1,0,
-                        -1, 1,  0,   0,0
-                    };
-                    const PXSize vertexDataSize = sizeof(vertexData) / sizeof(float);
-
-                    PXByte bufferData[32];
-                    PXModel model;
-
-                    ModelConstruct(&model);
-
-                    model.Data = bufferData;
-
-                    MemoryClear(bufferData, sizeof(bufferData));
-                    ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
-
-                    model.DataVertexList = vertexData;
-                    model.DataVertexListSize = vertexDataSize;
-
-                    model.DataVertexWidth = 3u;
-                    model.DataVertexSize = vertexDataSize;
-                    model.DataTextureWidth = 2u;
-                    model.DataTextureSize = vertexDataSize;
-
-                    {
-                        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxUIPanel->UIElement.Renderable, &model);
-
-                        PXActionExitOnError(actionResult);
-                    }
-
-                    PXGraphicRenderableRegister(pxGraphic, &pxUIPanel->UIElement.Renderable);
-
-                    break;
-                }
-                case PXUIElementTypeLabel:
-                {
-                    const PXSize textSize = PXTextLengthA(text, 256);
-                    const PXSize vertexDataSize = textSize * 4u * (3u + 2u);
-
-                    float* vertexData = MemoryAllocate(vertexDataSize * sizeof(float));
-
-                    PXSize index = 0;
-                    float xoffset = 0;
-
-                    float imgwidth = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Width;
-                    float imgheight = pxGraphicUIText->TextFont->FontElement->FontPageList[0].FontTextureMap.Height;
-
-                    for (size_t i = 0; i < textSize; i++)
-                    {
-                        char character = text[i];
-
-                        PXSpriteFontCharacter* PXSpriteFontChar = PXSpriteFontGetCharacter(pxGraphicUIText->TextFont->FontElement, character);
-
-                        float texturePositionX = PXSpriteFontChar->Position[0] / imgwidth;
-                        float texturePositionY = PXSpriteFontChar->Position[1] / imgheight;
-                        float texturePositionWidth = PXSpriteFontChar->Size[0] / imgwidth;
-                        float texturePositionHeight = PXSpriteFontChar->Size[1] / imgheight;
-
-                        vertexData[index++] = xoffset;
-                        vertexData[index++] = 0;
-                        vertexData[index++] = 0;
-
-                        vertexData[index++] = texturePositionX;
-                        vertexData[index++] = texturePositionY + texturePositionHeight;
-
-                        vertexData[index++] = PXSpriteFontChar->Size[0] + xoffset;
-                        vertexData[index++] = 0;
-                        vertexData[index++] = 0;
-
-                        vertexData[index++] = texturePositionX + texturePositionWidth;
-                        vertexData[index++] = texturePositionY + texturePositionHeight;
-
-                        vertexData[index++] = PXSpriteFontChar->Size[0] + xoffset;
-                        vertexData[index++] = PXSpriteFontChar->Size[1];
-                        vertexData[index++] = 0;
-
-                        vertexData[index++] = texturePositionX + texturePositionWidth;
-                        vertexData[index++] = texturePositionY;
-
-                        vertexData[index++] = xoffset;
-                        vertexData[index++] = PXSpriteFontChar->Size[1];
-                        vertexData[index++] = 0;
-
-                        vertexData[index++] = texturePositionX;
-                        vertexData[index++] = texturePositionY;
-
-
-
-                        xoffset += PXSpriteFontChar->XAdvance + 10;
-
-
-                        //vertexData[index++] = PXSpriteFontChar->Position[0];
-                        //vertexData[index++] = PXSpriteFontChar->Position[1];
-
-                        //vertexData[index++] = PXSpriteFontChar->Position[0];
-                        //vertexData[index++] = PXSpriteFontChar->Position[1];
-                        //vertexData[index++] = PXSpriteFontChar->Position[0];
-                        //vertexData[index++] = PXSpriteFontChar->Position[1];
-
-                    }
-
-                    PXByte bufferData[32];
-                    PXModel model;
-
-                    ModelConstruct(&model);
-
-                    model.Data = bufferData;
-
-                    MemoryClear(bufferData, sizeof(bufferData));
-                    ModelSegmentsAdd(&model, 4u, vertexDataSize, -1);
-
-                    model.DataVertexList = vertexData;
-                    model.DataVertexListSize = vertexDataSize;
-
-                    model.DataVertexWidth = 3u;
-                    model.DataVertexSize = vertexDataSize;
-                    model.DataTextureWidth = 2u;
-                    model.DataTextureSize = vertexDataSize;
-
-                    {
-                        const PXActionResult actionResult = PXGraphicModelRegisterFromModel(pxGraphic, &pxGraphicUIText->UIElement.Renderable, &model);
-
-                        PXActionExitOnError(actionResult);
-                    }
-
-                    PXGraphicRenderableRegister(pxGraphic, &pxGraphicUIText->UIElement.Renderable);
-
-
-
-                    PXTexture pxTexture;
-
-                    PXTextureConstruct(&pxTexture);
-
-                    MemoryCopy(&pxGraphicUIText->TextFont->FontElement[0].FontPageList[0].FontTextureMap, sizeof(Image), &pxTexture.Image, sizeof(Image));
-
-                    pxTexture.Type = PXGraphicTextureType2D;
-                    pxTexture.Filter = PXGraphicRenderFilterNoFilter;
-                    pxTexture.LayoutNear = PXGraphicImageLayoutNearest;
-                    pxTexture.LayoutFar = PXGraphicImageLayoutNearest;
-                    pxTexture.WrapHeight = PXGraphicImageWrapStrechEdges;
-                    pxTexture.WrapWidth = PXGraphicImageWrapStrechEdges;
-
-                    PXGraphicTextureRegister(pxGraphic, &pxTexture);
-
-                    pxGraphicUIText->UIElement.Renderable.MeshSegmentList[0].TextureID = pxTexture.ID;
-
-                    break;
-                }
-                case PXUIElementTypeButton:
-                {
-                    PXRenderable* renderable = &pxButton->UIElement.Renderable;
-
-                    pxButton->TextFont = pxFont;
-                    PXGraphicUITextRegister(pxGraphic, renderable, 0, 0, 1, 1, text);
-                    PXGraphicModelShaderSet(pxGraphic, renderable, shader);
-                    PXMatrix4x4FScaleSet(0.0017, 0.002, 1, &renderable->MatrixModel);
-                    PXMatrix4x4FMoveToScaleXY(&renderable->MatrixModel, -0.9, -0.9, &renderable->MatrixModel);
-                    renderable->MeshSegmentList[0].RenderMode = PXGraphicDrawModeSquare;
-
-                    PXLockEngage(&pxGraphic->_pxUIElements);
-                    PXLinkedListFixedNodeAdd(&pxGraphic->_pxUIElements, &pxButton->UIElement);
-                    PXLockRelease(&pxGraphic->_pxUIElements);
-
-                    break;
-                }
-                case PXUIElementTypeImage:
-
-                case PXUIElementTypeCustom:
-
-                default:
-                    break;
-            }*/
-
 
             break;
         }
